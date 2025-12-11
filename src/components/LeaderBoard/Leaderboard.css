@@ -101,14 +101,6 @@
 .leaderboard-totals-container {
   display: flex;
   flex-direction: column;
-  align-items: center !important;
-  justify-content: center !important;
-  text-align: center !important;
-}
-
-.leaderboard-totals-container > * {
-  text-align: center;
-  margin: 0 auto;
 }
 
 @media screen and (max-width: 544px) {

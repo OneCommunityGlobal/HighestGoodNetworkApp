@@ -10,7 +10,7 @@ import {
 } from '../../../../../actions/task.js';
 import './tagcolor.css';
 import './task.css';
-import '../../../../Header/DarkMode.css'
+import '../../../../Header/index.css'
 import { Editor } from '@tinymce/tinymce-react';
 import { getPopupById } from './../../../../../actions/popupEditorAction';
 import { boxStyle, boxStyleDark } from '~/styles';
@@ -40,8 +40,8 @@ function Task(props) {
   const names = props.resources.map(element => element.name);
   const colors_objs = assignColorsToInitials(names);
 
-  const startedDate = new Date(props.startedDatetime);
-  const dueDate = new Date(props.dueDatetime);
+  const startedDate = props.startedDatetime ? new Date(props.startedDatetime) : null;
+  const dueDate = props.dueDatetime ? new Date(props.dueDatetime) : null;
 
   // states from hooks
   const [modal, setModal] = useState(false);
@@ -204,6 +204,7 @@ function Task(props) {
             </td>
             <td
               id={`r_${props.num}_${props.taskId}`}
+              // eslint-disable-next-line jsx-a11y/scope
               scope="row"
               className={`taskNum ${props.hasChildren ? 'has_children' : ''} text-left`}
               onClick={openChild}
@@ -216,6 +217,7 @@ function Task(props) {
                   className={`level-space-${props.level}`}
                   data-tip={`${getAncestorNames(props.mother)}`}
                 >
+                  {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
                   <span
                     onClick={openChild}
                     id={`task_name_${props.taskId}`}
@@ -242,7 +244,7 @@ function Task(props) {
                 <i data-tip="Tertiary" className="fa fa-star-o" aria-hidden="true" />
               ) : null}
             </td>
-            <td className="desktop-view">
+            <td>
               {props.resources.length
                 ? props.resources
                   .filter((elm, i) => i < 2 || showMoreResources)
@@ -265,6 +267,7 @@ function Task(props) {
                             {initials}{' '}
                           </span>
                         ) : (
+                          // eslint-disable-next-line jsx-a11y/alt-text
                           <img className="img-circle" src={elm.profilePic} />
                         )}
                       </a>
@@ -272,6 +275,7 @@ function Task(props) {
                   })
                 : null}
               {props.resources.length > 2 ? (
+                // eslint-disable-next-line jsx-a11y/anchor-is-valid, jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
                 <a
                   className="resourceMoreToggle"
                   onClick={() => setShowMoreResources(!showMoreResources)}
@@ -289,7 +293,7 @@ function Task(props) {
                 <i data-tip="Not Assigned" className="fa fa-square-o" aria-hidden="true" />
               )}
             </td>
-            <td className="desktop-view">
+            <td>
               {props.status === 'Started' || props.status === 'Active' ? (
                 <i data-tip="Active" className="fa fa-clock-o" aria-hidden="true" />
               ) : null}
@@ -307,39 +311,39 @@ function Task(props) {
               ) : null}
             </td>
             <td
-              className="desktop-view"
               data-tip={`Hours-Best-case: ${parseFloat(props.hoursBest / 8).toFixed(2)} day(s)`}
             >
               {props.hoursBest}
             </td>
             <td
-              className="desktop-view"
               data-tip={`Hours-Worst-case: ${parseFloat(props.hoursWorst / 8).toFixed(2)} day(s)`}
             >
               {props.hoursWorst}
             </td>
             <td
-              className="desktop-view"
               data-tip={`Hours-Most-case: ${parseFloat(props.hoursMost / 8).toFixed(2)} day(s)`}
             >
               {props.hoursMost}
             </td>
             <td
-              className="desktop-view"
               data-tip={`Estimated Hours: ${parseFloat(props.estimatedHours / 8).toFixed(
                 2,
               )} day(s)`}
             >
               {parseFloat(props.estimatedHours).toFixed(2)}
             </td>
-            <td className="desktop-view">
-              {startedDate.getFullYear() !== 1969 ? formatDate(startedDate) : null}
+            <td>
+              {startedDate ? 
+                `${startedDate.toLocaleDateString('en-US', { month: 'short', timeZone: 'UTC' })}-${startedDate.getUTCDate().toString().padStart(2, '0')}-${startedDate.getUTCFullYear()}` 
+                : null}
               <br />
             </td>
-            <td className="desktop-view">
-              {dueDate.getFullYear() !== 1969 ? formatDate(dueDate) : null}
+            <td>
+              {dueDate ? 
+                `${dueDate.toLocaleDateString('en-US', { month: 'short', timeZone: 'UTC' })}-${dueDate.getUTCDate().toString().padStart(2, '0')}-${dueDate.getUTCFullYear()}` 
+                : null}
             </td>
-            <td className="desktop-view">
+            <td>
               {props.links.map((link, i) =>
                 link.length > 1 ? (
                   <a key={i} href={link} target="_blank" data-tip={link} rel="noreferrer">
@@ -348,7 +352,7 @@ function Task(props) {
                 ) : null,
               )}
             </td>
-            <td className="desktop-view" onClick={toggleModal}>
+            <td onClick={toggleModal}>
               <i className="fa fa-book" aria-hidden="true" data-tip="More info" />
             </td>
             <Modal isOpen={modal} toggle={toggleModal} className={darkMode ? 'text-light dark-mode' : ''}>
@@ -400,6 +404,7 @@ function Task(props) {
               siblings={props.siblings}
               load={props.load}
               pageLoadTime={props.pageLoadTime}
+              tasks={props.tasks}
             />
           ) : null}
         </>

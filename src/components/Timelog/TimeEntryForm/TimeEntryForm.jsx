@@ -35,7 +35,7 @@ import TangibleInfoModal from './TangibleInfoModal';
 import ReminderModal from './ReminderModal';
 import TimeLogConfirmationModal from './TimeLogConfirmationModal';
 import { ENDPOINTS } from '~/utils/URL';
-import '../../Header/DarkMode.css';
+import '../../Header/index.css';
 import { updateIndividualTaskTime } from '../../TeamMemberTasks/actions';
 
 // Images are not allowed in timelog
@@ -81,6 +81,8 @@ function TimeEntryForm(props) {
     onTimeSubmitted,
     sessionId,
     timerStats,
+    timerConnected,
+    maxHoursPerEntry,
   } = props;
   // props from store
   const { authUser } = props;
@@ -118,10 +120,10 @@ function TimeEntryForm(props) {
                       subscript superscript charmap  | help',
     branding: false,
     toolbar_mode: 'sliding',
-    min_height: 180,
+    min_height: 250,
     max_height: 300,
     autoresize_bottom_margin: 1,
-    content_style: 'body { cursor: text !important; }',
+    content_style: 'body { cursor: text !important; } .mce-content-body[data-mce-placeholder]:focus::before {content: "";}',
     images_upload_handler: customImageUploadHandler,
     skin: darkMode ? 'oxide-dark' : 'oxide',
     content_css: darkMode ? 'dark' : 'default',
@@ -227,11 +229,15 @@ function TimeEntryForm(props) {
 
     if (name === 'hours' || name === 'minutes') {
       const numValue = +value;
+    
       const isValid =
-        name === 'hours' ? numValue >= 0 && numValue <= 40 : numValue >= 0 && numValue <= 59;
+        name === 'hours' ? numValue >= 0 && numValue <= 1000 : numValue >= 0 && numValue <= 59;
+    
       if (isValid) {
         updateFormValues(name, numValue);
       }
+    
+      return;
     } else if (name === 'isTangible') {
       updateFormValues(name, checked);
     } else {
@@ -253,6 +259,7 @@ function TimeEntryForm(props) {
   };
 
   const handleEditorChange = (content, editor) => {
+    editor.focus();
     const { wordcount } = editor.plugins;
     const regexFilter = /https:\/\/(?!(www\.)?localhost|(www\.)?dropbox\.com(?!\/scl\/)|(www\.)?[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}.*$/gim;
     const hasLink = regexFilter.test(content);
@@ -333,6 +340,13 @@ function TimeEntryForm(props) {
   };
 
   const submitTimeEntry = async () => {
+    // Prevent submission when logging timer time but timer is disconnected
+    if (from === 'Timer' && timerConnected === false) {
+      toast.error('Cannot log time entry while timer is disconnected. Please wait for connection to be restored or refresh the page.');
+      setSubmitting(false);
+      return;
+    }
+
     const { hours: formHours, minutes: formMinutes, personId, taskId } = formValues;
     const timeEntry = { ...formValues };
     const isTimeModified = edit && (initialHours !== formHours || initialMinutes !== formMinutes);
@@ -377,6 +391,13 @@ function TimeEntryForm(props) {
             }),
           );
           break;
+        case 'WeekEnd':
+          // Handle week-end time log completion
+          if (props.onComplete) {
+            await props.onComplete(timeEntry);
+          }
+          clearForm();
+          break;
         case 'TimeLog': {
           const date = moment(formValues.dateOfWork);
           const today = moment().tz('America/Los_Angeles');
@@ -395,7 +416,7 @@ function TimeEntryForm(props) {
           break;
       }
 
-      if (from !== 'Timer' && !reminder.editLimitNotification) {
+      if (from !== 'Timer' && from !== 'WeekEnd' && !reminder.editLimitNotification) {
         setReminder(r => ({
           ...r,
           editLimitNotification: !r.editLimitNotification,
@@ -422,21 +443,34 @@ function TimeEntryForm(props) {
       event.preventDefault();
     }
     setSubmitting(true);
-
+  
     if (edit && isEqual(formValues, initialFormValues)) {
       toast.info(`Nothing is changed for this time entry`);
       setSubmitting(false);
       return;
     }
+  
+    const maxHours = maxHoursPerEntry || 40;
+    const totalHours =
+      Number(formValues.hours || 0) + Number(formValues.minutes || 0) / 60;
 
+    if (from === 'TimeLog' && maxHoursPerEntry && totalHours > maxHours) {
+      toast.warning(
+        `Hold up, workhorse! You’ve hit the ${maxHours}-hour limit for a single entry. You can pop in a new time log for any additional hours.`
+      );
+      setSubmitting(false);
+      return;
+    }
+  
     if (!edit && !formValues.isTangible) {
       setTimelogConfirmationModalVisible(true);
       setSubmitting(false);
       return;
     }
-
+  
     await submitTimeEntry();
   };
+  
 
   const handleTangibleTimelogConfirm = async () => {
     setTimelogConfirmationModalVisible(false);
@@ -581,11 +615,11 @@ function TimeEntryForm(props) {
 
   /* ---------------- useEffects -------------- */
   useEffect(() => {
-    if (isAsyncDataLoaded) {
-      const options = buildOptions();
+      if (isAsyncDataLoaded) {
+        const options = buildOptions();
       setProjectsAndTasksOptions(options);
     }
-  }, [isAsyncDataLoaded, timeEntryFormUserProjects]);
+  }, [isAsyncDataLoaded, timeEntryFormUserProjects, timeEntryFormUserTasks]);
 
   // grab form data before editing
   useEffect(() => {
@@ -602,19 +636,17 @@ function TimeEntryForm(props) {
   }, [isOpen]);
 
   useEffect(() => {
-    if (actualDate && !edit) {
-      setFormValues({
-        ...formValues,
-        dateOfWork: moment(actualDate)
-          .tz('America/Los_Angeles')
-          .format('YYYY-MM-DD'),
-      });
-    }
-  }, [actualDate]);
+      if (actualDate && !edit) {
+      setFormValues(prev => ({
+          ...prev,
+          dateOfWork: moment(actualDate).tz('America/Los_Angeles').format('YYYY-MM-DD'),
+        }));
+      }
+    }, [actualDate, edit]);
 
   useEffect(() => {
-    setFormValues({ ...formValues, ...data });
-  }, [data]);
+      setFormValues(prev => ({ ...prev, ...data }));
+    }, [data]);
 
   const fontColor = darkMode ? 'text-light' : '';
   const headerBg = darkMode ? 'bg-space-cadet' : '';
@@ -683,18 +715,17 @@ function TimeEntryForm(props) {
               </Label>
               <Row form>
                 <Col>
-                  <Input
-                    type="number"
-                    name="hours"
-                    id="hours"
-                    min={0}
-                    max={40}
-                    placeholder="Hours"
-                    value={formValues.hours}
-                    onChange={handleInputChange}
-                    disabled={!canChangeTime}
-                    className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
-                  />
+                <Input
+                  type="number"
+                  name="hours"
+                  id="hours"
+                  min={0}
+                  placeholder="Hours"
+                  value={formValues.hours}
+                  onChange={handleInputChange}
+                  disabled={!canChangeTime}
+                  className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
+                />
                 </Col>
                 <Col>
                   <Input
@@ -754,7 +785,9 @@ function TimeEntryForm(props) {
                 className="form-control"
                 value={formValues.notes}
                 onEditorChange={handleEditorChange}
-                disabled={!(isSameDayAuthUserEdit || canEditTimeEntryDescription)}
+                disabled={
+                  !((isSameDayAuthUserEdit || canEditTimeEntryDescription) && !!formValues.projectId)
+                }
               />
 
               {'notes' in errors && (
@@ -846,6 +879,8 @@ TimeEntryForm.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   data: PropTypes.any.isRequired,
   handleStop: PropTypes.func,
+  timerConnected: PropTypes.bool,
+  maxHoursPerEntry: PropTypes.number,
 };
 
 const mapStateToProps = state => ({

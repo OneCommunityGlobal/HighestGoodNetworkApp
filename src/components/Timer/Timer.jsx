@@ -14,17 +14,19 @@ import {
 } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import cs from 'classnames';
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import css from './Timer.module.css';
-import '../Header/DarkMode.css';
+import '../Header/index.css';
 import { ENDPOINTS } from '~/utils/URL';
 import config from '../../config.json';
 import TimeEntryForm from '../Timelog/TimeEntryForm';
 import Countdown from './Countdown';
 import TimerStatus from './TimerStatus';
 import TimerPopout from './TimerPopout';
+import { postTimeEntry, editTimeEntry } from '../../actions/timeEntries';
 
 function Timer({ authUser, darkMode, isPopout }) {
+  const dispatch = useDispatch();
   const realIsPopout = typeof isPopout === 'boolean' ? isPopout : !!window.opener;
   /**
    *  Because the websocket can not be closed when internet is cut off (lost server connection),
@@ -51,7 +53,8 @@ function Timer({ authUser, darkMode, isPopout }) {
    *  forcedPause: boolean,
    *  started: boolean,
    *  goal: number,
-   *  startAt: Date
+   *  startAt: Date,
+   *  weekEndPause: boolean
    * }
    */
 
@@ -84,6 +87,7 @@ function Timer({ authUser, darkMode, isPopout }) {
     initialGoal: 900000,
     chiming: false,
     startAt: Date.now(),
+    weekEndPause: false,
   };
 
   const MAX_HOURS = 5;
@@ -108,6 +112,7 @@ function Timer({ authUser, darkMode, isPopout }) {
   const [lastActivity, setLastActivity] = useState(null); // Track last user activity
   const [sessionId, setSessionId] = useState(null); // Unique session identifier
   const [viewingUserId, setViewingUserId] = useState(null);
+  const [weekEndModal, setWeekEndModal] = useState(false);
   const isWSOpenRef = useRef(0);
   const timeIsOverAudioRef = useRef(null);
   const forcedPausedAudioRef = useRef(null);
@@ -371,6 +376,14 @@ function Timer({ authUser, darkMode, isPopout }) {
     sendStartChime(!timeIsOverModalOpen);
   };
 
+  const toggleWeekEndModal = () => {
+    setWeekEndModal(!weekEndModal);
+    if (weekEndModal) {
+      // When closing the modal, stop chiming
+      sendStartChime(false);
+    }
+  };
+
   const checkBtnAvail = useCallback(
     addition => {
       const remainingDuration = moment.duration(remaining);
@@ -466,16 +479,44 @@ function Timer({ authUser, darkMode, isPopout }) {
     }
   };
 
+  const handleWeekEndPause = () => {
+    if (goal - remaining < 60000) {
+      return; // Don't show modal if less than 1 minute
+    }
+
+    // Prevent duplicate calls if modal is already open
+    if (weekEndModal) {
+      return;
+    }
+
+    setWeekEndModal(true);
+    sendPause(); // Pause timer
+    toast.info('The week is close to ending! Please log your time.');
+    sendStartChime(true); // Start chiming
+  };
+
   /**
    * This useEffect is to make sure that all the states will be updated before taking effects,
    * so that message state and other states like running, inacMoal ... will be updated together
    * at the same time.
    */
   useEffect(() => {
-    // Exclude heartbeat message
+    // Exclude heartbeat message and timelog event messages
     if (lastJsonMessage && lastJsonMessage.heartbeat === 'pong') {
       isWSOpenRef.current = 0;
       return;
+    }
+
+    // Ignore TIMELOG_EVENT messages - they're for the timestamps tab, not the timer
+    if (lastJsonMessage && lastJsonMessage.type === 'TIMELOG_EVENT') {
+      return;
+    }
+    // Handle explicit week close pause action messages
+    if (lastJsonMessage && lastJsonMessage.action === 'WEEK_CLOSE_PAUSE') {
+      if (running) {
+        handleWeekEndPause();
+      }
+      return; // Exit early to prevent other modal logic
     }
 
     const {
@@ -483,12 +524,16 @@ function Timer({ authUser, darkMode, isPopout }) {
       forcedPause: forcedPauseLJM,
       started: startedLJM,
       chiming: chimingLJM,
-    } = lastJsonMessage || defaultMessage; // lastJsonMessage might be null at the beginning
+      weekEndPause: weekEndPauseLJM,
+    } = lastJsonMessage || defaultMessage;
+
     setMessage(lastJsonMessage || defaultMessage);
     setRunning(startedLJM && !pausedLJM);
+
+    // Show inactivity or time-over modals based on message state
     setInacModal(forcedPauseLJM);
-    setTimeIsOverModalIsOpen(chimingLJM);
-  }, [lastJsonMessage]);
+    setTimeIsOverModalIsOpen(chimingLJM && (customReadyState === ReadyState.OPEN || !weekEndModal));
+  }, [lastJsonMessage, customReadyState, running, message, weekEndModal]);
 
   // This useEffect is to make sure that the WS connection is maintained by sending a heartbeat every 60 seconds
   useEffect(() => {
@@ -566,6 +611,13 @@ function Timer({ authUser, darkMode, isPopout }) {
     }
   }, [timeIsOverModalOpen]);
 
+  // Close time over modal if connection is lost
+  useEffect(() => {
+    if (customReadyState !== ReadyState.OPEN && timeIsOverModalOpen) {
+      setTimeIsOverModalIsOpen(false);
+    }
+  }, [customReadyState, timeIsOverModalOpen]);
+
   useEffect(() => {
     if (inacModal) {
       window.focus();
@@ -576,6 +628,17 @@ function Timer({ authUser, darkMode, isPopout }) {
       forcedPausedAudioRef.current.currentTime = 0;
     }
   }, [inacModal]);
+
+  useEffect(() => {
+    if (weekEndModal) {
+      window.focus();
+      timeIsOverAudioRef.current.play();
+    } else {
+      window.focus();
+      timeIsOverAudioRef.current.pause();
+      timeIsOverAudioRef.current.currentTime = 0;
+    }
+  }, [weekEndModal]);
 
   useEffect(() => {
     if (!isInitialJsonMessageReceived) return;
@@ -600,6 +663,141 @@ function Timer({ authUser, darkMode, isPopout }) {
   const fontColor = darkMode ? 'text-light' : '';
   const headerBg = darkMode ? 'bg-space-cadet' : '';
   const bodyBg = darkMode ? 'bg-yinmn-blue' : '';
+
+  const renderTimeEntryForm = () =>
+    logTimeEntryModal && (
+      <TimeEntryForm
+        from="Timer"
+        edit={false}
+        toggle={toggleLogTimeModal}
+        isOpen={logTimeEntryModal}
+        data={logTimer}
+        sendStop={sendStop}
+        timerConnected={customReadyState === ReadyState.OPEN}
+        onTimeSubmitted={handleTimeSubmitted}
+        sessionId={sessionId}
+        timerStats={getTimerStats()}
+      />
+    );
+
+  const renderAudioElements = () => (
+    <>
+      <audio
+        ref={timeIsOverAudioRef}
+        key="timeIsOverAudio"
+        loop
+        preload="auto"
+        src="https://bigsoundbank.com/UPLOAD/mp3/2554.mp3"
+      />
+      <audio
+        ref={forcedPausedAudioRef}
+        key="forcedPausedAudio"
+        loop
+        preload="auto"
+        src="https://bigsoundbank.com/UPLOAD/mp3/1102.mp3"
+      />
+    </>
+  );
+
+  const renderConfirmationResetModal = () => (
+    <Modal
+      isOpen={confirmationResetModal}
+      toggle={() => setConfirmationResetModal(!confirmationResetModal)}
+      centered
+      size="md"
+      className={cs(fontColor, darkMode ? 'dark-mode' : '')}
+    >
+      <ModalHeader
+        className={darkMode ? 'bg-space-cadet' : ''}
+        toggle={() => setConfirmationResetModal(false)}
+      >
+        Reset Time
+      </ModalHeader>
+      <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+        Are you sure you want to reset your time?
+      </ModalBody>
+      <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+        <Button
+          color="primary"
+          onClick={() => {
+            sendClear();
+            setConfirmationResetModal(false);
+          }}
+        >
+          Yes, reset time!
+        </Button>{' '}
+      </ModalFooter>
+    </Modal>
+  );
+
+  const renderInactivityModal = () => (
+    <Modal
+      className={cs(fontColor, darkMode ? 'dark-mode' : '')}
+      size="md"
+      isOpen={inacModal}
+      toggle={() => setInacModal(!inacModal)}
+      centered
+    >
+      <ModalHeader className={headerBg} toggle={() => setInacModal(!inacModal)}>
+        Timer Paused
+      </ModalHeader>
+      <ModalBody className={bodyBg}>
+        The user timer has been paused due to inactivity or a lost in connection to the server.
+        Please check your internet connection and refresh the page to continue. This is to ensure
+        that our resources are being used efficiently and to improve performance for all of our
+        users.
+      </ModalBody>
+      <ModalFooter className={bodyBg}>
+        <Button
+          color="primary"
+          onClick={() => {
+            setInacModal(!inacModal);
+            sendAckForced();
+          }}
+        >
+          I understand
+        </Button>
+      </ModalFooter>
+    </Modal>
+  );
+
+  const renderTimeCompleteModal = () => (
+    <Modal
+      className={cs(fontColor, darkMode ? 'dark-mode' : '')}
+      isOpen={timeIsOverModalOpen}
+      toggle={toggleTimeIsOver}
+      centered
+      size="md"
+    >
+      <ModalHeader className={headerBg} toggle={toggleTimeIsOver}>
+        Time Complete!
+      </ModalHeader>
+      <ModalBody className={bodyBg}>{`You have worked for ${logHours ? `${logHours} hours` : ''}${
+        logMinutes ? ` ${logMinutes} minutes` : ''
+      }. Click below if you'd like to add time or Log Time.`}</ModalBody>
+      <ModalFooter className={bodyBg}>
+        <Button
+          color="primary"
+          onClick={() => {
+            toggleTimeIsOver();
+            toggleLogTimeModal();
+          }}
+        >
+          Log Time
+        </Button>{' '}
+        <Button
+          color="secondary"
+          onClick={() => {
+            toggleTimeIsOver();
+            handleAddButton(15);
+            sendStart();
+          }}
+        >
+          Add More Time
+        </Button>{' '}
+      </ModalFooter>
+    </Modal>
+  );
 
   if (realIsPopout) {
     return (
@@ -629,126 +827,11 @@ function Timer({ authUser, darkMode, isPopout }) {
             />
           )}
         </div>
-        {logTimeEntryModal && (
-          <TimeEntryForm
-            from="Timer"
-            edit={false}
-            toggle={toggleLogTimeModal}
-            isOpen={logTimeEntryModal}
-            data={logTimer}
-            sendStop={sendStop}
-            onTimeSubmitted={handleTimeSubmitted} // Add this prop
-            sessionId={sessionId}
-            timerStats={getTimerStats()}
-          />
-        )}
-        <audio
-          ref={timeIsOverAudioRef}
-          key="timeIsOverAudio"
-          loop
-          preload="auto"
-          src="https://bigsoundbank.com/UPLOAD/mp3/2554.mp3"
-        />
-        <audio
-          ref={forcedPausedAudioRef}
-          key="forcedPausedAudio"
-          loop
-          preload="auto"
-          src="https://bigsoundbank.com/UPLOAD/mp3/1102.mp3"
-        />
-        <Modal
-          isOpen={confirmationResetModal}
-          toggle={() => setConfirmationResetModal(!confirmationResetModal)}
-          centered
-          size="md"
-          className={cs(fontColor, darkMode ? 'dark-mode' : '')}
-        >
-          <ModalHeader
-            className={darkMode ? 'bg-space-cadet' : ''}
-            toggle={() => setConfirmationResetModal(false)}
-          >
-            Reset Time
-          </ModalHeader>
-          <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
-            Are you sure you want to reset your time?
-          </ModalBody>
-          <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-            <Button
-              color="primary"
-              onClick={() => {
-                sendClear();
-                setConfirmationResetModal(false);
-              }}
-            >
-              Yes, reset time!
-            </Button>{' '}
-          </ModalFooter>
-        </Modal>
-        <Modal
-          className={cs(fontColor, darkMode ? 'dark-mode' : '')}
-          size="md"
-          isOpen={inacModal}
-          toggle={() => setInacModal(!inacModal)}
-          centered
-        >
-          <ModalHeader className={headerBg} toggle={() => setInacModal(!inacModal)}>
-            Timer Paused
-          </ModalHeader>
-          <ModalBody className={bodyBg}>
-            The user timer has been paused due to inactivity or a lost in connection to the server.
-            Please check your internet connection and refresh the page to continue. This is to
-            ensure that our resources are being used efficiently and to improve performance for all
-            of our users.
-          </ModalBody>
-          <ModalFooter className={bodyBg}>
-            <Button
-              color="primary"
-              onClick={() => {
-                setInacModal(!inacModal);
-                sendAckForced();
-              }}
-            >
-              I understand
-            </Button>
-          </ModalFooter>
-        </Modal>
-        <Modal
-          className={cs(fontColor, darkMode ? 'dark-mode' : '')}
-          isOpen={timeIsOverModalOpen}
-          toggle={toggleTimeIsOver}
-          centered
-          size="md"
-        >
-          <ModalHeader className={headerBg} toggle={toggleTimeIsOver}>
-            Time Complete!
-          </ModalHeader>
-          <ModalBody className={bodyBg}>{`You have worked for ${
-            logHours ? `${logHours} hours` : ''
-          }${
-            logMinutes ? ` ${logMinutes} minutes` : ''
-          }. Click below if you'd like to add time or Log Time.`}</ModalBody>
-          <ModalFooter className={bodyBg}>
-            <Button
-              color="primary"
-              onClick={() => {
-                toggleTimeIsOver();
-                toggleLogTimeModal();
-              }}
-            >
-              Log Time
-            </Button>{' '}
-            <Button
-              color="secondary"
-              onClick={() => {
-                toggleTimeIsOver();
-                handleAddButton(15);
-                sendStart();
-              }}
-            >
-              Add More Time
-            </Button>{' '}
-          </ModalFooter>
-        </Modal>
+        {renderTimeEntryForm()}
+        {renderAudioElements()}
+        {renderConfirmationResetModal()}
+        {renderInactivityModal()}
+        {renderTimeCompleteModal()}
       </div>
     );
   }
@@ -940,124 +1023,11 @@ function Timer({ authUser, darkMode, isPopout }) {
           </div>
         </div>
       )}
-      {logTimeEntryModal && (
-        <TimeEntryForm
-          from="Timer"
-          edit={false}
-          toggle={toggleLogTimeModal}
-          isOpen={logTimeEntryModal}
-          data={logTimer}
-          sendStop={sendStop}
-          onTimeSubmitted={handleTimeSubmitted} // Add this prop
-          sessionId={sessionId}
-          timerStats={getTimerStats()}
-        />
-      )}
-      <audio
-        ref={timeIsOverAudioRef}
-        key="timeIsOverAudio"
-        loop
-        preload="auto"
-        src="https://bigsoundbank.com/UPLOAD/mp3/2554.mp3"
-      />
-      <audio
-        ref={forcedPausedAudioRef}
-        key="forcedPausedAudio"
-        loop
-        preload="auto"
-        src="https://bigsoundbank.com/UPLOAD/mp3/1102.mp3"
-      />
-      <Modal
-        isOpen={confirmationResetModal}
-        toggle={() => setConfirmationResetModal(!confirmationResetModal)}
-        centered
-        size="md"
-        className={cs(fontColor, darkMode ? 'dark-mode' : '')}
-      >
-        <ModalHeader
-          className={darkMode ? 'bg-space-cadet' : ''}
-          toggle={() => setConfirmationResetModal(false)}
-        >
-          Reset Time
-        </ModalHeader>
-        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
-          Are you sure you want to reset your time?
-        </ModalBody>
-        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-          <Button
-            color="primary"
-            onClick={() => {
-              sendClear();
-              setConfirmationResetModal(false);
-            }}
-          >
-            Yes, reset time!
-          </Button>{' '}
-        </ModalFooter>
-      </Modal>
-      <Modal
-        className={cs(fontColor, darkMode ? 'dark-mode' : '')}
-        size="md"
-        isOpen={inacModal}
-        toggle={() => setInacModal(!inacModal)}
-        centered
-      >
-        <ModalHeader className={headerBg} toggle={() => setInacModal(!inacModal)}>
-          Timer Paused
-        </ModalHeader>
-        <ModalBody className={bodyBg}>
-          The user timer has been paused due to inactivity or a lost in connection to the server.
-          Please check your internet connection and refresh the page to continue. This is to ensure
-          that our resources are being used efficiently and to improve performance for all of our
-          users.
-        </ModalBody>
-        <ModalFooter className={bodyBg}>
-          <Button
-            color="primary"
-            onClick={() => {
-              setInacModal(!inacModal);
-              sendAckForced();
-            }}
-          >
-            I understand
-          </Button>
-        </ModalFooter>
-      </Modal>
-      <Modal
-        className={cs(fontColor, darkMode ? 'dark-mode' : '')}
-        isOpen={timeIsOverModalOpen}
-        toggle={toggleTimeIsOver}
-        centered
-        size="md"
-      >
-        <ModalHeader className={headerBg} toggle={toggleTimeIsOver}>
-          Time Complete!
-        </ModalHeader>
-        <ModalBody className={bodyBg}>{`You have worked for ${logHours ? `${logHours} hours` : ''}${
-          logMinutes ? ` ${logMinutes} minutes` : ''
-        }. Click below if you'd like to add time or Log Time.`}</ModalBody>
-        <ModalFooter className={bodyBg}>
-          <Button
-            color="primary"
-            onClick={() => {
-              toggleTimeIsOver();
-              toggleLogTimeModal();
-            }}
-          >
-            Log Time
-          </Button>{' '}
-          <Button
-            color="secondary"
-            onClick={() => {
-              toggleTimeIsOver();
-              handleAddButton(15);
-              sendStart();
-            }}
-          >
-            Add More Time
-          </Button>{' '}
-        </ModalFooter>
-      </Modal>
+      {renderTimeEntryForm()}
+      {renderAudioElements()}
+      {renderConfirmationResetModal()}
+      {renderInactivityModal()}
+      {renderTimeCompleteModal()}
     </div>
   );
 }
