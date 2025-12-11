@@ -15,45 +15,33 @@ export default function JobApplicationPage() {
   const darkMode = useSelector(s => s.theme.darkMode);
 
   const [loading, setLoading] = useState(true);
-  const [job, setJob] = useState({ title: 'Job', description: '', requirements: [] });
+  const [job, setJob] = useState({ title: 'Job', description: '' });
 
   useEffect(() => {
     let active = true;
     (async () => {
       setLoading(true);
       try {
-        let j = { title: 'Job', description: '', requirements: [] };
-
-        // Check if requirements were passed via location.state (from SuggestedJobsList)
-        const requirementsFromState = location.state?.requirements || [];
+        let j = { title: 'Job', description: '' };
 
         try {
           const res = await fetch(`${ApiEndpoint}/jobs/${jobId}`, { method: 'GET' });
           if (res.ok) {
             const jd = await res.json();
             const source = jd?.job || jd || {};
-            j.title = source.title || location.state?.jobTitle || 'Job';
-            j.description = source.description || location.state?.jobDescription || '';
-            j.requirements = source.requirements || requirementsFromState || [];
-          } else {
-            // Fallback to location.state if API fails
-            j.title = location.state?.jobTitle || 'Job';
-            j.description = location.state?.jobDescription || '';
-            j.requirements = requirementsFromState;
+            j.title = source.title || 'Job';
+            j.description = source.description || '';
           }
         } catch {
-          // Use location.state as fallback
           j = {
-            title: location.state?.jobTitle || 'Software Developer',
+            title: 'Software Developer',
             description:
-              location.state?.jobDescription ||
               'We would like to have multiple contributors and are open to exploring win-win relationships with people of varying skill levels to help develop our Highest Good Network Application (HGNA). The app is built using the MERN stack...',
-            requirements: requirementsFromState,
           };
         }
 
         if (active) {
-          setJob({ title: j.title, description: j.description, requirements: j.requirements });
+          setJob({ title: j.title, description: j.description });
         }
       } finally {
         if (active) setLoading(false);
@@ -62,7 +50,7 @@ export default function JobApplicationPage() {
     return () => {
       active = false;
     };
-  }, [jobId, referralToken, location.state]);
+  }, [jobId, referralToken]);
 
   if (loading) {
     return (
@@ -81,8 +69,6 @@ export default function JobApplicationPage() {
       <JobApplicationForm
         jobTitle={job.title}
         jobDescription={job.description}
-        requirements={job.requirements || []}
-        referralToken={referralToken}
         darkMode={darkMode}
       />
 

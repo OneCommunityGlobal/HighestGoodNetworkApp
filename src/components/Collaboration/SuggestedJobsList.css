@@ -160,16 +160,17 @@ input.dark-mode-placeholder::placeholder {
 .job-ad {
   background: #fff;
   border: 1px solid #ccc;
-  padding: 30px 25px; /* Increased padding for bigger box */
+  padding: 20px;
   border-radius: 12px;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  flex: 0 1 350px; /* Bigger min width */
-  /* Max width to keep uniform size */
+  flex: 0 1 300px;
+  min-width: 280px;
+  max-width: 350px;
   transition: transform 0.3s, box-shadow 0.3s;
-  margin-bottom: 30px;
+  margin-bottom: 0;
 }
 
 .job-ad:hover {
@@ -178,19 +179,20 @@ input.dark-mode-placeholder::placeholder {
 }
 
 .job-role-name {
-  font-size: 2rem;
+  font-size: 1.25rem;
   font-weight: bold;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
   text-align: center;
   color: #0069d9;
 }
 
 .job-details {
-  font-size: 1.1rem;
+  font-size: 0.95rem;
   color: #555;
-  line-height: 1.6;
-  margin-bottom: 1.5rem;
+  line-height: 1.5;
+  margin-bottom: 1rem;
   text-align: center;
+  flex-grow: 1;
 }
 
 .job-requirements h4 {
@@ -211,14 +213,16 @@ input.dark-mode-placeholder::placeholder {
 .apply-now-btn {
   background-color: #007bff;
   color: white;
-  padding: 0.75rem 1.5rem;
+  padding: 0.5rem 1rem;
   border: none;
   cursor: pointer;
-  font-size: 1.1rem;
-  border-radius: 6px;
+  font-size: 1rem;
+  border-radius: 4px;
   text-align: center;
-  align-self: center; /* Center button */
-  width: fit-content;
+  text-decoration: none;
+  display: inline-block;
+  width: 100%;
+  margin-top: auto;
   transition: background-color 0.3s;
 }
 
@@ -230,13 +234,15 @@ input.dark-mode-placeholder::placeholder {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 30px; /* More gap for bigger cards */
+  gap: 20px;
   margin: 0 auto;
+  max-width: 1200px;
+  padding: 0 20px;
 }
 
 .category-icon {
-  width: 150px;
-  height: 150px;
+  width: 60px;
+  height: 60px;
   object-fit: contain;
   display: block;
   margin: 0 auto 15px;
@@ -244,8 +250,18 @@ input.dark-mode-placeholder::placeholder {
 
 @media (max-width: 600px) {
   .category-icon {
-    width: 100px;
-    height: 100px;
+    width: 50px;
+    height: 50px;
+  }
+}
+
+@media (max-width: 600px) {
+  .job-ad {
+    flex: 0 1 100%;
+    max-width: 100%;
+  }
+  .job-navbar {
+    padding: 15px;
   }
 }
 
@@ -254,6 +270,12 @@ input.dark-mode-placeholder::placeholder {
     justify-content: center;
   }
   .job-ad {
-    flex: 0 1 400px;
+    flex: 0 1 300px;
+  }
+}
+
+@media screen and (min-width: 1024px) {
+  .job-ad {
+    flex: 0 1 320px;
   }
 }
