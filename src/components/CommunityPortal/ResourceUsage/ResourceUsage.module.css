@@ -1,79 +1,47 @@
 .resourceUsageContainer {
   display: flex;
   min-height: 100vh;
-  background-color: #fff;
 }
 
 .chartSection {
   flex: 1;
   padding: 1.5rem;
-  background: #fff;
 }
 
 .headerSection {
   margin-bottom: 2rem;
 }
 
-.headerSection h1 {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-  color: #111827;
-}
-
 .filters {
   display: flex;
   gap: 0.75rem;
-  justify-content: left;
 }
 
 .customDropdown {
-  background: transparent !important;
   border: 1px solid #e5e7eb !important;
-  color: #374151 !important;
   padding: 0.5rem 1rem !important;
-  font-size: 0.875rem !important;
   border-radius: 0.375rem !important;
-  box-shadow: none !important;
-  display: flex !important;
-  align-items: center !important;
-  gap: 0.5rem !important;
-}
-
-.customDropdown:hover,
-.customDropdown:focus {
-  background-color: #f9fafb !important;
-  border-color: #e5e7eb !important;
-}
-
-.customDropdown::after {
-  margin-left: 0.5rem !important;
+  font-size: 0.875rem !important;
 }
 
 .chartContainer {
   height: calc(100vh - 200px);
-  width: 100%;
+  position: relative;
+}
+
+.yAxisLabel {
+  position: absolute;
+  top: -8px;
+  left: 35px;
+  font-size: 13px;
+  font-weight: 700;
+  z-index: 5;
 }
 
 .insightsSection {
   width: 400px;
-  background-color: #f9fafb;
-  border-left: 1px solid #e5e7eb;
   padding: 1.5rem;
-}
-
-.insightsHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
-}
-
-.insightsHeader h2 {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin: 0;
-  color: #111827;
+  border-left: 1px solid #e5e7eb;
 }
 
 .insightsGrid {
@@ -83,86 +51,62 @@
 }
 
 .insightCard {
-  background: white;
-  border-radius: 0.75rem;
   padding: 1rem;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  border-radius: 0.75rem;
 }
 
 .insightTitle {
-  color: #6b7280;
-  font-size: 0.875rem;
   margin-bottom: 0.75rem;
+  font-size: 0.875rem;
 }
 
 .insightBadge {
-  display: inline-block;
   padding: 0.25rem 0.75rem;
   border-radius: 1rem;
   font-size: 0.875rem;
   font-weight: 500;
 }
 
+/* Tooltip */
 .customTooltip {
-  background: white;
-  border-radius: 0.375rem;
   padding: 0.75rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 0.375rem;
   border: 1px solid #e5e7eb;
 }
 
-/* Responsive Design */
-@media (max-width: 1200px) {
-  .resourceUsageContainer {
-    flex-direction: column;
-  }
-
-  .insightsSection {
-    width: 100%;
-    border-left: none;
-    border-top: 1px solid #e5e7eb;
-  }
-
-  .insightsGrid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .chartContainer {
-    height: 400px;
-  }
+/* DARK MODE DROPDOWN FIX */
+.dark-mode .customDropdown,
+.dark-mode .dropdown-toggle.customDropdown {
+  background-color: #1C2541 !important;
+  color: #ffffff !important;
+  border-color: #3A506B !important;
 }
 
-@media (max-width: 768px) {
-  .headerSection {
-    flex-direction: column;
-  }
-
-  .filters {
-    flex-wrap: wrap;
-  }
-
-  .chartSection,
-  .insightsSection {
-    padding: 1rem;
-  }
+.dark-mode .dropdown-toggle.customDropdown.show,
+.dark-mode .show > .customDropdown.dropdown-toggle {
+  background-color: #243B5A !important;
 }
 
-/* Chart Styling */
-.recharts-legend-item {
-  margin-right: 1.5rem !important;
+.dark-mode .dropdown-menu {
+  background-color: #1C2541 !important;
+  border-color: #3A506B !important;
 }
 
-.recharts-legend-item-text {
-  margin-left: 0.5rem !important;
-  color: #666 !important;
+.dark-mode .dropdown-item {
+  color: #ffffff !important;
 }
 
-.recharts-cartesian-grid-horizontal line {
-  stroke: #eee !important;
-  stroke-dasharray: 3 3;
+.dark-mode .dropdown-item:hover {
+  background-color: #3A506B !important;
 }
 
+/* Badge visibility in dark mode */
+.dark-mode .insightBadge {
+  color: #111827 !important;
+}
+
+/* Chart ticks */
 .recharts-cartesian-axis-tick-value {
   font-size: 12px;
-  fill: #666;
+  font-weight: 700;
 }
