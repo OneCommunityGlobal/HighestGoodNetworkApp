@@ -1,8 +1,18 @@
 import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
+import { postFacebookContent } from '~/actions/facebookActions';
 
 export default function SocialMediaComposer({ platform }) {
   const [postContent, setPostContent] = useState('');
   const [activeSubTab, setActiveSubTab] = useState('composer');
+  const [link, setLink] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
+  const [isPosting, setIsPosting] = useState(false);
+
+  const dispatch = useDispatch();
+  const authUser = useSelector(state => state.auth?.user);
+  const frontPermissions = authUser?.permissions?.frontPermissions || [];
 
   const tabOrder = [
     { id: 'composer', label: '📝 Make Post' },
@@ -17,14 +27,59 @@ export default function SocialMediaComposer({ platform }) {
     return {
       padding: '10px 16px',
       cursor: 'pointer',
+      borderTop: '1px solid transparent',
+      borderLeft: '1px solid transparent',
+      borderRight: '1px solid transparent',
       borderBottom: isActive ? '3px solid #007bff' : '3px solid transparent',
       backgroundColor: isActive ? '#dbeeff' : '#dedede', // ACTIVE vs INACTIVE
       color: isActive ? '#007bff' : '#333',
+      fontSize: '14px',
+      fontFamily: 'inherit',
       fontWeight: isActive ? 'bold' : 'normal',
       flex: 1,
       textAlign: 'center',
       transition: 'all 0.2s ease-in-out',
     };
+  };
+
+  const handlePost = async () => {
+    if (platform !== 'facebook') {
+      toast.info(`Posting for ${platform} is not wired yet.`);
+      return;
+    }
+
+    if (!postContent.trim()) {
+      toast.error('Please enter content for your post.');
+      return;
+    }
+
+    if (!authUser?.userid) {
+      toast.error('User information is missing; please re-login and try again.');
+      return;
+    }
+
+    setIsPosting(true);
+    try {
+      await dispatch(
+        postFacebookContent({
+          message: postContent.trim(),
+          link: link.trim() || undefined,
+          imageUrl: imageUrl.trim() || undefined,
+          requestor: {
+            requestorId: authUser.userid,
+            role: authUser.role,
+            permissions: authUser.permissions,
+          },
+        }),
+      );
+      setPostContent('');
+      setLink('');
+      setImageUrl('');
+    } catch (error) {
+      // Toast already shown in action
+    } finally {
+      setIsPosting(false);
+    }
   };
 
   return (
@@ -38,9 +93,7 @@ export default function SocialMediaComposer({ platform }) {
             onClick={() => setActiveSubTab(id)}
             style={{
               ...tabStyle(id),
-              border: 'none',
               outline: 'none',
-              font: 'inherit',
             }}
           >
             {label}
@@ -63,17 +116,41 @@ export default function SocialMediaComposer({ platform }) {
               marginBottom: '1rem',
             }}
           />
-          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+          {platform === 'facebook' && (
+            <div
+              style={{ display: 'flex', gap: '1rem', flexDirection: 'column', marginTop: '1rem' }}
+            >
+              <input
+                type="text"
+                value={link}
+                onChange={e => setLink(e.target.value)}
+                placeholder="Optional link (will be attached to the post)"
+                style={{ padding: '8px', borderRadius: '6px', border: '1px solid #ccc' }}
+              />
+              <input
+                type="text"
+                value={imageUrl}
+                onChange={e => setImageUrl(e.target.value)}
+                placeholder="Optional image URL for a photo post"
+                style={{ padding: '8px', borderRadius: '6px', border: '1px solid #ccc' }}
+              />
+            </div>
+          )}
+          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginTop: '1rem' }}>
             <button
+              type="button"
+              onClick={handlePost}
+              disabled={isPosting}
               style={{
-                backgroundColor: '#007bff',
+                backgroundColor: isPosting ? '#6c757d' : '#007bff',
                 color: 'white',
                 padding: '10px 16px',
                 borderRadius: '6px',
                 border: 'none',
+                cursor: isPosting ? 'not-allowed' : 'pointer',
               }}
             >
-              Post to {platform}
+              {isPosting ? 'Posting...' : `Post to ${platform}`}
             </button>
 
             <div style={{ position: 'relative' }}>
