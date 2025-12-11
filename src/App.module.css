@@ -1,0 +1,286 @@
+:global(html) {
+  overflow-x: hidden;
+}
+
+:global(body) {
+  display: grid;
+  grid-template-columns: auto 0px;
+}
+
+:global(button) {
+  border: none;
+  background-color: transparent;
+}
+
+:global(#root) {
+  height: 100%;
+  overflow-x: auto;
+  overflow: hidden;
+  /* background-color: var(--background-color); */
+  background-color: #ffffff;
+}
+
+.app {
+  text-align: center;
+}
+
+/* .close{
+  visibility: hidden
+} */
+
+.newProfilePic {
+  visibility: hidden;
+  width: 0;
+  height: 0;
+  padding-top: 7px;
+  padding-right: 2px;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.infringement {
+  color: blue;
+}
+
+.profilepic {
+  height: 180px;
+  width: 180px;
+}
+
+.accordionToggle:after {
+  font-family: 'FontAwesome';
+  content: '\f054';
+  float: right;
+}
+
+.accordionToggle.collapsed:after {
+  /* symbol for down chevron*/
+  content: '\f078';
+}
+
+.dashboardbutton {
+  background-color: black;
+  border: black;
+}
+
+.hgnLeaderboard {
+  /*background-color:#FFCCBC */
+  background-color: black;
+}
+
+.bgSuper {
+  background-color: #0000cd !important;
+  /* medium blue #0000CD*/
+}
+
+.bgAwesome {
+  background-color: #990099 !important;
+  /*  violet */
+}
+
+.bgSuperAwesome {
+  background-color: #660099 !important;
+  /*  purple */
+}
+
+.bgOrange {
+  background-color: #ffa500 !important;
+  /*  brighter orange */
+}
+
+.bgDarkSeaGreen {
+  background-color: #c9d6c6;
+}
+
+.bgBrightRed {
+  background-color: #ff3300 !important;
+  /*  bright-red */
+}
+
+.bgAlmostRed {
+  background-color: #cc3366 !important;
+  /*  90%to100%-red */
+}
+
+.bgOxfordBlue {
+  background-color: #1b2a41 !important;
+}
+
+/* .bg-oxford-blue:hover{
+  background-color: #1B2A41 !important;
+  color:black;
+} */
+
+.bgSpaceCadet {
+  background-color: #1c2541 !important;
+}
+
+/* .bg-space-cadet:hover{
+  background-color: #1C2541 !important;
+  color:black;
+} */
+
+.bgYinmnBlue {
+  background-color: #3a506b !important;
+}
+
+/* .bg-yinmn-blue:hover{
+  background-color: #3A506B !important;
+  color: black;
+} */
+
+.bgYinmnBlueLight {
+  background-color: #2f4157;
+}
+
+/* .bg-yinmn-blue-light:hover{
+  background-color:#2f4157;
+  color: black;
+} */
+
+.bgDarkmodeLiblack {
+  background-color: #1c1c1c !important;
+}
+
+.bgDarkmodeBlack {
+  background-color: #000000 !important;
+}
+
+.bgAzure {
+  background-color: #007bff !important;
+}
+
+.textOxfordBlue {
+  color: #1b2a41 !important;
+}
+
+.textSpaceCadet {
+  color: #1c2541 !important;
+}
+
+.textYinmnBlue {
+  color: #3a506b !important;
+}
+
+.textAzure {
+  color: #007bff !important;
+}
+
+.textDarkGreen {
+  color: #193d31 !important;
+}
+
+.textCustomGrey {
+  color: rgb(192, 192, 192) !important;
+}
+
+.boxShadowDark {
+  box-shadow: 2px 2px 4px 1px black !important;
+}
+
+.boxShadowLight {
+  box-shadow: 2px 2px 4px 1px lightgray;
+}
+
+.darkTextMuted {
+  color: #b5bac5 !important;
+}
+
+.darkTextInfo {
+  color: #6af1ea !important
+}
+
+.summaryTextLight :global(p) {
+  color: #fff !important;
+}
+
+:global(nav ul.navbar-nav li:last-child > div) {
+  transform: translate3d(-26px, 40px, 0px) !important;
+}
+
+.calendarIconDark {
+  color-scheme: dark;
+}
+
+.top {
+  text-decoration: none;
+  padding: 10px;
+  margin: 10px;
+  --offset: 100px;
+  margin-top: calc(100vh + var(--offset));
+  font-family: sans-serif;
+  color: #fff;
+  background: #000;
+  border-radius: 100px;
+  place-self: end;
+  position: sticky;
+  right: -30px;
+  bottom: 10px;
+  white-space: nowrap;
+}
+
+:global(tr) {
+  content-visibility: auto;
+}
+
+.customCheckbox :global(*) {
+  cursor: pointer;
+}
+
+:global(input[type='radio']:hover) {
+  cursor: pointer;
+}
+
+:global(input[type='checkbox']:not([disabled]):hover) {
+  cursor: pointer;
+}
+
+:global(.tox .tox-toolbar__group) {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  gap: 4px !important;
+}
+
+:global(.tox .tox-tbtn) {
+  min-width: auto !important;
+  padding: 4px 6px !important;
+  font-size: 14px !important;
+}
+
+:global(.tox-tbtn) {
+  padding: 2px 4px !important;
+}
+
+:global(.tox .tox-toolbar) {
+  flex-wrap: wrap !important;
+  justify-content: flex-start !important;
+}
+
+:global(.tox .tox-split-button) {
+  display: flex !important;
+  align-items: center !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+:global(.tox .tox-split-button__chevron) {
+  display: inline-block !important;
+  min-width: auto !important;
+  width: auto !important;
+  margin-left: -1px !important;
+  padding: 4px !important;
+}
+
+.pdrl1 {
+  padding: 0 1em !important;
+}
+
+.userCardContainer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 24px;
+  padding: 20px;
+}
+

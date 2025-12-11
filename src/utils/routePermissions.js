@@ -3,6 +3,7 @@
 const RoutePermissions = {
   reports: ['getReports'],
   weeklySummariesReport: ['getWeeklySummaries'],
+  prDashboard: ['accessPRTeamDashboard'],
   weeklyVolunteerSummary: ['getWeeklyVolunteerSummary'],
   userManagement: ['getUserProfiles', 'postUserProfile', 'deleteUserProfile', 'changeUserStatus'],
   badgeManagement: ['seeBadges', 'createBadges', 'updateBadges', 'deleteBadges', 'assignBadges'],
@@ -34,5 +35,8 @@ const RoutePermissions = {
     'suggestTask',
   ],
   announcements: ['sendEmails'],
+  faq: [''],
+  faqManagement: ['manageFAQs'],
+  accessHgnSkillsDashboard: ['accessHgnSkillsDashboard'],
 };
 export default RoutePermissions;

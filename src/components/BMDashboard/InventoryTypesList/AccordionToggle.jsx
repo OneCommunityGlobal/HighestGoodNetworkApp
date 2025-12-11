@@ -2,6 +2,7 @@ import { useContext } from 'react';
 import { useAccordionToggle } from 'react-bootstrap/AccordionToggle';
 import AccordionContext from 'react-bootstrap/AccordionContext';
 import { FaChevronUp, FaChevronDown } from 'react-icons/fa';
+import styles from './TypesList.module.css';
 
 export default function AccordionToggle({ children, eventKey, callback }) {
   const currentEventKey = useContext(AccordionContext);
@@ -11,11 +12,11 @@ export default function AccordionToggle({ children, eventKey, callback }) {
   const isCurrentEventKey = currentEventKey === eventKey;
 
   return (
-    <button type="button" className="card-header" onClick={decoratedOnClick}>
+    <button type="button" className={`${styles.cardHeader}`} onClick={decoratedOnClick}>
       {isCurrentEventKey ? (
-        <FaChevronUp className="arrow-icon " />
+        <FaChevronUp className={`${styles.arrowIcon}`} />
       ) : (
-        <FaChevronDown className="arrow-icon " />
+        <FaChevronDown className={`${styles.arrowIcon}`} />
       )}
       {children}
     </button>

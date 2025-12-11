@@ -1,0 +1,126 @@
+.issuesTableResponsive :global(.text-end) {
+  font-weight: 500;
+  color: #6c757d;
+  border-bottom-width: 1px;
+}
+
+/* Improved positioning for the action menu */
+.actionMenu {
+  position: absolute;
+  top: 0;          /* Position at the top of relative parent */
+  right: 100%;     /* Position to the left of the button */
+  transform: translateY(-25%); /* Adjust vertical position */
+  min-width: 10rem;
+  z-index: 1050;
+  padding: 0.5rem 0;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 0.25rem;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  white-space: nowrap;
+}
+
+.issueDashboardDropdownItem {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+}
+
+:global(.badge.bg-info) {
+  background-color: #cfe2ff !important;
+  color: #084298 !important;
+  font-weight: 500;
+}
+
+:global(.pagination .page-link) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem 0.5rem;
+}
+
+:global(.btn-light) {
+  color: #6c757d;
+  border-color: #e9ecef;
+}
+
+.issueDashboardDropdown :global(.btn-link) {
+  color: #6c757d;
+  text-decoration: none;
+}
+
+/* Fixed table responsiveness */
+.issuesTableResponsive {
+  overflow-x: visible !important; /* Prevent horizontal scrollbar */
+  overflow-y: visible !important; /* Ensure dropdowns aren't clipped */
+  position: relative;
+}
+
+/* Improved dropdown positioning */
+.issueDashboardDropdown {
+  position: static;  /* Make it relative to the table cell instead */
+}
+
+:global(td.text-end) {
+  position: relative; /* Create positioning context for dropdown */
+  white-space: nowrap;
+  width: 1%;
+}
+
+.issuesTableResponsive :global(td),
+.issuesTableResponsive :global(th) {
+  text-align: left !important;
+}
+
+/* Ensure card doesn't create scrollbars */
+:global(.card) {
+  overflow: hidden;
+}
+
+/* Ensure table doesn't exceed container width */
+.issuesTableResponsive {
+  width: 100%;
+  table-layout: fixed;
+}
+
+/* Make sure content doesn't force horizontal scroll */
+:global(.container-fluid) {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Fix for the dropdown menu to appear inside table */
+:global(td.text-end .issue-dashboard-dropdown .issue-dashboard-dropdown-menu) {
+  position: absolute;
+  right: 3rem !important;
+  top: 65px !important;
+  left: auto !important;
+}
+
+.issuesModalBackdrop {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  background-color: rgba(0, 0, 0, 0.3) !important;
+  z-index: 1050 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+
+.issuesModalBackdrop :global(.modal-dialog) {
+  border-radius: 8px;
+  max-width: 400px;
+  width: 90%;
+}
+
+:global(.table-dark thead tr:hover) {
+  background-color: #3D444D;
+}
+
+:global(.table-dark thead tr th) {
+  color: #f8f9fa;
+}
+

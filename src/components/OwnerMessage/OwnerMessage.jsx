@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input } from 'reactstrap';
 import { connect, useDispatch } from 'react-redux';
-import hasPermission from 'utils/permissions';
+import hasPermission from '~/utils/permissions';
 import { boxStyle, boxStyleDark } from '../../styles';
 import './OwnerMessage.css';
 
@@ -139,8 +139,25 @@ function OwnerMessage({
 
       {(user.role === 'Owner' || canEditHeaderMessage) && (
         <div className="icon-wrapper">
-          <button type="submit" className="owner-message-button" onClick={toggle}>
-            <img src={editIcon} alt="edit icon" title="Edit this header" />
+          <button
+            type="submit"
+            className="owner-message-button"
+            onClick={toggle}
+            aria-label="Edit header message"
+          >
+            <div
+              style={{
+                width: '24px',
+                height: '24px',
+                backgroundImage: `url(${editIcon})`,
+                backgroundSize: 'contain',
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat',
+              }}
+              title="Edit this header"
+              role="img"
+              aria-label="Edit icon"
+            />
           </button>
 
           {ownerMessage && (
@@ -149,11 +166,20 @@ function OwnerMessage({
               className="owner-message-button"
               onClick={toggleDeleteWarning}
               style={{ marginLeft: '0.25rem' }}
+              aria-label="Delete header message"
             >
-              <img
-                src={deleteIcon}
-                alt="edit icon"
+              <div
+                style={{
+                  width: '24px',
+                  height: '24px',
+                  backgroundImage: `url(${deleteIcon})`,
+                  backgroundSize: 'contain',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat',
+                }}
                 title="Click to restore header to standard message"
+                role="img"
+                aria-label="Delete icon"
               />
             </button>
           )}

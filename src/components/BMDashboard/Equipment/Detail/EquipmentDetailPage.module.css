@@ -1,0 +1,109 @@
+.equipmentDetailPage {
+  font-size: 0.95rem;
+  margin: 1.5rem auto 3rem auto;
+  max-width: 720px;
+}
+
+.equipmentDetailPageHeader {
+  margin-bottom: 1.5rem;
+}
+
+:global(.EquipmentDetailPage__detail_item) {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.35rem 0;
+  color: #27333c;
+}
+
+:global(.EquipmentDetailPage__span) {
+  background-color: #e2f3ea;
+  border: 1px solid #c1e0ce;
+  border-radius: 6px;
+  padding: 0.35rem 0.65rem;
+  min-height: 2rem;
+  display: inline-flex;
+  align-items: center;
+  color: #1f3b2d;
+  font-weight: 600;
+}
+
+:global(.EquipmentDetailPage__image) {
+  border: 1px solid #e5e5e6;
+  border-radius: 8px;
+  width: 220px;
+  height: auto;
+  margin-bottom: 1rem;
+  max-width: 100%;
+}
+
+.equipmentDetailPageImage {
+  display: block;
+  width: 220px;
+  max-width: 100%;
+  height: auto;
+}
+
+button.descriptionItem_button {
+  padding: 0;
+  margin-bottom: 0.75rem;
+  color: #1f3b2d;
+  font-weight: 600;
+}
+
+button.descriptionItem_button:hover {
+  background-color: transparent;
+  text-decoration: underline;
+}
+
+:global(.EquipmentDetailPage__dashed_line) {
+  border-top: 1px dashed #5f6d61;
+  width: 100%;
+  max-width: 440px;
+  margin: 0.6rem 0 0.9rem;
+}
+
+.backBtn {
+  color: black !important;
+  border-color: black !important;
+  margin-top: 1rem;
+}
+
+.valuePill {
+  background-color: #e2f3ea;
+  border: 1px solid #c1e0ce;
+  border-radius: 6px;
+  padding: 0.35rem 0.65rem;
+  min-height: 2rem;
+  display: inline-flex;
+  align-items: center;
+  color: #1f3b2d;
+  font-weight: 600;
+}
+
+.valuePillMuted {
+  background-color: #e7ecf2;
+  border-color: #cfd7e1;
+  color: #2f3a45;
+}
+
+@media (prefers-color-scheme: dark) {
+  :global(.EquipmentDetailPage__span) {
+    background-color: #2d3b4a;
+    border-color: #40536a;
+    color: #e7f0ff;
+  }
+
+  .valuePill {
+    background-color: #2d3b4a;
+    border-color: #40536a;
+    color: #e7f0ff;
+  }
+
+  .valuePillMuted {
+    background-color: #374759;
+    border-color: #4a5d76;
+    color: #dce6f5;
+  }
+}

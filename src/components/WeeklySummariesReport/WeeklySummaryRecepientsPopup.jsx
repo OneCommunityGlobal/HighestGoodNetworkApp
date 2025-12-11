@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { boxStyle, boxStyleDark } from 'styles';
-import '../Header/DarkMode.css';
+import { boxStyle, boxStyleDark } from '~/styles';
+import '../Header/index.css';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Container, Alert } from 'reactstrap';
 import { toast } from 'react-toastify';
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -18,7 +18,7 @@ import {
 // const membersList = [{ id: 1, firstName: "onecommunityglobal", lastName: '', email: "onecommunityglobal@gmail.com" },
 // { id: 2, firstName: "onecommunityhospitality", lastName: '', email: "onecommunityhospitality@gmail.com" }]
 
-const WeeklySummaryRecipientsPopup = React.memo(props => {
+const WeeklySummaryRecipientsPopupComponent = props => {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const dispatch = useDispatch();
@@ -34,16 +34,28 @@ const WeeklySummaryRecipientsPopup = React.memo(props => {
   const [updatedRecipients, setUpdatedRecipients] = useState(false);
 
   useEffect(() => {
-    // eslint-disable-next-line consistent-return
+    let isMounted = true; // Track if component is mounted
+
     const getRecipients = async () => {
       try {
         const data = await dispatch(getSummaryRecipients());
-        setRecipients([...data]);
+        if (isMounted) {
+          setRecipients([...data]); // Only update state if still mounted
+        }
+        return data;
       } catch (err) {
-        return err;
+        if (isMounted) {
+          return null;
+        }
+        return null;
       }
     };
+
     getRecipients();
+
+    return () => {
+      isMounted = false; // Set to false on unmount
+    };
   }, [open, updatedRecipients]);
 
   const closePopup = () => {
@@ -101,7 +113,6 @@ const WeeklySummaryRecipientsPopup = React.memo(props => {
       <Modal
         isOpen={open}
         toggle={closePopup}
-        autoFocus={false}
         size="lg"
         className={darkMode ? 'text-light dark-mode' : ''}
       >
@@ -200,5 +211,7 @@ const WeeklySummaryRecipientsPopup = React.memo(props => {
       </Modal>
     </Container>
   );
-});
+};
+const WeeklySummaryRecipientsPopup = React.memo(WeeklySummaryRecipientsPopupComponent);
+WeeklySummaryRecipientsPopup.displayName = 'WeeklySummaryRecipientsPopup';
 export default WeeklySummaryRecipientsPopup;

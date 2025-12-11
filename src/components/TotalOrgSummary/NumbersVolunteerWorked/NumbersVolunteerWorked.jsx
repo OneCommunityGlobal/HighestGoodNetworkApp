@@ -1,14 +1,18 @@
-import '../TotalOrgSummary.css';
-
-export default function NumbersVolunteerWorked({ isLoading, usersTimeEntries, darkMode }) {
+import styles from '../TotalOrgSummary.module.css';
+import cx from 'clsx';
+export default function NumbersVolunteerWorked({ isLoading, data, darkMode }) {
   return (
     <div>
       <p
-        className={`${
-          darkMode ? 'text-light' : 'text-dark'
-        } component-border component-pie-chart-label p-2`}
+        data-pdf-label
+        className={cx(
+          darkMode ? 'text-light' : 'text-dark',
+          styles.componentBorder,
+          styles.componentPieChartLabel,
+          'p-2',
+        )}
       >
-        {isLoading ? '...' : usersTimeEntries.length} Volunteers worked 1+ hours over assigned time
+        {isLoading ? '...' : data?.count ?? 0} Volunteers worked 1+ hours over assigned time
       </p>
     </div>
   );

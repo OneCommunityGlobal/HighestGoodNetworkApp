@@ -1,0 +1,977 @@
+/* Main Layout Containers */
+.lbLogo {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.lbLogo img {
+  max-width: 20%;
+  height: auto;
+  min-width: 250px;
+  transition: transform 0.3s ease;
+}
+
+.lbLogo img:hover {
+  transform: scale(1.05);
+}
+
+.lbOutsideContainer {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #f0f2f5;
+  padding: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+  
+.lbInsideContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #fff;
+  /* border-radius: 8px; */
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+/* Navbar Styling */
+.lbNavbar {
+  margin: 0 auto;
+  max-width: 1200px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  background-color: #9dd425;
+  /* border-radius: 8px; */
+  height: 60px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.lbNavLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.lbVillageFilter {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  width: 350px;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.lbVillageFilter:focus {
+  border-color: #2c4f3c;
+}
+
+.lbGoButton {
+  padding: 8px 15px;
+  background: #2c4f3c;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.lbGoButton:hover {
+  background: #1a3328;
+}
+
+.lbNavRight {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+}
+
+.lbWelcomeText {
+  color: #2c4f3c;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.lbNavIcon {
+  font-size: 1.4rem;
+  color: #2c4f3c;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.lbNavIcon:hover {
+  transform: scale(1.15);
+  color: #1a3328;
+}
+
+.lbUserIcon {
+  font-size: 1.6rem;
+}
+
+.lbNotificationBadge {
+  position: relative;
+}
+
+.lbBadge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #dc3545;
+  color: white;
+  border-radius: 100%;
+  padding: 2px 6px;
+  font-size: 0.75rem;
+  font-weight: bold;
+}
+
+/* Content Header */
+.lbContentHeader {
+  position: relative;
+  width: 100%;
+  padding: 10px 20px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+/* Property Map Link */
+.lbPropertyMap {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.lbPropertyMap:hover {
+  transform: translateY(-2px);
+}
+
+.lbMapIcon {
+  color: #e74c3c;
+  font-size: 16px;
+}
+
+.lbMapText {
+  color: #3498db;
+  text-decoration: underline;
+  font-size: 14px;
+}
+
+/* Main Content Layout */
+.lbHeaderContent {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 25px;
+  position: relative;
+}
+
+/* Filter Section */
+.lbFilterSection {
+  position: absolute;
+  left: 20px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  gap: 5px;
+  transition: transform 0.2s;
+}
+
+.lbFilterSection:hover {
+  transform: translateY(-2px);
+}
+
+.lbFilterIcon {
+  font-size: 16px;
+  color: #2c4f3c;
+}
+
+.lbFilterText {
+  font-weight: bold;
+  text-decoration: underline;
+  font-size: 14px;
+  color: #2c4f3c;
+}
+
+/* Tabs */
+.lbTabsSection {
+  display: flex;
+  gap: 25px;
+  justify-content: center;
+  align-items: center;
+}
+
+.lbTab {
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 5px 0;
+  position: relative;
+  transition: color 0.3s;
+}
+
+.lbActiveTab {
+  color: #2c4f3c;
+}
+
+.lbActiveTab::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background-color: #2c4f3c;
+  border-radius: 2px;
+}
+
+.lbInactiveTab {
+  color: #999;
+}
+
+.lbInactiveTab:hover {
+  color: #666;
+}
+
+/* View Toggle */
+.lbViewToggle {
+  position: absolute;
+  right: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+.lbViewBtn {
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  color: #999;
+  padding: 5px;
+  transition: color 0.3s, transform 0.2s;
+}
+
+.lbViewBtn:hover {
+  color: #666;
+  transform: translateY(-2px);
+}
+
+.active {
+  color: #2c4f3c;
+}
+
+/* Properties Container */
+.lbPropertiesContainer {
+  margin-top: 30px;
+}
+
+.lbPropertiesContainer.lbGridView {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 25px;
+}
+
+@media (max-width: 1100px) {
+  .lbPropertiesContainer.lbGridView {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .lbPropertiesContainer.lbGridView {
+    grid-template-columns: 1fr;
+  }
+}
+
+.lbPropertiesContainer.lbListView {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Property Cards */
+.lbPropertyCard {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  overflow: hidden;
+  transition: transform 0.3s, box-shadow 0.3s;
+  cursor: pointer;
+}
+
+.lbPropertyCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+}
+
+.lbGridView .lbPropertyCard {
+  padding: 0;
+}
+
+.lbListView .lbPropertyCard {
+  display: flex;
+  padding: 0;
+  height: 180px;
+}
+
+.lbPropertyImage {
+  background: #f9f9f9;
+  height: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.lbPropertyImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s;
+}
+
+.lbPropertyCard:hover .lbPropertyImage img {
+  transform: scale(1.05);
+}
+
+.lbListView .lbPropertyImage {
+  width: 250px;
+  height: 180px;
+  flex-shrink: 0;
+}
+
+.lbPropertyDetails {
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex-grow: 1;
+}
+
+.lbListView .lbPropertyDetails {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.lbPropertyDetails h3 {
+  color: #2c4f3c;
+  margin: 0 0 5px;
+  font-size: 1.2rem;
+}
+
+.lbPropertyDetails p {
+  color: #666;
+  margin: 0 0 10px;
+}
+
+.lbPrice {
+  font-weight: bold;
+  color: #2c4f3c;
+  font-size: 1.1rem;
+}
+
+/* Loading and Error States */
+.lbLoadingIndicator {
+  text-align: center;
+  padding: 40px;
+  font-size: 18px;
+  color: #666;
+}
+
+.lbErrorMessage {
+  padding: 20px;
+  background-color: #fee;
+  border-left: 4px solid #dc3545;
+  color: #dc3545;
+  margin: 20px 0;
+  border-radius: 4px;
+}
+
+.lbNoResults {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  margin: 20px 0;
+}
+
+/* Pagination Controls */
+.lbPaginationControls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 30px;
+  padding: 15px 0;
+  gap: 15px;
+}
+
+.lbPaginationButton {
+  padding: 8px 16px;
+  background: #f0f2f5;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.lbPaginationButton:hover:not(:disabled) {
+  background: #e0e0e0;
+}
+
+.lbPaginationButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.lbPaginationInfo {
+  margin: 0 10px;
+  color: #666;
+}
+
+.lbPageSizeSelector {
+  margin-left: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lbPageSizeSelector select {
+  padding: 5px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Modal Styles */
+.lbModalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.lbDatePickerContainer,
+.lbPropertyMapModal,
+.lbNotificationModal,
+.lbPropertyDetailsModal {
+  background: white;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+  animation: modalFadeIn 0.3s ease;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.lbPropertyDetailsModal {
+  max-width: 900px;
+}
+
+/* Close Button Styling - fixed to be shorter */
+.lbCloseButton {
+  font-size: 1.2rem;
+  color: #dc3545;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.lbCloseButton:hover {
+  color: #b52e3b;
+}
+
+/* Modal header adjustments */
+.lbModalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.lbModalHeader h3 {
+  margin: 0;
+  color: #2c4f3c;
+  font-size: 1.5rem;
+  font-weight: 500;
+  flex-grow: 1;
+}
+
+.lbCloseButtonWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.lbModalContent {
+  padding: 20px;
+}
+
+/* Date Picker Specific Styles */
+.lbDatePickerContent {
+  padding: 20px;
+}
+
+.lbDateInputs {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.lbDateInputGroup {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.lbDateInputGroup label {
+  font-weight: bold;
+  color: #2c4f3c;
+}
+
+.lbDateInputGroup input {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+/* Date Navigation Styles */
+.lbDateNavigation {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+.lbDateNavButton {
+  background: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.lbDateNavButton:hover {
+  background: #e0e0e0;
+}
+
+.lbDatePickerActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.lbApplyButton {
+  padding: 10px 20px;
+  background: #2c4f3c;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.lbApplyButton:hover {
+  background: #1a3328;
+}
+
+.lbClearButton {
+  padding: 10px 20px;
+  background: transparent;
+  color: #666;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.lbClearButton:hover {
+  background: #f9f9f9;
+  color: #333;
+}
+
+/* Map Modal Specific Styles */
+.lbPropertyMapModal {
+  width: 90%;
+  max-width: 1000px;
+}
+
+.lbMapPopup {
+  padding: 5px;
+  min-width: 200px;
+}
+
+.lbMapPopup h4 {
+  margin: 0 0 5px;
+  color: #2c4f3c;
+}
+
+.lbMapPopup p {
+  margin: 3px 0;
+  color: #666;
+}
+
+.lbViewDetailsButton {
+  display: block;
+  width: 100%;
+  padding: 8px;
+  margin-top: 10px;
+  background: #2c4f3c;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.3s;
+}
+
+.lbViewDetailsButton:hover {
+  background: #1a3328;
+}
+
+.leafletContainer {
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #ddd;
+}
+
+.lbMapLegend {
+  margin-top: 20px;
+  padding: 15px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+.lbMapLegend h4 {
+  margin-top: 0;
+  color: #2c4f3c;
+}
+
+/* Village Search and Pagination Styles */
+.lbVillageSearch {
+  margin-bottom: 15px;
+}
+
+.lbVillageSearchInput {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.lbVillageSearchInput:focus {
+  border-color: #2c4f3c;
+}
+
+.lbVillagePagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 15px;
+  gap: 10px;
+}
+
+.lbVillagePagination .lbPaginationInfo {
+  margin: 0 10px;
+  color: #666;
+  font-size: 14px;
+}
+
+.lbVillagePagination .lbPaginationButton {
+  padding: 5px 10px;
+  font-size: 14px;
+}
+
+.lbVillageChips {
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 5px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.lbVillageChip {
+  padding: 5px 10px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.lbVillageChip:hover {
+  background: #f0f2f5;
+}
+
+.lbVillageChip.active {
+  background: #2c4f3c;
+  color: white;
+  border-color: #2c4f3c;
+}
+
+/* Notification Modal Specific Styles */
+.lbNotificationContent {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.lbNotificationItem {
+  padding: 15px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.lbNotificationItem:last-child {
+  border-bottom: none;
+}
+
+.lbNotificationItem h4 {
+  margin: 0 0 5px;
+  color: #2c4f3c;
+}
+
+.lbNotificationItem p {
+  margin: 0 0 5px;
+  color: #666;
+}
+
+.lbNotificationTime {
+  font-size: 12px;
+  color: #999;
+}
+
+.lbNotificationItem.unread {
+  position: relative;
+}
+
+.lbNotificationItem.unread::before {
+  content: '';
+  position: absolute;
+  top: 15px;
+  left: -20px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #dc3545;
+}
+
+/* Property Details Modal Specific Styles */
+.lbPropertyDetailsContent {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.lbPropertyDetailsImage {
+  width: 100%;
+  height: 300px;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.lbPropertyDetailsImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.lbPropertyDetailsInfo {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+}
+
+.lbPropertyInfoItem {
+  font-size: 16px;
+  color: #666;
+}
+
+.lbPropertyInfoItem strong {
+  color: #2c4f3c;
+}
+
+.lbPropertyDescription {
+  grid-column: 1 / -1;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #eee;
+  color: #666;
+  line-height: 1.5;
+}
+
+.lbPropertyAmenities {
+  grid-column: 1 / -1;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #eee;
+  color: #666;
+  line-height: 1.5;
+}
+
+.lbPropertyAmenities ul {
+  margin: 5px 0 0 20px;
+  padding: 0;
+}
+
+.lbPropertyAmenities li {
+  margin: 3px 0;
+}
+
+.lbPropertyDetailsActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+}
+
+.lbActionButton {
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.lbContactButton {
+  background: transparent;
+  border: 1px solid #2c4f3c;
+  color: #2c4f3c;
+}
+
+.lbContactButton:hover {
+  background: #f0f2f5;
+}
+
+.lbBookButton {
+  background: #2c4f3c;
+  color: white;
+  border: none;
+}
+
+.lbBookButton:hover {
+  background: #1a3328;
+}
+
+/* Bidding-specific styles */
+.lbBiddingItem .lbPrice {
+  color: #e74c3c;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .lbNavbar {
+    flex-direction: column;
+    height: auto;
+    padding: 15px;
+    gap: 15px;
+  }
+  
+  .lbNavLeft, .lbNavRight {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .lbVillageFilter {
+    width: 100%;
+  }
+  
+  .lbHeaderContent {
+    flex-direction: column;
+    gap: 15px;
+    padding: 10px 0;
+  }
+  
+  .lbFilterSection, .lbPropertyMap {
+    position: static;
+    margin-bottom: 15px;
+  }
+  
+  .lbListView .lbPropertyCard {
+    flex-direction: column;
+    height: auto;
+  }
+  
+  .lbListView .lbPropertyImage {
+    width: 100%;
+  }
+  
+  .lbPropertyDetailsInfo {
+    grid-template-columns: 1fr;
+  }
+  
+  .lbDateInputs {
+    flex-direction: column;
+  }
+  
+  .lbPropertyDetailsActions {
+    flex-direction: column;
+  }
+  
+  .lbActionButton {
+    width: 100%;
+  }
+  
+  .lbTabsSection, .lbViewToggle {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .lbDateNavigation {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .lbDateNavButton {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .lbVillagePagination {
+    flex-wrap: wrap;
+  }
+}

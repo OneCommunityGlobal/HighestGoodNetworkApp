@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-named-as-default
 import allTimeEntriesReducer from '../allTimeEntriesReducer'; // Adjust the path as necessary
 
 describe('allTimeEntriesReducer', () => {
@@ -15,7 +16,7 @@ describe('allTimeEntriesReducer', () => {
     const initialState = null; // Initial state is null
     const action = {
       type: 'GET_ALL_TIME_ENTRIES',
-      payload: [{ id: 1, entry: 'Sample entry' }] // Action payload
+      payload: [{ id: 1, entry: 'Sample entry' }], // Action payload
     };
 
     const result = allTimeEntriesReducer(initialState, action);
@@ -27,7 +28,7 @@ describe('allTimeEntriesReducer', () => {
     const initialState = [{ id: 1, entry: 'Sample entry' }]; // Initial state with some data
     const action = {
       type: 'UNKNOWN_ACTION', // An unknown action
-      payload: [{ id: 2, entry: 'Another entry' }] // Payload won't matter for unknown actions
+      payload: [{ id: 2, entry: 'Another entry' }], // Payload won't matter for unknown actions
     };
 
     const result = allTimeEntriesReducer(initialState, action);

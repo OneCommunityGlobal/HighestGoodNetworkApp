@@ -17,7 +17,10 @@ function TeamWeeklySummaries({ name, i, data, darkMode }) {
       .endOf('week')
       .subtract(weekIndex, 'week')
       .format('DD-MMM-YY'),
+    
   });
+  // eslint-disable-next-line no-console
+  console.log('darkMode', darkMode);
   return (
     <div className={`team-weekly-summaries ${darkMode ? 'bg-space-cadet' : ''}`} data-testid="team-weekly-summaries">
       <div className="team-weekly-header"  >
@@ -32,7 +35,8 @@ function TeamWeeklySummaries({ name, i, data, darkMode }) {
       </div>
       {data.summary && (
         <div className="team-weekly-summary-container">
-          <div className="team-week-summary-text"> {parse(data.summary)}</div>
+          <div className="team-week-summary-text">  {darkMode?  parse('<span class=darkSpan >' + data.summary + "</span>") : parse(data.summary)}</div>
+      
           <FontAwesomeIcon
             icon={faCopy}
             className="copy-icon"

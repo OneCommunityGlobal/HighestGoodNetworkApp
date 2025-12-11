@@ -1,13 +1,14 @@
 import { toast } from 'react-toastify';
 import { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import axios from 'axios';
 import { Table, Button, FormGroup, Label, Input } from 'reactstrap';
-import './JobCCDashboard.css';
-import { ENDPOINTS } from 'utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import JobCCModal from './JobCCModal'; // Modal for managing CC list
 import JobCategoryCCModal from './JobCategoryCCModal';
+import styles from './JobCCDashboard.module.css';
 
-function JobCCDashboard({ darkMode }) {
+function JobCCDashboard() {
   const [jobs, setJobs] = useState([]);
   const [filter, setFilter] = useState('');
   const [search, setSearch] = useState('');
@@ -16,6 +17,7 @@ function JobCCDashboard({ darkMode }) {
   const [selectedJob, setSelectedJob] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [showJobCategoryCCModal, setShowJobCategoryCCModal] = useState(false);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   const fetchJobs = async () => {
     try {
@@ -51,12 +53,19 @@ function JobCCDashboard({ darkMode }) {
 
   const handleSearchChange = e => setSearch(e.target.value);
 
+  const formatTextSearch = text =>
+    text
+      .toLowerCase()
+      .split('')
+      .filter(item => item !== ' ')
+      .join('');
+
   const filteredJobs = jobs.filter(job => {
     const matchesFilter = filter ? job.category === filter : true;
     const matchesSearch =
       search.length === 0 ||
-      job.title.toLowerCase().includes(search.toLowerCase()) ||
-      job.ccList.some(entry => entry.email.toLowerCase().includes(search.toLowerCase()));
+      formatTextSearch(job.title).includes(formatTextSearch(search)) ||
+      job.ccList.some(entry => formatTextSearch(entry.email).includes(formatTextSearch(search)));
     return matchesFilter && matchesSearch;
   });
 
@@ -79,12 +88,27 @@ function JobCCDashboard({ darkMode }) {
   };
 
   return (
-    <div className={`job-cc-dashboard ${darkMode ? 'dark-mode-job-cc-dashboard' : ''}`}>
-      <h1 className="dashboard-title">Job CC Dashboard</h1>
+    <div
+      className={`${styles.jobCcDashboard} ${darkMode ? styles.darkModeJobCcDashboard : ''}`}
+      style={{ height: '100%' }}
+    >
+      <h1 className={`${styles.dashboardTitle}`}>Job CC Dashboard</h1>
       <div className="filters-container">
         <FormGroup>
-          <Label for="filter">Filter by Category</Label>
-          <Input type="select" id="filter" value={filter} onChange={handleFilterChange}>
+          <Label for="filter" className={`${darkMode ? 'text-light' : 'text-dark'}`}>
+            Filter by Category
+          </Label>
+          <Input
+            type="select"
+            id="filter"
+            style={
+              darkMode
+                ? { backgroundColor: 'black', color: 'white', border: 'none' }
+                : { backgroundColor: 'white', color: 'black' }
+            }
+            value={filter}
+            onChange={handleFilterChange}
+          >
             <option value="">All</option>
             {categories.map(category => (
               <option key={category} value={category}>
@@ -94,10 +118,17 @@ function JobCCDashboard({ darkMode }) {
           </Input>
         </FormGroup>
         <FormGroup>
-          <Label for="search">Search by Title or Email</Label>
+          <Label for="search" className={`${darkMode ? 'text-light' : 'text-dark'}`}>
+            Search by Title or Email
+          </Label>
           <Input
             type="text"
             id="search"
+            style={
+              darkMode
+                ? { backgroundColor: 'black', color: 'white', border: 'none' }
+                : { backgroundColor: 'white', color: 'black' }
+            }
             placeholder="Search..."
             value={search}
             onChange={handleSearchChange}
@@ -113,7 +144,7 @@ function JobCCDashboard({ darkMode }) {
         </div>
       </div>
 
-      <Table striped bordered hover className="job-cc-dashboard-table">
+      <Table striped bordered hover className={`${styles.jobCcDashboardTable}`}>
         <thead>
           <tr>
             <th>Job Title</th>
@@ -124,19 +155,29 @@ function JobCCDashboard({ darkMode }) {
           </tr>
         </thead>
         <tbody>
-          {filteredJobs.map(job => (
-            <tr key={job._id}>
-              <td>{job.title}</td>
-              <td>{job.category}</td>
-              <td>{new Date(job.datePosted).toLocaleDateString()}</td>
-              <td>{job.ccList.map(entry => entry.email).join(', ') || 'No CCs'}</td>
-              <td>
-                <Button color="info" size="sm" onClick={() => handleOpenModal(job)}>
-                  Manage CCs
-                </Button>
-              </td>
-            </tr>
-          ))}
+          {filteredJobs.length === 0 ? (
+            <h4 className={`${darkMode ? 'text-light' : 'text-dark'} text-center`}>
+              No title or email were found.
+            </h4>
+          ) : (
+            filteredJobs.map(job => (
+              <tr key={job._id}>
+                <td className={`${darkMode ? 'text-light' : 'text-dark'}`}>{job.title}</td>
+                <td className={`${darkMode ? 'text-light' : 'text-dark'}`}>{job.category}</td>
+                <td className={`${darkMode ? 'text-light' : 'text-dark'}`}>
+                  {new Date(job.datePosted).toLocaleDateString()}
+                </td>
+                <td className={`${darkMode ? 'text-light' : 'text-dark'}`}>
+                  {job.ccList.map(entry => entry.email).join(', ') || 'No CCs'}
+                </td>
+                <td className={`${darkMode ? 'text-light' : 'text-dark'}`}>
+                  <Button color="info" size="sm" onClick={() => handleOpenModal(job)}>
+                    Manage CCs
+                  </Button>
+                </td>
+              </tr>
+            ))
+          )}
         </tbody>
       </Table>
 

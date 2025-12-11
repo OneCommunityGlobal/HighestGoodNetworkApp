@@ -14,7 +14,7 @@ import {
   UncontrolledPopover,
 } from 'reactstrap';
 import { connect } from 'react-redux';
-import { boxStyle } from 'styles';
+import { boxStyle } from '~/styles';
 import { updateBadge, deleteBadge, closeAlert } from '../../actions/badgeManagement';
 import BadgeTableHeader from './BadgeTableHeader';
 import BadgeTableFilter from './BadgeTableFilter';
@@ -162,9 +162,7 @@ function BadgeDevelopmentTable(props) {
     return filteredList;
   };
 
-  
   const handleSortName = () => {
-    console.log("here sort name");
     setSortRankState('default');
     setSortNameState(prevState => {
       // change the icon
@@ -174,8 +172,10 @@ function BadgeDevelopmentTable(props) {
 
       // Sort the badges by name
       const sorted = [...sortedBadges].sort((a, b) => {
-        if (newState === 'ascending') return a.badgeName.toLowerCase() > b.badgeName.toLowerCase() ? 1 : -1;
-        if (newState === 'descending') return a.badgeName.toLowerCase() < b.badgeName.toLowerCase() ? 1 : -1;
+        if (newState === 'ascending')
+          return a.badgeName.toLowerCase() > b.badgeName.toLowerCase() ? 1 : -1;
+        if (newState === 'descending')
+          return a.badgeName.toLowerCase() < b.badgeName.toLowerCase() ? 1 : -1;
         return 0;
       });
 
@@ -186,7 +186,6 @@ function BadgeDevelopmentTable(props) {
 
   const handleSortRank = () => {
     setSortNameState('default');
-    console.log("sort rank");
     setSortRankState(prevState => {
       // Change the icon state
       let newState = 'ascending';
@@ -203,10 +202,14 @@ function BadgeDevelopmentTable(props) {
       setSortedBadges(sorted);
       return newState;
     });
-    
   };
 
   const filteredBadges = sortedBadges;
+
+  const toggleCheckbox = id => {
+    // prettier-ignore
+    setSortedBadges(prev => prev.map(item => (item._id === id ? { ...item, showReport: !item.showReport } : item)));
+  };
 
   const reportBadge = badgeValue => {
     // Returns true for all checked badges and false for all unchecked
@@ -220,8 +223,10 @@ function BadgeDevelopmentTable(props) {
           checked={badgeValue.showReport || false}
           onChange={() => {
             const updatedValue = { ...badgeValue, showReport: !checkValue };
+            toggleCheckbox(badgeValue._id);
             props.updateBadge(badgeValue._id, updatedValue);
           }}
+          data-testid={`report-checkbox-${badgeValue._id}`}
           style={{
             display: 'inline-block',
             width: '20px',
@@ -236,14 +241,13 @@ function BadgeDevelopmentTable(props) {
     );
   };
 
-
   const onNameSort = () => {
-    setSortNameState((prevState) => {
+    setSortNameState(prevState => {
       if (prevState === 'ascending') return 'descending';
       if (prevState === 'descending') return 'default';
       return 'ascending';
     });
-  
+
     const sortedBadges = [...props.allBadgeData].sort((a, b) => {
       if (sortNameState === 'ascending') {
         return a.badgeName.toLowerCase() > b.badgeName.toLowerCase() ? 1 : -1;
@@ -252,18 +256,16 @@ function BadgeDevelopmentTable(props) {
       }
       return 0;
     });
-  
+
     return sortedBadges;
   };
-  
-const onRankSort = () => {
-    setSortRankState((prevState) => {
+
+  const onRankSort = () => {
+    setSortRankState(prevState => {
       if (prevState === 'ascending') return 'descending';
       if (prevState === 'descending') return 'default';
       return 'ascending';
     });
-  
-  
   };
 
   return (
@@ -272,21 +274,25 @@ const onRankSort = () => {
         className={`table table-bordered ${darkMode ? 'bg-yinmn-blue text-light dark-mode' : ''}`}
       >
         <thead>
-        <BadgeTableHeader
+          <BadgeTableHeader
             darkMode={darkMode}
             sortNameState={sortNameState}
             sortRankState={sortRankState}
             onNameSort={handleSortName}
             onRankSort={handleSortRank}
           />
-
         </thead>
         <tbody>
           {filteredBadges.map(value => (
             <tr key={value._id}>
               <td className="badge_image_sm">
                 {' '}
-                <img src={value.imageUrl} id={`popover_${value._id}`} alt="" />
+                <img
+                  src={value.imageUrl}
+                  id={`popover_${value._id}`}
+                  alt=""
+                  data-testid={`badge-image-${value._id}`}
+                />
                 <UncontrolledPopover trigger="hover" target={`popover_${value._id}`}>
                   <Card className={`text-center ${darkMode ? 'bg-space-cadet text-light' : ''}`}>
                     <CardImg className="badge_image_lg" src={value?.imageUrl} />
@@ -316,7 +322,7 @@ const onRankSort = () => {
                   <Button
                     outline
                     color="info"
-                    disabled = {!canUpdateBadges}
+                    disabled={!canUpdateBadges}
                     onClick={() => onEditButtonClick(value)}
                     style={darkMode ? {} : boxStyle}
                   >
@@ -327,7 +333,7 @@ const onRankSort = () => {
                   <Button
                     outline
                     color="danger"
-                    disabled = {!canDeleteBadges}
+                    disabled={!canDeleteBadges}
                     onClick={() => onDeleteButtonClick(value._id, value.badgeName)}
                     style={darkMode ? {} : boxStyle}
                   >
