@@ -362,9 +362,7 @@ function Timer({ authUser, darkMode, isPopout }) {
 
       // Show success message with statistics
       const stats = getTimerStats();
-      toast.success(
-        `✅ Time logged successfully!`,
-      );
+      toast.success(`✅ Time logged successfully!`);
     },
     [trackTimeSubmission, getTimerStats],
   );
