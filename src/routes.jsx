@@ -86,6 +86,7 @@ import TSAFormPage5 from './components/TSAForm/pages/TSAFormPage5';
 import TSAFormPage6 from './components/TSAForm/pages/TSAFormPage6';
 import TSAFormPage7 from './components/TSAForm/pages/TSAFormPage7';
 import TSAFormPage8 from './components/TSAForm/pages/TSAFormPage8';
+import PlannedCostDonutChart from './components/PlannedCostDonutChart';
 
 import DisplayTeamMemberDetails from './components/HGNForm/TopCommunityMembers/TopCommunityMembers';
 
@@ -844,6 +845,7 @@ export default (
           exact
           component={PromotionEligibility}
         />
+        <ProtectedRoute path="/planned-costs" exact component={PlannedCostDonutChart} />
         <ProtectedRoute
           path="/pr-team-analytics/popular-prs"
           exact
