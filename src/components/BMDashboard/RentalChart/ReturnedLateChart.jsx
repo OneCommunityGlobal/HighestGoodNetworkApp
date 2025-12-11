@@ -264,6 +264,7 @@ export default function ReturnedLateChart() {
             ))}
           </select>
         </div>
+
         <div className={styles['returned-late-filter-group']}>
           <label
             htmlFor="tools-select"
@@ -271,33 +272,36 @@ export default function ReturnedLateChart() {
           >
             Tools:
           </label>
-          <div className={styles['returned-late-filter-group']}>
-            <label
-              htmlFor="returned-late-sort"
-              className={`${styles['returned-late-filter-label']} ${darkMode ? 'text-white' : ''}`}
-            >
-              Sort By:
-            </label>
-            <select
-              id="returned-late-sort"
-              value={sortOption}
-              onChange={e => setSortOption(e.target.value)}
-              className={styles['returned-late-project-select']}
-            >
-              <option value="DESC">Highest % Late</option>
-              <option value="ASC">Lowest % Late</option>
-              <option value="ALPHA">Alphabetical (A–Z)</option>
-            </select>
-          </div>
-          <div id="tools-select" className={styles['returned-late-tools-select']}>
-            <MultiSelect
-              options={availableTools}
-              value={selectedTools}
-              onChange={setSelectedTools}
-              labelledBy="tools-select"
-            />
-          </div>
+
+          <MultiSelect
+            options={availableTools}
+            value={selectedTools}
+            onChange={setSelectedTools}
+            labelledBy="tools-select"
+            className={styles['returned-late-tools-select']}
+          />
         </div>
+
+        <div className={styles['returned-late-filter-group']}>
+          <label
+            htmlFor="returned-late-sort"
+            className={`${styles['returned-late-filter-label']} ${darkMode ? 'text-white' : ''}`}
+          >
+            Sort By:
+          </label>
+
+          <select
+            id="returned-late-sort"
+            value={sortOption}
+            onChange={e => setSortOption(e.target.value)}
+            className={styles['returned-late-project-select']}
+          >
+            <option value="DESC">Highest % Late</option>
+            <option value="ASC">Lowest % Late</option>
+            <option value="ALPHA">Alphabetical (A–Z)</option>
+          </select>
+        </div>
+
         <div className={styles['returned-late-filter-group']}>
           <label
             htmlFor="start-date-picker"
