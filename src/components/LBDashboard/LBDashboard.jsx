@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import {
   Container,
@@ -13,6 +14,7 @@ import {
   Card,
   CardBody,
 } from 'reactstrap';
+import ReviewWordCloud from './ReviewWordCloud/ReviewWordCloud';
 import styles from './LBDashboard.module.css';
 import DemandOverTime from './LbAnalytics/DemandOverTime/DemandOverTime';
 import moment from 'moment';
@@ -49,6 +51,32 @@ const DEFAULTS = {
   VACANCY: 'occupancyRate',
 };
 
+function GraphCard({ title, metricLabel, darkMode }) {
+  return (
+    <Card className={`${styles.graphCard} ${darkMode ? styles.darkCard : ''}`}>
+      <CardBody>
+        <div className={styles.graphTitle}>
+          <span className={darkMode ? styles.darkText : ''}>{title}</span>
+          <span className={`${styles.metricPill} ${darkMode ? styles.darkMetricPill : ''}`}>
+            {metricLabel}
+          </span>
+        </div>
+        <div className={`${styles.graphPlaceholder} ${darkMode ? styles.darkPlaceholder : ''}`}>
+          <span className={`${styles.placeholderText} ${darkMode ? styles.darkText : ''}`}>
+            Graph area
+          </span>
+        </div>
+      </CardBody>
+    </Card>
+  );
+}
+
+GraphCard.propTypes = {
+  title: PropTypes.string.isRequired,
+  metricLabel: PropTypes.string,
+  darkMode: PropTypes.bool,
+};
+
 export function LBDashboard() {
   const [activeCategory, setActiveCategory] = useState('DEMAND');
   const [selectedMetricKey, setSelectedMetricKey] = useState(DEFAULTS.DEMAND);
@@ -81,10 +109,58 @@ export function LBDashboard() {
 
   const goBack = () => window.history.back();
 
+  const renderCategoryControls = (categoryKey, label) => (
+    <>
+      <Button
+        className={`${styles.filterBtn} ${activeCategory === categoryKey ? styles.active : ''} ${
+          darkMode ? styles.darkFilterBtn : ''
+        }`}
+        onClick={() => handleCategoryClick(categoryKey)}
+      >
+        {label}
+      </Button>
+
+      <ButtonDropdown
+        isOpen={openDD[categoryKey]}
+        toggle={() => toggleDD(categoryKey)}
+        className={styles.dd}
+      >
+        <DropdownToggle
+          caret
+          className={`${styles.filterBtn} ${activeCategory === categoryKey ? styles.active : ''} ${
+            darkMode ? styles.darkFilterBtn : ''
+          }`}
+        />
+        <DropdownMenu
+          className={`${styles.dropdownMenu} ${darkMode ? styles.darkDropdownMenu : ''}`}
+        >
+          {METRIC_OPTIONS[categoryKey].map(m => (
+            <DropdownItem
+              key={m.key}
+              active={selectedMetricKey === m.key}
+              onClick={() => handleMetricPick(categoryKey, m.key)}
+              className={`${styles.dropdownItem} ${
+                selectedMetricKey === m.key ? styles.dropdownActive : ''
+              } ${darkMode ? styles.darkDropdownItem : ''}`}
+            >
+              {m.label}
+            </DropdownItem>
+          ))}
+        </DropdownMenu>
+      </ButtonDropdown>
+    </>
+  );
+
   return (
-    <Container fluid className={`${styles.dashboardContainer} ${darkMode ? styles.darkMode : ''}`}>
-      <header className={`${styles.dashboardHeader} ${darkMode ? styles.darkHeader : ''}`}>
-        <h1 className={styles.title}>Listing and Bidding Platform Dashboard</h1>
+    <Container
+      fluid
+      className={`${styles.dashboardContainer} ${darkMode ? styles.darkContainer : ''}`}
+    >
+      {/* Header */}
+      <header className={styles.dashboardHeader}>
+        <h1 className={`${styles.title} ${darkMode ? styles.darkText : ''}`}>
+          Listing and Bidding Platform Dashboard
+        </h1>
         <Button
           size="sm"
           onClick={goBack}
@@ -94,50 +170,18 @@ export function LBDashboard() {
         </Button>
       </header>
 
+      {/* Preset Overview Filter */}
       <section className={`${styles.filterBar} ${darkMode ? styles.darkFilterBar : ''}`}>
-        <div className={styles.filterLabel}>Choose Metric to view</div>
+        <div className={`${styles.filterLabel} ${darkMode ? styles.darkFilterLabel : ''}`}>
+          Choose Metric to view
+        </div>
+
         <ButtonGroup className={styles.categoryGroup}>
-          {['DEMAND', 'VACANCY', 'REVENUE'].map(category => (
-            <span key={category}>
-              <Button
-                className={`${styles.filterBtn} ${
-                  activeCategory === category ? styles.active : ''
-                } ${darkMode ? styles.darkFilterBtn : ''}`}
-                onClick={() => handleCategoryClick(category)}
-              >
-                {category.charAt(0) + category.slice(1).toLowerCase()}
-              </Button>
-              <ButtonDropdown
-                isOpen={openDD[category]}
-                toggle={() => toggleDD(category)}
-                className={styles.dd}
-              >
-                <DropdownToggle
-                  caret
-                  className={`${styles.filterBtn} ${
-                    activeCategory === category ? styles.active : ''
-                  } ${darkMode ? styles.darkFilterBtn : ''}`}
-                />
-                <DropdownMenu
-                  className={`${styles.dropdownMenu} ${darkMode ? styles.darkDropdown : ''}`}
-                >
-                  {METRIC_OPTIONS[category].map(m => (
-                    <DropdownItem
-                      key={m.key}
-                      active={selectedMetricKey === m.key}
-                      onClick={() => handleMetricPick(category, m.key)}
-                      className={`${styles.dropdownItem} ${
-                        selectedMetricKey === m.key ? styles.dropdownActive : ''
-                      } ${darkMode ? styles.darkDropdownItem : ''}`}
-                    >
-                      {m.label}
-                    </DropdownItem>
-                  ))}
-                </DropdownMenu>
-              </ButtonDropdown>
-            </span>
-          ))}
+          {renderCategoryControls('DEMAND', 'Demand')}
+          {renderCategoryControls('VACANCY', 'Vacancy')}
+          {renderCategoryControls('REVENUE', 'Revenue')}
         </ButtonGroup>
+
         <div className={`${styles.currentMetric} ${darkMode ? styles.darkText : ''}`}>
           Current metric:&nbsp;<strong>{metricLabel}</strong>
         </div>
@@ -194,11 +238,6 @@ export function LBDashboard() {
                   dateRange={dateRange}
                 />
               </div>
-              <div className={styles.chartCol}>
-                <Card className={`${styles.wordcloudCard} ${darkMode ? styles.darkCard : ''}`}>
-                  another graph
-                </Card>
-              </div>
             </div>
           </div>
         </details>
@@ -212,44 +251,7 @@ export function LBDashboard() {
             Insights from Reviews
           </summary>
           <div className={`${styles.sectionBody} ${darkMode ? styles.darkSectionBody : ''}`}>
-            <Row xs="1" md="2" className="g-3">
-              <Col>
-                <Card className={`${styles.wordcloudCard} ${darkMode ? styles.darkCard : ''}`}>
-                  <CardBody
-                    className={`${styles.wordcloudBody} ${darkMode ? styles.darkCardBody : ''}`}
-                  >
-                    <div className={`${styles.wordcloudTitle} ${darkMode ? styles.darkText : ''}`}>
-                      Village Wordcloud
-                    </div>
-                    <div
-                      className={`${styles.wordcloudPlaceholder} ${
-                        darkMode ? styles.darkPlaceholder : ''
-                      }`}
-                    >
-                      Wordcloud area
-                    </div>
-                  </CardBody>
-                </Card>
-              </Col>
-              <Col>
-                <Card className={`${styles.wordcloudCard} ${darkMode ? styles.darkCard : ''}`}>
-                  <CardBody
-                    className={`${styles.wordcloudBody} ${darkMode ? styles.darkCardBody : ''}`}
-                  >
-                    <div className={`${styles.wordcloudTitle} ${darkMode ? styles.darkText : ''}`}>
-                      Property Wordcloud
-                    </div>
-                    <div
-                      className={`${styles.wordcloudPlaceholder} ${
-                        darkMode ? styles.darkPlaceholder : ''
-                      }`}
-                    >
-                      Wordcloud area
-                    </div>
-                  </CardBody>
-                </Card>
-              </Col>
-            </Row>
+            <ReviewWordCloud darkMode={darkMode} />
           </div>
         </details>
       </section>

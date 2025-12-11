@@ -6,20 +6,30 @@
 :global .dark-mode .modal-body p:hover {
   background-color: #444;
 }
-
 .team-member-tasks {
   background-color: white;
   overflow: hidden;
 }
 
-.darkSeaGreenBtn {
-  background-color: #c9d6c6 !important;
-  border-color: #225163 !important;
-  color: #225163 !important;
+.progress-wrapper {
+  display: inline-block;
 }
 
+.team-task-progress-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: wrap;          
+}
+
+.team-task-progress-bar {
+  width: 100%;
+  margin-top: 4px;  
+}
+
+
 .team-member-task-review-button {
-  margin-top: 15px;
+  margin-top: 0;
 }
 
 .team-member-tasks h1 {
@@ -28,9 +38,8 @@
 }
 
 .task_table-container {
-  overflow-x: auto;
-  overflow-y: hidden;
-  max-width: 100%;
+  overflow: auto;
+  position: relative;
 }
 
 .task_table-container table {
@@ -92,22 +101,31 @@
   justify-content: center; 
 }
 
-/* ==== Progress TD (right-hand column) =============================== */
-.team-task-progress {
+/* .team-task-progress {
   position: relative;
-  /* remove the left gutter; reserve space for badge on the right */
-  padding-left: 0 !important;
-  padding-right: 30px;
-
-  /* let the column size naturally instead of hard-capping at 120px */
-  width: auto;
-  min-width: 160px;
-  max-width: none;
+  width: 100px;
+  min-width: 120px;
+  max-width: 120px;
+} */
+ .team-task-progress {
+  /* border: rgb(0, 213, 255) 1px solid !important; */
+  width: 45%;
+  height: auto !important;
 }
+
+/* .task-break {
+  border-bottom: 1px solid lightgray;
+} */
 
 .task-break {
+  /* border: red 1px solid; */
   border-bottom: 1px solid lightgray;
+  height: auto !important; 
+  width: 100%;
+  display: flex; 
+  margin: 1px 0 1px 0;
 }
+
 .task-break:last-of-type {
   border-bottom: none;
 }
@@ -116,19 +134,39 @@
   background-color: #3a506b;
   color: white;
 }
+
 .light-teammember-row th {
   background-color: #f0f8ff;
   color: black;
 }
 
-.task-align {
+/* .task-align {
   text-align: left;
   display: flex;
   flex-direction: column;
   gap: 1px;
   vertical-align: middle; 
+} */
+ .task-align {
+  width: 55%;
+  height: auto !important;
+  /* border: teal 1px solid !important; */
 }
-
+.inner-task-align{
+  /* border: purple 1px solid !important; */
+  padding: 0px 5px 5px 3px;
+  text-align: left;
+  display: flex;
+  justify-content: flex-start;
+  gap: 10px;
+  vertical-align: top;
+  flex-wrap: wrap;
+  margin: 0px;
+}
+.team-member-task-review-button, .task-align { /* Use the actual parent class from your HTML */
+    overflow: visible !important; 
+    z-index: 10; 
+}
 .team-member-tasks-user-name {
   width: 50%;
   text-align: center;
@@ -147,40 +185,42 @@
   height: 22px;
 }
 
-/* ==== Red badge – keep inside cell and center vertically ============ */
-.deadlineCount {
-  position: absolute;
-  text-align: center;
-  vertical-align: middle;
-  background: #FF4D4F;
-  border-radius: 50%;
-  color: #fff;
-  height: 22px;
-  width: 22px;
-  font-size: 13px;
-  line-height: 22px;
-  top: 50%;
-  right: 6px;                 
-  transform: translateY(-50%);
-  z-index: 1;
-}
-
-.deadlinePill {
+.followup-info-override {
+  position: relative;
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  background: #FF4D4F;
-  color: #fff;
-  border-radius: 50%;
-  height: 20px;
-  width: 20px;
-  font-size: 12px;
-  line-height: 20px;
-  cursor: pointer;
-  user-select: none;
-  flex-shrink: 0;            
 }
 
+.deadlineCount {
+  position: absolute;
+  top: -4px;     /* slightly up */
+  right: -17px;  /* shift more to the right, away from the i */
+  background: #e74c3c;
+  color: #fff;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 600;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  white-space: nowrap;
+  box-shadow: 0 0 0 2px #fff;
+  cursor: pointer;
+  z-index: 3;
+}
+
+
+
+.task-followup-icon{
+  /* border: palevioletred 1px solid; */
+  display: flex;
+  align-items: center;
+  gap: 6px;               /* space between the two icons only */
+  /* margin-left: -20px;   */
+}
 
 .team-clocks {
   display: flex;
@@ -241,16 +281,26 @@
 .complete-task-button {
   background-color: lightgreen;
 }
+
 .uncomplete-task-button {
   background-color: lightcoral;
 }
-.markAsDoneButton:hover { cursor: pointer; }
 
-.right-padding-temp-fix { padding-right: 0 !important; }
+.markAsDoneButton:hover {
+  cursor: pointer;
+}
 
-.table-row { position: relative; }
+.right-padding-temp-fix {
+  padding-right: 0 !important;
+}
 
-.hidden { visibility: hidden; }
+.table-row {
+  position: relative;
+}
+
+.hidden {
+  visibility: hidden;
+}
 
 .taking-time-off-content-div {
   background-color: rgba(0, 0, 25, 0.7);
@@ -272,14 +322,22 @@
   height: 100%;
 }
 
-.no-bottom-margin { margin-bottom: 0 !important; }
-.remove-padding { padding: 0 !important; }
+.no-bottom-margin {
+  margin-bottom: 0 !important;
+}
 
-.taking-time-off-table-div:hover { background-color: rgba(0, 0, 25, 0.6); }
+.remove-padding {
+  padding: 0 !important;
+}
+
+.taking-time-off-table-div:hover {
+  background-color: rgba(0, 0, 25, 0.6);
+}
 
 .taking-time-off-content-text {
   font-size: 1rem;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+    sans-serif;
   color: white;
   margin: 0;
   box-sizing: border-box;
@@ -297,16 +355,29 @@
   color: white;
   box-shadow: 2px 2px 4px 1px lightgray;
   box-sizing: border-box;
+  /* Icon group centering */
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
 }
-.show-time-off-btn-selected { background-color: #17A2B8; }
 
-.show-time-off-calender-svg { width: 22px; height: 20px; position: relative; }
-.show-time-off-calender-svg-selected { fill: white; }
+.show-time-off-btn-selected {
+  background-color: #17A2B8;
+}
+
+.show-time-off-calender-svg {
+  width: 22px;
+  height: 20px;
+  position: relative;
+  /* top: 11px;
+  left: -2px; */
+}
+
+.show-time-off-calender-svg-selected {
+  fill: white;
+}
 
 .show-time-off-icon {
   position: absolute;
@@ -320,8 +391,14 @@
   border-radius: 50%;
   background-color: white;
 }
-.show-time-off-icon-selected { background-color: #17A2B8; }
-.show-time-off-icon path { fill: #17A2B8; }
+
+.show-time-off-icon-selected {
+  background-color: #17A2B8;
+}
+
+.show-time-off-icon path {
+  fill: #17A2B8;
+}
 
 .taking-time-off-content-btn {
   color: white;
@@ -330,7 +407,10 @@
   padding: 7px;
   border-radius: 6px;
 }
-.taking-time-off-content-btn:hover { background-color: rgba(0, 0, 25, 0.8); }
+
+.taking-time-off-content-btn:hover {
+  background-color: rgba(0, 0, 25, 0.8);
+}
 
 .time-off-detail-modal {
   padding: 10px;
@@ -340,20 +420,27 @@
   max-height: 500px;
   overflow-y: auto;
 }
-.time-off-detail-modal::-webkit-scrollbar { width: 12px; }
+
+.time-off-detail-modal::-webkit-scrollbar {
+  width: 12px;
+}
+
 .time-off-detail-modal::-webkit-scrollbar-track {
   border-radius: 4px;
   background-color: #E7E7E7;
   border: 1px solid #CACACA;
   box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
 }
+
 .time-off-detail-modal::-webkit-scrollbar-thumb {
   border-radius: 8px;
   background-color: #007BFF;
   box-shadow: inset 0 0 3px #e7e7e7;
 }
 
-.time-off-detail-modal-section { margin-bottom: 10px; }
+.time-off-detail-modal-section {
+  margin-bottom: 10px;
+}
 
 .compress-time-off-detail-button {
   color: white;
@@ -365,10 +452,16 @@
   bottom: 1px;
   right: 1px;
 }
-.compress-time-off-detail-button:hover,
-.expand-time-off-detail-button:hover { background-color: rgba(0, 0, 25, 0.6); }
 
-.grid-container { display: grid; grid-template-rows: 1fr auto; }
+.compress-time-off-detail-button:hover,
+.expand-time-off-detail-button:hover {
+  background-color: rgba(0, 0, 25, 0.6);
+}
+
+.grid-container {
+  display: grid;
+  grid-template-rows: 1fr auto;
+}
 
 .expand-time-off-detail-button {
   color: white;
@@ -376,14 +469,14 @@
   border-radius: 5px;
   justify-self: end;
   margin-right: -12px;
-
+  margin-bottom: -12px;
+}
 .review-dropdown-item {
   display: flex;
   align-items: center;
   gap: 6px;
 }
-  margin-bottom: -12px;
-}
+
 
 .time-off-detail-modal-card-container {
   border: 1px solid #ccc;
@@ -391,60 +484,47 @@
   border-radius: 5px;
 }
 
-.team-member-tasks-icons {
+ .team-member-tasks-icons {
+  /* border: green 1px solid; */
   display: inline-flex;
   align-items: flex-start;
-  gap: 8px;
+  justify-content: flex-start;
+  gap: 7px;
+  flex-wrap: wrap;
 }
 
-.team-member-tasks-content {
-  align-items: center;
-  gap: 8px;
+ .team-member-tasks-content {
+  /* border: blue 10px solid; */
+  gap: 5px;
+  height: auto !important;
+  max-height: none !important; 
+  overflow: visible !important;
+  text-align: left;
+  /* min-width: 150px; */
 }
 
-/* ==== One-line row: "0 of 40" + icons ================================= */
-.team-task-progress-container {
+.progress-text{
+  margin: 0;
+  /* border: green 1px solid; */
+  font-size: 13px;
+  padding: 0;
+  flex-wrap: wrap;
+  display: inline-block; 
+  font-weight: 400;
+  width: 60px;
+}
+
+.team-task-progress-time,
+.team-task-progress-time-volunteers {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
-  gap: 8px;
-  flex-wrap: nowrap;    /* keep on one line */
-  min-width: 0;
+  padding: 0;             
+  margin: 0;              
 }
-
-/* Keep text on one line; steadier number width */
-.team-task-progress-time {
-  align-self: center;
-  white-space: nowrap;
-  font-variant-numeric: tabular-nums;
-}
-
-/* If volunteers use a different placement, keep existing semantics */
-.team-task-progress-time-volunteers {
-  grid-column: 1 / span 3;
-  grid-row: 1 / span 1;
-  justify-self: center;
-}
-
 .followup-tooltip-container {
   grid-column: 3 / span 1;
   grid-row: 1 / span 1;
   align-self: center;
-}
-
-.team-task-progress-bar { margin-top: 2px; }
-
-/* Prevent icons/checkbox from shrinking in flex; normalize size */
-.team-task-progress-container button,
-.team-task-progress-container svg,
-.team-task-progress-container input[type='checkbox'] {
-  flex-shrink: 0;
-}
-.team-task-progress-container svg,
-.team-task-progress-container input[type='checkbox'] {
-  width: 18px;
-  height: 18px;
-  vertical-align: middle;
 }
 
 .hours-btn-div {
@@ -514,18 +594,34 @@
   color: #fff !important;
   background: #252525 !important;
 }
+
 .rmsc.dark-mode .select-item:hover {
   background: #252525 !important;
   color: #fff !important;
 }
+
 .rmsc.dark-mode .search input:focus {
   background: #252525 !important;
   color: #fff !important;
 }
 
-/* ==== Responsive tweaks ============================================== */
+:global(.multi-select-filter) {
+  position: relative;
+  z-index: 20;
+}
+
+:global(.multi-select-filter .dropdown-content) {
+  z-index: 30;
+}
+
+:global(.multi-select-filter:focus-within) {
+  z-index: 30;
+}
+
 @media (max-width: 1240px) and (min-width: 992px) {
-  .header-box { flex-direction: column; }
+  .header-box {
+    flex-direction: column;
+  }
 
   .hours-btn-container {
     margin-top: 10px;
@@ -533,8 +629,10 @@
     align-items: center;
   }
 
-  .team-task-progress { min-width: 150px; }
-  .team-task-progress-container { display: flex; gap: 6px; }
+  .team-task-progress-container {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(3, auto);
+  }
 
   .team-task-progress-time,
   .team-task-progress-time-volunteers {
@@ -554,22 +652,31 @@
     margin-bottom: 3px;
   }
 
-  .team-member-tasks-bell { margin-right: 0; }
+  .team-member-tasks-bell {
+    margin-right: 0;
+  }
 }
 
 @media only screen and (max-width: 768px) {
+  /* Adjust 768px to the breakpoint you want */
   .team-task-progress {
-    padding-right: 26px;
     width: 100%;
-    min-width: 0;
+    min-width: auto;
     max-width: none;
   }
 
-  .task-table { max-height: 900px; }
+  .task_table-container{
+    max-height: 900px;
+  }
+  .header-box {
+    flex-direction: column;
+  }
 }
 
 @media only screen and (max-width: 768px) {
-  .pc-component { display: none; }
+  .pc-component {
+    display: none;
+  }
 
   .team-member-tasks h1 {
     color: black;
@@ -592,15 +699,15 @@
   }
 
   .team-member-tasks .table,
-  .team-member-tasks .table tbody,
-  .team-member-tasks .table tr,
-  .team-member-tasks .table td {
+  .team-member-tasks tbody,
+  .team-member-tasks tr,
+  .team-member-tasks td {
     display: block;
     width: 100%;
     text-align: left !important;
   }
 
-  .team-member-tasks .table td::before {
+  .team-member-tasks td::before {
     content: attr(data-label);
     font-size: 17px;
     font-weight: 500;
@@ -614,35 +721,118 @@
     font-size: 0.75rem !important;
   }
 
-  .table-row td { padding: 2px !important; }
+  .table-row td {
+    padding: 2px !important;
+  }
 
-  .spacer { height: 20px; }
+  .spacer {
+    height: 20px;
+  }
 
-  .deadlineCount { right: 4px; height: 20px; width: 20px; font-size: 12px; line-height: 20px; }
-
-  .expand-time-off-detail-button { margin-right: 0; margin-bottom: 0; }
+  .expand-time-off-detail-button {
+    margin-right: 0;
+    margin-bottom: 0;
+  }
 }
 
 @media only screen and (max-width: 440px) {
-  .hours-btn-container { column-gap: 0.2em; }
-  .team-member-tasks h1 { color: black; font-size: 14px; text-align: center; }
+  .hours-btn-container {
+    column-gap: 0.2em;
+  }
+
+  .team-member-tasks h1 {
+    color: black;
+    font-size: 14px;
+    text-align: center;
+  }
 }
 
 @media only screen and (max-width: 544px) {
-  .responsive-font-size { font-size: 0.75rem !important; }
-  .multi-select-filter { width: 50%; }
+  .responsive-font-size {
+    font-size: 0.75rem !important;
+  }
+
+  .multi-select-filter {
+    width: 50%;
+  }
 }
 
 @media screen and (max-width: 1075px) and (min-width: 992px) {
-  .header-box h1 { font-size: 1.25rem !important; margin-right: 10px; }
-  .team-member-task-remove { margin: 0; }
+  .header-box h1 {
+    font-size: 1.25rem !important;
+    margin-right: 10px;
+  }
+
+  .team-member-task-remove {
+    margin: 0;
+  }
 }
 
 @media screen and (max-width: 1200px) and (min-width: 992px) {
-  .team-member-tasks-user-name-link { font-size: 14px !important; }
-  .hours-completed-column { width: 50px; }
-  .team-clocks { font-size: 0.75rem !important; }
-  .team-member-tasks-content-link { font-size: 0.75rem !important; }
-  .team-task-progress-time { font-size: 0.75rem !important; }
-  .team-task-progress-time-volunteers { font-size: 0.75rem !important; }
+  .team-member-tasks-user-name-link {
+    font-size: 14px !important;
+  }
+
+  .hours-completed-column {
+    width: 50px;
+  }
+
+  .team-clocks {
+    font-size: 0.75rem !important;
+  }
+
+  .team-member-tasks-content-link {
+    font-size: 0.75rem !important;
+  }
+
+  .team-task-progress-time {
+    font-size: 0.75rem !important;
+  }
+
+  .team-task-progress-time-volunteers {
+    font-size: 0.75rem !important;
+  }
+}
+
+
+/* wrapper around the info icon + tooltip */
+.followup-tooltip-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+
+/* HIDE by default (override any earlier display:block !important) */
+.followup-tooltip {
+  position: absolute;
+  top: 22px;
+  right: 0;
+  z-index: 3000;
+
+  display: none !important;          /* <- key change */
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+
+  /* keep your existing visuals */
+  max-width: min(520px, 90vw);
+  max-height: 90vh;
+  overflow: auto;
+  background: #2d3748;
+  color: #fff;
+  padding: 15px;
+  border-radius: 6px;
+  box-sizing: border-box;
+
+  transition: opacity 120ms ease;
+}
+
+/* SHOW on hover or keyboard focus of the wrapper */
+.followup-tooltip-button:hover .followup-tooltip,
+.followup-tooltip-button:focus-within .followup-tooltip {
+  display: block !important;
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
 }

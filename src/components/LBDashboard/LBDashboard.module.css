@@ -10,11 +10,17 @@ body {
   margin: 0;
 }
 
+.darkContainer {
+  background: #1B2A41;
+  color: #fff;
+}
+
 .dashboardHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 10px;
+  padding: 0 15px;
 }
 
 .chartRow {
@@ -55,16 +61,20 @@ body {
   border: 1px solid #ece7f4;
   border-radius: 14px;
   padding: 14px 16px;
-  margin-bottom: 18px;
   display: grid;
   grid-template-columns: auto 1fr auto;
   gap: 12px 16px;
   align-items: center;
+  margin: 0 15px 18px 15px;
 }
 
 .filterLabel {
   font-size: 12px;
   color: #666;
+}
+
+.darkFilterLabel {
+  color: #6C757D;
 }
 
 .categoryGroup {
@@ -85,7 +95,6 @@ body {
 }
 
 .filterBtn:hover {
-
   color: #fff !important;
 }
 
@@ -114,16 +123,22 @@ body {
   color: #fff !important;
 }
 
-
+/* Dropdown menu + items */
 .dropdownMenu {
   border-radius: 10px;
   padding: 4px 0;
+}
+
+.darkDropdownMenu {
+  background: #1C2541;
+  border-color: #225163;
 }
 
 .dropdownItem {
   font-size: 14px;
   padding: 6px 14px;
 }
+
 
 .dropdownItem:hover {
   background: #eae4fb;
@@ -141,7 +156,7 @@ body {
 }
 
 .section {
-  margin-bottom: 14px;
+  margin: 0 15px 14px 15px;
 }
 
 .sectionSummary {
@@ -185,6 +200,12 @@ body {
   border-radius: 999px;
   padding: 2px 8px;
   background: #f6f6f8;
+}
+
+.darkMetricPill {
+  background: #3A506B;
+  border-color: #225163;
+  color: #fff;
 }
 
 .graphPlaceholder {

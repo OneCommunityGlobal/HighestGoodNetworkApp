@@ -68,17 +68,25 @@ function FollowupCheckButton({ moseoverText, user, task }) {
   };
 
   return (
-    <span className={styles.wrap} title={moseoverText}>
+    <div className={styles['followup-box']}>
       <input
         type="checkbox"
-        className={`${styles.checkbox} ${needFollowUp ? styles.checkboxRed : ''}`}
+        title={moseoverText}
+        className={`${styles['team-task-progress-follow-up']} ${
+          needFollowUp ? styles['team-task-progress-follow-up-red'] : ''
+        }`}
         checked={isChecked && !needFollowUp}
         onChange={handleCheckboxFollowUp}
       />
       {isChecked && !needFollowUp && (
-        <FontAwesomeIcon icon={faCheck} className={styles.checkIcon} />
+        <FontAwesomeIcon
+          icon={faCheck}
+          title="This box is used to track follow ups. Clicking it means you’ve checked in with a person that they are on track to meet their deadline"
+          className={styles['team-task-progress-follow-up-check']}
+          onClick={handleCheckboxFollowUp}
+        />
       )}
-    </span>
+    </div>
   );
 }
 
