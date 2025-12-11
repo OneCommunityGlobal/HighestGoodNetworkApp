@@ -1016,8 +1016,32 @@ function Index({
 }
 
 FormattedReport.propTypes = {
-  // eslint-disable-next-line react/forbid-prop-types
-  summaries: PropTypes.arrayOf(PropTypes.object).isRequired,
+  summaries: PropTypes.arrayOf(
+    PropTypes.shape({
+      weeklySummariesCount: PropTypes.number,
+      totalTangibleHrs: PropTypes.number,
+      bioPosted: PropTypes.string,
+      totalSeconds: PropTypes.arrayOf(PropTypes.number),
+      promisedHoursByWeek: PropTypes.arrayOf(PropTypes.number),
+      _id: PropTypes.string,
+      firstName: PropTypes.string,
+      lastName: PropTypes.string,
+      email: PropTypes.string,
+      teamCode: PropTypes.string,
+      weeklySummaryOption: PropTypes.string,
+      weeklySummaries: PropTypes.arrayOf(PropTypes.object),
+      badgeCollection: PropTypes.arrayOf(PropTypes.object),
+      startDate: PropTypes.string,
+      endDate: PropTypes.string,
+      filterColor: PropTypes.string,
+      timeOffFrom: PropTypes.string,
+      timeOffTill: PropTypes.string,
+      role: PropTypes.string,
+      adminLinks: PropTypes.arrayOf(PropTypes.object),
+      trophyFollowedUp: PropTypes.bool,
+      mediaUrl: PropTypes.string,
+    }),
+  ).isRequired,
   weekIndex: PropTypes.number.isRequired,
 };
 
