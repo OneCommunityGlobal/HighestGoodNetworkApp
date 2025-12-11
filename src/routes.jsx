@@ -136,6 +136,8 @@ import CheckTypes from './components/BMDashboard/shared/CheckTypes';
 import AttendanceNoShow from './components/AttendanceSystem/AttendanceNoShowCharts.jsx';
 import LessonsLearntChart from './components/BMDashboard/LessonsLearnt/LessonsLearntChart';
 import UtilizationChart from './components/BMDashboard/UtilizationChart/UtilizationChart';
+import MostSusceptibleTools from './components/MostSusceptible/toolBreakdownChart';
+import InjuriesDonutChart from './components/InjuriesAnalytics/InjuriesDonutChart';
 
 import RentalChart from './components/BMDashboard/RentalChart/RentalChart';
 import ReturnedLateChart from './components/BMDashboard/RentalChart/ReturnedLateChart';
@@ -551,6 +553,7 @@ export default (
         <ProtectedRoute path="/job-application" exact component={JobApplicationForm} />
         <ProtectedRoute path="/popularity" component={PopularityTimelineChart} fallback />;
         <ProtectedRoute path="/analytics/months-pledged" component={MonthsPledgedChart} fallback />
+        <ProtectedRoute path="/analytics/injuries" component={InjuriesDonutChart} fallback />
         <ProtectedRoute
           path="/jobanalytics"
           exact
