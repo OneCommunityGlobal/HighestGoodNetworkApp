@@ -14,7 +14,7 @@ import ProjectTableHeader from './ProjectTableHeader';
 import Project from './Project';
 import ModalTemplate from './../common/Modal';
 import { CONFIRM_ARCHIVE, PROJECT_INACTIVE_CONFIRMATION, PROJECT_ACTIVE_CONFIRMATION } from './../../languages/en/messages';
-import './projects.css';
+import './projects.module.css';
 import Loading from '../common/Loading';
 import hasPermission from '../../utils/permissions';
 import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
@@ -322,7 +322,10 @@ const projectFetchStatus = useSelector(state => state.allProjects.status);
   return (
     <>
       <div className={darkMode ? 'bg-oxford-blue text-light' : ''}>
-        <div className="container py-3 mb-5 border border-secondary rounded" style={darkMode ? { backgroundColor: '#1B2A41' } : {}}>
+        <div
+          className="container py-3 mb-5 rounded"
+          style={darkMode ? { backgroundColor: '#1B2A41' } : {}}
+        >
           {fetching || !fetched ? <Loading align="center" /> : null}
           <div className="d-flex align-items-center flex-wrap w-100">
             <h3 style={{ display: 'inline-block', marginRight: 10 }}>Projects</h3>
@@ -358,7 +361,7 @@ const projectFetchStatus = useSelector(state => state.allProjects.status);
             </select>
           </div>
         </div>
-        <div style={{ overflowX: 'auto', overflowY: 'auto',  maxHeight: '500px' }}>
+        <div>
         <table className="table table-bordered table-responsive-sm">
           <thead>
             <ProjectTableHeader
