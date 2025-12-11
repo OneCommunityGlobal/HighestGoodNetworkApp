@@ -243,6 +243,9 @@ const PopularityTimelineChart = lazy(() =>
 const MonthsPledgedChart = lazy(() =>
   import('./components/MonthsPledgedAnalytics/MonthsPledgedChart'),
 );
+const EnhancedPopularityTimelineChart = lazy(() =>
+  import('./components/EnhancedPopularityTimelineAnalytics/EnhancedPopularityTimelineChart'),
+);
 
 // PR Analytics Dashboard
 import ReviewsInsight from './components/PRAnalyticsDashboard/ReviewsInsight/ReviewsInsight';
@@ -550,6 +553,11 @@ export default (
         />
         <ProtectedRoute path="/job-application" exact component={JobApplicationForm} />
         <ProtectedRoute path="/popularity" component={PopularityTimelineChart} fallback />;
+        <ProtectedRoute
+          path="/popularity-enhanced"
+          component={EnhancedPopularityTimelineChart}
+          fallback
+        />
         <ProtectedRoute path="/analytics/months-pledged" component={MonthsPledgedChart} fallback />
         <ProtectedRoute
           path="/jobanalytics"
