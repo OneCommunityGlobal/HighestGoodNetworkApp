@@ -143,7 +143,11 @@ export default function IssueDashboard() {
                   <td>{assignedTo}</td>
                   <td>{cost}</td>
                   <td className="text-end position-relative">
-                    <div className={`${styles.issueDashboardDropdown}  ${darkMode ? 'bg-oxide-blue' : ''}`}>
+                    <div
+                      className={`${styles.issueDashboardDropdown}  ${
+                        darkMode ? 'bg-oxide-blue' : ''
+                      }`}
+                    >
                       <button
                         type="button"
                         aria-label="Actions menu"
