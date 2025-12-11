@@ -227,9 +227,24 @@ function Timer({ authUser, darkMode, isPopout }) {
 
   // Initialize session ID on component mount
   useEffect(() => {
-    const newSessionId = `session_${Date.now()}_${Math.random()
-      .toString(36)
-      .substring(2, 11)}`;
+    // Use cryptographically secure random values for session ID generation
+    // This is safe for client-side session tracking (not used for authentication)
+    let randomPart = '';
+    if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+      const randomBytes = new Uint8Array(9);
+      crypto.getRandomValues(randomBytes);
+      randomPart = Array.from(randomBytes)
+        .map(b => b.toString(36))
+        .join('')
+        .substring(0, 9);
+    } else {
+      // Fallback for environments without crypto API (should not occur in modern browsers)
+      // Use timestamp as fallback (not cryptographically secure but acceptable for non-security use)
+      randomPart = Date.now()
+        .toString(36)
+        .substring(2, 11);
+    }
+    const newSessionId = `session_${Date.now()}_${randomPart}`;
     setSessionId(newSessionId);
     console.log('🚀 Timer session initialized:', newSessionId);
   }, []);
