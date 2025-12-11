@@ -2074,12 +2074,21 @@
   resolved "https://registry.yarnpkg.com/@jest/types/-/types-29.6.3.tgz#1131f8cf634e7e84c5e77bab12f052af585fba59"
   integrity sha512-u3UPsIilWKOM3F9CXtrG8LEJmNxwoCQC/XVj4IKYXvvpx7QIi/Kg1LI5uDmDpKlac62NUtX7eLjRh+jVZcLOzw==
   dependencies:
-    "@jest/schemas" "^29.6.3"
-    "@types/istanbul-lib-coverage" "^2.0.0"
-    "@types/istanbul-reports" "^3.0.0"
-    "@types/node" "*"
-    "@types/yargs" "^17.0.8"
+    "@babel/core" "^7.11.6"
+    "@jest/types" "^29.6.3"
+    "@jridgewell/trace-mapping" "^0.3.18"
+    babel-plugin-istanbul "^6.1.1"
     chalk "^4.0.0"
+    convert-source-map "^2.0.0"
+    fast-json-stable-stringify "^2.1.0"
+    graceful-fs "^4.2.9"
+    jest-haste-map "^29.7.0"
+    jest-regex-util "^29.6.3"
+    jest-util "^29.7.0"
+    micromatch "^4.0.4"
+    pirates "^4.0.4"
+    slash "^3.0.0"
+    write-file-atomic "^4.0.2"
 
 "@jridgewell/gen-mapping@^0.3.12", "@jridgewell/gen-mapping@^0.3.5":
   version "0.3.13"
@@ -5178,6 +5187,13 @@ debug@4, debug@^4.1.0, debug@^4.1.1, debug@^4.3.1, debug@^4.3.2, debug@^4.3.4, d
   dependencies:
     ms "^2.1.3"
 
+debug@4, debug@^4.1.0, debug@^4.1.1, debug@^4.3.1, debug@^4.3.2, debug@^4.3.4, debug@^4.4.1, debug@^4.4.3:
+  version "4.4.3"
+  resolved "https://registry.npmjs.org/debug/-/debug-4.4.3.tgz"
+  integrity sha512-RGwwWnwQvkVfavKVt22FGLw+xYSdzARwm0ru6DhTVA3umU5hZc28V3kO4stgYryrTlLpuvgI9GiijltAjNbcqA==
+  dependencies:
+    ms "^2.1.3"
+
 debug@^3.2.7:
   version "3.2.7"
   resolved "https://registry.yarnpkg.com/debug/-/debug-3.2.7.tgz#72580b7e9145fb39b6676f9c5e5fb100b934179a"
@@ -7355,20 +7371,15 @@ jest-message-util@30.2.0:
     slash "^3.0.0"
     stack-utils "^2.0.6"
 
-jest-message-util@^29.7.0:
+jest-matcher-utils@^29.7.0:
   version "29.7.0"
   resolved "https://registry.yarnpkg.com/jest-message-util/-/jest-message-util-29.7.0.tgz#8bc392e204e95dfe7564abbe72a404e28e51f7f3"
   integrity sha512-GBEV4GRADeP+qtB2+6u61stea8mGcOT4mCtrYISZwfu9/ISHFJ/5zOMXYbpBE9RsS5+Gb63DW4FgmnKJ79Kf6w==
   dependencies:
-    "@babel/code-frame" "^7.12.13"
-    "@jest/types" "^29.6.3"
-    "@types/stack-utils" "^2.0.0"
     chalk "^4.0.0"
-    graceful-fs "^4.2.9"
-    micromatch "^4.0.4"
+    jest-diff "^29.7.0"
+    jest-get-type "^29.6.3"
     pretty-format "^29.7.0"
-    slash "^3.0.0"
-    stack-utils "^2.0.3"
 
 jest-mock@30.2.0:
   version "30.2.0"
@@ -7379,14 +7390,20 @@ jest-mock@30.2.0:
     "@types/node" "*"
     jest-util "30.2.0"
 
-jest-mock@^29.7.0:
+jest-message-util@^29.7.0:
   version "29.7.0"
   resolved "https://registry.yarnpkg.com/jest-mock/-/jest-mock-29.7.0.tgz#4e836cf60e99c6fcfabe9f99d017f3fdd50a6347"
   integrity sha512-ITOMZn+UkYS4ZFh83xYAOzWStloNzJFO2s8DWrE4lhtGD+AorgnbkiKERe4wQVBydIGPx059g6riW5Btp6Llnw==
   dependencies:
+    "@babel/code-frame" "^7.12.13"
     "@jest/types" "^29.6.3"
-    "@types/node" "*"
-    jest-util "^29.7.0"
+    "@types/stack-utils" "^2.0.0"
+    chalk "^4.0.0"
+    graceful-fs "^4.2.9"
+    micromatch "^4.0.4"
+    pretty-format "^29.7.0"
+    slash "^3.0.0"
+    stack-utils "^2.0.3"
 
 jest-pnp-resolver@^1.2.3:
   version "1.2.3"
@@ -9876,6 +9893,14 @@ ripemd160@^2.0.0, ripemd160@^2.0.1, ripemd160@^2.0.3:
     hash-base "^3.1.2"
     inherits "^2.0.4"
 
+ripemd160@^2.0.0, ripemd160@^2.0.1:
+  version "2.0.2"
+  resolved "https://registry.npmjs.org/ripemd160/-/ripemd160-2.0.2.tgz"
+  integrity sha512-ii4iagi25WusVoiC4B4lq7pbXfAp3D9v5CwfkY33vffw2+pkDjY1D8GaN7spsxvCSx8dkPqOZCEZyfxcmJG2IA==
+  dependencies:
+    hash-base "^3.0.0"
+    inherits "^2.0.1"
+
 robust-predicates@^3.0.2:
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/robust-predicates/-/robust-predicates-3.0.2.tgz#d5b28528c4824d20fc48df1928d41d9efa1ad771"
@@ -10239,6 +10264,14 @@ source-map-support@0.5.13:
 source-map-support@~0.5.20:
   version "0.5.21"
   resolved "https://registry.yarnpkg.com/source-map-support/-/source-map-support-0.5.21.tgz#04fe7c7f9e1ed2d662233c28cb2b35b9f63f6e4f"
+  integrity sha512-uBHU3L3czsIyYXKX88fdrGovxdSCoTGDRZ6SYXtSRxLZUzHg5P/66Ht6uoUlHu9EZod+inXhKo3qQgwXUT/y1w==
+  dependencies:
+    buffer-from "^1.0.0"
+    source-map "^0.6.0"
+
+source-map-support@~0.5.20:
+  version "0.5.21"
+  resolved "https://registry.npmjs.org/source-map-support/-/source-map-support-0.5.21.tgz"
   integrity sha512-uBHU3L3czsIyYXKX88fdrGovxdSCoTGDRZ6SYXtSRxLZUzHg5P/66Ht6uoUlHu9EZod+inXhKo3qQgwXUT/y1w==
   dependencies:
     buffer-from "^1.0.0"

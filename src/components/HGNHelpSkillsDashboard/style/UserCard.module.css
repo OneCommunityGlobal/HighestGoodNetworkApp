@@ -1,7 +1,8 @@
 .userCard {
-  width: 360px;
+  width: 100%;
+  max-width: 360px;
   height: auto;
-  padding: 30px 24px;
+  padding: 28px 24px;
   background: #ffffff;
   border: 2px solid #eeeeee;
   box-shadow: 1px 4px 4px rgba(0, 0, 0, 0.25);
@@ -11,6 +12,7 @@
   flex-direction: column;
   align-items: center;
   gap: 16px;
+  margin: 0 auto;
 }
 
 .avatar {
@@ -23,37 +25,44 @@
 .info {
   display: flex;
   flex-direction: column;
-  align-items: flex-start; /* keeps name/email/slack left-aligned */
+  align-items: stretch;
   text-align: left;
-  margin-top: 16px;
-  padding: 0;
-  width: fit-content;
-  margin-left: auto;
-  margin-right: auto;
+  gap: 8px;
+  margin-top: 12px;
+  width: 100%;
+  padding: 0 16px;
 }
 
 .userName {
-  font-size: 30px;
-  font-weight: 400;
+  width: 100%;
+  font-size: 24px;
+  font-weight: 500;
   color: black;
-  margin-bottom: 8px;
-  white-space: nowrap;
-  /*font-size: Large;*/
+  margin-bottom: 6px;
+  word-break: break-word;
+  line-height: 1.25;
+  text-align: center;
 }
 
 .contactLine {
+  width: 100%;
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 16px;
+  font-size: 13px;
   color: #616161;
   margin-bottom: 6px;
+  flex-wrap: wrap;
 }
 
 .contactIcon {
   width: 18px;
   height: 18px;
   margin-top: 1px;
+}
+
+.contactLine span {
+  word-break: break-all;
 }
 
 .scoreSkillsWrapper {
@@ -67,7 +76,7 @@
 .scoreLine {
   font-size: 22px;
   text-align: left;
-  margin-left: 4px;
+  padding: 0 16px;
 }
 
 .scoreLabel {
@@ -87,20 +96,28 @@
 .skillsSection {
   width: 100%;
   text-align: left;
-  padding: 0 4px;
+  padding: 0 16px 0 16px;
 }
 
 .skillsLabel {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 400;
   text-decoration: underline;
   margin-bottom: 4px;
 }
 
 .skillsText {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 400;
   color: #616161;
-  line-height: 22px;
+  line-height: 21px;
   word-wrap: break-word;
+}
+
+.containerGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 32px;
+  padding: 24px 0 32px;
+  justify-items: center;
 }
