@@ -80,7 +80,6 @@ function TimeEntryForm(props) {
     userProjects,
     onTimeSubmitted,
     sessionId,
-    timerStats,
     timerConnected,
     maxHoursPerEntry,
   } = props;
@@ -162,7 +161,7 @@ function TimeEntryForm(props) {
   const [timeEntryFormUserTasks, setTimeEntryFormUserTasks] = useState([]);
   const [projectOrTaskId, setProjectOrTaskId] = useState(timeEntryInitialProjectOrTaskId);
   const [isAsyncDataLoaded, setIsAsyncDataLoaded] = useState(
-    Boolean(userProjects && userProjects.length),
+    Boolean(userProjects?.length),
   );
   const [errors, setErrors] = useState({});
   const [reminder, setReminder] = useState(initialReminder);
@@ -380,7 +379,7 @@ function TimeEntryForm(props) {
               minutes: formMinutes,
               sessionId,
               timestamp: new Date().toISOString(),
-              userProfile: userProfile?.firstName + ' ' + userProfile?.lastName,
+              userProfile: `${userProfile?.firstName || ''} ${userProfile?.lastName || ''}`.trim(),
             });
           }
           dispatch(
@@ -874,13 +873,26 @@ function TimeEntryForm(props) {
 }
 
 TimeEntryForm.propTypes = {
+  from: PropTypes.string,
+  sendStop: PropTypes.func,
   edit: PropTypes.bool.isRequired,
   toggle: PropTypes.func.isRequired,
   isOpen: PropTypes.bool.isRequired,
   data: PropTypes.any.isRequired,
-  handleStop: PropTypes.func,
+  tab: PropTypes.number,
+  darkMode: PropTypes.bool,
+  userProfile: PropTypes.shape({
+    firstName: PropTypes.string,
+    lastName: PropTypes.string,
+    timeZone: PropTypes.string,
+  }),
+  userProjects: PropTypes.arrayOf(PropTypes.object), // eslint-disable-line react/forbid-prop-types
+  onTimeSubmitted: PropTypes.func,
+  sessionId: PropTypes.string,
+  timerStats: PropTypes.object, // eslint-disable-line react/forbid-prop-types
   timerConnected: PropTypes.bool,
   maxHoursPerEntry: PropTypes.number,
+  handleStop: PropTypes.func,
 };
 
 const mapStateToProps = state => ({

@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/media-has-caption */
 import moment from 'moment';
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
+import PropTypes from 'prop-types';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Progress } from 'reactstrap';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 import { BsAlarmFill } from 'react-icons/bs';
@@ -109,7 +110,6 @@ function Timer({ authUser, darkMode, isPopout }) {
   const [lastSubmittedTime, setLastSubmittedTime] = useState(null); // Add this state to track submitted time
   const [submissionHistory, setSubmissionHistory] = useState([]); // Track submission history for debugging
   const [timerState, setTimerState] = useState('idle'); // Track timer state: 'idle', 'running', 'paused', 'completed'
-  const [lastActivity, setLastActivity] = useState(null); // Track last user activity
   const [sessionId, setSessionId] = useState(null); // Unique session identifier
   const [viewingUserId, setViewingUserId] = useState(null);
   const [weekEndModal, setWeekEndModal] = useState(false);
@@ -221,7 +221,6 @@ function Timer({ authUser, darkMode, isPopout }) {
     newState => {
       console.log(`🔄 Timer state changed: ${timerState} → ${newState}`);
       setTimerState(newState);
-      setLastActivity(new Date().toISOString());
     },
     [timerState],
   );
@@ -230,7 +229,7 @@ function Timer({ authUser, darkMode, isPopout }) {
   useEffect(() => {
     const newSessionId = `session_${Date.now()}_${Math.random()
       .toString(36)
-      .substr(2, 9)}`;
+      .substring(2, 11)}`;
     setSessionId(newSessionId);
     console.log('🚀 Timer session initialized:', newSessionId);
   }, []);
@@ -360,11 +359,10 @@ function Timer({ authUser, darkMode, isPopout }) {
     submittedTime => {
       trackTimeSubmission(submittedTime);
 
-      // Show success message with statistics
-      const stats = getTimerStats();
+      // Show success message
       toast.success(`✅ Time logged successfully!`);
     },
-    [trackTimeSubmission, getTimerStats],
+    [trackTimeSubmission],
   );
 
   const toggleTimer = () => setShowTimer(timer => !timer);
@@ -452,7 +450,7 @@ function Timer({ authUser, darkMode, isPopout }) {
 
     // Show confirmation dialog for longer sessions
     if (logHours >= 2) {
-      const confirmed = window.confirm(
+      const confirmed = globalThis.confirm(
         `Are you sure you want to submit ${logHours} hours and ${logMinutes} minutes? This action cannot be undone.`,
       );
       if (!confirmed) {
@@ -1029,6 +1027,15 @@ function Timer({ authUser, darkMode, isPopout }) {
     </div>
   );
 }
+
+Timer.propTypes = {
+  authUser: PropTypes.shape({
+    userid: PropTypes.string,
+    role: PropTypes.string,
+  }),
+  darkMode: PropTypes.bool,
+  isPopout: PropTypes.bool,
+};
 
 const mapStateToProps = state => ({
   authUser: state.auth.user,
