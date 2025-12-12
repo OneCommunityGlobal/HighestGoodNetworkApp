@@ -3,8 +3,8 @@ import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage'; // defaults to localStorage for web
 
 import thunk from 'redux-thunk';
-import { userPreferencesReducer } from '~/reducers/lbdashboard/userPreferencesReducer';
-import { messagingReducer } from '~/reducers/lbdashboard/messagingReducer';
+import { userPreferencesReducer } from './reducers/listBidDashboard/userPreferencesReducer';
+import { messagingReducer } from './reducers/listBidDashboard/messagingReducer';
 import { weeklyProjectSummaryReducer } from '~/reducers/bmdashboard/weeklyProjectSummaryReducer';
 import { localReducers, sessionReducers } from './reducers';
 
@@ -33,23 +33,29 @@ const persistConfig = {
   writeFailHandler: err => {
     // If storage quota is exceeded, clear storage and try again
     if (err.name === 'QuotaExceededError') {
-      console.warn('Storage quota exceeded, clearing storage...');
       try {
         storage.removeItem('persist:root');
-        // Don't reload immediately, let the user decide
-        console.warn('Storage cleared. Please refresh the page if you experience issues.');
+        // Use setTimeout to avoid blocking the current execution
+        setTimeout(() => {
+          window.location.reload();
+        }, 100);
       } catch (clearError) {
-        console.error('Failed to clear storage:', clearError);
+        // If we can't clear storage, just reload anyway
+        setTimeout(() => {
+          window.location.reload();
+        }, 100);
       }
-    } else {
-      console.error('Redux persist error:', err);
     }
+    // For other errors, just log them and continue
+    // eslint-disable-next-line no-console
+    // console.warn('Non-quota storage error, continuing without persistence');
   },
   // Add better error handling for storage operations
   serialize: data => {
     try {
       return JSON.stringify(data);
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Failed to serialize state:', error);
       return '{}';
     }
@@ -58,6 +64,7 @@ const persistConfig = {
     try {
       return JSON.parse(data);
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Failed to deserialize state:', error);
       return {};
     }

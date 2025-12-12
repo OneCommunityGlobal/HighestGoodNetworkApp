@@ -80,6 +80,7 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
     color: ['rgba(76,75,245,255)', 'rgba(0,175,244,255)'],
   }));
   const projectBarInfo = {
+    ifcompare: projectChangePercentage !== undefined && projectChangePercentage !== null,
     amount: projectHours.count,
     percentage: `${(projectPercentage * 100).toFixed(2)}%`,
     change:
@@ -141,8 +142,41 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
         maxHeight: '548px',
         display: 'flex',
         flexDirection: 'column',
+        position: 'relative',
       }}
     >
+      {/* Projects box positioned in the right side middle area */}
+      <div
+        style={{
+          position: 'absolute',
+          top: '40%',
+          left: '65%',
+          transform: 'translateY(-50%)',
+          zIndex: 10,
+          background: 'white',
+          borderRadius: 4,
+          padding: 8,
+          boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+          border: '1px solid #eee',
+          minWidth: 130,
+          minHeight: 65,
+          display: 'grid',
+          justifyItems: 'center',
+          gap: 2,
+        }}
+      >
+        <div style={{ color: '#444', fontWeight: 'bold', fontSize: 15 }}>Projects</div>
+        <div style={{ color: '#222', fontWeight: 'bold', fontSize: 14 }}>
+          {projectBarInfo.amount}
+        </div>
+        <div style={{ color: '#666', fontSize: 10 }}>({projectBarInfo.percentage})</div>
+        {projectBarInfo.ifcompare && (
+          <div style={{ color: projectBarInfo.fontcolor, fontSize: 10, fontWeight: 'bold' }}>
+            {projectBarInfo.change}
+          </div>
+        )}
+      </div>
+
       <div style={{ textAlign: 'center', marginBottom: 0 }}>
         <div
           style={{
@@ -158,7 +192,13 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
               100}% of Total Tangible Hours Submitted to Tasks`}
           </span>
           {(() => {
-            const isPositive = data.hoursSubmittedToTasksComparisonPercentage >= 0;
+            const percentage = data.hoursSubmittedToTasksComparisonPercentage;
+
+            if (percentage === undefined || percentage === null) {
+              // No comparison → hide metrics
+              return null;
+            }
+            const isPositive = percentage >= 0;
             let color;
             if (isPositive) {
               color = darkMode ? 'lightgreen' : 'green';
@@ -166,8 +206,8 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
               color = 'red';
             }
             const value = isPositive
-              ? `+${(data.hoursSubmittedToTasksComparisonPercentage * 100).toFixed(0)}%`
-              : `${(data.hoursSubmittedToTasksComparisonPercentage * 100).toFixed(0)}%`;
+              ? `+${(percentage * 100).toFixed(0)}%`
+              : `${(percentage * 100).toFixed(0)}%`;
             return <span style={{ color, marginLeft: 8, fontSize: '12px' }}>{value}</span>;
           })()}
         </div>
@@ -177,9 +217,8 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
           chartData={chartData.filter(item => item.name === 'Tasks')}
           maxY={maxY}
           tickInterval={tickInterval}
-          renderCustomizedLabel={renderCustomizedLabel}
+          // renderCustomizedLabel={renderCustomizedLabel}
           darkMode={darkMode}
-          projectBarInfo={projectBarInfo}
           yAxisLabel="Hours"
         />
       </div>

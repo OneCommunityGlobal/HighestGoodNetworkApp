@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import hasPermission from '~/utils/permissions';
 import { TEAM_NAME, ACTIVE, MEMBERS } from '../../languages/en/ui';
 
-import './TeamsOverview.css';
+import styles from './TeamTableHeader.module.css';
 
 /**
  * The header row of the team table.
@@ -35,7 +35,7 @@ function TeamTableHeaderComponent({
       <th scope="col" id="teams__order">
         #
       </th>
-      <th scope="col">
+      <th scope="col" className={styles.teamNameCol}>
         <button type="button" onClick={onTeamNameSort} className={darkMode ? 'text-light' : ''}>
           {getSortIcon(sortTeamNameState)}
           {TEAM_NAME}
