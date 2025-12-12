@@ -251,7 +251,16 @@ export function CPDashboard() {
                         <FaMapMarkerAlt className={styles['event-icon']} /> {event.location}
                       </p>
                       <p className={styles['event-organizer']}>
-                        <FaUserAlt className={styles['event-icon']} /> {event.organizer}
+                        {event.organizerLogo ? (
+                          <img
+                            src={event.organizerLogo}
+                            alt={event.organizer || 'Organizer'}
+                            className={styles['organizer-logo']}
+                          />
+                        ) : (
+                          <FaUserAlt className={styles['event-icon']} />
+                        )}{' '}
+                        {event.organizer || 'Organizer TBD'}
                       </p>
                     </CardBody>
                   </Card>
