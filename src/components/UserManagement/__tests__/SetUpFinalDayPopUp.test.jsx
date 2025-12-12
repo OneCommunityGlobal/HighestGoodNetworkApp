@@ -5,6 +5,7 @@ import '@testing-library/jest-dom/extend-expect';
 import moment from 'moment';
 import { Provider } from 'react-redux';
 // eslint-disable import/no-named-as-default 
+// eslint-disable-next-line import/no-named-as-default
 import configureStore from 'redux-mock-store';
 import SetUpFinalDayPopUp from '../SetUpFinalDayPopUp.jsx';
 const mockStore = configureStore([]);
