@@ -259,7 +259,7 @@ export default function WriteTaskUpload() {
 
   const { toasts, removeToast, success, error } = useToast();
 
-  const getInitialComments = () => {
+  const loadCommentsFromStorage = () => {
     try {
       const saved = localStorage.getItem(`task-comments-${taskId}`);
       if (saved) {
@@ -267,34 +267,42 @@ export default function WriteTaskUpload() {
         return parsed.map(comment => ({
           ...comment,
           createdAt: new Date(comment.createdAt),
-          // Ensure userId exists for backward compatibility
           userId: comment.userId || null,
         }));
       }
     } catch (err) {
-      console.warn('Failed to load comments from localStorage:', err);
+      if (process.env.NODE_ENV === 'development') {
+        // eslint-disable-next-line no-console
+        console.warn('Failed to load comments from localStorage:', err);
+      }
     }
+    return null;
+  };
 
-    return [
-      {
-        id: 1,
-        content: 'Great work on this task! The approach you took is very thorough.',
-        author: 'Prof. Smith',
-        role: 'Educator',
-        userId: null, // Educator comments don't have userId
-        createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000),
-        edited: false,
-      },
-      {
-        id: 2,
-        content: 'I have a question about the second part of the assignment. Can you clarify?',
-        author: userName,
-        role: 'Student',
-        userId: currentUserId, // Use current user's ID
-        createdAt: new Date(Date.now() - 30 * 60 * 1000),
-        edited: false,
-      },
-    ];
+  const getDefaultComments = () => [
+    {
+      id: 1,
+      content: 'Great work on this task! The approach you took is very thorough.',
+      author: 'Prof. Smith',
+      role: 'Educator',
+      userId: null,
+      createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000),
+      edited: false,
+    },
+    {
+      id: 2,
+      content: 'I have a question about the second part of the assignment. Can you clarify?',
+      author: userName,
+      role: 'Student',
+      userId: currentUserId,
+      createdAt: new Date(Date.now() - 30 * 60 * 1000),
+      edited: false,
+    },
+  ];
+
+  const getInitialComments = () => {
+    const savedComments = loadCommentsFromStorage();
+    return savedComments || getDefaultComments();
   };
 
   const [comments, setComments] = useState(getInitialComments);
@@ -352,6 +360,28 @@ export default function WriteTaskUpload() {
       .getElementById('upload-dropzone')
       ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
+  // Extract comment management logic
+  const saveCommentsToStorage = updatedComments => {
+    try {
+      localStorage.setItem(`task-comments-${taskId}`, JSON.stringify(updatedComments));
+    } catch (err) {
+      if (process.env.NODE_ENV === 'development') {
+        // eslint-disable-next-line no-console
+        console.error('Error saving comments:', err);
+      }
+    }
+  };
+
+  const createNewComment = content => ({
+    id: Date.now(),
+    content,
+    author: userName,
+    role: 'Student',
+    userId: currentUserId,
+    createdAt: new Date(),
+    edited: false,
+  });
+
   const handleCommentSubmit = content => {
     try {
       if (!currentUserId) {
@@ -359,24 +389,12 @@ export default function WriteTaskUpload() {
         return;
       }
 
-      const newComment = {
-        id: Date.now(),
-        content,
-        author: userName,
-        role: 'Student',
-        userId: currentUserId, // Store userId for security
-        createdAt: new Date(),
-        edited: false,
-      };
-
+      const newComment = createNewComment(content);
       const updatedComments = [...comments, newComment];
       setComments(updatedComments);
-
-      localStorage.setItem(`task-comments-${taskId}`, JSON.stringify(updatedComments));
-
+      saveCommentsToStorage(updatedComments);
       success('Comment posted successfully!');
     } catch (err) {
-      // Log error for debugging
       if (process.env.NODE_ENV === 'development') {
         // eslint-disable-next-line no-console
         console.error('Error posting comment:', err);
@@ -385,30 +403,30 @@ export default function WriteTaskUpload() {
     }
   };
 
+  const validateDeletePermission = commentToDelete => {
+    if (!commentToDelete) {
+      error('Comment not found.');
+      return false;
+    }
+    if (commentToDelete.userId !== currentUserId) {
+      error('You can only delete your own comments.');
+      return false;
+    }
+    return true;
+  };
+
   const handleDeleteComment = commentId => {
     try {
-      // Find the comment to delete
       const commentToDelete = comments.find(comment => comment.id === commentId);
-
-      // Security check: Only allow deleting own comments
-      if (!commentToDelete) {
-        error('Comment not found.');
-        return;
-      }
-
-      if (commentToDelete.userId !== currentUserId) {
-        error('You can only delete your own comments.');
+      if (!validateDeletePermission(commentToDelete)) {
         return;
       }
 
       const updatedComments = comments.filter(comment => comment.id !== commentId);
       setComments(updatedComments);
-
-      localStorage.setItem(`task-comments-${taskId}`, JSON.stringify(updatedComments));
-
+      saveCommentsToStorage(updatedComments);
       success('Comment deleted successfully!');
     } catch (err) {
-      // Log error for debugging
       if (process.env.NODE_ENV === 'development') {
         // eslint-disable-next-line no-console
         console.error('Error deleting comment:', err);
@@ -417,80 +435,274 @@ export default function WriteTaskUpload() {
     }
   };
 
+  // Extract render helpers to reduce cognitive complexity
+  const renderSidebar = () => (
+    <aside className={`${styles.leftNav} ${darkMode ? styles.leftNavDark : ''}`}>
+      <div className={`${styles.burger} ${darkMode ? styles.burgerDark : ''}`} aria-hidden />
+      <nav className={styles.iconList}>
+        <button
+          className={`${styles.iconBtn} ${styles.active} ${darkMode ? styles.iconBtnDark : ''}`}
+          title="Home"
+        >
+          <Icon name="home" className={styles.svg} darkMode={darkMode} />
+        </button>
+        <button className={`${styles.iconBtn} ${darkMode ? styles.iconBtnDark : ''}`} title="Stats">
+          <Icon name="stats" className={styles.svg} darkMode={darkMode} />
+        </button>
+        <button
+          className={`${styles.iconBtn} ${darkMode ? styles.iconBtnDark : ''}`}
+          title="Folder"
+        >
+          <Icon name="folder" className={styles.svg} darkMode={darkMode} />
+        </button>
+        <button className={`${styles.iconBtn} ${darkMode ? styles.iconBtnDark : ''}`} title="Star">
+          <Icon name="star" className={styles.svg} darkMode={darkMode} />
+        </button>
+        <button
+          className={`${styles.iconBtn} ${darkMode ? styles.iconBtnDark : ''}`}
+          title="Calendar"
+        >
+          <Icon name="calendar" className={styles.svg} darkMode={darkMode} />
+        </button>
+        <button className={`${styles.iconBtn} ${darkMode ? styles.iconBtnDark : ''}`} title="Write">
+          <Icon name="pen" className={styles.svg} darkMode={darkMode} />
+        </button>
+      </nav>
+      <div className={styles.navFooter}>
+        <button
+          className={`${styles.navAction} ${darkMode ? styles.navActionDark : ''}`}
+          title="Settings"
+        >
+          <Icon name="settings" className={styles.svg} darkMode={darkMode} />
+          <span className={`${styles.navText} ${darkMode ? styles.navTextDark : ''}`}>
+            Settings
+          </span>
+        </button>
+        <button
+          className={`${styles.navAction} ${darkMode ? styles.navActionDark : ''}`}
+          title="Log out"
+        >
+          <Icon name="logout" className={styles.svg} darkMode={darkMode} />
+          <span className={`${styles.navText} ${darkMode ? styles.navTextDark : ''}`}>Log out</span>
+        </button>
+      </div>
+    </aside>
+  );
+
+  const renderHeader = () => (
+    <header className={`${styles.header} ${darkMode ? styles.headerDark : ''}`}>
+      <h1>
+        Activity - <span style={{ fontWeight: 800 }}>1</span> : Technology, Art, Trades, Health
+      </h1>
+      <div className={styles.headerRight}>
+        <span className={styles.welcome}>Welcome, {userName}</span>
+        <BellIcon darkMode={darkMode} />
+      </div>
+    </header>
+  );
+
+  const formatItemTime = it => {
+    const timeStr = new Date(it.at).toLocaleString();
+    const sizeStr =
+      it.type === 'file' && it.size != null ? ` • ${(it.size / 1024).toFixed(1)} KB` : '';
+    const commentStr = it.type === 'link' && it.comment ? ` • ${it.comment}` : '';
+    return `${timeStr}${sizeStr}${commentStr}`;
+  };
+
+  const renderHistorySection = () => {
+    if (items.length === 0) return null;
+
+    return (
+      <div className={styles.historyWrap}>
+        <button type="button" className={styles.historyHeader}>
+          <span className={styles.chev}>▾</span>
+          Previously Uploaded documents
+        </button>
+        <div className={styles.simpleList}>
+          {[...items].reverse().map(it => (
+            <div key={it.id} className={styles.simpleRow}>
+              <button
+                type="button"
+                className={styles.simpleLink}
+                onClick={() => openItem(it)}
+                title={`Open ${it.name}`}
+              >
+                {it.type === 'link' ? 'Link: ' : ''}
+                {it.name}
+              </button>
+              <span className={styles.simpleTime}>{formatItemTime(it)}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  const renderProgressPane = () => (
+    <aside className={styles.progressPane}>
+      <div className={styles.progressCard}>
+        <h3 className={styles.progressHeading}>Progress Bar</h3>
+        <div className={styles.progressBlock}>
+          <div className={styles.progressRow}>
+            <span>Overall Activity</span>
+            <span>25%</span>
+          </div>
+          <div className={styles.progressBar}>
+            <span style={{ width: '25%' }} />
+          </div>
+        </div>
+        <div className={styles.progressBlock}>
+          <div className={styles.progressRow}>
+            <span>This Task</span>
+            <span>50%</span>
+          </div>
+          <div className={styles.progressBar}>
+            <span style={{ width: '50%' }} />
+          </div>
+        </div>
+      </div>
+    </aside>
+  );
+
+  const renderFormGrid = () => (
+    <section className={styles.formGrid}>
+      <div className={styles.leftColumn}>
+        <section className={styles.unitWrap}>
+          <div className={styles.pillRow}>
+            <div className={`${styles.pillInput} ${darkMode ? styles.pillInputDark : ''}`}>
+              {unitLabel}
+            </div>
+            <div className={`${styles.pillInput} ${darkMode ? styles.pillInputDark : ''}`}>
+              {tradeLabel}
+            </div>
+          </div>
+        </section>
+
+        {renderFormSection()}
+
+        <section className={styles.uploadSection}>
+          <UploadPanel
+            id="upload-dropzone"
+            maxBytes={10 * 1024 * 1024}
+            onFilesUploaded={handleAddFiles}
+          />
+        </section>
+
+        {renderHistorySection()}
+
+        <section className={styles.commentsSection}>
+          <h2 className={styles.commentsHeading}>Comments/Queries Section</h2>
+          <CommentBox
+            onSubmit={handleCommentSubmit}
+            placeholder="Please enter your comments/Queries here"
+          />
+          <CommentList
+            comments={comments}
+            onDeleteComment={handleDeleteComment}
+            currentUserId={currentUserId}
+          />
+        </section>
+      </div>
+
+      {renderProgressPane()}
+    </section>
+  );
+
+  const handleCommentChange = e => {
+    setComment(e.target.value);
+    if (errComment) setErrComment('');
+  };
+
+  const handleLinkUrlChange = e => {
+    setLinkUrl(e.target.value);
+    if (errLink) setErrLink('');
+  };
+
+  const handleShowLink = () => {
+    setShowLink(true);
+    setTimeout(() => linkRef.current?.focus(), 0);
+  };
+
+  const renderFormSection = () => (
+    <div className={`${styles.longInputCard} ${darkMode ? styles.longInputCardDark : ''}`}>
+      <div className={styles.longCol}>
+        <textarea
+          ref={commentRef}
+          className={`${styles.longTextArea} ${errComment ? styles.inputError : ''} ${
+            darkMode ? styles.longTextAreaDark : ''
+          }`}
+          placeholder="Trades related trade from the indigo section of the Arts and Trades Subject Page"
+          value={comment}
+          onChange={handleCommentChange}
+        />
+
+        {(errLink || errComment) && (
+          <div className={styles.fieldErrorGroup}>
+            {errLink && <div>{errLink}</div>}
+            {errComment && <div>{errComment}</div>}
+          </div>
+        )}
+
+        {showLink && (
+          <input
+            ref={linkRef}
+            type="url"
+            className={`${styles.linkInput} ${errLink ? styles.inputError : ''} ${
+              darkMode ? styles.linkInputDark : ''
+            }`}
+            placeholder="Paste a link (include https://)"
+            value={linkUrl}
+            onChange={handleLinkUrlChange}
+          />
+        )}
+      </div>
+
+      <div className={styles.sideBtns}>
+        <button
+          className={`${styles.sideBtn} ${darkMode ? styles.sideBtnDark : ''}`}
+          aria-label="Insert link"
+          onClick={handleShowLink}
+          title="Add a link"
+        >
+          <Icon name="link" className={styles.svg} darkMode={darkMode} />
+        </button>
+
+        <button
+          className={`${styles.sideBtn} ${darkMode ? styles.sideBtnDark : ''}`}
+          aria-label="Comment"
+          onClick={() => commentRef.current?.focus()}
+          title="Add a comment"
+        >
+          <Icon name="comment" className={styles.svg} darkMode={darkMode} />
+        </button>
+
+        <button
+          className={`${styles.sideBtn} ${darkMode ? styles.sideBtnDark : ''}`}
+          aria-label="Submit link"
+          onClick={submitLink}
+          title="Upload link"
+        >
+          <Icon name="upload" className={styles.svg} darkMode={darkMode} />
+        </button>
+
+        <button
+          className={`${styles.sideBtn} ${darkMode ? styles.sideBtnDark : ''}`}
+          aria-label="Go to file upload"
+          onClick={scrollToUpload}
+          title="Open file picker"
+        >
+          <Icon name="folder-line" className={styles.svg} darkMode={darkMode} />
+        </button>
+      </div>
+    </div>
+  );
+
   return (
     <div className={`${styles.page} ${darkMode ? styles.pageDark : ''}`}>
-      <aside className={`${styles.leftNav} ${darkMode ? styles.leftNavDark : ''}`}>
-        <div className={`${styles.burger} ${darkMode ? styles.burgerDark : ''}`} aria-hidden />
-        <nav className={styles.iconList}>
-          <button
-            className={`${styles.iconBtn} ${styles.active} ${darkMode ? styles.iconBtnDark : ''}`}
-            title="Home"
-          >
-            <Icon name="home" className={styles.svg} darkMode={darkMode} />
-          </button>
-          <button
-            className={`${styles.iconBtn} ${darkMode ? styles.iconBtnDark : ''}`}
-            title="Stats"
-          >
-            <Icon name="stats" className={styles.svg} darkMode={darkMode} />
-          </button>
-          <button
-            className={`${styles.iconBtn} ${darkMode ? styles.iconBtnDark : ''}`}
-            title="Folder"
-          >
-            <Icon name="folder" className={styles.svg} darkMode={darkMode} />
-          </button>
-          <button
-            className={`${styles.iconBtn} ${darkMode ? styles.iconBtnDark : ''}`}
-            title="Star"
-          >
-            <Icon name="star" className={styles.svg} darkMode={darkMode} />
-          </button>
-          <button
-            className={`${styles.iconBtn} ${darkMode ? styles.iconBtnDark : ''}`}
-            title="Calendar"
-          >
-            <Icon name="calendar" className={styles.svg} darkMode={darkMode} />
-          </button>
-          <button
-            className={`${styles.iconBtn} ${darkMode ? styles.iconBtnDark : ''}`}
-            title="Write"
-          >
-            <Icon name="pen" className={styles.svg} darkMode={darkMode} />
-          </button>
-        </nav>
-        <div className={styles.navFooter}>
-          <button
-            className={`${styles.navAction} ${darkMode ? styles.navActionDark : ''}`}
-            title="Settings"
-          >
-            <Icon name="settings" className={styles.svg} darkMode={darkMode} />
-            <span className={`${styles.navText} ${darkMode ? styles.navTextDark : ''}`}>
-              Settings
-            </span>
-          </button>
-          <button
-            className={`${styles.navAction} ${darkMode ? styles.navActionDark : ''}`}
-            title="Log out"
-          >
-            <Icon name="logout" className={styles.svg} darkMode={darkMode} />
-            <span className={`${styles.navText} ${darkMode ? styles.navTextDark : ''}`}>
-              Log out
-            </span>
-          </button>
-        </div>
-      </aside>
+      {renderSidebar()}
 
       <main className={`${styles.main} ${darkMode ? styles.mainDark : ''}`}>
-        <header className={`${styles.header} ${darkMode ? styles.headerDark : ''}`}>
-          <h1>
-            Activity - <span style={{ fontWeight: 800 }}>1</span> : Technology, Art, Trades, Health
-          </h1>
-          <div className={styles.headerRight}>
-            <span className={styles.welcome}>Welcome, {userName}</span>
-            <BellIcon darkMode={darkMode} />
-          </div>
-        </header>
+        {renderHeader()}
 
         <section className={styles.chart}>
           <div className={styles.chartCard}>
@@ -503,180 +715,7 @@ export default function WriteTaskUpload() {
           </div>
         </section>
 
-        <section className={styles.formGrid}>
-          <div className={styles.leftColumn}>
-            <section className={styles.unitWrap}>
-              <div className={styles.pillRow}>
-                <div className={`${styles.pillInput} ${darkMode ? styles.pillInputDark : ''}`}>
-                  {unitLabel}
-                </div>
-                <div className={`${styles.pillInput} ${darkMode ? styles.pillInputDark : ''}`}>
-                  {tradeLabel}
-                </div>
-              </div>
-            </section>
-
-            <div className={`${styles.longInputCard} ${darkMode ? styles.longInputCardDark : ''}`}>
-              <div className={styles.longCol}>
-                <textarea
-                  ref={commentRef}
-                  className={`${styles.longTextArea} ${errComment ? styles.inputError : ''} ${
-                    darkMode ? styles.longTextAreaDark : ''
-                  }`}
-                  placeholder="Trades related trade from the indigo section of the Arts and Trades Subject Page"
-                  value={comment}
-                  onChange={e => {
-                    setComment(e.target.value);
-                    if (errComment) setErrComment('');
-                  }}
-                />
-
-                {(errLink || errComment) && (
-                  <div className={styles.fieldErrorGroup}>
-                    {errLink && <div>{errLink}</div>}
-                    {errComment && <div>{errComment}</div>}
-                  </div>
-                )}
-
-                {showLink && (
-                  <input
-                    ref={linkRef}
-                    type="url"
-                    className={`${styles.linkInput} ${errLink ? styles.inputError : ''} ${
-                      darkMode ? styles.linkInputDark : ''
-                    }`}
-                    placeholder="Paste a link (include https://)"
-                    value={linkUrl}
-                    onChange={e => {
-                      setLinkUrl(e.target.value);
-                      if (errLink) setErrLink('');
-                    }}
-                  />
-                )}
-              </div>
-
-              <div className={styles.sideBtns}>
-                <button
-                  className={`${styles.sideBtn} ${darkMode ? styles.sideBtnDark : ''}`}
-                  aria-label="Insert link"
-                  onClick={() => {
-                    setShowLink(true);
-                    setTimeout(() => linkRef.current?.focus(), 0);
-                  }}
-                  title="Add a link"
-                >
-                  <Icon name="link" className={styles.svg} darkMode={darkMode} />
-                </button>
-
-                <button
-                  className={`${styles.sideBtn} ${darkMode ? styles.sideBtnDark : ''}`}
-                  aria-label="Comment"
-                  onClick={() => commentRef.current?.focus()}
-                  title="Add a comment"
-                >
-                  <Icon name="comment" className={styles.svg} darkMode={darkMode} />
-                </button>
-
-                <button
-                  className={`${styles.sideBtn} ${darkMode ? styles.sideBtnDark : ''}`}
-                  aria-label="Submit link"
-                  onClick={submitLink}
-                  title="Upload link"
-                >
-                  <Icon name="upload" className={styles.svg} darkMode={darkMode} />
-                </button>
-
-                <button
-                  className={`${styles.sideBtn} ${darkMode ? styles.sideBtnDark : ''}`}
-                  aria-label="Go to file upload"
-                  onClick={scrollToUpload}
-                  title="Open file picker"
-                >
-                  <Icon name="folder-line" className={styles.svg} darkMode={darkMode} />
-                </button>
-              </div>
-            </div>
-
-            <section className={styles.uploadSection}>
-              <UploadPanel
-                id="upload-dropzone"
-                maxBytes={10 * 1024 * 1024}
-                onFilesUploaded={handleAddFiles}
-              />
-            </section>
-
-            {/* Unified history (files + links) */}
-            {items.length > 0 && (
-              <div className={styles.historyWrap}>
-                <button type="button" className={styles.historyHeader}>
-                  <span className={styles.chev}>▾</span>
-                  Previously Uploaded documents
-                </button>
-
-                <div className={styles.simpleList}>
-                  {[...items].reverse().map(it => (
-                    <div key={it.id} className={styles.simpleRow}>
-                      <button
-                        type="button"
-                        className={styles.simpleLink}
-                        onClick={() => openItem(it)}
-                        title={`Open ${it.name}`}
-                      >
-                        {it.type === 'link' ? 'Link: ' : ''}
-                        {it.name}
-                      </button>
-                      <span className={styles.simpleTime}>
-                        {new Date(it.at).toLocaleString()}
-                        {it.type === 'file' && it.size != null
-                          ? ` • ${(it.size / 1024).toFixed(1)} KB`
-                          : ''}
-                        {it.type === 'link' && it.comment ? ` • ${it.comment}` : ''}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Comments Section */}
-            <section className={styles.commentsSection}>
-              <h2 className={styles.commentsHeading}>Comments/Queries Section</h2>
-              <CommentBox
-                onSubmit={handleCommentSubmit}
-                placeholder="Please enter your comments/Queries here"
-              />
-              <CommentList
-                comments={comments}
-                onDeleteComment={handleDeleteComment}
-                currentUserId={currentUserId}
-              />
-            </section>
-          </div>
-
-          <aside className={styles.progressPane}>
-            <div className={styles.progressCard}>
-              <h3 className={styles.progressHeading}>Progress Bar</h3>
-              <div className={styles.progressBlock}>
-                <div className={styles.progressRow}>
-                  <span>Overall Activity</span>
-                  <span>25%</span>
-                </div>
-                <div className={styles.progressBar}>
-                  <span style={{ width: '25%' }} />
-                </div>
-              </div>
-              <div className={styles.progressBlock}>
-                <div className={styles.progressRow}>
-                  <span>This Task</span>
-                  <span>50%</span>
-                </div>
-                <div className={styles.progressBar}>
-                  <span style={{ width: '50%' }} />
-                </div>
-              </div>
-            </div>
-          </aside>
-        </section>
+        {renderFormGrid()}
       </main>
 
       {/* Toast Notifications */}
