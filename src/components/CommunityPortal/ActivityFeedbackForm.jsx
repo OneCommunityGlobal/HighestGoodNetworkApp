@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import styles from "./FeedbackModal.module.css";
+import { useSelector } from "react-redux";
+import styles from "./FeedbackPage.module.css";
 import StarIcon from "@mui/icons-material/Star";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
 
-const ActivityFeedbackForm = ({ onClose }) => {
+const ActivityFeedbackPage = () => {
   const [rating, setRating] = useState(0);
   const [hover, setHover] = useState(0);
   const [comment, setComment] = useState("");
@@ -11,47 +12,44 @@ const ActivityFeedbackForm = ({ onClose }) => {
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
+  const darkMode = useSelector((state) => state.theme.darkMode);
+
   const handleSubmit = () => {
     if (!rating) {
       setError("Please select a rating.");
       return;
     }
-    setLoading(true);
+
     setError("");
+    setLoading(true);
+
     setTimeout(() => {
       setSubmitted(true);
       setLoading(false);
-      setTimeout(() => onClose(), 1200);
-    }, 800);
+    }, 900);
   };
 
-  const canSubmit = rating > 0;
-
   return (
-    <div className={styles.overlay}>
-      <div className={styles.modal}>
-        <h2 className={styles.title}>Submit Feedback</h2>
+    <div className={darkMode ? styles.pageDark : styles.pageLight}>
+      <div className={styles.container}>
+
+        <h1 className={styles.heading}>Activity Feedback</h1>
 
         {submitted && <div className={styles.success}>Feedback submitted!</div>}
 
+        {/*5-STAR RATING SYSTEM */}
         <div className={styles.starContainer}>
-          {[1, 2, 3, 4, 5].map((value) => {
-            const filled = (hover || rating) >= value;
+          {[1, 2, 3, 4, 5].map((star) => {
+            const filled = star <= (hover || rating);
             return (
               <span
-                key={value}
+                key={star}
                 className={styles.starWrapper}
-                role="button"
-                tabIndex={0}
-                aria-label={`Rate ${value} stars`}
-                onMouseEnter={() => setHover(value)}
+                onMouseEnter={() => setHover(star)}
                 onMouseLeave={() => setHover(0)}
                 onClick={() => {
-                  setRating(value);
+                  setRating(star);
                   setError("");
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") setRating(value);
                 }}
               >
                 {filled ? (
@@ -64,6 +62,9 @@ const ActivityFeedbackForm = ({ onClose }) => {
           })}
         </div>
 
+        {error && <div className={styles.error}>{error}</div>}
+
+        {/* COMMENT BOX */}
         <textarea
           className={styles.commentBox}
           maxLength={300}
@@ -74,28 +75,17 @@ const ActivityFeedbackForm = ({ onClose }) => {
 
         <div className={styles.charCount}>{comment.length}/300</div>
 
-        {error && <div className={styles.error}>{error}</div>}
-
-        <div className={styles.buttonRow}>
-          <button
-            className={styles.cancelBtn}
-            onClick={onClose}
-            disabled={loading}
-          >
-            Cancel
-          </button>
-
-          <button
-            className={canSubmit ? styles.submitBtnActive : styles.submitBtnDisabled}
-            disabled={!canSubmit || loading}
-            onClick={handleSubmit}
-          >
-            {loading ? "Submitting..." : "Submit"}
-          </button>
-        </div>
+  
+        <button
+          className={rating ? styles.submitButton : styles.submitButtonDisabled}
+          disabled={!rating || loading}
+          onClick={handleSubmit}
+        >
+          {loading ? "Submitting..." : "Submit Feedback"}
+        </button>
       </div>
     </div>
   );
 };
 
-export default ActivityFeedbackForm;
+export default ActivityFeedbackPage;
