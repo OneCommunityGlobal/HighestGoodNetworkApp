@@ -125,9 +125,34 @@ function HoursPledgedChart() {
             onChange={setSelectedRoles}
             placeholder="Select Roles"
             styles={{
+              control: base => ({
+                ...base,
+                backgroundColor: darkMode ? '#1c2541' : base.backgroundColor,
+              }),
+              menu: base => ({
+                ...base,
+                backgroundColor: darkMode ? '#1c2541' : base.backgroundColor,
+              }),
+              option: (base, state) => ({
+                ...base,
+                backgroundColor: darkMode
+                  ? state.isFocused
+                    ? '#47526dff'
+                    : '#1c2541'
+                  : base.backgroundColor,
+                color: darkMode ? '#ffffff' : base.color,
+              }),
               placeholder: base => ({
                 ...base,
-                color: 'black',
+                color: darkMode ? '#ffffff' : base.color,
+              }),
+              input: base => ({
+                ...base,
+                color: darkMode ? '#ffffff' : base.color,
+              }),
+              multiValueLabel: base => ({
+                ...base,
+                color: darkMode ? '#000000ff' : base.color,
               }),
             }}
           />
@@ -160,7 +185,7 @@ function HoursPledgedChart() {
                 angle={-90}
                 position="outsideCenter"
                 offset={-20}
-                dx={-50}
+                dx={-90}
               />
             </YAxis>
             <Tooltip
