@@ -112,7 +112,6 @@ function PermissionChangeLogTable({ changeLogs, darkMode, roleNamesToHighlight =
                 Log Date and Time (PST)
               </th>
               <th className={`permission-change-log-table--header${addDark}`}>Name</th>
-              <th className={`permission-change-log-table--header${addDark}`}>Permissions</th>
               <th className={`permission-change-log-table--header${addDark}`}>Permissions Added</th>
               <th className={`permission-change-log-table--header${addDark}`}>
                 Permissions Removed
@@ -138,9 +137,6 @@ function PermissionChangeLogTable({ changeLogs, darkMode, roleNamesToHighlight =
                     }}
                   >
                     {log?.individualName ? formatName(log.individualName) : log.roleName}
-                  </td>
-                  <td className={`permission-change-log-table--cell permissions ${bgYinmnBlue}`}>
-                    {renderPermissions(log.permissions, log._id)}
                   </td>
                   <td className={`permission-change-log-table--cell permissions ${bgYinmnBlue}`}>
                     {renderPermissions(log.permissionsAdded, `${log._id}_added`)}
