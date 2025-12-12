@@ -196,9 +196,11 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-<<<<<<< HEAD
       storeReady: false,
       authInitialized: false,
+      hasError: false,
+      error: null,
+      errorInfo: null,
     };
     this.isLoggingOut = false; // Flag to prevent infinite logout loops
     this.broadcastChannel = null; // BroadcastChannel for cross-tab communication
