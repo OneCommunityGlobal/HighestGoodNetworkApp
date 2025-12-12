@@ -7,7 +7,7 @@ import { boxStyle, boxStyleDark } from '~/styles';
 import { ModalContext } from '~/context/ModalContext';
 import PermissionList from './PermissionList';
 import hasPermission from '../../utils/permissions';
-import './UserRoleTab.css';
+import styles from './UserRoleTab.module.css';
 
 function PermissionListItem(props) {
   const {
@@ -193,7 +193,11 @@ function PermissionListItem(props) {
 
   return (
     <>
-      <li className="user-role-tab__permissions" key={permission} data-testid={permission}>
+      <li
+        className={styles['user-role-tab__permissions']}
+        key={permission}
+        data-testid={permission}
+      >
         <p
           style={{
             color: isCategory
@@ -210,11 +214,11 @@ function PermissionListItem(props) {
             fontSize: isCategory && '20px',
             textIndent: `${50 * depth}px`,
           }}
-          className="permission-label"
+          className={styles['permission-label']}
         >
           {label}
         </p>
-        <div className="icon-button-container">
+        <div className={styles['icon-button-container']}>
           <div className="infos">
             <i
               data-toggle="tooltip"
@@ -232,7 +236,7 @@ function PermissionListItem(props) {
             <></>
           ) : isCategory ? (
             <Button
-              className="icon-button"
+              className={styles['icon-button']}
               color={
                 howManySubpermsInRole === 'All'
                   ? 'danger'
@@ -255,7 +259,7 @@ function PermissionListItem(props) {
           ) : (
             <>
               <Button
-                className="icon-button"
+                className={styles['icon-button']}
                 color={hasThisPermission ? 'danger' : 'success'}
                 onClick={() => {
                   togglePermission(permission);
@@ -277,22 +281,22 @@ function PermissionListItem(props) {
                 {hasThisPermission ? 'Delete' : 'Add'}
               </Button>
               <div
-                className={`permission-tooltip-wrapper ${
-                  changedPermission(permission) ? 'show-tooltip' : ''
+                className={`${styles['permission-tooltip-wrapper']} ${
+                  changedPermission(permission) ? `${styles['show-tooltip']}` : ''
                 }`}
               >
                 {immutablePermissions.length > 0 && (
                   <button
-                    className={`changed-permission ${
-                      darkMode ? 'dark-background' : 'light-background'
+                    className={`${styles['changed-permission']} ${
+                      darkMode ? `${styles['dark-background']}` : `${styles['light-background']}`
                     } ${
                       changedPermission(permission)
                         ? checkChangePermission(permission)
-                          ? 'green'
-                          : 'red'
+                          ? styles.green
+                          : styles.red
                         : darkMode
-                        ? 'dark'
-                        : 'light'
+                        ? styles.dark
+                        : styles.light
                     }
                     `}
                     aria-label={changedPermission(permission) ? 'Modified Permission' : ''}
@@ -303,7 +307,7 @@ function PermissionListItem(props) {
                     ★{' '}
                   </button>
                 )}
-                <p className="permission-tooltip-text">
+                <p className={`${styles['permission-tooltip-text']}`}>
                   Permission {checkChangePermission(permission) ? 'added' : 'removed'}
                 </p>
               </div>
@@ -313,7 +317,7 @@ function PermissionListItem(props) {
       </li>
       {isCategory ? (
         <li
-          className="user-role-tab__permissionList"
+          className={`${styles['user-role-tab__permissionList']}`}
           style={{
             display: 'flex',
             flexDirection: 'column',

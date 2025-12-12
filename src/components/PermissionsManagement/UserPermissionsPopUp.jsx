@@ -200,35 +200,37 @@ function UserPermissionsPopUp({
           <h4 className={styles['user-permissions-pop-up__title']}>
             User name<span className="red-asterisk">* </span>:
           </h4>
-          <div className="infos">
-            <i
-              data-toggle="tooltip"
-              data-placement="center"
-              title="Click for more information"
-              aria-hidden="true"
-              className="fa fa-info-circle"
-              onClick={() => {
-                handleModalOpen();
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <div className="infos">
+              <i
+                data-toggle="tooltip"
+                data-placement="center"
+                title="Click for more information"
+                aria-hidden="true"
+                className="fa fa-info-circle"
+                onClick={() => {
+                  handleModalOpen();
+                }}
+                style={{
+                  color: darkMode ? 'white' : 'black',
+                  fontSize: '25px',
+                  marginRight: '10px',
+                }}
+              />
+            </div>
+            <Button
+              type="button"
+              color="success"
+              // eslint-disable-next-line no-unused-vars
+              onClick={e => {
+                setToDefault();
               }}
-              style={{
-                color: darkMode ? 'white' : 'black',
-                fontSize: '25px',
-                marginRight: '10px',
-              }}
-            />
+              disabled={!actualUserProfile}
+              style={boxStyle}
+            >
+              Reset to Default
+            </Button>
           </div>
-          <Button
-            type="button"
-            color="success"
-            // eslint-disable-next-line no-unused-vars
-            onClick={e => {
-              setToDefault();
-            }}
-            disabled={!actualUserProfile}
-            style={boxStyle}
-          >
-            Reset to Default
-          </Button>
         </div>
         <Dropdown
           isOpen={isOpen}
