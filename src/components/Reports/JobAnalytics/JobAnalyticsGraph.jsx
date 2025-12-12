@@ -10,7 +10,7 @@ import {
   Legend,
 } from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
-import "./JobAnalyticsPage.css";
+import styles from "./JobAnalyticsPage.module.css";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -31,7 +31,7 @@ export default function JobAnalyticsGraph({ data, darkMode }) {
   };
 
   const chartOptions = {
-    indexAxis: "y", 
+    indexAxis: "y",
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
@@ -40,7 +40,7 @@ export default function JobAnalyticsGraph({ data, darkMode }) {
         display: true,
         text: "Most Competitive Roles",
         color: darkMode ? "#E0E0E0" : "#111111",
-        font: { size: 18, weight:"bold" },
+        font: { size: 18, weight: "bold" },
       },
       datalabels: {
         color: darkMode ? "#E0E0E0" : "#111111",
@@ -63,9 +63,10 @@ export default function JobAnalyticsGraph({ data, darkMode }) {
           color: darkMode ? "#E0E0E0" : "#111111",
           font: { weight: "bold", size: 14 },
         },
-        ticks: { color: darkMode ? "#E0E0E0" : "#111111" , 
-        font: { size: 12, weight: "bold" },
-      },
+        ticks: {
+          color: darkMode ? "#E0E0E0" : "#111111",
+          font: { size: 12, weight: "bold" },
+        },
         grid: { color: darkMode ? "#333" : "#ddd" },
       },
       y: {
@@ -75,16 +76,17 @@ export default function JobAnalyticsGraph({ data, darkMode }) {
           color: darkMode ? "#E0E0E0" : "#111111",
           font: { weight: "bold", size: 14 },
         },
-        ticks: { color: darkMode ? "#E0E0E0" : "#111111" ,
-        font: { size: 12, weight: "bold" },
-      },
+        ticks: {
+          color: darkMode ? "#E0E0E0" : "#111111",
+          font: { size: 12, weight: "bold" },
+        },
         grid: { color: darkMode ? "#333" : "#ddd" },
       },
     },
   };
 
   return (
-    <div className="graph-container">
+    <div className={styles.graphContainer}>
       <Bar data={chartData} options={chartOptions} plugins={[ChartDataLabels]} />
     </div>
   );
