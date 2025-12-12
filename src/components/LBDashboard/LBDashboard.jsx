@@ -3,8 +3,6 @@ import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import {
   Container,
-  Row,
-  Col,
   Button,
   ButtonGroup,
   ButtonDropdown,
@@ -12,7 +10,6 @@ import {
   DropdownMenu,
   DropdownItem,
   Card,
-  CardBody,
 } from 'reactstrap';
 import ReviewWordCloud from './ReviewWordCloud/ReviewWordCloud';
 import styles from './LBDashboard.module.css';
@@ -54,7 +51,7 @@ const DEFAULTS = {
 function GraphCard({ title, metricLabel, darkMode }) {
   return (
     <Card className={`${styles.graphCard} ${darkMode ? styles.darkCard : ''}`}>
-      <CardBody>
+      <div>
         <div className={styles.graphTitle}>
           <span className={darkMode ? styles.darkText : ''}>{title}</span>
           <span className={`${styles.metricPill} ${darkMode ? styles.darkMetricPill : ''}`}>
@@ -66,7 +63,7 @@ function GraphCard({ title, metricLabel, darkMode }) {
             Graph area
           </span>
         </div>
-      </CardBody>
+      </div>
     </Card>
   );
 }
@@ -75,6 +72,68 @@ GraphCard.propTypes = {
   title: PropTypes.string.isRequired,
   metricLabel: PropTypes.string,
   darkMode: PropTypes.bool,
+};
+
+const CategoryControls = ({
+  categoryKey,
+  label,
+  activeCategory,
+  selectedMetricKey,
+  openDD,
+  darkMode,
+  onCategoryClick,
+  onMetricPick,
+  onToggleDD,
+}) => (
+  <>
+    <Button
+      className={`${styles.filterBtn} ${activeCategory === categoryKey ? styles.active : ''} ${
+        darkMode ? styles.darkFilterBtn : ''
+      }`}
+      onClick={() => onCategoryClick(categoryKey)}
+    >
+      {label}
+    </Button>
+
+    <ButtonDropdown
+      isOpen={openDD[categoryKey]}
+      toggle={() => onToggleDD(categoryKey)}
+      className={styles.dd}
+    >
+      <DropdownToggle
+        caret
+        className={`${styles.filterBtn} ${activeCategory === categoryKey ? styles.active : ''} ${
+          darkMode ? styles.darkFilterBtn : ''
+        }`}
+      />
+      <DropdownMenu className={`${styles.dropdownMenu} ${darkMode ? styles.darkDropdownMenu : ''}`}>
+        {METRIC_OPTIONS[categoryKey].map(m => (
+          <DropdownItem
+            key={m.key}
+            active={selectedMetricKey === m.key}
+            onClick={() => onMetricPick(categoryKey, m.key)}
+            className={`${styles.dropdownItem} ${
+              selectedMetricKey === m.key ? styles.dropdownActive : ''
+            } ${darkMode ? styles.darkDropdownItem : ''}`}
+          >
+            {m.label}
+          </DropdownItem>
+        ))}
+      </DropdownMenu>
+    </ButtonDropdown>
+  </>
+);
+
+CategoryControls.propTypes = {
+  categoryKey: PropTypes.string.isRequired,
+  label: PropTypes.string.isRequired,
+  activeCategory: PropTypes.string.isRequired,
+  selectedMetricKey: PropTypes.string.isRequired,
+  openDD: PropTypes.object.isRequired,
+  darkMode: PropTypes.bool,
+  onCategoryClick: PropTypes.func.isRequired,
+  onMetricPick: PropTypes.func.isRequired,
+  onToggleDD: PropTypes.func.isRequired,
 };
 
 export function LBDashboard() {
@@ -107,49 +166,7 @@ export function LBDashboard() {
 
   const toggleDD = category => setOpenDD(s => ({ ...s, [category]: !s[category] }));
 
-  const goBack = () => window.history.back();
-
-  const renderCategoryControls = (categoryKey, label) => (
-    <>
-      <Button
-        className={`${styles.filterBtn} ${activeCategory === categoryKey ? styles.active : ''} ${
-          darkMode ? styles.darkFilterBtn : ''
-        }`}
-        onClick={() => handleCategoryClick(categoryKey)}
-      >
-        {label}
-      </Button>
-
-      <ButtonDropdown
-        isOpen={openDD[categoryKey]}
-        toggle={() => toggleDD(categoryKey)}
-        className={styles.dd}
-      >
-        <DropdownToggle
-          caret
-          className={`${styles.filterBtn} ${activeCategory === categoryKey ? styles.active : ''} ${
-            darkMode ? styles.darkFilterBtn : ''
-          }`}
-        />
-        <DropdownMenu
-          className={`${styles.dropdownMenu} ${darkMode ? styles.darkDropdownMenu : ''}`}
-        >
-          {METRIC_OPTIONS[categoryKey].map(m => (
-            <DropdownItem
-              key={m.key}
-              active={selectedMetricKey === m.key}
-              onClick={() => handleMetricPick(categoryKey, m.key)}
-              className={`${styles.dropdownItem} ${
-                selectedMetricKey === m.key ? styles.dropdownActive : ''
-              } ${darkMode ? styles.darkDropdownItem : ''}`}
-            >
-              {m.label}
-            </DropdownItem>
-          ))}
-        </DropdownMenu>
-      </ButtonDropdown>
-    </>
-  );
+  const goBack = () => globalThis.history.back();
 
   return (
     <Container
@@ -177,9 +194,39 @@ export function LBDashboard() {
         </div>
 
         <ButtonGroup className={styles.categoryGroup}>
-          {renderCategoryControls('DEMAND', 'Demand')}
-          {renderCategoryControls('VACANCY', 'Vacancy')}
-          {renderCategoryControls('REVENUE', 'Revenue')}
+          <CategoryControls
+            categoryKey="DEMAND"
+            label="Demand"
+            activeCategory={activeCategory}
+            selectedMetricKey={selectedMetricKey}
+            openDD={openDD}
+            darkMode={darkMode}
+            onCategoryClick={handleCategoryClick}
+            onMetricPick={handleMetricPick}
+            onToggleDD={toggleDD}
+          />
+          <CategoryControls
+            categoryKey="VACANCY"
+            label="Vacancy"
+            activeCategory={activeCategory}
+            selectedMetricKey={selectedMetricKey}
+            openDD={openDD}
+            darkMode={darkMode}
+            onCategoryClick={handleCategoryClick}
+            onMetricPick={handleMetricPick}
+            onToggleDD={toggleDD}
+          />
+          <CategoryControls
+            categoryKey="REVENUE"
+            label="Revenue"
+            activeCategory={activeCategory}
+            selectedMetricKey={selectedMetricKey}
+            openDD={openDD}
+            darkMode={darkMode}
+            onCategoryClick={handleCategoryClick}
+            onMetricPick={handleMetricPick}
+            onToggleDD={toggleDD}
+          />
         </ButtonGroup>
 
         <div className={`${styles.currentMetric} ${darkMode ? styles.darkText : ''}`}>

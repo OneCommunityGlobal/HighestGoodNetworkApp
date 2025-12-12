@@ -8,6 +8,7 @@ body {
 .dashboardContainer {
   background: #faf9fb;
   margin: 0;
+  padding-top: 20px;
 }
 
 .darkContainer {
@@ -70,11 +71,11 @@ body {
 
 .filterLabel {
   font-size: 12px;
-  color: #666;
+  color: #4a4a4a;
 }
 
 .darkFilterLabel {
-  color: #6C757D;
+  color: #b0b0b0;
 }
 
 .categoryGroup {

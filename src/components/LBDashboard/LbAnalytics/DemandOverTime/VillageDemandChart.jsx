@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Line } from 'react-chartjs-2';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import styles from './DemandOverTime.module.css';
@@ -160,6 +161,23 @@ const VillageDemandChart = ({ data, metric, chartLabel, darkMode }) => {
       </div>
     </div>
   );
+};
+
+VillageDemandChart.propTypes = {
+  data: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      data: PropTypes.arrayOf(
+        PropTypes.shape({
+          month: PropTypes.string.isRequired,
+          value: PropTypes.number.isRequired,
+        }),
+      ).isRequired,
+    }),
+  ).isRequired,
+  metric: PropTypes.string.isRequired,
+  chartLabel: PropTypes.string,
+  darkMode: PropTypes.bool,
 };
 
 export default VillageDemandChart;
