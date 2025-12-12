@@ -6,8 +6,6 @@
   --border: #e8e8e8;
   --danger: #e02424; /* vivid red */
   --muted: #9aa0a6;
-  --danger: #e02424; /* vivid red */
-  --danger: #e02424; /* vivid red */
 }
 
 /* Layout */
@@ -482,7 +480,7 @@
 }
 
 .iconBtnDark.active {
-  background-color: #3b82f6;
+  background-color: #2563eb;
   color: #ffffff;
 }
 
@@ -550,7 +548,7 @@
 }
 
 .sideBtnDark {
-  color: #9ca3af;
+  color: #e0e0e0;
   background-color: #374151;
   border-color: #4b5563;
 }
@@ -611,10 +609,7 @@
   background-color: #3b82f6;
 }
 
-/* Fix blue border issue */
-.headerDark {
-  border-bottom: 1px solid #374151;
-}
+/* Fix blue border issue - merged with existing .headerDark selector */
 
 /* Notes to teacher dark mode */
 .notesToTeacherDark {

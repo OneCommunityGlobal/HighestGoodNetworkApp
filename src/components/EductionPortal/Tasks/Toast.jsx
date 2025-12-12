@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import PropTypes from 'prop-types';
 import styles from './Toast.module.css';
 
 function Toast({ message, type = 'success', onClose, duration = 3000 }) {
@@ -91,6 +92,13 @@ function Toast({ message, type = 'success', onClose, duration = 3000 }) {
   );
 }
 
+Toast.propTypes = {
+  message: PropTypes.string.isRequired,
+  type: PropTypes.oneOf(['success', 'error', 'info']),
+  onClose: PropTypes.func.isRequired,
+  duration: PropTypes.number,
+};
+
 export function ToastContainer({ toasts = [], onRemove }) {
   return (
     <div className={styles.toastContainer}>
@@ -106,5 +114,17 @@ export function ToastContainer({ toasts = [], onRemove }) {
     </div>
   );
 }
+
+ToastContainer.propTypes = {
+  toasts: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      message: PropTypes.string.isRequired,
+      type: PropTypes.oneOf(['success', 'error', 'info']),
+      duration: PropTypes.number,
+    }),
+  ),
+  onRemove: PropTypes.func.isRequired,
+};
 
 export default Toast;

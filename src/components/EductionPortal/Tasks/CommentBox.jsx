@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
+import PropTypes from 'prop-types';
 import styles from './CommentBox.module.css';
 
 function CommentBox({
@@ -85,5 +86,11 @@ function CommentBox({
     </div>
   );
 }
+
+CommentBox.propTypes = {
+  onSubmit: PropTypes.func.isRequired,
+  placeholder: PropTypes.string,
+  disabled: PropTypes.bool,
+};
 
 export default CommentBox;
