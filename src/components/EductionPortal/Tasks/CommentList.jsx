@@ -1,4 +1,5 @@
 import { useSelector } from 'react-redux';
+import PropTypes from 'prop-types';
 import styles from './CommentList.module.css';
 
 function CommentList({
@@ -133,5 +134,23 @@ function CommentList({
     </div>
   );
 }
+
+CommentList.propTypes = {
+  comments: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      content: PropTypes.string.isRequired,
+      author: PropTypes.string.isRequired,
+      role: PropTypes.string,
+      userId: PropTypes.string,
+      createdAt: PropTypes.instanceOf(Date).isRequired,
+      edited: PropTypes.bool,
+    }),
+  ),
+  loading: PropTypes.bool,
+  emptyMessage: PropTypes.string,
+  onDeleteComment: PropTypes.func,
+  currentUserId: PropTypes.string,
+};
 
 export default CommentList;

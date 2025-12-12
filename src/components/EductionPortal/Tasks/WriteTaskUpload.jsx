@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import PropTypes from 'prop-types';
 import styles from './WriteTaskUpload.module.css';
 import UploadPanel from './UploadPanel';
 import CommentBox from './CommentBox';
@@ -123,6 +124,13 @@ const Icon = ({ name, className, darkMode = false }) => {
       return null;
   }
 };
+
+Icon.propTypes = {
+  name: PropTypes.string.isRequired,
+  className: PropTypes.string,
+  darkMode: PropTypes.bool,
+};
+
 const BellIcon = ({ darkMode = false }) => (
   <svg className={styles.bellIcon} width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
     <path
@@ -142,6 +150,10 @@ const BellIcon = ({ darkMode = false }) => (
     />
   </svg>
 );
+
+BellIcon.propTypes = {
+  darkMode: PropTypes.bool,
+};
 
 function cleanName(raw) {
   let s = String(raw || '').trim();
@@ -294,10 +306,8 @@ export default function WriteTaskUpload() {
     ]);
   };
 
-  // Submit link via side upload icon
-  const submitLink = () => {
-    if (!showLink) setShowLink(true);
-
+  // Validate link submission
+  const validateLinkSubmission = () => {
     const needLink = !isValidUrl(linkUrl);
     const needComment = !comment.trim();
 
@@ -307,6 +317,16 @@ export default function WriteTaskUpload() {
     if (needLink || needComment) {
       if (needLink) setTimeout(() => linkRef.current?.focus(), 0);
       else setTimeout(() => commentRef.current?.focus(), 0);
+      return false;
+    }
+    return true;
+  };
+
+  // Submit link via side upload icon
+  const submitLink = () => {
+    if (!showLink) setShowLink(true);
+
+    if (!validateLinkSubmission()) {
       return;
     }
 
@@ -356,6 +376,11 @@ export default function WriteTaskUpload() {
 
       success('Comment posted successfully!');
     } catch (err) {
+      // Log error for debugging
+      if (process.env.NODE_ENV === 'development') {
+        // eslint-disable-next-line no-console
+        console.error('Error posting comment:', err);
+      }
       error('Failed to post comment. Please try again.');
     }
   };
@@ -383,6 +408,11 @@ export default function WriteTaskUpload() {
 
       success('Comment deleted successfully!');
     } catch (err) {
+      // Log error for debugging
+      if (process.env.NODE_ENV === 'development') {
+        // eslint-disable-next-line no-console
+        console.error('Error deleting comment:', err);
+      }
       error('Failed to delete comment. Please try again.');
     }
   };
