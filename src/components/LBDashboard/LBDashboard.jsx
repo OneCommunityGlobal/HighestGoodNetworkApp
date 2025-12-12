@@ -136,6 +136,122 @@ CategoryControls.propTypes = {
   onToggleDD: PropTypes.func.isRequired,
 };
 
+// Helper function to get class names
+const getClassNames = (baseClass, darkClass, darkMode) =>
+  `${baseClass} ${darkMode ? darkClass : ''}`;
+
+// Extracted header component
+const DashboardHeader = ({ darkMode, onBack }) => (
+  <header className={styles.dashboardHeader}>
+    <h1 className={getClassNames(styles.title, styles.darkText, darkMode)}>
+      Listing and Bidding Platform Dashboard
+    </h1>
+    <Button
+      size="sm"
+      onClick={onBack}
+      className={getClassNames(styles.backBtn, styles.darkBackBtn, darkMode)}
+    >
+      Back
+    </Button>
+  </header>
+);
+
+DashboardHeader.propTypes = {
+  darkMode: PropTypes.bool,
+  onBack: PropTypes.func.isRequired,
+};
+
+// Extracted filter section component
+const FilterSection = ({
+  darkMode,
+  activeCategory,
+  selectedMetricKey,
+  openDD,
+  metricLabel,
+  onCategoryClick,
+  onMetricPick,
+  onToggleDD,
+}) => (
+  <section className={getClassNames(styles.filterBar, styles.darkFilterBar, darkMode)}>
+    <div className={getClassNames(styles.filterLabel, styles.darkFilterLabel, darkMode)}>
+      Choose Metric to view
+    </div>
+
+    <ButtonGroup className={styles.categoryGroup}>
+      <CategoryControls
+        categoryKey="DEMAND"
+        label="Demand"
+        activeCategory={activeCategory}
+        selectedMetricKey={selectedMetricKey}
+        openDD={openDD}
+        darkMode={darkMode}
+        onCategoryClick={onCategoryClick}
+        onMetricPick={onMetricPick}
+        onToggleDD={onToggleDD}
+      />
+      <CategoryControls
+        categoryKey="VACANCY"
+        label="Vacancy"
+        activeCategory={activeCategory}
+        selectedMetricKey={selectedMetricKey}
+        openDD={openDD}
+        darkMode={darkMode}
+        onCategoryClick={onCategoryClick}
+        onMetricPick={onMetricPick}
+        onToggleDD={onToggleDD}
+      />
+      <CategoryControls
+        categoryKey="REVENUE"
+        label="Revenue"
+        activeCategory={activeCategory}
+        selectedMetricKey={selectedMetricKey}
+        openDD={openDD}
+        darkMode={darkMode}
+        onCategoryClick={onCategoryClick}
+        onMetricPick={onMetricPick}
+        onToggleDD={onToggleDD}
+      />
+    </ButtonGroup>
+
+    <div className={getClassNames(styles.currentMetric, styles.darkText, darkMode)}>
+      Current metric:&nbsp;<strong>{metricLabel}</strong>
+    </div>
+  </section>
+);
+
+FilterSection.propTypes = {
+  darkMode: PropTypes.bool,
+  activeCategory: PropTypes.string.isRequired,
+  selectedMetricKey: PropTypes.string.isRequired,
+  openDD: PropTypes.object.isRequired,
+  metricLabel: PropTypes.string,
+  onCategoryClick: PropTypes.func.isRequired,
+  onMetricPick: PropTypes.func.isRequired,
+  onToggleDD: PropTypes.func.isRequired,
+};
+
+// Extracted analysis section component
+const AnalysisSection = ({ title, darkMode, children }) => (
+  <section className={getClassNames(styles.section, styles.darkSection, darkMode)}>
+    <details>
+      <summary
+        className={getClassNames(styles.sectionSummary, styles.darkSectionSummary, darkMode)}
+      >
+        {title}
+      </summary>
+      <div className={getClassNames(styles.sectionBody, styles.darkSectionBody, darkMode)}>
+        {children}
+      </div>
+    </details>
+  </section>
+);
+
+AnalysisSection.propTypes = {
+  title: PropTypes.string.isRequired,
+  darkMode: PropTypes.bool,
+  children: PropTypes.node,
+};
+
 export function LBDashboard() {
   const [activeCategory, setActiveCategory] = useState('DEMAND');
   const [selectedMetricKey, setSelectedMetricKey] = useState(DEFAULTS.DEMAND);
@@ -165,145 +281,70 @@ export function LBDashboard() {
   };
 
   const toggleDD = category => setOpenDD(s => ({ ...s, [category]: !s[category] }));
-
   const goBack = () => globalThis.history.back();
 
   const metricLabel = getMetricLabel();
+  const mappedMetric = METRIC_MAPPING[selectedMetricKey];
 
   return (
     <Container
       fluid
-      className={`${styles.dashboardContainer} ${darkMode ? styles.darkContainer : ''}`}
+      className={getClassNames(styles.dashboardContainer, styles.darkContainer, darkMode)}
     >
-      {/* Header */}
-      <header className={styles.dashboardHeader}>
-        <h1 className={`${styles.title} ${darkMode ? styles.darkText : ''}`}>
-          Listing and Bidding Platform Dashboard
-        </h1>
-        <Button
-          size="sm"
-          onClick={goBack}
-          className={`${styles.backBtn} ${darkMode ? styles.darkBackBtn : ''}`}
-        >
-          Back
-        </Button>
-      </header>
+      <DashboardHeader darkMode={darkMode} onBack={goBack} />
 
-      {/* Preset Overview Filter */}
-      <section className={`${styles.filterBar} ${darkMode ? styles.darkFilterBar : ''}`}>
-        <div className={`${styles.filterLabel} ${darkMode ? styles.darkFilterLabel : ''}`}>
-          Choose Metric to view
+      <FilterSection
+        darkMode={darkMode}
+        activeCategory={activeCategory}
+        selectedMetricKey={selectedMetricKey}
+        openDD={openDD}
+        metricLabel={metricLabel}
+        onCategoryClick={handleCategoryClick}
+        onMetricPick={handleMetricPick}
+        onToggleDD={toggleDD}
+      />
+
+      <AnalysisSection title="By Village" darkMode={darkMode}>
+        <div className={styles.chartRow}>
+          <div className={styles.chartCol}>
+            <DemandOverTime
+              compareType="villages"
+              metric={mappedMetric}
+              chartLabel="Comparing Demand of Villages across Months"
+              darkMode={darkMode}
+              dateRange={dateRange}
+            />
+          </div>
+          <div className={styles.chartCol}>
+            <Card className={getClassNames(styles.wordcloudCard, styles.darkCard, darkMode)}>
+              another graph
+            </Card>
+          </div>
+          <div className={styles.chartCol}>
+            <Card className={getClassNames(styles.wordcloudCard, styles.darkCard, darkMode)}>
+              another graph
+            </Card>
+          </div>
         </div>
+      </AnalysisSection>
 
-        <ButtonGroup className={styles.categoryGroup}>
-          <CategoryControls
-            categoryKey="DEMAND"
-            label="Demand"
-            activeCategory={activeCategory}
-            selectedMetricKey={selectedMetricKey}
-            openDD={openDD}
-            darkMode={darkMode}
-            onCategoryClick={handleCategoryClick}
-            onMetricPick={handleMetricPick}
-            onToggleDD={toggleDD}
-          />
-          <CategoryControls
-            categoryKey="VACANCY"
-            label="Vacancy"
-            activeCategory={activeCategory}
-            selectedMetricKey={selectedMetricKey}
-            openDD={openDD}
-            darkMode={darkMode}
-            onCategoryClick={handleCategoryClick}
-            onMetricPick={handleMetricPick}
-            onToggleDD={toggleDD}
-          />
-          <CategoryControls
-            categoryKey="REVENUE"
-            label="Revenue"
-            activeCategory={activeCategory}
-            selectedMetricKey={selectedMetricKey}
-            openDD={openDD}
-            darkMode={darkMode}
-            onCategoryClick={handleCategoryClick}
-            onMetricPick={handleMetricPick}
-            onToggleDD={toggleDD}
-          />
-        </ButtonGroup>
-
-        <div className={`${styles.currentMetric} ${darkMode ? styles.darkText : ''}`}>
-          Current metric:&nbsp;<strong>{metricLabel}</strong>
+      <AnalysisSection title="By Property" darkMode={darkMode}>
+        <div className={styles.chartRow}>
+          <div className={styles.chartCol}>
+            <DemandOverTime
+              compareType="properties"
+              metric={mappedMetric}
+              chartLabel="Comparing Demand of Properties across Time"
+              darkMode={darkMode}
+              dateRange={dateRange}
+            />
+          </div>
         </div>
-      </section>
+      </AnalysisSection>
 
-      <section className={`${styles.section} ${darkMode ? styles.darkSection : ''}`}>
-        <details>
-          <summary
-            className={`${styles.sectionSummary} ${darkMode ? styles.darkSectionSummary : ''}`}
-          >
-            By Village
-          </summary>
-          <div className={`${styles.sectionBody} ${darkMode ? styles.darkSectionBody : ''}`}>
-            <div className={styles.chartRow}>
-              <div className={styles.chartCol}>
-                <DemandOverTime
-                  compareType="villages"
-                  metric={METRIC_MAPPING[selectedMetricKey]}
-                  chartLabel="Comparing Demand of Villages across Months"
-                  darkMode={darkMode}
-                  dateRange={dateRange}
-                />
-              </div>
-              <div className={styles.chartCol}>
-                <Card className={`${styles.wordcloudCard} ${darkMode ? styles.darkCard : ''}`}>
-                  another graph
-                </Card>
-              </div>
-              <div className={styles.chartCol}>
-                <Card className={`${styles.wordcloudCard} ${darkMode ? styles.darkCard : ''}`}>
-                  another graph
-                </Card>
-              </div>
-            </div>
-          </div>
-        </details>
-      </section>
-
-      <section className={`${styles.section} ${darkMode ? styles.darkSection : ''}`}>
-        <details>
-          <summary
-            className={`${styles.sectionSummary} ${darkMode ? styles.darkSectionSummary : ''}`}
-          >
-            By Property
-          </summary>
-          <div className={`${styles.sectionBody} ${darkMode ? styles.darkSectionBody : ''}`}>
-            <div className={styles.chartRow}>
-              <div className={styles.chartCol}>
-                <DemandOverTime
-                  compareType="properties"
-                  metric={METRIC_MAPPING[selectedMetricKey]}
-                  chartLabel="Comparing Demand of Properties across Time"
-                  darkMode={darkMode}
-                  dateRange={dateRange}
-                />
-              </div>
-            </div>
-          </div>
-        </details>
-      </section>
-
-      <section className={`${styles.section} ${darkMode ? styles.darkSection : ''}`}>
-        <details>
-          <summary
-            className={`${styles.sectionSummary} ${darkMode ? styles.darkSectionSummary : ''}`}
-          >
-            Insights from Reviews
-          </summary>
-          <div className={`${styles.sectionBody} ${darkMode ? styles.darkSectionBody : ''}`}>
-            <ReviewWordCloud darkMode={darkMode} />
-          </div>
-        </details>
-      </section>
+      <AnalysisSection title="Insights from Reviews" darkMode={darkMode}>
+        <ReviewWordCloud darkMode={darkMode} />
+      </AnalysisSection>
     </Container>
   );
 }

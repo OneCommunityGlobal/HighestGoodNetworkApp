@@ -322,8 +322,8 @@ body {
 
 .darkPlaceholder {
   border-color: #6C757D;
-  color: #6C757D;
-  background: #1C1C1C;
+  color: #e1e1e1;
+  background: #3A506B;
 }
 
 .darkChartCard {
