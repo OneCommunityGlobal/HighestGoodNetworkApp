@@ -7,7 +7,7 @@ import {
   FiCopy,
   FiEdit,
 } from 'react-icons/fi';
-import './IssueDashboard.css';
+import styles from './IssueDashboard.module.css';
 import { Col, Row, Table } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -110,7 +110,7 @@ export default function IssueDashboard() {
         </Col>
       </Row>
 
-      <div className="issues-table-responsive">
+      <div className={styles.issuesTableResponsive}>
         <Table hover className={`mb-0 ${darkMode ? 'table-dark' : ''}`}>
           <thead className={darkMode ? 'table-dark' : 'table-light'}>
             <tr>
@@ -143,7 +143,11 @@ export default function IssueDashboard() {
                   <td>{assignedTo}</td>
                   <td>{cost}</td>
                   <td className="text-end position-relative">
-                    <div className={`issue-dashboard-dropdown  ${darkMode ? 'bg-oxide-blue' : ''}`}>
+                    <div
+                      className={`${styles.issueDashboardDropdown}  ${
+                        darkMode ? 'bg-oxide-blue' : ''
+                      }`}
+                    >
                       <button
                         type="button"
                         aria-label="Actions menu"
@@ -155,7 +159,7 @@ export default function IssueDashboard() {
 
                       {menuOpen === issue._id && (
                         <div
-                          className={`issue-dashboard-dropdown-menu show action-menu${
+                          className={`issue-dashboard-dropdown-menu show ${styles.actionMenu}${
                             currentItems.indexOf(issue) === currentItems.length - 1
                               ? ' last-row-menu'
                               : ''
@@ -163,7 +167,7 @@ export default function IssueDashboard() {
                         >
                           <button
                             type="button"
-                            className="issue-dashboard-dropdown-item"
+                            className={styles.issueDashboardDropdownItem}
                             onClick={() => {
                               openRenameModal(issue);
                               setMenuOpen(null);
@@ -174,7 +178,7 @@ export default function IssueDashboard() {
                           </button>
                           <button
                             type="button"
-                            className="issue-dashboard-dropdown-item"
+                            className={styles.issueDashboardDropdownItem}
                             onClick={() => {
                               openCopyModal(issue);
                               setMenuOpen(null);
