@@ -120,8 +120,6 @@ import TestEventRegistration from './components/EventRegistration/TestEventRegis
 import MemberList from './components/QuestionnaireDashboard/MemberList';
 import EventPopularity from './components/EventPopularity/EventPopularity';
 import ApplicantVolunteerRatio from './components/ApplicantVolunteerRatio/ApplicantVolunteerRatio';
-
-import WeeklySummaryPage from './components/VolunteerweeklysummaryBBC/WeeklySummaryPage'; // 测试用 后续要删除
 import { JobAnalyticsCompetitiveRolesPage } from './components/Reports/JobAnalytics';
 // LB Dashboard
 import LBProtectedRoute from './components/common/LBDashboard/LBProtectedRoute/LBProtectedRoute';
@@ -354,7 +352,6 @@ export default (
           component={JobAnalyticsCompetitiveRolesPage}
           fallback
         />
-
         <ProtectedRoute
           path="/inventory/:projectId"
           component={Inventory}
