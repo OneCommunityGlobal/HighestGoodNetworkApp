@@ -5,6 +5,7 @@ import styles from './Collaboration.module.css';
 import { toast } from 'react-toastify';
 import { ApiEndpoint } from '~/utils/URL';
 import OneCommunityImage from '../../assets/images/logo2.png';
+import ApplicantSourceDonutChart from '../ApplicantSourceDonutChart/ApplicantSourceDonutChart';
 
 function Collaboration() {
   const [query, setQuery] = useState('');
@@ -526,6 +527,7 @@ function Collaboration() {
           <div className={`${styles.jobHeadings} ${darkMode ? styles.darkMode : ''}`}>
             <h1 className={styles.jobHead}>Like to Work With Us? Apply Now!</h1>
             <p className={styles.jobIntro}> Learn about who we are and who we want to work with!</p>
+            <ApplicantSourceDonutChart></ApplicantSourceDonutChart>
           </div>
         )}
       </div>

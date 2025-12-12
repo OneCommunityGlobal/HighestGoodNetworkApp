@@ -1,5 +1,5 @@
 const APIEndpoint =
-  process.env.REACT_APP_APIENDPOINT || 'https://hgn-rest-beta.azurewebsites.net/api';
+  process.env.REACT_APP_APIENDPOINT || 'http://localhost:4500/api';
 
 export const ENDPOINTS = {
   APIEndpoint: () => APIEndpoint,
@@ -452,6 +452,7 @@ export const ENDPOINTS = {
   LB_LISTING_AVAILABILITY: `${APIEndpoint}/lb/listing/availability`,
   LB_LISTING_BOOK: `${APIEndpoint}/lb/listing/availability/booking`,
   HELP_CATEGORIES: `${APIEndpoint}/help-categories`,
+  APPLICANT_SOURCES: `${APIEndpoint}/analytics/applicant-sources`,
 
   // job analytics
   HOURS_PLEDGED: `${APIEndpoint}/analytics/hours-pledged`,
@@ -470,7 +471,6 @@ export const ENDPOINTS = {
 
   //pull requests analysis
   PR_REVIEWS_INSIGHTS: `${APIEndpoint}/analytics/pr-review-insights`,
-
 };
 
 export const ApiEndpoint = APIEndpoint;
