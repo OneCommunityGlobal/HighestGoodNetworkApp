@@ -6,7 +6,7 @@ function CommentList({
   loading = false,
   emptyMessage = 'No comments yet.',
   onDeleteComment,
-  currentUser,
+  currentUserId,
 }) {
   const darkMode = useSelector(state => state.theme?.darkMode);
 
@@ -104,7 +104,7 @@ function CommentList({
                 <span className={`${styles.timestamp} ${darkMode ? styles.timestampDark : ''}`}>
                   {formatTimeAgo(comment.createdAt)}
                 </span>
-                {onDeleteComment && comment.author === currentUser && (
+                {onDeleteComment && comment.userId === currentUserId && (
                   <button
                     className={`${styles.deleteButton} ${darkMode ? styles.deleteButtonDark : ''}`}
                     onClick={() => onDeleteComment(comment.id)}

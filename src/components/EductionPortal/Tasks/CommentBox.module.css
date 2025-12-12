@@ -90,6 +90,11 @@
   color: #9ca3af;
 }
 
+.characterCountError {
+  color: #ef4444 !important;
+  font-weight: 600;
+}
+
 .submitButton {
   padding: 0.625rem 1.25rem;
   background-color: #3b82f6;
