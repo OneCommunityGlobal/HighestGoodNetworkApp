@@ -149,6 +149,14 @@ body {
   margin: 5px 0;
 }
 
+.organizer-logo {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
 .dashboard-actions {
   text-align: center;
   margin-top: 20px;
