@@ -799,13 +799,15 @@ const onAssignProject = assignedProject => {
     try {
       dispatch(getSpecialWarnings(userId)).then(res => {
         if (res.error) {
-          console.log(res.error);
+          // eslint-disable-next-line no-console
+          console.error('Error fetching special warnings:', res.error);
           return;
         }
         setSpecialWarnings(res);
       });
     } catch (err) {
-      console.log(err);
+      // eslint-disable-next-line no-console
+      console.error('Error in fetchSpecialWarnings:', err);
     }
   };
 
@@ -865,7 +867,8 @@ const onAssignProject = assignedProject => {
         toast.success(toastMessage);
       })
       .catch(err => {
-        console.log(err);
+        // eslint-disable-next-line no-console
+        console.error('Error updating user profile:', err);
       });
   };
 

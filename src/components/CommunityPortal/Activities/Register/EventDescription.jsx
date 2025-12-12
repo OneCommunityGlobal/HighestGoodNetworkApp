@@ -102,9 +102,10 @@ function DescriptionSection({ activity, registrants = [] }) {
   }, [activity]);
 
   const participantEntries = useMemo(() => {
-    const baseParticipants = Array.isArray(activity?.participants) && activity.participants.length
-      ? activity.participants
-      : DEFAULT_TAB_CONTENT.Participates;
+    const baseParticipants =
+      Array.isArray(activity?.participants) && activity.participants.length
+        ? activity.participants
+        : DEFAULT_TAB_CONTENT.Participates;
 
     const dynamicEntries = registrants
       .map(reg => {
@@ -203,8 +204,7 @@ function DescriptionSection({ activity, registrants = [] }) {
           tabContent[activeTab].map((item, index) => {
             const isParticipantTab = activeTab === 'Participates';
             const label = typeof item === 'string' ? item : item.label;
-            const isNewParticipant =
-              isParticipantTab && typeof item === 'object' && item.isNew;
+            const isNewParticipant = isParticipantTab && typeof item === 'object' && item.isNew;
 
             const paragraphClasses = [styles.descriptionParagraph];
             if (darkMode) paragraphClasses.push(styles.descriptionParagraphDark);

@@ -21,10 +21,7 @@ function Register() {
   const [isRegistering, setIsRegistering] = useState(false);
   const [registrants, setRegistrants] = useState([]);
   const feedbackTimeoutRef = useRef(null);
-  const storageKey = useMemo(
-    () => `activity-${activityId}-registrants`,
-    [activityId],
-  );
+  const storageKey = useMemo(() => `activity-${activityId}-registrants`, [activityId]);
   const tokenPayload = useMemo(() => {
     if (typeof window === 'undefined' || typeof window.atob !== 'function') {
       return null;
@@ -35,7 +32,10 @@ function Register() {
       const segment = token.split('.')[1];
       if (!segment) return null;
       const normalized = segment.replace(/-/g, '+').replace(/_/g, '/');
-      const padded = normalized.padEnd(normalized.length + ((4 - (normalized.length % 4)) % 4), '=');
+      const padded = normalized.padEnd(
+        normalized.length + ((4 - (normalized.length % 4)) % 4),
+        '=',
+      );
       const decoded = window.atob(padded);
       return JSON.parse(decoded);
     } catch (err) {
@@ -245,7 +245,8 @@ function Register() {
   const resolveJobTitleFromToken = () =>
     tokenPayload?.jobTitle || tokenPayload?.title || tokenPayload?.position || null;
 
-  const resolveJobTitle = () => userProfile?.jobTitle || resolveJobTitleFromToken() || 'Participant';
+  const resolveJobTitle = () =>
+    userProfile?.jobTitle || resolveJobTitleFromToken() || 'Participant';
 
   const scheduleFeedbackClear = () => {
     if (feedbackTimeoutRef.current) {
@@ -508,7 +509,9 @@ function Register() {
 
         {/* Description Section */}
         <div
-          className={`${styles.descriptionSection} ${darkMode ? styles.descriptionSectionDark : ''}`}
+          className={`${styles.descriptionSection} ${
+            darkMode ? styles.descriptionSectionDark : ''
+          }`}
         >
           <EventDescription activity={activity} registrants={registrants} />
         </div>
