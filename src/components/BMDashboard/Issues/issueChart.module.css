@@ -4,64 +4,385 @@
   max-width: 900px;
   margin: 0 auto;
   padding: 20px;
-  background: #f9f9f9;
-  border-radius: 8px;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  background: #fafbfc;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+  border: 1px solid #e2e8f0;
 }
 
 .issueChartEventContainerDark {
-  background: #121212;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.9);
-  color: #ccd1dc;
+  background: #1a202c;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  color: #f7fafc;
+  border: 1px solid #2d3748;
 }
 
 .issueChartEventTitle {
   text-align: center;
   font-size: 24px;
-  color: #333;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 24px;
+  text-shadow: none;
 }
 
 .issueChartEventTitleDark {
-  color: #fff;
+  color: #f7fafc;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .chartWrapper {
-  padding: 20px;
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
+  margin-top: 20px;
 }
 
 .chartWrapperDark {
-  background: #1e1e1e;
-  box-shadow: 0 0 15px rgba(0,0,0,0.9);
-  color: #ccd1dc;
+  background: #2d3748;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  color: #f7fafc;
+  border: 1px solid #4a5568;
 }
 
 .issueChartLabel {
   font-size: 16px;
-  color: #555;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 8px;
+  display: block;
 }
 
 .issueChartLabelDark {
-  color: #fff;
+  color: #f7fafc;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .issueChartSelect {
-  padding: 2px 10px;
-  font-size: 16px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-  background-color: #fff;
-  color: #333;
+  padding: 8px 12px;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  background-color: #ffffff;
+  color: #1f2937;
   cursor: pointer;
-  transition: border-color 0.3s ease;
+  transition: all 0.2s ease;
   outline: none;
   margin-bottom: 20px;
+  min-height: 42px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.issueChartSelect:hover {
+  border-color: #9ca3af;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.issueChartSelect:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 .issueChartSelectDark {
-  border-color: #3d444d;
-  background-color: #22272e;
+  border-color: #4a5568;
+  background-color: #2d3748;
+  color: #f7fafc;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.issueChartSelectDark:hover {
+  border-color: #718096;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.issueChartSelectDark:focus {
+  border-color: #63b3ed;
+  box-shadow: 0 0 0 3px rgba(99, 179, 237, 0.2);
+}
+
+/* Select container styling */
+.selectContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  justify-content: center;
+  margin-bottom: 24px;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 8px;
+}
+
+.selectContainer > div {
+  min-width: 220px;
+  flex: 1;
+  max-width: 300px;
+}
+
+/* Dark mode select container */
+.issueChartEventContainerDark .selectContainer {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Improved accessibility and responsiveness */
+@media (max-width: 768px) {
+  .issueChartEventContainer,
+  .issueChartEventContainerDark {
+    margin: 16px;
+    padding: 16px;
+  }
+  
+  .chartWrapper,
+  .chartWrapperDark {
+    padding: 16px;
+  }
+  
+  .selectContainer {
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .selectContainer > div {
+    min-width: unset;
+    max-width: unset;
+  }
+  
+  .issueChartEventTitle,
+  .issueChartEventTitleDark {
+    font-size: 20px;
+  }
+}
+
+/* Loading and error states */
+.loadingText,
+.errorText {
+  text-align: center;
+  padding: 20px;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.loadingText {
+  color: #6b7280;
+}
+
+.loadingTextDark {
+  color: #d1d5db;
+}
+
+.errorText {
+  color: #dc2626;
+}
+
+.errorTextDark {
+  color: #fca5a5;
+}
+
+.chartContainer {
+  width: 100%;
+  height: 500px;
+}
+
+/* Container for entire chart section */
+.issueChartContainer {
+  width: 50vw; /* full viewport width */
+  padding: 20px;
+  box-sizing: border-box; /* include padding in width */
+  background: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+
+.filterCenterWrapper {
+  max-width: 650px; /* filters centered and constrained */
+  margin: 0 auto 20px auto;
+}
+
+
+.issueChartContainerDark {
+  width: 50vw; /* full viewport width */
+  padding: 20px;
+  box-sizing: border-box; /* include padding in width */
+  background: #121212;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.9);
+  color: #ccd1dc;
+}
+
+/* Chart title */
+.title {
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.titleDark {
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #fff;
+}
+
+/* Filter rows */
+.dateRow {
+  display: grid;
+  grid-template-columns: auto 1fr auto 1fr;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+.projectRow {
+  width: 100%;
+}
+
+/* Labels */
+.dateLabelLight {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+}
+
+.dateLabelDark {
+  font-size: 14px;
+  font-weight: 500;
   color: #cfd7e3;
+}
+
+/* Date picker */
+.dateField {
+  width: 100%;
+}
+
+.dateLight,
+.dateDark {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+.dateDark {
+  background: #22272e;
+  color: #cfd7e3;
+  border-color: #3d444d;
+}
+
+/* React select */
+.selectReact {
+  width: 100%;
+}
+
+:global(.react-datepicker__close-icon::after) {
+  background: none;
+  color: #b9b9b9;
+  font-size: 18px;
+}
+
+/* DARK MODE CONTROL */
+.controlDark {
+  background: #22272e !important;
+  border-color: #3d444d !important;
+  color: #cfd7e3 !important;
+}
+
+/* VALUE TEXT */
+.valueDark {
+  color: #cfd7e3 !important;
+}
+
+/* MENU */
+.menuDark {
+  background: #22272e !important;
+}
+
+/* OPTIONS — keep only base default color */
+.optionDark {
+  color: #cfd7e3 !important;
+}
+
+/* MULTI VALUE */
+.multiValueDark {
+  background: #3a3f45 !important;
+  color: #cfd7e3 !important;
+}
+
+.multiValueLabelDark {
+  color: #cfd7e3 !important;
+}
+
+.multiValueRemoveDark {
+  color: #cfd7e3 !important;
+}
+
+/* ===== LIGHT MODE ===== */
+
+.controlLight {
+  background: white !important;
+  border-color: #ccc !important;
+  color: black !important;
+}
+
+.menuLight {
+  background: white !important;
+}
+
+.optionLight {
+  color: black !important;
+}
+
+.multiValueLight {
+  background: #dceeff !important;
+  color: black !important;
+}
+
+.multiValueLabelLight {
+  color: black !important;
+}
+
+.multiValueRemoveLight {
+  color: black !important;
+}
+
+
+/* No data text */
+.noData {
+  text-align: center;
+  color: #888;
+  font-size: 16px;
+  padding: 40px 0;
+}
+
+/* Loading/Error */
+.loading,
+.error {
+  text-align: center;
+  padding: 20px 0;
+  font-size: 16px;
+}
+
+.rowLabel {
+  margin: 8px 0 8px;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+
+/* Responsive */
+@media (max-width: 650px) {
+  .dateRow {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .dateRow span.dateLabel {
+    display: none; /* hide labels for small screens */
+  }
 }
