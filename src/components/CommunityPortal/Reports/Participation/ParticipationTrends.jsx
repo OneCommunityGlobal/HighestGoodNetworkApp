@@ -172,7 +172,6 @@ function ParticipationTrends() {
         <div className={styles.trendsChart}>
           <div className={styles.chartArea}>
             <div className={styles.yAxis}>
-              <div className={styles.yAxisLabel}>Attendance</div>
               <div className={styles.yAxisValues}>
                 {[0, 20, 40, 60].map(value => (
                   <div key={value} className={styles.yAxisValue}>
@@ -180,6 +179,7 @@ function ParticipationTrends() {
                   </div>
                 ))}
               </div>
+              <div className={styles.yAxisLabel}>Attendance</div>
             </div>
 
             <div className={styles.barsContainer}>

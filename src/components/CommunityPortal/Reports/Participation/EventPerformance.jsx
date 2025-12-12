@@ -46,111 +46,133 @@ function EventPerformance() {
 
   const performanceData = getPerformanceData(selectedFilter);
 
-  const getAllEventPerformance = () => [
-    {
-      id: 1,
-      name: 'Morning Yoga Flow',
-      type: 'Yoga Class',
-      date: '2025-01-20',
-      attendance: 45,
-      capacity: 50,
-      rating: 4.8,
-      engagement: 92,
-      status: 'completed',
-      value: 3600,
-    },
-    {
-      id: 2,
-      name: 'High-Intensity Bootcamp',
-      type: 'Fitness Bootcamp',
-      date: '2025-01-18',
-      attendance: 55,
-      capacity: 60,
-      rating: 4.6,
-      engagement: 88,
-      status: 'completed',
-      value: 4500,
-    },
-    {
-      id: 3,
-      name: 'Italian Cooking Workshop',
-      type: 'Cooking Workshop',
-      date: '2025-01-22',
-      attendance: 25,
-      capacity: 30,
-      rating: 4.4,
-      engagement: 85,
-      status: 'upcoming',
-      value: 3000,
-    },
-    {
-      id: 4,
-      name: 'Salsa Dance Class',
-      type: 'Dance Class',
-      date: '2025-01-25',
-      attendance: 40,
-      capacity: 45,
-      rating: 4.2,
-      engagement: 78,
-      status: 'upcoming',
-      value: 2400,
-    },
-    {
-      id: 5,
-      name: 'Meditation & Mindfulness',
-      type: 'Yoga Class',
-      date: '2025-01-15',
-      attendance: 35,
-      capacity: 40,
-      rating: 4.7,
-      engagement: 90,
-      status: 'completed',
-      value: 2800,
-    },
-    {
-      id: 6,
-      name: 'Advanced Yoga Workshop',
-      type: 'Yoga Class',
-      date: '2025-02-01',
-      attendance: 30,
-      capacity: 35,
-      rating: 4.9,
-      engagement: 95,
-      status: 'upcoming',
-      value: 2400,
-    },
-    {
-      id: 7,
-      name: 'CrossFit Challenge',
-      type: 'Fitness Bootcamp',
-      date: '2025-02-05',
-      attendance: 50,
-      capacity: 55,
-      rating: 4.5,
-      engagement: 87,
-      status: 'upcoming',
-      value: 4000,
-    },
-    {
-      id: 8,
-      name: 'French Pastry Class',
-      type: 'Cooking Workshop',
-      date: '2025-02-08',
-      attendance: 20,
-      capacity: 25,
-      rating: 4.6,
-      engagement: 89,
-      status: 'upcoming',
-      value: 2500,
-    },
-  ];
+  const getAllEventPerformance = () => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Generate dates relative to today
+    const getDateString = daysFromToday => {
+      const date = new Date(today);
+      date.setDate(date.getDate() + daysFromToday);
+      return date.toISOString().split('T')[0];
+    };
+
+    return [
+      {
+        id: 1,
+        name: 'Morning Yoga Flow',
+        type: 'Yoga Class',
+        date: getDateString(-5), // 5 days ago
+        attendance: 45,
+        capacity: 50,
+        rating: 4.8,
+        engagement: 92,
+        status: 'completed',
+        value: 3600,
+      },
+      {
+        id: 2,
+        name: 'High-Intensity Bootcamp',
+        type: 'Fitness Bootcamp',
+        date: getDateString(-7), // 7 days ago
+        attendance: 55,
+        capacity: 60,
+        rating: 4.6,
+        engagement: 88,
+        status: 'completed',
+        value: 4500,
+      },
+      {
+        id: 3,
+        name: 'Italian Cooking Workshop',
+        type: 'Cooking Workshop',
+        date: getDateString(3), // 3 days from now
+        attendance: 25,
+        capacity: 30,
+        rating: 4.4,
+        engagement: 85,
+        status: 'upcoming',
+        value: 3000,
+      },
+      {
+        id: 4,
+        name: 'Salsa Dance Class',
+        type: 'Dance Class',
+        date: getDateString(6), // 6 days from now
+        attendance: 40,
+        capacity: 45,
+        rating: 4.2,
+        engagement: 78,
+        status: 'upcoming',
+        value: 2400,
+      },
+      {
+        id: 5,
+        name: 'Meditation & Mindfulness',
+        type: 'Yoga Class',
+        date: getDateString(-10), // 10 days ago
+        attendance: 35,
+        capacity: 40,
+        rating: 4.7,
+        engagement: 90,
+        status: 'completed',
+        value: 2800,
+      },
+      {
+        id: 6,
+        name: 'Advanced Yoga Workshop',
+        type: 'Yoga Class',
+        date: getDateString(13), // 13 days from now
+        attendance: 30,
+        capacity: 35,
+        rating: 4.9,
+        engagement: 95,
+        status: 'upcoming',
+        value: 2400,
+      },
+      {
+        id: 7,
+        name: 'CrossFit Challenge',
+        type: 'Fitness Bootcamp',
+        date: getDateString(17), // 17 days from now
+        attendance: 50,
+        capacity: 55,
+        rating: 4.5,
+        engagement: 87,
+        status: 'upcoming',
+        value: 4000,
+      },
+      {
+        id: 8,
+        name: 'French Pastry Class',
+        type: 'Cooking Workshop',
+        date: getDateString(20), // 20 days from now
+        attendance: 20,
+        capacity: 25,
+        rating: 4.6,
+        engagement: 89,
+        status: 'upcoming',
+        value: 2500,
+      },
+    ];
+  };
 
   const allEventPerformance = getAllEventPerformance();
 
   const filteredEvents = allEventPerformance.filter(event => {
     if (selectedFilter === 'all') return true;
-    if (selectedFilter === 'completed') return event.status === 'completed';
-    if (selectedFilter === 'upcoming') return event.status === 'upcoming';
+    if (selectedFilter === 'completed') {
+      const eventDate = new Date(event.date);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      return eventDate < today;
+    }
+    if (selectedFilter === 'upcoming') {
+      const eventDate = new Date(event.date);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      return eventDate >= today;
+    }
     if (selectedFilter === 'high-rated') return event.rating >= 4.5;
     return true;
   });

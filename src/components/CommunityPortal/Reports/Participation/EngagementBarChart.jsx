@@ -25,7 +25,6 @@ function EngagementBarChart() {
       <div className={styles.barChartContainer}>
         <div className={styles.chartArea}>
           <div className={styles.yAxis}>
-            <div className={styles.yAxisLabel}>Attendance</div>
             <div className={styles.yAxisValues}>
               {[0, 20, 40, 60].map(value => (
                 <div key={value} className={styles.yAxisValue}>
@@ -33,6 +32,7 @@ function EngagementBarChart() {
                 </div>
               ))}
             </div>
+            <div className={styles.yAxisLabel}>Attendance</div>
           </div>
 
           <div className={styles.barsContainer}>
