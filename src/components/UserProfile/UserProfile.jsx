@@ -770,24 +770,24 @@ setUpdatedTasks(prev => {
             blueSquare: newBlueSquare,
           })
           .then(res => {
-            const newBlueSqrs = [
+
+            const updatedInfringements = [
               ...userProfile.infringements,
               {
                 _id: res.data._id,
                 ...newBlueSquare,
-              },
+              }
             ];
-            toast.success('Blue Square Added!');
-            const updatedInfringements = res.data.infringements;
 
-            setOriginalUserProfile({
-              ...originalUserProfile,
+            setOriginalUserProfile(prev => ({
+              ...prev,
               infringements: updatedInfringements,
-            });
-            setUserProfile({
-              ...userProfile,
+            }));
+
+            setUserProfile(prev => ({
+              ...prev,
               infringements: updatedInfringements,
-            });
+            }));
           })
           .catch(error => {
             // eslint-disable-next-line no-console
