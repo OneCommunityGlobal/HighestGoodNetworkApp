@@ -53,9 +53,9 @@
 // export default DescriptionSection;
 
 import { useState } from 'react';
-import './DescriptionSection.css'; // Import external CSS file
+import styles from './DescriptionSection.module.css'; // Import external CSS file
 
-function DescriptionSection() {
+function DescriptionSection({ darkMode }) {
   const [activeTab, setActiveTab] = useState('Description');
 
   const tabContent = {
@@ -71,23 +71,23 @@ function DescriptionSection() {
   };
 
   return (
-    <div className="description-section">
-      <div className="tabs">
+    <div className={`${styles['description-section']} ${darkMode ? styles['dark-mode'] : ''}`}>
+      <div className={styles.tabs}>
         {Object.keys(tabContent).map(tab => (
           <button
             key={tab}
             type="button"
             onClick={() => setActiveTab(tab)}
-            className={`tab-button ${activeTab === tab ? 'active' : ''}`}
+            className={`${styles['tab-button']} ${activeTab === tab ? styles.active : ''}`}
           >
             {tab}
           </button>
         ))}
       </div>
 
-      <div className="tab-content">
+      <div className={styles['tab-content']}>
         {tabContent[activeTab]?.map(item => (
-          <p key={`${activeTab}-${item}`} className="description-paragraph">
+          <p key={`${activeTab}-${item}`} className={styles['description-paragraph']}>
             {item}
           </p>
         ))}

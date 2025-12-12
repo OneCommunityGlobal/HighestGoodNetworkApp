@@ -1,0 +1,553 @@
+
+.register-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start; 
+  padding: 20px;
+  gap: 20px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+/* bg-oxford-blue class definition for consistency */
+.bg-oxford-blue {
+  background-color: #1b2a41 !important;
+}
+
+.left-column {
+  flex: 1;
+  min-width: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  
+}
+
+.event-image {
+  width: 100%;
+  max-width: 450px; 
+  height: auto; 
+  border-radius: 8px; 
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+  object-fit: cover; 
+  margin: 10px auto; 
+  display: block; 
+}
+
+
+
+.details-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+
+.details-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.details-row p {
+  flex: 1;
+  min-width: 150px; 
+}
+
+.details-row p strong {
+  font-weight: bold;
+}
+
+/* Style for middle column */
+.middle-column {
+  flex: 1;
+  min-width: 300px;
+}
+
+.middle-column h1 {
+  margin-bottom: 20px;
+  font-size: 1.8rem;
+}
+
+/* removed duplicate .details-grid selector (merged above) */
+
+
+.right-column {
+  flex: 1;
+  min-width: 320px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+
+.container {
+  display: flex;
+  margin-top: auto; 
+  flex-direction: column;
+  padding: 20px;
+}
+
+
+.event-details {
+  flex: 1;
+  margin-right: 20px;
+}
+
+.calendar {
+  flex: 1;
+}
+
+.tabs-section {
+  margin-top: 20px;
+}
+ 
+.register-button {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 15px;
+}
+
+.register-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.calendar-container {
+  margin-top: 20px;
+  width: 100%;
+  max-width: 400px;
+}
+
+/* Override react-calendar default styles */
+.calendar-container :global(.react-calendar) {
+  width: 100%;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  font-family: inherit;
+}
+
+.calendar-container :global(.react-calendar__tile) {
+  position: relative;
+  padding: 10px 6px;
+  height: 60px;
+}
+
+/* Booked date styling - using :global to make it accessible from react-calendar */
+.calendar-container :global(.booked-date) {
+  background-color: #ffebee !important;
+  font-weight: bold;
+  color: #c62828 !important;
+}
+
+.calendar-container :global(.booked-date:hover) {
+  background-color: #ffcdd2 !important;
+}
+
+.booked-indicator {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  color: #d32f2f;
+  font-size: 12px;
+  line-height: 1;
+}
+
+/* Selected date styling */
+.calendar-container :global(.react-calendar__tile--active) {
+  background-color: #007bff !important;
+  color: white !important;
+}
+
+.calendar-container :global(.react-calendar__tile--active:hover) {
+  background-color: #0056b3 !important;
+}
+
+/* Today's date */
+.calendar-container :global(.react-calendar__tile--now) {
+  background-color: #e3f2fd;
+}
+
+.calendar-container :global(.react-calendar__tile--now:hover) {
+  background-color: #bbdefb;
+}
+
+.selected-date {
+  margin-top: 15px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+}
+
+/* Calendar legend */
+.calendar-legend {
+  margin-top: 15px;
+  padding: 10px;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.legend-item:last-child {
+  margin-bottom: 0;
+}
+
+.legend-indicator {
+  font-size: 16px;
+  margin-right: 8px;
+  width: 20px;
+  text-align: center;
+}
+
+.legend-indicator.booked {
+  color: #d32f2f;
+}
+
+.legend-indicator.today {
+  color: #1976d2;
+}
+
+.legend-text {
+  font-size: 13px;
+  color: #555;
+}
+/* removed duplicate .event-image selector (defined earlier with full styles) */
+
+.submit-comment-button {
+  background-color: #007bff;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 15px;
+  font-size: 1rem;
+  transition: background-color 0.3s, transform 0.2s ease-in-out;
+  display: inline-block;
+  width: auto; 
+  white-space: nowrap;  
+  
+}
+
+.submit-comment-button:hover {
+  background-color: #0056b3;
+  transform: translateY(-2px);
+}
+
+.submit-comment-button:active {
+  background-color: #004085;
+  transform: translateY(0);
+}
+
+.submit-comment-button:disabled {
+  background-color: #c0c0c0;
+  cursor: not-allowed;
+}
+
+.feedback-message {
+  margin-top: 15px;
+  padding: 10px;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.feedback-message.success {
+  color: green;
+  background-color: #e6ffe6;
+}
+
+.feedback-message.error {
+  color: red;
+  background-color: #ffe6e6;
+}
+
+.rating-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 150px;
+}
+
+.rating-label {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.star-rating {
+  display: flex;
+  margin-left: 3px;
+}
+
+
+.filled-star {
+  color: #ffc107; 
+  font-size: 18px; 
+  margin-right: 2px; 
+}
+
+.empty-star {
+  color: #ccc; 
+  font-size: 18px; 
+  margin-right: 2px; 
+}
+
+/* Class-based Dark Mode Support - Following Dashboard pattern */
+.register-container.dark-mode {
+  background-color: #1e2a3a;
+  color: #e0e0e0;
+}
+
+.register-container.dark-mode .middle-column h1 {
+  color: #e0e0e0;
+}
+
+.register-container.dark-mode .details-row p {
+  color: #b0b0b0;
+}
+
+.register-container.dark-mode .details-row p strong {
+  color: #e0e0e0;
+}
+
+.register-container.dark-mode .selected-date {
+  color: #e0e0e0;
+}
+
+/* Calendar dark mode */
+.register-container.dark-mode .calendar-container :global(.react-calendar) {
+  background-color: #1e2a3a;
+  border-color: #3a4a5c;
+  color: #e0e0e0;
+  box-shadow: none;
+}
+
+.register-container.dark-mode .calendar-container :global(.react-calendar__navigation button) {
+  color: #e0e0e0;
+  background-color: #3d4f62;
+}
+
+.register-container.dark-mode .calendar-container :global(.react-calendar__navigation button:enabled:hover),
+.register-container.dark-mode .calendar-container :global(.react-calendar__navigation button:enabled:focus) {
+  background-color: #4a5d72;
+}
+
+.register-container.dark-mode .calendar-container :global(.react-calendar__tile) {
+  color: #e0e0e0;
+  background-color: #1e2a3a;
+}
+
+.register-container.dark-mode .calendar-container :global(.react-calendar__tile:enabled:hover),
+.register-container.dark-mode .calendar-container :global(.react-calendar__tile:enabled:focus) {
+  background-color: #3d4f62;
+}
+
+.register-container.dark-mode .calendar-container :global(.react-calendar__tile--now) {
+  background-color: #2a4a7a;
+}
+
+.register-container.dark-mode .calendar-container :global(.react-calendar__tile--now:enabled:hover),
+.register-container.dark-mode .calendar-container :global(.react-calendar__tile--now:enabled:focus) {
+  background-color: #3a5a8a;
+}
+
+.register-container.dark-mode .calendar-container :global(.react-calendar__tile--active) {
+  background-color: #007bff !important;
+  color: white !important;
+}
+
+.register-container.dark-mode .calendar-container :global(.react-calendar__tile--active:enabled:hover),
+.register-container.dark-mode .calendar-container :global(.react-calendar__tile--active:enabled:focus) {
+  background-color: #0056b3 !important;
+}
+
+.register-container.dark-mode .calendar-container :global(.react-calendar__month-view__days__day--weekend) {
+  color: #ff9999;
+}
+
+.register-container.dark-mode .calendar-container :global(.react-calendar__month-view__weekdays) {
+  color: #b0b0b0;
+}
+
+.register-container.dark-mode .calendar-container :global(.react-calendar__month-view__weekdays__weekday) {
+  color: #b0b0b0;
+}
+
+/* Booked dates in dark mode */
+.register-container.dark-mode .calendar-container :global(.booked-date) {
+  background-color: #4a1a1a !important;
+  color: #ff6b6b !important;
+}
+
+.register-container.dark-mode .calendar-container :global(.booked-date:enabled:hover),
+.register-container.dark-mode .calendar-container :global(.booked-date:enabled:focus) {
+  background-color: #5a2a2a !important;
+}
+
+.register-container.dark-mode .booked-indicator {
+  color: #ff6b6b;
+}
+
+/* Feedback messages in dark mode */
+.register-container.dark-mode .feedback-message.success {
+  color: #81c784;
+  background-color: #1b3a1b;
+  border: 1px solid #2e7d32;
+}
+
+.register-container.dark-mode .feedback-message.error {
+  color: #e57373;
+  background-color: #3a1b1b;
+  border: 1px solid #c62828;
+}
+
+/* Image styling for dark mode */
+.register-container.dark-mode .event-image {
+  border: 1px solid #3a4a5c;
+  box-shadow: none;
+}
+
+/* Star rating in dark mode */
+.register-container.dark-mode .filled-star {
+  color: #ffd700;
+}
+
+.register-container.dark-mode .empty-star {
+  color: #555;
+}
+
+/* Calendar legend dark mode */
+.register-container.dark-mode .calendar-legend {
+  background-color: #1e2a3a;
+  border-color: #3a4a5c;
+  box-shadow: none;
+}
+
+.register-container.dark-mode .legend-text {
+  color: #b0b0b0;
+}
+
+.register-container.dark-mode .legend-indicator.today {
+  color: #4a9eff;
+}
+
+/* Register button dark mode */
+.register-container.dark-mode .register-button {
+  background-color: #3d4f62;
+  border: 1px solid #3a4a5c;
+}
+
+.register-container.dark-mode .register-button:hover:not(:disabled) {
+  background-color: #4a5d72;
+}
+
+.register-container.dark-mode .register-button:disabled {
+  background-color: #2a3a4a;
+  color: #666;
+}
+
+/* Responsive Design for Smaller Screens */
+@media (max-width: 1200px) {
+  .register-container {
+    flex-direction: column;
+  }
+
+  .left-column,
+  .middle-column,
+  .right-column {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .calendar-container {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .calendar-container :global(.react-calendar) {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .register-container {
+    padding: 10px;
+    gap: 15px;
+  }
+
+  .middle-column h1 {
+    font-size: 1.5rem;
+  }
+
+  .details-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .details-row p {
+    min-width: 100%;
+  }
+
+  .calendar-container :global(.react-calendar) {
+    max-width: 100%;
+    font-size: 14px;
+  }
+
+  .calendar-container :global(.react-calendar__tile) {
+    height: 50px;
+    padding: 8px 4px;
+  }
+
+  .left-column .event-image {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .register-container {
+    padding: 8px;
+  }
+
+  .middle-column h1 {
+    font-size: 1.3rem;
+  }
+
+  .calendar-container :global(.react-calendar) {
+    font-size: 12px;
+  }
+
+  .calendar-container :global(.react-calendar__tile) {
+    height: 45px;
+    padding: 6px 2px;
+    font-size: 12px;
+  }
+
+  .calendar-legend {
+    padding: 8px;
+  }
+
+  .legend-text {
+    font-size: 12px;
+  }
+
+  .selected-date {
+    font-size: 13px;
+  }
+}
