@@ -16,7 +16,7 @@ import {
 } from 'reactstrap';
 import { connect } from 'react-redux';
 import { HashLink as Link } from 'react-router-hash-link';
-import './SummaryBar.css';
+import styles from './SummaryBar.module.css';
 import { ENDPOINTS, ApiEndpoint } from '~/utils/URL';
 import axios from 'axios';
 import hasPermission from '~/utils/permissions';
