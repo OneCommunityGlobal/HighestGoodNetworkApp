@@ -6,7 +6,7 @@
 /* eslint-disable no-param-reassign */
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { connect , useDispatch } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import {
   Form,
   FormGroup,
@@ -67,7 +67,22 @@ const customImageUploadHandler = () =>
 function TimeEntryForm(props) {
   /* ---------------- variables -------------- */
   // props from parent
- const { from, sendStop, edit, data, toggle, isOpen, tab, darkMode, userProfile, userProjects, timerConnected, maxHoursPerEntry } = props;
+  const {
+    from,
+    sendStop,
+    edit,
+    data,
+    toggle,
+    isOpen,
+    tab,
+    darkMode,
+    userProfile,
+    userProjects,
+    onTimeSubmitted,
+    sessionId,
+    timerConnected,
+    maxHoursPerEntry,
+  } = props;
   // props from store
   const { authUser } = props;
   const dispatch = useDispatch();
@@ -145,7 +160,9 @@ function TimeEntryForm(props) {
   const [timeEntryFormUserProjects, setTimeEntryFormUserProjects] = useState(userProjects || []);
   const [timeEntryFormUserTasks, setTimeEntryFormUserTasks] = useState([]);
   const [projectOrTaskId, setProjectOrTaskId] = useState(timeEntryInitialProjectOrTaskId);
- const [isAsyncDataLoaded, setIsAsyncDataLoaded] = useState(Boolean(userProjects && userProjects.length));
+  const [isAsyncDataLoaded, setIsAsyncDataLoaded] = useState(
+    Boolean(userProjects?.length),
+  );
   const [errors, setErrors] = useState({});
   const [reminder, setReminder] = useState(initialReminder);
   const [isTangibleInfoModalVisible, setTangibleInfoModalVisibility] = useState(false);
@@ -355,6 +372,16 @@ function TimeEntryForm(props) {
         case 'Timer':
           sendStop();
           clearForm();
+          // Enhanced callback with additional data
+          if (onTimeSubmitted) {
+            onTimeSubmitted({
+              hours: formHours,
+              minutes: formMinutes,
+              sessionId,
+              timestamp: new Date().toISOString(),
+              userProfile: `${userProfile?.firstName || ''} ${userProfile?.lastName || ''}`.trim(),
+            });
+          }
           dispatch(
             updateIndividualTaskTime({
               newTime: { hours: formHours, minutes: formMinutes },
@@ -590,8 +617,8 @@ function TimeEntryForm(props) {
       if (isAsyncDataLoaded) {
         const options = buildOptions();
       setProjectsAndTasksOptions(options);
-      }
-    }, [isAsyncDataLoaded, timeEntryFormUserProjects, timeEntryFormUserTasks]);
+    }
+  }, [isAsyncDataLoaded, timeEntryFormUserProjects, timeEntryFormUserTasks]);
 
   // grab form data before editing
   useEffect(() => {
@@ -846,13 +873,26 @@ function TimeEntryForm(props) {
 }
 
 TimeEntryForm.propTypes = {
+  from: PropTypes.string,
+  sendStop: PropTypes.func,
   edit: PropTypes.bool.isRequired,
   toggle: PropTypes.func.isRequired,
   isOpen: PropTypes.bool.isRequired,
   data: PropTypes.any.isRequired,
-  handleStop: PropTypes.func,
+  tab: PropTypes.number,
+  darkMode: PropTypes.bool,
+  userProfile: PropTypes.shape({
+    firstName: PropTypes.string,
+    lastName: PropTypes.string,
+    timeZone: PropTypes.string,
+  }),
+  userProjects: PropTypes.arrayOf(PropTypes.object), // eslint-disable-line react/forbid-prop-types
+  onTimeSubmitted: PropTypes.func,
+  sessionId: PropTypes.string,
+  timerStats: PropTypes.object, // eslint-disable-line react/forbid-prop-types
   timerConnected: PropTypes.bool,
   maxHoursPerEntry: PropTypes.number,
+  handleStop: PropTypes.func,
 };
 
 const mapStateToProps = state => ({
