@@ -1,10 +1,10 @@
 .card {
-  width: 260px;
-  flex: 1 1 260px;
   border: 1px solid #ddd;
   border-radius: 12px;
   padding: 20px;
   background: white;
+  width: 260px;
+  flex: 1 1 260px;
 }
 
 
