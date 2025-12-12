@@ -16,7 +16,7 @@ import SetUpFinalDayButton from '~/components/UserManagement/SetUpFinalDayButton
 import './BasicInformationTab.css';
 import { boxStyle, boxStyleDark } from '~/styles';
 import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
-import { formatDateLocal } from '~/utils/formatDate';
+import { formatEndDatePST, formatDateLocal } from '~/utils/formatDate';
 import { ENDPOINTS } from '~/utils/URL';
 import axios from 'axios';
 import { isString } from 'lodash';
@@ -911,6 +911,10 @@ const BasicInformationTab = props => {
     </>
   );
 
+  const handleFinalDayChange = (updatedUser) => {
+  setUserProfile(updatedUser);
+};
+
   const endDateComponent = (
     <>
       <Col md={desktopDisplay ? '5' : ''}>
@@ -922,7 +926,7 @@ const BasicInformationTab = props => {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Label className={darkMode ? 'text-light' : ''} style={{ margin: '0' }}>
             {userProfile.endDate
-              ? formatDateLocal(userProfile.endDate)
+              ? formatEndDatePST(userProfile.endDate)
               : 'N/A'}
           </Label>
           {canEdit && canEditEndDate && (
@@ -932,6 +936,7 @@ const BasicInformationTab = props => {
               isBigBtn={true}
               userProfile={userProfile}
               darkMode={darkMode}
+              onFinalDaySave={handleFinalDayChange}
             />
           )}
         </div>

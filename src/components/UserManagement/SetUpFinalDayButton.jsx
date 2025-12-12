@@ -6,6 +6,7 @@ import { boxStyle } from '../../styles';
 import SetUpFinalDayPopUp from './SetUpFinalDayPopUp';
 import { SET_FINAL_DAY, CANCEL } from '../../languages/en/ui';
 import { FinalDay } from '../../utils/enums';
+import { formatEndDatePST } from '../../utils/formatDate';
 
 function SetUpFinalDayButton(props) {
   const { darkMode, userProfile, onFinalDaySave } = props;
@@ -40,11 +41,13 @@ function SetUpFinalDayButton(props) {
   };
 
   const handleSaveFinalDay = async (finalDayDate) => {
+    
+    const finalInstant = formatEndDatePST(finalDayDate);
     try {
       await updateUserFinalDayStatusIsSet(
         userProfile,
         'Active',
-        finalDayDate,
+        finalInstant,
         FinalDay.FinalDay,
       )(dispatch);
 
