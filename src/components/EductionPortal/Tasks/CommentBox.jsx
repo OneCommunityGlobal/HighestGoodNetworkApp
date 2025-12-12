@@ -24,6 +24,7 @@ function CommentBox({
 
     if (trimmedComment.length > 1000) {
       setError('Comment must be less than 1000 characters');
+      textareaRef.current?.focus();
       return;
     }
 
@@ -33,9 +34,17 @@ function CommentBox({
   };
 
   const handleChange = e => {
-    setComment(e.target.value);
+    const newValue = e.target.value;
+    setComment(newValue);
+
+    // Clear error when user starts typing
     if (error) {
       setError('');
+    }
+
+    // Show error immediately when exceeding 1000 characters
+    if (newValue.length > 1000) {
+      setError('Comment must be less than 1000 characters');
     }
   };
 
@@ -53,18 +62,21 @@ function CommentBox({
             onChange={handleChange}
             disabled={disabled}
             rows={4}
-            maxLength={1000}
           />
           {error && <div className={styles.errorMessage}>{error}</div>}
         </div>
         <div className={styles.commentActions}>
-          <span className={`${styles.characterCount} ${darkMode ? styles.characterCountDark : ''}`}>
+          <span
+            className={`${styles.characterCount} ${darkMode ? styles.characterCountDark : ''} ${
+              comment.length > 1000 ? styles.characterCountError : ''
+            }`}
+          >
             {comment.length}/1000
           </span>
           <button
             type="submit"
             className={`${styles.submitButton} ${darkMode ? styles.submitButtonDark : ''}`}
-            disabled={disabled || !comment.trim()}
+            disabled={disabled}
           >
             Submit
           </button>

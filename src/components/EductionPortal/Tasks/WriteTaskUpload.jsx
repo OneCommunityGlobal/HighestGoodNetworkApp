@@ -218,6 +218,8 @@ export default function WriteTaskUpload() {
   const { taskId } = useParams();
   const location = useLocation();
   const darkMode = useSelector(state => state.theme?.darkMode);
+  const authUser = useSelector(state => state.auth?.user);
+  const currentUserId = authUser?.userid || null;
 
   const [userName, setUserName] = useState('Student Name');
   useEffect(() => {
@@ -253,6 +255,8 @@ export default function WriteTaskUpload() {
         return parsed.map(comment => ({
           ...comment,
           createdAt: new Date(comment.createdAt),
+          // Ensure userId exists for backward compatibility
+          userId: comment.userId || null,
         }));
       }
     } catch (err) {
@@ -265,6 +269,7 @@ export default function WriteTaskUpload() {
         content: 'Great work on this task! The approach you took is very thorough.',
         author: 'Prof. Smith',
         role: 'Educator',
+        userId: null, // Educator comments don't have userId
         createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000),
         edited: false,
       },
@@ -273,6 +278,7 @@ export default function WriteTaskUpload() {
         content: 'I have a question about the second part of the assignment. Can you clarify?',
         author: userName,
         role: 'Student',
+        userId: currentUserId, // Use current user's ID
         createdAt: new Date(Date.now() - 30 * 60 * 1000),
         edited: false,
       },
@@ -328,11 +334,17 @@ export default function WriteTaskUpload() {
 
   const handleCommentSubmit = content => {
     try {
+      if (!currentUserId) {
+        error('Unable to identify user. Please refresh the page and try again.');
+        return;
+      }
+
       const newComment = {
         id: Date.now(),
         content,
         author: userName,
         role: 'Student',
+        userId: currentUserId, // Store userId for security
         createdAt: new Date(),
         edited: false,
       };
@@ -350,6 +362,20 @@ export default function WriteTaskUpload() {
 
   const handleDeleteComment = commentId => {
     try {
+      // Find the comment to delete
+      const commentToDelete = comments.find(comment => comment.id === commentId);
+
+      // Security check: Only allow deleting own comments
+      if (!commentToDelete) {
+        error('Comment not found.');
+        return;
+      }
+
+      if (commentToDelete.userId !== currentUserId) {
+        error('You can only delete your own comments.');
+        return;
+      }
+
       const updatedComments = comments.filter(comment => comment.id !== commentId);
       setComments(updatedComments);
 
@@ -592,7 +618,7 @@ export default function WriteTaskUpload() {
               <CommentList
                 comments={comments}
                 onDeleteComment={handleDeleteComment}
-                currentUser={userName}
+                currentUserId={currentUserId}
               />
             </section>
           </div>
