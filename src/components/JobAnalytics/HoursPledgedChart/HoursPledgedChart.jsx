@@ -173,19 +173,19 @@ function HoursPledgedChart() {
             height={400}
             data={chartData}
             layout="vertical"
-            margin={{ top: 20, right: 30, left: 100, bottom: 20 }}
+            margin={{ top: 20, right: 30, left: 100, bottom: 60 }}
           >
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis type="number" dataKey="avgHours">
-              <Label value="Average Hours Pledged" position="insideBottom" offset={-10} />
+            <XAxis type="number" dataKey="avgHours" width={120} tickMargin={15}>
+              <Label value="Average Hours Pledged" position="insideBottom" offset={-20} dy={10} />
             </XAxis>
-            <YAxis type="category" dataKey="role">
+            <YAxis type="category" dataKey="role" width={120} tickMargin={15}>
               <Label
                 value="Name of Role"
                 angle={-90}
                 position="outsideCenter"
                 offset={-20}
-                dx={-90}
+                dx={-70}
               />
             </YAxis>
             <Tooltip
