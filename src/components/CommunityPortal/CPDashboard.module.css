@@ -146,11 +146,6 @@
   font-weight: 600;
 }
 
-.filter-item input:not([type='checkbox']):not([type='radio']),
-.filter-item select {
-  padding: 12px 15px;
-}
-
 .filter-section-divider {
   height: fit-content;
   margin: 10px 10px;
