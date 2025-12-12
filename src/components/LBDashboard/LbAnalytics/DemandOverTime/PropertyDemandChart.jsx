@@ -13,6 +13,12 @@ import {
   Tooltip,
   Title as ChartTitle,
 } from 'chart.js';
+import {
+  getItemColors,
+  createChartOptions,
+  createDatasets,
+  getChartTitle,
+} from '../../../../utils/lbDashboard/chartsUtils';
 
 ChartJS.register(
   LineElement,
@@ -25,128 +31,15 @@ ChartJS.register(
   ChartDataLabels,
 );
 
-const metricLabels = {
-  pageVisits: 'Page Visits',
-  numberOfBids: 'Number of Bids',
-  averageRating: 'Average Rating',
-  averageBid: 'Average Bid',
-  finalPrice: 'Final Price/Income',
-  occupancyRate: 'Occupancy Rate (%)',
-  averageDuration: 'Average Duration of Stay (days)',
-};
-
-const metricCategories = {
-  pageVisits: 'Demand',
-  numberOfBids: 'Demand',
-  averageRating: 'Demand',
-  averageBid: 'Revenue',
-  finalPrice: 'Revenue',
-  occupancyRate: 'Vacancy',
-  averageDuration: 'Vacancy',
-};
-
-function getPropertyColors(properties) {
-  const colors = [
-    '#FF6B6B',
-    '#4ECDC4',
-    '#FFD93D',
-    '#1A535C',
-    '#FF9F1C',
-    '#2EC4B6',
-    '#E71D36',
-    '#3A86FF',
-  ];
-  const colorMap = {};
-  let idx = 0;
-  properties.forEach(p => {
-    if (!colorMap[p]) {
-      colorMap[p] = colors[idx % colors.length];
-      idx++;
-    }
-  });
-  return colorMap;
-}
-
 const PropertyDemandChart = ({ data, metric, chartLabel, darkMode }) => {
   const months = data.length > 0 ? data[0].data.map(d => d.month) : [];
-
   const propertyNames = data.map(p => p.name);
-  const propertyColors = getPropertyColors(propertyNames);
+  const propertyColors = getItemColors(propertyNames);
+  const datasets = createDatasets(data, propertyColors);
 
-  const datasets = data.map(property => ({
-    label: property.name,
-    data: property.data.map(point => point.value),
-    borderColor: propertyColors[property.name],
-    backgroundColor: propertyColors[property.name],
-    fill: false,
-    tension: 0.4,
-    pointRadius: 5,
-    pointHoverRadius: 7,
-  }));
-
-  const chartData = {
-    labels: months,
-    datasets,
-  };
-
-  const options = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        position: 'bottom',
-        labels: { font: { size: 13 }, color: darkMode ? '#fff' : '#222' },
-      },
-      title: { display: false },
-      datalabels: {
-        color: darkMode ? '#fff' : '#333',
-        font: { weight: 'bold', size: 11 },
-        align: 'top',
-        anchor: 'end',
-        offset: 4,
-        clip: false,
-        display: 'auto',
-        formatter: value => value,
-      },
-      tooltip: {
-        enabled: true,
-        callbacks: {
-          label: function(context) {
-            return `${context.dataset.label}: ${context.parsed.y}`;
-          },
-        },
-      },
-    },
-    layout: {
-      padding: 20,
-    },
-    scales: {
-      x: {
-        title: { display: true, text: 'Month', color: darkMode ? '#fff' : '#222' },
-        offset: true,
-        ticks: {
-          autoSkip: false,
-          maxRotation: 45,
-          minRotation: 30,
-          font: { size: 12 },
-          color: darkMode ? '#fff' : '#222',
-        },
-      },
-      y: {
-        title: {
-          display: true,
-          text: metricLabels[metric] || metric,
-          color: darkMode ? '#fff' : '#222',
-        },
-        beginAtZero: true,
-        ticks: { font: { size: 12 }, color: darkMode ? '#fff' : '#222' },
-      },
-    },
-  };
-
-  const chartTitleText =
-    chartLabel ||
-    `${metricCategories[metric] || 'Metric'}: ${metricLabels[metric] || metric} by Property`;
+  const chartData = { labels: months, datasets };
+  const options = createChartOptions(metric, darkMode);
+  const chartTitleText = getChartTitle(chartLabel, metric, 'Property');
 
   return (
     <div className={`${styles.chartCard} ${darkMode ? styles.darkChartCard : ''}`}>
