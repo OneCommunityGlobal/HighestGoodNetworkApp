@@ -1,23 +1,21 @@
 import PropTypes from 'prop-types';
 import { Doughnut } from 'react-chartjs-2';
 import { Chart, ArcElement } from 'chart.js';
-import styles from './VolunteerStatusPieChart.module.css';
+import styles from './MentorStatusPieChart.module.css';
 import externalLabelGuidesPlugin from './externalLabelGuidesPlugin';
 
 Chart.register(ArcElement);
 
-function VolunteerStatusPieChart({
-  data: { totalVolunteers, percentageChange, data: volunteerData },
+function MentorStatusPieChart({
+  data: { totalMentors, percentageChange, data: mentorData },
   comparisonType,
 }) {
-  // Debug: Log the data used for the chart
-  // console.log('VolunteerStatusPieChart data:', { volunteerData, totalVolunteers });
   const chartData = {
-    labels: volunteerData.map(item => item.label),
+    labels: mentorData.map(item => item.label),
     datasets: [
       {
-        data: volunteerData.map(item => item.value),
-        backgroundColor: ['#4C4AF5', '#2CCCF8', '#FF00C3'],
+        data: mentorData.map(item => item.value),
+        backgroundColor: ['#287D5A', '#2D9DA6', '#F26B38'],
         borderWidth: 1,
       },
     ],
@@ -26,7 +24,6 @@ function VolunteerStatusPieChart({
   const options = {
     plugins: {
       datalabels: {
-        // Hide in-slice labels because values are already shown with external guides.
         display: false,
       },
       legend: {
@@ -37,39 +34,40 @@ function VolunteerStatusPieChart({
       },
       externalLabelGuides: {
         offset: 20,
-        horizontalSpread: 34,
-        horizontalSpreadMap: { 0: 34, 1: 48, 2: 5 },
-        verticalOffsetMap: { 0: 38, 1: -22, 2: -50 },
+        horizontalSpread: 32,
+        horizontalSpreadMap: { 0: 32, 1: 46, 2: 5 },
+        verticalOffsetMap: { 0: 34, 1: -20, 2: -46 },
         sideMap: { 0: 1, 1: -1, 2: 1 },
-        total: totalVolunteers,
+        total: totalMentors,
         formatter: ({ value, percentage }) => [`${value}`, `(${percentage}%)`],
       },
     },
     maintainAspectRatio: false,
-    cutout: '55%',
+    cutout: '60%',
     layout: {
-      padding: 24,
+      padding: 20,
     },
   };
 
   const percentageChangeColor = percentageChange >= 0 ? 'green' : 'red';
 
   return (
-    <section className={styles.volunteerStatusContainer} aria-label="Volunteer Status Overview">
+    <section className={styles.mentorStatusContainer} aria-label="Mentor Status Overview">
       <div
-        className={styles.volunteerStatusChart}
-        data-chart="volunteer-status"
+        className={styles.mentorStatusChart}
+        data-chart="mentor-status"
         role="img"
-        aria-label="Volunteer Status Pie Chart"
+        aria-label="Mentor Status Pie Chart"
       >
         <Doughnut data={chartData} options={options} plugins={[externalLabelGuidesPlugin]} />
-        <div className={styles.volunteerStatusCenter}>
-          <h2 className={styles.volunteerStatusHeading}>TOTAL VOLUNTEERS*</h2>
-          <p className={styles.volunteerCount}>{totalVolunteers}</p>
+        <div className={styles.mentorStatusCenter}>
+          <h2 className={styles.mentorStatusHeading}>TOTAL MENTORS</h2>
+          <p className={styles.mentorCount}>{totalMentors}</p>
           {comparisonType !== 'No Comparison' && (
             <p
+              className={styles.mentorPercentageChange}
               style={{ color: percentageChangeColor }}
-              aria-label={`Percentage change: ${percentageChange}% ${comparisonType.toLowerCase()}`}
+              aria-label={`Mentor percentage change: ${percentageChange}% ${comparisonType.toLowerCase()}`}
             >
               {percentageChange >= 0
                 ? `+${percentageChange}% ${comparisonType.toUpperCase()}`
@@ -78,11 +76,11 @@ function VolunteerStatusPieChart({
           )}
         </div>
       </div>
-      <div className={styles.volunteerStatusLabels}>
-        {volunteerData.map((item, index) => (
-          <div key={item.label} className={styles.volunteerStatusLabel}>
+      <div className={styles.mentorStatusLabels}>
+        {mentorData.map((item, index) => (
+          <div key={item.label} className={styles.mentorStatusLabel}>
             <span
-              className={styles.volunteerStatusColor}
+              className={styles.mentorStatusColor}
               style={{ backgroundColor: chartData.datasets[0].backgroundColor[index] }}
               aria-hidden="true"
             />
@@ -94,9 +92,9 @@ function VolunteerStatusPieChart({
   );
 }
 
-VolunteerStatusPieChart.propTypes = {
+MentorStatusPieChart.propTypes = {
   data: PropTypes.shape({
-    totalVolunteers: PropTypes.number.isRequired,
+    totalMentors: PropTypes.number.isRequired,
     percentageChange: PropTypes.number.isRequired,
     data: PropTypes.arrayOf(
       PropTypes.shape({
@@ -108,4 +106,4 @@ VolunteerStatusPieChart.propTypes = {
   comparisonType: PropTypes.string.isRequired,
 };
 
-export default VolunteerStatusPieChart;
+export default MentorStatusPieChart;
