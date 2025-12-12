@@ -344,7 +344,7 @@ function JobFormBuilder() {
         {role === 'Owner' || role === 'Administrator' ? (
           <div className={styles.customForm}>
             <p className={styles.jobformDesc}>
-              Use this builder to create and edit question sets for job applications. Choose a
+              Use this form to create and edit question sets for job applications. Choose a
               position, then customize the form by adding, removing, or rearranging fields before
               saving your template.
             </p>
