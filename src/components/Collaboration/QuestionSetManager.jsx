@@ -1,3 +1,5 @@
+/* eslint-disable no-alert */
+/* eslint-disable no-console */
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
@@ -22,28 +24,38 @@ function QuestionSetManager({
   const [editingIndex, setEditingIndex] = useState(null);
 
   const api = {
+    // Get all templates
     getTemplates: async () => {
       const response = await axios.get(ENDPOINTS.GET_ALL_TEMPLATES);
       return response.data.templates;
     },
+
+    // Create a new template
     createTemplate: async data => {
       const response = await axios.post(ENDPOINTS.CREATE_TEMPLATE, data);
       return response.data.template;
     },
+
+    // Update an existing template
     updateTemplate: async (id, data) => {
       const response = await axios.put(ENDPOINTS.UPDATE_TEMPLATE(id), data);
       return response.data.template;
     },
+
+    // Delete a template
     deleteTemplate: async id => {
       const response = await axios.delete(ENDPOINTS.DELETE_TEMPLATE(id));
       return response.data;
     },
+
+    // Get template by ID
     getTemplateById: async id => {
       const response = await axios.get(ENDPOINTS.GET_TEMPLATE_BY_ID(id));
       return response.data.template;
     },
   };
 
+  // Load templates from API on component mount
   useEffect(() => {
     const fetchTemplates = async () => {
       setIsLoading(true);
@@ -55,6 +67,7 @@ function QuestionSetManager({
       } catch (err) {
         console.error('Failed to fetch templates:', err);
 
+        // Fallback to localStorage if API fails
         try {
           const savedTemplates = localStorage.getItem('jobFormTemplates');
           if (savedTemplates) {
@@ -97,8 +110,10 @@ function QuestionSetManager({
           return;
         }
 
+        // Find the existing template to get its ID
         const existingTemplate = templates.find(t => t.name === templateName);
 
+        // Update the template
         const updatedTemplate = await api.updateTemplate(existingTemplate._id, {
           name: templateName,
           fields: formFields.map(field => ({
@@ -111,6 +126,7 @@ function QuestionSetManager({
           })),
         });
 
+        // Update local state
         setTemplates(templates.map(t => (t._id === updatedTemplate._id ? updatedTemplate : t)));
 
         alert(`Template "${templateName}" updated successfully!`);
@@ -128,8 +144,11 @@ function QuestionSetManager({
           })),
         });
 
+        // Update local state
         const updatedTemplates = [...templates, newTemplate];
         setTemplates(updatedTemplates);
+
+        // Also saved to localStorage as backup
         localStorage.setItem('jobFormTemplates', JSON.stringify(updatedTemplates));
 
         alert(`Template "${templateName}" created successfully!`);
@@ -140,6 +159,7 @@ function QuestionSetManager({
     } catch (err) {
       console.error('Failed to save template:', err);
 
+      // Save to localStorage as fallback
       try {
         const templateExists = templates.some(t => t.name === templateName);
         if (templateExists) {
@@ -152,7 +172,7 @@ function QuestionSetManager({
           const newTemplates = [
             ...templates,
             {
-              id: Date.now(),
+              id: Date.now(), // Add a temporary ID for local templates
               name: templateName,
               fields: formFields,
             },
@@ -172,6 +192,7 @@ function QuestionSetManager({
     }
   };
 
+  // Load template
   const loadTemplate = async () => {
     if (selectedTemplate === '') {
       alert('Please select a template to load');
@@ -185,6 +206,7 @@ function QuestionSetManager({
       const template = templates.find(t => t.name === selectedTemplate);
 
       if (template) {
+        // Confirm if user wants to replace current form fields
         if (formFields.length > 0) {
           const confirmLoad = window.confirm('This will replace your current form. Continue?');
           if (!confirmLoad) {
@@ -193,10 +215,13 @@ function QuestionSetManager({
           }
         }
 
+        // Check if template has _id (server template) or not (local template)
         if (template._id) {
+          // Get the full template data from the server
           const fullTemplate = await api.getTemplateById(template._id);
           onImportQuestions(fullTemplate.fields);
         } else {
+          // Use the local template directly
           onImportQuestions(template.fields);
         }
 
@@ -211,6 +236,7 @@ function QuestionSetManager({
     }
   };
 
+  // Add template to existing fields
   const appendTemplate = async () => {
     if (selectedTemplate === '') {
       alert('Please select a template to append');
@@ -224,10 +250,13 @@ function QuestionSetManager({
       const template = templates.find(t => t.name === selectedTemplate);
 
       if (template) {
+        // Check if template has _id (server template) or not (local template)
         if (template._id) {
+          // Get template fields for appending from the server
           const templateData = await api.getTemplateById(template._id);
           onImportQuestions([...formFields, ...templateData.fields]);
         } else {
+          // Use the local template directly
           onImportQuestions([...formFields, ...template.fields]);
         }
 
@@ -242,6 +271,7 @@ function QuestionSetManager({
     }
   };
 
+  // Delete a template
   const deleteTemplate = async () => {
     if (selectedTemplate === '') {
       alert('Please select a template to delete');
@@ -260,10 +290,13 @@ function QuestionSetManager({
       const template = templates.find(t => t.name === selectedTemplate);
 
       if (template) {
+        // Check if template has _id (server template) or not (local template)
         if (template._id) {
+          // Delete from server
           await api.deleteTemplate(template._id);
         }
 
+        // Always remove from local state
         const filteredTemplates = templates.filter(t => t.name !== selectedTemplate);
         setTemplates(filteredTemplates);
         localStorage.setItem('jobFormTemplates', JSON.stringify(filteredTemplates));
@@ -275,11 +308,12 @@ function QuestionSetManager({
       console.error('Failed to delete template:', err);
       setError('Failed to delete template. Please try again later.');
 
+      // Still delete from local state
       const filteredTemplates = templates.filter(t => t.name !== selectedTemplate);
       setTemplates(filteredTemplates);
       localStorage.setItem('jobFormTemplates', JSON.stringify(filteredTemplates));
       setSelectedTemplate('');
-      alert('Template deleted from local storage only.');
+      alert(`Template deleted from local storage only.`);
     } finally {
       setIsLoading(false);
     }
