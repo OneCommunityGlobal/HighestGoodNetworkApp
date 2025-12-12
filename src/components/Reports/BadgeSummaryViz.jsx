@@ -14,7 +14,7 @@ import {
   UncontrolledTooltip,
 } from 'reactstrap';
 import { useSelector } from 'react-redux';
-import BadgeImage from 'components/Badge/BadgeImage';
+import BadgeImage from '~/components/Badge/BadgeImage';
 import { boxStyle, boxStyleDark } from '../../styles';
 import '../Badge/BadgeReport.css';
 import './BadgeSummaryViz.css';
@@ -113,7 +113,7 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard, personalBestMaxHrs
                                   >
                                     Dates
                                   </DropdownToggle>
-                                  <DropdownMenu>
+                                  <DropdownMenu className='badge_dropdown'>
                                     {value.earnedDate.map((date, valIndex) => (
                                       // eslint-disable-next-line react/no-array-index-key
                                       <DropdownItem key={`date-${value._id}-${valIndex}`}>

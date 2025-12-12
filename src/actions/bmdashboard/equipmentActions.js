@@ -1,11 +1,12 @@
 import axios from 'axios';
-import { SET_EQUIPMENTS } from '../../constants/bmdashboard/equipmentConstants';
+import { toast } from 'react-toastify';
+import { GET_EQUIPMENT_BY_ID, SET_EQUIPMENTS } from '../../constants/bmdashboard/equipmentConstants';
 import { GET_ERRORS } from '../../constants/errors';
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 
 export const setEquipment = payload => {
   return {
-    type: SET_EQUIPMENTS,
+    type: GET_EQUIPMENT_BY_ID,
     payload,
   };
 };
@@ -38,17 +39,17 @@ export const fetchEquipmentById = equipmentId => {
   };
 };
 
-export const fetchAllEquipments = () => {
-  return async dispatch => {
-    axios
-      .get(ENDPOINTS.BM_EQUIPMENTS)
-      .then(res => {
-        dispatch(setEquipments(res.data));
-      })
-      .catch(err => {
-        dispatch(setErrors(err));
-      });
-  };
+export const fetchAllEquipments = (projectId = null) => async dispatch => {
+  const url = projectId
+    ? `${ENDPOINTS.BM_EQUIPMENTS}?project=${projectId}`
+    : ENDPOINTS.BM_EQUIPMENTS;
+
+  try {
+    const res = await axios.get(url);
+    dispatch(setEquipments(res.data));
+  } catch (err) {
+    dispatch(setErrors(err));
+  }
 };
 
 export const addEquipmentType = async body => {
@@ -72,3 +73,21 @@ export const purchaseEquipment = async body => {
       return err.message;
     });
 };
+
+export const updateMultipleEquipmentLogs = (projectId, bulkArr) => dispatch => {
+  axios
+    .put(
+      `${ENDPOINTS.BM_EQUIPMENT_LOGS}?project=${projectId}`, 
+      bulkArr
+    )
+    .then(res => {
+      dispatch(setEquipments(res.data)); 
+      toast.success('Equipment logs updated successfully!');  
+      return res.data;
+    })
+    .catch(err => {
+      dispatch(setErrors(err));
+      toast.error('Failed to update equipment logs.');
+      throw err;
+    });
+}

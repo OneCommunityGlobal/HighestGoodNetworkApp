@@ -1,0 +1,408 @@
+/* Chart labels stay dark in dark mode for readability against light label chips */
+.containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer .recharts-wrapper text,
+.containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer .recharts-wrapper tspan {
+  fill: #000 !important;
+  color: #000 !important;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.25), 0 0 2px #fff;
+}
+/* Chart and graph titles/text should be white in dark mode for visibility */
+.containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer h3,
+.containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer p,
+.containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer .totalOrgChartTitle,
+.containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer .volunteerStatusGrid h3 {
+  color: #fff !important;
+}
+.containerTotalOrgWrapper {
+  min-height: 100%;
+  background-color: #fff;
+  margin: 0;
+  padding: 20px;
+  width: 100%;
+}
+
+/* Unified dark mode background */
+.containerTotalOrgWrapper:global(.bg-oxford-blue) {
+  background-color: #1c2541 !important;
+}
+
+/* Dark mode dropdown and button consistency */
+.containerTotalOrgWrapper:global(.bg-oxford-blue) .reportHeaderActions :global(.dropdown-toggle) {
+  background-color: #6f42c1 !important;
+  border-color: #6f42c1 !important;
+  color: white !important;
+}
+
+.containerTotalOrgWrapper:global(.bg-oxford-blue) .reportHeaderActions :global(.dropdown-toggle):hover {
+  background-color: #5a359a !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(111, 66, 193, 0.4) !important;
+}
+
+.containerTotalOrgWrapper:global(.bg-oxford-blue) .reportHeaderActions :global(.dropdown-menu) {
+  background-color: #34495e !important;
+  border: 1px solid #6f42c1 !important;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3) !important;
+}
+
+.containerTotalOrgWrapper:global(.bg-oxford-blue) .reportHeaderActions :global(.dropdown-item) {
+  background-color: transparent !important;
+  color: #fff !important;
+}
+
+.containerTotalOrgWrapper:global(.bg-oxford-blue) .reportHeaderActions :global(.dropdown-item):hover {
+  background-color: #6f42c1 !important;
+  color: #fff !important;
+  transform: translateX(4px) !important;
+}
+
+/* Dark mode button styling */
+.containerTotalOrgWrapper:global(.bg-oxford-blue) .reportHeaderActions button {
+  background-color: #007bff !important;
+  color: white !important;
+  box-shadow: 0 2px 6px rgba(0, 123, 255, 0.3) !important;
+}
+
+.containerTotalOrgWrapper:global(.bg-oxford-blue) .reportHeaderActions button:hover {
+  background-color: #0056b3 !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4) !important;
+}
+
+.containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer {
+  background-color: #1c2541 !important;
+  border: none !important;
+}
+
+.containerTotalOrgWrapper:global(.bg-oxford-blue) :global(.recharts-surface) {
+  background-color: #1c2541;
+}
+
+.containerTotalOrgWrapper:global(.bg-oxford-blue) .totalOrgChartTitle p {
+  color: #fff !important;
+}
+
+.containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer :global(.recharts-text),
+.containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer :global(.recharts-label),
+.containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer :global(.recharts-cartesian-axis-tick-value),
+.containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer text,
+.containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer tspan {
+  fill: #fff !important;
+  color: #fff !important;
+}
+
+.containerTotalOrgWrapper:global(.bg-oxford-blue) :global(.recharts-text) tspan,
+.containerTotalOrgWrapper:global(.bg-oxford-blue) :global(.recharts-label) tspan,
+.containerTotalOrgWrapper:global(.bg-oxford-blue) :global(.recharts-cartesian-axis-tick-value) tspan,
+.containerTotalOrgWrapper:global(.bg-oxford-blue) text tspan {
+  fill: #fff !important;
+}
+
+.containerTotalOrgWrapper:global(.bg-oxford-blue) :global(.row) > :global(.col) h3,
+.containerTotalOrgWrapper:global(.bg-oxford-blue) :global(.Collapsible__trigger) {
+  color: #fff;
+}
+
+
+
+.containerTotalOrgWrapper:global(.bg-oxford-blue) :global(.recharts-text),
+.containerTotalOrgWrapper:global(.bg-oxford-blue) :global(.recharts-label),
+.containerTotalOrgWrapper:global(.bg-oxford-blue) :global(.recharts-cartesian-axis-tick-value) {
+  fill: #fff !important;
+}
+
+.containerTotalOrgWrapper.bg-oxford-blue h3 {
+  color: #fff;
+}
+
+.pageRow {
+  width: 100% !important;
+  margin: 1px 10px 15px 10px;
+}
+
+/* Header section styles */
+.totalOrgReportHeaderRow  {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  width: 100%;
+  padding: 20px;
+  position: relative;
+  min-height: 70px;
+  overflow: visible;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.reportHeaderTitle {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex: 1;
+  min-height: 50px;
+  overflow: visible;
+}
+
+/* Beautiful header title styling */
+.reportHeaderTitle h3 {
+  margin: 0;
+  padding: 5px 0;
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: #2d3748;
+  text-align: left;
+  letter-spacing: -0.5px;
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+
+/* Dark mode header styling */
+.containerTotalOrgWrapper:global(.bg-oxford-blue) .reportHeaderTitle h3 {
+  color: #ffffff !important;
+}
+.reportHeaderActions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+/* Beautiful dropdown styling */
+.reportHeaderActions :global(.dropdown) {
+  position: relative;
+}
+
+.reportHeaderActions :global(.dropdown-toggle) {
+  padding: 12px 20px !important;
+  border: none !important;
+  border-radius: 10px !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+  transition: all 0.3s ease !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 44px !important;
+  min-width: 120px !important;
+  background-color: #6f42c1 !important;
+  color: white !important;
+  box-shadow: 0 2px 6px rgba(111, 66, 193, 0.3) !important;
+}
+
+.reportHeaderActions :global(.dropdown-toggle):hover {
+  background-color: #5a359a !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(111, 66, 193, 0.4) !important;
+}
+
+.reportHeaderActions :global(.dropdown-toggle):focus {
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(111, 66, 193, 0.3) !important;
+}
+
+/* Beautiful button styling */
+.reportHeaderActions button {
+  padding: 12px 24px !important;
+  border: none !important;
+  border-radius: 10px !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  transition: all 0.3s ease !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 44px !important;
+  background-color: #007bff !important;
+  color: white !important;
+  box-shadow: 0 2px 6px rgba(0, 123, 255, 0.3) !important;
+  text-transform: none !important;
+  letter-spacing: 0.3px !important;
+}
+
+.reportHeaderActions button:hover {
+  background-color: #0056b3 !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4) !important;
+}
+
+.reportHeaderActions button:disabled {
+  background-color: #6c757d !important;
+  cursor: not-allowed !important;
+  opacity: 0.6 !important;
+  transform: none !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+.reportHeaderActions button:focus {
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.3) !important;
+}
+
+/* Enhanced dropdown menu styling */
+.reportHeaderActions :global(.dropdown-menu) {
+  border: none !important;
+  border-radius: 12px !important;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+  padding: 8px 0 !important;
+  margin-top: 8px !important;
+  min-width: 180px !important;
+  background-color: white !important;
+}
+
+.reportHeaderActions :global(.dropdown-item) {
+  padding: 12px 20px !important;
+  font-weight: 500 !important;
+  transition: all 0.2s ease !important;
+  border: none !important;
+  background-color: transparent !important;
+  color: #333 !important;
+}
+
+.reportHeaderActions :global(.dropdown-item):hover {
+  background-color: #f8f9fa !important;
+  color: #6f42c1 !important;
+  transform: translateX(4px) !important;
+}
+
+/* Dark mode dropdown consistency */
+/* Component containers - Clean borderless design */
+.componentContainer {
+  margin: 15px 0;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 10px;
+  border: 1.5px solid #e0e0e0;
+  box-shadow: 0 4px 16px rgba(37,99,235,0.10), 0 1.5px 4px rgba(0,0,0,0.08);
+}
+
+.componentBorder {
+  border: 1.5px solid #e0e0e0;
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(37,99,235,0.10), 0 1.5px 4px rgba(0,0,0,0.08);
+  background-color: #fff;
+  overflow: hidden;
+}
+
+.componentBorderLoose {
+  overflow: visible;
+}
+.containerTotalOrgWrapper:global(.bg-oxford-blue) .componentBorder {
+  background-color: #1c2541 !important;
+  border: 1.5px solid #2f4157 !important;
+  box-shadow: 0 4px 24px rgba(255,255,255,0.13), 0 1.5px 4px rgba(255,255,255,0.10) !important;
+}
+
+/* Grid layouts */
+.volunteerStatusGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  width: 100%;
+  margin-top: 15px;
+}
+
+.componentPieChartLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: #000;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.totalOrgChartTitle p {
+  font-size: 1.8rem !important;
+  font-weight: bold;
+  text-align: center;
+  margin: 10px;
+  color: #333;
+  line-height: 1.3 !important;
+}
+
+/* Report Header Styles */
+/* .totalOrgReportHeaderRow  {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  margin: 0 !important;
+  padding: 0px 20px;
+}
+
+.reportHeaderTitle {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 600;
+  color: #000;
+}
+
+.reportHeaderActions {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+} */
+
+/* @media (max-width: 600px) {
+  .totalOrgReportHeaderRow {
+    flex-direction: column;
+  }
+} */
+
+.containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer p.m-0,
+.containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer span {
+  color: #fff !important;
+}
+
+.totalOrgChartTitleDark p {
+  color: white;
+}
+
+.whiteSmoke {
+  background-color: #f5f5f5;   
+}
+
+/* Responsive design for better mobile experience */
+@media (max-width: 768px) {
+  .totalOrgReportHeaderRow {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 15px;
+    padding: 15px;
+  }
+
+  .reportHeaderTitle {
+    justify-content: center;
+    text-align: center;
+  }
+
+  .reportHeaderTitle h3 {
+    font-size: 28px;
+  }
+
+  .reportHeaderActions {
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .reportHeaderActions :global(.dropdown-toggle),
+  .reportHeaderActions button {
+    min-width: 140px !important;
+    padding: 10px 16px !important;
+    font-size: 13px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .reportHeaderActions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .reportHeaderActions :global(.dropdown-toggle),
+  .reportHeaderActions button {
+    width: 100% !important;
+    min-width: unset !important;
+  }
+}

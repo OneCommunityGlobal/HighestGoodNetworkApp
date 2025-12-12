@@ -1,9 +1,11 @@
+/* eslint-disable react/destructuring-assignment */
 import './Team.css';
-import hasPermission from 'utils/permissions';
-import { boxStyle, boxStyleDark } from 'styles';
 import { connect, useSelector } from 'react-redux';
 import { Button } from 'reactstrap';
+import hasPermission from '~/utils/permissions';
+import { boxStyle, boxStyleDark } from '~/styles';
 import { DELETE } from '../../languages/en/ui';
+import headerStyles from './TeamTableHeader.module.css';
 
 export function Team(props) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -15,7 +17,8 @@ export function Team(props) {
       <th className="teams__order--input" scope="row">
         <div>{(props.index ?? 0) + 1}</div>
       </th>
-      <td>{props.name}</td>
+      {/*  Wrap long names vertically */}
+      <td className={headerStyles.teamNameCol}>{props.name}</td>
       <td className="teams__active--input">
         <button
           data-testid="active-marker"
@@ -30,7 +33,9 @@ export function Team(props) {
           }}
           aria-label={`Change status for team ${props.name}`}
         >
-          {/* Your content or indicator goes here */}
+          <div className={props.active ? 'isActive' : 'isNotActive'}>
+            <i className="fa fa-circle" aria-hidden="true"></i>
+          </div>
         </button>
       </td>
       <td className="centered-cell">

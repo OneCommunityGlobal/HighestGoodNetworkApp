@@ -1,0 +1,241 @@
+.tools-availability-page {
+  padding: 24px;
+  min-height: 100vh;
+  background-color: var(--bg-color);
+}
+
+.tools-availability-page.dark-mode {
+  background-color: var(--dark-bg);
+}
+
+.tools-availability-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+  background-color: var(--card-bg);
+  border-radius: 8px;
+  box-shadow: 0 2px 5px var(--card-shadow);
+}
+
+.tools-availability-page.dark-mode .tools-availability-content {
+  background-color: var(--section-bg);
+}
+
+/* Filter section styling */
+.tools-chart-filters {
+  display: flex;
+  gap: 32px;
+  margin-bottom: 32px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 200px;
+}
+
+.filter-group label {
+  font-weight: 600;
+  font-size: 14px;
+  color: #374151;
+  margin-bottom: 4px;
+}
+
+.tools-availability-page.dark-mode .filter-group label {
+  color: #e0e0e0;
+}
+
+/* Date picker group styling */
+.date-picker-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.date-picker {
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  background-color: #ffffff;
+  color: #374151;
+  min-width: 140px;
+  transition: all 0.2s ease;
+}
+
+.date-picker:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.date-picker:hover {
+  border-color: #9ca3af;
+}
+
+/* Dark mode date picker styling */
+.tools-availability-page.dark-mode .date-picker {
+  background-color: #2c3344;
+  border-color: #364156;
+  color: #e0e0e0;
+}
+
+.tools-availability-page.dark-mode .date-picker:focus {
+  border-color: #4589ff;
+  box-shadow: 0 0 0 3px rgba(69, 137, 255, 0.1);
+}
+
+.tools-availability-page.dark-mode .date-picker:hover {
+  border-color: #4b5563;
+}
+
+/* "to" text styling */
+.date-picker-group span {
+  font-weight: 500;
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0 4px;
+}
+
+.tools-availability-page.dark-mode .date-picker-group span {
+  color: #9ca3af;
+}
+
+/* Clear dates button styling */
+.clear-dates-btn {
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.clear-dates-btn:hover {
+  background-color: #dc2626;
+  transform: scale(1.05);
+}
+
+.clear-dates-btn:active {
+  transform: scale(0.95);
+}
+
+.tools-availability-page.dark-mode .clear-dates-btn {
+  background-color: #dc2626;
+}
+
+.tools-availability-page.dark-mode .clear-dates-btn:hover {
+  background-color: #b91c1c;
+}
+
+/* Project select styling */
+.project-select {
+  min-width: 250px;
+}
+
+.project-select .select__control {
+  border-radius: 6px;
+  border-color: #d1d5db;
+  min-height: 42px;
+  transition: all 0.2s ease;
+}
+
+.project-select .select__control:hover {
+  border-color: #9ca3af;
+}
+
+.project-select .select__control--is-focused {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Loading and error states */
+.select-loading, .select-error {
+  padding: 10px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  min-width: 250px;
+  text-align: center;
+}
+
+.select-loading {
+  background-color: #f3f4f6;
+  color: #6b7280;
+  border: 1px solid #d1d5db;
+}
+
+.select-error {
+  background-color: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+
+.tools-availability-page.dark-mode .select-loading {
+  background-color: #2c3344;
+  color: #9ca3af;
+  border-color: #364156;
+}
+
+.tools-availability-page.dark-mode .select-error {
+  background-color: #3c1a1a;
+  color: #f87171;
+  border-color: #7f1d1d;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .tools-chart-filters {
+    flex-direction: column;
+    gap: 24px;
+  }
+  
+  .filter-group {
+    min-width: 100%;
+  }
+  
+  .date-picker-group {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .date-picker {
+    min-width: 100%;
+  }
+  
+  .project-select {
+    min-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .tools-availability-page {
+    padding: 16px;
+  }
+  
+  .tools-availability-content {
+    padding: 16px;
+  }
+  
+  .date-picker-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .date-picker-group span {
+    align-self: center;
+    margin: 4px 0;
+  }
+} 

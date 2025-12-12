@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import './DarkMode.css';
+import './index.css';
 import { Tooltip } from 'reactstrap';
 import sunIcon from './images/sunIcon.png';
 import nightIcon from './images/nightIcon.png';
@@ -56,10 +56,18 @@ function DarkModeButton() {
         {darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
       </Tooltip>
       <div
-        type="button"
+        role="button"
+        tabIndex={0}
         className={`dark-mode-button ${darkMode ? 'dark-mode' : ''}`}
         onClick={toggleDarkMode}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            toggleDarkMode();
+          }
+        }}
         id="darkModeTooltip"
+        style={{ cursor: 'pointer', border: 'none', background: 'none', padding: 0 }}
       >
         {darkMode ? (
           <div className="darkModeSliderContainer">

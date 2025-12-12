@@ -1,0 +1,123 @@
+.userCard {
+  width: 100%;
+  max-width: 360px;
+  height: auto;
+  padding: 28px 24px;
+  background: #ffffff;
+  border: 2px solid #eeeeee;
+  box-shadow: 1px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 8px;
+  font-family: 'Roboto', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin: 0 auto;
+}
+
+.avatar {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  margin-bottom: 8px;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  text-align: left;
+  gap: 8px;
+  margin-top: 12px;
+  width: 100%;
+  padding: 0 16px;
+}
+
+.userName {
+  width: 100%;
+  font-size: 24px;
+  font-weight: 500;
+  color: black;
+  margin-bottom: 6px;
+  word-break: break-word;
+  line-height: 1.25;
+  text-align: center;
+}
+
+.contactLine {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #616161;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+
+.contactIcon {
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+}
+
+.contactLine span {
+  word-break: break-all;
+}
+
+.scoreSkillsWrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.scoreLine {
+  font-size: 22px;
+  text-align: left;
+  padding: 0 16px;
+}
+
+.scoreLabel {
+  font-weight: 400;
+}
+
+.scoreValue {
+  font-weight: 700;
+  padding-left: 4px;
+}
+
+.scoreMax {
+  font-weight: 700;
+  padding-left: 4px;
+}
+
+.skillsSection {
+  width: 100%;
+  text-align: left;
+  padding: 0 16px 0 16px;
+}
+
+.skillsLabel {
+  font-size: 18px;
+  font-weight: 400;
+  text-decoration: underline;
+  margin-bottom: 4px;
+}
+
+.skillsText {
+  font-size: 15px;
+  font-weight: 400;
+  color: #616161;
+  line-height: 21px;
+  word-wrap: break-word;
+}
+
+.containerGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 32px;
+  padding: 24px 0 32px;
+  justify-items: center;
+}
