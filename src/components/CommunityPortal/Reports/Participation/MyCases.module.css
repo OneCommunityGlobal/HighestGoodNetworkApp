@@ -287,3 +287,30 @@
   color: #ffffff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+
+.moreBtn {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #333;
+}
+
+.moreBtn:hover {
+  background-color: #007bff;
+  color: #fff;
+  border-color: #007bff;
+}
+
+.myCasesPageDark .moreBtn {
+  background-color: #3A506B;
+  border: 1px solid #5A6B7D;
+  color: #ffffff;
+}
+
+.myCasesPageDark .moreBtn:hover {
+  background-color: #5A6B7D;
+  color: #ffffff;
+}

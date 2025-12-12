@@ -7,7 +7,7 @@
 .participationLandingPageDark {
   min-width: 100%;
   margin: 0 auto;
-  background-color: #1B2A41;
+  background-color: #1b2a41;
   color: #ffffff;
 }
 
@@ -94,7 +94,7 @@
 .insightsDark {
   flex: 1;
   min-width: 48%;
-  background-color: #1C2541;
+  background-color: #1c2541;
   color: #ffffff;
   border-radius: 10px;
   border: 1px solid #ddd;
@@ -164,7 +164,7 @@
 }
 
 .trackingRateDark {
-  background: #3A506B;
+  background: #3a506b;
   border-radius: 10px;
   width: 48%;
   padding: 10px;
@@ -175,6 +175,11 @@
   color: #ffffff;
   display: inline-block;
   padding-left: 5px;
+}
+
+.trackingRateLabelDark {
+  color: #ffffff !important;
+  margin-top: 5px;
 }
 
 .trackingRateValue {
@@ -204,7 +209,7 @@
   border: 1px solid #ccc;
   border-radius: 10px;
   padding: 10px;
-  background: #3A506B;
+  background: #3a506b;
   color: #ffffff;
 }
 
@@ -220,7 +225,7 @@
 }
 
 .trackingTableDark thead th {
-  background: #1C2541;
+  background: #1c2541;
   color: #ffffff;
 }
 
@@ -403,7 +408,7 @@
 }
 
 .participationHeaderDark {
-  background: linear-gradient(135deg, #1C2541 0%, #3A506B 100%);
+  background: linear-gradient(135deg, #1c2541 0%, #3a506b 100%);
   color: #ffffff;
 }
 
@@ -423,6 +428,8 @@
 .headerNavigation {
   flex-shrink: 0;
   margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
 }
 
 .mainTitle {
@@ -447,11 +454,6 @@
 
 .subtitleDark {
   color: #ffffff;
-}
-
-.headerNavigation {
-  display: flex;
-  align-items: center;
 }
 
 .navLinks {
@@ -490,7 +492,7 @@
 .analyticsPageDark .navLink {
   color: #ffffff;
   background: rgba(255, 255, 255, 0.1);
-  border: 1px solid #5A6B7D;
+  border: 1px solid #5a6b7d;
 }
 
 .analyticsPageDark .navLink:hover {
@@ -548,10 +550,10 @@
 }
 
 .engagementSectionDark {
-  background-color: #1C2541;
+  background-color: #1c2541;
   padding: 1.5rem;
   border-radius: 12px;
-  border: 1px solid #3A506B;
+  border: 1px solid #3a506b;
 }
 
 .engagementCards {
@@ -578,9 +580,9 @@
 }
 
 .engagementCardDark {
-  background: #3A506B;
+  background: #3a506b;
   color: #ffffff;
-  border: 1px solid #5A6B7D;
+  border: 1px solid #5a6b7d;
 }
 
 .cardIcon {
@@ -641,15 +643,17 @@
 
 .pieChartSectionDark,
 .barChartSectionDark {
-  background: #3A506B;
+  background: #3a506b;
   color: #ffffff;
-  border: 1px solid #5A6B7D;
+  border: 1px solid #5a6b7d;
 }
 
 .chartTitle {
   font-size: 1.3rem;
   font-weight: 600;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  margin-top: 0;
+  padding-bottom: 0.5rem;
   color: #333;
 }
 
@@ -717,7 +721,7 @@
 }
 
 .pieChartSectionDark .chartSummary {
-  border-top-color: #5A6B7D;
+  border-top-color: #5a6b7d;
 }
 
 .summaryItem {
@@ -755,6 +759,8 @@
   display: flex;
   gap: 1rem;
   margin-bottom: 1rem;
+  margin-top: 2rem;
+  padding-left: 10px;
 }
 
 .yAxis {
@@ -762,7 +768,9 @@
   flex-direction: column;
   align-items: flex-end;
   gap: 0.5rem;
-  min-width: 60px;
+  min-width: 80px;
+  position: relative;
+  padding-left: 20px;
 }
 
 .yAxisLabel {
@@ -771,6 +779,15 @@
   font-weight: 600;
   transform: rotate(-90deg);
   white-space: nowrap;
+  position: absolute;
+  left: -60px;
+  top: 50%;
+  transform-origin: center;
+  width: 120px;
+  text-align: center;
+  margin-top: -10px;
+  height: 20px;
+  line-height: 20px;
 }
 
 .barChartSectionDark .yAxisLabel {
@@ -824,11 +841,11 @@
 }
 
 .attendanceBar {
-  background-color: #2196F3;
+  background-color: #2196f3;
 }
 
 .engagementBar {
-  background-color: #4CAF50;
+  background-color: #4caf50;
 }
 
 .barLabel {
@@ -867,7 +884,7 @@
 }
 
 .barChartSectionDark .chartLegend {
-  border-top-color: #5A6B7D;
+  border-top-color: #5a6b7d;
 }
 
 .chartInsights {
@@ -879,20 +896,10 @@
 }
 
 .barChartSectionDark .chartInsights {
-  border-top-color: #5A6B7D;
+  border-top-color: #5a6b7d;
 }
 
-.insightItem {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.insightLabel {
-  font-size: 0.8rem;
-  color: #666;
-  font-weight: 600;
-}
+/* .insightItem and .insightLabel are defined earlier in the file */
 
 .barChartSectionDark .insightLabel {
   color: #e5e7eb;
@@ -914,10 +921,10 @@
 }
 
 .analyticsNavigationDark {
-  background-color: #1C2541;
+  background-color: #1c2541;
   padding: 1.5rem;
   border-radius: 12px;
-  border: 1px solid #3A506B;
+  border: 1px solid #3a506b;
 }
 
 .sectionSubtitle {
@@ -958,9 +965,9 @@
 }
 
 .navigationCardDark {
-  background: #3A506B;
+  background: #3a506b;
   color: #ffffff;
-  border-color: #5A6B7D;
+  border-color: #5a6b7d;
 }
 
 .navigationCard .cardIcon {
@@ -976,7 +983,7 @@
 }
 
 .navigationCardDark .cardIcon {
-  background: #5A6B7D;
+  background: #5a6b7d;
 }
 
 .navigationCard .cardContent {
@@ -1040,28 +1047,28 @@
   .chartsRow {
     grid-template-columns: 1fr;
   }
-  
+
   .headerContent {
     flex-direction: column;
     gap: 1rem;
   }
-  
+
   .headerNavigation {
     width: 100%;
   }
-  
+
   .navLinks {
     flex-wrap: wrap;
   }
-  
+
   .metricsSummary {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .engagementCards {
     grid-template-columns: 1fr;
   }
-  
+
   .navigationGrid {
     grid-template-columns: 1fr;
   }
@@ -1075,7 +1082,7 @@
 }
 
 .analyticsPageDark {
-  background-color: #1B2A41;
+  background-color: #1b2a41;
   color: #ffffff;
   min-height: 100vh;
   max-width: none !important;
@@ -1184,8 +1191,8 @@
 .analyticsPageDark .metricSelect,
 .analyticsPageDark .periodSelect,
 .analyticsPageDark .filterSelect {
-  background: #3A506B;
-  border-color: #5A6B7D;
+  background: #3a506b;
+  border-color: #5a6b7d;
   color: #ffffff;
 }
 
@@ -1206,23 +1213,23 @@
 }
 
 .virtualCard {
-  border-color: #2196F3;
+  border-color: #2196f3;
 }
 
 .virtualCardDark {
-  background: #3A506B;
+  background: #3a506b;
   color: #ffffff;
-  border-color: #2196F3;
+  border-color: #2196f3;
 }
 
 .inPersonCard {
-  border-color: #4CAF50;
+  border-color: #4caf50;
 }
 
 .inPersonCardDark {
-  background: #3A506B;
+  background: #3a506b;
   color: #ffffff;
-  border-color: #4CAF50;
+  border-color: #4caf50;
 }
 
 .cardHeader {
@@ -1245,7 +1252,7 @@
 
 .virtualCardDark .cardHeader .cardIcon,
 .inPersonCardDark .cardHeader .cardIcon {
-  background: #5A6B7D;
+  background: #5a6b7d;
 }
 
 .cardHeader h3 {
@@ -1308,7 +1315,7 @@
 .virtualCardDark .topEvent,
 .inPersonCardDark .topEvent {
   color: #e5e7eb;
-  border-top-color: #5A6B7D;
+  border-top-color: #5a6b7d;
 }
 
 /* Ensure Top Event label is readable in dark mode */
@@ -1327,9 +1334,9 @@
 }
 
 .comparisonTableDark {
-  background: #3A506B;
+  background: #3a506b;
   color: #ffffff;
-  border: 1px solid #5A6B7D;
+  border: 1px solid #5a6b7d;
 }
 
 /* Hover styles for comparison table */
@@ -1370,7 +1377,7 @@
 
 .comparisonTableDark th,
 .comparisonTableDark td {
-  border-bottom-color: #5A6B7D;
+  border-bottom-color: #5a6b7d;
 }
 
 .comparisonTable th {
@@ -1380,7 +1387,7 @@
 }
 
 .comparisonTableDark th {
-  background: #5A6B7D;
+  background: #5a6b7d;
   color: #ffffff;
 }
 
@@ -1394,12 +1401,12 @@
 }
 
 .virtualValue {
-  color: #2196F3;
+  color: #2196f3;
   font-weight: 600;
 }
 
 .inPersonValue {
-  color: #4CAF50;
+  color: #4caf50;
   font-weight: 600;
 }
 
@@ -1440,9 +1447,9 @@
 .valueCardDark,
 .trendCardDark,
 .performanceCardDark {
-  background: #3A506B;
+  background: #3a506b;
   color: #ffffff;
-  border: 1px solid #5A6B7D;
+  border: 1px solid #5a6b7d;
 }
 
 /* Ensure strong contrast for summary numbers and labels in dark mode */
@@ -1474,9 +1481,9 @@
 .monthlyTrendsDark,
 .eventTypeTrendsDark,
 .eventsTableDark {
-  background: #3A506B;
+  background: #3a506b;
   color: #ffffff;
-  border: 1px solid #5A6B7D;
+  border: 1px solid #5a6b7d;
 }
 
 /* Improve contrast for monthly trends chart in dark mode */
@@ -1495,7 +1502,9 @@
 .eventsTable h3 {
   font-size: 1.3rem;
   font-weight: 600;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  margin-top: 0;
+  padding-bottom: 0.5rem;
   color: #333;
 }
 
@@ -1539,7 +1548,7 @@
 .eventTypeTrendsDark .trendsTable td,
 .eventsTableDark .tableContainer th,
 .eventsTableDark .tableContainer td {
-  border-bottom-color: #5A6B7D;
+  border-bottom-color: #5a6b7d;
 }
 
 .valueTable th,
@@ -1554,7 +1563,7 @@
 .monthlyTrendsDark .trendsTable th,
 .eventTypeTrendsDark .trendsTable th,
 .eventsTableDark .tableContainer th {
-  background: #5A6B7D;
+  background: #5a6b7d;
   color: #ffffff;
 }
 
@@ -1571,27 +1580,27 @@
 }
 
 .value {
-  color: #4CAF50;
+  color: #4caf50;
   font-weight: 600;
 }
 
 .participants {
-  color: #2196F3;
+  color: #2196f3;
   font-weight: 600;
 }
 
 .costPerPerson {
-  color: #FF9800;
+  color: #ff9800;
   font-weight: 600;
 }
 
 .roi {
-  color: #9C27B0;
+  color: #9c27b0;
   font-weight: 600;
 }
 
 .growth {
-  color: #4CAF50;
+  color: #4caf50;
   font-weight: 600;
 }
 
@@ -1600,17 +1609,17 @@
 }
 
 .statusGood {
-  color: #4CAF50;
+  color: #4caf50;
   font-weight: 600;
 }
 
 .statusNeutral {
-  color: #FF9800;
+  color: #ff9800;
   font-weight: 600;
 }
 
 .statusWarning {
-  color: #F44336;
+  color: #f44336;
   font-weight: 600;
 }
 
@@ -1624,15 +1633,17 @@
 }
 
 .valueTrendsDark {
-  background: #3A506B;
+  background: #3a506b;
   color: #ffffff;
-  border: 1px solid #5A6B7D;
+  border: 1px solid #5a6b7d;
 }
 
 .valueTrends h3 {
   font-size: 1.3rem;
   font-weight: 600;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  margin-top: 0;
+  padding-bottom: 0.5rem;
   color: #333;
 }
 
@@ -1642,6 +1653,7 @@
 
 .trendsChart {
   margin-top: 1rem;
+  padding-left: 10px;
 }
 
 .trendBarGroup {
@@ -1658,11 +1670,7 @@
   min-height: 4px;
 }
 
-.barValue {
-  font-size: 0.8rem;
-  color: #666;
-  font-weight: 600;
-}
+/* .barValue is defined earlier in the file */
 
 .valueTrendsDark .barValue,
 .monthlyTrendsDark .barValue {
@@ -1681,7 +1689,7 @@
 
 .barGrowth {
   font-size: 0.7rem;
-  color: #4CAF50;
+  color: #4caf50;
   font-weight: 600;
 }
 
@@ -1709,7 +1717,7 @@
   gap: 0.25rem;
 }
 
-.attendanceBar {
+.attendanceBarContainer {
   width: 60px;
   height: 4px;
   background: #e0e0e0;
@@ -1717,8 +1725,8 @@
   overflow: hidden;
 }
 
-.eventsTableDark .attendanceBar {
-  background: #5A6B7D;
+.eventsTableDark .attendanceBarContainer {
+  background: #5a6b7d;
 }
 
 .attendanceFill {
@@ -1742,7 +1750,7 @@
 }
 
 .ratingStars {
-  color: #FFD700;
+  color: #ffd700;
   font-size: 0.8rem;
 }
 
@@ -1752,7 +1760,7 @@
   gap: 0.25rem;
 }
 
-.engagementBar {
+.engagementBarContainer {
   width: 60px;
   height: 4px;
   background: #e0e0e0;
@@ -1761,7 +1769,7 @@
 }
 
 .eventsTableDark .engagementBar {
-  background: #5A6B7D;
+  background: #5a6b7d;
 }
 
 .engagementFill {
@@ -1778,12 +1786,12 @@
 }
 
 .statusCompleted {
-  background: #4CAF50;
+  background: #4caf50;
   color: white;
 }
 
 .statusUpcoming {
-  background: #2196F3;
+  background: #2196f3;
   color: white;
 }
 
@@ -1803,9 +1811,9 @@
 .valueInsightsDark,
 .trendInsightsDark,
 .performanceInsightsDark {
-  background: #3A506B;
+  background: #3a506b;
   color: #ffffff;
-  border: 1px solid #5A6B7D;
+  border: 1px solid #5a6b7d;
 }
 
 .insightsSection h3,
@@ -1837,21 +1845,21 @@
   gap: 1rem;
 }
 
-.insightItem {
+.insightCard {
   display: flex;
   align-items: center;
   gap: 1rem;
   padding: 1rem;
   background: #f8f9fa;
   border-radius: 8px;
-  border-left: 4px solid #2196F3;
+  border-left: 4px solid #2196f3;
 }
 
 .insightsSectionDark .insightItem,
 .insightsDark .insightItem,
 .barChartSectionDark .insightItem {
   background: #304663;
-  border-left-color: #2196F3;
+  border-left-color: #2196f3;
   color: #e5e7eb;
 }
 .insightsDark .insightItem *,
@@ -1864,21 +1872,11 @@
   flex-shrink: 0;
 }
 
-.insightCard {
-  background: #f8f9fa;
-  border-radius: 8px;
-  padding: 1rem;
-  display: flex;
-  align-items: flex-start;
-  gap: 1rem;
-  border-left: 4px solid #4CAF50;
-}
-
 .valueInsightsDark .insightCard,
 .trendInsightsDark .insightCard,
 .performanceInsightsDark .insightCard {
-  background: #5A6B7D;
-  border-left-color: #4CAF50;
+  background: #5a6b7d;
+  border-left-color: #4caf50;
 }
 
 .insightCard .insightIcon {
@@ -1944,21 +1942,21 @@
   .analyticsPage {
     padding: 1rem;
   }
-  
+
   .comparisonCards {
     grid-template-columns: 1fr;
   }
-  
+
   .valueSummaryCards,
   .trendsSummaryCards,
   .performanceSummaryCards {
     grid-template-columns: 1fr;
   }
-  
+
   .insightsGrid {
     grid-template-columns: 1fr;
   }
-  
+
   .cardStats {
     grid-template-columns: 1fr;
   }

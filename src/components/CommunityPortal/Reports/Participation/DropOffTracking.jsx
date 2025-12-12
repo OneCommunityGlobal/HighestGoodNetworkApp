@@ -75,13 +75,13 @@ function DropOffTracking() {
             +5%
             <span className={darkMode ? styles.spanDark : ''}>Last week</span>
           </p>
-          <p>Drop-off rate</p>
+          <p className={darkMode ? styles.trackingRateLabelDark : ''}>Drop-off rate</p>
         </div>
         <div className={`${styles.trackingRate} ${darkMode ? styles.trackingRateDark : ''}`}>
           <p className={styles.trackingRateValue}>
             +5% <span className={darkMode ? styles.spanDark : ''}>Last week</span>
           </p>
-          <p>No-show rate</p>
+          <p className={darkMode ? styles.trackingRateLabelDark : ''}>No-show rate</p>
         </div>
       </div>
       <div

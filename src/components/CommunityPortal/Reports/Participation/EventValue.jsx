@@ -164,7 +164,6 @@ function EventValue() {
         <div className={styles.trendsChart}>
           <div className={styles.chartArea}>
             <div className={styles.yAxis}>
-              <div className={styles.yAxisLabel}>Value ($)</div>
               <div className={styles.yAxisValues}>
                 {[0, 10000, 20000, 30000].map(value => (
                   <div key={value} className={styles.yAxisValue}>
@@ -172,6 +171,7 @@ function EventValue() {
                   </div>
                 ))}
               </div>
+              <div className={styles.yAxisLabel}>Value ($)</div>
             </div>
 
             <div className={styles.barsContainer}>
