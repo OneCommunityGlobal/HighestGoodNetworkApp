@@ -40,3 +40,33 @@
   padding-left: 5%;
   margin-bottom: 8px;
 }
+
+/* Class-based Dark Mode Support */
+.description-section.dark-mode {
+  background-color: #1e2a3a;
+}
+
+.description-section.dark-mode .tabs {
+  border-bottom-color: #3a4a5c;
+}
+
+.description-section.dark-mode .tab-button {
+  color: #b0b0b0;
+}
+
+.description-section.dark-mode .tab-button.active {
+  color: #4a9eff;
+  border-bottom-color: #4a9eff;
+}
+
+.description-section.dark-mode .tab-button:hover {
+  background-color: #2a3a4a;
+}
+
+.description-section.dark-mode .tab-content {
+  color: #e0e0e0;
+}
+
+.description-section.dark-mode .description-paragraph {
+  color: #b0b0b0;
+}

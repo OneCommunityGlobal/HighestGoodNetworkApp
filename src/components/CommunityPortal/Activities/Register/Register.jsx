@@ -1,17 +1,26 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-// import Calendar from 'react-calendar';
-// import 'react-calendar/dist/Calendar.css';
-import './Register.css';
+import { useSelector } from 'react-redux';
+import Calendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
+import styles from './Register.module.css';
 import EventDescription from './EventDescription';
 
 function Register() {
   const { activityId } = useParams();
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [activity, setActivity] = useState(null);
-  // eslint-disable-next-line no-unused-vars
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [feedbackMessage, setFeedbackMessage] = useState(null);
   const [availability, setAvailability] = useState(0);
+
+  // Mock booked dates - in real app, this would come from API
+  const bookedDates = [
+    new Date(2025, 11, 15), // Dec 15, 2025
+    new Date(2025, 11, 20), // Dec 20, 2025
+    new Date(2025, 11, 25), // Dec 25, 2025
+    new Date(2026, 0, 5), // Jan 5, 2026
+  ];
   useEffect(() => {
     const fetchedActivities = [
       {
@@ -75,16 +84,43 @@ function Register() {
       setFeedbackMessage({ type: 'error', text: 'Registration failed. No spots available.' });
     }
   };
+
+  // Helper function to check if a date is booked
+  const isDateBooked = date => {
+    return bookedDates.some(
+      bookedDate =>
+        bookedDate.getDate() === date.getDate() &&
+        bookedDate.getMonth() === date.getMonth() &&
+        bookedDate.getFullYear() === date.getFullYear(),
+    );
+  };
+
+  // Add custom class names to tiles for booked dates
+  const tileClassName = ({ date, view }) => {
+    if (view === 'month' && isDateBooked(date)) {
+      return 'booked-date';
+    }
+    return null;
+  };
+
+  // Add content to booked dates
+  const tileContent = ({ date, view }) => {
+    if (view === 'month' && isDateBooked(date)) {
+      return <div className={styles['booked-indicator']}>●</div>;
+    }
+    return null;
+  };
+
   if (!activity) return <p>Loading activity details...</p>;
   return (
-    <div className="main-container">
-      <div className="register-container">
+    <div className={`${styles['main-container']} ${darkMode ? styles['bg-oxford-blue'] : ''}`}>
+      <div className={`${styles['register-container']} ${darkMode ? styles['dark-mode'] : ''}`}>
         {/* Left Column: Image + Register Button */}
-        <div className="left-column">
-          <img src={activity.image} alt={activity.name} className="event-image" />
+        <div className={styles['left-column']}>
+          <img src={activity.image} alt={activity.name} className={styles['event-image']} />
           <button
             type="button"
-            className="register-button"
+            className={styles['register-button']}
             onClick={handleRegister}
             disabled={availability === 0}
           >
@@ -92,18 +128,18 @@ function Register() {
           </button>
           {feedbackMessage && (
             <div
-              className={`feedback-message ${
-                feedbackMessage.type === 'success' ? 'success' : 'error'
+              className={`${styles['feedback-message']} ${
+                feedbackMessage.type === 'success' ? styles['success'] : styles['error']
               }`}
             >
               {feedbackMessage.text}
             </div>
           )}
         </div>
-        <div className="middle-column">
+        <div className={styles['middle-column']}>
           <h1>{activity.name}</h1>
-          <div className="details-grid">
-            <div className="details-row">
+          <div className={styles['details-grid']}>
+            <div className={styles['details-row']}>
               <p>
                 <strong>Date:</strong> {activity.date}
               </p>
@@ -114,19 +150,21 @@ function Register() {
                 <strong>Organizer:</strong> {activity.organizer || 'Not Available'}
               </p>
             </div>
-            <div className="details-row">
+            <div className={styles['details-row']}>
               <p>
                 <strong>Availability:</strong> {availability} spots left
               </p>
-              <p className="rating-container">
+              <p className={styles['rating-container']}>
                 <strong>Overall Rating:</strong>
-                <span className="star-rating">
+                <span className={styles['star-rating']}>
                   {[...Array(5)].map((_, starIndex) => {
                     const key = `star-${activity.id}-${starIndex}`;
                     return (
                       <span
                         key={key}
-                        className={starIndex < activity.rating ? 'filled-star' : 'empty-star'}
+                        className={
+                          starIndex < activity.rating ? styles['filled-star'] : styles['empty-star']
+                        }
                       >
                         {starIndex < activity.rating ? '★' : '☆'}
                       </span>
@@ -140,13 +178,30 @@ function Register() {
             </div>
           </div>
         </div>
-        <div className="right-column">
-          {/*  <Calendar onChange={setSelectedDate} value={selectedDate} /> */}
-          <p className="selected-date">Selected Date: {selectedDate.toDateString()}</p>
+        <div className={styles['right-column']}>
+          <div className={styles['calendar-container']}>
+            <Calendar
+              onChange={setSelectedDate}
+              value={selectedDate}
+              tileClassName={tileClassName}
+              tileContent={tileContent}
+            />
+          </div>
+          <p className={styles['selected-date']}>Selected Date: {selectedDate.toDateString()}</p>
+          <div className={styles['calendar-legend']}>
+            <div className={styles['legend-item']}>
+              <span className={`${styles['legend-indicator']} ${styles['booked']}`}>●</span>
+              <span className={styles['legend-text']}>Booked/Unavailable</span>
+            </div>
+            <div className={styles['legend-item']}>
+              <span className={`${styles['legend-indicator']} ${styles['today']}`}>■</span>
+              <span className={styles['legend-text']}>Today</span>
+            </div>
+          </div>
         </div>
       </div>
-      <div className="description-section">
-        <EventDescription />
+      <div className={styles['description-section']}>
+        <EventDescription darkMode={darkMode} />
       </div>
     </div>
   );
