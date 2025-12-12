@@ -19,6 +19,8 @@
   gap: 24px;
   margin-top: 26px;
   padding-left: 4px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 @media (max-width: 1024px) {
