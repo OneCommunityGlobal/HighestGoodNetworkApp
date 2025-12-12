@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { ARCHIVE } from './../../../languages/en/ui';
-import './../projects.css';
+// old CSS removed
+// import './../projects.css';
+import styles from './../projects.module.css';
 import { Link } from 'react-router-dom';
 import { NavItem } from 'reactstrap';
 import { connect } from 'react-redux';
@@ -9,7 +11,7 @@ import hasPermission from '~/utils/permissions';
 import { boxStyle } from '~/styles';
 import { toast } from 'react-toastify';
 import { modifyProject } from '../../../actions/projects';
-import { CONFIRM_ARCHIVE } from './../../../languages/en/messages';
+// import { CONFIRM_ARCHIVE } from './../../../languages/en/messages'; // unused, removed
 
 const Project = props => {
   const { darkMode, index } = props;
@@ -53,14 +55,15 @@ const Project = props => {
         setDisplayName(previousProject?.projectName || '');
       }
 
-      const errorMessage = err?.response?.data?.message || 'An error occurred while updating the project';
+      const errorMessage =
+        err?.response?.data?.message || 'An error occurred while updating the project';
       toast.error(errorMessage);
     }
   };
 
-  const onDisplayNameChange = (e) => {
+  const onDisplayNameChange = e => {
     setDisplayName(e.target.value);
-  }
+  };
 
   const onUpdateProjectName = async () => {
     if (displayName.length < 3) {
@@ -76,7 +79,7 @@ const Project = props => {
     props.onClickProjectStatusBtn(projectData); // This will open the modal
   };
 
-  const onUpdateProjectCategory = (e) => {
+  const onUpdateProjectCategory = e => {
     const newCategory = e.target.value;
     setCategory(newCategory);
     persistProjectUpdate('category', newCategory);
@@ -84,7 +87,7 @@ const Project = props => {
 
   const onArchiveProject = () => {
     props.onClickArchiveBtn(projectData);
-  }
+  };
 
   useEffect(() => {
     setProjectData(props.projectData);
@@ -93,125 +96,126 @@ const Project = props => {
   }, [props.projectData, props.category]);
 
   return (
-      <>
-        <tr className="projects__tr" id={'tr_' + props.projectId}>
+    <>
+      <tr
+        className={styles['projects__tr']}
+        id={`tr_${props.projectId}`}
+      >
+        <th className={styles['projects__order--input']} scope="row">
+          <div className={darkMode ? 'text-light' : ''}>{index + 1}</div>
+        </th>
 
-          <th className="projects__order--input" scope="row">
-            <div className={darkMode ? 'text-light' : ''}>{index + 1}</div>
-          </th>
+        <td
+          data-testid="projects__name--input"
+          className={styles['projects__name--input']}
+        >
+          {canPutProject || canSeeProjectManagementFullFunctionality ? (
+            <input
+              type="text"
+              className={`form-control ${
+                darkMode ? 'bg-yinmn-blue border-0 text-light' : ''
+              }`}
+              value={displayName}
+              onChange={onDisplayNameChange}
+              onBlur={onUpdateProjectName}
+            />
+          ) : (
+            projectName
+          )}
+        </td>
 
+        <td className="projects__category--input">
+          {canEditCategoryAndStatus || canPutProject ? (
+            <select
+              data-testid="projects__category--input" // added for unit test
+              value={category}
+              onChange={onUpdateProjectCategory}
+              className={darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}
+            >
+              <option value="Unspecified">Unspecified</option>
+              <option value="Food">Food</option>
+              <option value="Energy">Energy</option>
+              <option value="Housing">Housing</option>
+              <option value="Education">Education</option>
+              <option value="Society">Society</option>
+              <option value="Economics">Economics</option>
+              <option value="Stewardship">Stewardship</option>
+              <option value="Other">Other</option>
+            </select>
+          ) : (
+            category
+          )}
+        </td>
 
-          <td data-testid="projects__name--input" className="projects__name--input">
-            {(canPutProject || canSeeProjectManagementFullFunctionality) ? (
+        <td
+          className={styles['projects__active--input']}
+          data-testid="project-active"
+          onClick={
+            canEditCategoryAndStatus || canPutProject ? onProjectStatusChange : null
+          }
+        >
+          {isActive ? (
+            <div className={styles.isActive}>
+              <i className="fa fa-circle" aria-hidden="true" />
+            </div>
+          ) : (
+            <div className={styles.isNotActive}>
+              <i className="fa fa-circle" aria-hidden="true" color="#dee2e6" />
+            </div>
+          )}
+        </td>
 
+        <td>
+          <NavItem tag={Link} to={`/inventory/${projectId}`}>
+            <button
+              type="button"
+              className="btn btn-outline-info"
+              style={darkMode ? {} : boxStyle}
+            >
+              <i className="fa fa-archive" aria-hidden="true" />
+            </button>
+          </NavItem>
+        </td>
 
-              <input
-                type="text"
-                className={`form-control ${darkMode ? 'bg-yinmn-blue border-0 text-light' : ''}`}
-                value={displayName}
-                onChange={onDisplayNameChange}
-                onBlur={onUpdateProjectName}
-              />
-            ) : (
-              projectName
-            )}
-          </td>
-          <td className="projects__category--input">
+        <td>
+          <NavItem tag={Link} to={`/project/members/${projectId}`}>
+            <button
+              type="button"
+              className="btn btn-outline-info"
+              style={darkMode ? {} : boxStyle}
+            >
+              <i className="fa fa-users" aria-hidden="true" />
+            </button>
+          </NavItem>
+        </td>
 
-            {canEditCategoryAndStatus || canPutProject ? (
+        <td>
+          <NavItem tag={Link} to={`/project/wbs/${projectId}`}>
+            <button
+              type="button"
+              className="btn btn-outline-info"
+              style={darkMode ? {} : boxStyle}
+            >
+              <i className="fa fa-tasks" aria-hidden="true" />
+            </button>
+          </NavItem>
+        </td>
 
-              <select
-
-                data-testid="projects__category--input" //added for unit test
-                value={category}
-                onChange={e => {
-                  onUpdateProjectCategory(e);
-                }}
-                className={darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}
-              >
-                <option value="Unspecified">Unspecified</option>
-                <option value="Food">Food</option>
-                <option value="Energy">Energy</option>
-                <option value="Housing">Housing</option>
-                <option value="Education">Education</option>
-                <option value="Society">Society</option>
-                <option value="Economics">Economics</option>
-                <option value="Stewardship">Stewardship</option>
-                <option value="Other">Other</option>
-              </select>
-            ) : (
-              category
-            )}
-          </td>
-          {/* <td className="projects__active--input" data-testid="project-active" onClick={canPutProject ? updateActive : null}>
-          {props.active ? ( */}
-          <td className="projects__active--input" data-testid="project-active" onClick={canEditCategoryAndStatus || canPutProject ? onProjectStatusChange : null}>
-            {isActive ? (
-              <div className="isActive">
-                <i className="fa fa-circle" aria-hidden="true"></i>
-              </div>
-            ) : (
-              <div className="isNotActive">
-                <i className="fa fa-circle" aria-hidden="true" color='#dee2e6'></i>
-              </div>
-            )}
-          </td>
+        {canDeleteProject ? (
           <td>
-            <NavItem tag={Link} to={`/inventory/${projectId}`}>
-              <button type="button" className="btn btn-outline-info" style={darkMode ? {} : boxStyle}>
-                {' '}
-                <i className="fa fa-archive" aria-hidden="true"></i>
-              </button>
-            </NavItem>
+            <button
+              data-testid="delete-button"
+              type="button"
+              className="btn btn-outline-danger"
+              style={darkMode ? { borderColor: '#D2042D' } : boxStyle}
+              onClick={onArchiveProject}
+            >
+              {ARCHIVE}
+            </button>
           </td>
-          <td>
-            <NavItem tag={Link} to={`/project/members/${projectId}`}>
-              <button type="button" className="btn btn-outline-info" style={darkMode ? {} : boxStyle}>
-                {' '}
-                <i className="fa fa-users" aria-hidden="true"></i>
-              </button>
-            </NavItem>
-          </td>
-
-          <td>
-            <NavItem tag={Link} to={`/project/wbs/${projectId}`}>
-              <button type="button" className="btn btn-outline-info" style={darkMode ? {} : boxStyle}>
-                <i className="fa fa-tasks" aria-hidden="true"></i>
-              </button>
-            </NavItem>
-          </td>
-
-
-          {(canDeleteProject) ? (
-
-            //         <td>
-            //           <button
-            //             data-testid="delete-button"
-            //             type="button"
-            //             className="btn btn-outline-danger"
-            //             onClick={onArchiveProject}
-            //             style={darkMode ? {} : boxStyle}
-            //             disabled={isArchived}
-            //           >
-            //             {ARCHIVE}
-            //           </button>
-            //         </td>
-            //       ) : null}
-            //     </tr>
-            // </>
-            <td>
-              <button
-                data-testid="delete-button"
-                type="button"
-                className="btn btn-outline-danger"
-                style={darkMode ? {borderColor: '#D2042D'} : boxStyle}
-                onClick={onArchiveProject}>
-                {ARCHIVE}
-              </button>
-            </td>
-          ) : null}
-        </tr>
-      </>
+        ) : null}
+      </tr>
+    </>
   );
 };
 
