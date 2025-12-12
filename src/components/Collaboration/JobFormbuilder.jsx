@@ -340,13 +340,13 @@ function JobFormBuilder() {
           </div>
         </div>
         {console.log(role)}
-        <h1 className={styles.jobformTitle}>FORM CREATION</h1>
+        <h1 className={styles.jobformTitle}>JOB FORM BUILDER</h1>
         {role === 'Owner' || role === 'Administrator' ? (
           <div className={styles.customForm}>
             <p className={styles.jobformDesc}>
-              Fill the form with questions about a specific position you want to create an ad for.
-              The default questions will automatically appear and are alredy selected. You can pick
-              and choose them with the checkbox.
+              Use this builder to create and edit question sets for job applications. Choose a
+              position, then customize the form by adding, removing, or rearranging fields before
+              saving your template.
             </p>
             <QuestionSetManager
               formFields={formFields}
