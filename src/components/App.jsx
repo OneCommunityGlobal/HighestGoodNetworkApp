@@ -346,7 +346,7 @@ class App extends Component {
     logger.logError(error);
     // eslint-disable-next-line no-console
     console.error('App component caught an error:', error, errorInfo);
-    
+
     // Update state with error details
     this.setState({
       error,
