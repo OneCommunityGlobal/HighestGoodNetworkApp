@@ -37,7 +37,7 @@ import axios from 'axios';
 import { getUserProfile } from '~/actions/userProfile';
 import { useDispatch, useSelector } from 'react-redux';
 import { boxStyleDark } from '../../styles';
-import '../Header/DarkMode.css';
+import '../Header/index.css';
 import '../UserProfile/TeamsAndProjects/autoComplete.css';
 import { ENDPOINTS } from '~/utils/URL';
 
@@ -313,6 +313,37 @@ function LeaderBoard({
 
   const handleTimeOffModalOpen = request => {
     showTimeOffRequestModal(request);
+  };
+
+  const manager = 'Manager';
+  const adm = 'Administrator';
+  const owner = 'Owner';
+
+  const handleDashboardAccess = item => {
+    // check the logged in user is manager and if the dashboard is admin and owner
+    if (loggedInUser.role === manager && [adm, owner].includes(item.role)) {
+      // check the logged in user is admin and if dashboard is owner
+      toast.error("Oops! You don't have the permission to access this user's dashboard!");
+    } else if (loggedInUser.role === adm && [owner].includes(item.role)) {
+      toast.error("Oops! You don't have the permission to access this user's dashboard!");
+    }
+    // check the logged in user isn't manager, administrator or owner and if they can access the dashboard
+    else if (
+      loggedInUser.role !== manager &&
+      loggedInUser.role !== adm &&
+      loggedInUser.role !== owner
+    ) {
+      if ([manager, adm, owner].includes(item.role)) {
+        // prevent access
+        toast.error("Oops! You don't have the permission to access this user's dashboard!");
+      } else {
+        // allow access to the painel
+        dashboardToggle(item);
+      }
+    } else {
+      // allow access to the painel
+      dashboardToggle(item);
+    }
   };
 
   // For Monthly and yearly anniversaries
@@ -641,7 +672,7 @@ function LeaderBoard({
               </div>
             </Alert>
           )}
-          <div id="leaderboard" className="my-custom-scrollbar table-wrapper-scroll-y">
+          <div id="leaderboard" className="my-custom-scrollbar table-wrapper-scroll-y mb-5">
             <div className="search-container mx-1">
               <input
                 className={`form-control col-12 mb-2 ${
@@ -658,6 +689,7 @@ function LeaderBoard({
               className={`leaderboard table-fixed ${
                 darkMode ? 'text-light dark-mode bg-yinmn-blue' : ''
               } ${isAbbreviatedView ? 'abbreviated-mode' : ''}`}
+              style={{ minWidth: '500px' }}
             >
               <thead className="responsive-font-size">
                 <tr className={darkMode ? 'bg-space-cadet' : ''} style={darkModeStyle}>
@@ -807,14 +839,14 @@ function LeaderBoard({
                             </ModalHeader>
                             <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
                               <p className={darkMode ? 'text-light' : ''}>
-                                Are you sure you wish to view this {item.name} dashboard?
+                                Are you sure you wish to view the dashboard for {item.name}?
                               </p>
                             </ModalBody>
                             <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-                              <Button variant="primary" onClick={() => showDashboard(item)}>
+                              <Button color="primary" onClick={() => showDashboard(item)}>
                                 Ok
-                              </Button>{' '}
-                              <Button variant="secondary" onClick={dashboardToggle}>
+                              </Button>
+                              <Button color="danger" onClick={dashboardToggle}>
                                 Cancel
                               </Button>
                             </ModalFooter>
@@ -834,11 +866,11 @@ function LeaderBoard({
                             role="button"
                             tabIndex={0}
                             onClick={() => {
-                              dashboardToggle(item);
+                              handleDashboardAccess(item);
                             }}
                             onKeyDown={e => {
                               if (e.key === 'Enter') {
-                                dashboardToggle(item);
+                                handleDashboardAccess(item);
                               }
                             }}
                           >
