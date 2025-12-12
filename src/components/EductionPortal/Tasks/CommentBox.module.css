@@ -97,8 +97,8 @@
 
 .submitButton {
   padding: 0.625rem 1.25rem;
-  background-color: #3b82f6;
-  color: white;
+  background-color: #2563eb;
+  color: #ffffff;
   border: none;
   border-radius: 6px;
   font-size: 0.938rem;
@@ -116,13 +116,14 @@
 }
 
 .submitButton:disabled {
-  background-color: #9ca3af;
+  background-color: #6b7280;
+  color: #ffffff;
   cursor: not-allowed;
-  opacity: 0.6;
+  opacity: 0.8;
 }
 
 .submitButtonDark {
-  background-color: #3b82f6;
+  background-color: #2563eb;
 }
 
 .submitButtonDark:hover:not(:disabled) {
@@ -131,6 +132,7 @@
 
 .submitButtonDark:disabled {
   background-color: #4b5563;
+  color: #e0e0e0;
 }
 
 @media (max-width: 768px) {
