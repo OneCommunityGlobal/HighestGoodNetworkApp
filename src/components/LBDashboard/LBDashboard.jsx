@@ -149,10 +149,10 @@ export function LBDashboard() {
     moment().endOf('month'),
   ];
 
-  const metricLabel = (() => {
+  const getMetricLabel = () => {
     const all = Object.values(METRIC_OPTIONS).flat();
     return (all.find(o => o.key === selectedMetricKey) || {}).label || '';
-  })();
+  };
 
   const handleCategoryClick = category => {
     setActiveCategory(category);
@@ -167,6 +167,8 @@ export function LBDashboard() {
   const toggleDD = category => setOpenDD(s => ({ ...s, [category]: !s[category] }));
 
   const goBack = () => globalThis.history.back();
+
+  const metricLabel = getMetricLabel();
 
   return (
     <Container

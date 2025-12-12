@@ -42,12 +42,13 @@ const DemandOverTime = ({
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    const generateDummyData = () => {
-      const items =
-        compareType === 'villages'
-          ? ['Village 1', 'Village 2', 'Village 3']
-          : ['Property A', 'Property B', 'Property C', 'Property D'];
+    const getItems = () => {
+      return compareType === 'villages'
+        ? ['Village 1', 'Village 2', 'Village 3']
+        : ['Property A', 'Property B', 'Property C', 'Property D'];
+    };
 
+    const generateMonths = () => {
       const months = [];
       let current = moment(dateRange[0]).startOf('month');
       const end = moment(dateRange[1]).endOf('month');
@@ -55,13 +56,21 @@ const DemandOverTime = ({
         months.push(current.format('MMM YYYY'));
         current = current.add(1, 'month');
       }
+      return months;
+    };
+
+    const createDataPoint = month => ({
+      month,
+      value: randomInt(20, 119),
+    });
+
+    const generateDummyData = () => {
+      const items = getItems();
+      const months = generateMonths();
 
       return items.map(item => ({
         name: item,
-        data: months.map(month => ({
-          month,
-          value: randomInt(20, 119),
-        })),
+        data: months.map(createDataPoint),
       }));
     };
 
