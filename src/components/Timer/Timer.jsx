@@ -16,7 +16,7 @@ import { toast } from 'react-toastify';
 import cs from 'classnames';
 import { connect, useDispatch } from 'react-redux';
 import css from './Timer.module.css';
-import '../Header/DarkMode.css';
+import '../Header/index.css';
 import { ENDPOINTS } from '~/utils/URL';
 import config from '../../config.json';
 import TimeEntryForm from '../Timelog/TimeEntryForm';
