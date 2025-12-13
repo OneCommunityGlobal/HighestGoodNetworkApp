@@ -379,11 +379,15 @@ function LessonList(props) {
 
     setIsExporting(true);
 
+    let blobUrl = null;
+    let downloadLink = null;
+
     try {
       // Validate data again before export
       if (!filteredLessons || !Array.isArray(filteredLessons) || filteredLessons.length === 0) {
         toast.error('No lesson data available to export');
         setIsExporting(false);
+        setShowExportModal(false);
         return;
       }
 
@@ -452,13 +456,15 @@ function LessonList(props) {
         } catch (rowError) {
           // Log error but continue with other rows
           console.warn(`Error processing lesson at index ${index}:`, rowError);
-          // Add a placeholder row to maintain CSV structure
-          csv += 'Error processing this lesson,,,,,,\n';
+          // Add a placeholder row to maintain CSV structure (7 columns matching headers)
+          const errorRow = ['Error processing this lesson', '', '', '', '', '', ''];
+          csv += errorRow.map(escapeCSV).join(',') + '\n';
         }
       });
 
       // Validate CSV content before creating blob
-      if (!csv || csv.length < 100) {
+      const minExpectedLength = 100; // BOM + metadata + headers should be at least this
+      if (!csv || csv.length < minExpectedLength) {
         throw new Error('Generated CSV content is invalid or too short');
       }
 
@@ -469,54 +475,73 @@ function LessonList(props) {
         throw new Error('Failed to create file blob');
       }
 
-      const url = URL.createObjectURL(blob);
+      blobUrl = URL.createObjectURL(blob);
 
-      if (!url) {
+      if (!blobUrl) {
         throw new Error('Failed to create download URL');
       }
 
       // Create download link
-      const link = document.createElement('a');
-      link.href = url;
+      downloadLink = document.createElement('a');
+      downloadLink.href = blobUrl;
 
       // Generate safe filename with date
       const dateString = exportDate
         .toISOString()
         .split('T')[0]
         .replace(/-/g, '_');
-      link.download = `lesson_data_${dateString}.csv`;
+      downloadLink.download = `lesson_data_${dateString}.csv`;
 
       // Ensure link is properly configured
-      link.style.display = 'none';
-      link.setAttribute('download', link.download);
+      downloadLink.style.display = 'none';
+      downloadLink.setAttribute('download', downloadLink.download);
 
       // Append to body, click, and cleanup
       if (document.body) {
-        document.body.appendChild(link);
-        link.click();
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
 
-        // Cleanup with error handling
+        // Cleanup with error handling - delay to ensure download starts
         setTimeout(() => {
           try {
-            if (document.body && document.body.contains(link)) {
-              document.body.removeChild(link);
+            if (document.body && document.body.contains(downloadLink)) {
+              document.body.removeChild(downloadLink);
             }
-            if (url) {
-              URL.revokeObjectURL(url);
+            if (blobUrl) {
+              URL.revokeObjectURL(blobUrl);
             }
           } catch (cleanupError) {
             console.warn('Error during cleanup:', cleanupError);
           }
-        }, 100);
+        }, 200);
       } else {
         throw new Error('Document body not available');
       }
 
+      // Close modal and show success only after successful export
+      setShowExportModal(false);
       toast.success(`Successfully exported ${filteredLessons.length} lesson(s) to CSV`);
     } catch (error) {
       console.error('Export error:', error);
       const errorMessage = error?.message || 'Unknown error occurred';
       toast.error(`Failed to export lesson data: ${errorMessage}. Please try again.`);
+      // Cleanup on error
+      if (blobUrl) {
+        try {
+          URL.revokeObjectURL(blobUrl);
+        } catch (cleanupError) {
+          console.warn('Error revoking URL on error:', cleanupError);
+        }
+      }
+      if (downloadLink && document.body && document.body.contains(downloadLink)) {
+        try {
+          document.body.removeChild(downloadLink);
+        } catch (cleanupError) {
+          console.warn('Error removing link on error:', cleanupError);
+        }
+      }
+      // Keep modal open on error so user can retry
+      // Modal stays open - user can try again or cancel
     } finally {
       setIsExporting(false);
     }
@@ -695,6 +720,7 @@ function LessonList(props) {
           filteredLessonsCount={filteredLessons?.length || 0}
           filterDescription={getFilterDescription()}
           darkMode={darkMode}
+          isExporting={isExporting}
         />
         <Lessons
           filteredLessons={filteredLessons}

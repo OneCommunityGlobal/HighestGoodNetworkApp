@@ -8,6 +8,7 @@ function ExportConfirmationModal({
   filteredLessonsCount,
   filterDescription,
   darkMode,
+  isExporting = false,
 }) {
   return (
     <Modal
@@ -42,13 +43,18 @@ function ExportConfirmationModal({
         <Button
           variant="primary"
           onClick={() => {
+            // Modal will be closed by exportLessonData on success
             onConfirmExport();
-            setShowExportModal(false);
           }}
+          disabled={isExporting}
         >
-          Confirm Export
+          {isExporting ? 'Exporting...' : 'Confirm Export'}
         </Button>
-        <Button variant="secondary" onClick={() => setShowExportModal(false)}>
+        <Button
+          variant="secondary"
+          onClick={() => setShowExportModal(false)}
+          disabled={isExporting}
+        >
           Cancel
         </Button>
       </ModalFooter>
