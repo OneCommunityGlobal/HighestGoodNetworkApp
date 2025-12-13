@@ -78,7 +78,6 @@ function WhatWeDoSection() {
               src={section.src}
               alt={section.title}
               onError={e => {
-                // console.log(`Failed to load image: ${section.src}`);
                 e.target.style.display = 'none';
               }}
             />
