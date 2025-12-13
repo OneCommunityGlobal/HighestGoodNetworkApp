@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import { postFacebookContent } from '~/actions/facebookActions';
+import moment from 'moment-timezone';
+import { postFacebookContent, scheduleFacebookPost } from '~/actions/facebookActions';
 
 export default function SocialMediaComposer({ platform }) {
   const [postContent, setPostContent] = useState('');
@@ -9,6 +10,9 @@ export default function SocialMediaComposer({ platform }) {
   const [link, setLink] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [isPosting, setIsPosting] = useState(false);
+  const [scheduledContent, setScheduledContent] = useState('');
+  const [scheduledDateTime, setScheduledDateTime] = useState('');
+  const [isScheduling, setIsScheduling] = useState(false);
 
   const dispatch = useDispatch();
   const authUser = useSelector(state => state.auth?.user);
@@ -79,6 +83,62 @@ export default function SocialMediaComposer({ platform }) {
       // Toast already shown in action
     } finally {
       setIsPosting(false);
+    }
+  };
+
+  const handleSchedule = async () => {
+    if (platform !== 'facebook') {
+      toast.info('Scheduling is only available for facebook right now.');
+      return;
+    }
+
+    if (!scheduledContent.trim()) {
+      toast.error('Please enter content for your scheduled post.');
+      return;
+    }
+
+    if (!scheduledDateTime) {
+      toast.error('Please pick a PST date and time for your scheduled post.');
+      return;
+    }
+
+    const scheduledMoment = moment.tz(scheduledDateTime, 'YYYY-MM-DDTHH:mm', 'America/Los_Angeles');
+
+    if (!scheduledMoment.isValid()) {
+      toast.error('Please provide a valid date/time in PST.');
+      return;
+    }
+
+    if (scheduledMoment.isBefore(moment.tz('America/Los_Angeles'))) {
+      toast.error('Scheduled time must be in the future (PST).');
+      return;
+    }
+
+    if (!authUser?.userid) {
+      toast.error('User information is missing; please re-login and try again.');
+      return;
+    }
+
+    setIsScheduling(true);
+    try {
+      await dispatch(
+        scheduleFacebookPost({
+          message: scheduledContent.trim(),
+          scheduledFor: scheduledDateTime,
+          timezone: 'America/Los_Angeles',
+          requestor: {
+            requestorId: authUser.userid,
+            role: authUser.role,
+            permissions: authUser.permissions,
+          },
+        }),
+      );
+      setScheduledContent('');
+      setScheduledDateTime('');
+    } catch (error) {
+      // Toast already shown in action
+    } finally {
+      setIsScheduling(false);
     }
   };
 
@@ -202,12 +262,58 @@ export default function SocialMediaComposer({ platform }) {
       {activeSubTab === 'scheduled' && (
         <div>
           <p>
-            <strong>Scheduled Posts for {platform}</strong>
+            <strong>Schedule a {platform} post (PST)</strong>
           </p>
-          <ul>
-            <li> Aug 5 at 3:00 PM — “New product alert!”</li>
-            <li> Aug 12 at 12:00 PM — “Weekly roundup”</li>
-          </ul>
+          <textarea
+            value={scheduledContent}
+            onChange={e => setScheduledContent(e.target.value)}
+            placeholder="Write the message to post later..."
+            style={{
+              width: '100%',
+              height: '120px',
+              padding: '12px',
+              borderRadius: '6px',
+              border: '1px solid #ccc',
+              marginBottom: '1rem',
+            }}
+          />
+          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
+            <label style={{ display: 'flex', flexDirection: 'column', fontWeight: 'bold' }}>
+              Date & time (PST)
+              <input
+                type="datetime-local"
+                value={scheduledDateTime}
+                onChange={e => setScheduledDateTime(e.target.value)}
+                style={{
+                  padding: '8px',
+                  borderRadius: '6px',
+                  border: '1px solid #ccc',
+                  minWidth: '240px',
+                }}
+              />
+            </label>
+            <button
+              type="button"
+              onClick={handleSchedule}
+              disabled={isScheduling}
+              style={{
+                backgroundColor: isScheduling ? '#6c757d' : '#28a745',
+                color: 'white',
+                padding: '10px 16px',
+                borderRadius: '6px',
+                border: 'none',
+                cursor: isScheduling ? 'not-allowed' : 'pointer',
+                height: 'fit-content',
+                marginTop: '1.6rem',
+              }}
+            >
+              {isScheduling ? 'Scheduling...' : 'Schedule post'}
+            </button>
+          </div>
+          <p style={{ marginTop: '0.5rem', color: '#555', fontSize: '14px' }}>
+            Times are saved in Pacific Time. Scheduled posts will automatically publish at the
+            chosen time.
+          </p>
         </div>
       )}
 

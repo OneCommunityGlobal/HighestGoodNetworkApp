@@ -231,6 +231,7 @@ export const ENDPOINTS = {
   CONFIRM_EMAIL_SUBSCRIPTION: `${APIEndpoint}/confirm-non-hgn-email-subscription`,
   REMOVE_EMAIL_SUBSCRIPTION: `${APIEndpoint}/remove-non-hgn-email-subscription`,
   FACEBOOK_POST: `${APIEndpoint}/social/facebook/post`,
+  FACEBOOK_SCHEDULE_POST: `${APIEndpoint}/social/facebook/schedule`,
   
   PERMISSION_MANAGEMENT_UPDATE: () => `${APIEndpoint}/permission-management`,
 
