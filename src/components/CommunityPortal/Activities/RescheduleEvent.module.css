@@ -1,0 +1,360 @@
+/* Page wrapper */
+.reschedulePage {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+/* Buttons */
+.rescheduleButton {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #007fff;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background 0.2s ease;
+}
+.rescheduleButton:hover {
+  background-color: #0066cc;
+}
+.btnDarkMode {
+  background-color: #34495e;
+  color: #ecf0f1;
+  border: 1px solid #ecf0f1;
+}
+.btnDarkMode:hover {
+  background-color: #2c3e50;
+}
+.btnPrimary {
+  background-color: #0066cc;
+  color: white;
+  border: none;
+}
+.btnPrimary:disabled {
+  background-color: #ccc;
+  color: #666;
+  cursor: not-allowed;
+}
+.btnCancelDark {
+  background: transparent;
+  color: #ecf0f1;
+  border: 1px solid #ecf0f1;
+}
+
+.rescheduleButtonDisabled {
+  background-color: #ccc;
+  color: #666;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+.rescheduleButtonDarkDisabled {
+  background-color: #555;
+  color: #999;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* Modal backdrop */
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 20, 20, 0.8) !important;
+  display: flex;
+  justify-content: center;
+  align-items: center; /* center vertically */
+  padding: 20px;
+  z-index: 9999;
+}
+.modalBackdropDark {
+  background: rgba(20, 20, 20, 0.8);
+}
+
+/* Modal card */
+.modalContent {
+  position: relative;
+  background: #fff;
+  padding: 24px;
+  border-radius: 10px;
+  width: min(900px, 95%);
+  max-height: 90vh;
+  overflow-y: auto;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 20px;
+}
+.modalContentDark {
+  background: #2c3e50;
+  color: #ecf0f1;
+}
+
+/* Close “×” */
+.modalCloseBtn {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  background: transparent;
+  border: none;
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+  color: inherit;
+}
+
+/* Event container */
+.eventContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.eventContainerDark h3,
+.eventContainerDark p {
+  color: #ecf0f1;
+}
+.modalTitle {
+  margin: 0 0 10px;
+  font-size: 22px;
+  font-weight: bold;
+}
+.eventDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+}
+
+/* Time dropdown */
+.timeDropdown {
+  margin-top: 4px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+.timeDropdownDark {
+  background: #34495e;
+  color: #ecf0f1;
+  border: 1px solid #ecf0f1;
+}
+
+/* DatePicker side */
+.datepickerContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+}
+.rescheduleText {
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+
+/* Confirmation buttons */
+.confirmationButtons {
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.modalBody {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+.modalBodySingle {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+@media (max-width: 768px) {
+  .modalBody {
+    grid-template-columns: 1fr;
+  }
+  .confirmationButtons {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .confirmationButtons button {
+    width: 100%;
+  }
+}
+
+.modalFooter {
+  display: flex;
+  justify-content: flex-end; 
+  gap: 12px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(140, 149, 159, 0.24);
+}
+
+.primaryBtn {
+  padding: 10px 16px;
+  font-size: 16px;
+  border: 0;
+  border-radius: 8px;
+  background: #007fff;
+  color: #fff;
+  cursor: pointer;
+}
+.primaryBtn:hover { background: #0066cc; }
+.primaryBtn:disabled {
+  background: #9bbce5;
+  cursor: not-allowed;
+}
+
+.secondaryBtn {
+  padding: 10px 16px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: 1px solid #d0d7de;
+  background: #fff;
+  color: #24292f;
+}
+
+@media (max-width: 768px) {
+  .modalFooter {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .modalFooter .primaryBtn,
+  .modalFooter .secondaryBtn {
+    width: 100%;
+  }
+}
+
+
+/* DatePicker dark theme overrides */
+:global(.react-datepicker.dark) {
+  background: #2c3e50;
+  color: #ecf0f1;
+}
+:global(.react-datepicker.dark .react-datepicker__header) {
+  background: #34495e;
+  border-bottom: 1px solid #2c3e50;
+}
+:global(.react-datepicker.dark .react-datepicker__day--selected) {
+  background-color: #2980b9;
+}
+
+.reschedulePage {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 32px 16px;
+}
+
+.reschedulePage h2 {
+  font-size: clamp(22px, 2.2vw, 28px);
+  font-weight: 700;
+  letter-spacing: -0.2px;
+  margin: 0 0 8px;
+}
+
+.muted {
+  opacity: 0.7;
+  font-size: 0.95rem;
+}
+
+.reschedulePage fieldset {
+  width: min(680px, 92vw);
+  margin: 12px 0 18px;
+  padding: 18px 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(140,149,159,.25);
+  background: #fff;
+  box-shadow:
+    0 1px 1px rgba(0,0,0,.04),
+    0 8px 24px rgba(149,157,165,.15);
+}
+
+.reschedulePage legend {
+  padding: 0 10px;
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+
+.reschedulePage label {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 8px;
+  border-radius: 10px;
+  transition: background .15s ease, border-color .15s ease;
+  user-select: none;
+}
+
+.reschedulePage label:hover {
+  background: #f6f8fa;
+}
+
+.reschedulePage input[type="radio"] {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  border: 2px solid #9bbce5;
+  border-radius: 50%;
+  display: grid;
+  place-content: center;
+  outline: none;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.reschedulePage input[type="radio"]::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  transform: scale(0);
+  transition: transform .15s ease;
+  background: #007fff;
+}
+.reschedulePage input[type="radio"]:checked {
+  border-color: #007fff;
+  box-shadow: 0 0 0 3px rgba(0,127,255,.12);
+}
+.reschedulePage input[type="radio"]:checked::before {
+  transform: scale(1);
+}
+
+.reschedulePage form > div:last-of-type {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.reschedulePage p {
+  margin: 6px 0 0;
+}
+.reschedulePage p:has(> .success) {
+  color: #05621b;
+}
+.reschedulePage p:has(> .error) {
+  color: #b3261e;
+}
+
+.primaryBtn {
+  padding: 12px 18px;
+  font-size: 16px;
+  border-radius: 10px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .reschedulePage {
+    background: #0f172a; 
+    color: #e5e7eb;
+  }
+  .reschedulePage fieldset {
+    background: #111827; 
+    border-color: rgba(255,255,255,.08);
+    box-shadow: 0 8px 28px rgba(0,0,0,.45);
+  }
+  .reschedulePage label:hover {
+    background: rgba(255,255,255,.04);
+  }
+  .muted {
+    color: #9ca3af;
+  }
+}
