@@ -735,7 +735,7 @@ export default (
           component={Register}
         />
         <CPProtectedRoute
-          path="/communityportal/activities/feedback"
+          path="/communityportal/feedback"
           exact
           component={ActivityFeedbackForm}
         />
