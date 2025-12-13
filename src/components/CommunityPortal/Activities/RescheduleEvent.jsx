@@ -14,7 +14,7 @@ function RescheduleEvent({ activity }) {
       link: 'Event Link',
     };
 
-  const darkMode = useSelector((state) => state.theme?.darkMode);
+  const darkMode = useSelector(state => state.theme?.darkMode);
 
   const [showModal, setShowModal] = useState(true); // open modal on load
   const [confirmStep, setConfirmStep] = useState(false);
@@ -40,7 +40,7 @@ function RescheduleEvent({ activity }) {
     setOptions([]);
   };
 
-  const formatTime = (hour24) => {
+  const formatTime = hour24 => {
     const hour = ((hour24 % 24) + 24) % 24;
     const h12 = hour % 12 === 0 ? 12 : hour % 12;
     const period = hour < 12 ? 'AM' : 'PM';
@@ -56,7 +56,7 @@ function RescheduleEvent({ activity }) {
     return slots;
   };
 
-  const toISODate = (d) => d.toISOString().slice(0, 10);
+  const toISODate = d => d.toISOString().slice(0, 10);
 
   const addOption = () => {
     if (!selectedDate || !selectedTime) return;
@@ -66,7 +66,7 @@ function RescheduleEvent({ activity }) {
     const timeSlot = selectedTime;
 
     const exists = options.some(
-      (opt) => opt.dateISO === dateISO && opt.timeSlot === timeSlot
+      opt => opt.dateISO === dateISO && opt.timeSlot === timeSlot
     );
     if (exists) {
       alert('That date & time is already in the poll list.');
@@ -77,7 +77,7 @@ function RescheduleEvent({ activity }) {
       return;
     }
 
-    setOptions((prev) =>
+    setOptions(prev =>
       [...prev, { dateISO, dateLabel, timeSlot }].sort(
         (a, b) => new Date(a.dateISO) - new Date(b.dateISO)
       )
@@ -85,11 +85,11 @@ function RescheduleEvent({ activity }) {
     setSelectedTime('');
   };
 
-  const removeOption = (idx) => {
-    setOptions((prev) => prev.filter((_, i) => i !== idx));
+  const removeOption = idx => {
+    setOptions(prev => prev.filter((_, i) => i !== idx));
   };
 
-  const parse12to24 = (label) => {
+  const parse12to24 = label => {
     const [time, ap] = label.split(' ');
     let [h, m] = time.split(':').map(Number);
     if (ap === 'PM' && h !== 12) h += 12;
@@ -97,8 +97,8 @@ function RescheduleEvent({ activity }) {
     return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
   };
 
-  const buildBackendOptions = (opts) =>
-    opts.map((opt) => {
+  const buildBackendOptions = opts =>
+    opts.map(opt => {
       const [startLabel, endLabel] = opt.timeSlot.split(' - ');
       return {
         dateISO: opt.dateISO,
@@ -193,31 +193,45 @@ function RescheduleModal(props) {
   } = props;
 
   return (
-    <div className={`${styles.reschedulePage} ${darkMode ? 'bg-oxford-blue text-light' : ''}`}>
+    <div
+      className={`${styles.reschedulePage} ${
+        darkMode ? 'bg-oxford-blue text-light' : ''
+      }`}
+    >
       <div style={{ position: 'absolute', top: 16, left: 16, opacity: 0.9 }}>
-        <div><strong>{eventInfo.name || 'Event'}</strong></div>
+        <div>
+          <strong>{eventInfo.name || 'Event'}</strong>
+        </div>
         <div className="muted">{eventInfo.location}</div>
       </div>
 
       {/* Modal opens automatically — no button shown */}
       <div
-        className={`${styles.modalBackdrop} ${darkMode ? styles.modalBackdropDark : ''}`}
+        className={`${styles.modalBackdrop} ${
+          darkMode ? styles.modalBackdropDark : ''
+        }`}
         role="button"
         tabIndex={0}
-        onClick={(e) => e.target === e.currentTarget && closeModal()}
-        onKeyDown={(e) => {
+        onClick={e => e.target === e.currentTarget && closeModal()}
+        onKeyDown={e => {
           if (e.key === 'Enter' || e.key === ' ') {
             e.target === e.currentTarget && closeModal();
           }
         }}
       >
         <div
-          className={`${styles.modalContent} ${darkMode ? styles.modalContentDark : ''}`}
+          className={`${styles.modalContent} ${
+            darkMode ? styles.modalContentDark : ''
+          }`}
           role="dialog"
           aria-modal="true"
           aria-labelledby="reschedule-title"
         >
-          <button type="button" className={styles.modalCloseBtn} onClick={closeModal}>
+          <button
+            type="button"
+            className={styles.modalCloseBtn}
+            onClick={closeModal}
+          >
             &times;
           </button>
 
@@ -230,34 +244,49 @@ function RescheduleModal(props) {
               </div>
 
               <div className={styles.modalBody}>
-                <label className={styles.fieldLabel}>Time (for selected date)</label>
+                <label className={styles.fieldLabel} htmlFor="timeSelect">
+                  Time (for selected date)
+                </label>
                 <select
+                  id="timeSelect"
                   value={selectedTime}
-                  onChange={(e) => setSelectedTime(e.target.value)}
-                  className={`${styles.timeDropdown} ${darkMode ? styles.timeDropdownDark : ''}`}
+                  onChange={e => setSelectedTime(e.target.value)}
+                  className={`${styles.timeDropdown} ${
+                    darkMode ? styles.timeDropdownDark : ''
+                  }`}
                 >
                   <option value="">Select time</option>
-                  {getTimeSlots(8, 24, 2).map((slot) => (
-                    <option key={slot} value={slot}>{slot}</option>
+                  {getTimeSlots(8, 24, 2).map(slot => (
+                    <option key={slot} value={slot}>
+                      {slot}
+                    </option>
                   ))}
                 </select>
 
-                <button type="button" className={styles.primaryBtn} onClick={addOption}>
+                <button
+                  type="button"
+                  className={styles.primaryBtn}
+                  onClick={addOption}
+                >
                   Add option
                 </button>
 
                 <textarea
-                  className={`${styles.textArea} ${darkMode ? styles.textAreaDark : ''}`}
+                  className={`${styles.textArea} ${
+                    darkMode ? styles.textAreaDark : ''
+                  }`}
                   value={reason}
-                  onChange={(e) => setReason(e.target.value)}
+                  onChange={e => setReason(e.target.value)}
                 />
 
                 <DatePicker
                   selected={selectedDate}
-                  onChange={(date) => setSelectedDate(date)}
+                  onChange={date => setSelectedDate(date)}
                   inline
                   minDate={new Date()}
-                  className={darkMode ? 'react-datepicker dark' : 'react-datepicker'}
+                  className={
+                    darkMode ? 'react-datepicker dark' : 'react-datepicker'
+                  }
                 />
 
                 {options.map((opt, idx) => (

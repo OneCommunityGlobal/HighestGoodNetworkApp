@@ -1,5 +1,4 @@
-// Activity List Component
-import { useState, useEffect, useCallback  } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import styles from './ActivityList.module.css';
 import { useHistory } from 'react-router-dom';
 
@@ -124,22 +123,29 @@ function ActivityList() {
     setActivities(fetchedActivities);
   }, []);
 
-  const handleFilterChange = e => {
+  const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilter({ ...filter, [name]: value });
   };
 
-  const filteredActivities = activities.filter(activity => {
+  const filteredActivities = activities.filter((activity) => {
     return (
-      (!filter.type || activity.type.toLowerCase().includes(filter.type.toLowerCase())) &&
+      (!filter.type ||
+        activity.type.toLowerCase().includes(filter.type.toLowerCase())) &&
       (!filter.date || activity.date === filter.date) &&
-      (!filter.location || activity.location.toLowerCase().includes(filter.location.toLowerCase()))
+      (!filter.location ||
+        activity.location
+          .toLowerCase()
+          .includes(filter.location.toLowerCase()))
     );
   });
 
-   const goToReschedule = useCallback((id) => {
-    history.push(`/communityportal/activities/${id}/manage`);
-  }, [history]);
+  const goToReschedule = useCallback(
+    (id) => {
+      history.push(`/communityportal/activities/${id}/manage`);
+    },
+    [history]
+  );
 
   return (
     <div className={styles.body}>
@@ -159,7 +165,12 @@ function ActivityList() {
 
         <label>
           Date:
-          <input type="date" name="date" value={filter.date} onChange={handleFilterChange} />
+          <input
+            type="date"
+            name="date"
+            value={filter.date}
+            onChange={handleFilterChange}
+          />
         </label>
 
         <label>
@@ -173,13 +184,14 @@ function ActivityList() {
           />
         </label>
       </div>
+
       <div className={styles.activityList}>
         {filteredActivities.length > 0 ? (
           <ul>
-            {filteredActivities.map(activity => (
+            {filteredActivities.map((activity) => (
               <li key={activity.id}>
-                <strong>{activity.name}</strong> - {activity.type} - {activity.date} -{' '}
-                {activity.location}
+                <strong>{activity.name}</strong> - {activity.type} -{' '}
+                {activity.date} - {activity.location}
                 <button
                   type="button"
                   onClick={() => goToReschedule(activity.id)}
@@ -189,7 +201,6 @@ function ActivityList() {
                   Reschedule
                 </button>
               </li>
-
             ))}
           </ul>
         ) : (
