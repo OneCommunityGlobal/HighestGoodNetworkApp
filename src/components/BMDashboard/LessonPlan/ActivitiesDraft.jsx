@@ -8,6 +8,7 @@ const ActivitiesDraft = () => {
   const [description, setDescription] = useState('');
   const [reason, setReason] = useState('');
   const [strategy, setStrategy] = useState('');
+  const [activities, setActivities] = useState([]);
 
   const strategies = [
     'Visual Learning',
@@ -20,8 +21,28 @@ const ActivitiesDraft = () => {
     'Gamification',
   ];
 
+  const handleSave = () => {
+    if (!description || !reason || !strategy) return;
+
+    const newActivity = {
+      id: Date.now(),
+      description,
+      reason,
+      strategy,
+    };
+
+    setActivities(prev => [...prev, newActivity]);
+
+    // Reset form
+    setDescription('');
+    setReason('');
+    setStrategy('');
+    setOpen(false);
+  };
+
   return (
     <>
+      {/* Header */}
       <div className={styles.headerContainer}>
         <div>
           <h1 className={styles.title}>Draft Custom Activities</h1>
@@ -35,6 +56,30 @@ const ActivitiesDraft = () => {
         </button>
       </div>
 
+      {/* Drafted Activities */}
+      <div className={styles.activityList}>
+        {activities.map((activity, index) => (
+          <div key={activity.id} className={styles.activityCard}>
+            <h3>Activity {index + 1}</h3>
+
+            <p>
+              <strong>Description:</strong> {activity.description}
+            </p>
+
+            <p>
+              <strong>Why I Chose This:</strong> {activity.reason}
+            </p>
+
+            <p>
+              <strong>Teaching Strategy:</strong> {activity.strategy}
+            </p>
+          </div>
+        ))}
+
+        {activities.length === 0 && <p className={styles.emptyText}>No activities drafted yet.</p>}
+      </div>
+
+      {/* Modal */}
       {open && (
         <div className={styles.modalOverlay}>
           <div className={styles.modalBox}>
@@ -42,7 +87,7 @@ const ActivitiesDraft = () => {
               ×
             </button>
 
-            <h2 className={styles.modalTitle}>Activity 1</h2>
+            <h2 className={styles.modalTitle}>Add Activity</h2>
 
             {/* Description */}
             <label htmlFor="description" className={styles.label}>
@@ -55,7 +100,6 @@ const ActivitiesDraft = () => {
               className={styles.textarea}
             />
 
-            {/* Why I Chose This */}
             <label htmlFor="reason" className={styles.label}>
               Why I Chose This
             </label>
@@ -66,7 +110,6 @@ const ActivitiesDraft = () => {
               className={styles.textarea}
             />
 
-            {/* Teaching Strategies */}
             <label htmlFor="strategy" className={styles.label}>
               Teaching Strategies
             </label>
@@ -84,7 +127,7 @@ const ActivitiesDraft = () => {
               ))}
             </select>
 
-            <button onClick={() => setOpen(false)} className={styles.saveBtn}>
+            <button onClick={handleSave} className={styles.saveBtn}>
               Save Activity
             </button>
           </div>

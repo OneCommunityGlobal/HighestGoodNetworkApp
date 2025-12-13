@@ -16,7 +16,6 @@
   margin-top: 4px;
 }
 
-
 .addBtn {
   background: black;
   color: white;
@@ -31,7 +30,32 @@
   opacity: 0.85;
 }
 
+/* Activities list */
+.activityList {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 24px;
+}
 
+.activityCard {
+  background: #f9f9f9;
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.activityCard h3 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+}
+
+.emptyText {
+  color: #888;
+  font-style: italic;
+}
+
+/* Modal */
 .modalOverlay {
   position: fixed;
   inset: 0;
@@ -42,14 +66,13 @@
   z-index: 50;
 }
 
-
 .modalBox {
   background: white;
   padding: 24px;
   width: 500px;
   border-radius: 14px;
   position: relative;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 
 .modalTitle {
@@ -57,7 +80,6 @@
   font-weight: 600;
   margin-bottom: 18px;
 }
-
 
 .closeBtn {
   position: absolute;
@@ -73,7 +95,6 @@
 .closeBtn:hover {
   color: black;
 }
-
 
 .label {
   font-weight: 500;
