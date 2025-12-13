@@ -16,7 +16,7 @@ describe('active cell status check', () => {
       // container,
     );
     const cell = screen.getByTitle('Click here to change the user status');
-    expect(cell).toHaveClass('activeUser');
+    expect(cell).toHaveAttribute('aria-pressed', 'true');
   });
   it('displays the not activeUser correctly', () => {
     isActive = false;
@@ -27,7 +27,7 @@ describe('active cell status check', () => {
     // const span = rendered.container.querySelector('span');
     // expect(span.className).toBe('notActiveUser');
     const cell = screen.getByTitle('Click here to change the user status');
-    expect(cell).toHaveClass('notActiveUser');
+    expect(cell).toHaveAttribute('aria-pressed', 'false');
   });
 });
 
