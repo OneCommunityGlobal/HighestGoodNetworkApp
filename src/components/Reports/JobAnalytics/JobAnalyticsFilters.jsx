@@ -116,7 +116,7 @@ function JobAnalyticsFilters({ filters, setFilters }) {
   return (
     <div style={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}>
       <label style={labelStyle}>
-        Dates
+        <span>Dates</span>
         <select
           name="dateMode"
           value={filters.dateMode}
@@ -131,7 +131,7 @@ function JobAnalyticsFilters({ filters, setFilters }) {
       {filters.dateMode === "Custom" && (
         <>
           <label style={labelStyle}>
-            Start Date
+            <span>Start Date</span>
             <input
               type="date"
               name="startDate"
@@ -142,7 +142,7 @@ function JobAnalyticsFilters({ filters, setFilters }) {
           </label>
 
           <label style={labelStyle}>
-            End Date
+            <span>End Date</span>
             <input
               type="date"
               name="endDate"
@@ -155,7 +155,7 @@ function JobAnalyticsFilters({ filters, setFilters }) {
       )}
 
       <label style={labelStyle}>
-        Role
+        <span>Role</span>
         <select
           name="roles"
           value={filters.roles}
@@ -172,7 +172,7 @@ function JobAnalyticsFilters({ filters, setFilters }) {
       </label>
 
       <label style={labelStyle}>
-        Granularity
+        <span>Granularity</span>
         <select
           name="granularity"
           value={filters.granularity}
