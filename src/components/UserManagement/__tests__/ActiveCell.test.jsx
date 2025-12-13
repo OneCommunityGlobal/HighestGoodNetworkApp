@@ -6,16 +6,16 @@ import styles from '../../Timelog/Timelog.module.css';
 import userEvent from '@testing-library/user-event';
 
 describe('ActiveCell', () => {
-  it('renders with the correct active class', () => {
+  it('renders with the correct active state', () => {
     render(<ActiveCell isActive canChange={false} />);
     const cell = screen.getByTitle('Active');
-    expect(cell).toHaveClass(styles.activeUser);
+    expect(cell).toHaveAttribute('aria-pressed', 'true');
   });
 
-  it('renders with the correct inactive class', () => {
+  it('renders with the correct inactive state', () => {
     render(<ActiveCell isActive={false} canChange={false} />);
     const cell = screen.getByTitle('Inactive')
-    expect(cell).toHaveClass(styles.notActiveUser);
+    expect(cell).toHaveAttribute('aria-pressed', 'false');
   });
 
   it('sets the correct id when index is provided', () => {
