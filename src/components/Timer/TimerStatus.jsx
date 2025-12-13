@@ -1,9 +1,16 @@
 import { ReadyState } from 'react-use-websocket';
 import { BsXLg } from 'react-icons/bs';
+import { FaSyncAlt } from 'react-icons/fa';
 import cs from 'classnames';
 import css from './Countdown.module.css';
+import timerCss from './Timer.module.css';
 
-export default function TimerStatus({ readyState, toggleTimer }) {
+export default function TimerStatus({
+  readyState,
+  toggleTimer,
+  handleManualReconnect,
+  isReconnecting,
+}) {
   /*
   This is the status of the connection with the timer service
   We just use the readyState of the websocket connection to show the status
@@ -24,10 +31,41 @@ export default function TimerStatus({ readyState, toggleTimer }) {
   This component will be shown when the the connection is not open or there is an error
   or when there is no message from the server
   */
+  const showReconnectButton = readyState !== ReadyState.OPEN && handleManualReconnect;
+
   return (
     <>
       <BsXLg className={cs(css.transitionColor, css.crossIcon)} onClick={toggleTimer} />
-      <div className={css.timerStatus}>{connectionStatus}</div>
+      <div className={css.timerStatus}>
+        <div>{connectionStatus}</div>
+        {showReconnectButton && (
+          <div style={{ display: 'flex', justifyContent: 'center', marginTop: '1rem' }}>
+            <div
+              title={isReconnecting ? 'Reconnecting...' : 'Reconnect'}
+              style={{
+                display: 'inline-block',
+                cursor: isReconnecting ? 'not-allowed' : 'pointer',
+              }}
+            >
+              <button
+                type="button"
+                className={cs(
+                  timerCss.reconnectInlineBtn,
+                  isReconnecting && timerCss.reconnectBtnDisabled,
+                )}
+                onClick={handleManualReconnect}
+                disabled={isReconnecting}
+                aria-label={isReconnecting ? 'Reconnecting...' : 'Reconnect'}
+                title={isReconnecting ? 'Reconnecting...' : 'Reconnect'}
+              >
+                <FaSyncAlt
+                  className={cs(timerCss.reconnectIcon, isReconnecting && timerCss.spin)}
+                />
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
     </>
   );
 }

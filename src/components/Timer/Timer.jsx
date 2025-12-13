@@ -649,6 +649,8 @@ function Timer({ authUser, darkMode, isPopout }) {
               readyState={customReadyState}
               message={message}
               toggleTimer={() => window.close()}
+              handleManualReconnect={handleManualReconnect}
+              isReconnecting={isReconnecting}
             />
           )}
         </div>
@@ -690,18 +692,37 @@ function Timer({ authUser, darkMode, isPopout }) {
             {moment.utc(remaining).format('HH:mm:ss')}
           </button>
         ) : (
-          <div className={css.disconnectedInline}>
+          <div
+            className={css.disconnectedInline}
+            onClick={!isButtonDisabled ? toggleTimer : undefined}
+            onKeyDown={!isButtonDisabled ? e => e.key === 'Enter' && toggleTimer() : undefined}
+            role={!isButtonDisabled ? 'button' : undefined}
+            tabIndex={!isButtonDisabled ? 0 : undefined}
+            style={!isButtonDisabled ? { cursor: 'pointer' } : undefined}
+            title={!isButtonDisabled ? 'Open timer dropdown' : undefined}
+          >
             <div className={css.disconnectedText}>Disconnected</div>
-            <button
-              type="button"
-              className={cs(css.reconnectInlineBtn, isReconnecting && css.reconnectBtnDisabled)}
-              onClick={handleManualReconnect}
-              disabled={isReconnecting}
-              aria-label={isReconnecting ? 'Reconnecting...' : 'Reconnect WebSocket'}
+            <div
               title={isReconnecting ? 'Reconnecting...' : 'Reconnect'}
+              style={{
+                display: 'inline-block',
+                cursor: isReconnecting ? 'not-allowed' : 'pointer',
+              }}
             >
-              <FaSyncAlt className={cs(css.reconnectIcon, isReconnecting && css.spin)} />
-            </button>
+              <button
+                type="button"
+                className={cs(css.reconnectInlineBtn, isReconnecting && css.reconnectBtnDisabled)}
+                onClick={e => {
+                  e.stopPropagation();
+                  handleManualReconnect();
+                }}
+                disabled={isReconnecting}
+                aria-label={isReconnecting ? 'Reconnecting...' : 'Reconnect'}
+                title={isReconnecting ? 'Reconnecting...' : 'Reconnect'}
+              >
+                <FaSyncAlt className={cs(css.reconnectIcon, isReconnecting && css.spin)} />
+              </button>
+            </div>
           </div>
         )}
       </div>
@@ -855,6 +876,8 @@ function Timer({ authUser, darkMode, isPopout }) {
                 readyState={customReadyState}
                 message={message}
                 toggleTimer={toggleTimer}
+                handleManualReconnect={handleManualReconnect}
+                isReconnecting={isReconnecting}
               />
             )}
           </div>
