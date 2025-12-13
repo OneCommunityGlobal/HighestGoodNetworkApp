@@ -75,6 +75,13 @@ function IssueChart() {
     }
   };
 
+  const handleClearFilters = () => {
+    setFilters({
+      issueTypes: [],
+      years: [],
+    });
+  };
+
   const chartData = useMemo(() => {
     if (!issues || Object.keys(issues).length === 0) return { labels: [], datasets: [] };
     const filteredIssueTypes = filters.issueTypes.length ? filters.issueTypes : Object.keys(issues);
@@ -259,6 +266,25 @@ function IssueChart() {
               aria-label="Filter issues by year"
               placeholder="Select years"
             />
+          </div>
+          <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+            <button
+              type="button"
+              onClick={handleClearFilters}
+              style={{
+                padding: '8px 16px',
+                backgroundColor: '#007FFF',
+                color: '#ffffff',
+                border: 'none',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                fontWeight: 500,
+                height: '38px',
+              }}
+              aria-label="Clear all issue chart filters"
+            >
+              Clear Filters
+            </button>
           </div>
         </div>
 

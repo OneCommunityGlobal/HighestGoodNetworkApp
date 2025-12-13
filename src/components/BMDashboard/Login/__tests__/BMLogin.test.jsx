@@ -4,11 +4,13 @@ import { useDispatch, Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import { configureStore } from 'redux-mock-store';
 import { BrowserRouter as Router } from 'react-router-dom';
-import axios from 'axios';
 import BMLogin from '../BMLogin';
 import { act } from 'react-dom/test-utils';
+const mockLoginBMUser = vi.fn();
 
-vi.mock('axios');
+vi.mock('~/actions/authActions', () => ({
+  loginBMUser: (...args) => mockLoginBMUser(...args),
+}));
 
 vi.mock('jwt-decode', () => ({
   default: vi.fn(() => ({ decodedPayload: 'mocked_decoded_payload' })),
@@ -135,10 +137,10 @@ describe('BMLogin component', () => {
   });
 
   it('logs in successfully with correct credentials', async () => {
-    axios.post.mockResolvedValue({
+    mockLoginBMUser.mockImplementationOnce(() => async () => ({
       statusText: 'OK',
       data: { token: '1234' },
-    });
+    }));
 
     renderComponent(store);
     fireEvent.change(screen.getByLabelText(/email/i), { target: { value: 'test@gmail.com' } });
@@ -153,11 +155,11 @@ describe('BMLogin component', () => {
   });
 
   it('displays specific validation error for status 422', async () => {
-    axios.post.mockResolvedValue({
+    mockLoginBMUser.mockImplementationOnce(() => async () => ({
       statusText: 'ERROR',
       status: 422,
-      data: { token: '1234', label: 'email', message: 'User not found' },
-    });
+      data: { label: 'email', message: 'User not found' },
+    }));
 
     renderComponent(store);
     fireEvent.change(screen.getByLabelText(/email/i), { target: { value: 'test@gmail.com' } });
@@ -170,11 +172,11 @@ describe('BMLogin component', () => {
   });
 
   it('does not show error if status is not 422', async () => {
-    axios.post.mockResolvedValue({
+    mockLoginBMUser.mockImplementationOnce(() => async () => ({
       statusText: 'ERROR',
       status: 500,
-      data: { token: '1234' },
-    });
+      data: {},
+    }));
 
     renderComponent(store);
     fireEvent.change(screen.getByLabelText(/email/i), { target: { value: 'test@gmail.com' } });
@@ -187,7 +189,7 @@ describe('BMLogin component', () => {
   });
 
   it('handles post rejection without validation error', async () => {
-    axios.post.mockRejectedValue({ response: 'server error' });
+    mockLoginBMUser.mockImplementationOnce(() => async () => undefined);
 
     renderComponent(store);
     fireEvent.change(screen.getByLabelText(/email/i), { target: { value: 'test@gmail.com' } });

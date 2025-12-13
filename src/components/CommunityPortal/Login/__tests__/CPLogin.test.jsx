@@ -4,8 +4,12 @@ import { useDispatch, Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import { configureStore } from 'redux-mock-store';
 import { BrowserRouter as Router } from 'react-router-dom';
-import axios from 'axios';
 import CPLogin from '../CPLogin';
+const mockLoginBMUser = vi.fn();
+
+vi.mock('~/actions/authActions', () => ({
+  loginBMUser: (...args) => mockLoginBMUser(...args),
+}));
 
 const mockStore = configureStore([thunk]);
 let store;
@@ -27,9 +31,12 @@ beforeEach(() => {
       },
     },
   });
+  mockLoginBMUser.mockImplementation(() => async () => ({
+    statusText: 'OK',
+    data: { token: '1234' },
+  }));
+  history.push.mockClear();
 });
-
-vi.mock('axios');
 
 vi.mock('jwt-decode', () => ({
   default: vi.fn(() => ({ decodedPayload: 'mocked_decoded_payload' })),
@@ -141,10 +148,10 @@ describe('CPLogin component', () => {
     ).toBeInTheDocument();
   });
   it('check if entering the right email and password logs in as expected', async () => {
-    axios.post.mockResolvedValue({
+    mockLoginBMUser.mockImplementationOnce(() => async () => ({
       statusText: 'OK',
       data: { token: '1234' },
-    });
+    }));
 
     const { container } = renderComponent(store);
 
@@ -172,11 +179,11 @@ describe('CPLogin component', () => {
     });
   });
   it("check if statusText in response is not 'OK' and status is 422 and displays validation error", async () => {
-    axios.post.mockResolvedValue({
+    mockLoginBMUser.mockImplementationOnce(() => async () => ({
       statusText: 'ERROR',
       status: 422,
-      data: { token: '1234', label: 'email', message: 'User not found' },
-    });
+      data: { label: 'email', message: 'User not found' },
+    }));
     const { container } = renderComponent(store);
 
     const emailElement = screen.getByRole('textbox', { name: /email/i });
@@ -193,11 +200,11 @@ describe('CPLogin component', () => {
     });
   });
   it("check if statusText in response is not 'OK' and status is not 422 and does not display any validation error", async () => {
-    axios.post.mockResolvedValue({
+    mockLoginBMUser.mockImplementationOnce(() => async () => ({
       statusText: 'ERROR',
       status: 500,
-      data: { token: '1234' },
-    });
+      data: {},
+    }));
     const { container } = renderComponent(store);
 
     const emailElement = screen.getByRole('textbox', { name: /email/i });
@@ -214,7 +221,7 @@ describe('CPLogin component', () => {
     });
   });
   it('check failed post request does not display any validation error', async () => {
-    axios.post.mockRejectedValue({ response: 'server error' });
+    mockLoginBMUser.mockImplementationOnce(() => async () => undefined);
     const { container } = renderComponent(store);
 
     const emailElement = screen.getByRole('textbox', { name: /email/i });
