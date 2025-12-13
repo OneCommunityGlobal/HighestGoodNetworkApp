@@ -16,18 +16,15 @@ function RescheduleEvent({ activity }) {
 
   const darkMode = useSelector(state => state.theme?.darkMode);
 
-  const [showModal, setShowModal] = useState(true); // open modal on load
+  const [showModal, setShowModal] = useState(true);
   const [confirmStep, setConfirmStep] = useState(false);
   const [loading, setLoading] = useState(false);
-
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState('');
   const [reason, setReason] = useState('');
-
   const [options, setOptions] = useState([]);
 
   useEffect(() => {
-    // Automatically scroll to modal top when it opens
     if (showModal) window.scrollTo(0, 0);
   }, [showModal]);
 
@@ -66,7 +63,7 @@ function RescheduleEvent({ activity }) {
     const timeSlot = selectedTime;
 
     const exists = options.some(
-      opt => opt.dateISO === dateISO && opt.timeSlot === timeSlot
+      opt => opt.dateISO === dateISO && opt.timeSlot === timeSlot,
     );
 
     if (exists) {
@@ -81,8 +78,8 @@ function RescheduleEvent({ activity }) {
 
     setOptions(prev =>
       [...prev, { dateISO, dateLabel, timeSlot }].sort(
-        (a, b) => new Date(a.dateISO) - new Date(b.dateISO)
-      )
+        (a, b) => new Date(a.dateISO) - new Date(b.dateISO),
+      ),
     );
 
     setSelectedTime('');
@@ -123,7 +120,7 @@ function RescheduleEvent({ activity }) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(payload),
-      }
+      },
     );
 
     if (!res.ok) {
@@ -214,7 +211,6 @@ function RescheduleModal(props) {
         <div className="muted">{eventInfo.location}</div>
       </div>
 
-      {/* Modal opens automatically — no button shown */}
       <div
         className={`${styles.modalBackdrop} ${
           darkMode ? styles.modalBackdropDark : ''

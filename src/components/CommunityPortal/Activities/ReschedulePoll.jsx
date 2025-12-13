@@ -45,9 +45,8 @@ export default function ReschedulePoll() {
         setLoading(true);
 
         const origin = getApiOrigin();
-        // Use /api (protected) + send Authorization header if you’re logged in.
         const url = `${origin}/api/communityportal/activities/${activityId}/reschedule/poll?token=${encodeURIComponent(
-          emailToken
+          emailToken,
         )}`;
 
         const headers = {};
@@ -63,7 +62,7 @@ export default function ReschedulePoll() {
 
         if (!res.ok)
           throw new Error(
-            payload?.message || payload?.error || res.statusText
+            payload?.message || payload?.error || res.statusText,
           );
 
         if (!ignore) {
@@ -71,7 +70,7 @@ export default function ReschedulePoll() {
           setSelected(
             Number.isInteger(payload.currentVote)
               ? payload.currentVote
-              : null
+              : null,
           );
         }
       } catch (e) {
@@ -118,7 +117,7 @@ export default function ReschedulePoll() {
 
       if (!res.ok)
         throw new Error(
-          payload?.message || payload?.error || res.statusText
+          payload?.message || payload?.error || res.statusText,
         );
 
       setMsg('Thanks! Your selection has been recorded.');

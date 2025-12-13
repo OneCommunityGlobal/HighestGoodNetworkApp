@@ -143,7 +143,7 @@ function ActivityList() {
     id => {
       history.push(`/communityportal/activities/${id}/manage`);
     },
-    [history]
+    [history],
   );
 
   return (
