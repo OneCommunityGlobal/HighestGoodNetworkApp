@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import { Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -91,3 +92,8 @@ export default function JobAnalyticsGraph({ data, darkMode }) {
     </div>
   );
 }
+
+JobAnalyticsGraph.propTypes = {
+  data: PropTypes.array.isRequired,
+  darkMode: PropTypes.bool.isRequired,
+};
