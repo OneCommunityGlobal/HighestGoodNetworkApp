@@ -202,7 +202,14 @@ function RescheduleModal(props) {
       {/* Modal opens automatically — no button shown */}
       <div
         className={`${styles.modalBackdrop} ${darkMode ? styles.modalBackdropDark : ''}`}
+        role="button"
+        tabIndex={0}
         onClick={(e) => e.target === e.currentTarget && closeModal()}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.target === e.currentTarget && closeModal();
+          }
+        }}
       >
         <div
           className={`${styles.modalContent} ${darkMode ? styles.modalContentDark : ''}`}
