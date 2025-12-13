@@ -791,6 +791,7 @@ export default (
           exact
           component={ActivityComments}
         />
+        {/* TODO: Add route for /communityportal/activity/:activityid/comments for FAQ/Comments section */}
         {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
         {/* <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} /> */}
         {/* ----- END BM Dashboard Routing ----- */}
