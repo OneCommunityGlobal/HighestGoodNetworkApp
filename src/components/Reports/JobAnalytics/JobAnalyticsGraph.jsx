@@ -16,7 +16,7 @@ import styles from "./JobAnalyticsPage.module.css";
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 export default function JobAnalyticsGraph({ data, darkMode }) {
-  if (!data || data.length === 0) {
+  if (!Array.isArray(data) || data.length === 0) {
     return <p>No data available</p>;
   }
 
@@ -25,7 +25,7 @@ export default function JobAnalyticsGraph({ data, darkMode }) {
     datasets: [
       {
         label: "Applications",
-        data: data.map((d) => d.applications || d.count || 0),
+        data: data.map((d) => d.applications ?? d.count ?? 0),
         backgroundColor: darkMode ? "#3A506B" : "rgba(54, 162, 235, 0.7)",
       },
     ],
@@ -45,13 +45,9 @@ export default function JobAnalyticsGraph({ data, darkMode }) {
       },
       datalabels: {
         color: darkMode ? "#E0E0E0" : "#111111",
-        borderRadius: 4,
-        padding: 4,
-        clamp: true,
         anchor: "end",
         align: "left",
         offset: -5,
-        clip: true,
         formatter: (value) => value.toLocaleString(),
         font: { weight: "bold" },
       },
@@ -66,7 +62,6 @@ export default function JobAnalyticsGraph({ data, darkMode }) {
         },
         ticks: {
           color: darkMode ? "#E0E0E0" : "#111111",
-          font: { size: 12, weight: "bold" },
         },
         grid: { color: darkMode ? "#333" : "#ddd" },
       },
@@ -79,7 +74,6 @@ export default function JobAnalyticsGraph({ data, darkMode }) {
         },
         ticks: {
           color: darkMode ? "#E0E0E0" : "#111111",
-          font: { size: 12, weight: "bold" },
         },
         grid: { color: darkMode ? "#333" : "#ddd" },
       },
@@ -94,6 +88,17 @@ export default function JobAnalyticsGraph({ data, darkMode }) {
 }
 
 JobAnalyticsGraph.propTypes = {
-  data: PropTypes.array.isRequired,
-  darkMode: PropTypes.bool.isRequired,
+  data: PropTypes.arrayOf(
+    PropTypes.shape({
+      role: PropTypes.string.isRequired,
+      applications: PropTypes.number,
+      count: PropTypes.number,
+    })
+  ),
+  darkMode: PropTypes.bool,
+};
+
+JobAnalyticsGraph.defaultProps = {
+  data: [],
+  darkMode: false,
 };

@@ -1,37 +1,34 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { ENDPOINTS } from '../../../utils/URL';
+import React, { useEffect, useState } from "react";
+import PropTypes from "prop-types";
+import axios from "axios";
+import { ENDPOINTS } from "../../../utils/URL";
 
 const GRANULARITY_OPTS = [
-  { value: 'totals', label: 'Totals' },
-  { value: 'weekly', label: 'Weekly' },
-  { value: 'monthly', label: 'Monthly' },
-  { value: 'annually', label: 'Annually' },
+  { value: "totals", label: "Totals" },
+  { value: "weekly", label: "Weekly" },
+  { value: "monthly", label: "Monthly" },
+  { value: "annually", label: "Annually" },
 ];
 
-const JobAnalyticsFilters = ({ filters, setFilters }) => {
-  const [roleOptions, setRoleOptions] = useState(['All']);
+function JobAnalyticsFilters({ filters, setFilters }) {
+  const [roleOptions, setRoleOptions] = useState(["All"]);
   const [loadingRoles, setLoadingRoles] = useState(false);
 
   const [isDark, setIsDark] = useState(
-    typeof document !== 'undefined' &&
-      document.querySelector('.dark-mode') !== null
+    typeof document !== "undefined" &&
+      document.body.classList.contains("dark-mode")
   );
 
   useEffect(() => {
-    if (typeof document === 'undefined') return;
+    if (typeof document === "undefined") return;
 
-    const targetNode = document.body;
     const observer = new MutationObserver(() => {
-      const darkActive =
-        document.querySelector('.dark-mode') !== null;
-      setIsDark(darkActive);
+      setIsDark(document.body.classList.contains("dark-mode"));
     });
 
-    observer.observe(targetNode, {
+    observer.observe(document.body, {
       attributes: true,
-      subtree: true,
-      attributeFilter: ['class'],
+      attributeFilter: ["class"],
     });
 
     return () => observer.disconnect();
@@ -40,38 +37,34 @@ const JobAnalyticsFilters = ({ filters, setFilters }) => {
   useEffect(() => {
     let alive = true;
 
-    (async () => {
+    async function loadRoles() {
       setLoadingRoles(true);
       try {
-        const resp = await axios.get(
-          ENDPOINTS.JOB_ANALYTICS_ROLES
-        );
-        const arr = Array.isArray(resp.data) ? resp.data : [];
+        const resp = await axios.get(ENDPOINTS.JOB_ANALYTICS_ROLES);
+        const roles = Array.isArray(resp.data) ? resp.data : [];
 
-        const withAll = [
-          'All',
-          ...Array.from(new Set(arr)).sort((a, b) =>
+        const sorted = [
+          "All",
+          ...Array.from(new Set(roles)).sort((a, b) =>
             a.localeCompare(b)
           ),
         ];
 
         if (alive) {
-          setRoleOptions(withAll);
-          if (!withAll.includes(filters.roles)) {
-            setFilters((prev) => ({
-              ...prev,
-              roles: 'All',
-            }));
+          setRoleOptions(sorted);
+          if (!sorted.includes(filters.roles)) {
+            setFilters((prev) => ({ ...prev, roles: "All" }));
           }
         }
-      } catch (e) {
-        console.error('Failed to load roles:', e);
-        if (alive) setRoleOptions(['All']);
+      } catch (err) {
+        console.error("Failed to load roles:", err);
+        if (alive) setRoleOptions(["All"]);
       } finally {
-        alive && setLoadingRoles(false);
+        if (alive) setLoadingRoles(false);
       }
-    })();
+    }
 
+    loadRoles();
     return () => {
       alive = false;
     };
@@ -80,69 +73,54 @@ const JobAnalyticsFilters = ({ filters, setFilters }) => {
   const onChange = (e) => {
     const { name, value } = e.target;
 
-    if (name === 'dateMode') {
-      if (value === 'All') {
-        return setFilters((prev) => ({
+    if (name === "dateMode") {
+      if (value === "All") {
+        setFilters((prev) => ({
           ...prev,
-          dateMode: 'All',
-          startDate: '',
-          endDate: '',
-          granularity: 'totals',
+          dateMode: "All",
+          startDate: "",
+          endDate: "",
+          granularity: "totals",
         }));
+        return;
       }
-      return setFilters((prev) => ({
-        ...prev,
-        dateMode: 'Custom',
-      }));
+      setFilters((prev) => ({ ...prev, dateMode: "Custom" }));
+      return;
     }
 
-    if (name === 'granularity' && filters.dateMode === 'All') {
-      return setFilters((prev) => ({
-        ...prev,
-        granularity: 'totals',
-      }));
+    if (name === "granularity" && filters.dateMode === "All") {
+      setFilters((prev) => ({ ...prev, granularity: "totals" }));
+      return;
     }
 
-    setFilters((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFilters((prev) => ({ ...prev, [name]: value }));
   };
 
-  const wrap = {
-    display: 'flex',
-    flexWrap: 'wrap',
-    gap: '1rem',
-    marginBottom: '1.25rem',
-  };
+  const nonTotalsDisabled = filters.dateMode !== "Custom";
 
-  const col = {
-    display: 'flex',
-    flexDirection: 'column',
-    fontSize: '.92rem',
-    minWidth: 180,
-    color: isDark ? '#eee' : '#2b2b2b',
+  const labelStyle = {
+    color: isDark ? "#e0e0e0" : "#111111",
+    display: "flex",
+    flexDirection: "column",
+    fontSize: "0.9rem",
   };
 
   const inputStyle = {
-    backgroundColor: isDark ? '#1a1a1a' : '#fff',
-    color: isDark ? '#eee' : '#111',
-    border: `1px solid ${isDark ? '#666' : '#ccc'}`,
-    borderRadius: 4,
-    padding: '0.25rem',
+    backgroundColor: isDark ? "#1b2a41" : "#ffffff",
+    color: isDark ? "#e0e0e0" : "#111111",
+    border: `1px solid ${isDark ? "#555" : "#ccc"}`,
+    borderRadius: "4px",
+    padding: "0.25rem",
   };
 
-  const nonTotalsDisabled = filters.dateMode !== 'Custom';
-
   return (
-    <div style={wrap}>
-      <label style={col}>
-        <span>Dates:</span>
+    <div style={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}>
+      <label style={labelStyle}>
+        Dates
         <select
           name="dateMode"
           value={filters.dateMode}
           onChange={onChange}
-          aria-label="Dates"
           style={inputStyle}
         >
           <option value="All">All</option>
@@ -150,10 +128,10 @@ const JobAnalyticsFilters = ({ filters, setFilters }) => {
         </select>
       </label>
 
-      {filters.dateMode === 'Custom' && (
+      {filters.dateMode === "Custom" && (
         <>
-          <label style={col}>
-            <span>Start Date:</span>
+          <label style={labelStyle}>
+            Start Date
             <input
               type="date"
               name="startDate"
@@ -163,8 +141,8 @@ const JobAnalyticsFilters = ({ filters, setFilters }) => {
             />
           </label>
 
-          <label style={col}>
-            <span>End Date:</span>
+          <label style={labelStyle}>
+            End Date
             <input
               type="date"
               name="endDate"
@@ -176,8 +154,8 @@ const JobAnalyticsFilters = ({ filters, setFilters }) => {
         </>
       )}
 
-      <label style={col}>
-        <span>Role:</span>
+      <label style={labelStyle}>
+        Role
         <select
           name="roles"
           value={filters.roles}
@@ -193,8 +171,8 @@ const JobAnalyticsFilters = ({ filters, setFilters }) => {
         </select>
       </label>
 
-      <label style={col}>
-        <span>Granularity:</span>
+      <label style={labelStyle}>
+        Granularity
         <select
           name="granularity"
           value={filters.granularity}
@@ -205,29 +183,26 @@ const JobAnalyticsFilters = ({ filters, setFilters }) => {
             <option
               key={opt.value}
               value={opt.value}
-              disabled={
-                opt.value !== 'totals' && nonTotalsDisabled
-              }
+              disabled={opt.value !== "totals" && nonTotalsDisabled}
             >
               {opt.label}
             </option>
           ))}
         </select>
-
-        {nonTotalsDisabled && (
-          <small
-            style={{
-              opacity: 0.7,
-              marginTop: 4,
-              color: isDark ? '#aaa' : '#555',
-            }}
-          >
-          
-          </small>
-        )}
       </label>
     </div>
   );
+}
+
+JobAnalyticsFilters.propTypes = {
+  filters: PropTypes.shape({
+    dateMode: PropTypes.string.isRequired,
+    startDate: PropTypes.string,
+    endDate: PropTypes.string,
+    roles: PropTypes.string,
+    granularity: PropTypes.string,
+  }).isRequired,
+  setFilters: PropTypes.func.isRequired,
 };
 
 export default JobAnalyticsFilters;

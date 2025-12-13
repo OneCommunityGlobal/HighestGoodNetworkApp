@@ -28,7 +28,7 @@ const JobAnalyticsCompetitiveRolesPage = () => {
         ? filters.granularity
         : undefined;
 
-    return ENDPOINTS.JOB_ANALYTICS(start, end, filters.roles, gran);
+    return ENDPOINTS.JOB_ANALYTICS_QUERY(start, end, filters.roles, gran);
   }, [filters]);
 
   useEffect(() => {
