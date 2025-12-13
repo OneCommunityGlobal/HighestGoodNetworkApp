@@ -2,19 +2,20 @@
 import { render, fireEvent, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import ActiveCell from '../ActiveCell'; // Adjust the import path as necessary.
+import styles from '../../Timelog/Timelog.module.css';
 import userEvent from '@testing-library/user-event';
 
 describe('ActiveCell', () => {
   it('renders with the correct active class', () => {
     render(<ActiveCell isActive canChange={false} />);
     const cell = screen.getByTitle('Active');
-    expect(cell).toHaveClass('activeUser');
+    expect(cell).toHaveClass(styles.activeUser);
   });
 
   it('renders with the correct inactive class', () => {
     render(<ActiveCell isActive={false} canChange={false} />);
     const cell = screen.getByTitle('Inactive')
-    expect(cell).toHaveClass('notActiveUser');
+    expect(cell).toHaveClass(styles.notActiveUser);
   });
 
   it('sets the correct id when index is provided', () => {
