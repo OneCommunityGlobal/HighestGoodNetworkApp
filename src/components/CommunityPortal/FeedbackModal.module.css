@@ -1,114 +1,109 @@
-.pageLight {
-  background-color: #ffffff;
-  color: #000000;
-  min-height: 100vh;
-  padding: 40px 20px;
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
 }
 
-.pageDark {
-  background-color: #1b2a41;
+.modalLight {
+  background: #ffffff;
+  color: #000;
+  padding: 24px;
+  width: 420px;
+  border-radius: 10px;
+  position: relative;
+}
+
+.modalDark {
+  background: #1b2a41;
   color: #ffffff;
-  min-height: 100vh;
-  padding: 40px 20px;
+  padding: 24px;
+  width: 420px;
+  border-radius: 10px;
+  position: relative;
 }
 
-.container {
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-.heading {
-  font-size: 26px;
-  text-align: center;
-  margin-bottom: 20px;
-  font-weight: 600;
+.closeBtn {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  border: none;
+  background: transparent;
+  font-size: 20px;
+  color: inherit;
+  cursor: pointer;
 }
 
 .starContainer {
   display: flex;
   justify-content: center;
-  gap: 12px;
-  margin-bottom: 18px;
+  gap: 10px;
+  margin: 15px 0;
 }
 
 .starWrapper {
   cursor: pointer;
-  transition: transform 0.15s ease-in-out;
+  transition: transform 0.15s ease;
 }
 
 .starWrapper:hover {
-  transform: scale(1.15);
+  transform: scale(1.2);
 }
 
-.starFilledIcon {
-  color: #ffb400;
-  font-size: 42px !important;
-}
-
+.starFilledIcon,
 .starEmptyIcon {
-  color: #cccccc;
-  font-size: 42px !important;
-}
-
-.pageDark .starEmptyIcon {
-  color: #666666 !important;
+  width: 36px;
+  height: 36px;
 }
 
 .commentBox {
   width: 100%;
-  min-height: 120px;
-  padding: 12px;
+  min-height: 110px;
+  padding: 10px;
   border-radius: 6px;
   border: 1px solid #ccc;
   background-color: inherit;
   color: inherit;
-  font-size: 14px;
-}
-
-.pageDark .commentBox {
-  border: 1px solid #555;
+  margin-bottom: 8px;
 }
 
 .charCount {
   text-align: right;
   font-size: 12px;
-  margin-top: 4px;
   opacity: 0.7;
 }
 
 .error {
   color: #ff4d4d;
-  margin-bottom: 14px;
-  font-size: 14px;
+  margin-bottom: 8px;
 }
 
 .success {
-  background-color: #d4edda;
+  background: #d4edda;
   color: #155724;
   padding: 10px;
-  border-radius: 6px;
   text-align: center;
-  margin-bottom: 18px;
+  border-radius: 6px;
+  margin-bottom: 12px;
 }
-
 .submitButton {
   width: 100%;
   padding: 12px;
-  background-color: #007bff;
+  background: #007bff;
   color: white;
   border: none;
   border-radius: 6px;
-  font-size: 16px;
   cursor: pointer;
 }
 
 .submitButtonDisabled {
   width: 100%;
   padding: 12px;
-  background-color: #007bff;
+  background: #007bff;
   opacity: 0.4;
-  border: none;
   border-radius: 6px;
-  font-size: 16px;
   cursor: not-allowed;
 }

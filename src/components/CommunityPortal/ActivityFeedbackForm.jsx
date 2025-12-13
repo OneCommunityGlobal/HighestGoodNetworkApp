@@ -1,10 +1,8 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import styles from "./FeedbackModal.module.css";
-import StarIcon from "@mui/icons-material/Star";
-import StarBorderIcon from "@mui/icons-material/StarBorder";
 
-const ActivityFeedbackPage = () => {
+const ActivityFeedbackModal = ({ onClose }) => {
   const [rating, setRating] = useState(0);
   const [hover, setHover] = useState(0);
   const [comment, setComment] = useState("");
@@ -26,21 +24,27 @@ const ActivityFeedbackPage = () => {
     setTimeout(() => {
       setSubmitted(true);
       setLoading(false);
+      setTimeout(() => onClose(), 1200);
     }, 900);
   };
 
   return (
-    <div className={darkMode ? styles.pageDark : styles.pageLight}>
-      <div className={styles.container}>
+    <div className={styles.overlay} onClick={onClose}>
+      <div
+        className={darkMode ? styles.modalDark : styles.modalLight}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button className={styles.closeBtn} onClick={onClose}>
+          ✕
+        </button>
 
-        <h1 className={styles.heading}>Activity Feedback</h1>
+        <h2 className={styles.heading}>Activity Feedback</h2>
 
         {submitted && <div className={styles.success}>Feedback submitted!</div>}
-
-        {/*5-STAR RATING SYSTEM */}
         <div className={styles.starContainer}>
           {[1, 2, 3, 4, 5].map((star) => {
             const filled = star <= (hover || rating);
+
             return (
               <span
                 key={star}
@@ -53,9 +57,23 @@ const ActivityFeedbackPage = () => {
                 }}
               >
                 {filled ? (
-                  <StarIcon className={styles.starFilledIcon} />
+                  <svg
+                    className={styles.starFilledIcon}
+                    viewBox="0 0 24 24"
+                    fill="#ffb400"
+                  >
+                    <path d="M12 .587l3.668 7.568L24 9.748l-6 5.848L19.335 24 12 19.897 4.665 24 6 15.596 0 9.748l8.332-1.593z" />
+                  </svg>
                 ) : (
-                  <StarBorderIcon className={styles.starEmptyIcon} />
+                  <svg
+                    className={styles.starEmptyIcon}
+                    viewBox="0 0 24 24"
+                    stroke="#ccc"
+                    fill="none"
+                    strokeWidth="2"
+                  >
+                    <path d="M12 .587l3.668 7.568L24 9.748l-6 5.848L19.335 24 12 19.897 4.665 24 6 15.596 0 9.748l8.332-1.593z" />
+                  </svg>
                 )}
               </span>
             );
@@ -63,19 +81,15 @@ const ActivityFeedbackPage = () => {
         </div>
 
         {error && <div className={styles.error}>{error}</div>}
-
-        {/* COMMENT BOX */}
         <textarea
           className={styles.commentBox}
           maxLength={300}
-          placeholder="Optional: Add your feedback (max 300 characters)"
+          placeholder="Optional: Add your feedback"
           value={comment}
           onChange={(e) => setComment(e.target.value)}
         />
 
         <div className={styles.charCount}>{comment.length}/300</div>
-
-  
         <button
           className={rating ? styles.submitButton : styles.submitButtonDisabled}
           disabled={!rating || loading}
@@ -88,4 +102,4 @@ const ActivityFeedbackPage = () => {
   );
 };
 
-export default ActivityFeedbackPage;
+export default ActivityFeedbackModal;
