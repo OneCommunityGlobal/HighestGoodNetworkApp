@@ -593,7 +593,7 @@ export default (
           exact
           component={AnalyticsDashboard}
           fallback
-          // allowedRoles={[UserRole.Administrator, UserRole.Owner]}
+        // allowedRoles={[UserRole.Administrator, UserRole.Owner]}
         />
         {/* ----- BEGIN BM Dashboard Routing ----- */}
         <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
@@ -706,8 +706,13 @@ export default (
         <CPProtectedRoute path="/communityportal" exact component={CPDashboard} />
         <Route path="/communityportal/login" component={CPLogin} />
         <CPProtectedRoute path="/communityportal/Activities" exact component={ActivityList} />
-        <CPProtectedRoute path="/communityportal/activities/:activityId/manage" component={RescheduleEvent} routePermissions={['rescheduleEvent']}/>
-        <Route path="/communityportal/ReschedulePoll" component={ReschedulePoll}/>
+        <CPProtectedRoute
+          path="/communityportal/activities/:activityId/manage"
+          component={RescheduleEvent}
+          routePermissions={['rescheduleEvent']}
+        />
+
+        <Route path="/communityportal/ReschedulePoll" component={ReschedulePoll} />
         {/* ----- Community Calendar Routing ----- */}
         <CPProtectedRoute path="/communityportal/calendar" exact component={CommunityCalendar} />
         <CPProtectedRoute

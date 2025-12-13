@@ -13,12 +13,13 @@ function getApiOrigin() {
 }
 
 function fmtHuman(opt, tz) {
-  const to12 = (hhmm) => {
+  const to12 = hhmm => {
     const [H, M] = hhmm.split(':').map(Number);
     const ap = H >= 12 ? 'PM' : 'AM';
-    const h12 = (H % 12) || 12;
+    const h12 = H % 12 || 12;
     return `${h12}:${String(M).padStart(2, '0')} ${ap}`;
   };
+
   const d = new Date(`${opt.dateISO}T00:00:00`);
   const dateStr = d.toDateString();
   return `${dateStr} • ${to12(opt.start)} – ${to12(opt.end)} (${tz})`;
@@ -45,11 +46,13 @@ export default function ReschedulePoll() {
 
         const origin = getApiOrigin();
         // Use /api (protected) + send Authorization header if you’re logged in.
-        const url = `${origin}/api/communityportal/activities/${activityId}/reschedule/poll?token=${encodeURIComponent(emailToken)}`;
+        const url = `${origin}/api/communityportal/activities/${activityId}/reschedule/poll?token=${encodeURIComponent(
+          emailToken
+        )}`;
 
         const headers = {};
         const jwt = localStorage.getItem('token');
-        if (jwt) headers['Authorization'] = jwt;
+        if (jwt) headers.Authorization = jwt;
 
         const res = await fetch(url, { headers });
 
@@ -58,11 +61,18 @@ export default function ReschedulePoll() {
           ? await res.json()
           : { error: await res.text() };
 
-        if (!res.ok) throw new Error(payload?.message || payload?.error || res.statusText);
+        if (!res.ok)
+          throw new Error(
+            payload?.message || payload?.error || res.statusText
+          );
 
         if (!ignore) {
           setPoll(payload);
-          setSelected(Number.isInteger(payload.currentVote) ? payload.currentVote : null);
+          setSelected(
+            Number.isInteger(payload.currentVote)
+              ? payload.currentVote
+              : null
+          );
         }
       } catch (e) {
         if (!ignore) setMsg(`Error: ${e.message || String(e)}`);
@@ -72,7 +82,9 @@ export default function ReschedulePoll() {
     }
 
     if (activityId) load();
-    return () => { ignore = true; };
+    return () => {
+      ignore = true;
+    };
   }, [activityId, emailToken]);
 
   async function onSubmit(e) {
@@ -88,12 +100,15 @@ export default function ReschedulePoll() {
 
       const headers = { 'Content-Type': 'application/json' };
       const jwt = localStorage.getItem('token');
-      if (jwt) headers['Authorization'] = jwt;
+      if (jwt) headers.Authorization = jwt;
 
       const res = await fetch(url, {
         method: 'POST',
         headers,
-        body: JSON.stringify({ token: emailToken, optionIdx: selected }),
+        body: JSON.stringify({
+          token: emailToken,
+          optionIdx: selected,
+        }),
       });
 
       const ct = res.headers.get('content-type') || '';
@@ -101,7 +116,10 @@ export default function ReschedulePoll() {
         ? await res.json()
         : { error: await res.text() };
 
-      if (!res.ok) throw new Error(payload?.message || payload?.error || res.statusText);
+      if (!res.ok)
+        throw new Error(
+          payload?.message || payload?.error || res.statusText
+        );
 
       setMsg('Thanks! Your selection has been recorded.');
     } catch (e) {
@@ -112,25 +130,57 @@ export default function ReschedulePoll() {
   }
 
   if (!activityId) {
-    return <div className={styles.reschedulePage}><p>Missing activity.</p></div>;
+    return (
+      <div className={styles.reschedulePage}>
+        <p>Missing activity.</p>
+      </div>
+    );
   }
+
   if (loading) {
-    return <div className={styles.reschedulePage}><p>Loading poll…</p></div>;
+    return (
+      <div className={styles.reschedulePage}>
+        <p>Loading poll…</p>
+      </div>
+    );
   }
+
   if (!poll) {
-    return <div className={styles.reschedulePage}><p>{msg || 'No poll found.'}</p></div>;
+    return (
+      <div className={styles.reschedulePage}>
+        <p>{msg || 'No poll found.'}</p>
+      </div>
+    );
   }
 
   return (
-    <div className={styles.reschedulePage} style={{ maxWidth: 640, margin: '24px auto' }}>
+    <div
+      className={styles.reschedulePage}
+      style={{ maxWidth: 640, margin: '24px auto' }}
+    >
       <h2 style={{ marginBottom: 4 }}>{poll.activity.title}</h2>
-      <div className="muted" style={{ marginBottom: 16 }}>{poll.activity.location}</div>
-      {poll.reason ? <p><strong>Reason:</strong> {poll.reason}</p> : null}
+      <div className="muted" style={{ marginBottom: 16 }}>
+        {poll.activity.location}
+      </div>
+      {poll.reason ? (
+        <p>
+          <strong>Reason:</strong> {poll.reason}
+        </p>
+      ) : null}
       <form onSubmit={onSubmit}>
-        <fieldset style={{ border: '1px solid #d0d7de', borderRadius: 8, padding: 12 }}>
+        <fieldset
+          style={{ border: '1px solid #d0d7de', borderRadius: 8, padding: 12 }}
+        >
           <legend style={{ padding: '0 6px' }}>Choose one time</legend>
           {poll.options.map((opt, idx) => (
-            <label key={idx} style={{ display: 'block', margin: '8px 0', cursor: 'pointer' }}>
+            <label
+              key={idx}
+              style={{
+                display: 'block',
+                margin: '8px 0',
+                cursor: 'pointer',
+              }}
+            >
               <input
                 type="radio"
                 name="opt"

@@ -120,28 +120,27 @@ function ActivityList() {
         location: 'Tech Hub',
       },
     ];
+
     setActivities(fetchedActivities);
   }, []);
 
-  const handleFilterChange = (e) => {
+  const handleFilterChange = e => {
     const { name, value } = e.target;
     setFilter({ ...filter, [name]: value });
   };
 
-  const filteredActivities = activities.filter((activity) => {
+  const filteredActivities = activities.filter(activity => {
     return (
       (!filter.type ||
         activity.type.toLowerCase().includes(filter.type.toLowerCase())) &&
       (!filter.date || activity.date === filter.date) &&
       (!filter.location ||
-        activity.location
-          .toLowerCase()
-          .includes(filter.location.toLowerCase()))
+        activity.location.toLowerCase().includes(filter.location.toLowerCase()))
     );
   });
 
   const goToReschedule = useCallback(
-    (id) => {
+    id => {
       history.push(`/communityportal/activities/${id}/manage`);
     },
     [history]
@@ -188,7 +187,7 @@ function ActivityList() {
       <div className={styles.activityList}>
         {filteredActivities.length > 0 ? (
           <ul>
-            {filteredActivities.map((activity) => (
+            {filteredActivities.map(activity => (
               <li key={activity.id}>
                 <strong>{activity.name}</strong> - {activity.type} -{' '}
                 {activity.date} - {activity.location}

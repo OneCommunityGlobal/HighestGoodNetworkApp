@@ -68,10 +68,12 @@ function RescheduleEvent({ activity }) {
     const exists = options.some(
       opt => opt.dateISO === dateISO && opt.timeSlot === timeSlot
     );
+
     if (exists) {
       alert('That date & time is already in the poll list.');
       return;
     }
+
     if (options.length >= 5) {
       alert('You can add up to 5 options.');
       return;
@@ -82,6 +84,7 @@ function RescheduleEvent({ activity }) {
         (a, b) => new Date(a.dateISO) - new Date(b.dateISO)
       )
     );
+
     setSelectedTime('');
   };
 
@@ -92,8 +95,10 @@ function RescheduleEvent({ activity }) {
   const parse12to24 = label => {
     const [time, ap] = label.split(' ');
     let [h, m] = time.split(':').map(Number);
+
     if (ap === 'PM' && h !== 12) h += 12;
     if (ap === 'AM' && h === 12) h = 0;
+
     return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
   };
 
@@ -113,7 +118,10 @@ function RescheduleEvent({ activity }) {
       `${ApiEndpoint}/communityportal/activities/${eventId}/reschedule/notify`,
       {
         method: 'POST',
-        headers: { Authorization: token, 'Content-Type': 'application/json' },
+        headers: {
+          Authorization: token,
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify(payload),
       }
     );
@@ -128,6 +136,7 @@ function RescheduleEvent({ activity }) {
 
   const handleCreateAndNotify = async () => {
     setLoading(true);
+
     try {
       const beOptions = buildBackendOptions(options);
 
@@ -247,6 +256,7 @@ function RescheduleModal(props) {
                 <label className={styles.fieldLabel} htmlFor="timeSelect">
                   Time (for selected date)
                 </label>
+
                 <select
                   id="timeSelect"
                   value={selectedTime}
@@ -306,20 +316,18 @@ function RescheduleModal(props) {
               </div>
             </>
           ) : (
-            <>
-              <div className={styles.modalFooter}>
-                <button
-                  type="button"
-                  onClick={handleCreateAndNotify}
-                  disabled={loading}
-                >
-                  {loading ? 'Sending…' : 'Create & Notify'}
-                </button>
-                <button type="button" onClick={() => setConfirmStep(false)}>
-                  Back
-                </button>
-              </div>
-            </>
+            <div className={styles.modalFooter}>
+              <button
+                type="button"
+                onClick={handleCreateAndNotify}
+                disabled={loading}
+              >
+                {loading ? 'Sending…' : 'Create & Notify'}
+              </button>
+              <button type="button" onClick={() => setConfirmStep(false)}>
+                Back
+              </button>
+            </div>
           )}
         </div>
       </div>
