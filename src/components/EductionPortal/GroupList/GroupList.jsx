@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback, useMemo, memo } from 'react';
+import PropTypes from 'prop-types';
 import styles from './GroupList.module.css';
 import GroupEditorModal from './GroupEditorModal.jsx';
 import { useSelector } from 'react-redux';
@@ -37,6 +38,7 @@ const GroupItem = memo(function GroupItem({ group, onEdit }) {
 
       <div className={styles.actions}>
         <button
+          type="button"
           className={styles.editButton}
           onClick={() => onEdit(group)}
           aria-label={`Edit ${group.name || 'group'}`}
@@ -47,6 +49,15 @@ const GroupItem = memo(function GroupItem({ group, onEdit }) {
     </li>
   );
 });
+
+GroupItem.propTypes = {
+  group: PropTypes.shape({
+    id: PropTypes.string,
+    name: PropTypes.string,
+    members: PropTypes.arrayOf(PropTypes.string),
+  }).isRequired,
+  onEdit: PropTypes.func.isRequired,
+};
 
 export default function GroupList() {
   const [groups, setGroups] = useLocalStorage(storageKey, groupsSeed);
@@ -121,7 +132,12 @@ export default function GroupList() {
         </div>
 
         <div>
-          <button className={styles.newButton} onClick={openNew} aria-haspopup="dialog">
+          <button
+            type="button"
+            className={styles.newButton}
+            onClick={openNew}
+            aria-haspopup="dialog"
+          >
             + New Group
           </button>
         </div>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useSelector } from 'react-redux';
+import PropTypes from 'prop-types';
 import styles from './GroupList.module.css';
 
 export default function GroupEditorModal({
@@ -32,7 +33,7 @@ export default function GroupEditorModal({
     document.body.style.overflow = 'hidden';
     const previouslyFocused = document.activeElement;
 
-    requestAnimationFrame(() => firstInputRef.current && firstInputRef.current.focus());
+    requestAnimationFrame(() => firstInputRef.current?.focus());
 
     function onKey(e) {
       if (e.key === 'Escape') {
@@ -63,13 +64,13 @@ export default function GroupEditorModal({
     return () => {
       document.body.style.overflow = prevOverflow;
       document.removeEventListener('keydown', onKey);
-      previouslyFocused && previouslyFocused.focus();
+      previouslyFocused?.focus();
     };
   }, [onClose]);
 
   const handleOverlayClick = useCallback(
     e => {
-      if (modalRef.current && modalRef.current.contains(e.target)) return;
+      if (modalRef.current?.contains(e.target)) return;
       onClose();
     },
     [onClose],
@@ -79,7 +80,7 @@ export default function GroupEditorModal({
     e => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
-        if (modalRef.current && modalRef.current.contains(document.activeElement)) return;
+        if (modalRef.current?.contains(document.activeElement)) return;
         onClose();
       }
     },
@@ -101,9 +102,7 @@ export default function GroupEditorModal({
       setError('Please provide a group name.');
       return false;
     }
-    const duplicate = existingGroups.find(
-      g => g.name && g.name.trim() === trimmed && g.id !== group?.id,
-    );
+    const duplicate = existingGroups.find(g => g.name?.trim() === trimmed && g.id !== group?.id);
     if (duplicate) {
       setError('A group with this name already exists.');
       return false;
@@ -114,7 +113,7 @@ export default function GroupEditorModal({
 
   const save = useCallback(() => {
     if (!validate()) return;
-    const payload = { ...(group || {}), name: name.trim(), members };
+    const payload = { ...group, name: name.trim(), members };
     onSave(payload);
   }, [group, name, members, onSave, validate]);
 
@@ -129,14 +128,14 @@ export default function GroupEditorModal({
       ref={overlayRef}
       onClick={handleOverlayClick}
       onKeyDown={handleOverlayKey}
-      role="button"
-      tabIndex={0}
+      role="presentation"
+      tabIndex={-1}
       aria-label="Close dialog"
     >
-      <div
+      <dialog
         className={styles.modal}
         ref={modalRef}
-        role="dialog"
+        open
         aria-modal="true"
         aria-labelledby="group-modal-title"
       >
@@ -144,7 +143,7 @@ export default function GroupEditorModal({
           <h3 id="group-modal-title" className={styles.modalTitle}>
             {group ? 'Edit Group' : 'New Group'}
           </h3>
-          <button className={styles.closeButton} onClick={onClose} aria-label="Close">
+          <button type="button" className={styles.closeButton} onClick={onClose} aria-label="Close">
             ×
           </button>
         </div>
@@ -200,22 +199,48 @@ export default function GroupEditorModal({
         <div className={styles.footer}>
           <div>
             {group && (
-              <button className={styles.danger} onClick={remove}>
+              <button type="button" className={styles.danger} onClick={remove}>
                 Delete
               </button>
             )}
           </div>
 
           <div className={styles.actions}>
-            <button className={styles.cancel} onClick={onClose}>
+            <button type="button" className={styles.cancel} onClick={onClose}>
               Cancel
             </button>
-            <button className={styles.primary} onClick={save} disabled={!name.trim()}>
+            <button type="button" className={styles.primary} onClick={save} disabled={!name.trim()}>
               Save
             </button>
           </div>
         </div>
-      </div>
+      </dialog>
     </div>
   );
 }
+
+GroupEditorModal.propTypes = {
+  group: PropTypes.shape({
+    id: PropTypes.string,
+    name: PropTypes.string,
+    members: PropTypes.arrayOf(PropTypes.string),
+  }),
+  learners: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      displayName: PropTypes.string,
+      name: PropTypes.string,
+      email: PropTypes.string,
+    }),
+  ),
+  onClose: PropTypes.func.isRequired,
+  onSave: PropTypes.func.isRequired,
+  onDelete: PropTypes.func.isRequired,
+  existingGroups: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string,
+      name: PropTypes.string,
+      members: PropTypes.arrayOf(PropTypes.string),
+    }),
+  ),
+};
