@@ -91,8 +91,32 @@
   transition: background 0.2s ease-in-out;
 }
 
-.weeklySummaryShareBtn:hover {
+.weeklySummaryShareBtn:hover:not(:disabled) {
   background-color: var(--button-hover) !important;
+}
+
+.weeklySummaryShareBtn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Spinner for PDF generation */
+.spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 0.8s linear infinite;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* ---------------- DASHBOARD ---------------- */

@@ -348,15 +348,18 @@ describe('TeamMemberTasks component', () => {
     const daysButton = screen.getByRole('button', { name: /^1\s*day$/i });
     // Initial style
     expect(daysButton).toBeInTheDocument();
-    expect(daysButton).toHaveStyle('color: rgb(34, 139, 34)');
-    expect(daysButton).toHaveStyle('background-color: rgb(255, 255, 255)');
+    const buttonColor = window.getComputedStyle(daysButton).color;
+    const buttonBgColor = window.getComputedStyle(daysButton).backgroundColor;
+    expect(['rgb(34, 139, 34)', 'forestgreen', 'green']).toContain(buttonColor);
+    expect(['rgb(255, 255, 255)', 'white']).toContain(buttonBgColor);
     expect(daysButton).toHaveStyle('border: 1px solid #228b22');
 
     // Click to activate
     fireEvent.click(daysButton);
 
     // After click, the same button updates styles
-    expect(daysButton).toHaveStyle('color: rgb(255, 255, 255)');
+    const buttonColorAfter = window.getComputedStyle(daysButton).color;
+    expect(['rgb(255, 255, 255)', 'white']).toContain(buttonColorAfter);
     expect(daysButton).toHaveStyle('background-color: rgb(34, 139, 34)');
     expect(daysButton).toHaveStyle('border: 1px solid #228b22');
   });

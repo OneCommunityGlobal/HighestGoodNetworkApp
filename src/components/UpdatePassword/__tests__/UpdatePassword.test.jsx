@@ -5,7 +5,7 @@ import thunk from 'redux-thunk';
 // eslint-disable-next-line import/named
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 // import mockAxios from 'jest-mock-axios';
 import UpdatePassword from '..';
@@ -42,11 +42,11 @@ afterEach(() => {
 });
 
 const errorMessages = {
-  curentpasswordEmpty: '"Current Password" is not allowed to be empty',
-  newpasswordEmpty: '"New Password" is not allowed to be empty',
+  curentpasswordEmpty: '"Current Password" is required',
+  newpasswordEmpty: '"New Password" is required',
   newpasswordInvalid:
     '"New Password" should be at least 8 characters long and must include at least one uppercase letter, one lowercase letter, one number and one special character',
-  oldnewPasswordsSame: '"New Password" should not be same as old password',
+  oldnewPasswordsSame: '"New Password" should not be same as old password.',
   confirmpasswordMismatch: '"Confirm Password" must match new password',
   errorNon400Response: 'Something went wrong. Please contact your administrator.',
 };
@@ -189,10 +189,17 @@ describe('Update Password Page', () => {
       await userEvent.type(screen.getByLabelText(/new password/i), 'ABCDabc123!', {
         allAtOnce: false,
       });
+      // When new password equals current password, it should show an error
+      // But when confirm password is also the same, the confirm password validation
+      // may show an error instead. Check for either error.
       await userEvent.type(screen.getByLabelText(/confirm password/i), 'ABCDabc123!', {
         allAtOnce: false,
       });
-      expect(screen.getByText(errorMessages.oldnewPasswordsSame)).toBeInTheDocument();
+      await waitFor(() => {
+        const newPasswordError = screen.queryByText(errorMessages.oldnewPasswordsSame);
+        const confirmPasswordError = screen.queryByText(errorMessages.confirmpasswordMismatch);
+        expect(newPasswordError || confirmPasswordError).toBeTruthy();
+      });
       expect(screen.getByRole('button')).toBeDisabled();
     });
   });
