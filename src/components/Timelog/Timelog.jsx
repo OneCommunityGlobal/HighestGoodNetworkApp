@@ -30,7 +30,7 @@ import {
   ModalBody,
   ModalFooter,
 } from 'reactstrap';
-import './Timelog.css';
+import styles from './Timelog.module.css'
 import classnames from 'classnames';
 import { connect, useSelector } from 'react-redux';
 import moment from 'moment';
@@ -565,7 +565,7 @@ const generateAllTimeEntryItems = () => {
     }
     if (timeLogState.activeTab === 4) {
       return (
-        <p className="ml-1 responsive-font-size text-dark" style={{ textAlign: 'left' }}>
+        <p className={classnames('ml-1', 'responsive-font-size', 'text-dark')} style={{ textAlign: 'left' }}>
   Viewing time Entries from <b>{formatDate(timeLogState.fromDate)}</b> to{' '}
   <b>{formatDate(timeLogState.toDate)}</b>
 </p>
@@ -573,7 +573,7 @@ const generateAllTimeEntryItems = () => {
       );
     }
     return (
-      <p className="ml-1 responsive-font-size text-dark" style={{ textAlign: 'left' }}>
+      <p className={classnames('ml-1', 'responsive-font-size', 'text-dark')} style={{ textAlign: 'left' }}>
   Viewing time Entries from <b>{formatDate(startOfWeek(timeLogState.activeTab - 1))}</b> to{' '}
   <b>{formatDate(endOfWeek(timeLogState.activeTab - 1))}</b>
 </p>
@@ -651,7 +651,7 @@ const generateAllTimeEntryItems = () => {
             value={wbsId}
             key={`TimeLog_${wbsId}`}
             disabled
-            className={`${darkMode ? 'text-white-50' : ''} responsive-font-size`}
+            className={classnames(darkMode ? 'text-white-50' : '', 'responsive-font-size')}
           >
             {`\u2003WBS: ${wbsName}`}
           </option>,
@@ -758,7 +758,7 @@ const generateAllTimeEntryItems = () => {
 
 return (
   <div
-    className={`container-timelog-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}
+    className={classnames(styles['container-timelog-wrapper'], darkMode ? 'bg-oxford-blue' : '')}
     style={darkMode ? (!props.isDashboard ? { padding: "0 15px 300px 15px" } : {}) : {}}
   >
 
@@ -790,7 +790,7 @@ return (
       {timeLogState.isTimeEntriesLoading ? (
         <LoadingSkeleton template="Timelog" />
       ) : (
-        <div className={`${!props.isDashboard ? 'timelogPageContainer' : 'ml-3 min-width-100'}`}>
+        <div className={!props.isDashboard ? styles['timelogPageContainer'] : `ml-3 ${styles['min-width-100']}`}>
           {timeLogState.summary ? (
             <div className="my-2">
               <div id="weeklySum">
@@ -806,17 +806,16 @@ return (
             <Col md={12} className="px-0 mx-0">
               <Card className={darkMode ? 'border-0' : ''}>
                 <CardHeader
-                  className={
-                    darkMode
-                      ? 'card-header-shadow-dark bg-space-cadet text-light'
-                      : 'card-header-shadow'
-                  }
+                  className={classnames(
+                    darkMode ? styles['card-header-shadow-dark'] : styles['card-header-shadow'],
+                    darkMode ? 'bg-space-cadet text-light' : ''
+                  )}
                 >
                   <Row style={{ minWidth: '100%' }} className="px-0 mx-0">
                     <Col style={{ minWidth: '100%' }} className="px-0 mx-0">
                       <CardTitle tag="h4">
                         <div className="d-flex align-items-center">
-                          <span className="taskboard-header-title mb-1 mr-2">
+                          <span className={`${styles['taskboard-header-title']} mb-1 mr-2`}>
                             Tasks and Timelogs
                           </span>
                           <EditableInfoModal
@@ -859,7 +858,7 @@ return (
                     </Col>
                     <Col className="px-0">
                       {isAuthUser ? (
-                        <div className="tasks-and-timelog-header-add-time-div mt-2">
+                        <div className={`${styles['tasks-and-timelog-header-add-time-div']} mt-2`}>
                           <div>
                             <div className="followup-tooltip-container">
                               <Button
@@ -928,7 +927,7 @@ return (
                           authUser.role !== 'Owner'
                         ) &&
                         canPutUserProfileImportantInfo && (
-                          <div className="tasks-and-timelog-header-add-time-div">
+                            <div className={styles['tasks-and-timelog-header-add-time-div']}>
                             <div>
                               <Button color="warning" onClick={toggle} style={boxStyle}>
                                 Add Time Entry {!isAuthUser && `for ${fullName}`}
@@ -976,11 +975,12 @@ return (
                   </Row>
                 </CardHeader>
                 <CardBody
-                  className={
-                    darkMode ? 'card-header-shadow-dark bg-space-cadet' : 'card-header-shadow'
-                  }
+                  className={classnames(
+                    darkMode ? styles['card-header-shadow-dark'] : styles['card-header-shadow'],
+                    darkMode ? 'bg-space-cadet' : ''
+                  )}
                 >
-                  <Nav tabs className="task-and-timelog-card-nav mb-1 responsive-font-size">
+                  <Nav tabs className={`${styles['task-and-timelog-card-nav']} mb-1 responsive-font-size`}>
                     <NavItem>
                       <NavLink
                         className={`${classnames({ active: timeLogState.activeTab === 0 })} ${
@@ -1127,7 +1127,7 @@ return (
                         <Button
                           color="primary"
                           onClick={handleSearch}
-                          className="search-time-entries-btn"
+                          className={styles['search-time-entries-btn']}
                           style={darkMode ? boxStyleDark : boxStyle}
                         >
                           Search

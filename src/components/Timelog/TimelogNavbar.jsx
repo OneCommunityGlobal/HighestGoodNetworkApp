@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import styles from './Timelog.module.css';
 import { Link } from 'react-router-dom';
 import {
   Progress,
@@ -27,7 +28,7 @@ function TimelogNavbar({ userId }) {
 
   return (
     <div>
-      <Navbar className="navbar navbar-expand-sm navbar-light navbar-border bg-light mb-2 col-md-12 nav-fill">
+      <Navbar className={`navbar navbar-expand-sm navbar-light ${styles['navbar-border']} bg-light mb-2 col-md-12 nav-fill`}>
         <NavbarBrand className="navbar-brand pb-3">
           {firstName} {lastName}
           &apos;s Timelog

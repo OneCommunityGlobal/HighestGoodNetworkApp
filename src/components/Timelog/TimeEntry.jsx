@@ -3,7 +3,8 @@ import { Card, Row, Col } from 'reactstrap';
 import { useDispatch, connect } from 'react-redux';
 import parse from 'html-react-parser';
 import moment from 'moment-timezone';
-import './Timelog.css';
+import styles from './Timelog.module.css'
+import classnames from 'classnames';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-regular-svg-icons';
 import hasPermission, { cantUpdateDevAdminDetails } from '~/utils/permissions';
@@ -133,7 +134,7 @@ function TimeEntry(props) {
         }}
       >
         <Row className="mx-0">
-          <Col md={3} className="date-block px-0">
+          <Col md={3} className={classnames(styles['date-block'], 'px-0')}>
             <div className="date-div">
               <div>
                 <h4 className={darkMode ? 'text-light' : ''}>{moment(dateOfWork).format('MMM D')}</h4>
@@ -175,8 +176,8 @@ function TimeEntry(props) {
             </div>
           </Col>
           <Col md={5} className="pl-2 pr-0">
-            <div className="time-entry-container">
-              <div className={`notes-section ${darkMode ? 'notes-text-light' : ''}`}>
+            <div className={styles['time-entry-container']}>
+              <div className={classnames(styles['notes-section'], darkMode ? styles['notes-text-light'] : '')}>
                 <div className={darkMode ? "dark-text-muted" : "text-muted"}>Notes:</div>
                 {parse(notes)}
               </div>

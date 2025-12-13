@@ -40,7 +40,7 @@
   gap: 10px;
 }
 
-.buttons {
+.buttons-absolute {
   right: 0;
   bottom: 0;
   position: absolute;
@@ -221,6 +221,10 @@
   color: #dee2e6;
 }
 
+@media (prefers-color-scheme: dark) {
+  .activeUser { color: #90ee90; }
+  .notActiveUser { color: #555; }
+}
 
 .custom-text-alignment {
   text-align: center;
