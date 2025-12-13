@@ -10,6 +10,7 @@ export function CPDashboard() {
   const [search, setSearch] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [failedLogos, setFailedLogos] = useState(new Set());
   const [pagination, setPagination] = useState({
     currentPage: 1,
     totalPages: 5,
@@ -19,6 +20,16 @@ export function CPDashboard() {
 
   const FALLBACK_IMG =
     'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=600&q=60';
+
+  const normalizeOrganizer = organizer => {
+    if (!organizer || typeof organizer !== 'string') return null;
+    const trimmed = organizer.trim();
+    return trimmed.length > 0 ? trimmed : null;
+  };
+
+  const handleLogoError = eventId => {
+    setFailedLogos(prev => new Set([...prev, eventId]));
+  };
 
   const FixedRatioImage = ({ src, alt, fallback }) => (
     <div
@@ -173,16 +184,18 @@ export function CPDashboard() {
                         <FaMapMarkerAlt className={styles['event-icon']} /> {event.location}
                       </p>
                       <p className={styles['event-organizer']}>
-                        {event.organizerLogo ? (
+                        {event.organizerLogo && !failedLogos.has(event._id) ? (
                           <img
                             src={event.organizerLogo}
-                            alt={event.organizer || 'Organizer'}
+                            alt={normalizeOrganizer(event.organizer) || 'Organizer'}
                             className={styles['organizer-logo']}
+                            onError={() => handleLogoError(event._id)}
+                            loading="lazy"
                           />
                         ) : (
-                          <FaUserAlt className={styles['event-icon']} />
+                          <FaUserAlt className={styles['event-icon']} aria-hidden="true" />
                         )}{' '}
-                        {event.organizer || 'Organizer TBD'}
+                        <span>{normalizeOrganizer(event.organizer) || 'Organizer TBD'}</span>
                       </p>
                     </CardBody>
                   </Card>
