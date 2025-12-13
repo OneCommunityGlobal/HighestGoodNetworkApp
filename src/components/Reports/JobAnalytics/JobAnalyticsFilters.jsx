@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import axios from "axios";
 import { ENDPOINTS } from "../../../utils/URL";
+import styles from "./JobAnalyticsPage.module.css";
 
 const GRANULARITY_OPTS = [
   { value: "totals", label: "Totals" },
@@ -10,28 +11,9 @@ const GRANULARITY_OPTS = [
   { value: "annually", label: "Annually" },
 ];
 
-function getLabelStyle(isDark) {
-  return {
-    color: isDark ? "#e0e0e0" : "#111111",
-    display: "flex",
-    flexDirection: "column",
-    fontSize: "0.9rem",
-  };
-}
-
-function getInputStyle(isDark) {
-  return {
-    backgroundColor: isDark ? "#1b2a41" : "#ffffff",
-    color: isDark ? "#e0e0e0" : "#111111",
-    border: `1px solid ${isDark ? "#555" : "#ccc"}`,
-    borderRadius: "4px",
-    padding: "0.25rem",
-  };
-}
-
-function FilterField({ label, children, isDark }) {
+function FilterField({ label, children }) {
   return (
-    <label style={getLabelStyle(isDark)}>
+    <label className={styles.filterLabel}>
       <span>{label}</span>
       {children}
     </label>
@@ -41,32 +23,11 @@ function FilterField({ label, children, isDark }) {
 FilterField.propTypes = {
   label: PropTypes.string.isRequired,
   children: PropTypes.node.isRequired,
-  isDark: PropTypes.bool.isRequired,
 };
 
 function JobAnalyticsFilters({ filters, setFilters }) {
   const [roleOptions, setRoleOptions] = useState(["All"]);
   const [loadingRoles, setLoadingRoles] = useState(false);
-
-  const [isDark, setIsDark] = useState(
-    typeof document !== "undefined" &&
-      document.body.classList.contains("dark-mode")
-  );
-
-  useEffect(() => {
-    if (typeof document === "undefined") return;
-
-    const observer = new MutationObserver(() => {
-      setIsDark(document.body.classList.contains("dark-mode"));
-    });
-
-    observer.observe(document.body, {
-      attributes: true,
-      attributeFilter: ["class"],
-    });
-
-    return () => observer.disconnect();
-  }, []);
 
   useEffect(() => {
     let alive = true;
@@ -91,6 +52,7 @@ function JobAnalyticsFilters({ filters, setFilters }) {
           }
         }
       } catch (err) {
+        // eslint-disable-next-line no-console
         console.error("Failed to load roles:", err);
         if (alive) setRoleOptions(["All"]);
       } finally {
@@ -131,16 +93,15 @@ function JobAnalyticsFilters({ filters, setFilters }) {
   };
 
   const nonTotalsDisabled = filters.dateMode !== "Custom";
-  const inputStyle = getInputStyle(isDark);
 
   return (
-    <div style={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}>
-      <FilterField label="Dates" isDark={isDark}>
+    <div className={styles.jobAnalyticsFilters}>
+      <FilterField label="Dates">
         <select
           name="dateMode"
           value={filters.dateMode}
           onChange={onChange}
-          style={inputStyle}
+          className={styles.filterInput}
         >
           <option value="All">All</option>
           <option value="Custom">Custom</option>
@@ -149,35 +110,35 @@ function JobAnalyticsFilters({ filters, setFilters }) {
 
       {filters.dateMode === "Custom" && (
         <>
-          <FilterField label="Start Date" isDark={isDark}>
+          <FilterField label="Start Date">
             <input
               type="date"
               name="startDate"
               value={filters.startDate}
               onChange={onChange}
-              style={inputStyle}
+              className={styles.filterInput}
             />
           </FilterField>
 
-          <FilterField label="End Date" isDark={isDark}>
+          <FilterField label="End Date">
             <input
               type="date"
               name="endDate"
               value={filters.endDate}
               onChange={onChange}
-              style={inputStyle}
+              className={styles.filterInput}
             />
           </FilterField>
         </>
       )}
 
-      <FilterField label="Role" isDark={isDark}>
+      <FilterField label="Role">
         <select
           name="roles"
           value={filters.roles}
           onChange={onChange}
           disabled={loadingRoles}
-          style={inputStyle}
+          className={styles.filterInput}
         >
           {roleOptions.map((r) => (
             <option key={r} value={r}>
@@ -187,12 +148,12 @@ function JobAnalyticsFilters({ filters, setFilters }) {
         </select>
       </FilterField>
 
-      <FilterField label="Granularity" isDark={isDark}>
+      <FilterField label="Granularity">
         <select
           name="granularity"
           value={filters.granularity}
           onChange={onChange}
-          style={inputStyle}
+          className={styles.filterInput}
         >
           {GRANULARITY_OPTS.map((opt) => (
             <option
