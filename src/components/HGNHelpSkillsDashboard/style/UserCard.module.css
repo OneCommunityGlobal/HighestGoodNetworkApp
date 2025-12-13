@@ -138,3 +138,24 @@
 .darkMode .scoreMax {
   color: #ffffff !important;
 }
+
+.darkMode {
+  color: #111 !important;
+  -webkit-text-fill-color: #111 !important;
+}
+
+.darkMode .contactLine,
+.darkMode .skillsText {
+  color: #616161 !important;
+}
+
+.darkMode .userName {
+  color: black !important;
+}
+
+.darkMode .scoreLine,
+.darkMode .scoreLabel,
+.darkMode .scoreValue,
+.darkMode .scoreMax {
+  color: #111 !important;
+}
