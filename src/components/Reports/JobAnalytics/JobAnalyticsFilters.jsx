@@ -10,16 +10,28 @@ const GRANULARITY_OPTS = [
   { value: "annually", label: "Annually" },
 ];
 
-function FilterField({ label, children, isDark }) {
-  const labelStyle = {
+function getLabelStyle(isDark) {
+  return {
     color: isDark ? "#e0e0e0" : "#111111",
     display: "flex",
     flexDirection: "column",
     fontSize: "0.9rem",
   };
+}
 
+function getInputStyle(isDark) {
+  return {
+    backgroundColor: isDark ? "#1b2a41" : "#ffffff",
+    color: isDark ? "#e0e0e0" : "#111111",
+    border: `1px solid ${isDark ? "#555" : "#ccc"}`,
+    borderRadius: "4px",
+    padding: "0.25rem",
+  };
+}
+
+function FilterField({ label, children, isDark }) {
   return (
-    <label style={labelStyle}>
+    <label style={getLabelStyle(isDark)}>
       <span>{label}</span>
       {children}
     </label>
@@ -119,14 +131,7 @@ function JobAnalyticsFilters({ filters, setFilters }) {
   };
 
   const nonTotalsDisabled = filters.dateMode !== "Custom";
-
-  const inputStyle = {
-    backgroundColor: isDark ? "#1b2a41" : "#ffffff",
-    color: isDark ? "#e0e0e0" : "#111111",
-    border: `1px solid ${isDark ? "#555" : "#ccc"}`,
-    borderRadius: "4px",
-    padding: "0.25rem",
-  };
+  const inputStyle = getInputStyle(isDark);
 
   return (
     <div style={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}>
