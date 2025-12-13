@@ -40,20 +40,20 @@ vi.mock('axios', () => {
 
 vi.mock('msw', () => ({
   rest: {
-    get:     vi.fn(),
-    post:    vi.fn(),
-    patch:   vi.fn(),
-    put:     vi.fn(),
-    delete:  vi.fn(),
+    get: vi.fn(),
+    post: vi.fn(),
+    patch: vi.fn(),
+    put: vi.fn(),
+    delete: vi.fn(),
     options: vi.fn(),
   },
 }))
 
 vi.mock('msw/node', () => ({
   setupServer: () => ({
-    listen: () => {},
-    resetHandlers: () => {},
-    close: () => {},
+    listen: () => { },
+    resetHandlers: () => { },
+    close: () => { },
   }),
 }));
 
@@ -131,3 +131,11 @@ afterAll(() => {
     console.error = originalConsoleError;
   }
 });
+
+class ResizeObserver {
+  observe() { return undefined; }      // noop
+  unobserve() { return undefined; }    // noop
+  disconnect() { return undefined; }   // noop
+}
+
+global.ResizeObserver = ResizeObserver;
