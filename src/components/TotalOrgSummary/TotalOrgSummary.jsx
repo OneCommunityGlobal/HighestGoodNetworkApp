@@ -25,7 +25,7 @@ import { jsPDF } from 'jspdf';
 import hasPermission from '~/utils/permissions';
 
 // actions
-import { getTotalOrgSummary } from '~/actions/totalOrgSummary';
+import { getTotalOrgSummary, getTaskAndProjectStats } from '~/actions/totalOrgSummary';
 
 import '../Header/DarkMode.css';
 import styles from './TotalOrgSummary.module.css';
@@ -142,7 +142,17 @@ function TotalOrgSummary(props) {
           comparisonStartDate,
           comparisonEndDate,
         );
-        setVolunteerStats(volunteerStatsResponse.data);
+
+        // Fetch task and project stats separately
+        const taskAndProjectStatsResponse = await props.getTaskAndProjectStats(
+          currentFromDate,
+          currentToDate,
+        );
+
+        setVolunteerStats({
+          ...volunteerStatsResponse.data,
+          taskAndProjectStats: taskAndProjectStatsResponse,
+        });
         await props.hasPermission('');
         setIsLoading(false);
       } catch (catchFetchError) {
@@ -935,6 +945,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   getTotalOrgSummary: (startDate, endDate, comparisonStartDate, comparisonEndDate) =>
     dispatch(getTotalOrgSummary(startDate, endDate, comparisonStartDate, comparisonEndDate)),
+  getTaskAndProjectStats: (startDate, endDate) =>
+    dispatch(getTaskAndProjectStats(startDate, endDate)),
   hasPermission: permission => dispatch(hasPermission(permission)),
 });
 
