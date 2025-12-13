@@ -10,6 +10,28 @@ const GRANULARITY_OPTS = [
   { value: "annually", label: "Annually" },
 ];
 
+function FilterField({ label, children, isDark }) {
+  const labelStyle = {
+    color: isDark ? "#e0e0e0" : "#111111",
+    display: "flex",
+    flexDirection: "column",
+    fontSize: "0.9rem",
+  };
+
+  return (
+    <label style={labelStyle}>
+      <span>{label}</span>
+      {children}
+    </label>
+  );
+}
+
+FilterField.propTypes = {
+  label: PropTypes.string.isRequired,
+  children: PropTypes.node.isRequired,
+  isDark: PropTypes.bool.isRequired,
+};
+
 function JobAnalyticsFilters({ filters, setFilters }) {
   const [roleOptions, setRoleOptions] = useState(["All"]);
   const [loadingRoles, setLoadingRoles] = useState(false);
@@ -98,13 +120,6 @@ function JobAnalyticsFilters({ filters, setFilters }) {
 
   const nonTotalsDisabled = filters.dateMode !== "Custom";
 
-  const labelStyle = {
-    color: isDark ? "#e0e0e0" : "#111111",
-    display: "flex",
-    flexDirection: "column",
-    fontSize: "0.9rem",
-  };
-
   const inputStyle = {
     backgroundColor: isDark ? "#1b2a41" : "#ffffff",
     color: isDark ? "#e0e0e0" : "#111111",
@@ -115,8 +130,7 @@ function JobAnalyticsFilters({ filters, setFilters }) {
 
   return (
     <div style={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}>
-      <label style={labelStyle}>
-        <span>Dates</span>
+      <FilterField label="Dates" isDark={isDark}>
         <select
           name="dateMode"
           value={filters.dateMode}
@@ -126,12 +140,11 @@ function JobAnalyticsFilters({ filters, setFilters }) {
           <option value="All">All</option>
           <option value="Custom">Custom</option>
         </select>
-      </label>
+      </FilterField>
 
       {filters.dateMode === "Custom" && (
         <>
-          <label style={labelStyle}>
-            <span>Start Date</span>
+          <FilterField label="Start Date" isDark={isDark}>
             <input
               type="date"
               name="startDate"
@@ -139,10 +152,9 @@ function JobAnalyticsFilters({ filters, setFilters }) {
               onChange={onChange}
               style={inputStyle}
             />
-          </label>
+          </FilterField>
 
-          <label style={labelStyle}>
-            <span>End Date</span>
+          <FilterField label="End Date" isDark={isDark}>
             <input
               type="date"
               name="endDate"
@@ -150,12 +162,11 @@ function JobAnalyticsFilters({ filters, setFilters }) {
               onChange={onChange}
               style={inputStyle}
             />
-          </label>
+          </FilterField>
         </>
       )}
 
-      <label style={labelStyle}>
-        <span>Role</span>
+      <FilterField label="Role" isDark={isDark}>
         <select
           name="roles"
           value={filters.roles}
@@ -169,10 +180,9 @@ function JobAnalyticsFilters({ filters, setFilters }) {
             </option>
           ))}
         </select>
-      </label>
+      </FilterField>
 
-      <label style={labelStyle}>
-        <span>Granularity</span>
+      <FilterField label="Granularity" isDark={isDark}>
         <select
           name="granularity"
           value={filters.granularity}
@@ -189,7 +199,7 @@ function JobAnalyticsFilters({ filters, setFilters }) {
             </option>
           ))}
         </select>
-      </label>
+      </FilterField>
     </div>
   );
 }
