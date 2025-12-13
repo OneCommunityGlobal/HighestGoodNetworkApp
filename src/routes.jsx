@@ -100,6 +100,7 @@ import CheckTypes from './components/BMDashboard/shared/CheckTypes';
 import Toolslist from './components/BMDashboard/Tools/ToolsList';
 import AddTool from './components/BMDashboard/Tools/AddTool';
 import AttendanceNoShow from './components/AttendanceSystem/AttendanceNoShowCharts.jsx';
+import AttendanceStatistics from './components/AttendanceStats/AttendanceDashboard';
 import AddTeamMember from './components/BMDashboard/AddTeamMember/AddTeamMember';
 import LessonsLearntChart from './components/BMDashboard/LessonsLearnt/LessonsLearntChart';
 
@@ -282,6 +283,7 @@ export default (
     <Route path="/TestEventReg" component={TestEventRegistration} />
 
     <Route path="/logattendance" component={AttendanceNoShow} />
+    <Route path="/Participation" component={AttendanceStatistics} />
 
     <>
       {/* Comment out the Header component and its import during phase 2 development. */}
