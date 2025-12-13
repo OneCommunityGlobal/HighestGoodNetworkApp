@@ -1,8 +1,8 @@
 :root {
   --bg: #ffffff;
   --muted: #6b7280;
-  --primary: #0b74de;
-  --primary-600: #0963b8;
+  --primary: #133d68;
+  --primary-600: #083a68;
   --danger: #d14343;
   --card: #fafafa;
   --glass: rgba(11, 116, 222, 0.06);
@@ -17,8 +17,8 @@
 .dark {
   --bg: #181a1b;
   --muted: #b0b3b8;
-  --primary: #60a5fa;
-  --primary-600: #2563eb;
+  --primary: #133d68;
+  --primary-600: #083a68;
   --danger: #f87171;
   --card: #23272a;
   --glass: rgba(96, 165, 250, 0.08);
@@ -76,7 +76,7 @@
 }
 
 .dark .primary {
-  background: linear-gradient(180deg, var(--primary), var(--primary-600));
+  background: var(--primary);
   color: #fff;
 }
 
@@ -117,6 +117,7 @@
   background: var(--bg);
   max-width: var(--container-max);
   margin: 0 auto;
+  border-radius: 10px;
 }
 
 .header {
@@ -141,7 +142,7 @@
 }
 
 .newButton {
-  background: linear-gradient(180deg, var(--primary), var(--primary-600));
+  background: var(--primary);
   color: #fff;
   border: 0;
   padding: 0.5rem 0.875rem;
@@ -385,7 +386,7 @@
 }
 
 .primary {
-  background: linear-gradient(180deg, var(--primary), var(--primary-600));
+  background: var(--primary);
   color: #fff;
   border: none;
   padding: 0.5rem 0.875rem;
