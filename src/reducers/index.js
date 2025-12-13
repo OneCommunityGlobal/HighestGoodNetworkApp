@@ -99,6 +99,7 @@ import reviewsInsightReducer from './prAnalytics/reviewsInsightReducer';
 // job analytics
 import { hoursPledgedReducer } from './jobAnalytics/hoursPledgedReducer';
 import { studentTasksReducer } from './studentTasksReducer';
+import { weeklySummariesFiltersApi } from '../actions/weeklySummariesFilterAction';
 
 const localReducers = {
   auth: authReducer,
@@ -135,6 +136,7 @@ const localReducers = {
   allUsersTimeEntries: allUsersTimeEntriesReducer,
   allUserProfilesBasicInfo: allUserProfilesBasicInfoReducer,
   projectById: projectByIdReducer,
+  [weeklySummariesFiltersApi.reducerPath]: weeklySummariesFiltersApi.reducer,
 
   // bm dashboard
   materials: materialsReducer,

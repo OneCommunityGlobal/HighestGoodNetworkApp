@@ -18,6 +18,11 @@ import Select from 'react-select';
 import mainStyles from './WeeklySummariesReport.module.css';
 import { setField } from '~/utils/stateHelper';
 import FilterEditForm from './FilterEditForm';
+import {
+  useCreateWeeklySummariesFilterMutation,
+  useUpdateWeeklySummariesFilterMutation,
+} from '../../actions/weeklySummariesFilterAction';
+import { normalizeFilter } from '~/utils/weeklySummariesFilterHelper';
 
 const defaultState = {
   filterName: '',
@@ -42,67 +47,73 @@ function CreateFilterModal({
   hasPermissionToFilter,
   canSeeBioHighlight,
   filters,
-  refetchFilters,
   teamCodes,
   colorOptions,
   tableData,
   summaries,
   teamCodeWarningUsers,
+  currentAppliedFilter,
+  applyFilter,
 }) {
   const [state, setState] = useState(() => initialState ?? defaultState);
   const [mode, setMode] = useState('create');
-  const [selectedFilter, setSelectedFilter] = useState(null);
+  const [selectedFilter, setSelectedFilter] = useState(() => currentAppliedFilter ?? null);
+  const [updateFilter] = useUpdateWeeklySummariesFilterMutation();
+  const [createFilter] = useCreateWeeklySummariesFilterMutation();
 
   useEffect(() => {
     setState(initialState);
   }, [initialState]);
 
+  useEffect(() => {
+    setSelectedFilter(currentAppliedFilter);
+  }, [currentAppliedFilter]);
+
   const handleSubmit = async e => {
     e.preventDefault();
-    if (state.filterName !== '' && state.filterName.length <= 7) {
-      if (mode === 'create' || (mode === 'update' && state.selectedFilter !== null)) {
-        // No errors -> submit form
-        const data = {
-          filterName: state.filterName,
-          selectedCodes: state.selectedCodes.map(code => code.value),
-          selectedColors: state.selectedColors.map(color => color.value),
-          selectedExtraMembers: state.selectedExtraMembers.map(member => member.value),
-          selectedTrophies: state.selectedTrophies,
-          selectedSpecialColors: state.selectedSpecialColors,
-          selectedBioStatus: state.selectedBioStatus,
-          selectedOverTime: state.selectedOverTime,
-        };
-        if (mode === 'create') {
-          try {
-            const res = await axios.post(ENDPOINTS.WEEKLY_SUMMARIES_FILTERS, data);
-            if (res.status < 200 || res.status >= 300) {
-              toast.error(`Failed to save new filter. Status ${res.status}`);
-            } else {
-              toast.success(`Successfully created filter ${state.filterName}`);
-            }
-            refetchFilters();
-          } catch (error) {
-            toast.error(`Failed to save new filter. Error ${error}`);
-          }
-        } else {
-          try {
-            const res = await axios.patch(
-              ENDPOINTS.WEEKLY_SUMMARIES_FILTER_BY_ID(selectedFilter.value),
-              data,
-            );
-            if (res.status < 200 || res.status >= 300) {
-              toast.error(`Failed to save new filter. Status ${res.status}`);
-            } else {
-              toast.success(`Successfully update filter ${selectedFilter.label}`);
-            }
-            await refetchFilters();
-          } catch (error) {
-            toast.error(`Failed to save new filter. Error ${error}`);
-          }
-        }
+    const validName = state.filterName.trim().length > 0 && state.filterName.trim().length <= 7;
 
-        toggle();
+    if ((mode === 'create' && validName) || (mode === 'update' && state.selectedFilter !== null)) {
+      // No errors -> submit form
+      const data = {
+        filterName: mode === 'create' ? state.filterName.trim() : selectedFilter.label,
+        selectedCodes: state.selectedCodes.map(code => code.value),
+        selectedColors: state.selectedColors.map(color => color.value),
+        selectedExtraMembers: state.selectedExtraMembers.map(member => member.value),
+        selectedTrophies: state.selectedTrophies,
+        selectedSpecialColors: state.selectedSpecialColors,
+        selectedBioStatus: state.selectedBioStatus,
+        selectedOverTime: state.selectedOverTime,
+      };
+      if (mode === 'create') {
+        try {
+          const res = await createFilter({
+            data,
+          }).unwrap(); // unwrap = throw exception if error
+
+          toast.success(`Successfully created filter ${state.filterName.trim()}`);
+        } catch (error) {
+          toast.error(`Failed to save new filter. Error: ${JSON.stringify(error)}`);
+        }
+      } else {
+        try {
+          const res = await updateFilter({
+            id: selectedFilter.value,
+            data,
+          }).unwrap(); // unwrap = throw exception if error
+
+          toast.success(`Successfully updated filter ${selectedFilter.label}`);
+          if (currentAppliedFilter && selectedFilter.value === currentAppliedFilter.value) {
+            applyFilter(normalizeFilter(res));
+          }
+        } catch (error) {
+          toast.error(`Failed to update filter. Error: ${error}`);
+        }
       }
+
+      toggle();
+    } else {
+      toast.error(`Please set a valid filter name or select a filter to override.`);
     }
   };
 
@@ -149,27 +160,29 @@ function CreateFilterModal({
               )}
             </FormGroup>
           )}
-          <FormGroup>
-            <Label for="filterName" className={`${darkMode ? mainStyles.textWhite : ''}`}>
-              {mode === 'create'
-                ? 'Filter Name (up to 7 characters) *'
-                : 'New Filter Name (up to 7 characters) *'}
-            </Label>
-            <Input
-              id="filterName"
-              value={state.filterName}
-              onChange={e => setField(setState, 'filterName', e.target.value)}
-              placeholder="Enter filter name"
-              required
-              invalid={!state.filterName}
-              maxLength={7}
-            />
-            {state.filterName === '' && (
-              <div className={`${darkMode ? mainStyles.errorTextDark : mainStyles.errorText}`}>
-                Filter name is required
-              </div>
-            )}
-          </FormGroup>
+
+          {mode === 'create' && (
+            <FormGroup>
+              <Label for="filterName" className={`${darkMode ? mainStyles.textWhite : ''}`}>
+                Filter Name (up to 7 characters) *
+              </Label>
+              <Input
+                id="filterName"
+                value={state.filterName}
+                onChange={e => setField(setState, 'filterName', e.target.value)}
+                placeholder="Enter filter name"
+                required={mode === 'create'}
+                invalid={state.filterName.trim().length === 0}
+                maxLength={7}
+              />
+              {state.filterName.trim().length === 0 && (
+                <div className={`${darkMode ? mainStyles.errorTextDark : mainStyles.errorText}`}>
+                  Filter name is required
+                </div>
+              )}
+            </FormGroup>
+          )}
+
           <FilterEditForm
             state={state}
             setState={setState}
