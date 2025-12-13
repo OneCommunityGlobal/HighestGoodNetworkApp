@@ -100,11 +100,22 @@
   color: var(--fg);
   font-size: .875rem;
   border: 1px solid var(--card-border);
+  color-scheme: light;
 }
 .input:focus {
   outline: none;
   border-color: var(--primary);
   box-shadow: 0 0 0 3px rgba(59,130,246,.2);
+}
+
+[data-theme="dark"] .input {
+  background: var(--card);
+  border-color: var(--card-border);
+  color-scheme: dark;
+}
+
+[data-theme="dark"] .input::-webkit-calendar-picker-indicator {
+  filter: invert(1);
 }
 
 /******** Loading UI ********/

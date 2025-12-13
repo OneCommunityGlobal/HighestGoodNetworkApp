@@ -1,16 +1,18 @@
 import { Bar } from 'react-chartjs-2';
-import './ReviewsInsight.css';
+import styles from './ReviewsInsight.module.css';
 import { useSelector } from 'react-redux';
+import { Chart } from 'chart.js';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 function ActionDoneGraph({ selectedTeams, teamData }) {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   if (!selectedTeams || selectedTeams.length === 0) {
-    return <div> </div>;
+    return <div></div>;
   }
 
   if (!teamData || Object.keys(teamData).length === 0) {
-    return <div className="no-data-ri">No data available for Action Done Graph.</div>;
+    return <div className={styles.noData}>No data available for Action Graph.</div>;
   }
 
   const isAllTeams = selectedTeams.some(team => team.value === 'All');
@@ -54,6 +56,14 @@ function ActionDoneGraph({ selectedTeams, teamData }) {
       tooltip: {
         enabled: true,
       },
+      datalabels: {
+        color: darkMode ? '#fff' : '#000',
+        font: { weight: 'bold', size: 11 },
+        formatter: value => {
+          if (!value) return 0;
+          return value;
+        },
+      },
     },
     scales: {
       x: {
@@ -81,9 +91,11 @@ function ActionDoneGraph({ selectedTeams, teamData }) {
   };
 
   return (
-    <div className="ri-action-done-graph">
-      <h2>PR: Action Done</h2>
-      <div className="ri-graph">
+    <div className={styles.riActionDoneGraph}>
+      <h2 className={`${styles.heading} ${darkMode ? styles.darkModeForeground : ''}`}>
+        PR: Action Done
+      </h2>
+      <div className={`${styles.riGraph} ${darkMode ? styles.riGraphDarkMode : ''}`}>
         <Bar data={data} options={options} />
       </div>
     </div>

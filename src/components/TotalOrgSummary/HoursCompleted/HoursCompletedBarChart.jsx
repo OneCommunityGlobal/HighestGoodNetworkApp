@@ -142,8 +142,41 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
         maxHeight: '548px',
         display: 'flex',
         flexDirection: 'column',
+        position: 'relative',
       }}
     >
+      {/* Projects box positioned in the right side middle area */}
+      <div
+        style={{
+          position: 'absolute',
+          top: '40%',
+          left: '65%',
+          transform: 'translateY(-50%)',
+          zIndex: 10,
+          background: 'white',
+          borderRadius: 4,
+          padding: 8,
+          boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+          border: '1px solid #eee',
+          minWidth: 130,
+          minHeight: 65,
+          display: 'grid',
+          justifyItems: 'center',
+          gap: 2,
+        }}
+      >
+        <div style={{ color: '#444', fontWeight: 'bold', fontSize: 15 }}>Projects</div>
+        <div style={{ color: '#222', fontWeight: 'bold', fontSize: 14 }}>
+          {projectBarInfo.amount}
+        </div>
+        <div style={{ color: '#666', fontSize: 10 }}>({projectBarInfo.percentage})</div>
+        {projectBarInfo.ifcompare && (
+          <div style={{ color: projectBarInfo.fontcolor, fontSize: 10, fontWeight: 'bold' }}>
+            {projectBarInfo.change}
+          </div>
+        )}
+      </div>
+
       <div style={{ textAlign: 'center', marginBottom: 0 }}>
         <div
           style={{
@@ -186,7 +219,6 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
           tickInterval={tickInterval}
           // renderCustomizedLabel={renderCustomizedLabel}
           darkMode={darkMode}
-          projectBarInfo={projectBarInfo}
           yAxisLabel="Hours"
         />
       </div>

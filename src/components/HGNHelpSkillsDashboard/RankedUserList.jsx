@@ -1,41 +1,38 @@
-import { useEffect, useState } from 'react';
-import axios from 'axios';
+import PropTypes from 'prop-types';
 import UserCard from './UserCard';
-import './style/UserCard.module.css';
+import styles from './style/UserCard.module.css';
 
-function RankedUserList({ selectedSkills }) {
-  const [rankedUsers, setRankedUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
+function RankedUserList({ users, loading, error, emptyMessage }) {
+  if (loading) {
+    return <p>Loading community members...</p>;
+  }
 
-  useEffect(() => {
-    if (!selectedSkills || selectedSkills.length === 0) return;
+  if (error) {
+    return <p className="text-danger">{error}</p>;
+  }
 
-    const fetchRankedUsers = async () => {
-      setLoading(true);
-      try {
-        const response = await axios.get('http://localhost:4500/api/hgnform/ranked', {
-          params: { skills: selectedSkills.join(',') },
-        });
-        setRankedUsers(response.data);
-      } catch (err) {
-        // console.error('Error fetching ranked users:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchRankedUsers();
-  }, [selectedSkills]);
-
-  if (loading) return <p>Loading ranked users...</p>;
+  if (!users.length) {
+    return <p>{emptyMessage}</p>;
+  }
 
   return (
-    <div className="user-card-container">
-      {rankedUsers.map(user => (
-        <UserCard key={user._id} user={user} />
+    <div className={styles.containerGrid}>
+      {users.map(user => (
+        <UserCard key={user._id || user.email || user.name} user={user} />
       ))}
     </div>
   );
 }
+
+RankedUserList.propTypes = {
+  users: PropTypes.arrayOf(PropTypes.object).isRequired,
+  loading: PropTypes.bool.isRequired,
+  error: PropTypes.string,
+  emptyMessage: PropTypes.string.isRequired,
+};
+
+RankedUserList.defaultProps = {
+  error: null,
+};
 
 export default RankedUserList;

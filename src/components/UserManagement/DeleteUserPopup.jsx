@@ -15,7 +15,7 @@ import {
 import hasPermission from '../../utils/permissions';
 import { CLOSE } from '../../languages/en/ui';
 import { boxStyle, boxStyleDark } from '../../styles';
-import '../Header/DarkMode.css';
+import '../Header/index.css';
 
 /**
  * Modal popup to delete the user profile

@@ -10,7 +10,8 @@ import AddNewTitleModal from './AddNewTitleModal';
 import EditTitlesModal from './EditTitlesModal';
 import { getAllTitle } from '../../../actions/title';
 import './QuickSetupModal.css';
-import '../../Header/DarkMode.css';
+import '../../Header/index.css';
+import styles from '../../SummaryBar/SummaryBar.module.css'
 
 function QuickSetupModal(props) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -88,7 +89,7 @@ function QuickSetupModal(props) {
         ''
       )}
 
-      <div className="col text-center mt-3 flex">
+      <div className={`col ${styles['text-center']} mt-3 flex`}>
         {canAddTitle ? (
           <Button
             color="primary"

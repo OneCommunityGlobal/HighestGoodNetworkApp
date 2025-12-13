@@ -19,6 +19,20 @@
   word-wrap: break-word;
   word-break: break-word;
   overflow-wrap: break-word;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center; 
+}
+
+.member-card h3 {
+  margin: 0 0 8px 0;
+  font-size: 1.1rem;
+  line-height: 1.3;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto; /* optional: allows hyphenation for very long names */
+  text-align: center; /* explicitly center the name */
 }
 
 .paginationControls {
