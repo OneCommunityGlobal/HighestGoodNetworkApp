@@ -114,27 +114,22 @@
   overflow-wrap: break-word;
 }
 
-.userCard.darkMode {
+.userCard.dark {
   background: #2f4157;
-  border-color: #444;
+  border-color: #333;
   box-shadow: none;
+  color: #ffffff;
 }
 
-.userCard.darkMode .contactLine {
-  color: #ccc;
+.userCard.dark .userName,
+.userCard.dark .scoreLine,
+.userCard.dark .scoreLabel,
+.userCard.dark .scoreValue,
+.userCard.dark .scoreMax {
+  color: #ffffff;
 }
 
-.darkMode .skillsText {
-  color: #ffffff !important;
-}
-
-.darkMode .userName {
-  color: #ffffff !important;
-}
-
-.darkMode .scoreLine,
-.darkMode .scoreLabel,
-.darkMode .scoreValue,
-.darkMode .scoreMax {
-  color: #ffffff !important;
+.userCard.dark .contactLine,
+.userCard.dark .skillsText {
+  color: #bbbbbb;
 }

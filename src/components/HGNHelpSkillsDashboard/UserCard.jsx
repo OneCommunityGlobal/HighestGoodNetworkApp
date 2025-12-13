@@ -16,7 +16,7 @@ function UserCard({ user }) {
   };
 
   return (
-    <div className={`${styles.userCard} ${darkMode ? styles.darkMode : ''}`}>
+    <div className={`${styles.userCard} ${darkMode ? styles.dark : ''}`}>
       <img src={avatar} alt="Avatar" className={`${styles.avatar}`} />
       <div className={`${styles.info}`}>
         <div className={`${styles.userName}`} title={name}>
