@@ -13,6 +13,8 @@ export default function JobApplicationPage() {
   const referralToken = qs.get('token') || '';
 
   const darkMode = useSelector(s => s.theme.darkMode);
+  const userRole = useSelector(s => s.auth?.user?.role);
+  const isAdmin = userRole === 'Administrator' || userRole === 'Owner';
 
   const [loading, setLoading] = useState(true);
   const [job, setJob] = useState({ title: 'Job', description: '' });
@@ -70,6 +72,7 @@ export default function JobApplicationPage() {
         jobTitle={job.title}
         jobDescription={job.description}
         darkMode={darkMode}
+        isAdmin={isAdmin}
       />
 
       {/* Bottom banner (full width) */}

@@ -8,9 +8,10 @@
   --muted: #6b7280;   
   --bg: #fff;   
   --bg-soft: #f8fafc;   
-  --primary:#007bff;   
+  --primary:#8cc63f;   
   --danger:#b91c1c;   
-  --focus:#2563eb; 
+  --focus:#6fa832; 
+  --green-header: #8cc63f;
 }  
 * {
   box-sizing: border-box;
@@ -40,14 +41,36 @@ html, body {
 .ja-wrap{
   max-width: var(--ja-max);
   margin: 0 auto;
-  padding: 24px var(--pad);
+  padding: 0 0 48px 0;
   color: var(--text);
   transition: background-color 0.3s ease, color 0.3s ease;
+  background: #f5f5f5;
+  min-height: 100vh;
 } 
 
 .ja-header{
-  margin-bottom: 24px;
+  margin-bottom: 0;
   text-align: center;
+  background: #f5f5f5;
+  padding: 16px var(--pad);
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.ja-header .ja-title {
+  margin-bottom: 8px;
+  color: #000;
+  font-weight: 700;
+}
+
+.ja-header .ja-desc {
+  color: #000;
+  background: #f5f5f5;
+  margin: 12px auto 0;
+  max-width: 90%;
+  text-align: left;
+  line-height: 1.6;
 } 
 
 .ja-title{
@@ -80,8 +103,8 @@ html, body {
 }
 
 .ja-requirements-list {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 12px;
 }
 
@@ -139,6 +162,9 @@ html, body {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 24px;
+  padding-bottom: 48px;
+  margin: 24px var(--pad);
+  margin-bottom: 0;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 } 
@@ -232,6 +258,40 @@ textarea:focus {
   align-items: center;
   gap: 10px;
   cursor: pointer;
+}
+
+.ja-checkbox input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background-color: var(--bg);
+  cursor: pointer;
+  position: relative;
+  margin: 0;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.ja-checkbox input[type="checkbox"]:checked {
+  background-color: var(--primary);
+  border-color: var(--primary);
+}
+
+.ja-checkbox input[type="checkbox"]:checked::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #fff;
+  font-size: 14px;
+  font-weight: bold;
+  line-height: 1;
 } 
 
 .ja-consent{
@@ -258,27 +318,32 @@ textarea:focus {
   transition: border-color 0.3s ease;
 } 
 
-.btn-primary{
-  background: var(--primary);
-  color: #fff;
-  border: none;
-  border-radius: 8px;
+.ja-actions .btn-primary {
+  background: #69B369 !important;
+  color: #fff !important;
+  border: 1px solid #5A945A !important;
+  border-radius: 12px;
   padding: 12px 24px;
   font-weight: 600;
   font-size: 16px;
   cursor: pointer;
   transition: all 0.2s;
   min-width: 200px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 } 
 
-.btn-primary:hover{
-  background: #0056b3;
+.ja-actions .btn-primary:hover {
+  background: #5A945A !important;
+  color: #fff !important;
   transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 } 
 
-.btn-primary:active{
+.ja-actions .btn-primary:active {
   transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background: #5A945A !important;
+  color: #fff !important;
 }  
 
 .ja-loading{
@@ -335,14 +400,19 @@ textarea:focus {
   }
   
   .ja-wrap {
+    padding: 0;
+  }
+  
+  .ja-header {
     padding: 16px 12px;
   }
   
   .ja-form {
     padding: 20px 16px;
+    margin: 24px 12px;
   }
   
-  .ja-reqs-grid {
+  .ja-requirements-list {
     grid-template-columns: 1fr;
   }
   
@@ -366,6 +436,15 @@ textarea:focus {
   }
   
   .ja-wrap {
+    padding: 0;
+  }
+  
+  .ja-header {
     padding: 12px 8px;
+  }
+  
+  .ja-form {
+    margin: 16px 8px;
+    padding: 16px 12px;
   }
 }

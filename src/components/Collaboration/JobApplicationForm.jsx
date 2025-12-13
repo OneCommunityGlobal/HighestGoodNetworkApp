@@ -5,6 +5,7 @@ export default function JobApplicationForm({
   jobTitle = 'Job',
   jobDescription = '',
   darkMode = false,
+  isAdmin = false,
 }) {
   const [form, setForm] = useState({
     firstName: '',
@@ -52,6 +53,39 @@ export default function JobApplicationForm({
 
   const update = (k, v) => setForm(f => ({ ...f, [k]: v }));
 
+  // Check if requirements are satisfied (for admin view)
+  const checkRequirements = () => {
+    const requirements = {
+      reactExperience: false,
+      twoMonthsCommitment: false,
+      javascriptExperience: false,
+      timeZoneLocation: false,
+      tenHoursPerWeek: false,
+    };
+
+    // Check 1+ years of Full-Time ReactJS Experience
+    const reactKeywords = ['react', 'reactjs', 'react.js'];
+    const roleSkillsLower = (form.roleSkills || '').toLowerCase();
+    requirements.reactExperience =
+      (form.fullTimeYears && parseFloat(form.fullTimeYears) >= 1) ||
+      reactKeywords.some(keyword => roleSkillsLower.includes(keyword));
+
+    // Check Minimum of 2 Months Commitment
+    requirements.twoMonthsCommitment =
+      form.monthsVolunteer && parseFloat(form.monthsVolunteer) >= 2;
+
+    // Check 1+ years of Full-Time JavaScript Experience
+    requirements.javascriptExperience = form.fullTimeYears && parseFloat(form.fullTimeYears) >= 1;
+
+    // Check Time Zone and Location Matches
+    requirements.timeZoneLocation = !!(form.locationTz && form.locationTz.trim());
+
+    // Check Minimum of 10 hours of work a week
+    requirements.tenHoursPerWeek = form.hoursPerWeek && parseFloat(form.hoursPerWeek) >= 10;
+
+    return requirements;
+  };
+
   const validate = () => {
     const e = {};
     if (!form.firstName.trim()) e.firstName = 'First name is required';
@@ -80,14 +114,8 @@ export default function JobApplicationForm({
   return (
     <main className={`ja-wrap ${darkMode ? 'bg-oxford-blue text-light' : ''}`}>
       <header className="ja-header">
-        <h1 className="ja-title" style={{ color: darkMode ? '#ffffff' : undefined }}>
-          Job Application – {jobTitle}
-        </h1>
-        {jobDescription && (
-          <p className="ja-desc" style={{ color: darkMode ? '#b0b7c3' : undefined }}>
-            {stripHtml(jobDescription)}
-          </p>
-        )}
+        <h1 className="ja-title">Job Application – {jobTitle}</h1>
+        {jobDescription && <p className="ja-desc">{stripHtml(jobDescription)}</p>}
       </header>
 
       <form
@@ -95,6 +123,9 @@ export default function JobApplicationForm({
         onSubmit={submit}
         noValidate
       >
+        {/* Requirements Section - Shows checkboxes only in admin view */}
+        {isAdmin && <RequirementsSection requirements={checkRequirements()} darkMode={darkMode} />}
+
         <div className="ja-row-2">
           <Field
             id="firstName"
@@ -361,6 +392,78 @@ export default function JobApplicationForm({
         </div>
       </form>
     </main>
+  );
+}
+
+/* Requirements Section Component */
+function RequirementsSection({ requirements, darkMode }) {
+  const requirementList = [
+    {
+      id: 'reactExperience',
+      label: '1+ years of Full-Time ReactJS Experience',
+      satisfied: requirements.reactExperience,
+    },
+    {
+      id: 'twoMonthsCommitment',
+      label: 'Minimum of 2 Months Commitment',
+      satisfied: requirements.twoMonthsCommitment,
+    },
+    {
+      id: 'javascriptExperience',
+      label: '1+ years of Full-Time JavaScript Experience',
+      satisfied: requirements.javascriptExperience,
+    },
+    {
+      id: 'timeZoneLocation',
+      label: 'Time Zone and Location Matches',
+      satisfied: requirements.timeZoneLocation,
+    },
+    {
+      id: 'tenHoursPerWeek',
+      label: 'Minimum of 10 hours of work a week',
+      satisfied: requirements.tenHoursPerWeek,
+    },
+  ];
+
+  return (
+    <div className="ja-requirements-section">
+      <h3 className="ja-requirements-title">Requirements Status</h3>
+      <div className="ja-requirements-list">
+        {requirementList.map(req => (
+          <div key={req.id} className="ja-requirement-item">
+            <label className="ja-requirement-checkbox">
+              <input
+                type="checkbox"
+                className="ja-requirement-checkbox-input"
+                checked={req.satisfied}
+                readOnly
+                disabled
+              />
+              <span className={`ja-requirement-checkbox-custom ${req.satisfied ? 'checked' : ''}`}>
+                {req.satisfied && (
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 14 14"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M11.6667 3.5L5.25 9.91667L2.33334 7"
+                      stroke="white"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                )}
+              </span>
+              <span style={{ color: darkMode ? '#ffffff' : undefined }}>{req.label}</span>
+            </label>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
 
