@@ -131,11 +131,9 @@ function ActivityList() {
 
   const filteredActivities = activities.filter(activity => {
     return (
-      (!filter.type ||
-        activity.type.toLowerCase().includes(filter.type.toLowerCase())) &&
+      (!filter.type || activity.type.toLowerCase().includes(filter.type.toLowerCase())) &&
       (!filter.date || activity.date === filter.date) &&
-      (!filter.location ||
-        activity.location.toLowerCase().includes(filter.location.toLowerCase()))
+      (!filter.location || activity.location.toLowerCase().includes(filter.location.toLowerCase()))
     );
   });
 
@@ -164,12 +162,7 @@ function ActivityList() {
 
         <label>
           Date:
-          <input
-            type="date"
-            name="date"
-            value={filter.date}
-            onChange={handleFilterChange}
-          />
+          <input type="date" name="date" value={filter.date} onChange={handleFilterChange} />
         </label>
 
         <label>
@@ -189,8 +182,8 @@ function ActivityList() {
           <ul>
             {filteredActivities.map(activity => (
               <li key={activity.id}>
-                <strong>{activity.name}</strong> - {activity.type} -{' '}
-                {activity.date} - {activity.location}
+                <strong>{activity.name}</strong> - {activity.type} - {activity.date} -{' '}
+                {activity.location}
                 <button
                   type="button"
                   onClick={() => goToReschedule(activity.id)}

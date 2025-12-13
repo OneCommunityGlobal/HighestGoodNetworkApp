@@ -60,18 +60,11 @@ export default function ReschedulePoll() {
           ? await res.json()
           : { error: await res.text() };
 
-        if (!res.ok)
-          throw new Error(
-            payload?.message || payload?.error || res.statusText,
-          );
+        if (!res.ok) throw new Error(payload?.message || payload?.error || res.statusText);
 
         if (!ignore) {
           setPoll(payload);
-          setSelected(
-            Number.isInteger(payload.currentVote)
-              ? payload.currentVote
-              : null,
-          );
+          setSelected(Number.isInteger(payload.currentVote) ? payload.currentVote : null);
         }
       } catch (e) {
         if (!ignore) setMsg(`Error: ${e.message || String(e)}`);
@@ -115,10 +108,7 @@ export default function ReschedulePoll() {
         ? await res.json()
         : { error: await res.text() };
 
-      if (!res.ok)
-        throw new Error(
-          payload?.message || payload?.error || res.statusText,
-        );
+      if (!res.ok) throw new Error(payload?.message || payload?.error || res.statusText);
 
       setMsg('Thanks! Your selection has been recorded.');
     } catch (e) {
@@ -153,10 +143,7 @@ export default function ReschedulePoll() {
   }
 
   return (
-    <div
-      className={styles.reschedulePage}
-      style={{ maxWidth: 640, margin: '24px auto' }}
-    >
+    <div className={styles.reschedulePage} style={{ maxWidth: 640, margin: '24px auto' }}>
       <h2 style={{ marginBottom: 4 }}>{poll.activity.title}</h2>
       <div className="muted" style={{ marginBottom: 16 }}>
         {poll.activity.location}
@@ -167,9 +154,7 @@ export default function ReschedulePoll() {
         </p>
       ) : null}
       <form onSubmit={onSubmit}>
-        <fieldset
-          style={{ border: '1px solid #d0d7de', borderRadius: 8, padding: 12 }}
-        >
+        <fieldset style={{ border: '1px solid #d0d7de', borderRadius: 8, padding: 12 }}>
           <legend style={{ padding: '0 6px' }}>Choose one time</legend>
           {poll.options.map((opt, idx) => (
             <label

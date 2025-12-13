@@ -6,13 +6,12 @@ import { useSelector } from 'react-redux';
 import { ApiEndpoint } from '~/utils/URL';
 
 function RescheduleEvent({ activity }) {
-  const eventInfo =
-    activity || {
-      _id: '1',
-      name: 'Event Name',
-      location: 'San Francisco, CA 94108',
-      link: 'Event Link',
-    };
+  const eventInfo = activity || {
+    _id: '1',
+    name: 'Event Name',
+    location: 'San Francisco, CA 94108',
+    link: 'Event Link',
+  };
 
   const darkMode = useSelector(state => state.theme?.darkMode);
 
@@ -62,9 +61,7 @@ function RescheduleEvent({ activity }) {
     const dateLabel = selectedDate.toDateString();
     const timeSlot = selectedTime;
 
-    const exists = options.some(
-      opt => opt.dateISO === dateISO && opt.timeSlot === timeSlot,
-    );
+    const exists = options.some(opt => opt.dateISO === dateISO && opt.timeSlot === timeSlot);
 
     if (exists) {
       alert('That date & time is already in the poll list.');
@@ -199,11 +196,7 @@ function RescheduleModal(props) {
   } = props;
 
   return (
-    <div
-      className={`${styles.reschedulePage} ${
-        darkMode ? 'bg-oxford-blue text-light' : ''
-      }`}
-    >
+    <div className={`${styles.reschedulePage} ${darkMode ? 'bg-oxford-blue text-light' : ''}`}>
       <div style={{ position: 'absolute', top: 16, left: 16, opacity: 0.9 }}>
         <div>
           <strong>{eventInfo.name || 'Event'}</strong>
@@ -212,9 +205,7 @@ function RescheduleModal(props) {
       </div>
 
       <div
-        className={`${styles.modalBackdrop} ${
-          darkMode ? styles.modalBackdropDark : ''
-        }`}
+        className={`${styles.modalBackdrop} ${darkMode ? styles.modalBackdropDark : ''}`}
         role="button"
         tabIndex={0}
         onClick={e => e.target === e.currentTarget && closeModal()}
@@ -225,18 +216,12 @@ function RescheduleModal(props) {
         }}
       >
         <div
-          className={`${styles.modalContent} ${
-            darkMode ? styles.modalContentDark : ''
-          }`}
+          className={`${styles.modalContent} ${darkMode ? styles.modalContentDark : ''}`}
           role="dialog"
           aria-modal="true"
           aria-labelledby="reschedule-title"
         >
-          <button
-            type="button"
-            className={styles.modalCloseBtn}
-            onClick={closeModal}
-          >
+          <button type="button" className={styles.modalCloseBtn} onClick={closeModal}>
             &times;
           </button>
 
@@ -257,9 +242,7 @@ function RescheduleModal(props) {
                   id="timeSelect"
                   value={selectedTime}
                   onChange={e => setSelectedTime(e.target.value)}
-                  className={`${styles.timeDropdown} ${
-                    darkMode ? styles.timeDropdownDark : ''
-                  }`}
+                  className={`${styles.timeDropdown} ${darkMode ? styles.timeDropdownDark : ''}`}
                 >
                   <option value="">Select time</option>
                   {getTimeSlots(8, 24, 2).map(slot => (
@@ -269,18 +252,12 @@ function RescheduleModal(props) {
                   ))}
                 </select>
 
-                <button
-                  type="button"
-                  className={styles.primaryBtn}
-                  onClick={addOption}
-                >
+                <button type="button" className={styles.primaryBtn} onClick={addOption}>
                   Add option
                 </button>
 
                 <textarea
-                  className={`${styles.textArea} ${
-                    darkMode ? styles.textAreaDark : ''
-                  }`}
+                  className={`${styles.textArea} ${darkMode ? styles.textAreaDark : ''}`}
                   value={reason}
                   onChange={e => setReason(e.target.value)}
                 />
@@ -290,9 +267,7 @@ function RescheduleModal(props) {
                   onChange={date => setSelectedDate(date)}
                   inline
                   minDate={new Date()}
-                  className={
-                    darkMode ? 'react-datepicker dark' : 'react-datepicker'
-                  }
+                  className={darkMode ? 'react-datepicker dark' : 'react-datepicker'}
                 />
 
                 {options.map((opt, idx) => (
@@ -313,11 +288,7 @@ function RescheduleModal(props) {
             </>
           ) : (
             <div className={styles.modalFooter}>
-              <button
-                type="button"
-                onClick={handleCreateAndNotify}
-                disabled={loading}
-              >
+              <button type="button" onClick={handleCreateAndNotify} disabled={loading}>
                 {loading ? 'Sending…' : 'Create & Notify'}
               </button>
               <button type="button" onClick={() => setConfirmStep(false)}>
