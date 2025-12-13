@@ -70,17 +70,7 @@ export default function GroupEditorModal({
 
   const handleOverlayClick = useCallback(
     e => {
-      if (modalRef.current?.contains(e.target)) return;
-      onClose();
-    },
-    [onClose],
-  );
-
-  const handleOverlayKey = useCallback(
-    e => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        if (modalRef.current?.contains(document.activeElement)) return;
+      if (e.target === overlayRef.current) {
         onClose();
       }
     },
@@ -127,15 +117,22 @@ export default function GroupEditorModal({
       className={`${styles.overlay} ${darkMode ? styles.dark : ''}`}
       ref={overlayRef}
       onClick={handleOverlayClick}
-      onKeyDown={handleOverlayKey}
-      role="presentation"
-      tabIndex={-1}
+      role="button"
+      tabIndex={0}
+      onKeyDown={e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          if (e.target === overlayRef.current) {
+            onClose();
+          }
+        }
+      }}
       aria-label="Close dialog"
     >
-      <dialog
+      <div
         className={styles.modal}
         ref={modalRef}
-        open
+        role="dialog"
         aria-modal="true"
         aria-labelledby="group-modal-title"
       >
@@ -214,7 +211,7 @@ export default function GroupEditorModal({
             </button>
           </div>
         </div>
-      </dialog>
+      </div>
     </div>
   );
 }

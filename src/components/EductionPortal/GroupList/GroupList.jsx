@@ -80,17 +80,17 @@ export default function GroupList() {
   }, []);
 
   const makeId = useCallback(() => {
-    try {
-      return typeof crypto !== 'undefined' && crypto.randomUUID
-        ? crypto.randomUUID()
-        : 'g' +
-            Date.now().toString(36) +
-            Math.random()
-              .toString(36)
-              .slice(2, 8);
-    } catch {
-      return 'g' + Date.now().toString(36);
+    // Use crypto.randomUUID() for cryptographically secure IDs when available
+    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+      return crypto.randomUUID();
     }
+
+    const timestamp = Date.now().toString(36);
+    const randomPart = performance
+      .now()
+      .toString(36)
+      .replace('.', '');
+    return `g-${timestamp}-${randomPart}`;
   }, []);
 
   const handleSave = useCallback(
