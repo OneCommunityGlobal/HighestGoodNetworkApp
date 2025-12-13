@@ -1,0 +1,225 @@
+:root {
+  --bg: #ffffff;
+  --text: #0f172a;
+  --muted: #64748b;
+  --border: #e5e7eb;
+  --primary: #4f46e5;
+  --primary-100: #eef2ff;
+  --error: #b91c1c;
+}
+
+.dark {
+  --bg: #1B2A41;
+  --text: #e5e7eb;
+  --muted: #94a3b8;
+  --border: #334155;
+  --primary: #4f46e5;
+  --primary-100: rgba(79, 70, 229, 0.25);
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  z-index: 60
+}
+
+.dark.overlay {
+  background: rgba(2, 6, 23, 0.6)
+}
+
+.modal {
+  width: min(760px, 100%);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.25);
+  color: var(--text);
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  max-height: min(84vh, 820px)
+}
+
+.header {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between
+}
+
+.title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text)
+}
+
+.iconBtn {
+  border: none;
+  background: transparent;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--muted)
+}
+
+.iconBtn:hover {
+  color: var(--text)
+}
+
+.body {
+  padding: 16px;
+  overflow: auto
+}
+
+.section {
+  margin-bottom: 16px
+}
+
+.sectionLabel {
+  font-size: 14px;
+  color: var(--muted);
+  margin-bottom: 8px
+}
+
+.checkAll {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  user-select: none
+}
+
+.list {
+  max-height: 240px;
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 6px;
+  background: #fafafa
+}
+
+.dark .list {
+  background: #0f172a
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--text)
+}
+
+.item:hover {
+  background: #f3f4f6
+}
+
+.dark .item:hover {
+  background: #152036
+}
+
+.itemText {
+  font-size: 14px
+}
+
+.itemName {
+  font-weight: 700
+}
+
+.itemMeta {
+  color: var(--muted)
+}
+
+.textarea {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px;
+  font: inherit;
+  outline: none;
+  resize: vertical;
+  min-height: 120px;
+  background: #fff;
+  color: #0f172a
+}
+
+.dark .textarea {
+  background: #0f172a;
+  color: var(--text)
+}
+
+.textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-100)
+}
+
+.counter {
+  text-align: right;
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 6px
+}
+
+.error {
+  margin-top: 6px;
+  color: var(--error);
+  font-size: 14px
+}
+
+.footer {
+  padding: 12px 16px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px
+}
+
+.primaryBtn,
+.cancelBtnNotify {
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid transparent
+}
+
+.primaryBtn {
+  background: var(--primary);
+  color: #fff
+}
+
+.primaryBtn:disabled {
+  opacity: .7;
+  cursor: default
+}
+
+.cancelBtnNotify {
+  background: #fff;
+  color: var(--text);
+  border-color: var(--border)
+}
+
+.dark .cancelBtnNotify {
+  background: #0f172a;
+  color: var(--text);
+  border-color: var(--border)
+}
+
+.cancelBtnNotify:hover {
+  background: #f9fafb
+}
+
+.dark .cancelBtnNotify:hover {
+  background: #152036
+}
