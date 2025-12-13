@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import DOMPurify from 'dompurify';
 import PropTypes from 'prop-types';
 import {
   Button,
@@ -40,6 +41,24 @@ export class EditableInfoModal extends Component {
 
   _isMounted = false;
 
+   // Sanitize HTML content to prevent XSS attacks
+  sanitizeHTML = (htmlContent) => {
+    if (!htmlContent || typeof htmlContent !== 'string') return '';
+
+    return DOMPurify.sanitize(htmlContent, {
+      ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'u', 'ul', 'ol', 'li', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'a', 'span', 'div'],
+      ALLOWED_ATTR: ['href', 'class'], // Removed 'style' to prevent CSS injection
+      ALLOW_DATA_ATTR: false,
+      ALLOWED_URI_REGEXP: /^https?:\/\//, // Only allow http/https URLs
+    });
+  };
+
+  // Sanitize text content to prevent XSS in props
+  sanitizeText = (textContent) => {
+    if (!textContent || typeof textContent !== 'string') return '';
+    return DOMPurify.sanitize(textContent, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
+  };
+
   
   async componentDidMount() {
     this._isMounted = true;
@@ -53,13 +72,14 @@ export class EditableInfoModal extends Component {
     if (Array.isArray(infoCollections)) {
       infoCollections.forEach((info) => {
         if (info.infoName === areaName) {
-          content = info.infoContent;
+          content = this.sanitizeHTML(info.infoContent);
           visible = info.visibility;
         }
       });
     } 
 
-    content = content.replace(/<ul>/g, "<ul class='custom-ul'>");
+    // Safely add custom class to ul elements WITHIN the sanitized content
+    content = this.sanitizeHTML(content.replace(/<ul>/g, "<ul class='custom-ul'>"));
     let CanRead = (visible === '0') ||
       (visible === '1' && (role === 'Owner' || role === 'Administrator')) ||
       (visible === '2' && (role !== 'Volunteer'));
@@ -118,7 +138,8 @@ export class EditableInfoModal extends Component {
   }
   handleInputChange = (content, editor) => {
     const infoContent = this.state.infoContent;
-    this.setState({ infoContent: content });
+    const sanitizedContent = this.sanitizeHTML(content);
+    this.setState({ infoContent: sanitizedContent });
   }
 
 
@@ -164,9 +185,9 @@ export class EditableInfoModal extends Component {
   mainSaveHandler = async () => {
     const { findIndex: updatedInfo, infoId } = this.handleChangeInInfos();
     const newInfo = {
-      infoName: this.state.infoName,
-      infoContent: this.state.infoContent,
-      visibility: this.state.visibility,
+      infoName: this.sanitizeText(this.state.infoName),
+      infoContent: this.sanitizeHTML(this.state.infoContent),
+      visibility: this.sanitizeText(this.state.visibility),
     }
     let saveResult;
     if (!updatedInfo) {
@@ -225,7 +246,9 @@ export class EditableInfoModal extends Component {
           />
           {editableModalOpen && (
             <Modal isOpen={editableModalOpen} toggle={this.toggleEditableModal} size="lg" className={darkMode ? 'text-light' : ''}>
-              <ModalHeader className={`d-flex justify-content-center ${darkMode ? 'bg-space-cadet' : ''}`}>Welcome to the {this.props.areaTitle} Information Page!</ModalHeader>
+              <ModalHeader className={`d-flex justify-content-center ${darkMode ? 'bg-space-cadet' : ''}`}>
+                Welcome to the {this.sanitizeText(this.props.areaTitle)} Information Page!
+              </ModalHeader>
               <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''} style={{ padding: '20px 40px' }}>
                 {this.state.editing
                   ? <RichTextEditor

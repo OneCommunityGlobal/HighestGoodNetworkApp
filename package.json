@@ -1,4 +1,5 @@
 {
+  "$schema": "https://json.schemastore.org/package.json",
   "name": "hgnreactapp",
   "version": "0.1.0",
   "license": "GPL-2.0",
@@ -59,8 +60,9 @@
     "html-react-parser": "^1.4.14",
     "html-to-pdfmake": "^2.0.6",
     "html2canvas": "^1.4.1",
+    "jest": "^30.2.0",
     "jquery": "^3.7.1",
-    "jspdf": "^3.0.1",
+    "jspdf": "^3.0.3",
     "jwt-decode": "^2.2.0",
     "leaflet": "^1.9.4",
     "leaflet.heat": "^0.2.0",
@@ -98,11 +100,13 @@
     "react-spinners": "^0.15.0",
     "react-sticky": "^6.0.3",
     "react-table": "^7.8.0",
+    "react-tagcloud": "^2.3.3",
     "react-to-pdf": "^1.0.1",
     "react-to-print": "^3.0.5",
     "react-toastify": "^5.3.1",
     "react-tooltip": "^4.5.1",
     "react-use-websocket": "^3.0.0",
+    "react-window": "^1.8.11",
     "reactjs-popup": "^2.0.5",
     "reactstrap": "^8.10.1",
     "read-excel-file": "^5.5.3",
@@ -117,7 +121,7 @@
     "tinymce": "^7.2.0",
     "util": "^0.12.5",
     "uuid": "^9.0.1",
-    "webpack": "^5.102.0"
+    "webpack": "^5.102.1"
   },
   "resolutions": {
     "react": "18.3.1",
@@ -187,7 +191,6 @@
     "sass": "^1.86.3",
     "sass-loader": "^16.0.5",
     "stylelint": "^16.25.0",
-    "stylelint-config-prettier": "^9.0.5",
     "stylelint-config-standard": "^39.0.1",
     "typescript": "^4.8.4",
     "vite": "^6.3.5",

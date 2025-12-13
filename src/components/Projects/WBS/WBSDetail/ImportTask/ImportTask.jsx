@@ -12,7 +12,7 @@ import { getPopupById } from './../../../../../actions/popupEditorAction';
 import { TASK_IMPORT_POPUP_ID } from './../../../../../constants/popupId';
 import parse from 'html-react-parser';
 import { boxStyle, boxStyleDark } from '~/styles';
-import '../../../../Header/DarkMode.css'
+import '../../../../Header/index.css'
 
 const ImportTask = props => {
   /*
@@ -63,7 +63,7 @@ const ImportTask = props => {
       setImportStatus('imported');
       setTaskList(tmpList);
     } catch (error) {
-      console.log("ERROR!!!!!")
+     // console.log("ERROR!!!!!")
       setImportStatus('importError');
       setAlert(error.message);
     }

@@ -1,14 +1,14 @@
 import { useParams, Link } from 'react-router-dom';
-import './FollowUpEmailTemplate.css';
+import styles from './FollowUpEmailTemplate.module.css';
 import { FaLinkedin, FaInstagram, FaFacebook } from 'react-icons/fa';
 import companyLogo from '../../../assets/images/logo2.png';
 
 function FollowUpEmailTemplate() {
   const { eventId = 1234, email = '' } = useParams(); // || { email: '' };
   return (
-    <div className="email-template-container">
+    <div className={styles.emailTemplateContainer}>
       {/* Company Logo */}
-      <img src={companyLogo} alt="One Community Logo" className="email-logo" />
+      <img src={companyLogo} alt="One Community Logo" className={styles.emailLogo} />
 
       <h2>Hi {email || '[Name]'},</h2>
       <p>
@@ -21,7 +21,7 @@ function FollowUpEmailTemplate() {
         <br />
         <Link
           to={`/communityportal/activities/FeedbackForm/${eventId}/${email || 'no-email'}`}
-          className="feedback-link"
+          className={styles.feedbackLink}
         >
           Survey Form
         </Link>
@@ -45,17 +45,17 @@ function FollowUpEmailTemplate() {
       <p>Timezone: Los Angeles, CA - Pacific Time</p>
 
       {/* Horizontal Line */}
-      <hr className="email-divider" />
+      <hr className={styles.emailDivider} />
 
       {/* Social Media Icons */}
-      <div className="social-icons">
+      <div className={styles.socialIcons}>
         <a
           href="https://www.linkedin.com/company/one-community-global/"
           target="_blank"
           rel="noopener noreferrer"
           aria-label="LinkedIn"
         >
-          <FaLinkedin className="social-icon linkedin" />
+          <FaLinkedin className={`${styles.socialIcon} ${styles.socialIconLinkedin}`} />
         </a>
 
         <a
@@ -64,7 +64,7 @@ function FollowUpEmailTemplate() {
           rel="noopener noreferrer"
           aria-label="Instagram"
         >
-          <FaInstagram className="social-icon instagram" />
+          <FaInstagram className={`${styles.socialIcon} ${styles.socialIconInstagram}`} />
         </a>
 
         <a
@@ -73,12 +73,12 @@ function FollowUpEmailTemplate() {
           rel="noopener noreferrer"
           aria-label="Facebook"
         >
-          <FaFacebook className="social-icon facebook" />
+          <FaFacebook className={`${styles.socialIcon} ${styles.socialIconFacebook}`} />
         </a>
       </div>
 
       {/* Horizontal Line */}
-      <hr className="email-divider" />
+      <hr className={styles.emailDivider} />
 
       <p style={{ fontWeight: 'bold', textAlign: 'center' }}>
         Jae M.Sabol <br /> Executive Director - One Community <br />
@@ -91,13 +91,13 @@ function FollowUpEmailTemplate() {
         Policies. If you no longer want to receive mails from us, click the unsubscribe link below.
       </p>
 
-      <div className="footer-links-container">
+      <div className={styles.footerLinksContainer}>
         <a
           href="https://onecommunityglobal.org/terms-and-conditions/"
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Privacy Policy"
-          className="footer-links"
+          className={styles.footerLinks}
         >
           Privacy Policy
         </a>
@@ -106,7 +106,7 @@ function FollowUpEmailTemplate() {
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Terms and Conditions"
-          className="footer-links"
+          className={styles.footerLinks}
         >
           Terms and Conditions
         </a>
@@ -115,7 +115,7 @@ function FollowUpEmailTemplate() {
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Contact"
-          className="footer-links"
+          className={styles.footerLinks}
         >
           Help Center
         </a>

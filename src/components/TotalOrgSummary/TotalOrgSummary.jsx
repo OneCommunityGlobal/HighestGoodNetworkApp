@@ -27,7 +27,7 @@ import hasPermission from '~/utils/permissions';
 // actions
 import { getTotalOrgSummary } from '~/actions/totalOrgSummary';
 
-import '../Header/DarkMode.css';
+import '../Header/index.css';
 import styles from './TotalOrgSummary.module.css';
 import { clsx } from 'clsx';
 import VolunteerHoursDistribution from './VolunteerHoursDistribution/VolunteerHoursDistribution';
@@ -177,7 +177,9 @@ function TotalOrgSummary(props) {
       await new Promise(resolve => setTimeout(resolve, 5000));
 
       // 3. Replace Chart.js canvas elements with images in the live DOM.
-      const chartCanvases = document.querySelectorAll('.volunteer-status-chart canvas');
+      const chartCanvases = document.querySelectorAll(
+        '[data-chart="volunteer-status"] canvas, [data-chart="mentor-status"] canvas',
+      );
       const originalCanvases = [];
       chartCanvases.forEach(canvasElem => {
         try {
@@ -673,7 +675,11 @@ ${
             </Col>
             <Col lg={{ size: 6 }}>
               <div
-                className={clsx(styles.componentContainer, styles.componentBorder)}
+                className={clsx(
+                  styles.componentContainer,
+                  styles.componentBorder,
+                  styles.componentBorderLoose,
+                )}
                 data-pdf-block
               >
                 <div
@@ -688,6 +694,7 @@ ${
                 <VolunteerStatusChart
                   isLoading={isLoading}
                   volunteerNumberStats={volunteerStats?.volunteerNumberStats}
+                  mentorNumberStats={volunteerStats?.mentorNumberStats}
                   comparisonType={selectedComparison}
                 />
               </div>
@@ -823,7 +830,7 @@ ${
             </Col>
           </Row>
         </AccordianWrapper>
-        <AccordianWrapper title="Volunteer Roles and Team Dynamics">
+        <AccordianWrapper title="Volunteer Work and Role Distribution">
           <Row>
             <Col lg={{ size: 7 }}>
               <div
@@ -870,7 +877,7 @@ ${
             </Col>
           </Row>
         </AccordianWrapper>
-        <AccordianWrapper title="Volunteer Roles and Team Dynamics">
+        <AccordianWrapper title="Teams and Blue Squares">
           <Row>
             <Col lg={{ size: 6 }}>
               <div

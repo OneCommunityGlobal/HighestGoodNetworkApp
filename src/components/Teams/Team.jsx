@@ -5,6 +5,7 @@ import { Button } from 'reactstrap';
 import hasPermission from '~/utils/permissions';
 import { boxStyle, boxStyleDark } from '~/styles';
 import { DELETE } from '../../languages/en/ui';
+import headerStyles from './TeamTableHeader.module.css';
 
 export function Team(props) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -17,7 +18,7 @@ export function Team(props) {
         <div>{(props.index ?? 0) + 1}</div>
       </th>
       {/*  Wrap long names vertically */}
-      <td className="team-name-col">{props.name}</td>
+      <td className={headerStyles.teamNameCol}>{props.name}</td>
       <td className="teams__active--input">
         <button
           data-testid="active-marker"

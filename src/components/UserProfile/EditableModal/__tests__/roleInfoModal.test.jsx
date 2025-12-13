@@ -105,7 +105,7 @@ describe('RoleInfoModal component Test cases', () => {
       CanRead: true,
       infoContent: '',
     };
-
+    
     render(
       <Provider store={store}>
         <RoleInfoModal info={info} roleName="MentorInfo" />
