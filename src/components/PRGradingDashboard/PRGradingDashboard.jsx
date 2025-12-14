@@ -150,15 +150,26 @@ function PRGradingDashboard() {
 
   // Remove a graded PR (only new ones)
   const removeGradedPR = (reviewer, prIndex) => {
+    // Check if PR can be removed before updating state
+    const reviewerGrading = gradings.find(g => g.reviewer === reviewer);
+    if (!reviewerGrading) return;
+
+    const prToRemove = reviewerGrading.gradedPrs[prIndex];
+    if (!prToRemove) return;
+
+    // Only allow removal of new PRs
+    if (!prToRemove.isNew) {
+      toast.warning('Cannot delete existing PRs. Only newly added PRs can be removed.');
+      return;
+    }
+
+    // Show success toast
+    toast.success('PR removed successfully! Click Save to save the changes.');
+
+    // Update state
     setGradings(prev =>
       prev.map(g => {
         if (g.reviewer === reviewer) {
-          const prToRemove = g.gradedPrs[prIndex];
-          // Only allow removal of new PRs
-          if (!prToRemove.isNew) {
-            toast.warning('Cannot delete existing PRs. Only newly added PRs can be removed.');
-            return g;
-          }
           // Always decrement by 1, regardless of how many PR numbers are in the string
           return {
             ...g,
