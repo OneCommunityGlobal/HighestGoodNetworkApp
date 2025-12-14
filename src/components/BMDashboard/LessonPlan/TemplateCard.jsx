@@ -1,10 +1,16 @@
 import { useState } from 'react';
 import styles from './templateCard.module.css';
 
-const TemplateCard = ({ template }) => {
+const TemplateCard = ({ template, onSelectTemplate }) => {
   const [open, setOpen] = useState(false);
+  const { title, level, description, ageBand, duration, theme, subjectTags } = template;
 
-  const { title, level, description, details, subjects } = template;
+  const handleSelect = () => {
+    console.log(`Template "${title}" selected.`);
+    if (onSelectTemplate) {
+      onSelectTemplate(template); // send template up
+    }
+  };
 
   return (
     <>
@@ -25,25 +31,25 @@ const TemplateCard = ({ template }) => {
         <div className={styles.detailGrid}>
           <div>
             <span className={styles.label}>Age Band:</span>
-            <p>{details.ageBand}</p>
+            <p>{ageBand}</p>
           </div>
           <div>
             <span className={styles.label}>Duration:</span>
-            <p>{details.duration}</p>
+            <p>{duration}</p>
           </div>
         </div>
 
         <div className={styles.themeSection}>
           <span className={styles.label}>Theme:</span>
-          <p className={styles.themeValue}>{details.theme}</p>
+          <p className={styles.themeValue}>{theme}</p>
         </div>
 
         <div className={styles.subjectSection}>
           <span className={styles.label}>Subjects:</span>
           <div className={styles.subjectPills}>
-            {subjects.map((s, i) => (
-              <span key={i} className={styles.pill}>
-                {s}
+            {subjectTags.map(subject => (
+              <span key={subject._id} className={styles.pill}>
+                {subject.name}
               </span>
             ))}
           </div>
@@ -53,7 +59,9 @@ const TemplateCard = ({ template }) => {
           <button className={styles.previewBtn} onClick={() => setOpen(true)}>
             👁 Preview
           </button>
-          <button className={styles.selectBtn}>Select</button>
+          <button className={styles.selectBtn} onClick={handleSelect}>
+            Select
+          </button>
         </div>
       </div>
 
@@ -71,13 +79,13 @@ const TemplateCard = ({ template }) => {
               <div>
                 <h4>Template Details</h4>
                 <p>
-                  <strong>Age Band:</strong> {details.ageBand}
+                  <strong>Age Band:</strong> {ageBand}
                 </p>
                 <p>
-                  <strong>Duration:</strong> {details.duration}
+                  <strong>Duration:</strong> {duration}
                 </p>
                 <p>
-                  <strong>Theme:</strong> {details.theme}
+                  <strong>Theme:</strong> {theme}
                 </p>
                 <p>
                   <strong>Difficulty:</strong> {level}
@@ -85,14 +93,14 @@ const TemplateCard = ({ template }) => {
               </div>
 
               <div>
-                <h4>Included Subjects</h4>
-                <div className={styles.subjectPills}>
-                  {subjects.map((s, i) => (
-                    <span key={i} className={styles.pill}>
-                      {s}
-                    </span>
-                  ))}
-                </div>
+                <h4>Included Subjects & Topics</h4>
+                {subjectTags.map(subject => (
+                  <div key={subject._id} className={styles.subjectBlock}>
+                    <p>
+                      <strong>{subject.name}</strong>
+                    </p>
+                  </div>
+                ))}
               </div>
             </div>
 
@@ -100,7 +108,9 @@ const TemplateCard = ({ template }) => {
               <button className={styles.closeModalBtn} onClick={() => setOpen(false)}>
                 Close
               </button>
-              <button className={styles.modalSelectBtn}>Select Template</button>
+              <button className={styles.modalSelectBtn} onClick={handleSelect}>
+                Select Template
+              </button>
             </div>
           </div>
         </div>

@@ -70,7 +70,7 @@ import issueReducer from './bmdashboard/issueReducer';
 import HGNFormReducer from './hgnFormReducers';
 import injuriesReducer from './injuries';
 // import { weeklyProjectSummaryReducer } from './bmdashboard/weeklyProjectSummaryReducer';
-
+import lessonPlanBuilderReducer from './bmdashboard/lessonPlanBuilderReducer';
 import { weeklyProjectSummaryReducer } from './bmdashboard/weeklyProjectSummaryReducer';
 import messageReducer from './listBidDashboard/messagingReducer';
 // eslint-disable import/no-named-as-default
@@ -154,6 +154,7 @@ const localReducers = {
   dashboard: dashboardReducer,
   injuries: injuriesReducer,
   weeklyProjectSummary: weeklyProjectSummaryReducer,
+  lessonPlanBuilder: lessonPlanBuilderReducer,
 
   // lbdashboard
   wishlistItem: wishListReducer,

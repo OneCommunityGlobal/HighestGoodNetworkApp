@@ -379,6 +379,8 @@ POPULARITY_ROLES: `${APIEndpoint}/popularity/roles`,
   UPDATE_TEMPLATE: id => `${APIEndpoint}/templates/${id}`,
   DELETE_TEMPLATE: id => `${APIEndpoint}/templates/${id}`,
 
+  LESSON_PLAN_TEMPLATES: `${APIEndpoint}/student/lesson-plan-templates-details`,
+
   JOB_NOTIFICATION_LIST: `${APIEndpoint}/job-notification-list/`,
 
   MESSAGING_SERVICE: new URL('/messaging-service', APIEndpoint.replace('http', 'ws')).toString(),

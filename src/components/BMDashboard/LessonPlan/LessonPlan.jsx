@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import styles from './LessonPlan.module.css';
 import Template from './Template';
 import Topics from './Topics';
 import ActivitiesDraft from './ActivitiesDraft';
 import ReviewAndSubmit from './ReviewAndSubmit';
+import { fetchLessonPlanTemplates } from '../../../actions/bmdashboard/lessonPlanBuilderActions';
 
 const steps = [
   { id: 1, label: 'Choose Template' },
@@ -15,6 +17,7 @@ const steps = [
 const LessonPlan = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [chatInput, setChatInput] = useState('');
+  const [selectedTemplate, setSelectedTemplate] = useState(null);
   const [comments, setComments] = useState([
     {
       time: 'Dec 05, 05:30 AM',
@@ -22,6 +25,14 @@ const LessonPlan = () => {
     },
     { time: 'Dec 06, 09:15 AM', text: 'Reflection questions are thoughtful and helpful.' },
   ]);
+
+  const dispatch = useDispatch();
+  const { lessonPlanTemplates, loading, error } = useSelector(state => state.lessonPlanBuilder);
+
+  // Fetch lesson plan templates on component mount
+  useEffect(() => {
+    dispatch(fetchLessonPlanTemplates());
+  }, [dispatch]);
 
   const sendComment = () => {
     if (!chatInput.trim()) return;
@@ -85,8 +96,18 @@ const LessonPlan = () => {
           <div className={styles.body}>
             <div className={styles.container}>
               <div className={styles.content}>
-                {currentStep === 1 && <Template />}
-                {currentStep === 2 && <Topics />}
+                {currentStep === 1 && (
+                  <Template
+                    templates={lessonPlanTemplates}
+                    loading={loading}
+                    error={error}
+                    onSelectTemplate={template => {
+                      setSelectedTemplate(template);
+                      setCurrentStep(2);
+                    }}
+                  />
+                )}
+                {currentStep === 2 && <Topics template={selectedTemplate} />}
                 {currentStep === 3 && <ActivitiesDraft />}
                 {currentStep === 4 && <ReviewAndSubmit />}
               </div>
