@@ -2,6 +2,9 @@ import {
   FETCH_LESSON_PLAN_TEMPLATES_REQUEST,
   FETCH_LESSON_PLAN_TEMPLATES_SUCCESS,
   FETCH_LESSON_PLAN_TEMPLATES_FAIL,
+  SAVE_LESSON_PLAN_DRAFT_REQUEST,
+  SAVE_LESSON_PLAN_DRAFT_SUCCESS,
+  SAVE_LESSON_PLAN_DRAFT_FAIL,
   SUBMIT_LESSON_PLAN_DRAFT,
   VIEW_LESSON_PLAN_DRAFT,
 } from '../../constants/bmdashboard/lessonPlanBuilderConstants';
@@ -35,10 +38,24 @@ const lessonPlanBuilderReducer = (state = initialState, action) => {
         loading: false,
         error: action.payload,
       };
-    case SUBMIT_LESSON_PLAN_DRAFT:
+
+    case SAVE_LESSON_PLAN_DRAFT_SUCCESS:
       return {
         ...state,
         submittedDrafts: [...state.submittedDrafts, action.payload],
+        loading: false,
+      };
+    case SAVE_LESSON_PLAN_DRAFT_REQUEST:
+      return {
+        ...state,
+        loading: true,
+        error: null,
+      };
+    case SAVE_LESSON_PLAN_DRAFT_FAIL:
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
       };
     case VIEW_LESSON_PLAN_DRAFT:
       return {

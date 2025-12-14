@@ -18,6 +18,8 @@ const LessonPlan = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [chatInput, setChatInput] = useState('');
   const [selectedTemplate, setSelectedTemplate] = useState(null);
+  const [selectedAtoms, setSelectedAtoms] = useState([]); // topics
+  const [activities, setActivities] = useState([]);
   const [comments, setComments] = useState([
     {
       time: 'Dec 05, 05:30 AM',
@@ -84,6 +86,11 @@ const LessonPlan = () => {
               {currentStep < steps.length && (
                 <button
                   className={styles.midNextButton}
+                  disabled={
+                    (currentStep === 1 && !selectedTemplate) ||
+                    (currentStep === 2 && selectedAtoms.length === 0) ||
+                    (currentStep === 3 && activities.length === 0)
+                  }
                   onClick={() => setCurrentStep(currentStep + 1)}
                 >
                   Next ▶
@@ -107,9 +114,26 @@ const LessonPlan = () => {
                     }}
                   />
                 )}
-                {currentStep === 2 && <Topics template={selectedTemplate} />}
-                {currentStep === 3 && <ActivitiesDraft />}
-                {currentStep === 4 && <ReviewAndSubmit />}
+
+                {currentStep === 2 && (
+                  <Topics
+                    template={selectedTemplate}
+                    selectedAtoms={selectedAtoms}
+                    setSelectedAtoms={setSelectedAtoms}
+                  />
+                )}
+
+                {currentStep === 3 && (
+                  <ActivitiesDraft activities={activities} setActivities={setActivities} />
+                )}
+
+                {currentStep === 4 && (
+                  <ReviewAndSubmit
+                    template={selectedTemplate}
+                    topics={selectedAtoms}
+                    activities={activities}
+                  />
+                )}
               </div>
             </div>
           </div>

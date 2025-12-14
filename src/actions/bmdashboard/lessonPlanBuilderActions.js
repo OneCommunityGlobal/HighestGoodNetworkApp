@@ -5,6 +5,9 @@ import {
   FETCH_LESSON_PLAN_TEMPLATES_REQUEST,
   FETCH_LESSON_PLAN_TEMPLATES_SUCCESS,
   FETCH_LESSON_PLAN_TEMPLATES_FAIL,
+  SAVE_LESSON_PLAN_DRAFT_REQUEST,
+  SAVE_LESSON_PLAN_DRAFT_SUCCESS,
+  SAVE_LESSON_PLAN_DRAFT_FAIL,
 } from '../../constants/bmdashboard/lessonPlanBuilderConstants';
 
 export const fetchLessonPlanTemplates = () => {
@@ -35,6 +38,33 @@ export const fetchLessonPlanTemplates = () => {
         payload: error.message,
       });
       toast.error(`Error fetching lesson plan templates: ${error.message}`);
+    }
+  };
+};
+
+export const saveLessonPlanDraft = (draftData) => {
+  return async dispatch => {
+    try {
+      dispatch({ type: SAVE_LESSON_PLAN_DRAFT_REQUEST });
+
+      const response = await axios.post(
+        ENDPOINTS.LESSON_PLAN_DRAFT,
+        draftData
+      );
+
+      dispatch({
+        type: SAVE_LESSON_PLAN_DRAFT_SUCCESS,
+        payload: response.data.draft,
+      });
+
+      toast.success('Draft saved successfully');
+    } catch (error) {
+      dispatch({
+        type: SAVE_LESSON_PLAN_DRAFT_FAIL,
+        payload: error.message,
+      });
+
+      toast.error('Failed to save draft');
     }
   };
 };

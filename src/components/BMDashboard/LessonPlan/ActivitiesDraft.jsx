@@ -3,13 +3,11 @@
 import React, { useState } from 'react';
 import styles from './activitiesDraft.module.css';
 
-const ActivitiesDraft = () => {
+const ActivitiesDraft = ({ activities, setActivities }) => {
   const [open, setOpen] = useState(false);
   const [description, setDescription] = useState('');
   const [reason, setReason] = useState('');
   const [strategy, setStrategy] = useState('');
-  const [activities, setActivities] = useState([]);
-
   const strategies = [
     'Visual Learning',
     'Hands-on Practice',

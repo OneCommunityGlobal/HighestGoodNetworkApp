@@ -1,7 +1,25 @@
 import React from 'react';
 import styles from './reviewAndSubmit.module.css';
+import { useDispatch } from 'react-redux';
+import { saveLessonPlanDraft } from '../../../actions/bmdashboard/lessonPlanBuilderActions';
 
-const ReviewAndSubmit = () => {
+const ReviewAndSubmit = ({ template, topics = [], activities = [] }) => {
+  const dispatch = useDispatch();
+
+  const handleSaveDraft = () => {
+    const payload = {
+      templateId: template._id,
+      selectedTopics: topics.map(t => t._id),
+      activities,
+      educatorId: template.educatorId,
+    };
+
+    dispatch(saveLessonPlanDraft(payload));
+  };
+  if (!template) {
+    return <p className={styles.wrapper}>No template selected.</p>;
+  }
+
   return (
     <div className={styles.wrapper}>
       <h2 className={styles.pageTitle}>Review & Submit</h2>
@@ -18,33 +36,48 @@ const ReviewAndSubmit = () => {
           <div className={styles.block}>
             <h4 className={styles.blockTitle}>Template</h4>
             <p className={styles.blockText}>
-              Global Citizen - Understanding world cultures, history, and social responsibility
+              <strong>{template.title}</strong> — {template.description}
             </p>
           </div>
 
           {/* SELECTED TOPICS */}
           <div className={styles.block}>
-            <h4 className={styles.blockTitle}>Selected Topics (2)</h4>
+            <h4 className={styles.blockTitle}>Selected Topics ({topics.length})</h4>
+
             <div className={styles.pillRow}>
-              <span className={styles.pill}>Algebra Fundamentals</span>
-              <span className={styles.pill}>Geometry Basics</span>
+              {topics.length === 0 && <p>No topics selected.</p>}
+
+              {topics.map(topic => (
+                <span key={topic._id} className={styles.pill}>
+                  {topic.name}
+                </span>
+              ))}
             </div>
           </div>
 
           {/* ACTIVITIES */}
           <div className={styles.block}>
-            <h4 className={styles.blockTitle}>Activities (1)</h4>
+            <h4 className={styles.blockTitle}>Activities ({activities.length})</h4>
 
-            <div className={styles.activityBox}>
-              <h5 className={styles.activityTitle}>Activity 1</h5>
-              <p className={styles.activityDesc}>hi</p>
+            {activities.length === 0 && <p>No activities added.</p>}
 
-              <div className={styles.pillRow}>
-                <span className={styles.pill}>Hands-on Practice</span>
-                <span className={styles.pill}>Project-based Learning</span>
-                <span className={styles.pill}>Real-world Applications</span>
+            {activities.map((activity, index) => (
+              <div key={activity.id} className={styles.activityBox}>
+                <h5 className={styles.activityTitle}>Activity {index + 1}</h5>
+
+                <p className={styles.activityDesc}>
+                  <strong>Description:</strong> {activity.description}
+                </p>
+
+                <p className={styles.activityDesc}>
+                  <strong>Why:</strong> {activity.reason}
+                </p>
+
+                <div className={styles.pillRow}>
+                  <span className={styles.pill}>{activity.strategy}</span>
+                </div>
               </div>
-            </div>
+            ))}
           </div>
         </div>
 
@@ -56,8 +89,8 @@ const ReviewAndSubmit = () => {
 
             <ul className={styles.checklist}>
               <li>✓ Template selected</li>
-              <li>✓ Topics chosen</li>
-              <li>✓ Activities created</li>
+              <li className={topics.length ? '' : styles.incomplete}>✓ Topics chosen</li>
+              <li className={activities.length ? '' : styles.incomplete}>✓ Activities created</li>
               <li>✓ All activities described</li>
             </ul>
           </div>
@@ -69,8 +102,13 @@ const ReviewAndSubmit = () => {
               Your lesson plan will be sent to your educator for review and feedback.
             </p>
 
-            <button className={styles.primaryBtn}>Submit to Educator</button>
-            <button className={styles.secondaryBtn}>Save as Draft</button>
+            <button className={styles.primaryBtn} disabled={!topics.length || !activities.length}>
+              Submit to Educator
+            </button>
+
+            <button className={styles.secondaryBtn} onClick={handleSaveDraft}>
+              Save as Draft
+            </button>
           </div>
         </div>
       </div>

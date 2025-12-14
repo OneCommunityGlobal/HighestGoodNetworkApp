@@ -37,11 +37,18 @@
 }
 
 .atomCard {
+  all: unset;
+  cursor: pointer;
+  display: block;
   width: 260px;
   padding: 16px;
   border-radius: 12px;
   border: 1px solid #dcdcdc;
   background: #fff;
+}
+
+.atomCard:focus-visible {
+  outline: 2px solid #4f46e5;
 }
 
 .atomTitle {
@@ -58,4 +65,8 @@
   padding: 10px;
   border-radius: 8px;
   border: 1px solid #ddd;
+}
+.selectedAtom {
+  border: 2px solid #4f46e5;
+  background-color: #eef2ff;
 }

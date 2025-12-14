@@ -380,6 +380,7 @@ POPULARITY_ROLES: `${APIEndpoint}/popularity/roles`,
   DELETE_TEMPLATE: id => `${APIEndpoint}/templates/${id}`,
 
   LESSON_PLAN_TEMPLATES: `${APIEndpoint}/student/lesson-plan-templates-details`,
+  LESSON_PLAN_DRAFT: `${APIEndpoint}/student/lesson-plan-drafts`,
 
   JOB_NOTIFICATION_LIST: `${APIEndpoint}/job-notification-list/`,
 
