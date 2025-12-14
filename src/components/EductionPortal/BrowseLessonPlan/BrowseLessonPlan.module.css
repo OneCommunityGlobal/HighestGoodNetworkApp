@@ -1,171 +1,404 @@
 .container {
-  padding: 16px;
-  background: #fff;
-  color: #222;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: #f8f9fa;
   min-height: 100vh;
-  transition: background 0.2s, color 0.2s;
-}
-.title {
-  margin: 0 0 12px 0;
-  font-size: 20px;
-}
-.controls {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 12px;
-  align-items: center;
-}
-.search {
-  flex: 1;
-  padding: 8px;
-  background: #f5f5f5;
-  color: #222;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  transition: background 0.2s, color 0.2s;
-}
-.select {
-  padding: 8px;
-  background: #f5f5f5;
-  color: #222;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  transition: background 0.2s, color 0.2s;
-}
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 12px;
-}
-.message {
-  padding: 12px;
-}
-.messageError {
-  padding: 12px;
-  color: red;
-}
-.empty {
-  padding: 12px;
 }
 
-/* Card styles */
-.card {
-  background: #fafafa;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  transition: background 0.2s, color 0.2s, border 0.2s;
+.container.dark {
+  background: #1a1a1a;
+  color: #e0e0e0;
 }
-.thumb {
-  width: 100%;
-  height: 140px;
-  object-fit: cover;
-  background: #eee;
-}
-.thumbPlaceholder {
-  width: 100%;
-  height: 140px;
-  background: #eee;
+
+.header {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  color: #aaa;
-  font-size: 14px;
+  margin-bottom: 2rem;
 }
-.body {
-  padding: 12px;
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin: 0;
+}
+
+.dark .title {
+  color: #f0f0f0;
+}
+
+.viewToggle {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.viewBtn {
+  padding: 0.5rem 1rem;
+  border: 1px solid #ddd;
+  background: white;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.viewBtn:hover {
+  background: #f0f0f0;
+}
+
+.viewBtn.active {
+  background: #3498db;
+  color: white;
+  border-color: #3498db;
+}
+
+.dark .viewBtn {
+  background: #2a2a2a;
+  border-color: #444;
+  color: #e0e0e0;
+}
+
+.dark .viewBtn:hover {
+  background: #333;
+}
+
+.controls {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.searchBar {
+  flex: 1;
+  min-width: 250px;
+  padding: 0.75rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+
+.searchBar:focus {
+  outline: none;
+  border-color: #3498db;
+}
+
+.dark .searchBar {
+  background: #2a2a2a;
+  border-color: #444;
+  color: #e0e0e0;
+}
+
+.filtersRow {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.select {
+  padding: 0.75rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: white;
+  font-size: 0.95rem;
+  cursor: pointer;
+  min-width: 150px;
+}
+
+.dark .select {
+  background: #2a2a2a;
+  border-color: #444;
+  color: #e0e0e0;
+}
+
+.clearBtn {
+  padding: 0.75rem 1.5rem;
+  background: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.clearBtn:hover {
+  background: #c0392b;
+}
+
+.resultsInfo {
+  margin-bottom: 1rem;
+  color: #7f8c8d;
+  font-size: 0.95rem;
+}
+
+.dark .resultsInfo {
+  color: #aaa;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.list {
   display: flex;
   flex-direction: column;
-  flex: 1;
+  gap: 1rem;
 }
-.meta {
+
+.loading {
+  text-align: center;
+  padding: 3rem;
+  font-size: 1.1rem;
+  color: #7f8c8d;
+}
+
+.dark .loading {
+  color: #aaa;
+}
+
+.error {
+  text-align: center;
+  padding: 2rem;
+  color: #e74c3c;
+  background: #fee;
+  border-radius: 8px;
+}
+
+.dark .error {
+  background: #3a1f1f;
+  color: #ff6b6b;
+}
+
+.empty {
+  text-align: center;
+  padding: 3rem;
+  color: #95a5a6;
+  font-size: 1.1rem;
+}
+
+.dark .empty {
+  color: #777;
+}
+
+.pagination {
   display: flex;
-  gap: 8px;
-  margin-bottom: 8px;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
 }
-.tag {
-  background: #e0e0e0;
-  color: #555;
+
+.pageBtn {
+  padding: 0.5rem 1rem;
+  border: 1px solid #ddd;
+  background: white;
   border-radius: 4px;
-  padding: 2px 8px;
-  font-size: 12px;
-}
-.description {
-  flex: 1;
-  font-size: 14px;
-  margin-bottom: 12px;
-}
-.actions {
-  display: flex;
-  gap: 8px;
-}
-.view {
-  background: #1976d2;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  padding: 6px 12px;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s;
 }
-.view:hover {
-  background: #1565c0;
+
+.pageBtn:hover:not(:disabled) {
+  background: #3498db;
+  color: white;
+  border-color: #3498db;
 }
-.save {
-  background: #43a047;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  padding: 6px 12px;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-.save:disabled {
-  background: #bdbdbd;
+
+.pageBtn:disabled {
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
-/* DARK MODE */
-.dark {
-  background: #181a1b !important;
-  color: #f1f1f1 !important;
+.dark .pageBtn {
+  background: #2a2a2a;
+  border-color: #444;
+  color: #e0e0e0;
 }
+
+.pageInfo {
+  color: #7f8c8d;
+}
+
+.dark .pageInfo {
+  color: #aaa;
+}
+
+/* Card Styles */
+.card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
 .dark .card {
-  background: #232526;
-  border: 1px solid #333;
-  color: #f1f1f1;
+  background: #2a2a2a;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
-.dark .thumbPlaceholder {
-  background: #222;
-  color: #666;
+
+.cardImage {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
 }
-.dark .search,
-.dark .select {
-  background: #232526;
-  color: #f1f1f1;
-  border: 1px solid #333;
+
+.imagePlaceholder {
+  width: 100%;
+  height: 200px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1rem;
 }
+
+.cardBody {
+  padding: 1.5rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.cardTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 0.75rem 0;
+  color: #2c3e50;
+}
+
+.dark .cardTitle {
+  color: #f0f0f0;
+}
+
+.cardMeta {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.tag {
+  padding: 0.25rem 0.75rem;
+  background: #ecf0f1;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  color: #7f8c8d;
+}
+
 .dark .tag {
-  background: #333;
-  color: #bbb;
+  background: #3a3a3a;
+  color: #aaa;
 }
-.dark .view {
-  background: #1565c0;
-  color: #fff;
+
+.cardDescription {
+  color: #7f8c8d;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  flex: 1;
+  margin-bottom: 1rem;
 }
-.dark .view:hover {
-  background: #1976d2;
+
+.dark .cardDescription {
+  color: #aaa;
 }
-.dark .save {
-  background: #388e3c;
-  color: #fff;
+
+.cardStats {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.85rem;
+  color: #95a5a6;
+  margin-bottom: 1rem;
 }
-.dark .save:disabled {
-  background: #555;
-  color: #bbb;
+
+.dark .cardStats {
+  color: #888;
 }
-.dark .messageError {
-  color: #ff8a80;
+
+.cardActions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.btnPrimary, .btnSecondary {
+  flex: 1;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btnPrimary {
+  background: #3498db;
+  color: white;
+}
+
+.btnPrimary:hover {
+  background: #2980b9;
+}
+
+.btnPrimary:disabled {
+  background: #95a5a6;
+  cursor: not-allowed;
+}
+
+.btnSecondary {
+  background: #2ecc71;
+  color: white;
+}
+
+.btnSecondary:hover {
+  background: #27ae60;
+}
+
+.btnSecondary.saved {
+  background: #95a5a6;
+}
+
+/* List View Styles */
+.listItem {
+  display: flex;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dark .listItem {
+  background: #2a2a2a;
+}
+
+.listImage {
+  width: 200px;
+  height: 150px;
+  object-fit: cover;
+}
+
+.listContent {
+  flex: 1;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.listActions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
 }
