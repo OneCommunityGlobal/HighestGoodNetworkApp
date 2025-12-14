@@ -12,7 +12,7 @@ import ExportConfirmationModal from './ExportConfirmationModal';
 import styles from './LessonListForm.module.css';
 
 function LessonList(props) {
-  const { lessons, dispatch } = props;
+  const { lessons, darkMode, dispatch } = props;
   const [tags, setTags] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [deleteValue, setDeleteInputValue] = useState('');
@@ -737,6 +737,7 @@ const mapStateToProps = state => {
   // console.log('Current Redux state:', state);
   return {
     lessons: state.lessons.lessons,
+    darkMode: state.theme.darkMode,
   };
 };
 
