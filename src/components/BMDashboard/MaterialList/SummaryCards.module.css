@@ -1,0 +1,43 @@
+.wrapper {
+  margin-bottom: 1rem;
+}
+
+.card {
+  border-radius: 12px;
+}
+
+.title {
+  font-size: 14px;
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.value {
+  font-size: 28px;
+  font-weight: 700;
+  color: #012970;
+}
+
+.icon {
+  width: 56px;
+  height: 56px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 30px;
+
+  background-color: #f6f9ff;
+  border-radius: 50%;
+}
+
+.icon svg {
+  width: 1em;
+  height: 1em;
+  vertical-align: middle;
+}
+
+.warningIcon svg {
+  transform: translateY(-0.067em);
+}
