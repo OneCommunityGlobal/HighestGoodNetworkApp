@@ -101,6 +101,7 @@ export const ENDPOINTS = {
   TASK_DEL: (taskId, motherId) => `${APIEndpoint}/task/del/${taskId}/${motherId}`,
   GET_TASK: taskId => `${APIEndpoint}/task/${taskId}`,
   TASK_UPDATE: taskId => `${APIEndpoint}/task/update/${taskId}`,
+  TASK_DELETE_BY_ID: (taskId, userId) => `${APIEndpoint}/task/deleteTask/${taskId}/${userId}`,
   TASK_UPDATE_STATUS: taskId => `${APIEndpoint}/task/updateStatus/${taskId}`,
   TASK_CHANGE_LOGS: taskId => `${APIEndpoint}/task/${taskId}/changeLogs`,
   DELETE_CHILDREN: taskId => `${APIEndpoint}/task/delete/children/${taskId}`,
@@ -109,6 +110,10 @@ export const ENDPOINTS = {
   UPDATE_PARENT_TASKS: wbsId => `${APIEndpoint}/task/updateAllParents/${wbsId}`,
   MOVE_TASKS: wbsId => `${APIEndpoint}/tasks/moveTasks/${wbsId}`,
   WEEKLY_SUMMARIES_REPORT: () => `${APIEndpoint}/reports/weeklysummaries`,
+  WEEKLY_SUMMARIES_FILTERS:`${APIEndpoint}/weeklySummariesFilters`,
+  WEEKLY_SUMMARIES_FILTER_BY_ID: filterId => `${APIEndpoint}/weeklySummariesFilters/${filterId}`,
+  WEEKLY_SUMMARIES_FILTER_REPLACE_CODES: `${APIEndpoint}/weeklySummariesFilters/replaceTeamcodes`,
+  WEEKLY_SUMMARIES_FILTER_REPLACE_INDIVIDUAL_CODES: `${APIEndpoint}/weeklySummariesFilters/replaceIndividualTeamcodes`,
   SAVE_SUMMARY_RECEPIENTS: userid => `${APIEndpoint}/reports/recepients/${userid}`,
   GET_SUMMARY_RECEPIENTS: () => `${APIEndpoint}/reports/getrecepients`,
   GET_CURRENT_WARNINGS: () => `${APIEndpoint}/currentWarnings`,
@@ -142,6 +147,7 @@ export const ENDPOINTS = {
   APPLICANT_VOLUNTEER_RATIO: `${APIEndpoint}/applicant-volunteer-ratio`,
   USER_UNREAD_TASK_NOTIFICATIONS: userId => `${APIEndpoint}/tasknotification/user/${userId}`,
   BADGE: () => `${APIEndpoint}/badge`,
+  BADGE_ASSIGN_MULTIPLE: `${APIEndpoint}/badge/assign`,
   BADGE_ASSIGN: userId => `${APIEndpoint}/badge/assign/${userId}`,
   BADGE_BY_ID: badgeId => `${APIEndpoint}/badge/${badgeId}`,
 
@@ -224,6 +230,8 @@ export const ENDPOINTS = {
   NON_HGN_EMAIL_SUBSCRIPTION: `${APIEndpoint}/add-non-hgn-email-subscription`,
   CONFIRM_EMAIL_SUBSCRIPTION: `${APIEndpoint}/confirm-non-hgn-email-subscription`,
   REMOVE_EMAIL_SUBSCRIPTION: `${APIEndpoint}/remove-non-hgn-email-subscription`,
+  
+  PERMISSION_MANAGEMENT_UPDATE: () => `${APIEndpoint}/permission-management`,
 
   // reasons endpoints
   CREATEREASON: () => {
@@ -283,7 +291,7 @@ export const ENDPOINTS = {
   BM_PROJECTS_WITH_LOCATION: `${APIEndpoint}/bm/projects/location`,
   BM_PROJECT_EXPENSE_BY_ID: projectId => `${APIEndpoint}/bm/project/${projectId}/expenses`,
   BM_PROJECT_BY_ID: projectId => `${APIEndpoint}/bm/project/${projectId}`,
-  BM_PROJECTS_LIST_FOR_MATERIALS_COST: `${APIEndpoint}/totalProjects `,
+
   BM_PROJECT_MATERIALS_COST: `${APIEndpoint}/material-costs`,
   BM_UPDATE_MATERIAL: `${APIEndpoint}/bm/updateMaterialRecord`,
   BM_UPDATE_MATERIAL_BULK: `${APIEndpoint}/bm/updateMaterialRecordBulk`,
@@ -365,6 +373,8 @@ export const ENDPOINTS = {
   HGN_FORM_SUBMIT: `${APIEndpoint}/hgnform`,
   HGN_FORM_UPDATE_USER_SKILLS_FOLLOWUP_SUBMIT: `${APIEndpoint}/skills/profile/updateFollowUp/`,
 
+  HGN_FORM_GET_TEAM_MEMBERS_BY_SKILL: skill => `${APIEndpoint}/userProfile/skills/${skill}`,
+
   CREATE_JOB_FORM: `${APIEndpoint}/jobforms`,
   UPDATE_JOB_FORM: `${APIEndpoint}/jobforms`,
   GET_JOB_FORM: formId => `${APIEndpoint}/jobforms/${formId}`,
@@ -390,6 +400,11 @@ export const ENDPOINTS = {
   // lb dashboard endpoints
   LB_REGISTER: `${APIEndpoint}/lbdashboard/register`,
   LB_LOGIN: `${APIEndpoint}/lbdashboard/login`,
+
+  // Phase 2 summary dashboard
+  SUPPLIER_PERFORMANCE: (projectId, startDate, endDate) =>
+    `${APIEndpoint}/suppliers/performance?projectId=${projectId}&startDate=${startDate}&endDate=${endDate}`,
+  SUPPLIER_PROJECTS: `${APIEndpoint}/suppliers/projects`,
 
   // event endpoint
   EVENTS: `${APIEndpoint}/events`,
