@@ -23,16 +23,23 @@ const ResendEmailModal = ({ isOpen, toggle, email, onResend }) => {
     setIsSubmitting(true);
 
     try {
-      let recipientsArray = [];
-      if (recipientOption === 'specific') {
-        // Parse comma or newline separated emails
-        recipientsArray = specificRecipients
-          .split(/[,\n]/)
-          .map(email => email.trim())
-          .filter(email => email.length > 0);
-      }
+      // FIXED: Issue 6 - Pass data as an object with correct structure
+      const resendData = {
+        recipientOption: recipientOption,
+        recipients:
+          recipientOption === 'specific'
+            ? specificRecipients
+                .split(/[,\n]/)
+                .map(email => email.trim())
+                .filter(email => email.length > 0)
+            : undefined,
+      };
 
-      await onResend(email._id, recipientOption, recipientsArray);
+      await onResend(resendData);
+
+      // Reset form after successful resend
+      setRecipientOption('same');
+      setSpecificRecipients('');
       toggle();
     } catch (error) {
       console.error('Error resending email:', error);

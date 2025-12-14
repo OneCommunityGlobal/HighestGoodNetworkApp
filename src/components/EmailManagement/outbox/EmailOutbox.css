@@ -182,15 +182,54 @@
     border-radius: 6px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     border: 1px solid var(--border-color, #dee2e6);
+    background-color: #ffffff;
 }
 
 .dropdown-item {
     transition: all 0.2s ease;
+    color: #212529;
 }
 
 .dropdown-item:hover {
-    background-color: var(--primary-color, #007bff);
-    color: white;
+    background-color: #f8f9fa;
+    color: #212529;
+}
+
+.dropdown-header {
+    color: #6c757d;
+}
+
+/* FIXED: Issue 11 - Dark Mode Dropdown Support */
+[data-theme="dark"] .dropdown-menu,
+.dark-mode .dropdown-menu,
+body.dark .dropdown-menu {
+    background-color: #2d2d2d !important;
+    border-color: #404040 !important;
+}
+
+[data-theme="dark"] .dropdown-item,
+.dark-mode .dropdown-item,
+body.dark .dropdown-item {
+    color: #ffffff !important;
+}
+
+[data-theme="dark"] .dropdown-item:hover,
+.dark-mode .dropdown-item:hover,
+body.dark .dropdown-item:hover {
+    background-color: #404040 !important;
+    color: #ffffff !important;
+}
+
+[data-theme="dark"] .dropdown-header,
+.dark-mode .dropdown-header,
+body.dark .dropdown-header {
+    color: #adb5bd !important;
+}
+
+[data-theme="dark"] .dropdown-divider,
+.dark-mode .dropdown-divider,
+body.dark .dropdown-divider {
+    border-color: #404040 !important;
 }
 
 /* Icon Animations */
@@ -512,19 +551,6 @@ body.dark .card-header .text-muted {
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-.fa-spin {
-    animation: fa-spin 1s infinite linear;
-}
-
-@keyframes fa-spin {
-    0% {
-        transform: rotate(0deg);
-    }
-
-    100% {
-        transform: rotate(360deg);
-    }
-}
 /* Settings Dropdown Styles */
 .settings-btn {
     min-width: 38px;
@@ -556,6 +582,7 @@ body.dark .card-header .text-muted {
     cursor: not-allowed;
     opacity: 0.6;
 }
+
 /* Modal Overlay */
 .modal-overlay {
   position: fixed;
@@ -582,11 +609,11 @@ body.dark .card-header .text-muted {
 
 /* Header */
 .modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid #e6e6e6;
-  padding-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e6e6e6;
+    padding-bottom: 10px;
 }
 
 .close-btn {
@@ -670,10 +697,10 @@ body.dark .card-header .text-muted {
 
 /* Footer */
 .modal-footer {
-  display: flex;
-  justify-content: flex-end;
-  padding-top: 15px;
-  border-top: 1px solid #eee;
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
 }
 
 .btn-secondary {
@@ -685,8 +712,391 @@ body.dark .card-header .text-muted {
   cursor: pointer;
 }
 
-/* Fade In */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to   { opacity: 1; transform: translateY(0); }
+/* ADDITIONAL FIX: Email List Header and Stats in Dark Mode */
+[data-theme="dark"] .email-outbox,
+.dark-mode .email-outbox,
+body.dark .email-outbox {
+    background-color: #1a1a1a !important;
+    color: #ffffff !important;
+}
+
+/* Email Outbox Page Title */
+[data-theme="dark"] .email-outbox h3,
+[data-theme="dark"] .email-outbox-header h3,
+.dark-mode .email-outbox h3,
+.dark-mode .email-outbox-header h3,
+body.dark .email-outbox h3,
+body.dark .email-outbox-header h3 {
+    color: #ffffff !important;
+}
+
+/* Email List Card Header */
+[data-theme="dark"] .card .card-header,
+.dark-mode .card .card-header,
+body.dark .card .card-header {
+    background-color: #2d2d2d !important;
+    color: #ffffff !important;
+    border-color: #404040 !important;
+}
+
+[data-theme="dark"] .card .card-header h5,
+.dark-mode .card .card-header h5,
+body.dark .card .card-header h5 {
+    color: #ffffff !important;
+}
+
+/* STAT CARDS - LIGHT AND DARK MODE STYLING */
+
+/* Light mode - stat cards with white background and blue border */
+.stat-card {
+    background-color: #ffffff !important;
+    border: 2px solid #0056b3 !important;
+}
+
+/* Dark mode - stat cards with dark background and blue border */
+[data-theme="dark"] .stat-card,
+.dark-mode .stat-card,
+body.dark .stat-card {
+    background-color: #2d2d2d !important;
+    border: 2px solid #0056b3 !important;
+}
+
+/* FIXED: Stat Card Content Padding and Alignment */
+.stat-card .card-body {
+    padding: 1rem 1.25rem !important;
+}
+
+.stat-card .card-body > div {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 48px;
+    padding-left: 8px;
+}
+
+/* Light mode - text color */
+.stat-card .card-body {
+    color: #333333 !important;
+}
+
+.stat-card .card-body h2,
+.stat-card .card-body div,
+.stat-card .card-body span {
+    color: #333333 !important;
+}
+
+/* Dark mode - text color */
+[data-theme="dark"] .stat-card .card-body,
+.dark-mode .stat-card .card-body,
+body.dark .stat-card .card-body {
+    color: #ffffff !important;
+}
+
+[data-theme="dark"] .stat-card .card-body h2,
+[data-theme="dark"] .stat-card .card-body div,
+[data-theme="dark"] .stat-card .card-body span,
+.dark-mode .stat-card .card-body h2,
+.dark-mode .stat-card .card-body div,
+.dark-mode .stat-card .card-body span,
+body.dark .stat-card .card-body h2,
+body.dark .stat-card .card-body div,
+body.dark .stat-card .card-body span {
+    color: #ffffff !important;
+}
+
+/* Ensure colored icons in BOTH light and dark mode */
+.stat-card .card-body svg,
+.stat-card .card-body .fa,
+.stat-card .card-body i {
+    flex-shrink: 0;
+}
+
+/* Total Emails - Blue icon */
+.stat-card:nth-child(1) .card-body svg,
+.stat-card:nth-child(1) .card-body i,
+.stat-card:nth-child(1) .card-body .fa {
+    color: #007bff !important;
+}
+
+/* Sent - Green icon */
+.stat-card:nth-child(2) .card-body svg,
+.stat-card:nth-child(2) .card-body i,
+.stat-card:nth-child(2) .card-body .fa {
+    color: #28a745 !important;
+}
+
+/* Pending - Yellow/Orange icon */
+.stat-card:nth-child(3) .card-body svg,
+.stat-card:nth-child(3) .card-body i,
+.stat-card:nth-child(3) .card-body .fa {
+    color: #ffc107 !important;
+}
+
+/* Failed - Red icon */
+.stat-card:nth-child(4) .card-body svg,
+.stat-card:nth-child(4) .card-body i,
+.stat-card:nth-child(4) .card-body .fa {
+    color: #dc3545 !important;
+}
+
+/* Hover effects for stat cards */
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 86, 179, 0.3) !important;
+}
+
+[data-theme="dark"] .stat-card:hover,
+.dark-mode .stat-card:hover,
+body.dark .stat-card:hover {
+    background-color: #363636 !important;
+    box-shadow: 0 4px 12px rgba(0, 86, 179, 0.5) !important;
+}
+
+/* Card Body Text */
+[data-theme="dark"] .card-body,
+.dark-mode .card-body,
+body.dark .card-body {
+    background-color: #2d2d2d !important;
+    color: #ffffff !important;
+}
+
+/* Empty State Text */
+[data-theme="dark"] .text-muted,
+.dark-mode .text-muted,
+body.dark .text-muted {
+    color: #adb5bd !important;
+}
+
+/* Table in Dark Mode */
+[data-theme="dark"] .table,
+.dark-mode .table,
+body.dark .table {
+    color: #ffffff !important;
+}
+
+[data-theme="dark"] .table td,
+.dark-mode .table td,
+body.dark .table td {
+    border-color: #404040 !important;
+}
+
+[data-theme="dark"] .table tbody tr,
+.dark-mode .table tbody tr,
+body.dark .table tbody tr {
+    background-color: #2d2d2d !important;
+}
+
+[data-theme="dark"] .table-striped tbody tr:nth-of-type(odd),
+.dark-mode .table-striped tbody tr:nth-of-type(odd),
+body.dark .table-striped tbody tr:nth-of-type(odd) {
+    background-color: #363636 !important;
+}
+
+[data-theme="dark"] .table-hover tbody tr:hover,
+.dark-mode .table-hover tbody tr:hover,
+body.dark .table-hover tbody tr:hover {
+    background-color: #404040 !important;
+}
+
+/* CRITICAL FIX: Email Outbox heading visibility in dark mode */
+
+/* Target the main heading specifically */
+[data-theme="dark"] h3,
+.dark-mode h3,
+body.dark h3 {
+    color: #ffffff !important;
+}
+
+/* More specific targeting for email-outbox-header */
+[data-theme="dark"] .email-outbox-header,
+.dark-mode .email-outbox-header,
+body.dark .email-outbox-header {
+    color: #ffffff !important;
+}
+
+[data-theme="dark"] .email-outbox-header *,
+.dark-mode .email-outbox-header *,
+body.dark .email-outbox-header * {
+    color: #ffffff !important;
+}
+
+/* Ensure mb-0 class doesn't override */
+[data-theme="dark"] h3.mb-0,
+.dark-mode h3.mb-0,
+body.dark h3.mb-0 {
+    color: #ffffff !important;
+}
+
+/* Page title class */
+[data-theme="dark"] .page-title,
+.dark-mode .page-title,
+body.dark .page-title {
+    color: #ffffff !important;
+}
+
+/* BUTTON STYLING FIXES */
+
+/* Reduce padding and adjust spacing */
+.email-outbox-header .btn {
+    padding: 0.5rem 0.75rem !important;
+    font-size: 0.875rem !important;
+}
+
+/* Make refresh button text and icon darker in light mode */
+.email-outbox-header .btn-primary {
+    background-color: #0056b3 !important;
+    border-color: #004085 !important;
+    color: #ffffff !important;
+}
+
+.email-outbox-header .btn-primary:hover {
+    background-color: #004085 !important;
+    border-color: #003366 !important;
+}
+
+/* Settings button darker */
+.email-outbox-header .btn-secondary {
+    background-color: #5a6268 !important;
+    border-color: #4e555b !important;
+    color: #ffffff !important;
+}
+
+.email-outbox-header .btn-secondary:hover {
+    background-color: #4e555b !important;
+    border-color: #3d4449 !important;
+}
+
+/* Make icons inside buttons darker/more visible */
+.email-outbox-header .btn svg,
+.email-outbox-header .btn .fa,
+.email-outbox-header .btn .far,
+.email-outbox-header .btn .fas {
+    color: #ffffff !important;
+    opacity: 1 !important;
+}
+
+/* Adjust button group spacing */
+.email-outbox-header .d-flex[style*="gap"] {
+    gap: 8px !important;
+}
+
+/* Next refresh text styling */
+.email-outbox-header .text-muted {
+    color: #6c757d !important;
+    font-size: 0.875rem !important;
+}
+
+/* Auto-refresh indicator - smaller and tighter */
+.email-outbox-header .auto-refresh-indicator {
+    padding: 0.375rem 0.625rem !important;
+    font-size: 0.813rem !important;
+}
+
+/* FINAL STYLING ADJUSTMENTS */
+
+/* Remove white background from stats container, match card color */
+.email-outbox .row.mb-4,
+.email-outbox > .row:first-of-type {
+    background-color: transparent !important;
+    margin-bottom: 1.5rem !important;
+}
+
+/* Header controls positioning - move down and to the left with padding */
+.email-outbox-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-top: 12px !important;
+    padding-right: 16px !important;
+}
+
+.email-outbox-header .d-flex {
+    padding-top: 8px !important;
+    padding-right: 12px !important;
+}
+
+/* Adjust refresh controls container */
+.email-outbox-header > div:last-child {
+    margin-top: 8px;
+    margin-right: 12px;
+}
+
+/* CRITICAL FIX: Remove all white/light backgrounds from stat cards row */
+.email-outbox .row,
+.email-outbox .container-fluid > .row,
+.email-outbox-stats,
+.stats-row {
+    background-color: transparent !important;
+}
+
+/* Target any potential wrapper divs around stat cards */
+.email-outbox > div,
+.email-outbox .mb-4,
+.email-outbox .mb-3 {
+    background-color: transparent !important;
+}
+
+/* Force transparent background on all row elements in email-outbox */
+.email-outbox [class*="row"] {
+    background-color: transparent !important;
+}
+
+/* Force transparent on light mode too */
+.email-outbox .row,
+.email-outbox .row > div,
+.email-outbox .row.mb-4,
+.email-outbox .row.mb-3 {
+    background-color: transparent !important;
+    background: transparent !important;
+}
+
+/* CRITICAL FIX: Remove white background from tab-content */
+.email-update-container .tab-content,
+.email-tabs-container .tab-content,
+.tab-content {
+    background-color: transparent !important;
+}
+
+/* Also fix the tab-pane */
+.tab-pane,
+.tab-pane.active {
+    background-color: transparent !important;
+}
+
+/* Fix email-content-area specifically */
+.email-content-area {
+    background-color: transparent !important;
+}
+
+/* Target the mb-3 row specifically */
+.email-outbox-header.d-flex.justify-content-between.align-items-center.mb-3 {
+    background-color: transparent !important;
+}
+
+/* Remove background from all direct children of tab-content */
+.tab-content > * {
+    background-color: transparent !important;
+}
+
+/* Center align the stat cards */
+.email-outbox .row.mb-3,
+.email-outbox > .row:first-of-type,
+.email-outbox-header + .row {
+    justify-content: center !important;
+    padding: 0 2rem !important;
+}
+
+/* Add equal spacing around cards container */
+.stat-card {
+    margin: 0 auto !important;
+}
+
+/* Center the cards row with proper margins */
+.email-outbox .row {
+    max-width: 100%;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
 }

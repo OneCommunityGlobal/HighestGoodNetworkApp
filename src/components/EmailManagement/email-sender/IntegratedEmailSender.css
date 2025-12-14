@@ -1081,3 +1081,88 @@
   background: #2b6cb0;
   border-color: #63b3ed;
 }
+
+
+/* Draft notification animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.draft-notification {
+  animation: fadeIn 0.3s ease-in;
+}
+
+/* Alert button gaps */
+.alert .gap-2 {
+  gap: 0.5rem !important;
+}
+
+.alert .d-flex.gap-2 > * {
+  margin-left: 0 !important;
+}
+
+/* Offline warning styling */
+.alert-warning {
+  border-left: 4px solid #ffc107;
+}
+
+.alert-info {
+  border-left: 4px solid #17a2b8;
+}
+
+/* Draft notification responsive */
+@media (max-width: 768px) {
+  .draft-notification {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+  
+  .draft-notification .d-flex.gap-2 {
+    margin-top: 0.75rem;
+    width: 100%;
+  }
+  
+  .draft-notification .d-flex.gap-2 button {
+    flex: 1;
+  }
+}
+
+/* Clear Draft button styling */
+.action-buttons .btn-outline-danger {
+  border-color: #dc3545;
+  color: #dc3545;
+}
+
+.action-buttons .btn-outline-danger:hover {
+  background-color: #dc3545;
+  color: #ffffff;
+}
+
+/* Dark mode adjustments for alerts */
+[data-theme="dark"] .alert-info,
+.dark-mode .alert-info {
+  background-color: rgba(23, 162, 184, 0.2);
+  border-color: #17a2b8;
+  color: #ffffff;
+}
+
+[data-theme="dark"] .alert-warning,
+.dark-mode .alert-warning {
+  background-color: rgba(255, 193, 7, 0.2);
+  border-color: #ffc107;
+  color: #ffffff;
+}
+
+[data-theme="dark"] .alert-info small,
+[data-theme="dark"] .alert-warning small,
+.dark-mode .alert-info small,
+.dark-mode .alert-warning small {
+  color: rgba(255, 255, 255, 0.8);
+}

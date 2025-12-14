@@ -143,7 +143,7 @@ const EmailOutbox = ({ isActive = true }) => {
   // Manual refresh with user feedback
   const handleManualRefresh = useCallback(async () => {
     if (isRefreshingRef.current) {
-      toast.info('Refresh already in progress');
+      toast.info('Refresh already in progress', { autoClose: 3000 });
       return;
     }
 
@@ -154,7 +154,7 @@ const EmailOutbox = ({ isActive = true }) => {
   // Process pending and stuck emails
   const handleProcessPendingEmails = useCallback(async () => {
     if (processingPending) {
-      toast.info('Processing already in progress');
+      toast.info('Processing already in progress', { autoClose: 3000 });
       return;
     }
 
@@ -263,11 +263,15 @@ const EmailOutbox = ({ isActive = true }) => {
   }, [refreshState.autoRefresh, refreshState.lastRefresh, refreshState.refreshInterval]);
 
   const toggleAutoRefresh = useCallback(() => {
-    setRefreshState(prev => ({
-      ...prev,
-      autoRefresh: !prev.autoRefresh,
-      countdown: !prev.autoRefresh ? Math.floor(prev.refreshInterval / 1000) : prev.countdown,
-    }));
+    setRefreshState(prev => {
+      const newAutoRefresh = !prev.autoRefresh;
+      return {
+        ...prev,
+        autoRefresh: newAutoRefresh,
+        countdown: newAutoRefresh ? Math.floor(prev.refreshInterval / 1000) : prev.countdown,
+        lastRefresh: newAutoRefresh ? new Date() : prev.lastRefresh, // Reset lastRefresh when enabling
+      };
+    });
   }, []);
 
   // Filter emails based on selected status
@@ -371,13 +375,28 @@ const EmailOutbox = ({ isActive = true }) => {
     }
   };
 
+  // FIXED: Issue 4 - Properly extract email addresses from recipient objects
   const handleViewRecipients = recipients => {
     if (!recipients || recipients.length === 0) {
-      toast.info('No recipients found');
+      toast.info('No recipients found', { autoClose: 3000 });
       return;
     }
 
-    const recipientList = recipients.join('\n');
+    // Extract email addresses from recipient objects
+    const recipientList = recipients
+      .map(recipient => {
+        // If recipient is a string, return it directly
+        if (typeof recipient === 'string') {
+          return recipient;
+        }
+        // If recipient is an object, try to get the email property
+        if (typeof recipient === 'object' && recipient !== null) {
+          return recipient.email || recipient.address || JSON.stringify(recipient);
+        }
+        return String(recipient);
+      })
+      .join('\n');
+
     // eslint-disable-next-line no-alert
     alert(`Recipients:\n\n${recipientList}`);
   };
@@ -394,7 +413,12 @@ const EmailOutbox = ({ isActive = true }) => {
 
   const handleResendEmail = async resendData => {
     try {
-      await dispatch(resendEmail(emailToResend._id, resendData));
+      // FIXED: Issue 6 - The action expects (emailId, recipientOption, specificRecipients[])
+      // Extract values from resendData and pass as separate parameters
+      const recipientOption = resendData.recipientOption;
+      const specificRecipients = resendData.recipients || [];
+
+      await dispatch(resendEmail(emailToResend._id, recipientOption, specificRecipients));
       toast.success('Email resend initiated successfully!');
       setShowResendModal(false);
       setEmailToResend(null);
@@ -414,21 +438,21 @@ const EmailOutbox = ({ isActive = true }) => {
     }
 
     try {
-      toast.info('Retrying failed batches...');
+      toast.info('Retrying failed batches...', { autoClose: 3000 });
 
-      const response = await httpService.post(`/api/emails/${emailId}/retry`, {
+      const response = await httpService.post(`/api/retry-email/${emailId}`, {
         requestor: {
           requestorId: currentUser?.userid,
+          email: currentUser?.email,
           role: currentUser?.role,
         },
       });
-
       if (response.data.success) {
         const count = response.data.data?.failedItemsRetried || 0;
         if (count > 0) {
           toast.success(`Successfully retried ${count} failed batch${count > 1 ? 'es' : ''}!`);
         } else {
-          toast.info('No failed batches to retry');
+          toast.info('No failed batches to retry', { autoClose: 3000 });
         }
         // Refresh the list
         await fetchData(false);
@@ -445,6 +469,26 @@ const EmailOutbox = ({ isActive = true }) => {
   const handleCloseResendModal = () => {
     setShowResendModal(false);
     setEmailToResend(null);
+  };
+
+  // FIXED: Issue 3 - Calculate recipient counts from batches
+  const calculateRecipientCounts = batches => {
+    let totalRecipients = 0;
+    let sentRecipients = 0;
+    let failedRecipients = 0;
+
+    batches.forEach(batch => {
+      const recipientCount = batch.recipients?.length || 0;
+      totalRecipients += recipientCount;
+
+      if (batch.status === 'SENT') {
+        sentRecipients += recipientCount;
+      } else if (batch.status === 'FAILED') {
+        failedRecipients += recipientCount;
+      }
+    });
+
+    return { totalRecipients, sentRecipients, failedRecipients };
   };
 
   return (
@@ -998,7 +1042,7 @@ const EmailOutbox = ({ isActive = true }) => {
         </>
       )}
 
-      {/* Email Details Modal */}
+      {/* Email Details Modal - FIXED Issue 3 */}
       {showEmailDetails && selectedEmail && (
         <Modal
           isOpen={showEmailDetails}
@@ -1015,110 +1059,124 @@ const EmailOutbox = ({ isActive = true }) => {
                 <h6 className="mb-0">Email Information</h6>
               </CardHeader>
               <CardBody>
-                <div className="row g-3">
-                  {/* Row 1: Email ID and Subject */}
-                  <div className="col-md-6">
-                    <div>
-                      <strong>Email ID:</strong>
-                      <div
-                        className="text-primary mt-1"
-                        style={{ fontSize: '0.875rem', wordBreak: 'break-all' }}
-                      >
-                        {selectedEmail._id}
+                {(() => {
+                  // Calculate counts from batches
+                  const counts = calculateRecipientCounts(emailBatches);
+                  return (
+                    <div className="row g-3">
+                      {/* Row 1: Email ID and Subject */}
+                      <div className="col-md-6">
+                        <div>
+                          <strong>Email ID:</strong>
+                          <div
+                            className="text-primary mt-1"
+                            style={{ fontSize: '0.875rem', wordBreak: 'break-all' }}
+                          >
+                            {selectedEmail._id}
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                  <div className="col-md-6">
-                    <div>
-                      <strong>Subject:</strong>
-                      <div className="text-muted mt-1">{selectedEmail.subject}</div>
-                    </div>
-                  </div>
+                      <div className="col-md-6">
+                        <div>
+                          <strong>Subject:</strong>
+                          <div className="text-muted mt-1">{selectedEmail.subject}</div>
+                        </div>
+                      </div>
 
-                  {/* Row 2: Status and Created By */}
-                  <div className="col-md-6">
-                    <div>
-                      <strong>Status:</strong>
-                      <div className="mt-1">
-                        <Badge color={getStatusBadge(selectedEmail.status)}>
-                          {selectedEmail.status}
-                        </Badge>
+                      {/* Row 2: Status and Created By */}
+                      <div className="col-md-6">
+                        <div>
+                          <strong>Status:</strong>
+                          <div className="mt-1">
+                            <Badge color={getStatusBadge(selectedEmail.status)}>
+                              {selectedEmail.status}
+                            </Badge>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                  <div className="col-md-6">
-                    <div>
-                      <strong>Created By:</strong>
-                      <div className="text-muted mt-1">{getUserDisplayName(selectedEmail)}</div>
-                    </div>
-                  </div>
+                      <div className="col-md-6">
+                        <div>
+                          <strong>Created By:</strong>
+                          <div className="text-muted mt-1">{getUserDisplayName(selectedEmail)}</div>
+                        </div>
+                      </div>
 
-                  {/* Row 3: Created and Started */}
-                  <div className="col-md-6">
-                    <div>
-                      <strong>Created:</strong>
-                      <div className="text-muted mt-1">{formatDate(selectedEmail.createdAt)}</div>
-                    </div>
-                  </div>
-                  <div className="col-md-6">
-                    <div>
-                      <strong>Started:</strong>
-                      <div className="text-success mt-1">
-                        {selectedEmail.startedAt ? formatDate(selectedEmail.startedAt) : 'N/A'}
+                      {/* Row 3: Created and Started */}
+                      <div className="col-md-6">
+                        <div>
+                          <strong>Created:</strong>
+                          <div className="text-muted mt-1">
+                            {formatDate(selectedEmail.createdAt)}
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
+                      <div className="col-md-6">
+                        <div>
+                          <strong>Started:</strong>
+                          <div className="text-success mt-1">
+                            {selectedEmail.startedAt ? formatDate(selectedEmail.startedAt) : 'N/A'}
+                          </div>
+                        </div>
+                      </div>
 
-                  {/* Row 4: Completed and Last Updated */}
-                  <div className="col-md-6">
-                    <div>
-                      <strong>Completed:</strong>
-                      <div className="text-success mt-1">
-                        {selectedEmail.completedAt ? formatDate(selectedEmail.completedAt) : 'N/A'}
+                      {/* Row 4: Completed and Last Updated */}
+                      <div className="col-md-6">
+                        <div>
+                          <strong>Completed:</strong>
+                          <div className="text-success mt-1">
+                            {selectedEmail.completedAt
+                              ? formatDate(selectedEmail.completedAt)
+                              : 'N/A'}
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                  <div className="col-md-6">
-                    <div>
-                      <strong>Last Updated:</strong>
-                      <div className="text-muted mt-1">{formatDate(selectedEmail.updatedAt)}</div>
-                    </div>
-                  </div>
+                      <div className="col-md-6">
+                        <div>
+                          <strong>Last Updated:</strong>
+                          <div className="text-muted mt-1">
+                            {formatDate(selectedEmail.updatedAt)}
+                          </div>
+                        </div>
+                      </div>
 
-                  {/* Row 5: Total Batches and Total Recipients */}
-                  <div className="col-md-6">
-                    <div>
-                      <strong>Total Batches:</strong>
-                      <div className="text-primary fw-bold mt-1">{emailBatches.length}</div>
-                    </div>
-                  </div>
-                  <div className="col-md-6">
-                    <div>
-                      <strong>Total Recipients:</strong>
-                      <div className="text-primary fw-bold mt-1">
-                        {selectedEmail.totalEmails || 0}
+                      {/* Row 5: Total Batches and Total Recipients - FIXED */}
+                      <div className="col-md-6">
+                        <div>
+                          <strong style={{ color: '#007bff', fontWeight: 'bold' }}>
+                            Total Batches:
+                          </strong>
+                          <div className="text-primary fw-bold mt-1">{emailBatches.length}</div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
+                      <div className="col-md-6">
+                        <div>
+                          <strong style={{ color: '#007bff', fontWeight: 'bold' }}>
+                            Total Recipients:
+                          </strong>
+                          <div className="text-primary fw-bold mt-1">{counts.totalRecipients}</div>
+                        </div>
+                      </div>
 
-                  {/* Row 6: Sent Recipients and Failed Recipients */}
-                  <div className="col-md-6">
-                    <div>
-                      <strong>Sent Recipients:</strong>
-                      <div className="text-success fw-bold mt-1">
-                        {selectedEmail.sentEmails || 0}
+                      {/* Row 6: Sent Recipients and Failed Recipients - FIXED */}
+                      <div className="col-md-6">
+                        <div>
+                          <strong style={{ color: '#28a745', fontWeight: 'bold' }}>
+                            Sent Recipients:
+                          </strong>
+                          <div className="text-success fw-bold mt-1">{counts.sentRecipients}</div>
+                        </div>
+                      </div>
+                      <div className="col-md-6">
+                        <div>
+                          <strong style={{ color: '#dc3545', fontWeight: 'bold' }}>
+                            Failed Recipients:
+                          </strong>
+                          <div className="text-danger fw-bold mt-1">{counts.failedRecipients}</div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="col-md-6">
-                    <div>
-                      <strong>Failed Recipients:</strong>
-                      <div className="text-danger fw-bold mt-1">
-                        {selectedEmail.failedEmails || 0}
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                  );
+                })()}
               </CardBody>
             </Card>
 

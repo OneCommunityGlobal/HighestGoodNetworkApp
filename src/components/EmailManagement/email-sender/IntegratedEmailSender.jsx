@@ -57,6 +57,7 @@ import {
 } from '../../../actions/emailTemplateActions';
 import './IntegratedEmailSender.css';
 import '../EmailManagementShared.css';
+import { saveDraft, loadDraft, clearDraft, hasDraft, getDraftAge } from './formPersistence';
 import {
   EMAIL_MODES,
   EMAIL_DISTRIBUTION,
@@ -257,6 +258,11 @@ const initialEmailState = {
   previewError: null,
   backendPreviewData: null,
   componentError: null,
+  // NEW PROPERTIES FOR DRAFT PERSISTENCE
+  showDraftNotification: false,
+  draftAge: null,
+  isOnline: typeof navigator !== 'undefined' ? navigator.onLine : true,
+  showOfflineWarning: false,
 };
 
 // Reducer function
@@ -370,6 +376,25 @@ const emailReducer = (state, action) => {
         componentError: null,
       };
 
+    case 'SET_SHOW_DRAFT_NOTIFICATION':
+      return { ...state, showDraftNotification: action.payload };
+
+    case 'SET_DRAFT_AGE':
+      return { ...state, draftAge: action.payload };
+
+    case 'SET_IS_ONLINE':
+      return { ...state, isOnline: action.payload };
+
+    case 'SET_SHOW_OFFLINE_WARNING':
+      return { ...state, showOfflineWarning: action.payload };
+
+    case 'RESTORE_DRAFT':
+      return {
+        ...state,
+        ...action.payload,
+        showDraftNotification: false,
+      };
+
     default:
       return state;
   }
@@ -437,6 +462,10 @@ const IntegratedEmailSender = ({
     previewError,
     backendPreviewData,
     componentError,
+    showDraftNotification,
+    draftAge,
+    isOnline,
+    showOfflineWarning,
   } = state;
 
   // Refs for performance optimization
@@ -702,6 +731,80 @@ const IntegratedEmailSender = ({
     };
   }, [resetAllStates]);
 
+  // Check for existing draft on component mount
+  useEffect(() => {
+    if (hasDraft()) {
+      const age = getDraftAge();
+      dispatch({ type: 'SET_DRAFT_AGE', payload: age });
+      dispatch({ type: 'SET_SHOW_DRAFT_NOTIFICATION', payload: true });
+    }
+  }, []);
+
+  // Network status monitoring
+  useEffect(() => {
+    const handleOnline = () => {
+      dispatch({ type: 'SET_IS_ONLINE', payload: true });
+      dispatch({ type: 'SET_SHOW_OFFLINE_WARNING', payload: false });
+      toast.success('Connection restored!', { autoClose: 1000 });
+    };
+
+    const handleOffline = () => {
+      dispatch({ type: 'SET_IS_ONLINE', payload: false });
+      dispatch({ type: 'SET_SHOW_OFFLINE_WARNING', payload: true });
+      toast.warning('You are offline. Your work will be saved locally.', {
+        autoClose: false,
+        closeButton: true,
+      });
+    };
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
+  // Auto-save form data to localStorage
+  useEffect(() => {
+    // Don't save if form is completely empty
+    if (
+      !selectedTemplate &&
+      !customContent.trim() &&
+      !customSubject.trim() &&
+      !recipients.trim() &&
+      Object.keys(variableValues).length === 0
+    ) {
+      return;
+    }
+
+    // Debounce save operation
+    const timeoutId = setTimeout(() => {
+      const formState = {
+        selectedTemplate,
+        customContent,
+        customSubject,
+        recipients,
+        variableValues,
+        emailDistribution,
+        emailMode,
+      };
+
+      saveDraft(formState);
+    }, 1000); // Save after 1 second of inactivity
+
+    return () => clearTimeout(timeoutId);
+  }, [
+    selectedTemplate,
+    customContent,
+    customSubject,
+    recipients,
+    variableValues,
+    emailDistribution,
+    emailMode,
+  ]);
+
   // Enhanced retry mechanism with exponential backoff
   const handleRetry = useCallback(async () => {
     if (isRetrying) return; // Prevent multiple simultaneous retries
@@ -713,7 +816,7 @@ const IntegratedEmailSender = ({
     dispatch({ type: 'SET_SHOW_RETRY_OPTIONS', payload: false });
 
     toast.info(`Retrying to load templates... (Attempt ${retryCount + 1})`, {
-      autoClose: 3000,
+      autoClose: 1000,
     });
 
     try {
@@ -754,7 +857,7 @@ const IntegratedEmailSender = ({
 
       toast.success('Templates loaded successfully!', {
         icon: <FaCheckCircle />,
-        autoClose: 2000,
+        autoClose: 1000,
       });
 
       // Reset retry count on success
@@ -1039,7 +1142,7 @@ const IntegratedEmailSender = ({
   const handlePreview = useCallback(async () => {
     if (!validateForPreview()) {
       toast.warning('Please fix validation errors before previewing', {
-        autoClose: 3000,
+        autoClose: 1000,
       });
       return;
     }
@@ -1147,11 +1250,14 @@ const IntegratedEmailSender = ({
           emailDistribution === EMAIL_DISTRIBUTION.BROADCAST
             ? 'all subscribers'
             : `${recipientList.length} recipient(s)`;
-        toast.info(`Email created successfully for ${recipientCount}. Processing started.`);
+        toast.info(`Email created successfully for ${recipientCount}. Processing started.`, {
+          autoClose: 3000,
+        });
 
         dispatch({ type: 'SET_SHOW_PREVIEW_MODAL', payload: false });
         dispatch({ type: 'SET_BACKEND_PREVIEW_DATA', payload: null });
         dispatch({ type: 'SET_PREVIEW_ERROR', payload: null });
+        clearDraft(); // Clear saved draft after successful send
         resetAllStates();
       } else {
         // Send custom email
@@ -1184,11 +1290,14 @@ const IntegratedEmailSender = ({
           emailDistribution === EMAIL_DISTRIBUTION.BROADCAST
             ? 'all subscribers'
             : `${recipientList.length} recipient(s)`;
-        toast.info(`Email created successfully for ${recipientCount}. Processing started.`);
+        toast.info(`Email created successfully for ${recipientCount}. Processing started.`, {
+          autoClose: 3000,
+        });
 
         dispatch({ type: 'SET_SHOW_PREVIEW_MODAL', payload: false });
         dispatch({ type: 'SET_BACKEND_PREVIEW_DATA', payload: null });
         dispatch({ type: 'SET_PREVIEW_ERROR', payload: null });
+        clearDraft(); // Clear saved draft after successful send
         resetAllStates();
       }
     } catch (error) {
@@ -1197,6 +1306,7 @@ const IntegratedEmailSender = ({
       dispatch({
         type: 'UPDATE_VALIDATION_ERROR',
         payload: { field: 'general', error: errorMessage },
+        autoClose: 3000,
       });
     } finally {
       dispatch({ type: 'SET_IS_SENDING', payload: false });
@@ -1214,6 +1324,66 @@ const IntegratedEmailSender = ({
     resetAllStates,
     currentUser,
   ]);
+  const handleRestoreDraft = useCallback(async () => {
+    const draft = loadDraft();
+
+    if (!draft) {
+      toast.error('No draft found to restore');
+      dispatch({ type: 'SET_SHOW_DRAFT_NOTIFICATION', payload: false });
+      return;
+    }
+
+    try {
+      // Restore email mode first
+      if (draft.emailMode && draft.emailMode !== emailMode) {
+        setEmailMode(draft.emailMode);
+        updateModeURL(draft.emailMode);
+      }
+
+      // Restore template if in template mode
+      if (draft.emailMode === EMAIL_MODES.TEMPLATES && draft.selectedTemplateId && templates) {
+        const template = templates.find(t => t._id === draft.selectedTemplateId);
+        if (template) {
+          await handleTemplateSelect(template);
+        }
+      }
+
+      // Restore other form fields
+      dispatch({
+        type: 'RESTORE_DRAFT',
+        payload: {
+          customContent: draft.customContent || '',
+          customSubject: draft.customSubject || '',
+          recipients: draft.recipients || '',
+          variableValues: draft.variableValues || {},
+          emailDistribution: draft.emailDistribution || EMAIL_DISTRIBUTION.SPECIFIC,
+        },
+      });
+
+      toast.success('Draft restored successfully!', {
+        autoClose: 1000,
+        icon: <FaCheckCircle />,
+      });
+
+      dispatch({ type: 'SET_SHOW_DRAFT_NOTIFICATION', payload: false });
+    } catch (error) {
+      toast.error('Failed to restore draft');
+      console.error('Draft restoration error:', error);
+    }
+  }, [emailMode, templates, handleTemplateSelect, setEmailMode, updateModeURL]);
+
+  const handleDismissDraft = useCallback(() => {
+    clearDraft();
+    dispatch({ type: 'SET_SHOW_DRAFT_NOTIFICATION', payload: false });
+    toast.info('Draft dismissed', { autoClose: 2000 });
+  }, []);
+
+  const handleClearDraft = useCallback(() => {
+    if (window.confirm('Are you sure you want to clear the saved draft? This cannot be undone.')) {
+      clearDraft();
+      toast.info('Draft cleared', { autoClose: 2000 });
+    }
+  }, []);
 
   // Memoized TinyMCE configuration
   const TINY_MCE_INIT_OPTIONS = useMemo(() => getEmailSenderConfig(darkMode), [darkMode]);
@@ -1282,6 +1452,49 @@ const IntegratedEmailSender = ({
       <div className="page-title-container mb-3">
         <h2 className="page-title">Send Email</h2>
       </div>
+      {/* Draft Notification - Restore saved work */}
+      {showDraftNotification && (
+        <Alert
+          color="info"
+          className="d-flex align-items-center justify-content-between mb-3 draft-notification"
+        >
+          <div className="d-flex align-items-center">
+            <FaInfoCircle className="me-2" />
+            <div>
+              <strong>Draft Available</strong>
+              <br />
+              <small>
+                You have unsaved work from {draftAge} minute{draftAge !== 1 ? 's' : ''} ago.
+              </small>
+            </div>
+          </div>
+          <div className="d-flex gap-2">
+            <Button color="primary" size="sm" onClick={handleRestoreDraft}>
+              <FaRedo className="me-1" />
+              Restore
+            </Button>
+            <Button color="outline-secondary" size="sm" onClick={handleDismissDraft}>
+              <FaTimes className="me-1" />
+              Dismiss
+            </Button>
+          </div>
+        </Alert>
+      )}
+
+      {/* Offline Warning */}
+      {showOfflineWarning && (
+        <Alert color="warning" className="d-flex align-items-center mb-3">
+          <FaExclamationTriangle className="me-2" />
+          <div>
+            <strong>You are offline</strong>
+            <br />
+            <small>
+              Your work is being saved locally. You can continue editing and send when connection is
+              restored.
+            </small>
+          </div>
+        </Alert>
+      )}
 
       <div className="email-controls-container mb-3">
         <div className="email-controls-row">
@@ -1355,6 +1568,17 @@ const IntegratedEmailSender = ({
               <Button color="secondary" size="sm" onClick={onClose}>
                 <FaTimes className="me-1" />
                 Close
+              </Button>
+            )}
+            {hasDraft() && (
+              <Button
+                color="outline-danger"
+                size="sm"
+                onClick={handleClearDraft}
+                title="Clear saved draft"
+              >
+                <FaTimes className="me-1" />
+                Clear Draft
               </Button>
             )}
           </div>
