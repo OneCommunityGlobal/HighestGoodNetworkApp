@@ -147,6 +147,7 @@ export const ENDPOINTS = {
   APPLICANT_VOLUNTEER_RATIO: `${APIEndpoint}/applicant-volunteer-ratio`,
   USER_UNREAD_TASK_NOTIFICATIONS: userId => `${APIEndpoint}/tasknotification/user/${userId}`,
   BADGE: () => `${APIEndpoint}/badge`,
+  BADGE_ASSIGN_MULTIPLE: `${APIEndpoint}/badge/assign`,
   BADGE_ASSIGN: userId => `${APIEndpoint}/badge/assign/${userId}`,
   BADGE_BY_ID: badgeId => `${APIEndpoint}/badge/${badgeId}`,
 
