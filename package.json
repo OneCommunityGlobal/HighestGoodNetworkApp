@@ -8,6 +8,8 @@
   },
   "private": true,
   "dependencies": {
+    "@ant-design/charts": "^2.6.4",
+    "@ant-design/icons": "^6.0.1",
     "@babel/runtime": "^7.27.6",
     "@babel/runtime-corejs3": "^7.27.6",
     "@changey/react-leaflet-markercluster": "^4.0.0-rc1",
@@ -32,7 +34,8 @@
     "@tinymce/tinymce-react": "^6.1.0",
     "ajv": "^8.0.0",
     "ajv-keywords": "^5.1.0",
-    "antd": "^5.27.4",
+    "ant-design": "^1.0.0",
+    "antd": "^5.27.6",
     "assert": "^2.1.0",
     "axios": "^1.11.0",
     "axios-mock-adapter": "^1.22.0",
