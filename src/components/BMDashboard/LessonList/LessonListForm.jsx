@@ -435,7 +435,7 @@ function LessonList(props) {
           const project = lesson?.relatedProject?.name || 'Unknown Project';
           const likes = typeof lesson?.totalLikes === 'number' ? lesson.totalLikes : 0;
 
-          // Safely handle content - remove HTML tags, newlines, and limit length
+          // Safely handle content - remove HTML tags and normalize newlines
           let content = '';
           if (lesson?.content) {
             // Remove HTML tags if present
@@ -443,12 +443,11 @@ function LessonList(props) {
               typeof lesson.content === 'string'
                 ? lesson.content.replace(/<[^>]*>/g, '')
                 : String(lesson.content);
-            // Replace newlines and limit length
+            // Replace newlines with spaces to keep content on single line in CSV
             content = textContent
               .replace(/\n/g, ' ')
               .replace(/\r/g, ' ')
-              .trim()
-              .substring(0, 500);
+              .trim();
           }
 
           const row = [title, date, tags, author, project, likes, content];
