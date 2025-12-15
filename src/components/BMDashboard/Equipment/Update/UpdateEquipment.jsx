@@ -8,7 +8,6 @@ import Radio from '~/components/common/Radio';
 import DragAndDrop from '~/components/common/DragAndDrop/DragAndDrop';
 import Image from '~/components/common/Image/Image';
 import styles from './UpdateEquipment.module.css';
-import '../../BMDashboard.css';
 
 export default function UpdateEquipment() {
   const history = useHistory();

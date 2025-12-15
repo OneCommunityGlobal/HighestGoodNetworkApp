@@ -29,6 +29,7 @@ function computeCounts(members, loading, localMembers) {
   if (!sawFlag) return { total: tot, active: '…', inactive: '…' };
   return { total: tot, active: act, inactive: tot - act };
 }
+import headerStyles from './TeamTableHeader.module.css';
 
 export function Team(props) {
   const dispatch = useDispatch();
@@ -83,11 +84,10 @@ export function Team(props) {
       <th className="teams__order--input" scope="row">
         <div>{(props.index ?? 0) + 1}</div>
       </th>
-
-      <td className="team-name-col">
+      {/*  Wrap long names vertically */}
+      <td className={headerStyles.teamNameCol}>
         {props.name} ({total} | {active} | {inactive})
       </td>
-
       <td className="teams__active--input">
         <button
           data-testid="active-marker"
