@@ -1,11 +1,14 @@
 import { useState, useMemo, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, LabelList, ResponsiveContainer } from 'recharts';
 import DatePicker from 'react-datepicker';
 import Select from 'react-select';
 import { getAllApplicantVolunteerRatios } from '../../services/applicantVolunteerRatioService';
+import styles from './ApplicantVolunteerRatio.module.css';
 import 'react-datepicker/dist/react-datepicker.css';
 
 function ApplicantVolunteerRatio() {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [data, setData] = useState([]);
   const [allRoles, setAllRoles] = useState([]); // Store all available roles
   const [loading, setLoading] = useState(true);
@@ -13,6 +16,7 @@ function ApplicantVolunteerRatio() {
   const [selectedRoles, setSelectedRoles] = useState([]);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+  const [validationError, setValidationError] = useState('');
 
   // Fetch all available roles (without filtering)
   useEffect(() => {
@@ -30,7 +34,7 @@ function ApplicantVolunteerRatio() {
         // Set all roles as selected by default
         setSelectedRoles(roleOptions);
       } catch (err) {
-        console.error('Error fetching all roles:', err);
+        // Error fetching all roles
         setError('Failed to load roles. Please try again.');
       }
     };
@@ -41,6 +45,17 @@ function ApplicantVolunteerRatio() {
   // Fetch filtered data based on selected roles and date range
   useEffect(() => {
     const fetchFilteredData = async () => {
+      // Validate date range: start must be before or equal to end
+      if (startDate && endDate && startDate > endDate) {
+        setValidationError('Start date must be earlier than or equal to End date.');
+        setData([]);
+        setLoading(false);
+        return;
+      }
+
+      // clear previous validation error when dates are valid
+      if (validationError) setValidationError('');
+
       if (selectedRoles.length === 0) {
         setData([]);
         return;
@@ -73,7 +88,7 @@ function ApplicantVolunteerRatio() {
 
         setData(transformedData);
       } catch (err) {
-        console.error('Error fetching applicant volunteer ratio data:', err);
+        // Error fetching applicant volunteer ratio data
         setError('Failed to load data. Please try again.');
       } finally {
         setLoading(false);
@@ -89,104 +104,127 @@ function ApplicantVolunteerRatio() {
     [data, selectedRoles],
   );
 
+  // Apply dark mode to document body
+  useEffect(() => {
+    if (darkMode) {
+      document.body.classList.add('dark-mode-body');
+    } else {
+      document.body.classList.remove('dark-mode-body');
+    }
+
+    return () => {
+      document.body.classList.remove('dark-mode-body');
+    };
+  }, [darkMode]);
+
   if (loading) {
     return (
-      <div style={{ maxWidth: 900, margin: '0 auto', padding: 24 }}>
-        <h2>Number of People Hired vs. Total Applications</h2>
-        <div>Loading...</div>
+      <div className={`${styles.page} ${darkMode ? styles.dark : ''}`}>
+        <h2 className={styles.heading}>Number of People Hired vs. Total Applications</h2>
+        <div className={styles.statusMessage}>Loading...</div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div style={{ maxWidth: 900, margin: '0 auto', padding: 24 }}>
-        <h2>Number of People Hired vs. Total Applications</h2>
-        <div style={{ color: 'red' }}>{error}</div>
+      <div className={`${styles.page} ${darkMode ? styles.dark : ''}`}>
+        <h2 className={styles.heading}>Number of People Hired vs. Total Applications</h2>
+        <div className={`${styles.statusMessage} ${styles.errorMessage}`}>{error}</div>
       </div>
     );
   }
 
   return (
-    <div style={{ maxWidth: 900, margin: '0 auto', padding: 24 }}>
-      <h2>Number of People Hired vs. Total Applications</h2>
-      <div style={{ display: 'flex', gap: 16, marginBottom: 24, flexWrap: 'wrap' }}>
-        <div>
-          <label htmlFor="start-date" style={{ fontWeight: 500 }}>
+    <div className={`${styles.page} ${darkMode ? styles.dark : ''}`}>
+      <h2 className={styles.heading}>Number of People Hired vs. Total Applications</h2>
+      <div className={styles.filters}>
+        <div className={styles.filterGroup}>
+          <label htmlFor="start-date" className={styles.label}>
             Date Range:{' '}
           </label>
-          <DatePicker
-            id="start-date"
-            selected={startDate}
-            onChange={date => setStartDate(date)}
-            selectsStart
-            startDate={startDate}
-            endDate={endDate}
-            placeholderText="Start Date"
-            dateFormat="yyyy/MM/dd"
-            style={{ marginRight: 8 }}
-          />
-          <span> to </span>
-          <DatePicker
-            id="end-date"
-            selected={endDate}
-            onChange={date => setEndDate(date)}
-            selectsEnd
-            startDate={startDate}
-            endDate={endDate}
-            minDate={startDate}
-            placeholderText="End Date"
-            dateFormat="yyyy/MM/dd"
-          />
+          <div className={styles.dateInputWrapper}>
+            <DatePicker
+              id="start-date"
+              selected={startDate}
+              onChange={date => setStartDate(date)}
+              selectsStart
+              startDate={startDate}
+              endDate={endDate}
+              placeholderText="Start Date"
+              dateFormat="yyyy/MM/dd"
+            />
+            <span>to</span>
+            <DatePicker
+              id="end-date"
+              selected={endDate}
+              onChange={date => setEndDate(date)}
+              selectsEnd
+              startDate={startDate}
+              endDate={endDate}
+              minDate={startDate}
+              placeholderText="End Date"
+              dateFormat="yyyy/MM/dd"
+            />
+          </div>
+          {validationError && (
+            <div className={styles.validationError} role="alert">
+              {validationError}
+            </div>
+          )}
         </div>
-        <div style={{ minWidth: 220 }}>
-          <label htmlFor="role-select" style={{ fontWeight: 500 }}>
+        <div className={styles.filterGroupInline}>
+          <label htmlFor="role-select" className={styles.label}>
             Role:{' '}
           </label>
           <Select
             id="role-select"
             isMulti
-            options={allRoles} // Use allRoles for the dropdown
+            options={allRoles}
             value={selectedRoles}
             onChange={setSelectedRoles}
             placeholder="Select roles..."
+            classNamePrefix="custom-select"
+            menuPortalTarget={typeof document !== 'undefined' ? document.body : undefined}
           />
         </div>
       </div>
       {chartData.length > 0 ? (
-        <ResponsiveContainer width="100%" height={400}>
-          <BarChart
-            data={chartData}
-            layout="vertical"
-            margin={{ top: 20, right: 40, left: 80, bottom: 20 }}
-            barCategoryGap={24}
-          >
-            <XAxis
-              type="number"
-              label={{
-                value: 'Percentage of People Hired vs. Total Applications',
-                position: 'insideBottom',
-                offset: -5,
-              }}
-              allowDecimals={false}
-            />
-            <YAxis
-              dataKey="role"
-              type="category"
-              width={180}
-              label={{ value: 'Name of Role', angle: -90, position: 'insideLeft' }}
-            />
-            <Tooltip />
-            <Bar dataKey="applicants" fill="#1976d2" name="Total Applicants">
-              <LabelList dataKey="applicants" position="right" />
-            </Bar>
-            <Bar dataKey="hired" fill="#43a047" name="Total Hired">
-              <LabelList dataKey="hired" position="right" />
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
+        <div className={styles.chartContainer}>
+          <ResponsiveContainer width="100%" height={400}>
+            <BarChart
+              data={chartData}
+              layout="vertical"
+              margin={{ top: 20, right: 40, left: 80, bottom: 20 }}
+              barCategoryGap={24}
+            >
+              <XAxis
+                type="number"
+                label={{
+                  value: 'Percentage of People Hired vs. Total Applications',
+                  position: 'insideBottom',
+                  offset: -5,
+                }}
+                allowDecimals={false}
+              />
+              <YAxis
+                dataKey="role"
+                type="category"
+                width={180}
+                label={{ value: 'Name of Role', angle: -90, position: 'insideLeft' }}
+              />
+              <Tooltip />
+              <Bar dataKey="applicants" fill="#1976d2" name="Total Applicants">
+                <LabelList dataKey="applicants" position="right" />
+              </Bar>
+              <Bar dataKey="hired" fill="#43a047" name="Total Hired">
+                <LabelList dataKey="hired" position="right" />
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
       ) : (
-        <div style={{ textAlign: 'center', padding: '40px 0' }}>
+        <div className={styles.noData}>
           No data available. Please add some applicant volunteer ratio data.
         </div>
       )}

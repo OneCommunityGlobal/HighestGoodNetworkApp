@@ -44,11 +44,9 @@ thead {
 
 .usermanagement__tr .edituser_input,
 .usermanagement__tr .btn,
-.usermanagement__tr .copy_icon,
-.usermanagement__tr svg {
-  height: 100%;
+.usermanagement__tr .copy_icon {
   margin: 0;
-  padding: 0;
+  padding-top: 15px;
   box-sizing: border-box;
 }
 

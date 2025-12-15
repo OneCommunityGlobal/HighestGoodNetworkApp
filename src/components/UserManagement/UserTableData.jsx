@@ -3,15 +3,13 @@ import { Tooltip, UncontrolledTooltip } from 'reactstrap';
 import { connect, useSelector, useDispatch} from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { toast } from 'react-toastify';
-// import { Link, useHistory } from 'react-router-dom';
-import { useHistory } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import { useHistory, Link } from 'react-router-dom';
 import { faUser, faUsers, faShieldAlt, faBriefcase, faUserTie, faCrown, faChalkboardTeacher, faBug, faGlobe, faStar, faCopy } from '@fortawesome/free-solid-svg-icons';
 import { updateUserInfomation } from '../../actions/userManagement';
 import { getAllRoles } from '../../actions/role';
 import ResetPasswordButton from './ResetPasswordButton';
-// import { DELETE, PAUSE, RESUME, SET_FINAL_DAY, CANCEL } from '../../languages/en/ui';
 import { DELETE, PAUSE, RESUME } from '../../languages/en/ui';
-// import { UserStatus, FinalDay } from '../../utils/enums';
 import { UserStatus } from '../../utils/enums';
 import ActiveCell from './ActiveCell';
 import TimeDifference from './TimeDifference';
@@ -19,6 +17,7 @@ import { boxStyle } from '../../styles';
 import { formatDateLocal, formatDateUtcYYYYMMDD } from '../../utils/formatDate';
 import hasPermission, {cantUpdateDevAdminDetails } from '../../utils/permissions';
 import SetUpFinalDayButton from './SetUpFinalDayButton';
+
 /**
  * The body row of the user table
  */
@@ -42,18 +41,13 @@ const UserTableDataComponent = (props) => {
     jobTitle: props.user.jobTitle,
     email: props.user.email,
     weeklycommittedHours: props.user.weeklycommittedHours,
-    startDate: formatDateLocal(props.user.startDate),
-    endDate: formatDateLocal(props.user.endDate),
+    startDate: formatDateUtcYYYYMMDD(props.user.startDate) || '',
+    endDate: formatDateUtcYYYYMMDD(props.user.endDate) || '',
   });
   const dispatch = useDispatch();
   const history = useHistory();
   const { roles } = useSelector(state => state.role);
-  const joinTimeStamp = date => {
-    const now = new Date();
-    let formattedTimestamp = now.toISOString();
-    formattedTimestamp = `${date.toString()}T${formattedTimestamp.split('T')[1]}`;
-    return formattedTimestamp;
-  };
+  const joinTimeStamp = (date) => `${String(date).slice(0,10)}T12:00:00.000Z`;
   const addUserInformation = (item, value, id) => {
     dispatch(
       updateUserInfomation({
@@ -64,9 +58,10 @@ const UserTableDataComponent = (props) => {
     );
   };
   const canDeleteUsers = props.hasPermission('deleteUserProfile');
-  const resetPasswordStatus = props.hasPermission('resetPassword');
-  const updatePasswordStatus = props.hasPermission('updatePassword');
+  const resetPasswordStatus = props.hasPermission('updatePassword');
+  //const updatePasswordStatus = props.hasPermission('updatePassword');
   const canChangeUserStatus = props.hasPermission('changeUserStatus');
+  const canSetFinalDay = props.hasPermission('setFinalDay');
   const canSeeReports = props.hasPermission('getReports');
   const toggleDeleteTooltip = () => setTooltipDelete(!tooltipDeleteOpen);
   const togglePauseTooltip = () => setTooltipPause(!tooltipPauseOpen);
@@ -176,65 +171,69 @@ const UserTableDataComponent = (props) => {
           ''
         )}
         <span style={{ position: 'absolute', top: 0, right: 0 }}>
-          <button
-            type="button"
-            className="team-member-tasks-user-report-link"
+          <Link
+          to={`/peoplereport/${props.user._id}`}
+          onClick={(event) => {
+            if (!canSeeReports) {
+              event.preventDefault();
+              return;
+            }
+
+            if (
+              event.metaKey || event.ctrlKey ||
+              event.shiftKey || event.altKey ||
+              event.button !== 0
+            ) {
+              return;
+            }
+
+            event.preventDefault(); 
+            history.push(`/peoplereport/${props.user._id}`);
+          }}
+          style={{
+            textDecoration: 'none',
+            opacity: canSeeReports ? 1 : 0.7,
+            cursor: canSeeReports ? 'pointer' : 'not-allowed',
+            display: 'inline-block',               
+            lineHeight: 0,                        
+            padding: 0,                           
+          }}
+          title="Click to view user report"
+        >
+          <img
+            src="/report_icon.png"
+            alt="reportsicon"
+            className="team-member-tasks-user-report-link-image"
+            id={`report-icon-${props.user._id}`}
             style={{
-              fontSize: 18,
-              opacity: canSeeReports ? 1 : 0.7,
-              background: 'none',
-              border: 'none',
-              padding: 0,
-            }}
-            onClick={(event) => {
-              if (!canSeeReports) {
-                event.preventDefault();
-                return;
-              }
-
-              if (event.metaKey || event.ctrlKey || event.button === 1) {
-                window.open(`/peoplereport/${props.user._id}`, '_blank');
-                return;
-              }
-
-              event.preventDefault(); // prevent full reload
-              history.push(`/peoplereport/${props.user._id}`);
-            }}
-          >
-            <img
-              src="/report_icon.png"
-              alt="reportsicon"
-              className="team-member-tasks-user-report-link-image"
-              id={`report-icon-${props.user._id}`}
-              style={{
-                cursor: canSeeReports ? 'pointer' : 'not-allowed', // Change cursor style to indicate the disabled state
-              }}
-            />
-          </button>
-        </span>
-
-        <span style={{ position: 'absolute', bottom: 0, right: 0 }}>
-          <i
-            className="fa fa-clock-o"
-            aria-hidden="true"
-            style={{ fontSize: 14, cursor: 'pointer', marginRight: '5px' }}
-            title="Click to see user's timelog"
-            onClick={e => {
-              if (!canSeeReports) {
-                e.preventDefault();
-                return;
-              }
-
-              if (e.metaKey || e.ctrlKey || e.button === 1) {
-                window.open(`/timelog/${props.user._id}`, '_blank');
-                return;
-              }
-
-              e.preventDefault(); // prevent full reload
-              history.push(`/timelog/${props.user._id}`);
+              width: 16,   
+              height: 16,
+              verticalAlign: 'middle',
             }}
           />
-        </span>
+        </Link>
+
+      </span>
+      <Link
+        to={`/timelog/${props.user._id}#currentWeek`}
+        style={{ position: 'absolute', bottom: 0, right: 0 }}
+        title="Click to see user's timelog"
+        onClick={(e) => {
+          if (!canSeeReports) {
+            e.preventDefault();
+            return;
+          }
+        }}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <i
+          className="fa fa-clock-o"
+          aria-hidden="true"
+          style={{ fontSize: 14, cursor: 'pointer', marginRight: '5px' }}
+        />
+      </Link>
+
 
         <TimeDifference
           userProfile={props.user}
@@ -474,7 +473,7 @@ const UserTableDataComponent = (props) => {
       <td>
         {!isCurrentUser && (
           <>
-            {!canChangeUserStatus ? (
+            {canSetFinalDay ? (
               <Tooltip
                 placement="bottom"
                 isOpen={tooltipFinalDayOpen}
@@ -486,13 +485,15 @@ const UserTableDataComponent = (props) => {
             ) : (
               ''
             )}
-            <SetUpFinalDayButton
+                       <SetUpFinalDayButton
               userProfile={props.user}
               darkMode={darkMode}
               onFinalDaySave={updatedUser => {
                 // Update the user object in the parent state
                 props.onUserUpdate(updatedUser);
               }}
+              id={`btn-final-day-${props.user._id}`}
+              disabled={!canSetFinalDay}
             />
           </>
         )}
@@ -505,7 +506,7 @@ const UserTableDataComponent = (props) => {
       <td>
         {editUser?.startDate ? (
           <span>
-            { props.user.startDate ? formatDateLocal(formData.startDate) : 'N/A' }
+            { props.user.startDate ? formatDateLocal(props.user.startDate) : 'N/A' }
             {/* {formData.startDate},{props.user.startDate} */}
           </span>
         ) : (
@@ -523,7 +524,7 @@ const UserTableDataComponent = (props) => {
       <td className="email_cell">
         {editUser?.endDate ? (
           <div>
-            {props.user.endDate ? formatDateLocal(formData.endDate) : 'N/A'}
+            {props.user.endDate ? formatDateLocal(props.user.endDate) : 'N/A'}
             <FontAwesomeIcon
               className="copy_icon"
               icon={faCopy}
@@ -584,7 +585,7 @@ const UserTableDataComponent = (props) => {
               user={props.user}
               darkMode={darkMode}
               isSmallButton
-              canUpdatePassword={resetPasswordStatus || updatePasswordStatus}
+              canUpdatePassword={resetPasswordStatus}
             />
           </span>
         </td>
@@ -592,6 +593,10 @@ const UserTableDataComponent = (props) => {
     </tr>
   );
 };
+// UserTableData.propTypes = {
+//   hasPermission: PropTypes.func, // or PropTypes.bool depending on what it is
+//   user: PropTypes.object,        // if you access user or user._id
+// };
 
 const UserTableData = React.memo(UserTableDataComponent);
 UserTableData.displayName = 'UserTableData';
@@ -600,5 +605,32 @@ const mapStateToProps = state => ({
   auth: state.auth,
   authEmail: state.auth.user.email,
 });
+UserTableDataComponent.propTypes = {
+  hasPermission: PropTypes.func.isRequired, // must be a function
+  user: PropTypes.shape({
+    _id: PropTypes.string.isRequired,
+    firstName: PropTypes.string,
+    lastName: PropTypes.string,
+    role: PropTypes.string,
+    jobTitle: PropTypes.string,
+    email: PropTypes.string,
+    weeklycommittedHours: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    startDate: PropTypes.string,
+    endDate: PropTypes.string,
+    infringementCount: PropTypes.number,
+    isActive: PropTypes.bool,
+    reactivationDate: PropTypes.string,
+  }).isRequired,
+  index: PropTypes.number,
+  isActive: PropTypes.bool,
+  resetLoading: PropTypes.bool,
+  authEmail: PropTypes.string,
+  auth: PropTypes.object,
+  onPauseResumeClick: PropTypes.func,
+  onDeleteClick: PropTypes.func,
+  onLogTimeOffClick: PropTypes.func,
+  onUserUpdate: PropTypes.func,
+  timeOffRequests: PropTypes.array,
+};
 
 export default connect(mapStateToProps, { hasPermission })(UserTableData);

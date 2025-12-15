@@ -27,7 +27,7 @@ import TotalProjectReport from './TotalReport/TotalProjectReport';
 import TotalContributorsReport from './TotalReport/TotalContributorsReport';
 import AddLostTime from './LostTime/AddLostTime';
 import LostTimeHistory from './LostTime/LostTimeHistory';
-import '../Header/DarkMode.css';
+import '../Header/index.css';
 import ViewReportByDate from './ViewReportsByDate/ViewReportsByDate';
 import ReportFilter from './ReportFilter/ReportFilter';
 import Loading from '../common/Loading';
@@ -109,6 +109,7 @@ class ReportsPage extends Component {
     this.onDateChange = this.onDateChange.bind(this);
     this.handleClearFilters = this.handleClearFilters.bind(this);
     this.showContributorsReport = this.showContributorsReport.bind(this);
+    this.handleSearchClick = this.handleSearchClick.bind(this);
   }
 
   async componentDidMount() {
@@ -459,6 +460,13 @@ class ReportsPage extends Component {
     }));
   }
 
+  handleSearchClick() {
+    // This function is called when the search button is clicked
+    // The actual scroll behavior is handled in ReportTableSearchPanel
+    // No additional action needed here
+  }
+
+
   render() {
     const { darkMode } = this.props.state.theme;
     const userRole = this.props.state.userProfile.role;
@@ -500,13 +508,13 @@ class ReportsPage extends Component {
 
     const isOxfordBlue = darkMode ? 'bg-oxford-blue text-light' : 'bg-white-smoke';
     const isYinmnBlue = darkMode ? 'bg-yinmn-blue' : '';
-    const textColor = darkMode ? 'text-light' : 'text-dark';
+    const textColor = darkMode ? 'text-blue-400' : 'text-dark';
     const boxStyling = darkMode ? boxStyleDark : boxStyle;
 
     return (
       <Container fluid className={`mb-5 container-component-wrapper ${isOxfordBlue}`}>
         <div
-          className={`category-data-container ${
+          className={`category-data-container ${isOxfordBlue} ${
             this.state.showPeople ||
             this.state.showProjects ||
             this.state.showTeams ||
@@ -599,6 +607,7 @@ class ReportsPage extends Component {
                     setFilterStatus={this.setFilterStatus}
                     onWildCardSearch={this.onWildCardSearch}
                     onCreateNewTeamShow={this.onCreateNewTeamShow}
+                    onSearchClick={this.handleSearchClick}
                     darkMode={darkMode}
                   />
                   <ViewReportByDate
