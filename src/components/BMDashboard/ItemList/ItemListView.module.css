@@ -1,3 +1,7 @@
+table thead th, table td {
+  vertical-align: middle !important;
+}
+
 .itemsListContainer {
   width: 100%;
   max-width: 1536px;
