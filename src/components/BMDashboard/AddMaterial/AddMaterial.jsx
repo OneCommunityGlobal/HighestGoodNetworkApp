@@ -63,7 +63,7 @@ export default function AddMaterialForm() {
   // console.log(materialTypes);
   // console.log(units)
   const createdBy = useSelector(state => state.auth.user.email);
-  const darkMode = useSelector(state => state.theme.darkMode);
+  const darkMode = useSelector(state => state.theme?.darkMode);
 
   useEffect(() => {
     dispatch(fetchMaterialTypes());
