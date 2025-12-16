@@ -1,11 +1,4 @@
-/* ---------- General Styles ---------- */
-.body {
-  font-family: 'Arial', sans-serif;
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
+/* General Styles */
 .myCasesPage {
   padding: 20px;
   background-color: #ffffff;
@@ -15,30 +8,24 @@
 }
 
 .myCasesPageDark {
-  padding: 16px;
+  padding: 20px;
   background-color: #1C2541;
   border: 1px solid #ddd;
-  border-radius: 6px;
+  border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* ---------- Header ---------- */
-.myCasesPage .header {
+.header {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.myCasesPageDark .header {
+.headerDark {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #1C2541;
   color: #ffffff;
-}
-
-.myCasesPageDark .headerActions {
-  gap: 20px;     /* more room between dropdowns/buttons */
 }
 
 .sectionTitle {
@@ -51,7 +38,6 @@
 .sectionTitleDark {
   font-size: 24px;
   font-weight: bold;
-  background-color: #1C2541;
   color: #ffffff !important;
   margin: 0;
 }
@@ -62,28 +48,19 @@
   gap: 15px;
 }
 
-/* ---------- View Switcher ---------- */
 .viewSwitcher {
-  display: flex;
-  gap: 12px; /* clean space between buttons */
+  border: 1px solid #ddd;
+  border-radius: 4px;
 }
 
 .viewSwitcher button,
 .createNew {
   background-color: #fff;
-  border-radius: 6px;
-  padding: 10px 20px;
+  border-radius: 4px;
+  padding: 8px 12px;
   cursor: pointer;
   font-size: 14px;
-  font-weight: 500;
   color: #333;
-  border: 1px solid #ccc;
-}
-
-.viewSwitcher button.active {
-  background-color: #007bff;
-  color: #fff;
-  border-color: #007bff;
 }
 
 .filterWrapper {
@@ -96,6 +73,15 @@
   border: 1px solid #ccc;
   border-radius: 4px;
   cursor: pointer;
+  background-color: #ffffff;
+  color: #333;
+}
+
+/* Dark mode styles for filter dropdown */
+.myCasesPageDark .filterDropdown {
+  background-color: #3a506b;
+  border-color: #5a6b7d;
+  color: #ffffff;
 }
 
 /* Hover and focus effects for the dropdown */
@@ -105,17 +91,61 @@
   outline: none;
 }
 
+.viewSwitcher button.active,
+.viewSwitcher .active,
+.createNew:hover {
+  background-color: #007bff;
+  color: #fff;
+  border-color: #007bff;
+}
+
+/* Dark mode styles for view switcher */
+.myCasesPageDark .viewSwitcher {
+  border-color: #5a6b7d;
+}
+
+.myCasesPageDark .viewSwitcher button {
+  background-color: #3a506b;
+  color: #ffffff;
+  border-color: #5a6b7d;
+}
+
+.myCasesPageDark .viewSwitcher button.active,
+.myCasesPageDark .viewSwitcher .active {
+  background-color: #007bff;
+  color: #ffffff;
+  border-color: #007bff;
+}
+
+.myCasesPageDark .viewSwitcher button:hover {
+  background-color: #5a6b7d;
+  color: #ffffff;
+}
+
 .createNew {
   font-weight: bold;
   border: 1px solid #ccc;
   border-radius: 4px;
 }
 
+/* Dark mode styles for createNew button */
+.myCasesPageDark .createNew {
+  background-color: #3a506b;
+  border-color: #5a6b7d;
+  color: #ffffff;
+}
+
+.myCasesPageDark .createNew:hover {
+  background-color: #007bff;
+  color: #ffffff;
+  border-color: #007bff;
+}
+
 .content {
   margin-top: 10px;
 }
 
-/* ---------- Card View Styles ---------- */
+/* Card View Styles */
 .caseCards {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -174,6 +204,32 @@
 .eventBadge[data-type='Fitness Bootcamp'] {
   background-color: #f5e6ff;
   color: #9b59b6;
+}
+
+/* Dark mode styles for event badges - use darker backgrounds with white text for better contrast */
+.caseCardDark .eventBadge {
+  color: #ffffff;
+  font-weight: bold;
+}
+
+.caseCardDark .eventBadge[data-type='Yoga Class'] {
+  background-color: #1e7e34;
+  color: #ffffff;
+}
+
+.caseCardDark .eventBadge[data-type='Cooking Workshop'] {
+  background-color: #c0392b;
+  color: #ffffff;
+}
+
+.caseCardDark .eventBadge[data-type='Dance Class'] {
+  background-color: #d68910;
+  color: #ffffff;
+}
+
+.caseCardDark .eventBadge[data-type='Fitness Bootcamp'] {
+  background-color: #7d3c98;
+  color: #ffffff;
 }
 
 .eventTime {
@@ -239,7 +295,7 @@
   color: #555;
 }
 
-/* ---------- List View Styles ---------- */
+/* List View Styles */
 .caseList {
   list-style-type: none;
   padding: 0;
@@ -281,7 +337,7 @@
   font-size: 14px;
 }
 
-/* ---------- Calendar View Styles ---------- */
+/* Calendar View Styles */
 .calendarView {
   padding: 20px;
   background-color: #fff;
@@ -304,109 +360,29 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* ---------- More button ---------- */
 .moreBtn {
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  padding: 6px 12px;
-  font-size: 14px;
+  background-color: #fff;
+  border: 1px solid #ccc;
   border-radius: 4px;
+  padding: 8px 12px;
   cursor: pointer;
-  transition: background-color 0.2s;
+  font-size: 14px;
+  color: #333;
 }
 
 .moreBtn:hover {
-  background-color: #0056b3;
+  background-color: #007bff;
+  color: #fff;
+  border-color: #007bff;
 }
 
-/* ---------- Expanded scroll area ---------- */
-.caseCards.expanded,
-.caseList.expanded {
-  max-height: 500px; /* enough space to show ~30 events */
-  overflow-y: auto;
-  padding-right: 8px;
+.myCasesPageDark .moreBtn {
+  background-color: #3A506B;
+  border: 1px solid #5A6B7D;
+  color: #ffffff;
 }
 
-/* Print styles for case cards */
-/* Print styles for case cards */
-@media print {
-  .myCasesPage {
-    overflow: visible !important;
-    height: auto !important;
-    max-height: none !important;
-    page-break-inside: auto !important;
-  }
-
-  .caseCards {
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 12px !important;
-    max-height: none !important;
-    height: auto !important;
-    overflow: visible !important;
-    page-break-inside: auto !important;
-  }
-  
-  .caseCard {
-    background: white !important;
-    color: #333 !important;
-    border: 1px solid #ddd !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-    break-inside: avoid-page !important;
-    page-break-inside: avoid !important;
-  }
-  
-  .caseCardDark {
-    background: #3A506B !important;
-    color: #ffffff !important;
-    border: 1px solid #555 !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-    break-inside: avoid-page !important;
-    page-break-inside: avoid !important;
-  }
-  
-  .caseList {
-    max-height: none !important;
-    height: auto !important;
-    overflow: visible !important;
-    page-break-inside: auto !important;
-  }
-  
-  .caseListItem {
-    break-inside: avoid-page !important;
-    page-break-inside: avoid !important;
-  }
-  
-  .caseListItemDark {
-    break-inside: avoid-page !important;
-    page-break-inside: avoid !important;
-  }
-  
-  .eventBadge {
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-  
-  .eventBadge[data-type='Yoga Class'] {
-    background-color: #e9f7ef !important;
-    color: #28a745 !important;
-  }
-
-  .eventBadge[data-type='Cooking Workshop'] {
-    background-color: #fdecea !important;
-    color: #e74c3c !important;
-  }
-
-  .eventBadge[data-type='Dance Class'] {
-    background-color: #fff5e6 !important;
-    color: #f39c12 !important;
-  }
-
-  .eventBadge[data-type='Fitness Bootcamp'] {
-    background-color: #f5e6ff !important;
-    color: #9b59b6 !important;
-  }
+.myCasesPageDark .moreBtn:hover {
+  background-color: #5A6B7D;
+  color: #ffffff;
 }

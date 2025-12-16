@@ -9,7 +9,8 @@ function DropOffTracking() {
 
   const getDateRange = () => {
     const today = new Date();
-    let startDate, endDate;
+    let startDate;
+    let endDate;
 
     if (selectedTime === 'Today') {
       startDate = new Date(today);
@@ -38,8 +39,10 @@ function DropOffTracking() {
     }
     if (selectedTime !== 'All Time') {
       const { startDate, endDate } = getDateRange();
-      const eventDate = new Date(event.eventDate);
-      return eventDate >= startDate && eventDate <= endDate;
+      const eventDate = new Date(event.eventTime.split(' pm ')[1]);
+      if (startDate && endDate) {
+        return eventDate >= startDate && eventDate <= endDate;
+      }
     }
     return true;
   });
@@ -47,11 +50,7 @@ function DropOffTracking() {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   return (
-    <div
-      className={`tracking-container-global ${styles.trackingContainer} ${
-        darkMode ? styles.trackingContainerDark : ''
-      }`}
-    >
+    <div className={`${styles.trackingContainer} ${darkMode ? styles.trackingContainerDark : ''}`}>
       <div className={`${styles.trackingHeader} ${darkMode ? styles.trackingHeaderDark : ''}`}>
         <h3>Drop-off and no-show rate tracking</h3>
         <div className={styles.trackingFilters}>
@@ -70,36 +69,27 @@ function DropOffTracking() {
           </select>
         </div>
       </div>
-
       <div className={styles.trackingSummary}>
         <div className={`${styles.trackingRate} ${darkMode ? styles.trackingRateDark : ''}`}>
           <p className={styles.trackingRateValue}>
-            +5% <span>Last week</span>
+            +5%
+            <span className={darkMode ? styles.spanDark : ''}>Last week</span>
           </p>
-          <p className={styles.trackingRateSubheading}>
-            <span> Drop-off rate</span>
-          </p>
+          <p className={darkMode ? styles.trackingRateLabelDark : ''}>Drop-off rate</p>
         </div>
         <div className={`${styles.trackingRate} ${darkMode ? styles.trackingRateDark : ''}`}>
           <p className={styles.trackingRateValue}>
-            +5% <span>Last week</span>
+            +5% <span className={darkMode ? styles.spanDark : ''}>Last week</span>
           </p>
-          <p className={styles.trackingRateSubheading}>
-            <span> No-show rate </span>
-          </p>
+          <p className={darkMode ? styles.trackingRateLabelDark : ''}>No-show rate</p>
         </div>
       </div>
-
       <div
         className={`${styles.trackingListContainer} ${
           darkMode ? styles.trackingListContainerDark : ''
         }`}
       >
-        <table
-          className={`tracking-table-global ${styles.trackingTable} ${
-            darkMode ? `tracking-table-global-dark ${styles.trackingTableDark}` : ''
-          }`}
-        >
+        <table className={`${styles.trackingTable} ${darkMode ? styles.trackingTableDark : ''}`}>
           <thead>
             <tr>
               <th>Event name</th>
