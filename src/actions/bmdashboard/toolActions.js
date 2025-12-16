@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { GET_TOOL_BY_ID, GET_TOOLS } from '../../constants/bmdashboard/toolsConstants';
+import { GET_TOOL_BY_ID, GET_TOOLS, GET_TOOL_AVAILABILITY } from '../../constants/bmdashboard/toolsConstants';
 import { GET_ERRORS } from '../../constants/errors';
 import { ENDPOINTS } from '~/utils/URL';
 
@@ -24,6 +24,11 @@ export const setErrors = payload => {
   };
 };
 
+export const setToolAvailability = payload => ({
+  type: GET_TOOL_AVAILABILITY,
+  payload,
+});
+
 export const fetchTools = () => {
   const url = ENDPOINTS.BM_TOOLS;
   return async dispatch => {
@@ -33,7 +38,6 @@ export const fetchTools = () => {
         dispatch(setTools(res.data));
       })
       .catch(error => {
-        // console.log('err: ', error.response.data.message);
         dispatch(setErrors(error));
       });
   };
@@ -62,4 +66,17 @@ export const purchaseTools = async body => {
       if (err.request) return err.request;
       return err.message;
     });
+};
+
+export const fetchToolAvailability = (toolId = '', projectId = '') => {
+  return async dispatch => {
+    try {
+      const url = ENDPOINTS.BM_TOOL_AVAILABILITY(toolId, projectId);
+      const response = await axios.get(url);
+      dispatch(setToolAvailability(response.data));
+    } catch (error) {
+      // console.error('Error fetching tool availability:', error);
+      dispatch(setErrors(error));
+    }
+  };
 };

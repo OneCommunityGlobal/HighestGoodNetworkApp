@@ -1,7 +1,6 @@
 /* eslint-disable*/
 import { Component } from 'react';
-import '../../Teams/Team.css';
-import './PeopleReport.css';
+import styles from './PeopleReport.module.css';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { FiUser } from 'react-icons/fi';
@@ -24,7 +23,6 @@ import PeopleTableDetails from '../PeopleTableDetails';
 import { ReportPage } from '../sharedComponents/ReportPage';
 import { getPeopleReportData } from './selectors';
 import { PeopleTasksPieChart } from './components';
-import ToggleSwitch from '../../UserProfile/UserProfileEdit/ToggleSwitch';
 import { Checkbox } from '../../common/Checkbox';
 import { updateRehireableStatus } from '../../../actions/userManagement'
 
@@ -130,6 +128,9 @@ class PeopleReport extends Component {
       prevState.timeEntries !== this.state.timeEntries ||
       prevState.isLoading !== this.state.isLoading) {
       // this.syncPanelHeights();
+    }
+    if (prevProps.timeEntries !== this.props.timeEntries) {
+      this.setState({ timeEntries: this.props.timeEntries });
     }
   }
 
@@ -342,7 +343,7 @@ class PeopleReport extends Component {
       }
       if (props.infringements.length > 0) {
         props.infringements.map((current, index) => (
-          <tr className="teams__tr" key={index}>
+          <tr className={styles.teams__tr} key={index}>
             <td>{index + 1}</td>
             <td>{current.date}</td>
             <td>{current.description}</td>
@@ -482,23 +483,24 @@ class PeopleReport extends Component {
 
     return (
 
-      <div className={`container-people-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}>
-        <div className="people-report-flex-layout" >
+      <div className={`${styles.containerPeopleWrapper} ${darkMode ? styles.bgOxfordBlue : ''}`}>
+        <div className={`${styles.peopleReportFlexLayout}`}>
 
-          <div xs="12" md="9" lg="9" className="people-report-left" >
+          <div xs="12" md="9" lg="9" className={`${styles.peopleReportLeft}`} >
             <ReportPage darkMode={darkMode}>
+              
+                <div className={`${styles.peopleReportTimeLogsWrapper} ${
+                  boxCount === 3 ? styles.threeBoxes : 
+                ''}`}
+                >
 
-
-              <div className={`people-report-time-logs-wrapper`} 
-              // style={boxCount === 3 ? { height: '68vw' } : { width: '100%' }}
-              >
                 <ReportPage.ReportBlock
                   firstColor="#ff5e82"
                   secondColor="#e25cb2"
-                  className="people-report-time-log-block"
+                  className={styles.peopleReportTimeLogBlock}
                   darkMode={darkMode}
                 >
-                  <h3 className="text-light">{weeklycommittedHours}</h3>
+                  <h3 className={styles.textLight}>{weeklycommittedHours}</h3>
                   <p>Weekly Committed Hours</p>
                 </ReportPage.ReportBlock>
 
@@ -507,29 +509,29 @@ class PeopleReport extends Component {
                   <ReportPage.ReportBlock
                     firstColor="#b368d2"
                     secondColor="#831ec4"
-                    className="people-report-time-log-block"
+                    className={styles.peopleReportTimeLogBlock}
                     darkMode={darkMode}
                   >
-                    <h3 className="text-light">{tangibleHoursReportedThisWeek}</h3>
+                    <h3 className={styles.textLight}>{tangibleHoursReportedThisWeek}</h3>
                     <p>Hours Logged This Week</p>
                   </ReportPage.ReportBlock>
                 )}
                 <ReportPage.ReportBlock
                   firstColor="#64b7ff"
                   secondColor="#928aef"
-                  className="people-report-time-log-block"
+                  className={styles.peopleReportTimeLogBlock}
                   darkMode={darkMode}
                 >
-                  <h3 className="text-light">{infringements.length}</h3>
+                  <h3 className={styles.textLight}>{infringements.length}</h3>
                   <p>Blue squares</p>
                 </ReportPage.ReportBlock>
                 <ReportPage.ReportBlock
                   firstColor="#ffdb56"
                   secondColor="#ff9145"
-                  className="people-report-time-log-block"
+                  className={styles.peopleReportTimeLogBlock}
                   darkMode={darkMode}
                 >
-                  <h3 className="text-light">{totalTangibleHrsRound}</h3>
+                  <h3 className={styles.textLight}>{totalTangibleHrsRound}</h3>
                   <p>Total Hours Logged</p>
                 </ReportPage.ReportBlock>
               </div>
@@ -538,18 +540,18 @@ class PeopleReport extends Component {
 
               <PeopleTasksPieChart darkMode={darkMode} />
 
-              <div className="mobile-people-table">
+              <div className={`${styles.mobilePeopleTable}`}>
                 <ReportPage.ReportBlock darkMode={darkMode}>
                   {this.state.isLoading ? (
                     <p
-                      className={`${darkMode ? 'text-light' : ''}
+                      className={`${darkMode ? styles.textLight : ''}
                    d-flex align-items-center flex-row justify-content-center`}
                     >
                       Loading tasks: &nbsp; <Spinner color={`${darkMode ? 'light' : 'dark'}`} />
                     </p>
                   ) : activeTasks.length > 0 ? (
                     <>
-                      <div className={`intro_date ${darkMode ? 'text-light' : ''}`}>
+                      <div className={`intro_date ${darkMode ? styles.textLight : ''}`}>
                         <h4>Tasks contributed</h4>
                       </div>
                       <PeopleDataTable />
@@ -557,8 +559,8 @@ class PeopleReport extends Component {
                   ) : (
                     <Alert color="danger" style={{ margin: '0 35% ' }}>You have no tasks.</Alert>
                   )}
-                  <div className="Infringementcontainer">
-                    <div className="InfringementcontainerInner">
+                  <div className={`${styles.infringementContainer}`}>
+                    <div className={`${styles.infringementContainerInner}`}>
                       <UserProject userProjects={userProjects} />
                       <Infringements
                         infringements={infringements}
@@ -566,10 +568,10 @@ class PeopleReport extends Component {
                         toDate={toDate}
                         timeEntries={timeEntries}
                       />
-                      <div className="visualizationDiv">
+                      <div className={`${styles.visualizationDiv}`}>
                         <TimeEntriesViz timeEntries={timeEntries} fromDate={fromDate} toDate={toDate} darkMode={darkMode} />
                       </div>
-                      <div className="visualizationDiv">
+                      <div className={`${styles.visualizationDiv}`}>
                         <InfringementsViz
                           infringements={infringements}
                           fromDate={fromDate}
@@ -577,15 +579,15 @@ class PeopleReport extends Component {
                           darkMode={darkMode}
                         />
                       </div>
-                      <div className="visualizationDivRow">
-                        <div className="BadgeSummaryDiv">
+                      <div className={`${styles.visualizationDivRow}`}>
+                        <div className={`${styles.badgeSummaryDiv}`}>
                           <BadgeSummaryViz
                             authId={auth.user.userid}
                             userId={match.params.userId}
                             badges={userProfile.badgeCollection}
                           />
                         </div>
-                        <div className="BadgeSummaryPreviewDiv">
+                        <div className={`${styles.badgeSummaryPreviewDiv}`}>
                           <BadgeSummaryPreview badges={userProfile.badgeCollection} darkMode={darkMode} />
                         </div>
                       </div>
@@ -642,7 +644,7 @@ class PeopleReport extends Component {
           )} */}
             </ReportPage>
           </div>
-          <div className={`people-report-right ${darkMode ? 'bg-oxford-blue' : ''}`} xs="12" md="3" lg="3">
+          <div className={`${styles.peopleReportRight} ${darkMode ? styles.bgOxfordBlue : ''}`} xs="12" md="3" lg="3">
             <ReportPage.ReportHeader
               src={profilePic}
               avatar={profilePic ? undefined : <FiUser />}
@@ -652,63 +654,53 @@ class PeopleReport extends Component {
 
               <div
                 // style={{ minHeight: '200px' }}
-                className={`report-stats ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}
+                className={`${styles.reportStats} ${darkMode ? `${styles.bgYinmnBlue} ${styles.textLight}` : ''}`}
               >
                 <p>
                   <Link to={`/userProfile/${_id}`}
                     title="View Profile"
-                    className={darkMode ? 'text-light font-weight-bold' : ''}
+                    className={`${darkMode ? `${styles.textLight} ${styles.fontWeightBold}` : ''}`}
                     style={{ fontSize: "24px" }}>
                     {firstName} {lastName}
                   </Link>
                 </p>
-                <p>Role: {role}</p>
-                <p>Title: {jobTitle}</p>
+                <div className={styles.dateInfo}>
+                  <div>
+                    <p>Role</p>
+                    <h4>{role}</h4>
+                  </div>
+                  </div>
+                  <div className={styles.dateInfo}>
+                  <div>
+                    <p>Title</p>
+                    <h4>{jobTitle}</h4>
+                  </div>
+                </div>
 
                 {/* {endDate ? ( */}
-                <div className="rehireable">
+                <div className={styles.rehireable}>
                   <Checkbox
                     value={isRehireable}
                     onChange={() => this.setRehireable(!isRehireable)}
                     label="Rehireable"
                     darkMode={darkMode}
-                    backgroundColorCN={darkMode ? "bg-yinmn-blue" : ""}
-                    textColorCN={darkMode ? "text-light" : ""}
+                    className={`${styles.reportStats} ${darkMode ? `${styles.bgYinmnBlue} ${styles.textLight}` : ''}`}
+                    backgroundColorCN={darkMode ? styles.bgYinmnBlue : ""}
+                    textColorCN={darkMode ? styles.textLight : ""}
                   />
                 </div>
-                {/* ) : (
-              ''
-            )} */}
-
-                <div className="stats">
+                <div className={styles.dateInfo}>
                   <div>
-                    <h4>{formatDate(startDate)}</h4>
                     <p>Start Date</p>
+                    <h4>{formatDate(startDate)}</h4>
                   </div>
                   <div>
-                    <h4>{endDate ? formatDate(endDate) : 'N/A'}</h4>
                     <p>End Date</p>
+                    <h4>{endDate ? formatDate(endDate) : 'N/A'}</h4>
                   </div>
-                  {bioStatus ? (
-                    <div>
-                      <h5>Bio {bioStatus === 'default' ? 'not requested' : bioStatus}</h5>{' '}
-                      {authRole === 'Administrator' || authRole === 'Owner' ? (
-                        <ToggleSwitch
-                          fontSize="13px"
-                          fontColor="#007BFF"
-                          switchType="bio"
-                          state={bioStatus}
-                          /* eslint-disable-next-line no-use-before-define */
-                          handleUserProfile={bio => onChangeBioPosted(bio)}
-                        />
-                      ) : null}
-                    </div>
-                  ) : null}
                 </div>
               </div>
             </ReportPage.ReportHeader>
-
-
           </div >
         </div>
       </div>

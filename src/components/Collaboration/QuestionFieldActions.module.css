@@ -1,0 +1,65 @@
+.fieldControls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.visibilityCheckbox {
+  transform: scale(1.2);
+  cursor: pointer;
+}
+
+.fieldActions {
+  display: flex;
+  gap: 5px;
+}
+
+.cloneButton, .moveButton, .deleteButton {
+  padding: 3px 8px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: opacity 0.2s;
+}
+
+.cloneButton {
+  background-color: #9c27b0;
+  color: white;
+}
+
+.moveButton {
+  background-color: #ff9800;
+  color: white;
+}
+
+.deleteButton {
+  background-color: #f44336;
+  color: white;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+button:not(:disabled):hover {
+  opacity: 0.8;
+} 
+
+.editButton {
+  background-color: #2196f3;
+  color: white;
+  padding: 3px 8px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: opacity 0.2s;
+}
+
+.editButton:hover {
+  opacity: 0.8;
+}
+
