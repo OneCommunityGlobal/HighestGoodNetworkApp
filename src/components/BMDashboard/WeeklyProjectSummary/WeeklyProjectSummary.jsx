@@ -366,6 +366,22 @@ function WeeklyProjectSummary() {
         }),
       },
       {
+        title: 'Rental Tracking',
+        key: 'Rental Tracking',
+        className: 'half', // adjust if Figma shows full width
+        content: [1, 2].map((_, index) => {
+          const uniqueId = uuidv4();
+          return (
+            <div
+              key={uniqueId}
+              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+            >
+              📊 Card
+            </div>
+          );
+        }),
+      },
+      {
         title: 'Financials Tracking',
         key: 'Financials Tracking',
         className: 'full',
