@@ -5,9 +5,6 @@ import { TEAM_NAME, ACTIVE, MEMBERS } from '../../languages/en/ui';
 
 import styles from './TeamTableHeader.module.css';
 
-/**
- * The header row of the team table.
- */
 function TeamTableHeaderComponent({
   onTeamNameSort,
   onTeamActiveSort,
@@ -37,13 +34,18 @@ function TeamTableHeaderComponent({
       </th>
       <th scope="col" className={styles.teamNameCol}>
         <button type="button" onClick={onTeamNameSort} className={darkMode ? 'text-light' : ''}>
-          {getSortIcon(sortTeamNameState)}
-          {TEAM_NAME}
+          <span aria-hidden="true">{getSortIcon(sortTeamNameState)}</span>
+          {TEAM_NAME} <span aria-hidden="true">(All | Active | In Active)</span>
         </button>
       </th>
       <th scope="col" id="teams__active">
-        <button type="button" onClick={onTeamActiveSort} className={darkMode ? 'text-light' : ''}>
-          {getSortIcon(sortTeamActiveState)}
+        <button
+          type="button"
+          onClick={onTeamActiveSort}
+          className={darkMode ? 'text-light' : ''}
+          aria-label="Active"
+        >
+          <span aria-hidden="true">{getSortIcon(sortTeamActiveState)}</span>
           {ACTIVE}
         </button>
       </th>
@@ -58,7 +60,5 @@ function TeamTableHeaderComponent({
 }
 
 TeamTableHeaderComponent.displayName = 'TeamTableHeader';
-
 export const TeamTableHeader = React.memo(TeamTableHeaderComponent);
-
 export default connect(null, { hasPermission })(TeamTableHeader);
