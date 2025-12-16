@@ -1,0 +1,16 @@
+.chartContainer {
+  width: 100%;
+  padding: 15px;
+  background: var(--bg-color, #fff);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.chartContainer.darkMode {
+  background: var(--dark-bg-color, #1a1a1a);
+  box-shadow: 0 2px 4px rgba(255, 255, 255, 0.1);
+}
+
+.chartContainer canvas {
+  max-height: 100% !important;
+}
