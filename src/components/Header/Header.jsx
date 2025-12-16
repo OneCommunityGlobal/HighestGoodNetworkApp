@@ -596,8 +596,7 @@ export function Header(props) {
                         </>
                       )}
                       <DropdownItem divider />
-                      <DropdownItem tag={Link} to="/pr-dashboard/analytics" className={fontColor}>
-                      <DropdownItem tag={Link} to="/pr-dashboard/overview" className={fontColor}  disabled={headerDisabled}>
+                      <DropdownItem tag={Link} to="/pr-dashboard/analytics" className={fontColor}  disabled={headerDisabled}>
                         PR Team Analytics
                       </DropdownItem>
                       {canAccessBlueSquareEmailManagement && (
