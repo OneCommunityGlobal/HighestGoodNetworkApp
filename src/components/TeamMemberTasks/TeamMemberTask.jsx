@@ -372,13 +372,15 @@ const TeamMemberTask = React.memo(
                               }}
                             >{`${user.name}`}</Link>
 
-                            {user.role !== 'Volunteer' && (
+                            {user.role !== 'Volunteer' ? (
                               <div
                                 className="user-role"
                                 style={{ fontSize: '14px', color: darkMode ? 'lightgray' : 'gray' }}
                               >
                                 {user.role}
                               </div>
+                            ) : (
+                              <div></div>
                             )}
 
                             <div
@@ -506,8 +508,6 @@ const TeamMemberTask = React.memo(
                                           data-testid={`${task.taskName}`}
                                           style={{ color: darkMode ? '#339CFF' : undefined }}
                                         >
-                                          {/* <span>aaaaaaaa aaaaaaaaaa aaaaaa aaaaaaaaaaaaaaaa aaaa aaaaaaaaaaaaaaa aaa aaaaaa aaaa aaaaaaa aaaaaaaa aaaaaaaa aaaaaa aa bb</span> */}
-
                                           <span>{`${task.num} ${task.taskName}`} </span>
                                         </Link>
                                         <CopyToClipboard
@@ -595,7 +595,7 @@ const TeamMemberTask = React.memo(
                                         darkMode ? 'bg-yinmn-blue text-light' : ''
                                       }`}
                                     >
-                                      <>
+                                      <div className={styles['progress-wrapper']}>
                                         <div className={styles['team-task-progress-container']}>
                                           <div
                                             data-testid={`times-${task.taskName}`}
@@ -661,7 +661,7 @@ const TeamMemberTask = React.memo(
                                           )}
                                           className={styles['team-task-progress-bar']}
                                         />
-                                      </>
+                                      </div>
                                     </td>
                                   )}
                                 </tr>

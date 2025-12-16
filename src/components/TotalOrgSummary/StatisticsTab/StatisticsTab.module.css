@@ -13,7 +13,7 @@
   --color-increase-percentage: #328d1b;
 }
 
-.statistics-tab-holder {
+.statisticsTabHolder {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -30,32 +30,41 @@
   margin: 0.5rem;
 }
 
-
 /* Light mode (default) */
-.statistics-title {
+.statisticsTitle {
   color: #000000;
   font-size: larger;
   text-align: center;
 }
 
-
-
-
 /* All text and numbers inside the statistics boxes are black */
-.statistics-title,
-.statistics-number,
-.statistics-percentage {
+.statisticsTitle,
+.statisticsNumber,
+.statisticsPercentage {
+  color: #000 !important;
+}
+
+/* Override white text in dark mode - keep statistics card text black for contrast with light card backgrounds */
+/* This needs to be more specific than the rule in TotalOrgSummary.module.css line 17 */
+/* Using .statisticsTabHolder to increase specificity and target only the card content */
+:global(.bg-oxford-blue) .statisticsTabHolder .statisticsTitle,
+:global(.bg-oxford-blue) .statisticsTabHolder .statisticsNumber,
+:global(.bg-oxford-blue) .statisticsTabHolder .statisticsPercentage,
+:global(.bg-oxford-blue) .statisticsTabHolder h3.statisticsTitle,
+:global(.bg-oxford-blue) .statisticsTabHolder h3.statisticsNumber,
+:global(.bg-oxford-blue) .statisticsTabHolder h4.statisticsPercentage {
   color: #000 !important;
 }
 
 /* Section headers above the boxes remain white in dark mode for contrast */
-.bg-oxford-blue .volunteerStatusGrid h3,
-.bg-oxford-blue .componentContainer h3,
-.bg-oxford-blue .statistics-section-title {
+/* Note: volunteerStatusGrid and componentContainer are from TotalOrgSummary.module.css, so they need :global() */
+:global(.bg-oxford-blue) :global(.volunteerStatusGrid) h3,
+:global(.bg-oxford-blue) :global(.componentContainer) h3,
+:global(.bg-oxford-blue) :global(.statistics-section-title) {
   color: #fff !important;
 }
 
-.statistics-number-shape {
+.statisticsNumberShape {
   height: 3.6rem;
   width: 5rem;
   display: flex;
@@ -64,66 +73,66 @@
   border-radius: 50%;
 }
 
-
-.statistics-number {
+.statisticsNumber {
   color: #000000;
 }
 
-.statistics-percentage {
+.statisticsPercentage {
   margin-top: 0.75rem;
   font-size: medium;
 }
 
-
-.statistics-percentage-increase {
+.statisticsPercentageIncrease {
   color: var(--color-increase-percentage);
 }
-.statistics-percentage-decrease {
+
+.statisticsPercentageDecrease {
   color: var(--color-decrease-percentage);
 }
 
-.active-volunteers-tab-bg-color {
+.activeVolunteersTabBgColor {
   background-color: var(--color-active-volunteers-tab-bg);
 }
 
-.active-volunteers-shape-bg-color {
+.activeVolunteersShapeBgColor {
   background-color: var(--color-active-volunteers-shape-bg);
 }
 
-.new-volunteers-tab-bg-color {
+.newVolunteersTabBgColor {
   background-color: var(--color-new-volunteers-tab-bg);
 }
 
-.new-volunteers-shape-bg-color {
+.newVolunteersShapeBgColor {
   background-color: var(--color-new-volunteers-shape-bg);
 }
 
-.deactivated-volunteers-tab-bg-color {
+.deactivatedVolunteersTabBgColor {
   background-color: var(--color-deactivated-volunteers-tab-bg);
 }
 
-.deactivated-volunteers-shape-bg-color {
+.deactivatedVolunteersShapeBgColor {
   background-color: var(--color-deactivated-volunteers-shape-bg);
 }
 
-.total-hours-worked-tab-bg-color {
+.totalHoursWorkedTabBgColor {
   background-color: var(--color-total-hours-worked-tab-bg);
 }
 
-.total-hours-worked-shape-bg-color {
+.totalHoursWorkedShapeBgColor {
   background-color: var(--color-total-hours-worked-shape-bg);
 }
 
 @media (max-width: 768px) {
-  .statistics-tab-holder {
+  .statisticsTabHolder {
     width: 48%;
     margin: 1%;
   }
 }
 
 @media (max-width: 480px) {
-  .statistics-tab-holder {
+  .statisticsTabHolder {
     width: 100%;
     margin: 0.5rem 0;
   }
 }
+
