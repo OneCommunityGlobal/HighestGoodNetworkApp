@@ -1,5 +1,3 @@
-/* ===== ORIGINAL STYLES (UNCHANGED) ===== */
-
 .body {
   font-family: 'Poppins', sans-serif;
   margin: 0;
@@ -84,8 +82,6 @@
   margin: 20px 0;
 }
 
-/* ===== DARK MODE OVERLAYS (FIXED) ===== */
-
 .darkBody {
   background-color: #1b2a41;
   color: #f9fafb;
@@ -124,8 +120,6 @@
 .darkActivityItem span {
   color: #e5e7eb;
 }
-
-/* ===== RESPONSIVE (UNCHANGED) ===== */
 
 @media (max-width: 768px) {
   .filters {
