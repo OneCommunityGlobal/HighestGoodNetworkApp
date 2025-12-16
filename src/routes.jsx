@@ -168,6 +168,7 @@ import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
 import EPLogin from './components/EductionPortal/Login';
 import EPDashboard from './components/EductionPortal';
 import GroupList from './components/EductionPortal/GroupList/GroupList';
+import EvaluationResultsWrapper from './components/EductionPortal/EvaluationResultsWrapper';
 
 import PRReviewTeamAnalytics from './components/HGNPRDashboard/PRReviewTeamAnalytics';
 import PRDashboardOverview from './components/HGNPRDashboard/PRDashboardOverview';
@@ -771,6 +772,11 @@ export default (
         />
         {/* Good Education  Portal Routes */}
         <EPProtectedRoute path="/educationportal" exact component={EPDashboard} />
+        <EPProtectedRoute
+          path="/educationportal/evaluation-results"
+          exact
+          component={EvaluationResultsWrapper}
+        />
         <Route path="/educationportal/login" component={EPLogin} />
         <EPProtectedRoute path="/educationportal/tasks/upload" exact component={WriteTaskUpload} />
         <Route path="/educator/groups" exact component={GroupList} />
