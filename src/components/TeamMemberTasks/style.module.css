@@ -494,7 +494,27 @@
   max-height: none !important; 
   overflow: visible !important;
   text-align: left;
+
+  display: flex;
+  align-items: flex-start;  
   /* min-width: 150px; */
+}
+
+.team-member-tasks-content-link {
+  display: inline-block;
+  max-width: 100%;
+  min-width: 0;
+
+  white-space: normal;            
+  word-break: break-word;         
+  overflow-wrap: anywhere;      
+}
+
+.team-member-tasks-content span {
+  display: inline;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .progress-text{
