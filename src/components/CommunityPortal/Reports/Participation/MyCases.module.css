@@ -73,6 +73,15 @@
   border: 1px solid #ccc;
   border-radius: 4px;
   cursor: pointer;
+  background-color: #ffffff;
+  color: #333;
+}
+
+/* Dark mode styles for filter dropdown */
+.myCasesPageDark .filterDropdown {
+  background-color: #3a506b;
+  border-color: #5a6b7d;
+  color: #ffffff;
 }
 
 /* Hover and focus effects for the dropdown */
@@ -83,16 +92,53 @@
 }
 
 .viewSwitcher button.active,
+.viewSwitcher .active,
 .createNew:hover {
   background-color: #007bff;
   color: #fff;
   border-color: #007bff;
 }
 
+/* Dark mode styles for view switcher */
+.myCasesPageDark .viewSwitcher {
+  border-color: #5a6b7d;
+}
+
+.myCasesPageDark .viewSwitcher button {
+  background-color: #3a506b;
+  color: #ffffff;
+  border-color: #5a6b7d;
+}
+
+.myCasesPageDark .viewSwitcher button.active,
+.myCasesPageDark .viewSwitcher .active {
+  background-color: #007bff;
+  color: #ffffff;
+  border-color: #007bff;
+}
+
+.myCasesPageDark .viewSwitcher button:hover {
+  background-color: #5a6b7d;
+  color: #ffffff;
+}
+
 .createNew {
   font-weight: bold;
   border: 1px solid #ccc;
   border-radius: 4px;
+}
+
+/* Dark mode styles for createNew button */
+.myCasesPageDark .createNew {
+  background-color: #3a506b;
+  border-color: #5a6b7d;
+  color: #ffffff;
+}
+
+.myCasesPageDark .createNew:hover {
+  background-color: #007bff;
+  color: #ffffff;
+  border-color: #007bff;
 }
 
 .content {
@@ -158,6 +204,32 @@
 .eventBadge[data-type='Fitness Bootcamp'] {
   background-color: #f5e6ff;
   color: #9b59b6;
+}
+
+/* Dark mode styles for event badges - use darker backgrounds with white text for better contrast */
+.caseCardDark .eventBadge {
+  color: #ffffff;
+  font-weight: bold;
+}
+
+.caseCardDark .eventBadge[data-type='Yoga Class'] {
+  background-color: #1e7e34;
+  color: #ffffff;
+}
+
+.caseCardDark .eventBadge[data-type='Cooking Workshop'] {
+  background-color: #c0392b;
+  color: #ffffff;
+}
+
+.caseCardDark .eventBadge[data-type='Dance Class'] {
+  background-color: #d68910;
+  color: #ffffff;
+}
+
+.caseCardDark .eventBadge[data-type='Fitness Bootcamp'] {
+  background-color: #7d3c98;
+  color: #ffffff;
 }
 
 .eventTime {

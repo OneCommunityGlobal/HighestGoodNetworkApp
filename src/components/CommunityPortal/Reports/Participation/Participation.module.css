@@ -148,6 +148,14 @@
   font-size: 0.8rem;
   border: 1px solid #ccc;
   border-radius: 5px;
+  background-color: #ffffff;
+  color: #333;
+}
+
+.trackingContainerDark .trackingFilters select {
+  background-color: #3a506b;
+  border-color: #5a6b7d;
+  color: #ffffff;
 }
 
 .trackingSummary {
@@ -291,6 +299,14 @@
   font-size: 0.8rem;
   border: 1px solid #ccc;
   border-radius: 5px;
+  background-color: #ffffff;
+  color: #333;
+}
+
+.insightsDark .insightsFilters select {
+  background-color: #3a506b;
+  border-color: #5a6b7d;
+  color: #ffffff;
 }
 
 .insightsTabs {
@@ -317,7 +333,8 @@
   border-right: 1px solid #ccc;
 }
 
-.insightsTabActive {
+.insightsTabActive,
+.activeTab {
   border-radius: 4px;
   background-color: #007bff;
   color: #fff;
@@ -328,9 +345,27 @@
   background-color: #e0e0e0;
 }
 
+/* Dark mode styles for tabs */
+.insightsDark .insightsTabs {
+  border-color: #5a6b7d;
+}
+
+.insightsDark .insightsTab {
+  background-color: #3a506b;
+  color: #ffffff;
+  border-right-color: #5a6b7d;
+}
+
+.insightsDark .insightsTabActive,
+.insightsDark .activeTab {
+  background-color: #007bff;
+  color: #ffffff;
+  font-weight: bold;
+}
+
 /* Dark mode hover states */
 .insightsDark .insightsTab:hover {
-  background-color: #3b5373;
+  background-color: #5a6b7d;
   color: #ffffff;
 }
 .navigationCardDark:hover {
@@ -395,6 +430,12 @@
   font-size: 0.9rem;
   font-weight: bold;
   color: #333;
+}
+
+.insightsPercentageDark {
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: #ffffff;
 }
 
 /* Header Section Styles */
