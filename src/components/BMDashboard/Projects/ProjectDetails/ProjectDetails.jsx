@@ -1,25 +1,14 @@
 import { useParams } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Container, Row, Col } from 'reactstrap';
-import { useEffect } from 'react';
 import LogBar from './LogBar';
 import RentedToolsDisplay from './RentedTools/RentedToolsDisplay';
 import MaterialsDisplay from './Materials/MaterialsDisplay';
 import ProjectLog from './ProjectLog';
 import styles from './ProjectDetails.module.css';
-import { fetchBMProjectMembers } from '../../../../actions/bmdashboard/projectMemberAction';
 
 function ProjectDetails() {
   const { projectId } = useParams();
-  const dispatch = useDispatch();
-
-  // Fetch the members specific to this project/building on mount
-  useEffect(() => {
-    if (projectId) {
-      dispatch(fetchBMProjectMembers(projectId));
-    }
-  }, [projectId, dispatch]);
-
   const darkMode = useSelector(state => state.theme.darkMode);
   const projects = useSelector(state => state.bmProjects) || [];
   const currProject = projects.find(project => String(project._id) === String(projectId));
@@ -36,14 +25,14 @@ function ProjectDetails() {
   return (
     <Container
       fluid
-      className={`${darkMode ? styles['project-details-dark'] : styles['project-details']}`}
+      className={`${darkMode ? styles['project-details-dark'] : styles['project-details']}  `}
     >
       <Row className="justify-content-center">
         <Col xs="12" lg="10">
           <h1
             className={`${
               darkMode ? styles['project-details-title-dark'] : styles['project-details-title']
-            } mb-2`}
+            } mb-2 `}
           >
             {currProject.name} Dashboard{' '}
           </h1>

@@ -1,70 +1,81 @@
+import React from 'react';
+import { useSelector } from 'react-redux';
 import { Card, Table } from 'reactstrap';
 
-const DummyData = [
-  {
-    id: '12',
-    firstName: 'Dora',
-    lastName: 'Kimberly',
-    role: 'Carpenter',
-    team: 'XYZ',
-    currentTask: 'Stud wall construction',
-    totalHrs: 169,
-    todaysHrs: 5.5,
-  },
-  {
-    id: '35',
-    firstName: 'Cailin',
-    lastName: 'Colby',
-    role: 'Volunteer',
-    team: 'Team A',
-    currentTask: 'Foundation concreting',
-    totalHrs: 15,
-    todaysHrs: 2.18,
-  },
-  {
-    id: '36',
-    firstName: 'Member A',
-    lastName: 'Member A',
-    role: 'Role A',
-    team: 'Team A',
-    currentTask: 'Task 1',
-    totalHrs: 169,
-    todaysHrs: 5.5,
-  },
-];
+function ProjectLog({ projectId }) {
+  // 1. Get Project Members
+  const projectData = useSelector(state => state.bmProjectMembers);
+  const rawMembers = projectData?.members;
+  const membersArray = rawMembers && Array.isArray(rawMembers.members) ? rawMembers.members : [];
 
-function ProjectLog() {
-  const tableRows = DummyData.map(person => (
-    <tr key={person.id}>
-      <th scope="row">{person.id}</th>
-      <td>{person.firstName}</td>
-      <td>{person.lastName}</td>
-      <td>{person.role}</td>
-      <td>{person.team}</td>
-      <td>{person.currentTask}</td>
-      <td>{person.totalHrs}</td>
-      <td>{person.todaysHrs}</td>
-    </tr>
-  ));
+  // 2. Get All Teams
+  const allTeams = useSelector(state => state.allTeamsData?.allTeams || []);
+
+  // 3. Helper: Look up the team manually
+  const findTeamNameForUser = targetUserId => {
+    if (!allTeams || allTeams.length === 0) return 'Loading...';
+
+    const foundTeam = allTeams.find(team =>
+      team.members.some(member => {
+        let rawId = member.userId || member._id || member.user;
+        if (rawId && typeof rawId === 'object') {
+          rawId = rawId._id || rawId.$oid || rawId;
+        }
+        return String(rawId) === String(targetUserId);
+      }),
+    );
+
+    return foundTeam ? foundTeam.teamName : 'No Team';
+  };
+
+  const tableRows = membersArray.map((member, index) => {
+    if (!member || !member.user || typeof member.user === 'string') return null;
+
+    const user = member.user;
+    const teamName = findTeamNameForUser(user._id);
+
+    return (
+      <tr key={user._id || index}>
+        <th scope="row">{user._id ? String(user._id).substring(user._id.length - 4) : 'N/A'}</th>
+        <td>{user.firstName || 'Unknown'}</td>
+        <td>{user.lastName || 'User'}</td>
+        <td>{user.role || 'N/A'}</td>
+        <td>{teamName}</td>
+        <td>{member.hours ? Math.round(member.hours) : '--'}</td>
+      </tr>
+    );
+  });
+
+  const validRows = tableRows.filter(row => row !== null);
 
   return (
     <Card className="project-log">
       <h2>Members working on site today</h2>
-      <Table hover responsive striped>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>Role</th>
-            <th>Team</th>
-            <th>Current Task</th>
-            <th>Total Hrs</th>
-            <th>Today&apos;s Hrs</th>
-          </tr>
-        </thead>
-        <tbody>{tableRows}</tbody>
-      </Table>
+      <div className="table-responsive">
+        <Table hover striped>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>First Name</th>
+              <th>Last Name</th>
+              <th>Role</th>
+              <th>Team</th>
+              <th>Total Hrs</th>
+            </tr>
+          </thead>
+          <tbody>
+            {validRows.length > 0 ? (
+              validRows
+            ) : (
+              <tr>
+                <td colSpan="6" className="text-center p-4">
+                  {membersArray.length === 0 ? 'Loading...' : 'No active members found.'}
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </Table>
+      </div>
     </Card>
   );
 }
