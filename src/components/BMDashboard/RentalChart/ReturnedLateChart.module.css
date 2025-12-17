@@ -9,6 +9,11 @@
   font-weight: bold;
 }
 
+/* Dark mode title */
+.bg-oxford-blue .returned-late-chart h1 {
+  color: #ffffff;
+}
+
 .returned-late-filters {
   display: flex;
   gap: 20px;
@@ -26,6 +31,11 @@
   margin-bottom: 5px;
   font-weight: bold;
   color: #333;
+}
+
+/* Dark mode labels */
+.bg-oxford-blue .returned-late-filter-label {
+  color: #ffffff;
 }
 
 .returned-late-project-select {
@@ -52,6 +62,7 @@
   position: relative;
 }
 
+/* Loading state */
 .returned-late-loading {
   display: flex;
   justify-content: center;
@@ -61,15 +72,22 @@
   color: #666;
 }
 
-.returned-late-error {
-  color: #d32f2f;
-  padding: 16px;
-  background-color: #ffebee;
-  border: 1px solid #ffcdd2;
-  border-radius: 4px;
-  margin: 20px 0;
+.bg-oxford-blue .returned-late-loading {
+  color: #ffffff;
 }
 
+/* ✅ FINAL ERROR STYLE — SAME FOR LIGHT & DARK */
+.returned-late-error {
+  color: #ffffff !important;
+  background-color: #b3261e; /* consistent error red */
+  padding: 14px 16px;
+  border-radius: 6px;
+  margin: 20px 0;
+  font-weight: 500;
+  text-align: center;
+}
+
+/* No data state */
 .returned-late-no-data {
   display: flex;
   justify-content: center;
@@ -78,4 +96,27 @@
   font-size: 16px;
   color: #666;
   font-style: italic;
+}
+
+.bg-oxford-blue .returned-late-no-data {
+  color: #ffffff;
+}
+
+/* Fix select dropdown readability in dark mode */
+.bg-oxford-blue select {
+  background-color: #ffffff;
+  color: #333333;
+  border: 1px solid #cccccc;
+}
+
+/* Ensure option text is readable */
+.bg-oxford-blue select option {
+  color: #333333;
+  background-color: #ffffff;
+}
+
+/* Disabled / default-looking state fix */
+.bg-oxford-blue select:disabled {
+  color: #333333;
+  background-color: #f5f5f5;
 }

@@ -24,6 +24,8 @@ import IssueCharts from '../Issues/openIssueCharts';
 import SupplierPerformanceGraph from './SupplierPerformanceGraph.jsx';
 import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
 import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
+import RentalChart from '../RentalChart/RentalChart';
+import ReturnedLateChart from '../RentalChart/ReturnedLateChart';
 
 const projectStatusButtons = [
   {
@@ -368,18 +370,24 @@ function WeeklyProjectSummary() {
       {
         title: 'Rental Tracking',
         key: 'Rental Tracking',
-        className: 'half', // adjust if Figma shows full width
-        content: [1, 2].map((_, index) => {
-          const uniqueId = uuidv4();
-          return (
-            <div
-              key={uniqueId}
-              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
-            >
-              📊 Card
+        className: 'full',
+        content: (
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr',
+              gap: '12px',
+            }}
+          >
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+              <RentalChart />
             </div>
-          );
-        }),
+
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+              <ReturnedLateChart />
+            </div>
+          </div>
+        ),
       },
       {
         title: 'Financials Tracking',
