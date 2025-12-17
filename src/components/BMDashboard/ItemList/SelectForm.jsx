@@ -22,6 +22,7 @@ export default function SelectForm({ items, setSelectedProject, setSelectedItem 
           type="select"
           onChange={handleChange}
           disabled={!items.length}
+          className={styles.uniformControl}
         >
           {items.length ? (
             <>

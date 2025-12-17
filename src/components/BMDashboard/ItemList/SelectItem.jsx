@@ -42,6 +42,7 @@ export default function SelectItem({
           value={selectedItem}
           onChange={e => setSelectedItem(e.target.value)}
           disabled={!items.length}
+          className={styles.uniformControl}
         >
           {items.length ? (
             <>
