@@ -110,7 +110,7 @@ export const ENDPOINTS = {
   UPDATE_PARENT_TASKS: wbsId => `${APIEndpoint}/task/updateAllParents/${wbsId}`,
   MOVE_TASKS: wbsId => `${APIEndpoint}/tasks/moveTasks/${wbsId}`,
   WEEKLY_SUMMARIES_REPORT: () => `${APIEndpoint}/reports/weeklysummaries`,
-  WEEKLY_SUMMARIES_FILTERS:`${APIEndpoint}/weeklySummariesFilters`,
+  WEEKLY_SUMMARIES_FILTERS: `${APIEndpoint}/weeklySummariesFilters`,
   WEEKLY_SUMMARIES_FILTER_BY_ID: filterId => `${APIEndpoint}/weeklySummariesFilters/${filterId}`,
   WEEKLY_SUMMARIES_FILTER_REPLACE_CODES: `${APIEndpoint}/weeklySummariesFilters/replaceTeamcodes`,
   WEEKLY_SUMMARIES_FILTER_REPLACE_INDIVIDUAL_CODES: `${APIEndpoint}/weeklySummariesFilters/replaceIndividualTeamcodes`,
@@ -230,7 +230,7 @@ export const ENDPOINTS = {
   NON_HGN_EMAIL_SUBSCRIPTION: `${APIEndpoint}/add-non-hgn-email-subscription`,
   CONFIRM_EMAIL_SUBSCRIPTION: `${APIEndpoint}/confirm-non-hgn-email-subscription`,
   REMOVE_EMAIL_SUBSCRIPTION: `${APIEndpoint}/remove-non-hgn-email-subscription`,
-  
+
   PERMISSION_MANAGEMENT_UPDATE: () => `${APIEndpoint}/permission-management`,
 
   // reasons endpoints
@@ -474,6 +474,8 @@ export const ENDPOINTS = {
   LESSON_PLANS: `${APIEndpoint}/education/lesson-plans`,
   SAVE_INTEREST: `${APIEndpoint}/education/student/saved-interests`,
   GET_SAVED: `${APIEndpoint}/education/student/saved-interests`,
+  REMOVE_INTEREST: `${APIEndpoint}/education/student/saved-interests`,
+  CHECK_IF_SAVED: `${APIEndpoint}/education/student/saved-interests/check`,
 
 };
 

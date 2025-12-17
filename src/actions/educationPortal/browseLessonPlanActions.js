@@ -28,12 +28,11 @@ import { ENDPOINTS } from '~/utils/URL';
 const getAuthHeaders = () => {
   const token = localStorage.getItem('token');
   if (!token) {
-    console.warn('No authentication token found');
   }
   return {
     'Content-Type': 'application/json',
     Accept: 'application/json',
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    ...(token ? { Authorization: token } : {}),
   };
 };
 
@@ -45,7 +44,6 @@ export const fetchLessonPlans = (params = {}) => async dispatch => {
     
     const res = await axios.get(url, { 
       headers: getAuthHeaders(),
-      withCredentials: true // Include credentials if needed
     });
     
     dispatch({
@@ -54,7 +52,6 @@ export const fetchLessonPlans = (params = {}) => async dispatch => {
       meta: res.data.meta,
     });
   } catch (error) {
-    console.error('Fetch lesson plans error:', error);
     const errorMessage = error.response?.status === 401 
       ? 'Please log in to view lesson plans'
       : error.response?.data?.error || error.message;
@@ -71,11 +68,9 @@ export const fetchLessonPlanDetail = id => async dispatch => {
   try {
     const res = await axios.get(`${ENDPOINTS.LESSON_PLANS}/${id}`, {
       headers: getAuthHeaders(),
-      withCredentials: true
     });
     dispatch({ type: FETCH_LESSON_PLAN_DETAIL_SUCCESS, payload: res.data.data });
   } catch (error) {
-    console.error('Fetch lesson plan detail error:', error);
     const errorMessage = error.response?.status === 401 
       ? 'Please log in to view lesson plan details'
       : error.response?.data?.error || error.message;
@@ -95,7 +90,6 @@ export const saveLessonPlan = (studentId, lessonPlanId) => async dispatch => {
       { studentId, lessonPlanId },
       { 
         headers: getAuthHeaders(),
-        withCredentials: true
       }
     );
     dispatch({
@@ -104,7 +98,6 @@ export const saveLessonPlan = (studentId, lessonPlanId) => async dispatch => {
       lessonPlanId,
     });
   } catch (error) {
-    console.error('Save lesson plan error:', error);
     const errorMessage = error.response?.status === 401 
       ? 'Please log in to save lesson plans'
       : error.response?.data?.error || error.message;
@@ -123,7 +116,6 @@ export const removeLessonPlan = (studentId, lessonPlanId) => async dispatch => {
       `${ENDPOINTS.REMOVE_INTEREST}/${lessonPlanId}?studentId=${studentId}`,
       { 
         headers: getAuthHeaders(),
-        withCredentials: true
       }
     );
     dispatch({
@@ -132,7 +124,6 @@ export const removeLessonPlan = (studentId, lessonPlanId) => async dispatch => {
       lessonPlanId,
     });
   } catch (error) {
-    console.error('Remove lesson plan error:', error);
     const errorMessage = error.response?.status === 401 
       ? 'Please log in to remove saved lesson plans'
       : error.response?.data?.error || error.message;
@@ -151,7 +142,6 @@ export const fetchSavedLessonPlans = studentId => async dispatch => {
       `${ENDPOINTS.GET_SAVED}?studentId=${encodeURIComponent(studentId)}`,
       { 
         headers: getAuthHeaders(),
-        withCredentials: true
       }
     );
     dispatch({
@@ -160,7 +150,6 @@ export const fetchSavedLessonPlans = studentId => async dispatch => {
       meta: res.data.meta,
     });
   } catch (error) {
-    console.error('Fetch saved lesson plans error:', error);
     const errorMessage = error.response?.status === 401 
       ? 'Please log in to view saved lesson plans'
       : error.response?.data?.error || error.message;
@@ -179,7 +168,6 @@ export const checkIfSaved = (studentId, lessonPlanId) => async dispatch => {
       `${ENDPOINTS.CHECK_IF_SAVED}?studentId=${studentId}&lessonPlanId=${lessonPlanId}`,
       { 
         headers: getAuthHeaders(),
-        withCredentials: true
       }
     );
     dispatch({
@@ -188,7 +176,6 @@ export const checkIfSaved = (studentId, lessonPlanId) => async dispatch => {
       lessonPlanId,
     });
   } catch (error) {
-    console.error('Check if saved error:', error);
     dispatch({
       type: CHECK_IF_SAVED_FAILURE,
       error: error.response?.data?.error || error.message,
