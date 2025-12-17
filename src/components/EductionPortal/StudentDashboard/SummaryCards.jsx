@@ -61,7 +61,7 @@ const SummaryCards = ({ data, darkMode = false }) => {
   };
 
   return (
-    <div className={`${styles.summaryCards} ${darkMode ? styles.darkMode : ''}`}>
+    <div className={styles.summaryCards}>
       {cards.map((card, index) => (
         <div key={index} className={styles.card}>
           <div className={styles.cardContent}>

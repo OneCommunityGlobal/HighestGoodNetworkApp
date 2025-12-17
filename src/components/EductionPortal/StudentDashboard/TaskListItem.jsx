@@ -35,7 +35,7 @@ const TaskListItem = ({
   };
 
   return (
-    <div className={`${styles.taskListItem} ${darkMode ? styles.darkMode : ''}`}>
+    <div className={styles.taskListItem}>
       {/* Task Info */}
       <div className={styles.taskInfo}>
         <div className={styles.taskHeader}>

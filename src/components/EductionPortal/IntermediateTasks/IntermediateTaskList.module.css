@@ -364,157 +364,157 @@
   }
 }
 
-/* Dark Mode Styles */
-.darkMode {
+/* Dark Mode Styles - Using global dark-mode class for consistency across builds */
+:global(.dark-mode) .dashboard {
   background-color: #1a1a1a;
 }
 
-.darkMode .title {
+:global(.dark-mode) .title {
   color: #ffffff;
 }
 
-.darkMode .subtitle {
+:global(.dark-mode) .subtitle {
   color: #9ca3af;
 }
 
-.darkMode .taskCard {
+:global(.dark-mode) .taskCard {
   background-color: #2d2d2d;
   border-color: #404040;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
-.darkMode .taskCard:hover {
+:global(.dark-mode) .taskCard:hover {
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
 }
 
-.darkMode .taskTitle {
+:global(.dark-mode) .taskTitle {
   color: #ffffff;
 }
 
-.darkMode .taskSubtitle {
+:global(.dark-mode) .taskSubtitle {
   color: #9ca3af;
 }
 
-.darkMode .taskMeta {
+:global(.dark-mode) .taskMeta {
   color: #9ca3af;
 }
 
-.darkMode .taskStatus {
+:global(.dark-mode) .taskStatus {
   color: #d1d5db;
 }
 
-.darkMode .progressInfo {
+:global(.dark-mode) .progressInfo {
   color: #60a5fa;
 }
 
-.darkMode .expandButton {
+:global(.dark-mode) .expandButton {
   background-color: #2d2d2d;
   border-color: #404040;
   color: #9ca3af;
 }
 
-.darkMode .expandButton:hover {
+:global(.dark-mode) .expandButton:hover {
   background-color: #363636;
   border-color: #525252;
   color: #d1d5db;
 }
 
-.darkMode .subTasksContainer {
+:global(.dark-mode) .subTasksContainer {
   border-top-color: #404040;
 }
 
-.darkMode .loadingState {
+:global(.dark-mode) .loadingState {
   color: #9ca3af;
 }
 
-.darkMode .spinner {
+:global(.dark-mode) .spinner {
   border-color: #404040;
   border-top-color: #60a5fa;
 }
 
-.darkMode .emptySubTasks {
+:global(.dark-mode) .emptySubTasks {
   color: #9ca3af;
 }
 
-.darkMode .subTaskItem {
+:global(.dark-mode) .subTaskItem {
   background-color: #252525;
   border-color: #404040;
 }
 
-.darkMode .subTaskItem:hover {
+:global(.dark-mode) .subTaskItem:hover {
   background-color: #2a2a2a;
   border-color: #525252;
 }
 
-.darkMode .subTaskTitle {
+:global(.dark-mode) .subTaskTitle {
   color: #ffffff;
 }
 
-.darkMode .subTaskDescription {
+:global(.dark-mode) .subTaskDescription {
   color: #9ca3af;
 }
 
-.darkMode .subTaskMeta {
+:global(.dark-mode) .subTaskMeta {
   color: #9ca3af;
 }
 
-.darkMode .subTaskHours {
+:global(.dark-mode) .subTaskHours {
   color: #d1d5db;
 }
 
-.darkMode .subTaskDueDate {
+:global(.dark-mode) .subTaskDueDate {
   color: #9ca3af;
 }
 
-.darkMode .statuspending {
+:global(.dark-mode) .statuspending {
   background-color: #404040;
   color: #d1d5db;
 }
 
-.darkMode .statusin_progress {
+:global(.dark-mode) .statusin_progress {
   background-color: #1e3a5f;
   color: #93c5fd;
 }
 
-.darkMode .statuscompleted {
+:global(.dark-mode) .statuscompleted {
   background-color: #1a4d2e;
   color: #86efac;
 }
 
-.darkMode .editButton,
-.darkMode .deleteButton {
+:global(.dark-mode) .editButton,
+:global(.dark-mode) .deleteButton {
   background-color: #2d2d2d;
   border-color: #404040;
   color: #9ca3af;
 }
 
-.darkMode .editButton:hover {
+:global(.dark-mode) .editButton:hover {
   background-color: #1e3a5f;
   border-color: #60a5fa;
   color: #60a5fa;
 }
 
-.darkMode .deleteButton:hover {
+:global(.dark-mode) .deleteButton:hover {
   background-color: #4a1a1a;
   border-color: #ef4444;
   color: #ef4444;
 }
 
-.darkMode .markDoneButton {
+:global(.dark-mode) .markDoneButton {
   background-color: #2563eb;
   color: #ffffff;
 }
 
-.darkMode .markDoneButton:hover {
+:global(.dark-mode) .markDoneButton:hover {
   background-color: #1d4ed8;
 }
 
-.darkMode .completedBadge {
+:global(.dark-mode) .completedBadge {
   background-color: #1a4d2e;
   color: #86efac;
 }
 
-.darkMode .emptyState {
+:global(.dark-mode) .emptyState {
   color: #9ca3af;
   background-color: #2d2d2d;
   border-color: #404040;

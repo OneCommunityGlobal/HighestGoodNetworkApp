@@ -86,7 +86,7 @@ const NavigationBar = ({ darkMode = false }) => {
   };
 
   return (
-    <nav className={`${styles.navigationBar} ${darkMode ? styles.darkMode : ''}`}>
+    <nav className={styles.navigationBar}>
       <div className={styles.navContainer}>
         {navigationItems.map((item, index) => (
           <div key={index} className={styles.navItem}>

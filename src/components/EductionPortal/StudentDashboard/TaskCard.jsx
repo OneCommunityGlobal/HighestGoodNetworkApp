@@ -35,7 +35,7 @@ const TaskCard = ({
   };
 
   return (
-    <div className={`${styles.taskCard} ${darkMode ? styles.darkMode : ''}`}>
+    <div className={styles.taskCard}>
       {/* Status Badge */}
       <div className={`${styles.statusBadge} ${statusBadge.className}`}>{statusBadge.text}</div>
 

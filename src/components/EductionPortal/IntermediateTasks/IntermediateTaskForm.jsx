@@ -10,11 +10,9 @@ import {
   ModalBody,
   ModalFooter,
 } from 'reactstrap';
-import { useSelector } from 'react-redux';
 import styles from './IntermediateTaskList.module.css';
 
 const IntermediateTaskForm = ({ task, onSubmit, onCancel }) => {
-  const darkMode = useSelector(state => state.theme.darkMode);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -82,12 +80,12 @@ const IntermediateTaskForm = ({ task, onSubmit, onCancel }) => {
   };
 
   return (
-    <Modal isOpen={true} toggle={onCancel} size="lg" className={darkMode ? 'dark-mode' : ''}>
-      <ModalHeader toggle={onCancel} className={darkMode ? 'bg-space-cadet' : ''}>
+    <Modal isOpen={true} toggle={onCancel} size="lg">
+      <ModalHeader toggle={onCancel}>
         {task ? 'Edit Intermediate Task' : 'Add Intermediate Task'}
       </ModalHeader>
       <Form onSubmit={handleSubmit} className={styles.formModal}>
-        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+        <ModalBody>
           <FormGroup>
             <Label for="title">Title *</Label>
             <Input
@@ -156,7 +154,7 @@ const IntermediateTaskForm = ({ task, onSubmit, onCancel }) => {
             </Input>
           </FormGroup>
         </ModalBody>
-        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+        <ModalFooter>
           <Button color="secondary" onClick={onCancel}>
             Cancel
           </Button>

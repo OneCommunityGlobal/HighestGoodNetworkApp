@@ -20,7 +20,7 @@ const TaskListView = ({
   }
 
   return (
-    <div className={`${styles.listView} ${darkMode ? styles.darkMode : ''}`}>
+    <div className={styles.listView}>
       {tasks.map(task => (
         <TaskListItem
           key={task._id || task.id}

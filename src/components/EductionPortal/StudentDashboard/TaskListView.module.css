@@ -15,7 +15,7 @@
   margin: 0;
 }
 
-/* Dark Mode Styles */
-.darkMode .emptyState {
+/* Dark Mode Styles - Using global dark-mode class for consistency across builds */
+:global(.dark-mode) .emptyState {
   color: #9ca3af;
 }

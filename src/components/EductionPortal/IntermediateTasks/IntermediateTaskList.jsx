@@ -159,7 +159,7 @@ const IntermediateTaskList = () => {
   };
 
   return (
-    <div className={`${styles.dashboard} ${darkMode ? styles.darkMode : ''}`}>
+    <div className={styles.dashboard}>
       <Container className={styles.mainContainer}>
         <div className={styles.header}>
           <h1 className={styles.title}>Intermediate Tasks</h1>

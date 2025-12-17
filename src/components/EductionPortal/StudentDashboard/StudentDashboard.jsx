@@ -150,7 +150,7 @@ const StudentDashboard = () => {
   }
 
   return (
-    <div className={`${styles.dashboard} ${darkMode ? styles.darkMode : ''}`}>
+    <div className={styles.dashboard}>
       <NavigationBar darkMode={darkMode} />
 
       <Container className={styles.mainContainer}>

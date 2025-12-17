@@ -20,7 +20,7 @@ const TaskCardView = ({
   }
 
   return (
-    <div className={`${styles.cardView} ${darkMode ? styles.darkMode : ''}`}>
+    <div className={styles.cardView}>
       {tasks.map(task => (
         <TaskCard
           key={task._id || task.id}
