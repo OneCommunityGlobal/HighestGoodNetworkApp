@@ -249,10 +249,10 @@ export default function ReturnedLateChart() {
             className={styles['returned-late-date-picker']}
           />
         </div>
-        <div className={styles['returned-late-filter-group']}>
+        <div className={`${styles['returned-late-filter-group']}`}>
           <label
             htmlFor="end-date-picker"
-            className={`${styles['returned-late-filter-label']} ${darkMode ? 'text-white' : ''}`}
+            className={`${styles['returned-late-filter-label']}${darkMode ? 'text-white' : ''}`}
           >
             To:
           </label>
@@ -260,7 +260,7 @@ export default function ReturnedLateChart() {
             id="end-date-picker"
             selected={dateRange.endDate}
             onChange={handleEndDateChange}
-            className={styles['returned-late-date-picker']}
+            className={`${styles['returned-late-date-picker']}${darkMode ? 'text-white' : ''}`}
           />
         </div>
       </div>
