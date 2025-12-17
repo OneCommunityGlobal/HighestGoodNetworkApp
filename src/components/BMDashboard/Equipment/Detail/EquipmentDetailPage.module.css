@@ -1,49 +1,109 @@
-.EquipmentDetailPage {
-  font-size: clamp(0.9em, 2.5vw, 1em);
-  margin-top: 1em;
-  margin-bottom: 3rem;
+.equipmentDetailPage {
+  font-size: 0.95rem;
+  margin: 1.5rem auto 3rem auto;
+  max-width: 720px;
 }
 
-.EquipmentDetailPage__header h1 {
-  font-size: clamp(2em, 2.5vw, 3em);
+.equipmentDetailPageHeader {
+  margin-bottom: 1.5rem;
 }
 
-.EquipmentDetailPage__span {
-  background-color: #e6f5f2;
+:global(.EquipmentDetailPage__detail_item) {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.35rem 0;
+  color: #27333c;
+}
+
+:global(.EquipmentDetailPage__span) {
+  background-color: #e2f3ea;
+  border: 1px solid #c1e0ce;
+  border-radius: 6px;
+  padding: 0.35rem 0.65rem;
+  min-height: 2rem;
+  display: inline-flex;
+  align-items: center;
+  color: #1f3b2d;
+  font-weight: 600;
+}
+
+:global(.EquipmentDetailPage__image) {
   border: 1px solid #e5e5e6;
-  border-radius: 5px;
-  padding: 0.5em;
-  margin-left: 1em;
+  border-radius: 8px;
+  width: 220px;
+  height: auto;
+  margin-bottom: 1rem;
+  max-width: 100%;
 }
 
-.EquipmentDetailPage__image {
-  border: 1px solid #e5e5e6;
-  border-radius: 5px;
-  width: 150px;
+.equipmentDetailPageImage {
+  display: block;
+  width: 220px;
+  max-width: 100%;
   height: auto;
 }
 
-.EquipmentDetailPage__detail_item {
-  line-height: 2.5;
-}
-
 button.descriptionItem_button {
-  padding: 0em;
-  margin-bottom: 1em;
+  padding: 0;
+  margin-bottom: 0.75rem;
+  color: #1f3b2d;
+  font-weight: 600;
 }
 
 button.descriptionItem_button:hover {
   background-color: transparent;
+  text-decoration: underline;
 }
 
-.EquipmentDetailPage__dashed_line {
-  border-top: 1px dashed #000;
-  width: 50%;
-  margin-top: 10px;
-  margin-bottom: 10px;
+:global(.EquipmentDetailPage__dashed_line) {
+  border-top: 1px dashed #5f6d61;
+  width: 100%;
+  max-width: 440px;
+  margin: 0.6rem 0 0.9rem;
 }
 
 .backBtn {
   color: black !important;
   border-color: black !important;
+  margin-top: 1rem;
+}
+
+.valuePill {
+  background-color: #e2f3ea;
+  border: 1px solid #c1e0ce;
+  border-radius: 6px;
+  padding: 0.35rem 0.65rem;
+  min-height: 2rem;
+  display: inline-flex;
+  align-items: center;
+  color: #1f3b2d;
+  font-weight: 600;
+}
+
+.valuePillMuted {
+  background-color: #e7ecf2;
+  border-color: #cfd7e1;
+  color: #2f3a45;
+}
+
+@media (prefers-color-scheme: dark) {
+  :global(.EquipmentDetailPage__span) {
+    background-color: #2d3b4a;
+    border-color: #40536a;
+    color: #e7f0ff;
+  }
+
+  .valuePill {
+    background-color: #2d3b4a;
+    border-color: #40536a;
+    color: #e7f0ff;
+  }
+
+  .valuePillMuted {
+    background-color: #374759;
+    border-color: #4a5d76;
+    color: #dce6f5;
+  }
 }

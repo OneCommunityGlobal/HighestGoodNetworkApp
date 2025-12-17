@@ -28,15 +28,11 @@ function CalendarActivitySection() {
             }`}
           >
             <p
-              className={`${styles.activityMessage} ${
-                darkMode ? styles.activityMessageDark : ''
-              }`}
+              className={`${styles.activityMessage} ${darkMode ? styles.activityMessageDark : ''}`}
             >
               <strong>{activity.author}</strong>: {activity.message}
             </p>
-            <small
-              className={`${styles.activityTime} ${darkMode ? styles.activityTimeDark : ''}`}
-            >
+            <small className={`${styles.activityTime} ${darkMode ? styles.activityTimeDark : ''}`}>
               {activity.time}
             </small>
           </li>
