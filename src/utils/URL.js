@@ -463,6 +463,29 @@ export const ENDPOINTS = {
   UPDATE_SAVED_FILTERS_INDIVIDUAL_TEAM_CODE: () =>
     `${APIEndpoint}/savedFilters/updateIndividualTeamCode`,
 
+  // Job Analytics endpoint
+  JOB_ANALYTICS_QUERY: (startDate, endDate, roles, granularity) => {
+    const params = [
+      startDate && endDate
+        ? `startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`
+        : null,
+
+      roles && roles !== "All"
+        ? `roles=${encodeURIComponent(roles)}`
+        : null,
+
+      granularity
+        ? `granularity=${encodeURIComponent(granularity)}`
+        : null,
+    ].filter(Boolean);
+
+    const qs = params.length ? `?${params.join("&")}` : "";
+
+    return `${APIEndpoint.replace("/api", "")}/job-analytics${qs}`;
+  },
+
+  JOB_ANALYTICS_ROLES: `${APIEndpoint.replace('/api', '')}/job-analytics/roles`,
+
   // pr dashboard endpoints
   PROMOTION_ELIGIBILITY: `${APIEndpoint}/promotion-eligibility`,
   PROMOTE_MEMBERS: `${APIEndpoint}/promote-members`,
