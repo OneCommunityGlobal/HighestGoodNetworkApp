@@ -1,7 +1,11 @@
-.message-container {
+.messageContainer {
   display: flex;
   align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-width: 0;
   z-index: 10;
+  gap: 8px;
 }
 
 .inputs:disabled {
@@ -9,22 +13,30 @@
   cursor: not-allowed;
 }
 
-img {
-  max-width: 400px;
+.ownerMessageImg {
+  max-width: 100%;
+  width: auto;
   height: 50px;
+  object-fit: contain;
   border-radius: 4px;
+  flex-shrink: 1;
+  min-width: 0;
 }
 
 .message {
   font-style: italic;
-  white-space: normal;
-  text-align: center;
-  justify-content: center;
   color: white;
-  margin: 0rem;
+  margin: 0;
+  text-align: center;
+  max-width: 100%;
+  min-width: 0;
+  white-space: normal;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.icon-wrapper {
+.iconWrapper {
+  flex: 0 0 auto;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -34,28 +46,40 @@ img {
   margin-left: 0rem;
 }
 
-.owner-message-button {
+.ownerMessageButton {
   border: none;
   background: none;
 }
 
-button > img {
+.buttonImg {
   width: 18px;
   height: 18px;
 }
 
-button > img:hover {
+.buttonImg:hover {
   cursor: pointer;
   opacity: 0.6;
 }
 
-.modal-body {
+.modalBody {
   display: flex;
   flex-direction: column;
 }
 
+@media (max-width: 768px) {
+  .ownerMessageImg {
+    height: 36px;
+  }
+}
+
+@media (max-width: 480px) {
+  .ownerMessageImg {
+    height: 28px;
+  }
+}
+
 @media (max-width: 1400px) {
-  .message-container {
+  .messageContainer {
     align-items: center;
     justify-content: center;
     text-align: center;
@@ -63,7 +87,7 @@ button > img:hover {
 }
 
 @media print {
-  .owner-message-button {
+  .ownerMessageButton {
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -77,7 +101,7 @@ button > img:hover {
     print-color-adjust: exact !important;
   }
 
-  .owner-message-button img {
+  .ownerMessageButton img {
     width: 24px !important;
     height: 24px !important;
     min-width: 24px !important;

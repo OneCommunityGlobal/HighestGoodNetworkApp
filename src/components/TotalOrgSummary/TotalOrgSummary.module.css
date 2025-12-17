@@ -271,12 +271,15 @@
 /* Dark mode dropdown consistency */
 /* Component containers - Clean borderless design */
 .componentContainer {
-  margin: 15px 0;
+  margin: 0 0 15px 0;
   padding: 20px;
   background-color: #fff;
   border-radius: 10px;
   border: 1.5px solid #e0e0e0;
   box-shadow: 0 4px 16px rgba(37,99,235,0.10), 0 1.5px 4px rgba(0,0,0,0.08);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .componentBorder {
@@ -285,6 +288,9 @@
   box-shadow: 0 4px 16px rgba(37,99,235,0.10), 0 1.5px 4px rgba(0,0,0,0.08);
   background-color: #fff;
   overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .componentBorderLoose {
