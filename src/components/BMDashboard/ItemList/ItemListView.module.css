@@ -358,3 +358,289 @@
 .lightDatePickerPopper .react-datepicker__triangle {
   display: none;
 }
+
+/* New styles for MaterialListView redesign */
+.pageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #f9fafb;
+  margin-bottom: 20px;
+}
+
+.darkMode .pageHeader {
+  border-color: #374151;
+  background: #1f2937;
+}
+
+.pageHeader .titleSection h3 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.pageHeader .subtitle {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 5px 0 0 0;
+}
+
+.darkMode .pageHeader .subtitle {
+  color: #9ca3af;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.moreMenu {
+  position: relative;
+  display: inline-block;
+}
+
+.moreMenu button {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 4px;
+}
+
+.moreMenu button:hover {
+  background: #e5e7eb;
+}
+
+.darkMode .moreMenu button:hover {
+  background: #374151;
+}
+
+.moreMenu .menu {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  min-width: 150px;
+  display: none;
+}
+
+.darkMode .moreMenu .menu {
+  background: #1f2937;
+  border-color: #374151;
+}
+
+.moreMenu.open .menu {
+  display: block;
+}
+
+.moreMenu .menu button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 10px;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.moreMenu .menu button:hover {
+  background: #f3f4f6;
+}
+
+.darkMode .moreMenu .menu button:hover {
+  background: #374151;
+}
+
+.filterCard {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 20px;
+  background: #f9fafb;
+  margin-bottom: 20px;
+}
+
+.darkMode .filterCard {
+  border-color: #374151;
+  background: #1f2937;
+}
+
+.filterRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  align-items: end;
+  margin-bottom: 15px;
+}
+
+.filterRow .searchGroup {
+  flex: 1;
+  min-width: 300px;
+}
+
+.filterRow .filterGroup {
+  display: flex;
+  gap: 10px;
+  align-items: end;
+}
+
+.metaRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.darkMode .metaRow {
+  color: #9ca3af;
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.summaryCard {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 15px;
+  background: #f9fafb;
+  text-align: center;
+}
+
+.darkMode .summaryCard {
+  border-color: #374151;
+  background: #1f2937;
+}
+
+.summaryCard .value {
+  font-size: 24px;
+  font-weight: bold;
+  color: #1f2937;
+}
+
+.darkMode .summaryCard .value {
+  color: #f9fafb;
+}
+
+.summaryCard .label {
+  font-size: 14px;
+  color: #6b7280;
+  margin-top: 5px;
+}
+
+.darkMode .summaryCard .label {
+  color: #9ca3af;
+}
+
+.actionsCell {
+  position: relative;
+}
+
+.rowMenu {
+  position: relative;
+  display: inline-block;
+}
+
+.rowMenu button {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 4px;
+}
+
+.rowMenu button:hover {
+  background: #e5e7eb;
+}
+
+.darkMode .rowMenu button:hover {
+  background: #374151;
+}
+
+.rowMenu .menu {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  min-width: 120px;
+  display: none;
+}
+
+.darkMode .rowMenu .menu {
+  background: #1f2937;
+  border-color: #374151;
+}
+
+.rowMenu.open .menu {
+  display: block;
+}
+
+.rowMenu .menu button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 8px 10px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.rowMenu .menu button:hover {
+  background: #f3f4f6;
+}
+
+.darkMode .rowMenu .menu button:hover {
+  background: #374151;
+}
+
+.uniformControl {
+  height: 40px;
+  font-size: 14px;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  box-sizing: border-box;
+  background: #ffffff;
+  color: #111827;
+}
+
+.darkMode .uniformControl {
+  border-color: #4b5563;
+  background: #374151;
+  color: #f9fafb;
+}
+
+.uniformControl:focus {
+  outline: none;
+  border-color: #468ef9;
+  box-shadow: 0 0 0 2px rgba(70, 143, 249, 0.2);
+}
+
+.uniformControl:disabled {
+  background: #f3f4f6;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.darkMode .uniformControl:disabled {
+  background: #1f2937;
+  color: #6b7280;
+}
