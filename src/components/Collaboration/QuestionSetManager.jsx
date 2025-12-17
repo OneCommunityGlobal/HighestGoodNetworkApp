@@ -7,7 +7,13 @@ import { ENDPOINTS } from '../../utils/URL';
 import styles from './QuestionSetManager.module.css';
 import QuestionEditModal from './QuestionEditModal';
 
-function QuestionSetManager({ formFields, setFormFields, onImportQuestions, darkMode }) {
+function QuestionSetManager({
+  formFields,
+  setFormFields,
+  onImportQuestions,
+  darkMode,
+  onTemplateSaved,
+}) {
   const [templates, setTemplates] = useState([]);
   const [templateName, setTemplateName] = useState('');
   const [selectedTemplate, setSelectedTemplate] = useState('');
@@ -66,7 +72,6 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions, dark
           const savedTemplates = localStorage.getItem('jobFormTemplates');
           if (savedTemplates) {
             setTemplates(JSON.parse(savedTemplates));
-            // setError('Using locally saved templates.');
           }
         } catch (localError) {
           console.error('Failed to load local templates:', localError);
@@ -125,6 +130,7 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions, dark
         setTemplates(templates.map(t => (t._id === updatedTemplate._id ? updatedTemplate : t)));
 
         alert(`Template "${templateName}" updated successfully!`);
+        if (onTemplateSaved) onTemplateSaved();
       } else {
         const newTemplate = await api.createTemplate({
           name: templateName,
@@ -146,6 +152,7 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions, dark
         localStorage.setItem('jobFormTemplates', JSON.stringify(updatedTemplates));
 
         alert(`Template "${templateName}" created successfully!`);
+        if (onTemplateSaved) onTemplateSaved();
       }
 
       setTemplateName('');
@@ -175,6 +182,7 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions, dark
           localStorage.setItem('jobFormTemplates', JSON.stringify(newTemplates));
         }
         alert(`Template "${templateName}" saved locally.`);
+        if (onTemplateSaved) onTemplateSaved();
       } catch (localError) {
         console.error('Failed to save local template:', localError);
         alert('Failed to save template. Please try again.');
@@ -426,6 +434,13 @@ QuestionSetManager.propTypes = {
   ).isRequired,
   setFormFields: PropTypes.func.isRequired,
   onImportQuestions: PropTypes.func.isRequired,
+  darkMode: PropTypes.bool,
+  onTemplateSaved: PropTypes.func,
+};
+
+QuestionSetManager.defaultProps = {
+  darkMode: false,
+  onTemplateSaved: null,
 };
 
 export default QuestionSetManager;

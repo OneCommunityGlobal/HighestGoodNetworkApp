@@ -14,8 +14,8 @@ import QuestionEditModal from './QuestionEditModal';
 
 function JobFormBuilder() {
   const { role } = useSelector(state => state.auth.user);
-  const [formFields, setFormFields] = useState([]);
   const darkMode = useSelector(state => state.theme.darkMode);
+  const [formFields, setFormFields] = useState([]);
   const [newField, setNewField] = useState({
     questionText: '',
     questionType: 'textbox',
@@ -75,6 +75,18 @@ function JobFormBuilder() {
   const [editingQuestion, setEditingQuestion] = useState(null);
   const [editingIndex, setEditingIndex] = useState(null);
 
+  // Reset builder after template is saved
+  const resetBuilderState = () => {
+    setFormFields([]);
+    setNewField({
+      questionText: '',
+      questionType: 'textbox',
+      options: [],
+      visible: true,
+    });
+    setNewOption('');
+  };
+
   // Auto-load existing form on component mount
   useEffect(() => {
     const loadFirstAvailableForm = async () => {
@@ -98,14 +110,6 @@ function JobFormBuilder() {
 
     loadFirstAvailableForm();
   }, []);
-
-  // const ensureFormExists = async () => {
-  //   if (!currentFormId) {
-  //     console.warn('No form ID available for this operation');
-  //     return false;
-  //   }
-  //   return true;
-  // };
 
   // CRUD Functions with Dynamic Form ID
   const cloneField = async (field, index) => {
@@ -352,7 +356,8 @@ function JobFormBuilder() {
               formFields={formFields}
               setFormFields={setFormFields}
               onImportQuestions={importQuestions}
-              darkMode={darkMode} // Pass dark mode prop
+              darkMode={darkMode}
+              onTemplateSaved={resetBuilderState} /*only new prop */
             />
             <form>
               {formFields.map((field, index) => (
