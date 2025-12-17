@@ -25,7 +25,16 @@ function TotalPeopleReport(props) {
   const fromDate = useMemo(() => startDate.toLocaleDateString('en-CA'), [startDate]);
   const toDate = useMemo(() => endDate.toLocaleDateString('en-CA'), [endDate]);
 
-  const userList = useMemo(() => userProfiles.map(user => user._id), [userProfiles]);
+  const userList = useMemo(() => {
+    const list = userProfiles?.map(user => user._id) || [];
+    // eslint-disable-next-line no-console
+    console.log('TotalPeopleReport userList created:', {
+      userProfilesLength: userProfiles?.length,
+      userListLength: list.length,
+      sampleUserIds: list.slice(0, 5),
+    });
+    return list;
+  }, [userProfiles]);
 
   const loadTimeEntriesForPeriod = useCallback(
     async controller => {
@@ -37,11 +46,23 @@ function TotalPeopleReport(props) {
       }
 
       try {
+        // eslint-disable-next-line no-console
+        console.log('TotalPeopleReport API Request:', {
+          url,
+          payload: { users: userList, fromDate, toDate },
+          usersCount: userList?.length,
+          userProfilesCount: userProfiles?.length,
+        });
         const res = await axios.post(
           url,
           { users: userList, fromDate, toDate },
           { signal: controller.signal },
         );
+        // eslint-disable-next-line no-console
+        console.log('TotalPeopleReport API Response:', {
+          dataLength: res.data?.length,
+          sampleData: res.data?.slice(0, 2),
+        });
         const timeEntries = res.data.map(entry => ({
           userId: entry.personId,
           hours: entry.hours,
@@ -51,6 +72,8 @@ function TotalPeopleReport(props) {
         }));
         setAllTimeEntries(timeEntries);
       } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error('TotalPeopleReport API Error:', error);
         setTotalPeopleReportDataLoading(false);
       }
     },
