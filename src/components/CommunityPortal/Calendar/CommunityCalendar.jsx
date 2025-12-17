@@ -363,11 +363,13 @@ function CommunityCalendar() {
                 <div>
                   <h2>{formattedSelectedDate || 'Select a date'}</h2>
                   <p className={styles.selectedDateSummary}>
-                    {selectedDateEvents.length > 0
-                      ? `${selectedDateEvents.length} ${
-                          selectedDateEvents.length === 1 ? 'event' : 'events'
-                        } scheduled`
-                      : 'No events scheduled for this date'}
+                    {(() => {
+                      if (selectedDateEvents.length === 0) {
+                        return 'No events scheduled for this date';
+                      }
+                      const eventText = selectedDateEvents.length === 1 ? 'event' : 'events';
+                      return `${selectedDateEvents.length} ${eventText} scheduled`;
+                    })()}
                   </p>
                 </div>
               </div>
