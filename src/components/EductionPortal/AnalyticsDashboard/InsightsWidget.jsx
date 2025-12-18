@@ -23,11 +23,41 @@ const MOCK_ANALYTICS_DATA = {
     { id: 5, name: 'Michael Chen', score: 89.7, avatar: 'MC', trend: 1.1 },
   ],
   topSubjects: [
-    { id: 'cs', name: 'Computer Science', averageScore: 91, color: '#3b82f6', students: 45 },
-    { id: 'math', name: 'Mathematics', averageScore: 88, color: '#8b5cf6', students: 52 },
-    { id: 'science', name: 'Science', averageScore: 85, color: '#06b6d4', students: 48 },
-    { id: 'english', name: 'English Literature', averageScore: 82, color: '#10b981', students: 50 },
-    { id: 'history', name: 'History', averageScore: 79, color: '#f59e0b', students: 42 },
+    { id: 'cs', name: 'Computer Science', averageScore: 91, color: '#10b981', students: 45 },
+    { id: 'math', name: 'Mathematics', averageScore: 88, color: '#10b981', students: 52 },
+    { id: 'science', name: 'Science', averageScore: 85, color: '#fbbf24', students: 48 },
+    { id: 'english', name: 'English Literature', averageScore: 82, color: '#fbbf24', students: 50 },
+    { id: 'history', name: 'History', averageScore: 79, color: '#ef4444', students: 42 },
+  ],
+  lifeStrategies: [
+    {
+      id: 1,
+      strategy: 'Everything you do should increase choices',
+      impact: 92,
+      color: '#10b981',
+      changeType: 'high',
+    },
+    {
+      id: 2,
+      strategy: 'Ask "what would Love do?"',
+      impact: 88,
+      color: '#10b981',
+      changeType: 'good',
+    },
+    {
+      id: 3,
+      strategy: 'Choose to lead with observation',
+      impact: 76,
+      color: '#d1d5db',
+      changeType: 'moderate',
+    },
+    {
+      id: 4,
+      strategy: 'Practice improving your emotional intelligence',
+      impact: 79,
+      color: '#fbbf24',
+      changeType: 'moderate',
+    },
   ],
 };
 
@@ -73,6 +103,8 @@ const InsightsWidget = () => {
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
       setError(errorMessage);
+
+      // eslint-disable-next-line no-console
       console.error('Error fetching analytics:', err);
 
       if (retryCount < MAX_RETRIES) {
@@ -140,211 +172,162 @@ const InsightsWidget = () => {
     >
       <div className={styles.header}>
         <div>
-          <h2 className={styles.title}>
-            <span className={styles.titleIcon}>📊</span>
-            Key Insights
-          </h2>
-          <p className={styles.subtitle}>Real-time analytics and performance metrics</p>
+          <h2 className={styles.title}>Key Insights</h2>
+          <p className={styles.subtitle}>Automatically generated performance insights and trends</p>
         </div>
         <button
           className={styles.refreshButton}
           onClick={fetchAnalyticsOverview}
-          onKeyDown={e => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
-              fetchAnalyticsOverview();
-            }
-          }}
           title="Refresh data"
           aria-label="Refresh analytics data"
           type="button"
         >
           <span className={styles.refreshIcon}>↻</span>
+          Refresh
         </button>
       </div>
 
-      <div className={styles.metricsGrid}>
-        <MetricCard
-          label="Average Score"
+      {/* Summary Cards */}
+      <div className={styles.summaryCards}>
+        <SummaryCard
+          title="Average Score"
           value={sortedMetrics.averageScore}
-          trend={sortedMetrics.scoreChange}
+          change={sortedMetrics.scoreChange}
           unit="%"
-          icon="📈"
-          color="#3b82f6"
           darkMode={darkMode}
         />
-        <MetricCard
-          label="Completion Rate"
+        <SummaryCard
+          title="Completion Rate"
           value={sortedMetrics.completionRate}
-          trend={sortedMetrics.completionChange}
+          change={sortedMetrics.completionChange}
           unit="%"
-          icon="✓"
-          color="#10b981"
           darkMode={darkMode}
         />
-        <MetricCard
-          label="Total Students"
+        <SummaryCard
+          title="Total Students"
           value={sortedMetrics.totalStudents}
-          trend={sortedMetrics.studentGrowth}
-          icon="👥"
-          color="#8b5cf6"
+          change={sortedMetrics.studentGrowth}
           isCount
           darkMode={darkMode}
         />
-        <MetricCard
-          label="Active Students"
+        <SummaryCard
+          title="Active Students"
           value={sortedMetrics.activeStudents}
-          trend={sortedMetrics.activeChange}
-          icon="🎯"
-          color="#f59e0b"
+          change={sortedMetrics.activeChange}
           isCount
           darkMode={darkMode}
         />
       </div>
 
-      <div className={styles.sectionsGrid}>
+      {/* Main Content Grid */}
+      <div className={styles.contentGrid}>
+        {/* Top Performers */}
         {sortedMetrics.topStudents && sortedMetrics.topStudents.length > 0 && (
-          <TopPerformersSection students={sortedMetrics.topStudents} darkMode={darkMode} />
+          <div className={`${styles.insightPanel} ${darkMode ? styles.darkPanel : ''}`}>
+            <h3 className={styles.panelTitle}>Top Performing Students</h3>
+            <div className={styles.performersList}>
+              {sortedMetrics.topStudents.map((student, index) => (
+                <div key={student.id} className={styles.performerItem}>
+                  <div className={styles.performerRank}>{index + 1}</div>
+                  <div className={styles.performerInfo}>
+                    <span className={styles.performerName}>{student.name}</span>
+                    <div className={styles.performerMeta}>
+                      <span className={styles.performerScore}>{student.score.toFixed(1)}%</span>
+                      <span
+                        className={student.trend > 0 ? styles.trendPositive : styles.trendNegative}
+                      >
+                        {student.trend > 0 ? '↑' : '↓'} {Math.abs(student.trend).toFixed(1)}%
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         )}
 
-        {sortedMetrics.topSubjects && sortedMetrics.topSubjects.length > 0 && (
-          <TopSubjectsSection subjects={sortedMetrics.topSubjects} darkMode={darkMode} />
+        {/* Life Strategies Impact */}
+        {sortedMetrics.lifeStrategies && sortedMetrics.lifeStrategies.length > 0 && (
+          <div className={`${styles.insightPanel} ${darkMode ? styles.darkPanel : ''}`}>
+            <h3 className={styles.panelTitle}>Impact of Life Strategies</h3>
+            <div className={styles.strategiesList}>
+              {sortedMetrics.lifeStrategies.map(strategy => (
+                <div key={strategy.id} className={styles.strategyItem}>
+                  <div className={styles.strategyLabel}>{strategy.strategy}</div>
+                  <div className={styles.strategyBar}>
+                    <div
+                      className={styles.strategyFill}
+                      style={{
+                        width: `${strategy.impact}%`,
+                        backgroundColor: strategy.color,
+                      }}
+                    />
+                  </div>
+                  <div className={styles.strategyValue}>{strategy.impact}%</div>
+                </div>
+              ))}
+            </div>
+            <div className={styles.strategyLegend}>
+              <span className={styles.legendItem}>
+                <span className={styles.legendDot} style={{ backgroundColor: '#10b981' }} />
+                High Impact (90+)
+              </span>
+              <span className={styles.legendItem}>
+                <span className={styles.legendDot} style={{ backgroundColor: '#10b981' }} />
+                Good Result (80-89)
+              </span>
+              <span className={styles.legendItem}>
+                <span className={styles.legendDot} style={{ backgroundColor: '#fbbf24' }} />
+                Moderate Impact (70-79)
+              </span>
+              <span className={styles.legendItem}>
+                <span className={styles.legendDot} style={{ backgroundColor: '#ef4444' }} />
+                Low Impact (&lt;70)
+              </span>
+            </div>
+            <div className={styles.insightNote}>
+              <strong>Actionable Insight:</strong> Consistently applying &ldquo;Everything you do
+              should increase choices&rdquo; means up to 9x lift. Therefore, observing one&apos;s
+              choices and remaining...
+              <button className={styles.learnMoreButton}>
+                Take the emotional intelligence course →
+              </button>
+            </div>
+          </div>
         )}
       </div>
     </div>
   );
 };
 
-const MetricCard = ({
-  label,
-  value,
-  trend,
-  unit = '',
-  icon,
-  color,
-  isCount = false,
-  darkMode = false,
-}) => {
-  if (!label || value === null || value === undefined) {
+const SummaryCard = ({ title, value, change, unit = '', isCount = false, darkMode = false }) => {
+  if (!title || value === null || value === undefined) {
     return null;
   }
 
-  const isTrendPositive = trend > 0;
-  const trendClass = isTrendPositive ? styles.positive : styles.negative;
+  const isPositive = change > 0;
 
   return (
-    <div
-      className={`${styles.metricCard} ${darkMode ? styles.darkMetricCard : ''}`}
-      role="region"
-      aria-label={label}
-      style={{ '--accent-color': color }}
-    >
-      <div className={styles.metricHeader}>
-        <div className={styles.iconWrapper} style={{ background: `${color}15` }}>
-          <span className={styles.metricIcon}>{icon}</span>
-        </div>
-        <div className={styles.metricLabel}>{label}</div>
-      </div>
-      <div className={styles.metricValue}>
+    <div className={`${styles.summaryCard} ${darkMode ? styles.darkSummaryCard : ''}`}>
+      <div className={styles.cardTitle}>{title}</div>
+      <div className={styles.cardValue}>
         {isCount ? value.toLocaleString() : value.toFixed(1)}
-        {unit && <span className={styles.unit}>{unit}</span>}
+        {unit && <span className={styles.cardUnit}>{unit}</span>}
       </div>
-      <div className={`${styles.metricTrend} ${trendClass}`}>
-        <span className={styles.trendIcon} aria-hidden="true">
-          {isTrendPositive ? '↑' : '↓'}
+      <div
+        className={`${styles.cardChange} ${
+          isPositive ? styles.changePositive : styles.changeNegative
+        }`}
+      >
+        <span className={styles.changeIcon}>{isPositive ? '↑' : '↓'}</span>
+        <span className={styles.changeText}>
+          {isPositive ? '+' : ''}
+          {change.toFixed(1)}
+          {isCount ? '' : unit} this month
         </span>
-        <span className={styles.trendValue}>
-          {Math.abs(trend).toFixed(1)}
-          {isCount ? '' : unit}
-        </span>
-        <span className={styles.trendLabel}>vs last month</span>
       </div>
     </div>
   );
 };
-
-const TopPerformersSection = ({ students, darkMode = false }) => (
-  <div
-    className={`${styles.topPerformersSection} ${darkMode ? styles.darkSection : ''}`}
-    role="region"
-    aria-label="Top performing students"
-  >
-    <h3 className={styles.sectionTitle}>
-      <span className={styles.sectionIcon}>🏆</span>
-      Top Performing Students
-    </h3>
-    <ul className={styles.performersList}>
-      {students.map((student, index) => (
-        <li
-          key={student.id}
-          className={`${styles.performerItem} ${darkMode ? styles.darkPerformerItem : ''}`}
-          style={{ '--index': index }}
-        >
-          <div className={styles.performerRank}>
-            <span className={`${styles.rankBadge} ${styles[`rank${index + 1}`]}`}>{index + 1}</span>
-          </div>
-          <div className={styles.performerAvatar}>{student.avatar}</div>
-          <div className={styles.performerInfo}>
-            <span className={styles.performerName}>{student.name}</span>
-            <div className={styles.performerTrend}>
-              <span className={student.trend > 0 ? styles.trendUp : styles.trendDown}>
-                {student.trend > 0 ? '↑' : '↓'} {Math.abs(student.trend).toFixed(1)}%
-              </span>
-            </div>
-          </div>
-          <div className={styles.performerScore}>
-            <span className={styles.scoreValue}>{student.score.toFixed(1)}</span>
-            <span className={styles.scoreLabel}>Score</span>
-          </div>
-        </li>
-      ))}
-    </ul>
-  </div>
-);
-
-const TopSubjectsSection = ({ subjects, darkMode = false }) => (
-  <div
-    className={`${styles.topSubjectsSection} ${darkMode ? styles.darkSection : ''}`}
-    role="region"
-    aria-label="Top performing subjects"
-  >
-    <h3 className={styles.sectionTitle}>
-      <span className={styles.sectionIcon}>📚</span>
-      Top Subjects by Performance
-    </h3>
-    <ul className={styles.subjectsList}>
-      {subjects.map((subject, index) => (
-        <li
-          key={subject.id}
-          className={`${styles.subjectItem} ${darkMode ? styles.darkSubjectItem : ''}`}
-          style={{ '--index': index, '--subject-color': subject.color }}
-        >
-          <div className={styles.subjectHeader}>
-            <span className={styles.subjectName}>{subject.name}</span>
-            <span className={styles.subjectStudents}>{subject.students} students</span>
-          </div>
-          <div className={styles.progressBarContainer}>
-            <div
-              className={styles.progressBar}
-              role="progressbar"
-              aria-valuenow={subject.averageScore}
-              aria-valuemin="0"
-              aria-valuemax="100"
-            >
-              <div
-                className={styles.progressFill}
-                style={{
-                  width: `${Math.min(subject.averageScore, 100)}%`,
-                  background: subject.color,
-                }}
-              />
-            </div>
-            <span className={styles.percentage}>{subject.averageScore.toFixed(1)}%</span>
-          </div>
-        </li>
-      ))}
-    </ul>
-  </div>
-);
 
 export default InsightsWidget;
