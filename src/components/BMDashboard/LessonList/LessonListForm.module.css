@@ -1,10 +1,10 @@
 
 .formContainer{
-  
+
   .formControl {
    max-width: unset !important;
    font-size: small !important;
- } 
+ }
  .formLabel{
   margin: 5px 0;
   font-size: small;
@@ -15,12 +15,13 @@
   margin-left: 10px;
   font-size: small !important;
   max-width: 100%;
+  width: 100%;
 }
 
 .tag .deleteTag {
   margin-left: 10px;
   background-color: red;
-  
+
 }
 
 .mainContainer{
@@ -49,8 +50,8 @@
   text-align: center !important;
   margin-right: 40px;
   width: 200px;
-  
- 
+
+
 }
 .singleFormSelect {
   background-color: #F2F2F266 !important;
@@ -70,16 +71,11 @@
   flex: 1;
 }
 
-.formControlDelete {
-  width: 100%;
-  margin-left: 0;
-  font-size: small !important;
-}
-
 .tagsInputContainer {
   display: flex;
   align-items: flex-start;
   gap: 10px;
+  flex-direction: column;
 }
 
 .tag {
@@ -97,7 +93,7 @@
 .tag .close {
   margin-left: 5px;
   cursor: pointer;
-} 
+}
 
 .tag .buttonClose {
   background-color: #F2F2F266;
@@ -105,11 +101,6 @@
   color: black;
 }
 
-.tagsInputContainer {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
 
 .tagsWrapper {
   display: flex;
@@ -143,3 +134,14 @@
    }
   }
 
+/* Dark mode styles for Filter & Sort dropdowns */
+.darkMode .singleFormSelect {
+  background-color: #1c2541 !important;
+  color: white !important;
+  border: 1px solid #444;
+}
+
+.darkMode .singleFormSelect option {
+  background-color: #1c2541;
+  color: white;
+}
