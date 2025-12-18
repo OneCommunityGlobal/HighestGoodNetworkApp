@@ -2,7 +2,7 @@ import { useSelector } from 'react-redux';
 import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { v4 as uuidv4 } from 'uuid';
-import { FaRegClock, FaIdCard, FaInfoCircle } from 'react-icons/fa';
+import { FaRegClock, FaIdCard, FaEllipsisV, FaInfoCircle } from 'react-icons/fa';
 import styles from './ActivityAttendance.module.css';
 import { useState } from 'react';
 import profileImg from '../../../assets/images/profile.png';
@@ -16,7 +16,6 @@ function deriveAttendanceMetrics({
   communityVisitors,
 }) {
   const attendingMembers = Math.max(registeredMembers - registeredNoShows, 0);
-
   const totalAttendees = attendingMembers + communityVisitors;
 
   const participationPercentage =
@@ -78,7 +77,6 @@ const exportToCSV = students => {
   link.setAttribute('href', encodedUri);
   link.setAttribute('download', 'student_data.csv');
   document.body.appendChild(link);
-  // eslint-disable-next-line testing-library/no-node-access
   link.click();
   document.body.removeChild(link);
 };
@@ -102,33 +100,72 @@ function StatsCard({ title, value, colorClass, definition }) {
   );
 }
 
-function StudentRow({ img, name, time, id }) {
+function StudentRow({ img, name, time, id, onViewDetails }) {
   return (
     <div className={styles.studentRow}>
       <div className={styles.studentLeft}>
         <img src={img} alt={name} className={styles.studentImg} />
-        <div className={styles.studentName}>{name}</div>
+        <div
+          className={styles.studentName}
+          title="View more details"
+          onClick={onViewDetails}
+          role="button"
+          tabIndex={0}
+        >
+          {name}
+        </div>
       </div>
+
       <div className={styles.studentCenter}>
         <div className={styles.studentTime}>
           <FaRegClock className={styles.studentIcon} /> {time}
         </div>
       </div>
+
       <div className={styles.studentRight}>
         <div className={styles.studentId}>
           <FaIdCard className={styles.studentIcon} /> {id}
         </div>
+
+        <button
+          type="button"
+          className={styles['student-menu-btn']}
+          title="View more details"
+          onClick={onViewDetails}
+        >
+          <FaEllipsisV />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function StudentDetailPanel({ student, onClose }) {
+  if (!student) return null;
+
+  return (
+    <div className={styles['student-detail-overlay']}>
+      <div className={styles['student-detail-panel']}>
+        <h3>Student Details</h3>
+        <p><strong>Name:</strong> {student.name}</p>
+        <p><strong>ID:</strong> {student.id}</p>
+        <p><strong>Check-in Time:</strong> {student.time}</p>
+
+        <button type="button" className={styles['close-panel-btn']} onClick={onClose}>
+          Close
+        </button>
       </div>
     </div>
   );
 }
 
 function LiveUpdates({ students, searchTerm, selectedStatus, onStatusChange }) {
+  const [selectedStudent, setSelectedStudent] = useState(null);
+
   const normalizedSearch = searchTerm.trim().toLowerCase();
 
   const filteredStudents = students.filter(student => {
     const matchesStatus = selectedStatus === 'All' || student.status === selectedStatus;
-
     const matchesSearch =
       !normalizedSearch ||
       student.name.toLowerCase().includes(normalizedSearch) ||
@@ -159,6 +196,7 @@ function LiveUpdates({ students, searchTerm, selectedStatus, onStatusChange }) {
             ))}
           </div>
         </div>
+
         <button
           className={styles.exportBtn}
           type="button"
@@ -177,12 +215,15 @@ function LiveUpdates({ students, searchTerm, selectedStatus, onStatusChange }) {
               name={student.name}
               time={student.time}
               id={student.id}
+              onViewDetails={() => setSelectedStudent(student)}
             />
           ))
         ) : (
           <p className={styles.noResults}>No students found.</p>
         )}
       </div>
+
+      <StudentDetailPanel student={selectedStudent} onClose={() => setSelectedStudent(null)} />
     </div>
   );
 }
@@ -192,63 +233,26 @@ function ActivityAttendance() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
 
-  /* -------- Raw inputs -------- */
   const totalCommunityMembers = 400;
   const registeredMembers = 100;
   const registeredNoShows = 15;
   const communityVisitors = 19;
 
-  const { attendingMembers, totalAttendees, participationPercentage } = deriveAttendanceMetrics({
-    totalCommunityMembers,
-    registeredMembers,
-    registeredNoShows,
-    communityVisitors,
-  });
+  const { attendingMembers, totalAttendees, participationPercentage } =
+    deriveAttendanceMetrics({
+      totalCommunityMembers,
+      registeredMembers,
+      registeredNoShows,
+      communityVisitors,
+    });
 
   const statsData = [
-    {
-      id: uuidv4(),
-      title: 'Total Community Members',
-      value: totalCommunityMembers,
-      colorClass: 'statGreen',
-      definition: 'Total number of people who live in the community.',
-    },
-    {
-      id: uuidv4(),
-      title: 'Registered Members',
-      value: registeredMembers,
-      colorClass: 'statBlue',
-      definition: 'Community members who registered for the event/session.',
-    },
-    {
-      id: uuidv4(),
-      title: 'Registered No-Shows',
-      value: registeredNoShows,
-      colorClass: 'statRed',
-      definition: 'Registered community members who did not attend the event.',
-    },
-    {
-      id: uuidv4(),
-      title: 'Attending Members',
-      value: attendingMembers,
-      colorClass: 'statBlue',
-      definition: 'Community members who registered and actually attended the event.',
-    },
-    {
-      id: uuidv4(),
-      title: 'Community Visitors',
-      value: communityVisitors,
-      colorClass: 'statOrange',
-      definition: 'Non-community members who attended the event.',
-    },
-    {
-      id: uuidv4(),
-      title: 'Total Attendees',
-      value: totalAttendees,
-      colorClass: 'statDarkGreen',
-      definition:
-        'Total number of people who attended the event. Used for participation and continuation decisions.',
-    },
+    { id: uuidv4(), title: 'Total Community Members', value: totalCommunityMembers, colorClass: 'statGreen', definition: 'Total number of people who live in the community.' },
+    { id: uuidv4(), title: 'Registered Members', value: registeredMembers, colorClass: 'statBlue', definition: 'Community members who registered.' },
+    { id: uuidv4(), title: 'Registered No-Shows', value: registeredNoShows, colorClass: 'statRed', definition: 'Registered members who didn’t attend.' },
+    { id: uuidv4(), title: 'Attending Members', value: attendingMembers, colorClass: 'statBlue', definition: 'Members who attended.' },
+    { id: uuidv4(), title: 'Community Visitors', value: communityVisitors, colorClass: 'statOrange', definition: 'Visitors attending.' },
+    { id: uuidv4(), title: 'Total Attendees', value: totalAttendees, colorClass: 'statDarkGreen', definition: 'Total attendees.' },
   ];
 
   const students = [
@@ -259,13 +263,8 @@ function ActivityAttendance() {
   ];
 
   return (
-    <div
-      className={`${styles.activityAttendancePage} ${
-        darkMode ? styles.activityAttendanceDarkMode : ''
-      }`}
-    >
+    <div className={`${styles.activityAttendancePage} ${darkMode ? styles.activityAttendanceDarkMode : ''}`}>
       <div className={styles.dashboardContainer}>
-        {/* Title and Search Bar */}
         <div className={styles.dashboardTitle}>
           <div className={styles.titleText}>
             <h2>Welcome Admin</h2>
@@ -292,13 +291,7 @@ function ActivityAttendance() {
 
             <div className={styles.statsGrid}>
               {statsData.map(stat => (
-                <StatsCard
-                  key={stat.id}
-                  title={stat.title}
-                  value={stat.value}
-                  colorClass={stat.colorClass}
-                  definition={stat.definition}
-                />
+                <StatsCard key={stat.id} {...stat} />
               ))}
             </div>
           </div>
