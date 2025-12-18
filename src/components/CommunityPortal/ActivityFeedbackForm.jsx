@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useSelector } from "react-redux";
 import styles from "./FeedbackModal.module.css";
 
@@ -6,15 +6,48 @@ const ActivityFeedbackModal = ({ onClose }) => {
   const [rating, setRating] = useState(0);
   const [hover, setHover] = useState(0);
   const [comment, setComment] = useState("");
+  const [moreDetails, setMoreDetails] = useState("");
+  const [showMore, setShowMore] = useState(false);
+
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
   const darkMode = useSelector((state) => state.theme.darkMode);
 
+  const modalRef = useRef(null);
+  const errorRef = useRef(null);
+
+  useEffect(() => {
+    const focusable = modalRef.current.querySelectorAll(
+      "button, textarea, [tabindex]"
+    );
+    const firstEl = focusable[0];
+    const lastEl = focusable[focusable.length - 1];
+
+    const trap = (e) => {
+      if (e.key !== "Tab") return;
+
+      if (e.shiftKey && document.activeElement === firstEl) {
+        e.preventDefault();
+        lastEl.focus();
+      } else if (!e.shiftKey && document.activeElement === lastEl) {
+        e.preventDefault();
+        firstEl.focus();
+      }
+    };
+
+    document.addEventListener("keydown", trap);
+    return () => document.removeEventListener("keydown", trap);
+  }, []);
+
   const handleSubmit = () => {
     if (!rating) {
       setError("Please select a rating.");
+      setTimeout(
+        () => errorRef.current?.scrollIntoView({ behavior: "smooth" }),
+        100
+      );
       return;
     }
 
@@ -24,13 +57,30 @@ const ActivityFeedbackModal = ({ onClose }) => {
     setTimeout(() => {
       setSubmitted(true);
       setLoading(false);
+
       setTimeout(() => onClose(), 1200);
     }, 900);
   };
 
+  const FilledStar = (
+    <svg viewBox="0 0 24 24" className={styles.starFilled}>
+      <path d="M12 .587l3.668 7.568L24 9.748l-6 5.848L19.335 24 12 19.897 4.665 24 6 15.596 0 9.748l8.332-1.593z" />
+    </svg>
+  );
+
+  const EmptyStar = (
+    <svg viewBox="0 0 24 24" className={styles.starEmpty}>
+      <path
+        d="M12 .587l3.668 7.568L24 9.748l-6 5.848L19.335 24 12 19.897 4.665 24 6 15.596 0 9.748l8.332-1.593z"
+        strokeWidth="2"
+      />
+    </svg>
+  );
+
   return (
     <div className={styles.overlay} onClick={onClose}>
       <div
+        ref={modalRef}
         className={darkMode ? styles.modalDark : styles.modalLight}
         onClick={(e) => e.stopPropagation()}
       >
@@ -40,7 +90,10 @@ const ActivityFeedbackModal = ({ onClose }) => {
 
         <h2 className={styles.heading}>Activity Feedback</h2>
 
-        {submitted && <div className={styles.success}>Feedback submitted!</div>}
+        {submitted && (
+          <div className={styles.success}>Feedback submitted!</div>
+        )}
+
         <div className={styles.starContainer}>
           {[1, 2, 3, 4, 5].map((star) => {
             const filled = star <= (hover || rating);
@@ -49,38 +102,35 @@ const ActivityFeedbackModal = ({ onClose }) => {
               <span
                 key={star}
                 className={styles.starWrapper}
+                tabIndex={0}
+                role="button"
+                aria-label={`Rate ${star} stars`}
                 onMouseEnter={() => setHover(star)}
                 onMouseLeave={() => setHover(0)}
                 onClick={() => {
                   setRating(star);
                   setError("");
                 }}
+                onKeyDown={(e) => {
+                  if (e.key === "ArrowRight" && rating < 5)
+                    setRating(rating + 1);
+                  if (e.key === "ArrowLeft" && rating > 1)
+                    setRating(rating - 1);
+                  if (e.key === "Enter") setRating(star);
+                }}
               >
-                {filled ? (
-                  <svg
-                    className={styles.starFilledIcon}
-                    viewBox="0 0 24 24"
-                    fill="#ffb400"
-                  >
-                    <path d="M12 .587l3.668 7.568L24 9.748l-6 5.848L19.335 24 12 19.897 4.665 24 6 15.596 0 9.748l8.332-1.593z" />
-                  </svg>
-                ) : (
-                  <svg
-                    className={styles.starEmptyIcon}
-                    viewBox="0 0 24 24"
-                    stroke="#ccc"
-                    fill="none"
-                    strokeWidth="2"
-                  >
-                    <path d="M12 .587l3.668 7.568L24 9.748l-6 5.848L19.335 24 12 19.897 4.665 24 6 15.596 0 9.748l8.332-1.593z" />
-                  </svg>
-                )}
+                {filled ? FilledStar : EmptyStar}
               </span>
             );
           })}
         </div>
 
-        {error && <div className={styles.error}>{error}</div>}
+        {error && (
+          <div ref={errorRef} className={styles.error}>
+            {error}
+          </div>
+        )}
+
         <textarea
           className={styles.commentBox}
           maxLength={300}
@@ -89,9 +139,36 @@ const ActivityFeedbackModal = ({ onClose }) => {
           onChange={(e) => setComment(e.target.value)}
         />
 
-        <div className={styles.charCount}>{comment.length}/300</div>
+        <div
+          className={
+            comment.length > 250
+              ? styles.charCountWarning
+              : styles.charCount
+          }
+        >
+          {comment.length}/300
+        </div>
+
         <button
-          className={rating ? styles.submitButton : styles.submitButtonDisabled}
+          className={styles.moreDetailsBtn}
+          onClick={() => setShowMore(!showMore)}
+        >
+          {showMore ? "Hide Additional Details" : "Add More Details"}
+        </button>
+
+        {showMore && (
+          <textarea
+            className={styles.moreDetailsBox}
+            placeholder="Additional optional information..."
+            value={moreDetails}
+            onChange={(e) => setMoreDetails(e.target.value)}
+          />
+        )}
+
+        <button
+          className={
+            rating ? styles.submitButton : styles.submitButtonDisabled
+          }
           disabled={!rating || loading}
           onClick={handleSubmit}
         >

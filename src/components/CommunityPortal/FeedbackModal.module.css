@@ -11,36 +11,56 @@
 .modalLight {
   background: #ffffff;
   color: #000;
-  padding: 24px;
-  width: 420px;
-  border-radius: 10px;
+  padding: 28px;
+  width: 440px;
+  border-radius: 12px;
   position: relative;
+  animation: modalPop 0.25s ease-out;
 }
 
 .modalDark {
   background: #1b2a41;
   color: #ffffff;
-  padding: 24px;
-  width: 420px;
-  border-radius: 10px;
+  padding: 28px;
+  width: 440px;
+  border-radius: 12px;
   position: relative;
+  animation: modalPop 0.25s ease-out;
+}
+
+@keyframes modalPop {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .closeBtn {
   position: absolute;
   top: 10px;
-  right: 12px;
+  right: 14px;
   border: none;
   background: transparent;
-  font-size: 20px;
+  font-size: 22px;
   color: inherit;
   cursor: pointer;
+}
+
+.heading {
+  text-align: center;
+  font-size: 22px;
+  margin-bottom: 14px;
+  font-weight: 600;
 }
 
 .starContainer {
   display: flex;
   justify-content: center;
-  gap: 10px;
+  gap: 12px;
   margin: 15px 0;
 }
 
@@ -53,16 +73,21 @@
   transform: scale(1.2);
 }
 
-.starFilledIcon,
-.starEmptyIcon {
-  width: 36px;
-  height: 36px;
+.starFilled,
+.starEmpty {
+  width: 40px;
+  height: 40px;
+  stroke: #ccc;
+}
+
+.starFilled {
+  fill: #ffb400;
 }
 
 .commentBox {
   width: 100%;
   min-height: 110px;
-  padding: 10px;
+  padding: 12px;
   border-radius: 6px;
   border: 1px solid #ccc;
   background-color: inherit;
@@ -76,19 +101,48 @@
   opacity: 0.7;
 }
 
+.charCountWarning {
+  text-align: right;
+  font-size: 12px;
+  font-weight: 700;
+  color: #ff4d4d;
+}
+
+.moreDetailsBtn {
+  border: none;
+  background: none;
+  color: #007bff;
+  cursor: pointer;
+  margin: 8px 0;
+  font-size: 14px;
+}
+
+.moreDetailsBox {
+  width: 100%;
+  min-height: 80px;
+  margin-bottom: 8px;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: inherit;
+  color: inherit;
+}
+
 .error {
   color: #ff4d4d;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
+  font-size: 14px;
 }
 
 .success {
   background: #d4edda;
   color: #155724;
   padding: 10px;
-  text-align: center;
   border-radius: 6px;
+  text-align: center;
   margin-bottom: 12px;
 }
+
 .submitButton {
   width: 100%;
   padding: 12px;
@@ -97,6 +151,7 @@
   border: none;
   border-radius: 6px;
   cursor: pointer;
+  font-size: 16px;
 }
 
 .submitButtonDisabled {
