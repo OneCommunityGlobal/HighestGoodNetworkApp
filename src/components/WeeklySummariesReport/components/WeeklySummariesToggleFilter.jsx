@@ -1,5 +1,5 @@
 import { Label } from 'reactstrap';
-import styles from './WeeklySummariesReport.module.css';
+import styles from '../WeeklySummariesReport.module.css';
 import ReactTooltip from 'react-tooltip';
 import { toggleField, setChildField } from '~/utils/stateHelper';
 

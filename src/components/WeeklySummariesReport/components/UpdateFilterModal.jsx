@@ -16,15 +16,15 @@ import {
 
 import { ENDPOINTS } from '~/utils/URL';
 import Select from 'react-select';
-import mainStyles from './WeeklySummariesReport.module.css';
+import mainStyles from '../WeeklySummariesReport.module.css';
 import { setField } from '~/utils/stateHelper';
 import FilterPreviewForm from './FilterPreviewForm';
 import FilterEditForm from './FilterEditForm';
-import DeleteFilterConfirmationModal from './components/DeleteFilterConfirmationModal';
+import DeleteFilterConfirmationModal from './DeleteFilterConfirmationModal';
 import {
   useDeleteWeeklySummariesFilterMutation,
   useUpdateWeeklySummariesFilterMutation,
-} from '../../actions/weeklySummariesFilterAction';
+} from '../../../actions/weeklySummariesFilterAction';
 import { normalizeFilter } from '~/utils/weeklySummariesFilterHelper';
 
 const defaultState = {

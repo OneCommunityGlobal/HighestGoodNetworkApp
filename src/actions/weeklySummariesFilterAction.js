@@ -80,6 +80,30 @@ export const weeklySummariesFiltersApi = createApi({
       invalidatesTags: ["WeeklySummariesFilters"],  // <-- Refresh cache
     }),
 
+    // ---------------------------------------
+    // UPDATE Existing Filter with Replaced Team codes
+    // ---------------------------------------
+    updateFiltersWithReplacedTeamCodes: builder.mutation({
+      query: ({oldTeamCodes, newTeamCode}) => ({
+        url: ENDPOINTS.WEEKLY_SUMMARIES_FILTER_REPLACE_CODES,
+        method: "POST",
+        body: { oldTeamCodes, newTeamCode },
+      }),
+      invalidatesTags: ["WeeklySummariesFilters"],  // <-- Refresh cache
+    }),
+
+    // ---------------------------------------
+    // UPDATE Existing Filter with Individual Codes changes
+    // ---------------------------------------
+    updateFiltersWithIndividualCodesChange: builder.mutation({
+      query: ({oldTeamCode, newTeamCode, userId}) => ({
+        url: ENDPOINTS.WEEKLY_SUMMARIES_FILTER_REPLACE_INDIVIDUAL_CODES,
+        method: "POST",
+        body: { oldTeamCode, newTeamCode, userId },
+      }),
+      invalidatesTags: ["WeeklySummariesFilters"],  // <-- Refresh cache
+    }),
+
   }),
 });
 
@@ -89,4 +113,6 @@ export const {
   useUpdateWeeklySummariesFilterMutation,
   useReplaceWeeklySummariesFilterMutation,
   useDeleteWeeklySummariesFilterMutation,
+  useUpdateFiltersWithReplacedTeamCodesMutation,
+  useUpdateFiltersWithIndividualCodesChangeMutation,
 } = weeklySummariesFiltersApi;

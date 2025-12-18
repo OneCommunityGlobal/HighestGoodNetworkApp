@@ -15,13 +15,13 @@ import {
 
 import { ENDPOINTS } from '~/utils/URL';
 import Select from 'react-select';
-import mainStyles from './WeeklySummariesReport.module.css';
+import mainStyles from '../WeeklySummariesReport.module.css';
 import { setField } from '~/utils/stateHelper';
 import FilterEditForm from './FilterEditForm';
 import {
   useCreateWeeklySummariesFilterMutation,
   useUpdateWeeklySummariesFilterMutation,
-} from '../../actions/weeklySummariesFilterAction';
+} from '../../../actions/weeklySummariesFilterAction';
 import { normalizeFilter } from '~/utils/weeklySummariesFilterHelper';
 
 const defaultState = {
