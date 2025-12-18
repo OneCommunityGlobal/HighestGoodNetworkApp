@@ -385,3 +385,53 @@
     text-align: center;
   }
 }
+
+/* ======================================
+   12) THREE-DOT MENU & DETAIL PANEL
+   ====================================== */
+
+.student-menu-btn {
+  background: none;
+  border: none;
+  margin-left: 12px;
+  cursor: pointer;
+  color: var(--text-color);
+  font-size: 1rem;
+  opacity: 0.7;
+}
+
+.student-menu-btn:hover {
+  opacity: 1;
+}
+
+.student-detail-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.student-detail-panel {
+  background-color: var(--card-bg);
+  padding: 24px;
+  border-radius: 8px;
+  width: 320px;
+  box-shadow: 0 4px 12px var(--shadow-color);
+}
+
+.student-detail-panel h3 {
+  margin-bottom: 12px;
+}
+
+.close-panel-btn {
+  margin-top: 16px;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  background-color: var(--heading-color);
+  color: var(--card-bg);
+  cursor: pointer;
+}

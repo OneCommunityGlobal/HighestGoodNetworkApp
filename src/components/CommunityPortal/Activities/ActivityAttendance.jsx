@@ -2,8 +2,8 @@ import { useSelector } from 'react-redux';
 import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { v4 as uuidv4 } from 'uuid';
-import { FaRegClock, FaIdCard } from 'react-icons/fa';
-import './ActivityAttendance.css';
+import { FaRegClock, FaIdCard, FaEllipsisV } from 'react-icons/fa';
+import styles from './ActivityAttendance.module.css';
 import { useState } from 'react';
 import profileImg from '../../../assets/images/profile.png';
 
@@ -35,9 +35,9 @@ function StatsChart({ stats }) {
   };
 
   return (
-    <div className="chart-container">
+    <div className={styles['chart-container']}>
       <Doughnut data={data} options={options} />
-      <div className="chart-label">{percentage}%</div>
+      <div className={styles['chart-label']}>{percentage}%</div>
     </div>
   );
 }
@@ -59,50 +59,106 @@ const exportToCSV = students => {
 
 function StatsCard({ title, value, color }) {
   return (
-    <div className="stats-card">
+    <div className={styles['stats-card']}>
       <h3>{title}</h3>
-      <p className="stats-value" style={{ color }}>
+      <p className={styles['stats-value']} style={{ color }}>
         {value}
       </p>
     </div>
   );
 }
 
-function StudentRow({ img, name, time, id }) {
+function StudentRow({ img, name, time, id, onViewDetails }) {
   return (
-    <div className="student-row">
-      <div className="student-left">
-        <img src={img} alt={name} className="student-img" />
-        <div className="student-name">{name}</div>
-      </div>
-      <div className="student-center">
-        <div className="student-time">
-          <FaRegClock className="student-icon" /> {time}
+    <div className={styles['student-row']}>
+      <div className={styles['student-left']}>
+        <img src={img} alt={name} className={styles['student-img']} />
+        <div
+          className={styles['student-name']}
+          title="View more details"
+          onClick={onViewDetails}
+          onKeyDown={e => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              onViewDetails();
+            }
+          }}
+          role="button"
+          tabIndex={0}
+        >
+          {name}
         </div>
       </div>
-      <div className="student-right">
-        <div className="student-id">
-          <FaIdCard className="student-icon" /> {id}
+
+      <div className={styles['student-center']}>
+        <div className={styles['student-time']}>
+          <FaRegClock className={styles['student-icon']} /> {time}
         </div>
+      </div>
+
+      <div className={styles['student-right']}>
+        <div className={styles['student-id']}>
+          <FaIdCard className={styles['student-icon']} /> {id}
+        </div>
+
+        <button
+          type="button"
+          className={styles['student-menu-btn']}
+          title="View more details"
+          onClick={onViewDetails}
+        >
+          <FaEllipsisV />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function StudentDetailPanel({ student, onClose }) {
+  if (!student) return null;
+
+  return (
+    <div className={styles['student-detail-overlay']}>
+      <div className={styles['student-detail-panel']}>
+        <h3>Student Details</h3>
+        <p>
+          <strong>Name:</strong> {student.name}
+        </p>
+        <p>
+          <strong>ID:</strong> {student.id}
+        </p>
+        <p>
+          <strong>Check-in Time:</strong> {student.time}
+        </p>
+
+        <button type="button" className={styles['close-panel-btn']} onClick={onClose}>
+          Close
+        </button>
       </div>
     </div>
   );
 }
 
 function LiveUpdates({ students, searchTerm }) {
+  const [selectedStudent, setSelectedStudent] = useState(null);
+
   const filteredStudents = students.filter(student =>
     student.name.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   return (
-    <div className="live-updates">
-      <div className="updates-header">
+    <div className={styles['live-updates']}>
+      <div className={styles['updates-header']}>
         <h3>Live Student Update</h3>
-        <button className="export-btn" type="button" onClick={() => exportToCSV(filteredStudents)}>
+        <button
+          className={styles['export-btn']}
+          type="button"
+          onClick={() => exportToCSV(filteredStudents)}
+        >
           Export Data
         </button>
       </div>
-      <div className="updates-list">
+
+      <div className={styles['updates-list']}>
         {filteredStudents.length > 0 ? (
           filteredStudents.map(student => (
             <StudentRow
@@ -111,12 +167,15 @@ function LiveUpdates({ students, searchTerm }) {
               name={student.name}
               time={student.time}
               id={student.id}
+              onViewDetails={() => setSelectedStudent(student)}
             />
           ))
         ) : (
-          <p className="no-results">No students found.</p>
+          <p className={styles['no-results']}>No students found.</p>
         )}
       </div>
+
+      <StudentDetailPanel student={selectedStudent} onClose={() => setSelectedStudent(null)} />
     </div>
   );
 }
@@ -140,36 +199,38 @@ function ActivityAttendance() {
   ];
 
   return (
-    <div className={`activity-attendance-page ${darkMode ? 'activity-attendance-dark-mode' : ''}`}>
-      <div className="dashboard-container">
-        {/* Title and Search Bar */}
-        <div className="dashboard-title">
-          <div className="title-text">
+    <div
+      className={`${styles['activity-attendance-page']} ${
+        darkMode ? styles['activity-attendance-dark-mode'] : ''
+      }`}
+    >
+      <div className={styles['dashboard-container']}>
+        <div className={styles['dashboard-title']}>
+          <div className={styles['title-text']}>
             <h2>Welcome Admin</h2>
             <p>Senior Admin - One Community</p>
           </div>
-          <div className="search-container">
+          <div className={styles['search-container']}>
             <input
               type="text"
               placeholder="Search Students..."
-              className="search-bar"
+              className={styles['search-bar']}
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
             />
           </div>
         </div>
 
-        <div className="dashboard-main">
-          <div className="stats-chart-container">
+        <div className={styles['dashboard-main']}>
+          <div className={styles['stats-chart-container']}>
             <StatsChart stats={statsData} />
-            <div className="stats-grid">
+            <div className={styles['stats-grid']}>
               {statsData.map(stat => (
                 <StatsCard key={stat.id} title={stat.title} value={stat.value} color={stat.color} />
               ))}
             </div>
           </div>
 
-          {/* Live Student Updates */}
           <LiveUpdates students={students} searchTerm={searchTerm} />
         </div>
       </div>
