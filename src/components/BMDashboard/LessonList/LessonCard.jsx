@@ -20,6 +20,7 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, 
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [lessonToDeleteId, setLessonToDeleteId] = useState(null);
   const lessons = useSelector(state => state.lessons.lessons);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   const getLikeStatus = lessonId => {
     const lesson = lessons.find(l => l._id === lessonId);
@@ -101,7 +102,7 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, 
                   lesson.tags.map(tag => (
                     <span
                       key={`tag-in-header-${tag}-${lesson._id}`}
-                      className={`text-muted ${styles.tagItem}`}
+                      className={`${styles.tagItem} ${darkMode ? styles.darkTag : ''}`}
                     >
                       {`#${tag}`}
                     </span>
@@ -120,7 +121,7 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, 
                   lesson.tags.map(tag => (
                     <span
                       key={`tag-in-body-${tag}-${lesson._id}`}
-                      className={`text-muted ${styles.tagItem}`}
+                      className={`${styles.tagItem} ${darkMode ? styles.darkTag : ''}`}
                     >
                       {`#${tag}`}
                     </span>

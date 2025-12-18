@@ -17,10 +17,20 @@
 }
 .cardTagAndFile {
   font-size: small;
+  color: #78bdda;
+
 }
+
+.lessonCardTag .tagItem,
 .cardTagAndFile .tagItem {
+  color: black !important;  /* Set all tags to black */
+  font-size: small;
+  white-space: nowrap;
   display: inline-block;
   margin-right: 5px;
+}
+.darkTag {
+  color: black !important;
 }
 .lessonCardHeader:first-child {
   border-radius: 0 !important;
@@ -81,15 +91,14 @@
   display: flex;
   justify-content: space-between;
 }
-.cardTagAndFile {
-  color: #78bdda;
-}
+
 
 .cardScrollable {
   max-height: 300px;
   overflow-y: auto;
 }
 .tagItem {
+  color: black !important;
   font-size: small;
   white-space: nowrap;
 }
@@ -157,9 +166,6 @@ validation-error {
   font-size: small;
   display: block;
   margin-bottom: 10px;
-}
-.editableLessonSummary.error {
-  border: 1px solid red;
 }
 
 @media (max-width: 570px) {
