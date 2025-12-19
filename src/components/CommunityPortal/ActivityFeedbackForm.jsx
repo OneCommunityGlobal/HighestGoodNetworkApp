@@ -1,29 +1,29 @@
-import React, { useState, useRef, useEffect } from "react";
-import { useSelector } from "react-redux";
-import styles from "./FeedbackModal.module.css";
+import React, { useState, useRef, useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import styles from './FeedbackModal.module.css';
 
 const ActivityFeedbackModal = ({ onClose }) => {
   const [rating, setRating] = useState(0);
   const [hover, setHover] = useState(0);
-  const [comment, setComment] = useState("");
-  const [moreDetails, setMoreDetails] = useState("");
+  const [comment, setComment] = useState('');
+  const [moreDetails, setMoreDetails] = useState('');
   const [showMore, setShowMore] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  const darkMode = useSelector((state) => state.theme.darkMode);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   const modalRef = useRef(null);
   const errorRef = useRef(null);
 
   useEffect(() => {
-    const focusable = modalRef.current.querySelectorAll("button, textarea, [tabindex]");
+    const focusable = modalRef.current.querySelectorAll('button, textarea, [tabindex]');
     const firstEl = focusable[0];
     const lastEl = focusable[focusable.length - 1];
 
-    const trap = (e) => {
-      if (e.key !== "Tab") return;
+    const trap = e => {
+      if (e.key !== 'Tab') return;
       if (e.shiftKey && document.activeElement === firstEl) {
         e.preventDefault();
         lastEl.focus();
@@ -33,27 +33,27 @@ const ActivityFeedbackModal = ({ onClose }) => {
       }
     };
 
-    const escClose = (e) => {
-      if (e.key === "Escape") onClose();
+    const escClose = e => {
+      if (e.key === 'Escape') onClose();
     };
 
-    document.addEventListener("keydown", trap);
-    document.addEventListener("keydown", escClose);
+    document.addEventListener('keydown', trap);
+    document.addEventListener('keydown', escClose);
 
     return () => {
-      document.removeEventListener("keydown", trap);
-      document.removeEventListener("keydown", escClose);
+      document.removeEventListener('keydown', trap);
+      document.removeEventListener('keydown', escClose);
     };
   }, [onClose]);
 
   const handleSubmit = () => {
     if (!rating) {
-      setError("Please select a rating.");
-      setTimeout(() => errorRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
+      setError('Please select a rating.');
+      setTimeout(() => errorRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
       return;
     }
 
-    setError("");
+    setError('');
     setLoading(true);
 
     setTimeout(() => {
@@ -71,28 +71,33 @@ const ActivityFeedbackModal = ({ onClose }) => {
 
   const EmptyStar = (
     <svg viewBox="0 0 24 24" className={styles.starEmpty}>
-      <path d="M12 .587l3.668 7.568L24 9.748l-6 5.848L19.335 24 12 19.897 4.665 24 6 15.596 0 9.748l8.332-1.593z" strokeWidth="2" />
+      <path
+        d="M12 .587l3.668 7.568L24 9.748l-6 5.848L19.335 24 12 19.897 4.665 24 6 15.596 0 9.748l8.332-1.593z"
+        strokeWidth="2"
+      />
     </svg>
   );
 
   return (
     <div
       className={styles.overlay}
-      role="button"
+      role="dialog"
+      aria-modal="true"
       tabIndex={0}
-      onClick={(e) => {
+      onMouseDown={e => {
         if (e.target === e.currentTarget) onClose();
       }}
-      onKeyDown={(e) => {
-        if ((e.key === "Enter" || e.key === " ") && e.target === e.currentTarget) onClose();
+      onKeyDown={e => {
+        if ((e.key === 'Enter' || e.key === ' ') && e.target === e.currentTarget) onClose();
       }}
     >
       <div
         ref={modalRef}
         className={darkMode ? styles.modalDark : styles.modalLight}
-        onMouseDown={(e) => e.stopPropagation()}
+        tabIndex={-1}
+        onMouseDown={e => e.stopPropagation()}
       >
-        <button className={styles.closeBtn} onClick={onClose}>
+        <button className={styles.closeBtn} onClick={onClose} aria-label="Close feedback form">
           ✕
         </button>
 
@@ -101,7 +106,7 @@ const ActivityFeedbackModal = ({ onClose }) => {
         {submitted && <div className={styles.success}>Feedback submitted!</div>}
 
         <div className={styles.starContainer}>
-          {[1, 2, 3, 4, 5].map((star) => {
+          {[1, 2, 3, 4, 5].map(star => {
             const filled = star <= (hover || rating);
             return (
               <span
@@ -114,12 +119,12 @@ const ActivityFeedbackModal = ({ onClose }) => {
                 onMouseLeave={() => setHover(0)}
                 onClick={() => {
                   setRating(star);
-                  setError("");
+                  setError('');
                 }}
-                onKeyDown={(e) => {
-                  if (e.key === "ArrowRight" && rating < 5) setRating(rating + 1);
-                  if (e.key === "ArrowLeft" && rating > 1) setRating(rating - 1);
-                  if (e.key === "Enter") setRating(star);
+                onKeyDown={e => {
+                  if (e.key === 'ArrowRight' && rating < 5) setRating(rating + 1);
+                  if (e.key === 'ArrowLeft' && rating > 1) setRating(rating - 1);
+                  if (e.key === 'Enter') setRating(star);
                 }}
               >
                 {filled ? FilledStar : EmptyStar}
@@ -139,7 +144,7 @@ const ActivityFeedbackModal = ({ onClose }) => {
           maxLength={300}
           placeholder="Optional: Add your feedback"
           value={comment}
-          onChange={(e) => setComment(e.target.value)}
+          onChange={e => setComment(e.target.value)}
         />
 
         <div className={comment.length > 250 ? styles.charCountWarning : styles.charCount}>
@@ -147,7 +152,7 @@ const ActivityFeedbackModal = ({ onClose }) => {
         </div>
 
         <button className={styles.moreDetailsBtn} onClick={() => setShowMore(!showMore)}>
-          {showMore ? "Hide Additional Details" : "Add More Details"}
+          {showMore ? 'Hide Additional Details' : 'Add More Details'}
         </button>
 
         {showMore && (
@@ -155,7 +160,7 @@ const ActivityFeedbackModal = ({ onClose }) => {
             className={styles.moreDetailsBox}
             placeholder="Additional optional information..."
             value={moreDetails}
-            onChange={(e) => setMoreDetails(e.target.value)}
+            onChange={e => setMoreDetails(e.target.value)}
           />
         )}
 
@@ -164,7 +169,7 @@ const ActivityFeedbackModal = ({ onClose }) => {
           onClick={handleSubmit}
           aria-disabled={loading || !rating}
         >
-          {loading ? "Submitting..." : "Submit Feedback"}
+          {loading ? 'Submitting...' : 'Submit Feedback'}
         </button>
       </div>
     </div>
