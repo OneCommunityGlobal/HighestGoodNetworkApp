@@ -142,7 +142,7 @@ export default function EventDashboard() {
                 <h3>{card.title}</h3>
                 <p className={styles.epStatSubtitle}>{card.subtitle}</p>
 
-                {card.participants && <div>👥 +{card.participants}</div>}
+                {!!card.participants && <div> +{card.participants}</div>}
 
                 <p
                   className={
