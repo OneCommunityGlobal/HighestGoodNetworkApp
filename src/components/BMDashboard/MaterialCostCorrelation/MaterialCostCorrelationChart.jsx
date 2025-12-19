@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   ComposedChart,
@@ -74,6 +74,16 @@ function MaterialCostCorrelationChart() {
   );
 
   const chartContainerRef = useRef(null);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+  // Handle window resize for responsive chart margins
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Fetch data when filters change
   useEffect(() => {
@@ -116,17 +126,33 @@ function MaterialCostCorrelationChart() {
     }
   }, [data]);
 
-  // Chart configuration
+  // Chart configuration with responsive margins
   const chartConfig = useMemo(() => {
     const textColor = darkMode ? '#f7fafc' : '#1a202c';
     const gridColor = darkMode ? '#4a5568' : '#e2e8f0';
 
+    // Adjust margins based on screen size
+    let margin;
+    if (windowWidth <= 480) {
+      // Mobile phones
+      margin = { top: 10, right: 40, left: 40, bottom: 70 };
+    } else if (windowWidth <= 768) {
+      // Tablets/iPads
+      margin = { top: 10, right: 50, left: 50, bottom: 75 };
+    } else if (windowWidth <= 1024) {
+      // Small laptops
+      margin = { top: 10, right: 55, left: 55, bottom: 80 };
+    } else {
+      // Desktop
+      margin = { top: 10, right: 60, left: 60, bottom: 80 };
+    }
+
     return {
       textColor,
       gridColor,
-      margin: { top: 10, right: 60, left: 60, bottom: 80 },
+      margin,
     };
-  }, [darkMode]);
+  }, [darkMode, windowWidth]);
 
   // Handlers
   const handleProjectChange = projectIds => {
@@ -277,7 +303,12 @@ function MaterialCostCorrelationChart() {
             </button>
           </div>
         ) : (
-          <ResponsiveContainer width="100%" height={600}>
+          <ResponsiveContainer
+            width="100%"
+            height={
+              windowWidth <= 480 ? 450 : windowWidth <= 768 ? 500 : windowWidth <= 1024 ? 550 : 600
+            }
+          >
             <ComposedChart data={barChartData} margin={chartConfig.margin}>
               <CartesianGrid strokeDasharray="3 3" stroke={chartConfig.gridColor} />
               <XAxis
