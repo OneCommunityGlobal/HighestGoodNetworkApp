@@ -71,18 +71,16 @@ const ActivityFeedbackModal = ({ onClose }) => {
 
   const EmptyStar = (
     <svg viewBox="0 0 24 24" className={styles.starEmpty}>
-      <path
-        d="M12 .587l3.668 7.568L24 9.748l-6 5.848L19.335 24 12 19.897 4.665 24 6 15.596 0 9.748l8.332-1.593z"
-        strokeWidth="2"
-      />
+      <path d="M12 .587l3.668 7.568L24 9.748l-6 5.848L19.335 24 12 19.897 4.665 24 6 15.596 0 9.748l8.332-1.593z" strokeWidth="2" />
     </svg>
   );
 
   return (
     <div
       className={styles.overlay}
+      role="button"
       tabIndex={0}
-      onMouseDown={(e) => {
+      onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
       onKeyDown={(e) => {
@@ -110,6 +108,7 @@ const ActivityFeedbackModal = ({ onClose }) => {
                 key={star}
                 className={styles.starWrapper}
                 tabIndex={0}
+                role="button"
                 aria-label={`Rate ${star} stars`}
                 onMouseEnter={() => setHover(star)}
                 onMouseLeave={() => setHover(0)}
@@ -147,10 +146,7 @@ const ActivityFeedbackModal = ({ onClose }) => {
           {comment.length}/300
         </div>
 
-        <button
-          className={styles.moreDetailsBtn}
-          onClick={() => setShowMore(!showMore)}
-        >
+        <button className={styles.moreDetailsBtn} onClick={() => setShowMore(!showMore)}>
           {showMore ? "Hide Additional Details" : "Add More Details"}
         </button>
 
@@ -165,8 +161,8 @@ const ActivityFeedbackModal = ({ onClose }) => {
 
         <button
           className={rating ? styles.submitButton : styles.submitButtonDisabled}
-          disabled={!rating || loading}
           onClick={handleSubmit}
+          aria-disabled={loading || !rating}
         >
           {loading ? "Submitting..." : "Submit Feedback"}
         </button>
