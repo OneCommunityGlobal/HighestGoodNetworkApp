@@ -245,11 +245,7 @@ function Collaboration() {
                 <button className={styles.searchButton} type="submit">
                   Go
                 </button>
-                <button
-                  className={styles.resetButton}
-                  type="button"
-                  onClick={handleResetFilters}
-                >
+                <button className={styles.resetButton} type="button" onClick={handleResetFilters}>
                   Reset
                 </button>
                 <button
@@ -350,11 +346,7 @@ function Collaboration() {
               <button className={styles.resetButton} type="button" onClick={handleResetFilters}>
                 Reset
               </button>
-              <button
-                className={styles.showSummaries}
-                type="button"
-                onClick={handleShowSummaries}
-              >
+              <button className={styles.showSummaries} type="button" onClick={handleShowSummaries}>
                 Show Summaries
               </button>
             </form>
@@ -384,8 +376,7 @@ function Collaboration() {
               const jobTitle = ad.title || 'Untitled Position';
               const jobCategory = ad.category || 'General';
               const jobImageUrl =
-                ad.imageUrl ||
-                `/api/placeholder/640/480?text=${encodeURIComponent(jobCategory)}`;
+                ad.imageUrl || `/api/placeholder/640/480?text=${encodeURIComponent(jobCategory)}`;
 
               return (
                 <div
@@ -412,6 +403,32 @@ function Collaboration() {
                       toast.error('Error opening job application');
                     }
                   }}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      try {
+                        if (history && typeof history.push === 'function') {
+                          history.push({
+                            pathname: '/job-application',
+                            state: {
+                              jobId: ad._id,
+                              jobTitle: jobTitle,
+                              jobDescription: ad.description || '',
+                              requirements: Array.isArray(ad.requirements) ? ad.requirements : [],
+                              category: jobCategory,
+                            },
+                          });
+                        } else {
+                          window.location.href = `/job-application`;
+                        }
+                      } catch (error) {
+                        console.error('Error navigating to job application:', error);
+                        toast.error('Error opening job application');
+                      }
+                    }
+                  }}
+                  role="button"
+                  tabIndex={0}
                   style={{ cursor: 'pointer' }}
                 >
                   <img

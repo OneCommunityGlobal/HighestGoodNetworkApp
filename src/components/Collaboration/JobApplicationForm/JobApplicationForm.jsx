@@ -65,11 +65,11 @@ function JobApplicationForm() {
         const res = await axios.get(ENDPOINTS.GET_ALL_JOB_FORMS);
         const formsArr = Array.isArray(res.data.forms) ? res.data.forms : [];
         setForms(formsArr);
-        
+
         // If we have job data from redirect, try to match it
         if (jobDataFromRedirect?.jobTitle) {
           const matchedForm = formsArr.find(
-            f => f.title?.toLowerCase() === jobDataFromRedirect.jobTitle?.toLowerCase()
+            f => f.title?.toLowerCase() === jobDataFromRedirect.jobTitle?.toLowerCase(),
           );
           if (matchedForm) {
             setSelectedJob(matchedForm.title);
@@ -78,7 +78,7 @@ function JobApplicationForm() {
             return;
           }
         }
-        
+
         const firstWithQuestions = formsArr.find(f => f.questions && f.questions.length > 0);
         if (firstWithQuestions) {
           setSelectedJob(firstWithQuestions.title);
@@ -162,8 +162,7 @@ function JobApplicationForm() {
       reactKeywords.some(keyword => roleSkillsLower.includes(keyword));
 
     // Check Minimum of 2 Months Commitment
-    requirements.twoMonthsCommitment =
-      monthsVolunteer && parseFloat(monthsVolunteer) >= 2;
+    requirements.twoMonthsCommitment = monthsVolunteer && parseFloat(monthsVolunteer) >= 2;
 
     // Check 1+ years of Full-Time JavaScript Experience
     requirements.javascriptExperience = fullTimeYears && parseFloat(fullTimeYears) >= 1;
@@ -185,7 +184,10 @@ function JobApplicationForm() {
       const text = doc.body.textContent || doc.body.innerText || '';
       return text.replace(/\s+/g, ' ').trim();
     } catch (error) {
-      return html.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+      return html
+        .replace(/<[^>]*>/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
     }
   };
 
@@ -266,7 +268,9 @@ function JobApplicationForm() {
         </section>
         <section className={styles.formContainer}>
           <header className={styles.jaHeader}>
-            <h1 className={styles.jaTitle}>Job Application – {selectedJob || 'General Position'}</h1>
+            <h1 className={styles.jaTitle}>
+              Job Application – {selectedJob || 'General Position'}
+            </h1>
             {(jobDataFromRedirect?.jobDescription || filteredForm?.description) && (
               <p className={styles.jaDesc}>
                 {stripHtml(jobDataFromRedirect?.jobDescription || filteredForm?.description || '')}
@@ -291,8 +295,10 @@ function JobApplicationForm() {
           )}
           <form className={styles.form} onSubmit={handleSubmit}>
             {/* Requirements Section - Shows checkboxes only in admin view */}
-            {isAdmin && <RequirementsSection requirements={checkRequirements()} darkMode={darkMode} />}
-            
+            {isAdmin && (
+              <RequirementsSection requirements={checkRequirements()} darkMode={darkMode} />
+            )}
+
             <div>
               Here is a questionnaire to apply to work with us. To complete your application and
               schedule a Zoom interview, please answer the pre-interview questions below.
@@ -385,7 +391,9 @@ function JobApplicationForm() {
                 />
               </div>
               <div className={styles.formGroup}>
-                <h2>6. For how long do you wish to volunteer with us? (Enter your answer in months)</h2>
+                <h2>
+                  6. For how long do you wish to volunteer with us? (Enter your answer in months)
+                </h2>
                 <input
                   type="number"
                   min="0"
@@ -541,7 +549,11 @@ function RequirementsSection({ requirements, darkMode }) {
                 readOnly
                 disabled
               />
-              <span className={`${styles.requirementCheckboxCustom} ${req.satisfied ? styles.checked : ''}`}>
+              <span
+                className={`${styles.requirementCheckboxCustom} ${
+                  req.satisfied ? styles.checked : ''
+                }`}
+              >
                 {req.satisfied && (
                   <svg
                     width="14"
