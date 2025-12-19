@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import axios from 'axios';
 import { ENDPOINTS } from '~/utils/URL';
 import { Bar } from 'react-chartjs-2';
@@ -34,6 +34,9 @@ export default function ReturnedLateChart() {
   });
   const [chartData, setChartData] = useState({ labels: [], datasets: [] });
   const [rawToolsData, setRawToolsData] = useState([]);
+  const [selectedToolDetail, setSelectedToolDetail] = useState(null);
+  const [detailOpen, setDetailOpen] = useState(false);
+  const [detailLoading, setDetailLoading] = useState(false);
   const darkMode = useSelector(state => state.theme.darkMode);
 
   useEffect(() => {
@@ -126,12 +129,32 @@ export default function ReturnedLateChart() {
     fetchData();
   }, [selectedProject, dateRange, selectedTools]);
 
+  const handleBarClick = useCallback(
+    (event, elements) => {
+      if (!elements || !elements.length) return;
+
+      const index = elements[0].index;
+      const toolName = chartData.labels[index];
+
+      const toolDetail = rawToolsData.find(t => t.toolName === toolName);
+
+      setSelectedToolDetail(toolDetail || null);
+      setDetailOpen(true);
+    },
+    [chartData.labels, rawToolsData],
+  );
+
   const options = useMemo(() => {
     const textColor = darkMode ? '#fff' : '#333';
     const datalabelCOlor = darkMode ? '#fff' : '#111';
     return {
       responsive: true,
       maintainAspectRatio: false,
+      onClick: handleBarClick,
+      interaction: {
+        mode: 'nearest',
+        intersect: true,
+      },
       plugins: {
         legend: { display: false },
         title: {
@@ -182,7 +205,7 @@ export default function ReturnedLateChart() {
         },
       },
     };
-  }, [chartData, darkMode]);
+  }, [chartData, darkMode, handleBarClick]);
 
   const handleProjectChange = e => setSelectedProject(e.target.value);
   const handleStartDateChange = date =>
@@ -284,6 +307,55 @@ export default function ReturnedLateChart() {
           <Bar ref={chartRef} data={chartData} options={options} />
         )}
       </div>
+      {detailOpen && (
+        <>
+          {/* Backdrop */}
+          <div
+            className={styles['returned-late-detail-backdrop']}
+            role="button"
+            tabIndex={0}
+            aria-label="Close tool detail panel"
+            onClick={() => setDetailOpen(false)}
+            onKeyDown={e => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                setDetailOpen(false);
+              }
+            }}
+          />
+
+          {/* Slide-out Panel */}
+          <div
+            className={`${styles['returned-late-detail-panel']} ${
+              darkMode ? styles['dark-panel'] : ''
+            }`}
+          >
+            <button
+              className={styles['returned-late-detail-close']}
+              onClick={() => setDetailOpen(false)}
+            >
+              ✕
+            </button>
+
+            {detailLoading && <p>Loading details...</p>}
+
+            {!detailLoading && selectedToolDetail && !selectedToolDetail.error && (
+              <>
+                <h3>{selectedToolDetail.toolName}</h3>
+                <p>Total Checkouts: {selectedToolDetail.totalCheckouts ?? '—'}</p>
+                <p>Late Returns: {selectedToolDetail.percentLate}%</p>
+                <p>
+                  Average Delay:{' '}
+                  {selectedToolDetail.avgDelayDays != null
+                    ? `${selectedToolDetail.avgDelayDays} days`
+                    : '—'}
+                </p>
+              </>
+            )}
+
+            {!detailLoading && selectedToolDetail?.error && <p>{selectedToolDetail.error}</p>}
+          </div>
+        </>
+      )}
     </div>
   );
 }
