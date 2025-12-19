@@ -1,150 +1,239 @@
-.downloadButtonContainer {
-  margin: 20px 0;
-  padding: 16px;
-  background-color: #f8f9fa;
-  border-radius: 8px;
-  border-left: 4px solid #007bff;
-  transition: background-color 0.3s ease, border-color 0.3s ease;
+.downloadSection {
+  margin: 32px 0;
+  padding: 0;
+  background: transparent;
 }
 
-.downloadButtonContainer.darkMode {
-  background-color: #1e1e1e;
-  border-left-color: #0d7bd6;
+.downloadSection.darkMode {
+  background: transparent;
 }
 
-.downloadControlsWrapper {
-  display: flex;
-  align-items: stretch;
-  gap: 12px;
-  flex-wrap: wrap;
-  flex-direction: column;
+.downloadHeader {
+  margin-bottom: 24px;
+}
+
+.downloadTitle {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.5px;
+}
+
+.downloadSection.darkMode .downloadTitle {
+  color: #ffffff;
+}
+
+.downloadSubtitle {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
+  font-weight: 400;
+}
+
+.downloadSection.darkMode .downloadSubtitle {
+  color: #9ca3af;
+}
+
+.downloadCard {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e5e7eb;
+  transition: all 0.3s ease;
+}
+
+.downloadSection.darkMode .downloadCard {
+  background: #1f2937;
+  border-color: #374151;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.formatSelection {
+  margin-bottom: 24px;
 }
 
 .formatLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-weight: 600;
-  color: #333;
+  color: #374151;
   font-size: 14px;
-  display: block;
-  margin-bottom: 4px;
-  transition: color 0.3s ease;
+  margin-bottom: 12px;
+  letter-spacing: -0.2px;
 }
 
-.downloadButtonContainer.darkMode .formatLabel {
-  color: #e0e0e0;
+.downloadSection.darkMode .formatLabel {
+  color: #d1d5db;
+}
+
+.labelIcon {
+  font-size: 18px;
+}
+
+.selectWrapper {
+  position: relative;
+  display: block;
+  width: 100%;
 }
 
 .formatSelect {
   width: 100%;
-  padding: 10px 12px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 14px;
-  background-color: #fff;
-  color: #333;
+  padding: 14px 40px 14px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 500;
+  background-color: #f9fafb;
+  color: #1f2937;
   cursor: pointer;
-  transition: border-color 0.3s ease, box-shadow 0.2s ease, background-color 0.3s ease, color 0.3s ease;
+  transition: all 0.2s ease;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: none;
 }
 
 .formatSelect:hover:not(:disabled) {
-  border-color: #007bff;
-  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
+  border-color: #3b82f6;
+  background-color: #ffffff;
 }
 
-.formatSelect:active:not(:disabled),
 .formatSelect:focus:not(:disabled) {
-  border-color: #007bff;
+  border-color: #3b82f6;
   outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  background-color: #ffffff;
 }
 
 .formatSelect:disabled {
-  background-color: #e9ecef;
+  background-color: #f3f4f6;
   cursor: not-allowed;
-  opacity: 0.65;
+  opacity: 0.6;
 }
 
 .formatSelect.darkModeSelect {
-  background-color: #2d2d2d;
-  color: #e0e0e0;
-  border-color: #444;
+  background-color: #111827;
+  color: #f3f4f6;
+  border-color: #374151;
 }
 
 .formatSelect.darkModeSelect:hover:not(:disabled) {
-  border-color: #0d7bd6;
-  box-shadow: 0 0 0 2px rgba(13, 123, 214, 0.1);
+  border-color: #3b82f6;
+  background-color: #1f2937;
+}
+
+.formatSelect.darkModeSelect:focus:not(:disabled) {
+  background-color: #1f2937;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
 }
 
 .formatSelect.darkModeSelect:disabled {
-  background-color: #3a3a3a;
-  color: #666;
+  background-color: #0d1117;
+  color: #6b7280;
+}
+
+/* Style select dropdown options */
+.formatSelect option {
+  padding: 12px;
+  background-color: #ffffff;
+  color: #1f2937;
+  font-size: 15px;
+}
+
+.formatSelect.darkModeSelect option {
+  background-color: #1f2937;
+  color: #f3f4f6;
+}
+
+.selectArrow {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: #6b7280;
+  font-size: 12px;
+  transition: all 0.2s ease;
+  line-height: 1;
+}
+
+.downloadSection.darkMode .selectArrow {
+  color: #9ca3af;
+}
+
+.selectWrapper:has(.formatSelect:focus) .selectArrow {
+  transform: translateY(-50%) rotate(180deg);
+  color: #3b82f6;
 }
 
 .downloadButton {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 12px;
   width: 100%;
-  padding: 12px 20px;
-  background-color: #007bff;
+  padding: 16px 24px;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
   color: white;
   border: none;
-  border-radius: 4px;
-  font-size: 14px;
+  border-radius: 12px;
+  font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
-  min-height: 44px;
+  transition: all 0.3s ease;
+  min-height: 56px;
+  box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3), 0 2px 4px -1px rgba(59, 130, 246, 0.2);
+  letter-spacing: -0.2px;
 }
 
 .downloadButton:hover:not(:disabled) {
-  background-color: #0056b3;
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+  box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.4), 0 4px 6px -2px rgba(59, 130, 246, 0.3);
 }
 
 .downloadButton:active:not(:disabled) {
   transform: translateY(0);
-  box-shadow: 0 2px 4px rgba(0, 123, 255, 0.2);
+  box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3), 0 2px 4px -1px rgba(59, 130, 246, 0.2);
 }
 
 .downloadButton:disabled {
-  background-color: #6c757d;
+  background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
   cursor: not-allowed;
   opacity: 0.7;
+  box-shadow: none;
 }
 
 .downloadButton.loading {
-  background-color: #6c757d;
+  background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
 }
 
 .downloadButton.darkModeButton {
-  background-color: #0d7bd6;
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
 }
 
 .downloadButton.darkModeButton:hover:not(:disabled) {
-  background-color: #0a5fa8;
-  box-shadow: 0 4px 8px rgba(13, 123, 214, 0.3);
+  background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
 }
 
-.downloadButton:focus {
-  outline: 2px solid #0056b3;
-  outline-offset: 2px;
-}
-
-.downloadButton.darkModeButton:focus {
-  outline: 2px solid #0a5fa8;
+.downloadButton:focus-visible {
+  outline: 3px solid #3b82f6;
   outline-offset: 2px;
 }
 
 .downloadIcon {
-  font-size: 16px;
+  width: 20px;
+  height: 20px;
   flex-shrink: 0;
 }
 
 .spinner {
   display: inline-block;
-  width: 14px;
-  height: 14px;
+  width: 16px;
+  height: 16px;
   border: 2px solid rgba(255, 255, 255, 0.3);
   border-top-color: white;
   border-radius: 50%;
@@ -158,52 +247,77 @@
   }
 }
 
-.reportMetadata {
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px solid #dee2e6;
-  color: #6c757d;
-  font-size: 12px;
-  word-break: break-word;
-  overflow-wrap: break-word;
-  transition: color 0.3s ease, border-color 0.3s ease;
+.reportInfo {
+  margin-top: 24px;
+  padding: 20px;
+  background: #f9fafb;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
 }
 
-.reportMetadata.darkModeMetadata {
-  border-top-color: #444;
-  color: #a0a0a0;
+.reportInfo.darkModeInfo {
+  background: #111827;
+  border-color: #374151;
 }
 
-.reportMetadata small {
-  display: block;
-  line-height: 1.6;
+.infoRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  font-size: 14px;
 }
 
-.reportMetadata strong {
-  color: #495057;
-  transition: color 0.3s ease;
+.infoRow:not(:last-child) {
+  border-bottom: 1px solid #e5e7eb;
 }
 
-.reportMetadata.darkModeMetadata strong {
-  color: #d0d0d0;
+.reportInfo.darkModeInfo .infoRow:not(:last-child) {
+  border-bottom-color: #374151;
+}
+
+.infoLabel {
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.reportInfo.darkModeInfo .infoLabel {
+  color: #9ca3af;
+}
+
+.infoValue {
+  color: #1f2937;
+  font-weight: 600;
+}
+
+.reportInfo.darkModeInfo .infoValue {
+  color: #f3f4f6;
 }
 
 .errorMessage {
-  margin-top: 12px;
-  padding: 10px 12px;
-  background-color: #f8d7da;
-  border: 1px solid #f5c6cb;
-  border-radius: 4px;
-  color: #721c24;
-  font-size: 13px;
+  margin-top: 20px;
+  padding: 16px 20px;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 12px;
+  color: #991b1b;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
   animation: slideIn 0.3s ease;
-  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 
 .errorMessage.darkModeError {
-  background-color: #3d1f1f;
-  border-color: #5c2e2e;
-  color: #ff9999;
+  background-color: #3f1f1f;
+  border-color: #7f1d1d;
+  color: #fca5a5;
+}
+
+.errorIcon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
 }
 
 @keyframes slideIn {
@@ -218,35 +332,27 @@
 }
 
 @media (min-width: 640px) {
-  .downloadControlsWrapper {
-    flex-direction: row;
-    align-items: center;
-  }
-
-  .formatLabel {
-    margin-bottom: 0;
-    white-space: nowrap;
-    flex: 0 0 auto;
+  .downloadCard {
+    padding: 40px;
   }
 
   .formatSelect {
-    width: auto;
-    flex: 1 1 auto;
-    min-width: 120px;
+    max-width: 320px;
   }
 
   .downloadButton {
-    width: auto;
-    flex: 0 0 auto;
-    min-width: 150px;
-    justify-content: center;
+    max-width: 400px;
+    margin: 0 auto;
   }
 }
 
 @media (min-width: 768px) {
-  .downloadButtonContainer {
-    margin: 24px 0;
-    padding: 20px;
+  .downloadTitle {
+    font-size: 28px;
+  }
+
+  .downloadSubtitle {
+    font-size: 15px;
   }
 
   .formatLabel {
@@ -254,164 +360,38 @@
   }
 
   .formatSelect {
-    padding: 10px 14px;
-    font-size: 15px;
+    font-size: 16px;
   }
 
   .downloadButton {
-    padding: 12px 24px;
-    font-size: 15px;
-    min-height: 44px;
-  }
-
-  .reportMetadata {
-    font-size: 13px;
-  }
-
-  .reportMetadata small {
-    display: inline;
+    font-size: 17px;
   }
 }
 
-@media (min-width: 1024px) {
-  .downloadButtonContainer {
-    margin: 28px 0;
+@media (max-width: 639px) {
+  .downloadCard {
     padding: 24px;
   }
 
-  .formatLabel {
-    font-size: 16px;
-  }
-
-  .formatSelect {
-    padding: 10px 16px;
-    font-size: 16px;
-  }
-
   .downloadButton {
-    padding: 12px 28px;
-    font-size: 16px;
+    font-size: 15px;
+    min-height: 52px;
   }
 
-  .reportMetadata {
-    font-size: 14px;
-  }
-}
-
-@media (min-width: 1280px) {
-  .downloadButtonContainer {
-    margin: 32px 0;
-    padding: 28px;
-    max-width: 100%;
-  }
-
-  .downloadControlsWrapper {
-    gap: 16px;
-  }
-}
-
-@media (max-width: 359px) {
-  .downloadButtonContainer {
-    margin: 12px 0;
-    padding: 12px;
-  }
-
-  .downloadButton {
-    padding: 10px 16px;
-    font-size: 12px;
-    min-height: 40px;
-  }
-
-  .formatSelect {
-    font-size: 12px;
-    padding: 8px 10px;
-  }
-
-  .formatLabel {
-    font-size: 12px;
-  }
-
-  .reportMetadata {
-    font-size: 11px;
-  }
-
-  .errorMessage {
-    font-size: 12px;
-    padding: 8px 10px;
-  }
-}
-
-@media (max-height: 500px) and (orientation: landscape) {
-  .downloadButtonContainer {
-    margin: 12px 0;
-    padding: 12px;
-  }
-
-  .downloadButton {
-    min-height: 40px;
-    padding: 8px 16px;
-  }
-
-  .formatSelect {
-    padding: 8px 10px;
-  }
-}
-
-@media (hover: none) and (pointer: coarse) {
-  .downloadButton,
-  .formatSelect {
-    min-height: 48px;
-    padding: 12px 16px;
-  }
-
-  .downloadButton:active:not(:disabled) {
-    background-color: #0056b3;
-  }
-
-  .downloadButton.darkModeButton:active:not(:disabled) {
-    background-color: #0a5fa8;
-  }
-}
-
-@media (prefers-contrast: more) {
-  .downloadButton {
-    border: 2px solid #0056b3;
-  }
-
-  .downloadButton.darkModeButton {
-    border: 2px solid #0a5fa8;
-  }
-
-  .formatSelect {
-    border: 2px solid #333;
-  }
-
-  .formatSelect.darkModeSelect {
-    border: 2px solid #666;
+  .infoRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .downloadButton,
-  .formatSelect,
-  .spinner,
-  .downloadButtonContainer,
-  .formatLabel,
-  .reportMetadata,
-  .errorMessage {
-    transition: none;
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
-
-  .spinner {
-    animation: none;
-    border-top-color: transparent;
-    border-right-color: white;
-  }
-
-  .errorMessage {
-    animation: none;
-  }
-
+  
   .downloadButton:hover:not(:disabled) {
     transform: none;
   }

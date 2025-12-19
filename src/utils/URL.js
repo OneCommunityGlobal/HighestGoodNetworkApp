@@ -494,6 +494,16 @@ export const ENDPOINTS = {
   //pull requests analysis
   PR_REVIEWS_INSIGHTS: `${APIEndpoint}/analytics/pr-review-insights`,
 
+  EDUCATOR_REPORT_EXPORT: (type, format, params = {}) => {
+    const { studentId, classId, startDate, endDate } = params;
+    let url = `${APIEndpoint}/educator/reports/export?type=${type}&format=${format}`;
+    if (studentId) url += `&studentId=${studentId}`;
+    if (classId) url += `&classId=${classId}`;
+    if (startDate) url += `&startDate=${encodeURIComponent(startDate)}`;
+    if (endDate) url += `&endDate=${encodeURIComponent(endDate)}`;
+    return url;
+  },
+
 };
 
 export const ApiEndpoint = APIEndpoint;
