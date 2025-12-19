@@ -8,7 +8,6 @@ const ActivityFeedbackModal = ({ onClose }) => {
   const [comment, setComment] = useState("");
   const [moreDetails, setMoreDetails] = useState("");
   const [showMore, setShowMore] = useState(false);
-
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -19,15 +18,12 @@ const ActivityFeedbackModal = ({ onClose }) => {
   const errorRef = useRef(null);
 
   useEffect(() => {
-    const focusable = modalRef.current.querySelectorAll(
-      "button, textarea, [tabindex]"
-    );
+    const focusable = modalRef.current.querySelectorAll("button, textarea, [tabindex]");
     const firstEl = focusable[0];
     const lastEl = focusable[focusable.length - 1];
 
     const trap = (e) => {
       if (e.key !== "Tab") return;
-
       if (e.shiftKey && document.activeElement === firstEl) {
         e.preventDefault();
         lastEl.focus();
@@ -37,17 +33,23 @@ const ActivityFeedbackModal = ({ onClose }) => {
       }
     };
 
+    const escClose = (e) => {
+      if (e.key === "Escape") onClose();
+    };
+
     document.addEventListener("keydown", trap);
-    return () => document.removeEventListener("keydown", trap);
-  }, []);
+    document.addEventListener("keydown", escClose);
+
+    return () => {
+      document.removeEventListener("keydown", trap);
+      document.removeEventListener("keydown", escClose);
+    };
+  }, [onClose]);
 
   const handleSubmit = () => {
     if (!rating) {
       setError("Please select a rating.");
-      setTimeout(
-        () => errorRef.current?.scrollIntoView({ behavior: "smooth" }),
-        100
-      );
+      setTimeout(() => errorRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
       return;
     }
 
@@ -57,7 +59,6 @@ const ActivityFeedbackModal = ({ onClose }) => {
     setTimeout(() => {
       setSubmitted(true);
       setLoading(false);
-
       setTimeout(() => onClose(), 1200);
     }, 900);
   };
@@ -78,7 +79,17 @@ const ActivityFeedbackModal = ({ onClose }) => {
   );
 
   return (
-    <div className={styles.overlay} onClick={onClose}>
+    <div
+      className={styles.overlay}
+      role="button"
+      tabIndex={0}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+      onKeyDown={(e) => {
+        if ((e.key === "Enter" || e.key === " ") && e.target === e.currentTarget) onClose();
+      }}
+    >
       <div
         ref={modalRef}
         className={darkMode ? styles.modalDark : styles.modalLight}
@@ -90,14 +101,11 @@ const ActivityFeedbackModal = ({ onClose }) => {
 
         <h2 className={styles.heading}>Activity Feedback</h2>
 
-        {submitted && (
-          <div className={styles.success}>Feedback submitted!</div>
-        )}
+        {submitted && <div className={styles.success}>Feedback submitted!</div>}
 
         <div className={styles.starContainer}>
           {[1, 2, 3, 4, 5].map((star) => {
             const filled = star <= (hover || rating);
-
             return (
               <span
                 key={star}
@@ -112,10 +120,8 @@ const ActivityFeedbackModal = ({ onClose }) => {
                   setError("");
                 }}
                 onKeyDown={(e) => {
-                  if (e.key === "ArrowRight" && rating < 5)
-                    setRating(rating + 1);
-                  if (e.key === "ArrowLeft" && rating > 1)
-                    setRating(rating - 1);
+                  if (e.key === "ArrowRight" && rating < 5) setRating(rating + 1);
+                  if (e.key === "ArrowLeft" && rating > 1) setRating(rating - 1);
                   if (e.key === "Enter") setRating(star);
                 }}
               >
@@ -139,20 +145,11 @@ const ActivityFeedbackModal = ({ onClose }) => {
           onChange={(e) => setComment(e.target.value)}
         />
 
-        <div
-          className={
-            comment.length > 250
-              ? styles.charCountWarning
-              : styles.charCount
-          }
-        >
+        <div className={comment.length > 250 ? styles.charCountWarning : styles.charCount}>
           {comment.length}/300
         </div>
 
-        <button
-          className={styles.moreDetailsBtn}
-          onClick={() => setShowMore(!showMore)}
-        >
+        <button className={styles.moreDetailsBtn} onClick={() => setShowMore(!showMore)}>
           {showMore ? "Hide Additional Details" : "Add More Details"}
         </button>
 
@@ -166,9 +163,7 @@ const ActivityFeedbackModal = ({ onClose }) => {
         )}
 
         <button
-          className={
-            rating ? styles.submitButton : styles.submitButtonDisabled
-          }
+          className={rating ? styles.submitButton : styles.submitButtonDisabled}
           disabled={!rating || loading}
           onClick={handleSubmit}
         >
