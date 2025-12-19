@@ -35,6 +35,8 @@ import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
 import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
 import InjurySeverityChart from '../Injuries/InjurySeverityChart';
 import CostPredictionChart from './CostPredictionChart';
+import ToolReplacementChart from '../../ToolReplacementChart/ToolReplacementChart';
+import MaterialCostCorrelationChart from '../MaterialCostCorrelation';
 
 const projectStatusButtons = [
   {
@@ -134,6 +136,98 @@ const projectStatusButtons = [
     textColor: '#328D1B',
   },
 ];
+
+function renderFinancialCard(i) {
+  if (i === 2) return <CostPredictionChart projectId={1} />;
+  if (i === 3) return <ActualVsPlannedCost />;
+  return <div>📊 Card</div>;
+}
+
+function renderMaterialCard(idx, quantityOfMaterialsUsedData) {
+  if (idx === 0) return <MaterialCostCorrelationChart />;
+  if (idx === 1) return <QuantityOfMaterialsUsed data={quantityOfMaterialsUsedData} />;
+  if (idx === 2) return <TotalMaterialCostPerProject />;
+  if (idx === 3) return <ToolReplacementChart />;
+  return <p>📊 Card</p>;
+}
+
+function renderProjectStatusGrid() {
+  return (
+    <div className={styles.projectStatusGrid}>
+      {projectStatusButtons.map(button => (
+        <div
+          key={uuidv4()}
+          className={`${styles.weeklyProjectSummaryCard} ${styles.statusCard}`}
+          style={{ backgroundColor: button.bgColor }}
+        >
+          <div
+            className={styles.weeklyCardTitle}
+            style={{ color: '#000' }} // FIX: always visible
+          >
+            {button.title}
+          </div>
+
+          <div
+            className={styles.weeklyStatusButton}
+            style={{ backgroundColor: button.buttonColor }}
+          >
+            <span className={styles.weeklyStatusValue}>{button.value}</span>
+          </div>
+
+          <div className="weekly-status-change" style={{ color: button.textColor }}>
+            {button.change}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function renderMaterialConsumptionCards(quantityOfMaterialsUsedData) {
+  return [0, 1, 2, 3].map(idx => (
+    <div key={uuidv4()} className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+      {renderMaterialCard(idx, quantityOfMaterialsUsedData)}
+    </div>
+  ));
+}
+
+function renderLaborTrackingCard(i) {
+  return i === 1 ? <PaidLaborCost /> : <DistributionLaborHours />;
+}
+
+function renderLaborTrackingCards() {
+  return [0, 1].map(i => (
+    <div key={uuidv4()} className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+      {renderLaborTrackingCard(i)}
+    </div>
+  ));
+}
+
+function renderFinancialsTrackingCards() {
+  return [0, 1, 2, 3].map(i => (
+    <div key={uuidv4()} className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+      {renderFinancialCard(i)}
+    </div>
+  ));
+}
+
+function DashboardSection({ title, sectionKey, className, content, isOpen, onToggle }) {
+  return (
+    <div className={`${styles.weeklyProjectSummaryDashboardSection} ${styles[className]}`}>
+      <button
+        type="button"
+        className={styles.weeklyProjectSummaryDashboardCategoryTitle}
+        onClick={() => onToggle(sectionKey)}
+      >
+        {title} <span>{isOpen ? '∧' : '∨'}</span>
+      </button>
+
+      {isOpen && (
+        <div className={styles.weeklyProjectSummaryDashboardCategoryContent}>{content}</div>
+      )}
+    </div>
+  );
+}
 
 function WeeklyProjectSummary() {
   const dispatch = useDispatch();
