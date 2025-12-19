@@ -436,6 +436,16 @@ function ActivityComments() {
     }
   };
 
+  const toggleSortType = () => {
+    setSortType(prev => (prev === 'Newest' ? 'Oldest' : 'Newest'));
+  };
+
+  const sortedComments = [...comments].sort((a, b) => {
+    if (sortType === 'Newest') return new Date(b.createdAt) - new Date(a.createdAt);
+    if (sortType === 'Oldest') return new Date(a.createdAt) - new Date(b.createdAt);
+    return 0;
+  });
+
   const handlePostComment = () => {
     if (!commentInput.trim()) return;
 
@@ -866,8 +876,8 @@ function ActivityComments() {
                 <span className={styles.commentCount}>
                   Comment <span style={{ color: '#888', fontWeight: 400 }}>{comments.length}</span>
                 </span>
-                <button className={styles.sortBtn}>
-                  <span style={{ fontSize: '1.1em' }}>⇅</span> Sort
+                <button className={styles.sortBtn} onClick={toggleSortType}>
+                  <span style={{ fontSize: '1.1em' }}>⇅</span> {sortType}
                 </button>
               </div>
               <div className={styles.commentBox}>
@@ -884,7 +894,7 @@ function ActivityComments() {
                 </button>
               </div>
               <div className={styles.commentsList}>
-                {comments.map(comment => (
+                {sortedComments.map(comment => (
                   <div key={comment.id} className={styles.commentItem}>
                     <div className={styles.commentTopRow}>
                       <img
