@@ -1,6 +1,13 @@
 import { FaChartBar, FaChartLine } from 'react-icons/fa';
 import styles from './ChartTypeToggle.module.css';
 
+/**
+ * Chart Type Toggle Component
+ * Allows switching between scatter plot and bar chart views
+ * @param {string} currentChartType - Currently selected chart type ('scatter' or 'bar')
+ * @param {Function} onToggle - Callback when chart type changes
+ * @param {boolean} darkMode - Whether dark mode is enabled
+ */
 function ChartTypeToggle({ currentChartType, onToggle, darkMode }) {
   return (
     <div className={`${styles.toggleContainer} ${darkMode ? styles.darkMode : ''}`}>

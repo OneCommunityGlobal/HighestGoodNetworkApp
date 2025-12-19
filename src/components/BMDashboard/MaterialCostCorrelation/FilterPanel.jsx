@@ -7,6 +7,20 @@ import { fetchBMProjects } from '../../../actions/bmdashboard/projectActions';
 import { fetchMaterialTypes } from '../../../actions/bmdashboard/invTypeActions';
 import styles from './FilterPanel.module.css';
 
+/**
+ * Filter Panel Component
+ * Provides filtering controls for projects, material types, and date ranges
+ * Includes preset date range buttons and reset functionality
+ * @param {Array} selectedProjects - Array of selected project IDs
+ * @param {Array} selectedMaterialTypes - Array of selected material type IDs
+ * @param {Date|null} startDate - Start date for date range filter
+ * @param {Date|null} endDate - End date for date range filter
+ * @param {Function} onProjectChange - Callback when project selection changes
+ * @param {Function} onMaterialTypeChange - Callback when material type selection changes
+ * @param {Function} onDateRangeChange - Callback when date range changes
+ * @param {Function} onResetFilters - Callback to reset all filters
+ * @param {boolean} darkMode - Whether dark mode is enabled
+ */
 function FilterPanel({
   selectedProjects,
   selectedMaterialTypes,

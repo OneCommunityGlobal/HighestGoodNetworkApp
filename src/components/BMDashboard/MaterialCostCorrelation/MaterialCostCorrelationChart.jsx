@@ -24,7 +24,6 @@ import {
   setDateRangeFilter,
   resetFilters,
 } from '../../../actions/bmdashboard/materialCostCorrelationActions';
-import BMError from '../shared/BMError';
 import styles from './MaterialCostCorrelationChart.module.css';
 
 // Color palette for material types - accessible colors for light and dark modes
@@ -43,7 +42,13 @@ const MATERIAL_COLORS = [
   '#98D8C8',
 ];
 
-// Custom Tooltip Component
+/**
+ * Custom Tooltip Component for Scatter Chart
+ * Displays project, material type, quantity, cost, and cost per unit information
+ * @param {boolean} active - Whether tooltip is active
+ * @param {Array} payload - Chart data payload
+ * @param {boolean} darkMode - Whether dark mode is enabled
+ */
 function CustomTooltip({ active, payload, darkMode }) {
   if (!active || !payload || !payload.length) {
     return null;
@@ -81,25 +86,12 @@ function CustomTooltip({ active, payload, darkMode }) {
 function MaterialCostCorrelationChart() {
   const dispatch = useDispatch();
   const darkMode = useSelector(state => state.theme?.darkMode);
-  const { loading, data, meta, error, filters } = useSelector(
+  const { loading, data, error, filters } = useSelector(
     state => state.materialCostCorrelation || {},
   );
 
   const [chartType, setChartType] = useState('scatter');
   const chartContainerRef = useRef(null);
-  const [containerWidth, setContainerWidth] = useState(window.innerWidth);
-
-  // Handle container width for responsive charts
-  useEffect(() => {
-    function handleResize() {
-      if (chartContainerRef.current) {
-        setContainerWidth(chartContainerRef.current.offsetWidth);
-      }
-    }
-    window.addEventListener('resize', handleResize);
-    handleResize();
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
 
   // Fetch data when filters change
   useEffect(() => {
