@@ -17,7 +17,7 @@
   width: 100%;
   max-width: 1400px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 12px;
   background-color: var(--chart-bg);
   border-radius: 8px;
   min-height: 600px;
@@ -48,7 +48,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
+  margin-bottom: 12px;
   flex-wrap: wrap;
   gap: 16px;
 }
@@ -62,7 +62,7 @@
 
 .chartContainer {
   width: 100%;
-  padding: 24px;
+  padding: 12px;
   background: var(--chart-bg);
   border-radius: 8px;
   min-height: 500px;

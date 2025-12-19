@@ -13,10 +13,10 @@
   --preset-button-text: #1a202c;
   --reset-button-bg: #dc3545;
   --reset-button-hover-bg: #c82333;
-  padding: 24px;
+  padding: 16px;
   background-color: var(--filter-panel-bg);
   border-radius: 8px;
-  margin-bottom: 24px;
+  margin-bottom: 12px;
   border: 1px solid var(--filter-border);
   color: var(--filter-text);
 }
