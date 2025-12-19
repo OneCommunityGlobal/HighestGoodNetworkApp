@@ -31,6 +31,8 @@ function JobApplicationForm() {
   const [monthsVolunteer, setMonthsVolunteer] = useState('');
   const [hoursPerWeek, setHoursPerWeek] = useState('');
   const [roleSkills, setRoleSkills] = useState('');
+  // User questionnaire data from referral link
+  const [userQuestionnaireData, setUserQuestionnaireData] = useState(null);
 
   const darkMode = useSelector(state => state.theme?.darkMode);
   const isAdmin = useSelector(state => {
@@ -49,15 +51,75 @@ function JobApplicationForm() {
     }
   });
 
-  // Get job data from redirect
+  // Get job data from redirect or URL parameters
   useEffect(() => {
+    // Check for referral link parameters from URL query string
+    const searchParams = new URLSearchParams(location.search);
+    const referralId = searchParams.get('ref') || searchParams.get('referral');
+    const jobId = searchParams.get('jobId') || location.pathname.split('/').pop();
+
+    // If we have a referral ID, fetch user's questionnaire data
+    if (referralId) {
+      fetchUserQuestionnaireData(referralId);
+    }
+
+    // Get job data from location state or URL
     if (location.state) {
       setJobDataFromRedirect(location.state);
       if (location.state.jobTitle) {
         setJobTitleInput(location.state.jobTitle);
       }
+    } else if (jobId && jobId !== 'job-application') {
+      // Fetch job data from API if we have a jobId
+      fetchJobData(jobId);
     }
-  }, [location.state]);
+  }, [location.state, location.search, location.pathname]);
+
+  // Fetch user's prior questionnaire data from referral link
+  const fetchUserQuestionnaireData = async referralId => {
+    try {
+      // This endpoint should return the user's questionnaire responses
+      // Adjust the endpoint based on your API structure
+      const response = await axios.get(`${ENDPOINTS.GET_USER_QUESTIONNAIRE}/${referralId}`);
+      if (response.data) {
+        setUserQuestionnaireData(response.data);
+        // Pre-fill form fields from questionnaire data
+        if (response.data.name) setApplicantName(response.data.name);
+        if (response.data.email) setApplicantEmail(response.data.email);
+        if (response.data.locationTimezone) setLocationTimezone(response.data.locationTimezone);
+        if (response.data.phone) setPhone(response.data.phone);
+        if (response.data.fullTimeYears) setFullTimeYears(response.data.fullTimeYears);
+        if (response.data.monthsVolunteer) setMonthsVolunteer(response.data.monthsVolunteer);
+        if (response.data.hoursPerWeek) setHoursPerWeek(response.data.hoursPerWeek);
+        if (response.data.roleSkills) setRoleSkills(response.data.roleSkills);
+      }
+    } catch (error) {
+      console.error('Error fetching user questionnaire data:', error);
+      // If referral data fetch fails, continue without it
+    }
+  };
+
+  // Fetch job data by ID
+  const fetchJobData = async jobId => {
+    try {
+      const response = await axios.get(`${ENDPOINTS.GET_JOB}/${jobId}`);
+      if (response.data) {
+        setJobDataFromRedirect({
+          jobId: response.data._id,
+          jobTitle: response.data.title,
+          jobDescription: response.data.description || '',
+          requirements: response.data.requirements || [],
+          category: response.data.category || 'General',
+        });
+        if (response.data.title) {
+          setJobTitleInput(response.data.title);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching job data:', error);
+      toast.error('Failed to load job details');
+    }
+  };
 
   useEffect(() => {
     async function fetchForms() {
@@ -176,6 +238,45 @@ function JobApplicationForm() {
     return requirements;
   };
 
+  // Check user requirements based on their prior questionnaire data (for user view)
+  const checkUserRequirements = () => {
+    // Use current form values or user questionnaire data
+    const userFullTimeYears = fullTimeYears || userQuestionnaireData?.fullTimeYears || '';
+    const userMonthsVolunteer = monthsVolunteer || userQuestionnaireData?.monthsVolunteer || '';
+    const userHoursPerWeek = hoursPerWeek || userQuestionnaireData?.hoursPerWeek || '';
+    const userRoleSkills = roleSkills || userQuestionnaireData?.roleSkills || '';
+    const userLocationTimezone = locationTimezone || userQuestionnaireData?.locationTimezone || '';
+
+    const requirements = {
+      reactExperience: false,
+      twoMonthsCommitment: false,
+      javascriptExperience: false,
+      timeZoneLocation: false,
+      tenHoursPerWeek: false,
+    };
+
+    // Check 1+ years of Full-Time ReactJS Experience
+    const reactKeywords = ['react', 'reactjs', 'react.js'];
+    const roleSkillsLower = (userRoleSkills || '').toLowerCase();
+    requirements.reactExperience =
+      (userFullTimeYears && parseFloat(userFullTimeYears) >= 1) ||
+      reactKeywords.some(keyword => roleSkillsLower.includes(keyword));
+
+    // Check Minimum of 2 Months Commitment
+    requirements.twoMonthsCommitment = userMonthsVolunteer && parseFloat(userMonthsVolunteer) >= 2;
+
+    // Check 1+ years of Full-Time JavaScript Experience
+    requirements.javascriptExperience = userFullTimeYears && parseFloat(userFullTimeYears) >= 1;
+
+    // Check Time Zone and Location Matches
+    requirements.timeZoneLocation = !!(userLocationTimezone && userLocationTimezone.trim());
+
+    // Check Minimum of 10 hours of work a week
+    requirements.tenHoursPerWeek = userHoursPerWeek && parseFloat(userHoursPerWeek) >= 10;
+
+    return requirements;
+  };
+
   // Helper function to strip HTML tags and clean text
   const stripHtml = html => {
     if (!html) return '';
@@ -269,7 +370,7 @@ function JobApplicationForm() {
         <section className={styles.formContainer}>
           <header className={styles.jaHeader}>
             <h1 className={styles.jaTitle}>
-              Job Application – {selectedJob || 'General Position'}
+              {jobDataFromRedirect?.jobTitle || selectedJob || 'General Position'}
             </h1>
             {(jobDataFromRedirect?.jobDescription || filteredForm?.description) && (
               <p className={styles.jaDesc}>
@@ -294,9 +395,11 @@ function JobApplicationForm() {
             </div>
           )}
           <form className={styles.form} onSubmit={handleSubmit}>
-            {/* Requirements Section - Shows checkboxes only in admin view */}
-            {isAdmin && (
+            {/* Requirements Section - Admin view shows dynamic checkboxes, User view shows static checkboxes */}
+            {isAdmin ? (
               <RequirementsSection requirements={checkRequirements()} darkMode={darkMode} />
+            ) : (
+              <UserRequirementsSection requirements={checkUserRequirements()} darkMode={darkMode} />
             )}
 
             <div>
@@ -537,6 +640,82 @@ function RequirementsSection({ requirements, darkMode }) {
 
   return (
     <div className={styles.adminRequirementsSection}>
+      <h3 className={styles.requirementsTitle}>Requirements Status</h3>
+      <div className={styles.requirementsList}>
+        {requirementList.map(req => (
+          <div key={req.id} className={styles.requirementItem}>
+            <label className={styles.requirementCheckbox}>
+              <input
+                type="checkbox"
+                className={styles.requirementCheckboxInput}
+                checked={req.satisfied}
+                readOnly
+                disabled
+              />
+              <span
+                className={`${styles.requirementCheckboxCustom} ${
+                  req.satisfied ? styles.checked : ''
+                }`}
+              >
+                {req.satisfied && (
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 14 14"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M11.6667 3.5L5.25 9.91667L2.33334 7"
+                      stroke="white"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                )}
+              </span>
+              <span style={{ color: darkMode ? '#ffffff' : undefined }}>{req.label}</span>
+            </label>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* User Requirements Section Component - Shows requirements with checkboxes for user view */
+function UserRequirementsSection({ requirements, darkMode }) {
+  const requirementList = [
+    {
+      id: 'reactExperience',
+      label: '1+ years of Full-Time ReactJS Experience',
+      satisfied: requirements.reactExperience,
+    },
+    {
+      id: 'twoMonthsCommitment',
+      label: 'Minimum of 2 Months Commitment',
+      satisfied: requirements.twoMonthsCommitment,
+    },
+    {
+      id: 'javascriptExperience',
+      label: '1+ years of Full-Time JavaScript Experience',
+      satisfied: requirements.javascriptExperience,
+    },
+    {
+      id: 'timeZoneLocation',
+      label: 'Time Zone and Location Matches',
+      satisfied: requirements.timeZoneLocation,
+    },
+    {
+      id: 'tenHoursPerWeek',
+      label: 'Minimum of 10 hours of work a week',
+      satisfied: requirements.tenHoursPerWeek,
+    },
+  ];
+
+  return (
+    <div className={styles.userRequirementsSection}>
       <h3 className={styles.requirementsTitle}>Requirements Status</h3>
       <div className={styles.requirementsList}>
         {requirementList.map(req => (

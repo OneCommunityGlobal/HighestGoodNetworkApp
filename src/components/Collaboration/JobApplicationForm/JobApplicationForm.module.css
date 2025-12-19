@@ -93,11 +93,12 @@
 }
 
 .jaTitle {
-  font-size: 1.8em;
-  font-weight: bold;
+  font-size: 2.5em;
+  font-weight: 700;
   margin-bottom: 15px;
   text-align: left;
   color: #333;
+  line-height: 1.2;
 }
 
 .jaDesc {
@@ -444,6 +445,19 @@
   min-height: 50px;
 }
 
+/* --- User Requirements Section --- */
+.userRequirementsSection {
+  margin: 20px 0;
+  padding: 15px;
+  border-top: 2px solid #98cb03;
+  border-bottom: 2px solid #98cb03;
+  background-color: #f0f0f0;
+  border-radius: 8px;
+  display: block;
+  visibility: visible;
+  min-height: 50px;
+}
+
 .requirementsTitle {
   font-size: 1.1rem;
   font-weight: 600;
@@ -522,6 +536,13 @@
 
 /* Dark mode for admin requirements */
 .darkMode .adminRequirementsSection {
+  background-color: #1c2541;
+  border-top-color: #98cb03;
+  border-bottom-color: #98cb03;
+}
+
+/* Dark mode for user requirements */
+.darkMode .userRequirementsSection {
   background-color: #1c2541;
   border-top-color: #98cb03;
   border-bottom-color: #98cb03;

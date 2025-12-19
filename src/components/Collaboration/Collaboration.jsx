@@ -58,6 +58,97 @@ function Collaboration() {
     return columns * rows;
   };
 
+  // Get category-specific image - using high-quality relevant images
+  const getCategoryImage = category => {
+    const categoryLower = (category || 'General').toLowerCase();
+
+    // High-quality, relevant images for each job category
+    const categoryImages = {
+      // Software & IT - Modern laptop/technology workspace
+      software:
+        'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=640&h=480&fit=crop&q=80',
+      it: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=640&h=480&fit=crop&q=80',
+      programming:
+        'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=640&h=480&fit=crop&q=80',
+
+      // Engineering & Technical Design - Blueprint/technical drawing
+      engineering:
+        'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=640&h=480&fit=crop&q=80',
+      technical:
+        'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=640&h=480&fit=crop&q=80',
+      design:
+        'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=640&h=480&fit=crop&q=80',
+
+      // Administrative & Support - Office workspace
+      administrative:
+        'https://images.unsplash.com/photo-1497366216548-37526070297c?w=640&h=480&fit=crop&q=80',
+      support:
+        'https://images.unsplash.com/photo-1497366216548-37526070297c?w=640&h=480&fit=crop&q=80',
+      admin:
+        'https://images.unsplash.com/photo-1497366216548-37526070297c?w=640&h=480&fit=crop&q=80',
+
+      // Electric Engineer - Electrical work/panel
+      electric:
+        'https://images.unsplash.com/photo-1621905251918-48416bd8575a?w=640&h=480&fit=crop&q=80',
+      electrical:
+        'https://images.unsplash.com/photo-1621905251918-48416bd8575a?w=640&h=480&fit=crop&q=80',
+
+      // Plumbing Engineer - Plumbing work
+      plumbing:
+        'https://images.unsplash.com/photo-1621905252507-b35492cc74b4?w=640&h=480&fit=crop&q=80',
+
+      // Culinary Chef - Professional kitchen/cooking
+      culinary:
+        'https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=640&h=480&fit=crop&q=80',
+      chef: 'https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=640&h=480&fit=crop&q=80',
+
+      // Civil Engineer - Construction site
+      civil:
+        'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=640&h=480&fit=crop&q=80',
+      construction:
+        'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=640&h=480&fit=crop&q=80',
+
+      // Nutritionist - Healthy food/wellness
+      nutrition:
+        'https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=640&h=480&fit=crop&q=80',
+      diet:
+        'https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=640&h=480&fit=crop&q=80',
+
+      // Mechanical Engineer - Mechanical/industrial work
+      mechanical:
+        'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=640&h=480&fit=crop&q=80',
+    };
+
+    // Try to find matching category
+    for (const [key, imageUrl] of Object.entries(categoryImages)) {
+      if (categoryLower.includes(key)) {
+        return imageUrl;
+      }
+    }
+
+    // Default General category - Professional workspace
+    return 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=640&h=480&fit=crop&q=80';
+  };
+
+  // Group jobs by category
+  const getUniqueCategories = () => {
+    const categoryMap = new Map();
+    jobAds.forEach(ad => {
+      if (ad && ad.category) {
+        const cat = ad.category;
+        if (!categoryMap.has(cat)) {
+          categoryMap.set(cat, {
+            category: cat,
+            count: 0,
+            firstJob: ad,
+          });
+        }
+        categoryMap.get(cat).count++;
+      }
+    });
+    return Array.from(categoryMap.values());
+  };
+
   const fetchJobAds = async () => {
     const adsPerPage = calculateAdsPerPage();
 
@@ -336,7 +427,7 @@ function Collaboration() {
             <form className={styles.searchForm} onSubmit={handleSubmit}>
               <input
                 type="text"
-                placeholder="Search by title..."
+                placeholder="Enter Job Title"
                 value={searchTerm}
                 onChange={handleSearch}
               />
@@ -354,7 +445,7 @@ function Collaboration() {
 
           <div className={styles.navbarRight}>
             <select value={selectedCategory} onChange={handleCategoryChange}>
-              <option value="">Select from Categories</option>
+              <option value="">Select From Positions</option>
               {categories.map(c => (
                 <option key={c} value={c}>
                   {c}
@@ -365,47 +456,71 @@ function Collaboration() {
         </nav>
 
         <div className={styles.headings}>
-          <h1>Like to Work With Us? Apply Now!</h1>
-          <p>Learn about who we are and who we want to work with!</p>
+          <h1 className={styles.mainHeading}>LIKE TO WORK WITH US? APPLY NOW!</h1>
         </div>
 
         <div className={styles.jobList}>
-          {jobAds.length > 0 ? (
-            jobAds.map(ad => {
-              if (!ad || !ad._id) return null;
-              const jobTitle = ad.title || 'Untitled Position';
-              const jobCategory = ad.category || 'General';
-              const jobImageUrl =
-                ad.imageUrl || `/api/placeholder/640/480?text=${encodeURIComponent(jobCategory)}`;
+          {(() => {
+            // Show categories if no search term and no category filter
+            const shouldShowCategories = !searchTerm && !selectedCategory && jobAds.length > 0;
 
-              return (
-                <div
-                  key={ad._id}
-                  className={styles.jobAd}
-                  onClick={() => {
-                    try {
-                      if (history && typeof history.push === 'function') {
-                        history.push({
-                          pathname: '/job-application',
-                          state: {
-                            jobId: ad._id,
-                            jobTitle: jobTitle,
-                            jobDescription: ad.description || '',
-                            requirements: Array.isArray(ad.requirements) ? ad.requirements : [],
-                            category: jobCategory,
-                          },
-                        });
-                      } else {
-                        window.location.href = `/job-application`;
-                      }
-                    } catch (error) {
-                      console.error('Error navigating to job application:', error);
-                      toast.error('Error opening job application');
-                    }
-                  }}
-                  onKeyDown={e => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
+            if (shouldShowCategories) {
+              const uniqueCategories = getUniqueCategories();
+              if (uniqueCategories.length > 0) {
+                return uniqueCategories.map(catInfo => {
+                  const categoryName = catInfo.category || 'General';
+                  const categoryImage = getCategoryImage(categoryName);
+
+                  return (
+                    <div
+                      key={categoryName}
+                      className={styles.jobAd}
+                      onClick={() => {
+                        setSelectedCategory(categoryName);
+                        setCurrentPage(1);
+                      }}
+                      onKeyDown={e => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          setSelectedCategory(categoryName);
+                          setCurrentPage(1);
+                        }
+                      }}
+                      role="button"
+                      tabIndex={0}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      <img
+                        src={categoryImage}
+                        alt={categoryName}
+                        loading="lazy"
+                        onError={e => {
+                          e.currentTarget.onerror = null;
+                          // Fallback to general workspace image
+                          e.currentTarget.src =
+                            'https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=640&h=480&fit=crop&q=80';
+                        }}
+                      />
+                      <h3 className={styles.categoryTitle}>{categoryName.toUpperCase()}</h3>
+                    </div>
+                  );
+                });
+              }
+            }
+
+            // Show individual jobs when filtered
+            if (jobAds.length > 0) {
+              return jobAds.map(ad => {
+                if (!ad || !ad._id) return null;
+                const jobTitle = ad.title || 'Untitled Position';
+                const jobCategory = ad.category || 'General';
+                const jobImageUrl = getCategoryImage(jobCategory);
+
+                return (
+                  <div
+                    key={ad._id}
+                    className={styles.jobAd}
+                    onClick={() => {
                       try {
                         if (history && typeof history.push === 'function') {
                           history.push({
@@ -425,45 +540,56 @@ function Collaboration() {
                         console.error('Error navigating to job application:', error);
                         toast.error('Error opening job application');
                       }
-                    }
-                  }}
-                  role="button"
-                  tabIndex={0}
-                  style={{ cursor: 'pointer' }}
-                >
-                  <img
-                    src={jobImageUrl}
-                    alt={jobTitle}
-                    loading="lazy"
-                    onError={e => {
-                      e.currentTarget.onerror = null;
-                      const category = jobCategory.toLowerCase();
-                      if (category.includes('engineering')) {
-                        e.currentTarget.src =
-                          'https://img.icons8.com/external-prettycons-flat-prettycons/47/external-job-social-media-prettycons-flat-prettycons.png';
-                      } else if (category.includes('marketing')) {
-                        e.currentTarget.src =
-                          'https://img.icons8.com/external-justicon-lineal-color-justicon/64/external-marketing-marketing-and-growth-justicon-lineal-color-justicon-1.png';
-                      } else if (category.includes('design')) {
-                        e.currentTarget.src = 'https://img.icons8.com/arcade/64/design.png';
-                      } else if (category.includes('finance')) {
-                        e.currentTarget.src =
-                          'https://img.icons8.com/cotton/64/merchant-account--v2.png';
-                      } else {
-                        e.currentTarget.src =
-                          'https://img.icons8.com/cotton/64/working-with-a-laptop--v1.png';
+                    }}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        try {
+                          if (history && typeof history.push === 'function') {
+                            history.push({
+                              pathname: '/job-application',
+                              state: {
+                                jobId: ad._id,
+                                jobTitle: jobTitle,
+                                jobDescription: ad.description || '',
+                                requirements: Array.isArray(ad.requirements) ? ad.requirements : [],
+                                category: jobCategory,
+                              },
+                            });
+                          } else {
+                            window.location.href = `/job-application`;
+                          }
+                        } catch (error) {
+                          console.error('Error navigating to job application:', error);
+                          toast.error('Error opening job application');
+                        }
                       }
                     }}
-                  />
-                  <h3>
-                    {jobTitle} - {jobCategory}
-                  </h3>
-                </div>
-              );
-            })
-          ) : (
-            <p className={styles.noJobads}>No matching jobs found.</p>
-          )}
+                    role="button"
+                    tabIndex={0}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <img
+                      src={jobImageUrl}
+                      alt={jobTitle}
+                      loading="lazy"
+                      onError={e => {
+                        e.currentTarget.onerror = null;
+                        // Fallback to general workspace image
+                        e.currentTarget.src =
+                          'https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=640&h=480&fit=crop&q=80';
+                      }}
+                    />
+                    <h3>
+                      {jobTitle} - {jobCategory}
+                    </h3>
+                  </div>
+                );
+              });
+            }
+
+            return <p className={styles.noJobads}>No matching jobs found.</p>;
+          })()}
         </div>
 
         {totalPages > 1 && (
