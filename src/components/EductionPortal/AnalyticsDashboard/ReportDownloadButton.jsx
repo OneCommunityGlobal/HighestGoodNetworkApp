@@ -215,7 +215,6 @@ const ReportDownloadButton = ({
                 </option>
               ))}
             </select>
-            <div className={styles.selectArrow}>▼</div>
           </div>
         </div>
 
