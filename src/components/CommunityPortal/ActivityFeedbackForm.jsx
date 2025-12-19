@@ -81,13 +81,9 @@ const ActivityFeedbackModal = ({ onClose }) => {
   return (
     <div
       className={styles.overlay}
-      role="button"
-      tabIndex={0}
-      onClick={e => {
+      role="presentation"
+      onMouseDown={e => {
         if (e.target === e.currentTarget) onClose();
-      }}
-      onKeyDown={e => {
-        if ((e.key === 'Enter' || e.key === ' ') && e.target === e.currentTarget) onClose();
       }}
     >
       <div
@@ -96,7 +92,7 @@ const ActivityFeedbackModal = ({ onClose }) => {
         role="dialog"
         aria-modal="true"
         tabIndex={-1}
-        onClick={e => e.stopPropagation()}
+        onMouseDown={e => e.stopPropagation()}
       >
         <button className={styles.closeBtn} onClick={onClose} aria-label="Close feedback form">
           ✕
