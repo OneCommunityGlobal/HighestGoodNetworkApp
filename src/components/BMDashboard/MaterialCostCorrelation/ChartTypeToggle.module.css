@@ -1,0 +1,53 @@
+/* Placeholder CSS - will be styled in Phase 4 */
+.toggleContainer {
+  display: flex;
+  gap: 0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.toggleButton {
+  padding: 8px 16px;
+  border: 1px solid #ccc;
+  background: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+}
+
+.toggleButton:first-child {
+  border-radius: 4px 0 0 4px;
+}
+
+.toggleButton:last-child {
+  border-radius: 0 4px 4px 0;
+  border-left: none;
+}
+
+.toggleButton.active {
+  background: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.toggleButton:hover:not(.active) {
+  background: #f0f0f0;
+}
+
+.toggleButton.darkMode {
+  background: #2d3748;
+  color: #f7fafc;
+  border-color: #4a5568;
+}
+
+.toggleButton.darkMode.active {
+  background: #007bff;
+  color: white;
+}
+
+.toggleIcon {
+  font-size: 16px;
+}
+

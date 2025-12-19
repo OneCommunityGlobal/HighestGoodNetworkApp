@@ -1,0 +1,130 @@
+/* Placeholder CSS - will be styled in Phase 4 */
+.container {
+  width: 100%;
+  padding: 20px;
+}
+
+/* Dark mode styles will be added in Phase 4 */
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.title {
+  margin: 0;
+}
+
+.chartContainer {
+  width: 100%;
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.loadingContainer,
+.errorContainer,
+.noDataContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+}
+
+.spinner {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.loadingText,
+.errorText,
+.noDataText {
+  margin-top: 20px;
+}
+
+.noDataHint {
+  margin-top: 10px;
+  font-size: 0.9em;
+  opacity: 0.7;
+}
+
+.customTooltip {
+  padding: 10px;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.customTooltipDark {
+  background: #2d3748;
+  border-color: #4a5568;
+  color: #f7fafc;
+}
+
+.customTooltipLight {
+  background: white;
+  border-color: #e2e8f0;
+  color: #1a202c;
+}
+
+.tooltipTitle {
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.tooltipRow {
+  margin: 4px 0;
+}
+
+.legendSection {
+  padding: 20px;
+  border-top: 1px solid #e2e8f0;
+  margin-top: 20px;
+}
+
+.legendTitle {
+  margin: 0 0 10px 0;
+}
+
+.legendContent {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.legendItem {
+  flex: 1;
+  min-width: 200px;
+}
+
+.retryButton {
+  margin-top: 10px;
+  padding: 8px 16px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.retryButton:hover {
+  background: #0056b3;
+}
+
