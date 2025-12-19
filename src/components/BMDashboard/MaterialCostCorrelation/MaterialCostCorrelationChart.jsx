@@ -124,7 +124,7 @@ function MaterialCostCorrelationChart() {
     return {
       textColor,
       gridColor,
-      margin: { top: 20, right: 80, left: 80, bottom: 100 },
+      margin: { top: 10, right: 60, left: 60, bottom: 80 },
     };
   }, [darkMode]);
 
@@ -277,7 +277,7 @@ function MaterialCostCorrelationChart() {
             </button>
           </div>
         ) : (
-          <ResponsiveContainer width="100%" height={500}>
+          <ResponsiveContainer width="100%" height={600}>
             <ComposedChart data={barChartData} margin={chartConfig.margin}>
               <CartesianGrid strokeDasharray="3 3" stroke={chartConfig.gridColor} />
               <XAxis
