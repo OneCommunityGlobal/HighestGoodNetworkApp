@@ -1,0 +1,96 @@
+/* Placeholder CSS - will be styled in Phase 4 */
+.filterPanel {
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.darkMode {
+  background: #1b2a41;
+  color: #f7fafc;
+}
+
+.filterGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.filterLabel {
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.dateRangeContainer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.dateSeparator {
+  margin: 0 5px;
+}
+
+.datePickerLight,
+.datePickerDark {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 100%;
+}
+
+.presetButtons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.presetButtonLight,
+.presetButtonDark {
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  background: white;
+}
+
+.presetButtonLight:hover {
+  background: #f0f0f0;
+}
+
+.resetButton {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.resetButtonLight {
+  background: #dc3545;
+  color: white;
+}
+
+.resetButtonLight:hover {
+  background: #c82333;
+}
+
+.resetButtonDark {
+  background: #6c757d;
+  color: white;
+}
+
+.resetButtonDark:hover {
+  background: #5a6268;
+}
+
+/* React-select styling will be added in Phase 4 */
+
