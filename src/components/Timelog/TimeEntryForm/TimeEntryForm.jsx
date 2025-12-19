@@ -346,7 +346,7 @@ function TimeEntryForm(props) {
       return;
     }
 
-    const { hours: formHours, minutes: formMinutes, personId, taskId } = formValues;
+    const { hours: formHours, minutes: formMinutes, personId, taskId, isTangible } = formValues;
     const timeEntry = { ...formValues };
     const isTimeModified = edit && (initialHours !== formHours || initialMinutes !== formMinutes);
 
@@ -403,6 +403,16 @@ function TimeEntryForm(props) {
           const offset = today.week() - date.week();
           props.getTimeEntriesForWeek(timeEntryUserId, Math.min(offset, 3));
           clearForm();
+
+          if(isTangible) {
+            dispatch(
+              updateIndividualTaskTime({
+                newTime: { hours: formHours, minutes: formMinutes },
+                taskId,
+                personId,
+              }),
+            );
+          }
           break;
         }
         case 'WeeklyTab':
