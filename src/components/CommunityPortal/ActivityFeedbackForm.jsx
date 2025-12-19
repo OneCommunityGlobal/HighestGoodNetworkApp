@@ -81,9 +81,8 @@ const ActivityFeedbackModal = ({ onClose }) => {
   return (
     <div
       className={styles.overlay}
-      role="button"
       tabIndex={0}
-      onClick={(e) => {
+      onMouseDown={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
       onKeyDown={(e) => {
@@ -93,7 +92,7 @@ const ActivityFeedbackModal = ({ onClose }) => {
       <div
         ref={modalRef}
         className={darkMode ? styles.modalDark : styles.modalLight}
-        onClick={(e) => e.stopPropagation()}
+        onMouseDown={(e) => e.stopPropagation()}
       >
         <button className={styles.closeBtn} onClick={onClose}>
           ✕
@@ -111,7 +110,6 @@ const ActivityFeedbackModal = ({ onClose }) => {
                 key={star}
                 className={styles.starWrapper}
                 tabIndex={0}
-                role="button"
                 aria-label={`Rate ${star} stars`}
                 onMouseEnter={() => setHover(star)}
                 onMouseLeave={() => setHover(0)}
@@ -149,7 +147,10 @@ const ActivityFeedbackModal = ({ onClose }) => {
           {comment.length}/300
         </div>
 
-        <button className={styles.moreDetailsBtn} onClick={() => setShowMore(!showMore)}>
+        <button
+          className={styles.moreDetailsBtn}
+          onClick={() => setShowMore(!showMore)}
+        >
           {showMore ? "Hide Additional Details" : "Add More Details"}
         </button>
 
