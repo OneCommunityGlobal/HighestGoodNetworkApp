@@ -55,6 +55,26 @@ const formatDate = date => {
   return null;
 };
 
+// Helper function to validate MongoDB ObjectId format
+const isValidObjectId = id => {
+  if (!id || typeof id !== 'string') return false;
+  return /^[0-9a-fA-F]{24}$/.test(id);
+};
+
+// Helper function to validate date range
+const validateDateRange = (startDate, endDate) => {
+  if (!startDate || !endDate) return { valid: true };
+  const start = startDate instanceof Date ? startDate : new Date(startDate);
+  const end = endDate instanceof Date ? endDate : new Date(endDate);
+  if (start > end) {
+    return {
+      valid: false,
+      error: 'Start date cannot be after end date',
+    };
+  }
+  return { valid: true };
+};
+
 // Thunk Action for Fetching Data
 export const fetchMaterialCostCorrelation = (
   projectIds = [],
@@ -63,6 +83,48 @@ export const fetchMaterialCostCorrelation = (
   endDate = null,
 ) => async dispatch => {
   try {
+    // Client-side validation
+    const dateValidation = validateDateRange(startDate, endDate);
+    if (!dateValidation.valid) {
+      const validationError = dateValidation.error;
+      // eslint-disable-next-line no-console
+      console.warn('[MaterialCostCorrelation] Validation failed:', validationError, {
+        startDate,
+        endDate,
+      });
+      toast.warning(validationError, {
+        toastId: 'materialCostCorrelationValidation',
+        autoClose: 5000,
+      });
+      dispatch(fetchMaterialCostCorrelationFailure(validationError));
+      return;
+    }
+
+    // Validate ObjectIds if provided
+    const invalidProjectIds =
+      projectIds && projectIds.length > 0
+        ? projectIds.filter(id => !isValidObjectId(id))
+        : [];
+    const invalidMaterialTypeIds =
+      materialTypeIds && materialTypeIds.length > 0
+        ? materialTypeIds.filter(id => !isValidObjectId(id))
+        : [];
+
+    if (invalidProjectIds.length > 0 || invalidMaterialTypeIds.length > 0) {
+      const validationError = 'Invalid project or material type IDs provided';
+      // eslint-disable-next-line no-console
+      console.warn('[MaterialCostCorrelation] Validation failed:', validationError, {
+        invalidProjectIds,
+        invalidMaterialTypeIds,
+      });
+      toast.warning(validationError, {
+        toastId: 'materialCostCorrelationValidation',
+        autoClose: 5000,
+      });
+      dispatch(fetchMaterialCostCorrelationFailure(validationError));
+      return;
+    }
+
     dispatch(fetchMaterialCostCorrelationRequest());
 
     // Build query parameters
@@ -92,34 +154,104 @@ export const fetchMaterialCostCorrelation = (
       ? `${ENDPOINTS.BM_MATERIAL_COST_CORRELATION}?${queryString}`
       : ENDPOINTS.BM_MATERIAL_COST_CORRELATION;
 
+    // console.log('[MaterialCostCorrelation] Fetching data:', {
+    //   url,
+    //   projectIds,
+    //   materialTypeIds,
+    //   startDate: formattedStartDate,
+    //   endDate: formattedEndDate,
+    //   timestamp: new Date().toISOString(),
+    // });
+
     // Make API request
     const response = await axios.get(url);
+
+    // Validate response structure
+    if (!response.data) {
+      throw new Error('Invalid response: missing data property');
+    }
+
+    console.log('[MaterialCostCorrelation] Success:', {
+      dataPoints: response.data?.data?.length || 0,
+      timestamp: new Date().toISOString(),
+    });
 
     // Dispatch success action with response data
     dispatch(fetchMaterialCostCorrelationSuccess(response.data));
   } catch (error) {
-    // Extract error message from response
+    // Extract error message based on error type
     let errorMessage = 'Failed to fetch material cost correlation data';
+    let errorType = 'unknown';
+    let statusCode = null;
+
     if (error.response) {
       // Server responded with error status
-      errorMessage =
-        error.response.data?.error || error.response.data?.message || errorMessage;
+      statusCode = error.response.status;
+      errorType = 'server';
+
+      if (statusCode === 401) {
+        errorMessage = 'Your session has expired. Please log in again.';
+        // Store attempted action for retry after login
+        sessionStorage.setItem(
+          'materialCostCorrelationRetryAction',
+          JSON.stringify({ projectIds, materialTypeIds, startDate, endDate }),
+        );
+        // Redirect to login after short delay
+        setTimeout(() => {
+          window.location.href = '/bmdashboard/login';
+        }, 2000);
+      } else if (statusCode === 403) {
+        errorMessage =
+          'You do not have permission to access this data. Please contact an administrator for BM Portal access.';
+        errorType = 'permission';
+      } else if (statusCode >= 500) {
+        errorMessage = 'Server error. Please try again later or contact support if the issue persists.';
+        errorType = 'server';
+      } else {
+        errorMessage =
+          error.response.data?.error ||
+          error.response.data?.message ||
+          `Request failed with status ${statusCode}`;
+      }
     } else if (error.request) {
       // Request was made but no response received
-      errorMessage = 'Network error: Unable to connect to server';
+      errorMessage = 'Network error: Unable to connect to server. Please check your internet connection.';
+      errorType = 'network';
     } else {
       // Something else happened
       errorMessage = error.message || errorMessage;
+      if (errorMessage.includes('Invalid response')) {
+        errorType = 'malformed';
+      }
     }
+
+    // eslint-disable-next-line no-console
+    // eslint-disable-next-line no-console
+    console.error('[MaterialCostCorrelation] Error:', {
+      errorType,
+      statusCode,
+      message: errorMessage,
+      error: error,
+      timestamp: new Date().toISOString(),
+    });
 
     // Dispatch failure action
     dispatch(fetchMaterialCostCorrelationFailure(errorMessage));
 
-    // Display error toast notification
-    toast.error(errorMessage, {
-      toastId: 'materialCostCorrelationError',
-      autoClose: 5000,
-    });
+    // Display error toast notification with appropriate configuration
+    const toastOptions = {
+      toastId: `materialCostCorrelationError-${errorType}`,
+      autoClose: errorType === 'network' ? false : errorType === 'permission' ? false : 5000,
+      position: 'top-right',
+      closeOnClick: true,
+      pauseOnHover: true,
+    };
+
+    if (errorType === 'permission' || errorType === 'network') {
+      toast.error(errorMessage, toastOptions);
+    } else {
+      toast.error(errorMessage, toastOptions);
+    }
   }
 };
 
