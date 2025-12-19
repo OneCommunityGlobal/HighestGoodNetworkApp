@@ -7,7 +7,13 @@ import { ENDPOINTS } from '../../utils/URL';
 import styles from './QuestionSetManager.module.css';
 import QuestionEditModal from './QuestionEditModal';
 
-function QuestionSetManager({ formFields, setFormFields, onImportQuestions, darkMode }) {
+function QuestionSetManager({
+  formFields,
+  setFormFields,
+  onImportQuestions,
+  darkMode,
+  onClearTemplate,
+}) {
   const [templates, setTemplates] = useState([]);
   const [templateName, setTemplateName] = useState('');
   const [selectedTemplate, setSelectedTemplate] = useState('');
@@ -16,6 +22,7 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions, dark
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editingQuestion, setEditingQuestion] = useState(null);
   const [editingIndex, setEditingIndex] = useState(null);
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
 
   const api = {
     // Get all templates
@@ -311,6 +318,13 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions, dark
     }
   };
 
+  // Clear all template fields
+  const handleClearTemplate = () => {
+    setFormFields([]);
+    setShowClearConfirm(false);
+    alert('Template cleared successfully!');
+  };
+
   const handleSaveEditedQuestion = editedQuestion => {
     if (editingIndex !== null) {
       const updatedQuestion = {
@@ -380,6 +394,24 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions, dark
             disabled={isLoading || !selectedTemplate}
           >
             {isLoading ? 'Loading...' : 'Clone with Template'}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              if (formFields.length > 0) {
+                const confirmClear = window.confirm(
+                  'Are you sure you want to clear all the fields in this template? This action cannot be undone.',
+                );
+                if (confirmClear) {
+                  handleClearTemplate();
+                }
+              }
+            }}
+            className={styles.clearTemplateButton}
+            disabled={formFields.length === 0}
+            title="Remove all fields and reset the template to a clean state"
+          >
+            Clear Template
           </button>
           <button
             type="button"

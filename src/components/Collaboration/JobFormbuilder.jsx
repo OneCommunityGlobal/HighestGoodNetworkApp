@@ -352,7 +352,7 @@ function JobFormBuilder() {
               formFields={formFields}
               setFormFields={setFormFields}
               onImportQuestions={importQuestions}
-              darkMode={darkMode} // Pass dark mode prop
+              darkMode={darkMode}
             />
             <form>
               {formFields.map((field, index) => (
@@ -499,6 +499,11 @@ function JobFormBuilder() {
                 onCancel={handleCancelEdit}
               />
             )}
+            <div className={styles.saveSection}>
+              <button type="submit" className={styles.jobSubmitButton} onClick={handleSubmit}>
+                Save Form
+              </button>
+            </div>
           </div>
         ) : null}
       </div>

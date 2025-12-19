@@ -202,29 +202,6 @@
   background-color: #45a049;
 }
 
-/* Submit Button */
-.jobSubmitButton {
-  display: block;
-  width: 100%;
-  /* max-width: 300px; */
-  padding: 10px;
-  text-align: center;
-  margin-top: 20px;
-  margin-left:auto;
-  margin-right:auto;
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  font-size: 16px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.jobSubmitButton:hover {
-  background-color: #45a049;
-}
-
 /* Dark mode styles following your collaboration component pattern */
 .darkMode {
   background-color: #1B2A41;
@@ -339,4 +316,33 @@
 
 .darkMode .jobformTitle {
   color: white;
+}
+
+/* Submit Button */
+.jobSubmitButton {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  text-align: center;
+  margin-top: 20px;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.jobSubmitButton:hover {
+  background-color: #45a049;
+}
+
+.saveSection {
+  display: flex;
+  justify-content: center;
+  margin-top: 15px;
+  margin-bottom: 20px;
 }
