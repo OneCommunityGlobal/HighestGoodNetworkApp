@@ -608,7 +608,6 @@ export default (
           exact
           component={AnalyticsDashboard}
           fallback
-        // allowedRoles={[UserRole.Administrator, UserRole.Owner]}
         />
         {/* ----- BEGIN BM Dashboard Routing ----- */}
         <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
@@ -751,11 +750,6 @@ export default (
           path="/communityportal/Activities/Register/:activityId"
           exact
           component={Register}
-        />
-        <CPProtectedRoute
-          path="/communityportal/feedback"
-          exact
-          component={ActivityFeedbackForm}
         />
         {/* Listing and Bidding Routes */}
         <LBProtectedRoute path="/lbdashboard" exact component={LBDashboard} />
