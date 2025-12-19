@@ -232,6 +232,9 @@ export const ENDPOINTS = {
   REMOVE_EMAIL_SUBSCRIPTION: `${APIEndpoint}/remove-non-hgn-email-subscription`,
   FACEBOOK_POST: `${APIEndpoint}/social/facebook/post`,
   FACEBOOK_SCHEDULE_POST: `${APIEndpoint}/social/facebook/schedule`,
+  FACEBOOK_SCHEDULE: `${APIEndpoint}/social/facebook/schedule`,
+  FACEBOOK_SCHEDULED: `${APIEndpoint}/social/facebook/scheduled`,
+  FACEBOOK_HISTORY: `${APIEndpoint}/social/facebook/history`,
   
   PERMISSION_MANAGEMENT_UPDATE: () => `${APIEndpoint}/permission-management`,
 
