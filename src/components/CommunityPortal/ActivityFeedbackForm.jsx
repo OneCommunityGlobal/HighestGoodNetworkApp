@@ -18,7 +18,7 @@ const ActivityFeedbackModal = ({ onClose }) => {
   const errorRef = useRef(null);
 
   useEffect(() => {
-    const focusable = modalRef.current.querySelectorAll('button, textarea, [tabindex]');
+    const focusable = modalRef.current.querySelectorAll('button, textarea, [role="button"]');
     const firstEl = focusable[0];
     const lastEl = focusable[focusable.length - 1];
 
@@ -81,19 +81,16 @@ const ActivityFeedbackModal = ({ onClose }) => {
   return (
     <div
       className={styles.overlay}
-      role="dialog"
-      aria-modal="true"
-      tabIndex={0}
+      role="presentation"
       onMouseDown={e => {
         if (e.target === e.currentTarget) onClose();
-      }}
-      onKeyDown={e => {
-        if ((e.key === 'Enter' || e.key === ' ') && e.target === e.currentTarget) onClose();
       }}
     >
       <div
         ref={modalRef}
         className={darkMode ? styles.modalDark : styles.modalLight}
+        role="dialog"
+        aria-modal="true"
         tabIndex={-1}
         onMouseDown={e => e.stopPropagation()}
       >
