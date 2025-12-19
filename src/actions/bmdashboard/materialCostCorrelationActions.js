@@ -10,6 +10,7 @@ import {
   RESET_MATERIAL_COST_CORRELATION_FILTERS,
 } from '../../constants/bmdashboard/materialCostCorrelationConstants';
 import { ENDPOINTS } from '../../utils/URL';
+import logger from '../../services/logService';
 
 // Action Creators
 export const fetchMaterialCostCorrelationRequest = () => ({
@@ -87,11 +88,9 @@ export const fetchMaterialCostCorrelation = (
     const dateValidation = validateDateRange(startDate, endDate);
     if (!dateValidation.valid) {
       const validationError = dateValidation.error;
-      // eslint-disable-next-line no-console
-      console.warn('[MaterialCostCorrelation] Validation failed:', validationError, {
-        startDate,
-        endDate,
-      });
+      logger.logInfo(
+        `[MaterialCostCorrelation] Validation failed: ${validationError} - Start: ${startDate}, End: ${endDate}`,
+      );
       toast.warning(validationError, {
         toastId: 'materialCostCorrelationValidation',
         autoClose: 5000,
@@ -112,11 +111,9 @@ export const fetchMaterialCostCorrelation = (
 
     if (invalidProjectIds.length > 0 || invalidMaterialTypeIds.length > 0) {
       const validationError = 'Invalid project or material type IDs provided';
-      // eslint-disable-next-line no-console
-      console.warn('[MaterialCostCorrelation] Validation failed:', validationError, {
-        invalidProjectIds,
-        invalidMaterialTypeIds,
-      });
+      logger.logInfo(
+        `[MaterialCostCorrelation] Validation failed: ${validationError} - Invalid Project IDs: ${JSON.stringify(invalidProjectIds)}, Invalid Material Type IDs: ${JSON.stringify(invalidMaterialTypeIds)}`,
+      );
       toast.warning(validationError, {
         toastId: 'materialCostCorrelationValidation',
         autoClose: 5000,
@@ -154,15 +151,6 @@ export const fetchMaterialCostCorrelation = (
       ? `${ENDPOINTS.BM_MATERIAL_COST_CORRELATION}?${queryString}`
       : ENDPOINTS.BM_MATERIAL_COST_CORRELATION;
 
-    // console.log('[MaterialCostCorrelation] Fetching data:', {
-    //   url,
-    //   projectIds,
-    //   materialTypeIds,
-    //   startDate: formattedStartDate,
-    //   endDate: formattedEndDate,
-    //   timestamp: new Date().toISOString(),
-    // });
-
     // Make API request
     const response = await axios.get(url);
 
@@ -170,11 +158,6 @@ export const fetchMaterialCostCorrelation = (
     if (!response.data) {
       throw new Error('Invalid response: missing data property');
     }
-
-    console.log('[MaterialCostCorrelation] Success:', {
-      dataPoints: response.data?.data?.length || 0,
-      timestamp: new Date().toISOString(),
-    });
 
     // Dispatch success action with response data
     dispatch(fetchMaterialCostCorrelationSuccess(response.data));
@@ -225,15 +208,11 @@ export const fetchMaterialCostCorrelation = (
       }
     }
 
-    // eslint-disable-next-line no-console
-    // eslint-disable-next-line no-console
-    console.error('[MaterialCostCorrelation] Error:', {
-      errorType,
-      statusCode,
-      message: errorMessage,
-      error: error,
-      timestamp: new Date().toISOString(),
-    });
+    logger.logError(
+      new Error(
+        `[MaterialCostCorrelation] Error - Type: ${errorType}, Status: ${statusCode}, Message: ${errorMessage}`,
+      ),
+    );
 
     // Dispatch failure action
     dispatch(fetchMaterialCostCorrelationFailure(errorMessage));

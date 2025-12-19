@@ -16,6 +16,7 @@ import { toast } from 'react-toastify';
 import { BiErrorCircle, BiRefresh } from 'react-icons/bi';
 import FilterPanel from './FilterPanel';
 import ChartTypeToggle from './ChartTypeToggle';
+import logger from '../../../services/logService';
 import {
   fetchMaterialCostCorrelation,
   setProjectFilter,
@@ -154,11 +155,12 @@ function MaterialCostCorrelationChart() {
 
       return flattened.length > 0 ? flattened : null;
     } catch (transformError) {
-      // eslint-disable-next-line no-console
-      console.error('[MaterialCostCorrelation] Data transformation error:', transformError, {
-        data,
-        timestamp: new Date().toISOString(),
-      });
+      logger.logError(
+        new Error(
+          `[MaterialCostCorrelation] Data transformation error: ${transformError.message ||
+            transformError}`,
+        ),
+      );
       return null;
     }
   }, [data]);
@@ -188,14 +190,11 @@ function MaterialCostCorrelationChart() {
         quantityUsed: project?.totals?.quantityUsed || 0,
       }));
     } catch (transformError) {
-      // eslint-disable-next-line no-console
-      console.error(
-        '[MaterialCostCorrelation] Bar chart data transformation error:',
-        transformError,
-        {
-          data,
-          timestamp: new Date().toISOString(),
-        },
+      logger.logError(
+        new Error(
+          `[MaterialCostCorrelation] Bar chart data transformation error: ${transformError.message ||
+            transformError}`,
+        ),
       );
       return null;
     }
