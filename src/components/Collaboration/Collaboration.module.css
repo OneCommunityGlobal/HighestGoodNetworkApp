@@ -194,6 +194,9 @@
   background: linear-gradient(135deg, #fff, #f9f9f9);
   transition: transform .3s, box-shadow .3s;
   padding-bottom: 8px;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
 }
 
 .jobAd img {
@@ -209,20 +212,85 @@
   color: #333;
   margin: 10px 12px 0;
   transition: color .3s;
-}
-
-.jobAd a {
-  text-decoration: none;
-  color: inherit;
-}
-
-.jobAd a:hover h3 {
-  color: #007acc;
+  text-align: center;
 }
 
 .jobAd:hover {
   transform: translateY(-5px);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* --- Admin Requirements Section --- */
+.adminRequirementsSection {
+  margin-top: auto;
+  padding: 15px;
+  border-top: 1px solid #ddd;
+  background-color: #f9f9f9;
+}
+
+.requirementsTitle {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 0 0 12px 0;
+  color: #333;
+}
+
+.requirementsList {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.requirementItem {
+  display: flex;
+  align-items: flex-start;
+}
+
+.requirementCheckbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: default;
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.requirementCheckboxInput {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.requirementCheckboxCustom {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  background-color: #fff;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.requirementCheckboxCustom svg {
+  display: none;
+}
+
+.requirementCheckboxInput:checked + .requirementCheckboxCustom {
+  background-color: #8cc63f;
+  border-color: #8cc63f;
+}
+
+.requirementCheckboxInput:checked + .requirementCheckboxCustom svg {
+  display: block;
+}
+
+.requirementCheckbox span:last-child {
+  color: #333;
 }
 
 /* --- Summaries view --- */
@@ -331,12 +399,10 @@
   justify-content: center;
   align-items: center;
   text-align: center;
-
   font-size: 1.1em;
   margin: 20px auto;
   max-width: 400px;
   padding: 16px 20px;
-
   border: 1px solid #ddd;
   border-radius: 8px;
   background-color: #f9f9f9;
@@ -381,6 +447,10 @@
   .summariesList {
     padding: 0 12px;
   }
+
+  .requirementsList {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 350px) {
@@ -410,6 +480,7 @@
   }
 }
 
+/* --- Dark Mode --- */
 .jobLandingDark {
   background-color: #1c2541;
 }
@@ -525,6 +596,24 @@
   color: #fff;
 }
 
+.jobLandingDark .adminRequirementsSection {
+  background-color: #1c2541;
+  border-top-color: #444;
+}
+
+.jobLandingDark .requirementsTitle {
+  color: #e0e0e0;
+}
+
+.jobLandingDark .requirementCheckboxCustom {
+  border-color: #555;
+  background-color: #2a2a2a;
+}
+
+.jobLandingDark .requirementCheckbox span:last-child {
+  color: #e0e0e0;
+}
+
 .summariesList {
   width: min(1100px, 100%);
   margin: 24px auto;
@@ -574,7 +663,7 @@
   background-color: #ffffff !important;
   color: black !important;
   border: none !important;
-  box-shadow: 0 0 0 2px rgba(14, 94, 215, 0.35) inset; 
+  box-shadow: 0 0 0 2px rgba(14, 94, 215, 0.35) inset;
   cursor: default;
-  opacity: 1; 
+  opacity: 1;
 }

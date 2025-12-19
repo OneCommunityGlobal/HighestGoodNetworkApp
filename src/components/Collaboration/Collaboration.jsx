@@ -1,59 +1,65 @@
-import { Component } from 'react';
+import { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+import hasPermission from '~/utils/permissions';
 import styles from './Collaboration.module.css';
 import { toast } from 'react-toastify';
 import { ApiEndpoint } from '~/utils/URL';
 import OneCommunityImage from '../../assets/images/logo2.png';
 
-import 'leaflet/dist/leaflet.css';
-import { connect } from 'react-redux';
-import 'react-day-picker/dist/style.css';
+function Collaboration() {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [jobAds, setJobAds] = useState([]);
+  const [totalPages, setTotalPages] = useState(0);
+  const [categories, setCategories] = useState([]);
+  const [summaries, setSummaries] = useState(null);
+  const [summariesAll, setSummariesAll] = useState([]);
+  const [summariesPage, setSummariesPage] = useState(1);
+  const [summariesPageSize] = useState(6);
+  const [summariesTotalPages, setSummariesTotalPages] = useState(0);
+  const [columns, setColumns] = useState(() => getColumnsFromMQ());
 
-/* eslint-disable */
-class Collaboration extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      searchTerm: '',
-      selectedCategory: '',
-      currentPage: 1,
-      jobAds: [],
-      totalPages: 0,
-      categories: [],
-      summaries: null,
-      summariesAll: [],
-      summariesPage: 1,
-      summariesPageSize: 6,
-      summariesTotalPages: 0,
-      columns: this.getColumnsFromMQ(),
-    };
-  }
-  componentDidMount() {
-    this.fetchJobAds();
-    this.fetchCategories();
-    window.addEventListener('resize', this.handleResize);
-  }
+  const darkMode = useSelector(state => state.theme?.darkMode);
+  const dispatch = useDispatch();
+  const history = useHistory();
+  const userHasPermission = permission => dispatch(hasPermission(permission));
+  const canReorderJobs = userHasPermission('reorderJobs');
+  const isAdmin = useSelector(state => {
+    try {
+      const user = state?.auth?.user;
+      const role = user?.role;
+      return (
+        role === 'Administrator' ||
+        role === 'Owner' ||
+        role === 'admin' ||
+        role === 'ADMINISTRATOR' ||
+        role === 'OWNER'
+      );
+    } catch (error) {
+      console.error('Error checking admin status:', error);
+      return false;
+    }
+  });
 
-  componentWillUnmount() {
-    window.removeEventListener('resize', this.handleResize);
-  }
-
-  getColumnsFromMQ = () => {
+  function getColumnsFromMQ() {
+    if (typeof window === 'undefined') return 1;
     if (window.matchMedia('(min-width: 1600px)').matches) return 6;
     if (window.matchMedia('(min-width: 1300px)').matches) return 5;
     if (window.matchMedia('(min-width: 1017px)').matches) return 4;
     if (window.matchMedia('(min-width: 768px)').matches) return 3;
     if (window.matchMedia('(min-width: 480px)').matches) return 2;
     return 1;
-  };
+  }
 
-  calculateAdsPerPage = () => {
+  const calculateAdsPerPage = () => {
     const rows = 5;
-    return this.state.columns * rows;
+    return columns * rows;
   };
 
-  fetchJobAds = async () => {
-    const { searchTerm, selectedCategory, currentPage } = this.state;
-    const adsPerPage = this.calculateAdsPerPage();
+  const fetchJobAds = async () => {
+    const adsPerPage = calculateAdsPerPage();
 
     try {
       const response = await fetch(
@@ -66,16 +72,16 @@ class Collaboration extends Component {
       if (!response.ok) throw new Error(`Failed to fetch jobs: ${response.statusText}`);
 
       const data = await response.json();
-      this.setState({
-        jobAds: Array.isArray(data?.jobs) ? data.jobs : [],
-        totalPages: data?.pagination?.totalPages || 0,
-      });
+      const jobs = Array.isArray(data?.jobs) ? data.jobs : [];
+      setJobAds(jobs);
+      setTotalPages(data?.pagination?.totalPages || 0);
     } catch (error) {
+      console.error('Error fetching jobs:', error);
       toast.error('Error fetching jobs');
     }
   };
 
-  fetchCategories = async () => {
+  const fetchCategories = async () => {
     try {
       const response = await fetch(`${ApiEndpoint}/jobs/categories`, { method: 'GET' });
       if (!response.ok) throw new Error(`Failed to fetch categories: ${response.statusText}`);
@@ -84,34 +90,33 @@ class Collaboration extends Component {
       const sorted = Array.isArray(data?.categories)
         ? [...data.categories].sort((a, b) => a.localeCompare(b))
         : [];
-      this.setState({ categories: sorted });
+      setCategories(sorted);
     } catch (error) {
+      console.error('Error fetching categories:', error);
       toast.error('Error fetching categories');
     }
   };
 
-  handleSearch = e => this.setState({ searchTerm: e.target.value });
+  const handleSearch = e => setSearchTerm(e.target.value);
 
-  handleSubmit = e => {
+  const handleSubmit = e => {
     e.preventDefault();
-    this.setState({ summaries: null, currentPage: 1 }, this.fetchJobAds);
+    setSummaries(null);
+    setCurrentPage(1);
+    fetchJobAds();
   };
 
-  handleCategoryChange = e => {
+  const handleCategoryChange = e => {
     const selectedValue = e.target.value;
-    this.setState(
-      {
-        selectedCategory: selectedValue || '',
-        currentPage: 1,
-        summaries: null,
-      },
-      this.fetchJobAds,
-    );
+    setSelectedCategory(selectedValue || '');
+    setCurrentPage(1);
+    setSummaries(null);
+    fetchJobAds();
   };
 
-  handleResetFilters = async () => {
+  const handleResetFilters = async () => {
     try {
-      const adsPerPage = this.calculateAdsPerPage();
+      const adsPerPage = calculateAdsPerPage();
       const response = await fetch(`${ApiEndpoint}/jobs/reset-filters?page=1&limit=${adsPerPage}`, {
         method: 'GET',
       });
@@ -119,30 +124,29 @@ class Collaboration extends Component {
       if (!response.ok) throw new Error(`Failed to reset filters: ${response.statusText}`);
 
       const data = await response.json();
-      this.setState({
-        searchTerm: '',
-        selectedCategory: '',
-        currentPage: 1,
-        jobAds: Array.isArray(data?.jobs) ? data.jobs : [],
-        totalPages: data?.pagination?.totalPages || 0,
-        summaries: null,
-        summariesAll: [],
-        summariesPage: 1,
-        summariesTotalPages: 0,
-      });
+      setSearchTerm('');
+      setSelectedCategory('');
+      setCurrentPage(1);
+      setJobAds(Array.isArray(data?.jobs) ? data.jobs : []);
+      setTotalPages(data?.pagination?.totalPages || 0);
+      setSummaries(null);
+      setSummariesAll([]);
+      setSummariesPage(1);
+      setSummariesTotalPages(0);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (error) {
+      console.error('Error resetting filters:', error);
       toast.error('Error resetting filters');
     }
   };
 
-  setPage = pageNumber => {
-    this.setState({ currentPage: pageNumber }, this.fetchJobAds);
+  const setPage = pageNumber => {
+    setCurrentPage(pageNumber);
+    fetchJobAds();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  handleShowSummaries = async () => {
-    const { searchTerm, selectedCategory, summariesPageSize } = this.state;
+  const handleShowSummaries = async () => {
     try {
       const response = await fetch(
         `${ApiEndpoint}/jobs/summaries?search=${encodeURIComponent(searchTerm)}` +
@@ -155,60 +159,65 @@ class Collaboration extends Component {
       const data = await response.json();
       const summariesData = Array.isArray(data?.jobs) ? data.jobs : [];
 
-      this.setState({
-        summaries: { jobs: summariesData },
-        summariesAll: summariesData,
-        summariesPage: 1,
-        summariesTotalPages: Math.max(1, Math.ceil(summariesData.length / summariesPageSize)),
-      });
+      setSummaries({ jobs: summariesData });
+      setSummariesAll(summariesData);
+      setSummariesPage(1);
+      setSummariesTotalPages(Math.max(1, Math.ceil(summariesData.length / summariesPageSize)));
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (error) {
+      console.error('Error fetching summaries:', error);
       toast.error('Error fetching summaries');
     }
   };
 
-  setSummariesPage = page => {
-    this.setState(
-      prev => {
-        const next =
-          page < 1 ? 1 : page > prev.summariesTotalPages ? prev.summariesTotalPages : page;
-        return { summariesPage: next };
-      },
-      () => window.scrollTo({ top: 0, behavior: 'smooth' }),
-    );
+  const handleSetSummariesPage = page => {
+    const next = page < 1 ? 1 : page > summariesTotalPages ? summariesTotalPages : page;
+    setSummariesPage(next);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  debounce = (fn, ms = 150) => {
+  const debounce = (fn, ms = 150) => {
     let t;
     return (...args) => {
       clearTimeout(t);
-      t = setTimeout(() => fn.apply(this, args), ms);
+      t = setTimeout(() => fn.apply(null, args), ms);
     };
   };
 
-  handleResize = this.debounce(() => {
-    const newCols = this.getColumnsFromMQ();
-    if (newCols === this.state.columns) return;
-    this.setState({ columns: newCols, currentPage: 1 }, this.fetchJobAds);
+  const handleResize = debounce(() => {
+    const newCols = getColumnsFromMQ();
+    if (newCols === columns) return;
+    setColumns(newCols);
+    setCurrentPage(1);
+    fetchJobAds();
   }, 200);
 
-  renderSummaries() {
-    const {
-      searchTerm,
-      selectedCategory,
-      categories,
-      summariesAll,
-      summariesPage,
-      summariesPageSize,
-      summariesTotalPages,
-    } = this.state;
+  // Initial fetch and setup
+  useEffect(() => {
+    fetchJobAds();
+    fetchCategories();
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
+  // Refetch when page changes
+  useEffect(() => {
+    if (currentPage > 0) {
+      fetchJobAds();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage]);
+
+  const renderSummaries = () => {
     const start = (summariesPage - 1) * summariesPageSize;
     const end = start + summariesPageSize;
     const pageItems = summariesAll.slice(start, end);
 
     return (
-      <div className={`${styles.jobLanding} ${this.props.darkMode ? styles.jobLandingDark : ''}`}>
+      <div className={`${styles.jobLanding} ${darkMode ? styles.jobLandingDark : ''}`}>
         <div className={styles.header}>
           <a
             href="https://www.onecommunityglobal.org/collaboration/"
@@ -226,12 +235,12 @@ class Collaboration extends Component {
         <div className={styles.collabContainer}>
           <nav className={styles.navbar}>
             <div className={styles.navbarLeft}>
-              <form className={styles.searchForm} onSubmit={this.handleSubmit}>
+              <form className={styles.searchForm} onSubmit={handleSubmit}>
                 <input
                   type="text"
                   placeholder="Search by title..."
                   value={searchTerm}
-                  onChange={this.handleSearch}
+                  onChange={handleSearch}
                 />
                 <button className={styles.searchButton} type="submit">
                   Go
@@ -239,14 +248,14 @@ class Collaboration extends Component {
                 <button
                   className={styles.resetButton}
                   type="button"
-                  onClick={this.handleResetFilters}
+                  onClick={handleResetFilters}
                 >
                   Reset
                 </button>
                 <button
                   className={styles.showSummaries}
                   type="button"
-                  onClick={this.handleShowSummaries}
+                  onClick={handleShowSummaries}
                 >
                   Show Summaries
                 </button>
@@ -254,7 +263,7 @@ class Collaboration extends Component {
             </div>
 
             <div className={styles.navbarRight}>
-              <select value={selectedCategory} onChange={this.handleCategoryChange}>
+              <select value={selectedCategory} onChange={handleCategoryChange}>
                 <option value="">Select from Categories</option>
                 {categories.map(c => (
                   <option key={c} value={c}>
@@ -296,9 +305,9 @@ class Collaboration extends Component {
                   <button
                     type="button"
                     key={`summaries-${i}`}
-                    onClick={() => this.setSummariesPage(i + 1)}
+                    onClick={() => handleSetSummariesPage(i + 1)}
                     disabled={summariesPage === i + 1}
-                    className={this.props.darkMode ? 'bg-space-cadet text-light border-0' : ''}
+                    className={darkMode ? 'bg-space-cadet text-light border-0' : ''}
                   >
                     {i + 1}
                   </button>
@@ -309,108 +318,118 @@ class Collaboration extends Component {
         </div>
       </div>
     );
-  }
+  };
 
-  render() {
-    const {
-      searchTerm,
-      selectedCategory,
-      currentPage,
-      jobAds,
-      totalPages,
-      categories,
-      summaries,
-    } = this.state;
+  if (summaries) return renderSummaries();
 
-    if (summaries) return this.renderSummaries();
+  return (
+    <div className={`${styles.jobLanding} ${darkMode ? styles.jobLandingDark : ''}`}>
+      <div className={styles.header}>
+        <a
+          href="https://www.onecommunityglobal.org/collaboration/"
+          target="_blank"
+          rel="noreferrer"
+        >
+          <img src={OneCommunityImage} alt="One Community Logo" className={styles.responsiveImg} />
+        </a>
+      </div>
 
-    return (
-      <div className={`${styles.jobLanding} ${this.props.darkMode ? styles.jobLandingDark : ''}`}>
-        <div className={styles.header}>
-          <a
-            href="https://www.onecommunityglobal.org/collaboration/"
-            target="_blank"
-            rel="noreferrer"
-          >
-            <img
-              src={OneCommunityImage}
-              alt="One Community Logo"
-              className={styles.responsiveImg}
-            />
-          </a>
-        </div>
-
-        <div className={styles.collabContainer}>
-          <nav className={styles.navbar}>
-            <div className={styles.navbarLeft}>
-              <form className={styles.searchForm} onSubmit={this.handleSubmit}>
-                <input
-                  type="text"
-                  placeholder="Search by title..."
-                  value={searchTerm}
-                  onChange={this.handleSearch}
-                />
-                <button className={styles.searchButton} type="submit">
-                  Go
-                </button>
-                <button
-                  className={styles.resetButton}
-                  type="button"
-                  onClick={this.handleResetFilters}
-                >
-                  Reset
-                </button>
-                <button
-                  className={styles.showSummaries}
-                  type="button"
-                  onClick={this.handleShowSummaries}
-                >
-                  Show Summaries
-                </button>
-              </form>
-            </div>
-
-            <div className={styles.navbarRight}>
-              <select value={selectedCategory} onChange={this.handleCategoryChange}>
-                <option value="">Select from Categories</option>
-                {categories.map(c => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </nav>
-
-          <div className={styles.headings}>
-            <h1>Like to Work With Us? Apply Now!</h1>
-            <p>Learn about who we are and who we want to work with!</p>
+      <div className={styles.collabContainer}>
+        <nav className={styles.navbar}>
+          <div className={styles.navbarLeft}>
+            <form className={styles.searchForm} onSubmit={handleSubmit}>
+              <input
+                type="text"
+                placeholder="Search by title..."
+                value={searchTerm}
+                onChange={handleSearch}
+              />
+              <button className={styles.searchButton} type="submit">
+                Go
+              </button>
+              <button className={styles.resetButton} type="button" onClick={handleResetFilters}>
+                Reset
+              </button>
+              <button
+                className={styles.showSummaries}
+                type="button"
+                onClick={handleShowSummaries}
+              >
+                Show Summaries
+              </button>
+            </form>
           </div>
 
-          <div className={styles.jobList}>
-            {jobAds.length > 0 ? (
-              jobAds.map(ad => (
-                <div key={ad._id} className={styles.jobAd}>
-                  <img
-                    src={
-                      ad.imageUrl ||
-                      `/api/placeholder/640/480?text=${encodeURIComponent(
-                        ad.category || 'Job Opening',
-                      )}`
+          <div className={styles.navbarRight}>
+            <select value={selectedCategory} onChange={handleCategoryChange}>
+              <option value="">Select from Categories</option>
+              {categories.map(c => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))}
+            </select>
+          </div>
+        </nav>
+
+        <div className={styles.headings}>
+          <h1>Like to Work With Us? Apply Now!</h1>
+          <p>Learn about who we are and who we want to work with!</p>
+        </div>
+
+        <div className={styles.jobList}>
+          {jobAds.length > 0 ? (
+            jobAds.map(ad => {
+              if (!ad || !ad._id) return null;
+              const jobTitle = ad.title || 'Untitled Position';
+              const jobCategory = ad.category || 'General';
+              const jobImageUrl =
+                ad.imageUrl ||
+                `/api/placeholder/640/480?text=${encodeURIComponent(jobCategory)}`;
+
+              return (
+                <div
+                  key={ad._id}
+                  className={styles.jobAd}
+                  onClick={() => {
+                    try {
+                      if (history && typeof history.push === 'function') {
+                        history.push({
+                          pathname: '/job-application',
+                          state: {
+                            jobId: ad._id,
+                            jobTitle: jobTitle,
+                            jobDescription: ad.description || '',
+                            requirements: Array.isArray(ad.requirements) ? ad.requirements : [],
+                            category: jobCategory,
+                          },
+                        });
+                      } else {
+                        window.location.href = `/job-application`;
+                      }
+                    } catch (error) {
+                      console.error('Error navigating to job application:', error);
+                      toast.error('Error opening job application');
                     }
-                    alt={ad.title ? `${ad.title}` : 'Job image'}
+                  }}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <img
+                    src={jobImageUrl}
+                    alt={jobTitle}
                     loading="lazy"
                     onError={e => {
                       e.currentTarget.onerror = null;
-                      if (ad?.category === 'Engineering') {
+                      const category = jobCategory.toLowerCase();
+                      if (category.includes('engineering')) {
                         e.currentTarget.src =
                           'https://img.icons8.com/external-prettycons-flat-prettycons/47/external-job-social-media-prettycons-flat-prettycons.png';
-                      } else if (ad?.category === 'Marketing') {
+                      } else if (category.includes('marketing')) {
                         e.currentTarget.src =
                           'https://img.icons8.com/external-justicon-lineal-color-justicon/64/external-marketing-marketing-and-growth-justicon-lineal-color-justicon-1.png';
-                      } else if (ad?.category === 'Design') {
+                      } else if (category.includes('design')) {
                         e.currentTarget.src = 'https://img.icons8.com/arcade/64/design.png';
-                      } else if (ad?.category === 'Finance') {
+                      } else if (category.includes('finance')) {
                         e.currentTarget.src =
                           'https://img.icons8.com/cotton/64/merchant-account--v2.png';
                       } else {
@@ -419,47 +438,35 @@ class Collaboration extends Component {
                       }
                     }}
                   />
-                  <a
-                    href={`https://www.onecommunityglobal.org/collaboration/seeking-${(
-                      ad.category || ''
-                    ).toLowerCase()}`}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    <h3>
-                      {ad.title} - {ad.category}
-                    </h3>
-                  </a>
+                  <h3>
+                    {jobTitle} - {jobCategory}
+                  </h3>
                 </div>
-              ))
-            ) : (
-              <p className={styles.noJobads}>No matching jobs found.</p>
-            )}
-          </div>
-
-          {totalPages > 1 && (
-            <div className={styles.pagination}>
-              {Array.from({ length: totalPages }, (_, i) => (
-                <button
-                  type="button"
-                  key={i}
-                  onClick={() => this.setPage(i + 1)}
-                  disabled={currentPage === i + 1}
-                  className={this.props.darkMode ? 'bg-space-cadet text-light border-0' : ''}
-                >
-                  {i + 1}
-                </button>
-              ))}
-            </div>
+              );
+            })
+          ) : (
+            <p className={styles.noJobads}>No matching jobs found.</p>
           )}
         </div>
+
+        {totalPages > 1 && (
+          <div className={styles.pagination}>
+            {Array.from({ length: totalPages }, (_, i) => (
+              <button
+                type="button"
+                key={i}
+                onClick={() => setPage(i + 1)}
+                disabled={currentPage === i + 1}
+                className={darkMode ? 'bg-space-cadet text-light border-0' : ''}
+              >
+                {i + 1}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
-    );
-  }
+    </div>
+  );
 }
 
-const mapStateToProps = state => ({
-  darkMode: state.theme.darkMode,
-});
-
-export default connect(mapStateToProps)(Collaboration);
+export default Collaboration;

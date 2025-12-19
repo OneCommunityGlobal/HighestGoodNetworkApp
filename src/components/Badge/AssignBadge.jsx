@@ -26,7 +26,7 @@ import {
   getUserId,
 } from '../../actions/badgeManagement';
 import { getAllUserProfile } from '../../actions/userManagement';
-import '../Header/DarkMode.css';
+import '../Header/index.css';
 
 function AssignBadge(props) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -63,6 +63,7 @@ function AssignBadge(props) {
       }
       setError(null);
     } catch (err) {
+      /* eslint-disable no-console */
       console.error('Error filtering users:', err);
       setError(err.message);
       setFilteredUsers([]);
