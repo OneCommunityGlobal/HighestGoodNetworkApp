@@ -341,14 +341,22 @@
 }
 
 /* Responsive Media Queries */
+@media (max-width: 1024px) {
+  .filterPanel {
+    padding: 12px;
+    margin-bottom: 8px;
+  }
+}
+
 @media (max-width: 768px) {
   .filterPanel {
-    padding: 16px;
+    padding: 10px;
+    margin-bottom: 6px;
   }
 
   .filterGrid {
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
+    gap: 16px;
   }
 
   .dateRangeContainer {
@@ -363,12 +371,13 @@
 
 @media (max-width: 480px) {
   .filterPanel {
-    padding: 12px;
+    padding: 8px;
+    margin-bottom: 4px;
   }
 
   .filterGrid {
     grid-template-columns: 1fr;
-    gap: 16px;
+    gap: 12px;
   }
 
   .presetButtons {
