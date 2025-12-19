@@ -14,11 +14,11 @@ function MyCases() {
   const filterEvents = events => {
     const now = new Date();
 
-    const nowTime = now.getTime();
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
 
     const upcomingEvents = events.filter(event => {
       const eventTime = new Date(event.eventDate).getTime();
-      return eventTime >= nowTime;
+      return eventTime >= startOfToday;
     });
 
     if (filter === 'today') {
