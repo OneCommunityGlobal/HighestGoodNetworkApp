@@ -24,6 +24,7 @@ import IssueCharts from '../Issues/openIssueCharts';
 import SupplierPerformanceGraph from './SupplierPerformanceGraph.jsx';
 import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
 import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
+import MaterialCostCorrelationChart from '../MaterialCostCorrelation';
 
 const projectStatusButtons = [
   {
@@ -252,7 +253,9 @@ function WeeklyProjectSummary() {
         className: 'full',
         content: [1, 2, 3].map((_, index) => {
           let content;
-          if (index === 1) {
+          if (index === 0) {
+            content = <MaterialCostCorrelationChart />;
+          } else if (index === 1) {
             content = <QuantityOfMaterialsUsed data={quantityOfMaterialsUsedData} />;
           } else if (index === 2) {
             content = <TotalMaterialCostPerProject />;
