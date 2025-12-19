@@ -226,11 +226,7 @@ export const fetchMaterialCostCorrelation = (
       pauseOnHover: true,
     };
 
-    if (errorType === 'permission' || errorType === 'network') {
-      toast.error(errorMessage, toastOptions);
-    } else {
-      toast.error(errorMessage, toastOptions);
-    }
+    toast.error(errorMessage, toastOptions);
   }
 };
 
