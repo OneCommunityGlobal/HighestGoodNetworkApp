@@ -1,10 +1,9 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  ScatterChart,
-  Scatter,
-  BarChart,
+  ComposedChart,
   Bar,
+  Line,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -15,7 +14,6 @@ import {
 import { toast } from 'react-toastify';
 import { BiErrorCircle, BiRefresh } from 'react-icons/bi';
 import FilterPanel from './FilterPanel';
-import ChartTypeToggle from './ChartTypeToggle';
 import logger from '../../../services/logService';
 import {
   fetchMaterialCostCorrelation,
@@ -26,25 +24,9 @@ import {
 } from '../../../actions/bmdashboard/materialCostCorrelationActions';
 import styles from './MaterialCostCorrelationChart.module.css';
 
-// Color palette for material types - accessible colors for light and dark modes
-const MATERIAL_COLORS = [
-  '#0088FE',
-  '#00C49F',
-  '#FFBB28',
-  '#FF8042',
-  '#8884D8',
-  '#82CA9D',
-  '#FFC658',
-  '#FF6B6B',
-  '#4ECDC4',
-  '#45B7D1',
-  '#FFA07A',
-  '#98D8C8',
-];
-
 /**
- * Custom Tooltip Component for Scatter Chart
- * Displays project, material type, quantity, cost, and cost per unit information
+ * Custom Tooltip Component for Combined Chart
+ * Displays project name, total cost, and quantity used
  * @param {boolean} active - Whether tooltip is active
  * @param {Array} payload - Chart data payload
  * @param {boolean} darkMode - Whether dark mode is enabled
@@ -54,10 +36,14 @@ function CustomTooltip({ active, payload, darkMode }) {
     return null;
   }
 
-  const data = payload[0].payload;
+  const data = payload[0]?.payload;
   if (!data) {
     return null;
   }
+
+  // Find cost and quantity from payload
+  const costPayload = payload.find(p => p.dataKey === 'totalCostK');
+  const quantityPayload = payload.find(p => p.dataKey === 'quantityUsed');
 
   return (
     <div
@@ -66,19 +52,16 @@ function CustomTooltip({ active, payload, darkMode }) {
       }`}
     >
       <div className={styles.tooltipTitle}>{data.projectName}</div>
-      <div className={styles.tooltipRow}>
-        <strong>Material:</strong> {data.materialTypeName}
-      </div>
-      <div className={styles.tooltipRow}>
-        <strong>Quantity Used:</strong> {data.x} {data.unit}
-      </div>
-      <div className={styles.tooltipRow}>
-        <strong>Total Cost:</strong> ${data.totalCost.toFixed(2)}
-      </div>
-      <div className={styles.tooltipRow}>
-        <strong>Cost per Unit:</strong>{' '}
-        {data.costPerUnit !== null ? `$${data.costPerUnit.toFixed(2)}` : 'N/A'}
-      </div>
+      {costPayload && (
+        <div className={styles.tooltipRow}>
+          <strong>Total Material Cost:</strong> ${(costPayload.value * 1000).toFixed(2)}
+        </div>
+      )}
+      {quantityPayload && (
+        <div className={styles.tooltipRow}>
+          <strong>Quantity Used:</strong> {quantityPayload.value.toFixed(2)}
+        </div>
+      )}
     </div>
   );
 }
@@ -90,7 +73,6 @@ function MaterialCostCorrelationChart() {
     state => state.materialCostCorrelation || {},
   );
 
-  const [chartType, setChartType] = useState('scatter');
   const chartContainerRef = useRef(null);
 
   // Fetch data when filters change
@@ -111,65 +93,7 @@ function MaterialCostCorrelationChart() {
     filters.endDate,
   ]);
 
-  // Transform API data for chart with error handling
-  const transformedData = useMemo(() => {
-    try {
-      if (!data || !Array.isArray(data) || data.length === 0) {
-        return null;
-      }
-
-      const flattened = [];
-      data.forEach(project => {
-        // Use optional chaining and provide fallbacks
-        if (project?.byMaterialType && Array.isArray(project.byMaterialType)) {
-          project.byMaterialType.forEach(material => {
-            // Filter out items where quantityUsed is zero or costPerUnit is null
-            if (
-              material?.quantityUsed > 0 &&
-              material?.costPerUnit !== null &&
-              material?.costPerUnit !== undefined
-            ) {
-              flattened.push({
-                x: material.quantityUsed || 0,
-                y: material.totalCostK || 0,
-                projectName: project.projectName || 'Unknown Project',
-                materialTypeName: material.materialTypeName || 'Unknown Material',
-                unit: material.unit || '',
-                totalCost: material.totalCost || 0,
-                costPerUnit: material.costPerUnit || 0,
-                projectId: project.projectId || '',
-                materialTypeId: material.materialTypeId || '',
-              });
-            }
-          });
-        }
-      });
-
-      return flattened.length > 0 ? flattened : null;
-    } catch (transformError) {
-      logger.logError(
-        new Error(
-          `[MaterialCostCorrelation] Data transformation error: ${transformError.message ||
-            transformError}`,
-        ),
-      );
-      return null;
-    }
-  }, [data]);
-
-  // Generate color map for material types
-  const colorMap = useMemo(() => {
-    if (!transformedData) return {};
-
-    const uniqueMaterialTypes = [...new Set(transformedData.map(item => item.materialTypeName))];
-    const map = {};
-    uniqueMaterialTypes.forEach((materialType, index) => {
-      map[materialType] = MATERIAL_COLORS[index % MATERIAL_COLORS.length];
-    });
-    return map;
-  }, [transformedData]);
-
-  // Prepare data for bar chart (grouped by project) with error handling
+  // Prepare data for combined chart (grouped by project) with error handling
   const barChartData = useMemo(() => {
     try {
       if (!data || !Array.isArray(data) || data.length === 0) {
@@ -184,26 +108,13 @@ function MaterialCostCorrelationChart() {
     } catch (transformError) {
       logger.logError(
         new Error(
-          `[MaterialCostCorrelation] Bar chart data transformation error: ${transformError.message ||
+          `[MaterialCostCorrelation] Chart data transformation error: ${transformError.message ||
             transformError}`,
         ),
       );
       return null;
     }
   }, [data]);
-
-  // Get common unit from transformed data (for scatter chart X-axis label)
-  const commonUnit = useMemo(() => {
-    if (!transformedData || transformedData.length === 0) return '';
-    // Get the most common unit
-    const units = transformedData.map(item => item.unit);
-    const unitCounts = {};
-    units.forEach(unit => {
-      unitCounts[unit] = (unitCounts[unit] || 0) + 1;
-    });
-    const sortedUnits = Object.entries(unitCounts).sort((a, b) => b[1] - a[1]);
-    return sortedUnits.length > 0 ? sortedUnits[0][0] : '';
-  }, [transformedData]);
 
   // Chart configuration
   const chartConfig = useMemo(() => {
@@ -218,10 +129,6 @@ function MaterialCostCorrelationChart() {
   }, [darkMode]);
 
   // Handlers
-  const handleChartTypeToggle = newType => {
-    setChartType(newType);
-  };
-
   const handleProjectChange = projectIds => {
     dispatch(setProjectFilter(projectIds));
   };
@@ -328,7 +235,7 @@ function MaterialCostCorrelationChart() {
   }
 
   // Determine if we have data to display
-  const hasData = chartType === 'scatter' ? transformedData : barChartData;
+  const hasData = barChartData;
 
   return (
     <div
@@ -338,11 +245,6 @@ function MaterialCostCorrelationChart() {
       {/* Header */}
       <div className={styles.header}>
         <h2 className={styles.title}>Material Usage vs Cost Correlation</h2>
-        <ChartTypeToggle
-          currentChartType={chartType}
-          onToggle={handleChartTypeToggle}
-          darkMode={darkMode}
-        />
       </div>
 
       {/* Filter Panel */}
@@ -374,55 +276,9 @@ function MaterialCostCorrelationChart() {
               Reset Filters
             </button>
           </div>
-        ) : chartType === 'scatter' ? (
-          <ResponsiveContainer width="100%" height={500}>
-            <ScatterChart margin={chartConfig.margin}>
-              <CartesianGrid strokeDasharray="3 3" stroke={chartConfig.gridColor} />
-              <XAxis
-                type="number"
-                dataKey="x"
-                name="Quantity"
-                label={{
-                  value: `Quantity of Materials Used ${commonUnit ? `(${commonUnit})` : ''}`,
-                  position: 'insideBottom',
-                  offset: -5,
-                  fill: chartConfig.textColor,
-                }}
-                tick={{ fill: chartConfig.textColor }}
-              />
-              <YAxis
-                type="number"
-                dataKey="y"
-                name="Cost"
-                label={{
-                  value: 'Total Material Cost (×1000$)',
-                  angle: -90,
-                  position: 'insideLeft',
-                  fill: chartConfig.textColor,
-                }}
-                tick={{ fill: chartConfig.textColor }}
-              />
-              <Tooltip content={<CustomTooltip darkMode={darkMode} />} />
-              <Legend />
-              {/* Group scatter points by material type */}
-              {Object.entries(colorMap).map(([materialType, color]) => {
-                const materialData = transformedData.filter(
-                  item => item.materialTypeName === materialType,
-                );
-                return (
-                  <Scatter
-                    key={materialType}
-                    name={materialType}
-                    data={materialData}
-                    fill={color}
-                  />
-                );
-              })}
-            </ScatterChart>
-          </ResponsiveContainer>
         ) : (
           <ResponsiveContainer width="100%" height={500}>
-            <BarChart data={barChartData} margin={chartConfig.margin}>
+            <ComposedChart data={barChartData} margin={chartConfig.margin}>
               <CartesianGrid strokeDasharray="3 3" stroke={chartConfig.gridColor} />
               <XAxis
                 dataKey="projectName"
@@ -438,6 +294,7 @@ function MaterialCostCorrelationChart() {
                 height={100}
               />
               <YAxis
+                yAxisId="cost"
                 label={{
                   value: 'Total Material Cost (×1000$)',
                   angle: -90,
@@ -446,17 +303,36 @@ function MaterialCostCorrelationChart() {
                 }}
                 tick={{ fill: chartConfig.textColor }}
               />
-              <Tooltip
-                formatter={(value, name) => [`$${value.toFixed(2)}K`, 'Total Cost']}
-                contentStyle={{
-                  backgroundColor: darkMode ? '#2d3748' : '#ffffff',
-                  border: darkMode ? '1px solid #4a5568' : '1px solid #e2e8f0',
-                  color: darkMode ? '#f7fafc' : '#1a202c',
+              <YAxis
+                yAxisId="quantity"
+                orientation="right"
+                label={{
+                  value: 'Quantity of Materials Used',
+                  angle: 90,
+                  position: 'insideRight',
+                  fill: chartConfig.textColor,
                 }}
+                tick={{ fill: chartConfig.textColor }}
               />
+              <Tooltip content={<CustomTooltip darkMode={darkMode} />} />
               <Legend />
-              <Bar dataKey="totalCostK" fill="#0088FE" name="Total Cost (×1000$)" />
-            </BarChart>
+              <Bar
+                yAxisId="cost"
+                dataKey="totalCostK"
+                fill="#0088FE"
+                name="Total Material Cost (×1000$)"
+              />
+              <Line
+                yAxisId="quantity"
+                type="monotone"
+                dataKey="quantityUsed"
+                stroke="#FF8042"
+                strokeWidth={2}
+                dot={{ r: 4 }}
+                activeDot={{ r: 6 }}
+                name="Quantity of Materials Used"
+              />
+            </ComposedChart>
           </ResponsiveContainer>
         )}
       </div>
@@ -466,19 +342,20 @@ function MaterialCostCorrelationChart() {
         <h3 className={styles.legendTitle}>Chart Information</h3>
         <div className={styles.legendContent}>
           <div className={styles.legendItem}>
-            <strong>X-axis:</strong>{' '}
-            {chartType === 'scatter'
-              ? `Quantity of Materials Used ${commonUnit ? `(${commonUnit})` : ''}`
-              : 'Project Names'}
+            <strong>X-axis:</strong> Project Names
           </div>
           <div className={styles.legendItem}>
-            <strong>Y-axis:</strong> Total Material Cost in thousands of dollars (×1000$)
+            <strong>Left Y-axis:</strong> Total Material Cost in thousands of dollars (×1000$)
           </div>
-          {chartType === 'scatter' && (
-            <div className={styles.legendItem}>
-              <strong>Colors:</strong> Each color represents a different material type
-            </div>
-          )}
+          <div className={styles.legendItem}>
+            <strong>Right Y-axis:</strong> Quantity of Materials Used
+          </div>
+          <div className={styles.legendItem}>
+            <strong>Blue Bars:</strong> Represent Total Material Cost per project
+          </div>
+          <div className={styles.legendItem}>
+            <strong>Orange Line:</strong> Represents Quantity of Materials Used per project
+          </div>
           <div className={styles.legendItem}>
             <strong>Data Source:</strong> Material usage and purchase records from selected date
             range
