@@ -124,7 +124,7 @@ function MaterialCostCorrelationChart() {
     return {
       textColor,
       gridColor,
-      margin: { top: 20, right: 30, left: 20, bottom: 60 },
+      margin: { top: 20, right: 80, left: 80, bottom: 100 },
     };
   }, [darkMode]);
 
@@ -282,16 +282,19 @@ function MaterialCostCorrelationChart() {
               <CartesianGrid strokeDasharray="3 3" stroke={chartConfig.gridColor} />
               <XAxis
                 dataKey="projectName"
-                label={{
-                  value: 'Project',
-                  position: 'insideBottom',
-                  offset: -5,
-                  fill: chartConfig.textColor,
-                }}
-                tick={{ fill: chartConfig.textColor }}
+                tick={{ fill: chartConfig.textColor, fontSize: 12 }}
                 angle={-45}
                 textAnchor="end"
                 height={100}
+                interval={0}
+                tickFormatter={value => {
+                  // Truncate long project names to prevent overflow
+                  const maxLength = 15;
+                  if (value && value.length > maxLength) {
+                    return `${value.substring(0, maxLength)}...`;
+                  }
+                  return value;
+                }}
               />
               <YAxis
                 yAxisId="cost"
@@ -299,9 +302,11 @@ function MaterialCostCorrelationChart() {
                   value: 'Total Material Cost (×1000$)',
                   angle: -90,
                   position: 'insideLeft',
-                  fill: chartConfig.textColor,
+                  offset: 10,
+                  style: { textAnchor: 'middle', fill: chartConfig.textColor },
                 }}
-                tick={{ fill: chartConfig.textColor }}
+                tick={{ fill: chartConfig.textColor, fontSize: 12 }}
+                width={70}
               />
               <YAxis
                 yAxisId="quantity"
@@ -310,9 +315,11 @@ function MaterialCostCorrelationChart() {
                   value: 'Quantity of Materials Used',
                   angle: 90,
                   position: 'insideRight',
-                  fill: chartConfig.textColor,
+                  offset: 10,
+                  style: { textAnchor: 'middle', fill: chartConfig.textColor },
                 }}
-                tick={{ fill: chartConfig.textColor }}
+                tick={{ fill: chartConfig.textColor, fontSize: 12 }}
+                width={70}
               />
               <Tooltip content={<CustomTooltip darkMode={darkMode} />} />
               <Legend />
@@ -335,32 +342,6 @@ function MaterialCostCorrelationChart() {
             </ComposedChart>
           </ResponsiveContainer>
         )}
-      </div>
-
-      {/* Legend Section */}
-      <div className={styles.legendSection}>
-        <h3 className={styles.legendTitle}>Chart Information</h3>
-        <div className={styles.legendContent}>
-          <div className={styles.legendItem}>
-            <strong>X-axis:</strong> Project Names
-          </div>
-          <div className={styles.legendItem}>
-            <strong>Left Y-axis:</strong> Total Material Cost in thousands of dollars (×1000$)
-          </div>
-          <div className={styles.legendItem}>
-            <strong>Right Y-axis:</strong> Quantity of Materials Used
-          </div>
-          <div className={styles.legendItem}>
-            <strong>Blue Bars:</strong> Represent Total Material Cost per project
-          </div>
-          <div className={styles.legendItem}>
-            <strong>Orange Line:</strong> Represents Quantity of Materials Used per project
-          </div>
-          <div className={styles.legendItem}>
-            <strong>Data Source:</strong> Material usage and purchase records from selected date
-            range
-          </div>
-        </div>
       </div>
     </div>
   );
