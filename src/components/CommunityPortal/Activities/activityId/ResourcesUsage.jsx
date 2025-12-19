@@ -78,8 +78,7 @@ function ResourcesUsage() {
 
       <div className={styles.tickBox}>
         <label className={styles.tickLabel}>
-          <input type="checkbox" id="tickAll" />
-          Tick off All Selected Items
+          <input type="checkbox" id="tickAll" /> Tick off All Selected Items
         </label>
       </div>
     </div>
