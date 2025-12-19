@@ -13,6 +13,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { toast } from 'react-toastify';
+import { BiErrorCircle, BiRefresh } from 'react-icons/bi';
 import FilterPanel from './FilterPanel';
 import ChartTypeToggle from './ChartTypeToggle';
 import {
@@ -117,35 +118,49 @@ function MaterialCostCorrelationChart() {
     filters.endDate,
   ]);
 
-  // Transform API data for chart
+  // Transform API data for chart with error handling
   const transformedData = useMemo(() => {
-    if (!data || !Array.isArray(data) || data.length === 0) {
+    try {
+      if (!data || !Array.isArray(data) || data.length === 0) {
+        return null;
+      }
+
+      const flattened = [];
+      data.forEach(project => {
+        // Use optional chaining and provide fallbacks
+        if (project?.byMaterialType && Array.isArray(project.byMaterialType)) {
+          project.byMaterialType.forEach(material => {
+            // Filter out items where quantityUsed is zero or costPerUnit is null
+            if (
+              material?.quantityUsed > 0 &&
+              material?.costPerUnit !== null &&
+              material?.costPerUnit !== undefined
+            ) {
+              flattened.push({
+                x: material.quantityUsed || 0,
+                y: material.totalCostK || 0,
+                projectName: project.projectName || 'Unknown Project',
+                materialTypeName: material.materialTypeName || 'Unknown Material',
+                unit: material.unit || '',
+                totalCost: material.totalCost || 0,
+                costPerUnit: material.costPerUnit || 0,
+                projectId: project.projectId || '',
+                materialTypeId: material.materialTypeId || '',
+              });
+            }
+          });
+        }
+      });
+
+      return flattened.length > 0 ? flattened : null;
+    } catch (transformError) {
+      // eslint-disable-next-line no-console
+      console.error('[MaterialCostCorrelation] Data transformation error:', transformError, {
+        data,
+        timestamp: new Date().toISOString(),
+      });
       return null;
     }
-
-    const flattened = [];
-    data.forEach(project => {
-      if (project.byMaterialType && Array.isArray(project.byMaterialType)) {
-        project.byMaterialType.forEach(material => {
-          // Filter out items where quantityUsed is zero or costPerUnit is null
-          if (material.quantityUsed > 0 && material.costPerUnit !== null) {
-            flattened.push({
-              x: material.quantityUsed,
-              y: material.totalCostK,
-              projectName: project.projectName,
-              materialTypeName: material.materialTypeName,
-              unit: material.unit,
-              totalCost: material.totalCost,
-              costPerUnit: material.costPerUnit,
-              projectId: project.projectId,
-              materialTypeId: material.materialTypeId,
-            });
-          }
-        });
-      }
-    });
-
-    return flattened.length > 0 ? flattened : null;
   }, [data]);
 
   // Generate color map for material types
@@ -160,17 +175,30 @@ function MaterialCostCorrelationChart() {
     return map;
   }, [transformedData]);
 
-  // Prepare data for bar chart (grouped by project)
+  // Prepare data for bar chart (grouped by project) with error handling
   const barChartData = useMemo(() => {
-    if (!data || !Array.isArray(data) || data.length === 0) {
+    try {
+      if (!data || !Array.isArray(data) || data.length === 0) {
+        return null;
+      }
+
+      return data.map(project => ({
+        projectName: project?.projectName || 'Unknown Project',
+        totalCostK: project?.totals?.totalCostK || 0,
+        quantityUsed: project?.totals?.quantityUsed || 0,
+      }));
+    } catch (transformError) {
+      // eslint-disable-next-line no-console
+      console.error(
+        '[MaterialCostCorrelation] Bar chart data transformation error:',
+        transformError,
+        {
+          data,
+          timestamp: new Date().toISOString(),
+        },
+      );
       return null;
     }
-
-    return data.map(project => ({
-      projectName: project.projectName,
-      totalCostK: project.totals?.totalCostK || 0,
-      quantityUsed: project.totals?.quantityUsed || 0,
-    }));
   }, [data]);
 
   // Get common unit from transformed data (for scatter chart X-axis label)
@@ -231,28 +259,78 @@ function MaterialCostCorrelationChart() {
     );
   }
 
+  // Determine error type from error message
+  const getErrorType = errorMessage => {
+    if (!errorMessage) return 'unknown';
+    const message = errorMessage.toLowerCase();
+    if (message.includes('session') || message.includes('expired') || message.includes('log in')) {
+      return 'authentication';
+    }
+    if (message.includes('permission') || message.includes('access')) {
+      return 'permission';
+    }
+    if (message.includes('network') || message.includes('connect')) {
+      return 'network';
+    }
+    if (message.includes('start date') || message.includes('end date')) {
+      return 'validation';
+    }
+    return 'general';
+  };
+
+  const errorType = error ? getErrorType(error) : null;
+
   // Render error state
-  if (error) {
+  if (error && errorType !== 'validation') {
+    const shouldShowRetry = errorType !== 'permission' && errorType !== 'authentication';
+    const errorIcon = <BiErrorCircle className={styles.errorIcon} />;
+
     return (
       <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
         <div className={styles.errorContainer}>
-          <p className={styles.errorText}>Error: {error}</p>
-          <button
-            type="button"
-            onClick={() =>
-              dispatch(
-                fetchMaterialCostCorrelation(
-                  filters.selectedProjects || [],
-                  filters.selectedMaterialTypes || [],
-                  filters.startDate,
-                  filters.endDate,
-                ),
-              )
-            }
-            className={styles.retryButton}
-          >
-            Retry
-          </button>
+          <div className={styles.errorContent}>
+            {errorIcon}
+            <p className={styles.errorText}>{error}</p>
+            {errorType === 'authentication' && (
+              <p className={styles.errorHint}>
+                You will be redirected to the login page shortly...
+              </p>
+            )}
+            {errorType === 'permission' && (
+              <p className={styles.errorHint}>
+                This error is not transient. Please contact an administrator for assistance.
+              </p>
+            )}
+            {errorType === 'network' && (
+              <p className={styles.errorHint}>
+                Please check your internet connection and try again.
+              </p>
+            )}
+            {errorType === 'general' && (
+              <p className={styles.errorHint}>
+                If this problem persists, please try different filters or contact support.
+              </p>
+            )}
+          </div>
+          {shouldShowRetry && (
+            <button
+              type="button"
+              onClick={() =>
+                dispatch(
+                  fetchMaterialCostCorrelation(
+                    filters.selectedProjects || [],
+                    filters.selectedMaterialTypes || [],
+                    filters.startDate,
+                    filters.endDate,
+                  ),
+                )
+              }
+              className={styles.retryButton}
+            >
+              <BiRefresh className={styles.retryIcon} />
+              Retry
+            </button>
+          )}
         </div>
       </div>
     );
@@ -297,6 +375,13 @@ function MaterialCostCorrelationChart() {
             <p className={styles.noDataHint}>
               Try expanding your date range or selecting different projects or material types.
             </p>
+            <button
+              type="button"
+              onClick={handleResetFilters}
+              className={styles.resetFiltersButton}
+            >
+              Reset Filters
+            </button>
           </div>
         ) : chartType === 'scatter' ? (
           <ResponsiveContainer width="100%" height={500}>
