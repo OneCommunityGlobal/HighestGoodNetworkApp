@@ -2,7 +2,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { vi } from 'vitest';
 import { Provider } from 'react-redux';
-import configureStore from 'redux-mock-store';
+import { configureStore } from 'redux-mock-store';
 import ActivityFeedbackModal from './ActivityFeedbackForm';
 
 const mockStore = configureStore([]);

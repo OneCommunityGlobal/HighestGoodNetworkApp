@@ -29,10 +29,7 @@ function ActivitiesPage() {
         <LatestRegistration />
         <MyEvent />
       </div>
-
-      {showFeedback && (
-        <ActivityFeedbackModal onClose={() => setShowFeedback(false)} />
-      )}
+      {showFeedback && <ActivityFeedbackModal onClose={() => setShowFeedback(false)} />}
     </div>
   );
 }
