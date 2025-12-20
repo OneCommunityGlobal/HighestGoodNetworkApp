@@ -23,6 +23,7 @@ const LessonPlan = () => {
   const [selectedTemplate, setSelectedTemplate] = useState(null);
   const [selectedAtoms, setSelectedAtoms] = useState([]); // topics
   const [activities, setActivities] = useState([]);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [comments, setComments] = useState([
     {
       time: 'Dec 05, 05:30 AM',
@@ -53,6 +54,16 @@ const LessonPlan = () => {
     <div className={styles.page}>
       {/* MAIN CONTENT + SIDEBAR WRAPPER */}
       <div className={styles.wrapper}>
+        {!isSidebarOpen && (
+          <button
+            className={styles.openSidebarBtn}
+            onClick={() => setIsSidebarOpen(true)}
+            aria-label="Open sidebar"
+          >
+            ☰ Comments
+          </button>
+        )}
+
         {/* MAIN SECTION LEFT */}
         <div className={styles.leftSection}>
           <div className={styles.progressStepper}>
@@ -147,38 +158,40 @@ const LessonPlan = () => {
         </div>
 
         {/* SIDEBAR RIGHT */}
-        <div className={styles.sidebar}>
-          <h2>Educator Collaboration</h2>
+        {isSidebarOpen && (
+          <div className={styles.sidebar}>
+            <h2>Educator Collaboration</h2>
 
-          <div className={styles.statusBox}>
-            <p>
-              <strong>Status: Draft Ready</strong>
-            </p>
-            <span>Your lesson plan looks great! Ready for educator review.</span>
+            <div className={styles.statusBox}>
+              <p>
+                <strong>Status: Draft Ready</strong>
+              </p>
+              <span>Your lesson plan looks great! Ready for educator review.</span>
+            </div>
+
+            <h3>Recent Comments</h3>
+            <div className={styles.commentThread}>
+              {comments.map((c, i) => (
+                <div key={i} className={styles.commentItem}>
+                  <small>{c.time}</small>
+                  <p>{c.text}</p>
+                </div>
+              ))}
+            </div>
+
+            <h3>Ask a Question</h3>
+            <textarea
+              className={styles.chatInput}
+              placeholder="Type message here..."
+              value={chatInput}
+              onChange={e => setChatInput(e.target.value)}
+            />
+
+            <button className={styles.sendButton} onClick={sendComment}>
+              Send
+            </button>
           </div>
-
-          <h3>Recent Comments</h3>
-          <div className={styles.commentThread}>
-            {comments.map((c, i) => (
-              <div key={i} className={styles.commentItem}>
-                <small>{c.time}</small>
-                <p>{c.text}</p>
-              </div>
-            ))}
-          </div>
-
-          <h3>Ask a Question</h3>
-          <textarea
-            className={styles.chatInput}
-            placeholder="Type message here..."
-            value={chatInput}
-            onChange={e => setChatInput(e.target.value)}
-          />
-
-          <button className={styles.sendButton} onClick={sendComment}>
-            Send
-          </button>
-        </div>
+        )}
       </div>
     </div>
   );

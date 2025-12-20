@@ -197,3 +197,25 @@
   color: white;
   font-weight: 500;
 }
+
+.sidebarHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.closeSidebarBtn {
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.openSidebarBtn {
+  position: fixed;
+  right: 16px;
+  top: 120px;
+  z-index: 100;
+  padding: 8px 12px;
+  cursor: pointer;
+}
