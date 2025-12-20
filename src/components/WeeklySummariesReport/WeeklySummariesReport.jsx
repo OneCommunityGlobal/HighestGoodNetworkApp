@@ -310,45 +310,22 @@ const WeeklySummariesReport = props => {
   );
 
   // Modals / dropdowns
-  const [
-    createFilterModalOpen,
-    setCreateFilterModalOpen,
-  ] = useState(false);
-  const [
-    updateFilterModalOpen,
-    setUpdateFilterModalOpen,
-  ] = useState(false);
-  const [
-    selectFilterModalOpen,
-    setSelectFilterModalOpen,
-  ] = useState(false);
-  const [
-    saveFilterDropdownOpen,
-    setSaveFilterDropdownOpen,
-  ] = useState(false);
+  const [createFilterModalOpen, setCreateFilterModalOpen] = useState(false);
+  const [updateFilterModalOpen, setUpdateFilterModalOpen] = useState(false);
+  const [selectFilterModalOpen, setSelectFilterModalOpen] = useState(false);
+  const [saveFilterDropdownOpen, setSaveFilterDropdownOpen] = useState(false);
 
-  const toggleSaveFilterDropdown = () =>
-    setSaveFilterDropdownOpen(prev => !prev);
-  const toggleCreateFilterModal = () =>
-    setCreateFilterModalOpen(prev => !prev);
-  const toggleUpdateFilterModal = () =>
-    setUpdateFilterModalOpen(prev => !prev);
-  const toggleSelectFilterModal = () =>
-    setSelectFilterModalOpen(prev => !prev);
+  const toggleSaveFilterDropdown = () => setSaveFilterDropdownOpen(prev => !prev);
+  const toggleCreateFilterModal = () => setCreateFilterModalOpen(prev => !prev);
+  const toggleUpdateFilterModal = () => setUpdateFilterModalOpen(prev => !prev);
+  const toggleSelectFilterModal = () => setSelectFilterModalOpen(prev => !prev);
 
   // Saved filters
-  const [
-    currentAppliedFilter,
-    setCurrentAppliedFilter,
-  ] = useState(null);
-  const [
-    showModificationModal,
-    setShowModificationModal,
-  ] = useState(false);
+  const [currentAppliedFilter, setCurrentAppliedFilter] = useState(null);
+  const [showModificationModal, setShowModificationModal] = useState(false);
 
   const { role, darkMode } = props;
-  const hasPermissionToFilter =
-    role === 'Owner' || role === 'Administrator';
+  const hasPermissionToFilter = role === 'Owner' || role === 'Administrator';
 
   // Shared react-select props (reduces duplicated lines)
   const commonMultiSelectProps = {
@@ -366,10 +343,7 @@ const WeeklySummariesReport = props => {
   };
 
   useEffect(() => {
-    if (
-      props.allBadgeData &&
-      props.allBadgeData.length > 0
-    ) {
+    if (props.allBadgeData && props.allBadgeData.length > 0) {
       setState(prevState => ({
         ...prevState,
         badges: props.allBadgeData,
@@ -378,22 +352,16 @@ const WeeklySummariesReport = props => {
   }, [props.allBadgeData]);
 
   /**
-  * Sort summaries alphabetically (fix: b.lastName)
-  */
+   * Sort summaries alphabetically (fix: b.lastName)
+   */
   const alphabetize = summaries => {
     const temp = [...summaries];
     return temp.sort((a, b) =>
-      `${a.firstName} ${a.lastName}`.localeCompare(
-        `${b.firstName} ${b.lastName}`,
-      ),
+      `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`),
     );
   };
 
-  const doesSummaryBelongToWeek = (
-    startDateStr,
-    endDateStr,
-    weekIndex,
-  ) => {
+  const doesSummaryBelongToWeek = (startDateStr, endDateStr, weekIndex) => {
     const weekStartLA = moment()
       .tz('America/Los_Angeles')
       .startOf('week')
@@ -409,38 +377,22 @@ const WeeklySummariesReport = props => {
     const summaryStart = new Date(startDateStr);
     const summaryEnd = new Date(endDateStr);
 
-    return (
-      summaryStart <= weekEndLA && summaryEnd >= weekStartLA
-    );
+    return summaryStart <= weekEndLA && summaryEnd >= weekStartLA;
   };
 
   const getAllRoles = summaries => {
-    const roleNames = summaries.map(
-      summary => `${summary.role}Info`,
-    );
+    const roleNames = summaries.map(summary => `${summary.role}Info`);
     return [...new Set(roleNames)];
   };
 
-  const getPromisedHours = (
-    weekToDateX,
-    weeklycommittedHoursHistory,
-  ) => {
+  const getPromisedHours = (weekToDateX, weeklycommittedHoursHistory) => {
     if (!weeklycommittedHoursHistory) return -1;
     if (weeklycommittedHoursHistory.length === 0) return 10;
 
-    const weekToDateReformat = new Date(
-      weekToDateX,
-    ).setHours(23, 59, 59, 999);
-    for (
-      let i = weeklycommittedHoursHistory.length - 1;
-      i >= 0;
-      i -= 1
-    ) {
-      const historyDateX = new Date(
-        weeklycommittedHoursHistory[i].dateChanged,
-      );
-      if (weekToDateReformat >= historyDateX)
-        return weeklycommittedHoursHistory[i].hours;
+    const weekToDateReformat = new Date(weekToDateX).setHours(23, 59, 59, 999);
+    for (let i = weeklycommittedHoursHistory.length - 1; i >= 0; i -= 1) {
+      const historyDateX = new Date(weeklycommittedHoursHistory[i].dateChanged);
+      if (weekToDateReformat >= historyDateX) return weeklycommittedHoursHistory[i].hours;
     }
     return 0;
   };
@@ -457,10 +409,8 @@ const WeeklySummariesReport = props => {
             const visible =
               info.visibility === '0' ||
               (info.visibility === '1' &&
-                (props.role === 'Owner' ||
-                  props.role === 'Administrator')) ||
-              (info.visibility === '2' &&
-                props.role !== 'Volunteer');
+                (props.role === 'Owner' || props.role === 'Administrator')) ||
+              (info.visibility === '2' && props.role !== 'Volunteer');
             info.CanRead = visible;
             allRoleInfo.push(info);
           }
@@ -503,9 +453,7 @@ const WeeklySummariesReport = props => {
         filterName: filter.filterName,
         selectedCodes: new Set(filter.selectedCodes),
         selectedColors: new Set(filter.selectedColors),
-        selectedExtraMembers: new Set(
-          filter.selectedExtraMembers,
-        ),
+        selectedExtraMembers: new Set(filter.selectedExtraMembers),
         selectedTrophies: filter.selectedTrophies,
         selectedSpecialColors: filter.selectedSpecialColors,
         selectedBioStatus: filter.selectedBioStatus,
@@ -548,48 +496,34 @@ const WeeklySummariesReport = props => {
       const badgeStatusCode = await fetchAllBadges();
       setPermissionState(prev => ({
         ...prev,
-        bioEditPermission: hasPermissionAction(
-          'putUserProfileImportantInfo',
-        ),
-        canEditSummaryCount: hasPermissionAction(
-          'putUserProfileImportantInfo',
-        ),
+        bioEditPermission: hasPermissionAction('putUserProfileImportantInfo'),
+        canEditSummaryCount: hasPermissionAction('putUserProfileImportantInfo'),
         codeEditPermission:
           hasPermissionAction('editTeamCode') ||
           auth.user.role === 'Owner' ||
           auth.user.role === 'Administrator',
-        canSeeBioHighlight: hasPermissionAction(
-          'highlightEligibleBios',
-        ),
+        canSeeBioHighlight: hasPermissionAction('highlightEligibleBios'),
         canManageFilter:
           hasPermissionAction('manageSummariesFilters') ||
           auth.user.role === 'Owner' ||
           auth.user.role === 'Administrator',
-        hasSeeBadgePermission:
-          hasPermissionAction('seeBadges') &&
-          badgeStatusCode === 200,
+        hasSeeBadgePermission: hasPermissionAction('seeBadges') && badgeStatusCode === 200,
       }));
 
-      const response = await axios.get(
-        ENDPOINTS.WEEKLY_SUMMARIES_REPORT(),
-        {
-          params: {
-            week: weekIndex,
-            forceRefresh: true,
-            _ts: Date.now(),
-          },
-          headers: {
-            'Cache-Control': 'no-cache',
-            Pragma: 'no-cache',
-          },
+      const response = await axios.get(ENDPOINTS.WEEKLY_SUMMARIES_REPORT(), {
+        params: {
+          week: weekIndex,
+          forceRefresh: true,
+          _ts: Date.now(),
         },
-      );
+        headers: {
+          'Cache-Control': 'no-cache',
+          Pragma: 'no-cache',
+        },
+      });
 
       const summaries = response?.data ?? [];
-      if (
-        !Array.isArray(summaries) ||
-        summaries.length === 0
-      ) {
+      if (!Array.isArray(summaries) || summaries.length === 0) {
         setState(prevState => ({
           ...prevState,
           loading: false,
@@ -606,9 +540,7 @@ const WeeklySummariesReport = props => {
 
       let summariesCopy = [...summaries];
       summariesCopy = alphabetize(summariesCopy);
-      summariesCopy = summariesCopy.filter(
-        summary => summary?.isActive !== false,
-      );
+      summariesCopy = summariesCopy.filter(summary => summary?.isActive !== false);
 
       summariesCopy = summariesCopy.map(summary => {
         const promisedHoursByWeek = weekDates.map(weekDate =>
@@ -653,9 +585,10 @@ const WeeklySummariesReport = props => {
       const memberDict = {};
       summariesCopy.forEach(summary => {
         const code = summary.teamCode || 'noCodeLabel';
-        if (teamCodeGroup[code])
-          teamCodeGroup[code].push(summary);
+        if (teamCodeGroup[code]) teamCodeGroup[code].push(summary);
         else teamCodeGroup[code] = [summary];
+
+        memberDict[summary._id] = `${summary.firstName} ${summary.lastName}`;
 
         memberDict[
           summary._id
@@ -677,12 +610,8 @@ const WeeklySummariesReport = props => {
 
       setTeamCodesAction(teamCodes);
 
-      colorOptionGroup.forEach(option =>
-        colorOptions.push({ value: option, label: option }),
-      );
-      colorOptions.sort((a, b) =>
-        `${a.label}`.localeCompare(`${b.label}`),
-      );
+      colorOptionGroup.forEach(option => colorOptions.push({ value: option, label: option }));
+      colorOptions.sort((a, b) => `${a.label}`.localeCompare(`${b.label}`));
 
       teamCodes
         .sort((a, b) =>
@@ -743,9 +672,7 @@ const WeeklySummariesReport = props => {
       if (code.value === '') return;
       if (code.value in state.tableData) {
         const team = state.tableData[code.value];
-        team.forEach(member =>
-          selectedMemberSet.add(member._id),
-        );
+        team.forEach(member => selectedMemberSet.add(member._id));
       }
     });
 
@@ -776,14 +703,10 @@ const WeeklySummariesReport = props => {
 
   const onSummaryRecepientsPopupClose = () =>
     setField(setState, 'summaryRecepientsPopupOpen', false);
-  const setSummaryRecepientsPopup = val =>
-    setField(setState, 'summaryRecepientsPopupOpen', val);
-  const onpasswordModalClose = () =>
-    setField(setState, 'passwordModalOpen', false);
-  const checkForValidPwd = booleanVal =>
-    setField(setState, 'isValidPwd', booleanVal);
-  const setAuthpassword = authPass =>
-    setField(setState, 'weeklyRecipientAuthPass', authPass);
+  const setSummaryRecepientsPopup = val => setField(setState, 'summaryRecepientsPopupOpen', val);
+  const onpasswordModalClose = () => setField(setState, 'passwordModalOpen', false);
+  const checkForValidPwd = booleanVal => setField(setState, 'isValidPwd', booleanVal);
+  const setAuthpassword = authPass => setField(setState, 'weeklyRecipientAuthPass', authPass);
 
   const onClickRecepients = () => {
     if (state.weeklyRecipientAuthPass) {
@@ -802,9 +725,7 @@ const WeeklySummariesReport = props => {
       isValidPwd={state.isValidPwd}
       setSummaryRecepientsPopup={setSummaryRecepientsPopup}
       setAuthpassword={setAuthpassword}
-      authEmailWeeklySummaryRecipient={
-        props.authEmailWeeklySummaryRecipient
-      }
+      authEmailWeeklySummaryRecipient={props.authEmailWeeklySummaryRecipient}
     />
   );
 
@@ -814,9 +735,7 @@ const WeeklySummariesReport = props => {
       onClose={onSummaryRecepientsPopupClose}
       summaries={props.summaries}
       password={state.weeklyRecipientAuthPass}
-      authEmailWeeklySummaryRecipient={
-        props.authEmailWeeklySummaryRecipient
-      }
+      authEmailWeeklySummaryRecipient={props.authEmailWeeklySummaryRecipient}
     />
   );
 
@@ -849,9 +768,7 @@ const WeeklySummariesReport = props => {
 
       const weekIndex = navItems.indexOf(state.activeTab);
 
-      const activeFilterColors = Object.entries(
-        selectedSpecialColors || {},
-      )
+      const activeFilterColors = Object.entries(selectedSpecialColors || {})
         .filter(([, isSelected]) => isSelected)
         .map(([color]) => color);
 
@@ -915,6 +832,7 @@ const WeeklySummariesReport = props => {
             summary._id,
           );
 
+      
           const noFilterSelected =
             selectedCodesArray.length === 0 &&
             selectedExtraMembersArray.length === 0;
@@ -972,8 +890,7 @@ const WeeklySummariesReport = props => {
 
       temp.forEach(summary => {
         if (summary.teamCode) {
-          if (!(summary.teamCode in filteredTeamDict))
-            filteredTeamDict[summary.teamCode] = [];
+          if (!(summary.teamCode in filteredTeamDict)) filteredTeamDict[summary.teamCode] = [];
           filteredTeamDict[summary.teamCode].push(summary);
         } else {
           filteredTeamDict[''].push(summary);
@@ -981,25 +898,17 @@ const WeeklySummariesReport = props => {
         filteredIdSet.add(summary._id);
       });
 
-      if (
-        selectedCodes[0]?.value === '' ||
-        selectedCodes.length >= 52
-      ) {
+      if (selectedCodes[0]?.value === '' || selectedCodes.length >= 52) {
         if (selectedCodes.length >= 52) {
           selectedCodes.forEach(code => {
             if (code.value === '') return;
             chartData.push({
               name: code.label,
-              value:
-                code.value in filteredTeamDict
-                  ? filteredTeamDict[code.value].length
-                  : 0,
+              value: code.value in filteredTeamDict ? filteredTeamDict[code.value].length : 0,
             });
 
             const team = filteredTeamDict[code.value];
-            const index = selectedCodesArray.indexOf(
-              code.value,
-            );
+            const index = selectedCodesArray.indexOf(code.value);
             const color = COLORS[index % COLORS.length];
             const members = (team || []).map(member => ({
               name: `${member.firstName} ${member.lastName}`,
@@ -1016,10 +925,7 @@ const WeeklySummariesReport = props => {
         } else {
           chartData.push({
             name: 'All With NO Code',
-            value:
-              '' in filteredTeamDict
-                ? filteredTeamDict[''].length
-                : 0,
+            value: '' in filteredTeamDict ? filteredTeamDict[''].length : 0,
           });
 
           const team = filteredTeamDict[''];
@@ -1041,12 +947,8 @@ const WeeklySummariesReport = props => {
         }
       } else {
         selectedCodes.forEach(code => {
-          const val =
-            code.value in filteredTeamDict
-              ? filteredTeamDict[code.value].length
-              : 0;
-          if (val > 0)
-            chartData.push({ name: code.label, value: val });
+          const val = code.value in filteredTeamDict ? filteredTeamDict[code.value].length : 0;
+          if (val > 0) chartData.push({ name: code.label, value: val });
 
           const team = filteredTeamDict[code.value];
           const index = selectedCodesArray.indexOf(
@@ -1094,10 +996,7 @@ const WeeklySummariesReport = props => {
         });
       }
 
-      const temptotal = chartData.reduce(
-        (acc, entry) => acc + entry.value,
-        0,
-      );
+      const temptotal = chartData.reduce((acc, entry) => acc + entry.value, 0);
 
       setState(prev => ({
         ...prev,
@@ -1119,20 +1018,17 @@ const WeeklySummariesReport = props => {
 
     try {
       const weekIndex = navItems.indexOf(activeTab);
-      const response = await axios.get(
-        ENDPOINTS.WEEKLY_SUMMARIES_REPORT(),
-        {
-          params: {
-            week: weekIndex,
-            forceRefresh: true,
-            _ts: Date.now(),
-          },
-          headers: {
-            'Cache-Control': 'no-cache',
-            Pragma: 'no-cache',
-          },
+      const response = await axios.get(ENDPOINTS.WEEKLY_SUMMARIES_REPORT(), {
+        params: {
+          week: weekIndex,
+          forceRefresh: true,
+          _ts: Date.now(),
         },
-      );
+        headers: {
+          'Cache-Control': 'no-cache',
+          Pragma: 'no-cache',
+        },
+      });
 
       if (response.status === 200) {
         let summariesCopy = [...response.data];
@@ -1189,11 +1085,7 @@ const WeeklySummariesReport = props => {
     const weekIndex = navItems.indexOf(tab);
     const shouldForceFetch = tab === 'Last Week';
 
-    if (
-      !shouldForceFetch &&
-      state.summariesByTab[tab] &&
-      state.summariesByTab[tab].length > 0
-    ) {
+    if (!shouldForceFetch && state.summariesByTab[tab] && state.summariesByTab[tab].length > 0) {
       setState(prevState => ({
         ...prevState,
         summaries: prevState.summariesByTab[tab],
@@ -1214,12 +1106,8 @@ const WeeklySummariesReport = props => {
           let summariesCopy = [...res.data];
           summariesCopy = alphabetize(summariesCopy);
           summariesCopy = summariesCopy.map(summary => {
-            const promisedHoursByWeek = weekDates.map(
-              weekDate =>
-                getPromisedHours(
-                  weekDate.toDate,
-                  summary.weeklycommittedHoursHistory || [],
-                ),
+            const promisedHoursByWeek = weekDates.map(weekDate =>
+              getPromisedHours(weekDate.toDate, summary.weeklycommittedHoursHistory || []),
             );
             const filterColor = summary.filterColor || null;
             return {
@@ -1234,9 +1122,7 @@ const WeeklySummariesReport = props => {
             summaries: summariesCopy,
             filteredSummaries: summariesCopy,
             badges: props.allBadgeData || prevState.badges,
-            loadedTabs: [
-              ...new Set([...prevState.loadedTabs, tab]),
-            ],
+            loadedTabs: [...new Set([...prevState.loadedTabs, tab])],
             summariesByTab: {
               ...prevState.summariesByTab,
               [tab]: summariesCopy,
@@ -1272,12 +1158,8 @@ const WeeklySummariesReport = props => {
       const selectedValues = event.map(e => e.value);
 
       const reorderedTeamCodes = [
-        ...prev.teamCodes.filter(code =>
-          selectedValues.includes(code.value),
-        ),
-        ...prev.teamCodes.filter(
-          code => !selectedValues.includes(code.value),
-        ),
+        ...prev.teamCodes.filter(code => selectedValues.includes(code.value)),
+        ...prev.teamCodes.filter(code => !selectedValues.includes(code.value)),
       ];
 
       return {
@@ -1349,11 +1231,8 @@ const WeeklySummariesReport = props => {
 
   const handleSpecialColorDotClick = (userId, color) => {
     setState(prevState => {
-      const updatedSummaries = prevState.summaries.map(
-        summary =>
-          summary._id === userId
-            ? { ...summary, filterColor: color }
-            : summary,
+      const updatedSummaries = prevState.summaries.map(summary =>
+        summary._id === userId ? { ...summary, filterColor: color } : summary,
       );
 
       return {
@@ -1399,9 +1278,7 @@ const WeeklySummariesReport = props => {
 
   const handleSaveFilter = async filterName => {
     const filterConfig = {
-      selectedCodes: state.selectedCodes.map(
-        code => code.value,
-      ),
+      selectedCodes: state.selectedCodes.map(code => code.value),
     };
 
     const result = await props.createSavedFilter({
@@ -1422,18 +1299,13 @@ const WeeklySummariesReport = props => {
     if (!currentAppliedFilter) return;
 
     const filterConfig = {
-      selectedCodes: state.selectedCodes.map(
-        code => code.value,
-      ),
+      selectedCodes: state.selectedCodes.map(code => code.value),
     };
 
-    const result = await props.updateSavedFilter(
-      currentAppliedFilter._id,
-      {
-        name: filterName,
-        filterConfig,
-      },
-    );
+    const result = await props.updateSavedFilter(currentAppliedFilter._id, {
+      name: filterName,
+      filterConfig,
+    });
 
     if (result.status === 200) {
       setShowModificationModal(false);
@@ -1444,16 +1316,12 @@ const WeeklySummariesReport = props => {
 
   const handleApplyFilter = filter => {
     const validCodes = filter.filterConfig.selectedCodes
-      .map(codeValue =>
-        state.teamCodes.find(
-          currentCode => currentCode.value === codeValue,
-        ),
-      )
+      .map(codeValue => state.teamCodes.find(currentCode => currentCode.value === codeValue))
       .filter(Boolean);
 
     setState(prevState => ({
       ...prevState,
-      selectedCodes: validCodes,
+      replaceCode: e.target?.value,
     }));
     setCurrentAppliedFilter(filter);
   };
@@ -1461,10 +1329,7 @@ const WeeklySummariesReport = props => {
   const handleDeleteFilter = async filterId => {
     const result = await props.deleteSavedFilter(filterId);
     if (result.status === 200) {
-      if (
-        currentAppliedFilter &&
-        currentAppliedFilter._id === filterId
-      )
+      if (currentAppliedFilter && currentAppliedFilter._id === filterId)
         setCurrentAppliedFilter(null);
       props.getSavedFilters();
     }
@@ -1477,21 +1342,16 @@ const WeeklySummariesReport = props => {
     if (!newCode || !fullCodeRegex.test(newCode)) {
       setState(prev => ({
         ...prev,
-        replaceCodeError:
-          'Replace code must be 5 to 7 characters.',
+        replaceCodeError: 'Replace code must be 5 to 7 characters.',
       }));
       return;
     }
 
-    const selectedCodes =
-      state.selectedCodes
-        ?.map(c => c.value)
-        .filter(v => v !== '') || [];
+    const selectedCodes = state.selectedCodes?.map(c => c.value).filter(v => v !== '') || [];
     if (selectedCodes.length === 0) {
       setState(prev => ({
         ...prev,
-        replaceCodeError:
-          'Select at least one team code to replace.',
+        replaceCodeError: 'Select at least one team code to replace.',
       }));
       return;
     }
@@ -1513,8 +1373,7 @@ const WeeklySummariesReport = props => {
       // ✅ Update local summaries optimistically
       setState(prev => {
         const updatedSummaries = prev.summaries.map(s => {
-          if (selectedCodes.includes(s.teamCode))
-            return { ...s, teamCode: newCode };
+          if (selectedCodes.includes(s.teamCode)) return { ...s, teamCode: newCode };
           return s;
         });
 
@@ -1531,10 +1390,7 @@ const WeeklySummariesReport = props => {
 
       // ✅ Update saved filters that reference old codes
       if (props.updateSavedFiltersForTeamCodeChange) {
-        props.updateSavedFiltersForTeamCodeChange(
-          selectedCodes,
-          newCode,
-        );
+        props.updateSavedFiltersForTeamCodeChange(selectedCodes, newCode);
       }
 
       toast.success('Team codes replaced.');
@@ -1548,10 +1404,7 @@ const WeeklySummariesReport = props => {
   };
 
   // Update a single user's team code (called from FormattedReport)
-  const handleTeamCodeChange = async (
-    userId,
-    newTeamCode,
-  ) => {
+  const handleTeamCodeChange = async (userId, newTeamCode) => {
     const trimmedCode = (newTeamCode ?? '').trim();
 
     // Allow clearing code (empty), but validate non-empty codes
@@ -1570,17 +1423,12 @@ const WeeklySummariesReport = props => {
 
       // ✅ Call backend to update user's team code
       // NOTE: Replace this endpoint if your project uses a different one
-      await axios.put(
-        ENDPOINTS.UPDATE_USER_TEAM_CODE(userId),
-        { teamCode: trimmedCode },
-      );
+      await axios.put(ENDPOINTS.UPDATE_USER_TEAM_CODE(userId), { teamCode: trimmedCode });
 
       // ✅ Update local summaries (so UI updates immediately)
       setState(prev => {
         const updatedSummaries = prev.summaries.map(s =>
-          s._id === userId
-            ? { ...s, teamCode: trimmedCode }
-            : s,
+          s._id === userId ? { ...s, teamCode: trimmedCode } : s,
         );
 
         const updatedByTab = {
@@ -1597,18 +1445,10 @@ const WeeklySummariesReport = props => {
 
       // ✅ Keep saved filters consistent (if you use these actions)
       // (We need the old code to update saved filters correctly)
-      const oldTeamCode =
-        state.summaries.find(s => s._id === userId)
-          ?.teamCode ?? '';
+      const oldTeamCode = state.summaries.find(s => s._id === userId)?.teamCode ?? '';
 
-      if (
-        props.updateSavedFiltersForIndividualTeamCodeChange
-      ) {
-        props.updateSavedFiltersForIndividualTeamCodeChange(
-          oldTeamCode,
-          trimmedCode,
-          userId,
-        );
+      if (props.updateSavedFiltersForIndividualTeamCodeChange) {
+        props.updateSavedFiltersForIndividualTeamCodeChange(oldTeamCode, trimmedCode, userId);
       }
     } catch (err) {
       toast.error('Failed to update team code.');
@@ -1618,8 +1458,8 @@ const WeeklySummariesReport = props => {
   const applyFilter = selectedFilter => {
     const filter = selectedFilter.filterData;
 
-    const selectedCodesChoice = state.teamCodes.filter(
-      code => filter.selectedCodes.has(code.value),
+    const selectedCodesChoice = state.teamCodes.filter(code =>
+      filter.selectedCodes.has(code.value),
     );
     const selectedColorsChoice = state.colorOptions.filter(
       color => filter.selectedColors.has(color.value),
@@ -1695,22 +1535,14 @@ const WeeklySummariesReport = props => {
         await props.fetchAllBadges();
         setPermissionState(prev => ({
           ...prev,
-          bioEditPermission: props.hasPermission(
-            'putUserProfileImportantInfo',
-          ),
+          bioEditPermission: props.hasPermission('putUserProfileImportantInfo'),
           codeEditPermission:
             props.hasPermission('editTeamCode') ||
             props.auth?.user?.role === 'Owner' ||
             props.auth?.user?.role === 'Administrator',
-          canEditSummaryCount: props.hasPermission(
-            'editSummaryHoursCount',
-          ),
-          canSeeBioHighlight: props.hasPermission(
-            'highlightEligibleBios',
-          ),
-          hasSeeBadgePermission: props.hasPermission(
-            'seeBadges',
-          ),
+          canEditSummaryCount: props.hasPermission('editSummaryHoursCount'),
+          canSeeBioHighlight: props.hasPermission('highlightEligibleBios'),
+          hasSeeBadgePermission: props.hasPermission('seeBadges'),
         }));
       } catch (error) {
         // eslint-disable-next-line no-console
@@ -1775,30 +1607,14 @@ const WeeklySummariesReport = props => {
 
       {/* Single modal instance for both create/update modes */}
       <SaveFilterModal
-        isOpen={
-          state.saveFilterModalOpen || showModificationModal
-        }
-        onClose={
-          showModificationModal
-            ? handleCloseModificationModal
-            : handleCloseSaveFilterModal
-        }
+        isOpen={state.saveFilterModalOpen || showModificationModal}
+        onClose={showModificationModal ? handleCloseModificationModal : handleCloseSaveFilterModal}
         onSave={handleSaveFilter}
-        onUpdate={
-          showModificationModal
-            ? handleUpdateFilter
-            : undefined
-        }
+        onUpdate={showModificationModal ? handleUpdateFilter : undefined}
         selectedCodes={state.selectedCodes}
         darkMode={darkMode}
-        existingFilterNames={props.savedFilters.map(
-          filter => filter.name,
-        )}
-        currentFilter={
-          showModificationModal
-            ? currentAppliedFilter
-            : undefined
-        }
+        existingFilterNames={props.savedFilters.map(filter => filter.name)}
+        currentFilter={showModificationModal ? currentAppliedFilter : undefined}
         isModification={showModificationModal}
       />
 
@@ -2019,13 +1835,8 @@ const WeeklySummariesReport = props => {
                     cursor: 'pointer',
                   }}
                 />
-                <ReactTooltip
-                  id="teamCodeWarningTooltip"
-                  place="top"
-                  effect="solid"
-                >
-                  {state.teamCodeWarningUsers.length} users
-                  have mismatched team codes!
+                <ReactTooltip id="teamCodeWarningTooltip" place="top" effect="solid">
+                  {state.teamCodeWarningUsers.length} users have mismatched team codes!
                 </ReactTooltip>
               </>
             )}
@@ -2044,64 +1855,72 @@ const WeeklySummariesReport = props => {
               placeholder="Search and select team codes..."
               styles={getMultiSelectStyles({
                 darkMode,
-                warning:
-                  state.teamCodeWarningUsers.length > 0,
+                warning: state.teamCodeWarningUsers.length > 0,
               })}
             />
 
-            {state.selectedCodes.length > 0 &&
-              hasPermissionToFilter && (
+            {state.selectedCodes.length > 0 && hasPermissionToFilter && (
+              <div className={styles['filter-save-buttons']}>
+                <button
+                  type="button"
+                  className={`${styles['filter-save-btn']} ${styles.save}`}
+                  onClick={handleOpenSaveFilterModal}
+                  title="Save current filter"
+                  aria-label="Save current filter"
+                >
+                  <i className="fa fa-save" />
+                </button>
+                <button
+                  type="button"
+                  className={`${styles['filter-save-btn']} ${styles.clear}`}
+                  onClick={() => handleSelectCodeChange([])}
+                  title="Clear selection"
+                  aria-label="Clear selection"
+                >
+                  <i className="fa fa-times" />
+                </button>
+              </div>
+            )}
+          </div>
+
+          {props.savedFilters && props.savedFilters.length > 0 && (
+            <div
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: '5px',
+                alignItems: 'center',
+              }}
+              className="my-3"
+            >
+              {props.savedFilters.map(filter => (
                 <div
-                  className={styles['filter-save-buttons']}
+                  key={filter._id}
+                  className={`${styles['saved-filter-button']} ${
+                    darkMode ? styles['dark-mode'] : ''
+                  } ${
+                    currentAppliedFilter && currentAppliedFilter._id === filter._id
+                      ? styles['active-filter']
+                      : ''
+                  }`}
                 >
                   <button
                     type="button"
-                    className={`${styles['filter-save-btn']} ${styles.save}`}
-                    onClick={handleOpenSaveFilterModal}
-                    title="Save current filter"
-                    aria-label="Save current filter"
-                  >
-                    <i className="fa fa-save" />
-                  </button>
-                  <button
-                    type="button"
-                    className={`${styles['filter-save-btn']} ${styles.clear}`}
-                    onClick={() =>
-                      handleSelectCodeChange([])
-                    }
-                    title="Clear selection"
-                    aria-label="Clear selection"
-                  >
-                    <i className="fa fa-times" />
-                  </button>
-                </div>
-              )}
-          </div>
-
-          {props.savedFilters &&
-            props.savedFilters.length > 0 && (
-              <div
-                style={{
-                  display: 'flex',
-                  flexWrap: 'wrap',
-                  gap: '5px',
-                  alignItems: 'center',
-                }}
-                className="my-3"
-              >
-                {props.savedFilters.map(filter => (
-                  <div
-                    key={filter._id}
-                    className={`${
-                      styles['saved-filter-button']
-                    } ${
-                      darkMode ? styles['dark-mode'] : ''
-                    } ${
-                      currentAppliedFilter &&
-                      currentAppliedFilter._id === filter._id
-                        ? styles['active-filter']
-                        : ''
-                    }`}
+                    className="btn btn-link p-0 mr-1"
+                    style={{
+                      color: 'inherit',
+                      textDecoration: 'none',
+                      fontSize: '0.875rem',
+                      background: 'none',
+                      border: 'none',
+                      padding: 0,
+                      fontWeight:
+                        currentAppliedFilter && currentAppliedFilter._id === filter._id
+                          ? 'bold'
+                          : 'normal',
+                    }}
+                    onClick={() => handleApplyFilter(filter)}
+                    title={`Apply filter: ${filter.name}`}
                   >
                     <button
                       type="button"
@@ -2140,17 +1959,14 @@ const WeeklySummariesReport = props => {
                     >
                       <i className="fa fa-times" />
                     </button>
+                    </button>
                   </div>
                 ))}
               </div>
             )}
         </Col>
 
-        <Col
-          lg={{ size: 5 }}
-          md={{ size: 6 }}
-          xs={{ size: 12 }}
-        >
+        <Col lg={{ size: 5 }} md={{ size: 6 }} xs={{ size: 12 }}>
           <div>Select Color</div>
           <Select
             {...commonMultiSelectProps}
@@ -2167,18 +1983,10 @@ const WeeklySummariesReport = props => {
             hasPermissionToFilter={hasPermissionToFilter}
             editable
             formId="report"
-            handleOverHoursToggleChange={
-              handleOverHoursToggleChange
-            }
-            handleBioStatusToggleChange={
-              handleBioStatusToggleChange
-            }
-            handleTrophyToggleChange={
-              handleTrophyToggleChange
-            }
-            handleSpecialColorToggleChange={
-              handleSpecialColorToggleChange
-            }
+            handleOverHoursToggleChange={handleOverHoursToggleChange}
+            handleBioStatusToggleChange={handleBioStatusToggleChange}
+            handleTrophyToggleChange={handleTrophyToggleChange}
+            handleSpecialColorToggleChange={handleSpecialColorToggleChange}
           />
         </Col>
       </Row>
@@ -2200,11 +2008,7 @@ const WeeklySummariesReport = props => {
           />
         </Col>
 
-        <Col
-          lg={{ size: 5 }}
-          md={{ size: 6 }}
-          xs={{ size: 12 }}
-        >
+        <Col lg={{ size: 5 }} md={{ size: 6 }} xs={{ size: 12 }}>
           <div>Logged Hours Range</div>
           <Select
             {...commonMultiSelectProps}
