@@ -1,65 +1,73 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './EHistory.css';
 import { fetchBMProjects } from '~/actions/bmdashboard/projectActions';
 import { fetchAllEquipments } from '~/actions/bmdashboard/equipmentActions';
 import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import Select from 'react-select';
-import { Link } from 'react-router-dom';
 
 export default function EquipmentUpdateLog() {
   const dispatch = useDispatch();
+  const history = useHistory();
   const bmProjects = useSelector(state => state.bmProjects || []);
   const equipments = useSelector(s => s.bmEquipments?.equipmentslist || []);
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const [selectedProject, setSelectedProject] = useState(null);
+  const [selectedProject, setSelectedProject] = useState({ label: 'All Projects', value: '0' });
 
   useEffect(() => {
     dispatch(fetchBMProjects());
+    // Load all equipment initially
+    dispatch(fetchAllEquipments());
   }, [dispatch]);
 
   useEffect(() => {
-    if (selectedProject?.value) {
+    if (selectedProject?.value && selectedProject.value !== '0') {
       dispatch(fetchAllEquipments(selectedProject.value));
+    } else {
+      dispatch(fetchAllEquipments());
     }
   }, [selectedProject, dispatch]);
 
-  const formatDate = iso => (iso ? new Date(iso).toLocaleString() : '-');
+  const formatDate = dateString => {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    return Number.isNaN(date.getTime()) ? 'N/A' : date.toLocaleDateString();
+  };
 
-  // 🌟 Dummy rows with dummy dates
-  const dummyRows = [
-    {
-      date: '2024-07-01T09:00:00Z',
-      previous: 'Working well',
-      current: 'Good',
-      replace: 'No',
-      lastUsed: 'N/A',
-      description: 'Initial condition',
-    },
-    {
-      date: '2024-08-15T14:30:00Z',
-      previous: 'Good',
-      current: 'Needs Repair',
-      replace: 'Yes',
-      lastUsed: 'John Doe',
-      description: 'Reported damage',
-    },
-  ];
+  const formatPersonName = person => {
+    if (!person) return 'N/A';
+    const fullName = `${person.firstName || ''} ${person.lastName || ''}`.trim();
+    return fullName || 'N/A';
+  };
 
-  // Build rows
-  const updateEntries = equipments
-    .filter(item => !selectedProject || item.project?._id === selectedProject.value)
-    .flatMap(item => {
-      if (item.updateRecord && item.updateRecord.length > 0) {
-        return item.updateRecord.map(entry => ({ entry, equipment: item }));
+  // Flatten all log records from all equipment with equipment info
+  const logRecords = useMemo(() => {
+    const records = [];
+    equipments.forEach(equipment => {
+      if (equipment.logRecord && equipment.logRecord.length > 0) {
+        equipment.logRecord.forEach(log => {
+          records.push({
+            ...log,
+            equipmentName: equipment.itemType?.name || 'N/A',
+            equipmentCode: equipment.code || 'N/A',
+            equipmentId: equipment._id,
+            projectName: equipment.project?.name || 'N/A',
+          });
+        });
       }
-      return dummyRows.map(dummy => ({
-        entry: null,
-        equipment: item,
-        dummy,
-      }));
     });
+    // Sort by date descending (most recent first)
+    return records.sort((a, b) => new Date(b.date) - new Date(a.date));
+  }, [equipments]);
+
+  const filteredLogRecords = useMemo(() => {
+    if (!selectedProject?.value || selectedProject.value === '0') {
+      return logRecords;
+    }
+    return logRecords.filter(record => record.projectName === selectedProject.label);
+  }, [logRecords, selectedProject]);
 
   return (
     <div
@@ -79,9 +87,14 @@ export default function EquipmentUpdateLog() {
             <Select
               id="project-select"
               value={selectedProject}
-              onChange={option => setSelectedProject(option)}
-              options={bmProjects.map(p => ({ label: p.name, value: p._id }))}
-              placeholder="All Projects"
+              onChange={option =>
+                setSelectedProject(option || { label: 'All Projects', value: '0' })
+              }
+              options={[
+                { label: 'All Projects', value: '0' },
+                ...bmProjects.map(p => ({ label: p.name, value: p._id })),
+              ]}
+              placeholder="Select project…"
               isClearable
               styles={{
                 container: base => ({ ...base, minWidth: '200px' }),
@@ -128,36 +141,32 @@ export default function EquipmentUpdateLog() {
           >
             <thead>
               <tr>
-                <th>SID</th>
-                <th>Submit Time</th>
-                <th>PID</th>
-                <th>Name</th>
-                <th>Previous</th>
-                <th>Current</th>
-                <th>Replace</th>
-                <th>Last Used</th>
-                <th>Description</th>
+                <th>Date</th>
+                <th>Equipment Name</th>
+                <th>Equipment Number</th>
+                <th>Type</th>
+                <th>Created By</th>
+                <th>Responsible User</th>
               </tr>
             </thead>
             <tbody>
-              {updateEntries.length > 0 ? (
-                updateEntries.map(({ entry, equipment, dummy }, idx) => (
-                  <tr key={(entry && entry._id) || `dummy-${equipment._id}-${idx}`}>
-                    <td>{idx + 1}</td>
-                    <td>{entry ? formatDate(entry.date) : formatDate(dummy.date)}</td>
-                    <td>{equipment.project?.name || '-'}</td>
-                    <td>{equipment.itemType?.name || equipment.name || 'Unknown'}</td>
-                    <td>{entry ? '-' : dummy.previous}</td>
-                    <td>{entry ? entry.condition : dummy.current}</td>
-                    <td>{entry ? '-' : dummy.replace}</td>
-                    <td>{entry ? entry.createdBy || '-' : dummy.lastUsed}</td>
-                    <td>{entry ? '-' : dummy.description}</td>
+              {filteredLogRecords.length > 0 ? (
+                filteredLogRecords.map((record, index) => (
+                  <tr key={`${record.equipmentId}-${index}-${record.date}`}>
+                    <td>{formatDate(record.date)}</td>
+                    <td>{record.equipmentName}</td>
+                    <td>{record.equipmentCode}</td>
+                    <td>{record.type || 'N/A'}</td>
+                    <td>{formatPersonName(record.createdBy)}</td>
+                    <td>{formatPersonName(record.responsibleUser)}</td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={9} className="text-center">
-                    No history available
+                  <td colSpan={6} className="text-center">
+                    {selectedProject?.value && selectedProject.value !== '0'
+                      ? 'No equipment history records found for the selected project.'
+                      : 'No equipment history records found. Please select a project to view history.'}
                   </td>
                 </tr>
               )}
@@ -166,11 +175,13 @@ export default function EquipmentUpdateLog() {
         </div>
 
         <div className="d-flex justify-content-start mt-3">
-          <Link to="/equipment-tools">
-            <button className="btn btn-primary" type="button">
-              Back to Equipment/Tools List
-            </button>
-          </Link>
+          <button
+            className="btn btn-primary"
+            type="button"
+            onClick={() => history.push('/bmdashboard/equipment')}
+          >
+            Back to Equipment List
+          </button>
         </div>
       </div>
     </div>
