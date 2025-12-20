@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import styles from './ResourceManagement.module.css';
 
-function SearchBar() {
+function SearchBar({ onSearch, searchTerm }) {
   return (
     <div className={styles.searchBarContainer}>
       <div className={styles.searchBarContainerLeft}>
@@ -10,8 +10,14 @@ function SearchBar() {
         <span className={styles.iconToggle}>⇅</span>
       </div>
       <div className={styles.searchBarContainerRight}>
-        <input type="text" className={styles.searchInput} placeholder="Search" />
-        <button type="button" className={styles.searchButton}>
+        <input
+          type="text"
+          className={styles.searchInput}
+          placeholder="Search"
+          value={searchTerm}
+          onChange={e => onSearch(e.target.value)} // Update the input value
+        />
+        <button type="button" className={styles.searchButton} onClick={() => onSearch(searchTerm)}>
           Search
         </button>
       </div>
@@ -102,6 +108,20 @@ function ResourceManagement() {
       date: 'Feb 2, 2024',
     },
   ]);
+  const [searchTerm, setSearchTerm] = useState(''); // State for search term
+  const [filteredResources, setFilteredResources] = useState(resources);
+
+  const handleSearch = term => {
+    setSearchTerm(term);
+    const filtered = resources.filter(
+      resource =>
+        resource.user.toLowerCase().includes(term.toLowerCase()) ||
+        resource.facilities.toLowerCase().includes(term.toLowerCase()) ||
+        resource.materials.toLowerCase().includes(term.toLowerCase()) ||
+        resource.date.toLowerCase().includes(term.toLowerCase()),
+    );
+    setFilteredResources(filtered);
+  };
 
   return (
     <div className={styles.resourceManagementDashboard}>
@@ -112,7 +132,7 @@ function ResourceManagement() {
         </button>
       </div>
 
-      <SearchBar />
+      <SearchBar onSearch={handleSearch} searchTerm={searchTerm} />
 
       <div className={styles.resourceList}>
         <div className={styles.resourceHeading}>
@@ -127,7 +147,7 @@ function ResourceManagement() {
         </div>
         <hr className={styles.lineSperator} />
 
-        {resources.map(resource => (
+        {filteredResources.map(resource => (
           <div key={resource.id}>
             <div className={styles.resourceItem}>
               <div className={styles.checkboxContainer}>
