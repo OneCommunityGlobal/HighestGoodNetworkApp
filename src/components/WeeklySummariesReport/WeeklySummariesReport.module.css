@@ -11,11 +11,35 @@
   border: 1px solid transparent;
   border-color: #fff #dee2e6 #dee2e6;
 }
+/* Normal (no hover) */
+.btn--dark-sea-green {
+  background-color: #cfe0cf !important;  /* normal look (light green) */
+  color: #ffffff !important;
+  border: 1px solid #9db59d !important;
+}
+
+/* Hover = sea green */
+.btn--dark-sea-green:hover,
+.btn--dark-sea-green:focus {
+  background-color: #1f6f78 !important;  /* sea green */
+  border-color: #1f6f78 !important;
+  color: #ffffff !important;
+}
 
 .reportWrapper {
   padding: 20px 0;
-  margin-top: 5px;
-  border-bottom: 1px solid #828282;
+  
+}
+
+.darkModal .modal-header,
+.darkModal .modal-footer {
+  background-color: #0f1b2b;
+  border-color: #334155;
+  color: #f5f7fb;
+}
+.darkBackdrop {
+  background-color: #000 !important;
+  opacity: .6 !important;
 }
 
 .bioToggle {
@@ -44,6 +68,11 @@
   margin: 5px;
 }
 
+.table-container {
+  margin-top: 25px;
+  
+}
+
 .nonsummaryWrapper {
   display: flex;
   flex-direction: row;
@@ -62,6 +91,32 @@
 .switchToggle{
   display: none;
 }
+.extraMembersSelect :global(.dropdown-container) {
+  min-height: 42px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #111827;
+}
+
+.extraMembersDark :global(.dropdown-container) {
+  border: 1px solid #475569;
+  background: #0c1626;  /* separate bg */
+  color: #f5f7fb;
+}
+
+.extraMembersDark :global(.dropdown-content),
+.extraMembersDark :global(.options) {
+  background: #0a1220;
+  color: #f5f7fb;
+}
+
+.extraMembersDark :global(.search input) {
+  background: #0a1220 !important;
+  color: #f5f7fb !important;
+  border: 1px solid #475569 !important;
+}
+
 .switchToggleLabel{
   display: block;
   overflow: hidden;
@@ -297,34 +352,7 @@
     padding-left: 0 !important;
     padding-right: 0 !important;
   }
-
 }
-/* @media screen and (max-width: 544px) {
-  .responsiveFontSize {
-    font-size: 0.75rem !important;
-  }
-  .switchToggleControl{
-    margin-left: -6px;
-  }
-}
-@media screen and (max-width: 490px) {
-  .responsiveFontSize {
-    font-size: 0.5rem !important;
-  }
-  .switchToggleControl{
-    width: 33px;
-  }
-  
-}
-
-@media screen and (max-width: 400px) {
-  .responsiveFontSize {
-    font-size: 0.3rem !important;
-  }  
-  .switchToggleControl{
-    width: 40px;
-  }
-} */
 
 @media (min-width: 482px) {
   .teamcodeWrapper {

@@ -1768,7 +1768,7 @@ const WeeklySummariesReport = props => {
             )}
 
             <Button
-              color={darkMode ? 'light' : 'primary'}
+              style={darkMode ? boxStyleDark : boxStyle}
               outline
               className="mx-1"
               type="button"
@@ -1925,19 +1925,124 @@ const WeeklySummariesReport = props => {
                 }}
                 placeholder="Search and select team codes..."
                 classNamePrefix="custom-select"
-                className={`custom-select-container ${darkMode ? 'dark-mode' : ''} ${
-                  state.teamCodeWarningUsers.length > 0 ? 'warning-border' : ''
-                }`}
+                menuPortalTarget={document.body}
                 styles={{
+                  menuPortal: base => ({
+                    ...base,
+                    zIndex: 9999,
+                  }),
+
+                  control: (base, s) => ({
+                    ...base,
+                    minHeight: 42,
+                    backgroundColor: darkMode ? '#0f1b2b' : '#ffffff',
+                    borderColor:
+                      state.teamCodeWarningUsers.length > 0
+                        ? '#e22a2a'
+                        : s.isFocused
+                        ? darkMode
+                          ? '#60a5fa'
+                          : '#2563eb'
+                        : darkMode
+                        ? '#334155'
+                        : '#cbd5e1',
+                    boxShadow: 'none',
+                    ':hover': {
+                      borderColor:
+                        state.teamCodeWarningUsers.length > 0
+                          ? '#e22a2a'
+                          : darkMode
+                          ? '#60a5fa'
+                          : '#2563eb',
+                    },
+                  }),
+
+                  valueContainer: base => ({
+                    ...base,
+                    padding: '2px 10px',
+                  }),
+
+                  input: base => ({
+                    ...base,
+                    color: darkMode ? '#f5f7fb' : '#111827',
+                  }),
+
+                  placeholder: base => ({
+                    ...base,
+                    color: darkMode ? '#94a3b8' : '#6b7280',
+                  }),
+
+                  singleValue: base => ({
+                    ...base,
+                    color: darkMode ? '#f5f7fb' : '#111827',
+                  }),
+
+                  menu: base => ({
+                    ...base,
+                    backgroundColor: darkMode ? '#0b1422' : '#ffffff',
+                    border: `1px solid ${darkMode ? '#334155' : '#e5e7eb'}`,
+                  }),
+
                   menuList: base => ({
                     ...base,
-                    maxHeight: '700px',
+                    maxHeight: 700,
                     overflowY: 'auto',
+                    backgroundColor: darkMode ? '#0b1422' : '#ffffff',
                   }),
-                  option: (base, state) => ({
+
+                  option: (base, s) => ({
                     ...base,
                     fontSize: '13px',
-                    backgroundColor: state.isFocused ? '#eee' : 'white',
+                    backgroundColor: s.isSelected
+                      ? darkMode
+                        ? '#1f2a44'
+                        : '#dbeafe'
+                      : s.isFocused
+                      ? darkMode
+                        ? '#16233a'
+                        : '#eee'
+                      : darkMode
+                      ? '#0b1422'
+                      : '#ffffff',
+                    color: darkMode ? '#f5f7fb' : '#111827',
+                    ':active': {
+                      backgroundColor: darkMode ? '#1f2a44' : '#bfdbfe',
+                    },
+                  }),
+
+                  multiValue: base => ({
+                    ...base,
+                    backgroundColor: darkMode ? '#1f2a44' : '#e5e7eb',
+                  }),
+
+                  multiValueLabel: base => ({
+                    ...base,
+                    color: darkMode ? '#f5f7fb' : '#111827',
+                  }),
+
+                  multiValueRemove: base => ({
+                    ...base,
+                    color: darkMode ? '#f5f7fb' : '#111827',
+                    ':hover': {
+                      backgroundColor: darkMode ? '#334155' : '#cbd5e1',
+                    },
+                  }),
+
+                  indicatorSeparator: base => ({
+                    ...base,
+                    backgroundColor: darkMode ? '#334155' : '#d1d5db',
+                  }),
+
+                  dropdownIndicator: base => ({
+                    ...base,
+                    color: darkMode ? '#cbd5e1' : '#6b7280',
+                    ':hover': { color: darkMode ? '#f5f7fb' : '#111827' },
+                  }),
+
+                  clearIndicator: base => ({
+                    ...base,
+                    color: darkMode ? '#cbd5e1' : '#6b7280',
+                    ':hover': { color: darkMode ? '#f5f7fb' : '#111827' },
                   }),
                 }}
               />
@@ -2035,20 +2140,115 @@ const WeeklySummariesReport = props => {
             }}
             placeholder="Select color filters..."
             classNamePrefix="custom-select"
-            className={`${styles.multiSelectFilter} text-dark ${darkMode ? 'dark-mode' : ''}`}
+            menuPortalTarget={document.body}
             styles={{
+              menuPortal: base => ({
+                ...base,
+                zIndex: 9999,
+              }),
+
+              control: (base, s) => ({
+                ...base,
+                minHeight: 42,
+                backgroundColor: darkMode ? '#0f1b2b' : '#ffffff',
+                borderColor: s.isFocused
+                  ? darkMode
+                    ? '#60a5fa'
+                    : '#2563eb'
+                  : darkMode
+                  ? '#334155'
+                  : '#cbd5e1',
+                boxShadow: 'none',
+                ':hover': {
+                  borderColor: darkMode ? '#60a5fa' : '#2563eb',
+                },
+              }),
+
+              valueContainer: base => ({
+                ...base,
+                padding: '2px 10px',
+              }),
+
+              input: base => ({
+                ...base,
+                color: darkMode ? '#f5f7fb' : '#111827',
+              }),
+
+              placeholder: base => ({
+                ...base,
+                color: darkMode ? '#94a3b8' : '#6b7280',
+              }),
+
+              menu: base => ({
+                ...base,
+                backgroundColor: darkMode ? '#0b1422' : '#ffffff',
+                border: `1px solid ${darkMode ? '#334155' : '#e5e7eb'}`,
+              }),
+
               menuList: base => ({
                 ...base,
-                maxHeight: '700px',
+                maxHeight: 700,
                 overflowY: 'auto',
+                backgroundColor: darkMode ? '#0b1422' : '#ffffff',
               }),
-              option: (base, state) => ({
+
+              option: (base, s) => ({
                 ...base,
                 fontSize: '13px',
-                backgroundColor: state.isFocused ? '#eee' : 'white',
+                backgroundColor: s.isSelected
+                  ? darkMode
+                    ? '#1f2a44'
+                    : '#dbeafe'
+                  : s.isFocused
+                  ? darkMode
+                    ? '#16233a'
+                    : '#eee'
+                  : darkMode
+                  ? '#0b1422'
+                  : '#ffffff',
+                color: darkMode ? '#f5f7fb' : '#111827',
+                ':active': {
+                  backgroundColor: darkMode ? '#1f2a44' : '#bfdbfe',
+                },
+              }),
+
+              multiValue: base => ({
+                ...base,
+                backgroundColor: darkMode ? '#1f2a44' : '#e5e7eb',
+              }),
+
+              multiValueLabel: base => ({
+                ...base,
+                color: darkMode ? '#f5f7fb' : '#111827',
+              }),
+
+              multiValueRemove: base => ({
+                ...base,
+                color: darkMode ? '#f5f7fb' : '#111827',
+                ':hover': {
+                  backgroundColor: darkMode ? '#334155' : '#cbd5e1',
+                },
+              }),
+
+              indicatorSeparator: base => ({
+                ...base,
+                backgroundColor: darkMode ? '#334155' : '#d1d5db',
+              }),
+
+              dropdownIndicator: base => ({
+                ...base,
+                color: darkMode ? '#cbd5e1' : '#6b7280',
+                ':hover': { color: darkMode ? '#f5f7fb' : '#111827' },
+              }),
+
+              clearIndicator: base => ({
+                ...base,
+                color: darkMode ? '#cbd5e1' : '#6b7280',
+                ':hover': { color: darkMode ? '#f5f7fb' : '#111827' },
               }),
             }}
           />
+
           <WeeklySummariesToggleFilter
             state={state}
             setState={setState}
@@ -2062,8 +2262,7 @@ const WeeklySummariesReport = props => {
         <Col lg={{ size: 5, offset: 1 }} md={{ size: 6 }} xs={{ size: 12 }}>
           <div>Select Extra Members</div>
           <MultiSelect
-            className={`${styles['report-multi-select-filter']} ${styles.textDark} 
-              ${darkMode ? 'dark-mode' : ''}`}
+            className={`${styles.extraMembersSelect} ${darkMode ? styles.extraMembersDark : ''}`}
             options={state.membersFromUnselectedTeam}
             value={state.selectedExtraMembers}
             onChange={handleSelectExtraMembersChange}
@@ -2073,6 +2272,10 @@ const WeeklySummariesReport = props => {
           <div>Logged Hours Range</div>
           <Select
             isMulti
+            isSearchable
+            closeMenuOnSelect={false}
+            hideSelectedOptions={false}
+            blurInputOnSelect={false}
             placeholder="Select range..."
             components={{
               Option: CheckboxOption,
@@ -2085,26 +2288,118 @@ const WeeklySummariesReport = props => {
               { value: '20-40', label: '20-40' },
               { value: '>40', label: '>40' },
             ]}
-            hideSelectedOptions={false}
-            blurInputOnSelect={false}
-            closeMenuOnSelect={false}
-            className={`${styles.multiSelectFilter} text-dark ${darkMode ? 'dark-mode' : ''}`}
-            styles={{
-              menuList: base => ({
-                ...base,
-                maxHeight: '700px',
-                overflowY: 'auto',
-              }),
-              option: (base, state) => ({
-                ...base,
-                fontSize: '13px',
-                backgroundColor: state.isFocused ? '#eee' : 'white',
-              }),
-            }}
             value={state.selectedLoggedHoursRange}
             onChange={selectedOption =>
               setState({ ...state, selectedLoggedHoursRange: selectedOption })
             }
+            classNamePrefix="custom-select"
+            menuPortalTarget={document.body}
+            styles={{
+              menuPortal: base => ({
+                ...base,
+                zIndex: 9999,
+              }),
+
+              control: (base, s) => ({
+                ...base,
+                minHeight: 42,
+                backgroundColor: darkMode ? '#0f1b2b' : '#ffffff',
+                borderColor: s.isFocused
+                  ? darkMode
+                    ? '#60a5fa'
+                    : '#2563eb'
+                  : darkMode
+                  ? '#334155'
+                  : '#cbd5e1',
+                boxShadow: 'none',
+                ':hover': {
+                  borderColor: darkMode ? '#60a5fa' : '#2563eb',
+                },
+              }),
+
+              valueContainer: base => ({
+                ...base,
+                padding: '2px 10px',
+              }),
+
+              input: base => ({
+                ...base,
+                color: darkMode ? '#f5f7fb' : '#111827',
+              }),
+
+              placeholder: base => ({
+                ...base,
+                color: darkMode ? '#94a3b8' : '#6b7280',
+              }),
+
+              menu: base => ({
+                ...base,
+                backgroundColor: darkMode ? '#0b1422' : '#ffffff',
+                border: `1px solid ${darkMode ? '#334155' : '#e5e7eb'}`,
+              }),
+
+              menuList: base => ({
+                ...base,
+                maxHeight: 700,
+                overflowY: 'auto',
+                backgroundColor: darkMode ? '#0b1422' : '#ffffff',
+              }),
+
+              option: (base, s) => ({
+                ...base,
+                fontSize: '13px',
+                backgroundColor: s.isSelected
+                  ? darkMode
+                    ? '#1f2a44'
+                    : '#dbeafe'
+                  : s.isFocused
+                  ? darkMode
+                    ? '#16233a'
+                    : '#eee'
+                  : darkMode
+                  ? '#0b1422'
+                  : '#ffffff',
+                color: darkMode ? '#f5f7fb' : '#111827',
+                ':active': {
+                  backgroundColor: darkMode ? '#1f2a44' : '#bfdbfe',
+                },
+              }),
+
+              multiValue: base => ({
+                ...base,
+                backgroundColor: darkMode ? '#1f2a44' : '#e5e7eb',
+              }),
+
+              multiValueLabel: base => ({
+                ...base,
+                color: darkMode ? '#f5f7fb' : '#111827',
+              }),
+
+              multiValueRemove: base => ({
+                ...base,
+                color: darkMode ? '#f5f7fb' : '#111827',
+                ':hover': {
+                  backgroundColor: darkMode ? '#334155' : '#cbd5e1',
+                },
+              }),
+
+              indicatorSeparator: base => ({
+                ...base,
+                backgroundColor: darkMode ? '#334155' : '#d1d5db',
+              }),
+
+              dropdownIndicator: base => ({
+                ...base,
+                color: darkMode ? '#cbd5e1' : '#6b7280',
+                ':hover': { color: darkMode ? '#f5f7fb' : '#111827' },
+              }),
+
+              clearIndicator: base => ({
+                ...base,
+                color: darkMode ? '#cbd5e1' : '#6b7280',
+                ':hover': { color: darkMode ? '#f5f7fb' : '#111827' },
+              }),
+            }}
           />
         </Col>
       </Row>
@@ -2126,7 +2421,7 @@ const WeeklySummariesReport = props => {
       )}
 
       {permissionState.codeEditPermission && state.selectedCodes && state.selectedCodes.length > 0 && (
-        <Row className={styles['mx-max-sm-0']} style={{ marginBottom: '10px' }}>
+        <Row className={styles['mx-max-sm-0']}>
           <Col lg={{ size: 5, offset: 1 }} md={{ size: 6 }} xs={{ size: 12 }}>
             Replace With
             <Input
@@ -2158,7 +2453,7 @@ const WeeklySummariesReport = props => {
       )}
       <Row className={styles['mx-max-sm-0']}>
         <Col lg={{ size: 10, offset: 1 }} xs={{ size: 12 }}>
-          <Nav tabs>
+          <Nav className={styles['table-container']} tabs>
             {navItems.map(item => (
               <NavItem key={item}>
                 <NavLink
@@ -2205,7 +2500,8 @@ const WeeklySummariesReport = props => {
                         {permissionState.hasSeeBadgePermission && (
                           <>
                             <Button
-                              className="btn--dark-sea-green mr-2"
+                              type="button"
+                              className="mx-1"
                               style={darkMode ? boxStyleDark : boxStyle}
                               onClick={() =>
                                 setState(prev => ({ ...prev, loadBadges: !state.loadBadges }))
@@ -2214,7 +2510,7 @@ const WeeklySummariesReport = props => {
                               {state.loadBadges ? 'Hide Badges' : 'Load Badges'}
                             </Button>
                             <Button
-                              className="btn--dark-sea-green"
+                              className="mr-2"
                               style={darkMode ? boxStyleDark : boxStyle}
                               onClick={() =>
                                 setState(prev => ({ ...prev, loadTrophies: !state.loadTrophies }))
@@ -2225,7 +2521,7 @@ const WeeklySummariesReport = props => {
                           </>
                         )}
                         <Button
-                          className="btn--dark-sea-green mr-2"
+                          className="mr-2"
                           style={darkMode ? boxStyleDark : boxStyle}
                           onClick={refreshCurrentTab}
                           disabled={state.refreshing}

@@ -125,7 +125,7 @@ function GeneratePdfReport({ summaries, weekIndex, weekDates, darkMode }) {
 
   return (
     <Button
-      className="btn--dark-sea-green"
+      className="mx-1"
       onClick={generateAndDownloadPdf}
       style={darkMode ? boxStyleDark : boxStyle}
     >
