@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './styles/StarRating.css'; // Import the updated CSS
+import styles from './styles/StarRating.module.css';
 
 function StarRating({ onRate }) {
   const [rating, setRating] = useState(0);
@@ -22,7 +22,7 @@ function StarRating({ onRate }) {
       stars.push(
         <span
           key={i}
-          className={`star ${i < rating ? 'selected' : ''}`}
+          className={`${styles.star} ${i < rating ? styles.selected : ''}`}
           onClick={() => handleStarClick(i)}
           onKeyDown={e => handleStarKeyDown(e, i)}
           role="button"
@@ -36,7 +36,7 @@ function StarRating({ onRate }) {
     return stars;
   };
 
-  return <div className="star-container">{renderStars()}</div>;
+  return <div className={styles['star-container']}>{renderStars()}</div>;
 }
 
 export default StarRating;

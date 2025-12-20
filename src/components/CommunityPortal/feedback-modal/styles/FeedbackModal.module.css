@@ -11,11 +11,11 @@
   z-index: 1000;
 }
 
-h2.header-feedback {
+.headerFeedback {
   text-align: center;
 }
 
-p.para {
+.para {
   text-align: center;
 }
 
@@ -75,7 +75,7 @@ p.para {
   transition: 0.7s;
 }
 
-textarea {
+.textarea {
   width: 100%;
   height: 80px;
   margin-top: 10px;
@@ -99,4 +99,11 @@ textarea {
   color: rgb(186, 31, 31);
   font-weight: semi-bold;
   text-align: center;
+}
+
+.char-count {
+  text-align: right;
+  font-size: 0.875rem;
+  color: #666;
+  margin-top: 5px;
 }

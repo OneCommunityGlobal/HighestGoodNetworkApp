@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import StarRating from './StarRating';
-import './styles/FeedbackModal.css';
+import styles from './styles/FeedbackModal.module.css';
 
 function FeedbackModal({ isOpen, onClose, onFeedbackSubmitted, hasSubmitted, activityId }) {
   const [rating, setRating] = useState(0);
@@ -66,7 +66,7 @@ function FeedbackModal({ isOpen, onClose, onFeedbackSubmitted, hasSubmitted, act
   };
 
   const handleOverlayClick = e => {
-    if (e.target.className === 'modal-overlay') {
+    if (e.target.classList.contains(styles['modal-overlay'])) {
       handleClose();
     }
   };
@@ -80,7 +80,7 @@ function FeedbackModal({ isOpen, onClose, onFeedbackSubmitted, hasSubmitted, act
   return isOpen ? (
     // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
     <div
-      className="modal-overlay"
+      className={styles['modal-overlay']}
       onClick={handleOverlayClick}
       onKeyDown={handleOverlayKeyDown}
       role="dialog"
@@ -88,9 +88,9 @@ function FeedbackModal({ isOpen, onClose, onFeedbackSubmitted, hasSubmitted, act
       tabIndex={-1}
       aria-label="Feedback modal"
     >
-      <div className="modal-content">
+      <div className={styles['modal-content']}>
         <span
-          className="close-icon"
+          className={styles['close-icon']}
           onClick={handleClose}
           onKeyDown={e => {
             if (e.key === 'Enter' || e.key === ' ') {
@@ -104,44 +104,45 @@ function FeedbackModal({ isOpen, onClose, onFeedbackSubmitted, hasSubmitted, act
         >
           &times;
         </span>
-        <h2 className="header-feedback">Your feedback is very important to us!</h2>
+        <h2 className={styles.headerFeedback}>Your feedback is very important to us!</h2>
 
         {hasSubmitted && !submitted && (
           <div>
-            <p className="success-message">
+            <p className={styles['success-message']}>
               You have already submitted feedback for this activity.
             </p>
-            <p className="para">Thank you for your feedback!</p>
-            <div className="modal-buttons">
-              <button type="button" className="cancel-btn" onClick={handleClose}>
+            <p className={styles.para}>Thank you for your feedback!</p>
+            <div className={styles['modal-buttons']}>
+              <button type="button" className={styles['cancel-btn']} onClick={handleClose}>
                 Close
               </button>
             </div>
           </div>
         )}
 
-        {submitted && <p className="success-message">{successMessage}</p>}
+        {submitted && <p className={styles['success-message']}>{successMessage}</p>}
 
         {!hasSubmitted && !submitted && (
           <div>
-            <p className="para">
+            <p className={styles.para}>
               If you can, please tell us what parts you are not happy or satisfied with.
             </p>
             <form onSubmit={handleSubmit}>
               <StarRating onRate={setRating} />
-              {errorMessage && <p className="error-message">{errorMessage}</p>}
+              {errorMessage && <p className={styles['error-message']}>{errorMessage}</p>}
               <textarea
+                className={styles.textarea}
                 value={comment}
                 onChange={handleCommentChange}
                 placeholder="Please leave your feedback (optional)"
                 maxLength="300"
               />
-              <div className="char-count">{charCount}/300</div>
-              <div className="modal-buttons">
-                <button type="submit" className="submit-btn" disabled={rating === 0}>
+              <div className={styles['char-count']}>{charCount}/300</div>
+              <div className={styles['modal-buttons']}>
+                <button type="submit" className={styles['submit-btn']} disabled={rating === 0}>
                   Submit Feedback
                 </button>
-                <button type="button" className="cancel-btn" onClick={handleClose}>
+                <button type="button" className={styles['cancel-btn']} onClick={handleClose}>
                   Cancel
                 </button>
               </div>
