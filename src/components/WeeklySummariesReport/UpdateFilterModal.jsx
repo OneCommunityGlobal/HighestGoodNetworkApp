@@ -21,6 +21,42 @@ import { setField } from '~/utils/stateHelper';
 import FilterPreviewForm from './FilterPreviewForm';
 import FilterEditForm from './FilterEditForm';
 
+const ActionButtons = ({ update, isProcessing, onSave, onCancel, onEdit, onDelete }) => {
+  if (update) {
+    if (isProcessing) {
+      return (
+        <div className="d-flex align-items-center">
+          <Spinner size="sm" color="danger" className="mr-2" />
+          Updating...
+        </div>
+      );
+    }
+
+    return (
+      <div className="my-3 d-flex justify-content-end">
+        <Button color="primary" className="mr-2" onClick={onSave}>
+          Save
+        </Button>
+        <Button color="secondary" onClick={onCancel}>
+          Cancel
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="my-3 d-flex justify-content-end">
+      <Button color="primary" className="mr-2" onClick={onEdit}>
+        Edit
+      </Button>
+      <Button color="danger" onClick={onDelete}>
+        Delete
+      </Button>
+    </div>
+  );
+};
+
+
 const defaultState = {
   filterName: '',
   selectedCodes: [],
@@ -395,34 +431,15 @@ export default function UpdateFilterModal({
             />
             {selectedFilter && (
               <FormGroup>
-                {update ? (
-                  <div>
-                    {isProcessing ? (
-                      <div className="d-flex align-items-center">
-                        <Spinner size="sm" color="danger" className="mr-2" />
-                        Updating...
-                      </div>
-                    ) : (
-                      <div className="my-3 d-flex justify-content-end">
-                        <Button color="primary" className="mr-2" onClick={handleSubmit}>
-                          Save
-                        </Button>
-                        <Button color="secondary" onClick={rollBackUpdate}>
-                          Cancel
-                        </Button>
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <div className="my-3 d-flex justify-content-end">
-                    <Button color="primary" className="mr-2" onClick={setUpdate}>
-                      Edit
-                    </Button>
-                    <Button color="danger" onClick={deleteModalToggle}>
-                      Delete
-                    </Button>
-                  </div>
-                )}
+                <ActionButtons
+                  update={update}
+                  isProcessing={isProcessing}
+                  onSave={handleSubmit}
+                  onCancel={rollBackUpdate}
+                  onEdit={() => setUpdate(true)}
+                  onDelete={deleteModalToggle}
+                />
+
                 <Label for="filterName" className={`${darkMode ? mainStyles.textWhite : ''}`}>
                   Filter Name (up to 7 characters) *
                 </Label>
@@ -453,7 +470,7 @@ export default function UpdateFilterModal({
                     teamCodes={teamCodes}
                     colorOptions={colorOptions}
                     tableData={tableData}
-                    summaries={summaries}
+               summaries={summaries}
                     teamCodeWarningUsers={teamCodeWarningUsers}
                   />
                 ) : (

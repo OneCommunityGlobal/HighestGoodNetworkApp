@@ -1581,7 +1581,18 @@ const WeeklySummariesReport = props => {
                 isOpen={saveFilterDropdownOpen}
                 toggle={toggleSaveFilterDropdown}
               >
-                <DropdownToggle caret color="primary">
+                <DropdownToggle
+                  color="primary"
+                  caret
+                  style={
+                    darkMode
+                      ? {
+                          backgroundColor: '#2563eb',
+                          borderColor: '#2563eb',
+                        }
+                      : {}
+                  }
+                >
                   Manage Filters
                 </DropdownToggle>
                 <DropdownMenu right className={`${darkMode ? styles['darkMode'] : ''}`}>
