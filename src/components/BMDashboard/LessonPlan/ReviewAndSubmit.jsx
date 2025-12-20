@@ -1,19 +1,21 @@
 import React from 'react';
 import styles from './reviewAndSubmit.module.css';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { saveLessonPlanDraft } from '../../../actions/bmdashboard/lessonPlanBuilderActions';
 
 const ReviewAndSubmit = ({ template, topics = [], activities = [] }) => {
   const dispatch = useDispatch();
-
+  const user = useSelector(state => state.auth.user);
+  const userId = user ? user.userid : null;
   const handleSaveDraft = () => {
     const payload = {
+      userId,
       templateId: template._id,
       selectedTopics: topics.map(t => t._id),
       activities,
-      educatorId: template.educatorId,
+      educatorId: template.createdBy,
     };
-
+    console.log('Saving draft with payload:', payload);
     dispatch(saveLessonPlanDraft(payload));
   };
   if (!template) {
@@ -62,7 +64,7 @@ const ReviewAndSubmit = ({ template, topics = [], activities = [] }) => {
             {activities.length === 0 && <p>No activities added.</p>}
 
             {activities.map((activity, index) => (
-              <div key={activity.id} className={styles.activityBox}>
+              <div key={activity._id || index} className={styles.activityBox}>
                 <h5 className={styles.activityTitle}>Activity {index + 1}</h5>
 
                 <p className={styles.activityDesc}>

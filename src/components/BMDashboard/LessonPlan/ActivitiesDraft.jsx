@@ -23,7 +23,6 @@ const ActivitiesDraft = ({ activities, setActivities }) => {
     if (!description || !reason || !strategy) return;
 
     const newActivity = {
-      id: Date.now(),
       description,
       reason,
       strategy,

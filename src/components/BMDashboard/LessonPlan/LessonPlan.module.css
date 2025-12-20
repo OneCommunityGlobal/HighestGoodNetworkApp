@@ -1,15 +1,44 @@
+.lessonPlanRoot {
+  position: relative;
+  width: 100%;
+  overflow-x: hidden;
+}
 .page {
   background-color: #f5f5f5;
-  min-height: 100vh;
+  min-height: calc(100vh - var(--app-header-height, 64px));
 }
 
+.commentToggleBar {
+  position: sticky;
+  top: 0px;
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 12px;
+  z-index: 20;
+}
+
+.openSidebarBtn {
+  padding: 10px 14px;
+  cursor: pointer;
+}
+
+.mainContent {
+  transition: padding 0.3s ease;
+}
+
+.withSidebar {
+  padding: 0 340px 0 40px;
+}
+
+.fullWidth {
+  padding: 0 40px;
+}
 
 .progressStepper {
-  background-color: white;
+  background: white;
   padding: 20px 0;
-  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
-
 
 .stepWrapper {
   display: flex;
@@ -17,44 +46,37 @@
   gap: 50px;
 }
 
-
 .stepItem {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-
 .circle {
   width: 35px;
   height: 35px;
   border-radius: 50%;
-  background-color: #d3d3d3;
+  background: #d3d3d3;
   color: white;
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   font-weight: bold;
-  transition: 0.3s ease;
 }
-
 
 .activeCircle {
-  background-color: #4285f4;
+  background: #4285f4;
 }
-
 
 .stepLabel {
   margin-top: 8px;
   color: #555;
 }
 
-
 .activeLabel {
   font-weight: bold;
   color: #4285f4;
 }
-
 
 .midSectionWrapper {
   display: flex;
@@ -62,22 +84,13 @@
   margin-top: 20px;
 }
 
-
 .midSectionHeader {
   width: 60%;
-  padding: 20px 0;
-  border-radius: 10px;
   position: relative;
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
 }
-
-
-.midHeaderText {
-  text-align: center;
-}
-
 
 .midPrevButton,
 .midNextButton {
@@ -85,37 +98,34 @@
   top: 50%;
   transform: translateY(-50%);
   padding: 8px 16px;
-  border: none;
   border-radius: 8px;
+  border: none;
   cursor: pointer;
 }
 
-
 .midPrevButton {
-  left: 20px;
-  background-color: #e0e0e0;
+  left: 0;
+  background: #e0e0e0;
 }
 
 .midNextButton {
-  right: 20px;
-  background-color: #4285f4;
+  right: 0;
+  background: #4285f4;
   color: white;
 }
 
 .body {
   display: flex;
   justify-content: center;
-  margin-top: 40px;
+  margin-top: 20px;
 }
 
 .container {
-  width: 60%;
-  background-color: white;
+  width: 80%;
+  background: white;
   padding: 30px;
   border-radius: 12px;
-  min-height: 300px;
-  position: relative;
-  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .content {
@@ -123,28 +133,27 @@
   text-align: center;
 }
 
-.wrapper {
-  display: flex;
-  justify-content: space-between;
-}
-
-.leftSection {
-  width: 72%;
-}
-
 .sidebar {
-  width: 26%;
-  background: #ffffff;
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 320px;
+  height: 100%;
+  background: white;
   padding: 20px;
   border-left: 1px solid #ddd;
-  min-height: 100vh;
   overflow-y: auto;
+  z-index: 10;
 }
 
-.sidebar h2 {
+.closeSidebarBtn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: transparent;
+  border: none;
   font-size: 20px;
-  margin-bottom: 12px;
-  font-weight: 600;
+  cursor: pointer;
 }
 
 .statusBox {
@@ -158,7 +167,6 @@
 .commentThread {
   max-height: 300px;
   overflow-y: auto;
-  padding-right: 5px;
 }
 
 .commentItem {
@@ -166,56 +174,19 @@
   border-bottom: 1px solid #eee;
 }
 
-.commentItem small {
-  color: #666;
-  font-size: 11px;
-}
-
-.commentItem p {
-  font-size: 13px;
-  margin: 2px 0 0;
-}
-
 .chatInput {
   width: 100%;
   height: 80px;
-  border-radius: 6px;
-  border: 1px solid #bbb;
-  padding: 8px;
-  resize: none;
   margin-top: 8px;
+  padding: 8px;
 }
 
 .sendButton {
-  margin-top: 8px;
   width: 100%;
+  margin-top: 8px;
   padding: 10px;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
-  background-color: #4285f4;
+  background: #4285f4;
   color: white;
-  font-weight: 500;
-}
-
-.sidebarHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.closeSidebarBtn {
-  background: transparent;
   border: none;
-  font-size: 18px;
-  cursor: pointer;
-}
-
-.openSidebarBtn {
-  position: fixed;
-  right: 16px;
-  top: 120px;
-  z-index: 100;
-  padding: 8px 12px;
   cursor: pointer;
 }

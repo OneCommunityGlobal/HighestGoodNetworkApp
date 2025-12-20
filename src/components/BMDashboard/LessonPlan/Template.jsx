@@ -17,7 +17,7 @@ const Template = ({ templates, loading, error, onSelectTemplate }) => {
           <TemplateCard
             key={template._id}
             template={template}
-            onSelectTemplate={onSelectTemplate} // pass down
+            onSelectTemplate={onSelectTemplate}
           />
         ))}
       </div>

@@ -16,7 +16,6 @@ export const fetchLessonPlanTemplates = () => {
 
   return async dispatch => {
     try {
-      // Dispatch request to set loading state
       dispatch({ type: FETCH_LESSON_PLAN_TEMPLATES_REQUEST });
 
       const response = await axios.get(url);

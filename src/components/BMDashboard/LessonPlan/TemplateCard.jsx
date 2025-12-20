@@ -3,12 +3,12 @@ import styles from './templateCard.module.css';
 
 const TemplateCard = ({ template, onSelectTemplate }) => {
   const [open, setOpen] = useState(false);
-  const { title, level, description, ageBand, duration, theme, subjectTags } = template;
+  const { title, level, description, ageBand, duration, theme, subjectTags, createdBy } = template;
 
   const handleSelect = () => {
     console.log(`Template "${title}" selected.`);
     if (onSelectTemplate) {
-      onSelectTemplate(template); // send template up
+      onSelectTemplate(template);
     }
   };
 

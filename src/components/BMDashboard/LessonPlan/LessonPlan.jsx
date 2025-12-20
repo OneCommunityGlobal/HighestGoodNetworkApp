@@ -21,7 +21,7 @@ const LessonPlan = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [chatInput, setChatInput] = useState('');
   const [selectedTemplate, setSelectedTemplate] = useState(null);
-  const [selectedAtoms, setSelectedAtoms] = useState([]); // topics
+  const [selectedAtoms, setSelectedAtoms] = useState([]);
   const [activities, setActivities] = useState([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [comments, setComments] = useState([
@@ -41,57 +41,54 @@ const LessonPlan = () => {
 
   const sendComment = () => {
     if (!chatInput.trim()) return;
-    const newComment = {
-      time: new Date().toISOString(),
-      text: chatInput,
-    };
-    setComments(prev => [{ ...newComment, time: 'Now' }, ...prev]);
+
+    const newComment = { time: 'Now', text: chatInput };
+    setComments(prev => [newComment, ...prev]);
     setChatInput('');
     dispatch(saveLessonPlanComments([newComment]));
   };
 
   return (
-    <div className={styles.page}>
-      {/* MAIN CONTENT + SIDEBAR WRAPPER */}
-      <div className={styles.wrapper}>
+    <div className={styles.lessonPlanRoot}>
+      <div className={styles.page}>
         {!isSidebarOpen && (
-          <button
-            className={styles.openSidebarBtn}
-            onClick={() => setIsSidebarOpen(true)}
-            aria-label="Open sidebar"
-          >
-            ☰ Comments
-          </button>
+          <div className={styles.commentToggleBar}>
+            <button className={styles.openSidebarBtn} onClick={() => setIsSidebarOpen(true)}>
+              ☰ Comments
+            </button>
+          </div>
         )}
-
-        {/* MAIN SECTION LEFT */}
-        <div className={styles.leftSection}>
+        <div
+          className={`${styles.mainContent} ${
+            isSidebarOpen ? styles.withSidebar : styles.fullWidth
+          }`}
+        >
           <div className={styles.progressStepper}>
             <div className={styles.stepWrapper}>
-              {steps.map(step => {
-                const isActive = currentStep === step.id;
-                return (
-                  <div key={step.id} className={styles.stepItem}>
-                    <div className={`${styles.circle} ${isActive ? styles.activeCircle : ''}`}>
-                      {step.id}
-                    </div>
-                    <p className={`${styles.stepLabel} ${isActive ? styles.activeLabel : ''}`}>
-                      {step.label}
-                    </p>
+              {steps.map(step => (
+                <div key={step.id} className={styles.stepItem}>
+                  <div
+                    className={`${styles.circle} ${
+                      currentStep === step.id ? styles.activeCircle : ''
+                    }`}
+                  >
+                    {step.id}
                   </div>
-                );
-              })}
+                  <p
+                    className={`${styles.stepLabel} ${
+                      currentStep === step.id ? styles.activeLabel : ''
+                    }`}
+                  >
+                    {step.label}
+                  </p>
+                </div>
+              ))}
             </div>
           </div>
-
-          {/* Header */}
           <div className={styles.midSectionWrapper}>
             <div className={styles.midSectionHeader}>
               {currentStep > 1 && (
-                <button
-                  className={styles.midPrevButton}
-                  onClick={() => setCurrentStep(currentStep - 1)}
-                >
+                <button className={styles.midPrevButton} onClick={() => setCurrentStep(p => p - 1)}>
                   ◀ Previous
                 </button>
               )}
@@ -109,15 +106,13 @@ const LessonPlan = () => {
                     (currentStep === 2 && selectedAtoms.length === 0) ||
                     (currentStep === 3 && activities.length === 0)
                   }
-                  onClick={() => setCurrentStep(currentStep + 1)}
+                  onClick={() => setCurrentStep(p => p + 1)}
                 >
                   Next ▶
                 </button>
               )}
             </div>
           </div>
-
-          {/* MAIN BODY */}
           <div className={styles.body}>
             <div className={styles.container}>
               <div className={styles.content}>
@@ -156,17 +151,17 @@ const LessonPlan = () => {
             </div>
           </div>
         </div>
-
-        {/* SIDEBAR RIGHT */}
         {isSidebarOpen && (
           <div className={styles.sidebar}>
+            <button className={styles.closeSidebarBtn} onClick={() => setIsSidebarOpen(false)}>
+              ✕
+            </button>
+
             <h2>Educator Collaboration</h2>
 
             <div className={styles.statusBox}>
-              <p>
-                <strong>Status: Draft Ready</strong>
-              </p>
-              <span>Your lesson plan looks great! Ready for educator review.</span>
+              <strong>Status: Draft Ready</strong>
+              <p>Your lesson plan looks great! Ready for educator review.</p>
             </div>
 
             <h3>Recent Comments</h3>
@@ -182,11 +177,9 @@ const LessonPlan = () => {
             <h3>Ask a Question</h3>
             <textarea
               className={styles.chatInput}
-              placeholder="Type message here..."
               value={chatInput}
               onChange={e => setChatInput(e.target.value)}
             />
-
             <button className={styles.sendButton} onClick={sendComment}>
               Send
             </button>
