@@ -786,6 +786,7 @@ const WeeklySummariesReport = props => {
           const isInSelectedCode = selectedCodesArray.includes(summary.teamCode);
           const isInSelectedExtraMember = selectedExtraMembersArray.includes(summary._id);
 
+      
           const noFilterSelected =
             selectedCodesArray.length === 0 && selectedExtraMembersArray.length === 0;
 
