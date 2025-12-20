@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
+import { debounce } from 'lodash';
 import { FaSearch, FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import styles from './ActivityFAQs.module.css';
 
@@ -10,6 +11,8 @@ function ActivityFAQs() {
   const [error, setError] = useState(null);
   const [expandedFAQ, setExpandedFAQ] = useState(null);
   const [selectedFilter, setSelectedFilter] = useState('All');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredFAQs, setFilteredFAQs] = useState([]);
 
   useEffect(() => {
     // TODO: Fetch FAQs for this specific activity/event
@@ -68,9 +71,45 @@ function ActivityFAQs() {
   // Get unique categories for filters
   const categories = ['All', ...new Set(faqs.map(faq => faq.category))];
 
-  // Filter FAQs based on selected category
-  const filteredFAQs =
-    selectedFilter === 'All' ? faqs : faqs.filter(faq => faq.category === selectedFilter);
+  // Debounced search function
+  const debouncedSearch = useCallback(
+    debounce((query, category, allFaqs) => {
+      let filtered = allFaqs;
+
+      // Apply category filter
+      if (category !== 'All') {
+        filtered = filtered.filter(faq => faq.category === category);
+      }
+
+      // Apply search filter
+      if (query.trim()) {
+        const lowerQuery = query.toLowerCase().trim();
+        filtered = filtered.filter(
+          faq =>
+            faq.question.toLowerCase().includes(lowerQuery) ||
+            faq.answer.toLowerCase().includes(lowerQuery),
+        );
+      }
+
+      setFilteredFAQs(filtered);
+    }, 300),
+    [],
+  );
+
+  // Update filtered FAQs when search query, filter, or FAQs change
+  useEffect(() => {
+    if (faqs.length > 0) {
+      debouncedSearch(searchQuery, selectedFilter, faqs);
+    } else {
+      setFilteredFAQs([]);
+    }
+  }, [searchQuery, selectedFilter, faqs, debouncedSearch]);
+
+  // Handle search input change
+  const handleSearchChange = e => {
+    const query = e.target.value;
+    setSearchQuery(query);
+  };
 
   if (loading) {
     return (
@@ -104,7 +143,8 @@ function ActivityFAQs() {
             type="text"
             placeholder="Q Search"
             className={styles.searchInput}
-            // Search functionality will be implemented in Phase 4
+            value={searchQuery}
+            onChange={handleSearchChange}
           />
         </div>
       </div>
@@ -145,6 +185,10 @@ function ActivityFAQs() {
                 {expandedFAQ === faq.id && <div className={styles.faqAnswer}>{faq.answer}</div>}
               </div>
             ))}
+          </div>
+        ) : searchQuery.trim() || selectedFilter !== 'All' ? (
+          <div className={styles.noFaqs}>
+            No FAQs found matching your search criteria. Try adjusting your search or filters.
           </div>
         ) : (
           <div className={styles.noFaqs}>No FAQs available for this event.</div>
