@@ -1,9 +1,10 @@
 // Activity List Component
 import { useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 import styles from './ActivityList.module.css';
-// import { useHistory } from 'react-router-dom';
 
 function ActivityList() {
+  const history = useHistory();
   const [activities, setActivities] = useState([]);
   const [filter, setFilter] = useState({
     type: '',
@@ -136,8 +137,12 @@ function ActivityList() {
     );
   });
 
+  const handleActivityClick = activityId => {
+    history.push(`/communityportal/activity/${activityId}/feedback`);
+  };
+
   return (
-    <div className={styles.body}>
+    <div className={`${styles.body} activity-list-container`}>
       <h1 className={styles.h1}>Activity List</h1>
 
       <div className={styles.filters}>
@@ -173,8 +178,14 @@ function ActivityList() {
           <ul>
             {filteredActivities.map(activity => (
               <li key={activity.id}>
-                <strong>{activity.name}</strong> - {activity.type} - {activity.date} -{' '}
-                {activity.location}
+                <button
+                  className={`${styles.activityItem} activity-item`}
+                  onClick={() => handleActivityClick(activity.id)}
+                >
+                  <strong>{activity.name}</strong> - {activity.type} - {activity.date} -{' '}
+                  {activity.location}
+                  <div className={styles.feedbackText}>Click to leave feedback</div>
+                </button>
               </li>
             ))}
           </ul>

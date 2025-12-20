@@ -51,10 +51,6 @@
   box-shadow: 0 20px 25px -5px rgba(79, 70, 229, 0.1), 0 10px 10px -5px rgba(79, 70, 229, 0.04);
 }
 
-.breakdownCard.filtered .categoryHeader {
-  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-}
-
 .categoryCard::before {
   content: '';
   position: absolute;
@@ -210,6 +206,9 @@
 .categoryIcon {
   font-size: 1.25rem;
   color: rgba(255, 255, 255, 0.9) !important;
+  margin-right: 0.5rem;
+  width: 16px;
+  text-align: center;
 }
 
 .categoryDetails {
@@ -222,6 +221,13 @@
   font-weight: 700;
   color: #ffffff !important;
   line-height: 1.2;
+}
+
+/* Additional categoryName styles for different contexts */
+.categoryName:not(.categoryHeader .categoryName) {
+  font-weight: 600;
+  color: #1f2937;
+  font-size: 0.95rem;
   transition: all 0.3s ease;
 }
 
@@ -377,6 +383,8 @@
 }
 
 .headerRight {
+  display: flex;
+  align-items: center;
   flex-shrink: 0;
 }
 
@@ -411,11 +419,6 @@
   font-size: 0.875rem;
   color: #6b7280;
   font-weight: 400;
-}
-
-.headerRight {
-  display: flex;
-  align-items: center;
 }
 
 .countBadge {
@@ -470,17 +473,6 @@
   vertical-align: middle;
 }
 
-.categoryName {
-  font-weight: 600;
-  color: #1f2937;
-  font-size: 0.95rem;
-}
-
-.categoryIcon {
-  margin-right: 0.5rem;
-  width: 16px;
-  text-align: center;
-}
 
 .weightageCell {
   font-weight: 600;

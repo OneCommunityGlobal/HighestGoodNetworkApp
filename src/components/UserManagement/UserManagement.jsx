@@ -30,7 +30,7 @@ import UserTableHeader from './UserTableHeader';
 import UserTableData from './UserTableData';
 import UserTableSearchHeader from './UserTableSearchHeader';
 import UserTableFooter from './UserTableFooter';
-import './usermanagement.css';
+import styles from './usermanagement.module.css';
 import UserSearchPanel from './UserSearchPanel';
 import NewUserPopup from './NewUserPopup';
 import ActivationDatePopup from './ActivationDatePopup';

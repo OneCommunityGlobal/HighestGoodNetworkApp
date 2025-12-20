@@ -156,6 +156,7 @@ import CPDashboard from './components/CommunityPortal';
 import ActivityList from './components/CommunityPortal/Activities/ActivityList';
 import ActivityComments from './components/CommunityPortal/Activities/activityId/ActivityComments';
 import Feedbackform from './components/CommunityPortal/Activities/Feedbackform';
+import CommunityFeedbackModal from './components/CommunityPortal/feedback-modal/CommunityFeedbackModal';
 import FollowUpEmailTemplate from './components/CommunityPortal/Activities/FollowUpEmailTemplate';
 // import AddActivities from './components/CommunityPortal/Activities/AddActivities';
 // import ActvityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
@@ -730,6 +731,10 @@ export default (
         <CPProtectedRoute
           path="/communityportal/activities/Feedbackform/:eventId/:email"
           component={Feedbackform}
+        />
+        <CPProtectedRoute
+          path="/communityportal/activity/:activityId/feedback"
+          component={CommunityFeedbackModal}
         />
         <CPProtectedRoute
           path="/communityportal/activities/FollowUpEmailTemplate"

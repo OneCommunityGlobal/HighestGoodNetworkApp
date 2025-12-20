@@ -2,18 +2,8 @@
   overflow-x: auto;
 }
 
-.highlight-row {
-  background-color: #e0f7fa;           
-  border-left: 4px solid #00bcd4;      
-  transition: background 0.2s ease;
-}
-
-.highlight-row:hover {
-  background-color: #b2ebf2;           
-}
-
 .permission-change-log-table {
-  border-collapse: 'collapse';
+  border-collapse: collapse;
   width: 100%;
 }
 
@@ -57,9 +47,9 @@
   padding: 5px 10px;
   margin: 0 5px;
   color: #ffffff;
-  border: 'none';
+  border: none;
   border-radius: 5px;
-  cursor: 'pointer';
+  cursor: pointer;
 }
 
 .pagination-container {
@@ -104,4 +94,20 @@
 .pagination span {
   display: inline-block;
   padding: 5px 10px;
+}
+
+.permissions-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.toggle-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: inline-flex;
+  align-items: center;
+  color: inherit;
 }

@@ -1,5 +1,5 @@
 import CPDashboard from './CPDashboard';
-import CPHeader from './CPHeader/CPHeader';
+import CPHeaderDefault from './CPHeader/CPHeader';
 
 export default CPDashboard;
-export { CPHeader };
+export const CPHeader = CPHeaderDefault;

@@ -810,7 +810,7 @@
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
     margin-top: 1rem;
-    align-items: start;
+    align-items: stretch; /* Make cards same height */
   }
   
   .overallFeedback {
@@ -835,14 +835,6 @@
   
   .teacherTitle {
     font-size: 0.875rem;
-  }
-  
-  .feedbackColumns {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-    margin-top: 1rem;
-    align-items: stretch; /* Make cards same height */
   }
   
   .strengthsSection,
@@ -1020,12 +1012,6 @@
     font-weight: 500;
   }
   
-  .categoryTable,
-  .assignmentTable {
-    min-width: 500px;
-    font-size: 0.85rem;
-  }
-  
   .categoryTable th,
   .categoryTable td,
   /* Teacher Feedback mobile styles */
@@ -1038,9 +1024,11 @@
   }
   
   .feedbackColumns {
+    display: grid;
     grid-template-columns: 1fr;
     gap: 1rem;
     margin-top: 1rem;
+    align-items: stretch;
   }
   
   .teacherInfo {
@@ -1064,14 +1052,6 @@
     padding: 1rem;
     margin-bottom: 1.25rem;
     border-radius: 0.5rem;
-  }
-  
-  .feedbackColumns {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1rem;
-    margin-top: 1rem;
-    align-items: stretch;
   }
   
   .strengthsSection,
@@ -1180,6 +1160,10 @@
   color: var(--text-dark);
   line-height: 1.6;
   margin: 0;
+  padding: 1rem;
+  background: var(--bg-light);
+  border-radius: var(--border-radius);
+  border-left: 4px solid var(--primary-color);
 }
 
 .feedbackColumns {
@@ -1429,15 +1413,6 @@
 
 .feedbackTitle svg {
   color: var(--primary-color);
-}
-
-.feedbackText {
-  color: var(--text-dark);
-  line-height: 1.6;
-  padding: 1rem;
-  background: var(--bg-light);
-  border-radius: var(--border-radius);
-  border-left: 4px solid var(--primary-color);
 }
 
 /* Additional Details */

@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import { useState } from 'react';
-import './PermissionChangeLogTable.css';
+import styles from './PermissionChangeLogTable.module.css';
 import { FiChevronLeft, FiChevronRight, FiChevronDown, FiChevronUp } from 'react-icons/fi';
 import { formatDate, formattedAmPmTime } from '~/utils/formatDate';
 import { permissionLabelKeyMappingObj } from './PermissionsConst';
@@ -15,7 +15,9 @@ function PermissionChangeLogTable({ changeLogs, darkMode, roleNamesToHighlight =
   const currentItems = changeLogs.slice(indexOfFirstItem, indexOfLastItem);
   const fontColor = darkMode ? 'text-light' : '';
   const bgYinmnBlue = darkMode ? 'bg-yinmn-blue' : '';
-  const addDark = darkMode ? '-dark' : '';
+  const headerClass = darkMode
+    ? styles['permission-change-log-table--header-dark']
+    : styles['permission-change-log-table--header'];
   const paginate = pageNumber => {
     if (pageNumber > 0 && pageNumber <= totalPages) {
       setCurrentPage(pageNumber);
@@ -56,7 +58,7 @@ function PermissionChangeLogTable({ changeLogs, darkMode, roleNamesToHighlight =
 
     return pageNumbers.map(number => {
       const isActive = currentPage === number;
-      const activeClass = darkMode ? 'activeDark' : 'activeLight';
+      const activeClass = darkMode ? styles.activeDark : styles.activeLight;
       const buttonClass = isActive ? activeClass : '';
 
       return (
@@ -86,13 +88,17 @@ function PermissionChangeLogTable({ changeLogs, darkMode, roleNamesToHighlight =
       .filter(e => e);
 
     return (
-      <div className="permissions-cell">
+      <div className={styles['permissions-cell']}>
         {expandedRows[rowId]
           ? filteredPermissions.join(', ') // Show all filtered permissions if expanded
           : filteredPermissions.slice(0, 5).join(', ') +
             (filteredPermissions.length > 5 ? ', ...' : '')}
         {filteredPermissions.length > 5 && (
-          <button className="toggle-button" onClick={() => toggleExpandRow(rowId)} type="button">
+          <button
+            className={styles['toggle-button']}
+            onClick={() => toggleExpandRow(rowId)}
+            type="button"
+          >
             {expandedRows[rowId] ? <FiChevronUp /> : <FiChevronDown />}
           </button>
         )}
@@ -101,24 +107,20 @@ function PermissionChangeLogTable({ changeLogs, darkMode, roleNamesToHighlight =
   };
   return (
     <>
-      <div className="table-responsive">
+      <div className={styles['table-responsive']}>
         <table
-          className={`permission-change-log-table ${darkMode ? 'text-light' : ''}`}
+          className={`${styles['permission-change-log-table']} ${darkMode ? 'text-light' : ''}`}
           style={{ borderCollapse: 'collapse', width: '98%', margin: '0 auto' }}
         >
           <thead>
-            <tr className={darkMode ? 'table-row-dark' : 'table-row'}>
-              <th className={`permission-change-log-table--header${addDark}`}>
-                Log Date and Time (PST)
-              </th>
-              <th className={`permission-change-log-table--header${addDark}`}>Name</th>
-              <th className={`permission-change-log-table--header${addDark}`}>Permissions</th>
-              <th className={`permission-change-log-table--header${addDark}`}>Permissions Added</th>
-              <th className={`permission-change-log-table--header${addDark}`}>
-                Permissions Removed
-              </th>
-              <th className={`permission-change-log-table--header${addDark}`}>Editor Role</th>
-              <th className={`permission-change-log-table--header${addDark}`}>Editor Email</th>
+            <tr className={darkMode ? styles['table-row-dark'] : styles['table-row']}>
+              <th className={headerClass}>Log Date and Time (PST)</th>
+              <th className={headerClass}>Name</th>
+              <th className={headerClass}>Permissions</th>
+              <th className={headerClass}>Permissions Added</th>
+              <th className={headerClass}>Permissions Removed</th>
+              <th className={headerClass}>Editor Role</th>
+              <th className={headerClass}>Editor Email</th>
             </tr>
           </thead>
           <tbody>
@@ -127,11 +129,11 @@ function PermissionChangeLogTable({ changeLogs, darkMode, roleNamesToHighlight =
               const shouldHighlight = roleSet.has(normalize(nameValue));
               return (
                 <tr key={log._id} className={shouldHighlight ? 'highlight-row' : ''}>
-                  <td className={`permission-change-log-table--cell ${bgYinmnBlue}`}>{`${formatDate(
-                    log.logDateTime,
-                  )} ${formattedAmPmTime(log.logDateTime)}`}</td>
                   <td
-                    className={`permission-change-log-table--cell ${bgYinmnBlue}`}
+                    className={`${styles['permission-change-log-table--cell']} ${bgYinmnBlue}`}
+                  >{`${formatDate(log.logDateTime)} ${formattedAmPmTime(log.logDateTime)}`}</td>
+                  <td
+                    className={`${styles['permission-change-log-table--cell']} ${bgYinmnBlue}`}
                     style={{
                       // Uncommented lines below and in formatName, using individualName for users, and roleName for role changes
                       fontWeight: log?.individualName ? 'bold' : 'normal',
@@ -139,19 +141,19 @@ function PermissionChangeLogTable({ changeLogs, darkMode, roleNamesToHighlight =
                   >
                     {log?.individualName ? formatName(log.individualName) : log.roleName}
                   </td>
-                  <td className={`permission-change-log-table--cell permissions ${bgYinmnBlue}`}>
+                  <td className={`${styles['permission-change-log-table--cell']} ${bgYinmnBlue}`}>
                     {renderPermissions(log.permissions, log._id)}
                   </td>
-                  <td className={`permission-change-log-table--cell permissions ${bgYinmnBlue}`}>
+                  <td className={`${styles['permission-change-log-table--cell']} ${bgYinmnBlue}`}>
                     {renderPermissions(log.permissionsAdded, `${log._id}_added`)}
                   </td>
-                  <td className={`permission-change-log-table--cell permissions ${bgYinmnBlue}`}>
+                  <td className={`${styles['permission-change-log-table--cell']} ${bgYinmnBlue}`}>
                     {renderPermissions(log.permissionsRemoved, `${log._id}_removed`)}
                   </td>
-                  <td className={`permission-change-log-table--cell ${bgYinmnBlue}`}>
+                  <td className={`${styles['permission-change-log-table--cell']} ${bgYinmnBlue}`}>
                     {log.requestorRole}
                   </td>
-                  <td className={`permission-change-log-table--cell ${bgYinmnBlue}`}>
+                  <td className={`${styles['permission-change-log-table--cell']} ${bgYinmnBlue}`}>
                     {log.requestorEmail}
                   </td>
                 </tr>
@@ -160,8 +162,8 @@ function PermissionChangeLogTable({ changeLogs, darkMode, roleNamesToHighlight =
           </tbody>
         </table>
       </div>
-      <div className="pagination-container">
-        <div className={`pagination ${fontColor}`}>
+      <div className={styles['pagination-container']}>
+        <div className={`${styles.pagination} ${fontColor}`}>
           <button
             className={fontColor}
             onClick={() => paginate(currentPage - 1)}

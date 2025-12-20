@@ -96,6 +96,81 @@
   margin: 20px 0;
 }
 
+/* Dark Mode Styles */
+:global(body.dark-mode) .body,
+:global(body.bm-dashboard-dark) .body {
+  background-color: #1b2a41 !important;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .h1,
+:global(body.bm-dashboard-dark) .h1 {
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .filters,
+:global(body.bm-dashboard-dark) .filters {
+  background: #2e5061 !important;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .filters label,
+:global(body.bm-dashboard-dark) .filters label {
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .filters input,
+:global(body.bm-dashboard-dark) .filters input {
+  background-color: #3a506b !important;
+  border-color: #4a6072 !important;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .filters input::placeholder,
+:global(body.bm-dashboard-dark) .filters input::placeholder {
+  color: #b8c5d1 !important;
+}
+
+:global(body.dark-mode) .activityList,
+:global(body.bm-dashboard-dark) .activityList {
+  background: #2e5061 !important;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .activityList li,
+:global(body.bm-dashboard-dark) .activityList li {
+  background-color: #3a506b !important;
+  border-color: #4a6072 !important;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .activityList li strong,
+:global(body.bm-dashboard-dark) .activityList li strong {
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .activityList li span,
+:global(body.bm-dashboard-dark) .activityList li span {
+  color: #d1d8e0 !important;
+}
+
+:global(body.dark-mode) .activityList p,
+:global(body.bm-dashboard-dark) .activityList p {
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .activityItem,
+:global(body.bm-dashboard-dark) .activityItem {
+  color: #ffffff !important;
+  background: transparent !important;
+  border: none !important;
+}
+
+:global(body.dark-mode) .feedbackText,
+:global(body.bm-dashboard-dark) .feedbackText {
+  color: #b8c5d1 !important;
+}
+
 @media (max-width: 768px) {
   .filters {
     flex-direction: column;

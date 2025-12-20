@@ -70,8 +70,10 @@
 
 .lbMessagingContact {
   display: flex;
-  padding: 2px;
+  align-items: center;
+  padding: 8px;
   margin: 2px;
+  border-bottom: 1px solid #eee;
   cursor: pointer;
   background-color: white;
   border-radius: 5px;
@@ -82,7 +84,10 @@
 }
 
 .lbMessagingContact img {
-  border-radius: 20%;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
 }
 
 .lbMessagingContactInfo {
@@ -291,6 +296,7 @@
 .lbMsgIcon {
   height: 100%;
   width: 75% !important;
+  cursor: pointer;
 }
 
 .lgMessagingBellSelectDropdown {
@@ -414,26 +420,7 @@
   padding: 10px;
 }
 
-.lbMessagingContact {
-  display: flex;
-  align-items: center;
-  padding: 8px;
-  border-bottom: 1px solid #eee;
-  cursor: pointer;
-}
-
-.lbMessagingContact img {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  margin-right: 10px;
-}
-
 .lbMessagingContactName {
   font-size: 15px;
   font-weight: 500;
-}
-
-.lbMsgIcon {
-  cursor: pointer;
 }

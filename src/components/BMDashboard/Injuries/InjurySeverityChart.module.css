@@ -19,6 +19,7 @@
 
 .filterSelect .ant-select-selector {
   background-color: #ffffff !important;
+  border-color: rgba(0, 0, 0, 0.2) !important;
 }
 
 /* RangePicker placeholder */
@@ -28,14 +29,6 @@
 
 .filterSelect .ant-picker {
   background-color: #ffffff !important;
-}
-
-.filterSelect .ant-select-selector {
-  border-color: rgba(0, 0, 0, 0.2) !important;
-}
-
-/* Light border for RangePicker */
-.filterSelect .ant-picker {
   border-color: rgba(0, 0, 0, 0.2) !important;
 }
 
