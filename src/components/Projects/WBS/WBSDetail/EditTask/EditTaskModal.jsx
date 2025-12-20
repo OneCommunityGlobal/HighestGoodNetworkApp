@@ -19,7 +19,7 @@ import { toast } from 'react-toastify';
 import UserSearch from './UserSearch';
 import UserTag from './UserTag';
 import ReadOnlySectionWrapper from './ReadOnlySectionWrapper';
-import '../../../../Header/DarkMode.css';
+import '../../../../Header/index.css';
 import styles from '../wbs.module.css';
 import TagsSearch from '../components/TagsSearch';
 

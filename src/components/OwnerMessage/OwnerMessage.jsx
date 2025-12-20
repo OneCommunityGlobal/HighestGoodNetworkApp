@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
-
 import { toast } from 'react-toastify';
-
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input } from 'reactstrap';
 import { connect, useDispatch } from 'react-redux';
 import hasPermission from '~/utils/permissions';
 import { boxStyle, boxStyleDark } from '../../styles';
-import './OwnerMessage.css';
+
+import styles from './OwnerMessage.module.css';
 
 import editIcon from './assets/edit.png';
 import deleteIcon from './assets/delete.png';
@@ -62,7 +61,6 @@ function OwnerMessage({
       const imageType = /jpg|jpeg|png/g;
       const validFormats = imageType.test(file.name);
 
-      // Input validation: file type
       if (!validFormats) {
         toggle();
         toggleWrongPictureFormatWarning();
@@ -104,9 +102,9 @@ function OwnerMessage({
 
   function getContent(messages) {
     if (isImage.test(messages)) {
-      return <img src={messages} alt="" />;
+      return <img src={messages} alt="" className={styles.ownerMessageImg} />;
     }
-    return <span className="message">{messages}</span>;
+    return <span className={styles.message}>{messages}</span>;
   }
 
   useEffect(() => {
@@ -117,11 +115,7 @@ function OwnerMessage({
   }, []);
 
   useEffect(() => {
-    if (message !== ownerMessage) {
-      setDisableButtons(false);
-    } else {
-      setDisableButtons(true);
-    }
+    setDisableButtons(message === ownerMessage);
   }, [message]);
 
   useEffect(() => {
@@ -134,14 +128,14 @@ function OwnerMessage({
   const boxStyling = darkMode ? boxStyleDark : boxStyle;
 
   return (
-    <div className="message-container">
+    <div className={styles.messageContainer}>
       {ownerMessage ? getContent(ownerMessage) : getContent(ownerStandardMessage)}
 
       {(user.role === 'Owner' || canEditHeaderMessage) && (
-        <div className="icon-wrapper">
+        <div className={styles.iconWrapper}>
           <button
             type="submit"
-            className="owner-message-button"
+            className={styles.ownerMessageButton}
             onClick={toggle}
             aria-label="Edit header message"
           >
@@ -163,7 +157,7 @@ function OwnerMessage({
           {ownerMessage && (
             <button
               type="submit"
-              className="owner-message-button"
+              className={styles.ownerMessageButton}
               onClick={toggleDeleteWarning}
               style={{ marginLeft: '0.25rem' }}
               aria-label="Delete header message"
@@ -190,7 +184,7 @@ function OwnerMessage({
         <ModalHeader toggle={() => toggle()} className={headerBg}>
           Create message
         </ModalHeader>
-        <ModalBody className={`modal-body ${bodyBg}`}>
+        <ModalBody className={`${styles.modalBody} ${bodyBg}`}>
           <p>Write a message:</p>
           <Input
             type="textarea"
@@ -199,7 +193,7 @@ function OwnerMessage({
             onChange={event => setMessage(event.target.value)}
             maxLength="100"
             disabled={disableTextInput}
-            className="inputs"
+            className={styles.inputs}
           />
           <p className="paragraph" style={{ marginTop: '1rem' }}>
             Or upload a picture:
@@ -213,9 +207,10 @@ function OwnerMessage({
             type="file"
             label="Choose Image"
             onChange={event => handleImageUpload(event)}
-            className="inputs"
+            className={styles.inputs}
           />
         </ModalBody>
+
         <ModalFooter
           className={bodyBg}
           style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
@@ -242,6 +237,7 @@ function OwnerMessage({
           </Button>
         </ModalFooter>
       </Modal>
+
       <Modal isOpen={modalDeleteWarning} toggle={() => toggleDeleteWarning()} className={fontColor}>
         <ModalBody className={headerBg}>
           <h4>Do you really want to delete the message?</h4>
@@ -255,6 +251,7 @@ function OwnerMessage({
           </Button>
         </ModalFooter>
       </Modal>
+
       <Modal
         isOpen={modalWrongPictureFormatWarning}
         toggle={() => toggleWrongPictureFormatWarning()}

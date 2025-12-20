@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { Label } from 'reactstrap';
 import styles from '../WeeklySummariesReport.module.css';
 import ReactTooltip from 'react-tooltip';
@@ -9,6 +10,7 @@ export default function WeeklySummariesToggleFilter({
   hasPermissionToFilter,
   editable,
   formId,
+  hasPermission,
 }) {
   const handleTrophyToggleChange = () => {
     toggleField(setState, 'selectedTrophies');
@@ -64,7 +66,7 @@ export default function WeeklySummariesToggleFilter({
           </div>
         </div>
       )}
-      {(hasPermissionToFilter || props.hasPermission('highlightEligibleBios')) && (
+      {(hasPermissionToFilter || hasPermission?.('highlightEligibleBios')) && (
         <div className={`${styles.filterStyle} ml-3`} style={{ minWidth: 'max-content' }}>
           <span>Filter by Bio Status</span>
           <div className={styles.switchToggleControl}>
@@ -129,3 +131,12 @@ export default function WeeklySummariesToggleFilter({
     </div>
   );
 }
+
+WeeklySummariesToggleFilter.propTypes = {
+  state: PropTypes.object.isRequired,
+  setState: PropTypes.func.isRequired,
+  hasPermissionToFilter: PropTypes.bool,
+  editable: PropTypes.bool,
+  formId: PropTypes.string.isRequired,
+  hasPermission: PropTypes.func,
+};

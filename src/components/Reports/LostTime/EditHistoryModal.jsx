@@ -7,7 +7,7 @@ import moment from 'moment';
 import { isEmpty } from 'lodash';
 import { deleteTimeEntry, editTimeEntry } from '~/actions/timeEntries';
 import './EditHistoryModal.css';
-import '../../Header/DarkMode.css'
+import '../../Header/index.css'
 import { toast } from 'react-toastify';
 
 function EditHistoryModal(props) {

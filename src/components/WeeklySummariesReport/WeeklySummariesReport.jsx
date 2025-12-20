@@ -1832,7 +1832,7 @@ const WeeklySummariesReport = props => {
               />
 
               {/* Save/Delete Buttons - only visible when codes are selected */}
-              {state.selectedCodes.length > 0 && hasPermissionToFilter && (
+              {state.selectedCodes.length > 0 && permissionState.canManageFilter && (
                 <div className={styles['filter-save-buttons']}>
                   <button
                     type="button"
