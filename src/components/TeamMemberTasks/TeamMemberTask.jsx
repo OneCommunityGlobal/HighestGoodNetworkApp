@@ -595,7 +595,7 @@ const TeamMemberTask = React.memo(
                                         darkMode ? 'bg-yinmn-blue text-light' : ''
                                       }`}
                                     >
-                                      <>
+                                      <div className={styles['progress-wrapper']}>
                                         <div className={styles['team-task-progress-container']}>
                                           <div
                                             data-testid={`times-${task.taskName}`}
@@ -661,7 +661,7 @@ const TeamMemberTask = React.memo(
                                           )}
                                           className={styles['team-task-progress-bar']}
                                         />
-                                      </>
+                                      </div>
                                     </td>
                                   )}
                                 </tr>
