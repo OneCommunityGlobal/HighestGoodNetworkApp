@@ -90,7 +90,7 @@ export function Record({ record, recordType, setRecord }) {
     }
   };
 
-  if (recordType === 'Update') {
+  if (recordType === 'Update' || recordType === 'UsageRecord') {
     return (
       <>
         <thead>
@@ -123,8 +123,8 @@ export function Record({ record, recordType, setRecord }) {
             })
           ) : (
             <tr>
-              <td colSpan={4} style={{ fontWeight: 'bold' }}>
-                There are no updates for this item.
+              <td colSpan={5} style={{ fontWeight: 'bold' }}>
+                There are no usage records for this item.
               </td>
             </tr>
           )}
