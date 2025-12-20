@@ -445,6 +445,21 @@ function ActivityComments() {
     if (sortType === 'Oldest') return new Date(a.createdAt) - new Date(b.createdAt);
     return 0;
   });
+  const handleUpvote = commentId => {
+    setComments(prevComments =>
+      prevComments.map(comment =>
+        comment.id === commentId ? { ...comment, upvotes: comment.upvotes + 1 } : comment,
+      ),
+    );
+  };
+
+  const handleDownvote = commentId => {
+    setComments(prevComments =>
+      prevComments.map(comment =>
+        comment.id === commentId ? { ...comment, downvotes: comment.downvotes + 1 } : comment,
+      ),
+    );
+  };
 
   const handlePostComment = () => {
     if (!commentInput.trim()) return;
@@ -910,11 +925,16 @@ function ActivityComments() {
                     </div>
                     <div className={styles.commentText}>{comment.text}</div>
                     <div className={styles.commentActionsRow}>
-                      <button className={styles.upvoteBtn}>
+                      <button className={styles.upvoteBtn} onClick={() => handleUpvote(comment.id)}>
                         <span style={{ fontSize: '1.1em' }}>↑</span>
+                        <span className={styles.voteCount}>{comment.upvotes}</span>
                       </button>
-                      <button className={styles.downvoteBtn}>
+                      <button
+                        className={styles.downvoteBtn}
+                        onClick={() => handleDownvote(comment.id)}
+                      >
                         <span style={{ fontSize: '1.1em' }}>↓</span>
+                        <span className={styles.voteCount}>{comment.downvotes}</span>
                       </button>
                       <button
                         className={styles.replyBtn}
