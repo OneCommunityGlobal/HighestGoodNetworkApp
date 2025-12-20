@@ -1,465 +1,350 @@
-import { Component } from 'react';
+import { useEffect, useState, useRef } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import hasPermission from '~/utils/permissions';
 import styles from './Collaboration.module.css';
 import { toast } from 'react-toastify';
 import { ApiEndpoint } from '~/utils/URL';
 import OneCommunityImage from '../../assets/images/logo2.png';
+import CollaborationJobFilters from './CollaborationJobFilters';
 
-import 'leaflet/dist/leaflet.css';
-import { connect } from 'react-redux';
-import 'react-day-picker/dist/style.css';
+function Collaboration() {
+  const [query, setQuery] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
 
-/* eslint-disable */
-class Collaboration extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      searchTerm: '',
-      selectedCategory: '',
-      currentPage: 1,
-      jobAds: [],
-      totalPages: 0,
-      categories: [],
-      summaries: null,
-      summariesAll: [],
-      summariesPage: 1,
-      summariesPageSize: 6,
-      summariesTotalPages: 0,
-      columns: this.getColumnsFromMQ(),
-    };
-  }
-  componentDidMount() {
-    this.fetchJobAds();
-    this.fetchCategories();
-    window.addEventListener('resize', this.handleResize);
-  }
+  const [categories, setCategories] = useState([]);
+  const [selectedCategories, setSelectedCategories] = useState([]);
 
-  componentWillUnmount() {
-    window.removeEventListener('resize', this.handleResize);
-  }
+  const [currentPage, setCurrentPage] = useState(1);
+  const [jobAds, setJobAds] = useState([]);
+  const [totalPages, setTotalPages] = useState(0);
 
-  getColumnsFromMQ = () => {
-    if (window.matchMedia('(min-width: 1600px)').matches) return 6;
-    if (window.matchMedia('(min-width: 1300px)').matches) return 5;
-    if (window.matchMedia('(min-width: 1017px)').matches) return 4;
-    if (window.matchMedia('(min-width: 768px)').matches) return 3;
-    if (window.matchMedia('(min-width: 480px)').matches) return 2;
-    return 1;
-  };
+  const [summaries, setSummaries] = useState(null);
+  const [showSearchResults, setShowSearchResults] = useState(false);
 
-  calculateAdsPerPage = () => {
-    const rows = 5;
-    return this.state.columns * rows;
-  };
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
-  fetchJobAds = async () => {
-    const { searchTerm, selectedCategory, currentPage } = this.state;
-    const adsPerPage = this.calculateAdsPerPage();
+  const [showTooltip, setShowTooltip] = useState(false);
+  const [tooltipPosition, setTooltipPosition] = useState(null);
 
-    try {
-      const response = await fetch(
-        `${ApiEndpoint}/jobs?page=${currentPage}&limit=${adsPerPage}` +
-          `&search=${encodeURIComponent(searchTerm)}` +
-          `&category=${encodeURIComponent(selectedCategory)}`,
-        { method: 'GET' },
-      );
+  const [isReorderModalOpen, setIsReorderModalOpen] = useState(false);
 
-      if (!response.ok) throw new Error(`Failed to fetch jobs: ${response.statusText}`);
+  const darkMode = useSelector(state => state.theme.darkMode);
+  const dispatch = useDispatch();
+  const userHasPermission = perm => dispatch(hasPermission(perm));
+  const canReorderJobs = userHasPermission('reorderJobs');
 
-      const data = await response.json();
-      this.setState({
-        jobAds: Array.isArray(data?.jobs) ? data.jobs : [],
-        totalPages: data?.pagination?.totalPages || 0,
-      });
-    } catch (error) {
-      toast.error('Error fetching jobs');
+  /** TOOLTIP INIT */
+  useEffect(() => {
+    if (!localStorage.getItem('tooltipDismissed')) {
+      setShowTooltip(true);
+      setTooltipPosition('search');
     }
-  };
+  }, []);
 
-  fetchCategories = async () => {
+  /** FETCH CATEGORIES */
+  const fetchCategories = async () => {
     try {
-      const response = await fetch(`${ApiEndpoint}/jobs/categories`, { method: 'GET' });
-      if (!response.ok) throw new Error(`Failed to fetch categories: ${response.statusText}`);
+      const response = await fetch(`${ApiEndpoint}/jobs/categories`);
+      if (!response.ok) throw new Error('Failed to Fetch');
 
       const data = await response.json();
-      const sorted = Array.isArray(data?.categories)
-        ? [...data.categories].sort((a, b) => a.localeCompare(b))
-        : [];
-      this.setState({ categories: sorted });
-    } catch (error) {
+      setCategories([...data.categories].sort((a, b) => a.localeCompare(b)));
+    } catch {
       toast.error('Error fetching categories');
     }
   };
 
-  handleSearch = e => this.setState({ searchTerm: e.target.value });
+  /** FETCH JOB ADS */
+  const fetchJobAds = async (search, cats, page) => {
+    const adsPerPage = 20;
 
-  handleSubmit = e => {
-    e.preventDefault();
-    this.setState({ summaries: null, currentPage: 1 }, this.fetchJobAds);
-  };
+    const categoryParam = cats.length ? encodeURIComponent(cats.join(',')) : '';
 
-  handleCategoryChange = e => {
-    const selectedValue = e.target.value;
-    this.setState(
-      {
-        selectedCategory: selectedValue || '',
-        currentPage: 1,
-        summaries: null,
-      },
-      this.fetchJobAds,
-    );
-  };
-
-  handleResetFilters = async () => {
     try {
-      const adsPerPage = this.calculateAdsPerPage();
-      const response = await fetch(`${ApiEndpoint}/jobs/reset-filters?page=1&limit=${adsPerPage}`, {
-        method: 'GET',
-      });
+      const response = await fetch(
+        `${ApiEndpoint}/jobs?page=${page}&limit=${adsPerPage}&search=${encodeURIComponent(
+          search,
+        )}&category=${categoryParam}`,
+      );
 
-      if (!response.ok) throw new Error(`Failed to reset filters: ${response.statusText}`);
+      if (!response.ok) throw new Error('Request failed while fetching Job Ads');
 
       const data = await response.json();
-      this.setState({
-        searchTerm: '',
-        selectedCategory: '',
-        currentPage: 1,
-        jobAds: Array.isArray(data?.jobs) ? data.jobs : [],
-        totalPages: data?.pagination?.totalPages || 0,
-        summaries: null,
-        summariesAll: [],
-        summariesPage: 1,
-        summariesTotalPages: 0,
+
+      const sorted = [...data.jobs].sort((a, b) => {
+        if (a.displayOrder !== b.displayOrder) return a.displayOrder - b.displayOrder;
+        if (a.featured !== b.featured) return b.featured - a.featured;
+        return new Date(b.datePosted) - new Date(a.datePosted);
       });
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    } catch (error) {
-      toast.error('Error resetting filters');
+
+      setJobAds(sorted);
+      setTotalPages(data.pagination.totalPages);
+    } catch {
+      toast.error('Error fetching jobs');
     }
   };
 
-  setPage = pageNumber => {
-    this.setState({ currentPage: pageNumber }, this.fetchJobAds);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  /** INITIAL CATEGORY FETCH */
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    fetchJobAds(query, selectedCategories, currentPage);
+  }, [query, selectedCategories, currentPage]);
+
+  /** SEARCH HANDLERS */
+  const handleSearch = e => {
+    const value = e.target.value;
+    setQuery(value);
+
+    if (!selectedCategories.length && !localStorage.getItem('tooltipDismissed')) {
+      setTooltipPosition('category');
+      setShowTooltip(true);
+    }
   };
 
-  handleShowSummaries = async () => {
-    const { searchTerm, selectedCategory, summariesPageSize } = this.state;
+  const handleSubmit = e => {
+    e.preventDefault();
+
+    setSearchTerm(query);
+    setShowSearchResults(true);
+    setSummaries(null);
+    setCurrentPage(1);
+  };
+
+  /** CATEGORY SELECTION */
+  const toggleCategory = category => {
+    setSelectedCategories(prev => {
+      return prev.includes(category) ? prev.filter(c => c !== category) : [...prev, category];
+    });
+
+    setCurrentPage(1);
+  };
+
+  const removeCategory = category => {
+    setSelectedCategories(prev => prev.filter(c => c !== category));
+    setCurrentPage(1);
+  };
+
+  /** CLICK OUTSIDE DROPDOWN */
+  useEffect(() => {
+    const handleClick = e => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, []);
+
+  /** TOOLTIP DISMISS */
+  const dismissCategoryTooltip = () => {
+    setShowTooltip(false);
+    localStorage.setItem('tooltipDismissed', 'true');
+  };
+
+  const dismissSearchTooltip = () => {
+    setTooltipPosition('category');
+  };
+
+  /** SUMMARIES FETCH */
+  const handleShowSummaries = async () => {
+    const categoryParam = selectedCategories.join(',');
+
     try {
       const response = await fetch(
-        `${ApiEndpoint}/jobs/summaries?search=${encodeURIComponent(searchTerm)}` +
-          `&category=${encodeURIComponent(selectedCategory)}`,
-        { method: 'GET' },
+        `${ApiEndpoint}/jobs/summaries?search=${searchTerm}&category=${categoryParam}`,
       );
-
-      if (!response.ok) throw new Error(`Failed to fetch summaries: ${response.statusText}`);
-
-      const data = await response.json();
-      const summariesData = Array.isArray(data?.jobs) ? data.jobs : [];
-
-      this.setState({
-        summaries: { jobs: summariesData },
-        summariesAll: summariesData,
-        summariesPage: 1,
-        summariesTotalPages: Math.max(1, Math.ceil(summariesData.length / summariesPageSize)),
-      });
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    } catch (error) {
+      if (!response.ok) throw new Error('Error Fetching Job Summaries');
+      setSummaries(await response.json());
+    } catch {
       toast.error('Error fetching summaries');
     }
   };
 
-  setSummariesPage = page => {
-    this.setState(
-      prev => {
-        const next =
-          page < 1 ? 1 : page > prev.summariesTotalPages ? prev.summariesTotalPages : page;
-        return { summariesPage: next };
-      },
-      () => window.scrollTo({ top: 0, behavior: 'smooth' }),
-    );
+  const toggleReorderModal = () => setIsReorderModalOpen(prev => !prev);
+
+  const handleJobsReordered = () => {
+    fetchJobAds(query, selectedCategories, currentPage);
   };
 
-  debounce = (fn, ms = 150) => {
-    let t;
-    return (...args) => {
-      clearTimeout(t);
-      t = setTimeout(() => fn.apply(this, args), ms);
-    };
-  };
+  /** RENDER HELPERS */
+  const renderFilters = () => (
+    <CollaborationJobFilters
+      query={query}
+      handleSearch={handleSearch}
+      handleSubmit={handleSubmit}
+      canReorderJobs={canReorderJobs}
+      toggleReorderModal={toggleReorderModal}
+      showTooltip={showTooltip}
+      tooltipPosition={tooltipPosition}
+      dismissSearchTooltip={dismissSearchTooltip}
+      dismissCategoryTooltip={dismissCategoryTooltip}
+      dropdownRef={dropdownRef}
+      isDropdownOpen={isDropdownOpen}
+      setIsDropdownOpen={setIsDropdownOpen}
+      categories={categories}
+      selectedCategories={selectedCategories}
+      toggleCategory={toggleCategory}
+    />
+  );
 
-  handleResize = this.debounce(() => {
-    const newCols = this.getColumnsFromMQ();
-    if (newCols === this.state.columns) return;
-    this.setState({ columns: newCols, currentPage: 1 }, this.fetchJobAds);
-  }, 200);
+  const renderCategoryChips = () => (
+    <div className={styles.chipContainer}>
+      {selectedCategories.map(cat => (
+        <div key={cat} className={`${styles.chip} btn btn-secondary`}>
+          {cat}
+          <button className={styles.chipClose} onClick={() => removeCategory(cat)}>
+            ✕
+          </button>
+        </div>
+      ))}
+    </div>
+  );
 
-  renderSummaries() {
-    const {
-      searchTerm,
-      selectedCategory,
-      categories,
-      summariesAll,
-      summariesPage,
-      summariesPageSize,
-      summariesTotalPages,
-    } = this.state;
-
-    const start = (summariesPage - 1) * summariesPageSize;
-    const end = start + summariesPageSize;
-    const pageItems = summariesAll.slice(start, end);
-
+  /** SUMMARY VIEW */
+  if (summaries) {
     return (
-      <div className={`${styles.jobLanding} ${this.props.darkMode ? styles.jobLandingDark : ''}`}>
-        <div className={styles.header}>
+      <div className={`${styles.jobLanding} ${darkMode ? styles.darkMode : ''}`}>
+        <div className={styles.jobHeader}>
           <a
             href="https://www.onecommunityglobal.org/collaboration/"
             target="_blank"
             rel="noreferrer"
           >
-            <img
-              src={OneCommunityImage}
-              alt="One Community Logo"
-              className={styles.responsiveImg}
-            />
+            <img src={OneCommunityImage} alt="One Community Logo" />
           </a>
         </div>
 
-        <div className={styles.collabContainer}>
-          <nav className={styles.navbar}>
-            <div className={styles.navbarLeft}>
-              <form className={styles.searchForm} onSubmit={this.handleSubmit}>
-                <input
-                  type="text"
-                  placeholder="Search by title..."
-                  value={searchTerm}
-                  onChange={this.handleSearch}
-                />
-                <button className={styles.searchButton} type="submit">
-                  Go
-                </button>
-                <button
-                  className={styles.resetButton}
-                  type="button"
-                  onClick={this.handleResetFilters}
-                >
-                  Reset
-                </button>
-                <button
-                  className={styles.showSummaries}
-                  type="button"
-                  onClick={this.handleShowSummaries}
-                >
-                  Show Summaries
-                </button>
-              </form>
-            </div>
+        <div className={styles.jobContainer}>
+          {renderFilters()}
+          {renderCategoryChips()}
 
-            <div className={styles.navbarRight}>
-              <select value={selectedCategory} onChange={this.handleCategoryChange}>
-                <option value="">Select from Categories</option>
-                {categories.map(c => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </nav>
-
-          <div className={styles.summariesList}>
-            <h1>Summaries</h1>
-
-            {pageItems.length > 0 ? (
-              pageItems.map(summary => (
-                <div
-                  key={summary._id || summary.jobDetailsLink || summary.title}
-                  className={styles.summariesItem}
-                >
+          <div className={styles.jobsSummariesList}>
+            {summaries.jobs?.length > 0 ? (
+              summaries.jobs.map(summary => (
+                <div key={summary._id} className={styles.jobSummaryItem}>
                   <h3>
-                    <a href={summary.jobDetailsLink} target="_blank" rel="noreferrer">
-                      {summary.title}
-                    </a>
+                    <a href={summary.jobDetailsLink}>{summary.title}</a>
                   </h3>
-                  <p>{summary.description}</p>
-                  <p className={styles.date}>
-                    Date Posted:{' '}
-                    {summary.datePosted ? new Date(summary.datePosted).toLocaleDateString() : '—'}
-                  </p>
+                  <div className={styles.jobSummaryContent}>
+                    <p>{summary.description}</p>
+                    <p>Date Posted: {new Date(summary.datePosted).toLocaleDateString()}</p>
+                  </div>
                 </div>
               ))
             ) : (
               <p>No summaries found.</p>
             )}
-
-            {summariesTotalPages > 1 && (
-              <div className={styles.pagination}>
-                {Array.from({ length: summariesTotalPages }, (_, i) => (
-                  <button
-                    type="button"
-                    key={`summaries-${i}`}
-                    onClick={() => this.setSummariesPage(i + 1)}
-                    disabled={summariesPage === i + 1}
-                    className={this.props.darkMode ? 'bg-space-cadet text-light border-0' : ''}
-                  >
-                    {i + 1}
-                  </button>
-                ))}
-              </div>
-            )}
           </div>
         </div>
       </div>
     );
   }
 
-  render() {
-    const {
-      searchTerm,
-      selectedCategory,
-      currentPage,
-      jobAds,
-      totalPages,
-      categories,
-      summaries,
-    } = this.state;
+  /** MAIN VIEW */
+  return (
+    <div className={`${styles.jobLanding} ${darkMode ? styles.darkMode : ''}`}>
+      <div className={styles.jobHeader}>
+        <a
+          href="https://www.onecommunityglobal.org/collaboration/"
+          target="_blank"
+          rel="noreferrer"
+        >
+          <img src={OneCommunityImage} alt="One Community Logo" />
+        </a>
+      </div>
 
-    if (summaries) return this.renderSummaries();
+      <div className={styles.jobContainer}>
+        {renderFilters()}
+        {renderCategoryChips()}
 
-    return (
-      <div className={`${styles.jobLanding} ${this.props.darkMode ? styles.jobLandingDark : ''}`}>
-        <div className={styles.header}>
-          <a
-            href="https://www.onecommunityglobal.org/collaboration/"
-            target="_blank"
-            rel="noreferrer"
-          >
-            <img
-              src={OneCommunityImage}
-              alt="One Community Logo"
-              className={styles.responsiveImg}
-            />
-          </a>
-        </div>
+        {showSearchResults ? (
+          <div className={styles.jobDetails}>
+            <div className={styles.jobQueries}>
+              {searchTerm.length || selectedCategories.length ? (
+                <p className={styles.jobQuery}>
+                  Listing results for{' '}
+                  <strong>
+                    {searchTerm && `'${searchTerm}' `}
+                    {selectedCategories.length > 0 &&
+                      selectedCategories.map(c => `'${c}'`).join(', ')}
+                  </strong>
+                </p>
+              ) : (
+                <p className={styles.jobQuery}>Listing all job ads.</p>
+              )}
 
-        <div className={styles.collabContainer}>
-          <nav className={styles.navbar}>
-            <div className={styles.navbarLeft}>
-              <form className={styles.searchForm} onSubmit={this.handleSubmit}>
-                <input
-                  type="text"
-                  placeholder="Search by title..."
-                  value={searchTerm}
-                  onChange={this.handleSearch}
-                />
-                <button className={styles.searchButton} type="submit">
-                  Go
-                </button>
-                <button
-                  className={styles.resetButton}
-                  type="button"
-                  onClick={this.handleResetFilters}
-                >
-                  Reset
-                </button>
-                <button
-                  className={styles.showSummaries}
-                  type="button"
-                  onClick={this.handleShowSummaries}
-                >
-                  Show Summaries
-                </button>
-              </form>
-            </div>
+              <button className="btn btn-secondary" onClick={handleShowSummaries}>
+                Show Summaries
+              </button>
 
-            <div className={styles.navbarRight}>
-              <select value={selectedCategory} onChange={this.handleCategoryChange}>
-                <option value="">Select from Categories</option>
-                {categories.map(c => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </nav>
-
-          <div className={styles.headings}>
-            <h1>Like to Work With Us? Apply Now!</h1>
-            <p>Learn about who we are and who we want to work with!</p>
-          </div>
-
-          <div className={styles.jobList}>
-            {jobAds.length > 0 ? (
-              jobAds.map(ad => (
-                <div key={ad._id} className={styles.jobAd}>
-                  <img
-                    src={
-                      ad.imageUrl ||
-                      `/api/placeholder/640/480?text=${encodeURIComponent(
-                        ad.category || 'Job Opening',
-                      )}`
-                    }
-                    alt={ad.title ? `${ad.title}` : 'Job image'}
-                    loading="lazy"
-                    onError={e => {
-                      e.currentTarget.onerror = null;
-                      if (ad?.category === 'Engineering') {
-                        e.currentTarget.src =
-                          'https://img.icons8.com/external-prettycons-flat-prettycons/47/external-job-social-media-prettycons-flat-prettycons.png';
-                      } else if (ad?.category === 'Marketing') {
-                        e.currentTarget.src =
-                          'https://img.icons8.com/external-justicon-lineal-color-justicon/64/external-marketing-marketing-and-growth-justicon-lineal-color-justicon-1.png';
-                      } else if (ad?.category === 'Design') {
-                        e.currentTarget.src = 'https://img.icons8.com/arcade/64/design.png';
-                      } else if (ad?.category === 'Finance') {
-                        e.currentTarget.src =
-                          'https://img.icons8.com/cotton/64/merchant-account--v2.png';
-                      } else {
-                        e.currentTarget.src =
-                          'https://img.icons8.com/cotton/64/working-with-a-laptop--v1.png';
-                      }
-                    }}
-                  />
-                  <a
-                    href={`https://www.onecommunityglobal.org/collaboration/seeking-${(
-                      ad.category || ''
-                    ).toLowerCase()}`}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    <h3>
-                      {ad.title} - {ad.category}
-                    </h3>
-                  </a>
+              {searchTerm && (
+                <div className={`${styles.chip} btn btn-secondary`}>
+                  {searchTerm}
+                  <button className={styles.chipClose} onClick={() => setSearchTerm('')}>
+                    ✕
+                  </button>
                 </div>
-              ))
-            ) : (
-              <p className={styles.noJobads}>No matching jobs found.</p>
-            )}
-          </div>
+              )}
+            </div>
 
-          {totalPages > 1 && (
-            <div className={styles.pagination}>
+            {jobAds.length ? (
+              <div className={styles.jobList}>
+                {jobAds.map(ad => (
+                  <div key={ad._id} className={styles.jobAd}>
+                    <img
+                      src={`/api/placeholder/640/480?text=${encodeURIComponent(ad.category)}`}
+                      onError={e => {
+                        e.target.onerror = null;
+                        e.target.src =
+                          'https://img.icons8.com/cotton/64/working-with-a-laptop--v1.png';
+                      }}
+                      alt={ad.title}
+                      loading="lazy"
+                    />
+
+                    <a
+                      href={`https://www.onecommunityglobal.org/seeking-${ad.title
+                        .toLowerCase()
+                        .replace(/[^a-z0-9]+/g, '-')}/`}
+                    >
+                      <h3>
+                        {ad.title} - {ad.category}
+                      </h3>
+                    </a>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className={styles.jobNoResults}>
+                <h2>No job ads found.</h2>
+              </div>
+            )}
+
+            <div className={styles.jobPagination}>
               {Array.from({ length: totalPages }, (_, i) => (
                 <button
-                  type="button"
                   key={i}
-                  onClick={() => this.setPage(i + 1)}
+                  onClick={() => setCurrentPage(i + 1)}
                   disabled={currentPage === i + 1}
-                  className={this.props.darkMode ? 'bg-space-cadet text-light border-0' : ''}
                 >
                   {i + 1}
                 </button>
               ))}
             </div>
-          )}
-        </div>
+          </div>
+        ) : (
+          <div className={styles.jobHeadings}>
+            <h1 className={styles.jobHead}>Like to Work With Us? Apply Now!</h1>
+            <p className={styles.jobIntro}>Learn about who we are and who we want to work with!</p>
+          </div>
+        )}
       </div>
-    );
-  }
+    </div>
+  );
 }
 
-const mapStateToProps = state => ({
-  darkMode: state.theme.darkMode,
-});
-
-export default connect(mapStateToProps)(Collaboration);
+export default Collaboration;
