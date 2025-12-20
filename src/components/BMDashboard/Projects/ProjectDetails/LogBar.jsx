@@ -1,6 +1,9 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Button } from 'reactstrap';
 import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import styles from './ProjectDetails.module.css';
+
 // button styles for each section
 const buttonStyles = {
   dailyLogging: 'green',
@@ -8,21 +11,34 @@ const buttonStyles = {
   team: 'indigo',
 };
 
-//  button labels for each section
-const buttonLabels = {
-  dailyLogging: ['Time', 'Material', 'Tool/Equipment'],
-  newItem: ['Team', 'Material', 'Tool/Equipment', 'Lessons'],
-  team: ['Create New Team', 'Edit Existing Team', 'Log Issue'],
-};
-
 function LogBar(props) {
   const { projectId } = props;
+  const darkMode = useSelector(state => state.theme?.darkMode || false);
+  const buttonLabels = {
+    dailyLogging: {
+      name: ['Time', 'Material', 'Tool/Equipment'],
+      url: ['/bmdashboard/timelog', '/bmdashboard/materials/add', '/bmdashboard/tools/log'],
+    },
+    newItem: {
+      name: ['Team', 'Material', 'Tool/Equipment', 'Lessons'],
+      url: [
+        '/teams',
+        '/bmdashboard/materials/add',
+        '/bmdashboard/tools/add',
+        `/bmdashboard/lessonform/${projectId}`,
+      ],
+    },
+    team: {
+      name: ['Create New Team', 'Edit Existing Team', 'Log Issue', 'View Issues'],
+      url: ['/teams', '/teams', `/bmdashboard/issues/add/${projectId}`, '/bmdashboard/issues/'],
+    },
+  };
 
   return (
-    <div className="log-bar">
+    <div className={`${darkMode ? styles['log-bar-dark'] : styles['log-bar']}`}>
       {Object.keys(buttonStyles).map(section => (
-        <div key={uuidv4()} className="log-bar__section">
-          <h2>
+        <div key={uuidv4()} className={styles['log-bar__section']}>
+          <h2 style={{ color: darkMode ? '#ffffff' : '#333333' }}>
             {(() => {
               switch (section) {
                 case 'dailyLogging':
@@ -34,26 +50,29 @@ function LogBar(props) {
               }
             })()}
           </h2>
-          <ul className="log-bar__btn-group">
-            {buttonLabels[section].map(label => (
+          <ul className={styles['log-bar__btn-group']}>
+            {buttonLabels[section].name.map((label, index) => (
               <li key={uuidv4()}>
-                {label === 'Lessons' ? ( // Check if it's the "Lessons" button
-                  <Link to={`/bmdashboard/lessonform/${projectId}`}>
-                    <Button type="button" className={`button button--${buttonStyles[section]}`}>
+                {label !== 'Log Issue' ? (
+                  <Link to={buttonLabels[section].url[index]}>
+                    <Button
+                      type="button"
+                      className={`${styles.button} ${styles.btn} ${
+                        styles[`button--${buttonStyles[section]}`]
+                      }`}
+                    >
                       {label}
                     </Button>
                   </Link>
                 ) : (
-                  <Button
-                    type="button"
-                    className={
-                      label === 'Log Issue'
-                        ? `button button--maroon`
-                        : `button button--${buttonStyles[section]}`
-                    }
-                  >
-                    {label}
-                  </Button>
+                  <Link to={`/bmdashboard/issues/add/${projectId}`}>
+                    <Button
+                      type="button"
+                      className={`${styles.button} ${styles.btn} ${styles['button--maroon']}`}
+                    >
+                      Log Issue
+                    </Button>
+                  </Link>
                 )}
               </li>
             ))}

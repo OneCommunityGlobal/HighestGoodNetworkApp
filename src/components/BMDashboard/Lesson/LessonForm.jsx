@@ -1,6 +1,8 @@
+/* eslint-disable testing-library/no-node-access */
 import { useState, useEffect } from 'react';
 import { Form, FormControl, Button } from 'react-bootstrap';
-import './LessonForm.css';
+import axios from 'axios';
+import { ENDPOINTS } from '~/utils/URL';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
@@ -9,6 +11,7 @@ import { getAllRoles } from '../../../actions/role';
 import { fetchBMProjects } from '../../../actions/bmdashboard/projectActions';
 // import { fetchAllProjects } from '../../../actions/projects'; // fetch all projects (not bmprojects)
 import Noimg from './images/Noimg3.jpg';
+import styles from './LessonForm.module.css';
 
 const style = {
   backgroundImage: `url(${Noimg})`,
@@ -21,47 +24,103 @@ function LessonForm() {
   // const projects = useSelector(state => state.allProjects.projects); // grab all projects from store(not BM projects)
   const projects = useSelector(state => state.bmProjects); // grab all BM projects from store
   const [LessonFormtags, setLessonFormTags] = useState([]); // save all tags user inputs
+  const [permanentTags, setPermanentTags] = useState([]);
   const [tagInput, setTagInput] = useState(''); // track user input in tag input
   const [selectedFile, setSelectedFile] = useState(null); // track file that was selected or droped in upload appendix
-  const [prevselectedProject, setprevSelectedProject] = useState(null); // used to track the previously project selected for deletion in tags when changed
   const [selectedProject, setSelectedProject] = useState(null); // Track selected project in Belongs to dropdown
   const [selectedRole, setSelectedRole] = useState('All'); // track selected role in View by dropdown
   const [LessonText, setLessonText] = useState(null); // track lesson text
   const [LessonTitleText, setLessonTitleText] = useState(null); // track lessontitle text
   const { projectId } = useParams(); // passed project id in parameters
   const [projectname, setProjectName] = useState(null);
+  // track filtered tags
+  const [filteredTags, setFilteredTags] = useState([]);
+  const [showDropdown, setShowDropdown] = useState(false);
+
   // track user input in the tag input feild
+
   const handleTagInput = e => {
     e.preventDefault();
-    setTagInput(e.target.value);
+    const input = e.target.value;
+    setTagInput(input);
+
+    if (input.trim()) {
+      const filtered = permanentTags.filter(tag => tag.toLowerCase().includes(input.toLowerCase()));
+      setFilteredTags(filtered);
+      setShowDropdown(true);
+    } else {
+      setFilteredTags([]);
+      setShowDropdown(false);
+    }
   };
+
+  const handleTagSelection = selectedTag => {
+    if (!LessonFormtags.includes(selectedTag)) {
+      setLessonFormTags([...LessonFormtags, selectedTag]);
+    }
+    setTagInput('');
+    setShowDropdown(false);
+  };
+
   // when user hits enter add the tag to LessonFromtags
-  const addTag = e => {
+  const addTag = async e => {
     e.preventDefault();
-    const trimmedTagInput = tagInput.trim().replace(/\s+/g, ' '); // Replace consecutive spaces with a single space
-    if (trimmedTagInput !== '') {
-      if (!LessonFormtags.includes(trimmedTagInput)) {
-        setLessonFormTags([...LessonFormtags, trimmedTagInput]);
-        setTagInput('');
+    const trimmedTagInput = tagInput.trim().replace(/\s+/g, ' ');
+    if (trimmedTagInput && !LessonFormtags.includes(trimmedTagInput)) {
+      try {
+        const response = await axios.post(ENDPOINTS.BM_TAG_ADD, {
+          tag: trimmedTagInput,
+        });
+        if (response.data) {
+          setLessonFormTags(prev => [...prev, trimmedTagInput]);
+          setPermanentTags(response.data);
+          setTagInput('');
+          toast.success('Tag added successfully');
+        }
+      } catch (error) {
+        const errorMsg = error.response?.data?.details || error.message;
+        toast.error(`Failed to add tag: ${errorMsg}`);
       }
     }
   };
   // removes tag when 'x' is clicked from LessonFormtags variable
-  const removeTag = tagIndex => {
-    const newTags = LessonFormtags.filter((_, index) => index !== tagIndex);
+  const removeTag = tagToRemove => {
+    const newTags = LessonFormtags.filter(tag => tag !== tagToRemove);
     setLessonFormTags(newTags);
   };
-  // removes the previously added project from tags if a new one is selected from belongs to dropdown
-  const removePreviousProject = prevproject => {
-    const newTags = LessonFormtags.filter(project => project !== prevproject);
-    setLessonFormTags(newTags);
+  const fetchTags = async () => {
+    try {
+      const response = await axios.get(ENDPOINTS.BM_TAGS);
+      setPermanentTags(response.data);
+    } catch (error) {
+      toast.error('Error fetching tags: ', error.message);
+    }
   };
   // Dispatch the action to fetch roles and projects when the component mounts
   useEffect(() => {
+    fetchTags();
     dispatch(fetchBMProjects(projectId));
     dispatch(getAllRoles());
-  }, [dispatch]);
+  }, [dispatch, projectId]);
   // logic if there is a projectId passed in params(on project specific from) to add the project tag automatically
+
+  // useEffect handles click away from input drop down menu
+  useEffect(() => {
+    const handleClickOutside = event => {
+      // is click outside dropdown?
+      const dropdown = document.querySelector('.tag-dropdown');
+      const input = document.querySelector('.form-control');
+      if (dropdown && !dropdown.contains(event.target) && !input.contains(event.target)) {
+        setShowDropdown(false);
+      }
+    };
+    // if clicked outside
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   useEffect(() => {
     if (projectId) {
       // Fetch the project with the given projectId
@@ -71,7 +130,6 @@ function LessonForm() {
         // Set the project name as a tag
         setProjectName(foundProject.name);
         setSelectedProject(projectId);
-        setLessonFormTags([projectname]);
       }
     }
   }, [projectId, projects]);
@@ -95,6 +153,10 @@ function LessonForm() {
 
   const handleDragOver = e => {
     e.preventDefault();
+  };
+
+  const onHandleCancel = () => {
+    window.location.href = `/bmdashboard/projects/${projectId}`;
   };
 
   const handleDrop = e => {
@@ -123,38 +185,10 @@ function LessonForm() {
     const lessonformtitleinput = e.target.value;
     setLessonTitleText(lessonformtitleinput);
   };
-  useEffect(() => {
-    if (selectedProject && prevselectedProject !== selectedProject) {
-      // Find the project with the selected ID
-      const foundProject = projects.find(project => project._id === selectedProject);
-      // Check if the found project is valid
-      if (foundProject) {
-        setprevSelectedProject(selectedProject);
-        // Remove the tag for the previously selected project
-        if (prevselectedProject) {
-          removePreviousProject(
-            projects.find(project => project._id === prevselectedProject)?.name,
-          );
-        }
-        // Add the project name to the tags array
-        setLessonFormTags(tags => [...tags, foundProject.name]);
-      }
-    }
-  }, [selectedProject, prevselectedProject, projects]);
 
   // Lesson submit. all the data from user input is in here
   const LessonFormSubmit = async e => {
     e.preventDefault();
-    // console.log(LessonFormtags, "Tags")
-    // console.log(selectedProject, "selected project")
-    // console.log(selectedRole, "selecedRole")
-    // console.log(selectedFile, "selected file")
-    // console.log(LessonText, "lesson text")
-    // console.log(LessonTitleText,"lesson title")
-    if (!LessonFormtags.length) {
-      toast.info('Need atleast one tag');
-      return;
-    }
     if (!selectedProject) {
       toast.info('Need to select a project');
       return;
@@ -170,10 +204,10 @@ function LessonForm() {
     };
     try {
       const response = await dispatch(postNewLesson(lessonData));
-
       // Check if the response indicates success
       if (response && response._id) {
         toast.success('Lesson Added');
+        fetchTags();
       } else {
         // Handle unexpected response
         toast.error('Unexpected Response: Lesson may not have been added');
@@ -184,12 +218,13 @@ function LessonForm() {
     }
   };
   return (
-    <div className="MasterContainer">
-      <div className="FormContainer">
+    <div className={`${styles.masterContainer}`}>
+      <div className={`${styles.formContainer}`}>
         <Form onSubmit={LessonFormSubmit}>
           <div className="WriteLessonAndTagDiv">
             <Form.Group className="LessonFrom" controlId="exampleForm.ControlTextarea1">
-              <Form.Label className="LessonLabel">Lesson Title</Form.Label>
+              <Form.Label className={`${styles.lessonLabel}`}>Lesson Title</Form.Label>
+              <span className="red-asterisk">* </span>
               <Form.Control
                 required
                 className="LessonTitle"
@@ -200,10 +235,11 @@ function LessonForm() {
               />
             </Form.Group>
             <Form.Group className="LessonForm" controlId="exampleForm.ControlTextarea1">
-              <Form.Label className="LessonLabel">Write a Lesson</Form.Label>
+              <Form.Label className={`${styles.lessonLabel}`}>Write a Lesson</Form.Label>
+              <span className="red-asterisk">* </span>
               <Form.Control
                 required
-                className="LessonPlaceholderText"
+                className={`${styles.lessonPlaceholderText}`}
                 as="textarea"
                 placeholder="Enter the lesson you learn..."
                 rows={10}
@@ -211,8 +247,8 @@ function LessonForm() {
               />
             </Form.Group>
             <Form.Group controlId="exampleForm.ControlInput1">
-              <Form.Label>Add tag</Form.Label>
-              <div className="input-group">
+              <Form.Label>Add tag (Press enter to add tag)</Form.Label>
+              <div className={`${styles.inputGroup}`}>
                 <input
                   type="text"
                   placeholder="Input tag for the lesson"
@@ -223,30 +259,41 @@ function LessonForm() {
                       addTag(e);
                     }
                   }}
-                  className="form-control"
+                  className={`${styles.formControl}`}
                 />
-              </div>
-              <div className="TagsDiv">
-                {LessonFormtags.map((tag, index) => {
-                  const key = `${tag}_${index}`;
-                  return (
-                    <div className="Tag" key={key}>
-                      <span className="TagSpan">{tag}</span>
+                {showDropdown && filteredTags.length > 0 && (
+                  <div className={`${styles.tagDropdown}`}>
+                    {filteredTags.map(tag => (
                       <button
-                        className="removeTagBTN"
+                        key={tag}
+                        className={styles.tagOption}
+                        onClick={() => handleTagSelection(tag)}
                         type="button"
-                        onClick={() => removeTag(index)}
                       >
-                        X
+                        {tag}
                       </button>
-                    </div>
-                  );
-                })}
+                    ))}
+                  </div>
+                )}
+              </div>
+              <div className={`${styles.tagsDiv}`}>
+                {LessonFormtags.map(tag => (
+                  <div className={`${styles.tag}`} key={tag}>
+                    <span className={`${styles.tagSpan}`}>{tag}</span>
+                    <button
+                      className={`${styles.removeTagBTN}`}
+                      type="button"
+                      onClick={() => removeTag(tag)}
+                    >
+                      X
+                    </button>
+                  </div>
+                ))}
               </div>
             </Form.Group>
           </div>
-          <div className="FormSelectContainer">
-            <div className="SingleFormSelect">
+          <div className={`${styles.formSelectContainer}`}>
+            <div className={`${styles.singleFormSelect}`}>
               <Form.Group controlId="Form.ControlSelect1">
                 <Form.Label>Belongs to</Form.Label>
                 <FormControl
@@ -265,7 +312,7 @@ function LessonForm() {
                 </FormControl>
               </Form.Group>
             </div>
-            <div className="SingleFormSelect">
+            <div className={`${styles.singleFormSelect}`}>
               <Form.Group controlId="Form.ControlSelect2">
                 <Form.Label>View by</Form.Label>
                 <FormControl
@@ -304,20 +351,23 @@ function LessonForm() {
                 {selectedFile ? (
                   <p>Selected File: {selectedFile.name}</p>
                 ) : (
-                  <div className="TextAndImageDiv">
-                    <div className="ImageDiv" style={style} />
-
-                    <p className="DragandDropText">Drag and drop a file here</p>
+                  <div className={`${styles.textAndImageDiv}`}>
+                    <div className={`${styles.imageDiv}`} style={style} />
+                    <p className={`${styles.dragandDropText}`}>Drag and drop a file here</p>
                   </div>
                 )}
               </div>
             </Form.Group>
           </div>
-          <div className="ButtonDiv">
-            <Button className="LessonFormButtonCancel" type="cancel">
-              Cancel
+          <div className={`${styles.buttonDiv}`}>
+            <Button
+              className={`${styles.lessonFormButtonCancel}`}
+              type="cancel"
+              onClick={onHandleCancel}
+            >
+              Back
             </Button>
-            <Button className="LessonFormButtonSubmit" type="submit">
+            <Button className={`${styles.lessonFormButtonSubmit}`} type="submit">
               Post
             </Button>
           </div>

@@ -1,5 +1,6 @@
 import { Row, Col, Label } from 'reactstrap';
 import { useState, useEffect } from 'react';
+import './ProjectSummary.css'; // Import the CSS file
 
 function ProjectSummary({ project }) {
   const {
@@ -26,9 +27,9 @@ function ProjectSummary({ project }) {
     };
   }, []);
 
-  const summaryLabelCol = windowWidth < 700 ? '6' : '4';
-  const summaryLabelCol1 = windowWidth < 700 ? '6' : '8';
-  const summaryLabelCol2 = windowWidth < 700 ? '6' : '7';
+  const summaryLabelCol = windowWidth < 700 ? 12 : 4; // full-width on smaller screens
+  const summaryValueCol = windowWidth < 700 ? 12 : 8; // full-width on smaller screens
+  const summaryLabelColShort = windowWidth < 700 ? 6 : 4; // adjust for shorter labels
 
   return (
     <div className="project-summary_content">
@@ -36,34 +37,34 @@ function ProjectSummary({ project }) {
         <h2>{project.name} Summary</h2>
       </Row>
       <Row className="project-summary_item mx-auto">
-        <Col xs={summaryLabelCol}>
+        <Col xs={summaryLabelCol} sm={summaryLabelCol}>
           <Label className="project-summary_label">Total hours of work done:</Label>
         </Col>
-        <Col xs="3">
+        <Col xs={summaryValueCol} sm={summaryValueCol}>
           <span className="project-summary_span">{hoursWorked}</span>
         </Col>
       </Row>
       <Row className="project-summary_item mx-auto">
-        <Col xs={summaryLabelCol}>
+        <Col xs={summaryLabelCol} sm={summaryLabelCol}>
           <Label className="project-summary_label">Total cost of materials:</Label>
         </Col>
-        <Col xs="3">
+        <Col xs={summaryValueCol} sm={summaryValueCol}>
           <span className="project-summary_span">{totalMaterialsCost} USD</span>
         </Col>
       </Row>
       <Row className="project-summary_item mx-auto">
-        <Col xs={summaryLabelCol}>
+        <Col xs={summaryLabelCol} sm={summaryLabelCol}>
           <Label className="project-summary_label">Total cost of equipment:</Label>
         </Col>
-        <Col xs="3">
+        <Col xs={summaryValueCol} sm={summaryValueCol}>
           <span className="project-summary_span">{totalEquipmentCost} USD</span>
         </Col>
       </Row>
       <Row className="project-summary_item mx-auto">
-        <Col xs={summaryLabelCol}>
+        <Col xs={summaryLabelCol} sm={summaryLabelCol}>
           <Label className="project-summary_label">Waste:</Label>
         </Col>
-        <Col xs={summaryLabelCol}>
+        <Col xs={summaryValueCol} sm={summaryValueCol}>
           <span className="project-summary_span">
             {mostMaterialWaste?.stockWasted} {mostMaterialWaste?.itemType.unit} of{' '}
             {mostMaterialWaste?.itemType.name} has been wasted!
@@ -71,26 +72,26 @@ function ProjectSummary({ project }) {
         </Col>
       </Row>
       <Row className="project-summary_item mx-auto">
-        <Col xs={summaryLabelCol}>
+        <Col xs={summaryLabelCol} sm={summaryLabelCol}>
           <Label className="project-summary_label">Total members:</Label>
         </Col>
-        <Col xs="3">
+        <Col xs={summaryValueCol} sm={summaryValueCol}>
           <span className="project-summary_span">{members.length}</span>
         </Col>
       </Row>
       <Row className="project-summary_item mx-auto">
-        <Col xs={summaryLabelCol}>
+        <Col xs={summaryLabelCol} sm={summaryLabelColShort}>
           <Label className="project-summary_label">Rentals:</Label>
         </Col>
-        <Col xs={summaryLabelCol2}>
+        <Col xs={summaryValueCol} sm={8}>
           <span className="project-summary_span">Excavator 2 rental ends in 72 hours!</span>
         </Col>
       </Row>
       <Row className="project-summary_item mx-auto">
-        <Col xs={summaryLabelCol}>
+        <Col xs={summaryLabelCol} sm={summaryLabelColShort}>
           <Label className="project-summary_label">Most material bought:</Label>
         </Col>
-        <Col xs={summaryLabelCol2}>
+        <Col xs={summaryValueCol} sm={8} className="project-summary_value">
           <span className="project-summary_span">
             {mostMaterialBought?.stockBought} {mostMaterialBought?.itemType.unit} of{' '}
             {mostMaterialBought?.itemType.name} purchased for this project
@@ -98,10 +99,10 @@ function ProjectSummary({ project }) {
         </Col>
       </Row>
       <Row className="project-summary_item mx-auto">
-        <Col xs={summaryLabelCol}>
+        <Col xs={summaryLabelCol} sm={summaryLabelColShort}>
           <Label className="project-summary_label">Stock:</Label>
         </Col>
-        <Col xs={summaryLabelCol1}>
+        <Col xs={summaryValueCol} sm={summaryValueCol} className="project-summary_value">
           <span className="project-summary_span">
             {leastMaterialAvailable?.itemType.name} is nearly out of stock (
             {leastMaterialAvailable?.stockAvailable} {leastMaterialAvailable?.itemType.unit}{' '}

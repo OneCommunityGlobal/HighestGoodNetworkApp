@@ -3,12 +3,14 @@ import { Table, Button, UncontrolledTooltip } from 'reactstrap';
 import { connect } from 'react-redux';
 import axios from 'axios';
 import AssignTableRow from '../Badge/AssignTableRow';
-import { assignBadgesByUserID, clearNameAndSelected } from '../../actions/badgeManagement';
-import { ENDPOINTS } from '../../utils/URL';
-import { boxStyle } from '../../styles';
+import { assignBadgesByUserID, clearNameAndSelected, addSelectBadge } from '../../actions/badgeManagement';
+import { ENDPOINTS } from '~/utils/URL';
+import { boxStyle, boxStyleDark } from '../../styles';
 import { toast } from 'react-toastify';
+import { PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE } from '~/utils/constants';
 
 function AssignBadgePopup(props) {
+  const {darkMode} = props;
   const [searchedName, setSearchedName] = useState('');
   const [badgeList, setBadgeList] = useState([]);
   // Added state to disable confirm button while updating.
@@ -20,8 +22,8 @@ function AssignBadgePopup(props) {
 
   // Update: Added toast message effect for success and error. Added restriction: Jae's badges only editable by Jae or Owner
   const assignBadges = async () => {
-    if(props.isRecordBelongsToJaeAndUneditable){
-      alert("STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.");
+    if (props.isRecordBelongsToJaeAndUneditable) {
+      alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
       return;
     }
     try {
@@ -33,9 +35,10 @@ function AssignBadgePopup(props) {
         badgeCollection: response.data.badgeCollection,
       });
       toast.success('Badge update successfully');
+      // 🔹 Clear selected badges in Redux after a successful save
+      props.clearNameAndSelected();
     } catch (e) {
-      //TODO: Proper error handling.
-      toast.error('Badge uodate failed');
+      toast.error('Badge update failed');
     }
     setConfirmButtonDisable(false);
     props.handleSubmit();
@@ -53,16 +56,29 @@ function AssignBadgePopup(props) {
     } catch (error) {}
   };
 
-  const filterBadges = allBadges => {
-    let filteredList = allBadges.filter(badge => {
-      if (badge.badgeName.toLowerCase().indexOf(searchedName.toLowerCase()) > -1) {
-        return badge;
-      }
-    });
-    return filteredList;
-  };
+ const filterBadges = (allBadges = []) => {
+   // guard against non-array inputs
+   if (!Array.isArray(allBadges)) return [];
+   return allBadges.filter(({ badgeName }) =>
+     badgeName.toLowerCase().includes(searchedName.toLowerCase())
+   );
+ };
 
   let filteredBadges = filterBadges(badgeList);
+
+  const addExistBadges = () => {
+    if (props.userProfile && props.userProfile.badgeCollection) {
+      // store raw badge IDs, not "assign-badge-..."
+      const existBadges = props.userProfile.badgeCollection
+        .filter(b => b.badge !== null)
+        .map(b => b.badge._id);
+      return existBadges;
+    }
+    return [];
+  };
+  let existBadges = addExistBadges();
+
+
 
   return (
     <div data-testid="test-assignbadgepopup">
@@ -76,7 +92,7 @@ function AssignBadgePopup(props) {
         }}
       />
       <div style={{ overflowY: 'scroll', height: '75vh' }}>
-        <Table data-testid="test-badgeResults">
+        <Table data-testid="test-badgeResults" className={darkMode ? 'text-light' : ''}>
           <thead>
             <tr>
               <th>Badge</th>
@@ -104,14 +120,14 @@ function AssignBadgePopup(props) {
           </thead>
           <tbody>
             {filteredBadges.map((value, index) => (
-              <AssignTableRow badge={value} index={index} key={index} />
+              <AssignTableRow badge={value} index={index} key={index} existBadges={existBadges} />
             ))}
           </tbody>
         </Table>
       </div>
       <Button
         className="btn--dark-sea-green float-right"
-        style={{ ...boxStyle, margin: 5 }}
+        style={darkMode ? {...boxStyleDark, margin: 5 } : { ...boxStyle, margin: 5 }}
         onClick={assignBadges}
         disabled={shouldConfirmButtonDisable}
         data-testid="test-button"
@@ -124,6 +140,7 @@ function AssignBadgePopup(props) {
 
 const mapStateToProps = state => ({
   selectedBadges: state.badge.selectedBadges,
+  darkMode: state.theme.darkMode,
 });
 
 const mapDispatchToProps = dispatch => {
@@ -131,6 +148,7 @@ const mapDispatchToProps = dispatch => {
     assignBadgesByUserID: (userId, selectedBadge) =>
       assignBadgesByUserID(userId, selectedBadge)(dispatch),
     clearNameAndSelected: () => dispatch(clearNameAndSelected()),
+    addSelectBadge: badgeId => dispatch(addSelectBadge(badgeId)),
   };
 };
 

@@ -1,20 +1,65 @@
+/* TasksTable.css */
+
+/* Header styling */
 .tasks-table-header {
   text-align: left;
   margin-bottom: 24px;
 }
 
+/* Filter wrapper styling */
 .tasks-table-filters-wrapper {
   display: flex;
   justify-content: space-between;
 }
 
+/* Filter container styling */
 .tasks-table-filters {
   display: flex;
   flex-wrap: wrap;
   margin-bottom: 24px;
 }
 
+/* Filter item styling */
 .tasks-table-filter-item {
+  display: flex;
+  align-items: center;
+  border-radius: 4px;
+  padding: 4px 10px;
+  height: 30px;
+  margin-right: 8px;
+  margin-bottom: 12px;
+  flex-wrap: nowrap;
+}
+
+/* Input styling */
+.tasks-table-filter-input .select__control {
+  width: 140px;
+  border: 2px solid #d1cfd4;
+  border-radius: 4px;
+  min-height: 30px;
+  height: 30px;
+  box-shadow: none;
+}
+
+.tasks-table-filter-input .select__control--is-focused {
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.tasks-table-filter-input .select__placeholder {
+  color: #6c757d;
+}
+
+.tasks-table-filter-input .select__single-value {
+  color: #495057;
+}
+
+.tasks-table-text-search-box {
+  display: block;
+  background-color: white;
+  border: 2px solid #d1cfd4;
+  outline-color: #d1cfd4;
+  color: #495057;
   display: flex;
   align-items: center;
   border-radius: 4px;
@@ -24,11 +69,13 @@
   margin-bottom: 12px;
 }
 
-.tasks-table-filter-input {
-  width: 140px;
-  border: 2px solid #d1cfd4;
+.tasks-table-text-search-box:focus,
+.tasks-table-text-search-box:active {
+  border-color: #0075ff;
+  outline-color: #0075ff;
 }
 
+/* Clear filter button styling */
 .tasks-table-clear-filter-button {
   display: block;
   background-color: white;
@@ -36,7 +83,21 @@
   outline-color: #e7b1ef;
   color: #ca50db;
   border-radius: 4px;
-  margin-left: 40px;
+  margin-left: 20px;
+  width: 100px;
+  min-width: 100px;
+  height: 30px;
+  cursor: pointer;
+}
+
+.tasks-table-edit-tasks-button{
+  display: block;
+  background-color: white;
+  border: 2px solid #007bff;
+  outline-color: #007bff;
+  color: #5750db;
+  border-radius: 4px;
+  margin-left: 0px;
   width: 100px;
   min-width: 100px;
   height: 30px;
@@ -48,4 +109,11 @@
 .tasks-table-clear-filter-button:active {
   border-color: #ca50db;
   outline-color: #ca50db;
+}
+
+.tasks-table-edit-tasks-button:hover,
+.tasks-table-edit-tasks-button:focus,
+.tasks-table-edit-tasks-button:active {
+  border-color: #5750db;
+  outline-color: #5750db;
 }

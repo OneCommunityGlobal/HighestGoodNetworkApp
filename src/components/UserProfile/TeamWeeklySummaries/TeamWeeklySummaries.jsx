@@ -1,4 +1,3 @@
-import React from 'react';
 import './TeamWeeklySummaries.css';
 import moment from 'moment';
 import parse from 'html-react-parser';
@@ -6,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { toast } from 'react-toastify';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
 
-function TeamWeeklySummaries({ name, i, data }) {
+function TeamWeeklySummaries({ name, i, data, darkMode }) {
   const getWeekDates = weekIndex => ({
     fromDate: moment()
       .tz('America/Los_Angeles')
@@ -18,9 +17,12 @@ function TeamWeeklySummaries({ name, i, data }) {
       .endOf('week')
       .subtract(weekIndex, 'week')
       .format('DD-MMM-YY'),
+    
   });
+  // eslint-disable-next-line no-console
+  console.log('darkMode', darkMode);
   return (
-    <div className="team-weekly-summaries" data-testid="team-weekly-summaries">
+    <div className={`team-weekly-summaries ${darkMode ? 'bg-space-cadet' : ''}`} data-testid="team-weekly-summaries">
       <div className="team-weekly-header"  >
         <h6 className="team-weekly-header-date">
           {getWeekDates(i).fromDate} to {getWeekDates(i).toDate}
@@ -33,7 +35,8 @@ function TeamWeeklySummaries({ name, i, data }) {
       </div>
       {data.summary && (
         <div className="team-weekly-summary-container">
-          <div className="team-week-summary-text"> {parse(data.summary)}</div>
+          <div className="team-week-summary-text">  {darkMode?  parse('<span class=darkSpan >' + data.summary + "</span>") : parse(data.summary)}</div>
+      
           <FontAwesomeIcon
             icon={faCopy}
             className="copy-icon"

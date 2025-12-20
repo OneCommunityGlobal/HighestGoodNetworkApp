@@ -1,1 +1,0 @@
-export { NewModal } from './NewModal';

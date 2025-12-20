@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
-
 import { toast } from 'react-toastify';
-
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input } from 'reactstrap';
-import { connect } from 'react-redux';
-import { boxStyle } from '../../styles';
-import './OwnerMessage.css';
+import { connect, useDispatch } from 'react-redux';
+import hasPermission from '~/utils/permissions';
+import { boxStyle, boxStyleDark } from '../../styles';
+
+import styles from './OwnerMessage.module.css';
 
 import editIcon from './assets/edit.png';
 import deleteIcon from './assets/delete.png';
@@ -20,10 +20,12 @@ function OwnerMessage({
   auth,
   ownerMessage,
   ownerStandardMessage,
+  darkMode,
   getMessage,
   updateMessage,
   deleteMessage,
 }) {
+  const dispatch = useDispatch();
   const { user } = auth;
 
   const [disableTextInput, setDisableTextInput] = useState(false);
@@ -32,6 +34,8 @@ function OwnerMessage({
   const [modal, setModal] = useState(false);
   const [modalDeleteWarning, setModalDeleteWarning] = useState(false);
   const [modalWrongPictureFormatWarning, setModalWrongPictureFormatWarning] = useState(false);
+
+  const canEditHeaderMessage = dispatch(hasPermission('editHeaderMessage'));
 
   const isImage = /;base64/g;
 
@@ -57,7 +61,6 @@ function OwnerMessage({
       const imageType = /jpg|jpeg|png/g;
       const validFormats = imageType.test(file.name);
 
-      // Input validation: file type
       if (!validFormats) {
         toggle();
         toggleWrongPictureFormatWarning();
@@ -99,9 +102,9 @@ function OwnerMessage({
 
   function getContent(messages) {
     if (isImage.test(messages)) {
-      return <img src={messages} alt="" />;
+      return <img src={messages} alt="" className={styles.ownerMessageImg} />;
     }
-    return <span className="message">{messages}</span>;
+    return <span className={styles.message}>{messages}</span>;
   }
 
   useEffect(() => {
@@ -112,42 +115,76 @@ function OwnerMessage({
   }, []);
 
   useEffect(() => {
-    if (message !== ownerMessage) {
-      setDisableButtons(false);
-    } else {
-      setDisableButtons(true);
-    }
+    setDisableButtons(message === ownerMessage);
   }, [message]);
 
   useEffect(() => {
     setMessage(ownerMessage);
   }, [ownerMessage]);
 
+  const fontColor = darkMode ? 'text-light' : '';
+  const headerBg = darkMode ? 'bg-space-cadet' : '';
+  const bodyBg = darkMode ? 'bg-yinmn-blue' : '';
+  const boxStyling = darkMode ? boxStyleDark : boxStyle;
+
   return (
-    <div className="message-container">
+    <div className={styles.messageContainer}>
       {ownerMessage ? getContent(ownerMessage) : getContent(ownerStandardMessage)}
 
-      {user.role === 'Owner' && (
-        <div className="icon-wrapper">
-          <button type="submit" onClick={toggle}>
-            <img src={editIcon} alt="edit icon" title="Edit this header" />
+      {(user.role === 'Owner' || canEditHeaderMessage) && (
+        <div className={styles.iconWrapper}>
+          <button
+            type="submit"
+            className={styles.ownerMessageButton}
+            onClick={toggle}
+            aria-label="Edit header message"
+          >
+            <div
+              style={{
+                width: '24px',
+                height: '24px',
+                backgroundImage: `url(${editIcon})`,
+                backgroundSize: 'contain',
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat',
+              }}
+              title="Edit this header"
+              role="img"
+              aria-label="Edit icon"
+            />
           </button>
 
           {ownerMessage && (
-            <button type="submit" onClick={toggleDeleteWarning} style={{ marginLeft: '0.5rem' }}>
-              <img
-                src={deleteIcon}
-                alt="edit icon"
+            <button
+              type="submit"
+              className={styles.ownerMessageButton}
+              onClick={toggleDeleteWarning}
+              style={{ marginLeft: '0.25rem' }}
+              aria-label="Delete header message"
+            >
+              <div
+                style={{
+                  width: '24px',
+                  height: '24px',
+                  backgroundImage: `url(${deleteIcon})`,
+                  backgroundSize: 'contain',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat',
+                }}
                 title="Click to restore header to standard message"
+                role="img"
+                aria-label="Delete icon"
               />
             </button>
           )}
         </div>
       )}
 
-      <Modal isOpen={modal} toggle={() => toggle()}>
-        <ModalHeader toggle={() => toggle()}>Create message</ModalHeader>
-        <ModalBody className="modal-body">
+      <Modal isOpen={modal} toggle={() => toggle()} className={fontColor}>
+        <ModalHeader toggle={() => toggle()} className={headerBg}>
+          Create message
+        </ModalHeader>
+        <ModalBody className={`${styles.modalBody} ${bodyBg}`}>
           <p>Write a message:</p>
           <Input
             type="textarea"
@@ -156,7 +193,7 @@ function OwnerMessage({
             onChange={event => setMessage(event.target.value)}
             maxLength="100"
             disabled={disableTextInput}
-            className="inputs"
+            className={styles.inputs}
           />
           <p className="paragraph" style={{ marginTop: '1rem' }}>
             Or upload a picture:
@@ -170,15 +207,19 @@ function OwnerMessage({
             type="file"
             label="Choose Image"
             onChange={event => handleImageUpload(event)}
-            className="inputs"
+            className={styles.inputs}
           />
         </ModalBody>
-        <ModalFooter style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+
+        <ModalFooter
+          className={bodyBg}
+          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+        >
           <Button
             color="info"
             onClick={() => handleMessage(true)}
             disabled={disableButtons}
-            style={boxStyle}
+            style={boxStyling}
           >
             {ownerStandardMessage ? (
               <span style={{ color: 'white' }}>Update as Standard Message</span>
@@ -190,35 +231,42 @@ function OwnerMessage({
             color="primary"
             onClick={() => handleMessage(false)}
             disabled={disableButtons}
-            style={boxStyle}
+            style={boxStyling}
           >
             {ownerMessage ? 'Update' : 'Create'}
           </Button>
         </ModalFooter>
       </Modal>
-      <Modal isOpen={modalDeleteWarning} toggle={() => toggleDeleteWarning()}>
-        <ModalBody>
+
+      <Modal isOpen={modalDeleteWarning} toggle={() => toggleDeleteWarning()} className={fontColor}>
+        <ModalBody className={headerBg}>
           <h4>Do you really want to delete the message?</h4>
         </ModalBody>
-        <ModalFooter>
-          <Button color="secondary" onClick={() => toggleDeleteWarning()} style={boxStyle}>
+        <ModalFooter className={bodyBg}>
+          <Button color="secondary" onClick={() => toggleDeleteWarning()} style={boxStyling}>
             Cancel
           </Button>
-          <Button color="danger" onClick={() => handleDeleteMessage()} style={boxStyle}>
+          <Button color="danger" onClick={() => handleDeleteMessage()} style={boxStyling}>
             Delete
           </Button>
         </ModalFooter>
       </Modal>
+
       <Modal
         isOpen={modalWrongPictureFormatWarning}
         toggle={() => toggleWrongPictureFormatWarning()}
+        className={fontColor}
       >
-        <ModalBody>
+        <ModalBody className={headerBg}>
           <strong>Please insert a valid image!</strong>
           <span>Only .jpg, .jpeg and .png formats are accepted.</span>
         </ModalBody>
-        <ModalFooter>
-          <Button color="danger" onClick={() => toggleWrongPictureFormatWarning()} style={boxStyle}>
+        <ModalFooter className={bodyBg}>
+          <Button
+            color="danger"
+            onClick={() => toggleWrongPictureFormatWarning()}
+            style={boxStyling}
+          >
             Close
           </Button>
         </ModalFooter>
@@ -231,6 +279,7 @@ const mapStateToProps = state => ({
   auth: state.auth,
   ownerMessage: state.ownerMessage.message,
   ownerStandardMessage: state.ownerMessage.standardMessage,
+  darkMode: state.theme.darkMode,
 });
 
 const mapDispatchToProps = dispatch => ({

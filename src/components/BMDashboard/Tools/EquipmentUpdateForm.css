@@ -1,0 +1,100 @@
+.add-tool-form {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.add-tool-form label {
+  font-size: 0.9em;
+  font-weight: bold;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.add-tool-flex-group {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.add-tool-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 1rem auto 2rem;
+}
+
+.add-tool-buttons button {
+  flex: 1;
+  min-width: 120px;
+}
+
+.add-tool-total-price {
+  display: flex;
+  border-radius: 10px;
+  line-height: 3rem;
+  font-weight: bolder;
+  background-color: #f5e6e6;
+  padding: 1rem;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.file-preview-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.toolFormError {
+  font-weight: 500;
+  font-size: 12px !important;
+  color: red;
+  margin-top: 0.25rem;
+}
+
+.field-required {
+  color: red;
+}
+
+@media screen and (max-width: 600px) {
+  .add-tool-flex-group {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .file-preview-container {
+    flex-direction: column;
+  }
+
+  .add-tool-buttons {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .add-tool-buttons button {
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 400px) {
+  .add-tool-form {
+    padding: 0.5rem;
+  }
+
+  .add-tool-total-price {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .add-tool-total-price div {
+    width: 100%;
+  }
+
+  .add-tool-buttons {
+    gap: 0.5rem;
+  }
+}

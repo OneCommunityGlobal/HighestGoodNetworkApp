@@ -14,8 +14,8 @@
 }
 
 .user-profile-blue-square-div-header-title {
-  display: flex;
-  flex-direction: row;
+  display: grid;
+  grid-template-columns: 1fr auto;
   padding: 5px;
   border-bottom: 1px solid #007bff;
   font-size: 1rem;

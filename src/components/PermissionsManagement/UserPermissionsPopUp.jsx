@@ -1,31 +1,58 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { Button, Dropdown, Form, Input, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { useEffect, useState, useRef } from 'react';
+import { Button, Dropdown, Form, Input } from 'reactstrap';
 import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
-import { addNewRole, getAllRoles } from '../../actions/role';
-import { getAllUserProfile } from 'actions/userManagement';
-import PermissionList from './PermissionList';
-import './PermissionsManagement.css';
+import { getAllUserProfile } from '~/actions/userManagement';
+import styles from './PermissionsManagement.module.css';
 import axios from 'axios';
-import { ENDPOINTS } from 'utils/URL';
-import { boxStyle } from 'styles';
+import { ENDPOINTS } from '~/utils/URL';
+// eslint-disable-next-line no-unused-vars
+import { boxStyle, boxStyleDark } from '~/styles';
+import {
+  DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
+  DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
+  PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
+} from '../../utils/constants';
 import { cantUpdateDevAdminDetails } from '../../utils/permissions';
+import PermissionList from './PermissionList';
+import { addNewRole, getAllRoles } from '../../actions/role';
 
-const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles, authUser }) => {
+import ReminderModal from './ReminderModal';
 
+function UserPermissionsPopUp({
+  allUserProfiles,
+  // eslint-disable-next-line no-unused-vars
+  toggle,
+  getAllUsers,
+  roles,
+  authUser,
+  setReminderModal,
+  reminderModal,
+  modalStatus,
+  darkMode,
+  getChangeLogs,
+}) {
   const [searchText, onInputChange] = useState('');
   const [actualUserProfile, setActualUserProfile] = useState();
   const [userPermissions, setUserPermissions] = useState();
+  const [userRemovedDefaultPermissions, setUserRemovedDefaultPermissions] = useState(); // defulat perms taht were deleted
   const [isOpen, setIsOpen] = useState(false);
   const [isInputFocus, setIsInputFocus] = useState(false);
   const [actualUserRolePermission, setActualUserRolePermission] = useState();
+  const [selectedAccount, setSelectedAccount] = useState('');
+  const [toastShown, setToastShown] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const setToDefault = () => {
     setUserPermissions([]);
-  }
+    setUserRemovedDefaultPermissions([]);
+  };
 
-  useEffect(()=>{
+  useEffect(() => {
     setUserPermissions(actualUserProfile?.permissions?.frontPermissions);
+    setUserRemovedDefaultPermissions(
+      actualUserProfile?.permissions?.removedDefaultPermissions || [],
+    );
   }, [actualUserProfile]);
 
   const refInput = useRef();
@@ -33,6 +60,7 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles, aut
     const url = ENDPOINTS.USER_PROFILE(userId);
     const allUserInfo = await axios.get(url).then(res => res.data);
     setActualUserProfile(allUserInfo);
+    setSelectedAccount(`${allUserInfo.firstName} ${allUserInfo.lastName}`);
   };
 
   useEffect(() => {
@@ -46,158 +74,224 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles, aut
 
   const updateProfileOnSubmit = async e => {
     e.preventDefault();
-    debugger;
     const shouldPreventEdit = cantUpdateDevAdminDetails(actualUserProfile?.email, authUser.email);
     if (shouldPreventEdit) {
-      alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
+      setIsSubmitting(false);
+      if (actualUserProfile?.email === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY) {
+        // eslint-disable-next-line no-alert, prettier/prettier
+        alert(DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY);
+      } else {
+        // eslint-disable-next-line no-alert, prettier/prettier
+        alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
+      }
       return;
     }
     const userId = actualUserProfile?._id;
 
-    const url = ENDPOINTS.USER_PROFILE(userId);
-    const allUserInfo = await axios.get(url).then(res => res.data);
-    const newUserInfo = { ...allUserInfo, permissions: {frontPermissions: userPermissions} };
+    const url = `${ENDPOINTS.PERMISSION_MANAGEMENT_UPDATE()}/user/${userId}`;
+    const permissionData = {
+      permissions: {
+        frontPermissions: userPermissions,
+        removedDefaultPermissions: userRemovedDefaultPermissions,
+      },
+      requestor: authUser, // Fixed: use authUser instead of req.body.requestor
+    };
 
-    await axios
-      .put(url, newUserInfo)
-      .then(res => {
-        const SUCCESS_MESSAGE = `
-        Permission has been updated successfully. Be sure to tell them that you are changing these
-        permissions and for that they need to log out and log back in for their new permissions to take
-        place.`;
-        toast.success(SUCCESS_MESSAGE, {
+    axios
+      .patch(url, permissionData)
+      .then(() => {
+        if (!toastShown) {
+          const SUCCESS_MESSAGE = `
+            Permissions have been updated successfully. 
+            Please inform the user to log out and log back in for the new permissions to take effect.`;
+          toast.success(SUCCESS_MESSAGE, {
+            autoClose: 10000,
+          });
+          setToastShown(true);
+        }
+        toggle();
+        getAllUsers();
+        getChangeLogs();
+      })
+      .catch(err => {
+        const ERROR_MESSAGE = `
+          Permission update failed. ${err}
+        `;
+        toast.error(ERROR_MESSAGE, {
           autoClose: 10000,
         });
       })
-      .catch(err => {
-        console.log(err);
-        const ERROR_MESSAGE = `
-        Permission updated failed. ${err}
-        `
-        toast.error(ERROR_MESSAGE, {
-          autoClose: 10000,
-        })
+      .finally(() => {
+        setIsSubmitting(false);
       });
-    getAllUsers();
   };
   useEffect(() => {
     refInput.current.focus();
   }, []);
+  useEffect(() => {
+    if (!modalStatus) {
+      setToastShown(false);
+    }
+  }, [modalStatus]);
+
   return (
     <>
-    <Form
-      id="manage__user-permissions"
-      onSubmit={e => {
-        updateProfileOnSubmit(e);
-      }}
-    >
-      <div style={{display: 'flex', justifyContent: 'space-between', paddingBottom: '5px'}}>
-        <h4 className="user-permissions-pop-up__title">User name:</h4>
-        <Button
-          type="button"
-          color="success"
-          onClick={e => {
-            setToDefault();
-          }}
-          disabled={actualUserProfile ? false : true}
-          style={boxStyle}
-        >
-          Reset to Default
-        </Button>
-      </div>
-      <Dropdown
-        isOpen={isOpen}
-        toggle={() => {
-          setIsOpen(!isOpen);
-        }}
-        style={{ width: '100%', marginRight: '5px' }}
-      >
-        <Input
-          type="text"
-          value={searchText}
-          innerRef={refInput}
-          onFocus={e => {
-            setIsInputFocus(true);
-            setIsOpen(true);
-          }}
-          onChange={e => {
-            onInputChange(e.target.value);
-            setIsOpen(true);
-          }}
-          placeholder="Shows only ACTIVE users"
+      {modalStatus && (
+        <ReminderModal
+          setReminderModal={setReminderModal}
+          reminderModal={reminderModal}
+          updateProfileOnSubmit={updateProfileOnSubmit}
+          changedAccount={selectedAccount}
+          darkMode={darkMode}
         />
-        {isInputFocus || (searchText !== '' && allUserProfiles && allUserProfiles.length > 0) ? (
-          <div
-            tabIndex="-1"
-            role="menu"
-            aria-hidden="false"
-            className={`dropdown-menu${isOpen ? ' show dropdown__user-perms' : ''}`}
-            style={{ marginTop: '0px', width: '100%' }}
-          >
-            {allUserProfiles
-              .filter(user => {
-                if (
-                  user.firstName.toLowerCase().includes(searchText.toLowerCase()) ||
-                  user.lastName.toLowerCase().includes(searchText.toLowerCase()) ||
-                  `${user.firstName} ${user.lastName}`
-                    .toLowerCase()
-                    .includes(searchText.toLowerCase())
-                ) {
-                  if (user.isActive) {
-                    return user;
-                  }
-                }
-              })
-              .map(user => (
-                <div
-                  className="user__auto-complete"
-                  key={user._id}
-                  onClick={() => {
-                    onInputChange(`${user.firstName} ${user.lastName}`);
-                    setIsOpen(false);
-                    setActualUserProfile(user);
-                    getUserData(user._id);
-                  }}
-                >
-                  {`${user.firstName} ${user.lastName}`}
-                </div>
-              ))}
-          </div>
-        ) : (
-          <></>
-        )}
-      </Dropdown>
-      <div>
-        <h4 className="user-permissions-pop-up__title">Permissions:</h4>
-        <ul className="user-role-tab__permission-list">
-          <PermissionList
-            rolePermissions={userPermissions}
-            immutablePermissions={actualUserRolePermission}
-            editable={!!actualUserProfile}
-            setPermissions={setUserPermissions}
-          />
-        </ul>
-      </div>
-      <Button
-        type="submit"
-        id="manage__user-permissions"
-        color="primary"
-        size="lg"
-        block
-        style={{ ...boxStyle, marginTop: '1rem' }}
+      )}
+      <Form
+        id={styles['manage__user-permissions']}
+        onSubmit={e => {
+          updateProfileOnSubmit(e);
+        }}
+        autoComplete="off"
       >
-        Submit
-      </Button>
-    </Form>
+        <div
+          className={darkMode ? styles['text-space-cadet'] : ''}
+          style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '5px' }}
+        >
+          <h4 className={styles['user-permissions-pop-up__title']}>
+            User name<span className="red-asterisk">* </span>:
+          </h4>
+          <Button
+            type="button"
+            color="success"
+            // eslint-disable-next-line no-unused-vars
+            onClick={e => {
+              setToDefault();
+            }}
+            disabled={!actualUserProfile}
+            style={boxStyle}
+          >
+            Reset to Default
+          </Button>
+        </div>
+        <Dropdown
+          isOpen={isOpen}
+          toggle={() => {
+            setIsOpen(!isOpen);
+          }}
+          style={{ width: '100%', marginRight: '5px' }}
+        >
+          <Input
+            type="search"
+            value={searchText}
+            innerRef={refInput}
+            // eslint-disable-next-line no-unused-vars
+            onFocus={e => {
+              setIsInputFocus(true);
+              setIsOpen(true);
+            }}
+            onChange={e => {
+              onInputChange(e.target.value);
+              setIsOpen(true);
+            }}
+            placeholder="Shows only ACTIVE users"
+            className={darkMode ? styles['bg-darkmode-liblack text-light border-0'] : ''}
+            autoComplete="off"
+            name="user-search"
+          />
+          {isInputFocus || (searchText !== '' && allUserProfiles && allUserProfiles.length > 0) ? (
+            <div
+              tabIndex="-1"
+              role="menu"
+              aria-hidden="false"
+              className={`dropdown-menu${isOpen ? ` show ${styles['dropdown__user-perms']}` : ''} ${
+                darkMode ? styles['bg-darkmode-liblack text-light'] : ''
+              }`}
+              style={{ marginTop: '0px', width: '100%' }}
+            >
+              {allUserProfiles
+                // eslint-disable-next-line array-callback-return, consistent-return
+                .filter(user => {
+                  if (
+                    user.firstName.toLowerCase().includes(searchText.toLowerCase()) ||
+                    user.lastName.toLowerCase().includes(searchText.toLowerCase()) ||
+                    `${user.firstName} ${user.lastName}`
+                      .toLowerCase()
+                      .includes(searchText.toLowerCase())
+                  ) {
+                    if (user.isActive) {
+                      return user;
+                    }
+                  }
+                })
+                .map(user => (
+                  <div
+                    className={styles['user__auto-complete']}
+                    key={user._id}
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => {
+                      onInputChange(`${user.firstName} ${user.lastName}`);
+                      setIsOpen(false);
+                      setActualUserProfile(user);
+                      getUserData(user._id);
+                    }}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        onInputChange(`${user.firstName} ${user.lastName}`);
+                        setIsOpen(false);
+                        setActualUserProfile(user);
+                        getUserData(user._id);
+                      }
+                    }}
+                  >
+                    {user.firstName} {user.lastName}
+                  </div>
+                ))}
+            </div>
+          ) : (
+            // eslint-disable-next-line react/jsx-no-useless-fragment
+            <></>
+          )}
+        </Dropdown>
+        <div>
+          <h4
+            className={`${styles['user-permissions-pop-up__title']} ${
+              darkMode ? styles['text-space-cadet'] : ''
+            }`}
+          >
+            Permissions:
+          </h4>
+          <ul className={styles['user-role-tab__permission-list']}>
+            <PermissionList
+              rolePermissions={userPermissions}
+              immutablePermissions={actualUserRolePermission}
+              editable={!!actualUserProfile}
+              setPermissions={setUserPermissions}
+              removedDefaultPermissions={userRemovedDefaultPermissions}
+              setRemovedDefaultPermissions={setUserRemovedDefaultPermissions}
+            />
+          </ul>
+        </div>
+        <Button
+          type="submit"
+          id="manage__user-permissions"
+          color="primary"
+          size="lg"
+          block
+          style={{ ...boxStyle, marginTop: '1rem' }}
+        >
+          Submit
+        </Button>
+      </Form>
     </>
   );
-};
+}
 
 const mapStateToProps = state => ({
   authUser: state.auth.user,
   roles: state.role.roles,
   allUserProfiles: state.allUserProfiles.userProfiles,
   permissionsUser: state.auth.permissions,
+  darkMode: state.theme.darkMode,
 });
 
 const mapDispatchToProps = dispatch => ({

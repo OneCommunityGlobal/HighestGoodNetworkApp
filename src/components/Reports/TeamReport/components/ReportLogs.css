@@ -28,6 +28,8 @@
 
 .teams-report-time-title {
   margin-top: 40px;
+  text-align: center;
+
 }
 @media screen and (max-width: 1100px) {
   .teams-report-time-logs-wrapper {

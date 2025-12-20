@@ -1,4 +1,6 @@
-import httpService from 'services/httpService';
+// eslint-disable-next-line import/no-unresolved
+import httpService from '~/services/httpService';
+import { toast } from 'react-toastify';
 import moment from 'moment';
 import {
   FETCH_TIME_OFF_REQUESTS_SUCCESS,
@@ -8,10 +10,11 @@ import {
   DELETE_TIME_OF_REQUEST,
   ADD_IS_ON_TIME_OFF_REQUESTS,
   ADD_GOING_ON_TIME_OFF_REQUESTS,
+  ADD_FUTURE_TIME_OFF,
   TIME_OFF_REQUEST_DETAIL_MODAL_OPEN,
   TIME_OFF_REQUEST_DETAIL_MODAL_CLOSE,
 } from '../constants/timeOffRequestConstants';
-import { ENDPOINTS } from '../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import 'moment-timezone';
 
 /**
@@ -35,6 +38,11 @@ const addIsOnTimeOffRequests = request => ({
 
 const addGoingOnTimeOffRequests = request => ({
   type: ADD_GOING_ON_TIME_OFF_REQUESTS,
+  payload: request,
+});
+
+const addFutureTimeOffRequests = request => ({
+  type: ADD_FUTURE_TIME_OFF,
   payload: request,
 });
 
@@ -70,8 +78,13 @@ const isTimeOffRequestIncludeCurrentWeek = request => {
   const requestStartingDate = moment(startingDate);
   const requestEndingDate = moment(endingDate);
 
-  const currentWeekStart = moment().startOf('week').add(1, 'second');
-  const currentWeekEnd = moment().endOf('week').subtract(1, 'day').subtract(1, 'second');
+  const currentWeekStart = moment()
+    .startOf('week')
+    .add(1, 'second');
+  const currentWeekEnd = moment()
+    .endOf('week')
+    .subtract(1, 'day')
+    .subtract(1, 'second');
 
   // Check if the current week falls within the date range of the request
   if (
@@ -86,13 +99,7 @@ const isTimeOffRequestIncludeCurrentWeek = request => {
 
 const isUserOnVacation = requests => {
   moment.tz.setDefault('America/Los_Angeles');
-
-  for (const request of requests) {
-    if(isTimeOffRequestIncludeCurrentWeek(request)) {
-      return request;
-    }
-  }
-  return null;
+  return requests.find(request => isTimeOffRequestIncludeCurrentWeek(request)) || null;
 };
 
 const isUserGoingOnVacation = requests => {
@@ -111,6 +118,41 @@ const isUserGoingOnVacation = requests => {
   return userGoingOnVacation || null;
 };
 
+const isUserGoingOnFutureTimeOff = requests => {
+  let closestStartDate = null;
+  let minDifference = Infinity;
+
+  const currentDate = moment.tz('America/Los_Angeles').startOf('day');
+
+  // for (const request of requests) {
+  //   if (
+  //     currentDate.isBefore(moment(request.startingDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ')) &&
+  //     Math.floor(moment(request.startingDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ').diff(currentDate)) <
+  //       minDifference
+  //   ) {
+  //     closestStartDate = request;
+  //     minDifference = Math.floor(
+  //       moment(request.startingDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ').diff(currentDate),
+  //     );
+  //   }
+  // }
+
+  requests.forEach((request) => {
+    const requestDate = moment(request.startingDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
+    const diff = Math.floor(requestDate.diff(currentDate));
+    
+    if (currentDate.isBefore(requestDate) && diff < minDifference) {
+      closestStartDate = request;
+      minDifference = diff;
+    }
+  });
+
+  if (closestStartDate) {
+    return closestStartDate;
+  }
+
+  return null;
+};
 
 // Thunk Function
 export const getAllTimeOffRequests = () => async dispatch => {
@@ -121,18 +163,41 @@ export const getAllTimeOffRequests = () => async dispatch => {
     const keys = Object.keys(requests);
     let onVacation = {};
     let goingOnVacation = {};
+    let futureTimeOff = {};
+    const currentDate = moment.tz('America/Los_Angeles').startOf('day');
     keys.forEach( key => {
       const arrayOfRequests = requests[key];
       const isUserOff = isUserOnVacation(arrayOfRequests);
       const isUserGoingOff = isUserGoingOnVacation(arrayOfRequests);
+      const isUserTakingFutureTimeOff = isUserGoingOnFutureTimeOff(arrayOfRequests);
       if (isUserOff) {
-        onVacation = { ...onVacation, [key]: { ...isUserOff } };
+        const additionalWeeks = Math.floor(
+          moment(isUserOff.endingDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ')
+            .subtract(1, 'day')
+            .diff(moment(isUserOff.startingDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ'), 'weeks'),
+        );
+
+        onVacation = { ...onVacation, [key]: { ...isUserOff, isInTimeOff: true, weeks: additionalWeeks } };
       } else if (isUserGoingOff) {
         goingOnVacation = { ...goingOnVacation, [key]: { ...isUserGoingOff } };
       }
-    })
+
+      if (isUserTakingFutureTimeOff) {
+        const futureWeeks = Math.ceil(
+          moment(isUserTakingFutureTimeOff.startingDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ').diff(
+            moment(currentDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
+            'days',
+          ) / 7,
+        );
+        futureTimeOff = {
+          ...futureTimeOff,
+          [key]: { ...isUserTakingFutureTimeOff, weeks: futureWeeks },
+        };
+      }
+    });
     dispatch(addIsOnTimeOffRequests(onVacation));
     dispatch(addGoingOnTimeOffRequests(goingOnVacation));
+    dispatch(addFutureTimeOffRequests(futureTimeOff));
   } catch (error) {
     dispatch(fetchTimeOffRequestsFailure(error.message));
   }
@@ -144,7 +209,7 @@ export const addTimeOffRequestThunk = request => async dispatch => {
     const AddedRequest = response.data;
     dispatch(addTimeOffRequest(AddedRequest));
   } catch (error) {
-    console.log(error);
+    toast.info(error);
   }
 };
 
@@ -155,7 +220,7 @@ export const updateTimeOffRequestThunk = (id, data) => async dispatch => {
     const updatedRequest = response.data;
     dispatch(updateTimeOffRequest(updatedRequest));
   } catch (error) {
-    console.log(error);
+    toast.info(error);
   }
 };
 
@@ -165,6 +230,6 @@ export const deleteTimeOffRequestThunk = id => async dispatch => {
     const deletedRequest = response.data;
     dispatch(deleteTimeOffRequest(deletedRequest));
   } catch (error) {
-    console.log(error);
+    toast.info(error);
   }
 };

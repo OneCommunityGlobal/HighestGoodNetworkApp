@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from '~/styles';
+import '../Header/index.css';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Container, Alert } from 'reactstrap';
 import { toast } from 'react-toastify';
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import moment from 'moment';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import MembersAutoComplete from '../Teams/MembersAutoComplete';
@@ -17,7 +18,9 @@ import {
 // const membersList = [{ id: 1, firstName: "onecommunityglobal", lastName: '', email: "onecommunityglobal@gmail.com" },
 // { id: 2, firstName: "onecommunityhospitality", lastName: '', email: "onecommunityhospitality@gmail.com" }]
 
-const WeeklySummaryRecipientsPopup = React.memo(props => {
+const WeeklySummaryRecipientsPopupComponent = props => {
+  const darkMode = useSelector(state => state.theme.darkMode);
+
   const dispatch = useDispatch();
   const { open, onClose, summaries, password, authEmailWeeklySummaryRecipient } = props;
 
@@ -31,16 +34,28 @@ const WeeklySummaryRecipientsPopup = React.memo(props => {
   const [updatedRecipients, setUpdatedRecipients] = useState(false);
 
   useEffect(() => {
-    // eslint-disable-next-line consistent-return
+    let isMounted = true; // Track if component is mounted
+
     const getRecipients = async () => {
       try {
         const data = await dispatch(getSummaryRecipients());
-        setRecipients([...data]);
+        if (isMounted) {
+          setRecipients([...data]); // Only update state if still mounted
+        }
+        return data;
       } catch (err) {
-        return err;
+        if (isMounted) {
+          return null;
+        }
+        return null;
       }
     };
+
     getRecipients();
+
+    return () => {
+      isMounted = false; // Set to false on unmount
+    };
   }, [open, updatedRecipients]);
 
   const closePopup = () => {
@@ -95,12 +110,17 @@ const WeeklySummaryRecipientsPopup = React.memo(props => {
 
   return (
     <Container fluid>
-      <Modal isOpen={open} toggle={closePopup} autoFocus={false} size="lg">
+      <Modal
+        isOpen={open}
+        toggle={closePopup}
+        size="lg"
+        className={darkMode ? 'text-light dark-mode' : ''}
+      >
         <ModalHeader toggle={closePopup}>
           Recipients of Weekly summaries
           <FontAwesomeIcon
             icon={faInfoCircle}
-            className="ml-2"
+            className="mx-2"
             style={{ color: '#74C0FC', cursor: 'pointer' }}
             onClick={openInfo}
           />
@@ -114,12 +134,18 @@ const WeeklySummaryRecipientsPopup = React.memo(props => {
                   Password: {showPassword ? password : ''}
                 </span>
                 {!showPassword && (
-                  <Button onClick={() => setShowPassword(true)} style={boxStyle}>
+                  <Button
+                    onClick={() => setShowPassword(true)}
+                    style={darkMode ? boxStyleDark : boxStyle}
+                  >
                     Reveal{' '}
                   </Button>
                 )}
                 {showPassword && (
-                  <Button onClick={() => setShowPassword(false)} style={boxStyle}>
+                  <Button
+                    onClick={() => setShowPassword(false)}
+                    style={darkMode ? boxStyleDark : boxStyle}
+                  >
                     Hide
                   </Button>
                 )}
@@ -127,7 +153,7 @@ const WeeklySummaryRecipientsPopup = React.memo(props => {
             </div>
           )}
         </ModalHeader>
-        <ModalBody style={{ textAlign: 'center' }}>
+        <ModalBody style={{ textAlign: 'center' }} className={darkMode ? 'bg-yinmn-blue' : ''}>
           <div className="input-group-prepend" style={{ marginBottom: '10px' }}>
             <MembersAutoComplete
               summaries={summaries}
@@ -136,12 +162,14 @@ const WeeklySummaryRecipientsPopup = React.memo(props => {
               setSearchText={setSearchText}
               context="WeeklySummary"
             />
-            <Button color="primary" onClick={addUserFn} style={boxStyle}>
+            <Button color="primary" onClick={addUserFn} style={darkMode ? boxStyleDark : boxStyle}>
               Add
             </Button>
           </div>
           {!isValidUser && <Alert color="danger">Please choose a valid user.</Alert>}
-          <table className="table table-bordered table-responsive-sm">
+          <table
+            className={`table table-bordered table-responsive-sm ${darkMode ? 'text-light' : ''}`}
+          >
             <thead>
               <tr>
                 <th>#</th>
@@ -165,7 +193,7 @@ const WeeklySummaryRecipientsPopup = React.memo(props => {
                         onClick={() => {
                           deleteRecipient(`${user._id}`);
                         }}
-                        style={boxStyle}
+                        style={darkMode ? boxStyleDark : boxStyle}
                       >
                         Delete
                       </Button>
@@ -175,13 +203,15 @@ const WeeklySummaryRecipientsPopup = React.memo(props => {
             </tbody>
           </table>
         </ModalBody>
-        <ModalFooter>
-          <Button color="secondary" onClick={closePopup} style={boxStyle}>
+        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+          <Button color="secondary" onClick={closePopup} style={darkMode ? boxStyleDark : boxStyle}>
             Close
           </Button>
         </ModalFooter>
       </Modal>
     </Container>
   );
-});
+};
+const WeeklySummaryRecipientsPopup = React.memo(WeeklySummaryRecipientsPopupComponent);
+WeeklySummaryRecipientsPopup.displayName = 'WeeklySummaryRecipientsPopup';
 export default WeeklySummaryRecipientsPopup;

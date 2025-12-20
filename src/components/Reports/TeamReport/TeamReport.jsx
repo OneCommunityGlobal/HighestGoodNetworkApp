@@ -1,13 +1,12 @@
 // eslint-disable-next-line no-unused-vars
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useRef, useEffect, useState, useMemo, useCallback } from 'react';
 import { useDispatch, useSelector, connect } from 'react-redux';
 import moment from 'moment';
 import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import { FiUsers } from 'react-icons/fi';
-import Dropdown from 'react-bootstrap/Dropdown';
 import axios from 'axios';
-import { ENDPOINTS } from 'utils/URL';
-import { getTeamDetail } from '../../../actions/team';
+import { ENDPOINTS } from '~/utils/URL';
 import {
   getAllUserTeams,
   postNewTeam,
@@ -18,17 +17,19 @@ import {
   addTeamMember,
 } from '../../../actions/allTeamsAction';
 
-import { getTeamReportData } from './selectors';
 import './TeamReport.css';
 import { ReportPage } from '../sharedComponents/ReportPage';
 import UserLoginPrivileges from './components/UserLoginPrivileges';
 
 export function TeamReport({ match }) {
+  const darkMode = useSelector(state => state.theme.darkMode);
+
   const dispatch = useDispatch();
-  const { team } = useSelector(getTeamReportData);
+  // const {team}=useSelector(getTeamReportData);
+  const [team, setTeam] = useState({});
+  const [teamDataLoading, setTeamDataLoading] = useState(false);
   const user = useSelector(state => state.auth.user);
   const [teamMembers, setTeamMembers] = useState([]);
-  const [allTeams, setAllTeams] = useState([]);
   const [allTeamsMembers, setAllTeamsMembers] = useState([]);
   const [searchParams, setSearchParams] = useState({
     teamName: '',
@@ -37,8 +38,18 @@ export function TeamReport({ match }) {
     isActive: false,
     isInactive: false,
   });
+  
+  // Add state for the search input value (separate from searchParams)
+  const [searchInputValue, setSearchInputValue] = useState('');
+  const hasFetchIds = useRef(new Set());
 
-  const [selectedTeams, setSelectedTeams] = useState([]);
+  const [selectedTeams] = useState([]);
+
+  // Get all teams from Redux state
+  const allTeams = useSelector(state => state.allTeamsData.allTeams) || [];
+
+  // State to track which team's members are being shown
+  const [showMembersForTeam, setShowMembersForTeam] = useState(null);
 
   // Create a state variable to store the selected radio input
   // eslint-disable-next-line no-unused-vars
@@ -50,66 +61,98 @@ export function TeamReport({ match }) {
     setSelectedInput(event.target.value);
   };
 
-  const handleStatus = useMemo(
-    () =>
-      // eslint-disable-next-line react/no-unstable-nested-components,func-names
-      function(isActive) {
-        return isActive ? (
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '0.5rem',
-            }}
-          >
-            <span
-              className="dot"
-              style={{ backgroundColor: '#00ff00', width: '0.7rem', height: '0.7rem' }}
-            />
-            <strong>Active</strong>
-          </div>
-        ) : (
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '0.5rem',
-            }}
-          >
-            <span
-              className="dot"
-              style={{ backgroundColor: 'red', width: '0.7rem', height: '0.7rem' }}
-            />
-            <strong>Inactive</strong>
-          </div>
-        );
-      },
-    [],
-  );
+  // Helper function to format status
+  // eslint-disable-next-line no-unused-vars
+  const handleStatus = (isActive) => {
+    return isActive ? 'Active' : 'Inactive';
+  };
 
-  function handleSelectTeam(event, selectedTeam, index) {
-    if (event.target.checked) {
-      if (selectedTeams.length < 4) {
-        setSelectedTeams([...selectedTeams, { selectedTeam, index }]);
-      }
-    } else {
-      setSelectedTeams(prevSelectedTeams =>
-        // eslint-disable-next-line no-shadow
-        prevSelectedTeams.filter(team => team.selectedTeam._id !== selectedTeam._id),
-      );
+  // Helper function to format dates
+  // eslint-disable-next-line no-unused-vars
+  const handleDate = (date) => {
+    if (!date) return 'N/A';
+    return moment(date).format('MMM-DD-YY');
+  };
+
+  // Helper function to handle team selection
+  // eslint-disable-next-line no-unused-vars
+  const handleSelectTeam = (event, selectedTeam, index) => {
+    // This function would handle team selection logic
+    // Implementation depends on your requirements
+    // eslint-disable-next-line no-console
+    console.log('Team selected:', selectedTeam, 'Index:', index);
+  };
+
+  // Helper function to get current team members
+  // eslint-disable-next-line no-unused-vars
+  const getCurrentTeamMembers = (teamId) => {
+    // This function would fetch and display current team members
+    // Implementation depends on your requirements
+    // eslint-disable-next-line no-console
+    console.log('Getting members for team:', teamId);
+    setShowMembersForTeam(showMembersForTeam === teamId ? null : teamId);
+  };
+
+  // Main search function that filters teams based on search parameters
+  // eslint-disable-next-line no-unused-vars
+  const handleSearch = () => {
+    if (!allTeams || !Array.isArray(allTeams)) {
+      return [];
     }
-  }
+    
+    return allTeams.filter(teamData => {
+      // Filter by team name
+      if (searchParams.teamName && !teamData.teamName?.toLowerCase().includes(searchParams.teamName.toLowerCase())) {
+        return false;
+      }
+      
+      // Filter by creation date
+      if (searchParams.createdAt && new Date(teamData.createdDatetime) < searchParams.createdAt) {
+        return false;
+      }
+      
+      // Filter by modification date
+      if (searchParams.modifiedAt && new Date(teamData.modifiedDatetime) < searchParams.modifiedAt) {
+        return false;
+      }
+      
+      // Filter by active status
+      if (searchParams.isActive && !teamData.isActive) {
+        return false;
+      }
+      
+      // Filter by inactive status
+      if (searchParams.isInactive && teamData.isActive) {
+        return false;
+      }
+      
+      return true;
+    });
+  };
 
-  function handleSearchByName(event) {
-    event.persist();
+  const getTeamDetails = async teamId => {
+    try {
+      if (
+        teamDataLoading ||
+        (team && team._id === match.params.teamId) ||
+        hasFetchIds.current.has(teamId)
+      ) {
+        return; // Prevent repeated calls if data is already loading or loaded
+      }
+      setTeamDataLoading(true);
+      const url = ENDPOINTS.TEAM_BY_ID(teamId);
+      const res = await axios.get(url);
+      setTeam(res.data);
+      hasFetchIds.current.add(teamId);
+      setTeamDataLoading(false);
+    } catch (error) {
+      setTeam(null);
+    } finally {
+      setTeamDataLoading(false);
+    }
+  };
 
-    setSearchParams(prevParams => ({
-      ...prevParams,
-      teamName: event.target.value,
-    }));
-  }
+  // Removed automatic search - now search only happens on button click
 
   function handleCheckboxChange(event) {
     const { id, checked } = event.target;
@@ -137,59 +180,66 @@ export function TeamReport({ match }) {
     }
   }
 
-  function handleSearch() {
-    // eslint-disable-next-line no-shadow
-    const searchResults = allTeams.filter(team => {
-      const isMatchedName = team.teamName
-        .toLowerCase()
-        .includes(searchParams.teamName.toLowerCase());
-      const isMatchedCreatedDate = moment(team.createdDatetime).isSameOrAfter(
-        moment(searchParams.createdAt).startOf('day'),
-      );
-      const isMatchedModifiedDate = moment(team.modifiedDatetime).isSameOrAfter(
-        moment(searchParams.modifiedAt).startOf('day'),
-      );
-      const isActive = team.isActive === searchParams.isActive;
-      const isInactive = team.isActive !== searchParams.isInactive;
-      return (
-        isMatchedName && isMatchedCreatedDate && isMatchedModifiedDate && (isActive || isInactive)
-      );
-    });
-    return searchResults;
-  }
-
-  function handleDate(date) {
-    const formattedDates = {};
-    // eslint-disable-next-line no-shadow
-    const getFormattedDate = date => {
-      if (!formattedDates[date]) {
-        formattedDates[date] = moment(date).format('MM-DD-YYYY');
-      }
-      return formattedDates[date];
-    };
-
-    return getFormattedDate(date);
-  }
-
   useEffect(() => {
-    if (match) {
-      dispatch(getTeamDetail(match.params.teamId));
-      dispatch(getTeamMembers(match.params.teamId)).then(result => setTeamMembers([...result]));
-      dispatch(getAllUserTeams())
-        .then(result => {
-          setAllTeams([...result]);
-          return result;
-        })
-        .then(result => {
-          // eslint-disable-next-line no-shadow
-          const allTeamMembersPromises = result.map(team => dispatch(getTeamMembers(team._id)));
-          Promise.all(allTeamMembersPromises).then(results => {
-            setAllTeamsMembers([...results]);
-          });
-        });
+    if (match && match.params && match.params.teamId) {
+      getTeamDetails(match.params.teamId);
     }
   }, []);
 
+  // Ensure teams are loaded when component mounts
+  useEffect(() => {
+    if (!allTeams || allTeams.length === 0) {
+      dispatch(getAllUserTeams());
+    }
+  }, [dispatch, allTeams]);
+
+
+  useEffect(() => {
+    let isMounted = true; // flag to check component mount status
+    const fetchTeamDetails = async teamId => {
+      if (teamDataLoading || (team && team._id === match.params.teamId)) {
+        return; // Prevent repeated calls if data is already loading or loaded
+      }
+      await getTeamDetails(teamId);
+    };
+
+    const fetchTeamMembers = async teamId => {
+      await dispatch(getTeamMembers(teamId)).then(result => {
+        if (isMounted) {
+          // Only update state if component is still mounted
+          setTeamMembers([...result]);
+        }
+      });
+    };
+
+    const fetchAllUserTeams = async () => {
+      if (isMounted) {
+        dispatch(getAllUserTeams())
+          .then(result => {
+            return result;
+          })
+          .then(result => {
+            const allTeamMembersPromises = result.map(t => dispatch(getTeamMembers(t._id)));
+            Promise.all(allTeamMembersPromises).then(results => {
+              if (isMounted) {
+                // Only update state if component is still mounted
+                setAllTeamsMembers([...results]);
+              }
+            });
+          });
+      }
+    };
+    if (match && match.params && match.params.teamId) {
+      fetchTeamDetails(match.params.teamId);
+      fetchTeamMembers(match.params.teamId);
+      fetchAllUserTeams();
+    }
+
+    return () => {
+      isMounted = false; // Set the flag as false when the component unmounts
+    };
+  }, [match?.params?.teamId]); // include all dependencies in the dependency array
+  //
   // Get Total Tangible Hours this week [main TEAM]
   const [teamMembersWeeklyEffort, setTeamMembersWeeklyEffort] = useState([]);
   const [totalTeamWeeklyWorkedHours, setTotalTeamWeeklyWorkedHours] = useState('');
@@ -304,220 +354,256 @@ export function TeamReport({ match }) {
   return (
     <ReportPage
       contentClassName="team-report-blocks"
+      darkMode={darkMode}
       renderProfile={() => (
-        <ReportPage.ReportHeader isActive={team.isActive} avatar={<FiUsers />} name={team.teamName}>
-          <div>
-            <h5>{moment(team.createdDatetime).format('MMM-DD-YY')}</h5>
+        <ReportPage.ReportHeader
+          isActive={team?.isActive}
+          avatar={<FiUsers />}
+          name={team?.teamName}
+          darkMode={darkMode}
+        >
+          <div className={darkMode ? 'text-light' : ''}>
+            <h5>{moment(team?.createdDatetime).format('MMM-DD-YY')}</h5>
             <p>Created Date</p>
           </div>
         </ReportPage.ReportHeader>
       )}
     >
-      <ReportPage.ReportBlock className="team-report-main-info-wrapper">
+      <ReportPage.ReportBlock className="team-report-main-info-wrapper" darkMode={darkMode}>
         <div className="team-report-main-info-id">
-          <div style={{ wordBreak: 'break-all' }} className="update-date">
-            <div>
+          <div className="team-info-container" style={{ color: darkMode ? 'white' : '' }}>
+            <div className="team-report-id">
               <span className="team-report-star">&#9733;</span> Team ID: {team._id}
             </div>
-            {/*
-          This LoginPrivilegesSimulation component will be removed once the backend team link the login privileges.
-          It is just to simulate the toggle between the login privileges. The logic is
-          inside the userLoginPrivileges.jsx file.
-          */}
-            {/* <LoginPrivileges selectedInput={selectedInput} handleInputChange={handleInputChange} />  */}
-            Last updated:
-            {moment(team.modifiedDatetime).format('MMM-DD-YY')}
+            <div className="team-report-last-updated" style={{ color: darkMode ? 'white' : '' }}>
+              Last updated: {moment(team.modifiedDatetime).format('MMM-DD-YY')}
+            </div>
           </div>
         </div>
       </ReportPage.ReportBlock>
       <UserLoginPrivileges
         role={user.role}
         handleInputChange={handleInputChange}
-        teamName={team.teamName}
+        teamName={team?.teamName}
         teamMembers={teamMembers}
         totalTeamWeeklyWorkedHours={totalTeamWeeklyWorkedHours}
         selectedTeams={selectedTeams}
         selectedTeamsWeeklyEffort={selectedTeamsWeeklyEffort}
         allTeamsMembers={allTeamsMembers}
+        darkMode={darkMode}
+        teamDataLoading={teamDataLoading}
       />
       <div className="table-mobile">
-        <ReportPage.ReportBlock>
-          <div className="input-group input-group-sm d-flex flex-nowrap justify-content-between active-inactive-container">
-            <div className="d-flex align-items-center">
-              <div className="d-flex flex-column">
-                {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-                <label htmlFor="search-by-name" className="text-left">
-                  Name
-                </label>
+        <ReportPage.ReportBlock darkMode={darkMode}>
+          <div className="input-group input-group-sm d-flex flex-row flex-nowrap justify-content-between align-items-center active-inactive-container gap-3">
+            {/* Name Search */}
+            <div className="d-flex flex-column flex-shrink-0">
+              <label
+                htmlFor="search-by-name"
+                className={`text-left ${darkMode ? 'text-light' : ''}`}
+              >
+                Name
+              </label>
+              <div className="input-group">
                 <input
                   type="text"
-                  className="form-control rounded-1 mr-3 w-auto"
+                  className="form-control rounded-1"
                   placeholder="Search team name"
                   id="search-by-name"
-                  onChange={event => handleSearchByName(event)}
+                  value={searchInputValue}
+                  onChange={event => setSearchInputValue(event.target.value)}
                 />
-              </div>
-              <div className="date-picker-container">
-                <div id="task_startDate" className="date-picker-item">
-                  <div className="d-flex flex-column">
-                    {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-                    <label htmlFor="search-by-startDate" className="text-left">
-                      Created After
-                    </label>
-                    <DatePicker
-                      selected={searchParams.createdAt}
-                      onChange={date =>
-                        setSearchParams(prevParams => ({
-                          ...prevParams,
-                          createdAt: new Date(date),
-                        }))
-                      }
-                      className="form-control w-auto"
-                      id="search-by-startDate"
-                    />
-                  </div>
-                </div>
-                <div id="task_EndDate" className="date-picker-item">
-                  <div className="d-flex flex-column">
-                    {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-                    <label htmlFor="search-by-endDate" className="text-left">
-                      Modified After
-                    </label>
-                    <DatePicker
-                      selected={searchParams.modifiedAt}
-                      onChange={date =>
-                        setSearchParams(prevParams => ({
-                          ...prevParams,
-                          modifiedAt: new Date(date),
-                        }))
-                      }
-                      className="form-control  w-auto"
-                      id="search-by-endDate"
-                    />
-                  </div>
-                </div>
-                <div className="active-inactive-container">
-                  <div className="active-inactive-container-item">
-                    {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-                    <label htmlFor="active">Active</label>
-                    <input
-                      onChange={event => handleCheckboxChange(event)}
-                      type="checkbox"
-                      placeholder="Search team name"
-                      id="active"
-                      checked={searchParams.isActive}
-                    />
-                  </div>
-                  <div className="active-inactive-container-item">
-                    {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-                    <label htmlFor="inactive">Inactive</label>
-                    <input
-                      onChange={event => handleCheckboxChange(event)}
-                      type="checkbox"
-                      placeholder="Search team name"
-                      id="inactive"
-                      checked={searchParams.isInactive}
-                    />
-                  </div>
+                <div className="input-group-append">
+                  <button
+                    type="button"
+                    className={`btn ${darkMode ? 'btn-outline-light' : 'btn-outline-secondary'}`}
+                    onClick={() => {
+                      // Trigger search when button is clicked
+                      setSearchParams(prevParams => ({
+                        ...prevParams,
+                        teamName: searchInputValue,
+                      }));
+                    }}
+                    title="Search teams"
+                  >
+                    🔍
+                  </button>
+                  <button
+                    type="button"
+                    className={`btn ${darkMode ? 'btn-outline-light' : 'btn-outline-secondary'}`}
+                    onClick={() => {
+                      // Clear search
+                      setSearchInputValue('');
+                      setSearchParams(prevParams => ({
+                        ...prevParams,
+                        teamName: '',
+                      }));
+                    }}
+                    title="Clear search"
+                  >
+                    ✕
+                  </button>
                 </div>
               </div>
             </div>
+
+            {/* Created After Date Picker */}
+            <div className="d-flex flex-column flex-shrink-0">
+              <label
+                htmlFor="search-by-startDate"
+                className={`text-left ${darkMode ? 'text-light' : ''}`}
+              >
+                Created After
+              </label>
+              <DatePicker
+                selected={searchParams.createdAt}
+                onChange={date =>
+                  setSearchParams(prevParams => ({
+                    ...prevParams,
+                    createdAt: new Date(date),
+                  }))
+                }
+                className="form-control w-auto"
+                id="search-by-startDate"
+              />
+            </div>
+
+            {/* Modified After Date Picker */}
+            <div className="d-flex flex-column flex-shrink-0">
+              <label
+                htmlFor="search-by-endDate"
+                className={`text-left ${darkMode ? 'text-light' : ''}`}
+              >
+                Modified After
+              </label>
+              <DatePicker
+                selected={searchParams.modifiedAt}
+                onChange={date =>
+                  setSearchParams(prevParams => ({
+                    ...prevParams,
+                    modifiedAt: new Date(date),
+                  }))
+                }
+                className="form-control w-auto"
+                id="search-by-endDate"
+              />
+            </div>
+
+            {/* Active Checkbox */}
+            <div className="d-flex flex-column flex-shrink-0">
+              <label htmlFor="active" className={darkMode ? 'text-light' : ''}>
+                Active
+              </label>
+              <input
+                onChange={event => handleCheckboxChange(event)}
+                type="checkbox"
+                id="active"
+                checked={searchParams.isActive}
+              />
+            </div>
+
+            {/* Inactive Checkbox */}
+            <div className="d-flex flex-column flex-shrink-0">
+              <label htmlFor="inactive" className={darkMode ? 'text-light' : ''}>
+                Inactive
+              </label>
+              <input
+                onChange={event => handleCheckboxChange(event)}
+                type="checkbox"
+                id="inactive"
+                checked={searchParams.isInactive}
+              />
+            </div>
           </div>
-          <table className="table tableHeader">
-            <thead className="table table-hover">
-              <tr>
-                <td className="tableHeader">
+          <table className="table tableHeader" style={{ marginTop: '10px' }}>
+            <thead className={`table table-hover ${darkMode ? 'text-light table-hover-dark' : ''}`}>
+              <tr className={darkMode ? 'bg-space-cadet' : ''}>
+                <td>
                   <strong>All</strong>
                 </td>
-                <td className="tableHeader">
+                <td>
                   <strong>Team</strong>
                 </td>
-                <td className="tableHeader">
+                <td>
                   <strong>Status</strong>
                 </td>
-                <td className="tableHeader">
+                <td>
                   <strong>Team Members</strong>
                 </td>
-                <td className="tableHeader">
+                <td>
                   <strong>ID</strong>
                 </td>
-                <td className="tableHeader">
+                <td>
                   <strong>Created At</strong>
                 </td>
-                <td className="tableHeader">
+                <td>
                   <strong>Modified At</strong>
                 </td>
               </tr>
             </thead>
-            {allTeamsMembers.length > 1 ? (
-              <tbody className="table">
-                {/* eslint-disable-next-line no-shadow */}
-                {handleSearch().map((team, index) => (
-                  <tr className="table-row" key={team._id}>
+            <tbody className="table">
+              {allTeamsMembers && allTeamsMembers.length > 0 ? (
+                handleSearch().map((teamData, index) => (
+                  <tr className={`table-row ${darkMode ? 'bg-yinmn-blue text-light table-hover-dark' : ''}`} key={teamData._id}>
                     <td>
                       <input
                         type="checkbox"
-                        onChange={event => handleSelectTeam(event, team, index)}
+                        onChange={event => handleSelectTeam(event, teamData, index)}
+                        checked={selectedTeams.some(st => st.selectedTeam._id === teamData._id)}
                         disabled={
                           selectedTeams.length === 4 &&
-                          !selectedTeams.some(
-                            selectedTeam => selectedTeam.selectedTeam.teamName === team.teamName,
-                          )
+                          !selectedTeams.some(st => st.selectedTeam._id === teamData._id)
                         }
                       />
                     </td>
                     <td>
-                      <strong>{team.teamName}</strong>
+                      <strong>{teamData?.teamName}</strong>
                     </td>
-                    <td>{handleStatus(team.isActive)}</td>
+                    <td>{handleStatus(teamData?.isActive)}</td>
                     <td>
-                      <Dropdown>
-                        <Dropdown.Toggle
-                          variant="success"
-                          id="dropdown-basic"
-                          style={{ backgroundColor: '#996cd3', border: 'none' }}
+                      <div>
+                        <button
+                          type="button"
+                          className="btn btn-sm"
+                          style={{ backgroundColor: '#996cd3', border: 'none', color: 'white' }}
+                          onClick={() => getCurrentTeamMembers(teamData?._id)}
                         >
                           See
-                        </Dropdown.Toggle>
-                        <Dropdown.Menu>
-                          {allTeamsMembers[index].length > 1 ? (
-                            allTeamsMembers[index].map(member => (
-                              <div key={`${team._id}-${member._id}`}>
-                                <Dropdown.Item href="#/action-1">
-                                  {member.firstName} {member.lastName}
-                                </Dropdown.Item>
-                                <Dropdown.Divider />
+                        </button>
+                        {showMembersForTeam === teamData?._id && (
+                          <div className="mt-2 p-2 border rounded" style={{ backgroundColor: '#f8f9fa' }}>
+                            {allTeamsMembers[index] && allTeamsMembers[index].length > 1 ? (
+                              allTeamsMembers[index].map(member => (
+                                <div key={`${teamData?._id}-${member?._id}`} className="mb-1">
+                                  {member?.firstName} {member?.lastName}
+                                </div>
+                              ))
+                            ) : (
+                              <div className="text-muted">
+                                <strong>This team has no members!</strong>
                               </div>
-                            ))
-                          ) : (
-                            <Dropdown.Item href="#/action-1">
-                              <strong>This team has no members!</strong>
-                            </Dropdown.Item>
-                          )}
-                        </Dropdown.Menu>
-                      </Dropdown>
+                            )}
+                          </div>
+                        )}
+                      </div>
                     </td>
-                    <td>{team._id}</td>
-                    <td>{handleDate(team.createdDatetime)}</td>
-                    <td>{handleDate(team.modifiedDatetime)}</td>
+                    <td>{teamData._id}</td>
+                    <td>{handleDate(teamData?.createdDatetime)}</td>
+                    <td>{handleDate(teamData?.modifiedDatetime)}</td>
                   </tr>
-                ))}
-              </tbody>
-            ) : (
-              <tbody>
-                <tr style={{ backgroundColor: 'white' }}>
-                  <td />
-                  <td />
-                  <td />
-                  <td>
-                    <strong>Loading...</strong>
+                ))
+              ) : (
+                <tr style={{ backgroundColor: darkMode ? '#3A506B' : 'white' }}>
+                  <td colSpan="7" className="text-center">
+                    <strong className={darkMode ? 'text-light' : ''}>
+                      {allTeamsMembers && allTeamsMembers.length === 0 
+                        ? 'No teams found. Please check your permissions or contact an administrator.' 
+                        : 'Loading teams...'}
+                    </strong>
                   </td>
-                  <td />
-                  <td />
-                  <td />
                 </tr>
-              </tbody>
-            )}
+              )}
+            </tbody>
           </table>
         </ReportPage.ReportBlock>
       </div>
@@ -535,3 +621,4 @@ export default connect(mapStateToProps, {
   deleteTeamMember,
   addTeamMember,
 })(TeamReport);
+

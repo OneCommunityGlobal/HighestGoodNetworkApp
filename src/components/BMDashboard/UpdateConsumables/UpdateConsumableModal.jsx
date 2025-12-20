@@ -1,5 +1,6 @@
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
-import './UpdateConsumable.css';
+import UpdateConsumable from './UpdateConsumable';
+import styles from './UpdateConsumable.module.css';
 
 function UpdateConsumableModal({ modal, setModal, record }) {
   if (record) {
@@ -11,7 +12,9 @@ function UpdateConsumableModal({ modal, setModal, record }) {
       <Modal isOpen={modal} size="md">
         <ModalHeader>Update Consumable Form</ModalHeader>
         <ModalBody>
-          <div className="updateModalContainer" />
+          <div className={`${styles.updateModalContainer}`}>
+            <UpdateConsumable record={record} setModal={setModal} />
+          </div>
         </ModalBody>
         <ModalFooter>
           <Button onClick={toggle}>Close</Button>

@@ -3,21 +3,28 @@ import { WEEK_DIFF } from '../../constants/badge';
 
 function BadgeHistory({ badges, personalBestMaxHrs }) {
   const filterBadges = allBadges => {
+    if (!Array.isArray(allBadges)) return [];
+
     const filteredList = allBadges.filter(
-      value => Date.now() - new Date(value.lastModified).getTime() > WEEK_DIFF,
+      value =>
+        value &&
+        value.lastModified &&
+        Date.now() - new Date(value.lastModified).getTime() > WEEK_DIFF,
     );
 
     filteredList.sort((a, b) => {
-      if (a.badge.ranking === 0) return 1;
-      if (b.badge.ranking === 0) return -1;
-      if (a.badge.ranking > b.badge.ranking) return 1;
-      if (a.badge.ranking < b.badge.ranking) return -1;
-      if (a.badge.badgeName > b.badge.badgeName) return 1;
-      if (a.badge.badgeName < b.badge.badgeName) return -1;
+      const rankingA = a?.badge?.ranking ?? Infinity;
+      const rankingB = b?.badge?.ranking ?? Infinity;
+      const nameA = a?.badge?.badgeName ?? '';
+      const nameB = b?.badge?.badgeName ?? '';
 
-      // If all conditions fail, return 0 to indicate that elements are equal
-      return 0;
+      if (rankingA === 0) return 1;
+      if (rankingB === 0) return -1;
+      if (rankingA > rankingB) return 1;
+      if (rankingA < rankingB) return -1;
+      return nameA.localeCompare(nameB);
     });
+
     return filteredList;
   };
 
@@ -25,16 +32,18 @@ function BadgeHistory({ badges, personalBestMaxHrs }) {
 
   return (
     <div className="badge_history_container">
-      {filteredBadges.map((value, index) => (
-        <BadgeImage
-          personalBestMaxHrs={personalBestMaxHrs}
-          time="old"
-          count={value.count}
-          badgeData={value.badge}
-          index={index}
-          key={index}
-        />
-      ))}
+      {filteredBadges.map((value, index) =>
+        value && value.badge ? (
+          <BadgeImage
+            personalBestMaxHrs={personalBestMaxHrs}
+            time="old"
+            count={value.count}
+            badgeData={value.badge}
+            index={index}
+            key={value.badge._id || index}
+          />
+        ) : null,
+      )}
     </div>
   );
 }

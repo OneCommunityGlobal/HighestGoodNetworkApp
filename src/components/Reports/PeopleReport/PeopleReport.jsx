@@ -1,23 +1,20 @@
-// eslint-disable-next-line no-unused-vars
-import React, { Component, useState } from 'react';
-import '../../Teams/Team.css';
-import './PeopleReport.css';
+/* eslint-disable*/
+import { Component } from 'react';
+import styles from './PeopleReport.module.css';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { FiUser } from 'react-icons/fi';
-import moment from 'moment';
 import { toast } from 'react-toastify';
-// import { formatDate } from '../../../utils/formatDate';
+import { Spinner, Alert } from 'reactstrap';
+import { formatDate } from '../../../utils/formatDate';
 import {
   updateUserProfileProperty,
   getUserProfile,
   getUserTasks,
 } from '../../../actions/userProfile';
-
 import { getUserProjects } from '../../../actions/userProjects';
 import { getWeeklySummaries, updateWeeklySummaries } from '../../../actions/weeklySummaries';
-import 'react-input-range/lib/css/index.css';
-import { getTimeEntriesForPeriod, getTimeEndDateEntriesForPeriod } from '../../../actions/timeEntries';
+import { getTimeEntriesForPeriod } from '../../../actions/timeEntries';
 import InfringementsViz from '../InfringementsViz';
 import TimeEntriesViz from '../TimeEntriesViz';
 import BadgeSummaryViz from '../BadgeSummaryViz';
@@ -26,7 +23,6 @@ import PeopleTableDetails from '../PeopleTableDetails';
 import { ReportPage } from '../sharedComponents/ReportPage';
 import { getPeopleReportData } from './selectors';
 import { PeopleTasksPieChart } from './components';
-import ToggleSwitch from '../../UserProfile/UserProfileEdit/ToggleSwitch';
 import { Checkbox } from '../../common/Checkbox';
 import { updateRehireableStatus } from '../../../actions/userManagement'
 
@@ -47,7 +43,7 @@ class PeopleReport extends Component {
       // eslint-disable-next-line react/no-unused-state
       isAssigned: '',
       isActive: '',
-      isRehireable: false,
+      isRehireable: true,
       // eslint-disable-next-line react/no-unused-state
       priority: '',
       // eslint-disable-next-line react/no-unused-state
@@ -64,7 +60,7 @@ class PeopleReport extends Component {
       priorityList: [],
       statusList: [],
       fromDate: '2016-01-01',
-      toDate: this.endOfWeek(0),
+      toDate: '3000-12-31',
       timeEntries: {},
       // eslint-disable-next-line react/no-unused-state
       startDate: '',
@@ -86,8 +82,9 @@ class PeopleReport extends Component {
     this.setEndDate = this.setEndDate.bind(this);
   }
 
+
   async componentDidMount() {
-    const { match, userProfile, userTask, userProjects, timeEntries, auth } = this.props;
+    const { match } = this.props;
     const { fromDate, toDate } = this.state;
 
     if (match) {
@@ -100,7 +97,6 @@ class PeopleReport extends Component {
       await this.props.getTimeEndDateEntriesForPeriod(userId, fromDate, toDate);
 
       const { userProfile, userTask, userProjects, timeEntries, auth } = this.props;
-
       this.setState({
         // eslint-disable-next-line react/no-unused-state
         userId,
@@ -120,7 +116,19 @@ class PeopleReport extends Component {
           ...timeEntries,
         },
       });
+    }
 
+  }
+
+  async componentDidUpdate(prevProps, prevState) {
+    if (prevState.userTask !== this.state.userTask ||
+      prevState.userProjects !== this.state.userProjects ||
+      prevState.timeEntries !== this.state.timeEntries ||
+      prevState.isLoading !== this.state.isLoading) {
+      // this.syncPanelHeights();
+    }
+    if (prevProps.timeEntries !== this.props.timeEntries) {
+      this.setState({ timeEntries: this.props.timeEntries });
     }
   }
 
@@ -245,7 +253,7 @@ class PeopleReport extends Component {
         classification: '',
         users: '',
         fromDate: '2016-01-01',
-        toDate: this.endOfWeek(0),
+        toDate: '3000-12-31',
         startDate: '',
         endDate: '',
       };
@@ -280,13 +288,24 @@ class PeopleReport extends Component {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  endOfWeek(offset) {
-    return moment()
-      .tz('America/Los_Angeles')
-      .endOf('week')
-      .subtract(offset, 'weeks')
-      .format('YYYY-MM-DD');
-  }
+  // endOfWeek(offset) {
+  //   return moment()
+  //     .tz('America/Los_Angeles')
+  //     .endOf('week')
+  //     .subtract(offset, 'weeks')
+  //     .format('YYYY-MM-DD');
+  // }
+  // syncPanelHeights = () => {
+  // const leftEl = this.leftContentRef?.current;
+  //   const rightEl = this.rightContentRef?.current;
+
+  //   if (leftEl && rightEl) {
+  //     requestAnimationFrame(() => {
+  //       const leftHeight = leftEl.offsetHeight;
+  //       rightEl.style.height = `${leftHeight}px`;
+  //     });
+  //   }
+  // };
 
   formatDate(date) {
     return moment.utc(date).format('MMM-DD-YY');
@@ -305,23 +324,19 @@ class PeopleReport extends Component {
     } = this.state;
     // eslint-disable-next-line no-unused-vars
     const { firstName, lastName, weeklycommittedHours, hoursByCategory } = userProfile;
-    const { tangibleHoursReportedThisWeek, auth, match } = this.props;
+    const { tangibleHoursReportedThisWeek, auth, match, darkMode } = this.props;
 
-    let totalTangibleHrsRound = 0;
-    if (hoursByCategory) {
-      const hours = hoursByCategory
-        ? Object.values(hoursByCategory).reduce((prev, curr) => prev + curr, 0)
-        : 0;
-      totalTangibleHrsRound = hours.toFixed(2);
-    }
+    const totalTangibleHrsRound = (timeEntries.period?.reduce((total, entry) => {
+      return total + (entry.hours + (entry.minutes / 60));
+    }, 0) || 0).toFixed(2);
 
     // eslint-disable-next-line react/no-unstable-nested-components,no-unused-vars
-    const UserProject = props => {
+    function UserProject(props) {
       const userProjectList = [];
       return <div>{userProjectList}</div>;
-    };
+    }
     // eslint-disable-next-line react/no-unstable-nested-components
-    const Infringements = props => {
+    function Infringements(props) {
       const dict = {};
 
       // aggregate infringements
@@ -337,13 +352,13 @@ class PeopleReport extends Component {
         }
       }
 
-      const startdate = Object.keys(dict)[0];
+      const [startdate] = Object.keys(dict);
       if (startdate) {
         startdate.toString();
       }
       if (props.infringements.length > 0) {
         props.infringements.map((current, index) => (
-          <tr className="teams__tr">
+          <tr className={styles.teams__tr} key={index}>
             <td>{index + 1}</td>
             <td>{current.date}</td>
             <td>{current.description}</td>
@@ -355,10 +370,10 @@ class PeopleReport extends Component {
           <div />
         </div>
       );
-    };
+    }
 
     // eslint-disable-next-line react/no-unstable-nested-components,no-unused-vars
-    const PeopleDataTable = props => {
+    function PeopleDataTable(props) {
       const peopleData = {
         alertVisible: false,
         taskData: [],
@@ -418,13 +433,17 @@ class PeopleReport extends Component {
         }
         task._id = userTask[i]._id;
         task.resources.push(resourcesName);
-        task.startDate = userTask[i].startedDatetime
-          ? moment.utc(userTask[i].startedDatetime).format('MM-DD-YY')
-          : 'N/A';
-
-        task.endDate = userTask[i].endedDatetime
-          ? moment.utc(userTask[i].endedDatetime).format('MM-DD-YY')
-          : 'N/A';
+        // startedDatetime
+        // if (userTask[i].startedDatetime === null && userTask[i].startedDatetime !== "") {
+        //   task.startDate = 'null';
+        // }
+        // if (userTask[i].dueDatetime === null && userTask[i].dueDatetime !== "") {
+        //   task.endDate = 'null';
+        // }
+        // task.startDate = userTask[i].startedDatetime.split('T')[0];
+        // task.endDate = userTask[i].dueDatetime.split('T')[0];
+        task.startDate = userTask[i].startedDatetime ? userTask[i].startedDatetime.split('T')[0] : 'null';
+        task.endDate = userTask[i].dueDatetime ? userTask[i].dueDatetime.split('T')[0] : 'null';
         task.hoursBest = userTask[i].hoursBest;
         task.hoursMost = userTask[i].hoursMost;
         task.hoursWorst = userTask[i].hoursWorst;
@@ -438,80 +457,23 @@ class PeopleReport extends Component {
         <PeopleTableDetails
           taskData={peopleData.taskData}
           showFilter={tangibleHoursReportedThisWeek !== 0}
+          darkMode={darkMode}
         />
       );
-    };
+    }
 
-    const renderProfileInfo = () => {
-      const { isRehireable, bioStatus, authRole } = this.state;
-      const { profilePic, role, jobTitle, endDate, _id, createdDate } = userProfile;
 
-      return (
-        <ReportPage.ReportHeader
-          src={profilePic}
-          avatar={profilePic ? undefined : <FiUser />}
-          isActive={isActive}
-        >
-          <div className="report-stats">
-            <p>
-              <Link to={`/userProfile/${_id}`} title="View Profile">
-                {firstName} {lastName}
-              </Link>
-            </p>
-            <p>Role: {role}</p>
-            <p>Title: {jobTitle}</p>
-
-            {/* {endDate ? ( */}
-            <div className="rehireable">
-              <Checkbox
-                value={isRehireable}
-                onChange={() => this.setRehireable(!isRehireable)}
-                label="Rehireable"
-              />
-            </div>
-            {/* ) : (
-              ''
-            )} */}
-
-            <div className="stats">
-              <div>
-                <h4>{this.formatDate(createdDate)}</h4>
-                <p>Start Date</p>
-              </div>
-              <div>
-                <h4>{endDate ? this.formatDate(endDate) : 'N/A'}</h4>
-                <p>End Date</p>
-              </div>
-              {bioStatus ? (
-                <div>
-                  <h5>Bio {bioStatus === 'default' ? 'not requested' : bioStatus}</h5>{' '}
-                  {authRole === 'Administrator' || authRole === 'Owner' ? (
-                    <ToggleSwitch
-                      fontSize="13px"
-                      switchType="bio"
-                      state={bioStatus}
-                      /* eslint-disable-next-line no-use-before-define */
-                      handleUserProfile={bio => onChangeBioPosted(bio)}
-                    />
-                  ) : null}
-                </div>
-              ) : null}
-            </div>
-          </div>
-        </ReportPage.ReportHeader>
-      );
-    };
-
+    const { isRehireable, bioStatus, authRole } = this.state;
+    const { profilePic, role, jobTitle, endDate, _id, startDate } = userProfile;
     const onChangeBioPosted = async bio => {
-      const bioStatus = bio;
       this.setState(() => {
         return {
-          bioStatus,
+          bioStatus: bio,
         };
       });
 
       try {
-        await updateUserProfileProperty(userProfile, 'bioPosted', bioStatus);
+        await this.props.updateUserProfileProperty(userProfile, 'bioPosted', bioStatus);
         toast.success('You have changed the bio announcement status of this user.');
       } catch (err) {
         // eslint-disable-next-line no-alert
@@ -519,95 +481,136 @@ class PeopleReport extends Component {
       }
     };
 
+    const activeTasks = userTask.reduce((accumulator, item) => {
+      const incompleteTasks = item.resources.filter(
+        task => task.completedTask === false && task.userID === userProfile._id,
+      );
+      return accumulator.concat(incompleteTasks);
+    }, []);
+    const visibleBlocks = [
+      'weeklycommittedHours',
+      userProfile.isActive ? 'hoursLogged' : null,
+      'blueSquares',
+      'totalHours'
+    ].filter(Boolean);
+
+    const boxCount = visibleBlocks.length;
+
     return (
-      <div className="container-people-wrapper">
-        <ReportPage renderProfile={renderProfileInfo}>
-          <div className={`people-report-time-logs-wrapper ${tangibleHoursReportedThisWeek === 0 ? "auto-width-report-time-logs-wrapper" : ""}`}>
-            <ReportPage.ReportBlock
-              firstColor="#ff5e82"
-              secondColor="#e25cb2"
-              className="people-report-time-log-block"
-            >
-              <h3>{weeklycommittedHours}</h3>
-              <p>Weekly Committed Hours</p>
-            </ReportPage.ReportBlock>
 
-            {userProfile.endDate ? (
-              ''
-            ) : (
-              <ReportPage.ReportBlock
-                firstColor="#b368d2"
-                secondColor="#831ec4"
-                className="people-report-time-log-block"
-              >
-                <h3>{tangibleHoursReportedThisWeek}</h3>
-                <p>Hours Logged This Week</p>
-              </ReportPage.ReportBlock>
-            )}
+      <div className={`${styles.containerPeopleWrapper} ${darkMode ? styles.bgOxfordBlue : ''}`}>
+        <div className={`${styles.peopleReportFlexLayout}`}>
 
-            <ReportPage.ReportBlock
-              firstColor="#64b7ff"
-              secondColor="#928aef"
-              className="people-report-time-log-block"
-            >
-              <h3>{infringements.length}</h3>
-              <p>Blue squares</p>
-            </ReportPage.ReportBlock>
-            <ReportPage.ReportBlock
-              firstColor="#ffdb56"
-              secondColor="#ff9145"
-              className="people-report-time-log-block"
-            >
-              <h3>{totalTangibleHrsRound}</h3>
-              <p>Total Hours Logged</p>
-            </ReportPage.ReportBlock>
-          </div>
+          <div xs="12" md="9" lg="9" className={`${styles.peopleReportLeft}`} >
+            <ReportPage darkMode={darkMode}>
+              
+                <div className={`${styles.peopleReportTimeLogsWrapper} ${
+                  boxCount === 3 ? styles.threeBoxes : 
+                ''}`}
+                >
 
-          <PeopleTasksPieChart />
-          <div className="mobile-people-table">
-            <ReportPage.ReportBlock>
-              <div className="intro_date">
-                <h4>Tasks contributed</h4>
+                <ReportPage.ReportBlock
+                  firstColor="#ff5e82"
+                  secondColor="#e25cb2"
+                  className={styles.peopleReportTimeLogBlock}
+                  darkMode={darkMode}
+                >
+                  <h3 className={styles.textLight}>{weeklycommittedHours}</h3>
+                  <p>Weekly Committed Hours</p>
+                </ReportPage.ReportBlock>
+
+                {(userProfile.isActive) && (
+
+                  <ReportPage.ReportBlock
+                    firstColor="#b368d2"
+                    secondColor="#831ec4"
+                    className={styles.peopleReportTimeLogBlock}
+                    darkMode={darkMode}
+                  >
+                    <h3 className={styles.textLight}>{tangibleHoursReportedThisWeek}</h3>
+                    <p>Hours Logged This Week</p>
+                  </ReportPage.ReportBlock>
+                )}
+                <ReportPage.ReportBlock
+                  firstColor="#64b7ff"
+                  secondColor="#928aef"
+                  className={styles.peopleReportTimeLogBlock}
+                  darkMode={darkMode}
+                >
+                  <h3 className={styles.textLight}>{infringements.length}</h3>
+                  <p>Blue squares</p>
+                </ReportPage.ReportBlock>
+                <ReportPage.ReportBlock
+                  firstColor="#ffdb56"
+                  secondColor="#ff9145"
+                  className={styles.peopleReportTimeLogBlock}
+                  darkMode={darkMode}
+                >
+                  <h3 className={styles.textLight}>{totalTangibleHrsRound}</h3>
+                  <p>Total Hours Logged</p>
+                </ReportPage.ReportBlock>
               </div>
 
-              <PeopleDataTable />
 
-              <div className="Infringementcontainer">
-                <div className="InfringementcontainerInner">
-                  <UserProject userProjects={userProjects} />
-                  <Infringements
-                    infringements={infringements}
-                    fromDate={fromDate}
-                    toDate={toDate}
-                    timeEntries={timeEntries}
-                  />
-                  <div className="visualizationDiv">
-                    <TimeEntriesViz timeEntries={timeEntries} fromDate={fromDate} toDate={toDate} />
-                  </div>
-                  <div className="visualizationDiv">
-                    <InfringementsViz
-                      infringements={infringements}
-                      fromDate={fromDate}
-                      toDate={toDate}
-                    />
-                  </div>
-                  <div className="visualizationDivRow">
-                    <div className="BadgeSummaryDiv">
-                      <BadgeSummaryViz
-                        authId={auth.user.userid}
-                        userId={match.params.userId}
-                        badges={userProfile.badgeCollection}
+
+              <PeopleTasksPieChart darkMode={darkMode} />
+
+              <div className={`${styles.mobilePeopleTable}`}>
+                <ReportPage.ReportBlock darkMode={darkMode}>
+                  {this.state.isLoading ? (
+                    <p
+                      className={`${darkMode ? styles.textLight : ''}
+                   d-flex align-items-center flex-row justify-content-center`}
+                    >
+                      Loading tasks: &nbsp; <Spinner color={`${darkMode ? 'light' : 'dark'}`} />
+                    </p>
+                  ) : activeTasks.length > 0 ? (
+                    <>
+                      <div className={`intro_date ${darkMode ? styles.textLight : ''}`}>
+                        <h4>Tasks contributed</h4>
+                      </div>
+                      <PeopleDataTable />
+                    </>
+                  ) : (
+                    <Alert color="danger" style={{ margin: '0 35% ' }}>You have no tasks.</Alert>
+                  )}
+                  <div className={`${styles.infringementContainer}`}>
+                    <div className={`${styles.infringementContainerInner}`}>
+                      <UserProject userProjects={userProjects} />
+                      <Infringements
+                        infringements={infringements}
+                        fromDate={fromDate}
+                        toDate={toDate}
+                        timeEntries={timeEntries}
                       />
-                    </div>
-                    <div className="BadgeSummaryPreviewDiv">
-                      <BadgeSummaryPreview badges={userProfile.badgeCollection} />
+                      <div className={`${styles.visualizationDiv}`}>
+                        <TimeEntriesViz timeEntries={timeEntries} fromDate={fromDate} toDate={toDate} darkMode={darkMode} />
+                      </div>
+                      <div className={`${styles.visualizationDiv}`}>
+                        <InfringementsViz
+                          infringements={infringements}
+                          fromDate={fromDate}
+                          toDate={toDate}
+                          darkMode={darkMode}
+                        />
+                      </div>
+                      <div className={`${styles.visualizationDivRow}`}>
+                        <div className={`${styles.badgeSummaryDiv}`}>
+                          <BadgeSummaryViz
+                            authId={auth.user.userid}
+                            userId={match.params.userId}
+                            badges={userProfile.badgeCollection}
+                          />
+                        </div>
+                        <div className={`${styles.badgeSummaryPreviewDiv}`}>
+                          <BadgeSummaryPreview badges={userProfile.badgeCollection} darkMode={darkMode} />
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
+                </ReportPage.ReportBlock>
               </div>
-            </ReportPage.ReportBlock>
-          </div>
-          {/* {tangibleHoursReportedThisWeek === 0 ? (
+              {/* {tangibleHoursReportedThisWeek === 0 ? (
             <div className="report-no-log-message">No task has been logged this week...</div>
           ) : (
             <div className="mobile-people-table">
@@ -654,11 +657,72 @@ class PeopleReport extends Component {
               </ReportPage.ReportBlock>
             </div>
           )} */}
-        </ReportPage>
+            </ReportPage>
+          </div>
+          <div className={`${styles.peopleReportRight} ${darkMode ? styles.bgOxfordBlue : ''}`} xs="12" md="3" lg="3">
+            <ReportPage.ReportHeader
+              src={profilePic}
+              avatar={profilePic ? undefined : <FiUser />}
+              isActive={isActive}
+              darkMode={darkMode}
+            >
+
+              <div
+                // style={{ minHeight: '200px' }}
+                className={`${styles.reportStats} ${darkMode ? `${styles.bgYinmnBlue} ${styles.textLight}` : ''}`}
+              >
+                <p>
+                  <Link to={`/userProfile/${_id}`}
+                    title="View Profile"
+                    className={`${darkMode ? `${styles.textLight} ${styles.fontWeightBold}` : ''}`}
+                    style={{ fontSize: "24px" }}>
+                    {firstName} {lastName}
+                  </Link>
+                </p>
+                <div className={styles.dateInfo}>
+                  <div>
+                    <p>Role</p>
+                    <h4>{role}</h4>
+                  </div>
+                  </div>
+                  <div className={styles.dateInfo}>
+                  <div>
+                    <p>Title</p>
+                    <h4>{jobTitle}</h4>
+                  </div>
+                </div>
+
+                {/* {endDate ? ( */}
+                <div className={styles.rehireable}>
+                  <Checkbox
+                    value={isRehireable}
+                    onChange={() => this.setRehireable(!isRehireable)}
+                    label="Rehireable"
+                    darkMode={darkMode}
+                    className={`${styles.reportStats} ${darkMode ? `${styles.bgYinmnBlue} ${styles.textLight}` : ''}`}
+                    backgroundColorCN={darkMode ? styles.bgYinmnBlue : ""}
+                    textColorCN={darkMode ? styles.textLight : ""}
+                  />
+                </div>
+                <div className={styles.dateInfo}>
+                  <div>
+                    <p>Start Date</p>
+                    <h4>{formatDate(startDate)}</h4>
+                  </div>
+                  <div>
+                    <p>End Date</p>
+                    <h4>{endDate ? formatDate(endDate) : 'N/A'}</h4>
+                  </div>
+                </div>
+              </div>
+            </ReportPage.ReportHeader>
+          </div >
+        </div>
       </div>
     );
   }
 }
+
 export default connect(getPeopleReportData, {
   getUserProfile,
   updateUserProfileProperty,

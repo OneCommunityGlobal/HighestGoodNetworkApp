@@ -1,15 +1,16 @@
 import { useState } from 'react';
 import { Card, CardTitle, CardBody, CardImg, CardText, Popover } from 'reactstrap';
+import styles from './Badge.module.css';
 
-function BadgeImage({ badgeData, time, index, personalBestMaxHrs, count }) {
+function BadgeImage({ badgeData, time, index, personalBestMaxHrs, count, cssSuffix }) {
   const [isOpen, setOpen] = useState(false);
-
+  cssSuffix = cssSuffix ? cssSuffix : '';
   const toggle = () => setOpen(prevIsOpen => !prevIsOpen);
 
   return (
     <>
-      <div className="badge_image_container">
-        <div className="badge_image_sm">
+      <div className={styles.badge_image_container}>
+        <div className={styles.badge_image_sm}>
           <img
             src={badgeData?.imageUrl}
             id={`popover_${time}${index.toString()}`}
@@ -17,16 +18,12 @@ function BadgeImage({ badgeData, time, index, personalBestMaxHrs, count }) {
             loading="lazy"
           />
         </div>
-
-        {badgeData.type === 'Personal Max' && (
-          <span className="badge_count_personalmax">{Math.floor(personalBestMaxHrs)}</span>
-        )}
-        {badgeData.type !== 'Personal Max' && count < 100 && (
-          <span className="badge_count">{Math.round(count)}</span>
-        )}
-        {badgeData.type !== 'Personal Max' && count >= 100 && (
-          <span className="badge_count_3_digit">{Math.round(count)}</span>
-        )}
+        <BadgeSpan
+          badgeType={badgeData.type}
+          personalBestMaxHrs={personalBestMaxHrs}
+          count={count}
+          cssSuffix={cssSuffix}
+        />
       </div>
       <Popover
         trigger="hover"
@@ -35,7 +32,7 @@ function BadgeImage({ badgeData, time, index, personalBestMaxHrs, count }) {
         target={`popover_${time}${index.toString()}`}
       >
         <Card className="text-center">
-          <CardImg className="badge_image_lg" src={badgeData?.imageUrl} />
+          <CardImg className={styles.badge_image_lg} src={badgeData?.imageUrl} />
           <CardBody>
             <CardTitle
               style={{
@@ -53,6 +50,22 @@ function BadgeImage({ badgeData, time, index, personalBestMaxHrs, count }) {
       </Popover>
     </>
   );
+}
+
+function BadgeSpan({ badgeType, personalBestMaxHrs, count, cssSuffix }) {
+  if (badgeType === 'Personal Max') {
+    return (
+      <span className={styles.badge_count_personalmax + cssSuffix}>
+        {Math.floor(personalBestMaxHrs)}
+      </span>
+    );
+  } else {
+    if (count < 100) {
+      return <span className={styles.badge_count + cssSuffix}>{Math.round(count)}</span>;
+    } else {
+      return <span className={styles.badge_count_3_digit + cssSuffix}>{Math.round(count)}</span>;
+    }
+  }
 }
 
 export default BadgeImage;

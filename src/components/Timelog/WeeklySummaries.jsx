@@ -1,27 +1,44 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import parse from 'html-react-parser';
-import './Timelog.css'
-import updateWeeklySummaries from 'actions/weeklySummaries';
-import { getUserProfile, updateUserProfile } from 'actions/userProfile';
-import hasPermission from 'utils/permissions';
-import { connect, useDispatch, useSelector } from 'react-redux';
+import styles from './Timelog.module.css';
+import { getUserProfile, updateUserProfile } from '~/actions/userProfile';
+import hasPermission from '~/utils/permissions';
+import { useDispatch, useSelector } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react';
-import { userProfileByIdReducer } from 'reducers/userProfileByIdReducer';
+import Spinner from 'react-bootstrap/Spinner';
+import { updateWeeklySummaries } from '../../actions/weeklySummaries';
+import WeeklySummary from '../WeeklySummary/WeeklySummary';
 
-const WeeklySummaries = ({ userProfile }) => {
-  const darkMode = useSelector(state => state.theme.darkMode)
+function WeeklySummaries({ userProfile, onEditSummary }) {
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   // Initialize state variables for editing and original summaries
+
   const [editing, setEditing] = useState([false, false, false]);
+
   const [editedSummaries, setEditedSummaries] = useState([
     userProfile.weeklySummaries[0]?.summary || '',
     userProfile.weeklySummaries[1]?.summary || '',
     userProfile.weeklySummaries[2]?.summary || '',
   ]);
-  const [originalSummaries, setOriginalSummaries] = useState([...editedSummaries]);
+
+  const [LoadingHandleSave, setLoadingHandleSave] = useState(null);
+
+  const [wordCount, setWordCount] = useState(0);
+
+  const [showModal, setShowModal] = useState(false);
+  const [modalTab, setModalTab] = useState('1');
 
   const dispatch = useDispatch();
   const canEdit = dispatch(hasPermission('putUserProfile'));
+
+  useEffect(() => {
+    setEditedSummaries([
+      userProfile.weeklySummaries[0]?.summary || '',
+      userProfile.weeklySummaries[1]?.summary || '',
+      userProfile.weeklySummaries[2]?.summary || '',
+    ]);
+  }, [userProfile]);
 
   const currentUserID = userProfile._id;
   const { user } = useSelector(state => state.auth);
@@ -31,52 +48,92 @@ const WeeklySummaries = ({ userProfile }) => {
     return <div>No weekly summaries available</div>;
   }
 
-  const toggleEdit = (index) => {
-    // Toggle the editing state for the specified summary
-    const newEditing = [...editing];
-    newEditing[index] = !newEditing[index];
+  const toggleEdit = index => {
+    const newEditing = editing.map((value, i) => (i === index ? !value : false));
     setEditing(newEditing);
   };
 
-  const handleSummaryChange = (event, index) => {
-    // Update the edited summary content
+  const handleSummaryChange = (event, index, editor) => {
+    const wordCounter = editor.plugins.wordcount.getCount();
+    setWordCount(wordCounter);
     const newEditedSummaries = [...editedSummaries];
     newEditedSummaries[index] = event.target.value;
     setEditedSummaries(newEditedSummaries);
   };
 
-  const handleCancel = (index) => {
+  const handleCancel = index => {
     // Revert to the original summary content and toggle off editing mode
     const newEditedSummaries = [...editedSummaries];
     newEditedSummaries[index] = userProfile.weeklySummaries[index]?.summary || '';
     setEditedSummaries(newEditedSummaries);
-    
+
     // Toggle off editing mode
     toggleEdit(index);
   };
 
-  const handleSave = async (index) => {
+  const handleSave = async index => {
     // Save the edited summary content and toggle off editing mode
     const editedSummary = editedSummaries[index];
-    // Check if the edited summary is not blank and contains at least 50 words
-    const wordCount = editedSummary.split(/\s+/).filter(Boolean).length;
+
     if (editedSummary.trim() !== '' && wordCount >= 50) {
+      setLoadingHandleSave(index);
       const updatedUserProfile = {
         ...userProfile,
         weeklySummaries: userProfile.weeklySummaries.map((item, i) =>
-          i === index ? { ...item, summary: editedSummary } : item
-        )
+          i === index ? { ...item, summary: editedSummary } : item,
+        ),
       };
-  
-    await dispatch(updateUserProfile(userProfile._id, updatedUserProfile));
-    await dispatch(getUserProfile(userProfile._id));
+
+      // This code updates the summary.
+      await dispatch(updateUserProfile(userProfile));
+
+      // This code saves edited weekly summaries in MongoDB.
+      await dispatch(updateWeeklySummaries(userProfile._id, updatedUserProfile));
+      await dispatch(getUserProfile(userProfile._id));
+      await setLoadingHandleSave(null);
+      setLoadingHandleSave(null);
       // Toggle off editing mode
       toggleEdit(index);
     } else {
       // Invalid summary, show an error message or handle it as needed
+      // eslint-disable-next-line no-alert
       alert('Please enter a valid summary with at least 50 words.');
     }
+  };
 
+  const handleEditSummary = (tabIndex) => {
+    // Map the tab index to the correct tab number
+    const tabNumber = String(tabIndex + 1);
+    setModalTab(tabNumber);
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    // Refresh the user profile to get updated summaries
+    dispatch(getUserProfile(userProfile._id));
+  };
+
+  // Images are not allowed while editing weekly summaries
+  const customImageUploadHandler = () =>
+    new Promise((_, reject) => {
+      // eslint-disable-next-line prefer-promise-reject-errors
+      reject({ message: 'Pictures are not allowed here!', remove: true });
+    });
+
+  const TINY_MCE_INIT_OPTIONS = {
+    license_key: 'gpl',
+    menubar: false,
+    plugins: 'advlist autolink autoresize lists link charmap table help wordcount',
+    toolbar:
+      'bold italic underline link removeformat | bullist numlist outdent indent | styleselect fontsizeselect | table| strikethrough forecolor backcolor | subscript superscript charmap | help',
+    branding: false,
+    min_height: 180,
+    max_height: 500,
+    autoresize_bottom_margin: 1,
+    images_upload_handler: customImageUploadHandler,
+    skin: darkMode ? 'oxide-dark' : 'oxide',
+    content_css: darkMode ? 'dark' : 'default',
   };
 
   const renderSummary = (title, summary, index) => {
@@ -85,61 +142,95 @@ const WeeklySummaries = ({ userProfile }) => {
         <div>
           <h3>{title}</h3>
           <Editor
-            init={{
-              menubar: false,
-              plugins: 'advlist autolink autoresize lists link charmap table paste help wordcount',
-              toolbar:
-                'bold italic underline link removeformat | bullist numlist outdent indent | styleselect fontsizeselect | table| strikethrough forecolor backcolor | subscript superscript charmap | help',
-              branding: false,
-              min_height: 180,
-              max_height: 500,
-              autoresize_bottom_margin: 1,
-            }}
+            tinymceScriptSrc="/tinymce/tinymce.min.js"
+            init={TINY_MCE_INIT_OPTIONS}
             value={editedSummaries[index]}
-            onEditorChange={(content) => handleSummaryChange({ target: { value: content } }, index)}
+            onEditorChange={(content, editor) =>
+              handleSummaryChange({ target: { value: content } }, index, editor)
+            }
+            onGetContent={(content, editor) => setWordCount(editor.plugins.wordcount.getCount())}
           />
-          <button className = "button save-button" onClick={() => handleSave(index)}>Save</button>
-          <button className = "button cancel-button" onClick={() => handleCancel(index)}>Cancel</button>
-        </div>
-      );
-    } else if (summary && (canEdit || currentUserID == loggedInUserId)) {
-      // Display the summary with an "Edit" button
-      return (
-        <div>
-          <h3>{title}</h3>
-          {parse(editedSummaries[index])}
-          <button className = "button edit-button" onClick={() => toggleEdit(index)}>Edit</button>
-        </div>
-      );
-    } else if (summary){
-      // Display the summary with an "Edit" button
-      return (
-        <div>
-          <h3>{title}</h3>
-          {parse(editedSummaries[index])}
-        </div>
-      );
-    } else {
-      // Display a message when there's no summary
-      return (
-        <div>
-          <h3>{title}</h3>
-          <p>
-            {userProfile.firstName} {userProfile.lastName} did not submit a summary.
-          </p>
+
+          <div style={{ marginTop: '10px' }}>
+            <button
+              type="button"
+              className={`${styles.button} ${styles['save-button']}`}
+              onClick={() => handleSave(index)}
+              disabled={LoadingHandleSave === index}
+            >
+              {LoadingHandleSave === index ? <Spinner animation="border" size="sm" /> : 'Save'}
+            </button>
+
+            <button
+              type="button"
+              className={`${styles.button} ${styles['cancel-button']}`}
+              onClick={() => handleCancel(index)}
+            >
+              Cancel
+            </button>
+          </div>
         </div>
       );
     }
+    if (summary && (canEdit || currentUserID === loggedInUserId)) {
+      // Display the summary with an "Edit" button
+      return (
+        <div className={darkMode ? 'bg-yinmn-blue summary-text-light' : ''}>
+          <h3>{title}</h3>
+          {parse(editedSummaries[index])}
+          <button type="button" className={`${styles.button} ${styles['edit-button']}`} onClick={() => toggleEdit(index)}>
+            Edit
+          </button>
+        </div>
+      );
+    }
+    if (summary) {
+      // Display the summary without edit button for users without edit permissions
+      return (
+        <div className={darkMode ? 'bg-yinmn-blue summary-text-light' : ''}>
+          <h3>{title}</h3>
+          {parse(editedSummaries[index])}
+        </div>
+      );
+    }
+    // Display a message when there's no summary with an edit button (always show edit button for missing summaries)
+    return (
+      <div>
+        <h3>{title}</h3>
+        <p className={darkMode ? 'bg-yinmn-blue text-light' : ''}>
+          {userProfile.firstName} {userProfile.lastName} did not submit a summary.
+        </p>
+        <button 
+          type="button" 
+          className={`${styles.button} ${styles['edit-button']}`}
+          onClick={() => handleEditSummary(index)}
+        >
+          Edit
+        </button>
+      </div>
+    );
   };
 
   return (
-    <div className={"p-2 " + (darkMode ? 'bg-yinmn-blue text-light' : '')}>
+    <div className={`${styles['responsive-font-size']} p-2 ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
       {renderSummary("This week's summary", userProfile.weeklySummaries[0]?.summary, 0)}
       {renderSummary("Last week's summary", userProfile.weeklySummaries[1]?.summary, 1)}
-      {renderSummary("The week before last's summary",userProfile.weeklySummaries[2]?.summary,2)}
+      {renderSummary("The week before last's summary", userProfile.weeklySummaries[2]?.summary, 2)}
+      
+      {showModal && (
+        <WeeklySummary
+          isModal={true}
+          displayUserId={userProfile._id}
+          setPopup={handleCloseModal}
+          userRole={userProfile.role}
+          isNotAllowedToEdit={false}
+          darkMode={darkMode}
+          initialActiveTab={modalTab}
+        />
+      )}
     </div>
   );
-};
+}
 
 // const mapStateToProps = state => state;
 // export default connect(mapStateToProps, { hasPermission })(WeeklySummaries);

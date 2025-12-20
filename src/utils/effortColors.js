@@ -22,7 +22,7 @@ export const getProgressColor = (effort, commit, invert = false) => {
     if (inRange(percentage, 60, 80)) color = 'success'; // green
     if (inRange(percentage, 80, 90)) color = 'orange'; // orange
     if (inRange(percentage, 90, 100)) color = 'almost-red';
-    if (percentage >= 100) color = color = 'bright-red'; // bright red
+    if (percentage >= 100) color = 'bright-red'; // bright red
   }
   return color;
 };
@@ -41,12 +41,12 @@ export const getcolor = effort => {
 
 // For progress bar that shows the percentage of the completion
 export const getProgressValue = (effort, commit) => {
-  let percentage = 0;
-  if (commit > 0) {
-    percentage = Math.round((effort * 100) / commit);
-    if (percentage > 100) percentage = 100;
-  }
-  return percentage;
+  const e = Number(effort);
+  const c = Number(commit);
+  if (!(c > 0) || !Number.isFinite(e)) return 0;
+
+  const pct = Math.min(100, Math.max(0, Math.round((e * 100) / c)));
+  return pct;
 };
 
 // For (progress) bar that is designed for the exact hours in LEADERBOARD

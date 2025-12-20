@@ -1,5 +1,5 @@
 import { Button } from 'reactstrap';
-import { boxStyle } from 'styles';
+import { boxStyle } from '~/styles';
 import TextSearchBox from '../UserManagement/TextSearchBox';
 import DropDownSearchBox from '../UserManagement/DropDownSearchBox';
 
@@ -13,6 +13,7 @@ function BadgeTableFilter({
   type,
   order,
   resetFilters,
+  darkMode,
 }) {
   const badgeTypes = [
     'No Infringement Streak',
@@ -28,7 +29,7 @@ function BadgeTableFilter({
   const orders = ['Ascending', 'Descending'];
 
   return (
-    <tr>
+    <tr className={darkMode ? 'bg-yinmn-blue' : ''}>
       <td id="badge_image" />
       <td id="badge_name">
         <TextSearchBox id="badge_name_search" searchCallback={onBadgeNameSearch} value={name} />
@@ -58,7 +59,13 @@ function BadgeTableFilter({
         />
       </td>
       <td id="badge_action">
-        <Button outline color="secondary" size="sm" onClick={() => resetFilters()} style={boxStyle}>
+        <Button
+          outline
+          color={darkMode ? 'primary' : 'secondary'}
+          size="sm"
+          onClick={() => resetFilters()}
+          style={darkMode ? {} : boxStyle}
+        >
           Reset Filters
         </Button>
       </td>

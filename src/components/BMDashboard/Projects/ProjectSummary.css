@@ -1,0 +1,35 @@
+.project-summary_content {
+  padding: 20px;
+}
+
+.project-summary_item {
+  margin-bottom: 15px;
+}
+
+.project-summary_label {
+  font-weight: bold;
+  text-align: left;
+  white-space: normal; /* Allow text to wrap properly */
+}
+
+.project-summary_value {
+  overflow-wrap: break-word; /* Ensures the content wraps if too long */
+  word-wrap: break-word; /* Ensures wrapping behavior */
+}
+
+.project-summary_span {
+  display: block;
+  word-break: break-word; /* Break words to prevent overflow */
+  line-height: 1.4;
+  white-space: normal; /* Allow wrapping in span */
+}
+
+@media (max-width: 700px) {
+  .project-summary_label {
+    font-size: 14px;
+  }
+
+  .project-summary_span {
+    font-size: 12px; /* Optional: adjust font size for smaller screens */
+  }
+}

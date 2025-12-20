@@ -1,6 +1,20 @@
 import axios from 'axios';
-import { ENDPOINTS } from '../utils/URL';
-import * as types from "../constants/role";
+import { toast } from 'react-toastify';
+import { ENDPOINTS } from '~/utils/URL';
+import * as types from '../constants/role';
+
+export const setRoleStart = () => {
+  return {
+    type: types.FETCH_ROLES_START,
+  };
+};
+
+export const setRoleError = payload => {
+  return {
+    type: types.FETCH_ROLES_ERROR,
+    payload,
+  };
+};
 
 export const fetchAllRoles = roles => {
   return {
@@ -29,44 +43,28 @@ export const getAllRoles = () => async dispatch => {
 };
 
 export const addNewRole = newRole => {
-  return async dispatch => {
-    let role = {};
-    let status = 200;
-    try {
-      const res = await axios.post(ENDPOINTS.ROLES(), newRole);
-      role = res.data;
-    } catch (error) {
-      status = 400;
-    }
-
-    dispatch(postNewRole(role, status));
-  };
+  return axios
+    .post(ENDPOINTS.ROLES(), newRole)
+    .then(res => {
+      return res;
+    })
+    .catch(err => {
+      if (err.response) return err.response;
+      if (err.request) return err.request;
+      return err.message;
+    });
 };
 
 export const updateRole = (roleId, updatedRole) => {
   return async dispatch => {
     try {
-      const res = await axios.patch(ENDPOINTS.ROLES_BY_ID(roleId), updatedRole);
+      await axios.patch(ENDPOINTS.ROLES_BY_ID(roleId), updatedRole);
       dispatch(modifyRole(updatedRole));
       return 0;
     } catch (err) {
       dispatch(setRoleError());
-      console.log(err);
+      toast.error(err.message || 'Failed to update role.');
       return 1;
     }
-    dispatch(modifyRole(updatedRole));
-  };
-};
-
-export const setRoleStart = () => {
-  return {
-    type: types.FETCH_ROLES_START,
-  };
-};
-
-export const setRoleError = payload => {
-  return {
-    type: types.FETCH_ROLES_ERROR,
-    payload,
   };
 };

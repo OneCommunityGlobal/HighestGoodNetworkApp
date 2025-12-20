@@ -1,23 +1,32 @@
 import axios from 'axios';
-import { useState, useEffect} from 'react';
-import { MapContainer, TileLayer, CircleMarker, Popup, useMapEvent } from 'react-leaflet';
-import MarkerClusterGroup from 'react-leaflet-cluster';
 import 'leaflet/dist/leaflet.css';
+import { useEffect, useRef, useState, forwardRef } from 'react';
+import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet';
+import MarkerClusterGroup from '@changey/react-leaflet-markercluster';
+import { Button, Container, Spinner } from 'reactstrap';
 import './TeamLocations.css';
-import { Button, Container } from 'reactstrap';
 
-import { boxStyle } from 'styles';
-import { toast } from 'react-toastify';
-import { SEARCH } from 'languages/en/ui';
 import { useSelector } from 'react-redux';
-import { ApiEndpoint, ENDPOINTS } from '../../utils/URL';
-import ListUsersPopUp from './ListUsersPopUp';
+import { toast } from 'react-toastify';
+import { SEARCH } from '~/languages/en/ui';
+import { boxStyle, boxStyleDark } from '~/styles';
+import { ApiEndpoint, ENDPOINTS } from '~/utils/URL';
 import AddOrEditPopup from './AddOrEditPopup';
+import ListUsersPopUp from './ListUsersPopUp';
 import MarkerPopup from './MarkerPopup';
+import TeamLocationsTable from './TeamLocationsTable';
 
+function getUserName(profile) {
+  let userName = '';
+  if (profile.firstName && profile.lastName) {
+    userName = `${profile.firstName} ${`${profile.lastName[0]}.`}`;
+  } else {
+    userName = profile.firstName || `${profile.lastName ? `${profile.lastName[0]}.` : ''}`;
+  }
+  return userName;
+}
 
-
-function TeamLocations() {
+const TeamLocations = forwardRef(() => {
   const [userProfiles, setUserProfiles] = useState([]);
   const [manuallyAddedProfiles, setManuallyAddedProfiles] = useState([]);
   const [addNewIsOpen, setAddNewIsOpen] = useState(false);
@@ -26,11 +35,31 @@ function TeamLocations() {
   const [editingUser, setEditingUser] = useState(null);
   const [searchText, setSearchText] = useState('');
   const [popupsOpen, setPopupsOpen] = useState(false);
-  const [mapMarkers,setMapMarkers] =useState([])
+  const [mapMarkers, setMapMarkers] = useState([]);
+  const [tableVisible, setTableVisible] = useState(false);
+  const [markerPopupVisible, setMarkerPopupVisible] = useState(false);
   const role = useSelector(state => state.auth.user.role);
-
+  const darkMode = useSelector(state => state.theme.darkMode);
+  const [loading, setLoading] = useState(true); // State variable for loading spinner
 
   const isAbleToEdit = role === 'Owner';
+  const mapRef = useRef(null);
+  const [currentUser, setCurrentUser] = useState(null);
+
+  const randomLocationOffset = c => {
+    const randomOffset = (Math.random() - 0.5) * 2 * 0.05;
+    const newLongitude = Number(c) + randomOffset;
+
+    const modifiedLongitude = Number(newLongitude.toFixed(7));
+    return modifiedLongitude;
+  };
+
+  const handleFlyTo = (latitude, longitude) => {
+    mapRef?.current.flyTo([latitude, longitude], 13, {
+      animate: true,
+      duration: 3.0,
+    });
+  };
 
   useEffect(() => {
     async function getUserProfiles() {
@@ -42,25 +71,33 @@ function TeamLocations() {
         setUserProfiles(users);
         setManuallyAddedProfiles(mUsers);
         const allMapMarkers = [...users, ...mUsers];
-        const allMapMarkersOffset = allMapMarkers.map(ele =>({
+        const allMapMarkersOffset = allMapMarkers.map(ele => ({
           ...ele,
           location: {
-              ...ele.location,
-              coords: {
-                  ...ele.location.coords,
-                  lat: randomLocationOffset(ele.location.coords.lat), 
-                  lng: randomLocationOffset(ele.location.coords.lng),
-              },
+            ...ele.location,
+            coords: {
+              ...ele.location.coords,
+              lat: randomLocationOffset(ele.location.coords.lat),
+              lng: randomLocationOffset(ele.location.coords.lng),
+            },
           },
-      }))
-        setMapMarkers(allMapMarkersOffset)
-
+        }));
+        setMapMarkers(allMapMarkersOffset);
+        setLoading(false); // Set loading to false after data is loaded
       } catch (error) {
         toast.error(error.message);
+        setLoading(false); // Set loading to false if there's an error
       }
     }
     getUserProfiles();
   }, []);
+
+  useEffect(() => {
+    const coords = currentUser?.location.coords;
+    if (coords) {
+      handleFlyTo(coords.lat, coords.lng);
+    }
+  }, [currentUser]);
 
   // We don't need the back to top button on this page
   useEffect(() => {
@@ -107,22 +144,60 @@ function TeamLocations() {
     }
   };
 
-  const randomLocationOffset = c => {
-    const randomOffset = (Math.random() - 0.5) * 2 * 0.05;
-    const newLongitude = Number(c) + randomOffset;
+  useEffect(() => {
+    async function getUserProfiles() {
+      try {
+        const locations = (await axios.get(ENDPOINTS.ALL_MAP_LOCATIONS())).data;
+        const users = locations.users.map(item => ({ ...item, type: 'user' })) || [];
+        const mUsers = locations.mUsers.map(item => ({ ...item, type: 'm_user' })) || [];
 
-    const modifiedLongitude = Number(newLongitude.toFixed(7));
-    return modifiedLongitude;
+        setUserProfiles(users);
+        setManuallyAddedProfiles(mUsers);
+        const allMapMarkers = [...users, ...mUsers];
+        const allMapMarkersOffset = allMapMarkers.map(ele => ({
+          ...ele,
+          location: {
+            ...ele.location,
+            coords: {
+              ...ele.location.coords,
+              lat: randomLocationOffset(ele.location.coords.lat),
+              lng: randomLocationOffset(ele.location.coords.lng),
+            },
+          },
+        }));
+        setMapMarkers(allMapMarkersOffset);
+        setLoading(false); // Set loading to false after data is loaded
+      } catch (error) {
+        toast.error(error.message);
+        setLoading(false); // Set loading to false if there's an error
+      }
+    }
+    getUserProfiles();
+  }, []);
+
+  const toggleTableVisibility = () => {
+    if (tableVisible) {
+      setCurrentUser(null);
+      setTableVisible(false);
+      setMarkerPopupVisible(false);
+
+      if (mapRef.current.getZoom() >= 13) {
+        setPopupsOpen(true);
+      }
+    } else {
+      setTableVisible(true);
+      setPopupsOpen(false);
+    }
   };
 
   // Get an array of all users' non-null countries (some locations may not be associated with a country)
   // Get the number of unique countries
 
-  
   const countries = mapMarkers.map(user => user.location.country);
   const totalUniqueCountries = [...new Set(countries)].length;
+  let filteredMapMarkers = mapMarkers;
   if (searchText) {
-    mapMarkers = mapMarkers.filter(
+    filteredMapMarkers = filteredMapMarkers.filter(
       item =>
         item.location.city?.toLowerCase().includes(searchText.toLowerCase()) ||
         item.location.country?.toLowerCase().includes(searchText.toLowerCase()) ||
@@ -136,10 +211,39 @@ function TeamLocations() {
   if (searchText) {
     dropdown = true;
   }
+  useEffect(() => {
+    const coords = currentUser?.location.coords;
+    if (coords) {
+      handleFlyTo(coords.lat, coords.lng);
+    }
+  }, [currentUser]);
+
+  const markerPopups = filteredMapMarkers.map(profile => {
+    const userName = getUserName(profile);
+
+    return (
+      <MarkerPopup
+        key={profile._id}
+        profile={profile}
+        userName={userName}
+        isAbleToEdit={isAbleToEdit}
+        editHandler={editHandler}
+        removeLocation={removeLocation}
+        isOpen={popupsOpen}
+        darkMode={darkMode}
+      />
+    );
+  });
 
   return (
-    <Container fluid className="mb-4">
-      {isAbleToEdit ? (
+    <Container
+      fluid
+      className={`${
+        darkMode ? 'bg-oxford-blue text-light team-locations-container dark-mode' : ''
+      }`}
+      style={{ minHeight: '100%', paddingBottom: '73px' }}
+    >
+      {isAbleToEdit && (
         <>
           <AddOrEditPopup
             open={editIsOpen || addNewIsOpen}
@@ -160,35 +264,55 @@ function TeamLocations() {
             setEdit={editHandler}
           />
         </>
-      ) : null}
+      )}
       <div className="py-2 d-flex justify-content-between flex-column flex-md-row">
-        <h5>Total Countries: {totalUniqueCountries}</h5>
+        <div className="text-and-table-icon-container">
+          <h5>
+            Total Countries:
+            {totalUniqueCountries}
+          </h5>
+          <button
+            type="button"
+            id="toggle-table-button"
+            disabled={filteredMapMarkers.length === 0}
+            onClick={toggleTableVisibility}
+            aria-label="Button"
+          >
+            <i
+              className={`fa fa-table ${darkMode ? 'text-light' : 'text-dark'}`}
+              aria-hidden="true"
+            />
+          </button>
+        </div>
         {isAbleToEdit ? (
           <div className="d-flex align-center">
             <div className="d-flex align-center pr-5 flex-column flex-md-row  position-relative">
               <div className="input-group-prepend">
-                <span className="input-group-text">{SEARCH}</span>
+                <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
+                  {SEARCH}
+                </span>
               </div>
               <div>
                 <input
                   type="text"
-                  className="form-control"
                   aria-label="Search"
-                  placeholder="Search Text"
+                  placeholder="Search by Location"
                   value={searchText}
                   onChange={searchHandler}
+                  className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
                 />
               </div>
-              {dropdown ? (
-                <div className="position-absolute map-dropdown-table w-100">
-                  <div
-                    className="overflow-auto pr-3"
-                    style={{ height: mapMarkers.length > 4 ? '300px' : 'unset' }}
-                  >
-                    {mapMarkers.length > 0 ? (
-                      <table className="table table-bordered table-responsive-md">
+              {dropdown && (
+                <div className="position-absolute map-dropdown-table">
+                  <div className="overflow-auto pr-3" style={{ height: '300px' }}>
+                    {filteredMapMarkers.length > 0 ? (
+                      <table
+                        className={`table table-bordered table-responsive-md ${
+                          darkMode ? 'text-light bg-yinmn-blue' : ''
+                        }`}
+                      >
                         <tbody>
-                          {mapMarkers.map(profile => {
+                          {filteredMapMarkers.map(profile => {
                             let userName = '';
                             if (profile.firstName && profile.lastName) {
                               userName = `${profile.firstName} ${profile.lastName}`;
@@ -198,9 +322,11 @@ function TeamLocations() {
                             return (
                               <tr key={profile._id}>
                                 <td>{userName}</td>
-                                <td>{`${profile.location.city ? `${profile.location.city},` : ''} ${
-                                  profile.location.country
-                                }`}</td>
+                                <td>
+                                  {`${profile.location.city ? `${profile.location.city},` : ''} ${
+                                    profile.location.country
+                                  }`}
+                                </td>
                                 <td>
                                   <div
                                     style={{
@@ -240,14 +366,14 @@ function TeamLocations() {
                     )}
                   </div>
                 </div>
-              ) : null}
+              )}
             </div>
             <div className="d-flex align-center">
               <Button
                 outline
                 color="danger"
                 className="btn btn-outline-error mr-1 btn-sm"
-                style={{ ...boxStyle }}
+                style={darkMode ? boxStyleDark : boxStyle}
                 onClick={toggleListPopUp}
               >
                 Users list
@@ -256,7 +382,7 @@ function TeamLocations() {
                 outline
                 color="primary"
                 className="btn btn-outline-success mr-1 btn-sm"
-                style={{ ...boxStyle }}
+                style={darkMode ? boxStyleDark : boxStyle}
                 onClick={() => setAddNewIsOpen(true)}
               >
                 Add person
@@ -265,64 +391,96 @@ function TeamLocations() {
           </div>
         ) : null}
       </div>
-      <MapContainer
-        id='map-container'
-        center={[51.505, -0.09]}
-        maxBounds={[
-          [-90, -225],
-          [90, 225],
-        ]}
-        maxBoundsViscosity={1.0}
-        zoom={3}
-        scrollWheelZoom
-        style={{ border: '1px solid grey' }}
-      >
-        <EventComponent setPopupsOpen={setPopupsOpen}  />
-      
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          minZoom={2}
-          maxZoom={15}
-        />
-        <MarkerClusterGroup disableClusteringAtZoom={13} spiderfyOnMaxZoom={true} chunkedLoading>
-          {mapMarkers.map(profile => {
-            let userName = '';
-            if (profile.firstName && profile.lastName) {
-              userName = `${profile.firstName} ${`${profile.lastName[0]}.`}`;
-            } else {
-              userName =
-                profile.firstName || `${profile.lastName ? `${profile.lastName[0]}.` : ''}`;
-            }
+      <div style={{ position: 'relative' }}>
+        <div>
+          {tableVisible && (
+            <TeamLocationsTable
+              visible={tableVisible}
+              filteredMapMarkers={filteredMapMarkers}
+              setCurrentUser={setCurrentUser}
+              darkMode={darkMode}
+            />
+          )}
+        </div>
+        {loading ? (
+          <div
+            className="d-flex justify-content-center align-items-center"
+            style={{ minHeight: '50vh' }}
+          >
+            <Spinner animation="border" size="lg" />
+          </div>
+        ) : (
+          <MapContainer
+            id="map-container"
+            center={[51.505, -0.09]}
+            maxBounds={[
+              [-90, -225],
+              [90, 225],
+            ]}
+            maxBoundsViscosity={1.0}
+            zoom={3}
+            scrollWheelZoom
+            style={{ border: '1px solid grey' }}
+            whenCreated={mapInstance => {
+              mapRef.current = mapInstance;
+            }}
+          >
+            <EventComponent
+              setPopupsOpen={setPopupsOpen}
+              currentUser={currentUser}
+              setMarkerPopupVisible={setMarkerPopupVisible}
+            />
 
-            return (
-              
+            <TileLayer
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              minZoom={2}
+              maxZoom={15}
+            />
+
+            <MarkerClusterGroup disableClusteringAtZoom={13} spiderfyOnMaxZoom chunkedLoading>
+              {tableVisible && currentUser ? (
                 <MarkerPopup
-                key={profile._id}
-                  profile={profile}
-                  userName={userName}
+                  key={currentUser._id}
+                  profile={currentUser}
+                  userName={getUserName(currentUser)}
                   isAbleToEdit={isAbleToEdit}
                   editHandler={editHandler}
                   removeLocation={removeLocation}
-                  isOpen={popupsOpen}
-                /> 
-            );
-          })}
-        </MarkerClusterGroup>
-      </MapContainer>
+                  isOpen={markerPopupVisible}
+                  darkMode={darkMode}
+                />
+              ) : (
+                markerPopups
+              )}
+            </MarkerClusterGroup>
+          </MapContainer>
+        )}
+      </div>
     </Container>
   );
-}
+});
 
-function EventComponent({ setPopupsOpen }) {
-  const map = useMapEvent('zoomend', () => {
-    if (map.getZoom() >= 13) {
-      setPopupsOpen(true);
-    } else {
-      setPopupsOpen(false);
-    }
+function EventComponent({ setPopupsOpen, currentUser, setMarkerPopupVisible }) {
+  const map = useMapEvents({
+    zoomend() {
+      if (currentUser) {
+        setMarkerPopupVisible(true);
+        setPopupsOpen(false);
+      }
+      if (map.getZoom() >= 13 && !currentUser) {
+        setPopupsOpen(true);
+      } else {
+        setPopupsOpen(false);
+      }
+    },
+
+    zoomstart() {
+      setMarkerPopupVisible(false);
+    },
   });
   return null;
 }
 
+TeamLocations.displayName = 'TeamLocations';
 export default TeamLocations;

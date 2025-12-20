@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Row, Col, Button } from 'reactstrap';
 
-const DeleteHoumeCountryModal = ({ isOpen, toggle, setLocation }) => {
+function DeleteHoumeCountryModal({ isOpen, toggle, setLocation }) {
   const locationInitialState = {
     userProvided: '',
     coords: { lat: '', lng: '' },
@@ -20,14 +20,14 @@ const DeleteHoumeCountryModal = ({ isOpen, toggle, setLocation }) => {
     setLocation(locationInitialState);
   };
 
-  const reset = ()=>{
+  const reset = () => {
     setLocationKept(false);
     setLocationRemoved(false);
-  } 
+  };
 
   return (
     <Modal isOpen={isOpen} toggle={toggle} onOpened={reset}>
-      <ModalHeader toggle={toggle}></ModalHeader>
+      <ModalHeader toggle={toggle} />
       {!locationKept && !locationRemoved && (
         <>
           <ModalBody>
@@ -94,6 +94,6 @@ const DeleteHoumeCountryModal = ({ isOpen, toggle, setLocation }) => {
       )}
     </Modal>
   );
-};
+}
 
 export default DeleteHoumeCountryModal;

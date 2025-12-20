@@ -3,6 +3,7 @@ import { faCopy } from '@fortawesome/free-solid-svg-icons';
 import { toast } from 'react-toastify';
 import './style.css';
 
+// eslint-disable-next-line react/function-component-definition
 const CopyToClipboard = ({ writeText, message }) => {
   const handleCopyToClipboard = () => {
     navigator.clipboard.writeText(writeText);

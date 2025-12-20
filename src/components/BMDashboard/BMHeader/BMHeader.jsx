@@ -1,9 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 // import { getUserProfile } from '../../actions/userProfile'
-import { getHeaderData } from '../../../actions/authActions';
-import { getAllRoles } from '../../../actions/role';
 import { Link } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
+import {
+  Collapse,
+  Navbar,
+  NavbarToggler,
+  Nav,
+  NavItem,
+  NavLink,
+  UncontrolledDropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+} from 'reactstrap';
+import { fetchTaskEditSuggestions } from '~/components/TaskEditSuggestions/thunks';
+import { getHeaderData } from '../../../actions/authActions';
+import { getAllRoles } from '../../../actions/role';
 import Timer from '../../Timer/Timer';
 import OwnerMessage from '../../OwnerMessage/OwnerMessage';
 import {
@@ -35,25 +48,11 @@ import {
   POPUP_MANAGEMENT,
   PERMISSIONS_MANAGEMENT,
 } from '../../../languages/en/ui';
-import {
-  Collapse,
-  Navbar,
-  NavbarToggler,
-  NavbarBrand,
-  Nav,
-  NavItem,
-  NavLink,
-  UncontrolledDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-} from 'reactstrap';
 import Logout from '../../Logout/Logout';
-import './BMHeader.css';
+import styles from './BMHeader.module.css';
 import hasPermission, { cantUpdateDevAdminDetails } from '../../../utils/permissions';
-import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
 
-export const Header = props => {
+export function Header(props) {
   const [isOpen, setIsOpen] = useState(false);
   const [logoutPopup, setLogoutPopup] = useState(false);
   const { isAuthenticated, user, firstName, profilePic } = props.auth;
@@ -93,12 +92,13 @@ export const Header = props => {
     }
   }, [props.auth.isAuthenticated]);
 
+  const roles = props.role?.roles;
+
   useEffect(() => {
     if (roles.length === 0) {
       props.getAllRoles();
     }
   }, []);
-  const roles = props.role?.roles;
 
   const toggle = () => {
     setIsOpen(prevIsOpen => !prevIsOpen);
@@ -109,16 +109,16 @@ export const Header = props => {
   };
 
   return (
-    <div className="header-wrapper">
-      <Navbar className="py-3 navbar" color="dark" dark expand="xl">
+    <div className={`${styles.headerWrapper}`}>
+      <Navbar className={`py-3 ${styles.navbar}`} color="dark" dark expand="xl">
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
         <div
-          className="timer-message-section"
-          style={user.role == 'Owner' ? { marginRight: '6rem' } : { marginRight: '10rem' }}
+          className={`${styles.timerMessageSection}`}
+          style={user.role === 'Owner' ? { marginRight: '6rem' } : { marginRight: '10rem' }}
         >
           {isAuthenticated && <Timer />}
           {isAuthenticated && (
-            <div className="owner-message">
+            <div className={`${styles.ownerMessage}`}>
               <OwnerMessage />
             </div>
           )}
@@ -126,11 +126,11 @@ export const Header = props => {
         <NavbarToggler onClick={toggle} />
         {isAuthenticated && (
           <Collapse isOpen={isOpen} navbar>
-            <Nav className="ml-auto nav-links" navbar>
+            <Nav className={`ml-auto ${styles.navLinks}`} navbar>
               {canUpdateTask && (
                 <NavItem>
                   <NavLink tag={Link} to="/taskeditsuggestions">
-                    <div className="redBackGroupHeader">
+                    <div className={`${styles.redBackGroupHeader}`}>
                       <span>{props.taskEditSuggestionCount}</span>
                     </div>
                   </NavLink>
@@ -138,22 +138,22 @@ export const Header = props => {
               )}
               <NavItem>
                 <NavLink tag={Link} to="/dashboard">
-                  <span className="dashboard-text-link">{DASHBOARD}</span>
+                  <span className={`${styles.dashboardTextLink}`}>{DASHBOARD}</span>
                 </NavLink>
               </NavItem>
               <NavItem>
                 <NavLink tag={Link} to="/bmdashboard">
-                  <span className="dashboard-text-link">{BM_DASHBOARD}</span>
+                  <span className={`${styles.dashboardTextLink}`}>{BM_DASHBOARD}</span>
                 </NavLink>
               </NavItem>
               <NavItem>
                 <NavLink tag={Link} to={`/timelog/${user.userid}`}>
-                  <span className="dashboard-text-link">{TIMELOG}</span>
+                  <span className={`${styles.dashboardTextLink}`}>{TIMELOG}</span>
                 </NavLink>
               </NavItem>
               <UncontrolledDropdown nav inNavbar>
                 <DropdownToggle nav caret>
-                  <span className="dashboard-text-link">{BM_PROJECT}</span>
+                  <span className={`${styles.dashboardTextLink}`}>{BM_PROJECT}</span>
                 </DropdownToggle>
                 <DropdownMenu>
                   <>
@@ -190,7 +190,7 @@ export const Header = props => {
               {canGetWeeklySummaries ? (
                 <UncontrolledDropdown nav inNavbar>
                   <DropdownToggle nav caret>
-                    <span className="dashboard-text-link">{REPORTS}</span>
+                    <span className={`${styles.dashboardTextLink}`}>{REPORTS}</span>
                   </DropdownToggle>
                   <DropdownMenu>
                     <DropdownItem tag={Link} to="/reports">
@@ -224,7 +224,7 @@ export const Header = props => {
                 canManageUser) && (
                 <UncontrolledDropdown nav inNavbar>
                   <DropdownToggle nav caret>
-                    <span className="dashboard-text-link">{OTHER_LINKS}</span>
+                    <span className={`${styles.dashboardTextLink}`}>{OTHER_LINKS}</span>
                   </DropdownToggle>
                   <DropdownMenu>
                     {canPostUserProfile ||
@@ -233,16 +233,12 @@ export const Header = props => {
                       <DropdownItem tag={Link} to="/usermanagement">
                         {USER_MANAGEMENT}
                       </DropdownItem>
-                    ) : (
-                      <React.Fragment></React.Fragment>
-                    )}
+                    ) : null}
                     {canCreateBadges ? (
                       <DropdownItem tag={Link} to="/badgemanagement">
                         {BADGE_MANAGEMENT}
                       </DropdownItem>
-                    ) : (
-                      <React.Fragment></React.Fragment>
-                    )}
+                    ) : null}
                     {canPostProject && (
                       <DropdownItem tag={Link} to="/projects">
                         {PROJECTS}
@@ -256,7 +252,7 @@ export const Header = props => {
                     {canCreatePopup || canUpdatePopup ? (
                       <>
                         <DropdownItem divider />
-                        <DropdownItem tag={Link} to={`/admin/`}>
+                        <DropdownItem tag={Link} to="/admin/">
                           {POPUP_MANAGEMENT}
                         </DropdownItem>
                       </>
@@ -281,7 +277,7 @@ export const Header = props => {
               </NavItem>
               <UncontrolledDropdown nav>
                 <DropdownToggle nav caret>
-                  <span className="dashboard-text-link">
+                  <span className={`${styles.dashboardTextLink}`}>
                     {WELCOME}, {firstName}
                   </span>
                 </DropdownToggle>
@@ -306,7 +302,7 @@ export const Header = props => {
       </Navbar>
     </div>
   );
-};
+}
 
 const mapStateToProps = state => ({
   auth: state.auth,

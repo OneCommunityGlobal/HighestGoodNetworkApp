@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import {
   Button,
@@ -13,17 +13,17 @@ import {
   moveTasks,
   deleteTask,
   emptyTaskItems,
-  copyTask,
   deleteChildrenTasks,
 } from '../../../../../actions/task.js';
 import ModalDelete from './../../../../../components/common/Modal';
 import * as Message from './../../../../../languages/en/messages';
 import { getPopupById } from './../../../../../actions/popupEditorAction';
 import { TASK_DELETE_POPUP_ID } from './../../../../../constants/popupId';
-import hasPermission from 'utils/permissions';
-import { boxStyle } from 'styles';
+import hasPermission from '~/utils/permissions';
+import { boxStyle, boxStyleDark } from '~/styles';
+import styles from '../wbs.module.css';
 
-function ControllerRow (props) {
+function ControllerRow(props) {
   /*
   * -------------------------------- variable declarations --------------------------------
   */
@@ -32,14 +32,14 @@ function ControllerRow (props) {
   const canPostTask = props.hasPermission('postTask');
 
   // props from store
-  const { role, userPermissions, roles, popupContent } = props;
+  const { role, userPermissions, roles, popupContent, darkMode, tasks } = props;
 
   // states from hooks
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
 
-
+  const { currentTask, copyCurrentTask } = props;
   /*
   * -------------------------------- functions --------------------------------
   */
@@ -51,36 +51,52 @@ function ControllerRow (props) {
   const toggle = () => setDropdownOpen(prevState => !prevState);
 
   const onMove = async (from, to) => {
-    props.setIsLoading(true);
     await props.moveTasks(props.wbsId, from, to);
     props.load();
-    props.setIsLoading(false);
   };
 
-  const onCopy = id => {
+  const onCopy = () => {
     setIsCopied(true);
-    props.copyTask(id);
+    copyCurrentTask(currentTask);
   };
 
   const deleteTask = async (taskId, mother) => {
-    props.setIsLoading(true);
     await props.deleteTask(taskId, mother);
     await props.emptyTaskItems();
     await props.load();
-    props.setIsLoading(false);
   };
 
   /*
-  * -------------------------------- useEffects --------------------------------
+  * -------------------------------- JSX rendering --------------------------------
   */
-
   return (
-    <tr className="wbsTaskController desktop-view" id={`controller_${props.taskId}`}>
-      <td colSpan={props.tableColNum} className="controlTd">
-        {props.level < 4 && canPostTask ? (
-          <AddTaskModal
-            key={`addTask_${props.taskId}`}
-            taskNum={props.num}
+    <tr className={styles["wbsTaskController"]} id={`controller_${props.taskId}`}>
+      <td colSpan={props.tableColNum} className={`${styles['controlTd']} ${darkMode ? 'bg-space-cadet' : ''}`}>
+        <div className={styles["task-action-buttons"]}>
+          {props.level < 4 && canPostTask ? (
+            <AddTaskModal
+              label={"Add Subtask"}
+              key={`addTask_${props.taskId}`}
+              taskNum={props.num}
+              taskId={props.taskId}
+              projectId={props.projectId}
+              wbsId={props.wbsId}
+              parentId1={props.parentId1}
+              parentId2={props.parentId2}
+              parentId3={props.parentId3}
+              mother={props.mother}
+              childrenQty={props.childrenQty}
+              level={props.level}
+              load={props.load}
+              pageLoadTime={props.pageLoadTime}
+              isOpen={props.isOpen}
+              setIsOpen={props.setIsOpen}
+              tasks={tasks}
+            />
+          ) : null}
+          <EditTaskModal
+            key={`editTask_${props.taskId}`}
+            parentNum={props.num}
             taskId={props.taskId}
             projectId={props.projectId}
             wbsId={props.wbsId}
@@ -88,85 +104,61 @@ function ControllerRow (props) {
             parentId2={props.parentId2}
             parentId3={props.parentId3}
             mother={props.mother}
-            childrenQty={props.childrenQty}
             level={props.level}
             load={props.load}
-            pageLoadTime={props.pageLoadTime}
-            isOpen={props.isOpen}
-            setIsOpen={props.setIsOpen}
           />
-        ) : null}
-        <EditTaskModal
-          key={`editTask_${props.taskId}`}
-          parentNum={props.num}
-          taskId={props.taskId}
-          projectId={props.projectId}
-          wbsId={props.wbsId}
-          parentId1={props.parentId1}
-          parentId2={props.parentId2}
-          parentId3={props.parentId3}
-          mother={props.mother}
-          level={props.level}
-          load={props.load}
-          setIsLoading={props.setIsLoading}
-        />
-        {canDeleteTask ? (
-          <>
+         
+          {canDeleteTask && (
             <Button
               color="danger"
               size="sm"
-              className="controlBtn"
+              className={styles["controlBtn"]}
               onClick={showUpDeleteModal}
-              style={boxStyle}
+              style={darkMode ? boxStyleDark : boxStyle}
             >
               Remove
             </Button>
+          )}
 
-            <Dropdown
-              direction="up"
-              isOpen={dropdownOpen}
-              toggle={toggle}
-              style={{ ...boxStyle, float: 'left' }}
-            >
-              <DropdownToggle caret color="primary" className='controlBtn' size="sm">
-                Move
-              </DropdownToggle>
-              <DropdownMenu>
-                {props.siblings.map((item, i) => {
-                  if (item.num !== props.num) {
-                    return (
-                      <DropdownItem key={i} onClick={e => onMove(props.num, item.num)}>
-                        {item.num.split('.0')[0]}
-                      </DropdownItem>
-                    );
-                  }
-                })}
-              </DropdownMenu>
-            </Dropdown>
+          <Dropdown direction="up" isOpen={dropdownOpen} toggle={toggle}>
+            <DropdownToggle caret color="primary" className={styles["controlBtn"]} size="sm" style={darkMode ? boxStyleDark : boxStyle}>
+              Move
+            </DropdownToggle>
+            <DropdownMenu>
+              {props.siblings.map((item, i) => {
+                if (item.num !== props.num) {
+                  return (
+                    <DropdownItem key={i} onClick={e => onMove(props.num, item.num)}>
+                      {item.num.split('.0')[0]}
+                    </DropdownItem>
+                  );
+                }
+              })}
+            </DropdownMenu>
+          </Dropdown>
 
-            <Button
-              color="secondary"
-              size="sm"
-              className="controlBtn"
-              onClick={() => onCopy(props.taskId)}
-              style={boxStyle}
-            >
-              {isCopied ? 'Copied' : 'Copy'}
-            </Button>
-          </>
-        ) : null}
+          <Button
+            color="secondary"
+            size="sm"
+            className={styles["controlBtn"]}
+            onClick={() => onCopy(props.taskId)}
+            style={darkMode ? boxStyleDark : boxStyle}
+          >
+            {isCopied ? 'Copied' : 'Copy'}
+          </Button>
+        </div>
+
         <ModalDelete
-          isOpen={modalDelete}
-          closeModal={() => {
-            setModalDelete(false);
-          }}
+          isOpen={canDeleteTask && modalDelete}
+          closeModal={() => setModalDelete(false)}
           confirmModal={() => deleteTask(props.taskId, props.mother)}
           modalMessage={popupContent || ''}
           modalTitle={Message.CONFIRM_DELETION}
+          darkMode={darkMode}
         />
       </td>
     </tr>
-  )
+  );
 }
 
 const mapStateToProps = state => ({
@@ -174,15 +166,14 @@ const mapStateToProps = state => ({
   userPermissions: state.auth.user?.permissions?.frontPermissions,
   roles: state.role.roles,
   popupContent: state.popupEditor.currPopup.popupContent,
+  darkMode: state.theme.darkMode,
 });
 
 export default connect(mapStateToProps, {
   moveTasks,
   deleteTask,
   emptyTaskItems,
-  copyTask,
   getPopupById,
   deleteChildrenTasks,
   hasPermission,
 })(ControllerRow);
-

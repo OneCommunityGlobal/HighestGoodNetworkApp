@@ -1,1 +1,0 @@
-export { ProjectMemberTable } from './ProjectMemberTable';

@@ -37,7 +37,7 @@ thead {
 }
 
 .teams__overview--top {
-  background: gray;
+  background: transparent;
 }
 
 .teams__overview--top .card {
@@ -57,12 +57,17 @@ thead {
   color: white;
 }
 
+#card_in_active {
+  background: #fbad4c;
+  color: white;
+}
+
 .teams__order--input div {
   margin-top: 7px;
 }
 
 .teams__active--input i {
-  margin-top: 10px;
+  margin-left: 20px;
   cursor: pointer;
 }
 
@@ -83,12 +88,10 @@ thead {
 
 .isActive i {
   color: lawngreen;
-  margin-top: 10px;
 }
 
 .isNotActive i {
   color: #dee2e6;
-  margin-top: 10px;
 
 }
 

@@ -1,21 +1,30 @@
 import React from 'react';
 
-const Dropdown = ({ value, name, label, options, className, error, ...rest }) => {
+function Dropdown({ value, name, label, options, className, error, onChange, onBlur, disabled }) {
   return (
-    <div className={`form-group ${className}`}>
+    <div className={`form-group ${className || ''}`}>
       <label htmlFor={name}>{label}</label>
 
-      <select value={value} name={name} id={name} {...rest} className="form-control">
-        <option value="">Please select a {label}</option>
+      <select
+        id={name}
+        name={name}
+        value={value}
+        onChange={onChange}
+        onBlur={onBlur}
+        disabled={disabled}
+        className="form-control"
+      >
+        <option value="">{`Please select a ${label}`}</option>
         {options.map(item => (
-          <option value={item._id} key={item._id}>
+          <option key={item._id} value={item._id}>
             {item.name}
           </option>
         ))}
       </select>
+
       {error && <div className="alert alert-danger">{error}</div>}
     </div>
   );
-};
+}
 
 export default Dropdown;

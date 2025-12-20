@@ -1,10 +1,19 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Form, FormGroup, Label, Input, Button } from 'reactstrap';
-import DragAndDrop from 'components/common/DragAndDrop/DragAndDrop';
-import { PhoneInput } from 'components/common/PhoneInput/PhoneInput';
+import DragAndDrop from '~/components/common/DragAndDrop/DragAndDrop';
+import PhoneInput from 'react-phone-input-2';
+import { toast } from 'react-toastify';
 
-import { boxStyle } from 'styles';
-import './AddToolForm.css';
+import { useDispatch, useSelector } from 'react-redux';
+import Joi from 'joi-browser';
+import { boxStyle } from '~/styles';
+import styles from './AddToolForm.module.css';
+
+import {
+  fetchToolTypes,
+  postBuildingToolType,
+  resetPostBuildingToolTypeResult,
+} from '../../../actions/bmdashboard/invTypeActions';
 
 const initialFormState = {
   project: 'Project1',
@@ -13,7 +22,7 @@ const initialFormState = {
   unitPrice: '',
   currency: 'USD',
   quantity: '',
-  purchaseRental: 'Purchase',
+  purchaseRental: 'purchase',
   condition: 'New',
   fromDate: '',
   toDate: '',
@@ -32,6 +41,68 @@ export default function AddToolForm() {
   const [areaCode, setAreaCode] = useState('1');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [uploadedFiles, setUploadedFiles] = useState([]); // log here for correct state snapshot (will show each render)
+  const [errors, setErrors] = useState({});
+  const dispatch = useDispatch();
+  const postBuildingInventoryResult = useSelector(state => state.bmInvTypes.postedResult);
+
+  useEffect(() => {
+    if (postBuildingInventoryResult?.error === true) {
+      toast.error(`${postBuildingInventoryResult?.result}`);
+      dispatch(resetPostBuildingToolTypeResult());
+    } else if (postBuildingInventoryResult?.result !== null) {
+      toast.success(
+        `Created a new Tool Type "${postBuildingInventoryResult?.result.name}" successfully`,
+      );
+      dispatch(fetchToolTypes());
+      dispatch(resetPostBuildingToolTypeResult());
+      // setDisableSubmit(true);
+    }
+  }, [postBuildingInventoryResult]);
+
+  const validationObj = {
+    name: Joi.string()
+      .min(3)
+      .max(15)
+      .required(),
+    description: Joi.string()
+      .min(5)
+      .max(500)
+      .required(),
+    invoice: Joi.string().required(),
+    quantity: Joi.number()
+      .min(1)
+      .max(999)
+      .integer()
+      .required(),
+    unitPrice: Joi.number()
+      .min(1)
+      .required(),
+    fromDate: Joi.date().required(),
+    toDate: Joi.date()
+      .when('purchaseRental', {
+        is: 'rental',
+        then: Joi.date()
+          .greater(Joi.ref('fromDate'))
+          .required(),
+      })
+      .when('purchaseRental', {
+        is: 'purchase',
+        then: Joi.date().allow(''),
+      }),
+  };
+
+  const schema = Joi.object(validationObj).unknown();
+
+  const validate = data => {
+    const result = schema.validate(data, { abortEarly: false });
+    if (!result.error) return null;
+
+    const errorMessages = {};
+    result.error.details.forEach(detail => {
+      errorMessages[detail.path[0]] = detail.message;
+    });
+    return errorMessages;
+  };
 
   const handleInputChange = (name, value) => {
     setFormData(prevData => ({
@@ -59,15 +130,36 @@ export default function AddToolForm() {
   const totalTax = calculateTotalTax(Number(taxes), totalPrice);
   const totalPriceWithShipping = (totalPrice + totalTax + Number(shippingFee)).toFixed(2);
 
-  const handleSubmit = event => {
+  const phoneChange = (name, phone) => {
+    setFormData(prevData => ({
+      ...prevData,
+      [name]: phone,
+    }));
+  };
+
+  const handleSubmit = async event => {
     event.preventDefault();
-    // const updatedFormData = {
-    //   ...formData,
-    //   images: uploadedFiles,
-    //   areaCode,
-    //   phoneNumber,
-    // };
-    // console.log('Data', updatedFormData);
+    const validationErrors = validate(formData);
+    setErrors(validationErrors || {});
+
+    if (validationErrors) {
+      return;
+    }
+    const imageURL = uploadedFiles.map(file => URL.createObjectURL(file));
+    const updatedFormData = {
+      ...formData,
+      category: 'Tool',
+      images: imageURL[0],
+      areaCode,
+      phoneNumber,
+      totalPriceWithShipping,
+    };
+    dispatch(postBuildingToolType(updatedFormData));
+    setFormData(initialFormState);
+    setUploadedFiles([]);
+    setAreaCode(1);
+    setPhoneNumber('');
+    // }
     // TODO: validate form data
     // TODO: submit data to API
   };
@@ -84,22 +176,11 @@ export default function AddToolForm() {
   };
 
   return (
-    <Form className="add-tool-form container" onSubmit={handleSubmit}>
+    <Form className={`${styles.addToolForm} container`} onSubmit={handleSubmit}>
       <FormGroup>
-        <Label for="select-project">Project</Label>
-        <Input
-          id="select-project"
-          name="project"
-          type="select"
-          value={formData.project}
-          onChange={event => handleInputChange('project', event.target.value)}
-        >
-          <option value="Project1">Project 1</option>
-          <option value="Project2">Project 2</option>
-        </Input>
-      </FormGroup>
-      <FormGroup>
-        <Label for="tool">Tool name</Label>
+        <Label for="tool">
+          Tool name <span className={`${styles.fieldRequired}`}>*</span>
+        </Label>
         <Input
           id="tool"
           type="text"
@@ -108,9 +189,17 @@ export default function AddToolForm() {
           value={formData.name}
           onChange={event => handleInputChange('name', event.target.value)}
         />
+        {errors.name && (
+          <Label for="toolNameErr" sm={12} className={`${styles.toolFormError}`}>
+            {/* Tool &quot;name&quot; length must be at least 4 characters that are not space. */}
+            {errors.name}
+          </Label>
+        )}
       </FormGroup>
       <FormGroup>
-        <Label for="invoice-number">Invoice Number or ID</Label>
+        <Label for="invoice-number">
+          Invoice Number or ID <span className={`${styles.fieldRequired}`}>*</span>
+        </Label>
         <Input
           id="invoice-number"
           type="text"
@@ -119,10 +208,17 @@ export default function AddToolForm() {
           value={formData.invoice}
           onChange={event => handleInputChange('invoice', event.target.value)}
         />
+        {errors.invoice && (
+          <Label for="toolInvoiceErr" sm={12} className={`${styles.toolFormError}`}>
+            {errors.invoice}
+          </Label>
+        )}
       </FormGroup>
-      <div className="add-tool-flex-group">
+      <div className={`${styles.addToolFlexGroup}`}>
         <FormGroup>
-          <Label for="unit-price">Unit Price (excl.taxes & shipping)</Label>
+          <Label for="unit-price">
+            Unit Price (excl.taxes & shipping) <span className={`${styles.fieldRequired}`}>*</span>
+          </Label>
           <Input
             id="unit-price"
             type="number"
@@ -130,6 +226,11 @@ export default function AddToolForm() {
             value={formData.unitPrice}
             onChange={event => handleInputChange('unitPrice', event.target.value)}
           />
+          {errors.unitPrice && (
+            <Label for="toolUnitPriceErr" sm={12} className={`${styles.toolFormError}`}>
+              {errors.unitPrice}
+            </Label>
+          )}
         </FormGroup>
         <FormGroup>
           <Label for="currency">Currency</Label>
@@ -146,7 +247,9 @@ export default function AddToolForm() {
           </Input>
         </FormGroup>
         <FormGroup>
-          <Label for="quantity">Total quantity</Label>
+          <Label for="quantity">
+            Total quantity <span className={`${styles.fieldRequired}`}>*</span>
+          </Label>
           <Input
             id="quantity"
             type="number"
@@ -154,9 +257,14 @@ export default function AddToolForm() {
             value={formData.quantity}
             onChange={event => handleInputChange('quantity', event.target.value)}
           />
+          {errors.quantity && (
+            <Label for="toolQuantityErr" sm={12} className={`${styles.toolFormError}`}>
+              {errors.quantity}
+            </Label>
+          )}
         </FormGroup>
       </div>
-      <div className="add-tool-flex-group">
+      <div className={`${styles.addToolFlexGroup}`}>
         <FormGroup>
           <Label for="purchase-rental">Purchase or Rental</Label>
           <Input
@@ -184,9 +292,11 @@ export default function AddToolForm() {
           </Input>
         </FormGroup>
       </div>
-      <div className="add-tool-flex-group">
+      <div className={`${styles.addToolFlexGroup}`}>
         <FormGroup>
-          <Label for="from-date">Purchase/Rental Date</Label>
+          <Label for="from-date">
+            Purchase/Rental Date <span className={`${styles.fieldRequired}`}>*</span>
+          </Label>
           <Input
             id="from-date"
             type="date"
@@ -194,6 +304,11 @@ export default function AddToolForm() {
             value={formData.fromDate}
             onChange={event => handleInputChange('fromDate', event.target.value)}
           />
+          {errors.fromDate && (
+            <Label for="fromDateErr" sm={12} className={`${styles.toolFormError}`}>
+              Enter Date
+            </Label>
+          )}
         </FormGroup>
         <FormGroup>
           <Label for="to-date">Return date (if rented)</Label>
@@ -205,9 +320,14 @@ export default function AddToolForm() {
             onChange={event => handleInputChange('toDate', event.target.value)}
             disabled={isPurchased}
           />
+          {errors.toDate && (
+            <Label for="toDateErr" sm={12} className={`${styles.toolFormError}`}>
+              Return Date must be after Rental Date
+            </Label>
+          )}
         </FormGroup>
       </div>
-      <div className="add-tool-flex-group">
+      <div className={`${styles.addToolFlexGroup}`}>
         <FormGroup>
           <Label for="shipping-fee">Shipping Fee excluding taxes (enter 0 if free)</Label>
           <Input
@@ -232,15 +352,14 @@ export default function AddToolForm() {
         </FormGroup>
       </div>
 
-      {/* <PhoneInput onPhoneNumberChange={handlePhoneNumberChange} /> */}
-
       <PhoneInput
-        areaCode={areaCode}
-        setAreaCode={setAreaCode}
-        phoneNumber={phoneNumber}
-        setPhoneNumber={setPhoneNumber}
+        country="US"
+        regions={['america', 'europe', 'asia', 'oceania', 'africa']}
+        limitMaxLength="true"
+        value={formData.phoneNumber}
+        onChange={phone => phoneChange('phoneNumber', phone)}
+        inputStyle={{ height: 'auto', width: '40%', fontSize: 'inherit' }}
       />
-
       <FormGroup>
         <Label for="imageUpload">Upload Tool/Equipment Picture</Label>
         <DragAndDrop
@@ -251,7 +370,7 @@ export default function AddToolForm() {
           updateUploadedFiles={setUploadedFiles}
         />
         {uploadedFiles.length > 0 && (
-          <div className="file-preview-container">
+          <div className={`${styles.filePreviewContainer}`}>
             {uploadedFiles.map((file, index) => (
               <div key={`${file.name} - ${file.lastModified}`} className="file-preview">
                 <img src={URL.createObjectURL(file)} alt={`preview-${index}`} />
@@ -276,7 +395,9 @@ export default function AddToolForm() {
         />
       </FormGroup>
       <FormGroup>
-        <Label for="description">Tool/Equipment Description</Label>
+        <Label for="description">
+          Tool/Equipment Description <span className={`${styles.fieldRequired}`}>*</span>
+        </Label>
         <Input
           type="textarea"
           rows="4"
@@ -285,14 +406,30 @@ export default function AddToolForm() {
           value={formData.description}
           onChange={event => handleInputChange('description', event.target.value)}
         />
+        {errors.description && (
+          <Label for="toolDescriptionErr" sm={12} className={`${styles.toolFormError}`}>
+            {/* Tool &quot;description&quot; length must be at least 4 characters that are not space. */}
+            {errors.description}
+          </Label>
+        )}
       </FormGroup>
-      <div className="add-tool-total-price">
+      <div className={`${styles.addToolTotalPrice}`}>
         <div>Total Price</div>
-        <div className="total-price-calculated">
+        <div className={`${styles.totalPriceCalculated}`}>
           {totalPriceWithShipping} {formData.currency}
         </div>
       </div>
-      <div className="add-tool-buttons">
+      {errors &&
+        (errors.name ||
+          errors.description ||
+          errors.invoice ||
+          errors.quantity ||
+          errors.unitPrice ||
+          errors.toDate ||
+          errors.fromDate) && (
+          <div className={`${styles.toolFormError}`}> Missing Required Field </div>
+        )}
+      <div className={`${styles.addToolButtons}`}>
         <Button outline style={boxStyle} onClick={handleCancelClick}>
           Cancel
         </Button>

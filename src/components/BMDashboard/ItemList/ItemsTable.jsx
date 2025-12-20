@@ -4,6 +4,7 @@ import { BiPencil } from 'react-icons/bi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSortDown, faSort, faSortUp } from '@fortawesome/free-solid-svg-icons';
 import RecordsModal from './RecordsModal';
+import styles from './ItemListView.module.css';
 
 export default function ItemsTable({
   selectedProject,
@@ -11,6 +12,7 @@ export default function ItemsTable({
   filteredItems,
   UpdateItemModal,
   dynamicColumns,
+  darkMode = false,
 }) {
   const [sortedData, setData] = useState(filteredItems);
   const [modal, setModal] = useState(false);
@@ -96,8 +98,8 @@ export default function ItemsTable({
         recordType={recordType}
       />
       <UpdateItemModal modal={updateModal} setModal={setUpdateModal} record={updateRecord} />
-      <div className="items_table_container">
-        <Table>
+      <div className={`${styles.itemsTableContainer} ${darkMode ? styles.darkTableWrapper : ''}`}>
+        <Table className={darkMode ? styles.darkTable : ''}>
           <thead>
             <tr>
               {selectedProject === 'all' ? (
@@ -117,6 +119,7 @@ export default function ItemsTable({
               {dynamicColumns.map(({ label }) => (
                 <th key={label}>{label}</th>
               ))}
+              <th>Usage Record</th>
               <th>Updates</th>
               <th>Purchases</th>
             </tr>
@@ -132,8 +135,29 @@ export default function ItemsTable({
                     {dynamicColumns.map(({ label, key }) => (
                       <td key={label}>{getNestedValue(el, key)}</td>
                     ))}
-                    <td className="items_cell">
-                      <button type="button" onClick={() => handleEditRecordsClick(el, 'Update')}>
+                    <td className={`${styles.itemsCell}`}>
+                      <button
+                        type="button"
+                        onClick={() => handleEditRecordsClick(el, 'UsageRecord')}
+                        aria-label="Edit Record"
+                      >
+                        <BiPencil />
+                      </button>
+                      <Button
+                        color="primary"
+                        outline
+                        size="sm"
+                        onClick={() => handleViewRecordsClick(el, 'UsageRecord')}
+                      >
+                        View
+                      </Button>
+                    </td>
+                    <td className={`${styles.itemsCell}`}>
+                      <button
+                        type="button"
+                        onClick={() => handleEditRecordsClick(el, 'Update')}
+                        aria-label="Edit Record"
+                      >
                         <BiPencil />
                       </button>
                       <Button
@@ -150,7 +174,7 @@ export default function ItemsTable({
                         color="primary"
                         outline
                         size="sm"
-                        onClick={() => handleViewRecordsClick(el.purchaseRecord, 'Purchase')}
+                        onClick={() => handleViewRecordsClick(el, 'Purchase')}
                       >
                         View
                       </Button>

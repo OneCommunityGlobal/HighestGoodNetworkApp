@@ -3,15 +3,15 @@ import UserLinks from '../UserLinks';
 import LinkModButton from '../UserProfileEdit/LinkModButton';
 
 const UserLinkLayout = props => {
-  const { userProfile, updateLink, handleLinkModel, handleSubmit } = props;
+  const { userProfile, updateLink, handleLinkModel, handleSubmit, darkMode } = props;
 
   const { adminLinks, personalLinks } = userProfile;
 
   return (
     <div data-testid="user-link">
-      <p style={{ display: 'inline-block', marginRight: 10 }}>LINKS </p>
+      <p className={darkMode ? 'text-light' : ''} style={{ display: 'inline-block', marginRight: 10 }}>LINKS </p>
       {props.canEdit ? (
-        <LinkModButton userProfile={userProfile} updateLink={updateLink} role={props.role} handleSubmit={handleSubmit}/>
+        <LinkModButton userProfile={userProfile} updateLink={updateLink} role={props.role} handleSubmit={handleSubmit} color={darkMode ? "white" : ""}/>
       ) : null}
       <UserLinks linkSection="user" links={personalLinks} handleLinkModel={handleLinkModel} />
       <UserLinks linkSection="user" links={adminLinks} handleLinkModel={handleLinkModel} />
