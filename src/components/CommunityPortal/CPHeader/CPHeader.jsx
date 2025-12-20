@@ -338,9 +338,9 @@ export function CPHeader(props) {
                         {UPDATE_PASSWORD}
                       </DropdownItem>
                     )}
-                    <DropdownItem className={darkMode ? 'text-light' : ''}>
+                    <div style={{ padding: '0 1rem' }}>
                       <DarkModeButton />
-                    </DropdownItem>
+                    </div>
                     <DropdownItem divider />
                     <DropdownItem onClick={openModal} className={darkMode ? 'text-light' : ''}>
                       {LOGOUT}

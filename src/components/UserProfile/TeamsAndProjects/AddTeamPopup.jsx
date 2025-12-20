@@ -1,164 +1,256 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Alert, Spinner } from 'reactstrap';
 import AddTeamsAutoComplete from './AddTeamsAutoComplete';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import '../../Header/DarkMode.css';
+import '../../Header/index.css';
 import { postNewTeam, getAllUserTeams } from '../../../../src/actions/allTeamsAction';
+// eslint-disable-next-line import/no-named-as-default-member
 import axios from 'axios';
 
 // eslint-disable-next-line react/display-name
-const AddTeamPopup = React.memo(props => {
+const AddTeamPopup = React.memo((props) => {
   const { darkMode } = props;
-
   const dispatch = useDispatch();
+
+  // ---- Local source of truth for teams (avoids relying on store shape)
+  const [teams, setTeams] = useState(() => props.teamsData?.allTeams ?? []);
+  const [teamsLoading, setTeamsLoading] = useState(false);
 
   const [selectedTeam, onSelectTeam] = useState(undefined);
   const [isValidTeam, onValidation] = useState(true);
   const [isValidNewTeam, onNewTeamValidation] = useState(true);
-  const [searchText, setSearchText] = useState(''); // add searchText state
+  const [searchText, setSearchText] = useState('');
 
-  // states and onrs for the new team form
   const [isDuplicateTeam, setDuplicateTeam] = useState(false);
   const [isNotDisplayAlert, setIsNotDisplayAlert] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Keep local teams in sync if parent props change later
+  useEffect(() => {
+    if (Array.isArray(props.teamsData?.allTeams) && props.teamsData.allTeams.length) {
+      setTeams(props.teamsData.allTeams);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.teamsData?.allTeams]);
 
   const closePopup = () => {
     props.onClose();
     !isNotDisplayAlert && setIsNotDisplayAlert(true);
   };
 
-  // prettier-ignore
-  const format = result => result.toLowerCase().trim().replace(/\s+/g, '');
+  const normalize = (s) =>
+    (s ?? '').toString().toLowerCase().trim().replace(/\s+/g, ' ');
 
-  const FilteredToTeamSpecific = arrayOrObj => {
-    const result = props.teamsData.allTeams.filter(
-      item => format(item.teamName) === format(searchText),
-    );
-    if (result.length > 0) {
-      if (arrayOrObj) return result[0];
-      else return result;
-    } else return undefined;
+  const allTeams = useMemo(() => teams ?? [], [teams]);
+
+  const findCandidates = () => {
+    const q = normalize(searchText);
+    if (!q) return [];
+    return allTeams.filter((t) => normalize(t.teamName).includes(q));
   };
 
-  const IfTheUserNotSelectedSuggestionAutoComplete = () => {
-    // prettier-ignore
-    if(searchText === '')  {onValidation(false);  return;}
-
-    const filterTeamData = FilteredToTeamSpecific(true);
-
-    if (filterTeamData) {
-      onAssignTeam(filterTeamData);
-      onValidation(true);
-      !isNotDisplayAlert && setIsNotDisplayAlert(true);
-    } else setIsNotDisplayAlert(false);
+  const findExact = () => {
+    const q = normalize(searchText);
+    if (!q) return undefined;
+    return allTeams.find((t) => normalize(t.teamName) === q);
   };
 
-  const onAssignTeam = result => {
-    //  prettier-ignore
-    if (!searchText) {onValidation(false);  return;} /* when the user typed nothing  */
+  const onAssignTeam = (result) => {
+    if (!result && !selectedTeam) {
+      onValidation(false);
+      return;
+    }
+    const toAssign = result || selectedTeam;
+    const idToCheck = toAssign?._id;
 
-    const idToCheck = result ? result._id : selectedTeam._id;
-
-    const some = !props.userTeamsById.some(x => x._id === idToCheck);
-
-    if ((result || selectedTeam) && some) {
-      props.onSelectAssignTeam(result ? result : selectedTeam);
-
+    const notAlreadyMember = !props.userTeamsById?.some((x) => x._id === idToCheck);
+    if (toAssign && notAlreadyMember) {
+      props.onSelectAssignTeam(toAssign);
       setSearchText('');
-
-      selectedTeam && (onSelectTeam(undefined), onValidation(false));
-      closePopup(); // automatically closes the popup after team assigned
-    } else
+      if (selectedTeam) {
+        onSelectTeam(undefined);
+        onValidation(false);
+      }
+      closePopup();
+    } else {
       toast.error(
-        'Your user has been found in this team. Please select another team to add your user.',
+        'Your user has been found in this team. Please select another team to add your user.'
       );
+    }
   };
 
-  const axiosResponseExceededTimeout = source => {
+  const axiosResponseExceededTimeout = (source) => {
     setIsLoading(false);
     source.cancel();
   };
 
-  const onCreateTeam = async () => {
-    if (searchText !== '') {
-      // eslint-disable-next-line import/no-named-as-default-member
-      const CancelToken = axios.CancelToken;
-      const source = CancelToken.source();
-      const timeout = setTimeout(() => axiosResponseExceededTimeout(source), 20000);
+  // Safely extract teams from various thunk/response shapes
+  const extractTeams = (payload) => {
+    if (!payload) return [];
+    // common shapes: array, {data: [...]}, {allTeams: [...]}, {data: {allTeams: [...]}}
+    if (Array.isArray(payload)) return payload;
+    if (Array.isArray(payload.data)) return payload.data;
+    if (Array.isArray(payload.allTeams)) return payload.allTeams;
+    if (payload.data && Array.isArray(payload.data.allTeams)) return payload.data.allTeams;
+    // some thunks return {status, data}
+    if (payload.status && Array.isArray(payload.data)) return payload.data;
+    if (payload.status && payload.data && Array.isArray(payload.data.allTeams)) return payload.data.allTeams;
+    return [];
+  };
 
+  const refreshTeams = async () => {
+    try {
+      setTeamsLoading(true);
+      const resp = await dispatch(getAllUserTeams());
+      const list = extractTeams(resp);
+      if (list.length) setTeams(list);
+    } finally {
+      setTeamsLoading(false);
+    }
+  };
+
+  const onCreateTeam = async () => {
+    if (!searchText) {
+      onNewTeamValidation(false);
+      return;
+    }
+
+    // eslint-disable-next-line import/no-named-as-default-member
+    const CancelToken = axios.CancelToken;
+    const source = CancelToken.source();
+    const timeout = setTimeout(() => axiosResponseExceededTimeout(source), 20000);
+
+    try {
       setIsLoading(true);
       const response = await dispatch(postNewTeam(searchText, true, source));
       clearTimeout(timeout);
-      if (response.status === 200) {
+
+      if (response?.status === 200) {
         setDuplicateTeam(false);
         !isNotDisplayAlert && setIsNotDisplayAlert(true);
-        // Get updated teams list and select the new team
-        await dispatch(getAllUserTeams());
+
+        // refresh list, then assign
+        await refreshTeams();
+
         toast.success('Team created successfully');
-        const newTeam = response.data; // Assuming response contains the new team data
-        const updatedTeams = [...props.teamsData.allTeams, newTeam];
-        props.teamsData.allTeams = updatedTeams;
+        // find newly created team by exact name match
+        const created =
+          allTeams.find((t) => normalize(t.teamName) === normalize(searchText)) ||
+          extractTeams(response)?.[0] ||
+          response?.data;
+
         setIsLoading(false);
-        onAssignTeam(newTeam);
+        onAssignTeam(created);
       } else {
         setIsLoading(false);
         const messageToastError =
-          response.status === 500
+          response?.status === 500
             ? 'No response received from the server'
             : 'Error occurred while creating team';
-        response.status === 403 ? setDuplicateTeam(true) : toast.error(messageToastError);
+        response?.status === 403 ? setDuplicateTeam(true) : toast.error(messageToastError);
       }
-    } else {
-      onNewTeamValidation(false);
+    } catch (e) {
+      clearTimeout(timeout);
+      setIsLoading(false);
+      toast.error('Error occurred while creating team');
     }
   };
+
+  const onConfirm = () => {
+    if (!searchText && !selectedTeam) {
+      onValidation(false);
+      return;
+    }
+
+    if (selectedTeam) {
+      onValidation(true);
+      !isNotDisplayAlert && setIsNotDisplayAlert(true);
+      onAssignTeam(selectedTeam);
+      return;
+    }
+
+    const exact = findExact();
+    if (exact) {
+      onValidation(true);
+      !isNotDisplayAlert && setIsNotDisplayAlert(true);
+      onAssignTeam(exact);
+      return;
+    }
+
+    const matches = findCandidates();
+    if (matches.length === 1) {
+      onValidation(true);
+      !isNotDisplayAlert && setIsNotDisplayAlert(true);
+      onAssignTeam(matches[0]);
+      return;
+    }
+
+    setIsNotDisplayAlert(false);
+  };
+
+  // Fetch/refresh teams whenever the modal opens
+  useEffect(() => {
+    if (props.open) {
+      refreshTeams();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.open]);
 
   useEffect(() => {
     onValidation(true);
     onNewTeamValidation(true);
+    setIsNotDisplayAlert(true);
+    setDuplicateTeam(false);
   }, [props.open]);
 
   return (
     <Modal
       isOpen={props.open}
       toggle={closePopup}
-      // eslint-disable-next-line jsx-a11y/no-autofocus
-      autoFocus={false}
       className={darkMode ? 'text-light dark-mode' : ''}
     >
       <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={closePopup}>
         Add Team
       </ModalHeader>
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''} style={{ textAlign: 'center' }}>
-        {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-        <label className={darkMode ? 'text-light' : ''} style={{ textAlign: 'left' }}>
+        <label  htmlFor="team-search" className={darkMode ? 'text-light' : ''} style={{ textAlign: 'left' }}>
           Add to Team
         </label>
+
         <div className="input-group-prepend" style={{ marginBottom: '10px' }}>
           <AddTeamsAutoComplete
-            teamsData={props.teamsData}
+            teamsData={{ allTeams }}   // always pass an array; from local state
             onCreateNewTeam={onCreateTeam}
             searchText={searchText}
-            setInputs={onSelectTeam}
-            setSearchText={setSearchText} // Added setSearchText prop
+            setInputs={onSelectTeam}   // passes TEAM OBJECT back
+            setSearchText={setSearchText}
           />
           <Button
             color="primary"
             style={{ marginLeft: '5px' }}
-            onClick={() => {
-              if (!searchText) onValidation(false);
-              else IfTheUserNotSelectedSuggestionAutoComplete();
-            }}
+            onClick={onConfirm}
             disabled={isLoading}
           >
             {isLoading ? <Spinner color="light" size="sm" /> : 'Confirm'}
           </Button>
         </div>
+
+        {/* Helpful hint while loading the list the first time */}
+        {teamsLoading && (
+          <div style={{ fontSize: 13, color: darkMode ? '#cbd5e1' : '#6b7280', marginTop: -6 }}>
+            Loading teams…
+          </div>
+        )}
+
         {!isNotDisplayAlert && (
           <>
-            <Alert color="danger">Oops, this team does not exist! Create it if you want it.</Alert>
+            <Alert color="danger">
+              {findCandidates().length > 1
+                ? 'More than one team matches your text. Please refine or pick from the dropdown.'
+                : 'Oops, this team does not exist! Create it if you want it.'}
+            </Alert>
             <div
               style={{
                 marginBottom: '10px',
@@ -168,15 +260,17 @@ const AddTeamPopup = React.memo(props => {
                 justifyContent: 'center',
               }}
             >
-              {/* prettier-ignore  */}
-              <Button color="info" onClick={onCreateTeam}><b>Create Team</b></Button>
-              {/* prettier-ignore  */}
-              <Button color="danger" onClick={() => setIsNotDisplayAlert(true)}><b>Cancel team creation </b></Button>
+              <Button color="info" onClick={onCreateTeam}>
+                <b>Create Team</b>
+              </Button>
+              <Button color="danger" onClick={() => setIsNotDisplayAlert(true)}>
+                <b>Cancel team creation </b>
+              </Button>
             </div>
           </>
         )}
 
-        {!isValidTeam && !searchText && (
+        {!isValidTeam && !searchText && !selectedTeam && (
           <Alert color="danger">Hey, You need to pick a team first!</Alert>
         )}
 

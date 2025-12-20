@@ -30,7 +30,7 @@ import UserTableHeader from './UserTableHeader';
 import UserTableData from './UserTableData';
 import UserTableSearchHeader from './UserTableSearchHeader';
 import UserTableFooter from './UserTableFooter';
-import './usermanagement.css';
+import styles from './usermanagement.module.css';
 import UserSearchPanel from './UserSearchPanel';
 import NewUserPopup from './NewUserPopup';
 import ActivationDatePopup from './ActivationDatePopup';
@@ -841,7 +841,7 @@ class UserManagement extends React.PureComponent {
     return (
       <Container
         fluid
-        className={darkMode ? ' bg-oxford-blue text-light' : ''}
+        className={darkMode ? ' bg-oxford-blue text-light p-3' : 'p-3'}
         style={{ minHeight: '100%' }}
       >
         {/* {fetching ? (
