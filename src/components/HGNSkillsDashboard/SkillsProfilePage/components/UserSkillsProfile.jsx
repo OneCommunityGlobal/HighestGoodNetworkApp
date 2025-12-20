@@ -7,7 +7,7 @@ import { useDispatch } from 'react-redux';
 import LeftSection from './LeftSection';
 import RightSection from './RightSection';
 import styles from '../styles/UserSkillsProfile.module.css';
-import jwtDecode from 'jwt-decode';
+import {jwtDecode} from 'jwt-decode';
 
 function UserSkillsProfile() {
   const { userId: routeUserId } = useParams();
