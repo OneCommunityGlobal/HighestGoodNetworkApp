@@ -2,10 +2,13 @@
   padding: 20px;
   max-width: 1200px;
   margin: 0 auto;
+  background-color: #f9f9f9;
+  min-height: 100vh;
 }
 
 .header {
   margin-bottom: 30px;
+  text-align: left;
 }
 
 .title {
@@ -19,6 +22,75 @@
   font-size: 1rem;
   color: #666;
   margin: 0;
+}
+
+.searchSection {
+  margin-bottom: 24px;
+}
+
+.searchContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  max-width: 600px;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 16px;
+  color: #666;
+  font-size: 1.1rem;
+  z-index: 1;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 12px 16px 12px 48px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.searchInput:focus {
+  border-color: #1976d2;
+  box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.1);
+}
+
+.filterSection {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.filterButton {
+  padding: 8px 16px;
+  border: 1px solid #ddd;
+  border-radius: 999px;
+  background-color: #fff;
+  color: #333;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.filterButton:hover {
+  border-color: #1976d2;
+  color: #1976d2;
+}
+
+.filterButtonActive {
+  background-color: #000;
+  color: #fff;
+  border-color: #000;
+}
+
+.filterButtonActive:hover {
+  background-color: #333;
+  border-color: #333;
 }
 
 .content {
@@ -39,28 +111,72 @@
 .faqList {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 12px;
 }
 
 .faqItem {
-  padding: 20px;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
   background-color: #fff;
+  overflow: hidden;
+  transition: box-shadow 0.3s ease;
+}
+
+.faqItem:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.faqQuestionButton {
+  width: 100%;
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  outline: none;
+  transition: background-color 0.2s ease;
+}
+
+.faqQuestionButton:hover {
+  background-color: #f5f5f5;
 }
 
 .faqQuestion {
-  font-size: 1.2rem;
-  font-weight: 600;
-  margin-bottom: 10px;
+  font-size: 1.1rem;
+  font-weight: 500;
   color: #333;
+  flex: 1;
+  margin-right: 16px;
+}
+
+.faqIcon {
+  color: #666;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+  transition: transform 0.3s ease;
 }
 
 .faqAnswer {
+  padding: 0 20px 16px 20px;
   font-size: 1rem;
   color: #666;
   line-height: 1.6;
-  margin: 0;
+  margin-top: 8px;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .noFaqs {
@@ -68,6 +184,31 @@
   padding: 40px;
   color: #999;
   font-size: 1.1rem;
+}
+
+.footer {
+  margin-top: 40px;
+  padding-top: 20px;
+  text-align: center;
+  border-top: 1px solid #e0e0e0;
+}
+
+.footerText {
+  font-size: 1rem;
+  color: #666;
+  margin: 0;
+}
+
+.footerLink {
+  color: #1976d2;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.footerLink:hover {
+  color: #1565c0;
+  text-decoration: underline;
 }
 
 @media (max-width: 768px) {
@@ -79,7 +220,30 @@
     font-size: 1.5rem;
   }
 
-  .faqItem {
-    padding: 15px;
+  .searchContainer {
+    max-width: 100%;
+  }
+
+  .filterSection {
+    gap: 8px;
+  }
+
+  .filterButton {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+  }
+
+  .faqQuestionButton {
+    padding: 12px 16px;
+  }
+
+  .faqQuestion {
+    font-size: 1rem;
+  }
+
+  .faqAnswer {
+    padding: 0 16px 12px 16px;
+    font-size: 0.9rem;
   }
 }
+
