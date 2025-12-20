@@ -7,6 +7,7 @@ import {
   SAVE_LESSON_PLAN_DRAFT_FAIL,
   SUBMIT_LESSON_PLAN_DRAFT,
   VIEW_LESSON_PLAN_DRAFT,
+  SAVE_LESSON_PLAN_COMMENTS,
 } from '../../constants/bmdashboard/lessonPlanBuilderConstants';
 
 const initialState = {
@@ -61,6 +62,18 @@ const lessonPlanBuilderReducer = (state = initialState, action) => {
       return {
         ...state,
         viewedDrafts: [...state.viewedDrafts, action.payload],
+      };
+    case SUBMIT_LESSON_PLAN_DRAFT:
+      return {
+        ...state,
+        submittedDrafts: [...state.submittedDrafts, action.payload],
+      };
+    case SAVE_LESSON_PLAN_COMMENTS:
+      return {
+        ...state,
+        submittedDrafts: state.submittedDrafts.map(draft =>
+          draft.id === action.payload.id ? { ...draft, comments: action.payload.comments } : draft,
+        ),
       };
     default:
       return state;

@@ -5,7 +5,10 @@ import Template from './Template';
 import Topics from './Topics';
 import ActivitiesDraft from './ActivitiesDraft';
 import ReviewAndSubmit from './ReviewAndSubmit';
-import { fetchLessonPlanTemplates } from '../../../actions/bmdashboard/lessonPlanBuilderActions';
+import {
+  fetchLessonPlanTemplates,
+  saveLessonPlanComments,
+} from '../../../actions/bmdashboard/lessonPlanBuilderActions';
 
 const steps = [
   { id: 1, label: 'Choose Template' },
@@ -31,15 +34,19 @@ const LessonPlan = () => {
   const dispatch = useDispatch();
   const { lessonPlanTemplates, loading, error } = useSelector(state => state.lessonPlanBuilder);
 
-  // Fetch lesson plan templates on component mount
   useEffect(() => {
     dispatch(fetchLessonPlanTemplates());
   }, [dispatch]);
 
   const sendComment = () => {
     if (!chatInput.trim()) return;
-    setComments([{ time: 'Now', text: chatInput }, ...comments]);
+    const newComment = {
+      time: new Date().toISOString(),
+      text: chatInput,
+    };
+    setComments(prev => [{ ...newComment, time: 'Now' }, ...prev]);
     setChatInput('');
+    dispatch(saveLessonPlanComments([newComment]));
   };
 
   return (

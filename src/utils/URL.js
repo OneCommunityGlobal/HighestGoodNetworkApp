@@ -381,6 +381,7 @@ POPULARITY_ROLES: `${APIEndpoint}/popularity/roles`,
 
   LESSON_PLAN_TEMPLATES: `${APIEndpoint}/student/lesson-plan-templates-details`,
   LESSON_PLAN_DRAFT: `${APIEndpoint}/student/lesson-plan-drafts`,
+  LESSON_PLAN_COMMENTS: `${APIEndpoint}/lesson-plan/save-comments`,
 
   JOB_NOTIFICATION_LIST: `${APIEndpoint}/job-notification-list/`,
 
