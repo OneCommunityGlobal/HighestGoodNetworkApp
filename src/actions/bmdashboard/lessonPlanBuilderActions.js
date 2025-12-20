@@ -7,8 +7,7 @@ import {
   FETCH_LESSON_PLAN_TEMPLATES_FAIL,
   SAVE_LESSON_PLAN_DRAFT_REQUEST,
   SAVE_LESSON_PLAN_DRAFT_SUCCESS,
-  SAVE_LESSON_PLAN_DRAFT_FAIL,
-  SAVE_LESSON_PLAN_COMMENTS
+  SAVE_LESSON_PLAN_DRAFT_FAIL
 } from '../../constants/bmdashboard/lessonPlanBuilderConstants';
 
 export const fetchLessonPlanTemplates = () => {
@@ -42,23 +41,6 @@ export const fetchLessonPlanTemplates = () => {
   };
 };
 
-export const saveLessonPlanComments = (comments) => {
-  return async dispatch => {
-    try{
-      dispatch({ type: SAVE_LESSON_PLAN_COMMENTS });
-      
-      const response = await axios.post(ENDPOINTS.LESSON_PLAN_COMMENTS, comments);
-      if(response.status === 200){
-        toast.success('Comments saved successfully');
-      } else {
-        toast.error('Failed to save comments');
-      }
-    }
-    catch(error){
-      toast.error(`Error saving comments: ${error.message}`);
-    }
-  }
-};
 
 export const saveLessonPlanDraft = (draftData) => {
   return async dispatch => {

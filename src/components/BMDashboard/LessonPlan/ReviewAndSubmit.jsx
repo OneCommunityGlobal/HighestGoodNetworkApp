@@ -3,7 +3,7 @@ import styles from './reviewAndSubmit.module.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { saveLessonPlanDraft } from '../../../actions/bmdashboard/lessonPlanBuilderActions';
 
-const ReviewAndSubmit = ({ template, topics = [], activities = [] }) => {
+const ReviewAndSubmit = ({ template, topics = [], activities = [], comments = [] }) => {
   const dispatch = useDispatch();
   const user = useSelector(state => state.auth.user);
   const userId = user ? user.userid : null;
@@ -14,6 +14,7 @@ const ReviewAndSubmit = ({ template, topics = [], activities = [] }) => {
       selectedTopics: topics.map(t => t._id),
       activities,
       educatorId: template.createdBy,
+      comments,
     };
     console.log('Saving draft with payload:', payload);
     dispatch(saveLessonPlanDraft(payload));

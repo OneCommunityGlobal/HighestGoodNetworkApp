@@ -5,10 +5,7 @@ import Template from './Template';
 import Topics from './Topics';
 import ActivitiesDraft from './ActivitiesDraft';
 import ReviewAndSubmit from './ReviewAndSubmit';
-import {
-  fetchLessonPlanTemplates,
-  saveLessonPlanComments,
-} from '../../../actions/bmdashboard/lessonPlanBuilderActions';
+import { fetchLessonPlanTemplates } from '../../../actions/bmdashboard/lessonPlanBuilderActions';
 
 const steps = [
   { id: 1, label: 'Choose Template' },
@@ -18,20 +15,15 @@ const steps = [
 ];
 
 const LessonPlan = () => {
+  const user = useSelector(state => state.auth.user);
+  const userId = user ? user.userid : null;
   const [currentStep, setCurrentStep] = useState(1);
   const [chatInput, setChatInput] = useState('');
   const [selectedTemplate, setSelectedTemplate] = useState(null);
   const [selectedAtoms, setSelectedAtoms] = useState([]);
   const [activities, setActivities] = useState([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [comments, setComments] = useState([
-    {
-      time: 'Dec 05, 05:30 AM',
-      text: 'Great topic selection! Consider adding more hands-on activities.',
-    },
-    { time: 'Dec 06, 09:15 AM', text: 'Reflection questions are thoughtful and helpful.' },
-  ]);
-
+  const [comments, setComments] = useState([]);
   const dispatch = useDispatch();
   const { lessonPlanTemplates, loading, error } = useSelector(state => state.lessonPlanBuilder);
 
@@ -42,10 +34,13 @@ const LessonPlan = () => {
   const sendComment = () => {
     if (!chatInput.trim()) return;
 
-    const newComment = { time: 'Now', text: chatInput };
+    const newComment = {
+      userId: userId,
+      comment: chatInput,
+      timestamp: new Date().toLocaleString(),
+    };
     setComments(prev => [newComment, ...prev]);
     setChatInput('');
-    dispatch(saveLessonPlanComments([newComment]));
   };
 
   return (
@@ -145,6 +140,7 @@ const LessonPlan = () => {
                     template={selectedTemplate}
                     topics={selectedAtoms}
                     activities={activities}
+                    comments={comments}
                   />
                 )}
               </div>
@@ -168,8 +164,8 @@ const LessonPlan = () => {
             <div className={styles.commentThread}>
               {comments.map((c, i) => (
                 <div key={i} className={styles.commentItem}>
-                  <small>{c.time}</small>
-                  <p>{c.text}</p>
+                  <small>{new Date(c.timestamp).toLocaleString()}</small>
+                  <p>{c.comment}</p>
                 </div>
               ))}
             </div>
