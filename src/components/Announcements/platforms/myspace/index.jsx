@@ -3,9 +3,11 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
+import axios from 'axios';
 
 import styles from './Myspace.module.css';
 import { setPlatformScheduleCount } from '../PlatformScheduleBadge';
+import { ENDPOINTS } from '../../../../utils/URL';
 
 const HEADLINE_MIN = 12;
 const HEADLINE_MAX = 95;
@@ -91,6 +93,24 @@ const createScheduleId = () =>
   `schedule-${Date.now().toString(36)}-${Math.random()
     .toString(36)
     .slice(2, 8)}`;
+
+const normalizeScheduleRecord = record => {
+  if (!record || typeof record !== 'object') return null;
+  const normalizedId = record._id || record.id || createScheduleId();
+  return {
+    ...record,
+    id: normalizedId,
+    _id: record._id || normalizedId,
+    updatedAt: record.updatedAt || record.updated_at || new Date().toISOString(),
+  };
+};
+
+const sortSchedulesByUpdatedAt = schedules =>
+  [...schedules].sort((a, b) => {
+    const getTime = entry =>
+      new Date(entry?.updatedAt || entry?.createdAt || entry?.created_at || 0).getTime();
+    return getTime(b) - getTime(a);
+  });
 
 const formatDisplayDateTime = (dateString, timeString) => {
   if (!dateString) return '—';
@@ -178,9 +198,40 @@ function MyspaceAutoPoster({ platform }) {
   const [scheduledDate, setScheduledDate] = useState(() => formatLocalDate(new Date()));
   const [scheduledTime, setScheduledTime] = useState(() => formatLocalTime(new Date()));
   const [savedSchedules, setSavedSchedules] = useState([]);
+  const [schedulesLoading, setSchedulesLoading] = useState(false);
+  const [scheduleSyncError, setScheduleSyncError] = useState('');
+  const [scheduleSaving, setScheduleSaving] = useState(false);
   const [editingScheduleId, setEditingScheduleId] = useState(null);
   const [scheduleAttemptedSave, setScheduleAttemptedSave] = useState(false);
   const photoInputRef = useRef(null);
+
+  useEffect(() => {
+    if (platform !== 'myspace') return undefined;
+    let isMounted = true;
+    const loadSchedules = async () => {
+      setSchedulesLoading(true);
+      setScheduleSyncError('');
+      try {
+        const response = await axios.get(ENDPOINTS.MYSPACE_SCHEDULES());
+        if (!isMounted) return;
+        const records = Array.isArray(response?.data?.data) ? response.data.data : [];
+        const normalized = records.map(normalizeScheduleRecord).filter(Boolean);
+        setSavedSchedules(sortSchedulesByUpdatedAt(normalized));
+      } catch (error) {
+        if (!isMounted) return;
+        setScheduleSyncError('Unable to load saved scheduled posts.');
+        toast.error('Unable to load saved Myspace posts. Please try again later.');
+      } finally {
+        if (isMounted) {
+          setSchedulesLoading(false);
+        }
+      }
+    };
+    loadSchedules();
+    return () => {
+      isMounted = false;
+    };
+  }, [platform]);
 
   useEffect(() => {
     if (platform !== 'myspace') return undefined;
@@ -370,7 +421,8 @@ function MyspaceAutoPoster({ platform }) {
     setActiveSubTab('make');
   };
 
-  const handleSaveSchedule = () => {
+  const handleSaveSchedule = async () => {
+    if (scheduleSaving) return;
     setScheduleAttemptedSave(true);
     if (!scheduleHasDraft) {
       toast.warn('Add content to the schedule before saving.');
@@ -382,8 +434,7 @@ function MyspaceAutoPoster({ platform }) {
     }
     const isEditing = Boolean(editingScheduleId);
     const recordId = isEditing ? editingScheduleId : createScheduleId();
-    const record = {
-      id: recordId,
+    const payload = {
       headline,
       sourceUrl,
       photoUrl,
@@ -395,21 +446,49 @@ function MyspaceAutoPoster({ platform }) {
       scheduledDraft: scheduledDraft.trim(),
       scheduledDate,
       scheduledTime,
-      updatedAt: new Date().toISOString(),
     };
-    setSavedSchedules(prev => {
-      const remaining = prev.filter(item => item.id !== record.id);
-      return [record, ...remaining];
+    const localRecord = normalizeScheduleRecord({
+      ...payload,
+      id: recordId,
+      updatedAt: new Date().toISOString(),
     });
-    const toastMessage = isEditing ? 'Scheduled post updated.' : 'Scheduled post saved.';
-    toast.success(toastMessage);
-    handleReset();
-    setScheduledDraft('');
-    setScheduledDate('');
-    setScheduledTime('');
-    setScheduleAttemptedSave(false);
-    setEditingScheduleId(null);
-    setActiveSubTab('make');
+    setScheduleSaving(true);
+    try {
+      const response = isEditing
+        ? await axios.put(ENDPOINTS.MYSPACE_SCHEDULE_BY_ID(recordId), payload)
+        : await axios.post(ENDPOINTS.MYSPACE_SCHEDULES(), payload);
+      const apiRecord = normalizeScheduleRecord(response?.data?.data) || localRecord;
+      setSavedSchedules(prev => {
+        const remaining = prev.filter(item => item.id !== apiRecord.id);
+        return sortSchedulesByUpdatedAt([apiRecord, ...remaining]);
+      });
+      const toastMessage = isEditing ? 'Scheduled post updated.' : 'Scheduled post saved.';
+      toast.success(toastMessage);
+      handleReset();
+      setScheduledDraft('');
+      setScheduledDate('');
+      setScheduledTime('');
+      setScheduleAttemptedSave(false);
+      setEditingScheduleId(null);
+      setActiveSubTab('make');
+    } catch (error) {
+      setSavedSchedules(prev => {
+        const remaining = prev.filter(item => item.id !== localRecord.id);
+        return sortSchedulesByUpdatedAt([{ ...localRecord, isLocalOnly: true }, ...remaining]);
+      });
+      toast.warn(
+        'Saved locally only. It will disappear after refresh until the server save succeeds.',
+      );
+      handleReset();
+      setScheduledDraft('');
+      setScheduledDate('');
+      setScheduledTime('');
+      setScheduleAttemptedSave(false);
+      setEditingScheduleId(null);
+      setActiveSubTab('make');
+    } finally {
+      setScheduleSaving(false);
+    }
   };
 
   const handleEditSchedule = scheduleId => {
@@ -894,9 +973,13 @@ function MyspaceAutoPoster({ platform }) {
                 type="button"
                 style={buttonStyle('primary', darkMode)}
                 onClick={handleSaveSchedule}
-                disabled={!scheduleHasDraft}
+                disabled={!scheduleHasDraft || scheduleSaving}
               >
-                {editingScheduleId ? 'Update scheduled post' : 'Save scheduled post'}
+                {scheduleSaving
+                  ? 'Saving…'
+                  : editingScheduleId
+                  ? 'Update scheduled post'
+                  : 'Save scheduled post'}
               </button>
               <button
                 type="button"
@@ -921,8 +1004,14 @@ function MyspaceAutoPoster({ platform }) {
             <p className={styles['myspace-field__hint']}>
               Choose a saved entry to continue editing or submit it to Myspace.
             </p>
+            {schedulesLoading && (
+              <p className={styles['myspace-field__hint']}>Loading saved scheduled posts…</p>
+            )}
+            {scheduleSyncError && (
+              <p className={styles['myspace-field__error']}>{scheduleSyncError}</p>
+            )}
             <div className={styles['myspace-saved__list']}>
-              {savedSchedules.length === 0 ? (
+              {!schedulesLoading && savedSchedules.length === 0 ? (
                 <p className={styles['myspace-scheduler__empty']}>
                   No saved scheduled posts yet. Save one to see it listed here.
                 </p>
@@ -949,6 +1038,11 @@ function MyspaceAutoPoster({ platform }) {
                         </span>
                       </div>
                       <p className={styles['myspace-saved__excerpt']}>{excerpt}</p>
+                      {schedule.isLocalOnly && (
+                        <p className={styles['myspace-field__error']}>
+                          Not synced yet. This entry will disappear after refresh.
+                        </p>
+                      )}
                       <div className={styles['myspace-saved__actions']}>
                         <button
                           type="button"

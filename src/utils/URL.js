@@ -144,6 +144,8 @@ export const ENDPOINTS = {
   BADGE: () => `${APIEndpoint}/badge`,
   BADGE_ASSIGN: userId => `${APIEndpoint}/badge/assign/${userId}`,
   BADGE_BY_ID: badgeId => `${APIEndpoint}/badge/${badgeId}`,
+  MYSPACE_SCHEDULES: () => `${APIEndpoint}/myspace/schedules`,
+  MYSPACE_SCHEDULE_BY_ID: scheduleId => `${APIEndpoint}/myspace/schedules/${scheduleId}`,
 
   TEAM_MEMBER_TASKS: userId => `${ENDPOINTS.APIEndpoint()}/user/${userId}/teams/tasks`,
   CREATE_OR_UPDATE_TASK_NOTIFICATION: taskId =>
