@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './ActivityList.module.css';
+import styles from './ActivityList.module.css';
 
 function ActivityList() {
   // console.log('ActivityList component rendered');
