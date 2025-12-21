@@ -13,8 +13,8 @@ const mockEducators = [
     students: [
       { id: 's-101', name: 'Jay', grade: '7', progress: 0.78 },
       { id: 's-102', name: 'Kate', grade: '7', progress: 0.62 },
-      { id: 's-103', name: 'Sam', grade: '8', progress: 0.85 }
-    ]
+      { id: 's-103', name: 'Sam', grade: '8', progress: 0.85 },
+    ],
   },
   {
     id: 't-002',
@@ -23,20 +23,20 @@ const mockEducators = [
     studentCount: 2,
     students: [
       { id: 's-201', name: 'Alina Gupta', grade: '6', progress: 0.54 },
-      { id: 's-202', name: 'Samir Khan', grade: '6', progress: 0.91 }
-    ]
+      { id: 's-202', name: 'Samir Khan', grade: '6', progress: 0.91 },
+    ],
   },
   {
     id: 't-003',
     name: 'John Doe',
     subject: 'English',
     studentCount: 1,
-    students: [{ id: 's-301', name: 'Ryan', grade: '7', progress: 0.73 }]
-  }
+    students: [{ id: 's-301', name: 'Ryan', grade: '7', progress: 0.73 }],
+  },
 ];
 
 const api = axios.create({
-  baseURL: process.env.REACT_APP_APIENDPOINT || ''
+  baseURL: process.env.REACT_APP_APIENDPOINT || '',
 });
 
 function getToken() {
@@ -50,7 +50,7 @@ async function GET(url, { useQueryFallback = true } = {}) {
   const token = getToken();
   try {
     return await api.get(url, {
-      headers: token ? { Authorization: token } : {}
+      headers: token ? { Authorization: token } : {},
     });
   } catch (err) {
     if (useQueryFallback && err?.response?.status === 401 && token) {
@@ -68,14 +68,12 @@ async function fetchEducatorsAPI() {
     id: e.id,
     name: e.name,
     subject: e.subject,
-    studentCount: Number(e.studentCount ?? 0)
+    studentCount: Number(e.studentCount ?? 0),
   }));
 }
 
 async function fetchStudentsAPI(educatorId) {
-  const res = await GET(
-    `/pm/educators/${encodeURIComponent(educatorId)}/students`
-  );
+  const res = await GET(`/pm/educators/${encodeURIComponent(educatorId)}/students`);
   return Array.isArray(res?.data?.data) ? res.data.data : [];
 }
 
@@ -106,10 +104,7 @@ function StudentCard({ s }) {
       <div className={styles.meta}>Grade {s.grade}</div>
       <div className={styles.progressWrap}>
         <div className={styles.progressBar}>
-          <div
-            className={styles.progressFill}
-            style={{ width: `${pct}%` }}
-          />
+          <div className={styles.progressFill} style={{ width: `${pct}%` }} />
         </div>
         <div className={styles.progressPct}>{pct}%</div>
       </div>
@@ -157,27 +152,18 @@ function EducatorRow({ educator, isExpanded, onToggle, studentQuery }) {
           <div className={styles.meta}>{educator.subject}</div>
         </div>
         <div className={styles.rowHeaderRight}>
-          <span className={styles.badge}>
-            {educator.studentCount} students
-          </span>
-          <span className={styles.toggleText}>
-            {isExpanded ? 'Hide' : 'View'}
-          </span>
+          <span className={styles.badge}>{educator.studentCount} students</span>
+          <span className={styles.toggleText}>{isExpanded ? 'Hide' : 'View'}</span>
         </div>
       </button>
 
       {isExpanded && (
-        <div
-          id={`students-${educator.id}`}
-          className={styles.studentsWrap}
-        >
+        <div id={`students-${educator.id}`} className={styles.studentsWrap}>
           {loading ? (
             <div className={styles.loadingText}>Loading students…</div>
           ) : filteredStudents.length === 0 ? (
             <div className={styles.emptyText}>
-              {studentQuery
-                ? 'No students match this search.'
-                : 'No students found.'}
+              {studentQuery ? 'No students match this search.' : 'No students found.'}
             </div>
           ) : (
             <div className={styles.students}>
@@ -228,12 +214,10 @@ export default function ProjectManagerEducatorView() {
     const q = query.trim().toLowerCase();
     setFiltered(
       educators.filter(e => {
-        const matchText =
-          e.name.toLowerCase().includes(q) ||
-          e.subject.toLowerCase().includes(q);
+        const matchText = e.name.toLowerCase().includes(q) || e.subject.toLowerCase().includes(q);
         const matchSubject = subject === 'All' || e.subject === subject;
         return matchText && matchSubject;
-      })
+      }),
     );
     setStudentQuery('');
   }, [query, subject, educators]);
@@ -257,7 +241,7 @@ export default function ProjectManagerEducatorView() {
   function handleSent(payload) {
     setLastSentInfo({
       educatorCount: payload.educatorIds.length,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
     setShowComposer(false);
   }
@@ -266,9 +250,7 @@ export default function ProjectManagerEducatorView() {
     <div className={`${styles.container} ${darkMode ? styles.dark : ''}`}>
       <div className={styles.header}>
         <h1 className={styles.title}>Project Manager Dashboard</h1>
-        <p className={styles.subtitle}>
-          View educators and their assigned students
-        </p>
+        <p className={styles.subtitle}>View educators and their assigned students</p>
 
         <div className={styles.toolbar}>
           <input
@@ -298,19 +280,14 @@ export default function ProjectManagerEducatorView() {
           <button className={styles.ghostBtn} onClick={collapseAll}>
             Collapse all
           </button>
-          <button
-            className={styles.primaryBtn}
-            onClick={() => setShowComposer(true)}
-          >
+          <button className={styles.primaryBtn} onClick={() => setShowComposer(true)}>
             New Announcement
           </button>
         </div>
       </div>
 
       {lastSentInfo && (
-        <div className={styles.successBanner}>
-          Sent to {lastSentInfo.educatorCount} educators
-        </div>
+        <div className={styles.successBanner}>Sent to {lastSentInfo.educatorCount} educators</div>
       )}
 
       <section className={styles.card}>

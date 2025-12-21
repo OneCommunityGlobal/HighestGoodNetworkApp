@@ -6,7 +6,7 @@ import styles from './ProjectManagerNotification.module.css';
 const DRAFT_KEY = 'pm_notif_draft';
 
 const api = axios.create({
-  baseURL: process.env.REACT_APP_APIENDPOINT || ''
+  baseURL: process.env.REACT_APP_APIENDPOINT || '',
 });
 
 function getToken() {
@@ -45,11 +45,7 @@ async function sendNotification(payload) {
   return res?.data ?? { ok: true };
 }
 
-export default function ProjectManagerNotification({
-  educators,
-  onClose,
-  onSent
-}) {
+export default function ProjectManagerNotification({ educators, onClose, onSent }) {
   const darkMode = useSelector(s => s.theme?.darkMode);
 
   const [selected, setSelected] = React.useState([]);
@@ -73,16 +69,12 @@ export default function ProjectManagerNotification({
   }, [onClose]);
 
   const allChecked = selected.length === educators.length && educators.length > 0;
-  const someChecked =
-    selected.length > 0 && selected.length < educators.length;
+  const someChecked = selected.length > 0 && selected.length < educators.length;
 
-  const toggleAll = () =>
-    setSelected(allChecked ? [] : educators.map(e => e.id));
+  const toggleAll = () => setSelected(allChecked ? [] : educators.map(e => e.id));
 
   const toggleOne = id =>
-    setSelected(prev =>
-      prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
-    );
+    setSelected(prev => (prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]));
 
   async function handleSend() {
     setSending(true);
@@ -90,19 +82,15 @@ export default function ProjectManagerNotification({
     try {
       const trimmed = message.trim();
       if (!trimmed) throw new Error('Enter a message.');
-      if (selected.length === 0)
-        throw new Error('Select at least one educator.');
+      if (selected.length === 0) throw new Error('Select at least one educator.');
 
       const preview = await previewNotification({
         educatorIds: selected,
-        message: trimmed
+        message: trimmed,
       });
 
       const mode = preview?.mode;
-      const validLen =
-        preview?.summary?.willSendTo ??
-        preview?.summary?.validIds?.length ??
-        0;
+      const validLen = preview?.summary?.willSendTo ?? preview?.summary?.validIds?.length ?? 0;
       const allFlag = !!preview?.summary?.all;
 
       if (mode === 'real' && validLen === 0 && !allFlag) {
@@ -110,13 +98,13 @@ export default function ProjectManagerNotification({
         throw new Error(
           unknown.length
             ? `No valid recipients. Unknown IDs: ${unknown.join(', ')}`
-            : 'No valid recipients.'
+            : 'No valid recipients.',
         );
       }
 
       const resp = await sendNotification({
         educatorIds: selected,
-        message: trimmed
+        message: trimmed,
       });
 
       localStorage.removeItem(DRAFT_KEY);
@@ -140,11 +128,7 @@ export default function ProjectManagerNotification({
           <h3 id="composer-title" className={styles.title}>
             New Announcement
           </h3>
-          <button
-            className={styles.iconBtn}
-            onClick={onClose}
-            aria-label="Close"
-          >
+          <button className={styles.iconBtn} onClick={onClose} aria-label="Close">
             ×
           </button>
         </div>
@@ -197,18 +181,10 @@ export default function ProjectManagerNotification({
         </div>
 
         <div className={styles.footer}>
-          <button
-            className={styles.cancelBtnNotify}
-            onClick={onClose}
-            disabled={sending}
-          >
+          <button className={styles.cancelBtnNotify} onClick={onClose} disabled={sending}>
             Cancel
           </button>
-          <button
-            className={styles.primaryBtn}
-            onClick={handleSend}
-            disabled={sending}
-          >
+          <button className={styles.primaryBtn} onClick={handleSend} disabled={sending}>
             {sending ? 'Sending…' : 'Send Announcement'}
           </button>
         </div>
