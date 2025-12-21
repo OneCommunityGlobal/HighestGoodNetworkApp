@@ -302,8 +302,18 @@
   font-weight: 600;
 }
 
+.darkPanel .trendPositive {
+  color: #6ee7b7;
+  font-weight: 600;
+}
+
 .trendNegative {
   color: #ef4444;
+  font-weight: 600;
+}
+
+.darkPanel .trendNegative {
+  color: #fca5a5;
   font-weight: 600;
 }
 
