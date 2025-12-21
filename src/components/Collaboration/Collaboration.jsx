@@ -44,7 +44,7 @@ function Collaboration() {
   });
 
   function getColumnsFromMQ() {
-    if (typeof window === 'undefined') return 1;
+    if (typeof window === 'undefined' || !window.matchMedia) return 1;
     if (window.matchMedia('(min-width: 1600px)').matches) return 6;
     if (window.matchMedia('(min-width: 1300px)').matches) return 5;
     if (window.matchMedia('(min-width: 1017px)').matches) return 4;
