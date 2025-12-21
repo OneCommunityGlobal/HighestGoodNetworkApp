@@ -7,9 +7,8 @@
 }
 
 .calendarContainerDarkMode {
-  background-color: #1B2A41;
+  background-color: #1b2a41;
   color: #fff;
-  min-width: 100% !important;
 }
 
 .calendarActivitySection,
@@ -24,13 +23,8 @@
 
 .calendarActivitySectionDarkMode,
 .calendarSectionDarkMode {
-  background-color: #3A506B;
+  background-color: #3a506b;
   color: #fff;
-  border-radius: 8px;
-  padding: 20px;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
 }
 
 .calendarActivitySection {
@@ -43,35 +37,17 @@
 
 .communityCalendar {
   font-family: Arial, sans-serif;
-  margin: 0 auto;
   padding: 20px;
   background-color: #fff;
   border: 1px solid #ddd;
   border-radius: 8px;
   display: flex;
   flex-direction: column;
-  flex-grow: 1;
 }
 
 .communityCalendarDarkMode {
-  background-color: #1B2A41;
+  background-color: #1b2a41;
   color: #fff;
-}
-
-.reactCalendar {
-  width: 100%;
-  height: auto;
-  font-size: 1.2rem;
-  border: 2px solid #ddd;
-  border-radius: 8px;
-  overflow: hidden;
-  background-color: #fff;
-}
-
-.reactCalendarDarkMode {
-  background-color: #1B2A41;
-  color: #FFFFFF;
-  border: 1px solid #444;
 }
 
 .calendarHeader {
@@ -81,16 +57,10 @@
   margin-bottom: 20px;
 }
 
-.calendarHeaderDarkMode {
-  background-color: #1B2A41;
-  color: #fff;
-  padding: 20px;
-  border-radius: 8px;
-}
-
 .calendarHeader h1 {
   font-size: 1.8rem;
   color: #333;
+  margin: 0;
 }
 
 .calendarHeaderDarkMode h1 {
@@ -100,10 +70,8 @@
 .calendarFilters {
   display: flex;
   gap: 10px;
-}
-
-.calendarFiltersDarkMode {
-  color: #fff;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
 }
 
 .calendarFilters select {
@@ -112,13 +80,43 @@
   border-radius: 4px;
   font-size: 1rem;
   color: #333;
+  background-color: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.calendarMain {
-  display: flex;
-  flex-direction: column;
+.calendarFilters select:hover,
+.calendarFilters select:focus {
+  border-color: #0073e6;
+  box-shadow: 0 0 0 3px rgba(0, 115, 230, 0.1);
+  outline: none;
+}
+
+.calendarFiltersDarkMode select {
+  background-color: #2d3e5f;
+  color: #fff;
+  border-color: #4a5568;
+}
+
+.calendarFiltersDarkMode select:hover,
+.calendarFiltersDarkMode select:focus {
+  border-color: #4dabf7;
+  box-shadow: 0 0 0 3px rgba(77, 171, 247, 0.1);
+}
+
+.reactCalendar {
   width: 100%;
-  height: 90%;
+  font-size: 1.2rem;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #fff;
+}
+
+.reactCalendarDarkMode {
+  background-color: #1b2a41;
+  color: #fff;
+  border: 1px solid #444;
 }
 
 .reactCalendar :global(.react-calendar__month-view__weekdays__weekday) abbr {
@@ -127,35 +125,86 @@
 
 .reactCalendar :global(.react-calendar__month-view__days__day) {
   height: 80px;
-  border: 1px solid #000000;
-  vertical-align: top;
+  border: 1px solid #000;
   padding: 2px;
 }
 
+
 .reactCalendar :global(.react-calendar__navigation) {
-  background-color: #f9f9f9;
-  border-bottom: 1px solid #ddd;
-  margin-bottom: 0px !important;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 8px;
+}
+
+
+.reactCalendar :global(.react-calendar__navigation button) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 36px;
+  padding: 0;
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+
+
+.reactCalendar :global(.react-calendar__navigation__label) {
+  flex: 1;
+  text-align: center;
+  font-weight: 700;
+  padding: 0 8px;
+  line-height: 1;
+}
+
+
+.reactCalendar :global(.react-calendar__navigation button svg),
+.reactCalendar :global(.react-calendar__navigation button img) {
+  display: block;
+  width: 18px;
+  height: 18px;
+}
+
+.reactCalendarDarkMode :global(.react-calendar__navigation) {
+  background: #2d3e5f;
+  border-bottom: 1px solid #4a5568;
+}
+
+.reactCalendarDarkMode :global(.react-calendar__navigation button) {
+  background: #3a4f70;
+  color: #e2e8f0;
+  border: 1px solid #4a5568;
+}
+
+.reactCalendarDarkMode :global(.react-calendar__navigation__label) {
+  color: #e2e8f0;
 }
 
 .reactCalendar :global(.react-calendar__tile) {
-  display: block;
   height: 90px;
   background: #fff;
   border: 1px solid #dee2e6 !important;
   box-sizing: border-box;
-  transition: background 0.3s, border-color 0.3s ease;
+  transition: all 0.2s ease;
   overflow: hidden;
   padding: 4px;
 }
+
 .reactCalendarDarkMode :global(.react-calendar__tile) {
   background: transparent;
-  color: #FFFFFF;
+  color: #fff;
+  border-color: #4a5568 !important;
 }
 
 .reactCalendar :global(.react-calendar__tile):hover {
   background-color: #f5f5f5;
   border-color: #999;
+}
+
+.reactCalendarDarkMode :global(.react-calendar__tile):hover {
+  background-color: #374a66;
 }
 
 .reactCalendar :global(.react-calendar__tile) .tileEvents {
@@ -169,9 +218,12 @@
   line-height: 1.1;
 }
 
+.reactCalendarDarkMode .tileEvents {
+  color: #e2e8f0;
+}
+
 .reactCalendar .eventItem {
   display: block;
-  position: relative;
   font-size: 0.75rem;
   font-weight: 500;
   line-height: 1.2;
@@ -182,12 +234,10 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   color: #000;
-  text-align: left;
   cursor: pointer;
   border: none;
   box-shadow: none;
-  transition: background-color 0.2s ease, transform 0.2s ease;
-  max-width: 100%;
+  transition: all 0.2s ease;
 }
 
 .reactCalendar .eventItem.statusNew {
@@ -214,6 +264,60 @@
   transform: scale(1.03);
 }
 
+.reactCalendarDarkMode .eventItem {
+  font-weight: 600;
+  padding: 3px 5px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.reactCalendarDarkMode .eventItem.statusNew {
+  background-color: #56cd56;
+  color: #0a3f0a;
+  border: 1px solid #2d7a2d;
+}
+
+.reactCalendarDarkMode .eventItem.statusNew:hover {
+  background-color: #6ed96e;
+  transform: scale(1.05);
+  box-shadow: 0 2px 6px rgba(86, 205, 86, 0.4);
+}
+
+.reactCalendarDarkMode .eventItem.statusNeedsAttendees {
+  background-color: #4a9eff;
+  color: #001a4d;
+  border: 1px solid #2563b8;
+}
+
+.reactCalendarDarkMode .eventItem.statusNeedsAttendees:hover {
+  background-color: #6bb3ff;
+  transform: scale(1.05);
+  box-shadow: 0 2px 6px rgba(74, 158, 255, 0.4);
+}
+
+.reactCalendarDarkMode .eventItem.statusFillingFast {
+  background-color: #ffb84d;
+  color: #4d2e00;
+  border: 1px solid #b87a1f;
+}
+
+.reactCalendarDarkMode .eventItem.statusFillingFast:hover {
+  background-color: #ffd280;
+  transform: scale(1.05);
+  box-shadow: 0 2px 6px rgba(255, 184, 77, 0.4);
+}
+
+.reactCalendarDarkMode .eventItem.statusFull {
+  background-color: #ff6b6b;
+  color: #4d0a0a;
+  border: 1px solid #cc3333;
+}
+
+.reactCalendarDarkMode .eventItem.statusFull:hover {
+  background-color: #ff8787;
+  transform: scale(1.05);
+  box-shadow: 0 2px 6px rgba(255, 107, 107, 0.4);
+}
+
 .react-calendar__tile--active,
 .react-calendar__tile--now {
   background-color: transparent !important;
@@ -221,6 +325,11 @@
 
 .hasEvents {
   background: #f0f8ff;
+}
+
+.reactCalendarDarkMode .hasEvents {
+  background-color: #1f2937;
+  border-color: #4a5568;
 }
 
 .eventModalOverlay {
@@ -288,7 +397,7 @@
 }
 
 .eventModalDark .modalHeader h2 {
-  color: #ffffff;
+  color: #fff;
 }
 
 .modalClose {
@@ -312,27 +421,17 @@
   color: #4a5568;
 }
 
-.eventModalDark .modalClose {
-  color: #a0aec0;
-}
-
 .eventModalDark .modalClose:hover {
   background-color: #4a5568;
-  color: #ffffff;
+  color: #fff;
 }
 
-.modalContent { padding: 20px 24px; }
-.eventModalDark .modalContent { background: #1a202c; }
+.modalContent {
+  padding: 20px 24px;
+}
 
-.eventStatus { margin-bottom: 20px; text-align: center; }
-
-.statusBadge {
-  padding: 6px 12px;
-  border-radius: 16px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+.eventModalDark .modalContent {
+  background: #1a202c;
 }
 
 .eventDetailsGrid {
@@ -367,10 +466,12 @@
 }
 
 .eventModalDark .detailItem span {
-  color: #ffffff;
+  color: #fff;
 }
 
-.eventDescription { margin-bottom: 24px; }
+.eventDescription {
+  margin-bottom: 24px;
+}
 
 .eventDescription label {
   display: block;
@@ -379,7 +480,6 @@
   color: #718096;
   margin-bottom: 8px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
 .eventModalDark .eventDescription label {
@@ -429,7 +529,6 @@
 
 .btnPrimary:hover {
   background-color: #2c5aa0;
-  transform: translateY(-1px);
 }
 
 .btnSecondary {
@@ -440,137 +539,312 @@
 
 .btnSecondary:hover {
   background-color: #cbd5e0;
-  transform: translateY(-1px);
 }
 
 .eventModalDark .btnSecondary {
   background-color: #4a5568;
-  color: #ffffff;
+  color: #fff;
   border-color: #718096;
 }
 
 .eventModalDark .btnSecondary:hover {
   background-color: #718096;
-  transform: translateY(-1px);
 }
 
-@media (max-width: 768px) {
-  .eventModal {
-    width: 95%;
-    max-height: 90vh;
-  }
-  .eventDetailsGrid {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-  .modalActions {
-    flex-direction: column;
-  }
-  .btnPrimary,
-  .btnSecondary {
-    width: 100%;
-  }
+.activityHeaderContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 12px;
 }
 
-.calendarActivitySection h2 {
-  margin-bottom: 10px;
+.activityHeader {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+  flex: 1;
 }
 
-.calendarActivitySectionDarkMode h2 {
+.activityHeaderDarkMode {
   color: #fff;
-  margin-bottom: 10px;
+}
+
+.sortDropdown {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background-color: #fff;
+  color: #333;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 130px;
+}
+
+.sortDropdown:hover,
+.sortDropdown:focus {
+  border-color: #0073e6;
+  box-shadow: 0 2px 4px rgba(0, 115, 230, 0.1);
+  outline: none;
+}
+
+.sortDropdownDarkMode {
+  background-color: #2d3e5f;
+  color: #fff;
+  border-color: #4a5568;
+}
+
+.sortDropdownDarkMode:hover,
+.sortDropdownDarkMode:focus {
+  border-color: #4dabf7;
+  box-shadow: 0 2px 4px rgba(77, 171, 247, 0.1);
 }
 
 .calendarActivityList {
   list-style: none;
-  padding: 0;
+  padding: 12px 0;
   margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .calendarActivityItem {
-  margin-bottom: 15px;
-  padding: 10px 0;
-  border-bottom: 1px solid #ccc;
-}
-
-.calendarActivityItem:last-child {
+  padding: 12px 14px;
+  border-left: 3px solid #0073e6;
+  background-color: #f8f9fb;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  margin: 0;
   border-bottom: none;
 }
 
-.activityMessageDarkMode {
+.calendarActivityItem:hover {
+  background-color: #f0f4f9;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.calendarActivityItemDarkMode {
+  background-color: #2d3e5f;
   color: #fff;
+  border-left-color: #4dabf7;
+}
+
+.calendarActivityItemDarkMode:hover {
+  background-color: #374a66;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.activityMessage {
+  margin: 0 0 6px 0;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  color: #333;
+}
+
+.activityMessageDarkMode {
+  color: #e2e8f0;
+}
+
+.activityTime {
+  display: block;
+  font-size: 0.8rem;
+  color: #888;
+  font-weight: 400;
+  margin: 0;
 }
 
 .activityTimeDarkMode {
-  color: #fff !important;
-}
-
-.calendarActivitySection .calendarActivityItemDarkMode {
-  color: #fff;
-  border-bottom: 1px solid #ccc;
+  color: #a0aec0;
 }
 
 .calendarActivityItem strong {
   color: #0073e6;
-}
-
-.calendarActivityItem small {
-  display: block;
-  font-size: 0.85rem;
-  color: #666;
-}
-
-.calendarActivityItemDarkMode small {
-  color: #fff;
-}
-
-.overflowPopup {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: white;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-  border-radius: 10px;
-  z-index: 1500;
-  width: 400px;
-  max-height: 70vh;
-  overflow-y: auto;
-  animation: fadeIn 0.2s ease-out;
-}
-
-.overflowPopupInner {
-  padding: 16px 20px;
-}
-
-.overflowPopup h4 {
-  margin-bottom: 12px;
-  font-size: 1.1rem;
   font-weight: 600;
-  border-bottom: 1px solid #ddd;
-  padding-bottom: 6px;
 }
 
-.overflowPopup .eventItem {
-  margin-bottom: 8px;
-  font-size: 0.9rem;
-  padding: 6px 10px;
-  border-radius: 6px;
-  color: #fff;
-  font-weight: 600;
-  cursor: pointer;
-  transition: transform 0.2s ease;
+.calendarActivityItemDarkMode strong {
+  color: #4dabf7;
 }
 
-.overflowPopup .eventItem:hover {
-  transform: translateY(-1px);
+/* RESPONSIVE STYLES */
+/* Tablets: 481px - 768px */
+@media (max-width: 768px) {
+  .calendarContainer {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .calendarActivitySection {
+    flex: 0 0 auto;
+    width: 100%;
+  }
+
+  .calendarSection {
+    flex: 0 0 auto;
+    width: 100%;
+  }
+
+  .calendarHeader h1 {
+    font-size: 1.5rem;
+  }
+
+  .reactCalendar :global(.react-calendar__month-view__days__day) {
+    height: 60px;
+  }
+
+  .reactCalendar :global(.react-calendar__tile) {
+    height: 70px;
+  }
+
+  .eventModal {
+    max-height: 90vh;
+  }
+
+  .eventDetailsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .activityHeaderContainer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .sortDropdown {
+    width: 100%;
+    min-width: auto;
+  }
+
+  .calendarFilters {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .calendarFilters select {
+    width: 100%;
+  }
 }
-.detailLabel {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #718096;
-  margin-bottom: 4px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  display: block;
+
+/* Mobile: up to 480px */
+@media (max-width: 480px) {
+  .communityCalendar,
+  .calendarActivitySection,
+  .calendarSection {
+    padding: 12px;
+    border-radius: 6px;
+  }
+
+  .calendarHeader h1 {
+    font-size: 1.3rem;
+  }
+
+  .calendarFilters {
+    flex-direction: column;
+  }
+
+  .calendarFilters select {
+    width: 100%;
+    padding: 10px 8px;
+    font-size: 16px;
+  }
+
+  .reactCalendar {
+    font-size: 1rem;
+    border: 1px solid #ddd;
+  }
+
+  .reactCalendar :global(.react-calendar__month-view__days__day) {
+    height: 50px;
+    padding: 1px;
+  }
+
+  .reactCalendar :global(.react-calendar__tile) {
+    height: 60px;
+    padding: 2px;
+  }
+
+  .reactCalendar .eventItem {
+    font-size: 0.65rem;
+    padding: 1px 2px;
+    margin-bottom: 1px;
+  }
+
+  .activityHeaderContainer {
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 15px;
+  }
+
+  .activityHeader {
+    font-size: 1.1rem;
+  }
+
+  .sortDropdown {
+    width: 100%;
+    min-width: auto;
+    padding: 10px 8px;
+    font-size: 0.9rem;
+  }
+
+  .calendarActivityList {
+    gap: 10px;
+  }
+
+  .calendarActivityItem {
+    padding: 10px 12px;
+    font-size: 0.9rem;
+  }
+
+  .activityMessage {
+    font-size: 0.9rem;
+  }
+
+  .activityTime {
+    font-size: 0.75rem;
+  }
+
+  .eventModal {
+    width: 95%;
+    max-height: 85vh;
+  }
+
+  .modalHeader {
+    padding: 15px 16px 12px;
+  }
+
+  .modalHeader h2 {
+    font-size: 1.3rem;
+  }
+
+  .modalContent {
+    padding: 15px 16px;
+  }
+
+  .modalActions {
+    padding: 12px 16px 16px;
+    flex-direction: column;
+  }
+
+  .btnPrimary,
+  .btnSecondary {
+    padding: 12px 16px;
+  }
+
+  .eventDetailsGrid {
+    gap: 10px;
+    margin-bottom: 15px;
+  }
+
+  .detailItem label {
+    font-size: 0.75rem;
+    margin-bottom: 2px;
+  }
+
+  .detailItem span {
+    font-size: 0.9rem;
+  }
 }
