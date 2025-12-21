@@ -122,7 +122,6 @@ export const getAllUserTeams = () => {
       .then(res => {
         dispatch(teamMembersFectchACtion(res.data));
         return res.data;
-        // console.log("getAllUserTeams: res:", res.data)
       })
       .catch(() => {
         dispatch(teamMembersFectchACtion(undefined));
