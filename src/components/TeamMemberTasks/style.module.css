@@ -505,8 +505,7 @@
   overflow: visible !important;
   text-align: left;
 
-  display: flex;
-  align-items: flex-start;  
+  display: flex;  
   /* min-width: 150px; */
 }
 
