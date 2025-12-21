@@ -3,7 +3,7 @@ import { useParams, Link, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { getVillageDetailsData } from '~/actions/lbdashboard/villageDetailsAction';
 import logo from '../../../../assets/images/logo2.png';
-import './VillageDetails.css';
+import styles from './VillageDetails.module.css';
 
 export default function VillageDetails() {
   const { id: nameSlug } = useParams();
@@ -23,23 +23,27 @@ export default function VillageDetails() {
   if (!village) return <h2 style={{ textAlign: 'center' }}>Village not found</h2>;
 
   return (
-    <div className="mainContainer">
-      <div className="logoContainer">
+    <div className={styles.mainContainer}>
+      <div className={styles.logoContainer}>
         <img src={logo} alt="One Community Logo" />
       </div>
 
-      <div className="contentContainer">
-        <div className="containerTop" />
-        <div className="containerMain">
-          <div className="village-details-page">
-            <div className="details-container">
+      <div className={styles.contentContainer}>
+        <div className={styles.containerTop} />
+        <div className={styles.containerMain}>
+          <div className={styles.villageDetailsPage}>
+            <div className={styles.detailsContainer}>
               {village.villageMapLink && (
-                <div className="map-section">
-                  <img src={village.villageMapLink} alt={village.name} className="village-map" />
+                <div className={styles.mapSection}>
+                  <img
+                    src={village.villageMapLink}
+                    alt={village.name}
+                    className={styles.villageMap}
+                  />
                 </div>
               )}
 
-              <div className="info-section">
+              <div className={styles.infoSection}>
                 <h2>{village.name}</h2>
 
                 {village.amenities?.length > 0 && (
@@ -56,9 +60,9 @@ export default function VillageDetails() {
                 {village.properties?.length > 0 && (
                   <>
                     <h3>Properties</h3>
-                    <div className="properties-grid">
+                    <div className={styles.propertiesGrid}>
                       {village.properties.map(p => (
-                        <div key={p._id || p.unit}>
+                        <div key={p._id || p.unit} className={styles.propertyCard}>
                           <p>Unit: {p.unit}</p>
                         </div>
                       ))}
@@ -66,7 +70,7 @@ export default function VillageDetails() {
                   </>
                 )}
 
-                <Link to="/lbdashboard/masterplan" className="masterplan-link">
+                <Link to="/lbdashboard/masterplan" className={styles.masterplanLink}>
                   Go back to Map
                 </Link>
               </div>
