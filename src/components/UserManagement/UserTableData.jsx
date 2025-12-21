@@ -383,11 +383,30 @@ const UserTableDataComponent = (props) => {
         ) : (
           <input
             type="number"
-            className={`edituser_input ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
+            step={0.5}
+            className={`edituser_input ${
+              darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+            }`}
             value={formData.weeklycommittedHours}
             onChange={e => {
-              updateFormData({ ...formData, weeklycommittedHours: e.target.value });
-              addUserInformation('weeklycommittedHours', e.target.value, props.user._id);
+              const rawValue = e.target.value;
+              const numericValue = Number(rawValue);
+
+              if (numericValue < 0) {
+                toast.error('If negative hours worked, we’d all be on vacation already. Try again, and be sure weekly hours are set to zero or more.');
+                return; // stop update
+              }
+
+              updateFormData({
+                ...formData,
+                weeklycommittedHours: numericValue,
+              });
+
+              addUserInformation(
+                'weeklycommittedHours',
+                numericValue,
+                props.user._id
+              );
             }}
           />
         )}
