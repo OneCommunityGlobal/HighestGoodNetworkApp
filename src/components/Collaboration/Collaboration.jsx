@@ -62,67 +62,58 @@ function Collaboration() {
   const getCategoryImage = category => {
     const categoryLower = (category || 'General').toLowerCase();
 
-    // High-quality, relevant images for each job category
-    const categoryImages = {
-      // Software & IT - Modern laptop/technology workspace
-      software:
-        'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=640&h=480&fit=crop&q=80',
-      it: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=640&h=480&fit=crop&q=80',
-      programming:
-        'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=640&h=480&fit=crop&q=80',
+    // Category to image URL mapping (grouped by image to reduce duplication)
+    const categoryImageMap = [
+      {
+        keywords: ['software', 'it', 'programming'],
+        url:
+          'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=640&h=480&fit=crop&q=80',
+      },
+      {
+        keywords: ['engineering', 'technical', 'design'],
+        url:
+          'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=640&h=480&fit=crop&q=80',
+      },
+      {
+        keywords: ['administrative', 'support', 'admin'],
+        url:
+          'https://images.unsplash.com/photo-1497366216548-37526070297c?w=640&h=480&fit=crop&q=80',
+      },
+      {
+        keywords: ['electric', 'electrical'],
+        url:
+          'https://images.unsplash.com/photo-1621905251918-48416bd8575a?w=640&h=480&fit=crop&q=80',
+      },
+      {
+        keywords: ['plumbing'],
+        url:
+          'https://images.unsplash.com/photo-1621905252507-b35492cc74b4?w=640&h=480&fit=crop&q=80',
+      },
+      {
+        keywords: ['culinary', 'chef'],
+        url: 'https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=640&h=480&fit=crop&q=80',
+      },
+      {
+        keywords: ['civil', 'construction'],
+        url:
+          'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=640&h=480&fit=crop&q=80',
+      },
+      {
+        keywords: ['nutrition', 'diet'],
+        url:
+          'https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=640&h=480&fit=crop&q=80',
+      },
+      {
+        keywords: ['mechanical'],
+        url:
+          'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=640&h=480&fit=crop&q=80',
+      },
+    ];
 
-      // Engineering & Technical Design - Blueprint/technical drawing
-      engineering:
-        'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=640&h=480&fit=crop&q=80',
-      technical:
-        'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=640&h=480&fit=crop&q=80',
-      design:
-        'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=640&h=480&fit=crop&q=80',
-
-      // Administrative & Support - Office workspace
-      administrative:
-        'https://images.unsplash.com/photo-1497366216548-37526070297c?w=640&h=480&fit=crop&q=80',
-      support:
-        'https://images.unsplash.com/photo-1497366216548-37526070297c?w=640&h=480&fit=crop&q=80',
-      admin:
-        'https://images.unsplash.com/photo-1497366216548-37526070297c?w=640&h=480&fit=crop&q=80',
-
-      // Electric Engineer - Electrical work/panel
-      electric:
-        'https://images.unsplash.com/photo-1621905251918-48416bd8575a?w=640&h=480&fit=crop&q=80',
-      electrical:
-        'https://images.unsplash.com/photo-1621905251918-48416bd8575a?w=640&h=480&fit=crop&q=80',
-
-      // Plumbing Engineer - Plumbing work
-      plumbing:
-        'https://images.unsplash.com/photo-1621905252507-b35492cc74b4?w=640&h=480&fit=crop&q=80',
-
-      // Culinary Chef - Professional kitchen/cooking
-      culinary:
-        'https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=640&h=480&fit=crop&q=80',
-      chef: 'https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=640&h=480&fit=crop&q=80',
-
-      // Civil Engineer - Construction site
-      civil:
-        'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=640&h=480&fit=crop&q=80',
-      construction:
-        'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=640&h=480&fit=crop&q=80',
-
-      // Nutritionist - Healthy food/wellness
-      nutrition:
-        'https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=640&h=480&fit=crop&q=80',
-      diet:
-        'https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=640&h=480&fit=crop&q=80',
-
-      // Mechanical Engineer - Mechanical/industrial work
-      mechanical:
-        'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=640&h=480&fit=crop&q=80',
-    };
-
-    // Try to find matching category
-    for (const [key, imageUrl] of Object.entries(categoryImages)) {
-      if (categoryLower.includes(key)) {
-        return imageUrl;
+    // Find matching category
+    for (const { keywords, url } of categoryImageMap) {
+      if (keywords.some(keyword => categoryLower.includes(keyword))) {
+        return url;
       }
     }
 

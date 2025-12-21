@@ -51,15 +51,24 @@ function JobApplicationForm() {
     }
   });
 
+  // Validate ID parameter to prevent injection attacks
+  const isValidId = id => {
+    if (!id || typeof id !== 'string') return false;
+    // Allow only alphanumeric characters, hyphens, and underscores (MongoDB ObjectId format)
+    return /^[a-zA-Z0-9_-]+$/.test(id) && id.length <= 100;
+  };
+
   // Get job data from redirect or URL parameters
   useEffect(() => {
     // Check for referral link parameters from URL query string
     const searchParams = new URLSearchParams(location.search);
     const referralId = searchParams.get('ref') || searchParams.get('referral');
-    const jobId = searchParams.get('jobId') || location.pathname.split('/').pop();
+    const jobIdParam = searchParams.get('jobId');
+    const pathJobId = location.pathname.split('/').pop();
+    const jobId = jobIdParam || (pathJobId && pathJobId !== 'job-application' ? pathJobId : null);
 
-    // If we have a referral ID, fetch user's questionnaire data
-    if (referralId) {
+    // If we have a valid referral ID, fetch user's questionnaire data
+    if (referralId && isValidId(referralId)) {
       fetchUserQuestionnaireData(referralId);
     }
 
@@ -69,8 +78,8 @@ function JobApplicationForm() {
       if (location.state.jobTitle) {
         setJobTitleInput(location.state.jobTitle);
       }
-    } else if (jobId && jobId !== 'job-application') {
-      // Fetch job data from API if we have a jobId
+    } else if (jobId && isValidId(jobId)) {
+      // Fetch job data from API if we have a valid jobId
       fetchJobData(jobId);
     }
   }, [location.state, location.search, location.pathname]);
@@ -206,75 +215,52 @@ function JobApplicationForm() {
     setResumeFile(f);
   };
 
+  // Shared function to check requirements based on provided data
+  const evaluateRequirements = (data = {}) => {
+    const {
+      fullTimeYears: years = '',
+      monthsVolunteer: months = '',
+      hoursPerWeek: hours = '',
+      roleSkills: skills = '',
+      locationTimezone: timezone = '',
+    } = data;
+
+    const reactKeywords = ['react', 'reactjs', 'react.js'];
+    const skillsLower = (skills || '').toLowerCase();
+    const yearsNum = years ? parseFloat(years) : 0;
+    const monthsNum = months ? parseFloat(months) : 0;
+    const hoursNum = hours ? parseFloat(hours) : 0;
+
+    return {
+      reactExperience:
+        yearsNum >= 1 || reactKeywords.some(keyword => skillsLower.includes(keyword)),
+      twoMonthsCommitment: monthsNum >= 2,
+      javascriptExperience: yearsNum >= 1,
+      timeZoneLocation: !!(timezone && timezone.trim()),
+      tenHoursPerWeek: hoursNum >= 10,
+    };
+  };
+
   // Check if requirements are satisfied (for admin view) - matching reference implementation
   const checkRequirements = () => {
-    const requirements = {
-      reactExperience: false,
-      twoMonthsCommitment: false,
-      javascriptExperience: false,
-      timeZoneLocation: false,
-      tenHoursPerWeek: false,
-    };
-
-    // Check 1+ years of Full-Time ReactJS Experience
-    const reactKeywords = ['react', 'reactjs', 'react.js'];
-    const roleSkillsLower = (roleSkills || '').toLowerCase();
-    requirements.reactExperience =
-      (fullTimeYears && parseFloat(fullTimeYears) >= 1) ||
-      reactKeywords.some(keyword => roleSkillsLower.includes(keyword));
-
-    // Check Minimum of 2 Months Commitment
-    requirements.twoMonthsCommitment = monthsVolunteer && parseFloat(monthsVolunteer) >= 2;
-
-    // Check 1+ years of Full-Time JavaScript Experience
-    requirements.javascriptExperience = fullTimeYears && parseFloat(fullTimeYears) >= 1;
-
-    // Check Time Zone and Location Matches
-    requirements.timeZoneLocation = !!(locationTimezone && locationTimezone.trim());
-
-    // Check Minimum of 10 hours of work a week
-    requirements.tenHoursPerWeek = hoursPerWeek && parseFloat(hoursPerWeek) >= 10;
-
-    return requirements;
+    return evaluateRequirements({
+      fullTimeYears,
+      monthsVolunteer,
+      hoursPerWeek,
+      roleSkills,
+      locationTimezone,
+    });
   };
 
   // Check user requirements based on their prior questionnaire data (for user view)
   const checkUserRequirements = () => {
-    // Use current form values or user questionnaire data
-    const userFullTimeYears = fullTimeYears || userQuestionnaireData?.fullTimeYears || '';
-    const userMonthsVolunteer = monthsVolunteer || userQuestionnaireData?.monthsVolunteer || '';
-    const userHoursPerWeek = hoursPerWeek || userQuestionnaireData?.hoursPerWeek || '';
-    const userRoleSkills = roleSkills || userQuestionnaireData?.roleSkills || '';
-    const userLocationTimezone = locationTimezone || userQuestionnaireData?.locationTimezone || '';
-
-    const requirements = {
-      reactExperience: false,
-      twoMonthsCommitment: false,
-      javascriptExperience: false,
-      timeZoneLocation: false,
-      tenHoursPerWeek: false,
-    };
-
-    // Check 1+ years of Full-Time ReactJS Experience
-    const reactKeywords = ['react', 'reactjs', 'react.js'];
-    const roleSkillsLower = (userRoleSkills || '').toLowerCase();
-    requirements.reactExperience =
-      (userFullTimeYears && parseFloat(userFullTimeYears) >= 1) ||
-      reactKeywords.some(keyword => roleSkillsLower.includes(keyword));
-
-    // Check Minimum of 2 Months Commitment
-    requirements.twoMonthsCommitment = userMonthsVolunteer && parseFloat(userMonthsVolunteer) >= 2;
-
-    // Check 1+ years of Full-Time JavaScript Experience
-    requirements.javascriptExperience = userFullTimeYears && parseFloat(userFullTimeYears) >= 1;
-
-    // Check Time Zone and Location Matches
-    requirements.timeZoneLocation = !!(userLocationTimezone && userLocationTimezone.trim());
-
-    // Check Minimum of 10 hours of work a week
-    requirements.tenHoursPerWeek = userHoursPerWeek && parseFloat(userHoursPerWeek) >= 10;
-
-    return requirements;
+    return evaluateRequirements({
+      fullTimeYears: fullTimeYears || userQuestionnaireData?.fullTimeYears || '',
+      monthsVolunteer: monthsVolunteer || userQuestionnaireData?.monthsVolunteer || '',
+      hoursPerWeek: hoursPerWeek || userQuestionnaireData?.hoursPerWeek || '',
+      roleSkills: roleSkills || userQuestionnaireData?.roleSkills || '',
+      locationTimezone: locationTimezone || userQuestionnaireData?.locationTimezone || '',
+    });
   };
 
   // Helper function to strip HTML tags and clean text
