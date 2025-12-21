@@ -84,7 +84,7 @@ import { jobApplicationReducer } from './jobApplication/jobApplicationReducer';
 
 // lbdashboard
 import wishListReducer from './listBidDashboard/wishListItemReducer';
-import villageDetailsReducer from './lbdashboard/villageDetailsReducer';
+import villageDetailsReducer from './listBidDashboard/villageDetailsReducer';
 
 // listing and biddding dashboard
 
