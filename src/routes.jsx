@@ -610,7 +610,7 @@ export default (
           exact
           component={AnalyticsDashboard}
           fallback
-          // allowedRoles={[UserRole.Administrator, UserRole.Owner]}
+        // allowedRoles={[UserRole.Administrator, UserRole.Owner]}
         />
         {/* ----- BEGIN BM Dashboard Routing ----- */}
         <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
@@ -786,7 +786,11 @@ export default (
         />
         <Route path="/educationportal/login" component={EPLogin} />
         <EPProtectedRoute path="/educationportal/tasks/upload" exact component={WriteTaskUpload} />
-        <EPProtectedRoute path="/educationportal/pm/dashboard" exact component={ProjectManagerEducatorView} />
+        <EPProtectedRoute
+          path="/educationportal/pm/dashboard"
+          exact
+          component={ProjectManagerEducatorView}
+        />
         {/* PR Analytics Dashboard */}
         <Route path="/pull-request-analytics/reviews-insight" component={ReviewsInsight} />
         <Route path="/educator/groups" exact component={GroupList} />

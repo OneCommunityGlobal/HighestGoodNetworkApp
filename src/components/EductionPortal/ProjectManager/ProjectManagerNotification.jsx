@@ -1,17 +1,19 @@
-import React from "react";
-import { useSelector } from "react-redux";
-import axios from "axios";
-import styles from "./ProjectManagerNotification.module.css";
+import React from 'react';
+import { useSelector } from 'react-redux';
+import axios from 'axios';
+import styles from './ProjectManagerNotification.module.css';
 
-const DRAFT_KEY = "pm_notif_draft";
+const DRAFT_KEY = 'pm_notif_draft';
 
 const api = axios.create({
-  baseURL: process.env.REACT_APP_APIENDPOINT || "",
+  baseURL: process.env.REACT_APP_APIENDPOINT || ''
 });
 
 function getToken() {
-  const raw = localStorage.getItem("token") || "";
-  return String(raw).replace(/^"(.*)"$/, "$1").trim();
+  const raw = localStorage.getItem('token') || '';
+  return String(raw)
+    .replace(/^"(.*)"$/, '$1')
+    .trim();
 }
 
 async function POST(url, data) {
@@ -23,10 +25,10 @@ async function POST(url, data) {
     if (err?.response?.status === 401) {
       const body = new URLSearchParams();
       Object.entries(data || {}).forEach(([k, v]) => {
-        if (Array.isArray(v)) v.forEach((x) => body.append(`${k}[]`, x));
+        if (Array.isArray(v)) v.forEach(x => body.append(`${k}[]`, x));
         else body.append(k, v);
       });
-      if (token) body.set("token", token);
+      if (token) body.set('token', token);
       return api.post(url, body);
     }
     throw err;
@@ -34,73 +36,93 @@ async function POST(url, data) {
 }
 
 async function previewNotification(payload) {
-  const res = await POST("/pm/notifications/preview", payload);
+  const res = await POST('/pm/notifications/preview', payload);
   return res?.data;
 }
 
 async function sendNotification(payload) {
-  const res = await POST("/pm/notifications", payload);
+  const res = await POST('/pm/notifications', payload);
   return res?.data ?? { ok: true };
 }
 
-export default function ProjectManagerNotification({ educators, onClose, onSent }) {
-  const darkMode = useSelector((s) => s.theme?.darkMode);
+export default function ProjectManagerNotification({
+  educators,
+  onClose,
+  onSent
+}) {
+  const darkMode = useSelector(s => s.theme?.darkMode);
 
   const [selected, setSelected] = React.useState([]);
-  const [message, setMessage] = React.useState("");
+  const [message, setMessage] = React.useState('');
   const [sending, setSending] = React.useState(false);
   const [error, setError] = React.useState(null);
-
 
   React.useEffect(() => {
     const saved = localStorage.getItem(DRAFT_KEY);
     if (saved) setMessage(saved);
   }, []);
+
   React.useEffect(() => {
     localStorage.setItem(DRAFT_KEY, message);
   }, [message]);
 
-
   React.useEffect(() => {
-    const onKey = (e) => e.key === "Escape" && onClose();
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    const onKey = e => e.key === 'Escape' && onClose();
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
   }, [onClose]);
 
   const allChecked = selected.length === educators.length && educators.length > 0;
-  const someChecked = selected.length > 0 && selected.length < educators.length;
+  const someChecked =
+    selected.length > 0 && selected.length < educators.length;
 
-  const toggleAll = () => setSelected(allChecked ? [] : educators.map((e) => e.id));
-  const toggleOne = (id) =>
-    setSelected((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+  const toggleAll = () =>
+    setSelected(allChecked ? [] : educators.map(e => e.id));
+
+  const toggleOne = id =>
+    setSelected(prev =>
+      prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
+    );
 
   async function handleSend() {
     setSending(true);
     setError(null);
     try {
       const trimmed = message.trim();
-      if (!trimmed) throw new Error("Enter a message.");
-      if (selected.length === 0) throw new Error("Select at least one educator.");
+      if (!trimmed) throw new Error('Enter a message.');
+      if (selected.length === 0)
+        throw new Error('Select at least one educator.');
 
-      const preview = await previewNotification({ educatorIds: selected, message: trimmed });
+      const preview = await previewNotification({
+        educatorIds: selected,
+        message: trimmed
+      });
+
       const mode = preview?.mode;
-      const validLen = preview?.summary?.willSendTo ?? preview?.summary?.validIds?.length ?? 0;
+      const validLen =
+        preview?.summary?.willSendTo ??
+        preview?.summary?.validIds?.length ??
+        0;
       const allFlag = !!preview?.summary?.all;
 
-      if (mode === "real" && validLen === 0 && !allFlag) {
+      if (mode === 'real' && validLen === 0 && !allFlag) {
         const unknown = preview?.summary?.unknownIds || [];
         throw new Error(
           unknown.length
-            ? `No valid recipients. Unknown IDs: ${unknown.join(", ")}`
-            : "No valid recipients."
+            ? `No valid recipients. Unknown IDs: ${unknown.join(', ')}`
+            : 'No valid recipients.'
         );
       }
 
-      const resp = await sendNotification({ educatorIds: selected, message: trimmed });
+      const resp = await sendNotification({
+        educatorIds: selected,
+        message: trimmed
+      });
+
       localStorage.removeItem(DRAFT_KEY);
       onSent({ educatorIds: selected, message: trimmed, resp });
     } catch (e) {
-      setError(e.message || "Failed to send.");
+      setError(e.message || 'Failed to send.');
     } finally {
       setSending(false);
     }
@@ -108,15 +130,23 @@ export default function ProjectManagerNotification({ educators, onClose, onSent 
 
   return (
     <div
-      className={`${styles.overlay} ${darkMode ? styles.dark : ""}`}
+      className={`${styles.overlay} ${darkMode ? styles.dark : ''}`}
       role="dialog"
       aria-modal="true"
       aria-labelledby="composer-title"
     >
       <div className={styles.modal}>
         <div className={styles.header}>
-          <h3 id="composer-title" className={styles.title}>New Announcement</h3>
-          <button className={styles.iconBtn} onClick={onClose} aria-label="Close">×</button>
+          <h3 id="composer-title" className={styles.title}>
+            New Announcement
+          </h3>
+          <button
+            className={styles.iconBtn}
+            onClick={onClose}
+            aria-label="Close"
+          >
+            ×
+          </button>
         </div>
 
         <div className={styles.body}>
@@ -127,14 +157,14 @@ export default function ProjectManagerNotification({ educators, onClose, onSent 
               <input
                 type="checkbox"
                 checked={allChecked}
-                ref={(el) => el && (el.indeterminate = someChecked)}
+                ref={el => el && (el.indeterminate = someChecked)}
                 onChange={toggleAll}
               />
-              Select all
+              <span>Select all</span>
             </label>
 
             <div className={styles.list}>
-              {educators.map((e) => (
+              {educators.map(e => (
                 <label key={e.id} className={styles.item}>
                   <input
                     type="checkbox"
@@ -157,9 +187,8 @@ export default function ProjectManagerNotification({ educators, onClose, onSent 
               placeholder="Write your announcement to teachers…"
               rows={6}
               value={message}
-              onChange={(e) => setMessage(e.target.value)}
+              onChange={e => setMessage(e.target.value)}
               maxLength={1000}
-              autoFocus
             />
             <div className={styles.counter}>{message.length}/1000</div>
           </div>
@@ -168,11 +197,19 @@ export default function ProjectManagerNotification({ educators, onClose, onSent 
         </div>
 
         <div className={styles.footer}>
-          <button className={styles.cancelBtnNotify} onClick={onClose} disabled={sending}>
+          <button
+            className={styles.cancelBtnNotify}
+            onClick={onClose}
+            disabled={sending}
+          >
             Cancel
           </button>
-          <button className={styles.primaryBtn} onClick={handleSend} disabled={sending}>
-            {sending ? "Sending…" : "Send Announcement"}
+          <button
+            className={styles.primaryBtn}
+            onClick={handleSend}
+            disabled={sending}
+          >
+            {sending ? 'Sending…' : 'Send Announcement'}
           </button>
         </div>
       </div>
