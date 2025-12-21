@@ -150,17 +150,18 @@ export default function ProjectManagerNotification({ educators, onClose, onSent 
 
             <div className={styles.list}>
               {educators.map(e => (
-                <label key={e.id} className={styles.item}>
+                <div key={e.id} className={styles.item}>
                   <input
+                    id={`educator-${e.id}`}
                     type="checkbox"
                     checked={selected.includes(e.id)}
                     onChange={() => toggleOne(e.id)}
                   />
-                  <span className={styles.itemText}>
+                  <label htmlFor={`educator-${e.id}`} className={styles.itemText}>
                     <span className={styles.itemName}>{e.name}</span>
                     <span className={styles.itemMeta}> • {e.subject}</span>
-                  </span>
-                </label>
+                  </label>
+                </div>
               ))}
             </div>
           </div>
