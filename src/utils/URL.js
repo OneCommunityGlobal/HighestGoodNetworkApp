@@ -494,6 +494,10 @@ export const ENDPOINTS = {
   //pull requests analysis
   PR_REVIEWS_INSIGHTS: `${APIEndpoint}/analytics/pr-review-insights`,
 
+  PM_EDUCATORS: () => `${APIEndpoint}/pm/educators`,
+  PM_EDUCATOR_STUDENTS: (educatorId) => `${APIEndpoint}/pm/educators/${encodeURIComponent(educatorId)}/students`,
+  PM_NOTIFICATIONS: () => `${APIEndpoint}/pm/notifications`,
+
 };
 
 export const ApiEndpoint = APIEndpoint;

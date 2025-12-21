@@ -258,6 +258,7 @@ const MonthsPledgedChart = lazy(() =>
 
 // PR Analytics Dashboard
 import ReviewsInsight from './components/PRAnalyticsDashboard/ReviewsInsight/ReviewsInsight';
+import ProjectManagerEducatorView from './components/EductionPortal/ProjectManager/ProjectManagerEducatorView';
 
 const JobAnalyticsPage = lazy(() =>
   import('./components/Reports/HitsAndApplicationRatio/JobAnalyticsPage'),
@@ -785,6 +786,13 @@ export default (
         />
         <Route path="/educationportal/login" component={EPLogin} />
         <EPProtectedRoute path="/educationportal/tasks/upload" exact component={WriteTaskUpload} />
+        <EPProtectedRoute
+          path="/educationportal/pm/dashboard"
+          exact
+          component={ProjectManagerEducatorView}
+        />
+        {/* PR Analytics Dashboard */}
+        <Route path="/pull-request-analytics/reviews-insight" component={ReviewsInsight} />
         <Route path="/educator/groups" exact component={GroupList} />
         <EPProtectedRoute
           path="/educationportal/tasks/intermediate"
