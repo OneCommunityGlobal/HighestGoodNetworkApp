@@ -553,7 +553,7 @@
 :global(body.dark-mode) .loadMoreBtn:disabled,
 :global(body.bm-dashboard-dark) .loadMoreBtn:disabled {
   background: #2e5061 !important;
-  color: #888 !important;
+  color: #b8c5d1 !important;
   cursor: not-allowed;
 }
 
