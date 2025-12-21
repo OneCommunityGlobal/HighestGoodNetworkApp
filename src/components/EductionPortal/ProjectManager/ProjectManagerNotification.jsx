@@ -137,15 +137,16 @@ export default function ProjectManagerNotification({ educators, onClose, onSent 
           <div className={styles.section}>
             <div className={styles.sectionLabel}>Recipients</div>
 
-            <label className={styles.checkAll}>
+            <div className={styles.checkAll}>
               <input
+                id="select-all-educators"
                 type="checkbox"
                 checked={allChecked}
                 ref={el => el && (el.indeterminate = someChecked)}
                 onChange={toggleAll}
               />
-              <span>Select all</span>
-            </label>
+              <label htmlFor="select-all-educators">Select all</label>
+            </div>
 
             <div className={styles.list}>
               {educators.map(e => (
