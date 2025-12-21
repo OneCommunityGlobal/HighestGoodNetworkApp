@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import './DropdownFilter.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { getVillageDropdownFilterData } from '~/actions/lbdashboard/villageDetailsAction';
+import styles from './DropdownFilter.module.css';
 
 export default function VillageDropdownFilter() {
   const [selected, setSelected] = useState('all');
@@ -25,8 +25,8 @@ export default function VillageDropdownFilter() {
   };
 
   return (
-    <div className="selector-container">
-      <select value={selected} onChange={handleSelect}>
+    <div className={styles.selectorContainer}>
+      <select className={styles.select} value={selected} onChange={handleSelect}>
         <option value="all">Filter by Village</option>
         {villages.map(v => (
           <option key={v._id} value={`${v._id}|${v.name}`}>
