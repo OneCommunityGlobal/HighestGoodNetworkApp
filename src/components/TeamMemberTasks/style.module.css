@@ -164,8 +164,16 @@
 .team-member-tasks-user-name {
   width: 50%;
   text-align: center;
-  justify-content: center;
-  vertical-align: middle; 
+
+  vertical-align: top !important;   
+  display: flex;                    
+  flex-direction: column;
+  justify-content: flex-start !important;
+  align-items: center;    
+}
+
+.team-member-tasks td {
+  vertical-align: top !important;
 }
 
 .team-member-tasks-subtable th:first-child {
@@ -489,6 +497,8 @@
 
  .team-member-tasks-content {
   /* border: blue 10px solid; */
+  align-items: flex-start !important;
+  justify-content: flex-start !important;
   gap: 5px;
   height: auto !important;
   max-height: none !important; 
