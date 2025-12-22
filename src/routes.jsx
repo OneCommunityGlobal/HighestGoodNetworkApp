@@ -172,6 +172,7 @@ import EPLogin from './components/EductionPortal/Login';
 import EPDashboard from './components/EductionPortal';
 import GroupList from './components/EductionPortal/GroupList/GroupList';
 import EvaluationResultsWrapper from './components/EductionPortal/EvaluationResultsWrapper';
+import InsightWidget from './components/EductionPortal/AnalyticsDashboard/InsightsWidget';
 
 import StudentDashboard from './components/EductionPortal/StudentTasks/StudentDashboard';
 import StudentTasks from './components/EductionPortal/StudentTasks/StudentTasks';
@@ -784,6 +785,7 @@ export default (
           component={EvaluationResultsWrapper}
         />
         <Route path="/educationportal/login" component={EPLogin} />
+        <Route path="/educationportal/InsightWidget" component={InsightWidget} />
         <EPProtectedRoute path="/educationportal/tasks/upload" exact component={WriteTaskUpload} />
         <Route path="/educator/groups" exact component={GroupList} />
         <EPProtectedRoute
