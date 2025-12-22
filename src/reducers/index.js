@@ -79,7 +79,11 @@ import userSkillsReducer from './userSkillsReducer';
 // community portalgit
 import { noShowVizReducer } from './communityPortal/noShowVizReducer';
 import { eventFeedbackReducer } from './communityPortal/eventFeedback';
-import { EventActivityReducer } from './communityPortal/EventActivityReducer';
+import {
+  FetchEventReducer,
+  CreateEventReducer,
+  FetchCalendarEventReducer,
+} from './communityPortal/EventActivityReducer';
 
 import { jobApplicationReducer } from './jobApplication/jobApplicationReducer';
 
@@ -100,6 +104,7 @@ import reviewsInsightReducer from './prAnalytics/reviewsInsightReducer';
 // job analytics
 import { hoursPledgedReducer } from './jobAnalytics/hoursPledgedReducer';
 import { studentTasksReducer } from './studentTasksReducer';
+import { create } from 'lodash';
 
 const localReducers = {
   auth: authReducer,
@@ -162,7 +167,9 @@ const localReducers = {
   bmissuechart: issueReducer,
   noShowViz: noShowVizReducer,
   eventFeedback: eventFeedbackReducer,
-  eventActivity: EventActivityReducer,
+  fetchEvent: FetchEventReducer,
+  createEvent: CreateEventReducer,
+  fetchCalendarEvent: FetchCalendarEventReducer,
 
   bmProjectMembers: bmProjectMemberReducer,
   bmTimeLogger: bmTimeLoggerReducer,

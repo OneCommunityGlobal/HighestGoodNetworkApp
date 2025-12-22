@@ -50,3 +50,22 @@ export function formatEventDisplay(event) {
 
   return `${formatTime(start)} - ${formatTime(end)}. ${month} ${day}${getOrdinal(day)}, ${year}`;
 }
+
+export const constructQueryParams = params => {
+  const queryParams = new URLSearchParams();
+  Object.keys(params).forEach(key => queryParams.append(key, params[key]));
+  return queryParams;
+};
+
+export const transformEvents = events => {
+  return events.map(event => {
+    const startTime = formateDate(new Date(event.startTime));
+    const endTime = formateDate(new Date(event.endTime));
+    return {
+      ...event,
+      date: formatEventDisplay({ eventStartTime: startTime, eventEndTime: endTime }),
+      startTime,
+      endTime,
+    };
+  });
+};

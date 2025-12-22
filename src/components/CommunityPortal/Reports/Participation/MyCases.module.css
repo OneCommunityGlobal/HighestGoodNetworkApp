@@ -122,7 +122,15 @@
 .caseCards {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-auto-rows: 220px;
   gap: 20px;
+  height: 900px;
+  overflow: auto;
+}
+
+.shrink {
+  overflow: hidden;
+  height: 220px;
 }
 
 .caseCard {
@@ -308,7 +316,7 @@
 }
 
 /* ---------- More button ---------- */
-.moreBtn {
+/*.moreBtn {
   background-color: #007bff;
   color: #fff;
   border: none;
@@ -321,6 +329,11 @@
 
 .moreBtn:hover {
   background-color: #0056b3;
+}*/
+
+.moreBtn {
+  font-size: 12px;
+  margin-top: 8px;
 }
 
 /* ---------- Expanded scroll area ---------- */
@@ -337,6 +350,17 @@
   font-weight: bold;
   padding: 8px;
 }
+
+.eventsTitle {
+  display: flex;
+  gap: 10px;
+}
+
+.card {
+  border-radius: 0px;
+  background-color: tomato;
+}
+
 
 /* Print styles for case cards */
 /* Print styles for case cards */

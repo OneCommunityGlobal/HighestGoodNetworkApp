@@ -99,7 +99,7 @@ function NoShowInsights() {
       </div>
 
       <div className={styles.insightsTabs}>
-        {['Event type', 'Time', 'Location'].map(tab => (
+        {['Demographics', 'Event type', 'Time', 'Location'].map(tab => (
           <button
             key={tab}
             type="button"

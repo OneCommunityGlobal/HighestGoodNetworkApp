@@ -14,15 +14,19 @@ export const AddEventDetailsPopup = ({ handlePopup, addEventDetails }) => {
   const [eventStartAt, setEventStartAt] = useState('');
   const [eventEndAt, setEventEndAt] = useState('');
   const darkMode = useSelector(state => state.theme.darkMode);
+  const { loading } = useSelector(state => state.createEvent);
 
   const handleEventDetails = e => {
     e.preventDefault();
     const eventDetails = {
-      eventType: eventTitle,
-      eventName: eventDesc,
-      eventStartTime: eventStartAt,
-      eventEndTime: eventEndAt,
+      title: eventTitle,
+      type: 'Meeting',
+      description: eventDesc,
+      startTime: eventStartAt,
+      endTime: eventEndAt,
       eventTime: formatEventDisplay({ eventStartTime: eventStartAt, eventEndTime: eventEndAt }),
+      maxAttendees: -1,
+      location: 'Virtual',
     };
     addEventDetails(eventDetails);
   };
@@ -81,6 +85,7 @@ export const AddEventDetailsPopup = ({ handlePopup, addEventDetails }) => {
             </div>
           </div>
         </form>
+        {loading && <div className={styles.retrievalStatus}>Adding event...</div>}
       </div>
     </div>,
     eventDetailsPopupId,
