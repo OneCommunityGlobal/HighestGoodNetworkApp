@@ -87,6 +87,8 @@ import wishListReducer from './listBidDashboard/wishListItemReducer';
 
 // listing and biddding dashboard
 
+import browseLessonPlanReducer from './educationPortal/broweLessonPlanReducer';
+
 import {
   listOverviewReducer,
   listingAvailabilityReducer,
@@ -178,6 +180,9 @@ const localReducers = {
 
   // job analytics
   hoursPledged: hoursPledgedReducer,
+
+  //education portal
+  browseLessonPlanReducer: browseLessonPlanReducer,
 
   // student tasks
   studentTasks: studentTasksReducer,
