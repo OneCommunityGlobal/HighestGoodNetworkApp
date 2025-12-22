@@ -45,6 +45,18 @@ function TotalPeopleReport(props) {
         return;
       }
 
+      // Don't make API call if userList is empty
+      if (!userList || userList.length === 0) {
+        // eslint-disable-next-line no-console
+        console.warn('TotalPeopleReport: Skipping API call - userList is empty', {
+          userProfilesLength: userProfiles?.length,
+          userListLength: userList?.length,
+        });
+        setTotalPeopleReportDataLoading(false);
+        setAllTimeEntries([]);
+        return;
+      }
+
       try {
         // eslint-disable-next-line no-console
         console.log('TotalPeopleReport API Request:', {
@@ -226,6 +238,16 @@ function TotalPeopleReport(props) {
   }, [endDate, startDate, generateBarData, summaryOfTimeRange]);
 
   useEffect(() => {
+    // Only make API call if userList has data
+    if (!userList || userList.length === 0) {
+      // eslint-disable-next-line no-console
+      console.log('TotalPeopleReport: Waiting for userProfiles to load...', {
+        userProfilesLength: userProfiles?.length,
+        userListLength: userList?.length,
+      });
+      return;
+    }
+
     setTotalPeopleReportDataReady(false);
     const controller = new AbortController();
     loadTimeEntriesForPeriod(controller).then(() => {
@@ -233,7 +255,7 @@ function TotalPeopleReport(props) {
       setTotalPeopleReportDataReady(true);
     });
     return () => controller.abort();
-  }, [loadTimeEntriesForPeriod, startDate, endDate]);
+  }, [loadTimeEntriesForPeriod, startDate, endDate, userList]);
 
   useEffect(() => {
     if (!totalPeopleReportDataLoading && totalPeopleReportDataReady) {
