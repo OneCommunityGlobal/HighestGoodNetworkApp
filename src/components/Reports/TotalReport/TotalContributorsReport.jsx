@@ -6,6 +6,13 @@ import TotalReportBarGraph from './TotalReportBarGraph';
 import Loading from '../../common/Loading';
 import EditableInfoModal from '../../UserProfile/EditableModal/EditableInfoModal';
 import { generateBarData as generateBarDataUtil } from './generateBarData';
+import {
+  getCachedData,
+  setCachedData,
+  validateUserList,
+  logApiRequest,
+  logApiResponse,
+} from './cacheUtils';
 
 function TotalContributorsReport({ startDate, endDate, userProfiles, darkMode, userRole }) {
   const [contributors, setContributors] = useState([]);
@@ -30,64 +37,42 @@ function TotalContributorsReport({ startDate, endDate, userProfiles, darkMode, u
 
   // Fetch time entries for the selected period
   const loadTimeEntriesForPeriod = useCallback(async (controller) => {
+    const reportName = 'TotalContributorsReport';
     const url = ENDPOINTS.TIME_ENTRIES_REPORTS;
 
     if (!url) {
       return;
     }
 
-    // Don't make API call if userList is empty
-    if (!userList || userList.length === 0) {
-      // eslint-disable-next-line no-console
-      console.warn('TotalContributorsReport: Skipping API call - userList is empty', {
-        userProfilesLength: userProfiles?.length,
-        userListLength: userList?.length,
-      });
+    // Validate userList
+    if (!validateUserList(userList, userProfiles, reportName)) {
       setTimeEntries([]);
       setLoading(false);
       return;
     }
 
-    // Check cache with date range key to ensure cache is valid for current date range
-    const cacheKey = `TotalContributorsReport_${fromDate}_${toDate}`;
-    const cachedData = localStorage.getItem(cacheKey);
-    if (cachedData) {
-      try {
-        const parsedData = JSON.parse(cachedData);
-        if (parsedData && Array.isArray(parsedData) && parsedData.length > 0) {
-          // eslint-disable-next-line no-console
-          console.log('TotalContributorsReport: Using cached data', {
-            cacheKey,
-            dataLength: parsedData.length,
-          });
-          setTimeEntries(parsedData);
-          setLoading(false);
-          return;
-        }
-      } catch (e) {
-        // eslint-disable-next-line no-console
-        console.warn('TotalContributorsReport: Failed to parse cached data', e);
-      }
+    // Check cache with date range key
+    const cacheKey = `${reportName}_${fromDate}_${toDate}`;
+    const cached = getCachedData(cacheKey, reportName);
+    if (cached.data) {
+      setTimeEntries(cached.data);
+      setLoading(false);
+      return;
     }
 
     try {
-      // eslint-disable-next-line no-console
-      console.log('TotalContributorsReport API Request:', {
-        url,
-        payload: { users: userList, fromDate, toDate },
+      logApiRequest(reportName, url, { users: userList, fromDate, toDate }, {
         usersCount: userList?.length,
-        timestamp: new Date().toISOString(),
       });
+
       const response = await axios.post(
         url,
         { users: userList, fromDate, toDate },
         { signal: controller.signal }
       );
-      // eslint-disable-next-line no-console
-      console.log('TotalContributorsReport API Response:', {
-        dataLength: response.data?.length,
-        timestamp: new Date().toISOString(),
-      });
+
+      logApiResponse(reportName, response.data?.length);
+
       const mappedTimeEntries = response.data.map(entry => ({
         userId: entry.personId,
         hours: entry.hours,
@@ -95,23 +80,14 @@ function TotalContributorsReport({ startDate, endDate, userProfiles, darkMode, u
         isTangible: entry.isTangible,
         date: entry.dateOfWork,
       }));
+
       setTimeEntries(mappedTimeEntries);
-      
-      // Cache the data with date range key
-      if (mappedTimeEntries.length > 0) {
-        localStorage.setItem(cacheKey, JSON.stringify(mappedTimeEntries));
-        // eslint-disable-next-line no-console
-        console.log('TotalContributorsReport: Data cached', { cacheKey, dataLength: mappedTimeEntries.length });
-      } else {
-        // eslint-disable-next-line no-console
-        console.warn('TotalContributorsReport: Empty response - clearing cache', { cacheKey });
-        localStorage.removeItem(cacheKey);
-      }
+      setCachedData(cacheKey, mappedTimeEntries, reportName);
     } catch (error) {
       // eslint-disable-next-line import/no-named-as-default-member
       if (!axios.isCancel(error)) {
         // eslint-disable-next-line no-console
-        console.error('TotalContributorsReport API Error:', error);
+        console.error(`${reportName} API Error:`, error);
         setTimeEntries([]);
       }
     }

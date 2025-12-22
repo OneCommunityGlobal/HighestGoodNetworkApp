@@ -8,6 +8,14 @@ import ReactTooltip from 'react-tooltip';
 import TotalReportBarGraph from './TotalReportBarGraph';
 import Loading from '../../common/Loading';
 import { generateBarData as generateBarDataUtil } from './generateBarData';
+import {
+  getCachedDataLength,
+  setCachedData,
+  validateUserList,
+  logApiRequest,
+  logApiResponse,
+  compareWithCache,
+} from './cacheUtils';
 
 function TotalProjectReport(props) {
   const { startDate, endDate, userProfiles, projects, darkMode } = props;
@@ -46,57 +54,30 @@ function TotalProjectReport(props) {
 
   const loadTimeEntriesForPeriod = useCallback(
     async controller => {
-      // Don't make API call if userList is empty
-      if (!userList || userList.length === 0) {
-        // eslint-disable-next-line no-console
-        console.warn('TotalProjectReport: Skipping API call - userList is empty', {
-          userProfilesLength: userProfiles?.length,
-          userListLength: userList?.length,
-        });
+      const reportName = 'TotalProjectReport';
+      const url = ENDPOINTS.TIME_ENTRIES_REPORTS;
+
+      // Validate userList
+      if (!validateUserList(userList, userProfiles, reportName)) {
         setTotalProjectReportDataLoading(false);
         setAllTimeEntries([]);
         return;
       }
 
-      // Check cache with date range key - but always fetch fresh data to ensure completeness
-      const cacheKey = `TotalProjectReport_${fromDate}_${toDate}`;
-      let cachedDataLength = 0;
-      const cachedData = localStorage.getItem(cacheKey);
-      if (cachedData) {
-        try {
-          const parsedData = JSON.parse(cachedData);
-          if (parsedData && Array.isArray(parsedData)) {
-            cachedDataLength = parsedData.length;
-            // eslint-disable-next-line no-console
-            console.log('TotalProjectReport: Found cached data (will compare with fresh data)', {
-              cacheKey,
-              cachedDataLength: cachedDataLength,
-            });
-          }
-        } catch (e) {
-          // eslint-disable-next-line no-console
-          console.warn('TotalProjectReport: Failed to parse cached data', e);
-        }
-      }
+      // Check cache length for comparison (but always fetch fresh data)
+      const cacheKey = `${reportName}_${fromDate}_${toDate}`;
+      const cachedDataLength = getCachedDataLength(cacheKey, reportName);
 
       try {
-        // eslint-disable-next-line no-console
-        console.log('TotalProjectReport API Request:', {
-          url: ENDPOINTS.TIME_ENTRIES_REPORTS,
-          payload: { users: userList, fromDate, toDate },
+        logApiRequest(reportName, url, { users: userList, fromDate, toDate }, {
           usersCount: userList?.length,
           projectsCount: projectList?.length,
-          timestamp: new Date().toISOString(),
         });
-        const url = ENDPOINTS.TIME_ENTRIES_REPORTS;
+
         const timeEntries = await axios
           .post(url, { users: userList, fromDate, toDate }, { signal: controller.signal })
           .then(res => {
-            // eslint-disable-next-line no-console
-            console.log('TotalProjectReport API Response (timeEntries):', {
-              dataLength: res.data?.length,
-              timestamp: new Date().toISOString(),
-            });
+            logApiResponse(`${reportName} (timeEntries)`, res.data?.length);
             return res.data.map(entry => ({
               projectId: entry.projectId,
               projectName: entry.projectName,
@@ -107,21 +88,20 @@ function TotalProjectReport(props) {
             }));
           });
 
-        // eslint-disable-next-line no-console
-        console.log('TotalProjectReport API Request (lost projects):', {
-          url: ENDPOINTS.TIME_ENTRIES_LOST_PROJ_LIST,
-          payload: { projects: projectList, fromDate, toDate },
-          timestamp: new Date().toISOString(),
+        logApiRequest(`${reportName} (lost projects)`, ENDPOINTS.TIME_ENTRIES_LOST_PROJ_LIST, {
+          projects: projectList,
+          fromDate,
+          toDate,
         });
-        const projUrl = ENDPOINTS.TIME_ENTRIES_LOST_PROJ_LIST;
+
         const projTimeEntries = await axios
-          .post(projUrl, { projects: projectList, fromDate, toDate }, { signal: controller.signal })
+          .post(
+            ENDPOINTS.TIME_ENTRIES_LOST_PROJ_LIST,
+            { projects: projectList, fromDate, toDate },
+            { signal: controller.signal },
+          )
           .then(res => {
-            // eslint-disable-next-line no-console
-            console.log('TotalProjectReport API Response (lost projects):', {
-              dataLength: res.data?.length,
-              timestamp: new Date().toISOString(),
-            });
+            logApiResponse(`${reportName} (lost projects)`, res.data?.length);
             return res.data.map(entry => ({
               projectId: entry.projectId,
               projectName: entry.projectName,
@@ -134,45 +114,13 @@ function TotalProjectReport(props) {
 
         if (!controller.signal.aborted) {
           const allEntries = [...timeEntries, ...projTimeEntries];
-          
-          // Compare with cached data - use whichever has more data (or always use fresh if same)
-          if (cachedDataLength > 0 && cachedDataLength > allEntries.length) {
-            // eslint-disable-next-line no-console
-            console.warn('TotalProjectReport: Fresh data has fewer entries than cache', {
-              freshDataLength: allEntries.length,
-              cachedDataLength: cachedDataLength,
-              message: 'Using fresh data anyway to ensure accuracy',
-            });
-          } else if (allEntries.length > cachedDataLength) {
-            // eslint-disable-next-line no-console
-            console.log('TotalProjectReport: Fresh data has more entries than cache', {
-              freshDataLength: allEntries.length,
-              cachedDataLength: cachedDataLength,
-              difference: allEntries.length - cachedDataLength,
-            });
-          }
-          
-          // Always use fresh data from API to ensure completeness
+          compareWithCache(reportName, allEntries.length, cachedDataLength);
           setAllTimeEntries(allEntries);
-          
-          // Cache the fresh data with date range key
-          if (allEntries.length > 0) {
-            localStorage.setItem(cacheKey, JSON.stringify(allEntries));
-            // eslint-disable-next-line no-console
-            console.log('TotalProjectReport: Fresh data cached', { 
-              cacheKey, 
-              dataLength: allEntries.length,
-              previousCacheLength: cachedDataLength,
-            });
-          } else {
-            // eslint-disable-next-line no-console
-            console.warn('TotalProjectReport: Empty response - clearing cache', { cacheKey });
-            localStorage.removeItem(cacheKey);
-          }
+          setCachedData(cacheKey, allEntries, reportName, cachedDataLength);
         }
       } catch (err) {
         // eslint-disable-next-line no-console
-        console.error('TotalProjectReport API Error:', err);
+        console.error(`${reportName} API Error:`, err);
         setTotalProjectReportDataLoading(false);
       }
     },
