@@ -5,6 +5,9 @@
   padding: 0;
 }
 
+/* ======================================
+   DASHBOARD CONTAINER
+   ====================================== */
 .dashboard-container {
   padding: 40px 10px;
   margin: 0 auto;
@@ -17,6 +20,14 @@
   width: 100%;
 }
 
+.dashboard-container-dark {
+  background: #1b2a41;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* ======================================
+   HEADER
+   ====================================== */
 .dashboard-header {
   display: flex;
   justify-content: space-between;
@@ -28,94 +39,25 @@
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
 }
 
-.dashboard-content{
-  width: 100%;
-  padding-left: 20px;
-  margin: 0;
-}
-
-.dashboard-search {
-  border: none;
-  padding: 8px 16px;
-  min-width: 260px;
-  border-radius: 999px 0 0 999px;
-  outline: none;
-}
-
-.dashboard-search:focus {
-  box-shadow: none;
-}
-
-.dashboard-search-button {
-  border-radius: 0 999px 999px 0;
-  border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 18px;
-}
-
-.dashboard-search-icon {
-  font-size: 1rem;
+.dashboard-header-dark {
+  background: linear-gradient(120deg, #2b3e59, #22304a);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
 }
 
 .dashboard-header h1 {
   font-size: 2.5rem;
   font-weight: bold;
   color: #2c3e50;
+  margin: 0;
 }
 
-.dashboard-search-container input {
-  border: 2px solid #2c3e50;
-  border-radius: 25px;
-  padding: 12px 20px;
-  font-size: 1rem;
-  width: 100%;
-  max-width: 600px;
-  transition: all 0.3s ease;
+.dashboard-title-dark {
+  color: #ffffff !important;
 }
 
-/* pill input */
-.dashboard-search-input {
-  padding: 8px 90px 8px 16px;  /* extra right padding for icons */
-  border-radius: 999px;
-  border: 2px solid #1b3c55;
-  min-width: 260px;
-  outline: none;
-}
-
-/* clear X button */
-.dashboard-clear-btn {
-  position: absolute;
-  right: 35px;
-  top: 45%;
-  transform: translateY(-50%);
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  font-size: 0.9rem;
-  color: #1b3c55;
-}
-
-/* blue circular search button inside the bar */
-.dashboard-search-icon-btn {
-  position: absolute;
-  right: 1%;
-  top: 48%;
-  transform: translateY(-50%);
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  cursor: pointer;
-  background: transparent;          /* 🔹 icon background now white */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #1b3c55;               /* blue magnifying-glass icon */
-  font-size: 0.9rem;
-}
-
-
+/* ======================================
+   SEARCH
+   ====================================== */
 .dashboard-search-container {
   position: relative;
   display: inline-flex;
@@ -126,93 +68,392 @@
   background: #ffffff;
 }
 
-.dashboard-search-container input:focus {
+.dashboard-search-input {
+  padding: 8px 90px 8px 16px;
+  border-radius: 999px;
+  border: 2px solid #1b3c55;
+  min-width: 260px;
+  outline: none;
+  background: #ffffff;
+  color: #2c3e50;
+}
+
+.dashboard-search-input-dark {
+  border-color: #4a5a77;
+  background: #3a506b;
+  color: #ffffff;
+}
+
+.dashboard-search-input-dark::placeholder {
+  color: #b0b8c4;
+}
+
+.dashboard-search-input:focus {
   border-color: #34495e;
   box-shadow: 0 0 8px rgba(52, 73, 94, 0.3);
   outline: none;
 }
 
+.dashboard-search-input-dark:focus {
+  border-color: #e8a71c;
+  box-shadow: 0 0 8px rgba(232, 167, 28, 0.3);
+}
+
+.dashboard-clear-btn {
+  position: absolute;
+  right: 35px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #1b3c55;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dashboard-clear-btn-dark {
+  color: #ffffff;
+}
+
+.dashboard-search-icon-btn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  cursor: pointer;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1b3c55;
+  font-size: 0.9rem;
+  border: none;
+  padding: 0;
+}
+
+.dashboard-search-icon-btn-dark {
+  color: #ffffff;
+}
+
+/* Hide browser's built-in clear icon for search inputs */
+.dashboard-search-input::-webkit-search-cancel-button,
+.dashboard-search-input::-webkit-search-decoration,
+.dashboard-search-input::-webkit-search-results-button,
+.dashboard-search-input::-webkit-search-results-decoration {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* ======================================
+   LAYOUT
+   ====================================== */
+.dashboard-row {
+  align-items: flex-start;
+}
+
 .dashboard-sidebar {
-  padding: 20px;
+  padding: 0;
   display: flex;
   justify-content: flex-start;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+  align-items: flex-start;
+}
+
+.dashboard-main {
+  padding: 0 0 0 24px;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* ======================================
+   FILTER SECTION
+   ====================================== */
+.filter-section {
+  width: 100%;
+  padding: 24px;
   background: #ffffff;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  overflow: visible;
+  box-sizing: border-box;
+}
+
+.filter-section-dark {
+  background: #2b3e59;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .filter-section h4 {
-  font-size: 1.8rem;
+  font-size: 1.5rem;
   color: #2c3e50;
   font-weight: 600;
+  margin: 0 0 24px 0;
+  padding: 0;
+}
+
+.filter-section-title-dark {
+  color: #ffffff !important;
+}
+
+.filter-section-divider {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.filter-item {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.filter-item > label:first-of-type {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #2c3e50;
+  margin: 0 0 8px 0;
+  display: block;
+  width: 100%;
+}
+
+.filter-label-dark {
+  color: #ffffff !important;
 }
 
 .filter-item input:not([type="checkbox"]):not([type="radio"]),
 .filter-item select {
-  padding: 12px 15px;
-  margin-top: 10px;
+  padding: 10px 14px;
+  margin: 0;
   border-radius: 8px;
   width: 100%;
   height: auto;
   font-size: 1rem;
   transition: all 0.3s ease;
+  border: 1px solid #ddd;
+  background: #ffffff;
+  color: #2c3e50;
+  box-sizing: border-box;
 }
 
-.filter-item input[type="radio"],
-.filter-item input[type="checkbox"] {
-  display: inline-block;      /* <– keeps input on same line as text */
-  width: auto;
-  padding: 0;
-  margin: 5px 0px 0px 120px;       /* top margin to line up under "Dates" */
-  vertical-align: middle;
-}
-
-.filter-item input:focus,
+.filter-item input:not([type="checkbox"]):not([type="radio"]):focus,
 .filter-item select:focus {
   border-color: #2c3e50;
   box-shadow: 0 0 5px rgba(44, 62, 80, 0.4);
   outline: none;
 }
 
-.dashboard-main {
-  width: 65%;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px #0000001a;
+.filter-select-dark,
+.date-filter-dark {
+  border-color: #4a5a77 !important;
+  background: #3a506b !important;
+  color: #ffffff !important;
 }
 
+.filter-select-dark:focus,
+.date-filter-dark:focus {
+  border-color: #e8a71c !important;
+  box-shadow: 0 0 5px rgba(232, 167, 28, 0.4) !important;
+}
 
+.filter-select-dark option {
+  background: #3a506b !important;
+  color: #ffffff !important;
+}
+
+/* Global dark mode styles for reactstrap Input components */
+:global(.filter-select-dark.form-control),
+:global(.filter-select-dark.form-select),
+:global(.date-filter-dark.form-control) {
+  border-color: #4a5a77 !important;
+  background-color: #3a506b !important;
+  color: #ffffff !important;
+}
+
+:global(.filter-select-dark.form-control:focus),
+:global(.filter-select-dark.form-select:focus),
+:global(.date-filter-dark.form-control:focus) {
+  border-color: #e8a71c !important;
+  background-color: #3a506b !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 5px rgba(232, 167, 28, 0.4) !important;
+}
+
+/* Radio and Checkbox Styling */
+.filter-options-horizontal {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.radio-label,
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  margin: 0;
+  padding: 4px 0;
+  width: 100%;
+  position: relative;
+  box-sizing: border-box;
+  min-height: 26px;
+}
+
+.filter-item input[type="radio"],
+.filter-item input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  min-height: 18px;
+  margin: 0;
+  padding: 0;
+  cursor: pointer;
+  flex-shrink: 0;
+  position: relative;
+  appearance: auto;
+  -webkit-appearance: auto;
+  box-sizing: border-box;
+}
+
+.filter-radio-dark,
+.filter-checkbox-dark {
+  accent-color: #e8a71c;
+}
+
+/* Global styles for reactstrap radio and checkbox in dark mode */
+:global(.filter-radio-dark.form-check-input),
+:global(.filter-checkbox-dark.form-check-input) {
+  accent-color: #e8a71c;
+  border-color: #4a5a77;
+  background-color: #3a506b;
+  width: 18px !important;
+  height: 18px !important;
+  margin: 0 !important;
+  flex-shrink: 0;
+}
+
+:global(.filter-radio-dark.form-check-input:checked),
+:global(.filter-checkbox-dark.form-check-input:checked) {
+  background-color: #e8a71c;
+  border-color: #e8a71c;
+}
+
+/* Ensure reactstrap Input components don't have default margins */
+:global(.filter-item .form-check-input),
+:global(.filter-item .form-control),
+:global(.filter-item .form-select) {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+/* Fix for reactstrap Input wrapper that might add padding */
+:global(.filter-item .form-check) {
+  padding-left: 0 !important;
+  margin-bottom: 0 !important;
+  margin-top: 0 !important;
+}
+
+/* Override any reactstrap default styles that might clip content */
+:global(.radio-label .form-check-input),
+:global(.checkbox-label .form-check-input) {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  position: static !important;
+}
+
+/* Ensure labels don't clip content */
+.radio-label span,
+.checkbox-label span {
+  display: inline-block;
+  flex: 1;
+  min-width: 0;
+  line-height: 1.5;
+}
+
+.filter-option-text-dark {
+  color: #ffffff !important;
+}
+
+.date-filter {
+  margin-top: 8px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ======================================
+   MAIN CONTENT
+   ====================================== */
 .section-title {
   font-size: 2.2rem;
   color: #2c3e50;
-  margin-bottom: 20px;
+  margin: 0 0 24px 0;
   font-weight: bold;
   text-align: center;
 }
 
+.section-title-dark {
+  color: #ffffff !important;
+}
+
+/* ======================================
+   EVENT CARDS
+   ====================================== */
 .event-card {
   margin-bottom: 20px;
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: none;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.event-card-dark {
+  background: #2b3e59;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+.event-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.event-card-dark:hover {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
 }
 
 .event-card-col {
   display: flex;
-}
-
-
-
-.event-card:hover {
-  transform: scale(1.05);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  margin-bottom: 20px;
 }
 
 .event-card-img-container img {
   width: 100%;
   height: auto;
   border-bottom: 3px solid #34495e;
+  display: block;
+}
+
+.event-card-body-dark {
+  background: #2b3e59 !important;
 }
 
 .event-title {
@@ -221,6 +462,10 @@
   margin: 10px 0;
   font-weight: bold;
   font-size: 1.5rem;
+}
+
+.event-title-dark {
+  color: #ffffff !important;
 }
 
 .event-date,
@@ -234,6 +479,47 @@
   margin: 5px 0;
 }
 
+.event-text-dark {
+  color: #d1d5db !important;
+}
+
+.event-icon {
+  flex-shrink: 0;
+}
+
+/* ======================================
+   NO EVENTS
+   ====================================== */
+.no-events {
+  text-align: center;
+  padding: 40px;
+  color: #555;
+  font-size: 1.2rem;
+}
+
+.no-events-dark {
+  color: #d1d5db !important;
+}
+
+/* ======================================
+   PAGINATION
+   ====================================== */
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  margin: 30px 0;
+}
+
+.pagination-info {
+  font-size: 1rem;
+  color: #2c3e50;
+}
+
+/* ======================================
+   ACTIONS
+   ====================================== */
 .dashboard-actions {
   text-align: center;
   margin-top: 20px;
@@ -256,11 +542,43 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-/* Hide browser's built-in clear icon for search inputs */
-.dashboard-search-input::-webkit-search-cancel-button,
-.dashboard-search-input::-webkit-search-decoration,
-.dashboard-search-input::-webkit-search-results-button,
-.dashboard-search-input::-webkit-search-results-decoration {
-  -webkit-appearance: none;
-  appearance: none;
+/* ======================================
+   LOADING & ERROR STATES
+   ====================================== */
+.loading-text-dark {
+  color: #ffffff !important;
+}
+
+.error-text {
+  color: #dc3545;
+  text-align: center;
+  padding: 20px;
+  font-size: 1.1rem;
+}
+
+.error-text-dark {
+  color: #ff6b6b !important;
+}
+
+/* ======================================
+   RESPONSIVE
+   ====================================== */
+@media (max-width: 768px) {
+  .dashboard-main {
+    padding: 24px 0 0 0;
+  }
+
+  .filter-section {
+    padding: 20px;
+  }
+
+  .dashboard-header {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .dashboard-header h1 {
+    font-size: 2rem;
+  }
 }

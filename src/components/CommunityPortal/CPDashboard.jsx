@@ -1,5 +1,7 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 import { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, CardBody, Button, Input } from 'reactstrap';
+import { useSelector } from 'react-redux';
+import { Container, Row, Col, Card, CardBody, Button, Input, Label } from 'reactstrap';
 import { FaCalendarAlt, FaMapMarkerAlt, FaUserAlt, FaSearch, FaTimes } from 'react-icons/fa';
 import styles from './CPDashboard.module.css';
 import { ENDPOINTS } from '../../utils/URL';
@@ -31,7 +33,8 @@ const FixedRatioImage = ({ src, alt, fallback }) => (
   </div>
 );
 
-export function CPDashboard() {
+function CPDashboard() {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [events, setEvents] = useState([]);
   const [searchInput, setSearchInput] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
@@ -53,14 +56,12 @@ export function CPDashboard() {
 
       try {
         const response = await axios.get(ENDPOINTS.EVENTS);
-        console.log('Fetched events:', response.data.events);
         setEvents(response.data.events || []);
         setPagination(prev => ({
           ...prev,
           total: response.data.events?.length || 0,
         }));
       } catch (err) {
-        console.error('Here', err);
         setError('Failed to load events');
       } finally {
         setIsLoading(false);
@@ -121,24 +122,42 @@ export function CPDashboard() {
 
   if (isLoading) {
     return (
-      <Container className={styles['dashboard-container']}>
-        <p>Loading events...</p>
+      <Container
+        className={`${styles['dashboard-container']} ${
+          darkMode ? styles['dashboard-container-dark'] : ''
+        }`}
+      >
+        <p className={darkMode ? styles['loading-text-dark'] : ''}>Loading events...</p>
       </Container>
     );
   }
 
   if (error) {
     return (
-      <Container className={styles['dashboard-container']}>
-        <p className={styles['error-text']}>{error}</p>
+      <Container
+        className={`${styles['dashboard-container']} ${
+          darkMode ? styles['dashboard-container-dark'] : ''
+        }`}
+      >
+        <p className={`${styles['error-text']} ${darkMode ? styles['error-text-dark'] : ''}`}>
+          {error}
+        </p>
       </Container>
     );
   }
 
   return (
-    <Container className={styles['dashboard-container']}>
-      <header className={styles['dashboard-header']}>
-        <h1>All Events</h1>
+    <Container
+      className={`${styles['dashboard-container']} ${
+        darkMode ? styles['dashboard-container-dark'] : ''
+      }`}
+    >
+      <header
+        className={`${styles['dashboard-header']} ${
+          darkMode ? styles['dashboard-header-dark'] : ''
+        }`}
+      >
+        <h1 className={darkMode ? styles['dashboard-title-dark'] : ''}>All Events</h1>
 
         <div className={styles['dashboard-controls']}>
           <div className={styles['dashboard-search-container']}>
@@ -149,13 +168,17 @@ export function CPDashboard() {
               value={searchInput}
               onChange={e => setSearchInput(e.target.value)}
               onKeyDown={handleSearchKeyDown}
-              className={styles['dashboard-search-input']}
+              className={`${styles['dashboard-search-input']} ${
+                darkMode ? styles['dashboard-search-input-dark'] : ''
+              }`}
             />
 
             {searchInput && (
               <button
                 type="button"
-                className={styles['dashboard-clear-btn']}
+                className={`${styles['dashboard-clear-btn']} ${
+                  darkMode ? styles['dashboard-clear-btn-dark'] : ''
+                }`}
                 onClick={() => {
                   setSearchInput('');
                   setSearchQuery('');
@@ -168,7 +191,9 @@ export function CPDashboard() {
 
             <button
               type="button"
-              className={styles['dashboard-search-icon-btn']}
+              className={`${styles['dashboard-search-icon-btn']} ${
+                darkMode ? styles['dashboard-search-icon-btn-dark'] : ''
+              }`}
               onClick={handleSearchClick}
               aria-label="Search events"
             >
@@ -178,48 +203,114 @@ export function CPDashboard() {
         </div>
       </header>
 
-      <Row>
+      <Row className={styles['dashboard-row']}>
         <Col md={3} className={styles['dashboard-sidebar']}>
-          <div className={styles['filter-section']}>
-            <h4>Search Filters</h4>
+          {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+          <div
+            className={`${styles['filter-section']} ${
+              darkMode ? styles['filter-section-dark'] : ''
+            }`}
+          >
+            <h4 className={darkMode ? styles['filter-section-title-dark'] : ''}>Search Filters</h4>
             <div className={styles['filter-section-divider']}>
               <div className={styles['filter-item']}>
-                <label htmlFor="date-tomorrow"> Dates</label>
+                <label
+                  htmlFor="date-filter-input"
+                  className={darkMode ? styles['filter-label-dark'] : ''}
+                >
+                  Dates
+                </label>
                 <div className={styles['filter-options-horizontal']}>
-                  <div>
-                    <Input type="radio" name="dates" /> Tomorrow
-                  </div>
-                  <div>
-                    <Input type="radio" name="dates" /> This Weekend
-                  </div>
+                  <label className={styles['radio-label']}>
+                    <Input
+                      type="radio"
+                      name="dates"
+                      id="date-tomorrow"
+                      className={darkMode ? styles['filter-radio-dark'] : ''}
+                    />
+                    <span className={darkMode ? styles['filter-option-text-dark'] : ''}>
+                      Tomorrow
+                    </span>
+                  </label>
+                  <label className={styles['radio-label']}>
+                    <Input
+                      type="radio"
+                      name="dates"
+                      id="date-weekend"
+                      className={darkMode ? styles['filter-radio-dark'] : ''}
+                    />
+                    <span className={darkMode ? styles['filter-option-text-dark'] : ''}>
+                      This Weekend
+                    </span>
+                  </label>
                 </div>
-                <Input type="date" placeholder="Ending After" className={styles['date-filter']} />
+                <Input
+                  id="date-filter-input"
+                  type="date"
+                  placeholder="Ending After"
+                  className={`${styles['date-filter']} ${
+                    darkMode ? styles['date-filter-dark'] : ''
+                  }`}
+                />
               </div>
 
               <div className={styles['filter-item']}>
-                <label htmlFor="online-only">Online</label>
-                <div>
-                  <Input type="checkbox" /> Online Only
-                </div>
+                <label
+                  htmlFor="online-only"
+                  className={darkMode ? styles['filter-label-dark'] : ''}
+                >
+                  Online
+                </label>
+                <label className={styles['checkbox-label']}>
+                  <Input
+                    type="checkbox"
+                    id="online-only"
+                    className={darkMode ? styles['filter-checkbox-dark'] : ''}
+                  />
+                  <span className={darkMode ? styles['filter-option-text-dark'] : ''}>
+                    Online Only
+                  </span>
+                </label>
               </div>
 
               <div className={styles['filter-item']}>
-                <label htmlFor="branches">Branches</label>
-                <Input type="select">
+                <Label for="branches" className={darkMode ? styles['filter-label-dark'] : ''}>
+                  Branches
+                </Label>
+                <Input
+                  type="select"
+                  id="branches"
+                  name="branches"
+                  className={darkMode ? styles['filter-select-dark'] : ''}
+                >
                   <option>Select branches</option>
                 </Input>
               </div>
 
               <div className={styles['filter-item']}>
-                <label htmlFor="themes">Themes</label>
-                <Input type="select">
+                <Label for="themes" className={darkMode ? styles['filter-label-dark'] : ''}>
+                  Themes
+                </Label>
+                <Input
+                  type="select"
+                  id="themes"
+                  name="themes"
+                  className={darkMode ? styles['filter-select-dark'] : ''}
+                >
                   <option>Select themes</option>
                 </Input>
               </div>
 
               <div className={styles['filter-item']}>
-                <label htmlFor="categories">Categories</label>
-                <Input type="select">
+                <Label for="categories" className={darkMode ? styles['filter-label-dark'] : ''}>
+                  Categories
+                </Label>
+                <Input
+                  type="select"
+                  id="categories"
+                  name="categories"
+                  className={darkMode ? styles['filter-select-dark'] : ''}
+                >
                   <option>Select categories</option>
                 </Input>
               </div>
@@ -228,13 +319,21 @@ export function CPDashboard() {
         </Col>
 
         <Col md={9} className={styles['dashboard-main']}>
-          <h2 className={styles['section-title']}>Events</h2>
+          <h2
+            className={`${styles['section-title']} ${darkMode ? styles['section-title-dark'] : ''}`}
+          >
+            Events
+          </h2>
 
           <Row>
             {displayedEvents.length > 0 ? (
               displayedEvents.map(event => (
                 <Col md={4} key={event.id} className={styles['event-card-col']}>
-                  <Card className={styles['event-card']}>
+                  <Card
+                    className={`${styles['event-card']} ${
+                      darkMode ? styles['event-card-dark'] : ''
+                    }`}
+                  >
                     <div className={styles['event-card-img-container']}>
                       <FixedRatioImage
                         src={event.image}
@@ -242,15 +341,33 @@ export function CPDashboard() {
                         fallback={FALLBACK_IMG}
                       />
                     </div>
-                    <CardBody>
-                      <h5 className={styles['event-title']}>{event.title}</h5>
-                      <p className={styles['event-date']}>
+                    <CardBody className={darkMode ? styles['event-card-body-dark'] : ''}>
+                      <h5
+                        className={`${styles['event-title']} ${
+                          darkMode ? styles['event-title-dark'] : ''
+                        }`}
+                      >
+                        {event.title}
+                      </h5>
+                      <p
+                        className={`${styles['event-date']} ${
+                          darkMode ? styles['event-text-dark'] : ''
+                        }`}
+                      >
                         <FaCalendarAlt className={styles['event-icon']} /> {formatDate(event.date)}
                       </p>
-                      <p className={styles['event-location']}>
+                      <p
+                        className={`${styles['event-location']} ${
+                          darkMode ? styles['event-text-dark'] : ''
+                        }`}
+                      >
                         <FaMapMarkerAlt className={styles['event-icon']} /> {event.location}
                       </p>
-                      <p className={styles['event-organizer']}>
+                      <p
+                        className={`${styles['event-organizer']} ${
+                          darkMode ? styles['event-text-dark'] : ''
+                        }`}
+                      >
                         <FaUserAlt className={styles['event-icon']} /> {event.organizer}
                       </p>
                     </CardBody>
@@ -258,7 +375,9 @@ export function CPDashboard() {
                 </Col>
               ))
             ) : (
-              <div className={styles['no-events']}>No events available</div>
+              <div className={`${styles['no-events']} ${darkMode ? styles['no-events-dark'] : ''}`}>
+                No events available
+              </div>
             )}
           </Row>
 
