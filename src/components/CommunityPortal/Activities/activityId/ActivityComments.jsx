@@ -657,20 +657,36 @@ function ActivityComments() {
     );
   };
 
+  const getTime = value => {
+    if (!value) return 0;
+    const time = new Date(value).getTime();
+    return isNaN(time) ? 0 : time;
+  };
   const filteredFeedbacks = feedbacks
     .filter(feedback => {
       const matchesSearch =
         feedback.text.toLowerCase().includes(feedbackSearch.toLowerCase()) ||
         feedback.name.toLowerCase().includes(feedbackSearch.toLowerCase());
+
       const matchesFilter =
         feedbackFilter === 'All' || feedback.rating.toString() === feedbackFilter;
+
       return matchesSearch && matchesFilter;
     })
     .sort((a, b) => {
-      if (feedbackSort === 'Oldest') return new Date(a.timestamp) - new Date(b.timestamp);
-      if (feedbackSort === 'Highest Rated') return b.rating - a.rating;
-      if (feedbackSort === 'Lowest Rated') return a.rating - b.rating;
-      return new Date(b.timestamp) - new Date(a.timestamp); // Newest
+      const aTime = getTime(a.createdAt);
+      const bTime = getTime(b.createdAt);
+
+      switch (feedbackSort) {
+        case 'Oldest':
+          return aTime - bTime;
+        case 'Highest Rated':
+          return b.rating - a.rating;
+        case 'Lowest Rated':
+          return a.rating - b.rating;
+        default:
+          return bTime - aTime; // Newest
+      }
     });
 
   return (
