@@ -24,48 +24,158 @@ function TotalProjectReport(props) {
 
   const fromDate = useMemo(() => startDate.toLocaleDateString('en-CA'), [startDate]);
   const toDate = useMemo(() => endDate.toLocaleDateString('en-CA'), [endDate]);
-  const userList = useMemo(() => userProfiles.map(user => user._id), [userProfiles]);
-  const projectList = useMemo(() => projects.map(proj => proj._id), [projects]);
+  const userList = useMemo(() => {
+    const list = userProfiles?.map(user => user._id) || [];
+    // eslint-disable-next-line no-console
+    console.log('TotalProjectReport userList created:', {
+      userProfilesLength: userProfiles?.length,
+      userListLength: list.length,
+    });
+    return list;
+  }, [userProfiles]);
+  const projectList = useMemo(() => {
+    const list = projects?.map(proj => proj._id) || [];
+    // eslint-disable-next-line no-console
+    console.log('TotalProjectReport projectList created:', {
+      projectsLength: projects?.length,
+      projectListLength: list.length,
+    });
+    return list;
+  }, [projects]);
 
   const loadTimeEntriesForPeriod = useCallback(
     async controller => {
+      // Don't make API call if userList is empty
+      if (!userList || userList.length === 0) {
+        // eslint-disable-next-line no-console
+        console.warn('TotalProjectReport: Skipping API call - userList is empty', {
+          userProfilesLength: userProfiles?.length,
+          userListLength: userList?.length,
+        });
+        setTotalProjectReportDataLoading(false);
+        setAllTimeEntries([]);
+        return;
+      }
+
+      // Check cache with date range key - but always fetch fresh data to ensure completeness
+      const cacheKey = `TotalProjectReport_${fromDate}_${toDate}`;
+      let cachedDataLength = 0;
+      const cachedData = localStorage.getItem(cacheKey);
+      if (cachedData) {
+        try {
+          const parsedData = JSON.parse(cachedData);
+          if (parsedData && Array.isArray(parsedData)) {
+            cachedDataLength = parsedData.length;
+            // eslint-disable-next-line no-console
+            console.log('TotalProjectReport: Found cached data (will compare with fresh data)', {
+              cacheKey,
+              cachedDataLength: cachedDataLength,
+            });
+          }
+        } catch (e) {
+          // eslint-disable-next-line no-console
+          console.warn('TotalProjectReport: Failed to parse cached data', e);
+        }
+      }
+
       try {
+        // eslint-disable-next-line no-console
+        console.log('TotalProjectReport API Request:', {
+          url: ENDPOINTS.TIME_ENTRIES_REPORTS,
+          payload: { users: userList, fromDate, toDate },
+          usersCount: userList?.length,
+          projectsCount: projectList?.length,
+          timestamp: new Date().toISOString(),
+        });
         const url = ENDPOINTS.TIME_ENTRIES_REPORTS;
         const timeEntries = await axios
           .post(url, { users: userList, fromDate, toDate }, { signal: controller.signal })
-          .then(res =>
-            res.data.map(entry => ({
+          .then(res => {
+            // eslint-disable-next-line no-console
+            console.log('TotalProjectReport API Response (timeEntries):', {
+              dataLength: res.data?.length,
+              timestamp: new Date().toISOString(),
+            });
+            return res.data.map(entry => ({
               projectId: entry.projectId,
               projectName: entry.projectName,
               hours: entry.hours,
               minutes: entry.minutes,
               isTangible: entry.isTangible,
               date: entry.dateOfWork,
-            })),
-          );
+            }));
+          });
 
+        // eslint-disable-next-line no-console
+        console.log('TotalProjectReport API Request (lost projects):', {
+          url: ENDPOINTS.TIME_ENTRIES_LOST_PROJ_LIST,
+          payload: { projects: projectList, fromDate, toDate },
+          timestamp: new Date().toISOString(),
+        });
         const projUrl = ENDPOINTS.TIME_ENTRIES_LOST_PROJ_LIST;
         const projTimeEntries = await axios
           .post(projUrl, { projects: projectList, fromDate, toDate }, { signal: controller.signal })
-          .then(res =>
-            res.data.map(entry => ({
+          .then(res => {
+            // eslint-disable-next-line no-console
+            console.log('TotalProjectReport API Response (lost projects):', {
+              dataLength: res.data?.length,
+              timestamp: new Date().toISOString(),
+            });
+            return res.data.map(entry => ({
               projectId: entry.projectId,
               projectName: entry.projectName,
               hours: entry.hours,
               minutes: entry.minutes,
               isTangible: entry.isTangible,
               date: entry.dateOfWork,
-            })),
-          );
+            }));
+          });
 
         if (!controller.signal.aborted) {
-          setAllTimeEntries([...timeEntries, ...projTimeEntries]);
+          const allEntries = [...timeEntries, ...projTimeEntries];
+          
+          // Compare with cached data - use whichever has more data (or always use fresh if same)
+          if (cachedDataLength > 0 && cachedDataLength > allEntries.length) {
+            // eslint-disable-next-line no-console
+            console.warn('TotalProjectReport: Fresh data has fewer entries than cache', {
+              freshDataLength: allEntries.length,
+              cachedDataLength: cachedDataLength,
+              message: 'Using fresh data anyway to ensure accuracy',
+            });
+          } else if (allEntries.length > cachedDataLength) {
+            // eslint-disable-next-line no-console
+            console.log('TotalProjectReport: Fresh data has more entries than cache', {
+              freshDataLength: allEntries.length,
+              cachedDataLength: cachedDataLength,
+              difference: allEntries.length - cachedDataLength,
+            });
+          }
+          
+          // Always use fresh data from API to ensure completeness
+          setAllTimeEntries(allEntries);
+          
+          // Cache the fresh data with date range key
+          if (allEntries.length > 0) {
+            localStorage.setItem(cacheKey, JSON.stringify(allEntries));
+            // eslint-disable-next-line no-console
+            console.log('TotalProjectReport: Fresh data cached', { 
+              cacheKey, 
+              dataLength: allEntries.length,
+              previousCacheLength: cachedDataLength,
+            });
+          } else {
+            // eslint-disable-next-line no-console
+            console.warn('TotalProjectReport: Empty response - clearing cache', { cacheKey });
+            localStorage.removeItem(cacheKey);
+          }
         }
       } catch (err) {
-        // console.log(err);
+        // eslint-disable-next-line no-console
+        console.error('TotalProjectReport API Error:', err);
+        setTotalProjectReportDataLoading(false);
       }
     },
-    [fromDate, toDate, userList, projectList],
+    [fromDate, toDate, userList, projectList, userProfiles],
   );
 
   const sumByProject = useCallback((objectArray, property) => {
@@ -164,6 +274,16 @@ function TotalProjectReport(props) {
   }, [endDate, startDate, generateBarData, summaryOfTimeRange]);
 
   useEffect(() => {
+    // Only make API call if userList has data
+    if (!userList || userList.length === 0) {
+      // eslint-disable-next-line no-console
+      console.log('TotalProjectReport: Waiting for userProfiles to load...', {
+        userProfilesLength: userProfiles?.length,
+        userListLength: userList?.length,
+      });
+      return;
+    }
+
     setTotalProjectReportDataReady(false);
     const controller = new AbortController();
 
@@ -177,7 +297,7 @@ function TotalProjectReport(props) {
     return () => {
       controller.abort();
     };
-  }, [loadTimeEntriesForPeriod, startDate, endDate]);
+  }, [loadTimeEntriesForPeriod, startDate, endDate, userList]);
 
   useEffect(() => {
     if (!totalProjectReportDataLoading && totalProjectReportDataReady) {

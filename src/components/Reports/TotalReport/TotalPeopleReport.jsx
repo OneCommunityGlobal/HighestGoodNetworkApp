@@ -57,6 +57,29 @@ function TotalPeopleReport(props) {
         return;
       }
 
+      // Check cache with date range key to ensure cache is valid for current date range
+      const cacheKey = `TotalPeopleReport_${fromDate}_${toDate}`;
+      const cachedData = localStorage.getItem(cacheKey);
+      if (cachedData) {
+        try {
+          const parsedData = JSON.parse(cachedData);
+          if (parsedData && Array.isArray(parsedData) && parsedData.length > 0) {
+            // eslint-disable-next-line no-console
+            console.log('TotalPeopleReport: Using cached data', {
+              cacheKey,
+              dataLength: parsedData.length,
+            });
+            setAllTimeEntries(parsedData);
+            setTotalPeopleReportDataLoading(false);
+            setTotalPeopleReportDataReady(true);
+            return;
+          }
+        } catch (e) {
+          // eslint-disable-next-line no-console
+          console.warn('TotalPeopleReport: Failed to parse cached data', e);
+        }
+      }
+
       try {
         // eslint-disable-next-line no-console
         console.log('TotalPeopleReport API Request:', {
@@ -64,6 +87,7 @@ function TotalPeopleReport(props) {
           payload: { users: userList, fromDate, toDate },
           usersCount: userList?.length,
           userProfilesCount: userProfiles?.length,
+          timestamp: new Date().toISOString(),
         });
         const res = await axios.post(
           url,
@@ -74,7 +98,10 @@ function TotalPeopleReport(props) {
         console.log('TotalPeopleReport API Response:', {
           dataLength: res.data?.length,
           sampleData: res.data?.slice(0, 2),
+          timestamp: new Date().toISOString(),
+          responseTime: new Date().toISOString(),
         });
+        
         const timeEntries = res.data.map(entry => ({
           userId: entry.personId,
           hours: entry.hours,
@@ -82,14 +109,37 @@ function TotalPeopleReport(props) {
           isTangible: entry.isTangible,
           date: entry.dateOfWork,
         }));
+        
+        // Log if response seems incomplete (very few entries for many users)
+        if (timeEntries.length > 0 && userList.length > 100 && timeEntries.length < 10) {
+          // eslint-disable-next-line no-console
+          console.warn('TotalPeopleReport: Response may be incomplete', {
+            timeEntriesCount: timeEntries.length,
+            usersCount: userList.length,
+            ratio: (timeEntries.length / userList.length * 100).toFixed(2) + '%',
+            message: 'If data seems incomplete, backend may still be processing. Try refreshing in a few minutes.',
+          });
+        }
+        
         setAllTimeEntries(timeEntries);
+        
+        // Cache the data with date range key
+        if (timeEntries.length > 0) {
+          localStorage.setItem(cacheKey, JSON.stringify(timeEntries));
+          // eslint-disable-next-line no-console
+          console.log('TotalPeopleReport: Data cached', { cacheKey, dataLength: timeEntries.length });
+        } else {
+          // eslint-disable-next-line no-console
+          console.warn('TotalPeopleReport: Empty response - clearing cache', { cacheKey });
+          localStorage.removeItem(cacheKey);
+        }
       } catch (error) {
         // eslint-disable-next-line no-console
         console.error('TotalPeopleReport API Error:', error);
         setTotalPeopleReportDataLoading(false);
       }
     },
-    [fromDate, toDate, userList],
+    [fromDate, toDate, userList, userProfiles],
   );
 
   const sumByUser = useCallback((objectArray, property) => {
