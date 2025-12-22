@@ -5,6 +5,7 @@ import './TotalReport.css';
 import { Button } from 'reactstrap';
 import ReactTooltip from 'react-tooltip';
 import Loading from '../../common/Loading';
+import { generateBarData as generateBarDataUtil } from './generateBarData';
 
 const LazyTotalReportBarGraph = React.lazy(() => import('./TotalReportBarGraph'));
 
@@ -237,11 +238,8 @@ function TotalTeamReport(props) {
     }, []);
   };
 
-  const generateBarData = groupedData => {
-    return groupedData.map(range => ({
-      label: `${range.timeRange}`,
-      value: range.teamsOfTime.length,
-    }));
+  const generateBarData = (groupedData, isYear = false) => {
+    return generateBarDataUtil(groupedData, isYear, startDate, endDate, 'teamsOfTime');
   };
   // Filter teams by end date to remove those created after the selected period
   const filterTeamByEndDate = (teams, endDateTime) => {

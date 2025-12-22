@@ -5,6 +5,7 @@ import './TotalReport.css';
 import TotalReportBarGraph from './TotalReportBarGraph';
 import Loading from '../../common/Loading';
 import EditableInfoModal from '../../UserProfile/EditableModal/EditableInfoModal';
+import { generateBarData as generateBarDataUtil } from './generateBarData';
 
 function TotalContributorsReport({ startDate, endDate, userProfiles, darkMode, userRole }) {
   const [contributors, setContributors] = useState([]);
@@ -169,25 +170,7 @@ function TotalContributorsReport({ startDate, endDate, userProfiles, darkMode, u
 
   // Generate bar chart data
   const generateBarData = useCallback((groupedDate, isYear = false) => {
-    if (isYear) {
-      const startMonth = startDate.getMonth();
-      const endMonth = endDate.getMonth();
-      const sumData = groupedDate.map(range => ({
-        label: range.timeRange,
-        value: range.usersOfTime.length,
-        months: 12,
-      }));
-      if (sumData.length > 1) {
-        sumData[0].months = 12 - startMonth;
-        sumData[sumData.length - 1].months = endMonth + 1;
-      }
-      const filteredData = sumData.filter(data => data.value > 0);
-      return filteredData;
-    }
-    return groupedDate.map(range => ({
-      label: range.timeRange,
-      value: range.usersOfTime.length,
-    }));
+    return generateBarDataUtil(groupedDate, isYear, startDate, endDate, 'usersOfTime');
   }, [startDate, endDate]);
 
   // Check if we should show monthly/yearly summaries

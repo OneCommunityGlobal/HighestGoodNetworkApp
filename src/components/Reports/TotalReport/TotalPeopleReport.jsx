@@ -7,6 +7,7 @@ import { Button } from 'reactstrap';
 import ReactTooltip from 'react-tooltip';
 import TotalReportBarGraph from './TotalReportBarGraph';
 import Loading from '../../common/Loading';
+import { generateBarData as generateBarDataUtil } from './generateBarData';
 
 function TotalPeopleReport(props) {
   const { startDate, endDate, userProfiles, darkMode } = props;
@@ -243,25 +244,7 @@ function TotalPeopleReport(props) {
 
   const generateBarData = useCallback(
     (groupedDate, isYear = false) => {
-      if (isYear) {
-        const startMonth = startDate.getMonth();
-        const endMonth = endDate.getMonth();
-        const sumData = groupedDate.map(range => ({
-          label: range.timeRange,
-          value: range.usersOfTime.length,
-          months: 12,
-        }));
-        if (sumData.length > 1) {
-          sumData[0].months = 12 - startMonth;
-          sumData[sumData.length - 1].months = endMonth + 1;
-        }
-        const filteredData = sumData.filter(data => data.value > 0);
-        return filteredData;
-      }
-      return groupedDate.map(range => ({
-        label: range.timeRange,
-        value: range.usersOfTime.length,
-      }));
+      return generateBarDataUtil(groupedDate, isYear, startDate, endDate, 'usersOfTime');
     },
     [startDate, endDate],
   );
