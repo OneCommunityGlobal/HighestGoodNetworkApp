@@ -19,10 +19,6 @@
   box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.1), 0 4px 6px -2px rgba(79, 70, 229, 0.05);
 }
 
-.breakdownCard.filtered .categoryHeader {
-  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-}
-
 /* Individual category cards */
 .categoryCard {
   background: #ffffff;

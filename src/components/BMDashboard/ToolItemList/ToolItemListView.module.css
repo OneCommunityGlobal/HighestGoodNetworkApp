@@ -7,6 +7,7 @@
 
 .itemsTableContainer {
   overflow-x: scroll;
+  align-items: center;
 }
 
 .itemsListContainer section {
@@ -20,7 +21,7 @@
   font-size: small;
 }
 
-.itemsListContainer th {
+.itemsTable th {
   height: 2rem;
 }
 
@@ -47,8 +48,8 @@
 }
 
 .conditionCell {
-  padding-left: 15px;
+  vertical-align: middle;
   display: flex;
   gap: 20px;
-  justify-content: flex-start;
+  justify-content: center;
 }

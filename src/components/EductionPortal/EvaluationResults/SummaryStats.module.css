@@ -122,15 +122,6 @@
   gap: 0.5rem;
 }
 
-.statValue {
-  font-size: 2.25rem;
-  font-weight: 800;
-  line-height: 1;
-  color: #1f2937;
-  margin: 0;
-  animation: countUp 0.6s ease-out;
-}
-
 .statLabel {
   font-size: 0.875rem;
   font-weight: 600;
