@@ -140,4 +140,5 @@ WeeklySummariesToggleFilter.propTypes = {
   editable: PropTypes.bool,
   formId: PropTypes.string.isRequired,
   hasPermission: PropTypes.func,
+  canSeeBioHighlight: PropTypes.bool,
 };
