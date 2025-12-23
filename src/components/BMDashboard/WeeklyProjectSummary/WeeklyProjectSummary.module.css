@@ -539,3 +539,48 @@
 :global(body.bm-dashboard-dark) .weeklyProjectSummaryContainer .weeklyProjectSummaryDashboardCategoryContent .projectStatusGrid .statusCard * {
   color: #1b2a41 !important;
 }
+
+/* ---------------- SUPPLIER PERFORMANCE DARK MODE STYLES ---------------- */
+/* Style reactstrap Input select elements in Supplier Performance component */
+/* Using high specificity to override global body.dark-mode .form-control rules */
+:global(body.dark-mode) .supplier-performance-card-dark select.form-control,
+:global(body.bm-dashboard-dark) .supplier-performance-card-dark select.form-control,
+:global(body.dark-mode) .supplier-performance-card-dark select,
+:global(body.bm-dashboard-dark) .supplier-performance-card-dark select,
+:global(body.dark-mode) .supplier-performance-card-dark .supplier-performance-select,
+:global(body.bm-dashboard-dark) .supplier-performance-card-dark .supplier-performance-select,
+:global(body.dark-mode) .supplier-performance-card-dark .supplier-performance-select.form-control,
+:global(body.bm-dashboard-dark) .supplier-performance-card-dark .supplier-performance-select.form-control {
+  background-color: #2b3344 !important;
+  border-color: #3a506b !important;
+  color: #ffffff !important;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m1 6 7 7 7-7'/%3e%3c/svg%3e") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 0.75rem center !important;
+  background-size: 16px 12px !important;
+  padding-right: 2.25rem !important;
+}
+
+:global(body.dark-mode) .supplier-performance-card-dark select.form-control:focus,
+:global(body.bm-dashboard-dark) .supplier-performance-card-dark select.form-control:focus,
+:global(body.dark-mode) .supplier-performance-card-dark select:focus,
+:global(body.bm-dashboard-dark) .supplier-performance-card-dark select:focus,
+:global(body.dark-mode) .supplier-performance-card-dark .supplier-performance-select:focus,
+:global(body.bm-dashboard-dark) .supplier-performance-card-dark .supplier-performance-select:focus,
+:global(body.dark-mode) .supplier-performance-card-dark .supplier-performance-select.form-control:focus,
+:global(body.bm-dashboard-dark) .supplier-performance-card-dark .supplier-performance-select.form-control:focus {
+  background-color: #2b3344 !important;
+  border-color: #4a6072 !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 0 0.2rem rgba(74, 96, 114, 0.25) !important;
+}
+
+:global(body.dark-mode) .supplier-performance-card-dark select.form-control option,
+:global(body.bm-dashboard-dark) .supplier-performance-card-dark select.form-control option,
+:global(body.dark-mode) .supplier-performance-card-dark select option,
+:global(body.bm-dashboard-dark) .supplier-performance-card-dark select option,
+:global(body.dark-mode) .supplier-performance-card-dark .supplier-performance-select option,
+:global(body.bm-dashboard-dark) .supplier-performance-card-dark .supplier-performance-select option {
+  background-color: #2b3344 !important;
+  color: #ffffff !important;
+}
