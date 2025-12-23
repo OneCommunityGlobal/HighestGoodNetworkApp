@@ -15,6 +15,8 @@
   max-width: 320px;
   aspect-ratio: 1 / 1;
   overflow: visible;
+  /* Enable container queries to scale font-size based on chart container width */
+  container-type: inline-size;
 }
 
 .mentorStatusCenter {
@@ -32,20 +34,28 @@
 
 .mentorStatusHeading {
   color: #828282;
-  font-size: 1.2rem;
   letter-spacing: 0.5px;
   text-transform: uppercase;
   transform: translateY(6px);
   width: 100%;
   text-align: center;
+  /* Scale font-size based on chart container width (not viewport width) */
+  /* At 280px container: 0.95rem, At 320px container: 1.2rem */
+  /* Uses container query width units (cqw): 1cqw = 1% of container width */
+  /* Percentage-based scaling: ~5.43-6% of container width */
+  font-size: clamp(0.95rem, 5.71cqw, 1.2rem);
 }
 
 .mentorCount {
   color: #6c6c6c;
-  font-size: 1.8rem;
   font-weight: 800;
   line-height: 1.18;
   margin-top: -10px;
+  /* Scale font-size based on chart container width (not viewport width) */
+  /* At 280px container: 1.35rem, At 320px container: 1.8rem */
+  /* Uses container query width units (cqw): 1cqw = 1% of container width */
+  /* Percentage-based scaling: ~7.71-9% of container width */
+  font-size: clamp(1.35rem, 8.36cqw, 1.8rem);
 }
 
 .mentorPercentageChange {
