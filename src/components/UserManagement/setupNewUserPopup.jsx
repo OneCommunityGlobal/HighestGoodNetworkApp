@@ -7,7 +7,7 @@ import httpService from '../../services/httpService';
 import { ENDPOINTS } from '~/utils/URL';
 import '../Header/index.css';
 
-const SetupNewUserPopupComponent = props => {
+const SetupNewUserPopupComponent = (props) => {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const [email, setEmail] = useState('');
@@ -34,18 +34,14 @@ const SetupNewUserPopupComponent = props => {
       httpService
         .post(ENDPOINTS.SETUP_NEW_USER(), { baseUrl, email, weeklyCommittedHours })
         .then(res => {
-          console.log('Setup link response:', res); // Debug logging
           if (res.status === 200) {
             toast.success('The setup link has been successfully sent');
-            console.log('Setup link sent successfully to:', email); // Debug logging
           } else {
-            console.error('Setup link failed with status:', res.status, res.data); // Debug logging
             setAlert({ visibility: 'visible', message: 'An error has occurred', state: 'error' });
           }
         })
         .catch(err => {
-          console.error('Setup link error:', err); // Debug logging
-          if (err.response && err.response.data === 'email already in use') {
+          if (err.response.data === 'email already in use') {
             setAlert({
               visibility: 'visible',
               message: 'This email is associated with an existing user account.',
@@ -108,9 +104,7 @@ const SetupNewUserPopupComponent = props => {
             onChange={e => {
               setEmail(e.target.value.toLocaleLowerCase());
             }}
-            className={`form-control setup-new-user-popup-input ${
-              darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
-            }`}
+            className={`form-control setup-new-user-popup-input ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
             placeholder="Please enter the email address for the new user"
           />
           <input
@@ -125,9 +119,7 @@ const SetupNewUserPopupComponent = props => {
               }
             }}
             onChange={handleCommitedHoursChange}
-            className={`form-control setup-new-user-popup-input ${
-              darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
-            }`}
+            className={`form-control setup-new-user-popup-input ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
             placeholder="weekly committed hours"
           />
           <button

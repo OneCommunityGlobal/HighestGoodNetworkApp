@@ -131,8 +131,7 @@ export const ENDPOINTS = {
     `${APIEndpoint}/reports/volunteerstats?startDate=${startDate}&endDate=${endDate}&comparisonStartDate=${comparisonStartDate ||
     ''}&comparisonEndDate=${comparisonEndDate || ''}`,
   VOLUNTEER_TRENDS: (timeFrame, offset, customStartDate, customEndDate) =>
-    `${APIEndpoint}/reports/volunteertrends?timeFrame=${timeFrame}&offset=${offset}${
-      customStartDate ? `&customStartDate=${customStartDate}` : ''
+    `${APIEndpoint}/reports/volunteertrends?timeFrame=${timeFrame}&offset=${offset}${customStartDate ? `&customStartDate=${customStartDate}` : ''
     }${customEndDate ? `&customEndDate=${customEndDate}` : ''}`,
   HOURS_TOTAL_ORG_SUMMARY: (startDate, endDate) =>
     `${APIEndpoint}/reports/overviewsummaries/taskandprojectstats?startDate=${startDate}&endDate=${endDate}`,
@@ -491,8 +490,10 @@ export const ENDPOINTS = {
   PROMOTION_ELIGIBILITY: `${APIEndpoint}/promotion-eligibility`,
   PROMOTE_MEMBERS: `${APIEndpoint}/promote-members`,
 
+
   //pull requests analysis
   PR_REVIEWS_INSIGHTS: `${APIEndpoint}/analytics/pr-review-insights`,
+
 };
 
 export const ApiEndpoint = APIEndpoint;
