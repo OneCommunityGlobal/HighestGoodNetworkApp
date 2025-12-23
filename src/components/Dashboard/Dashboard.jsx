@@ -24,46 +24,15 @@ export function Dashboard(props) {
   const [filteredUserTeamIds, setFilteredUserTeamIds] = useState([]);
   const [summaryBarData, setSummaryBarData] = useState(null);
   const { match, authUser } = props;
-
-  // Add null checks and fallbacks for props
-  const safeMatch = match || {};
-  const safeAuthUser = authUser || {};
-
   const checkSessionStorage = () => JSON.parse(sessionStorage.getItem('viewingUser')) ?? false;
   const [viewingUser, setViewingUser] = useState(checkSessionStorage);
   const [displayUserId, setDisplayUserId] = useState(
-    safeMatch.params?.userId || viewingUser?.userId || safeAuthUser.userid || null,
+    match.params.userId || viewingUser?.userId || authUser.userid,
   );
-  const isNotAllowedToEdit = cantUpdateDevAdminDetails(viewingUser?.email, safeAuthUser.email);
+  const isNotAllowedToEdit = cantUpdateDevAdminDetails(viewingUser?.email, authUser.email);
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    window.addEventListener('storage', handleStorageEvent);
-    return () => {
-      window.removeEventListener('storage', handleStorageEvent);
-    };
-  }, []);
-
-  useEffect(() => {
-    dispatch(updateSummaryBarData({ summaryBarData }));
-  }, [summaryBarData]);
-
-  // Add error boundary for the component
-  if (!safeAuthUser || !safeAuthUser.userid) {
-    return (
-      <div
-        className="d-flex justify-content-center align-items-center"
-        style={{ minHeight: '50vh' }}
-      >
-        <div className="text-center">
-          <i className="fa fa-spinner fa-pulse fa-2x text-primary"></i>
-          <p className="mt-2">Loading user data...</p>
-        </div>
-      </div>
-    );
-  }
 
   const toggle = () => {
     if (isNotAllowedToEdit) {
@@ -91,13 +60,24 @@ export function Dashboard(props) {
     setDisplayUserId(sessionStorageData ? sessionStorageData.userId : authUser.userid);
   };
 
+  useEffect(() => {
+    window.addEventListener('storage', handleStorageEvent);
+    return () => {
+      window.removeEventListener('storage', handleStorageEvent);
+    };
+  }, []);
+
+  useEffect(() => {
+    dispatch(updateSummaryBarData({ summaryBarData }));
+  }, [summaryBarData]);
+
   return (
     <Container fluid className={darkMode ? 'bg-oxford-blue' : ''}>
       {/* <FeedbackModal /> */}
       <SummaryBar
         displayUserId={displayUserId}
         toggleSubmitForm={toggle}
-        role={safeAuthUser.role}
+        role={authUser.role}
         summaryBarData={summaryBarData}
         isNotAllowedToEdit={isNotAllowedToEdit}
       />
@@ -115,7 +95,7 @@ export function Dashboard(props) {
               <WeeklySummary
                 isDashboard
                 isPopup={popup}
-                userRole={safeAuthUser.role}
+                userRole={authUser.role}
                 displayUserId={displayUserId}
                 displayUserEmail={viewingUser?.email}
                 isNotAllowedToEdit={isNotAllowedToEdit}
@@ -140,7 +120,7 @@ export function Dashboard(props) {
               <WeeklySummary
                 displayUserId={displayUserId}
                 setPopup={setPopup}
-                userRole={safeAuthUser.role}
+                userRole={authUser.role}
                 isNotAllowedToEdit={isNotAllowedToEdit}
                 darkMode={darkMode}
               />
