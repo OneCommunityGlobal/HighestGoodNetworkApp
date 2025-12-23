@@ -3,6 +3,7 @@ import BadgeTableHeader from '~/components/Badge/BadgeTableHeader';
 import { configureStore } from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import { renderWithProvider } from '__tests__/utils';
+import { screen } from '@testing-library/react';
 
 describe('BadgeTableHeader', () => {
   const mockStore = configureStore([]);
@@ -14,45 +15,26 @@ describe('BadgeTableHeader', () => {
   it('should render correctly', () => {
     renderWithProvider(
       <Provider store={store}>
-        <table>
-          <thead>
-            <BadgeTableHeader />
-          </thead>
-        </table>
+        <BadgeTableHeader />
       </Provider>,
     );
   });
 
   it('displays column name correctly', () => {
-    const { getByText } = renderWithProvider(
-      <table>
-        <thead>
-          <BadgeTableHeader />
-        </thead>
-      </table>
-    );
-    expect(getByText('Badge')).toBeInTheDocument();
-    expect(getByText('Name')).toBeInTheDocument();
-    expect(getByText('Description')).toBeInTheDocument();
-    expect(getByText('Type')).toBeInTheDocument();
-    expect(getByText('Details')).toBeInTheDocument();
-    expect(getByText('Ranking')).toBeInTheDocument();
-    expect(getByText('Action')).toBeInTheDocument();
-    expect(getByText('Reports Page Notification')).toBeInTheDocument();
+    renderWithProvider(<BadgeTableHeader />);
+    expect(screen.getByText('Badge')).toBeInTheDocument();
+    expect(screen.getByText('Name')).toBeInTheDocument();
+    expect(screen.getByText('Description')).toBeInTheDocument();
+    expect(screen.getByText('Type')).toBeInTheDocument();
+    expect(screen.getByText('Details')).toBeInTheDocument();
+    expect(screen.getByText('Ranking')).toBeInTheDocument();
+    expect(screen.getByText('Action')).toBeInTheDocument();
+    expect(screen.getByText('Reports Page Notification')).toBeInTheDocument();
   });
 
   it('should render tooltip properly', () => {
-    const { getByText } = renderWithProvider(
-      <table>
-        <thead>
-          <BadgeTableHeader />
-        </thead>
-      </table>
-    );
-    const ranking = getByText('Ranking');
-    if (ranking) {
-      const rankingInfo = ranking.querySelector('#SortRankingInfo');
-      expect(rankingInfo).toBeInTheDocument();
-    }
+    renderWithProvider(<BadgeTableHeader />);
+    const infoIcon = screen.getByTestId('sort-ranking-info-icon');
+    expect(infoIcon).toBeInTheDocument();
   });
 });

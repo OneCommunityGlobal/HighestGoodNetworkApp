@@ -11,14 +11,14 @@ thead {
 }
 
 #teams__active {
-  width: 50px;  /* Increase to provide space */
-  text-align: center;
+  width: 10px;
 }
 
 .centered-cell {
   text-align: center;
   vertical-align: middle;
 }
+
 
 #teams__members {
   width: 15px;
@@ -36,28 +36,9 @@ thead {
   text-align: start;
 }
 
-/* Targets 2nd column in team rows for better alignment and readability */
-.teams__tr td:nth-child(2) {
-  /* text-align: center; */
-  vertical-align: middle;
-  font-size: 16px;
-  font-weight: 400;
-}
-
-.teams__order--input div {
-  margin-top: 7px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-}
-
-
-
 .teams__overview--top {
   background: transparent;
 }
-
 
 .teams__overview--top .card {
   width: 200px;
@@ -71,18 +52,22 @@ thead {
   color: white;
 }
 
-#card_active,
-.card#card_non_active {
+#card_active {
   background: #fbad4c;
   color: white;
 }
 
-/* .teams__order--input div {
+#card_in_active {
+  background: #fbad4c;
+  color: white;
+}
+
+.teams__order--input div {
   margin-top: 7px;
-} */
+}
 
 .teams__active--input i {
-  margin-top: 10px;
+  margin-left: 20px;
   cursor: pointer;
 }
 
@@ -103,12 +88,10 @@ thead {
 
 .isActive i {
   color: lawngreen;
-  margin-top: 0px;
 }
 
 .isNotActive i {
   color: #dee2e6;
-  margin-top: 0px;
 
 }
 
@@ -130,10 +113,6 @@ tr:hover {
   background: #e9f6ff;
 }
 
-tr.dark-mode:hover {
-  background: #2f4157;
-}
-
 .user-auto-cpmplete {
   cursor: pointer;
   padding: 5px;
@@ -144,20 +123,6 @@ tr.dark-mode:hover {
 }
 
 .usermanagement-actions-cell {
-  height: 35px; /* Set a proper height */
-  padding: 5px 10px;
-  font-size: 14px;
-  line-height: normal;
-}
-
-@media (max-width: 768px) {
-  .overflow-container {
-    overflow-x: auto;
-    overflow-y: auto;
-    height: 60vh;
-  }
-}
-
-.overflow-container table {
-  min-width: 600px;
+  display: table-cell;
+  padding-left: 10px;
 }
