@@ -130,6 +130,106 @@ function InjuryCategoryBarChart() {
 
   const showLabels = seriesProjectIds.length <= 4;
 
+  const selectStyles = useMemo(
+    () => ({
+      control: base => ({
+        ...base,
+        backgroundColor: darkMode ? '#2b3344' : '#fff',
+        borderColor: darkMode ? '#3a506b' : '#ccc',
+        color: darkMode ? '#fff' : '#000',
+        minHeight: 38,
+        boxShadow: 'none',
+        borderRadius: 4,
+        '&:hover': {
+          borderColor: darkMode ? '#4a6072' : '#999',
+        },
+      }),
+      menu: base => ({
+        ...base,
+        backgroundColor: darkMode ? '#2b3344' : '#fff',
+        borderColor: darkMode ? '#3a506b' : '#ccc',
+        zIndex: 9999,
+      }),
+      menuList: base => ({
+        ...base,
+        backgroundColor: darkMode ? '#2b3344' : '#fff',
+        color: darkMode ? '#fff' : '#000',
+        padding: 0,
+      }),
+      option: (base, state) => ({
+        ...base,
+        backgroundColor: state.isSelected
+          ? darkMode
+            ? '#4a6072'
+            : '#0d55b3'
+          : state.isFocused
+          ? darkMode
+            ? '#3a506b'
+            : '#deebff'
+          : darkMode
+          ? '#2b3344'
+          : '#fff',
+        color: state.isSelected ? '#fff' : darkMode ? '#fff' : '#000',
+        cursor: 'pointer',
+        '&:active': {
+          backgroundColor: darkMode ? '#4a6072' : '#0d55b3',
+        },
+      }),
+      multiValue: base => ({
+        ...base,
+        backgroundColor: darkMode ? '#3a506b' : '#e2e7ee',
+        borderRadius: 4,
+      }),
+      multiValueLabel: base => ({
+        ...base,
+        color: darkMode ? '#fff' : '#333',
+        fontSize: 12,
+        padding: '2px 6px',
+      }),
+      multiValueRemove: base => ({
+        ...base,
+        color: darkMode ? '#fff' : '#333',
+        '&:hover': {
+          backgroundColor: darkMode ? '#5a7082' : '#ffbdad',
+          color: '#fff',
+        },
+        borderRadius: 4,
+        padding: 2,
+      }),
+      singleValue: base => ({
+        ...base,
+        color: darkMode ? '#fff' : base.color,
+      }),
+      input: base => ({
+        ...base,
+        color: darkMode ? '#fff' : base.color,
+      }),
+      placeholder: base => ({
+        ...base,
+        color: darkMode ? '#cbd5e0' : '#999',
+      }),
+      indicatorSeparator: base => ({
+        ...base,
+        backgroundColor: darkMode ? '#3a506b' : '#ccc',
+      }),
+      dropdownIndicator: base => ({
+        ...base,
+        color: darkMode ? '#fff' : '#666',
+        '&:hover': {
+          color: darkMode ? '#fff' : '#333',
+        },
+      }),
+      clearIndicator: base => ({
+        ...base,
+        color: darkMode ? '#fff' : '#666',
+        '&:hover': {
+          color: darkMode ? '#fff' : '#333',
+        },
+      }),
+    }),
+    [darkMode],
+  );
+
   return (
     <div className={`${styles['injury-chart-container']} ${darkMode ? styles.darkMode : ''}`}>
       <div className={styles['injury-chart-header']}>
@@ -150,6 +250,7 @@ function InjuryCategoryBarChart() {
               value={projectNameFilter}
               onChange={setProjectNameFilter}
               placeholder="All names"
+              styles={selectStyles}
             />
           </div>
 
@@ -165,6 +266,7 @@ function InjuryCategoryBarChart() {
               value={severityFilter}
               onChange={setSeverityFilter}
               placeholder="All severities"
+              styles={selectStyles}
             />
           </div>
 
@@ -180,6 +282,7 @@ function InjuryCategoryBarChart() {
               value={injuryTypeFilter}
               onChange={setInjuryTypeFilter}
               placeholder="All types"
+              styles={selectStyles}
             />
           </div>
 
@@ -187,32 +290,58 @@ function InjuryCategoryBarChart() {
             <label htmlFor="start-date" className={styles['injury-chart-label']}>
               Start date
             </label>
-            <DatePicker
-              id="start-date"
-              selected={startDate}
-              onChange={setStartDate}
-              selectsStart
-              startDate={startDate}
-              endDate={endDate}
-              maxDate={endDate || undefined}
-              placeholderText="Start date"
-            />
+            <div className={styles['date-picker-wrapper']}>
+              <DatePicker
+                id="start-date"
+                selected={startDate}
+                onChange={setStartDate}
+                selectsStart
+                startDate={startDate}
+                endDate={endDate}
+                maxDate={endDate || undefined}
+                placeholderText="Start date"
+                className={styles['injury-date-picker']}
+                wrapperClassName={styles['injury-date-picker-wrapper']}
+                style={{
+                  backgroundColor: darkMode ? '#2b3344' : '#fff',
+                  color: darkMode ? '#fff' : '#000',
+                  border: `1px solid ${darkMode ? '#3a506b' : '#ccc'}`,
+                  borderRadius: '4px',
+                  padding: '0.5rem',
+                  fontSize: '14px',
+                  width: '100%',
+                }}
+              />
+            </div>
           </div>
 
           <div className={styles.filter}>
             <label htmlFor="end-date" className={styles['injury-chart-label']}>
               End date
             </label>
-            <DatePicker
-              id="end-date"
-              selected={endDate}
-              onChange={setEndDate}
-              selectsEnd
-              startDate={startDate}
-              endDate={endDate}
-              minDate={startDate || undefined}
-              placeholderText="End date"
-            />
+            <div className={styles['date-picker-wrapper']}>
+              <DatePicker
+                id="end-date"
+                selected={endDate}
+                onChange={setEndDate}
+                selectsEnd
+                startDate={startDate}
+                endDate={endDate}
+                minDate={startDate || undefined}
+                placeholderText="End date"
+                className={styles['injury-date-picker']}
+                wrapperClassName={styles['injury-date-picker-wrapper']}
+                style={{
+                  backgroundColor: darkMode ? '#2b3344' : '#fff',
+                  color: darkMode ? '#fff' : '#000',
+                  border: `1px solid ${darkMode ? '#3a506b' : '#ccc'}`,
+                  borderRadius: '4px',
+                  padding: '0.5rem',
+                  fontSize: '14px',
+                  width: '100%',
+                }}
+              />
+            </div>
           </div>
         </div>
       </div>
