@@ -437,6 +437,11 @@
   font-weight: 600;
 }
 
+.weeklyStatusChange {
+  color: #1b2a41;
+  font-size: clamp(12px, 1.2vw, 14px);
+}
+
 /* ---------------- RESPONSIVE BREAKPOINTS ---------------- */
 @media (min-width: 1600px) {
   .projectStatusGrid {
@@ -466,4 +471,71 @@
   .projectStatusGrid {
     grid-template-columns: repeat(1, 1fr);
   }
+}
+
+/* ---------------- OVERRIDE GLOBAL DARK MODE FOR PROJECT STATUS CARDS ---------------- */
+/* These rules override the global dark mode text color rules specifically for Project Status cards */
+/* Using high specificity selectors to ensure they take precedence over global !important rules */
+/* The global CSS uses body.dark-mode * and body.bm-dashboard-dark * with !important, */
+/* so we need selectors with higher specificity (more elements) and also use !important */
+
+/* Target all text elements within Project Status cards - most specific selector */
+:global(body.dark-mode) .weeklyProjectSummaryContainer .projectStatusGrid .statusCard div.weeklyCardTitle,
+:global(body.bm-dashboard-dark) .weeklyProjectSummaryContainer .projectStatusGrid .statusCard div.weeklyCardTitle,
+:global(body.dark-mode) .weeklyProjectSummaryContainer .projectStatusGrid .statusCard span.weeklyStatusValue,
+:global(body.bm-dashboard-dark) .weeklyProjectSummaryContainer .projectStatusGrid .statusCard span.weeklyStatusValue,
+:global(body.dark-mode) .weeklyProjectSummaryContainer .projectStatusGrid .statusCard div.weekly-status-change,
+:global(body.bm-dashboard-dark) .weeklyProjectSummaryContainer .projectStatusGrid .statusCard div.weekly-status-change {
+  color: #1b2a41 !important;
+}
+
+/* Also target with class selectors for maximum specificity */
+:global(body.dark-mode) .weeklyProjectSummaryContainer .projectStatusGrid .statusCard .weeklyCardTitle,
+:global(body.bm-dashboard-dark) .weeklyProjectSummaryContainer .projectStatusGrid .statusCard .weeklyCardTitle {
+  color: #1b2a41 !important;
+}
+
+:global(body.dark-mode) .weeklyProjectSummaryContainer .projectStatusGrid .statusCard .weeklyStatusValue,
+:global(body.bm-dashboard-dark) .weeklyProjectSummaryContainer .projectStatusGrid .statusCard .weeklyStatusValue {
+  color: #1b2a41 !important;
+}
+
+:global(body.dark-mode) .weeklyProjectSummaryContainer .projectStatusGrid .statusCard .weekly-status-change,
+:global(body.bm-dashboard-dark) .weeklyProjectSummaryContainer .projectStatusGrid .statusCard .weekly-status-change {
+  color: #1b2a41 !important;
+}
+
+/* Target the statusCard container and all children with universal selector */
+:global(body.dark-mode) .weeklyProjectSummaryContainer .projectStatusGrid .statusCard,
+:global(body.bm-dashboard-dark) .weeklyProjectSummaryContainer .projectStatusGrid .statusCard {
+  color: #1b2a41 !important;
+}
+
+:global(body.dark-mode) .weeklyProjectSummaryContainer .projectStatusGrid .statusCard *,
+:global(body.bm-dashboard-dark) .weeklyProjectSummaryContainer .projectStatusGrid .statusCard * {
+  color: #1b2a41 !important;
+}
+
+/* Additional specific selectors for p, span, div elements within status cards */
+:global(body.dark-mode) .weeklyProjectSummaryContainer .projectStatusGrid .statusCard p,
+:global(body.dark-mode) .weeklyProjectSummaryContainer .projectStatusGrid .statusCard span,
+:global(body.dark-mode) .weeklyProjectSummaryContainer .projectStatusGrid .statusCard div,
+:global(body.bm-dashboard-dark) .weeklyProjectSummaryContainer .projectStatusGrid .statusCard p,
+:global(body.bm-dashboard-dark) .weeklyProjectSummaryContainer .projectStatusGrid .statusCard span,
+:global(body.bm-dashboard-dark) .weeklyProjectSummaryContainer .projectStatusGrid .statusCard div {
+  color: #1b2a41 !important;
+}
+
+/* Target the weeklyStatusChange class specifically */
+:global(body.dark-mode) .weeklyProjectSummaryContainer .projectStatusGrid .statusCard .weeklyStatusChange,
+:global(body.bm-dashboard-dark) .weeklyProjectSummaryContainer .projectStatusGrid .statusCard .weeklyStatusChange,
+:global(body.dark-mode) .weeklyProjectSummaryContainer .projectStatusGrid .statusCard .weekly-status-change,
+:global(body.bm-dashboard-dark) .weeklyProjectSummaryContainer .projectStatusGrid .statusCard .weekly-status-change {
+  color: #1b2a41 !important;
+}
+
+/* Extra specific selectors including intermediate containers for maximum specificity */
+:global(body.dark-mode) .weeklyProjectSummaryContainer .weeklyProjectSummaryDashboardCategoryContent .projectStatusGrid .statusCard *,
+:global(body.bm-dashboard-dark) .weeklyProjectSummaryContainer .weeklyProjectSummaryDashboardCategoryContent .projectStatusGrid .statusCard * {
+  color: #1b2a41 !important;
 }
