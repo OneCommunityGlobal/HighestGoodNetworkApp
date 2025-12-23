@@ -8,8 +8,8 @@
 
 .reports-table-head {
   display: grid;
-  grid-template-columns: 2.2fr 1fr 1fr 1.2fr 0.6fr 0.6fr 1.2fr 1fr 1fr;
-  justify-content: space-between;
+  grid-template-columns: 3.5fr 0.8fr 0.8fr 1fr 0.6fr 0.6fr 1fr 0.8fr 0.8fr;
+  gap: 0;
   align-items: center;
   vertical-align: middle;
   overflow: hidden;
@@ -24,12 +24,12 @@
 
 .people-table-row {
   display: grid;
-  grid-template-columns: 2.2fr 1fr 1fr 1.2fr 0.6fr 0.6fr 1.2fr 1fr 1fr;
-  justify-content: space-between;
+  grid-template-columns: 3.5fr 0.8fr 0.8fr 1fr 0.6fr 0.6fr 1fr 0.8fr 0.8fr;
+  gap: 0;
   align-items: center;
   vertical-align: middle;
   min-height: 42px;
-  padding: 0 16px;
+  padding: 8px 16px;
   cursor: pointer;
   border-bottom: 3px solid #f8f7f8;
   width: 100%;
@@ -37,7 +37,7 @@
 /* flex-wrap: wrap;
 flex-direction: row; */
 
-.reports-table-head,
+.reports-table-head > div,
 .people-table-row > div {
   padding: 8px;
   text-align: left;
@@ -46,6 +46,18 @@ flex-direction: row; */
   font-size: 16px;
   word-wrap: break-word;
   white-space: normal;
+  overflow: hidden;
+}
+
+/* Profile picture styling */
+.people-table-row .img-circle {
+  border-radius: 50%;
+  height: 30px;
+  width: 30px;
+  object-fit: cover;
+  display: inline-block;
+  margin-right: 4px;
+  vertical-align: middle;
 }
 
 .people-table-row:hover {
@@ -261,6 +273,24 @@ flex-direction: row; */
   height: 30px;
   cursor: pointer;
   margin-left: auto;
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.tasks-table-clear-filter-button:hover {
+  background-color: #fef5ff;
+  border-color: #ca50db;
+}
+
+/* Dark mode styling for Clear Filters button */
+.text-light .tasks-table-clear-filter-button {
+  background-color: #232946 !important;
+  border: 2px solid #5A67D8 !important;
+  color: #fff !important;
+}
+
+.text-light .tasks-table-clear-filter-button:hover {
+  background-color: #1C2541 !important;
+  border-color: #ca50db !important;
 }
 
 .people-report-task-name {
