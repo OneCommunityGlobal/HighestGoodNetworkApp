@@ -27,8 +27,22 @@
 
 .volunteerStatusHeading {
   color: #828282;
+  /* Base font-size for smaller screens (< 1200px) where charts stack */
   font-size: 1.2rem;
   text-align: center;
+  line-height: 1.2;
+  max-width: 90%;
+  margin: 0 auto;
+}
+
+/* More aggressive scaling from 1200px (0.95rem) to match mentor chart size (1.2rem) at larger screens */
+@media (min-width: 1200px) {
+  .volunteerStatusHeading {
+    /* More aggressive scaling rate (0.042vw) to reach mentor chart size (1.2rem) at larger screens */
+    /* At 1200px: 0.95rem (prevents overflow), Reaches 1.2rem at ~1800px (matching mentor chart) */
+    /* Steeper rate provides faster growth to match adjacent mentor chart font size */
+    font-size: clamp(0.95rem, calc(0.446rem + 0.042vw), 1.2rem);
+  }
 }
 
 .volunteerCount {
@@ -51,11 +65,13 @@
   align-items: center;
   gap: 16px;
   margin-top: 32px;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   margin-bottom: 24px;
-  overflow-x: auto;
+  overflow-x: visible;
   padding: 0 8px;
   width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .volunteerStatusLabel {
@@ -63,8 +79,10 @@
   align-items: center;
   gap: 6px;
   margin: 0;
-  font-size: 0.875rem;
+  /* Responsive font-size: scales from 0.875rem at small screens to 0.75rem at large screens */
+  font-size: clamp(0.75rem, 0.875rem - 0.1vw, 0.875rem);
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .volunteerStatusColor {
