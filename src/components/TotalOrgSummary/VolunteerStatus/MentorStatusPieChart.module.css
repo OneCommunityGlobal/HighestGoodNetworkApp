@@ -59,9 +59,10 @@
   gap: 16px;
   margin-top: 48px;
   margin-bottom: 24px;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
+  overflow-x: visible;
   padding: 0 20px;
-  width: max-content;
+  width: 100%;
   max-width: 100%;
   box-sizing: border-box;
 }
@@ -70,8 +71,10 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 0.875rem;
+  /* Responsive font-size: scales from 0.875rem at 1200px to 0.95rem at 1920px - INCREASES with screen size */
+  font-size: clamp(0.875rem, calc(0.75rem + 0.01042vw), 0.95rem);
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .mentorStatusColor {
