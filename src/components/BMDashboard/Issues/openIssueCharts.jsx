@@ -122,7 +122,7 @@ function IssueCharts() {
   const labelClass = `${styles.issueChartLabel} ${darkMode ? styles.issueChartLabelDark : ''}`;
 
   return (
-    <div className={containerClass}>
+    <div className={containerClass} style={darkMode ? { backgroundColor: '#253342' } : {}}>
       <h2>Longest Open Issues</h2>
       <label className={labelClass} htmlFor="start-date">
         Date Range
@@ -180,36 +180,102 @@ function IssueCharts() {
                 darkMode ? styles.multiValueRemoveDark : styles.multiValueRemoveLight,
             }}
             styles={{
-              option: (base, state) => ({
-                ...base,
-                backgroundColor: state.isSelected
-                  ? darkMode
-                    ? '#3a3f47'
-                    : '#dceeff'
-                  : state.isFocused
-                  ? darkMode
-                    ? '#3a3f47'
-                    : '#dceeff'
-                  : 'transparent',
-                color: darkMode ? '#cfd7e3' : 'black',
-              }),
-
-              multiValue: base => ({
-                ...base,
-                backgroundColor: darkMode ? '#3a3f47' : '#dceeff',
-                color: darkMode ? '#cfd7e3' : 'black',
-              }),
-
-              multiValueLabel: base => ({
-                ...base,
-                color: darkMode ? '#cfd7e3' : 'black',
-              }),
-
               control: base => ({
                 ...base,
-                backgroundColor: darkMode ? '#22272e' : 'white',
-                borderColor: darkMode ? '#3d444d' : '#ccc',
-                color: darkMode ? '#cfd7e3' : 'black',
+                backgroundColor: darkMode ? '#2b3344' : '#fff',
+                borderColor: darkMode ? '#3a506b' : '#ccc',
+                color: darkMode ? '#fff' : '#000',
+                minHeight: 38,
+                boxShadow: 'none',
+                borderRadius: 4,
+                '&:hover': {
+                  borderColor: darkMode ? '#4a6072' : '#999',
+                },
+              }),
+              menu: base => ({
+                ...base,
+                backgroundColor: darkMode ? '#2b3344' : '#fff',
+                borderColor: darkMode ? '#3a506b' : '#ccc',
+                zIndex: 9999,
+              }),
+              menuList: base => ({
+                ...base,
+                backgroundColor: darkMode ? '#2b3344' : '#fff',
+                color: darkMode ? '#fff' : '#000',
+                padding: 0,
+              }),
+              option: (base, state) => {
+                let backgroundColor;
+                if (state.isSelected) {
+                  backgroundColor = darkMode ? '#4a6072' : '#0d55b3';
+                } else if (state.isFocused) {
+                  backgroundColor = darkMode ? '#3a506b' : '#deebff';
+                } else {
+                  backgroundColor = darkMode ? '#2b3344' : '#fff';
+                }
+
+                const textColor = state.isSelected || darkMode ? '#fff' : '#000';
+
+                return {
+                  ...base,
+                  backgroundColor,
+                  color: textColor,
+                  cursor: 'pointer',
+                  '&:active': {
+                    backgroundColor: darkMode ? '#4a6072' : '#0d55b3',
+                  },
+                };
+              },
+              multiValue: base => ({
+                ...base,
+                backgroundColor: darkMode ? '#3a506b' : '#e2e7ee',
+                borderRadius: 4,
+              }),
+              multiValueLabel: base => ({
+                ...base,
+                color: darkMode ? '#fff' : '#333',
+                fontSize: 12,
+                padding: '2px 6px',
+              }),
+              multiValueRemove: base => ({
+                ...base,
+                color: darkMode ? '#fff' : '#333',
+                '&:hover': {
+                  backgroundColor: darkMode ? '#5a7082' : '#ffbdad',
+                  color: '#fff',
+                },
+                borderRadius: 4,
+                padding: 2,
+              }),
+              singleValue: base => ({
+                ...base,
+                color: darkMode ? '#fff' : base.color,
+              }),
+              input: base => ({
+                ...base,
+                color: darkMode ? '#fff' : base.color,
+              }),
+              placeholder: base => ({
+                ...base,
+                color: darkMode ? '#cbd5e0' : '#999',
+              }),
+              indicatorSeparator: base => ({
+                ...base,
+                backgroundColor: darkMode ? '#3a506b' : '#ccc',
+              }),
+              dropdownIndicator: base => ({
+                ...base,
+                color: darkMode ? '#fff' : '#666',
+                '&:hover': {
+                  color: darkMode ? '#fff' : '#333',
+                },
+              }),
+              clearIndicator: base => ({
+                ...base,
+                color: darkMode ? '#fff' : '#666',
+                '&:hover': {
+                  color: darkMode ? '#fff' : '#333',
+                },
               }),
             }}
           />
@@ -217,12 +283,23 @@ function IssueCharts() {
       </div>
 
       {/* Chart */}
-      <div className={styles.chartContainer} ref={chartContainerRef}>
+      <div
+        className={`${styles.chartContainer} ${darkMode ? styles.chartContainerDark : ''}`}
+        ref={chartContainerRef}
+      >
         {normalizedIssues.length === 0 ? (
           <p className={styles.noData}>No issues found.</p>
         ) : (
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={normalizedIssues} layout="vertical" margin={margin}>
+            <BarChart
+              data={normalizedIssues}
+              layout="vertical"
+              margin={margin}
+              style={{
+                backgroundColor: darkMode ? '#253342' : '#fff',
+                borderRadius: '8px',
+              }}
+            >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis
                 type="number"
@@ -232,13 +309,17 @@ function IssueCharts() {
                   offset: -5,
                   fill: darkMode ? '#fff' : '#000',
                 }}
-                tick={{ fill: darkMode ? '#ccc' : '#333' }}
+                tick={{ fill: darkMode ? '#fff' : '#333' }}
+                axisLine={{ stroke: darkMode ? '#888' : '#000' }}
+                tickLine={{ stroke: darkMode ? '#888' : '#000' }}
               />
               <YAxis
                 dataKey="issueName"
                 type="category"
                 tick={{ fontSize: 14, fontWeight: 500, fill: darkMode ? '#fff' : '#000' }}
                 width={yAxisWidth}
+                axisLine={{ stroke: darkMode ? '#888' : '#000' }}
+                tickLine={{ stroke: darkMode ? '#888' : '#000' }}
               />
               <Bar dataKey="durationOpen" fill="#6495ED" barSize={30}>
                 <LabelList
