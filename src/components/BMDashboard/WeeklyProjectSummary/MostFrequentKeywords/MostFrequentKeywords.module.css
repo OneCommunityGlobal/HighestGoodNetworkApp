@@ -123,3 +123,30 @@
   background-color: #3a506b !important;
   color: #ffffff !important;
 }
+
+/* DatePicker input and placeholder text color in dark mode */
+:global(body.dark-mode) .mfkContainer.darkMode .react-datepicker__input-container input,
+:global(body.bm-dashboard-dark) .mfkContainer.darkMode .react-datepicker__input-container input,
+:global(body.dark-mode) .mfkContainer.darkMode .react-datepicker-wrapper .react-datepicker__input-container input,
+:global(body.bm-dashboard-dark) .mfkContainer.darkMode .react-datepicker-wrapper .react-datepicker__input-container input,
+:global(body.dark-mode) .mfkContainer.darkMode .mfkDatepicker,
+:global(body.bm-dashboard-dark) .mfkContainer.darkMode .mfkDatepicker,
+.mfkContainer.darkMode .react-datepicker__input-container input,
+.mfkContainer.darkMode .react-datepicker-wrapper .react-datepicker__input-container input,
+.mfkContainer.darkMode .mfkDatepicker {
+  color: #fff !important;
+}
+
+/* DatePicker placeholder text color in dark mode */
+:global(body.dark-mode) .mfkContainer.darkMode .mfkDatepicker::placeholder,
+:global(body.bm-dashboard-dark) .mfkContainer.darkMode .mfkDatepicker::placeholder,
+:global(body.dark-mode) .mfkContainer.darkMode .react-datepicker__input-container input::placeholder,
+:global(body.bm-dashboard-dark) .mfkContainer.darkMode .react-datepicker__input-container input::placeholder,
+:global(body.dark-mode) .mfkContainer.darkMode .react-datepicker-wrapper .react-datepicker__input-container input::placeholder,
+:global(body.bm-dashboard-dark) .mfkContainer.darkMode .react-datepicker-wrapper .react-datepicker__input-container input::placeholder,
+.mfkContainer.darkMode .mfkDatepicker::placeholder,
+.mfkContainer.darkMode .react-datepicker__input-container input::placeholder,
+.mfkContainer.darkMode .react-datepicker-wrapper .react-datepicker__input-container input::placeholder,
+.mfkContainer.darkMode .react-datepicker-wrapper input::placeholder {
+  color: #fff !important;
+}
