@@ -19,7 +19,9 @@ const FixedRatioImage = ({ src, alt, fallback }) => (
       alt={alt}
       loading="lazy"
       onError={e => {
-        if (e.currentTarget.src !== fallback) e.currentTarget.src = fallback;
+        if (e.currentTarget.src !== fallback) {
+          e.currentTarget.src = fallback;
+        }
       }}
       style={{
         width: '100%',
@@ -50,6 +52,7 @@ export function CPDashboard() {
   useEffect(() => {
     const fetchEvents = async () => {
       setIsLoading(true);
+
       try {
         const response = await axios.get(ENDPOINTS.EVENTS);
         setEvents(response.data.events || []);
@@ -58,6 +61,7 @@ export function CPDashboard() {
           total: response.data.events?.length || 0,
         }));
       } catch (err) {
+        console.error('Failed to fetch events', err);
         setError('Failed to load events');
       } finally {
         setIsLoading(false);
@@ -82,7 +86,10 @@ export function CPDashboard() {
   };
 
   const formatDate = dateStr => {
-    if (!dateStr) return 'Date TBD';
+    if (!dateStr) {
+      return 'Date TBD';
+    }
+
     const date = new Date(dateStr);
     return date.toLocaleString('en-US', {
       weekday: 'long',
@@ -94,7 +101,10 @@ export function CPDashboard() {
   };
 
   const filteredEvents = events.filter(event => {
-    if (!searchQuery) return true;
+    if (searchQuery === '') {
+      return true;
+    }
+
     const term = searchQuery.toLowerCase();
 
     return (
@@ -114,8 +124,21 @@ export function CPDashboard() {
   const isFiltered = Boolean(searchQuery);
   const totalFilteredCount = filteredEvents.length;
 
+  let eventCountText = 'Showing all events';
+
+  if (isFiltered) {
+    if (totalFilteredCount > 0) {
+      eventCountText = `Showing ${totalFilteredCount} event${totalFilteredCount !== 1 ? 's' : ''}`;
+    } else {
+      eventCountText = 'No events found';
+    }
+  }
+
   const goToPage = newPage => {
-    if (newPage < 1 || newPage > totalPages) return;
+    if (newPage < 1 || newPage > totalPages) {
+      return;
+    }
+
     setPagination(prev => ({ ...prev, currentPage: newPage }));
   };
 
@@ -232,14 +255,7 @@ export function CPDashboard() {
         <Col md={9} className={styles['dashboard-main']}>
           <h2 className={styles['section-title']}>Events</h2>
 
-          {/* Event count indicator */}
-          <p className={styles['event-count-text']}>
-            {isFiltered
-              ? totalFilteredCount > 0
-                ? `Showing ${totalFilteredCount} event${totalFilteredCount !== 1 ? 's' : ''}`
-                : 'No events found'
-              : 'Showing all events'}
-          </p>
+          <p className={styles['event-count-text']}>{eventCountText}</p>
 
           <Row>
             {displayedEvents.length > 0 ? (
