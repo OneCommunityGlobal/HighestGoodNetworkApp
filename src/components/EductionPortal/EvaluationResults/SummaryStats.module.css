@@ -244,6 +244,10 @@
   }
 }
 
+.statValue {
+  animation: countUp 0.6s ease-out;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .summaryContainer {

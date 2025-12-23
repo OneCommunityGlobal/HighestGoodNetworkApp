@@ -169,7 +169,6 @@ import EventStats from './components/CommunityPortal/EventPersonalization/EventS
 import CommunityCalendar from './components/CommunityPortal/Calendar/CommunityCalendar';
 import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
 import EPLogin from './components/EductionPortal/Login';
-import BrowseLessonPlan from './components/EductionPortal/BrowseLessonPlan/BrowseLessonPlan';
 import EPDashboard from './components/EductionPortal';
 import GroupList from './components/EductionPortal/GroupList/GroupList';
 import EvaluationResultsWrapper from './components/EductionPortal/EvaluationResultsWrapper';
@@ -795,11 +794,6 @@ export default (
         />
         <Route path="/educationportal/login" component={EPLogin} />
         <Route path="/educationportal/InsightWidget" component={InsightWidget} />
-        <EPProtectedRoute
-          path="/educationportal/lesson-library"
-          exact
-          component={BrowseLessonPlan}
-        />
         <EPProtectedRoute path="/educationportal/tasks/upload" exact component={WriteTaskUpload} />
         <Route path="/educator/groups" exact component={GroupList} />
         <EPProtectedRoute
