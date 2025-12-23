@@ -24,7 +24,7 @@
   border-radius: 8px; 
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
   object-fit: cover; 
-  margin: 10px auto; 
+  margin: 10px auto 20px auto; 
   display: block; 
 }
 
@@ -34,6 +34,7 @@
   display: flex;
   flex-direction: column;
   gap: 15px;
+  margin-top: 20px;
 }
 
 
@@ -57,10 +58,6 @@
 .middle-column h1 {
   margin-bottom: 20px;
   font-size: 1.8rem;
-}
-
-.details-grid {
-  margin-top: 20px;
 }
 
 
@@ -113,12 +110,6 @@
   margin-top: 10px;
   font-size: 14px;
   color: #333;
-}
-.event-image {
-  width: 100%;
-  height: auto;
-  border-radius: 8px;
-  margin-bottom: 20px;
 } 
 
 .submit-comment-button {

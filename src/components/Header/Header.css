@@ -38,7 +38,7 @@
   padding-bottom: 1rem;
 }
 
-.navbar {
+/* .navbar {
   z-index: 100;
   white-space: nowrap;
   display: flex;
@@ -47,8 +47,17 @@
   align-items: center;
   width: 100%;
   white-space: nowrap;
+} */
+.navbar {
+  z-index: 100;
+  white-space: nowrap;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  overflow: visible;
 }
-
 .redBackGroupHeader {
   z-index: 10;
   bottom: 0;
@@ -70,11 +79,11 @@
   margin-right: 1rem;
   
 }
-
+/* 
 .navbar {
   z-index: 100;
   overflow: visible;
-}
+} */
 
 .nav-links {
   display: flex;

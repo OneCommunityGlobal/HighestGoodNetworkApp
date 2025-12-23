@@ -38,13 +38,16 @@
   display: flex;
   justify-content: flex-start;
   gap: 10px;
-}
-
-.buttons {
   right: 0;
   bottom: 0;
   position: absolute;
 }
+
+/* .buttons {
+  right: 0;
+  bottom: 0;
+  position: absolute;
+} */
 
 .red .progress-bar {
   background-color: red;

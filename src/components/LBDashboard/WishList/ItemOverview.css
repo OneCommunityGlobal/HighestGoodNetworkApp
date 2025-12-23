@@ -64,6 +64,7 @@
   justify-content: flex-end;
   align-items: center;
   width: 100%;
+  padding: 1rem 0 0;
 }
 
 .item__navbar-right h2{
@@ -183,11 +184,6 @@ p {
   width: 50%;
   height: 100%;
   padding: 2.5%;
-}
-
-.item__listing-details h1,
-p {
-  color: #000;
 }
 
 .item__rent {
@@ -311,6 +307,7 @@ p {
   }
   .item__navbar-right {
     justify-content: space-between;
+    padding: 1rem 0 0;
   }
   .item__navbar-right h2{
     font-family: sans-serif;
@@ -333,11 +330,6 @@ p {
 }
 
 @media screen and (max-width: 800px) {
-
-  .item__navbar-right {
-    padding: 1rem 0 0;
-  }
-
   .item__navbar{
     display: flex;
     flex-direction: row;
@@ -348,6 +340,7 @@ p {
   }
   .item__navbar-right {
     justify-content: space-between;
+    padding: 1rem 0 0;
   }
   .item__navbar-right h2{
     font-family: sans-serif;

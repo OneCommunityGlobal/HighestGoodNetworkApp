@@ -7,9 +7,9 @@
 /* Improved positioning for the action menu */
 .action-menu {
   position: absolute;
-  top: 0;          /* Position at the top of relative parent */
-  right: 100%;     /* Position to the left of the button */
-  transform: translateY(-25%); /* Adjust vertical position */
+  top: 0;
+  right: 100%;
+  transform: translateY(-25%);
   min-width: 10rem;
   z-index: 1050;
   padding: 0.5rem 0;
@@ -48,8 +48,10 @@
   text-decoration: none;
 }
 
-/* Fixed table responsiveness */
+/* ✅ merged duplicate: table responsiveness + layout */
 .issues-table-responsive {
+  width: 100%;
+  table-layout: fixed;
   overflow-x: visible !important; /* Prevent horizontal scrollbar */
   overflow-y: visible !important; /* Ensure dropdowns aren't clipped */
   position: relative;
@@ -57,14 +59,15 @@
 
 /* Improved dropdown positioning */
 .issue-dashboard-dropdown {
-  position: static;  /* Make it relative to the table cell instead */
+  position: static;
 }
 
 td.text-end {
-  position: relative; /* Create positioning context for dropdown */
+  position: relative;
   white-space: nowrap;
   width: 1%;
 }
+
 .issues-table-responsive td,
 .issues-table-responsive th {
   text-align: left !important;
@@ -73,12 +76,6 @@ td.text-end {
 /* Ensure card doesn't create scrollbars */
 .card {
   overflow: hidden;
-}
-
-/* Ensure table doesn't exceed container width */
-.issues-table-responsive {
-  width: 100%;
-  table-layout: fixed;
 }
 
 /* Make sure content doesn't force horizontal scroll */
@@ -108,7 +105,6 @@ td.text-end .issue-dashboard-dropdown .issue-dashboard-dropdown-menu {
   justify-content: center !important;
 }
 
-
 .issues-modal-backdrop .modal-dialog {
   border-radius: 8px;
   max-width: 400px;
@@ -118,6 +114,7 @@ td.text-end .issue-dashboard-dropdown .issue-dashboard-dropdown-menu {
 .table-dark thead tr:hover {
   background-color: #3D444D;
 }
+
 .table-dark thead tr th {
   color: #f8f9fa;
 }

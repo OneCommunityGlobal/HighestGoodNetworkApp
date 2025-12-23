@@ -71,6 +71,7 @@
   cursor: pointer;
   background-color: white;
   border-radius: 5px;
+  align-items: center;
 }
 
 .lb-messaging-contact:hover {
@@ -79,6 +80,10 @@
 
 .lb-messaging-contact img {
   border-radius: 20%;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
 }
 
 .lb-messaging-contact-info {
@@ -92,6 +97,8 @@
 .lb-messaging-contact-name {
   font-weight: bold;
   font-size: 14px;
+  font-size: 15px;
+  font-weight: 500;
 }
 
 .lb-messaging-contacts-header {
@@ -288,11 +295,6 @@
   margin: 0;
 }
 
-.lb-msg-icon {
-  height: 100%;
-  width: 75% !important;
-}
-
 .lg-messaging-bell-select-dropdown {
   position: absolute;
   top: 110%;
@@ -414,26 +416,8 @@
   padding: 10px;
 }
 
-.lb-messaging-contact {
-  display: flex;
-  align-items: center;
-  padding: 8px;
-  border-bottom: 1px solid #eee;
-  cursor: pointer;
-}
-
-.lb-messaging-contact img {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  margin-right: 10px;
-}
-
-.lb-messaging-contact-name {
-  font-size: 15px;
-  font-weight: 500;
-}
-
 .lb-msg-icon {
   cursor: pointer;
+  height: 100%;
+  width: 75% !important;
 }

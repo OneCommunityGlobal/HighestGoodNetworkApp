@@ -93,10 +93,6 @@
 /* Added controlBtn class to ensure uniform margin between buttons */
 .controlBtn {
   margin-right: 8px; /* Adds margin between buttons */
-}
-
-
-.controlBtn {
   float: left;
   margin-left: 10px;
 }

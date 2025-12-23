@@ -14,7 +14,8 @@
     display: flex;
     justify-content: space-between;
     margin-bottom: 24px;
-    font-weight: 500;
+    font-weight: bold;
+    padding-bottom: 8px;
   }
   
   .pie-chart-legend-item {
@@ -132,13 +133,6 @@
     height: 100%;
     width: 100%;
   
-  }
-  
-  .pie-chart-legend-header {
-    font-weight: bold;
-    display: flex;
-    justify-content: space-between;
-    padding-bottom: 8px;
   }
   
   .pie-chart-legend-table-wrapper {

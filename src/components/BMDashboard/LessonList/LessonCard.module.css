@@ -1,30 +1,37 @@
-
 .lessonCard {
   border: 2px solid #78bdda !important;
   background-color: #fbfbfb !important;
   margin-bottom: 2rem;
   overflow: hidden;
 }
+
 .lessonCardHeader {
   background-color: #78bdda !important;
   padding: 0.3rem 1.25rem !important;
 }
+
 .lessonCardBody {
   min-height: 20vh;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
+
+/* ✅ merged duplicate */
 .cardTagAndFile {
   font-size: small;
+  color: #78bdda;
 }
+
 .cardTagAndFile .tagItem {
   display: inline-block;
   margin-right: 5px;
 }
+
 .lessonCardHeader:first-child {
   border-radius: 0 !important;
 }
+
 .lessonCardFooter {
   background-color: #e8f4f9 !important;
   display: flex;
@@ -33,9 +40,11 @@
   padding: 0.3rem 0.625rem !important;
   border-top: unset !important;
 }
+
 .lessonCardFooter:last-child {
   border-radius: 0 !important;
 }
+
 .lessonCardTag {
   display: flex;
   flex-direction: row;
@@ -69,9 +78,11 @@
   height: 50px;
   flex-direction: column;
 }
+
 .lessonCardNavItem {
   font-size: small;
 }
+
 .navItemTitle {
   font-weight: bold;
   font-size: small;
@@ -81,21 +92,21 @@
   display: flex;
   justify-content: space-between;
 }
-.cardTagAndFile {
-  color: #78bdda;
-}
 
 .cardScrollable {
   max-height: 300px;
   overflow-y: auto;
 }
+
 .tagItem {
   font-size: small;
   white-space: nowrap;
 }
+
 .lessonFile {
   font-size: small;
 }
+
 .lessonSummary button {
   border: 1px solid #ccc;
   border-radius: 5px;
@@ -104,16 +115,20 @@
   margin-right: 5px;
   font-size: 14px;
 }
+
 .lessonSummary textarea {
   height: 10rem;
 }
+
 .scrollableCardBody::-webkit-scrollbar {
   width: 4px;
 }
+
 .scrollableCardBody::-webkit-scrollbar-thumb {
   background-color: #ccc;
   border-radius: 5px;
 }
+
 .cardTag::-webkit-scrollbar-horizontal {
   width: 4px;
 }
@@ -127,14 +142,19 @@
   margin-right: 5px;
   border-radius: 5px;
 }
+
 .validationError {
   color: red;
   font-size: small;
   display: block;
   margin-bottom: 10px;
 }
+
+/* ✅ merged duplicate */
 .editableLessonSummary.error {
   border: 1px solid red;
+  background-color: #fff0f0;
+  color: #a00;
 }
 
 @media (max-width: 768px) {
@@ -142,6 +162,7 @@
     flex-direction: column;
     align-items: flex-start;
   }
+
   .lessonCardNav {
     height: auto;
     display: flex;
@@ -152,24 +173,17 @@
     justify-content: flex-start;
   }
 }
-validation-error {
-  color: red;
-  font-size: small;
-  display: block;
-  margin-bottom: 10px;
-}
-.editableLessonSummary.error {
-  border: 1px solid red;
-}
 
 @media (max-width: 570px) {
   .formSelectContainer {
     flex-direction: column;
   }
+
   .cardFooter {
     font-size: small;
   }
 }
+
 @media (max-width: 767px) {
   .cardText {
     padding: 10px;

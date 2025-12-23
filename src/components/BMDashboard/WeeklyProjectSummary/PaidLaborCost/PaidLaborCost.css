@@ -91,12 +91,15 @@
   justify-content: space-between;
   align-items: center;
   margin-top: 3px;
-  padding: 2px 4px;
-  border: 1px solid #ddd;
+  padding: 0.2rem 2.5rem 0.2rem 0.2rem;
+  border: 1px solid #ccc;
   border-radius: 4px;
   background-color: white;
   cursor: pointer;
   transition: border-color 0.2s;
+  flex: 1;
+  justify-content: center;
+  font-size: 0.9rem;
 }
 
 .paid-labor-cost-date-range-input:hover {
@@ -383,19 +386,6 @@
   align-items: center;
 }
 
-.paid-labor-cost-date-range-input {
-  flex: 1;
-  padding: 0.2rem 2.5rem 0.2rem 0.2rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background-color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  font-size: 0 ninerem;
-}
-
 .paid-labor-cost-info-wrapper {
   position: absolute;
   right: 6px;
@@ -515,6 +505,8 @@
   width: 100%;
   overflow-x: auto;
   background-color: var(--bg-color);
+  scrollbar-width: thin;
+  scrollbar-color: var(--button-bg) var(--card-shadow);
 }
 
 .paid-labor-cost-chart-scroll-wrapper::-webkit-scrollbar {
@@ -528,9 +520,4 @@
 .paid-labor-cost-chart-scroll-wrapper::-webkit-scrollbar-thumb {
   background: var(--button-bg);
   border-radius: 3px;
-}
-
-.paid-labor-cost-chart-scroll-wrapper {
-  scrollbar-width: thin;
-  scrollbar-color: var(--button-bg) var(--card-shadow);
 }

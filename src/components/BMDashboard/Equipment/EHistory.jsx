@@ -30,10 +30,18 @@ export default function EquipmentUpdateLog() {
     }
   }, [selectedProject, dispatch]);
 
-  const formatDate = dateString => {
+  const formatDateTime = dateString => {
     if (!dateString) return 'N/A';
     const date = new Date(dateString);
-    return Number.isNaN(date.getTime()) ? 'N/A' : date.toLocaleDateString();
+    return Number.isNaN(date.getTime())
+      ? 'N/A'
+      : date.toLocaleString(undefined, {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+        });
   };
 
   const formatPersonName = person => {
@@ -141,29 +149,44 @@ export default function EquipmentUpdateLog() {
           >
             <thead>
               <tr>
-                <th>Date</th>
-                <th>Equipment Name</th>
-                <th>Equipment Number</th>
-                <th>Type</th>
-                <th>Created By</th>
-                <th>Responsible User</th>
+                <th>SID</th>
+                <th>SUBMIT TIME</th>
+                <th>PID</th>
+                <th>NAME</th>
+                <th>PREVIOUS</th>
+                <th>CURRENT</th>
+                <th>REPLACE</th>
+                <th>LAST USED</th>
+                <th>DESCRIPTION</th>
               </tr>
             </thead>
             <tbody>
               {filteredLogRecords.length > 0 ? (
                 filteredLogRecords.map((record, index) => (
                   <tr key={`${record.equipmentId}-${index}-${record.date}`}>
-                    <td>{formatDate(record.date)}</td>
+                    {/* SID */}
+                    <td>{index + 1}</td>
+                    {/* SUBMIT TIME */}
+                    <td>{formatDateTime(record.date)}</td>
+                    {/* PID (project name / id) */}
+                    <td>{record.projectName}</td>
+                    {/* NAME (equipment name) */}
                     <td>{record.equipmentName}</td>
-                    <td>{record.equipmentCode}</td>
+                    {/* PREVIOUS – not available from current API, placeholder */}
+                    <td>N/A</td>
+                    {/* CURRENT – use log type for now (Check In / Check Out) */}
                     <td>{record.type || 'N/A'}</td>
-                    <td>{formatPersonName(record.createdBy)}</td>
+                    {/* REPLACE – requires backend support, placeholder */}
+                    <td>N/A</td>
+                    {/* LAST USED – responsible user */}
                     <td>{formatPersonName(record.responsibleUser)}</td>
+                    {/* DESCRIPTION – requires backend support, placeholder */}
+                    <td>N/A</td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={6} className="text-center">
+                  <td colSpan={9} className="text-center">
                     {selectedProject?.value && selectedProject.value !== '0'
                       ? 'No equipment history records found for the selected project.'
                       : 'No equipment history records found. Please select a project to view history.'}
