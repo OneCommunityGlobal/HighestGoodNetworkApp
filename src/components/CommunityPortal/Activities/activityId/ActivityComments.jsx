@@ -556,9 +556,17 @@ function ActivityComments() {
 
   const handleHelpfulClick = feedbackId => {
     setFeedbacks(prevFeedbacks =>
-      prevFeedbacks.map(feedback =>
-        feedback.id === feedbackId ? { ...feedback, helpful: feedback.helpful + 1 } : feedback,
-      ),
+      prevFeedbacks.map(feedback => {
+        if (feedback.id !== feedbackId) return feedback;
+
+        const hasLiked = feedback.hasLiked ?? false;
+
+        return {
+          ...feedback,
+          helpful: hasLiked ? feedback.helpful - 1 : feedback.helpful + 1,
+          hasLiked: !hasLiked,
+        };
+      }),
     );
   };
 
