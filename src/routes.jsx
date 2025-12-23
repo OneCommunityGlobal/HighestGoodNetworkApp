@@ -180,6 +180,8 @@ import IntermediateTaskList from './components/EductionPortal/IntermediateTasks/
 
 // Social Architecture
 
+import TumblrAutoPoster from './components/AutoPosters/tumblrAutoPoster';
+
 import JobApplicationForm from './components/Collaboration/JobApplicationForm/JobApplicationForm';
 const ResourceManagement = lazy(() => import('./components/ResourceManagement/ResourceManagement'));
 const RequestResources = lazy(() => import('./components/SocialArchitecture/RequestResources'));
@@ -326,6 +328,7 @@ export default (
       <AutoUpdate />
       <ToastContainer />
       <Switch>
+        <ProtectedRoute path="/tumblr-auto-poster" exact component={TumblrAutoPoster} />
         <ProtectedRoute path="/weekly-summary" exact component={WeeklySummaryPage} />
         <ProtectedRoute path="/hgnhelp" exact component={HelpPage} />
         <ProtectedRoute path="/dashboard" exact component={Dashboard} />

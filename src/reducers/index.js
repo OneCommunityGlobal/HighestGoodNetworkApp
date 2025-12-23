@@ -100,6 +100,9 @@ import reviewsInsightReducer from './prAnalytics/reviewsInsightReducer';
 import { hoursPledgedReducer } from './jobAnalytics/hoursPledgedReducer';
 import { studentTasksReducer } from './studentTasksReducer';
 
+// Auto Posters
+import tumblrReducer from './tumblrReducer';
+
 const localReducers = {
   auth: authReducer,
   allUserProfiles: allUserProfilesReducer,
@@ -182,6 +185,9 @@ const localReducers = {
   // student tasks
   studentTasks: studentTasksReducer,
   jobApplication: jobApplicationReducer,
+
+  //Auto Posters
+  tumblr: tumblrReducer,
 };
 
 const sessionReducers = {
