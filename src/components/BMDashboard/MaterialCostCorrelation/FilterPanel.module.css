@@ -1,0 +1,392 @@
+.filterPanel {
+  --filter-panel-bg: #f8f9fa;
+  --filter-text: #1a202c;
+  --filter-border: #e2e8f0;
+  --input-bg: #ffffff;
+  --input-border: #ced4da;
+  --input-text: #1a202c;
+  --button-bg: #007bff;
+  --button-hover-bg: #0056b3;
+  --button-text: #ffffff;
+  --preset-button-bg: #f8f9fa;
+  --preset-button-hover-bg: #e9ecef;
+  --preset-button-text: #1a202c;
+  --reset-button-bg: #dc3545;
+  --reset-button-hover-bg: #c82333;
+  padding: 16px;
+  background-color: var(--filter-panel-bg);
+  border-radius: 8px;
+  margin-bottom: 12px;
+  border: 1px solid var(--filter-border);
+  color: var(--filter-text);
+}
+
+.darkMode {
+  --filter-panel-bg: #1b2a41;
+  --filter-text: #f7fafc;
+  --filter-border: #334155;
+  --input-bg: #1e293b;
+  --input-border: #475569;
+  --input-text: #f7fafc;
+  --button-bg: #3b82f6;
+  --button-hover-bg: #2563eb;
+  --button-text: #ffffff;
+  --preset-button-bg: #1e293b;
+  --preset-button-hover-bg: #334155;
+  --preset-button-text: #f7fafc;
+  --reset-button-bg: #ef4444;
+  --reset-button-hover-bg: #dc2626;
+}
+
+.filterGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.filterLabel {
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 8px;
+  color: var(--filter-text);
+}
+
+.dateRangeContainer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.dateSeparator {
+  margin: 0 4px;
+  color: var(--filter-text);
+  font-size: 14px;
+}
+
+.datePickerLight,
+.datePickerDark {
+  padding: 8px 12px;
+  border: 1px solid var(--input-border);
+  border-radius: 6px;
+  width: 100%;
+  background-color: var(--input-bg);
+  color: var(--input-text);
+  font-size: 14px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.datePickerLight:focus,
+.datePickerDark:focus {
+  outline: none;
+  border-color: var(--button-bg);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.presetButtons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.presetButtonLight,
+.presetButtonDark {
+  padding: 8px 14px;
+  border: 1px solid var(--input-border);
+  border-radius: 6px;
+  cursor: pointer;
+  background: var(--preset-button-bg);
+  color: var(--preset-button-text);
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.presetButtonLight:hover,
+.presetButtonDark:hover {
+  background: var(--preset-button-hover-bg);
+  border-color: var(--button-bg);
+  transform: translateY(-1px);
+}
+
+.presetButtonLight:active,
+.presetButtonDark:active {
+  transform: translateY(0);
+}
+
+.presetButtonLight:focus-visible,
+.presetButtonDark:focus-visible {
+  outline: 2px solid var(--button-bg);
+  outline-offset: 2px;
+}
+
+.resetButton {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.resetButtonLight {
+  background: var(--reset-button-bg);
+  color: var(--button-text);
+}
+
+.resetButtonLight:hover {
+  background: var(--reset-button-hover-bg);
+  transform: translateY(-1px);
+}
+
+.resetButtonLight:active {
+  transform: translateY(0);
+}
+
+.resetButtonLight:focus-visible {
+  outline: 2px solid var(--reset-button-bg);
+  outline-offset: 2px;
+}
+
+.resetButtonDark {
+  background: var(--reset-button-bg);
+  color: var(--button-text);
+}
+
+.resetButtonDark:hover {
+  background: var(--reset-button-hover-bg);
+  transform: translateY(-1px);
+}
+
+.resetButtonDark:active {
+  transform: translateY(0);
+}
+
+.resetButtonDark:focus-visible {
+  outline: 2px solid var(--reset-button-bg);
+  outline-offset: 2px;
+}
+
+/* React-Select Styling */
+:global(.select__control) {
+  min-height: 42px !important;
+}
+
+.controlLight {
+  background-color: var(--input-bg) !important;
+  border-color: var(--input-border) !important;
+  color: var(--input-text) !important;
+  border-radius: 6px !important;
+  box-shadow: none !important;
+}
+
+.controlLight:hover {
+  border-color: var(--button-bg) !important;
+}
+
+.controlLight:focus-within {
+  border-color: var(--button-bg) !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+}
+
+.controlDark {
+  background-color: var(--input-bg) !important;
+  border-color: var(--input-border) !important;
+  color: var(--input-text) !important;
+  border-radius: 6px !important;
+  box-shadow: none !important;
+}
+
+.controlDark:hover {
+  border-color: var(--button-bg) !important;
+}
+
+.controlDark:focus-within {
+  border-color: var(--button-bg) !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2) !important;
+}
+
+.menuLight {
+  background-color: var(--input-bg) !important;
+  border: 1px solid var(--input-border) !important;
+  border-radius: 6px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+.menuDark {
+  background-color: var(--input-bg) !important;
+  border: 1px solid var(--input-border) !important;
+  border-radius: 6px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+}
+
+.optionLight {
+  background-color: transparent !important;
+  color: var(--input-text) !important;
+  padding: 10px 12px !important;
+}
+
+.optionLight:hover {
+  background-color: #e9ecef !important;
+}
+
+.optionLight:active {
+  background-color: #dee2e6 !important;
+}
+
+.optionDark {
+  background-color: transparent !important;
+  color: var(--input-text) !important;
+  padding: 10px 12px !important;
+}
+
+.optionDark:hover {
+  background-color: #334155 !important;
+}
+
+.optionDark:active {
+  background-color: #475569 !important;
+}
+
+.multiValueLight {
+  background-color: #dceeff !important;
+  border-radius: 4px !important;
+}
+
+.multiValueDark {
+  background-color: #334155 !important;
+  border-radius: 4px !important;
+}
+
+.multiValueLabelLight {
+  color: #1a202c !important;
+  font-size: 13px !important;
+  padding: 4px 8px !important;
+}
+
+.multiValueLabelDark {
+  color: #f7fafc !important;
+  font-size: 13px !important;
+  padding: 4px 8px !important;
+}
+
+/* React-DatePicker Styling */
+:global(.react-datepicker) {
+  background-color: var(--input-bg) !important;
+  color: var(--input-text) !important;
+  border: 1px solid var(--input-border) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  font-family: inherit !important;
+}
+
+:global(.react-datepicker__header) {
+  background-color: var(--filter-panel-bg) !important;
+  border-bottom: 1px solid var(--input-border) !important;
+  border-radius: 8px 8px 0 0 !important;
+}
+
+:global(.react-datepicker__current-month),
+:global(.react-datepicker__day-name),
+:global(.react-datepicker__day),
+:global(.react-datepicker__month-text),
+:global(.react-datepicker__year-text) {
+  color: var(--input-text) !important;
+}
+
+:global(.react-datepicker__day:hover),
+:global(.react-datepicker__month-text:hover),
+:global(.react-datepicker__year-text:hover) {
+  background-color: var(--preset-button-hover-bg) !important;
+  border-radius: 4px !important;
+}
+
+:global(.react-datepicker__day--selected),
+:global(.react-datepicker__day--in-selecting-range),
+:global(.react-datepicker__day--in-range) {
+  background-color: var(--button-bg) !important;
+  color: var(--button-text) !important;
+  border-radius: 4px !important;
+}
+
+:global(.react-datepicker__day--selected:hover) {
+  background-color: var(--button-hover-bg) !important;
+}
+
+:global(.react-datepicker__day--today) {
+  font-weight: 700 !important;
+  border: 1px solid var(--button-bg) !important;
+  border-radius: 4px !important;
+}
+
+:global(.react-datepicker__close-icon::after) {
+  background-color: var(--input-text) !important;
+  color: var(--input-text) !important;
+  opacity: 0.6;
+}
+
+:global(.react-datepicker-popper) {
+  z-index: 999 !important;
+  max-width: 100vw;
+}
+
+/* Responsive Media Queries */
+@media (max-width: 1024px) {
+  .filterPanel {
+    padding: 12px;
+    margin-bottom: 8px;
+  }
+}
+
+@media (max-width: 768px) {
+  .filterPanel {
+    padding: 10px;
+    margin-bottom: 6px;
+  }
+
+  .filterGrid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+  }
+
+  .dateRangeContainer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .dateSeparator {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .filterPanel {
+    padding: 8px;
+    margin-bottom: 4px;
+  }
+
+  .filterGrid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .presetButtons {
+    flex-direction: column;
+  }
+
+  .presetButtonLight,
+  .presetButtonDark {
+    width: 100%;
+    text-align: center;
+  }
+}
