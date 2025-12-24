@@ -1,6 +1,8 @@
 import { BarChart, Bar, XAxis, YAxis, LabelList, ResponsiveContainer } from 'recharts';
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import styles from './ExpenseBarChart.module.css';
 
 const categories = ['Plumbing', 'Electrical', 'Structural', 'Mechanical'];
@@ -10,8 +12,8 @@ export default function ExpenseBarChart() {
   const darkMode = useSelector(state => state.theme?.darkMode);
   const [projectId, setProjectId] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('ALL');
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
   const [data, setData] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -67,6 +69,10 @@ export default function ExpenseBarChart() {
           const entryDate = new Date(entry.date);
           const start = startDate ? new Date(startDate) : null;
           const end = endDate ? new Date(endDate) : null;
+          // Reset time to start/end of day for proper comparison
+          if (start) start.setHours(0, 0, 0, 0);
+          if (end) end.setHours(23, 59, 59, 999);
+          entryDate.setHours(0, 0, 0, 0);
           const dateMatch = (!start || entryDate >= start) && (!end || entryDate <= end);
           const projectMatch = projectId === '' || entry.projectId === projectId;
           const categoryMatch = categoryFilter === 'ALL' || entry.category === categoryFilter;
@@ -132,21 +138,53 @@ export default function ExpenseBarChart() {
         </label>
         <label className={styles.expenseChartFilterLabel}>
           Start Date:{' '}
-          <input
-            type="date"
-            value={startDate}
-            onChange={e => setStartDate(e.target.value)}
-            className={styles.expenseChartDateInput}
-          />
+          <div className={styles.expenseChartDatePickerWrapper}>
+            <DatePicker
+              selected={startDate}
+              onChange={setStartDate}
+              selectsStart
+              startDate={startDate}
+              endDate={endDate}
+              maxDate={endDate || undefined}
+              placeholderText="Start date"
+              className={styles.expenseChartDatePickerInput}
+              wrapperClassName={styles.expenseChartDatePickerInputWrapper}
+              style={{
+                backgroundColor: darkMode ? '#2b3344' : '#fff',
+                color: darkMode ? '#fff' : '#000',
+                border: `1px solid ${darkMode ? '#3a506b' : '#ccc'}`,
+                borderRadius: '4px',
+                padding: '0.375rem',
+                fontSize: '0.875rem',
+                width: '100%',
+              }}
+            />
+          </div>
         </label>
         <label className={styles.expenseChartFilterLabel}>
           End Date:{' '}
-          <input
-            type="date"
-            value={endDate}
-            onChange={e => setEndDate(e.target.value)}
-            className={styles.expenseChartDateInput}
-          />
+          <div className={styles.expenseChartDatePickerWrapper}>
+            <DatePicker
+              selected={endDate}
+              onChange={setEndDate}
+              selectsEnd
+              startDate={startDate}
+              endDate={endDate}
+              minDate={startDate || undefined}
+              placeholderText="End date"
+              className={styles.expenseChartDatePickerInput}
+              wrapperClassName={styles.expenseChartDatePickerInputWrapper}
+              style={{
+                backgroundColor: darkMode ? '#2b3344' : '#fff',
+                color: darkMode ? '#fff' : '#000',
+                border: `1px solid ${darkMode ? '#3a506b' : '#ccc'}`,
+                borderRadius: '4px',
+                padding: '0.375rem',
+                fontSize: '0.875rem',
+                width: '100%',
+              }}
+            />
+          </div>
         </label>
       </div>
 
