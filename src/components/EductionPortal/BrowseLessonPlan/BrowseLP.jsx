@@ -95,6 +95,13 @@ export default function BrowseLessonPlan() {
     setExpandedSections(newExpanded);
   };
 
+  const handleKeyDown = (e, section) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      toggleSection(section);
+    }
+  };
+
   function handleToggleSave(plan) {
     if (!userId) {
       return;
@@ -112,6 +119,86 @@ export default function BrowseLessonPlan() {
   function handleViewDetails(plan) {
     // Navigate to lesson plan detail page
   }
+
+  const renderPlanCard = (plan, isSaved, showFooter = true) => {
+    const planId = plan._id || plan.id;
+    const cardClass = isSaved ? `${styles.atomCard} ${styles.savedCard}` : styles.atomCard;
+
+    return (
+      <div key={planId} className={cardClass}>
+        <div className={styles.cardHeader}>
+          <h4 className={styles.cardTitle}>{plan.title}</h4>
+          <div className={styles.cardActions}>
+            {isSaved ? (
+              <>
+                <button className={styles.iconBtn} title="Star">
+                  ⭐
+                </button>
+                <button
+                  className={styles.iconBtn}
+                  title="View"
+                  onClick={() => handleViewDetails(plan)}
+                >
+                  👁️
+                </button>
+                <button
+                  className={styles.iconBtn}
+                  title="Remove"
+                  onClick={() => handleToggleSave(plan)}
+                >
+                  ×
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  className={`${styles.iconBtn} ${styles.saveBtn}`}
+                  title="Save"
+                  onClick={() => handleToggleSave(plan)}
+                >
+                  ☆
+                </button>
+                <button
+                  className={styles.iconBtn}
+                  title="View"
+                  onClick={() => handleViewDetails(plan)}
+                >
+                  👁️
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+        <div className={styles.cardTags}>
+          {plan.subjects?.map(subj => (
+            <span key={subj} className={styles.subjectTag}>
+              {subj}
+            </span>
+          ))}
+          <span className={`${styles.difficultyBadge} ${styles[plan.difficulty || 'beginner']}`}>
+            {plan.difficulty || 'beginner'}
+          </span>
+        </div>
+        <p className={styles.cardDescription}>
+          {plan.description
+            ? plan.description.length > (showFooter ? 120 : 100)
+              ? `${plan.description.slice(0, showFooter ? 120 : 100)}...`
+              : plan.description
+            : showFooter
+            ? 'No description available.'
+            : 'No description.'}
+        </p>
+        {showFooter && (
+          <div className={styles.cardFooter}>
+            <span className={styles.addedDate}>
+              Added: {new Date(plan.createdAt || Date.now()).toLocaleDateString()}
+            </span>
+            {isSaved && <button className={styles.priorityBtn}>★ Priority</button>}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
     <div className={`${styles.container} ${darkMode ? styles.dark : ''}`}>
@@ -151,7 +238,6 @@ export default function BrowseLessonPlan() {
       {loading && <div className={styles.loadingMsg}>Loading...</div>}
       {error && <div className={styles.errorMsg}>{error}</div>}
 
-      {/* Display all subjects with saved items at top */}
       <div className={styles.sectionsContainer}>
         {Object.entries(groupedAllPlans).map(([subject, allItems]) => {
           const savedInSubject = (groupedSaved[subject] || []).filter(plan =>
@@ -183,61 +269,12 @@ export default function BrowseLessonPlan() {
 
               {expandedSections.has(sectionKey) && (
                 <>
-                  {/* Top 3 Priority (if any saved) */}
                   {savedInSubject.length > 0 && (
                     <div className={styles.priorityBox}>
                       <h3 className={styles.priorityTitle}>My Top 3 for {subject} (Next Focus)</h3>
                       {savedInSubject.slice(0, 3).map(plan => (
                         <div key={plan._id || plan.id} className={styles.priorityCard}>
-                          <div className={styles.cardHeader}>
-                            <h4 className={styles.cardTitle}>{plan.title}</h4>
-                            <div className={styles.cardActions}>
-                              <button className={styles.iconBtn} title="Star">
-                                ⭐
-                              </button>
-                              <button
-                                className={styles.iconBtn}
-                                title="View"
-                                onClick={() => handleViewDetails(plan)}
-                              >
-                                👁️
-                              </button>
-                              <button
-                                className={styles.iconBtn}
-                                title="Remove"
-                                onClick={() => handleToggleSave(plan)}
-                              >
-                                ×
-                              </button>
-                            </div>
-                          </div>
-                          <div className={styles.cardTags}>
-                            {plan.subjects?.map(subj => (
-                              <span key={subj} className={styles.subjectTag}>
-                                {subj}
-                              </span>
-                            ))}
-                            <span
-                              className={`${styles.difficultyBadge} ${
-                                styles[plan.difficulty || 'beginner']
-                              }`}
-                            >
-                              {plan.difficulty || 'beginner'}
-                            </span>
-                          </div>
-                          <p className={styles.cardDescription}>
-                            {plan.description
-                              ? plan.description.length > 120
-                                ? `${plan.description.slice(0, 120)}...`
-                                : plan.description
-                              : 'No description available.'}
-                          </p>
-                          <div className={styles.cardFooter}>
-                            <span className={styles.addedDate}>
-                              Added: {new Date(plan.createdAt || Date.now()).toLocaleDateString()}
-                            </span>
-                            <button className={styles.priorityBtn}>★ Priority</button>
-                          </div>
+                          {renderPlanCard(plan, true, true)}
                         </div>
                       ))}
                       {savedInSubject.length > 3 && (
@@ -248,112 +285,11 @@ export default function BrowseLessonPlan() {
                     </div>
                   )}
 
-                  {/* All Items in Subject (Saved + Available) */}
                   <div className={styles.allAtomsSection}>
                     <h3 className={styles.allAtomsTitle}>All {subject} Atoms</h3>
                     <div className={styles.atomsList}>
-                      {/* Saved items first */}
-                      {savedInSubject.map(plan => (
-                        <div
-                          key={plan._id || plan.id}
-                          className={`${styles.atomCard} ${styles.savedCard}`}
-                        >
-                          <div className={styles.cardHeader}>
-                            <h4 className={styles.cardTitle}>{plan.title}</h4>
-                            <div className={styles.cardActions}>
-                              <button className={styles.iconBtn} title="Star">
-                                ⭐
-                              </button>
-                              <button
-                                className={styles.iconBtn}
-                                title="View"
-                                onClick={() => handleViewDetails(plan)}
-                              >
-                                👁️
-                              </button>
-                              <button
-                                className={styles.iconBtn}
-                                title="Remove"
-                                onClick={() => handleToggleSave(plan)}
-                              >
-                                ×
-                              </button>
-                            </div>
-                          </div>
-                          <div className={styles.cardTags}>
-                            {plan.subjects?.map(subj => (
-                              <span key={subj} className={styles.subjectTag}>
-                                {subj}
-                              </span>
-                            ))}
-                            <span
-                              className={`${styles.difficultyBadge} ${
-                                styles[plan.difficulty || 'beginner']
-                              }`}
-                            >
-                              {plan.difficulty || 'beginner'}
-                            </span>
-                          </div>
-                          <p className={styles.cardDescription}>
-                            {plan.description
-                              ? plan.description.length > 100
-                                ? `${plan.description.slice(0, 100)}...`
-                                : plan.description
-                              : 'No description.'}
-                          </p>
-                          <div className={styles.cardFooter}>
-                            <span className={styles.addedDate}>
-                              Added: {new Date(plan.createdAt || Date.now()).toLocaleDateString()}
-                            </span>
-                          </div>
-                        </div>
-                      ))}
-
-                      {/* Available items */}
-                      {availableInSubject.map(plan => (
-                        <div key={plan._id || plan.id} className={styles.atomCard}>
-                          <div className={styles.cardHeader}>
-                            <h4 className={styles.cardTitle}>{plan.title}</h4>
-                            <div className={styles.cardActions}>
-                              <button
-                                className={`${styles.iconBtn} ${styles.saveBtn}`}
-                                title="Save"
-                                onClick={() => handleToggleSave(plan)}
-                              >
-                                ☆
-                              </button>
-                              <button
-                                className={styles.iconBtn}
-                                title="View"
-                                onClick={() => handleViewDetails(plan)}
-                              >
-                                👁️
-                              </button>
-                            </div>
-                          </div>
-                          <div className={styles.cardTags}>
-                            {plan.subjects?.map(subj => (
-                              <span key={subj} className={styles.subjectTag}>
-                                {subj}
-                              </span>
-                            ))}
-                            <span
-                              className={`${styles.difficultyBadge} ${
-                                styles[plan.difficulty || 'beginner']
-                              }`}
-                            >
-                              {plan.difficulty || 'beginner'}
-                            </span>
-                          </div>
-                          <p className={styles.cardDescription}>
-                            {plan.description
-                              ? plan.description.length > 100
-                                ? `${plan.description.slice(0, 100)}...`
-                                : plan.description
-                              : 'No description.'}
-                          </p>
-                        </div>
-                      ))}
+                      {savedInSubject.map(plan => renderPlanCard(plan, true, false))}
+                      {availableInSubject.map(plan => renderPlanCard(plan, false, false))}
                     </div>
                   </div>
                 </>
