@@ -8,7 +8,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import axios from 'axios';
 import ToolsHorizontalBarChart from './ToolsHorizontalBarChart';
 import { ENDPOINTS } from '../../../../utils/URL';
-import './ToolsAvailabilityPage.css';
+import styles from './ToolsAvailabilityPage.module.css';
 
 // YYYY-MM-DD (no tz shift)
 const toYMD = d =>
@@ -74,11 +74,11 @@ function ToolsAvailabilityPage() {
       const styleElement = document.createElement('style');
       styleElement.id = 'dark-mode-styles';
       styleElement.innerHTML = `
-        .dark-mode-body .tools-availability-page {
+        .dark-mode-body .${styles['tools-availability-page']} {
           background-color: #1e2736 !important;
           color: #e0e0e0 !important;
         }
-        .dark-mode-body .tools-availability-content {
+        .dark-mode-body .${styles['tools-availability-content']} {
           background-color: #1e2736 !important;
           color: #e0e0e0 !important;
         }
@@ -109,17 +109,17 @@ function ToolsAvailabilityPage() {
   // Render project selection based on loading and error states
   const renderProjectSelection = () => {
     if (loading) {
-      return <div className="select-loading">Loading projects...</div>;
+      return <div className={styles['select-loading']}>Loading projects...</div>;
     }
 
     if (error) {
-      return <div className="select-error">{error}</div>;
+      return <div className={styles['select-error']}>{error}</div>;
     }
 
     return (
       <Select
         id="project-select"
-        className="project-select"
+        className={styles['project-select']}
         classNamePrefix="select"
         value={selectedProject}
         onChange={handleProjectChange}
@@ -161,19 +161,19 @@ function ToolsAvailabilityPage() {
 
   return (
     <div
-      className={`tools-availability-page ${darkMode ? 'dark-mode' : ''}`}
+      className={`${styles['tools-availability-page']} ${darkMode ? 'dark-mode' : ''}`}
       style={darkModeStyles}
     >
-      <div className="tools-availability-content" style={darkModeStyles}>
-        <div className="tools-chart-filters">
-          <div className="filter-group">
+      <div className={styles['tools-availability-content']} style={darkModeStyles}>
+        <div className={styles['tools-chart-filters']}>
+          <div className={styles['filter-group']}>
             <label htmlFor="project-select">Project</label>
             {renderProjectSelection()}
           </div>
-          <div className="filter-group">
+          <div className={styles['filter-group']}>
             <label htmlFor="tools-start-date">Date Range (Optional)</label>
-            <div className="date-picker-group">
-              <div className="date-picker-wrapper">
+            <div className={styles['date-picker-group']}>
+              <div className={styles['date-picker-wrapper']}>
                 <DatePicker
                   id="tools-start-date"
                   selected={startDate}
@@ -183,8 +183,8 @@ function ToolsAvailabilityPage() {
                   endDate={endDate}
                   maxDate={endDate || undefined}
                   placeholderText="Start date"
-                  className="tools-availability-date-picker"
-                  wrapperClassName="tools-availability-date-picker-wrapper"
+                  className={styles['tools-availability-date-picker']}
+                  wrapperClassName={styles['tools-availability-date-picker-wrapper']}
                   style={{
                     backgroundColor: darkMode ? '#2b3344' : '#fff',
                     color: darkMode ? '#fff' : '#000',
@@ -197,7 +197,7 @@ function ToolsAvailabilityPage() {
                 />
               </div>
               <span>to</span>
-              <div className="date-picker-wrapper">
+              <div className={styles['date-picker-wrapper']}>
                 <DatePicker
                   id="tools-end-date"
                   selected={endDate}
@@ -207,8 +207,8 @@ function ToolsAvailabilityPage() {
                   endDate={endDate}
                   minDate={startDate || undefined}
                   placeholderText="End date"
-                  className="tools-availability-date-picker"
-                  wrapperClassName="tools-availability-date-picker-wrapper"
+                  className={styles['tools-availability-date-picker']}
+                  wrapperClassName={styles['tools-availability-date-picker-wrapper']}
                   style={{
                     backgroundColor: darkMode ? '#2b3344' : '#fff',
                     color: darkMode ? '#fff' : '#000',
@@ -223,7 +223,7 @@ function ToolsAvailabilityPage() {
               {(startDate || endDate) && (
                 <button
                   type="button"
-                  className="clear-dates-btn"
+                  className={styles['clear-dates-btn']}
                   onClick={handleClearDates}
                   aria-label="Clear date filters"
                   title="Clear date filters"
