@@ -900,6 +900,18 @@ export default (
           exact
           component={PRReviewTeamAnalytics}
         />
+        <ProtectedRoute path="/pr-dashboard/overview" exact component={PRDashboardOverview} />
+        <ProtectedRoute
+          path="/pr-dashboard/promotion-eligibility"
+          exact
+          component={PRDashboardPromotionEligibility}
+        />
+        <ProtectedRoute
+          path="/pr-dashboard/top-reviewed-prs"
+          exact
+          component={PRDashboardTopReviewedPRs}
+        />
+        <ProtectedRoute path="/pr-dashboard/details" exact component={PRDashboardDetails} />
         <Route path="*" component={NotFoundPage} />
       </Switch>
     </>
