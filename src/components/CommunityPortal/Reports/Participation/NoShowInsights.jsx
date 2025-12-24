@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
+import { ArrowUpDown, SquareArrowOutUpRight } from 'lucide-react';
 import mockEvents from './mockData';
 import styles from './Participation.module.css';
 
@@ -98,17 +99,23 @@ function NoShowInsights() {
         </div>
       </div>
 
-      <div className={styles.insightsTabs}>
-        {['Event type', 'Time', 'Location'].map(tab => (
-          <button
-            key={tab}
-            type="button"
-            className={`${styles.insightsTab} ${activeTab === tab ? styles.activeTab : ''}`}
-            onClick={() => setActiveTab(tab)}
-          >
-            {tab}
-          </button>
-        ))}
+      <div className={styles.insightsTabsContainer}>
+        <div className={styles.insightsTabs}>
+          {['Event type', 'Time', 'Location'].map(tab => (
+            <button
+              key={tab}
+              type="button"
+              className={`${styles.insightsTab} ${activeTab === tab ? styles.activeTab : ''}`}
+              onClick={() => setActiveTab(tab)}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+        <div className={styles.icons}>
+          <ArrowUpDown />
+          <SquareArrowOutUpRight />
+        </div>
       </div>
 
       <div className={styles.insightsContent}>{renderStats()}</div>

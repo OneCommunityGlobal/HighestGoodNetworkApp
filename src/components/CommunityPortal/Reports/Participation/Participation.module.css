@@ -359,11 +359,23 @@
 }
 
 .insightsTabs {
+  flex: 1;
   display: flex;
   border: 1px solid #ccc;
   border-radius: 5px;
   overflow: hidden;
   max-width: 60%;
+}
+
+.insightsTabsContainer{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.icons{
+  display: flex;
+  gap: 8px;
 }
 
 .insightsTab {
