@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { ArrowUpDown, SquareArrowOutUpRight } from 'lucide-react';
+import { ArrowUpDown, ArrowUp, ArrowDown, SquareArrowOutUpRight } from 'lucide-react';
 import mockEvents from './mockData';
 import styles from './Participation.module.css';
 
 function NoShowInsights() {
   const [dateFilter, setDateFilter] = useState('All');
   const [activeTab, setActiveTab] = useState('Event type');
+  const [sortOrder, setSortOrder] = useState('none');
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const filterByDate = events => {
@@ -33,6 +34,15 @@ function NoShowInsights() {
       }
     });
   };
+
+  const handleSortClick = () => {
+    setSortOrder(prev => {
+      if (prev === 'none' || prev === 'desc') return 'asc';
+      if (prev === 'asc') return 'desc';
+      return 'none';
+    });
+  };
+  const SortIcon = sortOrder === 'none' ? ArrowUpDown : sortOrder === 'asc' ? ArrowUp : ArrowDown;
 
   const calculateStats = filteredEvents => {
     const statsMap = new Map();
@@ -65,8 +75,14 @@ function NoShowInsights() {
   const renderStats = () => {
     const filteredEvents = filterByDate(mockEvents);
     const stats = calculateStats(filteredEvents);
+    const finalStats =
+      sortOrder === 'none'
+        ? stats
+        : [...stats].sort((a, b) =>
+            sortOrder === 'asc' ? a.percentage - b.percentage : b.percentage - a.percentage,
+          );
 
-    return stats.map(item => (
+    return finalStats.map(item => (
       <div key={item.label} className={styles.insightItem}>
         <div className={`${styles.insightsLabel} ${darkMode ? styles.insightsLabelDark : ''}`}>
           {item.label}
@@ -100,12 +116,18 @@ function NoShowInsights() {
       </div>
 
       <div className={styles.insightsTabsContainer}>
-        <div className={styles.insightsTabs}>
+        <div
+          className={`${styles.insightsTabs} ${
+            darkMode ? styles.insightsTabsDark : styles.insightsTabLight
+          }`}
+        >
           {['Event type', 'Time', 'Location'].map(tab => (
             <button
               key={tab}
               type="button"
-              className={`${styles.insightsTab} ${activeTab === tab ? styles.activeTab : ''}`}
+              className={`${styles.insightsTab} ${
+                darkMode ? styles.insightsTabDark : styles.insightsTabLight
+              } ${activeTab === tab ? styles.activeTab : ''}`}
               onClick={() => setActiveTab(tab)}
             >
               {tab}
@@ -113,7 +135,7 @@ function NoShowInsights() {
           ))}
         </div>
         <div className={styles.icons}>
-          <ArrowUpDown />
+          <SortIcon onClick={handleSortClick} className={styles.sortIcon} />
           <SquareArrowOutUpRight />
         </div>
       </div>

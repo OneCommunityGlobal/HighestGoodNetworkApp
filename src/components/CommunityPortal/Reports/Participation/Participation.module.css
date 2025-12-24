@@ -374,6 +374,7 @@
 }
 
 .icons{
+  cursor: pointer;
   display: flex;
   gap: 8px;
 }
@@ -383,11 +384,27 @@
   text-align: center;
   padding: 10px 0;
   font-size: 0.9rem;
-  color: #555;
-  background-color: #f8f9fa;
   border: none;
   cursor: pointer;
   transition: background-color 0.3s, color 0.3s;
+}
+
+.insightsTabLight{
+  color: #555;
+  background-color: #f8f9fa;
+}
+
+.insightsTabDark{
+  color: #f8f9fa;
+  background-color: #1C2541;
+}
+
+.insightsTabDark:hover {
+  background-color: #3A506B;
+}
+
+.insightsTabLight:hover {
+  background-color: #e0e0e0;
 }
 
 .insightsTab:not(:last-child) {
@@ -399,10 +416,6 @@
   background-color: #007bff;
   color: #fff;
   font-weight: bold;
-}
-
-.insightsTab:hover {
-  background-color: #e0e0e0;
 }
 
 .insightsContent {
@@ -458,6 +471,10 @@
   font-weight: bold;
   color: #333;
 }
+
+.insightsPercentageDark {
+    color: #ffffff;
+  }
 
 /* ---------- PDF/Print helpers ---------- */
 .pageBreakBefore { break-before: page; page-break-before: always; }
