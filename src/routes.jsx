@@ -787,11 +787,7 @@ export default (
         />
         <Route path="/educationportal/login" component={EPLogin} />
         <Route path="/educationportal/InsightWidget" component={InsightWidget} />
-        <EPProtectedRoute
-          path="/educationportal/lesson-library"
-          exact
-          component={BrowseLessonPlan}
-        />
+        <Route path="/educationportal/lesson-library" exact component={BrowseLessonPlan} />
         <EPProtectedRoute path="/educationportal/tasks/upload" exact component={WriteTaskUpload} />
         <Route path="/educator/groups" exact component={GroupList} />
         <EPProtectedRoute
