@@ -66,33 +66,242 @@
   padding: 1rem;
 }
 
+/* High specificity selectors to override global dark mode rules */
+:global(body.dark-mode) .darkMode .injury-select__control,
+:global(body.bm-dashboard-dark) .darkMode .injury-select__control,
 .darkMode .injury-select__control {
-  background-color: #2b3e59 !important;
+  background-color: #2b3344 !important;
   color: white !important;
-  border-color: #555 !important;
+  border-color: #3a506b !important;
+}
+
+.darkMode .injury-select__control:hover {
+  border-color: #4a6072 !important;
+}
+
+.darkMode .injury-select__control--is-focused {
+  border-color: #4a6072 !important;
+  box-shadow: 0 0 0 1px #4a6072 !important;
 }
 
 .darkMode .injury-select__single-value,
 .darkMode .injury-select__multi-value__label,
-.darkMode .injury-select__input-container {
+.darkMode .injury-select__input-container,
+.darkMode .injury-select__input-container input {
   color: white !important;
 }
 
+.darkMode .injury-select__placeholder {
+  color: #cbd5e0 !important;
+}
+
 .darkMode .injury-select__menu {
-  background-color: #2b3e59 !important;
+  background-color: #2b3344 !important;
+  color: white !important;
+  border-color: #3a506b !important;
+}
+
+.darkMode .injury-select__option {
+  background-color: #2b3344 !important;
+  color: white !important;
+}
+
+.darkMode .injury-select__option--is-focused {
+  background-color: #3a506b !important;
+  color: white !important;
+}
+
+.darkMode .injury-select__option--is-selected {
+  background-color: #4a6072 !important;
   color: white !important;
 }
 
 .darkMode .injury-select__option:hover {
-  color: black !important;
+  background-color: #3a506b !important;
+  color: white !important;
 }
 
-.darkMode .react-datepicker__input-container input {
-  background-color: #2b3e59 !important;
+.darkMode .injury-select__multi-value {
+  background-color: #3a506b !important;
+}
+
+.darkMode .injury-select__multi-value__label {
   color: white !important;
-  border: 1px solid #555;
+}
+
+.darkMode .injury-select__multi-value__remove {
+  color: white !important;
+}
+
+.darkMode .injury-select__multi-value__remove:hover {
+  background-color: #5a7082 !important;
+  color: white !important;
+}
+
+.darkMode .injury-select__indicator-separator {
+  background-color: #3a506b !important;
+}
+
+.darkMode .injury-select__dropdown-indicator {
+  color: white !important;
+}
+
+.darkMode .injury-select__dropdown-indicator:hover {
+  color: white !important;
+}
+
+.darkMode .injury-select__clear-indicator {
+  color: white !important;
+}
+
+.darkMode .injury-select__clear-indicator:hover {
+  color: white !important;
+}
+
+/* DatePicker wrapper */
+.date-picker-wrapper {
+  width: 100%;
+}
+
+.injury-date-picker-wrapper {
+  width: 100%;
+}
+
+/* High specificity selectors for DatePicker inputs - targeting all possible selectors */
+/* Using injury-chart-container in the chain for maximum specificity */
+:global(body.dark-mode) .injury-chart-container.darkMode .date-picker-wrapper .injury-date-picker-wrapper .react-datepicker__input-container input,
+:global(body.bm-dashboard-dark) .injury-chart-container.darkMode .date-picker-wrapper .injury-date-picker-wrapper .react-datepicker__input-container input,
+:global(body.dark-mode) .injury-chart-container.darkMode .date-picker-wrapper .react-datepicker-wrapper .react-datepicker__input-container input,
+:global(body.bm-dashboard-dark) .injury-chart-container.darkMode .date-picker-wrapper .react-datepicker-wrapper .react-datepicker__input-container input,
+:global(body.dark-mode) .darkMode .injury-chart-container .date-picker-wrapper .injury-date-picker-wrapper .react-datepicker__input-container input,
+:global(body.bm-dashboard-dark) .darkMode .injury-chart-container .date-picker-wrapper .injury-date-picker-wrapper .react-datepicker__input-container input,
+:global(body.dark-mode) .darkMode .injury-chart-container .date-picker-wrapper .react-datepicker-wrapper .react-datepicker__input-container input,
+:global(body.bm-dashboard-dark) .darkMode .injury-chart-container .date-picker-wrapper .react-datepicker-wrapper .react-datepicker__input-container input,
+:global(body.dark-mode) .darkMode .date-picker-wrapper .injury-date-picker-wrapper .react-datepicker__input-container input,
+:global(body.bm-dashboard-dark) .darkMode .date-picker-wrapper .injury-date-picker-wrapper .react-datepicker__input-container input,
+:global(body.dark-mode) .darkMode .date-picker-wrapper .react-datepicker__input-container input,
+:global(body.bm-dashboard-dark) .darkMode .date-picker-wrapper .react-datepicker__input-container input,
+:global(body.dark-mode) .darkMode .injury-date-picker-wrapper .react-datepicker__input-container input,
+:global(body.bm-dashboard-dark) .darkMode .injury-date-picker-wrapper .react-datepicker__input-container input,
+:global(body.dark-mode) .darkMode .react-datepicker-wrapper .react-datepicker__input-container input,
+:global(body.bm-dashboard-dark) .darkMode .react-datepicker-wrapper .react-datepicker__input-container input,
+:global(body.dark-mode) .darkMode .react-datepicker__input-container input,
+:global(body.bm-dashboard-dark) .darkMode .react-datepicker__input-container input,
+.injury-chart-container.darkMode .date-picker-wrapper .injury-date-picker-wrapper .react-datepicker__input-container input,
+.injury-chart-container.darkMode .date-picker-wrapper .react-datepicker-wrapper .react-datepicker__input-container input,
+.darkMode .injury-chart-container .date-picker-wrapper .injury-date-picker-wrapper .react-datepicker__input-container input,
+.darkMode .injury-chart-container .date-picker-wrapper .react-datepicker-wrapper .react-datepicker__input-container input,
+.darkMode .date-picker-wrapper .injury-date-picker-wrapper .react-datepicker__input-container input,
+.darkMode .date-picker-wrapper .react-datepicker__input-container input,
+.darkMode .injury-date-picker-wrapper .react-datepicker__input-container input,
+.darkMode .react-datepicker-wrapper .react-datepicker__input-container input,
+.darkMode .react-datepicker__input-container input {
+  background-color: #2b3344 !important;
+  color: white !important;
+  border: 1px solid #3a506b !important;
   padding: 0.5rem;
   border-radius: 4px;
+  width: 100%;
+}
+
+/* Target input elements directly within the wrapper - including wrapperClassName */
+:global(body.dark-mode) .injury-chart-container.darkMode .date-picker-wrapper .injury-date-picker-wrapper input,
+:global(body.bm-dashboard-dark) .injury-chart-container.darkMode .date-picker-wrapper .injury-date-picker-wrapper input,
+:global(body.dark-mode) .darkMode .injury-chart-container .date-picker-wrapper .injury-date-picker-wrapper input,
+:global(body.bm-dashboard-dark) .darkMode .injury-chart-container .date-picker-wrapper .injury-date-picker-wrapper input,
+:global(body.dark-mode) .darkMode .date-picker-wrapper .injury-date-picker-wrapper input,
+:global(body.bm-dashboard-dark) .darkMode .date-picker-wrapper .injury-date-picker-wrapper input,
+:global(body.dark-mode) .darkMode .injury-date-picker-wrapper input,
+:global(body.bm-dashboard-dark) .darkMode .injury-date-picker-wrapper input,
+.injury-chart-container.darkMode .date-picker-wrapper .injury-date-picker-wrapper input,
+.darkMode .injury-chart-container .date-picker-wrapper .injury-date-picker-wrapper input,
+.darkMode .date-picker-wrapper .injury-date-picker-wrapper input,
+.darkMode .injury-date-picker-wrapper input {
+  background-color: #2b3344 !important;
+  color: white !important;
+  border: 1px solid #3a506b !important;
+  padding: 0.5rem;
+  border-radius: 4px;
+  width: 100%;
+}
+
+/* Target inputs with react-datepicker-ignore-onclickoutside class */
+:global(body.dark-mode) .injury-chart-container.darkMode .date-picker-wrapper .injury-date-picker-wrapper input.react-datepicker-ignore-onclickoutside,
+:global(body.bm-dashboard-dark) .injury-chart-container.darkMode .date-picker-wrapper .injury-date-picker-wrapper input.react-datepicker-ignore-onclickoutside,
+:global(body.dark-mode) .darkMode .injury-chart-container .date-picker-wrapper .injury-date-picker-wrapper input.react-datepicker-ignore-onclickoutside,
+:global(body.bm-dashboard-dark) .darkMode .injury-chart-container .date-picker-wrapper .injury-date-picker-wrapper input.react-datepicker-ignore-onclickoutside,
+:global(body.dark-mode) .darkMode .date-picker-wrapper .injury-date-picker-wrapper input.react-datepicker-ignore-onclickoutside,
+:global(body.bm-dashboard-dark) .darkMode .date-picker-wrapper .injury-date-picker-wrapper input.react-datepicker-ignore-onclickoutside,
+.injury-chart-container.darkMode .date-picker-wrapper .injury-date-picker-wrapper input.react-datepicker-ignore-onclickoutside,
+.darkMode .injury-chart-container .date-picker-wrapper .injury-date-picker-wrapper input.react-datepicker-ignore-onclickoutside,
+.darkMode .date-picker-wrapper .injury-date-picker-wrapper input.react-datepicker-ignore-onclickoutside {
+  background-color: #2b3344 !important;
+  color: white !important;
+  border: 1px solid #3a506b !important;
+  padding: 0.5rem;
+  border-radius: 4px;
+  width: 100%;
+}
+
+/* Placeholder styles */
+:global(body.dark-mode) .injury-chart-container.darkMode .date-picker-wrapper .injury-date-picker-wrapper .react-datepicker__input-container input::placeholder,
+:global(body.bm-dashboard-dark) .injury-chart-container.darkMode .date-picker-wrapper .injury-date-picker-wrapper .react-datepicker__input-container input::placeholder,
+:global(body.dark-mode) .darkMode .injury-chart-container .date-picker-wrapper .injury-date-picker-wrapper .react-datepicker__input-container input::placeholder,
+:global(body.bm-dashboard-dark) .darkMode .injury-chart-container .date-picker-wrapper .injury-date-picker-wrapper .react-datepicker__input-container input::placeholder,
+:global(body.dark-mode) .darkMode .date-picker-wrapper .injury-date-picker-wrapper .react-datepicker__input-container input::placeholder,
+:global(body.bm-dashboard-dark) .darkMode .date-picker-wrapper .injury-date-picker-wrapper .react-datepicker__input-container input::placeholder,
+:global(body.dark-mode) .darkMode .date-picker-wrapper .react-datepicker__input-container input::placeholder,
+:global(body.bm-dashboard-dark) .darkMode .date-picker-wrapper .react-datepicker__input-container input::placeholder,
+:global(body.dark-mode) .darkMode .injury-date-picker-wrapper input::placeholder,
+:global(body.bm-dashboard-dark) .darkMode .injury-date-picker-wrapper input::placeholder,
+.injury-chart-container.darkMode .date-picker-wrapper .injury-date-picker-wrapper .react-datepicker__input-container input::placeholder,
+.darkMode .injury-chart-container .date-picker-wrapper .injury-date-picker-wrapper .react-datepicker__input-container input::placeholder,
+.darkMode .date-picker-wrapper .injury-date-picker-wrapper .react-datepicker__input-container input::placeholder,
+.darkMode .date-picker-wrapper .react-datepicker__input-container input::placeholder,
+.darkMode .injury-date-picker-wrapper input::placeholder,
+.darkMode .date-picker-wrapper .injury-date-picker-wrapper input::placeholder {
+  color: #cbd5e0 !important;
+}
+
+/* Focus styles */
+:global(body.dark-mode) .injury-chart-container.darkMode .date-picker-wrapper .injury-date-picker-wrapper .react-datepicker__input-container input:focus,
+:global(body.bm-dashboard-dark) .injury-chart-container.darkMode .date-picker-wrapper .injury-date-picker-wrapper .react-datepicker__input-container input:focus,
+:global(body.dark-mode) .darkMode .injury-chart-container .date-picker-wrapper .injury-date-picker-wrapper .react-datepicker__input-container input:focus,
+:global(body.bm-dashboard-dark) .darkMode .injury-chart-container .date-picker-wrapper .injury-date-picker-wrapper .react-datepicker__input-container input:focus,
+:global(body.dark-mode) .darkMode .date-picker-wrapper .injury-date-picker-wrapper .react-datepicker__input-container input:focus,
+:global(body.bm-dashboard-dark) .darkMode .date-picker-wrapper .injury-date-picker-wrapper .react-datepicker__input-container input:focus,
+:global(body.dark-mode) .darkMode .date-picker-wrapper .react-datepicker__input-container input:focus,
+:global(body.bm-dashboard-dark) .darkMode .date-picker-wrapper .react-datepicker__input-container input:focus,
+:global(body.dark-mode) .darkMode .react-datepicker__input-container input:focus,
+:global(body.bm-dashboard-dark) .darkMode .react-datepicker__input-container input:focus,
+:global(body.dark-mode) .injury-chart-container.darkMode .date-picker-wrapper .injury-date-picker-wrapper input:focus,
+:global(body.bm-dashboard-dark) .injury-chart-container.darkMode .date-picker-wrapper .injury-date-picker-wrapper input:focus,
+:global(body.dark-mode) .darkMode .injury-chart-container .date-picker-wrapper .injury-date-picker-wrapper input:focus,
+:global(body.bm-dashboard-dark) .darkMode .injury-chart-container .date-picker-wrapper .injury-date-picker-wrapper input:focus,
+:global(body.dark-mode) .darkMode .date-picker-wrapper .injury-date-picker-wrapper input:focus,
+:global(body.bm-dashboard-dark) .darkMode .date-picker-wrapper .injury-date-picker-wrapper input:focus,
+:global(body.dark-mode) .darkMode .injury-date-picker-wrapper input:focus,
+:global(body.bm-dashboard-dark) .darkMode .injury-date-picker-wrapper input:focus,
+:global(body.dark-mode) .injury-chart-container.darkMode .date-picker-wrapper .injury-date-picker-wrapper input.react-datepicker-ignore-onclickoutside:focus,
+:global(body.bm-dashboard-dark) .injury-chart-container.darkMode .date-picker-wrapper .injury-date-picker-wrapper input.react-datepicker-ignore-onclickoutside:focus,
+:global(body.dark-mode) .darkMode .injury-chart-container .date-picker-wrapper .injury-date-picker-wrapper input.react-datepicker-ignore-onclickoutside:focus,
+:global(body.bm-dashboard-dark) .darkMode .injury-chart-container .date-picker-wrapper .injury-date-picker-wrapper input.react-datepicker-ignore-onclickoutside:focus,
+:global(body.dark-mode) .darkMode .date-picker-wrapper .injury-date-picker-wrapper input.react-datepicker-ignore-onclickoutside:focus,
+:global(body.bm-dashboard-dark) .darkMode .date-picker-wrapper .injury-date-picker-wrapper input.react-datepicker-ignore-onclickoutside:focus,
+.injury-chart-container.darkMode .date-picker-wrapper .injury-date-picker-wrapper .react-datepicker__input-container input:focus,
+.darkMode .injury-chart-container .date-picker-wrapper .injury-date-picker-wrapper .react-datepicker__input-container input:focus,
+.darkMode .date-picker-wrapper .injury-date-picker-wrapper .react-datepicker__input-container input:focus,
+.darkMode .date-picker-wrapper .react-datepicker__input-container input:focus,
+.darkMode .injury-date-picker-wrapper input:focus,
+.darkMode .date-picker-wrapper .injury-date-picker-wrapper input:focus,
+.injury-chart-container.darkMode .date-picker-wrapper .injury-date-picker-wrapper input.react-datepicker-ignore-onclickoutside:focus,
+.darkMode .injury-chart-container .date-picker-wrapper .injury-date-picker-wrapper input.react-datepicker-ignore-onclickoutside:focus,
+.darkMode .date-picker-wrapper .injury-date-picker-wrapper input.react-datepicker-ignore-onclickoutside:focus {
+  background-color: #2b3344 !important;
+  border-color: #4a6072 !important;
+  color: white !important;
+  box-shadow: 0 0 0 0.2rem rgba(74, 96, 114, 0.25) !important;
+  outline: none !important;
 }
 
 .darkMode .error {

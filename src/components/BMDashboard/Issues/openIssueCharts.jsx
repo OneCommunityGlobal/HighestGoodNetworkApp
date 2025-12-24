@@ -17,6 +17,7 @@ import {
   fetchLongestOpenIssues,
   setProjectFilter,
 } from '../../../actions/bmdashboard/issueChartActions';
+import { getSelectStyles, getChartAxisProps } from '../../../utils/bmdashboard/chartUtils';
 import styles from './issueChart.module.css';
 
 function IssueCharts() {
@@ -122,7 +123,7 @@ function IssueCharts() {
   const labelClass = `${styles.issueChartLabel} ${darkMode ? styles.issueChartLabelDark : ''}`;
 
   return (
-    <div className={containerClass}>
+    <div className={containerClass} style={darkMode ? { backgroundColor: '#253342' } : {}}>
       <h2>Longest Open Issues</h2>
       <label className={labelClass} htmlFor="start-date">
         Date Range
@@ -179,50 +180,29 @@ function IssueCharts() {
               multiValueRemove: () =>
                 darkMode ? styles.multiValueRemoveDark : styles.multiValueRemoveLight,
             }}
-            styles={{
-              option: (base, state) => ({
-                ...base,
-                backgroundColor: state.isSelected
-                  ? darkMode
-                    ? '#3a3f47'
-                    : '#dceeff'
-                  : state.isFocused
-                  ? darkMode
-                    ? '#3a3f47'
-                    : '#dceeff'
-                  : 'transparent',
-                color: darkMode ? '#cfd7e3' : 'black',
-              }),
-
-              multiValue: base => ({
-                ...base,
-                backgroundColor: darkMode ? '#3a3f47' : '#dceeff',
-                color: darkMode ? '#cfd7e3' : 'black',
-              }),
-
-              multiValueLabel: base => ({
-                ...base,
-                color: darkMode ? '#cfd7e3' : 'black',
-              }),
-
-              control: base => ({
-                ...base,
-                backgroundColor: darkMode ? '#22272e' : 'white',
-                borderColor: darkMode ? '#3d444d' : '#ccc',
-                color: darkMode ? '#cfd7e3' : 'black',
-              }),
-            }}
+            styles={getSelectStyles(darkMode)}
           />
         </div>
       </div>
 
       {/* Chart */}
-      <div className={styles.chartContainer} ref={chartContainerRef}>
+      <div
+        className={`${styles.chartContainer} ${darkMode ? styles.chartContainerDark : ''}`}
+        ref={chartContainerRef}
+      >
         {normalizedIssues.length === 0 ? (
           <p className={styles.noData}>No issues found.</p>
         ) : (
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={normalizedIssues} layout="vertical" margin={margin}>
+            <BarChart
+              data={normalizedIssues}
+              layout="vertical"
+              margin={margin}
+              style={{
+                backgroundColor: darkMode ? '#253342' : '#fff',
+                borderRadius: '8px',
+              }}
+            >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis
                 type="number"
@@ -232,13 +212,16 @@ function IssueCharts() {
                   offset: -5,
                   fill: darkMode ? '#fff' : '#000',
                 }}
-                tick={{ fill: darkMode ? '#ccc' : '#333' }}
+                {...getChartAxisProps(darkMode, {
+                  tick: { fill: darkMode ? '#fff' : '#333' },
+                })}
               />
               <YAxis
                 dataKey="issueName"
                 type="category"
                 tick={{ fontSize: 14, fontWeight: 500, fill: darkMode ? '#fff' : '#000' }}
                 width={yAxisWidth}
+                {...getChartAxisProps(darkMode)}
               />
               <Bar dataKey="durationOpen" fill="#6495ED" barSize={30}>
                 <LabelList

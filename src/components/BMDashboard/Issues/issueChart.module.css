@@ -183,6 +183,12 @@
 .chartContainer {
   width: 100%;
   height: 500px;
+  background: #fff;
+  border-radius: 8px;
+}
+
+.chartContainerDark {
+  background: #253342;
 }
 
 /* Container for entire chart section */
@@ -206,9 +212,16 @@
   width: 50vw; /* full viewport width */
   padding: 20px;
   box-sizing: border-box; /* include padding in width */
-  background: #121212;
+  background: #253342 !important;
   box-shadow: 0 4px 12px rgba(0,0,0,0.9);
-  color: #ccd1dc;
+  color: #fff;
+}
+
+/* High specificity selectors to ensure container background is not overridden */
+:global(body.dark-mode) .issueChartContainerDark,
+:global(body.bm-dashboard-dark) .issueChartContainerDark,
+.issueChartContainerDark {
+  background: #253342 !important;
 }
 
 /* Chart title */
@@ -252,7 +265,7 @@
 .dateLabelDark {
   font-size: 14px;
   font-weight: 500;
-  color: #cfd7e3;
+  color: #fff;
 }
 
 /* Date picker */
@@ -270,9 +283,9 @@
 }
 
 .dateDark {
-  background: #22272e;
-  color: #cfd7e3;
-  border-color: #3d444d;
+  background: #2b3344 !important;
+  color: #fff !important;
+  border-color: #3a506b !important;
 }
 
 /* React select */
@@ -286,40 +299,125 @@
   font-size: 18px;
 }
 
-/* DARK MODE CONTROL */
+/* DARK MODE CONTROL - High specificity selectors */
+:global(body.dark-mode) .issueChartContainerDark .select__control,
+:global(body.bm-dashboard-dark) .issueChartContainerDark .select__control,
+.issueChartContainerDark .select__control,
+:global(body.dark-mode) .issueChartContainerDark .controlDark,
+:global(body.bm-dashboard-dark) .issueChartContainerDark .controlDark,
 .controlDark {
-  background: #22272e !important;
-  border-color: #3d444d !important;
-  color: #cfd7e3 !important;
+  background: #2b3344 !important;
+  border-color: #3a506b !important;
+  color: #fff !important;
+}
+
+.issueChartContainerDark .select__control:hover,
+.issueChartContainerDark .controlDark:hover {
+  border-color: #4a6072 !important;
+}
+
+.issueChartContainerDark .select__control--is-focused,
+.issueChartContainerDark .controlDark--is-focused {
+  border-color: #4a6072 !important;
+  box-shadow: 0 0 0 1px #4a6072 !important;
 }
 
 /* VALUE TEXT */
+:global(body.dark-mode) .issueChartContainerDark .select__single-value,
+:global(body.bm-dashboard-dark) .issueChartContainerDark .select__single-value,
+.issueChartContainerDark .select__single-value,
+:global(body.dark-mode) .issueChartContainerDark .select__input-container,
+:global(body.bm-dashboard-dark) .issueChartContainerDark .select__input-container,
+.issueChartContainerDark .select__input-container,
+:global(body.dark-mode) .issueChartContainerDark .select__input-container input,
+:global(body.bm-dashboard-dark) .issueChartContainerDark .select__input-container input,
+.issueChartContainerDark .select__input-container input,
 .valueDark {
-  color: #cfd7e3 !important;
+  color: #fff !important;
 }
 
 /* MENU */
+:global(body.dark-mode) .issueChartContainerDark .select__menu,
+:global(body.bm-dashboard-dark) .issueChartContainerDark .select__menu,
+.issueChartContainerDark .select__menu,
 .menuDark {
-  background: #22272e !important;
+  background: #2b3344 !important;
+  border-color: #3a506b !important;
 }
 
-/* OPTIONS — keep only base default color */
+/* OPTIONS */
+:global(body.dark-mode) .issueChartContainerDark .select__option,
+:global(body.bm-dashboard-dark) .issueChartContainerDark .select__option,
+.issueChartContainerDark .select__option,
 .optionDark {
-  color: #cfd7e3 !important;
+  color: #fff !important;
+}
+
+.issueChartContainerDark .select__option--is-focused,
+.issueChartContainerDark .optionDark--is-focused {
+  background-color: #3a506b !important;
+  color: #fff !important;
+}
+
+.issueChartContainerDark .select__option--is-selected,
+.issueChartContainerDark .optionDark--is-selected {
+  background-color: #4a6072 !important;
+  color: #fff !important;
 }
 
 /* MULTI VALUE */
+:global(body.dark-mode) .issueChartContainerDark .select__multi-value,
+:global(body.bm-dashboard-dark) .issueChartContainerDark .select__multi-value,
+.issueChartContainerDark .select__multi-value,
 .multiValueDark {
-  background: #3a3f45 !important;
-  color: #cfd7e3 !important;
+  background: #3a506b !important;
+  color: #fff !important;
 }
 
+:global(body.dark-mode) .issueChartContainerDark .select__multi-value__label,
+:global(body.bm-dashboard-dark) .issueChartContainerDark .select__multi-value__label,
+.issueChartContainerDark .select__multi-value__label,
 .multiValueLabelDark {
-  color: #cfd7e3 !important;
+  color: #fff !important;
 }
 
+:global(body.dark-mode) .issueChartContainerDark .select__multi-value__remove,
+:global(body.bm-dashboard-dark) .issueChartContainerDark .select__multi-value__remove,
+.issueChartContainerDark .select__multi-value__remove,
 .multiValueRemoveDark {
-  color: #cfd7e3 !important;
+  color: #fff !important;
+}
+
+.issueChartContainerDark .select__multi-value__remove:hover,
+.issueChartContainerDark .multiValueRemoveDark:hover {
+  background-color: #5a7082 !important;
+  color: #fff !important;
+}
+
+/* PLACEHOLDER */
+.issueChartContainerDark .select__placeholder {
+  color: #cbd5e0 !important;
+}
+
+/* INDICATORS */
+.issueChartContainerDark .select__indicator-separator {
+  background-color: #3a506b !important;
+}
+
+.issueChartContainerDark .select__dropdown-indicator {
+  color: #fff !important;
+}
+
+.issueChartContainerDark .select__dropdown-indicator:hover {
+  color: #fff !important;
+}
+
+.issueChartContainerDark .select__clear-indicator {
+  color: #fff !important;
+}
+
+.issueChartContainerDark .select__clear-indicator:hover {
+  color: #fff !important;
 }
 
 /* ===== LIGHT MODE ===== */
@@ -374,6 +472,67 @@
   font-size: 16px;
 }
 
+.issueChartContainerDark .rowLabel {
+  color: #fff;
+}
+
+
+/* High specificity selectors for DatePicker inputs in dark mode */
+:global(body.dark-mode) .issueChartContainerDark .dateField .react-datepicker__input-container input,
+:global(body.bm-dashboard-dark) .issueChartContainerDark .dateField .react-datepicker__input-container input,
+:global(body.dark-mode) .issueChartContainerDark .dateField .react-datepicker-wrapper .react-datepicker__input-container input,
+:global(body.bm-dashboard-dark) .issueChartContainerDark .dateField .react-datepicker-wrapper .react-datepicker__input-container input,
+:global(body.dark-mode) .issueChartContainerDark .dateField input,
+:global(body.bm-dashboard-dark) .issueChartContainerDark .dateField input,
+:global(body.dark-mode) .issueChartContainerDark .dateDark,
+:global(body.bm-dashboard-dark) .issueChartContainerDark .dateDark,
+.issueChartContainerDark .dateField .react-datepicker__input-container input,
+.issueChartContainerDark .dateField .react-datepicker-wrapper .react-datepicker__input-container input,
+.issueChartContainerDark .dateField input,
+.issueChartContainerDark .dateDark {
+  background-color: #2b3344 !important;
+  color: #fff !important;
+  border: 1px solid #3a506b !important;
+}
+
+/* DatePicker input with react-datepicker-ignore-onclickoutside */
+:global(body.dark-mode) .issueChartContainerDark .dateField input.react-datepicker-ignore-onclickoutside,
+:global(body.bm-dashboard-dark) .issueChartContainerDark .dateField input.react-datepicker-ignore-onclickoutside,
+:global(body.dark-mode) .issueChartContainerDark .dateField .react-datepicker-wrapper input.react-datepicker-ignore-onclickoutside,
+:global(body.bm-dashboard-dark) .issueChartContainerDark .dateField .react-datepicker-wrapper input.react-datepicker-ignore-onclickoutside,
+.issueChartContainerDark .dateField input.react-datepicker-ignore-onclickoutside,
+.issueChartContainerDark .dateField .react-datepicker-wrapper input.react-datepicker-ignore-onclickoutside {
+  background-color: #2b3344 !important;
+  color: #fff !important;
+  border: 1px solid #3a506b !important;
+}
+
+/* DatePicker placeholder */
+:global(body.dark-mode) .issueChartContainerDark .dateField .react-datepicker__input-container input::placeholder,
+:global(body.bm-dashboard-dark) .issueChartContainerDark .dateField .react-datepicker__input-container input::placeholder,
+:global(body.dark-mode) .issueChartContainerDark .dateField input::placeholder,
+:global(body.bm-dashboard-dark) .issueChartContainerDark .dateField input::placeholder,
+.issueChartContainerDark .dateField .react-datepicker__input-container input::placeholder,
+.issueChartContainerDark .dateField input::placeholder {
+  color: #cbd5e0 !important;
+}
+
+/* DatePicker focus state */
+:global(body.dark-mode) .issueChartContainerDark .dateField .react-datepicker__input-container input:focus,
+:global(body.bm-dashboard-dark) .issueChartContainerDark .dateField .react-datepicker__input-container input:focus,
+:global(body.dark-mode) .issueChartContainerDark .dateField input:focus,
+:global(body.bm-dashboard-dark) .issueChartContainerDark .dateField input:focus,
+:global(body.dark-mode) .issueChartContainerDark .dateDark:focus,
+:global(body.bm-dashboard-dark) .issueChartContainerDark .dateDark:focus,
+.issueChartContainerDark .dateField .react-datepicker__input-container input:focus,
+.issueChartContainerDark .dateField input:focus,
+.issueChartContainerDark .dateDark:focus {
+  background-color: #2b3344 !important;
+  border-color: #4a6072 !important;
+  color: #fff !important;
+  box-shadow: 0 0 0 0.2rem rgba(74, 96, 114, 0.25) !important;
+  outline: none !important;
+}
 
 /* Responsive */
 @media (max-width: 650px) {

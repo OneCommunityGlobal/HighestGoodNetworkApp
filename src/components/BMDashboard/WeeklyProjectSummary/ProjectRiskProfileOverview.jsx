@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import {
   BarChart,
   Bar,
@@ -12,6 +12,7 @@ import {
 import Select from 'react-select';
 import httpService from '../../../services/httpService';
 import { useSelector } from 'react-redux';
+import { getSelectStyles, getChartAxisProps } from '../../../utils/bmdashboard/chartUtils';
 import styles from './ProjectRiskProfileOverview.module.css';
 
 export default function ProjectRiskProfileOverview() {
@@ -72,6 +73,8 @@ export default function ProjectRiskProfileOverview() {
     return `${selectedDates.length} selected`;
   };
 
+  const selectStyles = useMemo(() => getSelectStyles(darkMode, { minHeight: 34 }), [darkMode]);
+
   if (loading) return <div className={`${styles.loading}`}>Loading project risk profiles...</div>;
   if (error) return <div className={`${styles.error}`}>{error}</div>;
 
@@ -104,6 +107,7 @@ export default function ProjectRiskProfileOverview() {
                   closeMenuOnSelect={false}
                   hideSelectedOptions={false}
                   components={{ IndicatorSeparator: () => null, ClearIndicator: () => null }}
+                  styles={selectStyles}
                 />
               </div>
             )}
@@ -132,6 +136,7 @@ export default function ProjectRiskProfileOverview() {
                   closeMenuOnSelect={false}
                   hideSelectedOptions={false}
                   components={{ IndicatorSeparator: () => null, ClearIndicator: () => null }}
+                  styles={selectStyles}
                 />
               </div>
             )}
@@ -151,8 +156,8 @@ export default function ProjectRiskProfileOverview() {
             barGap={8}
           >
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="projectName" />
-            <YAxis />
+            <XAxis dataKey="projectName" {...getChartAxisProps(darkMode)} />
+            <YAxis {...getChartAxisProps(darkMode)} />
             <Tooltip />
             <Legend />
             <Bar dataKey="predictedCostOverrun" name="Predicted Cost Overrun (%)" fill="#4285F4" />
