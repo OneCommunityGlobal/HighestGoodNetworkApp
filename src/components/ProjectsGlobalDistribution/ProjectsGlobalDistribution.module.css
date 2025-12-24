@@ -1,0 +1,15 @@
+.filter{
+  display: flex;
+  justify-content: space-around;
+}
+
+.chartContainer {
+  display: flex;
+  justify-content: center;
+}
+
+.applyBtn{
+  padding: 1em;
+  background-color: #000;
+  color: #fff;
+}
