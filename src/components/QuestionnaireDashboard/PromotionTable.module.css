@@ -93,11 +93,11 @@
   color: #586069;
 }
 
-.container[data-theme="light"] .statusMet {
+.statusMet {
   color: #22863a;
 }
 
-.container[data-theme="light"] .statusNotMet {
+.statusNotMet {
   color: #cb2431;
 }
 
