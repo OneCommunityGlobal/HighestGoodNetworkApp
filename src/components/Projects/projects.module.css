@@ -1,0 +1,146 @@
+:global(thead) {
+  background: aliceblue;
+}
+
+:global(#new_project) {
+  margin-bottom: 10px;
+}
+
+:global(#projects__order) {
+  width: 5px;
+}
+
+:global(#projects__active) {
+  width: 10px;
+}
+
+:global(#projects__category) {
+  width: 15px;
+}
+
+:global(#projects__members) {
+  width: 15px;
+}
+
+:global(#projects__inv) {
+  width: 15px;
+}
+
+:global(#projects__wbs) {
+  width: 15px;
+}
+
+:global(#projects__delete) {
+  width: 20px;
+}
+
+/* Keep overview layout global for now (likely used in Overview.jsx) */
+/* .projects__overview--top {
+  background: gray;
+} */
+
+:global(.projects__overview--top .card) {
+  width: 200px;
+  float: left;
+  margin-right: 10px;
+  margin-bottom: 10px;
+}
+
+:global(#card_project) {
+  background: #1d62f0;
+  color: white;
+}
+
+:global(#card_active) {
+  background: #fbad4c;
+  color: white;
+}
+
+:global(.project_info_modal_ol) {
+  padding-left: 20px;
+}
+
+:global(.search-project-person) {
+  position: relative;
+  width: 100%;
+}
+
+:global(.suggestions-list) {
+  position: absolute;
+  background-color: white;
+  border: 1px solid #ccc;
+  width: 100%;
+  z-index: 1000;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+:global(.suggestion-item) {
+  padding: 8px;
+  cursor: pointer;
+}
+
+:global(.suggestion-item:hover) {
+  background-color: #f0f0f0;
+}
+
+:global(.suggestion-button) {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+:global(.suggestion-button:hover) {
+  background-color: #f0f0f0;
+}
+
+:global(tr:hover) {
+  background: #e9f6ff;
+}
+
+@media (max-width: 375px) {
+  :global(#new_project .form-control) {
+    flex: 1 1 auto;
+    width: 50%;
+  }
+}
+
+.projects__tr {
+  text-align: center;
+}
+
+.projects__order--input div {
+  margin-top: 7px;
+}
+
+.projects__active--input i {
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+.projects__name--input input {
+  border: 1px solid white;
+}
+
+.projects__name--input input:hover {
+  border: 1px solid #dee2e6;
+}
+
+.isActive i {
+  color: lawngreen;
+}
+
+.isNotActive {
+  color: #dee2e6;
+}
+
+.isDisabled {
+  opacity: 0;
+  transition: opacity 10ms;
+  display: none;
+}

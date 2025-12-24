@@ -10,7 +10,8 @@ import AddNewTitleModal from './AddNewTitleModal';
 import EditTitlesModal from './EditTitlesModal';
 import { getAllTitle } from '../../../actions/title';
 import './QuickSetupModal.css';
-import '../../Header/DarkMode.css';
+import '../../Header/index.css';
+import styles from '../../SummaryBar/SummaryBar.module.css'
 
 function QuickSetupModal(props) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -37,6 +38,7 @@ function QuickSetupModal(props) {
       .then(res => {
         setTitles(res.data);
       })
+      // eslint-disable-next-line no-console
       .catch(err => console.log(err));
   }, [editModal, refreshTrigger]);
 
@@ -48,16 +50,25 @@ function QuickSetupModal(props) {
       const sortedData = response.data.sort((a, b) => a.order - b.order);
       setTitles(sortedData);
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.error(err);
     }
   };
 
-  useEffect(() => {
-    if (props.teamsData && props.teamsData.allTeamCode) {
-      const teamCodes = props.teamsData.allTeamCode.distinctTeamCodes.map(value => ({ value }));
-      setQSTTeamCodes(teamCodes);
-    }
-  }, [stateTeamCodes, props.teamsData]);
+ useEffect(() => {
+  if (props.fetchTeamCodeAllUsers) {
+    props.fetchTeamCodeAllUsers()
+      .then((fetchedCodes) => {
+        if (fetchedCodes?.length) {
+          const formatted = fetchedCodes.map(code => ({ value: code }));
+          setQSTTeamCodes(formatted);
+        }
+      })
+      // eslint-disable-next-line no-console
+      .catch((err) => console.error('Failed to fetch team codes:', err));
+  }
+}, [stateTeamCodes.length, props.teamsData && props.teamsData.allTeamCode]);
+
 
   return (
     <div className={`container pt-3 ${darkMode ? 'bg-yinmn-blue text-light border-0' : ''}`}>
@@ -78,7 +89,7 @@ function QuickSetupModal(props) {
         ''
       )}
 
-      <div className="col text-center mt-3 flex">
+      <div className={`col ${styles['text-center']} mt-3 flex`}>
         {canAddTitle ? (
           <Button
             color="primary"

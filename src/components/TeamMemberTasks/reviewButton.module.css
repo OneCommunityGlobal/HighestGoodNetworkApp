@@ -1,0 +1,107 @@
+.reviewBtn {
+  width: auto;
+  height: auto; /* Allow the height to adjust based on content */
+  white-space: normal; /* Allow content to wrap within the button */
+   overflow: hidden; /*Hide any overflowing content  */
+  z-index: 1000;
+  position: relative;
+  /* size */
+  --bs-btn-font-size: 12px;
+  --bs-btn-padding-y: 8px;   /* 0.25rem */
+  --bs-btn-padding-x: 8px;   /* 0.5rem */
+
+  /* extras you want */
+  font-weight: 600;
+  align-self: flex-start;
+  background-color: #c9d6c6 !important;
+  border-color: #285739 !important;
+  color: #285739 !important;
+}
+
+.review-button-dropdown {
+  overflow-y: auto; /* enable scrolling if the dropdown is too long*/
+  z-index: 1000;
+  position:fixed !important;
+  margin-top: -50px;
+}
+
+.reviewBtn-dropdown-wrapper{
+  display: 'inline-flex';
+  align-items: 'center';
+  margin-top: 6;
+  font-size: 1px !important;
+  font-size: 14px !important;
+  font-weight: 500;
+  line-height: 20px;
+  padding: 6px 14px !important;
+  min-width: 140px;
+  height: auto !important;
+}
+
+.edit-link-btn {
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.25rem;
+  margin-left: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media screen and (max-width: 1307px) and (min-width: 1152px) {
+  .reviewBtn {
+    padding: 5px !important;
+    font-size: 0.75rem !important;
+  }
+  .review-button-dropdown{
+    max-height: 200px;
+  }
+  .edit-link-btn {
+    padding: 5px !important;
+    font-size: 0.65rem !important;
+  }
+}
+
+@media screen and (max-width: 1151px) and (min-width: 992px) {
+  .reviewBtn {
+    padding: 2px !important;
+    font-size: 0.65rem !important;
+  }
+  .review-button-dropdown{
+    max-height: 150px;
+    width: 100%
+  }
+  .edit-link-btn {
+    padding: 2px !important;
+    font-size: 0.65rem !important;
+  }
+}
+@media screen and (max-width: 991px) {
+  .reviewBtn {
+    padding: 2px !important;
+    font-size: 0.65rem !important;
+    width: 100%
+  }
+  .review-button-dropdown{
+    max-height: 150px;
+    width: 100%
+  }
+  .edit-link-btn {
+    padding: 2px !important;
+    font-size: 0.65rem !important;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .reviewBtn {
+    padding: 2px !important;
+    font-size: 0.65rem !important;
+  }
+  .review-button-dropdown{
+    max-height: 120px;
+    width: 100%
+  }
+  .edit-link-btn {
+    padding: 2px !important;
+    font-size: 0.65rem !important;
+  }
+}

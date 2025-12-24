@@ -14,9 +14,9 @@ import {
   DropdownMenu,
   DropdownItem,
 } from 'reactstrap';
-import DarkModeButton from 'components/Header/DarkModeButton';
-import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
-import BellNotification from 'components/Header/BellNotification';
+import DarkModeButton from '~/components/Header/DarkModeButton';
+import { fetchTaskEditSuggestions } from '~/components/TaskEditSuggestions/thunks';
+import BellNotification from '~/components/Header/BellNotification';
 import { getHeaderData } from '../../../actions/authActions';
 import { getAllRoles } from '../../../actions/role';
 import Timer from '../../Timer/Timer';
@@ -175,7 +175,7 @@ export function Header(props) {
 
   return (
     <div className="header-wrapper">
-      <Navbar className="py-3 navbar" color="dark" dark expand="xl">
+      <Navbar className="py-3 navbar" color="dark" dark expand="md">
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
 
         <div
@@ -193,149 +193,161 @@ export function Header(props) {
         {isAuthenticated && (
           <Collapse isOpen={isOpen} navbar>
             <Nav className="ml-auto nav-links" navbar>
-              {canUpdateTask && (
+              <div
+                className="d-flex justify-content-center align-items-center"
+                style={{ width: '100%' }}
+              >
+                {canUpdateTask && (
+                  <NavItem>
+                    <NavLink tag={Link} to="/taskeditsuggestions">
+                      <div className="redBackGroupHeader">
+                        <span>{props.taskEditSuggestionCount}</span>
+                      </div>
+                    </NavLink>
+                  </NavItem>
+                )}
                 <NavItem>
-                  <NavLink tag={Link} to="/taskeditsuggestions">
-                    <div className="redBackGroupHeader">
-                      <span>{props.taskEditSuggestionCount}</span>
-                    </div>
+                  <NavLink tag={Link} to="/communityportal">
+                    <span className="dashboard-text-link">{DASHBOARD}</span>
                   </NavLink>
                 </NavItem>
-              )}
-              <NavItem>
-                <NavLink tag={Link} to="/communityportal">
-                  <span className="dashboard-text-link">{DASHBOARD}</span>
-                </NavLink>
-              </NavItem>
-              <UncontrolledDropdown nav inNavbar>
-                <DropdownToggle nav caret>
-                  <span className="dashboard-text-link">{ACTIVITY}</span>
-                </DropdownToggle>
-                <DropdownMenu>
-                  <DropdownItem tag={Link} to="/communityportal/activities">
-                    {ACTIVITIES}
-                  </DropdownItem>
-                  <DropdownItem tag={Link} to="/communityportal/activities/registration">
-                    {REGISTRATION}
-                  </DropdownItem>
-                </DropdownMenu>
-              </UncontrolledDropdown>
-              <NavItem>
-                <NavLink tag={Link} to="/communityportal/calendar">
-                  <span className="dashboard-text-link">{CALENDAR}</span>
-                </NavLink>
-              </NavItem>
-              <UncontrolledDropdown nav inNavbar>
-                <DropdownToggle nav caret>
-                  <span className="dashboard-text-link">{REPORTS}</span>
-                </DropdownToggle>
-                <DropdownMenu>
-                  <DropdownItem tag={Link} to="/communityportal/reports/participation">
-                    {PARTICIPATION}
-                  </DropdownItem>
-                  <DropdownItem tag={Link} to="/communityportal/reports/resourceusage">
-                    {RESOURCE_USAGE}
-                  </DropdownItem>
-                  <DropdownItem tag={Link} to="/communityportal/reports/event/personalization">
-                    {EVENT_PERSONALIZATION}
-                  </DropdownItem>
-                </DropdownMenu>
-              </UncontrolledDropdown>
-              <NavItem className="responsive-spacing">
-                <BellNotification />
-              </NavItem>
-              {(canAccessUserManagement ||
-                canAccessBadgeManagement ||
-                canAccessProjects ||
-                canAccessTeams ||
-                canAccessPopups ||
-                canAccessSendEmails ||
-                canAccessPermissionsManagement) && (
-                <UncontrolledDropdown nav inNavbar className="responsive-spacing">
+                <UncontrolledDropdown nav inNavbar>
                   <DropdownToggle nav caret>
-                    <span className="dashboard-text-link">{OTHER_LINKS}</span>
+                    <span className="dashboard-text-link">{ACTIVITY}</span>
                   </DropdownToggle>
-                  <DropdownMenu className={darkMode ? 'bg-yinmn-blue' : ''}>
-                    {canAccessUserManagement ? (
-                      <DropdownItem tag={Link} to="/usermanagement" className={fontColor}>
-                        {USER_MANAGEMENT}
-                      </DropdownItem>
-                    ) : null}
-                    {canAccessBadgeManagement ? (
-                      <DropdownItem tag={Link} to="/badgemanagement" className={fontColor}>
-                        {BADGE_MANAGEMENT}
-                      </DropdownItem>
-                    ) : null}
-                    {canAccessProjects && (
-                      <DropdownItem tag={Link} to="/projects" className={fontColor}>
-                        {PROJECTS}
-                      </DropdownItem>
-                    )}
-                    {canAccessTeams && (
-                      <DropdownItem tag={Link} to="/teams" className={fontColor}>
-                        {TEAMS}
-                      </DropdownItem>
-                    )}
-                    {canAccessSendEmails && (
-                      <DropdownItem tag={Link} to="/announcements" className={fontColor}>
-                        {SEND_EMAILS}
-                      </DropdownItem>
-                    )}
-                    {canAccessPermissionsManagement && (
-                      <>
-                        <DropdownItem divider />
-                        <DropdownItem tag={Link} to="/permissionsmanagement" className={fontColor}>
-                          {PERMISSIONS_MANAGEMENT}
-                        </DropdownItem>
-                      </>
-                    )}
+                  <DropdownMenu>
+                    <DropdownItem tag={Link} to="/communityportal/activities">
+                      {ACTIVITIES}
+                    </DropdownItem>
+                    <DropdownItem tag={Link} to="/communityportal/activities/registration">
+                      {REGISTRATION}
+                    </DropdownItem>
                   </DropdownMenu>
                 </UncontrolledDropdown>
-              )}
-              <NavItem>
-                <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
-                  <img
-                    src={`${profilePic || '/pfp-default-header.png'}`}
-                    alt=""
-                    style={{ maxWidth: '60px', maxHeight: '60px' }}
-                    className="dashboardimg"
-                  />
-                </NavLink>
-              </NavItem>
-              <UncontrolledDropdown nav>
-                <DropdownToggle nav caret>
-                  <span className="dashboard-text-link">
-                    {WELCOME}, {firstName}
-                  </span>
-                </DropdownToggle>
-                <DropdownMenu className={darkMode ? 'bg-yinmn-blue' : ''}>
-                  <DropdownItem header>Hello {firstName}</DropdownItem>
-                  <DropdownItem divider />
-                  <DropdownItem
-                    tag={Link}
-                    to={`/userprofile/${user.userid}`}
-                    className={darkMode ? 'text-light' : ''}
-                  >
-                    {VIEW_PROFILE}
-                  </DropdownItem>
-                  {!cantUpdateDevAdminDetails(props.userProfile.email, props.userProfile.email) && (
+                <NavItem>
+                  <NavLink tag={Link} to="/communityportal/calendar">
+                    <span className="dashboard-text-link">{CALENDAR}</span>
+                  </NavLink>
+                </NavItem>
+                <UncontrolledDropdown nav inNavbar>
+                  <DropdownToggle nav caret>
+                    <span className="dashboard-text-link">{REPORTS}</span>
+                  </DropdownToggle>
+                  <DropdownMenu>
+                    <DropdownItem tag={Link} to="/communityportal/reports/participation">
+                      {PARTICIPATION}
+                    </DropdownItem>
+                    <DropdownItem tag={Link} to="/communityportal/reports/resourceusage">
+                      {RESOURCE_USAGE}
+                    </DropdownItem>
+                    <DropdownItem tag={Link} to="/communityportal/reports/event/personalization">
+                      {EVENT_PERSONALIZATION}
+                    </DropdownItem>
+                  </DropdownMenu>
+                </UncontrolledDropdown>
+                <NavItem className="responsive-spacing">
+                  <BellNotification />
+                </NavItem>
+                {(canAccessUserManagement ||
+                  canAccessBadgeManagement ||
+                  canAccessProjects ||
+                  canAccessTeams ||
+                  canAccessPopups ||
+                  canAccessSendEmails ||
+                  canAccessPermissionsManagement) && (
+                  <UncontrolledDropdown nav inNavbar className="responsive-spacing">
+                    <DropdownToggle nav caret>
+                      <span className="dashboard-text-link">{OTHER_LINKS}</span>
+                    </DropdownToggle>
+                    <DropdownMenu className={darkMode ? 'bg-yinmn-blue' : ''}>
+                      {canAccessUserManagement ? (
+                        <DropdownItem tag={Link} to="/usermanagement" className={fontColor}>
+                          {USER_MANAGEMENT}
+                        </DropdownItem>
+                      ) : null}
+                      {canAccessBadgeManagement ? (
+                        <DropdownItem tag={Link} to="/badgemanagement" className={fontColor}>
+                          {BADGE_MANAGEMENT}
+                        </DropdownItem>
+                      ) : null}
+                      {canAccessProjects && (
+                        <DropdownItem tag={Link} to="/projects" className={fontColor}>
+                          {PROJECTS}
+                        </DropdownItem>
+                      )}
+                      {canAccessTeams && (
+                        <DropdownItem tag={Link} to="/teams" className={fontColor}>
+                          {TEAMS}
+                        </DropdownItem>
+                      )}
+                      {canAccessSendEmails && (
+                        <DropdownItem tag={Link} to="/announcements" className={fontColor}>
+                          {SEND_EMAILS}
+                        </DropdownItem>
+                      )}
+                      {canAccessPermissionsManagement && (
+                        <>
+                          <DropdownItem divider />
+                          <DropdownItem
+                            tag={Link}
+                            to="/permissionsmanagement"
+                            className={fontColor}
+                          >
+                            {PERMISSIONS_MANAGEMENT}
+                          </DropdownItem>
+                        </>
+                      )}
+                    </DropdownMenu>
+                  </UncontrolledDropdown>
+                )}
+                <NavItem>
+                  <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
+                    <img
+                      src={`${profilePic || '/pfp-default-header.png'}`}
+                      alt=""
+                      style={{ maxWidth: '60px', maxHeight: '60px' }}
+                      className="dashboardimg"
+                    />
+                  </NavLink>
+                </NavItem>
+                <UncontrolledDropdown nav>
+                  <DropdownToggle nav caret>
+                    <span className="dashboard-text-link">
+                      {WELCOME}, {firstName}
+                    </span>
+                  </DropdownToggle>
+                  <DropdownMenu className={darkMode ? 'bg-yinmn-blue' : ''}>
+                    <DropdownItem header>Hello {firstName}</DropdownItem>
+                    <DropdownItem divider />
                     <DropdownItem
                       tag={Link}
-                      to={`/updatepassword/${user.userid}`}
+                      to={`/userprofile/${user.userid}`}
                       className={darkMode ? 'text-light' : ''}
                     >
-                      {UPDATE_PASSWORD}
+                      {VIEW_PROFILE}
                     </DropdownItem>
-                  )}
-                  <DropdownItem className={darkMode ? 'text-light' : ''}>
-                    <DarkModeButton />
-                  </DropdownItem>
-                  <DropdownItem divider />
-                  <DropdownItem onClick={openModal} className={darkMode ? 'text-light' : ''}>
-                    {LOGOUT}
-                  </DropdownItem>
-                </DropdownMenu>
-              </UncontrolledDropdown>
+                    {!cantUpdateDevAdminDetails(
+                      props.userProfile.email,
+                      props.userProfile.email,
+                    ) && (
+                      <DropdownItem
+                        tag={Link}
+                        to={`/updatepassword/${user.userid}`}
+                        className={darkMode ? 'text-light' : ''}
+                      >
+                        {UPDATE_PASSWORD}
+                      </DropdownItem>
+                    )}
+                    <div style={{ padding: '0 1rem' }}>
+                      <DarkModeButton />
+                    </div>
+                    <DropdownItem divider />
+                    <DropdownItem onClick={openModal} className={darkMode ? 'text-light' : ''}>
+                      {LOGOUT}
+                    </DropdownItem>
+                  </DropdownMenu>
+                </UncontrolledDropdown>
+              </div>
             </Nav>
           </Collapse>
         )}

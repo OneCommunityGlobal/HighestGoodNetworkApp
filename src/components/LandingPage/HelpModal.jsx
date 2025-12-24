@@ -1,11 +1,10 @@
-// eslint-disable-next-line no-unused-vars
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Modal, Button } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import axios from 'axios';
-import { ENDPOINTS } from '../../utils/URL';
-import './HelpModal.css';
+import { ENDPOINTS } from '~/utils/URL';
+import styles from './HelpModal.module.css';
 
 function HelpModal({ show, onHide, auth }) {
   const [selectedOption, setSelectedOption] = useState('');
@@ -14,6 +13,7 @@ function HelpModal({ show, onHide, auth }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Fetch Help Categories
   useEffect(() => {
     const fetchHelpCategories = async () => {
       try {
@@ -25,7 +25,6 @@ function HelpModal({ show, onHide, auth }) {
         setLoading(false);
       }
     };
-
     fetchHelpCategories();
   }, []);
 
@@ -52,34 +51,30 @@ function HelpModal({ show, onHide, auth }) {
     return (
       <>
         <div
-          className="select-button"
+          className={styles.selectButton}
           onClick={() => setIsOpen(!isOpen)}
           role="button"
           tabIndex={0}
           onKeyDown={e => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              setIsOpen(!isOpen);
-            }
+            if (e.key === 'Enter' || e.key === ' ') setIsOpen(!isOpen);
           }}
         >
-          <span className={`select-button-text ${selectedOption ? 'selected' : ''}`}>
+          <span className={`${styles.selectButtonText} ${selectedOption ? styles.selected : ''}`}>
             {selectedOption || 'Select an option'}
           </span>
-          <span className={`select-button-arrow ${isOpen ? 'open' : ''}`} />
+          <span className={`${styles.selectButtonArrow} ${isOpen ? styles.open : ''}`} />
         </div>
         {isOpen && (
-          <div className="select-options" role="listbox">
+          <div className={styles.selectOptions} role="listbox">
             {options.map(option => (
               <div
                 key={option}
-                className="select-option"
+                className={styles.selectOption}
                 onClick={() => handleSelect(option)}
                 role="option"
                 tabIndex={0}
                 onKeyDown={e => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    handleSelect(option);
-                  }
+                  if (e.key === 'Enter' || e.key === ' ') handleSelect(option);
                 }}
                 aria-selected={selectedOption === option}
               >
@@ -92,34 +87,58 @@ function HelpModal({ show, onHide, auth }) {
     );
   };
 
-  const isOwner = auth.user && auth.user.role === 'Owner';
+  // ---- Access Logic ----
+  const user = auth?.user || {};
+  const role = user.role?.trim().toLowerCase() || '';
 
+  const allowedRoles = ['owner', 'administrator'];
+
+  // User must be in Software Development Team OR have one of the allowed roles
+  const isSoftwareDevMember =
+    user.teams?.some(team => team.teamName?.trim().toLowerCase() === 'software development team') ||
+    allowedRoles.includes(role);
+
+  console.log('User Role:', role);
+  console.log('Teams:', user.teams);
+  console.log('isSoftwareDevMember:', isSoftwareDevMember);
+
+  // ---- Modal Layout ----
   return (
-    <Modal show={show} onHide={onHide} className="help-modal" centered>
+    <Modal show={show} onHide={onHide} className={styles.helpModal} centered>
       <Modal.Header closeButton>
         <Modal.Title>What do you need help with?</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <div className="select-container">{renderContent()}</div>
-        {!isOwner && (
+        <div className={styles.selectContainer}>{renderContent()}</div>
+
+        {!isSoftwareDevMember && (
           <div className="alert alert-warning mt-3">
             Only members from the software development team can seek help
           </div>
         )}
-        <p className="text-muted">
+
+        <p className={styles.textMuted}>
           If you have any suggestions please click
           <button
             type="button"
             className="btn btn-link p-0 border-0 align-baseline"
             onClick={handleSuggestionsClick}
-            style={{ color: '#0066CC', textDecoration: 'none', marginLeft: '4px' }}
+            style={{
+              color: '#0066CC',
+              textDecoration: 'none',
+              marginLeft: '4px',
+            }}
           >
             here
           </button>
         </p>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="primary" onClick={handleSubmit} disabled={!selectedOption || !isOwner}>
+        <Button
+          variant="primary"
+          onClick={handleSubmit}
+          disabled={!selectedOption || !isSoftwareDevMember}
+        >
           Submit
         </Button>
       </Modal.Footer>
@@ -127,12 +146,18 @@ function HelpModal({ show, onHide, auth }) {
   );
 }
 
+// ---- PropTypes ----
 HelpModal.propTypes = {
   show: PropTypes.bool.isRequired,
   onHide: PropTypes.func.isRequired,
   auth: PropTypes.shape({
     user: PropTypes.shape({
       role: PropTypes.string,
+      teams: PropTypes.arrayOf(
+        PropTypes.shape({
+          teamName: PropTypes.string,
+        }),
+      ),
     }),
   }).isRequired,
 };
