@@ -1,0 +1,65 @@
+.container {
+  width: 100%;
+  margin-top: 20px;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  position: relative;
+}
+
+.title {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 26px;
+  font-weight: 600;
+}
+
+.filterRow {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.applyBtn {
+  background: #4285f4;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+.chartWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 60px;
+  position: relative;
+}
+
+.centerText {
+  position: absolute;
+  text-align: center;
+  font-size: 18px;
+  transform: translateY(-10px);
+}
+
+.summaryBox {
+  display: flex;
+  flex-direction: column;
+  font-size: 18px;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.label {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.value {
+  font-size: 22px;
+  color: #d9534f;
+  margin-bottom: 10px;
+}
