@@ -22,7 +22,7 @@ import {
   CLEAR_FILTERS,
   SET_SEARCH_QUERY,
   SET_VIEW_MODE,
-} from '~/constants/educationPortal/browselessonPlanConstant';
+} from '~/constants/educationPortal/browseLPConstant';
 import { ENDPOINTS } from '~/utils/URL';
 
 const getAuthHeaders = () => {

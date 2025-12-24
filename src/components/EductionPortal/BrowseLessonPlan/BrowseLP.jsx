@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import styles from './BrowseLessonPlan.module.css';
+import styles from './BrowseLP.module.css';
 import {
   fetchLessonPlans,
   saveLessonPlan,
