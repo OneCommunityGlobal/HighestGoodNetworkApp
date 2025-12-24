@@ -17,6 +17,7 @@ import {
   fetchLongestOpenIssues,
   setProjectFilter,
 } from '../../../actions/bmdashboard/issueChartActions';
+import { getSelectStyles, getChartAxisProps } from '../../../utils/bmdashboard/chartUtils';
 import styles from './issueChart.module.css';
 
 function IssueCharts() {
@@ -179,105 +180,7 @@ function IssueCharts() {
               multiValueRemove: () =>
                 darkMode ? styles.multiValueRemoveDark : styles.multiValueRemoveLight,
             }}
-            styles={{
-              control: base => ({
-                ...base,
-                backgroundColor: darkMode ? '#2b3344' : '#fff',
-                borderColor: darkMode ? '#3a506b' : '#ccc',
-                color: darkMode ? '#fff' : '#000',
-                minHeight: 38,
-                boxShadow: 'none',
-                borderRadius: 4,
-                '&:hover': {
-                  borderColor: darkMode ? '#4a6072' : '#999',
-                },
-              }),
-              menu: base => ({
-                ...base,
-                backgroundColor: darkMode ? '#2b3344' : '#fff',
-                borderColor: darkMode ? '#3a506b' : '#ccc',
-                zIndex: 9999,
-              }),
-              menuList: base => ({
-                ...base,
-                backgroundColor: darkMode ? '#2b3344' : '#fff',
-                color: darkMode ? '#fff' : '#000',
-                padding: 0,
-              }),
-              option: (base, state) => {
-                let backgroundColor;
-                if (state.isSelected) {
-                  backgroundColor = darkMode ? '#4a6072' : '#0d55b3';
-                } else if (state.isFocused) {
-                  backgroundColor = darkMode ? '#3a506b' : '#deebff';
-                } else {
-                  backgroundColor = darkMode ? '#2b3344' : '#fff';
-                }
-
-                const textColor = state.isSelected || darkMode ? '#fff' : '#000';
-
-                return {
-                  ...base,
-                  backgroundColor,
-                  color: textColor,
-                  cursor: 'pointer',
-                  '&:active': {
-                    backgroundColor: darkMode ? '#4a6072' : '#0d55b3',
-                  },
-                };
-              },
-              multiValue: base => ({
-                ...base,
-                backgroundColor: darkMode ? '#3a506b' : '#e2e7ee',
-                borderRadius: 4,
-              }),
-              multiValueLabel: base => ({
-                ...base,
-                color: darkMode ? '#fff' : '#333',
-                fontSize: 12,
-                padding: '2px 6px',
-              }),
-              multiValueRemove: base => ({
-                ...base,
-                color: darkMode ? '#fff' : '#333',
-                '&:hover': {
-                  backgroundColor: darkMode ? '#5a7082' : '#ffbdad',
-                  color: '#fff',
-                },
-                borderRadius: 4,
-                padding: 2,
-              }),
-              singleValue: base => ({
-                ...base,
-                color: darkMode ? '#fff' : base.color,
-              }),
-              input: base => ({
-                ...base,
-                color: darkMode ? '#fff' : base.color,
-              }),
-              placeholder: base => ({
-                ...base,
-                color: darkMode ? '#cbd5e0' : '#999',
-              }),
-              indicatorSeparator: base => ({
-                ...base,
-                backgroundColor: darkMode ? '#3a506b' : '#ccc',
-              }),
-              dropdownIndicator: base => ({
-                ...base,
-                color: darkMode ? '#fff' : '#666',
-                '&:hover': {
-                  color: darkMode ? '#fff' : '#333',
-                },
-              }),
-              clearIndicator: base => ({
-                ...base,
-                color: darkMode ? '#fff' : '#666',
-                '&:hover': {
-                  color: darkMode ? '#fff' : '#333',
-                },
-              }),
-            }}
+            styles={getSelectStyles(darkMode)}
           />
         </div>
       </div>
@@ -309,17 +212,16 @@ function IssueCharts() {
                   offset: -5,
                   fill: darkMode ? '#fff' : '#000',
                 }}
-                tick={{ fill: darkMode ? '#fff' : '#333' }}
-                axisLine={{ stroke: darkMode ? '#888' : '#000' }}
-                tickLine={{ stroke: darkMode ? '#888' : '#000' }}
+                {...getChartAxisProps(darkMode, {
+                  tick: { fill: darkMode ? '#fff' : '#333' },
+                })}
               />
               <YAxis
                 dataKey="issueName"
                 type="category"
                 tick={{ fontSize: 14, fontWeight: 500, fill: darkMode ? '#fff' : '#000' }}
                 width={yAxisWidth}
-                axisLine={{ stroke: darkMode ? '#888' : '#000' }}
-                tickLine={{ stroke: darkMode ? '#888' : '#000' }}
+                {...getChartAxisProps(darkMode)}
               />
               <Bar dataKey="durationOpen" fill="#6495ED" barSize={30}>
                 <LabelList

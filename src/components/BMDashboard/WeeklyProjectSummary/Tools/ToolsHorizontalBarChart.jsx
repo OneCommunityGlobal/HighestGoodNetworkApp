@@ -5,17 +5,14 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import axios from 'axios';
 import { ENDPOINTS } from '../../../../utils/URL';
+import {
+  toYMD,
+  getSelectStyles,
+  getDatePickerStyles,
+} from '../../../../utils/bmdashboard/chartUtils';
 import styles from './ToolsHorizontalBarChart.module.css';
 
 // No mock data - use real backend data only
-
-// YYYY-MM-DD (no tz shift)
-const toYMD = d =>
-  d instanceof Date && !isNaN(d)
-    ? `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(
-        d.getDate(),
-      ).padStart(2, '0')}`
-    : '';
 
 // Custom tooltip component
 function CustomTooltip({ active, payload, label }) {
@@ -199,68 +196,38 @@ function ToolsHorizontalBarChart({ darkMode }) {
     );
   }
 
-  const darkSelectStyles = {
-    control: base => ({
-      ...base,
-      backgroundColor: '#2c3344',
-      borderColor: '#364156',
-      minHeight: '32px',
-      fontSize: '12px',
-    }),
-    menu: base => ({
-      ...base,
-      backgroundColor: '#2c3344',
-      fontSize: '12px',
-    }),
-    option: (base, state) => ({
-      ...base,
-      backgroundColor: state.isFocused ? '#364156' : '#2c3344',
-      color: '#e0e0e0',
-      fontSize: '12px',
-    }),
-    multiValue: base => ({
-      ...base,
-      backgroundColor: '#364156',
-    }),
-    multiValueLabel: base => ({
-      ...base,
-      color: '#e0e0e0',
-      fontSize: '12px',
-    }),
-    placeholder: base => ({
-      ...base,
-      color: '#aaaaaa',
-      fontSize: '12px',
-    }),
-  };
-
-  const lightSelectStyles = {
-    control: base => ({
-      ...base,
-      minHeight: '32px',
-      fontSize: '12px',
-    }),
-    menu: base => ({
-      ...base,
-      fontSize: '12px',
-    }),
-    option: base => ({
-      ...base,
-      fontSize: '12px',
-    }),
-    multiValue: base => ({
-      ...base,
-      backgroundColor: '#e6e6e6',
-    }),
-    multiValueLabel: base => ({
-      ...base,
-      fontSize: '12px',
-    }),
-    placeholder: base => ({
-      ...base,
-      fontSize: '12px',
-    }),
-  };
+  const selectStyles = getSelectStyles(darkMode, {
+    minHeight: 32,
+    fontSize: 12,
+    controlOverrides: darkMode
+      ? {
+          backgroundColor: '#2c3344',
+          borderColor: '#364156',
+        }
+      : {},
+    optionOverrides: darkMode
+      ? {
+          color: '#e0e0e0',
+        }
+      : {},
+    multiValueOverrides: darkMode
+      ? {
+          backgroundColor: '#364156',
+        }
+      : {
+          backgroundColor: '#e6e6e6',
+        },
+    multiValueLabelOverrides: darkMode
+      ? {
+          color: '#e0e0e0',
+        }
+      : {},
+    placeholderOverrides: darkMode
+      ? {
+          color: '#aaaaaa',
+        }
+      : {},
+  });
 
   return (
     <div
@@ -286,7 +253,7 @@ function ToolsHorizontalBarChart({ darkMode }) {
             isClearable={true}
             isDisabled={allTools.length === 0}
             closeMenuOnSelect={false}
-            styles={darkMode ? darkSelectStyles : lightSelectStyles}
+            styles={selectStyles}
           />
         </div>
 
@@ -302,62 +269,7 @@ function ToolsHorizontalBarChart({ darkMode }) {
             placeholder="Select a project"
             isClearable={false}
             isDisabled={allProjects.length === 0}
-            styles={
-              darkMode
-                ? {
-                    control: baseStyles => ({
-                      ...baseStyles,
-                      backgroundColor: '#2c3344',
-                      borderColor: '#364156',
-                      minHeight: '32px',
-                      fontSize: '12px',
-                    }),
-                    menu: baseStyles => ({
-                      ...baseStyles,
-                      backgroundColor: '#2c3344',
-                      fontSize: '12px',
-                    }),
-                    option: (baseStyles, state) => ({
-                      ...baseStyles,
-                      backgroundColor: state.isFocused ? '#364156' : '#2c3344',
-                      color: '#e0e0e0',
-                      fontSize: '12px',
-                    }),
-                    singleValue: baseStyles => ({
-                      ...baseStyles,
-                      color: '#e0e0e0',
-                      fontSize: '12px',
-                    }),
-                    placeholder: baseStyles => ({
-                      ...baseStyles,
-                      color: '#aaaaaa',
-                      fontSize: '12px',
-                    }),
-                  }
-                : {
-                    control: baseStyles => ({
-                      ...baseStyles,
-                      minHeight: '32px',
-                      fontSize: '12px',
-                    }),
-                    menu: baseStyles => ({
-                      ...baseStyles,
-                      fontSize: '12px',
-                    }),
-                    option: baseStyles => ({
-                      ...baseStyles,
-                      fontSize: '12px',
-                    }),
-                    singleValue: baseStyles => ({
-                      ...baseStyles,
-                      fontSize: '12px',
-                    }),
-                    placeholder: baseStyles => ({
-                      ...baseStyles,
-                      fontSize: '12px',
-                    }),
-                  }
-            }
+            styles={selectStyles}
           />
         </div>
 
@@ -375,15 +287,7 @@ function ToolsHorizontalBarChart({ darkMode }) {
               placeholderText="Start date"
               className={styles['tools-date-picker']}
               wrapperClassName={styles['tools-date-picker-wrapper']}
-              style={{
-                backgroundColor: darkMode ? '#2b3344' : '#fff',
-                color: darkMode ? '#fff' : '#000',
-                border: `1px solid ${darkMode ? '#3a506b' : '#ccc'}`,
-                borderRadius: '4px',
-                padding: '0.5rem',
-                fontSize: '14px',
-                width: '100%',
-              }}
+              style={getDatePickerStyles(darkMode)}
             />
           </div>
         </div>
@@ -403,15 +307,7 @@ function ToolsHorizontalBarChart({ darkMode }) {
                 placeholderText="End date"
                 className={styles['tools-date-picker']}
                 wrapperClassName={styles['tools-date-picker-wrapper']}
-                style={{
-                  backgroundColor: darkMode ? '#2b3344' : '#fff',
-                  color: darkMode ? '#fff' : '#000',
-                  border: `1px solid ${darkMode ? '#3a506b' : '#ccc'}`,
-                  borderRadius: '4px',
-                  padding: '0.5rem',
-                  fontSize: '14px',
-                  width: '100%',
-                }}
+                style={getDatePickerStyles(darkMode)}
               />
             </div>
             <button
