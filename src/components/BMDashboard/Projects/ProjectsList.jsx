@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Row } from 'reactstrap';
+import { Row, Col } from 'reactstrap';
 import Select from 'react-select';
 import ProjectSummary from './ProjectSummary';
 
@@ -101,27 +101,32 @@ function ProjectsList() {
   };
 
   return (
-    <Row className={`ml-0 text-center mt-5 ${darkMode ? 'projects-list-dark' : ''}`}>
-      <Select
-        isMulti
-        options={projectOptions}
-        onChange={handleSelectChange}
-        className="mb-3"
-        placeholder="Select Projects"
-        styles={selectStyles}
-        classNamePrefix="react-select"
-      />
-      {filteredProjects.length ? (
-        <ul className="projects-list">
-          {filteredProjects.map(project => (
-            <li className="project-summary" key={project._id}>
-              <ProjectSummary project={project} />
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p className={darkMode ? 'text-light' : ''}>No projects data</p>
-      )}
+    <Row
+      className={`justify-content-center text-center mt-5 ${darkMode ? 'projects-list-dark' : ''}`}
+    >
+      <Col md="8" lg="6" className="mb-3">
+        <Select
+          isMulti
+          options={projectOptions}
+          onChange={handleSelectChange}
+          placeholder="Select Projects"
+          styles={selectStyles}
+          classNamePrefix="react-select"
+        />
+      </Col>
+      <Col xs="12">
+        {filteredProjects.length ? (
+          <ul className="projects-list">
+            {filteredProjects.map(project => (
+              <li className="project-summary" key={project._id}>
+                <ProjectSummary project={project} />
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className={darkMode ? 'text-light' : ''}>No projects data</p>
+        )}
+      </Col>
     </Row>
   );
 }
