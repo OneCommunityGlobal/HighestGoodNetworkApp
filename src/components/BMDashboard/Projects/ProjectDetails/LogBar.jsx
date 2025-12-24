@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Button } from 'reactstrap';
 import { Link } from 'react-router-dom';
+import styles from './ProjectDetails.module.css';
 // button styles for each section
 const buttonStyles = {
   dailyLogging: 'green',
@@ -31,9 +32,9 @@ function LogBar(props) {
   };
 
   return (
-    <div className="log-bar">
+    <div className={styles['log-bar']}>
       {Object.keys(buttonStyles).map(section => (
-        <div key={uuidv4()} className="log-bar__section">
+        <div key={uuidv4()} className={styles['log-bar__section']}>
           <h2>
             {(() => {
               switch (section) {
@@ -46,18 +47,24 @@ function LogBar(props) {
               }
             })()}
           </h2>
-          <ul className="log-bar__btn-group">
+          <ul className={styles['log-bar__btn-group']}>
             {buttonLabels[section].name.map((label, index) => (
               <li key={uuidv4()}>
                 {label !== 'Log Issue' ? (
                   <Link to={buttonLabels[section].url[index]}>
-                    <Button type="button" className={`button button--${buttonStyles[section]}`}>
+                    <Button
+                      type="button"
+                      className={`${styles.button} ${styles[`button--${buttonStyles[section]}`]}`}
+                    >
                       {label}
                     </Button>
                   </Link>
                 ) : (
                   <Link to={`/bmdashboard/issues/add/${projectId}`}>
-                    <Button type="button" className="button button--maroon">
+                    <Button
+                      type="button"
+                      className={`${styles.button} ${styles['button--maroon']}`}
+                    >
                       Log Issue
                     </Button>
                   </Link>

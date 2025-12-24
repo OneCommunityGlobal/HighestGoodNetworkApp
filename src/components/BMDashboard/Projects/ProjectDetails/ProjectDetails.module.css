@@ -53,9 +53,9 @@ background-color: rgb(1, 1, 38);
   margin-top: 1em;
 }
 
-.log-bar__section h2,
-.card.cards-container h2,
-.project-log h2 {
+.log-bar__section :global(h2),
+.cards-container :global(h2),
+.project-log :global(h2) {
   font-size: 1em;
   font-weight: bold;
 }
@@ -64,32 +64,32 @@ background-color: rgb(1, 1, 38);
   list-style-type: none;
 }
 
-.button.btn {
+.button {
   border: 0;
   border-radius: 10px;
   margin: 0.1em;
   width: 100%;
 }
 
-.button.btn:hover {
+.button:hover {
   outline: auto;
   filter: brightness(130%);
 }
 
 /* buttons custom colors */
-.button.btn.button--green {
+.button--green {
   background-color: #015d4a;
 }
 
-.button.btn.button--blue {
+.button--blue {
   background-color: #0f6386;
 }
 
-.button.btn.button--indigo {
+.button--indigo {
   background-color: #203844;
 }
 
-.button.btn.button--maroon {
+.button--maroon {
   background-color: #980101;
   margin-top: 2em;
 }
@@ -106,11 +106,11 @@ background-color: rgb(1, 1, 38);
     justify-content: center;
   }
 
-  .button.btn.btn-secondary {
+  .button {
     width: auto;
   }
 
-  .button.btn.btn-secondary.button--maroon {
+  .button.button--maroon {
     margin-top: auto;
   }
 }
@@ -129,17 +129,17 @@ background-color: rgb(1, 1, 38);
     flex: auto;
   }
 
-  .button.btn.btn-secondary {
+  .button {
     width: auto;
   }
 
-  .button.btn.btn-secondary.button--maroon {
+  .button.button--maroon {
     margin-left: 2em;
   }
 }
 
 /* styling for containers with cards */
-.card.cards-container {
+.cards-container {
   align-items: center;
   margin: 1em 2em;
   padding: 1em;
@@ -191,7 +191,7 @@ background-color: rgb(1, 1, 38);
   padding: 0.5em;
 }
 
-.single-card__body h3 {
+.single-card__body :global(h3) {
   font-size: 1em;
   margin-bottom: -0.2em;
 }
@@ -243,17 +243,17 @@ background-color: rgb(1, 1, 38);
   white-space: nowrap;
 }
 
-.project-log thead {
+.project-log :global(thead) {
   background-color: transparent;
 }
 
 @media (max-width: 768px) {
-  .project-log td,
-  .project-log th {
+  .project-log :global(td),
+  .project-log :global(th) {
     font-size: 0.6em;
   }
 }
 
-ul.log-bar__btn-group {
+.log-bar__btn-group {
   padding: 0px;
 }

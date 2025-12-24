@@ -1,7 +1,8 @@
-import { Card, Table } from 'reactstrap';
+import { Card, Table, Button } from 'reactstrap';
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons';
+import styles from './ProjectDetails.module.css';
 
 const DummyData = [
   {
@@ -78,6 +79,21 @@ class ProjectLog extends React.Component {
   };
   handleTodaysHrsSearchText = e => {
     this.setState({ todaysHrsSearchText: e.target.value });
+  };
+
+  handleClearFilters = () => {
+    this.setState({
+      idSearchText: '',
+      firstNameSearchText: '',
+      lastNameSearchText: '',
+      roleSearchText: '',
+      teamSearchText: '',
+      currentTaskSearchText: '',
+      totalHrsSearchText: '',
+      todaysHrsSearchText: '',
+      sortColumn: null,
+      sortDirection: 'asc',
+    });
   };
 
   handleSort = column => {
@@ -196,7 +212,18 @@ class ProjectLog extends React.Component {
     return filtered;
   };
   render() {
-    const tableRows = this.filteredData().map(person => (
+    const filteredData = this.filteredData();
+    const hasActiveFilters =
+      this.state.idSearchText ||
+      this.state.firstNameSearchText ||
+      this.state.lastNameSearchText ||
+      this.state.roleSearchText ||
+      this.state.teamSearchText ||
+      this.state.currentTaskSearchText ||
+      this.state.totalHrsSearchText ||
+      this.state.todaysHrsSearchText;
+
+    const tableRows = filteredData.map(person => (
       <tr key={person.id}>
         <th scope="row">{person.id}</th>
         <td>{person.firstName}</td>
@@ -210,8 +237,22 @@ class ProjectLog extends React.Component {
     ));
 
     return (
-      <Card className="project-log">
-        <h2>Members working on site today</h2>
+      <Card className={styles['project-log']}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '1rem',
+          }}
+        >
+          <h2 style={{ margin: 0 }}>Members working on site today</h2>
+          {hasActiveFilters && (
+            <Button color="secondary" size="sm" onClick={this.handleClearFilters}>
+              Clear Filters
+            </Button>
+          )}
+        </div>
         <Table hover responsive striped>
           <thead>
             <tr>
@@ -347,7 +388,19 @@ class ProjectLog extends React.Component {
               </td>
             </tr>
           </thead>
-          <tbody>{tableRows}</tbody>
+          <tbody>
+            {tableRows.length > 0 ? (
+              tableRows
+            ) : (
+              <tr>
+                <td colSpan="8" style={{ textAlign: 'center', padding: '2rem' }}>
+                  <p style={{ margin: 0, color: '#6c757d' }}>
+                    No members match the current filters.
+                  </p>
+                </td>
+              </tr>
+            )}
+          </tbody>
         </Table>
       </Card>
     );
