@@ -5,8 +5,8 @@ export default function SelectForm({
   items,
   setSelectedProject,
   setSelectedItem,
-  setSelectedCondition,
-  setSelectedToolStatus,
+  selectedProject, // optional (controlled)
+  selectedItem, // optional (controlled)
 }) {
   let projectsSet = [];
   if (items.length) {
@@ -14,11 +14,35 @@ export default function SelectForm({
   }
 
   const handleChange = event => {
-    setSelectedItem('all');
-    setSelectedCondition('all');
-    setSelectedToolStatus('all');
-    setSelectedProject(event.target.value);
+    const newProject = event.target.value;
+
+    const toolsForNewProject =
+      newProject === 'all'
+        ? [...new Set(items.map(m => m.itemType?.name).filter(Boolean))]
+        : [
+            ...new Set(
+              items
+                .filter(mat => mat.project?.name === newProject && mat.itemType?.name)
+                .map(m => m.itemType.name),
+            ),
+          ];
+
+    if (typeof setSelectedItem === 'function') {
+      // If controlled, only reset tool if invalid under new project
+      if (typeof selectedItem !== 'undefined') {
+        if (selectedItem !== 'all' && !toolsForNewProject.includes(selectedItem)) {
+          setSelectedItem('all');
+        }
+      } else {
+        // Backwards compatibility (uncontrolled)
+        setSelectedItem('all');
+      }
+    }
+
+    setSelectedProject(newProject);
   };
+
+  const isControlled = typeof selectedProject !== 'undefined';
 
   return (
     <Form>
@@ -30,17 +54,16 @@ export default function SelectForm({
           type="select"
           onChange={handleChange}
           disabled={!items.length}
+          value={isControlled ? selectedProject : undefined}
         >
           {items.length ? (
             <>
               <option value="all">All</option>
-              {projectsSet.map(name => {
-                return (
-                  <option key={name} value={name}>
-                    {name}
-                  </option>
-                );
-              })}
+              {projectsSet.map(name => (
+                <option key={name} value={name}>
+                  {name}
+                </option>
+              ))}
             </>
           ) : (
             <option>No data</option>
