@@ -1,11 +1,21 @@
 import { useEffect, useState } from 'react';
 import Select from 'react-select';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import axios from 'axios';
 import { ENDPOINTS } from '../../../../utils/URL';
 import styles from './ToolsHorizontalBarChart.module.css';
 
 // No mock data - use real backend data only
+
+// YYYY-MM-DD (no tz shift)
+const toYMD = d =>
+  d instanceof Date && !isNaN(d)
+    ? `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(
+        d.getDate(),
+      ).padStart(2, '0')}`
+    : '';
 
 // Custom tooltip component
 function CustomTooltip({ active, payload, label }) {
@@ -42,8 +52,8 @@ function ToolsHorizontalBarChart({ darkMode }) {
   const startDate12MonthsAgo = new Date(currentDate.getFullYear() - 1, currentDate.getMonth(), 1);
   const endOfCurrentMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
 
-  const [startDate, setStartDate] = useState(startDate12MonthsAgo.toISOString().split('T')[0]);
-  const [endDate, setEndDate] = useState(endOfCurrentMonth.toISOString().split('T')[0]);
+  const [startDate, setStartDate] = useState(startDate12MonthsAgo);
+  const [endDate, setEndDate] = useState(endOfCurrentMonth);
 
   // Date range logging removed for production
 
@@ -97,7 +107,7 @@ function ToolsHorizontalBarChart({ darkMode }) {
 
         // 2. Fetch filtered dataset
         const toolsResponse = await axios.get(
-          ENDPOINTS.TOOLS_AVAILABILITY_BY_PROJECT(projectId, startDate, endDate),
+          ENDPOINTS.TOOLS_AVAILABILITY_BY_PROJECT(projectId, toYMD(startDate), toYMD(endDate)),
         );
 
         const toolsDataFiltered = toolsResponse.data;
@@ -163,20 +173,12 @@ function ToolsHorizontalBarChart({ darkMode }) {
     setSelectedProject(selectedOption);
   };
 
-  const handleStartDateChange = e => {
-    setStartDate(e.target.value);
-  };
-
-  const handleEndDateChange = e => {
-    setEndDate(e.target.value);
-  };
-
   const handleClearDates = () => {
     const currentDate = new Date();
     const startDate12MonthsAgo = new Date(currentDate.getFullYear() - 1, currentDate.getMonth(), 1);
     const endOfCurrentMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
-    setStartDate(startDate12MonthsAgo.toISOString().split('T')[0]);
-    setEndDate(endOfCurrentMonth.toISOString().split('T')[0]);
+    setStartDate(startDate12MonthsAgo);
+    setEndDate(endOfCurrentMonth);
   };
 
   if (loading) {
@@ -268,26 +270,26 @@ function ToolsHorizontalBarChart({ darkMode }) {
     >
       <h4 className={styles['tools-horizontal-bar-chart-title']}>Tools by Availability</h4>
 
-      {/* Filters Section */}
-      <div className={styles['tools-horizontal-bar-chart-filter-group']}>
-        <label htmlFor="tool-select">Tool(s)</label>
-        <Select
-          id="tool-select"
-          className={styles['tools-horizontal-bar-chart-tool-select']}
-          classNamePrefix="select"
-          value={selectedTools}
-          onChange={handleToolChange}
-          options={allTools}
-          placeholder="Select tools"
-          isMulti={true}
-          isClearable={true}
-          isDisabled={allTools.length === 0}
-          closeMenuOnSelect={false}
-          styles={darkMode ? darkSelectStyles : lightSelectStyles}
-        />
-      </div>
-
+      {/* Filters Section - 2x2 Grid */}
       <div className={styles['tools-horizontal-bar-chart-filters']}>
+        <div className={styles['tools-horizontal-bar-chart-filter-group']}>
+          <label htmlFor="tool-select">Tool(s)</label>
+          <Select
+            id="tool-select"
+            className={styles['tools-horizontal-bar-chart-tool-select']}
+            classNamePrefix="select"
+            value={selectedTools}
+            onChange={handleToolChange}
+            options={allTools}
+            placeholder="Select tools"
+            isMulti={true}
+            isClearable={true}
+            isDisabled={allTools.length === 0}
+            closeMenuOnSelect={false}
+            styles={darkMode ? darkSelectStyles : lightSelectStyles}
+          />
+        </div>
+
         <div className={styles['tools-horizontal-bar-chart-filter-group']}>
           <label htmlFor="project-select">Project</label>
           <Select
@@ -360,27 +362,58 @@ function ToolsHorizontalBarChart({ darkMode }) {
         </div>
 
         <div className={styles['tools-horizontal-bar-chart-filter-group']}>
-          <label htmlFor="start-date-picker">Date Range</label>
-          <div className={styles['tools-horizontal-bar-chart-date-picker-group']}>
-            <input
+          <label htmlFor="start-date-picker">Start Date</label>
+          <div className={styles['date-picker-wrapper']}>
+            <DatePicker
               id="start-date-picker"
-              type="date"
-              className={styles['tools-horizontal-bar-chart-date-picker']}
-              value={startDate}
-              onChange={handleStartDateChange}
-              placeholder="Start date"
-              aria-label="Start date"
+              selected={startDate}
+              onChange={setStartDate}
+              selectsStart
+              startDate={startDate}
+              endDate={endDate}
+              maxDate={endDate || undefined}
+              placeholderText="Start date"
+              className={styles['tools-date-picker']}
+              wrapperClassName={styles['tools-date-picker-wrapper']}
+              style={{
+                backgroundColor: darkMode ? '#2b3344' : '#fff',
+                color: darkMode ? '#fff' : '#000',
+                border: `1px solid ${darkMode ? '#3a506b' : '#ccc'}`,
+                borderRadius: '4px',
+                padding: '0.5rem',
+                fontSize: '14px',
+                width: '100%',
+              }}
             />
-            <span>to</span>
-            <input
-              id="end-date-picker"
-              type="date"
-              className={styles['tools-horizontal-bar-chart-date-picker']}
-              value={endDate}
-              onChange={handleEndDateChange}
-              placeholder="End date"
-              aria-label="End date"
-            />
+          </div>
+        </div>
+
+        <div className={styles['tools-horizontal-bar-chart-filter-group']}>
+          <label htmlFor="end-date-picker">End Date</label>
+          <div className={styles['tools-horizontal-bar-chart-date-picker-group']}>
+            <div className={styles['date-picker-wrapper']}>
+              <DatePicker
+                id="end-date-picker"
+                selected={endDate}
+                onChange={setEndDate}
+                selectsEnd
+                startDate={startDate}
+                endDate={endDate}
+                minDate={startDate || undefined}
+                placeholderText="End date"
+                className={styles['tools-date-picker']}
+                wrapperClassName={styles['tools-date-picker-wrapper']}
+                style={{
+                  backgroundColor: darkMode ? '#2b3344' : '#fff',
+                  color: darkMode ? '#fff' : '#000',
+                  border: `1px solid ${darkMode ? '#3a506b' : '#ccc'}`,
+                  borderRadius: '4px',
+                  padding: '0.5rem',
+                  fontSize: '14px',
+                  width: '100%',
+                }}
+              />
+            </div>
             <button
               type="button"
               className={styles['tools-horizontal-bar-chart-clear-dates-btn']}

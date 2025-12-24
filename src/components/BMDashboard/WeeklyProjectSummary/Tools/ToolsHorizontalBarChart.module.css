@@ -104,8 +104,11 @@
   color: #e0e0e0;
 }
 
-/* Filters Styling */
+/* Filters Styling - 2x2 Grid Layout */
 .tools-horizontal-bar-chart-filters {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
   padding: 12px 0;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   margin-bottom: 12px;
@@ -116,10 +119,6 @@
 }
 
 .tools-horizontal-bar-chart-filter-group {
-  margin-bottom: 12px;
-}
-
-.tools-horizontal-bar-chart-filter-group:last-child {
   margin-bottom: 0;
 }
 
@@ -146,26 +145,12 @@
   flex-wrap: wrap;
 }
 
-.tools-horizontal-bar-chart-date-picker {
-  padding: 4px 6px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 12px;
-  background-color: #fff;
-  color: #333;
-  min-width: 120px;
+.date-picker-wrapper {
+  width: 100%;
 }
 
-.tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode .tools-horizontal-bar-chart-date-picker {
-  background-color: #2c3344;
-  border-color: #364156;
-  color: #e0e0e0;
-}
-
-.tools-horizontal-bar-chart-date-picker:focus {
-  outline: none;
-  border-color: #2196F3;
-  box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+.tools-date-picker-wrapper {
+  width: 100%;
 }
 
 .tools-horizontal-bar-chart-date-picker-group span {
@@ -205,6 +190,57 @@
   border-color: #5a6578;
 }
 
+/* React DatePicker styles for dark/light mode */
+:global(body.dark-mode) .tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode .date-picker-wrapper .tools-date-picker-wrapper .react-datepicker__input-container input,
+:global(body.bm-dashboard-dark) .tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode .date-picker-wrapper .tools-date-picker-wrapper .react-datepicker__input-container input,
+:global(body.dark-mode) .tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode .date-picker-wrapper .react-datepicker-wrapper .react-datepicker__input-container input,
+:global(body.bm-dashboard-dark) .tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode .date-picker-wrapper .react-datepicker-wrapper .react-datepicker__input-container input,
+.tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode .date-picker-wrapper .tools-date-picker-wrapper .react-datepicker__input-container input,
+.tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode .date-picker-wrapper .react-datepicker-wrapper .react-datepicker__input-container input,
+.tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode .date-picker-wrapper .tools-date-picker-wrapper input,
+.tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode .date-picker-wrapper input {
+  background-color: #2b3344 !important;
+  color: white !important;
+  border: 1px solid #3a506b !important;
+  padding: 0.5rem;
+  border-radius: 4px;
+  width: 100%;
+}
+
+:global(body.dark-mode) .tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode .date-picker-wrapper .tools-date-picker-wrapper input.react-datepicker-ignore-onclickoutside,
+:global(body.bm-dashboard-dark) .tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode .date-picker-wrapper .tools-date-picker-wrapper input.react-datepicker-ignore-onclickoutside,
+.tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode .date-picker-wrapper .tools-date-picker-wrapper input.react-datepicker-ignore-onclickoutside {
+  background-color: #2b3344 !important;
+  color: white !important;
+  border: 1px solid #3a506b !important;
+  padding: 0.5rem;
+  border-radius: 4px;
+  width: 100%;
+}
+
+:global(body.dark-mode) .tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode .date-picker-wrapper .tools-date-picker-wrapper .react-datepicker__input-container input::placeholder,
+:global(body.bm-dashboard-dark) .tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode .date-picker-wrapper .tools-date-picker-wrapper .react-datepicker__input-container input::placeholder,
+.tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode .date-picker-wrapper .tools-date-picker-wrapper .react-datepicker__input-container input::placeholder,
+.tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode .date-picker-wrapper .tools-date-picker-wrapper input::placeholder {
+  color: #cbd5e0 !important;
+}
+
+:global(body.dark-mode) .tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode .date-picker-wrapper .tools-date-picker-wrapper .react-datepicker__input-container input:focus,
+:global(body.bm-dashboard-dark) .tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode .date-picker-wrapper .tools-date-picker-wrapper .react-datepicker__input-container input:focus,
+:global(body.dark-mode) .tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode .date-picker-wrapper .tools-date-picker-wrapper input:focus,
+:global(body.bm-dashboard-dark) .tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode .date-picker-wrapper .tools-date-picker-wrapper input:focus,
+:global(body.dark-mode) .tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode .date-picker-wrapper .tools-date-picker-wrapper input.react-datepicker-ignore-onclickoutside:focus,
+:global(body.bm-dashboard-dark) .tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode .date-picker-wrapper .tools-date-picker-wrapper input.react-datepicker-ignore-onclickoutside:focus,
+.tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode .date-picker-wrapper .tools-date-picker-wrapper .react-datepicker__input-container input:focus,
+.tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode .date-picker-wrapper .tools-date-picker-wrapper input:focus,
+.tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode .date-picker-wrapper .tools-date-picker-wrapper input.react-datepicker-ignore-onclickoutside:focus {
+  background-color: #2b3344 !important;
+  border-color: #4a6072 !important;
+  color: white !important;
+  box-shadow: 0 0 0 0.2rem rgba(74, 96, 114, 0.25) !important;
+  outline: none !important;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .tools-horizontal-bar-chart-card {
@@ -217,14 +253,14 @@
     margin-bottom: 12px;
   }
   
+  .tools-horizontal-bar-chart-filters {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
   .tools-horizontal-bar-chart-date-picker-group {
     flex-direction: column;
     align-items: flex-start;
     gap: 6px;
-  }
-  
-  .tools-horizontal-bar-chart-date-picker {
-    min-width: 100px;
-    width: 100%;
   }
 } 

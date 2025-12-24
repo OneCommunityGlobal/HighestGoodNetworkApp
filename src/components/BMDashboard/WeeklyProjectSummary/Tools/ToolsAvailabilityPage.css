@@ -56,41 +56,12 @@
   flex-wrap: wrap;
 }
 
-.date-picker {
-  padding: 10px 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  font-size: 14px;
-  background-color: #ffffff;
-  color: #374151;
-  min-width: 140px;
-  transition: all 0.2s ease;
+.date-picker-wrapper {
+  width: 100%;
 }
 
-.date-picker:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.date-picker:hover {
-  border-color: #9ca3af;
-}
-
-/* Dark mode date picker styling */
-.tools-availability-page.dark-mode .date-picker {
-  background-color: #2c3344;
-  border-color: #364156;
-  color: #e0e0e0;
-}
-
-.tools-availability-page.dark-mode .date-picker:focus {
-  border-color: #4589ff;
-  box-shadow: 0 0 0 3px rgba(69, 137, 255, 0.1);
-}
-
-.tools-availability-page.dark-mode .date-picker:hover {
-  border-color: #4b5563;
+.tools-availability-date-picker-wrapper {
+  width: 100%;
 }
 
 /* "to" text styling */
@@ -140,6 +111,57 @@
   background-color: #b91c1c;
 }
 
+/* React DatePicker styles for dark/light mode */
+:global(body.dark-mode) .tools-availability-page.dark-mode .date-picker-wrapper .tools-availability-date-picker-wrapper .react-datepicker__input-container input,
+:global(body.bm-dashboard-dark) .tools-availability-page.dark-mode .date-picker-wrapper .tools-availability-date-picker-wrapper .react-datepicker__input-container input,
+:global(body.dark-mode) .tools-availability-page.dark-mode .date-picker-wrapper .react-datepicker-wrapper .react-datepicker__input-container input,
+:global(body.bm-dashboard-dark) .tools-availability-page.dark-mode .date-picker-wrapper .react-datepicker-wrapper .react-datepicker__input-container input,
+.tools-availability-page.dark-mode .date-picker-wrapper .tools-availability-date-picker-wrapper .react-datepicker__input-container input,
+.tools-availability-page.dark-mode .date-picker-wrapper .react-datepicker-wrapper .react-datepicker__input-container input,
+.tools-availability-page.dark-mode .date-picker-wrapper .tools-availability-date-picker-wrapper input,
+.tools-availability-page.dark-mode .date-picker-wrapper input {
+  background-color: #2b3344 !important;
+  color: white !important;
+  border: 1px solid #3a506b !important;
+  padding: 0.5rem;
+  border-radius: 4px;
+  width: 100%;
+}
+
+:global(body.dark-mode) .tools-availability-page.dark-mode .date-picker-wrapper .tools-availability-date-picker-wrapper input.react-datepicker-ignore-onclickoutside,
+:global(body.bm-dashboard-dark) .tools-availability-page.dark-mode .date-picker-wrapper .tools-availability-date-picker-wrapper input.react-datepicker-ignore-onclickoutside,
+.tools-availability-page.dark-mode .date-picker-wrapper .tools-availability-date-picker-wrapper input.react-datepicker-ignore-onclickoutside {
+  background-color: #2b3344 !important;
+  color: white !important;
+  border: 1px solid #3a506b !important;
+  padding: 0.5rem;
+  border-radius: 4px;
+  width: 100%;
+}
+
+:global(body.dark-mode) .tools-availability-page.dark-mode .date-picker-wrapper .tools-availability-date-picker-wrapper .react-datepicker__input-container input::placeholder,
+:global(body.bm-dashboard-dark) .tools-availability-page.dark-mode .date-picker-wrapper .tools-availability-date-picker-wrapper .react-datepicker__input-container input::placeholder,
+.tools-availability-page.dark-mode .date-picker-wrapper .tools-availability-date-picker-wrapper .react-datepicker__input-container input::placeholder,
+.tools-availability-page.dark-mode .date-picker-wrapper .tools-availability-date-picker-wrapper input::placeholder {
+  color: #cbd5e0 !important;
+}
+
+:global(body.dark-mode) .tools-availability-page.dark-mode .date-picker-wrapper .tools-availability-date-picker-wrapper .react-datepicker__input-container input:focus,
+:global(body.bm-dashboard-dark) .tools-availability-page.dark-mode .date-picker-wrapper .tools-availability-date-picker-wrapper .react-datepicker__input-container input:focus,
+:global(body.dark-mode) .tools-availability-page.dark-mode .date-picker-wrapper .tools-availability-date-picker-wrapper input:focus,
+:global(body.bm-dashboard-dark) .tools-availability-page.dark-mode .date-picker-wrapper .tools-availability-date-picker-wrapper input:focus,
+:global(body.dark-mode) .tools-availability-page.dark-mode .date-picker-wrapper .tools-availability-date-picker-wrapper input.react-datepicker-ignore-onclickoutside:focus,
+:global(body.bm-dashboard-dark) .tools-availability-page.dark-mode .date-picker-wrapper .tools-availability-date-picker-wrapper input.react-datepicker-ignore-onclickoutside:focus,
+.tools-availability-page.dark-mode .date-picker-wrapper .tools-availability-date-picker-wrapper .react-datepicker__input-container input:focus,
+.tools-availability-page.dark-mode .date-picker-wrapper .tools-availability-date-picker-wrapper input:focus,
+.tools-availability-page.dark-mode .date-picker-wrapper .tools-availability-date-picker-wrapper input.react-datepicker-ignore-onclickoutside:focus {
+  background-color: #2b3344 !important;
+  border-color: #4a6072 !important;
+  color: white !important;
+  box-shadow: 0 0 0 0.2rem rgba(74, 96, 114, 0.25) !important;
+  outline: none !important;
+}
+
 /* Project select styling */
 .project-select {
   min-width: 250px;
@@ -172,13 +194,13 @@
 
 .select-loading {
   background-color: #f3f4f6;
-  color: #6b7280;
+  color: #8b92a2;
   border: 1px solid #d1d5db;
 }
 
 .select-error {
   background-color: #fef2f2;
-  color: #dc2626;
+  color: #e93535;
   border: 1px solid #fecaca;
 }
 
@@ -209,10 +231,6 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
-  }
-  
-  .date-picker {
-    min-width: 100%;
   }
   
   .project-select {

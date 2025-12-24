@@ -3,17 +3,27 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import Select from 'react-select';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import axios from 'axios';
 import ToolsHorizontalBarChart from './ToolsHorizontalBarChart';
 import { ENDPOINTS } from '../../../../utils/URL';
 import './ToolsAvailabilityPage.css';
 
+// YYYY-MM-DD (no tz shift)
+const toYMD = d =>
+  d instanceof Date && !isNaN(d)
+    ? `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(
+        d.getDate(),
+      ).padStart(2, '0')}`
+    : '';
+
 function ToolsAvailabilityPage() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const [projects, setProjects] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null);
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -46,17 +56,9 @@ function ToolsAvailabilityPage() {
     setSelectedProject(selectedOption);
   };
 
-  const handleStartDateChange = e => {
-    setStartDate(e.target.value);
-  };
-
-  const handleEndDateChange = e => {
-    setEndDate(e.target.value);
-  };
-
   const handleClearDates = () => {
-    setStartDate('');
-    setEndDate('');
+    setStartDate(null);
+    setEndDate(null);
   };
 
   // Apply dark mode styles to document body when in dark mode
@@ -171,24 +173,53 @@ function ToolsAvailabilityPage() {
           <div className="filter-group">
             <label htmlFor="tools-start-date">Date Range (Optional)</label>
             <div className="date-picker-group">
-              <input
-                id="tools-start-date"
-                type="date"
-                className="date-picker"
-                value={startDate}
-                onChange={handleStartDateChange}
-                placeholder="Start date"
-                aria-label="Start date"
-              />
+              <div className="date-picker-wrapper">
+                <DatePicker
+                  id="tools-start-date"
+                  selected={startDate}
+                  onChange={setStartDate}
+                  selectsStart
+                  startDate={startDate}
+                  endDate={endDate}
+                  maxDate={endDate || undefined}
+                  placeholderText="Start date"
+                  className="tools-availability-date-picker"
+                  wrapperClassName="tools-availability-date-picker-wrapper"
+                  style={{
+                    backgroundColor: darkMode ? '#2b3344' : '#fff',
+                    color: darkMode ? '#fff' : '#000',
+                    border: `1px solid ${darkMode ? '#3a506b' : '#ccc'}`,
+                    borderRadius: '4px',
+                    padding: '0.5rem',
+                    fontSize: '14px',
+                    width: '100%',
+                  }}
+                />
+              </div>
               <span>to</span>
-              <input
-                type="date"
-                className="date-picker"
-                value={endDate}
-                onChange={handleEndDateChange}
-                placeholder="End date"
-                aria-label="End date"
-              />
+              <div className="date-picker-wrapper">
+                <DatePicker
+                  id="tools-end-date"
+                  selected={endDate}
+                  onChange={setEndDate}
+                  selectsEnd
+                  startDate={startDate}
+                  endDate={endDate}
+                  minDate={startDate || undefined}
+                  placeholderText="End date"
+                  className="tools-availability-date-picker"
+                  wrapperClassName="tools-availability-date-picker-wrapper"
+                  style={{
+                    backgroundColor: darkMode ? '#2b3344' : '#fff',
+                    color: darkMode ? '#fff' : '#000',
+                    border: `1px solid ${darkMode ? '#3a506b' : '#ccc'}`,
+                    borderRadius: '4px',
+                    padding: '0.5rem',
+                    fontSize: '14px',
+                    width: '100%',
+                  }}
+                />
+              </div>
               {(startDate || endDate) && (
                 <button
                   type="button"
@@ -208,8 +239,8 @@ function ToolsAvailabilityPage() {
           darkMode={darkMode}
           isFullPage
           projectId={selectedProject?.value}
-          startDate={startDate}
-          endDate={endDate}
+          startDate={toYMD(startDate)}
+          endDate={toYMD(endDate)}
         />
       </div>
     </div>
