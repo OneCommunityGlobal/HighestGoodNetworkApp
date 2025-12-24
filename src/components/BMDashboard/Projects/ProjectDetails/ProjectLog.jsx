@@ -212,6 +212,7 @@ class ProjectLog extends React.Component {
     return filtered;
   };
   render() {
+    const { darkMode } = this.props;
     const filteredData = this.filteredData();
     const hasActiveFilters =
       this.state.idSearchText ||
@@ -222,6 +223,15 @@ class ProjectLog extends React.Component {
       this.state.currentTaskSearchText ||
       this.state.totalHrsSearchText ||
       this.state.todaysHrsSearchText;
+
+    const inputStyle = {
+      width: '100%',
+      backgroundColor: darkMode ? '#1e293b' : '#fff',
+      color: darkMode ? '#f1f5f9' : '#000',
+      border: darkMode ? '1px solid #334155' : '1px solid #ccc',
+      borderRadius: '4px',
+      padding: '4px 8px',
+    };
 
     const tableRows = filteredData.map(person => (
       <tr key={person.id}>
@@ -320,7 +330,7 @@ class ProjectLog extends React.Component {
                   placeholder="Search ID"
                   value={this.state.idSearchText}
                   onChange={this.handleIdSearchChange}
-                  style={{ width: '100%' }}
+                  style={inputStyle}
                 />
               </td>
               <td>
@@ -329,7 +339,7 @@ class ProjectLog extends React.Component {
                   placeholder="Search First Name"
                   value={this.state.firstNameSearchText}
                   onChange={this.handleFirstNameSearchText}
-                  style={{ width: '100%' }}
+                  style={inputStyle}
                 />
               </td>
               <td>
@@ -338,7 +348,7 @@ class ProjectLog extends React.Component {
                   placeholder="Search Last Name"
                   value={this.state.lastNameSearchText}
                   onChange={this.handleLastNameSearchText}
-                  style={{ width: '100%' }}
+                  style={inputStyle}
                 />
               </td>
               <td>
@@ -347,7 +357,7 @@ class ProjectLog extends React.Component {
                   placeholder="Search Role"
                   value={this.state.roleSearchText}
                   onChange={this.handleRoleSearchText}
-                  style={{ width: '100%' }}
+                  style={inputStyle}
                 />
               </td>
               <td>
@@ -356,7 +366,7 @@ class ProjectLog extends React.Component {
                   placeholder="Search Team"
                   value={this.state.teamSearchText}
                   onChange={this.handleTeamSearchText}
-                  style={{ width: '100%' }}
+                  style={inputStyle}
                 />
               </td>
               <td>
@@ -365,7 +375,7 @@ class ProjectLog extends React.Component {
                   placeholder="Search Current Task"
                   value={this.state.currentTaskSearchText}
                   onChange={this.handleCurrentTaskSearchText}
-                  style={{ width: '100%' }}
+                  style={inputStyle}
                 />
               </td>
               <td>
@@ -374,7 +384,7 @@ class ProjectLog extends React.Component {
                   placeholder="Search Total Hrs"
                   value={this.state.totalHrsSearchText}
                   onChange={this.handleTotalHrsSearchText}
-                  style={{ width: '100%' }}
+                  style={inputStyle}
                 />
               </td>
               <td>
@@ -383,7 +393,7 @@ class ProjectLog extends React.Component {
                   placeholder="Search Today's Hrs"
                   value={this.state.todaysHrsSearchText}
                   onChange={this.handleTodaysHrsSearchText}
-                  style={{ width: '100%' }}
+                  style={inputStyle}
                 />
               </td>
             </tr>

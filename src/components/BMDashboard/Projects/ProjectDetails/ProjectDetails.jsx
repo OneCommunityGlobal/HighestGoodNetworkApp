@@ -73,7 +73,7 @@ function ProjectDetails() {
             </Col>
           </Row>
 
-          <ProjectLog projectId={projectId} />
+          <ProjectLog projectId={projectId} darkMode={darkMode} />
         </Col>
       </Row>
     </Container>
