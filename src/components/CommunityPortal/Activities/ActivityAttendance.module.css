@@ -1,7 +1,7 @@
 /* ======================================
    1) Light mode fallback
    ====================================== */
-.activity-attendance-page {
+.activityAttendancePage {
   --bg-color: #ffffff;
   --text-color: #000000;
   --heading-color: navy;
@@ -18,7 +18,7 @@
 /* ======================================
    2) Dark mode overrides
    ====================================== */
-.activity-attendance-dark-mode {
+.activityAttendanceDarkMode {
   --bg-color: #1b2a41;
   --text-color: #ffffff;
   --heading-color: #e8a71c;
@@ -30,14 +30,14 @@
 }
 
 /* Apply shadow on images if you have any .activity-agenda-image */
-.activity-agenda-dark-mode .activity-agenda-image img {
+.activityAgendaDarkMode .activityAgendaImage img {
   box-shadow: 0 4px 8px var(--card-shadow);
 }
 
 /* ======================================
    3) CONTAINER
    ====================================== */
-.dashboard-container {
+.dashboardContainer {
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
@@ -52,7 +52,7 @@
 /* ======================================
    4) TITLE & SEARCH BAR
    ====================================== */
-.dashboard-title {
+.dashboardTitle {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -65,19 +65,19 @@
   flex: 0 0 auto; /* do not shrink below content */
 }
 
-.title-text h2 {
+.titleText h2 {
   font-size: 1.75rem;
   font-weight: 600;
   color: var(--heading-color);
 }
 
-.title-text p {
+.titleText p {
   margin-top: 4px;
   font-size: 0.95rem;
   color: var(--text-color);
 }
 
-.search-container {
+.searchContainer {
   flex: 1 1 260px; /* grow/shrink but start at 260px */
   display: flex;
   justify-content: flex-end;
@@ -85,12 +85,12 @@
 }
 
 @media (min-width: 600px) {
-  .search-container {
+  .searchContainer {
     margin-top: 0;
   }
 }
 
-.search-bar {
+.attendanceSearchBar {
   width: 100%;
   max-width: 260px;
   padding: 10px 14px;
@@ -102,16 +102,20 @@
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.search-bar:focus {
+.attendanceSearchBar:focus {
   border-color: var(--heading-color);
   box-shadow: 0 0 4px var(--heading-color);
   outline: none;
 }
 
+.activityAttendanceDarkMode .attendanceSearchBar::placeholder {
+  color: #cbd5e1;
+}
+
 /* ======================================
    5) MAIN DASHBOARD LAYOUT
    ====================================== */
-.dashboard-main {
+.dashboardMain {
   margin-top: 25px;
   display: flex;
   flex-wrap: wrap;
@@ -122,7 +126,7 @@
 /* ======================================
    6) STATS + CHART PANEL
    ====================================== */
-.stats-chart-container {
+.statsChartContainer {
   flex: 1 1 380px;
   display: flex;
   flex-wrap: wrap;
@@ -136,7 +140,7 @@
   min-height: 260px;
 }
 
-.chart-container {
+.chartContainer {
   position: relative;
   width: 180px;
   height: 180px;
@@ -144,7 +148,7 @@
   margin: 0 auto;
 }
 
-.chart-label {
+.chartLabel {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -154,7 +158,7 @@
   color: var(--heading-color);
 }
 
-.stats-grid {
+.statsGrid {
   flex: 1 1 200px;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
@@ -165,7 +169,7 @@
 /* ======================================
    7) STATS CARD
    ====================================== */
-.stats-card {
+.statsCard {
   background-color: var(--panel-bg);
   padding: 18px;
   border-radius: 8px;
@@ -178,19 +182,19 @@
   min-height: 80px;
 }
 
-.stats-card:hover {
+.statsCard:hover {
   transform: translateY(-2px);
   box-shadow: 0 2px 8px var(--shadow-color);
 }
 
-.stats-card h3 {
+.statsCard h3 {
   margin-bottom: 8px;
   font-size: 1rem;
   font-weight: 500;
   color: var(--text-color);
 }
 
-.stats-value {
+.statsValue {
   font-size: 1.3rem;
   font-weight: 700;
 }
@@ -198,7 +202,7 @@
 /* ======================================
    8) LIVE UPDATES PANEL
    ====================================== */
-.live-updates {
+.liveUpdates {
   flex: 1 1 400px;
   background-color: var(--card-bg);
   padding: 20px;
@@ -211,7 +215,7 @@
 }
 
 /* Header (Title + Export Button) */
-.updates-header {
+.updatesHeader {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -219,13 +223,49 @@
   flex: 0 0 auto;
 }
 
-.updates-header h3 {
+.updatesHeader h3 {
   font-size: 1.2rem;
   font-weight: 600;
   color: var(--text-color);
 }
 
-.export-btn {
+.updatesHeaderLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.statusFilters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.statusFilterBtn {
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border-color);
+  background-color: transparent;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  margin-top: 10px;
+}
+
+.statusFilterBtnActive {
+  background-color: var(--heading-color);
+  color: var(--card-bg);
+  border-color: var(--heading-color);
+}
+
+@media (min-width: 500px) {
+  .statusFilterBtn {
+    margin-top: 0;
+  }
+}
+
+.exportBtn {
   background-color: var(--heading-color);
   color: var(--card-bg);
   padding: 10px 18px;
@@ -239,12 +279,12 @@
 }
 
 @media (min-width: 500px) {
-  .export-btn {
+  .exportBtn {
     margin-top: 0;
   }
 }
 
-.export-btn:hover {
+.exportBtn:hover {
   opacity: 0.9;
   transform: translateY(-1px);
 }
@@ -252,14 +292,14 @@
 /* ======================================
    9) STUDENT LIST WRAPPER
    ====================================== */
-.updates-list {
+.updatesList {
   margin-top: 20px;
   flex: 1 1 auto;
   overflow-y: auto;
 }
 
 /* “No Results” Message */
-.no-results {
+.noResults {
   text-align: center;
   font-size: 0.95rem;
   color: var(--text-color);
@@ -270,7 +310,7 @@
 /* ======================================
    10) STUDENT ROW
    ====================================== */
-.student-row {
+.studentRow {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -279,22 +319,22 @@
   transition: background-color 0.15s ease;
 }
 
-.student-row:nth-child(even) {
+.studentRow:nth-child(even) {
   background-color: var(--panel-bg);
 }
 
-.student-row:hover {
+.studentRow:hover {
   background-color: var(--card-bg);
 }
 
-.student-left {
+.studentLeft {
   display: flex;
   align-items: center;
   gap: 12px;
   flex: 0 0 35%; /* Takes 35% of row width */
 }
 
-.student-img {
+.studentImg {
   width: 44px;
   height: 44px;
   border-radius: 50%;
@@ -302,20 +342,20 @@
   border: 1px solid var(--border-color);
 }
 
-.student-name {
+.studentName {
   font-size: 1rem;
   font-weight: 600;
   color: var(--text-color);
 }
 
-.student-center {
+.studentCenter {
   flex: 0 0 30%;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.student-time {
+.studentTime {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -323,19 +363,19 @@
   color: var(--text-color);
 }
 
-.student-icon {
+.studentIcon {
   font-size: 1rem;
   color: var(--border-color);
 }
 
-.student-right {
+.studentRight {
   flex: 0 0 25%;
   display: flex;
   align-items: center;
   justify-content: flex-start;
 }
 
-.student-id {
+.studentId {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -349,38 +389,38 @@
    ====================================== */
 @media (max-width: 750px) {
   /* Stack chart + stats vertically */
-  .stats-chart-container {
+  .statsChartContainer {
     flex-direction: column;
     align-items: center;
   }
-  .chart-container {
+  .chartContainer {
     margin-bottom: 20px;
   }
   /* Make stats cards full width */
-  .stats-grid {
+  .statsGrid {
     grid-template-columns: 1fr;
   }
 
   /* Stack student-row sections vertically */
-  .student-row {
+  .studentRow {
     flex-direction: column;
     align-items: flex-start;
     padding: 12px 8px;
   }
 
-  .student-left,
-  .student-center,
-  .student-right {
+  .studentLeft,
+  .studentCenter,
+  .studentRight {
     flex: 1 1 100%;
     margin-top: 8px;
     justify-content: flex-start;
   }
 
   /* Ensure search + export buttons fill width */
-  .search-container {
+  .searchContainer {
     width: 100%;
   }
-  .export-btn {
+  .exportBtn {
     width: 100%;
     text-align: center;
   }
