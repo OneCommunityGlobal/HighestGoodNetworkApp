@@ -201,7 +201,7 @@ p {
 }
 
 .item__form button {
-  background: #13ae5c;
+  background: #006b32;
   color: white;
   padding: 10px;
   border-radius: 10px;
@@ -498,7 +498,6 @@ p {
 
   }
   .navbar-toggler-icon{
-    width: 20px !important;
     width: 20px !important;
   }
 }
