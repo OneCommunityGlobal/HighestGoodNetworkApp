@@ -286,7 +286,10 @@ function WeeklyProjectSummary() {
         key: 'Injury Severity',
         className: 'full',
         content: (
-          <div className={`${styles.weeklyProjectSummaryCard} ${styles.fullCard}`}>
+          <div
+            className={`${styles.weeklyProjectSummaryCard} ${styles.fullCard}`}
+            style={{ minHeight: '450px' }}
+          >
             <InjurySeverityChart />
           </div>
         ),

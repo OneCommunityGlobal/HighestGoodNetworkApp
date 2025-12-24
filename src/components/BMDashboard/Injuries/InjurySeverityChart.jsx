@@ -123,15 +123,14 @@ function InjurySeverityDashboard(props) {
     selDepts.length === 0 &&
     !dateRange[0] &&
     !dateRange[1];
+  const hasNoData = !loading && !isEmptyState && rawData.length === 0;
 
   const visibleProjects = useMemo(() => {
-    const projectsWithData = Array.from(new Set(rawData.map(r => r.projectName)));
-    return bmProjects.filter(
-      project =>
-        projectsWithData.includes(project.name) &&
-        (selProjects.length === 0 || selProjects.includes(project._id)),
-    );
-  }, [bmProjects, rawData, selProjects]);
+    if (selProjects.length > 0) {
+      return bmProjects.filter(p => selProjects.includes(p._id));
+    }
+    return bmProjects;
+  }, [bmProjects, selProjects]);
 
   const visibleDepartments = useMemo(() => {
     const depts = Array.from(new Set(rawData.map(r => r.department).filter(Boolean)));
@@ -145,7 +144,7 @@ function InjurySeverityDashboard(props) {
       if (visibleDepartments.length <= 1) {
         // Single department - show total injuries per project
         visibleProjects.forEach(project => {
-          const rec = rawData.find(r => r.severity === sev && r.projectName === project.name);
+          const rec = rawData.find(r => r.severity === sev && r.projectId === project._id);
           entry[project.name] = rec ? rec.totalInjuries : 0;
         });
       } else {
@@ -154,7 +153,7 @@ function InjurySeverityDashboard(props) {
           visibleDepartments.forEach(dept => {
             const key = `${project.name}_${dept}`;
             const rec = rawData.find(
-              r => r.severity === sev && r.projectName === project.name && r.department === dept,
+              r => r.severity === sev && r.projectId === project._id && r.department === dept,
             );
             entry[key] = rec ? rec.totalInjuries : 0;
           });
@@ -300,24 +299,37 @@ function InjurySeverityDashboard(props) {
           <Spin size="large" />
         </div>
       ) : isEmptyState ? (
-        <button
-          type="button"
-          className={styles.chartPlaceholder}
-          aria-describedby="injury-severity-placeholder-tooltip"
-        >
+        <button type="button" className={styles.chartPlaceholder}>
           <div className={styles.placeholderGraphic} />
-          <div
-            id="injury-severity-placeholder-tooltip"
-            role="tooltip"
-            className={styles.placeholderTooltip}
-          >
-            Select filters to generate visualization
-          </div>
+          <div className={styles.placeholderTooltip}>Select filters to generate visualization</div>
         </button>
+      ) : hasNoData ? (
+        <div className={styles.noDataState}>No data available for the selected filters</div>
       ) : (
         <ResponsiveContainer width="100%" height={400}>
           <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-            {/* existing BarChart code stays EXACTLY the same */}
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="severity" />
+            <YAxis />
+            <Tooltip content={<CustomTooltip darkMode={darkMode} />} />
+            <Legend />
+
+            {chartBars.map(bar => (
+              <Bar
+                key={bar.key}
+                dataKey={bar.dataKey}
+                name={bar.name}
+                fill={bar.fill}
+                stackId={bar.stackId}
+                legendType={bar.legendType}
+              >
+                <LabelList
+                  dataKey={bar.dataKey}
+                  position="center"
+                  formatter={value => (value > 0 ? value : '')}
+                />
+              </Bar>
+            ))}
           </BarChart>
         </ResponsiveContainer>
       )}
