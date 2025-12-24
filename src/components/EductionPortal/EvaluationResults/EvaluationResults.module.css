@@ -805,14 +805,6 @@
     margin: 0 0 1.25rem 0;
   }
   
-  .feedbackColumns {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-    margin-top: 1rem;
-    align-items: start;
-  }
-  
   .overallFeedback {
     padding: 1.25rem;
     margin-bottom: 1.5rem;
@@ -1020,12 +1012,6 @@
     font-weight: 500;
   }
   
-  .categoryTable,
-  .assignmentTable {
-    min-width: 500px;
-    font-size: 0.85rem;
-  }
-  
   .categoryTable th,
   .categoryTable td,
   /* Teacher Feedback mobile styles */
@@ -1035,12 +1021,6 @@
     border-radius: 0.5rem;
     width: 100%;
     box-sizing: border-box;
-  }
-  
-  .feedbackColumns {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-    margin-top: 1rem;
   }
   
   .teacherInfo {
@@ -1174,20 +1154,6 @@
 
 .feedbackIcon {
   font-size: 1rem;
-}
-
-.feedbackText {
-  color: var(--text-dark);
-  line-height: 1.6;
-  margin: 0;
-}
-
-.feedbackColumns {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-  margin-top: 1.5rem;
-  align-items: start;
 }
 
 .strengthsSection,
