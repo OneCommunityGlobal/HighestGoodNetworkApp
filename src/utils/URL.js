@@ -509,6 +509,11 @@ ENHANCED_POPULARITY: (range, roles, start, end, includeLowVolume) => {
   //pull requests analysis
   PR_REVIEWS_INSIGHTS: `${APIEndpoint}/analytics/pr-review-insights`,
 
+  LESSON_PLANS: `${APIEndpoint}/education/lesson-plans`,
+  SAVE_INTEREST: `${APIEndpoint}/education/student/saved-interests`,
+  GET_SAVED: `${APIEndpoint}/education/student/saved-interests`,
+  REMOVE_INTEREST: `${APIEndpoint}/education/student/saved-interests`,
+  CHECK_IF_SAVED: `${APIEndpoint}/education/student/saved-interests/check`,
 };
 
 export const ApiEndpoint = APIEndpoint;
