@@ -1,67 +1,79 @@
+/* Tooltip */
 .customTooltip {
   background-color: #ffffff;
   border: 1px solid #ccc;
   border-radius: 4px;
   padding: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .customTooltip.dark {
   background-color: #1c2541;
-  border: 1px solid rgba(255,255,255,0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.filterSelect .ant-select-selector,
+/* Filters – Light mode */
+.filterSelect .ant-select-selector {
+  background-color: #ffffff !important;
+  border-color: rgba(0, 0, 0, 0.2) !important;
+  color: #333333 !important;
+}
+
 .filterSelect .ant-select-selection-item,
 .filterSelect .ant-select-selection-placeholder {
   color: #333333 !important;
 }
 
-.filterSelect .ant-select-selector {
+.filterSelect .ant-picker {
   background-color: #ffffff !important;
+  border-color: rgba(0, 0, 0, 0.2) !important;
 }
 
-/* RangePicker placeholder */
 .filterSelect .ant-picker-input > input::placeholder {
   color: #666666 !important;
 }
 
-.filterSelect .ant-picker {
-  background-color: #ffffff !important;
+/* Placeholder (empty state) */
+.placeholderGraphic {
+  width: 60%;
+  height: 120px;
+  border: 2px dashed #d0d0d0;
+  opacity: 0.4;
+  margin-bottom: 12px;
+  animation: placeholderPulse 2.2s ease-in-out infinite;
 }
 
-.filterSelect .ant-select-selector {
-  border-color: rgba(0, 0, 0, 0.2) !important;
+.chartPlaceholder:hover .placeholderTooltip,
+.chartPlaceholder:focus-visible .placeholderTooltip {
+  opacity: 0.6;
 }
 
-/* Light border for RangePicker */
-.filterSelect .ant-picker {
-  border-color: rgba(0, 0, 0, 0.2) !important;
+/* No data state */
+.noDataState {
+  height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #888;
+  font-size: 16px;
+  font-weight: 500;
 }
 
-.oxideDark{
-  background-color: #1B2A41;
+/* Dark mode container */
+.oxideDark {
+  background-color: #1b2a41;
 }
 
-/* Only in darkMode: target filterSelect under .oxideDark */
+/* Filters – Dark mode */
 .oxideDark .filterSelect .ant-select-selector {
   background-color: #1c2541 !important;
   border-color: rgba(255, 255, 255, 0.2) !important;
 }
+
 .oxideDark .filterSelect .ant-select-selection-item,
-.oxideDark .filterSelect .ant-select-selection-placeholder {
-  color: #f5f5f5 !important;
-}
-.oxideDark .filterSelect .ant-select-arrow {
-  color: #f5f5f5 !important;
-}
+.oxideDark .filterSelect .ant-select-selection-placeholder,
+.oxideDark .filterSelect .ant-select-arrow,
 .oxideDark .filterSelect .ant-select-clear {
-  color: #f5f5f5 !important;
-}
-.oxideDark .filterSelect .ant-select-dropdown {
-  background-color: #1c2541 !important;
-}
-.oxideDark .filterSelect .ant-select-item-option-content {
   color: #f5f5f5 !important;
 }
 
@@ -74,31 +86,34 @@
 .oxideDark .filterSelect.ant-picker .ant-picker-input > input::placeholder {
   color: #f5f5f5 !important;
 }
-.oxideDark .filterSelect .ant-picker-suffix {
-  color: #f5f5f5 !important;
-}
+
+.oxideDark .filterSelect .ant-picker-suffix,
 .oxideDark .filterSelect .ant-picker-clear {
   color: #f5f5f5 !important;
 }
-.oxideDark .filterSelect .ant-picker-dropdown {
-  background-color: #1c2541 !important;
-  color: #f5f5f5 !important;
-}
 
-/* Chart axis labels and text in dark mode */
-.oxideDark .recharts-text {
-  fill: #f5f5f5 !important;
-}
-
-.oxideDark .recharts-cartesian-axis-tick-value {
-  fill: #f5f5f5 !important;
-}
-
+/* Recharts dark mode */
+.oxideDark .recharts-text,
+.oxideDark .recharts-cartesian-axis-tick-value,
 .oxideDark .recharts-legend-item-text {
+  fill: #f5f5f5 !important;
   color: #f5f5f5 !important;
 }
 
 .oxideDark .recharts-cartesian-grid-horizontal line,
 .oxideDark .recharts-cartesian-grid-vertical line {
   stroke: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Animation */
+@keyframes placeholderPulse {
+  0% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.55;
+  }
+  100% {
+    opacity: 0.35;
+  }
 }

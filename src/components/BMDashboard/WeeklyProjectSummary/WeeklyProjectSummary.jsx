@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
+import InjurySeverityChart from '../Injuries/InjurySeverityChart';
 import CostPredictionChart from './CostPredictionChart';
 import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
 import PaidLaborCost from './PaidLaborCost/PaidLaborCost';
@@ -277,6 +278,19 @@ function WeeklyProjectSummary() {
         content: (
           <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
             <IssueCharts />
+          </div>
+        ),
+      },
+      {
+        title: 'Injury Severity by Category of Worker Injured',
+        key: 'Injury Severity',
+        className: 'full',
+        content: (
+          <div
+            className={`${styles.weeklyProjectSummaryCard} ${styles.fullCard}`}
+            style={{ minHeight: '450px' }}
+          >
+            <InjurySeverityChart />
           </div>
         ),
       },

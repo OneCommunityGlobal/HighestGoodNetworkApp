@@ -117,14 +117,20 @@ function InjurySeverityDashboard(props) {
     ).finally(() => setLoading(false));
   }, [dispatch, selProjects, selTypes, selDepts, dateRange]);
 
+  const isEmptyState =
+    selProjects.length === 0 &&
+    selTypes.length === 0 &&
+    selDepts.length === 0 &&
+    !dateRange[0] &&
+    !dateRange[1];
+  const hasNoData = !loading && !isEmptyState && rawData.length === 0;
+
   const visibleProjects = useMemo(() => {
-    const projectsWithData = Array.from(new Set(rawData.map(r => r.projectName)));
-    return bmProjects.filter(
-      project =>
-        projectsWithData.includes(project.name) &&
-        (selProjects.length === 0 || selProjects.includes(project._id)),
-    );
-  }, [bmProjects, rawData, selProjects]);
+    if (selProjects.length > 0) {
+      return bmProjects.filter(p => selProjects.includes(p._id));
+    }
+    return bmProjects;
+  }, [bmProjects, selProjects]);
 
   const visibleDepartments = useMemo(() => {
     const depts = Array.from(new Set(rawData.map(r => r.department).filter(Boolean)));
@@ -138,7 +144,7 @@ function InjurySeverityDashboard(props) {
       if (visibleDepartments.length <= 1) {
         // Single department - show total injuries per project
         visibleProjects.forEach(project => {
-          const rec = rawData.find(r => r.severity === sev && r.projectName === project.name);
+          const rec = rawData.find(r => r.severity === sev && r.projectId === project._id);
           entry[project.name] = rec ? rec.totalInjuries : 0;
         });
       } else {
@@ -147,7 +153,7 @@ function InjurySeverityDashboard(props) {
           visibleDepartments.forEach(dept => {
             const key = `${project.name}_${dept}`;
             const rec = rawData.find(
-              r => r.severity === sev && r.projectName === project.name && r.department === dept,
+              r => r.severity === sev && r.projectId === project._id && r.department === dept,
             );
             entry[key] = rec ? rec.totalInjuries : 0;
           });
@@ -292,48 +298,22 @@ function InjurySeverityDashboard(props) {
         <div style={{ textAlign: 'center', padding: 50 }}>
           <Spin size="large" />
         </div>
+      ) : isEmptyState ? (
+        <button type="button" className={styles.chartPlaceholder}>
+          <div className={styles.placeholderGraphic} />
+          <div className={styles.placeholderTooltip}>Select filters to generate visualization</div>
+        </button>
+      ) : hasNoData ? (
+        <div className={styles.noDataState}>No data available for the selected filters</div>
       ) : (
         <ResponsiveContainer width="100%" height={400}>
           <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="severity"
-              height={60}
-              label={{
-                value: 'Severity',
-                position: 'bottom',
-                dy: 0,
-              }}
-            />
-            <YAxis
-              label={{
-                value: 'Injury Count',
-                angle: -90,
-                position: 'insideLeft',
-              }}
-            />
-            <Tooltip
-              content={
-                <CustomTooltip
-                  visibleProjects={visibleProjects}
-                  visibleDepartments={visibleDepartments}
-                  darkMode={darkMode}
-                />
-              }
-            />
-            <Legend
-              verticalAlign="bottom"
-              wrapperStyle={{ paddingTop: 30 }}
-              payload={
-                visibleDepartments.length > 1
-                  ? visibleDepartments.map((dept, idx) => ({
-                      value: dept,
-                      type: 'rect',
-                      color: generateColors(visibleDepartments.length)[idx],
-                    }))
-                  : undefined
-              }
-            />
+            <XAxis dataKey="severity" />
+            <YAxis />
+            <Tooltip content={<CustomTooltip darkMode={darkMode} />} />
+            <Legend />
+
             {chartBars.map(bar => (
               <Bar
                 key={bar.key}
@@ -346,11 +326,6 @@ function InjurySeverityDashboard(props) {
                 <LabelList
                   dataKey={bar.dataKey}
                   position="center"
-                  style={{
-                    fill: darkMode ? '#ffffff' : '#333333',
-                    fontSize: '10px',
-                    fontWeight: 'bold',
-                  }}
                   formatter={value => (value > 0 ? value : '')}
                 />
               </Bar>
