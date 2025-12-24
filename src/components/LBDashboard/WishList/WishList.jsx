@@ -1,4 +1,4 @@
-import './WishList.css';
+import './WishList.module.css';
 import { connect, useDispatch } from 'react-redux';
 import { FaMapMarkerAlt } from 'react-icons/fa';
 import { NavItem } from 'reactstrap';

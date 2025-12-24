@@ -2,7 +2,7 @@ import RegistrationForm from './RegistrationForm';
 import ResourceMonitoring from './ResourceMonitoring';
 import LatestRegistration from './LatestRegistration';
 import MyEvent from './MyEvent';
-import './styles.css';
+import './index.css';
 
 function ActivitiesPage() {
   return (

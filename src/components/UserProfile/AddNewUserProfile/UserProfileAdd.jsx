@@ -188,6 +188,14 @@ class UserProfileAdd extends Component {
       this.setState({ isLoading: true })
 
       const response = await axios.get(url);
+      
+      // Check if response.data exists and is an array
+      if (!response.data || !Array.isArray(response.data)) {
+        console.warn('Invalid response format from weekly summaries endpoint:', response.data);
+        this.setState({ inputAutoComplete: [], isLoading: false });
+        return;
+      }
+
       const stringWithValue = response.data.map(item => item.teamCode).filter(Boolean);
       const stringNoRepeat = stringWithValue
         .map(item => item)

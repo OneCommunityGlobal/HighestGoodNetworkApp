@@ -130,6 +130,8 @@ h1.list__item-title--mobile {
   .item__details-wrapper {
     padding: 10px;
     margin: 10px;
+    flex-direction: column;
+    align-items: center;
   }
 
   .wishlist__start__chat button {
@@ -152,10 +154,11 @@ h1.list__item-title--mobile {
 }
 
 @media screen and (max-width: 800px) {
-
   .item__details-wrapper {
     padding: 10px;
     margin: 10px;
+    flex-direction: column;
+    align-items: center;
   }
   
   .item-title_wrapper--mobile {
@@ -163,10 +166,6 @@ h1.list__item-title--mobile {
   }  
   .item-title_wrapper--desktop {
     display: none;
-  }
-  .item__details-wrapper {
-    flex-direction: column;
-    align-items: center;
   }
   .list__details-left {
     width: 98%;

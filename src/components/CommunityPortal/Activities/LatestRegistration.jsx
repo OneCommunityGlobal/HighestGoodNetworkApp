@@ -1,4 +1,4 @@
-import './styles.css';
+import './index.css';
 
 function LatestRegistration() {
   return (

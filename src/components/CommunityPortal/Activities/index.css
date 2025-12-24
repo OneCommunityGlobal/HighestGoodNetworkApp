@@ -86,6 +86,7 @@
   justify-content: center;
   align-items: center;
   gap: 5px;
+  margin-top: 10px;
 }
 
 .arrow.up {
@@ -100,6 +101,9 @@
 .resource-title {
   font-weight: bold;
   color: grey;
+  text-align: left;
+  font-size: 1.2rem;
+  margin-bottom: 5px;
 }
 
 .registrationForm,
@@ -148,8 +152,12 @@
   color: #fff;
   border: none;
   border-radius: 5px;
-  padding: 5px 10px;
+  padding: 8px 20px;
   cursor: pointer;
+}
+
+.create-new-btn:hover {
+  background-color: #218838;
 }
 
 .myEventsTable {
@@ -164,13 +172,6 @@
   text-align: left;
 }
 
-.status.active {
-  color: green;
-}
-
-.status.closed {
-  color: red;
-}
 
 /* My Events css */
 .myEventsTable th,
@@ -291,22 +292,10 @@
 
 /* Resource Monitoring */
 
-.resource-title {
-  text-align: left;
-  font-size: 1.2rem;
-  margin-bottom: 5px;
-}
-
 .resource-value {
   font-weight: bold;
   color: black;
   font-size: 1rem;
-}
-
-.resource-stats {
-  display: flex;
-  align-items: center;
-  margin-top: 10px;
 }
 
 .resource-stats .arrow {
@@ -365,19 +354,6 @@
 
 .apply-filters-btn:hover {
   background-color: #0056b3;
-}
-
-.create-new-btn {
-  padding: 8px 20px;
-  background-color: #28a745;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.create-new-btn:hover {
-  background-color: #218838;
 }
 
 .registerinfo {
