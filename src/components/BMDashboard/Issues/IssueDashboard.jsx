@@ -7,7 +7,7 @@ import {
   FiCopy,
   FiEdit,
 } from 'react-icons/fi';
-import './IssueDashboard.css';
+import './IssueDashboard.module.css';
 import { Col, Row, Table } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import {

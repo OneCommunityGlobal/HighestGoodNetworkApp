@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import './EHistory.css';
+import './EHistory.module.css';
 import { fetchBMProjects } from '~/actions/bmdashboard/projectActions';
 import { fetchAllEquipments } from '~/actions/bmdashboard/equipmentActions';
 import { useDispatch, useSelector } from 'react-redux';
