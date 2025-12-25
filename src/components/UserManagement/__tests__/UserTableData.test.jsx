@@ -3,7 +3,7 @@ import axios from 'axios'; // Import axios
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import thunk from 'redux-thunk';
-import { configureStore } from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 // import { Provider } from 'react-redux';
 import UserTableData from '../UserTableData';
 import { authMock, themeMock } from '../../../__tests__/mockStates';
@@ -12,7 +12,7 @@ import { MemoryRouter } from 'react-router-dom';
 
 // Mock Axios requests
 vi.mock('axios');
-const mockStore = configureStore([thunk]);
+const mockStore = configureMockStore([thunk]);
 const jaeAccountMock = {
   _id: '1',
   isAdmin: true,

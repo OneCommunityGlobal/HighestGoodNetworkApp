@@ -9,7 +9,7 @@ import thunk from 'redux-thunk';
 // eslint-disable-next-line no-unused-vars
 import { Route } from 'react-router-dom';
 // eslint-disable-next-line no-unused-vars
-import { configureStore }from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 // eslint-disable-next-line no-unused-vars
 import { authMock, userProfileMock, timeEntryMock, userProjectMock } from '../../../__tests__/mockStates';
 // eslint-disable-next-line no-unused-vars
@@ -19,7 +19,7 @@ import Timelog from '../Timelog';
 // eslint-disable-next-line no-unused-vars
 import * as actions from '../../../actions/timeEntries';
 
-/* const mockStore = configureStore([thunk]);
+/* const mockStore = configureMockStore([thunk]);
 vi.mock('../../actions/timeEntries.js');
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));

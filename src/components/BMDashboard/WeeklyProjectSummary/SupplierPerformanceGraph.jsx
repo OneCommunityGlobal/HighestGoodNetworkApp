@@ -12,7 +12,7 @@ import {
   LabelList,
   Label,
 } from 'recharts';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Input } from 'reactstrap';
 import { fetchSupplierProjects, fetchSupplierPerformance } from '../../../actions/summaryDashboard';
 
@@ -47,6 +47,7 @@ const getDateRangeOptions = () => {
 
 const SupplierPerformanceDashboard = function({ className, height = 420, onDataLoaded }) {
   const dispatch = useDispatch();
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   const [supplierData, setSupplierData] = useState([]);
   const [projects, setProjects] = useState([]);
@@ -126,7 +127,7 @@ const SupplierPerformanceDashboard = function({ className, height = 420, onDataL
       title: {
         fontSize: 24,
         fontWeight: 700,
-        color: '#2D3748',
+        color: darkMode ? '#ffffff' : '#2D3748',
         margin: 0,
       },
       rightControls: {
@@ -142,36 +143,39 @@ const SupplierPerformanceDashboard = function({ className, height = 420, onDataL
       controlLabel: {
         fontSize: 14,
         fontWeight: 600,
-        color: '#4A5568',
+        color: darkMode ? '#e0e0e0' : '#4A5568',
         marginBottom: 2,
       },
       controlValue: {
         fontSize: 14,
-        color: '#718096',
+        color: darkMode ? '#b0b8c9' : '#718096',
         fontWeight: 500,
       },
       select: {
         minWidth: 140,
         fontSize: 14,
+        backgroundColor: darkMode ? '#2b3e59' : '#ffffff',
+        color: darkMode ? '#ffffff' : '#000000',
+        border: darkMode ? '1px solid #4a5a77' : '1px solid #E2E8F0',
       },
       card: {
-        border: '1px solid #E2E8F0',
+        border: darkMode ? '1px solid #4a5a77' : '1px solid #E2E8F0',
         borderRadius: 8,
         padding: 20,
-        background: '#FFFFFF',
-        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+        background: darkMode ? '#253342' : '#FFFFFF',
+        boxShadow: darkMode ? '0 1px 3px rgba(0, 0, 0, 0.4)' : '0 1px 3px rgba(0, 0, 0, 0.1)',
       },
       message: {
         textAlign: 'center',
         padding: 32,
-        color: '#718096',
+        color: darkMode ? '#b0b8c9' : '#718096',
         fontSize: 16,
       },
       chartContainer: {
         marginTop: 8,
       },
     }),
-    [className],
+    [className, darkMode],
   );
 
   // Y-axis domain to match the image (50-100)
@@ -183,14 +187,16 @@ const SupplierPerformanceDashboard = function({ className, height = 420, onDataL
       return (
         <div
           style={{
-            backgroundColor: 'white',
+            backgroundColor: darkMode ? '#2b3e59' : 'white',
             padding: '8px 12px',
-            border: '1px solid #ccc',
+            border: darkMode ? '1px solid #4a5a77' : '1px solid #ccc',
             borderRadius: '4px',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+            boxShadow: darkMode ? '0 2px 4px rgba(0,0,0,0.4)' : '0 2px 4px rgba(0,0,0,0.1)',
           }}
         >
-          <p style={{ margin: 0, fontWeight: 'bold' }}>{`${label}`}</p>
+          <p style={{ margin: 0, fontWeight: 'bold', color: darkMode ? '#ffffff' : '#000000' }}>
+            {`${label}`}
+          </p>
           <p style={{ margin: 0, color: '#34A853' }}>{`On-Time Delivery: ${payload[0].value}%`}</p>
         </div>
       );
@@ -212,6 +218,7 @@ const SupplierPerformanceDashboard = function({ className, height = 420, onDataL
                 onChange={e => setSelectedDateRange(e.target.value)}
                 style={styles.select}
                 aria-label="Date Range"
+                className={darkMode ? 'bg-darkmode-liblack text-light' : ''}
               >
                 {getDateRangeOptions().map(option => (
                   <option key={option.value} value={option.value}>
@@ -228,6 +235,7 @@ const SupplierPerformanceDashboard = function({ className, height = 420, onDataL
                 onChange={e => setSelectedProject(e.target.value)}
                 style={styles.select}
                 aria-label="Project"
+                className={darkMode ? 'bg-darkmode-liblack text-light' : ''}
               >
                 <option value="all">ALL</option>
                 {projects.map(project => (
@@ -249,7 +257,7 @@ const SupplierPerformanceDashboard = function({ className, height = 420, onDataL
             (supplierData && supplierData.length > 0 ? (
               <ResponsiveContainer width="100%" height={height}>
                 <BarChart data={supplierData} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
+                  <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? '#4a5a77' : '#E2E8F0'} />
                   <XAxis
                     dataKey="supplierName"
                     interval={0}
@@ -257,34 +265,52 @@ const SupplierPerformanceDashboard = function({ className, height = 420, onDataL
                     angle={0}
                     textAnchor="middle"
                     height={60}
-                    tick={{ fontSize: 12, fill: '#4A5568' }}
+                    tick={{ fontSize: 12, fill: darkMode ? '#e0e0e0' : '#4A5568' }}
+                    stroke={darkMode ? '#e0e0e0' : '#4A5568'}
                   >
                     <Label
                       value="Supplier Name"
                       offset={-10}
                       position="insideBottom"
-                      style={{ textAnchor: 'middle', fontSize: '14px', fill: '#4A5568' }}
+                      style={{
+                        textAnchor: 'middle',
+                        fontSize: '14px',
+                        fill: darkMode ? '#e0e0e0' : '#4A5568',
+                      }}
                     />
                   </XAxis>
-                  <YAxis domain={yDomain} tickCount={6} tick={{ fontSize: 12, fill: '#4A5568' }}>
+                  <YAxis
+                    domain={yDomain}
+                    tickCount={6}
+                    tick={{ fontSize: 12, fill: darkMode ? '#e0e0e0' : '#4A5568' }}
+                    stroke={darkMode ? '#e0e0e0' : '#4A5568'}
+                  >
                     <Label
                       value="On time performance"
                       angle={-90}
                       position="insideLeft"
-                      style={{ textAnchor: 'middle', fontSize: '14px', fill: '#4A5568' }}
+                      style={{
+                        textAnchor: 'middle',
+                        fontSize: '14px',
+                        fill: darkMode ? '#e0e0e0' : '#4A5568',
+                      }}
                     />
                   </YAxis>
                   <Tooltip content={<CustomTooltip />} />
                   <Bar
                     dataKey="onTimeDeliveryPercentage"
-                    fill="#4CAF50"
+                    fill={darkMode ? '#66bb6a' : '#4CAF50'}
                     maxBarSize={80}
                     radius={[2, 2, 0, 0]}
                   >
                     <LabelList
                       dataKey="onTimeDeliveryPercentage"
                       position="top"
-                      style={{ fontSize: '12px', fontWeight: 'bold', fill: '#2D3748' }}
+                      style={{
+                        fontSize: '12px',
+                        fontWeight: 'bold',
+                        fill: darkMode ? '#ffffff' : '#2D3748',
+                      }}
                       formatter={value => `${value}`}
                     />
                   </Bar>

@@ -4,7 +4,7 @@ import { render, fireEvent, screen } from '@testing-library/react';
 import BadgeDevelopment from '../BadgeDevelopment';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
-import { configureStore } from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import { themeMock } from '__tests__/mockStates';
 
 // Mock the BadgeDevelopmentTable and CreateNewBadgePopup components
@@ -16,7 +16,7 @@ vi.mock('components/Badge/CreateNewBadgePopup', () => ({
 }));
 
 describe('BadgeDevelopment Component', () => {
-  const mockStore = configureStore([thunk]);
+  const mockStore = configureMockStore([thunk]);
 
   const renderComponent = () => {
     const store = mockStore({

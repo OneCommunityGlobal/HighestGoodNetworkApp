@@ -1,12 +1,12 @@
 import React from 'react';
 import { render, fireEvent, screen } from '@testing-library/react';
 import { Provider } from 'react-redux'; 
-import { configureStore } from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import { themeMock } from '__tests__/mockStates';
 import { vi } from 'vitest';
 import RoleInfoModal from '../RoleInfoModal';
 
-const mockStore = configureStore([]);
+const mockStore = configureMockStore([]);
 
 // Mock the action functions to return plain objects instead of functions
 vi.mock('../../../../actions/information', () => ({
