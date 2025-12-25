@@ -393,7 +393,9 @@ describe('User Table Data: Jae protected account record and login as Jae related
       renderRow(jaeAccountMock);
       const alertMock = vi.spyOn(window, 'alert').mockImplementation();
       await userEvent.click(screen.getByRole('button', { name: /Set Final Day/i }));
-      expect(alertMock).toHaveBeenCalledTimes(0);
+      // The Set Final Day button for protected accounts should not trigger an alert
+      // The button is disabled or opens a modal instead
+      expect(alertMock).not.toHaveBeenCalled();
     });
   });
 });

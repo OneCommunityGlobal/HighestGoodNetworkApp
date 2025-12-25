@@ -14,7 +14,7 @@ import {
 import PhoneInput from 'react-phone-input-2';
 import { toast } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
-import Joi from 'joi-browser';
+import Joi from 'joi';
 import {
   fetchMaterialTypes,
   postBuildingInventoryType,
