@@ -1,7 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import { useSelector } from 'react-redux';
+import { useState, useEffect } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import {
   BarChart,
@@ -14,32 +13,33 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import styles from './ResourceUsage.module.css';
+import { useSelector } from 'react-redux';
 
 const allData = {
   material: [
-    { name: 'Material A', returned: 5, loaned: 3, date: '2024-12-05' },
-    { name: 'Material B', returned: 8, loaned: 4, date: '2024-12-06' },
-    { name: 'Material C', returned: 12, loaned: 6, date: '2024-12-07' },
-    { name: 'Material D', returned: 25, loaned: 8, date: '2024-12-08' },
-    { name: 'Material E', returned: 15, loaned: 3, date: '2024-12-09' },
-    { name: 'Material F', returned: 4, loaned: 6, date: '2024-12-10' },
-    { name: 'Material G', returned: 2, loaned: 1, date: '2024-12-11' },
+    { name: 'Material A', returned: 5, loaned: 3 },
+    { name: 'Material B', returned: 8, loaned: 4 },
+    { name: 'Material C', returned: 12, loaned: 6 },
+    { name: 'Material D', returned: 25, loaned: 8 },
+    { name: 'Material E', returned: 15, loaned: 3 },
+    { name: 'Material F', returned: 4, loaned: 6 },
+    { name: 'Material G', returned: 2, loaned: 1 },
   ],
   equipment: [
-    { name: 'Laptops', returned: 15, loaned: 5, date: '2024-12-05' },
-    { name: 'Projectors', returned: 10, loaned: 3, date: '2024-12-06' },
-    { name: 'Chairs', returned: 30, loaned: 10, date: '2024-12-07' },
-    { name: 'Tables', returned: 20, loaned: 5, date: '2024-12-08' },
-    { name: 'Microphones', returned: 8, loaned: 2, date: '2024-12-09' },
+    { name: 'Laptops', returned: 15, loaned: 5 },
+    { name: 'Projectors', returned: 10, loaned: 3 },
+    { name: 'Chairs', returned: 30, loaned: 10 },
+    { name: 'Tables', returned: 20, loaned: 5 },
+    { name: 'Microphones', returned: 8, loaned: 2 },
   ],
   venue: [
-    { name: 'Venue A', returned: 5, loaned: 3, date: '2024-12-05' },
-    { name: 'Venue B', returned: 8, loaned: 4, date: '2024-12-06' },
-    { name: 'Venue C', returned: 12, loaned: 6, date: '2024-12-07' },
-    { name: 'Venue D', returned: 25, loaned: 8, date: '2024-12-08' },
-    { name: 'Venue E', returned: 15, loaned: 3, date: '2024-12-09' },
-    { name: 'Venue F', returned: 4, loaned: 6, date: '2024-12-10' },
-    { name: 'Venue G', returned: 2, loaned: 1, date: '2024-12-11' },
+    { name: 'Venue A', returned: 5, loaned: 3 },
+    { name: 'Venue B', returned: 8, loaned: 4 },
+    { name: 'Venue C', returned: 12, loaned: 6 },
+    { name: 'Venue D', returned: 25, loaned: 8 },
+    { name: 'Venue E', returned: 15, loaned: 3 },
+    { name: 'Venue F', returned: 4, loaned: 6 },
+    { name: 'Venue G', returned: 2, loaned: 1 },
   ],
 };
 
@@ -70,71 +70,77 @@ const allInsights = {
   ],
 };
 
+/* ----------Insight definitions for clarity ---------- */
+const insightDefinitions = {
+  'Most vulnerable materials':
+    'Material with the lowest return rate compared to loaned items for the selected period.',
+  'Most vulnerable equipment':
+    'Equipment with the lowest return rate compared to loaned items for the selected period.',
+  'Most waste event type': 'Event type associated with the highest reported waste.',
+  'Top rated venues': 'Venue with the highest average rating for the selected period.',
+  'Lowest rated venues': 'Venue with the lowest average rating for the selected period.',
+  'Highest cost venues/hr': 'Venue with the highest hourly cost during the selected period.',
+};
+
 function CustomTooltip({ active, payload, darkMode }) {
-  if (active && payload && payload.length) {
-    return (
-      <div className={`${styles.customTooltip} ${darkMode ? styles.darkTooltip : ''}`}>
-        <p className="mb-1">{`${payload[0].payload.name}`}</p>
-        <p className="mb-1" style={{ color: '#22c55e' }}>{`Returned: ${payload[0].value}`}</p>
-        <p className="mb-0" style={{ color: '#fca5a5' }}>{`Loaned: ${payload[1].value}`}</p>
+  if (!active || !payload || !payload.length) return null;
+
+  const data = payload[0].payload;
+
+  return (
+    <div
+      className={styles.chartTooltip}
+      style={{
+        backgroundColor: darkMode ? '#1e293b' : '#ffffff',
+        color: darkMode ? '#f8fafc' : '#111827',
+      }}
+    >
+      <div className={styles.tooltipTitle}>{data.name}</div>
+
+      <div className={styles.tooltipRow}>
+        <span className={styles.tooltipDot} style={{ background: '#22c55e' }} />
+        <span>Returned</span>
+        <span className={styles.tooltipValue}>{data.returned}</span>
       </div>
-    );
-  }
-  return null;
+
+      <div className={styles.tooltipRow}>
+        <span className={styles.tooltipDot} style={{ background: '#fca5a5' }} />
+        <span>Loaned</span>
+        <span className={styles.tooltipValue}>{data.loaned}</span>
+      </div>
+    </div>
+  );
 }
 
 export default function ResourceUsage() {
   const [resourceType, setResourceType] = useState('Material');
   const [timePeriod, setTimePeriod] = useState('This Week');
   const [insightsTimePeriod, setInsightsTimePeriod] = useState('Last Week');
-  const [data, setData] = useState(allData.venue);
+  const [data, setData] = useState(allData.material);
   const [insights, setInsights] = useState(allInsights['Last Week']);
+
   const darkMode = useSelector(state => state.theme.darkMode);
-  const badgeRefs = useRef([]);
-
-  const filterDataByDate = (datas, period) => {
-    // Create different datasets for different time periods to demonstrate filtering
-    const baseData = [...datas];
-
-    switch (period) {
-      case 'This Week':
-        // Show first 3 items for this week
-        return baseData.slice(0, 3);
-      case 'Last Week':
-        // Show middle 3 items for last week
-        return baseData.slice(2, 5);
-      case 'This Month':
-        // Show all items for this month
-        return baseData;
-      default:
-        return baseData;
-    }
-  };
 
   useEffect(() => {
-    badgeRefs.current.forEach(badge => {
-      if (badge) {
-        badge.style.setProperty('color', '#000', 'important');
-      }
-    });
-  }, [insights]);
+    setData(allData[resourceType.toLowerCase()]);
+  }, [resourceType]);
 
   useEffect(() => {
-    const resourceTypeKey = resourceType.toLowerCase();
-    const filteredData = filterDataByDate(allData[resourceTypeKey], timePeriod);
-    setData(filteredData);
-  }, [resourceType, timePeriod, allData]);
-
-  useEffect(() => {
-    setInsights(allInsights[insightsTimePeriod] || allInsights['Last Week']);
+    setInsights(allInsights[insightsTimePeriod]);
   }, [insightsTimePeriod]);
 
   return (
-    <div className={`${styles.resourceUsageContainer} ${darkMode ? styles.darkContainer : ''}`}>
-      {/* Left Section - Chart */}
-      <div className={`${styles.chartSection} ${darkMode ? styles.darkChartSection : ''}`}>
+    <div
+      data-testid="resource-usage-container"
+      className={`${styles.resourceUsageContainer} ${
+        darkMode ? 'dark-mode bg-oxford-blue text-light' : ''
+      }`}
+    >
+      {/* LEFT SECTION */}
+      <div className={`${styles.chartSection} ${darkMode ? 'bg-space-cadet' : ''}`}>
         <div className={styles.headerSection}>
           <h1>Resources usage</h1>
+
           <div className={styles.filters}>
             <Dropdown>
               <Dropdown.Toggle className={styles.customDropdown}>{resourceType}</Dropdown.Toggle>
@@ -146,6 +152,7 @@ export default function ResourceUsage() {
                 <Dropdown.Item onClick={() => setResourceType('Venue')}>Venue</Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
+
             <Dropdown>
               <Dropdown.Toggle className={styles.customDropdown}>{timePeriod}</Dropdown.Toggle>
               <Dropdown.Menu>
@@ -159,65 +166,65 @@ export default function ResourceUsage() {
           </div>
         </div>
 
+        {/* CHART */}
         <div className={styles.chartContainer}>
-          {data && data.length > 0 ? (
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 80 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#eee" vertical={false} />
-                <XAxis
-                  dataKey="name"
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fill: darkMode ? '#eee' : '#666', fontSize: 12 }}
-                />
-                <YAxis
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fill: darkMode ? '#eee' : '#666', fontSize: 12 }}
-                />
-                <Tooltip content={<CustomTooltip darkMode={darkMode} />} />
-                <Legend
-                  align="right"
-                  verticalAlign="top"
-                  iconType="circle"
-                  iconSize={8}
-                  wrapperStyle={{ paddingBottom: '20px' }}
-                />
-                <Bar
-                  dataKey="returned"
-                  stackId="a"
-                  fill="#22c55e"
-                  name="Returned"
-                  radius={[4, 4, 0, 0]}
-                />
-                <Bar
-                  dataKey="loaned"
-                  stackId="a"
-                  fill="#fca5a5"
-                  name="Loaned"
-                  radius={[4, 4, 0, 0]}
-                />
-              </BarChart>
-            </ResponsiveContainer>
-          ) : (
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: '100%',
-              }}
-            >
-              <p>No data available for the selected time period and resource type.</p>
-            </div>
-          )}
+          <div className={styles.yAxisLabel} style={{ color: darkMode ? '#ffffff' : '#666' }}>
+            Amount
+          </div>
+
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={data} margin={{ top: 20, right: 30, left: 30, bottom: 80 }}>
+              <CartesianGrid
+                strokeDasharray="3 3"
+                stroke={darkMode ? '#3A506B' : '#eee'}
+                vertical={false}
+              />
+
+              <XAxis
+                dataKey="name"
+                axisLine={false}
+                tickLine={false}
+                tick={{
+                  fill: darkMode ? '#ffffff' : '#666',
+                  fontWeight: 700,
+                  fontSize: 12,
+                }}
+              />
+
+              <YAxis
+                axisLine={false}
+                tickLine={false}
+                tick={{
+                  fill: darkMode ? '#ffffff' : '#666',
+                  fontWeight: 700,
+                  fontSize: 12,
+                }}
+              />
+
+              <Tooltip content={<CustomTooltip darkMode={darkMode} />} />
+
+              <Legend
+                align="right"
+                verticalAlign="top"
+                iconType="circle"
+                iconSize={8}
+                wrapperStyle={{
+                  color: darkMode ? '#ffffff' : '#666',
+                }}
+              />
+
+              <Bar dataKey="returned" stackId="a" fill="#22c55e" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="loaned" stackId="a" fill="#fca5a5" radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
         </div>
       </div>
 
-      {/* Right Section - Insights */}
-      <div className={`${styles.insightsSection} ${darkMode ? styles.darkInsightsSection : ''}`}>
+      {/* RIGHT SECTION */}
+      <div className={`${styles.insightsSection} ${darkMode ? 'bg-space-cadet text-light' : ''}`}>
         <div className={styles.insightsHeader}>
           <h2>Insights</h2>
+
           <Dropdown>
             <Dropdown.Toggle className={styles.customDropdown}>
               {insightsTimePeriod}
@@ -235,20 +242,32 @@ export default function ResourceUsage() {
             </Dropdown.Menu>
           </Dropdown>
         </div>
+
         <div className={styles.insightsGrid}>
-          {insights.map((insight, index) => (
+          {insights.map((insight, idx) => (
             <div
-              key={index}
-              className={`${styles.insightCard} ${darkMode ? styles.darkInsightCard : ''}`}
+              key={idx}
+              className={`${styles.insightCard} ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}
             >
-              <div className={styles.insightTitle}>{insight.title}</div>
+              {/* 🔹 ADD THIS LINE RIGHT HERE */}
+              <div className={styles.insightTooltip}>{insightDefinitions[insight.title]}</div>
+
               <div
-                ref={el => (badgeRefs.current[index] = el)}
-                className={styles.insightBadge}
+                className={styles.insightTitle}
+                title={insightDefinitions[insight.title]}
+                style={{ color: darkMode ? '#342d2dff' : '#6b7280', fontWeight: 600 }}
+              >
+                {insight.title}
+              </div>
+
+              <div
+                className={`${styles.insightBadge} ${darkMode ? 'text-dark' : ''}`}
                 style={{ backgroundColor: insight.color }}
               >
                 {insight.value}
               </div>
+
+              <div className={styles.insightMeta}>Based on returned vs loaned comparison</div>
             </div>
           ))}
         </div>
