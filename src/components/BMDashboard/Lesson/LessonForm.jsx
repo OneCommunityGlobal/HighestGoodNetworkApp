@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { Form, FormControl, Button } from 'react-bootstrap';
 import axios from 'axios';
 import { ENDPOINTS } from '~/utils/URL';
-import { useParams } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import postNewLesson from '../../../actions/bmdashboard/lessonActions';
@@ -18,6 +18,7 @@ const style = {
 };
 function LessonForm() {
   const dispatch = useDispatch();
+  const history = useHistory();
   const user = useSelector(state => state.auth.user); // grab user from store
   const userId = user ? user.userid : null; // get userID from user object
   const roles = useSelector(state => state.role.roles); // grab all roles from store
