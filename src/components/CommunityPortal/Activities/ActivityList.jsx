@@ -1,9 +1,11 @@
 // Activity List Component
 import { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import styles from './ActivityList.module.css';
-// import { useHistory } from 'react-router-dom';
 
 function ActivityList() {
+  const darkMode = useSelector(state => state.theme.darkMode);
+
   const [activities, setActivities] = useState([]);
   const [filter, setFilter] = useState({
     type: '',
@@ -11,8 +13,9 @@ function ActivityList() {
     location: '',
   });
 
+  const [sortOrder, setSortOrder] = useState('earliest');
+
   useEffect(() => {
-    // Fetch activities (mock or replace with API call)
     const fetchedActivities = [
       {
         id: 1,
@@ -21,13 +24,7 @@ function ActivityList() {
         date: '2024-01-10',
         location: 'Community Center',
       },
-      {
-        id: 2,
-        name: 'Book Club',
-        type: 'Social',
-        date: '2024-01-12',
-        location: 'Library',
-      },
+      { id: 2, name: 'Book Club', type: 'Social', date: '2024-01-12', location: 'Library' },
       {
         id: 3,
         name: 'Coding Workshop',
@@ -35,13 +32,7 @@ function ActivityList() {
         date: '2023-12-30',
         location: 'Tech Hub',
       },
-      {
-        id: 4,
-        name: 'Painting Session',
-        type: 'Art',
-        date: '2024-01-15',
-        location: 'Art Studio',
-      },
+      { id: 4, name: 'Painting Session', type: 'Art', date: '2024-01-15', location: 'Art Studio' },
       {
         id: 5,
         name: 'Dance Class',
@@ -63,13 +54,7 @@ function ActivityList() {
         date: '2024-01-18',
         location: 'Culinary School',
       },
-      {
-        id: 8,
-        name: 'Photography Walk',
-        type: 'Art',
-        date: '2023-12-30',
-        location: 'City Park',
-      },
+      { id: 8, name: 'Photography Walk', type: 'Art', date: '2023-12-30', location: 'City Park' },
       {
         id: 9,
         name: 'Marathon Training',
@@ -77,20 +62,8 @@ function ActivityList() {
         date: '2024-02-01',
         location: 'Stadium',
       },
-      {
-        id: 10,
-        name: 'Chess Tournament',
-        type: 'Social',
-        date: '2024-01-12',
-        location: 'Library',
-      },
-      {
-        id: 11,
-        name: 'Tech Talk',
-        type: 'Educational',
-        date: '2024-01-15',
-        location: 'Tech Hub',
-      },
+      { id: 10, name: 'Chess Tournament', type: 'Social', date: '2024-01-12', location: 'Library' },
+      { id: 11, name: 'Tech Talk', type: 'Educational', date: '2024-01-15', location: 'Tech Hub' },
       {
         id: 12,
         name: 'Sculpture Workshop',
@@ -105,13 +78,7 @@ function ActivityList() {
         date: '2024-01-20',
         location: 'Community Center',
       },
-      {
-        id: 14,
-        name: 'Film Screening',
-        type: 'Social',
-        date: '2024-01-18',
-        location: 'Library',
-      },
+      { id: 14, name: 'Film Screening', type: 'Social', date: '2024-01-18', location: 'Library' },
       {
         id: 15,
         name: 'Robotics Expo',
@@ -128,19 +95,30 @@ function ActivityList() {
     setFilter({ ...filter, [name]: value });
   };
 
-  const filteredActivities = activities.filter(activity => {
-    return (
-      (!filter.type || activity.type.toLowerCase().includes(filter.type.toLowerCase())) &&
-      (!filter.date || activity.date === filter.date) &&
-      (!filter.location || activity.location.toLowerCase().includes(filter.location.toLowerCase()))
-    );
-  });
+  const handleSortChange = e => {
+    setSortOrder(e.target.value);
+  };
+
+  const filteredActivities = activities
+    .filter(activity => {
+      return (
+        (!filter.type || activity.type.toLowerCase().includes(filter.type.toLowerCase())) &&
+        (!filter.date || activity.date === filter.date) &&
+        (!filter.location ||
+          activity.location.toLowerCase().includes(filter.location.toLowerCase()))
+      );
+    })
+    .sort((a, b) => {
+      const dateA = new Date(a.date);
+      const dateB = new Date(b.date);
+      return sortOrder === 'earliest' ? dateA - dateB : dateB - dateA;
+    });
 
   return (
-    <div className={styles.body}>
+    <div className={`${styles.body} ${darkMode ? styles.darkBody : ''}`}>
       <h1 className={styles.h1}>Activity List</h1>
 
-      <div className={styles.filters}>
+      <div className={`${styles.filters} ${darkMode ? styles.darkFilters : ''}`}>
         <label>
           Type:
           <input
@@ -158,6 +136,14 @@ function ActivityList() {
         </label>
 
         <label>
+          Sort By:
+          <select value={sortOrder} onChange={handleSortChange}>
+            <option value="earliest">Start Time: Earliest to Latest</option>
+            <option value="latest">Start Time: Latest to Earliest</option>
+          </select>
+        </label>
+
+        <label>
           Location:
           <input
             type="text"
@@ -168,12 +154,16 @@ function ActivityList() {
           />
         </label>
       </div>
-      <div className={styles.activityList}>
+
+      <div className={`${styles.activityList} ${darkMode ? styles.darkActivityList : ''}`}>
         {filteredActivities.length > 0 ? (
           <ul>
             {filteredActivities.map(activity => (
-              <li key={activity.id}>
-                <strong>{activity.name}</strong> - {activity.type} - {activity.date} -{' '}
+              <li
+                key={activity.id}
+                className={`${styles.activityItem} ${darkMode ? styles.darkActivityItem : ''}`}
+              >
+                <strong>{activity.name}</strong> – {activity.type} – {activity.date} –{' '}
                 {activity.location}
               </li>
             ))}

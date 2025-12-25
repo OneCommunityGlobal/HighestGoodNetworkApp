@@ -1,5 +1,3 @@
-/* Enhanced Aesthetic CSS for Activity List */
-
 .body {
   font-family: 'Poppins', sans-serif;
   margin: 0;
@@ -34,19 +32,13 @@
   color: #1f2937;
 }
 
-.filters input {
+.filters input,
+.filters select {
   padding: 10px;
   border: 1px solid #d1d5db;
   border-radius: 6px;
   margin-top: 5px;
   font-size: 1rem;
-  transition: all 0.3s ease;
-}
-
-.filters input:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
 }
 
 .activityList {
@@ -63,7 +55,7 @@
   padding: 0;
 }
 
-.activityList li {
+.activityItem {
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -72,20 +64,14 @@
   border: 1px solid #e5e7eb;
   border-radius: 8px;
   background-color: #f9fafb;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.activityList li:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.activityList li strong {
+.activityItem strong {
   color: #1e3a8a;
   font-size: 1.2rem;
 }
 
-.activityList li span {
+.activityItem span {
   color: #4b5563;
 }
 
@@ -94,6 +80,45 @@
   color: #6b7280;
   font-size: 1.1rem;
   margin: 20px 0;
+}
+
+.darkBody {
+  background-color: #1b2a41;
+  color: #f9fafb;
+}
+
+.darkFilters {
+  background-color: #1c2541;
+  box-shadow: none;
+}
+
+.darkFilters label {
+  color: #f9fafb;
+}
+
+.darkFilters input,
+.darkFilters select {
+  background-color: #3a506b;
+  color: #f9fafb;
+  border-color: #3a506b;
+}
+
+.darkActivityList {
+  background-color: #1c2541;
+  box-shadow: none;
+}
+
+.darkActivityItem {
+  background-color: #3a506b;
+  border-color: #3a506b;
+}
+
+.darkActivityItem strong {
+  color: #e0e7ff;
+}
+
+.darkActivityItem span {
+  color: #e5e7eb;
 }
 
 @media (max-width: 768px) {
@@ -109,10 +134,5 @@
 
   .activityList {
     padding: 20px;
-  }
-
-  .activityList li {
-    flex-direction: column;
-    padding: 10px;
   }
 }
