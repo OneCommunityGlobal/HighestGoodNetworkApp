@@ -7,6 +7,12 @@ function DropOffTracking() {
   const [selectedEvent, setSelectedEvent] = useState('All Events');
   const [selectedTime, setSelectedTime] = useState('All Time');
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [activeEvent, setActiveEvent] = useState(null);
+  const [selectedUsers, setSelectedUsers] = useState([]);
+
+  const darkMode = useSelector(state => state.theme.darkMode);
+
   const getDateRange = () => {
     const today = new Date();
     let startDate, endDate;
@@ -44,7 +50,17 @@ function DropOffTracking() {
     return true;
   });
 
-  const darkMode = useSelector(state => state.theme.darkMode);
+  const handleOpenList = event => {
+    setActiveEvent(event);
+    setSelectedUsers([]);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setActiveEvent(null);
+    setSelectedUsers([]);
+  };
 
   return (
     <div
@@ -103,23 +119,126 @@ function DropOffTracking() {
           <thead>
             <tr>
               <th>Event name</th>
-              <th>No-show rate</th>
-              <th>Drop-off rate</th>
-              <th>Attendees</th>
+
+              <th>
+                No-show rate
+                <span
+                  className={styles.infoIcon}
+                  title="Percentage of registered participants who did not attend the event. Calculated per event based on total registrations."
+                >
+                  ℹ️
+                </span>
+              </th>
+
+              <th>
+                Drop-off rate
+                <span
+                  className={styles.infoIcon}
+                  title="Percentage of participants who joined the event but left before it was completed. Calculated per event based on total registrations."
+                >
+                  ℹ️
+                </span>
+              </th>
+
+              <th>
+                Get list
+                <span
+                  className={styles.infoIcon}
+                  title="View the list of no-show participants for this event and send follow-up emails."
+                >
+                  ℹ️
+                </span>
+              </th>
             </tr>
           </thead>
+
           <tbody>
             {filteredEvents.map(event => (
               <tr key={event.id}>
                 <td>{event.eventName}</td>
                 <td className={styles.trackingRateGreen}>{event.noShowRate}</td>
                 <td className={styles.trackingRateRed}>{event.dropOffRate}</td>
-                <td>{event.attendees}</td>
+                <td>
+                  <button
+                    type="button"
+                    className={styles.getListBtn}
+                    aria-label="Get no-show list"
+                    onClick={() => handleOpenList(event)}
+                  >
+                    👥
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+
+      {isModalOpen && activeEvent && (
+        <div className={styles.modalOverlay}>
+          <div className={`${styles.modalContent} ${darkMode ? styles.modalContentDark : ''}`}>
+            <div className={styles.modalHeader}>
+              <h4>No-show list</h4>
+              <button type="button" className={styles.closeBtn} onClick={handleCloseModal}>
+                ✕
+              </button>
+            </div>
+
+            <div className={styles.modalSubHeader}>
+              {activeEvent.eventName} | {activeEvent.eventTime}
+            </div>
+
+            <div className={styles.modalList}>
+              <label className={styles.selectAll}>
+                <input
+                  type="checkbox"
+                  checked={
+                    selectedUsers.length > 0 &&
+                    selectedUsers.length === mockEvents.slice(0, 8).length
+                  }
+                  onChange={e =>
+                    setSelectedUsers(e.target.checked ? mockEvents.slice(0, 8).map(u => u.id) : [])
+                  }
+                />
+                Select all
+              </label>
+
+              {mockEvents.slice(0, 8).map(user => (
+                <label key={user.id} className={styles.userRow}>
+                  <input
+                    type="checkbox"
+                    checked={selectedUsers.includes(user.id)}
+                    onChange={() =>
+                      setSelectedUsers(prev =>
+                        prev.includes(user.id)
+                          ? prev.filter(id => id !== user.id)
+                          : [...prev, user.id],
+                      )
+                    }
+                  />
+                  <span className={styles.userAvatar}>👤</span>
+                  <span className={styles.userName}>No-show person {user.id}</span>
+                  <span className={styles.userEmail}>user{user.id}@example.com</span>
+                </label>
+              ))}
+            </div>
+
+            <div className={styles.modalFooter}>
+              <button
+                type="button"
+                className={styles.sendEmailBtn}
+                disabled={selectedUsers.length === 0}
+                onClick={() => {
+                  console.log('Send email to:', selectedUsers);
+                  handleCloseModal();
+                }}
+              >
+                Send Email
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
