@@ -703,3 +703,24 @@
     color: #ffffff !important;
   }
 }
+
+/* ---------- Info Tooltip Icons ---------- */
+.infoIcon {
+  margin-left: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  color: #666;
+  vertical-align: middle;
+}
+
+.infoIcon:hover {
+  color: #000;
+}
+
+.trackingTableDark .infoIcon {
+  color: #cccccc;
+}
+
+.trackingTableDark .infoIcon:hover {
+  color: #ffffff;
+}
