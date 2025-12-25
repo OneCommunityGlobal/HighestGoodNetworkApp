@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { connect, useDispatch, useSelector } from 'react-redux';
-import { Button, ButtonGroup, Table } from 'reactstrap';
+import { Button, ButtonGroup, Table, Spinner } from 'reactstrap';
 import Select from 'react-select';
+import { toast } from 'react-toastify';
 
 import { fetchBMProjects } from '~/actions/bmdashboard/projectActions';
 import {
@@ -69,6 +70,7 @@ function EDailyActivityLog(props) {
   const [date, setDate] = useState(TODAY);
   const [logType, setLogType] = useState('check-in'); // 'check-in' | 'check-out'
   const [rows, setRows] = useState([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     dispatch(fetchBMProjects());
@@ -119,22 +121,46 @@ function EDailyActivityLog(props) {
     setRows([]);
     setLogType('check-in');
     setDate(TODAY);
+    setIsSubmitting(false);
+    toast.info('Form has been reset');
   };
 
-  const handleSubmit = () => {
-    const payload = rows.flatMap(r =>
-      r.selectedNumbers.map(() => ({
-        equipmentId: r.id,
-        logEntry: {
-          createdBy: user.userid,
-          responsibleUser: null,
-          type: logType === 'check-in' ? 'Check In' : 'Check Out',
-          date,
-        },
-      })),
-    );
+  const handleSubmit = async () => {
+    const hasSelections = rows.some(r => r.selectedNumbers.length > 0);
 
-    dispatch(updateMultipleEquipmentLogs(selectedProject.value, payload));
+    if (!hasSelections) {
+      toast.warning('Please select at least one equipment item to log');
+      return;
+    }
+
+    if (!selectedProject?.value) {
+      toast.error('Please select a project');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const payload = rows.flatMap(r =>
+        r.selectedNumbers.map(() => ({
+          equipmentId: r.id,
+          logEntry: {
+            createdBy: user.userid,
+            responsibleUser: null,
+            type: logType === 'check-in' ? 'Check In' : 'Check Out',
+            date,
+          },
+        })),
+      );
+
+      await dispatch(updateMultipleEquipmentLogs(selectedProject.value, payload));
+
+      await dispatch(fetchAllEquipments(selectedProject.value));
+    } catch (error) {
+      console.error('Failed to submit equipment log:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -312,12 +338,31 @@ function EDailyActivityLog(props) {
         </Table>
 
         {/* actions */}
-        <div className="d-flex justify-content-end gap-2">
-          <Button color="secondary" onClick={handleCancel}>
+        <div className="d-flex justify-content-end gap-2 mb-4">
+          <Button
+            color="secondary"
+            onClick={handleCancel}
+            disabled={isSubmitting || !selectedProject}
+            style={{ minWidth: '100px' }}
+          >
             Cancel
           </Button>
-          <Button color="primary" onClick={handleSubmit}>
-            Submit
+          <Button
+            color="primary"
+            onClick={handleSubmit}
+            disabled={
+              isSubmitting || !selectedProject || rows.every(r => r.selectedNumbers.length === 0)
+            }
+            style={{ minWidth: '100px' }}
+          >
+            {isSubmitting ? (
+              <>
+                <Spinner size="sm" className="me-2" />
+                Submitting...
+              </>
+            ) : (
+              'Submit'
+            )}
           </Button>
         </div>
       </div>

@@ -75,7 +75,7 @@ export const purchaseEquipment = async body => {
 };
 
 export const updateMultipleEquipmentLogs = (projectId, bulkArr) => dispatch => {
-  axios
+  return axios
     .put(
       `${ENDPOINTS.BM_EQUIPMENT_LOGS}?project=${projectId}`, 
       bulkArr
