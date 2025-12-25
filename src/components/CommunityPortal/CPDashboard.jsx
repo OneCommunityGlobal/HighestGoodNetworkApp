@@ -19,7 +19,9 @@ const FixedRatioImage = ({ src, alt, fallback }) => (
       alt={alt}
       loading="lazy"
       onError={e => {
-        if (e.currentTarget.src !== fallback) e.currentTarget.src = fallback;
+        if (e.currentTarget.src !== fallback) {
+          e.currentTarget.src = fallback;
+        }
       }}
       style={{
         width: '100%',
@@ -53,14 +55,13 @@ export function CPDashboard() {
 
       try {
         const response = await axios.get(ENDPOINTS.EVENTS);
-        console.log('Fetched events:', response.data.events);
         setEvents(response.data.events || []);
         setPagination(prev => ({
           ...prev,
           total: response.data.events?.length || 0,
         }));
       } catch (err) {
-        console.error('Here', err);
+        console.error('Failed to fetch events', err);
         setError('Failed to load events');
       } finally {
         setIsLoading(false);
@@ -85,7 +86,10 @@ export function CPDashboard() {
   };
 
   const formatDate = dateStr => {
-    if (!dateStr) return 'Date TBD';
+    if (!dateStr) {
+      return 'Date TBD';
+    }
+
     const date = new Date(dateStr);
     return date.toLocaleString('en-US', {
       weekday: 'long',
@@ -97,7 +101,10 @@ export function CPDashboard() {
   };
 
   const filteredEvents = events.filter(event => {
-    if (!searchQuery) return true;
+    if (searchQuery === '') {
+      return true;
+    }
+
     const term = searchQuery.toLowerCase();
 
     return (
@@ -114,8 +121,24 @@ export function CPDashboard() {
     pagination.currentPage * pagination.limit,
   );
 
+  const isFiltered = Boolean(searchQuery);
+  const totalFilteredCount = filteredEvents.length;
+
+  let eventCountText = 'Showing all events';
+
+  if (isFiltered) {
+    if (totalFilteredCount > 0) {
+      eventCountText = `Showing ${totalFilteredCount} event${totalFilteredCount !== 1 ? 's' : ''}`;
+    } else {
+      eventCountText = 'No events found';
+    }
+  }
+
   const goToPage = newPage => {
-    if (newPage < 1 || newPage > totalPages) return;
+    if (newPage < 1 || newPage > totalPages) {
+      return;
+    }
+
     setPagination(prev => ({ ...prev, currentPage: newPage }));
   };
 
@@ -184,42 +207,44 @@ export function CPDashboard() {
             <h4>Search Filters</h4>
             <div className={styles['filter-section-divider']}>
               <div className={styles['filter-item']}>
-                <label htmlFor="date-tomorrow"> Dates</label>
+                <label htmlFor="date-filter">Dates</label>
                 <div className={styles['filter-options-horizontal']}>
                   <div>
-                    <Input type="radio" name="dates" /> Tomorrow
+                    <Input id="date-tomorrow" type="radio" name="dates" />
+                    <label htmlFor="date-tomorrow">Tomorrow</label>
                   </div>
                   <div>
-                    <Input type="radio" name="dates" /> This Weekend
+                    <Input id="date-weekend" type="radio" name="dates" />
+                    <label htmlFor="date-weekend">This Weekend</label>
                   </div>
                 </div>
-                <Input type="date" placeholder="Ending After" className={styles['date-filter']} />
+                <Input id="date-filter" type="date" className={styles['date-filter']} />
               </div>
 
               <div className={styles['filter-item']}>
                 <label htmlFor="online-only">Online</label>
                 <div>
-                  <Input type="checkbox" /> Online Only
+                  <Input id="online-only" type="checkbox" /> Online Only
                 </div>
               </div>
 
               <div className={styles['filter-item']}>
                 <label htmlFor="branches">Branches</label>
-                <Input type="select">
+                <Input id="branches" type="select">
                   <option>Select branches</option>
                 </Input>
               </div>
 
               <div className={styles['filter-item']}>
                 <label htmlFor="themes">Themes</label>
-                <Input type="select">
+                <Input id="themes" type="select">
                   <option>Select themes</option>
                 </Input>
               </div>
 
               <div className={styles['filter-item']}>
                 <label htmlFor="categories">Categories</label>
-                <Input type="select">
+                <Input id="categories" type="select">
                   <option>Select categories</option>
                 </Input>
               </div>
@@ -229,6 +254,8 @@ export function CPDashboard() {
 
         <Col md={9} className={styles['dashboard-main']}>
           <h2 className={styles['section-title']}>Events</h2>
+
+          <p className={styles['event-count-text']}>{eventCountText}</p>
 
           <Row>
             {displayedEvents.length > 0 ? (
@@ -262,7 +289,6 @@ export function CPDashboard() {
             )}
           </Row>
 
-          {/* Simple pagination controls if needed */}
           {totalPages > 1 && (
             <div className={styles['pagination-container']}>
               <Button
