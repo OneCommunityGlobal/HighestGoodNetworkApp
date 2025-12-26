@@ -105,7 +105,7 @@ function NoShowInsights() {
     <div className={`${styles.insights} ${darkMode ? styles.insightsDark : ''}`}>
       <div className={`${styles.insightsHeader} ${darkMode ? styles.insightsHeaderDark : ''}`}>
         <h3>No-show rate insights</h3>
-        <div className={styles.insightsFilters}>
+        <div className={`${styles.insightsFilters} ${darkMode ? styles.insightsFiltersDark : ''}`}>
           <select value={dateFilter} onChange={e => setDateFilter(e.target.value)}>
             <option value="All">All Time</option>
             <option value="Today">Today</option>

@@ -12,7 +12,7 @@
 }
 
 .participationLandingPageDark {
-  max-width: 100%;
+  max-width: 90%;
   margin: 0 auto;
   background-color: #1B2A41;
   color: #ffffff;
@@ -356,6 +356,11 @@
   font-size: 0.8rem;
   border: 1px solid #ccc;
   border-radius: 5px;
+}
+
+.insightsFiltersDark select{
+  color: #f8f9fa;
+  background-color: #1C2541;
 }
 
 .insightsTabs {
