@@ -15,6 +15,7 @@ import {
   CardBody,
 } from 'reactstrap';
 import ReviewWordCloud from './ReviewWordCloud/ReviewWordCloud';
+import RatingDistribution from './RatingDistribution/RatingDistribution';
 import styles from './LBDashboard.module.css';
 
 const METRIC_OPTIONS = {
@@ -244,7 +245,14 @@ export function LBDashboard() {
             Insights from Reviews
           </summary>
           <div className={`${styles.sectionBody} ${darkMode ? styles.darkSectionBody : ''}`}>
-            <ReviewWordCloud darkMode={darkMode} />
+            <Row xs="1" md="2" className="g-3">
+              <Col>
+                <RatingDistribution darkMode={darkMode} />
+              </Col>
+              <Col>
+                <ReviewWordCloud darkMode={darkMode} />
+              </Col>
+            </Row>
           </div>
         </details>
       </section>
