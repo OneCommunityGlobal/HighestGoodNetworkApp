@@ -1,128 +1,189 @@
-/* General Styles */
+/* ---------- General Styles ---------- */
 :global(body) {
   margin: 0;
   padding: 0;
-  background-color: white;
-  font-family: Arial, sans-serif;
+  font-family: 'Arial', sans-serif;
 }
 
+/* ---------- Main Dashboard ---------- */
 .resourceManagementDashboard {
   padding: 20px;
+  background-color: #ffffff;
+  color: #333;
 }
 
+.resourceManagementDashboardDark {
+  background-color: #1C2541;
+  color: #ffffff;
+}
+
+/* ---------- Header ---------- */
 .dashboardTitle {
   display: flex;
   align-items: center;
-  gap: 20px;
-  /* Spacing between the title and button */
+  justify-content: flex-start;
+  gap: 15px;
   margin-bottom: 20px;
 }
 
+/* Light mode title */
 .dashboardTitle h2 {
-  font-size: 1.5em;
-  font-weight: bold;
-  color: black;
+  font-size: 1.6em;
+  font-weight: 600;
+  color: #333;
+  transition: color 0.3s ease-in-out;
 }
+
+/* ✅ Dark mode title — supports both parent and direct application */
+.resourceManagementDashboardDark .dashboardTitle h2,
+.dashboardTitleDark h2,
+.dashboardTitleDark {
+  color: #dbe3f5 !important;
+}
+
 
 .addLogButton {
   background-color: #d3d3d3;
-  color: black;
+  color: #000;
   border: none;
   padding: 10px 20px;
-  border-radius: 5px;
+  border-radius: 6px;
   cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
 }
 
 .addLogButton:hover {
   background-color: #b3b3b3;
 }
 
-/* Search Bar */
+.addLogButtonDark {
+  background-color: #3A506B;
+  color: #ffffff;
+}
+
+.addLogButtonDark:hover {
+  background-color: #4B7BEC;
+}
+
+/* ---------- Search Bar ---------- */
 .searchBarContainer {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
   background-color: #f0f0f0;
   border: 1px solid #ddd;
-  border-radius: 5px;
-  padding: 10px;
+  border-radius: 6px;
+  padding: 10px 15px;
+  margin-bottom: 20px;
+}
+
+.searchBarContainerDark {
+  background-color: #3A506B;
+  border: 1px solid #888;
 }
 
 .searchBarContainerLeft {
   display: flex;
-  gap: 10px;
   align-items: center;
-  font-size: 1.2em;
+  gap: 10px;
 }
 
+.icon {
+  color: #333;
+  transition: color 0.2s;
+}
+
+.iconDark {
+  color: #dbe3f5;
+  transition: color 0.2s;
+}
+
+.iconDark:hover {
+  color: #ffffff;
+  text-shadow: 0 0 3px rgba(255, 255, 255, 0.4);
+}
+
+.icon:hover {
+  color: #007bff;
+}
+
+/* ---------- Search Input ---------- */
 .searchBarContainerRight {
   display: flex;
   gap: 10px;
 }
 
 .searchInput {
-  padding: 5px;
+  padding: 6px;
   border: 1px solid #ccc;
   border-radius: 5px;
+  outline: none;
+  font-size: 14px;
+}
+
+.searchInput:focus {
+  border-color: #007bff;
+}
+
+.searchInputDark {
+  background-color: #1C2541;
+  color: #ffffff;
+  border: 1px solid #666;
 }
 
 .searchButton {
   background-color: #007bff;
-  color: white;
+  color: #ffffff;
   border: none;
-  padding: 5px 10px;
+  padding: 6px 12px;
   border-radius: 5px;
   cursor: pointer;
+  transition: background-color 0.2s;
 }
 
 .searchButton:hover {
   background-color: #0056b3;
 }
 
-/* Resource List */
+.searchButtonDark {
+  background-color: #4B7BEC;
+}
+
+/* ---------- Resource Table ---------- */
 .resourceList {
-  background-color: white;
+  background-color: #ffffff;
   border: 1px solid #ddd;
-  border-radius: 5px;
+  border-radius: 6px;
   padding: 10px;
 }
-.checkboxContainer {
-  flex: 0;
-  /* Ensures the checkbox doesn't stretch unnecessarily */
-  margin-right: 20px;
-  /* Add a margin to create space between the checkbox and the rest of the items */
-  display: flex;
-  justify-content: center;
-  align-items: center;
+
+.resourceListDark {
+  background-color: #3A506B;
+  border-color: #555;
 }
 
 .resourceHeading,
 .resourceItem {
   display: flex;
-  justify-content: space-between;
   align-items: center;
   padding: 10px 0;
 }
 
 .resourceHeadingItem {
   flex: 1;
-  text-align: left;
   color: #555;
-  /* Font color for headings */
   font-weight: bold;
 }
 
 .resourceItemDetail {
   flex: 1;
-  text-align: left;
   color: #333;
-  /* Font color for logs */
+  font-size: 14.5px;
 }
 
-.calendarIcon {
-  margin-right: 5px;
-  /* Space between icon and text */
+.resourceListDark .resourceItemDetail {
+  color: #ffffff;
 }
 
 .lineSperator {
@@ -130,27 +191,268 @@
   border-top: 1px solid #ddd;
 }
 
-/* Pagination */
+/* ---------- Checkbox Styling ---------- */
+.checkboxContainer {
+  flex: 0 0 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.customCheckbox {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #777;
+  border-radius: 4px;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s;
+}
+
+.customCheckbox:checked {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+.resourceManagementDashboardDark .customCheckbox {
+  border-color: #ccc;
+}
+
+.resourceManagementDashboardDark .customCheckbox:checked {
+  background-color: #4B7BEC;
+}
+
+/* ---------- Pagination ---------- */
 .rmPagination {
   display: flex;
+  justify-content: center;
   gap: 10px;
-  justify-content: flex-end;
   margin-top: 20px;
 }
 
-.rmPagination button {
+.pageButton {
   background-color: #f1f1f1;
   border: 1px solid #ddd;
-  padding: 5px 10px;
+  padding: 6px 12px;
+  border-radius: 5px;
   cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
 }
 
-.rmPagination button:hover {
+.pageButton:hover {
   background-color: #007bff;
-  color: white;
+  color: #ffffff;
 }
 
-.arrow-button {
-  font-weight: bold;
-  padding: 5px 15px;
+.pageButtonDark {
+  background-color: #1C2541;
+  color: #ffffff;
+  border-color: #555;
 }
+
+.pageButtonDark:hover {
+  background-color: #4B7BEC;
+}
+
+/* ---------- Modal ---------- */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.25s ease-in;
+  z-index: 1000;
+}
+
+.modalContent {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 28px 24px;
+  width: 420px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  animation: scaleIn 0.25s ease-in-out;
+  transform-origin: top center;
+}
+
+.modalContentDark {
+  background-color: #3A506B;
+  color: #ffffff;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.4);
+}
+
+.modalContent h3 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  text-align: center;
+  color: #007bff;
+}
+
+.modalContentDark h3 {
+  color: #dbe3f5;
+}
+
+/* ---------- Form Styling ---------- */
+.formContainer label {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 14px;
+  font-size: 14px;
+  font-weight: 500;
+  color: inherit;
+}
+
+.formContainer input {
+  margin-top: 6px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  background-color: #ffffff;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.formContainer input:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 4px rgba(0, 123, 255, 0.5);
+  outline: none;
+}
+
+.modalContentDark .formContainer input {
+  background-color: #1C2541;
+  color: #ffffff;
+  border: 1px solid #667b9c;
+}
+
+.modalContentDark .formContainer input:focus {
+  border-color: #4B7BEC;
+  box-shadow: 0 0 4px rgba(75, 123, 236, 0.6);
+}
+
+/* ---------- Buttons ---------- */
+.modalButtons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.submitButton {
+  background-color: #007bff;
+  color: #ffffff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.submitButton:hover {
+  background-color: #0056b3;
+  transform: translateY(-1px);
+}
+
+.modalContentDark .submitButton {
+  background-color: #4B7BEC;
+}
+
+.modalContentDark .submitButton:hover {
+  background-color: #5a8eff;
+}
+
+.cancelButton {
+  background-color: transparent;
+  color: #555;
+  border: 1px solid #ccc;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancelButton:hover {
+  background-color: #f0f0f0;
+}
+
+.modalContentDark .cancelButton {
+  background-color: transparent;
+  color: #dbe3f5;
+  border: 1px solid #667b9c;
+}
+
+.modalContentDark .cancelButton:hover {
+  background-color: #2b3c55;
+}
+
+/* ---------- Toast Notification ---------- */
+.toast {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  background-color: #ffffff;
+  color: #333;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  animation: fadeIn 0.3s ease-in;
+  z-index: 1100;
+}
+
+.toastDark {
+  background-color: #3A506B;
+  color: #ffffff;
+  border: 1px solid #555;
+}
+
+.toastClose {
+  cursor: pointer;
+  color: inherit;
+  transition: opacity 0.2s;
+}
+
+.toastClose:hover {
+  opacity: 0.7;
+}
+
+/* ---------- Fix: Dark Mode Header Visibility ---------- */
+.resourceListDark .resourceHeadingItem {
+  color: #dbe3f5;
+  font-weight: 600;
+}
+
+.resourceListDark .resourceHeadingItem:hover {
+  color: #ffffff;
+  text-shadow: 0 0 2px rgba(255, 255, 255, 0.3);
+}
+
+/* ---------- Animations ---------- */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.96);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
