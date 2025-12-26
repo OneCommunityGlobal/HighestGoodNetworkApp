@@ -122,6 +122,11 @@
   color: #eaeaea;
 }
 
+/* Ensure Weekly Requirements column children don't inherit td color in dark mode */
+.promo-table-container.dark .promo-table td[data-label="Weekly Requirements"] {
+  color: #eaeaea;
+}
+
 .promo-table-container.dark .section-row td {
   background-color: #333;
   color: #f0f0f0;
@@ -149,6 +154,30 @@
 
 .promo-table-container.dark .check-icon {
   color: white;
+}
+
+/* Weekly Requirements color coding */
+.promo-table td .weekly-req-met {
+  color: #22c55e !important;
+  font-weight: 500;
+}
+
+.promo-table td .weekly-req-not-met {
+  color: #ef4444 !important;
+  font-weight: 500;
+}
+
+/* Dark mode Weekly Requirements color coding - maximum specificity to override td color */
+.promo-table-container.dark .promo-table td[data-label="Weekly Requirements"] .weekly-req-met,
+.promo-table-container.dark .promo-table td .weekly-req-met,
+.promo-table-container.dark .promo-table td[data-label="Weekly Requirements"] span.weekly-req-met {
+  color: #22c55e !important;
+}
+
+.promo-table-container.dark .promo-table td[data-label="Weekly Requirements"] .weekly-req-not-met,
+.promo-table-container.dark .promo-table td .weekly-req-not-met,
+.promo-table-container.dark .promo-table td[data-label="Weekly Requirements"] span.weekly-req-not-met {
+  color: #ef4444 !important;
 }
 
 /* mobile */

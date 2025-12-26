@@ -5,7 +5,13 @@ import { getPromotionEligibility, postPromotionEligibility } from '../../actions
 import './PromotionEligibility.module.css';
 import { useSelector } from 'react-redux';
 
+// eslint-disable-next-line no-console
+console.log('📦 PromotionEligibility.jsx - FILE LOADED/IMPORTED');
+
 function PromotionEligibility({ currentUser }) {
+  // eslint-disable-next-line no-console
+  console.log('🚀 PromotionEligibility - Component FUNCTION CALLED');
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [reviewers, setReviewers] = useState([]);
@@ -18,10 +24,24 @@ function PromotionEligibility({ currentUser }) {
 
   const darkMode = useSelector(state => state.theme.darkMode);
 
+  // eslint-disable-next-line no-console
+  console.log('🎨 PromotionEligibility - Component rendered, darkMode:', darkMode);
+
   useEffect(() => {
+    // eslint-disable-next-line no-console
+    console.log('📊 PromotionEligibility - useEffect triggered, loading:', loading);
+  }, [loading]);
+
+  useEffect(() => {
+    // eslint-disable-next-line no-console
+    console.log('🔄 PromotionEligibility - useEffect for data fetching started');
     (async () => {
       try {
+        // eslint-disable-next-line no-console
+        console.log('📡 PromotionEligibility - Fetching promotion eligibility data...');
         const data = await getPromotionEligibility();
+        // eslint-disable-next-line no-console
+        console.log('✅ PromotionEligibility - Data received:', data.length, 'reviewers');
 
         const mappedData = data.map(r => ({
           ...r,
@@ -32,9 +52,13 @@ function PromotionEligibility({ currentUser }) {
           isNewMember: r.isNewMember,
         }));
 
+        // eslint-disable-next-line no-console
+        console.log('📋 PromotionEligibility - Mapped data:', mappedData);
         setReviewers(mappedData);
         setLoading(false);
       } catch (e) {
+        // eslint-disable-next-line no-console
+        console.error('❌ PromotionEligibility - Error fetching data:', e);
         const msg = 'Failed to load Reviewers.';
         setError(msg);
         toast.error(msg);
@@ -106,39 +130,74 @@ function PromotionEligibility({ currentUser }) {
     totalReviews,
     remainingWeeks,
     promoteEligible,
-  }) => (
-    <tr key={id}>
-      <td data-label="Reviewer Name">{reviewerName}</td>
-      <td data-label="Weekly Requirements">{weeklyRequirementsMet ? '✔️' : '❌'}</td>
-      <td data-label="Required PRs">{requiredPRs}</td>
-      <td data-label="Total Reviews Done">{totalReviews}</td>
-      <td data-label="Remaining Weeks">{remainingWeeks}</td>
-      <td data-label="Promote?">
-        <div
-          role="checkbox"
-          tabIndex={promoteEligible ? 0 : -1}
-          aria-checked={selectedForPromotion.has(id)}
-          onClick={() => !processing && toggleSelectPromotion(id)}
-          onKeyDown={e => {
-            if ((e.key === 'Enter' || e.key === ' ') && !processing) {
-              e.preventDefault();
-              toggleSelectPromotion(id);
-            }
-          }}
-          className={`custom-circular-checkbox-wrapper ${processing ? 'disabled' : ''}`}
-          style={{
-            cursor: !processing ? 'pointer' : 'not-allowed',
-          }}
-        >
+  }) => {
+    // eslint-disable-next-line no-console
+    console.log('🔍 PromotionEligibility - renderRow called:', {
+      reviewerName,
+      weeklyRequirementsMet,
+      id,
+    });
+
+    return (
+      <tr key={id}>
+        <td data-label="Reviewer Name">{reviewerName}</td>
+        <td data-label="Weekly Requirements">
+          {weeklyRequirementsMet ? (
+            <span
+              className="weekly-req-met"
+              style={{
+                color: '#22c55e',
+                fontWeight: 500,
+                display: 'inline',
+              }}
+            >
+              ✓ Has Met
+            </span>
+          ) : (
+            <span
+              className="weekly-req-not-met"
+              style={{
+                color: '#ef4444',
+                fontWeight: 500,
+                display: 'inline',
+              }}
+            >
+              ✗ Has not Met
+            </span>
+          )}
+        </td>
+        <td data-label="Required PRs">{requiredPRs}</td>
+        <td data-label="Total Reviews Done">{totalReviews}</td>
+        <td data-label="Remaining Weeks">{remainingWeeks}</td>
+        <td data-label="Promote?">
           <div
-            className={`custom-circular-checkbox ${selectedForPromotion.has(id) ? 'checked' : ''}`}
+            role="checkbox"
+            tabIndex={promoteEligible ? 0 : -1}
+            aria-checked={selectedForPromotion.has(id)}
+            onClick={() => !processing && toggleSelectPromotion(id)}
+            onKeyDown={e => {
+              if ((e.key === 'Enter' || e.key === ' ') && !processing) {
+                e.preventDefault();
+                toggleSelectPromotion(id);
+              }
+            }}
+            className={`custom-circular-checkbox-wrapper ${processing ? 'disabled' : ''}`}
+            style={{
+              cursor: !processing ? 'pointer' : 'not-allowed',
+            }}
           >
-            {selectedForPromotion.has(id) && <FaCheck className="check-icon" />}
+            <div
+              className={`custom-circular-checkbox ${
+                selectedForPromotion.has(id) ? 'checked' : ''
+              }`}
+            >
+              {selectedForPromotion.has(id) && <FaCheck className="check-icon" />}
+            </div>
           </div>
-        </div>
-      </td>
-    </tr>
-  );
+        </td>
+      </tr>
+    );
+  };
 
   return (
     <div className={`page-wrapper ${darkMode ? 'dark' : ''}`}>
@@ -237,4 +296,10 @@ function PromotionEligibility({ currentUser }) {
   );
 }
 
+// eslint-disable-next-line no-console
+console.log('📤 PromotionEligibility.jsx - About to export component');
+
 export default PromotionEligibility;
+
+// eslint-disable-next-line no-console
+console.log('✅ PromotionEligibility.jsx - Component exported');
