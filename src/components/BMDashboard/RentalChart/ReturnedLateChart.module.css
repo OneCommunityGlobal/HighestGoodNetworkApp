@@ -79,3 +79,42 @@
   color: #666;
   font-style: italic;
 }
+
+.background-dark {
+  background-color: rgb(42, 63, 95);
+  border: 1px solid #555;
+}
+:global(.dark.rmsc ) {
+  --rmsc-border: none;
+  --rmsc-bg: none;
+  border:transparent;
+}
+
+:global(.dark.rmsc .dropdown-heading) {
+  background-color: rgb(42, 63, 95); 
+  color: #fff;
+  border: 1px solid #555;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+:global(.dark.rmsc .select-item:hover) {
+  background-color: rgb(37, 50, 70) ;
+}
+
+:global(.dark.rmsc .select-item.selected) {
+  background-color: rgb(37, 50, 70);
+}
+:global(.rmsc.dark .options) {
+  background-color: rgb(42, 63, 95);
+  color: #fff;
+}
+
+/* Search box */
+:global(.rmsc.dark .search) {
+  background-color: rgb(42, 63, 95);
+  color: #fff;
+}
+:global(.rmsc.dark .search input:focus) {
+  background-color: rgb(34, 54, 83);
+}
