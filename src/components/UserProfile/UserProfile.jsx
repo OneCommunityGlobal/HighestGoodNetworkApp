@@ -54,14 +54,10 @@ import { updateUserProfile } from "../../actions/userProfile";
 import { UserStatus } from '../../utils/enums';
 import BlueSquareLayout from './BlueSquareLayout';
 import TeamWeeklySummaries from './TeamWeeklySummaries/TeamWeeklySummaries';
-<<<<<<< HEAD
 import { boxStyle } from 'styles';
-import { connect, useDispatch } from 'react-redux';
 // import { formatDate } from 'utils/formatDate';
-=======
 import { connect, useDispatch, useSelector } from 'react-redux';
 import { formatDateLocal } from '~/utils/formatDate';
->>>>>>> 858d345dddb9475a24051b7df86dfcf2cd06f3cd
 import EditableInfoModal from './EditableModal/EditableInfoModal';
 import { fetchAllProjects } from '../../actions/projects';
 
@@ -162,33 +158,6 @@ function UserProfile(props) {
   const [showToggleVisibilityModal, setShowToggleVisibilityModal] = useState(false);
   const [pendingRehireableStatus, setPendingRehireableStatus] = useState(null);
   const [isRehireable, setIsRehireable] = useState(null);
-<<<<<<< HEAD
-=======
-  const [specialWarnings, setSpecialWarnings] = useState([]);
-  const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
-  const toggleRemoveModal = () => setIsRemoveModalOpen(!isRemoveModalOpen);
-  const [loadingSummaries, setLoadingSummaries] = useState(false);
-  const [showAccessManagementModal, setShowAccessManagementModal] = useState(false);
-  const allRequests = useSelector(state => state.timeOffRequests?.requests);
-
-  const updateRemovedImage = async () => {
-    try {
-      const response = await axios.put(ENDPOINTS.USERS_REMOVE_PROFILE_IMAGE, {
-        user_id: userProfile._id,
-      });
-      await loadUserProfile();
-      toast.success('Profile Image Removed');
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.log(error);
-      toast.error('Failed to remove profile Image.');
-    }
-  };
-  const confirmRemoveImage = async () => {
-    updateRemovedImage();
-    toggleRemoveModal(); // Close the remove confirmation modal
-  };
->>>>>>> 858d345dddb9475a24051b7df86dfcf2cd06f3cd
 
   const userProfileRef = useRef();
 
@@ -200,9 +169,6 @@ function UserProfile(props) {
   const [userEndDate, setUserEndDate] = useState('');
   const [calculatedStartDate, setCalculatedStartDate] = useState(''); 
 
-<<<<<<< HEAD
-  /* useEffect functions */
-=======
   const [inputAutoComplete, setInputAutoComplete] = useState([]);
   const [inputAutoStatus, setInputAutoStatus] = useState();
   const [isLoading, setIsLoading] = useState(false);
@@ -213,7 +179,6 @@ function UserProfile(props) {
   const [titleOnSet, setTitleOnSet] = useState(false); // added by development
 
   /* useEffect functions */ // added by luis, the below useEffect
->>>>>>> 858d345dddb9475a24051b7df86dfcf2cd06f3cd
   useEffect(() => {
     getCurretLoggedinUserEmail();
     dispatch(fetchAllProjects());
@@ -359,9 +324,6 @@ function UserProfile(props) {
     try {
       const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
       const currentUserEmail = response.data.email;
-<<<<<<< HEAD
-      dispatch(setCurrentUser({ ...props.auth.user, email: currentUserEmail }));
-=======
       dispatch(
         setCurrentUser({
           ...props.auth.user,
@@ -375,7 +337,6 @@ function UserProfile(props) {
           },
         }),
       );
->>>>>>> 858d345dddb9475a24051b7df86dfcf2cd06f3cd
     } catch (err) {
       toast.error('Error while getting current logged in user email');
     }
@@ -491,19 +452,6 @@ function UserProfile(props) {
         ...newUserProfile,
         jobTitle: newUserProfile.jobTitle[0],
         phoneNumber: newUserProfile.phoneNumber[0],
-<<<<<<< HEAD
-        createdDate: newUserProfile?.createdDate.split('T')[0],
-        endDate: newUserProfile?.endDate ? newUserProfile?.endDate.split('T')[0] : undefined,
-
-      });
-      setOriginalUserProfile({
-        ...newUserProfile,
-        jobTitle: newUserProfile.jobTitle[0],
-        phoneNumber: newUserProfile.phoneNumber[0],
-        createdDate: newUserProfile?.createdDate.split('T')[0],
-      });
-      setUserStartDate(newUserProfile?.createdDate.split('T')[0]);
-=======
         startDate: newUserProfile?.startDate ? formatDateYYYYMMDD(newUserProfile?.startDate) : '',
         createdDate: formatDateYYYYMMDD(newUserProfile?.createdDate),
         ...(newUserProfile?.endDate &&
@@ -524,7 +472,6 @@ function UserProfile(props) {
       // Users can now toggle between manual and calculated startDate via button
 
       checkIsProjectsEqual();
->>>>>>> 858d345dddb9475a24051b7df86dfcf2cd06f3cd
       setShowLoading(false);
     } catch (err) {
       setShowLoading(false);
@@ -682,43 +629,6 @@ setUpdatedTasks(prev => {
 
   const handleImageUpload = async evt => {
     if (evt) evt.preventDefault();
-<<<<<<< HEAD
-    const file = evt.target.files[0];
-    if (typeof file !== 'undefined') {
-      const filesizeKB = file.size / 1024;
-      const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
-      const allowedTypesString = `File type not permitted. Allowed types are ${allowedTypes
-        .toString()
-        .replaceAll(',', ', ')}`;
-
-      // Input validation: file type
-      if (!allowedTypes.includes(file.type)) {
-        setType('image');
-        setShowModal(true);
-        setModalTitle('Profile Pic Error');
-        setModalMessage(allowedTypesString);
-        return;
-      }
-
-      // Input validation: file size.
-      if (filesizeKB > 50) {
-        const errorMessage = `The file you are trying to upload exceeds the maximum size of 50KB. You can either
-                            choose a different file, or use an online file compressor.`;
-
-        setType('image');
-        setShowModal(true);
-        setModalTitle('Profile Pic Error');
-        setModalMessage(errorMessage);
-
-        return;
-      }
-
-      const fileReader = new FileReader();
-      fileReader.readAsDataURL(file);
-      fileReader.onloadend = () => {
-        setUserProfile({ ...userProfile, profilePic: fileReader.result });
-      };
-=======
     const file = evt.target.files?.[0];
     if (!file) return;
   
@@ -733,7 +643,6 @@ setUpdatedTasks(prev => {
       setModalTitle('Profile Pic Error');
       setModalMessage(allowedTypesString);
       return;
->>>>>>> 858d345dddb9475a24051b7df86dfcf2cd06f3cd
     }
     // size check
     if (filesizeKB > 50) {
@@ -778,9 +687,6 @@ setUpdatedTasks(prev => {
 
   const handleBlueSquare = (status = true, type = 'message', blueSquareID = '') => {
     if (targetIsDevAdminUneditable) {
-<<<<<<< HEAD
-      alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
-=======
       if (userProfile?.email === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY) {
         // eslint-disable-next-line no-alert
         alert(DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY);
@@ -788,7 +694,6 @@ setUpdatedTasks(prev => {
         // eslint-disable-next-line no-alert
         alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
       }
->>>>>>> 858d345dddb9475a24051b7df86dfcf2cd06f3cd
       return;
     }
     setType(type);
@@ -815,18 +720,6 @@ setUpdatedTasks(prev => {
   const modifyBlueSquares = async (id, dateStamp, summary, operation) => {
     setShowModal(false);
     if (operation === 'add') {
-<<<<<<< HEAD
-      const newBlueSquare = { date: dateStamp, description: summary, createdDate: moment.tz('America/Los_Angeles').toISOString().split('T')[0] };
-      setOriginalUserProfile({
-        ...originalUserProfile,
-        infringements: userProfile.infringements?.concat(newBlueSquare),
-      });
-      setUserProfile({
-        ...userProfile,
-        infringements: userProfile.infringements?.concat(newBlueSquare),
-      });
-      setModalTitle('Blue Square');
-=======
       /* peizhou: check that the date of the blue square is not future or empty. */
       if (moment(dateStamp).isAfter(moment().format('YYYY-MM-DD')) || dateStamp === '') {
         if (moment(dateStamp).isAfter(moment().format('YYYY-MM-DD'))) {
@@ -882,7 +775,6 @@ setUpdatedTasks(prev => {
             toast.error('Failed to add Blue Square!');
           });
       }
->>>>>>> 858d345dddb9475a24051b7df86dfcf2cd06f3cd
     } else if (operation === 'update') {
       const currentBlueSquares = [...userProfile?.infringements] || [];
       if (dateStamp != null && currentBlueSquares.length !== 0) {
@@ -944,13 +836,6 @@ setUpdatedTasks(prev => {
       noneBlSq = Object.values(warningData?.issueBlueSquare).every(blueSquare => blueSquare === false);
       inCompleteHoursMixedBlSq = warningData?.issueBlueSquare['Blu Sq Rmvd - Hrs Close Enoug'] === true;
     }
-<<<<<<< HEAD
-    try {
-      await props.updateUserProfile(userProfileRef.current);
-
-      if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
-        await props.refreshToken(userProfile._id);
-=======
     const inCompleteHoursBlSq = warningData.description === 'Blu Sq Rmvd - Hrs Close Enoug';
 
     let message = null;
@@ -963,7 +848,6 @@ setUpdatedTasks(prev => {
         message = `Issued a blue square for an Admin having to remove past blue squares ${inCompleteHours.warnings.length - 1} times for ${inCompleteHoursMessage} and received a warning for removing past blue squares ${noSummary.warnings.length - 1} times for ${noSummaryMessage}.`
       } else {
         message = `Issued a blue square for an Admin having to remove past blue squares ${noSummary.warnings.length - 1} times for ${noSummaryMessage} and received a warning for removing past blue squares ${inCompleteHours.warnings.length - 1} times for ${inCompleteHoursMessage}.`
->>>>>>> 858d345dddb9475a24051b7df86dfcf2cd06f3cd
       }
     } else if(inCompleteHoursBlSq) {
         message = `Issued a blue square for an Admin having to remove past blue squares ${inCompleteHours.warnings.length - 1} times for ${inCompleteHoursMessage}.`
@@ -1044,10 +928,6 @@ setUpdatedTasks(prev => {
       });
   };
 
-<<<<<<< HEAD
-  // Changing onSubmit for Badges component from handleSubmit to handleBadgeSubmit. 
-  // AssignBadgePopup already has onSubmit action to call an API to update the user badges. 
-=======
   // const handleSubmit = async updatedUserProfile => {
   //   for (let i = 0; i < updatedTasks.length; i += 1) {
   //     const updatedTask = updatedTasks[i];
@@ -1123,7 +1003,6 @@ setUpdatedTasks(prev => {
 
   // Changing onSubmit for Badges component from handleSubmit to handleBadgeSubmit.
   // AssignBadgePopup already has onSubmit action to call an API to update the user badges.
->>>>>>> 858d345dddb9475a24051b7df86dfcf2cd06f3cd
   // Using handleSubmit will trigger actopms to call the assignBadge API and updateUserProfile API, which is redundant.
   const handleBadgeSubmit = async () => {
     try {
@@ -1274,20 +1153,6 @@ setUpdatedTasks(prev => {
     setShowConfirmDialog(false);
   };
 
-<<<<<<< HEAD
-  useEffect(() => {
-    getTeamMembersWeeklySummary();
-    loadUserProfile();
-  }, []);
-
-  useEffect(() => {
-    if (!shouldRefresh) return;
-    setShouldRefresh(false);
-    loadUserProfile();
-  }, [shouldRefresh]);
-
-=======
->>>>>>> 858d345dddb9475a24051b7df86dfcf2cd06f3cd
   /**
    *
    * UserProfile.jsx and its subsomponents are being refactored to avoid the use of this monolithic function.
@@ -1387,20 +1252,11 @@ setUpdatedTasks(prev => {
   const canResetPassword =
     props.hasPermission('updatePassword')&& !(userProfile.role === 'Administrator' || userProfile.role === 'Owner');
   const targetIsDevAdminUneditable = cantUpdateDevAdminDetails(userProfile.email, authEmail);
-<<<<<<< HEAD
-
-  const canEditUserProfile = targetIsDevAdminUneditable
-    ? false
-    : userProfile.role === 'Owner'
-      ? canAddDeleteEditOwners
-      : canPutUserProfile;
-=======
   const canEditUserProfile = targetIsDevAdminUneditable
     ? false
     : userProfile.role === 'Owner' || userProfile.role === 'Administrator'
     ? canAddDeleteEditOwners
     : canPutUserProfile;
->>>>>>> 858d345dddb9475a24051b7df86dfcf2cd06f3cd
 
   const canEdit = canEditUserProfile || isUserSelf;
 
@@ -1524,64 +1380,6 @@ setUpdatedTasks(prev => {
                 />
               </div>
             ) : null}
-<<<<<<< HEAD
-            {!codeValid ? (
-              <Alert color="danger">The code format should be A-AAA or AAAAA.</Alert>
-            ) : null}
-            <div className="profile-head">
-              <h5 className="mr-2">{`${firstName} ${lastName}`}</h5>
-              <div style={{ marginTop: '6px' }} >
-                <EditableInfoModal
-                  areaName="UserProfileInfoModal"
-                  areaTitle="User Profile"
-                  fontSize={24}
-                  isPermissionPage={true}
-                  role={requestorRole} // Pass the 'role' prop to EditableInfoModal
-                />
-              </div>
-              <span className="mr-2">
-                <ActiveCell
-                  isActive={userProfile.isActive}
-                  user={userProfile}
-                  canChange={canChangeUserStatus}
-                  onClick={() => {
-                    if (cantDeactivateOwner(userProfile, requestorRole)) {
-                      //Owner user cannot be deactivated by another user that is not an Owner.
-                      alert('You are not authorized to deactivate an owner.');
-                      return;
-                    }
-                    setActiveInactivePopupOpen(true);
-                  }}
-                />
-              </span>
-              {canEdit && (
-                <span className="mr-2">
-                  <i
-                    data-toggle="tooltip"
-                    className="fa fa-clock-o"
-                    aria-hidden="true"
-                    style={{ fontSize: 24, cursor: 'pointer', marginTop: '6px' }}
-                    title="Click to see user's timelog"
-                    onClick={e => {
-                      if (e.metaKey || e.ctrlKey) {
-                        window.open(`/timelog/${targetUserId}`, '_blank');
-                      } else {
-                        e.preventDefault();
-                        props.history.push(`/timelog/${targetUserId}`);
-                      }
-                    }}
-                  />
-                </span>
-              )}
-              {canChangeRehireableStatus && (
-                <span className='mr-2'>
-                  <i
-                    className={isRehireable ? "fa fa-check-square-o" : "fa fa-square-o"}
-                    aria-hidden="true"
-                    style={{ fontSize: 24, cursor: 'pointer', marginTop: '6px' }}
-                    title="Click to change rehirable status"
-                    onClick={handleRehireableChange}
-=======
 
             {isSavingImage && (
               <div
@@ -1714,7 +1512,6 @@ setUpdatedTasks(prev => {
                     src="/report_icon.png"
                     alt="reportsicon"
                     className={teamStyles["team-member-tasks-user-report-link-image"]}
->>>>>>> 858d345dddb9475a24051b7df86dfcf2cd06f3cd
                   />
                 </Link>
               </span>
@@ -1788,48 +1585,6 @@ setUpdatedTasks(prev => {
                 Generate Summary Intro
               </Button>
             )}
-<<<<<<< HEAD
-            {summarySelected &&
-              showSelect &&
-              showSummary &&
-              summarySelected.map((data, i) => {
-                return (
-                  <TeamWeeklySummaries key={data['_id']} i={i} name={summaryName} data={data} />
-                );
-              })}
-            <Badges
-              isUserSelf={isUserSelf}
-              userProfile={userProfile}
-              setUserProfile={setUserProfile}
-              setOriginalUserProfile={setOriginalUserProfile}
-              role={requestorRole}
-              canEdit={canEdit}
-              handleSubmit={handleBadgeSubmit}
-              isRecordBelongsToJaeAndUneditable={targetIsDevAdminUneditable} //
-            />
-          </Col>
-        </Row>
-        <Row>
-          <Col md="4">
-            <div className="profile-work">
-              <UserLinkLayout
-                isUserSelf={isUserSelf}
-                userProfile={userProfile}
-                updateLink={updateLink}
-                handleLinkModel={props.handleLinkModel}
-                handleSubmit={handleSubmit}
-                role={requestorRole}
-                canEdit={canEdit}
-              />
-              <BlueSquareLayout
-                userProfile={userProfile}
-                handleUserProfile={handleUserProfile}
-                handleSaveError={props.handleSaveError}
-                handleBlueSquare={handleBlueSquare}
-                user={props.auth.user}
-                isUserSelf={isUserSelf}
-                canEdit={canEdit}
-=======
           </div>
           <h6 className={darkMode ? 'text-light' : 'text-azure'}>{jobTitle}</h6>
           <p className={`proile-rating ${darkMode ? 'text-light' : ''}`} style={{ textAlign: 'left' }}>
@@ -1855,7 +1610,6 @@ setUpdatedTasks(prev => {
                   setSummaryName(e.value[0]);
                   getWeeklySummary(e.value[1]);
                 }}
->>>>>>> 858d345dddb9475a24051b7df86dfcf2cd06f3cd
               />
             </div>
           ) : (
@@ -2030,26 +1784,6 @@ setUpdatedTasks(prev => {
                 />
               </TabPane>
               <TabPane tabId="4">
-<<<<<<< HEAD
-                <ProjectsTab
-                  userProjects={userProfile.projects || []}
-                  userTasks={tasks}
-                  projectsData={props?.allProjects?.projects || []}
-                  onAssignProject={onAssignProject}
-                  onDeleteProject={onDeleteProject}
-                  edit={canEdit}
-                  role={requestorRole}
-                  userId={props.match.params.userId}
-                  updateTask={onUpdateTask}
-                  handleSubmit={handleSubmit}
-                  disabled={
-                    !formValid.firstName ||
-                    !formValid.lastName ||
-                    !formValid.email ||
-                    !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
-                  }
-                />
-=======
                 {
                   activeTab === '4' && (
                     <ProjectsTab
@@ -2075,19 +1809,14 @@ setUpdatedTasks(prev => {
                   )
                 }
 
->>>>>>> 858d345dddb9475a24051b7df86dfcf2cd06f3cd
               </TabPane>
               <TabPane tabId="5">
                 <TimeEntryEditHistory
                   userProfile={userProfile}
                   setUserProfile={setUserProfile}
                   role={requestorRole}
-<<<<<<< HEAD
-                  isRecordBelongsToJaeAndUneditable={targetIsDevAdminUneditable} // 
-=======
                   isRecordBelongsToJaeAndUneditable={targetIsDevAdminUneditable}
                   darkMode={darkMode}
->>>>>>> 858d345dddb9475a24051b7df86dfcf2cd06f3cd
                 />
               </TabPane>
             </TabContent>
@@ -2197,11 +1926,6 @@ setUpdatedTasks(prev => {
                   </Button>
                 </ModalFooter>
               </Modal>
-<<<<<<< HEAD
-              <Modal isOpen={menuModalTabletScreen === 'Basic Information'} toggle={toggle}>
-                <ModalHeader toggle={toggle}>Basic Information</ModalHeader>
-                <ModalBody>
-=======
               <Modal
                 isOpen={menuModalTabletScreen === 'Basic Information'}
                 toggle={toggle}
@@ -2211,7 +1935,6 @@ setUpdatedTasks(prev => {
                   Basic Information
                 </ModalHeader>
                 <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
->>>>>>> 858d345dddb9475a24051b7df86dfcf2cd06f3cd
                   <BasicInformationTab
                     role={requestorRole}
                     userProfile={userProfile}
@@ -2224,10 +1947,7 @@ setUpdatedTasks(prev => {
                     canEdit={canEdit}
                     canEditRole={canEditUserProfile}
                     roles={roles}
-<<<<<<< HEAD
-=======
                     darkMode={darkMode}
->>>>>>> 858d345dddb9475a24051b7df86dfcf2cd06f3cd
                   />
                 </ModalBody>
                 <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
@@ -2428,14 +2148,7 @@ setUpdatedTasks(prev => {
                       !formValid.firstName ||
                       !formValid.lastName ||
                       !formValid.email ||
-<<<<<<< HEAD
-                      !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
-                    }
-                    canEditTeamCode={
-                      props.hasPermission('editTeamCode') || requestorRole === 'Owner' || requestorRole === 'Administrator'
-=======
                       !(isProfileEqual && isTasksEqual && isProjectsEqual)
->>>>>>> 858d345dddb9475a24051b7df86dfcf2cd06f3cd
                     }
                     canEditTeamCode={canEditTeamCode}
                     setUserProfile={setUserProfile}
@@ -2662,77 +2375,6 @@ setUpdatedTasks(prev => {
                 </ModalFooter>
               </Modal>
             </List>
-<<<<<<< HEAD
-          </Col>
-        </Row>
-        <Row>
-          <Col md="4"></Col>
-          <Col md="8" className="desktop-panel">
-            <div className="profileEditButtonContainer">
-              {canUpdatePassword && canEdit && !isUserSelf && (
-                <ResetPasswordButton
-                  className="mr-1 btn-bottom"
-                  user={userProfile}
-                  authEmail={authEmail}
-                />
-              )}
-              {isUserSelf && (activeTab === '1' || canPutUserProfile) && (
-                <Link
-                  to={targetIsDevAdminUneditable ? `#` : `/updatepassword/${userProfile._id}`}
-                  onClick={() => {
-                    if (targetIsDevAdminUneditable) {
-                      alert(
-                        'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD. ' +
-                        'You shouldn’t even be using this account except to create your own accounts to use. ' +
-                        'Please re-read the Local Setup Doc to understand why and what you should be doing instead of what you are trying to do now.',
-                      );
-                      return `#`;
-                    }
-                  }}
-                >
-                  <Button className="mr-1 btn-bottom" color="primary" style={boxStyle}>
-                    {' '}
-                    Update Password
-                  </Button>
-                </Link>
-              )}
-              {canEdit && (activeTab) && (
-                <>
-                  <SaveButton
-                    className="mr-1 btn-bottom"
-                    handleSubmit={async () => await handleSubmit()}
-                    disabled={
-                      !formValid.firstName ||
-                      !formValid.lastName ||
-                      !formValid.email ||
-                      !codeValid ||
-                      (userStartDate > userEndDate && userEndDate !== '') ||
-                      (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual) ||
-                      isTeamSaved
-                    }
-                    userProfile={userProfile}
-                    setSaved={() => setSaved(true)}
-                  />
-                  {activeTab !== '3' && (
-                    <span
-                      onClick={() => {
-                        setUserProfile(originalUserProfile);
-                        setTasks(originalTasks);
-                        setTeams(originalTeams);
-                        setProjects(resetProjects);
-                      }}
-                      className="btn btn-outline-danger mr-1 btn-bottom"
-                      style={boxStyle}
-                    >
-                      Cancel
-                    </span>
-                  )}
-                </>
-              )}
-            </div>
-          </Col>
-        </Row>
-=======
           </div>
         </div>
 
@@ -2763,7 +2405,6 @@ setUpdatedTasks(prev => {
         <div className="left-dummy" />
 
         {/* </div> */}
->>>>>>> 858d345dddb9475a24051b7df86dfcf2cd06f3cd
       </Container>
     </div>
   );
