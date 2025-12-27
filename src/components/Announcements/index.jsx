@@ -19,7 +19,6 @@ import ReactTooltip from 'react-tooltip';
 import EmailPanel from './platforms/email'; // ← new
 import SlashdotAutoPoster from './platforms/slashdot';
 
-
 function Announcements({ title, email: initialEmail }) {
   const [activeTab, setActiveTab] = useState('email');
   const darkMode = useSelector(state => state.theme.darkMode);
