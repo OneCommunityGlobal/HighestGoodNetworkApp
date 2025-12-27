@@ -327,7 +327,10 @@ function LessonList(props) {
       .replace(/\n/g, ' ');
 
     // If value contains comma, quote, or starts/ends with whitespace, wrap in quotes and escape quotes
-    if (stringValue.includes(',') || stringValue.includes('"') || /^\s|\s$/.test(stringValue)) {
+    const startsOrEndsWithWhitespace =
+      stringValue.length > 0 &&
+      (stringValue.trimStart() !== stringValue || stringValue.trimEnd() !== stringValue);
+    if (stringValue.includes(',') || stringValue.includes('"') || startsOrEndsWithWhitespace) {
       return `"${stringValue.replace(/"/g, '""')}"`;
     }
 
