@@ -109,10 +109,19 @@
   display: none;
 }
 
+.hideInTablet {
+  display: block;
+}
+.showInTablet {
+  display: none;
+}
 
 @media (max-width: 1700px) {
-  .navbarOwnerMessage {
+  .hideInTablet {
     display: none;
+  }
+  .showInTablet {
+    display: block;
   }
 }
 

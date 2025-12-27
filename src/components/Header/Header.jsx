@@ -404,6 +404,11 @@ export function Header(props) {
   const viewingUser = JSON.parse(window.sessionStorage.getItem('viewingUser'));
   return (
     <div className={`${styles.headerWrapper}`} data-testid="header">
+      {isAuthenticated && (
+        <div className={`bg-dark pt-3 ${styles.navbarOwnerMessage} ${styles.showInTablet}`}>
+          <OwnerMessage />
+        </div>
+      )}
       <Navbar className={`py-3 ${styles.navbar}`} color="dark" dark expand="xl">
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
         {showPromotionsPopup && 
@@ -424,7 +429,7 @@ export function Header(props) {
         {isAuthenticated && (
           <Collapse isOpen={isOpen} navbar innerRef={collapseRef}>
             {isAuthenticated && (
-              <div className={styles.navbarOwnerMessage}>
+              <div className={`${styles.navbarOwnerMessage} ${styles.hideInTablet}`}>
                 <OwnerMessage />
               </div>
             )}
