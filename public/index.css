@@ -171,11 +171,19 @@ body.bm-dashboard-dark .table {
 }
 
 body.dark-mode .table th,
-body.dark-mode .table td,
+body.dark-mode .table td {
+  color: #ffffff !important;
+  border-color: #3a506b;
+}
+
 body.bm-dashboard-dark .table th,
 body.bm-dashboard-dark .table td {
   color: #ffffff !important;
   border-color: #3a506b;
+}
+
+body.bm-dashboard-dark .table th{
+  background-color: #2e5061 !important;
 }
 
 body.dark-mode .table-striped > tbody > tr:nth-of-type(odd),

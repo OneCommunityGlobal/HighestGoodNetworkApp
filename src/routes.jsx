@@ -1,5 +1,5 @@
 import { lazy } from 'react';
-import { Route, Switch } from 'react-router-dom';
+import { Route, Switch, Redirect } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AutoUpdate from './components/AutoUpdate';
@@ -64,6 +64,7 @@ import { ExperienceDonutChart } from './components/ExperienceDonutChart';
 
 import ToolsAvailabilityPage from './components/BMDashboard/WeeklyProjectSummary/Tools/ToolsAvailabilityPage';
 import ResourceUsage from './components/CommunityPortal/ResourceUsage/ResourceUsage';
+import DatabaseDesign from './components/CommunityPortal/DatabaseDesign/DatabaseDesign';
 
 import Page1 from './components/HGNForm/pages/Page1';
 import Page2 from './components/HGNForm/pages/Page2';
@@ -110,7 +111,9 @@ import Collaboration from './components/Collaboration';
 import SuggestedJobsList from './components/Collaboration/SuggestedJobsList';
 
 import TestEventRegistration from './components/EventRegistration/TestEventRegistration';
+// Questionnaire Dashboard
 import MemberList from './components/QuestionnaireDashboard/MemberList';
+import PromotionTable from './components/QuestionnaireDashboard/PromotionTable';
 import EventPopularity from './components/EventPopularity/EventPopularity';
 import ApplicantVolunteerRatio from './components/ApplicantVolunteerRatio/ApplicantVolunteerRatio';
 import { JobAnalyticsCompetitiveRolesPage } from './components/Reports/JobAnalytics';
@@ -166,10 +169,15 @@ import EventStats from './components/CommunityPortal/EventPersonalization/EventS
 import CommunityCalendar from './components/CommunityPortal/Calendar/CommunityCalendar';
 import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
 import EPLogin from './components/EductionPortal/Login';
+import BrowseLessonPlan from './components/EductionPortal/BrowseLessonPlan/BrowseLP';
 import EPDashboard from './components/EductionPortal';
 import GroupList from './components/EductionPortal/GroupList/GroupList';
 import EvaluationResultsWrapper from './components/EductionPortal/EvaluationResultsWrapper';
+import InsightWidget from './components/EductionPortal/AnalyticsDashboard/InsightsWidget';
 
+import StudentDashboard from './components/EductionPortal/StudentTasks/StudentDashboard';
+import StudentTasks from './components/EductionPortal/StudentTasks/StudentTasks';
+import TaskDetails from './components/EductionPortal/StudentTasks/TaskDetails';
 import PRReviewTeamAnalytics from './components/HGNPRDashboard/PRReviewTeamAnalytics';
 import PRDashboardOverview from './components/HGNPRDashboard/PRDashboardOverview';
 import PRDashboardPromotionEligibility from './components/HGNPRDashboard/PRDashboardPromotionEligibility';
@@ -248,6 +256,9 @@ const PopularityTimelineChart = lazy(() =>
 );
 const MonthsPledgedChart = lazy(() =>
   import('./components/MonthsPledgedAnalytics/MonthsPledgedChart'),
+);
+const EnhancedPopularityTimelineChart = lazy(() =>
+  import('./components/EnhancedPopularityTimelineAnalytics/EnhancedPopularityTimelineChart'),
 );
 
 // PR Analytics Dashboard
@@ -564,6 +575,11 @@ export default (
         />
         <ProtectedRoute path="/job-application" exact component={JobApplicationForm} />
         <ProtectedRoute path="/popularity" component={PopularityTimelineChart} fallback />;
+        <ProtectedRoute
+          path="/popularity-enhanced"
+          component={EnhancedPopularityTimelineChart}
+          fallback
+        />
         <ProtectedRoute path="/analytics/months-pledged" component={MonthsPledgedChart} fallback />
         <ProtectedRoute
           path="/jobanalytics"
@@ -778,6 +794,8 @@ export default (
           component={EvaluationResultsWrapper}
         />
         <Route path="/educationportal/login" component={EPLogin} />
+        <Route path="/educationportal/InsightWidget" component={InsightWidget} />
+        <Route path="/educationportal/lesson-library" exact component={BrowseLessonPlan} />
         <EPProtectedRoute path="/educationportal/tasks/upload" exact component={WriteTaskUpload} />
         <Route path="/educator/groups" exact component={GroupList} />
         <EPProtectedRoute
@@ -785,6 +803,13 @@ export default (
           exact
           component={IntermediateTaskList}
         />
+        <EPProtectedRoute path="/educationportal/dashboard" exact component={StudentDashboard} />
+        <EPProtectedRoute path="/educationportal/student/tasks" exact component={StudentTasks} />
+        <EPProtectedRoute path="/educationportal/student/tasks/:id" exact component={TaskDetails} />
+        <Redirect exact from="/student/tasks" to="/educationportal/student/tasks" />
+        <Redirect exact from="/student/tasks/:id" to="/educationportal/student/tasks/:id" />
+        {/* PR Analytics Dashboard */}
+        <Route path="/pull-request-analytics/reviews-insight" component={ReviewsInsight} />
         <CPProtectedRoute
           path="/communityportal/reports/event/personalization"
           exact
@@ -799,6 +824,11 @@ export default (
           path="/communityportal/reports/resourceusage"
           exact
           component={ResourceUsage}
+        />
+        <CPProtectedRoute
+          path="/communityportal/database/design"
+          exact
+          component={DatabaseDesign}
         />
         {/* <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} /> */}
         <CPProtectedRoute path="/communityportal/ActivityAgenda" exact component={ActivityAgenda} />
@@ -821,6 +851,7 @@ export default (
         <ProtectedRoute path="/userprofile/:userId" fallback component={UserProfile} />
         <ProtectedRoute path="/userprofileedit/:userId" component={UserProfileEdit} />
         <ProtectedRoute path="/updatepassword/:userId" component={UpdatePassword} />
+        <ProtectedRoute path="/promotiontable" exact component={PromotionTable} />
         <ProtectedRoute path="/memberlist" exact component={MemberList} />
         <Route path="/Logout" component={Logout} />
         <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />

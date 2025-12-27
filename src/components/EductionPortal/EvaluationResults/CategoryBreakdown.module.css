@@ -19,10 +19,6 @@
   box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.1), 0 4px 6px -2px rgba(79, 70, 229, 0.05);
 }
 
-.breakdownCard.filtered .categoryHeader {
-  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-}
-
 /* Individual category cards */
 .categoryCard {
   background: #ffffff;
@@ -207,11 +203,6 @@
   backdrop-filter: blur(10px);
 }
 
-.categoryIcon {
-  font-size: 1.25rem;
-  color: rgba(255, 255, 255, 0.9) !important;
-}
-
 .categoryDetails {
   flex: 1;
 }
@@ -376,10 +367,6 @@
   gap: 1rem;
 }
 
-.headerRight {
-  flex-shrink: 0;
-}
-
 .instructorInfo {
   font-size: 0.875rem;
   color: #6b7280;
@@ -468,12 +455,6 @@
   padding: 1rem;
   border-bottom: 1px solid #e5e7eb;
   vertical-align: middle;
-}
-
-.categoryName {
-  font-weight: 600;
-  color: #1f2937;
-  font-size: 0.95rem;
 }
 
 .categoryIcon {

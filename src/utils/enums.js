@@ -7,7 +7,7 @@ export const UserStatus = {
 };
 export const FinalDay = {
   FinalDay: 'FinalDay',
-  NotSetFinalDay: 'NotSetFinalDay',
+  RemoveFinalDay: 'RemoveFinalDay',
 };
 /**
  * Enum representing the different roles of a user
