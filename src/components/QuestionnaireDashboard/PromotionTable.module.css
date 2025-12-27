@@ -93,11 +93,12 @@
   color: #586069;
 }
 
-.statusMet {
+/* Status colors for Weekly Requirements */
+.promotionTable td.statusMet {
   color: #22863a;
 }
 
-.statusNotMet {
+.promotionTable td.statusNotMet {
   color: #cb2431;
 }
 
@@ -180,12 +181,13 @@
   color: #f0f0f0; 
 }
 
-[data-theme="dark"] .statusMet {
-  color: #53d06e;
+/* Dark mode status colors - higher specificity to override td color */
+[data-theme="dark"] .promotionTable td.statusMet {
+  color: #53d06e !important;
 }
 
-[data-theme="dark"] .statusNotMet {
-  color: #fa7970;
+[data-theme="dark"] .promotionTable td.statusNotMet {
+  color: #fa7970 !important;
 }
 
 @media (max-width: 768px) {
