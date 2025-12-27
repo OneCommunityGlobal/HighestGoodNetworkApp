@@ -7,13 +7,10 @@ import 'react-datepicker/dist/react-datepicker.css';
 import DatePicker from 'react-datepicker';
 
 const ProjectsGlobalDistribution = () => {
-  // Sample project data (simulating MongoDB data)
-
   const [statusFilter, setStatusFilter] = useState('All');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
 
-  // Date validation functions
   const handleStartDateChange = date => {
     if (endDate && date && new Date(date) > new Date(endDate)) {
       alert('Start date cannot be later than end date.');
@@ -57,7 +54,6 @@ const ProjectsGlobalDistribution = () => {
   }, [statusFilter, startDate, endDate]);
 
   const filterData = async () => {
-    // Only call API if statusFilter is changed and dates are not set, or both dates are set
     const isStatusOnly = statusFilter !== 'All' && !startDate && !endDate;
     const isBothDatesSet = startDate && endDate;
 
@@ -208,7 +204,6 @@ const ProjectsGlobalDistribution = () => {
                     formatter={value => `${value.toFixed(1)}%`}
                     contentStyle={{
                       backgroundColor: darkMode ? '#222e3c' : 'rgba(255, 255, 255, 0.95)',
-                      //color: darkMode ? '#fff' : '#000',
                       border: '1px solid #e2e8f0',
                       borderRadius: '8px',
                       padding: '12px',
