@@ -24,6 +24,7 @@ import IssueCharts from '../Issues/openIssueCharts';
 import SupplierPerformanceGraph from './SupplierPerformanceGraph.jsx';
 import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
 import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
+import MaterialStockOutRiskIndicator from './MaterialStockOutRiskIndicator/MaterialStockOutRiskIndicator';
 
 const projectStatusButtons = [
   {
@@ -269,6 +270,16 @@ function WeeklyProjectSummary() {
             </div>
           );
         }),
+      },
+      {
+        title: 'Material Stock-Out Risk Indicator',
+        key: 'Material Stock-Out Risk Indicator',
+        className: 'full',
+        content: (
+          <div className={`${styles.weeklyProjectSummaryCard} ${styles.fullCard}`}>
+            <MaterialStockOutRiskIndicator />
+          </div>
+        ),
       },
       {
         title: 'Issue Tracking',

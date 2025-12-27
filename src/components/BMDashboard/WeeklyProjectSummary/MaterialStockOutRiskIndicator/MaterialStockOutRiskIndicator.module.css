@@ -1,0 +1,252 @@
+/* Material Stock-Out Risk Indicator Card */
+.card {
+    background-color: var(--card-bg, #ffffff);
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s ease;
+    min-height: 400px;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.card.darkMode {
+    background-color: #2c3344;
+    color: #e0e0e0;
+}
+
+/* Header */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.title {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+    color: var(--text-color, #333);
+    flex: 1;
+}
+
+.card.darkMode .title {
+    color: #ffffff;
+}
+
+.projectLabel {
+    font-size: 12px;
+    color: var(--text-color-secondary, #666);
+    font-weight: 500;
+    padding: 4px 8px;
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 4px;
+}
+
+.card.darkMode .projectLabel {
+    color: #aaa;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Filter Group */
+.filterGroup {
+    margin-bottom: 20px;
+}
+
+.filterLabel {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    margin-bottom: 6px;
+    color: var(--label-color, #666);
+}
+
+.card.darkMode .filterLabel {
+    color: #e0e0e0;
+}
+
+.select {
+    width: 100%;
+    max-width: 400px;
+}
+
+/* Chart Container */
+.chartContainer {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+/* Loading and Error States */
+.loading,
+.error,
+.empty {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 300px;
+    font-size: 14px;
+    color: var(--text-color, #666);
+    text-align: center;
+}
+
+.error {
+    color: #f44336;
+    background-color: rgba(244, 67, 54, 0.05);
+    border-radius: 4px;
+    padding: 12px;
+}
+
+.card.darkMode .loading,
+.card.darkMode .empty {
+    color: #aaa;
+}
+
+.card.darkMode .error {
+    color: #ff6b6b;
+    background-color: rgba(255, 107, 107, 0.1);
+}
+
+/* Tooltip */
+.tooltip {
+    background-color: rgba(255, 255, 255, 0.95);
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 10px 14px;
+    font-size: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    max-width: 250px;
+}
+
+.card.darkMode .tooltip {
+    background-color: rgba(44, 51, 68, 0.95);
+    border-color: #555;
+}
+
+.tooltipLabel {
+    font-weight: 600;
+    margin: 0 0 6px 0;
+    color: #333;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 4px;
+}
+
+.card.darkMode .tooltipLabel {
+    color: #e0e0e0;
+    border-bottom-color: #555;
+}
+
+.tooltipValue {
+    margin: 4px 0;
+    color: #333;
+}
+
+.card.darkMode .tooltipValue {
+    color: #e0e0e0;
+}
+
+.tooltipValue strong {
+    color: #2196f3;
+    font-weight: 600;
+}
+
+.card.darkMode .tooltipValue strong {
+    color: #64b5f6;
+}
+
+.tooltipProject {
+    margin: 4px 0 0 0;
+    color: #666;
+    font-size: 11px;
+}
+
+.card.darkMode .tooltipProject {
+    color: #aaa;
+}
+
+/* Legend */
+.legend {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.card.darkMode .legend {
+    border-top-color: rgba(255, 255, 255, 0.2);
+}
+
+.legendTitle {
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--text-color, #333);
+}
+
+.card.darkMode .legendTitle {
+    color: #e0e0e0;
+}
+
+.legendItems {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.legendItem {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--text-color, #666);
+}
+
+.card.darkMode .legendItem {
+    color: #aaa;
+}
+
+.legendColor {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border-radius: 3px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.card.darkMode .legendColor {
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .card {
+        padding: 16px;
+        min-height: 350px;
+    }
+
+    .title {
+        font-size: 16px;
+    }
+
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .select {
+        max-width: 100%;
+    }
+
+    .legendItems {
+        flex-direction: column;
+        gap: 8px;
+    }
+}
