@@ -4,7 +4,6 @@ import { ENDPOINTS } from '~/utils/URL';
 import { Bar } from 'react-chartjs-2';
 import DatePicker from 'react-datepicker';
 import { MultiSelect } from 'react-multi-select-component';
-import { Row, Col, Button, Input } from 'reactstrap';
 import 'react-datepicker/dist/react-datepicker.css';
 import styles from './ReturnedLateChart.module.css';
 import {
@@ -200,17 +199,17 @@ export default function ReturnedLateChart() {
       <h1 className={darkMode ? 'text-white' : ''}>Percent of Tools Returned Late</h1>
       <div className={styles['returned-late-filters']}>
         <div className={styles['returned-late-filter-group']}>
-          <label htmlFor="project-select" className={`${styles['returned-late-filter-label']} `}>
+          <label
+            htmlFor="project-select"
+            className={`${styles['returned-late-filter-label']} ${darkMode ? 'text-white' : ''}`}
+          >
             Project:
           </label>
-
           <select
             id="project-select"
             value={selectedProject}
             onChange={handleProjectChange}
-            className={`${styles['returned-late-project-select']} ${
-              darkMode ? styles['background-dark'] : ''
-            }`}
+            className={styles['returned-late-project-select']}
           >
             <option value="All">All Projects</option>
             {availableProjects.map(p => (
@@ -233,7 +232,6 @@ export default function ReturnedLateChart() {
               value={selectedTools}
               onChange={setSelectedTools}
               labelledBy="tools-select"
-              className={`${darkMode ? styles['background-dark'] : ''}`}
             />
           </div>
         </div>
@@ -248,9 +246,7 @@ export default function ReturnedLateChart() {
             id="start-date-picker"
             selected={dateRange.startDate}
             onChange={handleStartDateChange}
-            className={`${styles['returned-late-date-picker']}  ${
-              darkMode ? styles['background-dark'] : ''
-            } `}
+            className={styles['returned-late-date-picker']}
           />
         </div>
         <div className={styles['returned-late-filter-group']}>
@@ -264,9 +260,7 @@ export default function ReturnedLateChart() {
             id="end-date-picker"
             selected={dateRange.endDate}
             onChange={handleEndDateChange}
-            className={`${styles['returned-late-date-picker']} ${
-              darkMode ? styles['background-dark'] : ''
-            }`}
+            className={styles['returned-late-date-picker']}
           />
         </div>
       </div>
@@ -278,8 +272,7 @@ export default function ReturnedLateChart() {
         )}
         {error && (
           <div className={`${styles['returned-late-error']} ${darkMode ? 'text-white' : ''}`}>
-            {/* {error} */}
-            Unable to load the chart at this moment. Please try agian later
+            {error}
           </div>
         )}
         {!loading && !error && chartData.labels.length === 0 && (
