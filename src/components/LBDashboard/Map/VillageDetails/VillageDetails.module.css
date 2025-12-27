@@ -1,0 +1,145 @@
+.mainContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #e0e0e0;
+  width: 100%;
+  min-height: 100vh;
+  padding: 20px;
+  overflow-x: hidden;
+}
+
+.logoContainer {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.logoContainer img {
+  max-width: 30%;
+  min-width: 250px;
+  height: auto;
+}
+
+.contentContainer {
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  width: 85%;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.containerTop {
+  height: 60px;
+  background-color: #9dd425;
+}
+
+.containerMain {
+  display: flex;
+  flex-direction: column;
+  margin: 20px 40px 30px;
+  padding: 20px 20px 50px;
+  background-color: #e0e0e0;
+  min-height: 560px;
+}
+
+/* 🔑 THIS WAS MISSING */
+.villageDetailsPage {
+  width: 100%;
+}
+
+/* Details layout */
+.detailsContainer {
+  display: flex;
+  background: #f8f8f8;
+  border-radius: 8px;
+  overflow: hidden;
+  min-height: 400px;
+}
+
+/* Map */
+.mapSection {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #fff;
+  padding: 10px;
+}
+
+.villageMap {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  border-radius: 4px;
+}
+
+/* Info */
+.infoSection {
+  flex: 1;
+  padding: 20px;
+  background: #f0f0f0;
+  overflow-y: auto;
+}
+
+.infoSection h2 {
+  font-size: 2rem;
+  font-weight: bold;
+  text-decoration: underline;
+  margin-bottom: 0.5rem;
+}
+
+.infoSection h3 {
+  font-size: 1.2rem;
+  margin-top: 1rem;
+  font-weight: bold;
+}
+
+.infoSection ul {
+  padding-left: 1.5rem;
+  list-style-type: decimal;
+}
+
+.infoSection li {
+  margin-bottom: 0.5rem;
+}
+
+/* Properties */
+.propertiesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.propertyCard {
+  padding: 10px;
+  background: #fff;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  text-align: center;
+}
+
+.masterplanLink {
+  display: block;
+  text-align: center;
+  margin: 2rem auto 0;
+  text-decoration: underline;
+  color: blue;
+  font-weight: bold;
+}
+
+/* Responsive */
+@media (max-width: 990px) {
+  .detailsContainer {
+    flex-direction: column;
+  }
+
+  .mapSection {
+    height: 250px;
+  }
+}

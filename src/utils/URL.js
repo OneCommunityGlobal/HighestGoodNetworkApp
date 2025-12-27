@@ -433,6 +433,8 @@ ENHANCED_POPULARITY: (range, roles, start, end, includeLowVolume) => {
   LB_GET_USER_PREFERENCES: `${APIEndpoint}/lb/preferences`,
   LB_UPDATE_USER_PREFERENCES: `${APIEndpoint}/lb/preferences`,
   LB_MARK_MESSAGES_AS_READ: `${APIEndpoint}/lb/messages/mark-as-read`,
+  LB_VILLAGES: `${APIEndpoint}/villages`,
+  LB_VILLAGE_BY_ID: id => `${APIEndpoint}/villages/${id}`,
 
   // Injuries endpoints
   INJURIES: `${APIEndpoint}/injuries`,

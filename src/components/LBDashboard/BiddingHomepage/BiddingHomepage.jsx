@@ -28,7 +28,7 @@ import {
 } from 'react-icons/fa';
 import styles from './BiddingHomepage.module.css';
 import logo from '../../Collaboration/One-Community-Horizontal-Homepage-Header-980x140px-2.png';
-
+import Header from '../Header';
 const propertyListings = [
   {
     id: 405,
@@ -353,68 +353,10 @@ function BiddingHomepage() {
           className={styles.mainLogo}
         />
       </div>
-      <Container
-        fluid
-        className={`${styles.containerFluid} ${styles.biddingHomepageContainer} ${
-          darkMode ? 'dark-mode' : ''
-        }`}
-      >
-        <div className={`${styles.biddingHeader} ${darkMode ? 'dark-mode' : ''}`}>
-          <Row className={styles.rowCustom}>
-            <Col md={6} className={styles.colCustom}>
-              <Dropdown isOpen={dropdownOpen} toggle={toggle} className={styles.villageFilter}>
-                <DropdownToggle caret className={styles.dropdownToggle}>
-                  {selectedFilter}
-                </DropdownToggle>
-                <DropdownMenu className={styles.dropdownMenu}>
-                  <DropdownItem onClick={() => setSelectedFilter('Filter by Village')}>
-                    All Villages
-                  </DropdownItem>
-                  <DropdownItem onClick={() => setSelectedFilter('Earthbag Village')}>
-                    Earthbag Village
-                  </DropdownItem>
-                  <DropdownItem onClick={() => setSelectedFilter('Straw Bale Village')}>
-                    Straw Bale Village
-                  </DropdownItem>
-                  <DropdownItem onClick={() => setSelectedFilter('Recycle Materials Village')}>
-                    Recycle Materials Village
-                  </DropdownItem>
-                  <DropdownItem onClick={() => setSelectedFilter('Cob Village')}>
-                    Cob Village
-                  </DropdownItem>
-                  <DropdownItem onClick={() => setSelectedFilter('Tree House Village')}>
-                    Tree House Village
-                  </DropdownItem>
-                </DropdownMenu>
-              </Dropdown>
-              <InputGroup className={styles.searchBar}>
-                <Input
-                  placeholder="Search..."
-                  value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
-                />
-                <Button className={styles.goButton}>Go</Button>
-              </InputGroup>
-            </Col>
-            <Col md={6} className={styles.colRightAligned}>
-              <span className={styles.userWelcome}>WELCOME USER_NAME</span>
-              <div className={styles.userControls}>
-                <div className={styles.messages}>
-                  <FaComment />
-                </div>
-                <div className={styles.notifications}>
-                  <FaBell />
-                  <span className={styles.notificationBadge}>1</span>
-                </div>
-                <div className={styles.userProfile}>
-                  <FaUser />
-                </div>
-              </div>
-            </Col>
-          </Row>
-        </div>
-        <div className={`${styles.navigationTabs} ${darkMode ? 'dark-mode' : ''}`}>
-          <div className={`${styles.filterByDate} d-flex align-items-center gap-3`}>
+      <Container fluid className={`bidding-homepage-container ${darkMode ? 'dark-mode' : ''}`}>
+        <Header />
+        <div className={`navigation-tabs ${darkMode ? 'dark-mode' : ''}`}>
+          <div className="filter-by-date d-flex align-items-center gap-3">
             <Dropdown
               isOpen={dateFilterDropdownOpen}
               toggle={toggleDateFilterDropdown}
