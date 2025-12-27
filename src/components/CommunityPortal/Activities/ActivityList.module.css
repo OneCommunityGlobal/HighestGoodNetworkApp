@@ -8,6 +8,10 @@
   color: #333;
 }
 
+.darkBody {
+  background: #1B2A41;
+}
+
 .h1 {
   text-align: center;
   margin: 20px 0;
@@ -25,6 +29,10 @@
   background: #fff;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.darkFilters {
+  background: #0f172a;
 }
 
 .filters label {
@@ -49,6 +57,26 @@
   box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
 }
 
+.filters button {
+  margin: 30px 0;
+  border: 1px solid #000000;
+  border-radius: 6px;
+  padding: 10px;
+}
+
+.filters button:hover:not(:disabled) {
+  transform: scale(1.05);
+}
+
+.darkFilters button{
+  border: 1px solid #ffffff;
+}
+
+.darkFilters input{
+  background: #0f172a;
+  border: 1px solid #ffffff;
+}
+
 .activityList {
   max-width: 900px;
   margin: 0 auto;
@@ -56,6 +84,10 @@
   padding: 30px;
   border-radius: 12px;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.darkActivityList {
+  background: #2b3e59;
 }
 
 .activityList ul {
@@ -73,6 +105,10 @@
   border-radius: 8px;
   background-color: #f9fafb;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.darkActivityList li {
+  background: #1B2A41;
 }
 
 .activityList li:hover {

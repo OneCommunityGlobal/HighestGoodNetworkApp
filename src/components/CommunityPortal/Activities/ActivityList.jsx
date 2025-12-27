@@ -1,10 +1,12 @@
 // Activity List Component
 import { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import styles from './ActivityList.module.css';
 // import { useHistory } from 'react-router-dom';
 
 function ActivityList() {
   const [activities, setActivities] = useState([]);
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [filter, setFilter] = useState({
     type: '',
     date: '',
@@ -136,11 +138,19 @@ function ActivityList() {
     );
   });
 
+  const handleClearFilters = () => {
+    setFilter({
+      type: '',
+      date: '',
+      location: '',
+    });
+  };
+
   return (
-    <div className={styles.body}>
+    <div className={`${styles.body} ${darkMode ? styles.darkBody : ''}`}>
       <h1 className={styles.h1}>Activity List</h1>
 
-      <div className={styles.filters}>
+      <div className={`${styles.filters} ${darkMode ? styles.darkFilters : ''}`}>
         <label>
           Type:
           <input
@@ -167,8 +177,16 @@ function ActivityList() {
             placeholder="Enter location"
           />
         </label>
+        <button
+          type="button"
+          onClick={handleClearFilters}
+          disabled={!filter.type && !filter.date && !filter.location}
+        >
+          Clear All
+        </button>
       </div>
-      <div className={styles.activityList}>
+
+      <div className={`${styles.activityList} ${darkMode ? styles.darkActivityList : ''}`}>
         {filteredActivities.length > 0 ? (
           <ul>
             {filteredActivities.map(activity => (
