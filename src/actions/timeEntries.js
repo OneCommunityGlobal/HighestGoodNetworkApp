@@ -81,16 +81,55 @@ export const getTimeEntriesForPeriod = (userId, fromDate, toDate) => {
       }
     });
     if (!loggedOut || !res || !res.data) {
+
       const filteredEntries = res.data.filter(entry => {
         const entryDate = moment(entry.dateOfWork); // Convert the entry date to a moment object
         return entryDate.isBetween(fromDate, toDate, 'day', '[]'); // Check if the entry date is within the range (inclusive)
       });
+
       filteredEntries.sort((a, b) => {
         return moment(b.dateOfWork).valueOf() - moment(a.dateOfWork).valueOf();
       });
+    }
+  };
+};
 
-      await dispatch(setTimeEntriesForPeriod(filteredEntries));
-      // await dispatch(setTimeEntriesForPeriod(res.data));
+export const getTimeEndDateEntriesForPeriod = (userId, fromDate, toDate) => {
+  toDate = moment(toDate)
+    .endOf('day')
+    .format('YYYY-MM-DDTHH:mm:ss');
+  const url = ENDPOINTS.TIME_ENTRIES_PERIOD(userId, fromDate, toDate);
+  return async dispatch => {
+    let loggedOut = false;
+    try {
+      const res = await axios.get(url);
+      if (!res || !res.data) {
+        console.log("Request failed or no data received.");
+        return "N/A";
+      }
+      const filteredEntries = res.data.filter(entry => {
+        const entryDate = moment(entry.dateOfWork);
+        return entryDate.isBetween(fromDate, toDate, 'day', '[]');
+      });
+      filteredEntries.sort((a, b) => {
+        return moment(b.dateOfWork).valueOf() - moment(a.dateOfWork).valueOf();
+      });
+      const lastEntry = filteredEntries[0];
+      if (!lastEntry) {
+        return "N/A";
+      }
+      const dayOfWeek = moment(lastEntry.dateOfWork).day();
+      const daysUntilSaturday = dayOfWeek <= 6 ? 6 - dayOfWeek : 6 + (7 - dayOfWeek);
+      const lastSatday = moment(lastEntry.dateOfWork).add(daysUntilSaturday, 'days');
+
+      const formattedLastSatday = moment.utc(lastEntry.dateOfWork).format('YYYY-MM-DD');
+      return formattedLastSatday;
+    } catch (error) {
+      console.error("Error fetching time entries:", error);
+      if (error.response && error.response.status === 401) {
+        loggedOut = true;
+      }
+      return "N/A"; // Return "N/A" in case of error
     }
   };
 };
@@ -199,12 +238,14 @@ export const getTimeStartDateEntriesByPeriod = (userId, fromDate, toDate) => {
 };
 export const postTimeEntry = timeEntry => {
   const url = ENDPOINTS.TIME_ENTRY();
+
   return async dispatch => {
     try {
       const res = await axios.post(url, timeEntry);
       if (timeEntry.entryType === 'default' || timeEntry.entryType === 'person') {
         dispatch(updateTimeEntries(timeEntry));
       }
+
       return res.status;
     } catch (e) {
       return e.response.status;

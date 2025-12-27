@@ -312,12 +312,12 @@ export const updateUserFinalDay = (user, finalDayDate, isSet) => {
  */
 export const getUserProfileBasicInfo = (userId) => {
   // API request to fetch basic user profile information
- let userProfileBasicInfoPromise;
- if (userId)
+  let userProfileBasicInfoPromise;
+  if (userId)
     userProfileBasicInfoPromise = axios.get(`${ENDPOINTS.USER_PROFILE_BASIC_INFO}?userId=${userId}`);
- else
+  else
     userProfileBasicInfoPromise = axios.get(ENDPOINTS.USER_PROFILE_BASIC_INFO);
-  
+
   return async dispatch => {
     // Dispatch action indicating the start of the fetch process
     await dispatch(userProfilesBasicInfoFetchStartAction());

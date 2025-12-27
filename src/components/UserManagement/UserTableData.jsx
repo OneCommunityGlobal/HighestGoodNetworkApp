@@ -129,6 +129,10 @@ const UserTableDataComponent = (props) => {
     return RESUME;
   };
 
+  const formatEndDate = (date) => {
+    return moment.utc(date).format('MMM-DD-YY');
+  }
+
   return (
     <tr
       className={`usermanagement__tr ${darkMode ? 'dark-usermanagement-data' : 'light-usermanagement-data'}`}

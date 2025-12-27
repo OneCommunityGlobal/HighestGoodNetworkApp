@@ -94,6 +94,7 @@ class PeopleReport extends Component {
       await this.props.getUserProjects(userId);
       await this.props.getWeeklySummaries(userId);
       await this.props.getTimeEntriesForPeriod(userId, fromDate, toDate);
+      await this.props.getTimeEndDateEntriesForPeriod(userId, fromDate, toDate);
 
       const { userProfile, userTask, userProjects, timeEntries, auth } = this.props;
       this.setState({
@@ -103,11 +104,8 @@ class PeopleReport extends Component {
         isLoading: false,
         bioStatus: userProfile.bioPosted,
         authRole: auth.user.role,
-        userProfile: {
-          ...userProfile,
-        },
         isRehireable: userProfile.isRehireable,
-        userTask: [...userTask],
+        userTask: Array.isArray(userTask) ? [...userTask] : [],
         userProjects: {
           ...userProjects,
         },
@@ -133,6 +131,7 @@ class PeopleReport extends Component {
       this.setState({ timeEntries: this.props.timeEntries });
     }
   }
+
 
   setStartDate(date) {
     this.setState(() => {
@@ -295,6 +294,10 @@ class PeopleReport extends Component {
   //     });
   //   }
   // };
+
+  formatDate(date) {
+    return moment.utc(date).format('MMM-DD-YY');
+  }
 
   render() {
     const {
@@ -716,4 +719,6 @@ export default connect(getPeopleReportData, {
   getUserTasks,
   getUserProjects,
   getTimeEntriesForPeriod,
+  getTimeEndDateEntriesForPeriod,
+
 })(PeopleReport);

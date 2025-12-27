@@ -23,6 +23,7 @@ export default connect(mapStateToProps, {
   updateUserProfile,
   getTimeEntriesForWeek,
   getTimeEntriesForPeriod,
+  // getTimeEndDateEntriesForPeriod,
   getUserProjects,
   updateTask,
   refreshToken,

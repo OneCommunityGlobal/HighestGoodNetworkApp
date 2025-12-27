@@ -54,6 +54,7 @@ import { updateUserProfile } from "../../actions/userProfile";
 import { UserStatus } from '../../utils/enums';
 import BlueSquareLayout from './BlueSquareLayout';
 import TeamWeeklySummaries from './TeamWeeklySummaries/TeamWeeklySummaries';
+// import { formatDate } from 'utils/formatDate';
 import { connect, useDispatch, useSelector } from 'react-redux';
 import { formatDateLocal } from '~/utils/formatDate';
 import EditableInfoModal from './EditableModal/EditableInfoModal';
@@ -156,30 +157,6 @@ function UserProfile(props) {
   const [showToggleVisibilityModal, setShowToggleVisibilityModal] = useState(false);
   const [pendingRehireableStatus, setPendingRehireableStatus] = useState(null);
   const [isRehireable, setIsRehireable] = useState(null);
-  const [specialWarnings, setSpecialWarnings] = useState([]);
-  const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
-  const toggleRemoveModal = () => setIsRemoveModalOpen(!isRemoveModalOpen);
-  const [loadingSummaries, setLoadingSummaries] = useState(false);
-  const [showAccessManagementModal, setShowAccessManagementModal] = useState(false);
-  const allRequests = useSelector(state => state.timeOffRequests?.requests);
-
-  const updateRemovedImage = async () => {
-    try {
-      const response = await axios.put(ENDPOINTS.USERS_REMOVE_PROFILE_IMAGE, {
-        user_id: userProfile._id,
-      });
-      await loadUserProfile();
-      toast.success('Profile Image Removed');
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.log(error);
-      toast.error('Failed to remove profile Image.');
-    }
-  };
-  const confirmRemoveImage = async () => {
-    updateRemovedImage();
-    toggleRemoveModal(); // Close the remove confirmation modal
-  };
 
   const userProfileRef = useRef();
 
@@ -231,6 +208,8 @@ function UserProfile(props) {
       });
     });
   };
+
+  const formatDate = (date) => moment.utc(date).format('MMM-DD-YY');
 
   const checkIsProjectsEqual = () => {
     const originalProjectProperties = [];
@@ -1991,8 +1970,8 @@ setUpdatedTasks(prev => {
                               // eslint-disable-next-line no-alert
                               alert(
                                 'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD. ' +
-                                  'You shouldn’t even be using this account except to create your own accounts to use. ' +
-                                  'Please re-read the Local Setup Doc to understand why and what you should be doing instead of what you are trying to do now.',
+                                'You shouldn’t even be using this account except to create your own accounts to use. ' +
+                                'Please re-read the Local Setup Doc to understand why and what you should be doing instead of what you are trying to do now.',
                               );
                               return `#`;
                             }
