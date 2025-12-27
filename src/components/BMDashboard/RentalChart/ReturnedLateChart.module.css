@@ -81,11 +81,11 @@
 }
 
 .background-dark {
-  background-color: rgb(42, 63, 95);
+  background-color: #2a3f5f;
   border: 1px solid #555;
 }
 .background-red {
-  background-color: #ff4d4f ;
+  background-color: #ff4d4f;
 }
 
 :global(.dark.rmsc ) {
@@ -95,7 +95,7 @@
 }
 
 :global(.dark.rmsc .dropdown-heading) {
-  background-color: rgb(42, 63, 95); 
+  background-color: #2a3f5f; 
   color: #fff;
   border: 1px solid #555;
   border-radius: 4px;
@@ -103,22 +103,22 @@
 }
 
 :global(.dark.rmsc .select-item:hover) {
-  background-color: rgb(37, 50, 70) ;
+  background-color: #253246;
 }
 
 :global(.dark.rmsc .select-item.selected) {
-  background-color: rgb(37, 50, 70);
+  background-color: #253246;
 }
 :global(.rmsc.dark .options) {
-  background-color: rgb(42, 63, 95);
+  background-color: #2a3f5f;
   color: #fff;
 }
 
 /* Search box */
 :global(.rmsc.dark .search) {
-  background-color: rgb(42, 63, 95);
+  background-color: #2a3f5f;
   color: #fff;
 }
 :global(.rmsc.dark .search input:focus) {
-  background-color: rgb(34, 54, 83);
+  background-color: #223653;
 }
