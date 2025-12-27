@@ -1,0 +1,415 @@
+.compactWrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: inherit;
+}
+
+.compactIconBtn {
+  border: none;
+  border-radius: 999px;
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #3b82f6;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.compactIconBtn:hover {
+  background: #2563eb;
+}
+
+.compactBody {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 4px 10px 8px;
+  min-width: 130px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  border: 1px solid #e5e7eb;
+}
+
+.progressBar {
+  position: relative;
+  width: 100%;
+  height: 6px;
+  border-radius: 999px;
+  background: #e5e7eb;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+
+.progressFill {
+  height: 100%;
+  border-radius: inherit;
+  background: #3b82f6;
+  width: 0;
+}
+
+.timeLabel {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #1a1a1a;
+  text-align: center;
+}
+
+.compactControlsRow {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.compactCtrlBtn {
+  border-radius: 999px;
+  width: 26px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  cursor: pointer;
+}
+
+.compactCtrlBtn:hover {
+  background: #f3f4f6;
+}
+
+.compactSmallBtn {
+  width: 24px;
+  height: 24px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.30);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+
+.card {
+  background: #ffffff;
+  color: #1f2937;
+  border-radius: 20px;
+  padding: 18px 20px 20px;
+  width: 340px;
+  max-width: 100%;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  border: 1px solid #e5e7eb;
+}
+
+/* Header */
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.headerTitle {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.iconGhost {
+  border: none;
+  background: transparent;
+  color: #4b5563;
+  padding: 4px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.iconGhost:hover {
+  background: #f3f4f6;
+}
+
+
+.circleWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.goalText,
+.elapsedText {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.circleOuter {
+  position: relative;
+  width: 250px;
+  height: 230px;
+  margin-top: 6px;
+}
+
+.circleSvg {
+  position: absolute;
+  inset: 0;
+  transform: rotate(-90deg);
+}
+
+.circleTrack {
+  fill: none;
+  stroke: #e5e7eb;
+  stroke-width: 12;
+}
+
+.circleProgress {
+  fill: none;
+  stroke: #3b82f6;
+  stroke-width: 12;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.3s ease;
+}
+
+.circleInner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.remainingLabel {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: #6b7280;
+  margin-left: 20px;
+}
+
+.remainingTime {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.remainingUnitRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 0.65rem;
+  color: #6b7280;
+}
+
+.circleControls {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.circleCtrlBtn {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  border: none;
+  background: #3b82f6;
+  color: white;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.circleCtrlBtn:hover {
+  background: #2563eb;
+}
+
+.circleCtrlBtn:disabled {
+  opacity: 0.5;
+}
+
+.quickRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.quickBtn {
+  flex: 1;
+  border-radius: 10px;
+  border: none;
+  padding: 6px 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background: #e5e7eb;
+  color: #374151;
+  cursor: pointer;
+}
+
+.quickBtn:hover {
+  background: #d1d5db;
+}
+
+.quickBtn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* Time Editor */
+.timeGrid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto 1fr;
+  align-items: center;
+  justify-items: center;
+  gap: 4px;
+}
+
+.stepBtn {
+  width: 32px;
+  height: 24px;
+  border-radius: 999px;
+  border: none;
+  background: #e5e7eb;
+  color: #374151;
+  cursor: pointer;
+}
+
+.stepBtn:hover {
+  background: #d1d5db;
+}
+
+.digitBox {
+  width: 44px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: 600;
+  background: #ffffff;
+  color: #1a1a1a;
+}
+
+.colon {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+/* Errors */
+.errorText {
+  font-size: 0.8rem;
+  color: #dc2626;
+}
+
+/* Footer */
+.footer {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.okBtn {
+  border-radius: 999px;
+  padding: 6px 18px;
+  border: none;
+  background: #3b82f6;
+  color: #ffffff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.okBtn:hover {
+  background: #2563eb;
+}
+
+.slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+/* Dark mode */
+
+.dark .compactBody {
+  background: #1f2937;
+  border-color: #374151;
+}
+
+.dark .timeLabel {
+  color: #f9fafb;
+}
+
+.dark .progressBar {
+  background: #374151;
+}
+
+.dark .compactCtrlBtn {
+  background: #1f2937;
+  color: #e5e7eb;
+  border-color: #4b5563;
+}
+
+.dark .compactCtrlBtn:hover {
+  background: #374151;
+}
+
+.darkCard {
+  background: #0f172a;
+  color: #f8fafc;
+  border-color: #334155;
+}
+
+.darkCard .headerTitle,
+.darkCard .goalText,
+.darkCard .elapsedText,
+.darkCard .remainingTime {
+  color: #f8fafc;
+}
+
+.darkCard .remainingLabel,
+.darkCard .remainingUnitRow {
+  color: #cbd5f5;
+}
+
+.darkCard .digitBox {
+  background: #020617;
+  color: #f8fafc;
+  border-color: #334155;
+}
+
+.darkCard .stepBtn {
+  background: #1e293b;
+  color: #e5e7eb;
+}
+
+.darkCard .stepBtn:hover {
+  background: #334155;
+}
+
+.darkCard .quickBtn {
+  background: #1e293b;
+  color: #e5e7eb;
+}
+
+.darkCard .quickBtn:hover {
+  background: #334155;
+}
+
+.darkCard .iconGhost {
+  color: #e5e7eb;
+}
+
+.darkCard .iconGhost:hover {
+  background: #1e293b;
+}
