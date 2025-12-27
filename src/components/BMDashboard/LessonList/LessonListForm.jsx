@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import { Form, FormControl, InputGroup, Button } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { toast } from 'react-toastify';
@@ -23,6 +23,7 @@ function LessonList(props) {
   const [showDeleteDropdown, setShowDeleteDropdown] = useState(false);
   const [tagsToDelete, setTagsToDelete] = useState([]);
   const [confirmModal, setConfirmModal] = useState(false);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -187,7 +188,7 @@ function LessonList(props) {
     setShowDeleteDropdown(false);
   };
 
-  /** 
+  /**
   const handleInputKeyDown = event => {
     if (event.key === 'Enter' || event.key === ',') {
       event.preventDefault();
@@ -290,7 +291,11 @@ function LessonList(props) {
           </div>
           <div className={`${styles.formSelectContainer}`}>
             <div>
-              <Form.Group className={`${styles.singleForm}`} controlId="Form.ControlSelect1">
+              <Form.Group
+                className={`${styles.singleForm} ${darkMode ? styles.darkMode : ''}`}
+                controlId="Form.ControlSelect1"
+              >
+                {' '}
                 <Form.Label>Filter:</Form.Label>
                 <FormControl
                   className={`${styles.singleFormSelect}`}
@@ -307,7 +312,10 @@ function LessonList(props) {
               </Form.Group>
             </div>
             <div>
-              <Form.Group className={`${styles.singleForm}`} controlId="Form.ControlSelect2">
+              <Form.Group
+                className={`${styles.singleForm} ${darkMode ? styles.darkMode : ''}`}
+                controlId="Form.ControlSelect2"
+              >
                 <Form.Label>Sort:</Form.Label>
                 <FormControl
                   className={`${styles.singleFormSelect}`}
