@@ -84,6 +84,10 @@
   background-color: rgb(42, 63, 95);
   border: 1px solid #555;
 }
+.background-red {
+  background-color: #ff4d4f ;
+}
+
 :global(.dark.rmsc ) {
   --rmsc-border: none;
   --rmsc-bg: none;

@@ -272,18 +272,30 @@ export default function ReturnedLateChart() {
       </div>
       <div className={`${styles['returned-late-chart-container']} text-white`}>
         {loading && (
-          <div className={`${styles['returned-late-loading']} ${darkMode ? 'text-white' : ''}`}>
+          <div
+            className={`${styles['returned-late-loading']} ${
+              darkMode ? styles['background-dark'] : ''
+            }`}
+          >
             Loading...
           </div>
         )}
         {error && (
-          <div className={`${styles['returned-late-error']} ${darkMode ? 'text-white' : ''}`}>
+          <div
+            className={`${styles['returned-late-error']} ${
+              darkMode ? styles['background-red'] : ''
+            }`}
+          >
             {/* {error} */}
             Unable to load the chart at this moment. Please try again later
           </div>
         )}
         {!loading && !error && chartData.labels.length === 0 && (
-          <div className={`${styles['returned-late-no-data']} ${darkMode ? 'text-white' : ''}`}>
+          <div
+            className={`${styles['returned-late-no-data']} ${
+              darkMode ? styles['background-dark'] : ''
+            }`}
+          >
             No data for selected filters
           </div>
         )}
