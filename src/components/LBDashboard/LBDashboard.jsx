@@ -14,6 +14,7 @@ import {
 import ReviewWordCloud from './ReviewWordCloud/ReviewWordCloud';
 import styles from './LBDashboard.module.css';
 import DemandOverTime from './LbAnalytics/DemandOverTime/DemandOverTime';
+import WinningVsAverageBidChart from './LbAnalytics/WinningVsAverageBidChart/WinningVsAverageBidChart';
 import moment from 'moment';
 
 const METRIC_OPTIONS = {
@@ -338,6 +339,14 @@ export function LBDashboard() {
               darkMode={darkMode}
               dateRange={dateRange}
             />
+          </div>
+        </div>
+      </AnalysisSection>
+
+      <AnalysisSection title="Winning Bid vs Average Bid" darkMode={darkMode}>
+        <div className={styles.chartRow}>
+          <div className={styles.chartCol}>
+            <WinningVsAverageBidChart darkMode={darkMode} />
           </div>
         </div>
       </AnalysisSection>
