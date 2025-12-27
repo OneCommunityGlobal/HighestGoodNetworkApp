@@ -12,7 +12,7 @@ import { searchWithAccent } from '~/utils/search';
 import { fetchAllProjects } from '../../actions/projects';
 import { getAllUserTeams } from '../../actions/allTeamsAction';
 import TeamTable from './TeamTable';
-import PeopleTable from './PeopleTable';
+import PeopleTable from './PeoplesTable';
 import ProjectTable from './ProjectTable';
 import { getUserProfileBasicInfo } from '../../actions/userManagement';
 import { fetchAllTasks } from '../../actions/task';
