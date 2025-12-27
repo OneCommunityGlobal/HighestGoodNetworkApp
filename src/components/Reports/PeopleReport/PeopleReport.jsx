@@ -132,18 +132,6 @@ class PeopleReport extends Component {
     }
   }
 
-  async componentDidUpdate(prevProps) {
-    if (
-      prevProps.userProfile !== this.props.userProfile &&
-      Object.keys(this.props.userProfile).length > 0
-    ) {
-      this.setState({
-        userProfile: { ...this.props.userProfile },
-        isRehireable: this.props.userProfile.isRehireable,
-        bioStatus: this.props.userProfile.bioPosted,
-      });
-    }
-  }
 
   setStartDate(date) {
     this.setState(() => {

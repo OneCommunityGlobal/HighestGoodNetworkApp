@@ -54,7 +54,6 @@ import { updateUserProfile } from "../../actions/userProfile";
 import { UserStatus } from '../../utils/enums';
 import BlueSquareLayout from './BlueSquareLayout';
 import TeamWeeklySummaries from './TeamWeeklySummaries/TeamWeeklySummaries';
-import { boxStyle } from 'styles';
 // import { formatDate } from 'utils/formatDate';
 import { connect, useDispatch, useSelector } from 'react-redux';
 import { formatDateLocal } from '~/utils/formatDate';
