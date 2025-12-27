@@ -14,7 +14,7 @@ import { UserStatus } from '../../utils/enums';
 import ActiveCell from './ActiveCell';
 import TimeDifference from './TimeDifference';
 import { boxStyle } from '../../styles';
-import { formatDateLocal, formatDateUtcYYYYMMDD } from '../../utils/formatDate';
+import { formatDate, formatDateLocal, formatDateUtcYYYYMMDD } from '../../utils/formatDate';
 import hasPermission, {cantUpdateDevAdminDetails } from '../../utils/permissions';
 import SetUpFinalDayButton from './SetUpFinalDayButton';
 
@@ -41,8 +41,8 @@ const UserTableDataComponent = (props) => {
     jobTitle: props.user.jobTitle,
     email: props.user.email,
     weeklycommittedHours: props.user.weeklycommittedHours,
-    startDate: formatDateUtcYYYYMMDD(props.user.startDate) || '',
-    endDate: formatDateUtcYYYYMMDD(props.user.endDate) || '',
+    startDate: formatDate(props.user.startDate) || '',
+    endDate: formatDate(props.user.endDate) || '',
   });
   const dispatch = useDispatch();
   const history = useHistory();
@@ -97,8 +97,8 @@ const UserTableDataComponent = (props) => {
       jobTitle: props.user.jobTitle,
       email: props.user.email,
       weeklycommittedHours: props.user.weeklycommittedHours,
-      startDate: formatDateUtcYYYYMMDD(props.user.startDate),
-      endDate: formatDateUtcYYYYMMDD(props.user.endDate),
+      startDate: formatDate(props.user.startDate),
+      endDate: formatDate(props.user.endDate),
     });
   }, [props.user]);
 
@@ -383,11 +383,30 @@ const UserTableDataComponent = (props) => {
         ) : (
           <input
             type="number"
-            className={`edituser_input ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
+            step={0.5}
+            className={`edituser_input ${
+              darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+            }`}
             value={formData.weeklycommittedHours}
             onChange={e => {
-              updateFormData({ ...formData, weeklycommittedHours: e.target.value });
-              addUserInformation('weeklycommittedHours', e.target.value, props.user._id);
+              const rawValue = e.target.value;
+              const numericValue = Number(rawValue);
+
+              if (numericValue < 0) {
+                toast.error('If negative hours worked, we’d all be on vacation already. Try again, and be sure weekly hours are set to zero or more.');
+                return; // stop update
+              }
+
+              updateFormData({
+                ...formData,
+                weeklycommittedHours: numericValue,
+              });
+
+              addUserInformation(
+                'weeklycommittedHours',
+                numericValue,
+                props.user._id
+              );
             }}
           />
         )}
@@ -524,13 +543,13 @@ const UserTableDataComponent = (props) => {
       <td className="email_cell">
         {editUser?.endDate ? (
           <div>
-            {props.user.endDate ? formatDateLocal(props.user.endDate) : 'N/A'}
+            {props.user.endDate ? formatDate(props.user.endDate) : 'N/A'}
             <FontAwesomeIcon
               className="copy_icon"
               icon={faCopy}
               onClick={() => {
                 navigator.clipboard.writeText(
-                  props.user.endDate ? formatDateLocal(formData.endDate) : 'N/A',
+                  props.user.endDate ? formatDate(formData.endDate) : 'N/A',
                 );
                 toast.success('End Date Copied!');
               }}

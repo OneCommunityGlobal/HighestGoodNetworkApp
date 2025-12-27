@@ -182,4 +182,55 @@
 
 .dark .toggleButton {
   color: #ced4da;
+/* Dark Mode Styles - Using global dark-mode class for consistency across builds */
+:global(.dark-mode) .dashboard {
+  background-color: #1a1a1a;
+}
+
+:global(.dark-mode) .title {
+  color: #ffffff;
+}
+
+:global(.dark-mode) .subtitle {
+  color: #9ca3af;
+}
+
+:global(.dark-mode) .sectionTitle {
+  color: #ffffff;
+}
+
+:global(.dark-mode) .viewToggle {
+  background-color: #2d2d2d;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+:global(.dark-mode) .toggleButton {
+  color: #9ca3af;
+}
+
+:global(.dark-mode) .toggleButton:hover {
+  background-color: #363636;
+  color: #d1d5db;
+}
+
+:global(.dark-mode) .toggleButton.active {
+  background-color: #2563eb;
+  color: #ffffff;
+}
+
+:global(.dark-mode) .loadingContainer {
+  color: #9ca3af;
+}
+
+:global(.dark-mode) .spinner {
+  border-color: #404040;
+  border-top-color: #60a5fa;
+}
+
+:global(.dark-mode) .errorContainer {
+  color: #9ca3af;
+}
+
+:global(.dark-mode) .errorMessage {
+  color: #f87171;
 }
