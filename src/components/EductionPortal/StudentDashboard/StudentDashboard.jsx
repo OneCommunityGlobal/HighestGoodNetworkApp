@@ -25,6 +25,7 @@ const StudentDashboard = () => {
   const dispatch = useDispatch();
   const authUser = useSelector(state => state.auth.user);
   const { taskItems: tasks, fetching: loading, error } = useSelector(state => state.studentTasks);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   // Fetch tasks from API
   useEffect(() => {
@@ -131,7 +132,7 @@ const StudentDashboard = () => {
 
   if (loading) {
     return (
-      <div className={styles.loadingContainer}>
+      <div className={`${styles.loadingContainer} ${darkMode ? styles.dark : ''}`}>
         <div className={styles.spinner}></div>
         <p>Loading your dashboard...</p>
       </div>
@@ -140,7 +141,7 @@ const StudentDashboard = () => {
 
   if (error && error !== 'none') {
     return (
-      <div className={styles.errorContainer}>
+      <div className={`${styles.errorContainer} ${darkMode ? styles.dark : ''}`}>
         <p className={styles.errorMessage}>{error}</p>
         <Button color="primary" onClick={() => dispatch(fetchStudentTasks())}>
           Retry
@@ -150,7 +151,7 @@ const StudentDashboard = () => {
   }
 
   return (
-    <div className={styles.dashboard}>
+    <div className={`${styles.dashboard} ${darkMode ? styles.dark : ''}`}>
       <NavigationBar />
 
       <Container className={styles.mainContainer}>

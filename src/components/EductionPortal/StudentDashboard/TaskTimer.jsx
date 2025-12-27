@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
 import styles from "./timer.module.css";
 
 import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
@@ -33,6 +34,7 @@ export default function TaskTimer({ userid }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [displayRemaining, setDisplayRemaining] = useState(null);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   const token =
     localStorage.getItem("token") ||
@@ -269,7 +271,7 @@ export default function TaskTimer({ userid }) {
 
   return (
     <>
-      <div className={styles.compactWrapper}>
+      <div className={`${styles.compactWrapper} ${darkMode ? styles.dark : ""}`}>
         <button className={styles.compactIconBtn} onClick={() => setOpen(true)}>
           <AccessAlarmRoundedIcon fontSize="small" />
         </button>
@@ -338,7 +340,7 @@ export default function TaskTimer({ userid }) {
           }}
         >
           <div
-            className={styles.card}
+            className={`${styles.card} ${darkMode ? styles.darkCard : ""}`}
             role="dialog"
             tabIndex={-1}
             onClick={(e) => e.stopPropagation()}

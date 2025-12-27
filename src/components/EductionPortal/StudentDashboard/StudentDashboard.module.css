@@ -159,3 +159,27 @@
   display: flex;
   align-items: center;
 }
+.dark {
+  background-color: #0b132b;
+  color: #f8f9fa;
+}
+
+.dark .title {
+  color: #f8f9fa;
+}
+
+.dark .subtitle {
+  color: #adb5bd;
+}
+
+.dark .sectionTitle {
+  color: #f8f9fa;
+}
+
+.dark .viewToggle {
+  background-color: #1c2541;
+}
+
+.dark .toggleButton {
+  color: #ced4da;
+}

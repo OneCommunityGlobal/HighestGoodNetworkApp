@@ -339,3 +339,77 @@
   justify-content: center;
   gap: 4px;
 }
+/* Dark mode */
+
+.dark .compactBody {
+  background: #1f2937;
+  border-color: #374151;
+}
+
+.dark .timeLabel {
+  color: #f9fafb;
+}
+
+.dark .progressBar {
+  background: #374151;
+}
+
+.dark .compactCtrlBtn {
+  background: #1f2937;
+  color: #e5e7eb;
+  border-color: #4b5563;
+}
+
+.dark .compactCtrlBtn:hover {
+  background: #374151;
+}
+
+.darkCard {
+  background: #0f172a;
+  color: #f8fafc;
+  border-color: #334155;
+}
+
+.darkCard .headerTitle,
+.darkCard .goalText,
+.darkCard .elapsedText,
+.darkCard .remainingTime {
+  color: #f8fafc;
+}
+
+.darkCard .remainingLabel,
+.darkCard .remainingUnitRow {
+  color: #cbd5f5;
+}
+
+.darkCard .digitBox {
+  background: #020617;
+  color: #f8fafc;
+  border-color: #334155;
+}
+
+.darkCard .stepBtn {
+  background: #1e293b;
+  color: #e5e7eb;
+}
+
+.darkCard .stepBtn:hover {
+  background: #334155;
+}
+
+.darkCard .quickBtn {
+  background: #1e293b;
+  color: #e5e7eb;
+}
+
+.darkCard .quickBtn:hover {
+  background: #334155;
+}
+
+.darkCard .iconGhost {
+  color: #e5e7eb;
+}
+
+.darkCard .iconGhost:hover {
+  background: #1e293b;
+}
