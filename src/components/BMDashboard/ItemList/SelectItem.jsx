@@ -6,51 +6,79 @@ export default function SelectItem({
   selectedProject,
   selectedItem,
   setSelectedItem,
+  selectedToolStatus,
+  setSelectedToolStatus,
+  selectedCondition,
+  setSelectedCondition,
   label,
 }) {
   let itemSet = [];
   if (items?.length) {
-    if (selectedProject === 'all') {
-      itemSet = [
-        ...new Set(
-          items
-            .filter(m => m.itemType?.name) // Filter out items with null/undefined names
-            .map(m => m.itemType.name),
-        ),
-      ];
-    } else {
-      itemSet = [
-        ...new Set(
-          items
-            .filter(mat => mat.project?.name === selectedProject && mat.itemType?.name)
-            .map(m => m.itemType.name),
-        ),
-      ];
+    if (label === 'Tool') {
+      if (selectedProject === 'all') {
+        itemSet = [...new Set(items.filter(m => m.itemType?.name).map(m => m.itemType.name))];
+      } else {
+        itemSet = [
+          ...new Set(
+            items
+              .filter(mat => mat.project?.name === selectedProject && mat.itemType?.name)
+              .map(m => m.itemType.name),
+          ),
+        ];
+      }
+    } else if (label === 'Tool Status') {
+      itemSet = ['Using', 'Available', 'Under Maintenance'];
+    } else if (label === 'Condition') {
+      if (selectedProject === 'all') {
+        itemSet = [...new Set(items.filter(m => m.condition).map(m => m.condition))];
+      } else {
+        itemSet = [
+          ...new Set(
+            items
+              .filter(mat => mat.project?.name === selectedProject && mat.condition)
+              .map(m => m.condition),
+          ),
+        ];
+      }
     }
   }
 
   return (
     <Form>
-      <FormGroup className={`${styles.selectInput}`}>
-        <Label htmlFor="select-material" style={{ marginLeft: '10px' }}>
-          {label ? `${label}:` : 'Material:'}
-        </Label>
+      <FormGroup className={styles.selectInput}>
+        <Label htmlFor="select-material">{label ? `${label}:` : 'Material:'}</Label>
+
         <Input
           id="select-item"
           name="select-item"
           type="select"
-          value={selectedItem}
-          onChange={e => setSelectedItem(e.target.value)}
-          disabled={!items.length}
+          value={
+            label === 'Condition'
+              ? selectedCondition
+              : label === 'Tool Status'
+              ? selectedToolStatus
+              : selectedItem
+          }
+          onChange={e => {
+            const val = e.target.value;
+            if (label === 'Tool Status') {
+              setSelectedToolStatus(val);
+            } else if (label === 'Condition') {
+              setSelectedCondition(val);
+            } else {
+              setSelectedItem(val);
+            }
+          }}
+          disabled={!itemSet.length}
         >
-          {items.length ? (
+          {itemSet.length ? (
             <>
               <option value="all" key="all-option">
                 All
               </option>
-              {itemSet.map(item => (
-                <option key={`item-${item.id || item.name}`} value={item.name}>
-                  {item.name}
+              {itemSet.map(itemName => (
+                <option key={`item-${itemName}`} value={itemName}>
+                  {itemName}
                 </option>
               ))}
             </>

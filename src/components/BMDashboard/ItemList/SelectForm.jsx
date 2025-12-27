@@ -1,7 +1,13 @@
 import { Form, FormGroup, Label, Input } from 'reactstrap';
 import styles from './ItemListView.module.css';
 
-export default function SelectForm({ items, setSelectedProject, setSelectedItem }) {
+export default function SelectForm({
+  items,
+  setSelectedProject,
+  setSelectedItem,
+  setSelectedCondition,
+  setSelectedToolStatus,
+}) {
   let projectsSet = [];
   if (items.length) {
     projectsSet = [...new Set(items.map(el => el.project?.name))];
@@ -9,6 +15,8 @@ export default function SelectForm({ items, setSelectedProject, setSelectedItem 
 
   const handleChange = event => {
     setSelectedItem('all');
+    setSelectedCondition('all');
+    setSelectedToolStatus('all');
     setSelectedProject(event.target.value);
   };
 

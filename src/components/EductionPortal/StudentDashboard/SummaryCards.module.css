@@ -82,3 +82,31 @@
     font-size: 1.75rem;
   }
 }
+
+/* Dark Mode Styles - Using global dark-mode class for consistency across builds */
+:global(.dark-mode) .card {
+  background-color: #2d2d2d;
+  border-color: #404040;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+:global(.dark-mode) .card:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+}
+
+:global(.dark-mode) .cardIcon {
+  background-color: #363636;
+  color: #9ca3af;
+}
+
+:global(.dark-mode) .cardTitle {
+  color: #9ca3af;
+}
+
+:global(.dark-mode) .cardValue {
+  color: #ffffff;
+}
+
+:global(.dark-mode) .cardDescription {
+  color: #9ca3af;
+}

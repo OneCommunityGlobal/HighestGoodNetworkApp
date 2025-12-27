@@ -103,3 +103,22 @@
     display: none;
   }
 }
+
+/* Dark Mode Styles - Using global dark-mode class for consistency across builds */
+:global(.dark-mode) .navigationBar {
+  background-color: #1e3a5f;
+}
+
+:global(.dark-mode) .dropdownContent {
+  background-color: #2d2d2d;
+  border-color: #404040;
+}
+
+:global(.dark-mode) .dropdownItem {
+  color: #d1d5db;
+}
+
+:global(.dark-mode) .dropdownItem:hover {
+  background-color: #363636;
+  color: #ffffff;
+}

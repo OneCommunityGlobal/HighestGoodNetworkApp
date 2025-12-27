@@ -498,7 +498,7 @@ const TeamMemberTasks = React.memo(props => {
   return (
     <div
       data-testid="team-member-tasks-container"
-      className={`container ${styles['team-member-tasks']} ${
+      className={`container p-0 ${styles['team-member-tasks']} ${
         darkMode ? ' bg-space-cadet border-left border-right border-secondary' : ''
       }`}
     >
@@ -649,10 +649,12 @@ const TeamMemberTasks = React.memo(props => {
       )}
       <div className={styles['task_table-container']}>
         <Table
-          className={`task-table ${darkMode ? 'dark-teammember-row' : 'light-teammember-row'}`}
+          className={`${styles['task-table']} ${
+            darkMode ? styles['dark-teammember-row'] : styles['light-teammember-row']
+          }`}
         >
           <thead
-            className={`pc-component ${darkMode ? 'bg-space-cadet' : ''}`}
+            className={`${styles['pc-component']} ${darkMode ? 'bg-space-cadet' : ''}`}
             style={{ position: 'sticky', top: 0 }}
           >
             <tr>
@@ -717,7 +719,11 @@ const TeamMemberTasks = React.memo(props => {
                   <thead className={darkMode ? 'bg-space-cadet' : ''}>
                     <tr>
                       <th className={darkMode ? 'bg-space-cadet' : ''}>Tasks(s)</th>
-                      <th className={`team-task-progress ${darkMode ? 'bg-space-cadet' : ''}`}>
+                      <th
+                        className={`${styles['team-task-progress']} ${
+                          darkMode ? 'bg-space-cadet' : ''
+                        }`}
+                      >
                         Progress
                       </th>
                       {displayUser.role === 'Administrator' ? (

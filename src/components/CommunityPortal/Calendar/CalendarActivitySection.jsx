@@ -16,7 +16,7 @@ function CalendarActivitySection() {
         darkMode ? styles.calendarActivitySectionDarkMode : ''
       }`}
     >
-      <h2 className={`activity-header ${darkMode ? 'activity-header-dark-mode' : ''}`}>
+      <h2 className={`${styles.activityHeader} ${darkMode ? styles.activityHeaderDark : ''}`}>
         Latest News
       </h2>
       <ul className={styles.calendarActivityList}>
@@ -24,13 +24,15 @@ function CalendarActivitySection() {
           <li
             key={activity.id}
             className={`${styles.calendarActivityItem} ${
-              darkMode ? styles.calendarActivityItemDarkMode : ''
+              darkMode ? styles.calendarActivityItemDark : ''
             }`}
           >
-            <p className={`activity-message ${darkMode ? styles.activityMessageDarkMode : ''}`}>
+            <p
+              className={`${styles.activityMessage} ${darkMode ? styles.activityMessageDark : ''}`}
+            >
               <strong>{activity.author}</strong>: {activity.message}
             </p>
-            <small className={`activity-time ${darkMode ? styles.activityTimeDarkMode : ''}`}>
+            <small className={`${styles.activityTime} ${darkMode ? styles.activityTimeDark : ''}`}>
               {activity.time}
             </small>
           </li>

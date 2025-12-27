@@ -9,6 +9,7 @@ import {
   updateUserFinalDayStatusIsSet,
   deleteUser,
 } from '../../../actions/userManagement';
+import { FinalDay } from '../../../utils/enums';
 
 // Mock the actions
 vi.mock('../../../actions/userManagement', () => ({
@@ -65,14 +66,14 @@ vi.mock('../UserTableData', () => ({
         <button
           type="button"
           data-testid={`final-day-button-${index}`}
-          onClick={() => onFinalDayClick(user, MOCK_FINAL_DAY)}
+          onClick={() => onFinalDayClick(user, FinalDay.SetFinalDay)}
         >
           Set Final Day
         </button>
         <button
           type="button"
           data-testid={`not-final-day-button-${index}`}
-          onClick={() => onFinalDayClick(user, MOCK_NOT_FINAL_DAY)}
+          onClick={() => onFinalDayClick(user, FinalDay.RemoveFinalDay)}
         >
           Remove Final Day
         </button>
@@ -328,15 +329,15 @@ describe('UserManagement Component', () => {
     render(<UnconnectedUserManagement {...props} />);
 
     // Find and click the not final day button for the first user
-    const notFinalDayButton = screen.getByTestId('not-final-day-button-0');
-    fireEvent.click(notFinalDayButton);
+    const removeFinalDayButton = screen.getByTestId('not-final-day-button-0');
+    fireEvent.click(removeFinalDayButton);
 
     // Verify the API call
     expect(updateUserFinalDayStatusIsSet).toHaveBeenCalledWith(
       expect.objectContaining({ _id: '1' }),
       'Active',
       undefined,
-      MOCK_NOT_FINAL_DAY,
+      FinalDay.RemoveFinalDay,
     );
   });
 });

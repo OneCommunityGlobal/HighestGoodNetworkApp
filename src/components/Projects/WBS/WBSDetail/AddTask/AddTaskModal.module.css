@@ -1,0 +1,117 @@
+.hours-label {
+  font-weight: normal;
+  width: 75px;
+}
+.hours-input {
+  width: 20%;
+  padding: 3px 6px !important;
+}
+.form-date {
+  width: 30%;
+}
+
+.add-modal-dt .DayPickerInput{
+  position: relative;
+}
+
+.add-modal-dt .DayPickerInput-OverlayWrapper{
+  position: absolute;
+  bottom: 21em; 
+  left: -4.75em;
+  z-index: 9999; 
+}
+
+.replicate-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.replicate-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border: 1px solid #ced4da;
+  background: #f8f9fa;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.replicate-btn[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+:global(.dark-mode) :global(.add_new_task_form-label),
+:global(.dark-mode) :global(.add_new_task_form-input_area),
+:global(.dark-mode) :global(.warning) {
+  color: var(--text-light); 
+}
+
+.confirmContentDark {
+  background-color: #0f172a;   
+  border: 1px solid #1f2937;   
+  color: #fff;              
+}
+
+.confirmContentDark :is(.modal-title, p, span, label, small, strong, em, div) {
+  color: #fff;
+}
+
+.confirmBackdropDark {
+  background-color: rgba(2, 6, 23, 0.85);
+}
+
+.btnOutlineDangerDark {
+  color: #fca5a5;
+  border-color: #ef4444;
+}
+.btnOutlineDangerDark:hover {
+  background-color: #7f1d1d;
+  border-color: #ef4444;
+}
+
+.btnPrimaryDark {
+  filter: brightness(1.05) contrast(1.1);
+}
+
+.resourceRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+}
+
+.tagsWrapper {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.tagsWrapper > * {
+  flex: 1 1 auto;
+}
+
+.replicateInline {
+  margin-top: 0;
+  align-items: flex-start;
+  flex: 0 0 auto;
+}
+
+.replicateInline .replicate-btn {
+  height: 90%;
+  min-height: calc(1.5em + 0.75rem + 2px);
+  padding: 0 12px;
+  border-radius: 0.25rem;
+  line-height: 1.5;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.replicateInline .replicate-btn.square {
+  width: calc(1.5em + 0.75rem + 2px);
+  padding: 0;
+}
