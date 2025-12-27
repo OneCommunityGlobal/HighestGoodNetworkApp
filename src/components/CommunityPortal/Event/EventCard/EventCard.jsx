@@ -48,6 +48,8 @@ function EventCard(props) {
     return (locationType?.toLowerCase() || '') === 'virtual' ? 'virtual-tag' : 'in-person-tag';
   };
 
+  // TODO: Implement timezone conversion to display event times in user's local timezone
+  // This will ensure event times are accurate and consistent across different user locations
   const formatDateTime = dateString => {
     try {
       return format(new Date(dateString), 'h:mm a');
