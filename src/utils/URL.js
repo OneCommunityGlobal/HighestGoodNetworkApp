@@ -358,6 +358,7 @@ ENHANCED_POPULARITY: (range, roles, start, end, includeLowVolume) => {
   BM_ORGS_WITH_LOCATION: `${APIEndpoint}/bm/orgLocation`,
   ORG_DETAILS: (projectId) => `${APIEndpoint}/bm/orgLocation/${projectId}`,
   BM_PROJECT_MEMBERS: projectId => `${APIEndpoint}/bm/project/${projectId}/users`,
+  KNOWLEDGE_EVOLUTION:  `${APIEndpoint}/student/knowledge-evolution`,
 
   // bm time logger endpoints
   TIME_LOGGER_START: (projectId, memberId) =>
