@@ -166,12 +166,12 @@ export function Header(props) {
     }
   }, []);
 
-  const toggle = () => {
-    setIsOpen(prevIsOpen => !prevIsOpen);
-  };
-
   const openModal = () => {
     setLogoutPopup(true);
+  };
+
+  const toggle = () => {
+    setIsOpen(prevIsOpen => !prevIsOpen);
   };
 
   useEffect(() => {
@@ -200,7 +200,7 @@ export function Header(props) {
 
   return (
     <div className={styles.headerWrapper}>
-      <Navbar className={`py-3 ${styles.navbar}`} color="dark" dark expand="md">
+      <Navbar className={`py-3 ${styles.navbar}`} color="dark" dark expand="xl">
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
 
         {isAuthenticated && <Timer />}
@@ -227,22 +227,22 @@ export function Header(props) {
               <NavItem className={styles.showInMobile}>
                 <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
                   <img
-                    src={`${profilePic || '/pfp-default-header.png'}`}
                     alt=""
+                    src={`${profilePic || '/pfp-default-header.png'}`}
                     style={{ maxWidth: '60px', maxHeight: '60px' }}
                     className="dashboardimg"
                   />
                 </NavLink>
               </NavItem>
-              <UncontrolledDropdown nav inNavbar className={styles.showInMobile}>
+              <UncontrolledDropdown inNavbar nav className={styles.showInMobile}>
                 <DropdownToggle nav caret>
                   <span>
                     {WELCOME}, {firstName}
                   </span>
                 </DropdownToggle>
                 <DropdownMenu
-                  className={`${styles.noMaxHeight} ${
-                    darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown
+                  className={` ${darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown} ${
+                    styles.noMaxHeight
                   }`}
                 >
                   <DropdownItem
