@@ -1,0 +1,165 @@
+.ratingCard {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  transition: all 0.3s ease;
+  min-height: 220px;
+}
+
+.darkCard {
+  background-color: #1c2541;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.darkText {
+  color: #ffffff;
+}
+
+.dateRangeSelector {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #555;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.selectInput {
+  min-width: 180px;
+}
+
+.customDateRange {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.dateInputGroup {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dateInput {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  background-color: #fff;
+  color: #333;
+  min-width: 150px;
+}
+
+.darkInput {
+  background-color: #1c2541;
+  border-color: #225163;
+  color: #fff;
+}
+
+.dateInput:focus,
+.darkInput:focus {
+  outline: none;
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+.filtersSection {
+  margin-bottom: 12px;
+  padding: 10px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+}
+
+.darkCard .filtersSection {
+  background-color: #0d1b2a;
+}
+
+.filtersSection .label {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.chartContainer {
+  height: 350px;
+  margin-top: 12px;
+  position: relative;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .dateRangeSelector {
+    width: 100%;
+  }
+
+  .selectInput {
+    flex: 1;
+    min-width: auto;
+  }
+
+  .customDateRange {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .dateInputGroup {
+    width: 100%;
+  }
+
+  .dateInput {
+    flex: 1;
+  }
+
+  .chartContainer {
+    height: 300px;
+  }
+
+  .title {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 576px) {
+  .ratingCard {
+    padding: 15px;
+  }
+
+  .title {
+    font-size: 18px;
+  }
+
+  .label {
+    font-size: 13px;
+  }
+
+  .chartContainer {
+    height: 250px;
+  }
+}
