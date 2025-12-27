@@ -301,7 +301,7 @@ export function Header(props) {
                   </UncontrolledDropdown>
                 )}
                 <NavItem>
-                  <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
+                  <NavLink tag={Link} to={`/communityportal/profile/${displayUserId}`}>
                     <img
                       src={`${profilePic || '/pfp-default-header.png'}`}
                       alt=""
@@ -321,7 +321,7 @@ export function Header(props) {
                     <DropdownItem divider />
                     <DropdownItem
                       tag={Link}
-                      to={`/userprofile/${user.userid}`}
+                      to={`/communityportal/profile/${user.userid}`}
                       className={darkMode ? 'text-light' : ''}
                     >
                       {VIEW_PROFILE}
@@ -332,7 +332,7 @@ export function Header(props) {
                     ) && (
                       <DropdownItem
                         tag={Link}
-                        to={`/updatepassword/${user.userid}`}
+                        to={`/communityportal/updatepassword/${user.userid}`}
                         className={darkMode ? 'text-light' : ''}
                       >
                         {UPDATE_PASSWORD}
