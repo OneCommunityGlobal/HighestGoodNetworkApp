@@ -11,6 +11,9 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { format } from 'date-fns';
 import styles from './EventCard.module.css';
+// Phase 3: Import timezone utilities (exploration phase)
+// TODO: Will use these in Phase 5 for full implementation
+// import { getUserTimezone, convertToUserTimezone, getTimezoneAbbreviation } from '../../../utils/timezoneUtils';
 
 function EventCard(props) {
   const { event, darkMode } = props;
@@ -50,6 +53,12 @@ function EventCard(props) {
 
   // TODO: Implement timezone conversion to display event times in user's local timezone
   // This will ensure event times are accurate and consistent across different user locations
+  // Phase 3: Exploring conversion options - will implement in Phase 5
+  // Future implementation will:
+  // 1. Get user timezone: const userTz = getUserTimezone();
+  // 2. Convert event time: const convertedTime = convertToUserTimezone(dateString, userTz);
+  // 3. Get timezone abbreviation: const tzAbbr = getTimezoneAbbreviation(userTz);
+  // 4. Format with timezone: return format(convertedTime, 'h:mm a') + ' ' + tzAbbr;
   const formatDateTime = dateString => {
     try {
       return format(new Date(dateString), 'h:mm a');
