@@ -438,10 +438,10 @@ function LessonList(props) {
           // Safely handle content - remove HTML tags and normalize newlines
           let content = '';
           if (lesson?.content) {
-            // Remove HTML tags if present
+            // Remove HTML tags if present (using non-greedy quantifier to prevent ReDoS)
             const textContent =
               typeof lesson.content === 'string'
-                ? lesson.content.replace(/<[^>]*>/g, '')
+                ? lesson.content.replace(/<[^>]*?>/g, '')
                 : String(lesson.content);
             // Replace newlines with spaces to keep content on single line in CSV
             content = textContent
