@@ -282,6 +282,28 @@ function LessonList(props) {
     applyFiltersAndSort();
   }, [lessons, tags, filterOption, sortOption]); // All dependencies that should trigger filtering
 
+  /**
+   * Safely removes HTML tags from a string using DOMParser.
+   * This approach is ReDoS-safe and handles all HTML content consistently.
+   */
+  const stripHtmlTags = htmlString => {
+    if (!htmlString || typeof htmlString !== 'string') {
+      return String(htmlString || '');
+    }
+
+    try {
+      // Use DOMParser to safely parse and extract text content
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(htmlString, 'text/html');
+      return doc.body.textContent || doc.body.innerText || '';
+    } catch (error) {
+      // Fallback: if DOMParser fails, return the original string
+      // This should rarely happen, but provides a safety net
+      console.warn('Error parsing HTML content:', error);
+      return htmlString;
+    }
+  };
+
   const escapeCSV = value => {
     // Handle null, undefined, and empty values
     if (value === null || value === undefined || value === '') {
@@ -438,11 +460,8 @@ function LessonList(props) {
           // Safely handle content - remove HTML tags and normalize newlines
           let content = '';
           if (lesson?.content) {
-            // Remove HTML tags if present (using non-greedy quantifier to prevent ReDoS)
-            const textContent =
-              typeof lesson.content === 'string'
-                ? lesson.content.replace(/<[^>]*?>/g, '')
-                : String(lesson.content);
+            // Remove HTML tags using DOMParser (ReDoS-safe and handles all cases)
+            const textContent = stripHtmlTags(lesson.content);
             // Replace newlines with spaces to keep content on single line in CSV
             content = textContent
               .replace(/\n/g, ' ')
