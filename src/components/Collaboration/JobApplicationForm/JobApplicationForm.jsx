@@ -1,5 +1,6 @@
 // ...existing code...
 import React, { useState, useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import styles from './JobApplicationForm.module.css';
 import OneCommunityImage from '../../../assets/images/logo2.png';
 import axios from 'axios';
@@ -9,6 +10,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 function JobApplicationForm() {
+  const location = useLocation();
   const [forms, setForms] = useState([]);
   const [selectedJob, setSelectedJob] = useState('');
   const [answers, setAnswers] = useState([]);
@@ -23,8 +25,110 @@ function JobApplicationForm() {
   const [websiteSocial, setWebsiteSocial] = useState('');
   const [resumeFile, setResumeFile] = useState(null);
   const resumeInputRef = useRef(null);
+  const [jobDataFromRedirect, setJobDataFromRedirect] = useState(null);
+  // Additional fields for requirements checking
+  const [fullTimeYears, setFullTimeYears] = useState('');
+  const [monthsVolunteer, setMonthsVolunteer] = useState('');
+  const [hoursPerWeek, setHoursPerWeek] = useState('');
+  const [roleSkills, setRoleSkills] = useState('');
+  // User questionnaire data from referral link
+  const [userQuestionnaireData, setUserQuestionnaireData] = useState(null);
 
   const darkMode = useSelector(state => state.theme?.darkMode);
+  const isAdmin = useSelector(state => {
+    try {
+      const user = state?.auth?.user;
+      const role = user?.role;
+      return (
+        role === 'Administrator' ||
+        role === 'Owner' ||
+        role === 'admin' ||
+        role === 'ADMINISTRATOR' ||
+        role === 'OWNER'
+      );
+    } catch (error) {
+      return false;
+    }
+  });
+
+  // Validate ID parameter to prevent injection attacks
+  const isValidId = id => {
+    if (!id || typeof id !== 'string') return false;
+    // Allow only alphanumeric characters, hyphens, and underscores (MongoDB ObjectId format)
+    return /^[a-zA-Z0-9_-]+$/.test(id) && id.length <= 100;
+  };
+
+  // Get job data from redirect or URL parameters
+  useEffect(() => {
+    // Check for referral link parameters from URL query string
+    const searchParams = new URLSearchParams(location.search);
+    const referralId = searchParams.get('ref') || searchParams.get('referral');
+    const jobIdParam = searchParams.get('jobId');
+    const pathJobId = location.pathname.split('/').pop();
+    const jobId = jobIdParam || (pathJobId && pathJobId !== 'job-application' ? pathJobId : null);
+
+    // If we have a valid referral ID, fetch user's questionnaire data
+    if (referralId && isValidId(referralId)) {
+      fetchUserQuestionnaireData(referralId);
+    }
+
+    // Get job data from location state or URL
+    if (location.state) {
+      setJobDataFromRedirect(location.state);
+      if (location.state.jobTitle) {
+        setJobTitleInput(location.state.jobTitle);
+      }
+    } else if (jobId && isValidId(jobId)) {
+      // Fetch job data from API if we have a valid jobId
+      fetchJobData(jobId);
+    }
+  }, [location.state, location.search, location.pathname]);
+
+  // Fetch user's prior questionnaire data from referral link
+  const fetchUserQuestionnaireData = async referralId => {
+    try {
+      // This endpoint should return the user's questionnaire responses
+      // Adjust the endpoint based on your API structure
+      const response = await axios.get(`${ENDPOINTS.GET_USER_QUESTIONNAIRE}/${referralId}`);
+      if (response.data) {
+        setUserQuestionnaireData(response.data);
+        // Pre-fill form fields from questionnaire data
+        if (response.data.name) setApplicantName(response.data.name);
+        if (response.data.email) setApplicantEmail(response.data.email);
+        if (response.data.locationTimezone) setLocationTimezone(response.data.locationTimezone);
+        if (response.data.phone) setPhone(response.data.phone);
+        if (response.data.fullTimeYears) setFullTimeYears(response.data.fullTimeYears);
+        if (response.data.monthsVolunteer) setMonthsVolunteer(response.data.monthsVolunteer);
+        if (response.data.hoursPerWeek) setHoursPerWeek(response.data.hoursPerWeek);
+        if (response.data.roleSkills) setRoleSkills(response.data.roleSkills);
+      }
+    } catch (error) {
+      console.error('Error fetching user questionnaire data:', error);
+      // If referral data fetch fails, continue without it
+    }
+  };
+
+  // Fetch job data by ID
+  const fetchJobData = async jobId => {
+    try {
+      const response = await axios.get(`${ENDPOINTS.GET_JOB}/${jobId}`);
+      if (response.data) {
+        setJobDataFromRedirect({
+          jobId: response.data._id,
+          jobTitle: response.data.title,
+          jobDescription: response.data.description || '',
+          requirements: response.data.requirements || [],
+          category: response.data.category || 'General',
+        });
+        if (response.data.title) {
+          setJobTitleInput(response.data.title);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching job data:', error);
+      toast.error('Failed to load job details');
+    }
+  };
 
   useEffect(() => {
     async function fetchForms() {
@@ -32,6 +136,20 @@ function JobApplicationForm() {
         const res = await axios.get(ENDPOINTS.GET_ALL_JOB_FORMS);
         const formsArr = Array.isArray(res.data.forms) ? res.data.forms : [];
         setForms(formsArr);
+
+        // If we have job data from redirect, try to match it
+        if (jobDataFromRedirect?.jobTitle) {
+          const matchedForm = formsArr.find(
+            f => f.title?.toLowerCase() === jobDataFromRedirect.jobTitle?.toLowerCase(),
+          );
+          if (matchedForm) {
+            setSelectedJob(matchedForm.title);
+            setFilteredForm(matchedForm);
+            setAnswers(new Array((matchedForm.questions ?? []).length).fill(''));
+            return;
+          }
+        }
+
         const firstWithQuestions = formsArr.find(f => f.questions && f.questions.length > 0);
         if (firstWithQuestions) {
           setSelectedJob(firstWithQuestions.title);
@@ -51,7 +169,7 @@ function JobApplicationForm() {
       }
     }
     fetchForms();
-  }, []);
+  }, [jobDataFromRedirect]);
 
   useEffect(() => {
     if (!selectedJob) return;
@@ -95,6 +213,69 @@ function JobApplicationForm() {
   const handleResumeChange = e => {
     const f = e.target.files?.[0] || null;
     setResumeFile(f);
+  };
+
+  // Shared function to check requirements based on provided data
+  const evaluateRequirements = (data = {}) => {
+    const {
+      fullTimeYears: years = '',
+      monthsVolunteer: months = '',
+      hoursPerWeek: hours = '',
+      roleSkills: skills = '',
+      locationTimezone: timezone = '',
+    } = data;
+
+    const reactKeywords = ['react', 'reactjs', 'react.js'];
+    const skillsLower = (skills || '').toLowerCase();
+    const yearsNum = years ? parseFloat(years) : 0;
+    const monthsNum = months ? parseFloat(months) : 0;
+    const hoursNum = hours ? parseFloat(hours) : 0;
+
+    return {
+      reactExperience:
+        yearsNum >= 1 || reactKeywords.some(keyword => skillsLower.includes(keyword)),
+      twoMonthsCommitment: monthsNum >= 2,
+      javascriptExperience: yearsNum >= 1,
+      timeZoneLocation: !!(timezone && timezone.trim()),
+      tenHoursPerWeek: hoursNum >= 10,
+    };
+  };
+
+  // Check if requirements are satisfied (for admin view) - matching reference implementation
+  const checkRequirements = () => {
+    return evaluateRequirements({
+      fullTimeYears,
+      monthsVolunteer,
+      hoursPerWeek,
+      roleSkills,
+      locationTimezone,
+    });
+  };
+
+  // Check user requirements based on their prior questionnaire data (for user view)
+  const checkUserRequirements = () => {
+    return evaluateRequirements({
+      fullTimeYears: fullTimeYears || userQuestionnaireData?.fullTimeYears || '',
+      monthsVolunteer: monthsVolunteer || userQuestionnaireData?.monthsVolunteer || '',
+      hoursPerWeek: hoursPerWeek || userQuestionnaireData?.hoursPerWeek || '',
+      roleSkills: roleSkills || userQuestionnaireData?.roleSkills || '',
+      locationTimezone: locationTimezone || userQuestionnaireData?.locationTimezone || '',
+    });
+  };
+
+  // Helper function to strip HTML tags and clean text
+  const stripHtml = html => {
+    if (!html) return '';
+    try {
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      const text = doc.body.textContent || doc.body.innerText || '';
+      return text.replace(/\s+/g, ' ').trim();
+    } catch (error) {
+      return html
+        .replace(/<[^>]*>/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
   };
 
   const validateBeforeSubmit = () => {
@@ -173,12 +354,16 @@ function JobApplicationForm() {
           </div>
         </section>
         <section className={styles.formContainer}>
-          <h1 className={styles.formTitle}>FORM FOR {selectedJob?.toUpperCase()} POSITION</h1>
-          <p className={styles.formSubtitle}>
-            <a href="#learnMore" onClick={handleShowDescription}>
-              Click to know more about this position
-            </a>
-          </p>
+          <header className={styles.jaHeader}>
+            <h1 className={styles.jaTitle}>
+              {jobDataFromRedirect?.jobTitle || selectedJob || 'General Position'}
+            </h1>
+            {(jobDataFromRedirect?.jobDescription || filteredForm?.description) && (
+              <p className={styles.jaDesc}>
+                {stripHtml(jobDataFromRedirect?.jobDescription || filteredForm?.description || '')}
+              </p>
+            )}
+          </header>
           {showDescription && filteredForm && (
             <div className={styles.popupOverlay}>
               <div className={styles.popupContent}>
@@ -196,6 +381,13 @@ function JobApplicationForm() {
             </div>
           )}
           <form className={styles.form} onSubmit={handleSubmit}>
+            {/* Requirements Section - Admin view shows dynamic checkboxes, User view shows static checkboxes */}
+            {isAdmin ? (
+              <RequirementsSection requirements={checkRequirements()} darkMode={darkMode} />
+            ) : (
+              <UserRequirementsSection requirements={checkUserRequirements()} darkMode={darkMode} />
+            )}
+
             <div>
               Here is a questionnaire to apply to work with us. To complete your application and
               schedule a Zoom interview, please answer the pre-interview questions below.
@@ -268,15 +460,48 @@ function JobApplicationForm() {
               </div>
               <div className={styles.formGroup}>
                 <h2>4. What skills/experience do you possess?</h2>
-                <input type="text" placeholder="Type your response here" />
+                <input
+                  type="text"
+                  placeholder="Type your response here"
+                  value={roleSkills}
+                  onChange={e => setRoleSkills(e.target.value)}
+                  className={styles.inputField}
+                />
               </div>
               <div className={styles.formGroup}>
                 <h2>5. How many volunteer hours per week are you willing to commit to?</h2>
-                <input type="text" placeholder="Type your response here" />
+                <input
+                  type="number"
+                  min="0"
+                  placeholder="Type your response here"
+                  value={hoursPerWeek}
+                  onChange={e => setHoursPerWeek(e.target.value)}
+                  className={styles.inputField}
+                />
               </div>
               <div className={styles.formGroup}>
-                <h2>6. For how long do you wish to volunteer with us?</h2>
-                <input type="text" placeholder="Type your response here" />
+                <h2>
+                  6. For how long do you wish to volunteer with us? (Enter your answer in months)
+                </h2>
+                <input
+                  type="number"
+                  min="0"
+                  placeholder="Type your response here"
+                  value={monthsVolunteer}
+                  onChange={e => setMonthsVolunteer(e.target.value)}
+                  className={styles.inputField}
+                />
+              </div>
+              <div className={styles.formGroup}>
+                <h2>How Many Years of FULL TIME experience do you have?</h2>
+                <input
+                  type="number"
+                  min="0"
+                  placeholder="Enter years of experience"
+                  value={fullTimeYears}
+                  onChange={e => setFullTimeYears(e.target.value)}
+                  className={styles.inputField}
+                />
               </div>
               <div className={styles.formGroup}>
                 <h2>7. What is your desired start date?</h2>
@@ -365,6 +590,158 @@ function JobApplicationForm() {
           </form>
         </section>
       </main>
+    </div>
+  );
+}
+
+/* Requirements Section Component */
+function RequirementsSection({ requirements, darkMode }) {
+  const requirementList = [
+    {
+      id: 'reactExperience',
+      label: '1+ years of Full-Time ReactJS Experience',
+      satisfied: requirements.reactExperience,
+    },
+    {
+      id: 'twoMonthsCommitment',
+      label: 'Minimum of 2 Months Commitment',
+      satisfied: requirements.twoMonthsCommitment,
+    },
+    {
+      id: 'javascriptExperience',
+      label: '1+ years of Full-Time JavaScript Experience',
+      satisfied: requirements.javascriptExperience,
+    },
+    {
+      id: 'timeZoneLocation',
+      label: 'Time Zone and Location Matches',
+      satisfied: requirements.timeZoneLocation,
+    },
+    {
+      id: 'tenHoursPerWeek',
+      label: 'Minimum of 10 hours of work a week',
+      satisfied: requirements.tenHoursPerWeek,
+    },
+  ];
+
+  return (
+    <div className={styles.adminRequirementsSection}>
+      <h3 className={styles.requirementsTitle}>Requirements Status</h3>
+      <div className={styles.requirementsList}>
+        {requirementList.map(req => (
+          <div key={req.id} className={styles.requirementItem}>
+            <label className={styles.requirementCheckbox}>
+              <input
+                type="checkbox"
+                className={styles.requirementCheckboxInput}
+                checked={req.satisfied}
+                readOnly
+                disabled
+              />
+              <span
+                className={`${styles.requirementCheckboxCustom} ${
+                  req.satisfied ? styles.checked : ''
+                }`}
+              >
+                {req.satisfied && (
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 14 14"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M11.6667 3.5L5.25 9.91667L2.33334 7"
+                      stroke="white"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                )}
+              </span>
+              <span style={{ color: darkMode ? '#ffffff' : undefined }}>{req.label}</span>
+            </label>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* User Requirements Section Component - Shows requirements with checkboxes for user view */
+function UserRequirementsSection({ requirements, darkMode }) {
+  const requirementList = [
+    {
+      id: 'reactExperience',
+      label: '1+ years of Full-Time ReactJS Experience',
+      satisfied: requirements.reactExperience,
+    },
+    {
+      id: 'twoMonthsCommitment',
+      label: 'Minimum of 2 Months Commitment',
+      satisfied: requirements.twoMonthsCommitment,
+    },
+    {
+      id: 'javascriptExperience',
+      label: '1+ years of Full-Time JavaScript Experience',
+      satisfied: requirements.javascriptExperience,
+    },
+    {
+      id: 'timeZoneLocation',
+      label: 'Time Zone and Location Matches',
+      satisfied: requirements.timeZoneLocation,
+    },
+    {
+      id: 'tenHoursPerWeek',
+      label: 'Minimum of 10 hours of work a week',
+      satisfied: requirements.tenHoursPerWeek,
+    },
+  ];
+
+  return (
+    <div className={styles.userRequirementsSection}>
+      <h3 className={styles.requirementsTitle}>Requirements Status</h3>
+      <div className={styles.requirementsList}>
+        {requirementList.map(req => (
+          <div key={req.id} className={styles.requirementItem}>
+            <label className={styles.requirementCheckbox}>
+              <input
+                type="checkbox"
+                className={styles.requirementCheckboxInput}
+                checked={req.satisfied}
+                readOnly
+                disabled
+              />
+              <span
+                className={`${styles.requirementCheckboxCustom} ${
+                  req.satisfied ? styles.checked : ''
+                }`}
+              >
+                {req.satisfied && (
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 14 14"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M11.6667 3.5L5.25 9.91667L2.33334 7"
+                      stroke="white"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                )}
+              </span>
+              <span style={{ color: darkMode ? '#ffffff' : undefined }}>{req.label}</span>
+            </label>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
