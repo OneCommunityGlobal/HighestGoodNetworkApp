@@ -1,5 +1,5 @@
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import { boxStyle } from 'styles';
+import { boxStyle } from '~/styles';
 
 function DeleteLessonCardPopUp({ open, setDeletePopup, deleteLesson, lessonId }) {
   const closePopup = () => {

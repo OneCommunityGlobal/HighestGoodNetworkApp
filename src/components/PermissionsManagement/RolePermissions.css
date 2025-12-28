@@ -23,3 +23,11 @@
 .dark-mode .close {
   color: #ffffff;
 }
+
+.dark-mode .modal-body p {
+  color: #fff !important;
+}
+
+.modal-info-content {
+  padding-left: 20px;
+}

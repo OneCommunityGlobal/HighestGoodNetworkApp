@@ -1,0 +1,55 @@
+.itemsListContainer {
+  width: 100%;
+  max-width: 1536px;
+  margin: 1rem auto;
+  padding: 0 1rem;
+}
+
+.itemsTableContainer {
+  overflow-x: scroll;
+  align-items: center;
+}
+
+.itemsListContainer section {
+  margin-top: 2rem;
+}
+
+.itemsListContainer table {
+  text-align: center;
+  min-width: 1024px;
+  overflow: scroll;
+  font-size: small;
+}
+
+.itemsTable th {
+  height: 2rem;
+}
+
+.itemsCell button {
+  cursor: pointer;
+}
+
+.itemsCell svg {
+  width: 20px;
+  height: 20px;
+  margin-right: 6px;
+  color: dimgray;
+}
+
+.itemsCell svg:hover {
+  color: black;
+}
+
+.selectInput {
+  display: flex;
+  align-items: flex-end;
+  width: 300px;
+  column-gap: 1rem;
+}
+
+.conditionCell {
+  vertical-align: middle;
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+}

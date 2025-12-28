@@ -11,8 +11,8 @@ const Input = ({ label, name, error, className, type, invalid, textColor, ...res
   const [eye, setEye] = useState(true);
   const [password, setPassword] = useState('password');
 
-  const darkMode = useSelector(state => state.theme.darkMode);
-  const darkModeText = textColor || 'text-azure';
+  const darkmode = useSelector(state => state.theme.darkMode);
+  const darkmodeText = textColor || 'text-azure';
 
   const toggleEye = () => {
     if (password === 'password') {
@@ -25,8 +25,8 @@ const Input = ({ label, name, error, className, type, invalid, textColor, ...res
   };
 
   return (
-    <div className={`form-group ${className || ''}`}>
-      <label htmlFor={name} className={darkMode ? darkModeText : ''}>
+    <div data-testid="form-group" className={`form-group ${className || ''}`}>
+      <label htmlFor={name} className={darkmode ? darkmodeText : ''}>
         {label}
       </label>
       {type === 'password' ? (
@@ -36,7 +36,7 @@ const Input = ({ label, name, error, className, type, invalid, textColor, ...res
             type={password}
             id={name}
             name={name}
-            className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
+            className={`form-control ${darkmode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
           />
           <i onClick={toggleEye} className={`fa ${eye ? 'fa-eye-slash' : 'fa-eye'}`} />
           {invalid && (
@@ -51,7 +51,7 @@ const Input = ({ label, name, error, className, type, invalid, textColor, ...res
           type={type}
           id={name}
           name={name}
-          className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
+          className={`form-control ${darkmode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
         />
       )}
       {error && <div className="alert alert-danger mt-1">{error}</div>}

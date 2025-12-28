@@ -2,12 +2,12 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { USER_STATUS_CHANGE_CONFIRMATION } from '../../languages/en/messages';
-import '../Header/DarkMode.css';
+import '../Header/index.css';
 
 /**
  * Modal popup to show the user profile to confirm activation/deactivtion
  */
-const ActiveInactiveConfirmationPopup = React.memo(props => {
+const ActiveInactiveConfirmationPopupComponent = (props) => {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const closePopup = () => {
@@ -41,6 +41,8 @@ const ActiveInactiveConfirmationPopup = React.memo(props => {
       </ModalFooter>
     </Modal>
   );
-});
+};
 
+const ActiveInactiveConfirmationPopup = React.memo(ActiveInactiveConfirmationPopupComponent);
+ActiveInactiveConfirmationPopup.displayName = "ActiveInactiveConfirmationPopup";
 export default ActiveInactiveConfirmationPopup;

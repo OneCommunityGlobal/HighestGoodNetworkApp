@@ -1,0 +1,26 @@
+.smScrollable {
+  height: 100px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-start;
+}
+
+.chip {
+  display: flex;
+  align-items: center;
+  background: #e0e0e0;
+  border-radius: 20px;
+  padding: 4px 10px;
+  height: fit-content;
+}
+
+.filterContainerStart {
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}

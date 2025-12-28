@@ -1,0 +1,196 @@
+.dashboard {
+  min-height: 100vh;
+  background-color: #f8f9fa;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+}
+
+.mainContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 0.5rem;
+  line-height: 1.2;
+}
+
+.subtitle {
+  font-size: 1.125rem;
+  color: #6b7280;
+  margin: 0;
+  font-weight: 400;
+}
+
+.timeLogsSection {
+  margin-top: 3rem;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.sectionTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.viewToggle {
+  display: flex;
+  gap: 0.5rem;
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.toggleButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #6b7280;
+}
+
+.toggleButton:hover {
+  background-color: #f3f4f6;
+  color: #374151;
+}
+
+.toggleButton.active {
+  background-color: #3b82f6;
+  color: #ffffff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  color: #6b7280;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e5e7eb;
+  border-top: 4px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.errorContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  text-align: center;
+}
+
+.errorMessage {
+  color: #dc2626;
+  font-size: 1.125rem;
+  margin-bottom: 1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .mainContainer {
+    padding: 1rem 0.5rem;
+  }
+  
+  .title {
+    font-size: 2rem;
+  }
+  
+  .sectionHeader {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+  
+  .viewToggle {
+    align-self: flex-end;
+  }
+}
+
+/* Dark Mode Styles - Using global dark-mode class for consistency across builds */
+:global(.dark-mode) .dashboard {
+  background-color: #1a1a1a;
+}
+
+:global(.dark-mode) .title {
+  color: #ffffff;
+}
+
+:global(.dark-mode) .subtitle {
+  color: #9ca3af;
+}
+
+:global(.dark-mode) .sectionTitle {
+  color: #ffffff;
+}
+
+:global(.dark-mode) .viewToggle {
+  background-color: #2d2d2d;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+:global(.dark-mode) .toggleButton {
+  color: #9ca3af;
+}
+
+:global(.dark-mode) .toggleButton:hover {
+  background-color: #363636;
+  color: #d1d5db;
+}
+
+:global(.dark-mode) .toggleButton.active {
+  background-color: #2563eb;
+  color: #ffffff;
+}
+
+:global(.dark-mode) .loadingContainer {
+  color: #9ca3af;
+}
+
+:global(.dark-mode) .spinner {
+  border-color: #404040;
+  border-top-color: #60a5fa;
+}
+
+:global(.dark-mode) .errorContainer {
+  color: #9ca3af;
+}
+
+:global(.dark-mode) .errorMessage {
+  color: #f87171;
+}

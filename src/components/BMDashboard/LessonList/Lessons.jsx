@@ -1,5 +1,5 @@
-import { updateBMLesson, deleteBMLesson } from 'actions/bmdashboard/lessonsAction';
-import { likeLessonAction } from 'actions/bmdashboard/lessonLikesActions';
+import { updateBMLesson, deleteBMLesson } from '~/actions/bmdashboard/lessonsAction';
+import { likeLessonAction } from '~/actions/bmdashboard/lessonLikesActions';
 import LessonCard from './LessonCard';
 
 function Lessons({ filteredLessons, setFilteredLessons, dispatch }) {
@@ -18,12 +18,23 @@ function Lessons({ filteredLessons, setFilteredLessons, dispatch }) {
     setFilteredLessons(updatedData);
   };
 
-  const onDeliteLessonCard = lessonId => {
-    dispatch(deleteBMLesson(lessonId));
+  const onDeliteLessonCard = async lessonId => {
+    try {
+      await dispatch(deleteBMLesson(lessonId));
+
+      // Update filtered lessons
+      setFilteredLessons(prevLessons => prevLessons.filter(lesson => lesson._id !== lessonId));
+    } catch (error) {
+      // console.error('Error deleting lesson:', error);
+    }
   };
 
   const handleLike = async (lessonId, userId) => {
-    await dispatch(likeLessonAction(lessonId, userId));
+    try {
+      await dispatch(likeLessonAction(lessonId, userId));
+    } catch (error) {
+      // console.error('Error updating like:', error);
+    }
   };
 
   return (

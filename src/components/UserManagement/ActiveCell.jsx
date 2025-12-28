@@ -5,11 +5,12 @@
  * @param {func} props.onClick
  * @param {bool} props.canChange The permission to change the status via onClick
  */
+import styles from '~/components/Timelog/Timelog.module.css'
 function ActiveCell(props) {
   return (
     <span
       style={{ fontSize: '1.5rem', cursor: props.canChange ? 'pointer' : 'default' }}
-      className={props.isActive ? 'activeUser' : 'notActiveUser'}
+      className={props.isActive ? styles.activeUser : styles.notActiveUser}
       id={props.index === undefined ? undefined : `active_cell_${props.index}`}
       title={(() => {
         if (props.canChange) {
@@ -17,9 +18,22 @@ function ActiveCell(props) {
         }
         return props.isActive ? 'Active' : 'Inactive';
       })()}
-      onClick={props.canChange ? props.onClick : () => {}}
+      aria-pressed={props.isActive}
+      role={props.canChange ? 'button' : undefined}
+      tabIndex={props.canChange ? 0 : -1}
+      onClick={props.canChange ? props.onClick : () => { }}
+      onKeyDown={
+        props.canChange
+          ? (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              props.onClick(e);
+            }
+          }
+          : undefined
+      }
     >
-      <i className="fa fa-circle" aria-hidden="true" />
+      <i className={`fa fa-circle ${styles['fa-circle']}`} aria-hidden="true" />
     </span>
   );
 }
