@@ -171,7 +171,7 @@ export const ENDPOINTS = {
   POPULARITY_ROLES: `${APIEndpoint}/popularity/roles`,
 
 ENHANCED_POPULARITY: (range, roles, start, end, includeLowVolume) => {
-    let url = `${APIEndpoint}/api/popularity-enhanced/timeline?`;
+    let url = `${APIEndpoint}/popularity-enhanced/timeline?`;
     if (range) url += `range=${range}&`;
     if (roles && roles.length > 0) {
       url += `roles=${encodeURIComponent(roles.join(','))}&`;
@@ -181,9 +181,9 @@ ENHANCED_POPULARITY: (range, roles, start, end, includeLowVolume) => {
     if (includeLowVolume !== undefined) url += `includeLowVolume=${includeLowVolume}&`;
     return url.slice(0, -1);
   },
-  ENHANCED_POPULARITY_ROLES: `${APIEndpoint}/api/popularity-enhanced/roles-enhanced`,
+  ENHANCED_POPULARITY_ROLES: `${APIEndpoint}/popularity-enhanced/roles-enhanced`,
   ENHANCED_POPULARITY_PAIRS: (roles) => 
-    `${APIEndpoint}/api/popularity-enhanced/role-pairs?roles=${encodeURIComponent(roles.join(','))}`,
+    `${APIEndpoint}/popularity-enhanced/role-pairs?roles=${encodeURIComponent(roles.join(','))}`,
 
   // titles endpoints
   TITLES: () => `${APIEndpoint}/title`,
