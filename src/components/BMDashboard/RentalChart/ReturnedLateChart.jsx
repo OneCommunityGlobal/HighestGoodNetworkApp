@@ -4,7 +4,6 @@ import { ENDPOINTS } from '~/utils/URL';
 import { Bar } from 'react-chartjs-2';
 import DatePicker from 'react-datepicker';
 import { MultiSelect } from 'react-multi-select-component';
-import { Row, Col, Button, Input } from 'reactstrap';
 import 'react-datepicker/dist/react-datepicker.css';
 import styles from './ReturnedLateChart.module.css';
 import {
@@ -203,7 +202,6 @@ export default function ReturnedLateChart() {
           <label htmlFor="project-select" className={`${styles['returned-late-filter-label']} `}>
             Project:
           </label>
-
           <select
             id="project-select"
             value={selectedProject}
