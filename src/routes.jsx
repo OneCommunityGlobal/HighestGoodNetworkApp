@@ -99,6 +99,7 @@ import NoshowViz from './components/CommunityPortal/Attendence/NoshowViz';
 import EventList from './components/CommunityPortal/Event/EventList/EventList';
 import Resources from './components/CommunityPortal/Activities/activityId/Resources';
 import EventParticipation from './components/CommunityPortal/Reports/Participation/EventParticipation';
+import LogAttendance from './components/CommunityPortal/Activities/LogAttendance';
 
 import MaterialSummary from './components/MaterialSummary/MaterialSummary';
 
@@ -762,6 +763,11 @@ export default (
           path="/communityportal/Activities/Register/:activityId"
           exact
           component={Register}
+        />
+        <CPProtectedRoute
+          path="/communityportal/activity/:activityId/logattendance"
+          exact
+          component={LogAttendance}
         />
         {/* Listing and Bidding Routes */}
         <LBProtectedRoute path="/lbdashboard" exact component={LBDashboard} />
