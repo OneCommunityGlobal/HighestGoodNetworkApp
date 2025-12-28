@@ -146,7 +146,7 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, 
                   </>
                 ) : (
                   <span>
-                    {ReactHtmlParser(
+                    {parse(
                       lesson.content.length > maxSummaryLength
                         ? `${lesson.content.slice(0, maxSummaryLength)}...`
                         : lesson.content,
