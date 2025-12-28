@@ -1,25 +1,10 @@
 /* General Styling */
-.header-wrapper {
+.headerWrapper {
   height: fit-content;
   width: clamp(100vw, 0.1rem + 1vw, 100%);
 }
-/*
-  position: absolute;
-  top: 0;
-  left: 0;
-  padding: 12px;
-} */
-/* Timer Message Section */
-.timer-message-section {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  /* flex-wrap: wrap; */
-  width: 100%;
-  gap: 1rem;
-}
 
-.card-content {
+.cardContent {
   padding: 15px;
   padding-left: 40px;
   padding-right: 40px; /* Match left padding for balance */
@@ -48,7 +33,7 @@
   right: 0;
 }
 
-.card-wrapper {
+.cardWrapper {
   padding-top: 1rem;
   padding-bottom: 1rem;
   /* Ensure wrapper uses full width */
@@ -62,13 +47,8 @@
 .navbar {
   z-index: 100;
   white-space: nowrap;
-  display: flex;
-  flex-wrap: nowrap;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  overflow: visible;
 }
+
 
 .redBackGroupHeader {
   z-index: 10;
@@ -87,100 +67,113 @@
   min-width: 29px;
 }
 
-.owner-message {
-  margin-right: 1rem;
-  
+.navbarOwnerMessage {
+  flex: 1;
+  text-align: center;
+  justify-content: center;
+  padding-left: 20px;
+  padding-right: 20px;
 }
 
-.nav-links {
+.menuContainer {
   display: flex;
-  flex-direction: row;
+  justify-content: flex-end;
   align-items: center;
-  overflow: visible;
+  flex-wrap: wrap;
 }
 
-.dashboard-text-link {
+.dashboardTextLink {
   font-size: 16px;
   flex-wrap: nowrap;
   gap: 1rem;
 }
 
-.dropdown-item-hover:hover {
+.darkMenuDropdown {
+  background-color: #3a506b !important;
+}
+
+.darkDropdownText {
+  color: white !important;
+}
+
+.darkDropdownItem:hover {
   background-color: #2f4157 !important;
 }
 
-@media (max-width: 1400px) {
-  .nav-links {
-    flex-direction: column !important;
-  }
+.noMaxHeight {
+  max-height: none !important;
+  overflow: visible !important;
 }
 
-
-
-/* Media Queries for Responsiveness */
-@media (max-width: 1400px) {
-  .nav-links {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-    width: 100%;
-    overflow: visible;
-    flex-wrap: wrap;
-  }
+.showInMobile {
+  display: none;
 }
 
-@media (max-width: 1050px) {
-  .timer-message-section {
-    width: 100%;
-    margin-right: 0;
-  }
-
-  .owner-message {
-    display: block;
-    margin-right: 0;
-    text-align: center;
-    width: 100%;
-  }
-  .nav-links {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-    overflow: visible;
-    flex-wrap: wrap;
-  }
+.hideInTablet {
+  display: block;
+}
+.showInTablet {
+  display: none;
 }
 
-@media screen and (max-width: 768px) {
-  .responsive-spacing {
-    margin-right: 5px;
-  }
-
-  .nav-links {
-    flex-direction: column;
-    width: 100%;
-    overflow: visible;
-    flex-wrap: wrap;
-  }
-}
-
-/*@media screen and (min-width: 1400px) and (max-width: 1700px) {
-  .owner-message {
+@media (max-width: 1700px) {
+  .hideInTablet {
     display: none;
   }
-}*/
-
-@media screen and (max-width: 769px) {
-  .responsive-spacing {
-    margin-right: 5px;
+  .showInTablet {
+    display: block;
   }
 }
 
-.header-margin {
+@media screen and (max-width: 1151px) and (min-width: 992px) {
+  .dropdownMenu {
+      width: auto !important;
+  }
+}
+
+@media screen and (max-width: 1199px) {
+  .menuContainer {
+    align-items: start;
+    flex-direction: column !important;
+    /* width: 100%; */
+    padding-left: 50px;
+  }
+  .mobileMenuDropdown {
+    background-color: #343a40 !important;
+    border: none !important;
+  }
+  .mobileDropdownText{
+    color: rgba(255, 255, 255, 0.5) !important;
+  }
+  .mobileDropdownItem:hover{
+    background-color: #343a40 !important;
+    color: rgba(255, 255, 255, 0.75) !important;
+  }
+  .darkMenuDropdown {
+    background-color: #343a40 !important;
+    border: none !important;
+  }
+  .darkDropdownText {
+    color: rgba(255, 255, 255, 0.5) !important;
+  }
+  .darkDropdownItem:hover {
+    background-color: #343a40 !important;
+    color: rgba(255, 255, 255, 0.75) !important;
+  }
+  .hideInMobile {
+    display: none;
+  }
+  .showInMobile {
+    display: block;
+  }
+}
+
+.headerMargin {
   height: 20px;
   background-color: #1B2A41;
 }
 
-.header-margin-light {
+.headerMarginLight {
   height: 20px;
   background-color: #fff;
 }
@@ -207,15 +200,6 @@
     position: relative !important;
     font-size: 16px !important;
     margin: 0 !important;
-  }
-
-  /* Ensure navigation links display correctly */
-  .nav-links {
-    gap: 0.5rem !important;
-    width: auto !important;
-    font-size: 16px !important;
-    margin: 0 !important;
-    padding: 0 !important;
   }
 
   /* Ensure all icons have correct size */
