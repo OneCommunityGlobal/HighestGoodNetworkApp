@@ -7,45 +7,51 @@ import Nav from 'react-bootstrap/Nav';
 
 import { FiUser } from 'react-icons/fi';
 import { BsChat } from 'react-icons/bs';
-import { Link } from 'react-router-dom';
 import { IoNotificationsOutline } from 'react-icons/io5';
+import { Link } from 'react-router-dom';
+
+import styles from './Header.module.css';
 
 function LBDashboardHeader(props) {
   const [selectedVillage, setSelectedVillage] = useState('');
   const { authUser } = props;
 
   return (
-    <Navbar expand="lg" className="item__navbar">
+    <Navbar expand="lg" className={styles.item__navbar}>
       <Container fluid>
-        {/* Left Section - Village Selector */}
-        <div className="item__navbar-left">
-          <div className="item__selector">
+        {/* Left Section */}
+        <div className={styles['item__navbar-left']}>
+          <div className={styles.item__selector}>
             <select value={selectedVillage} onChange={e => setSelectedVillage(e.target.value)}>
               <option value="Village 1">Village 1</option>
               <option value="Village 2">Village 2</option>
               <option value="Village 3">Village 3</option>
             </select>
           </div>
-          <div className="item__button">
+
+          <div className={styles.item__button}>
             <p>Go</p>
           </div>
         </div>
 
-        {/* Right Section - User Info and Icons */}
+        {/* Right Section */}
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
-          <div className="item__navbar-right">
+          <div className={styles['item__navbar-right']}>
             <h2>WELCOME {authUser?.name || 'USER_NAME'}</h2>
-            <div className="item__icons">
-              <Nav className="ml-auto">
-                <Nav.Link as={Link} to="/bidding" className="item__nav-link">
-                  <BsChat className="item__nav-icon" />
+
+            <div className={styles.item__icons}>
+              <Nav>
+                <Nav.Link as={Link} to="/bidding" className={styles['item__nav-link']}>
+                  <BsChat className={styles['item__nav-icon']} />
                 </Nav.Link>
-                <Nav.Link as={Link} to="/bidding" className="item__nav-link">
-                  <IoNotificationsOutline className="item__nav-icon" />
+
+                <Nav.Link as={Link} to="/bidding" className={styles['item__nav-link']}>
+                  <IoNotificationsOutline className={styles['item__nav-icon']} />
                 </Nav.Link>
-                <Nav.Link as={Link} to="/bidding" className="item__nav-link">
-                  <FiUser className="item__nav-icon" />
+
+                <Nav.Link as={Link} to="/bidding" className={styles['item__nav-link']}>
+                  <FiUser className={styles['item__nav-icon']} />
                 </Nav.Link>
               </Nav>
             </div>
