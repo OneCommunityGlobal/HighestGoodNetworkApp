@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo, useCallback } from 'react';
 import axios from 'axios';
 import { ENDPOINTS } from '~/utils/URL';
-import './TotalReport.css';
+import styles from './TotalReport.module.css';
 import TotalReportBarGraph from './TotalReportBarGraph';
 import Loading from '../../common/Loading';
 import EditableInfoModal from '../../UserProfile/EditableModal/EditableInfoModal';
@@ -204,9 +204,9 @@ function TotalContributorsReport({ startDate, endDate, userProfiles, darkMode, u
   const totalTangibleTime = contributors.reduce((acc, obj) => acc + Number(obj.tangibleTime), 0);
 
   return (
-    <div className={`total-container ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
+    <div className={`${styles.totalContainer} ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
       <div className="d-flex align-items-center">
-        <h2 className={`total-title ${darkMode ? 'text-azure' : ''}`}>Contributors Report</h2>
+        <h2 className={`${styles.totalTitle} ${darkMode ? 'text-azure' : ''}`}>Contributors Report</h2>
         <EditableInfoModal
           areaName="contributorsReportInfo"
           areaTitle="Contributors Report"
@@ -217,16 +217,16 @@ function TotalContributorsReport({ startDate, endDate, userProfiles, darkMode, u
           darkMode={darkMode}
         />
       </div>
-      <div className="total-period">
+      <div className={styles.totalPeriod}>
         In the period from {startDate.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })} to {endDate.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })}:
       </div>
-      <div className="total-item">
-        <div className="total-number">{contributors.length}</div>
-        <div className="total-text">members have contributed more than 10 hours.</div>
+      <div className={styles.totalItem}>
+        <div className={styles.totalNumber}>{contributors.length}</div>
+        <div className={styles.totalText}>members have contributed more than 10 hours.</div>
       </div>
-      <div className="total-item">
-        <div className="total-number">{totalTangibleTime.toFixed(2)}</div>
-        <div className="total-text">hours of tangible time have been logged.</div>
+      <div className={styles.totalItem}>
+        <div className={styles.totalNumber}>{totalTangibleTime.toFixed(2)}</div>
+        <div className={styles.totalText}>hours of tangible time have been logged.</div>
       </div>
       <div>
         {showMonthly && contributorsInMonth.length > 0 && (

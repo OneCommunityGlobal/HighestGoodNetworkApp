@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { useEffect, useState, useMemo, useCallback } from 'react';
 import { ENDPOINTS } from '~/utils/URL';
 import axios from 'axios';
-import './TotalReport.css';
+import styles from './TotalReport.module.css';
 import { Button } from 'reactstrap';
 import ReactTooltip from 'react-tooltip';
 import TotalReportBarGraph from './TotalReportBarGraph';
@@ -299,9 +299,9 @@ function TotalProjectReport(props) {
       return acc + Number(obj.tangibleTime);
     }, 0);
     return (
-      <div className={`total-container ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
-        <div className={`total-title ${darkMode ? 'text-azure' : ''}`}>Total Project Report</div>
-        <div className="total-period">
+      <div className={`${styles.totalContainer} ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
+        <div className={`${styles.totalTitle} ${darkMode ? 'text-azure' : ''}`}>Total Project Report</div>
+        <div className={styles.totalPeriod}>
           In the period from{' '}
           {startDate.toLocaleDateString('en-US', {
             month: '2-digit',
@@ -316,13 +316,13 @@ function TotalProjectReport(props) {
           })}
           :
         </div>
-        <div className="total-item">
-          <span className="total-number">{allProject.length}</span>
-          <span className="total-text">projects have been worked on more than 1 hours.</span>
+        <div className={styles.totalItem}>
+          <span className={styles.totalNumber}>{allProject.length}</span>
+          <span className={styles.totalText}>projects have been worked on more than 1 hours.</span>
         </div>
-        <div className="total-item">
-          <span className="total-number">{totalTangibleTime.toFixed(2)}</span>
-          <span className="total-text">hours of tangible time have been logged.</span>
+        <div className={styles.totalItem}>
+          <span className={styles.totalNumber}>{totalTangibleTime.toFixed(2)}</span>
+          <span className={styles.totalText}>hours of tangible time have been logged.</span>
         </div>
         <div>
           {showMonthly && projectInMonth.length > 0 ? (
@@ -331,10 +331,10 @@ function TotalProjectReport(props) {
           {showYearly && projectInYear.length > 0 ? (
             <TotalReportBarGraph barData={projectInYear} range="year" />
           ) : null}
-          {showWarning && <div className='total-warning'>Graphs are shown only if the selected date range is greater than one month.</div>}
+          {showWarning && <div className={styles.totalWarning}>Graphs are shown only if the selected date range is greater than one month.</div>}
         </div>
         {allProject.length ? (
-          <div className="total-detail">
+          <div className={styles.totalDetail}>
             {/* eslint-disable-next-line no-unused-vars */}
             <Button onClick={e => onClickTotalProjectDetail()}>
               {showTotalProjectTable ? 'Hide Details' : 'Show Details'}
@@ -379,7 +379,7 @@ function TotalProjectReport(props) {
       ) : (
         <div>
           <div>{totalProjectInfo(allProject)}</div>
-          <div className='tables'>{showTotalProjectTable ? totalProjectTable(allProject) : null}</div>
+          <div className={styles.tables}>{showTotalProjectTable ? totalProjectTable(allProject) : null}</div>
         </div>
       )}
     </div>
