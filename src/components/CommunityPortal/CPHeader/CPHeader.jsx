@@ -45,6 +45,8 @@ import {
   ACTIVITIES,
   REGISTRATION,
   SEND_EMAILS,
+  ACTIVITY_RESOURCE_MANGEMENT,
+  ACTIVITY_RESOURCE_USAGE,
 } from '../../../languages/en/ui';
 import Logout from '../../Logout/Logout';
 // import './CPHeader.css';
@@ -395,6 +397,24 @@ export function Header(props) {
                     {canAccessSendEmails && (
                       <DropdownItem tag={Link} to="/announcements" className={fontColor}>
                         {SEND_EMAILS}
+                      </DropdownItem>
+                    )}
+                    {isAuthenticated && (
+                      <DropdownItem
+                        tag={Link}
+                        to="/communityportal/activity/:activityid/resources"
+                        className={fontColor}
+                      >
+                        {ACTIVITY_RESOURCE_MANGEMENT}
+                      </DropdownItem>
+                    )}
+                    {isAuthenticated && (
+                      <DropdownItem
+                        tag={Link}
+                        to="/communityportal/activity/:activityid/resourcesusage"
+                        className={fontColor}
+                      >
+                        {ACTIVITY_RESOURCE_USAGE}
                       </DropdownItem>
                     )}
                     {canAccessPermissionsManagement && (
