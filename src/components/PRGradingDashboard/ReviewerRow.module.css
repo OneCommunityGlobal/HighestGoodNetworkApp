@@ -1,0 +1,107 @@
+.row {
+  transition: background-color 0.2s;
+}
+
+.row:hover {
+  background-color: #f9fafb;
+}
+
+.cell {
+  padding: 1rem 1.5rem;
+  white-space: nowrap;
+}
+
+.reviewerName {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #111827;
+}
+
+.prsReviewedInput {
+  width: 6rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  background-color: white;
+  color: #111827;
+}
+
+.prsReviewedInput:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.5);
+}
+
+.prsNeeded {
+  font-size: 0.875rem;
+  color: #374151;
+}
+
+.addButton {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  background-color: #2563eb;
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: 0.375rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.addButton:hover {
+  background-color: #1d4ed8;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.addButton:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.5), 0 0 0 4px rgba(37, 99, 235, 0.1);
+}
+
+.addButtonIcon {
+  width: 1rem;
+  height: 1rem;
+  margin-right: 0.5rem;
+}
+
+/* Dark mode support */
+:global(.dark-mode) .row:hover {
+  background-color: #374151;
+}
+
+:global(.dark-mode) .reviewerName {
+  color: #f9fafb;
+}
+
+:global(.dark-mode) .prsReviewedInput {
+  background-color: #374151;
+  border-color: #4b5563;
+  color: #f9fafb;
+}
+
+:global(.dark-mode) .prsNeeded {
+  color: #d1d5db;
+}
+
+:global(.dark-mode) .prsReviewedInput:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+}
+
+:global(.dark-mode) .addButton {
+  background-color: #2563eb;
+  border-color: #2563eb;
+}
+
+:global(.dark-mode) .addButton:hover {
+  background-color: #1d4ed8;
+}
+
+:global(.dark-mode) .addButton:focus {
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.5), 0 0 0 4px rgba(37, 99, 235, 0.1);
+}
+
