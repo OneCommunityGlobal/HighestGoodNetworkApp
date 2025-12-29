@@ -14,6 +14,9 @@ export const DeleteTeamPopup = React.memo(props => {
   const canDeleteTeam = props.hasPermission('deleteTeam');
   const canPutTeam = props.hasPermission('putTeam');
 
+  const wrapLongTeamName = teamName =>
+    teamName.length >= 60 ? teamName.slice(0, 50) + '...' : teamName;
+
   return (
     <Modal
       isOpen={props.open}
@@ -25,7 +28,9 @@ export const DeleteTeamPopup = React.memo(props => {
       </ModalHeader>
       <ModalBody style={{ textAlign: 'center' }} className={darkMode ? 'bg-yinmn-blue' : ''}>
         <span>
-          {`Are you sure you want to delete the team with name "${props.selectedTeamName}"?
+          {`Are you sure you want to delete the team with name "${wrapLongTeamName(
+            props.selectedTeamName,
+          )}"?
           This action cannot be undone. Switch this team to "Inactive" if you'd like to keep it in the system.`}
         </span>
       </ModalBody>
