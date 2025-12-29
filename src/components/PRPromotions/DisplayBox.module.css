@@ -89,36 +89,43 @@
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  color: black;
   font-size: 12px;
   font-weight: bold;
 }
 
+/* VIBGYOR Colors with proper text contrast */
 .color-0 {
-  background-color: #9400D3;
+  background-color: #9400D3; /* Violet - dark, use white text */
+  color: white;
 }
 
 .color-1 {
-  background-color: #4B0082;
+  background-color: #4B0082; /* Indigo - very dark, use white text */
+  color: white;
 }
 
 .color-2 {
-  background-color: #0000FF;
+  background-color: #0000FF; /* Blue - dark, use white text */
+  color: white;
 }
 
 .color-3 {
-  background-color: #00FF00;
+  background-color: #00FF00; /* Green - bright, use black text */
+  color: black;
 }
 
 .color-4 {
-  background-color: #FFFF00;
+  background-color: #FFFF00; /* Yellow - bright, use black text */
+  color: black;
 }
 
 .color-5 {
-  background-color: #FF7F00;
+  background-color: #FF7F00; /* Orange - medium, use black text for better contrast */
+  color: black;
 }
 
 .color-6 {
-  background-color: #FF0000;
+  background-color: #FF0000; /* Red - dark, use white text */
+  color: white;
 }
 
