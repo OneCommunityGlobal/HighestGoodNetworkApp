@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { Container, Row, Col, Card, CardBody, Button, Input } from 'reactstrap';
 import { FaCalendarAlt, FaMapMarkerAlt, FaUserAlt, FaSearch, FaTimes } from 'react-icons/fa';
 import styles from './CPDashboard.module.css';
@@ -38,6 +39,7 @@ export function CPDashboard() {
   const [onlineOnly, setOnlineOnly] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [pagination, setPagination] = useState({
     currentPage: 1,
     totalPages: 5,
@@ -54,14 +56,12 @@ export function CPDashboard() {
 
       try {
         const response = await axios.get(ENDPOINTS.EVENTS);
-        console.log('Fetched events:', response.data.events);
         setEvents(response.data.events || []);
         setPagination(prev => ({
           ...prev,
           total: response.data.events?.length || 0,
         }));
       } catch (err) {
-        console.error('Here', err);
         setError('Failed to load events');
       } finally {
         setIsLoading(false);
@@ -129,7 +129,7 @@ export function CPDashboard() {
 
   if (isLoading) {
     return (
-      <Container className={styles['dashboard-container']}>
+      <Container className={styles.dashboardContainer}>
         <p>Loading events...</p>
       </Container>
     );
@@ -137,19 +137,19 @@ export function CPDashboard() {
 
   if (error) {
     return (
-      <Container className={styles['dashboard-container']}>
-        <p className={styles['error-text']}>{error}</p>
+      <Container className={styles.dashboardContainer}>
+        <p className={styles.errorText}>{error}</p>
       </Container>
     );
   }
 
   return (
-    <Container className={styles['dashboard-container']}>
-      <header className={styles['dashboard-header']}>
+    <Container className={`${styles.dashboardContainer} ${darkMode ? styles.darkContainer : ''}`}>
+      <header className={`${styles.dashboardHeader} ${darkMode ? styles.darkHeader : ''}`}>
         <h1>All Events</h1>
 
-        <div className={styles['dashboard-controls']}>
-          <div className={styles['dashboard-search-container']}>
+        <div>
+          <div className={styles.dashboardSearchContainer}>
             <Input
               id="search"
               type="search"
@@ -157,13 +157,13 @@ export function CPDashboard() {
               value={searchInput}
               onChange={e => setSearchInput(e.target.value)}
               onKeyDown={handleSearchKeyDown}
-              className={styles['dashboard-search-input']}
+              className={styles.dashboardSearchInput}
             />
 
             {searchInput && (
               <button
                 type="button"
-                className={styles['dashboard-clear-btn']}
+                className={styles.dashboardClearBtn}
                 onClick={() => {
                   setSearchInput('');
                   setSearchQuery('');
@@ -176,7 +176,7 @@ export function CPDashboard() {
 
             <button
               type="button"
-              className={styles['dashboard-search-icon-btn']}
+              className={styles.dashboardSearchIconBtn}
               onClick={handleSearchClick}
               aria-label="Search events"
             >
@@ -186,14 +186,14 @@ export function CPDashboard() {
         </div>
       </header>
 
-      <Row>
-        <Col md={3} className={styles['dashboard-sidebar']}>
-          <div className={styles['filter-section']}>
+      <Row className={styles.centeredRow}>
+        <Col md={3} className={`${styles.dashboardSidebar} ${darkMode ? styles.darkSidebar : ''}`}>
+          <div className={styles.filterSection}>
             <h4>Search Filters</h4>
-            <div className={styles['filter-section-divider']}>
-              <div className={styles['filter-item']}>
+            <div className={styles.filterSectionDivider}>
+              <div className={styles.filterItem}>
                 <label htmlFor="date-tomorrow"> Dates</label>
-                <div className={styles['filter-options-horizontal']}>
+                <div>
                   <div>
                     <Input type="radio" name="dates" /> Tomorrow
                   </div>
@@ -204,7 +204,7 @@ export function CPDashboard() {
                 <Input type="date" placeholder="Ending After" className={styles['date-filter']} />
               </div>
 
-              <div className={styles['filter-item']}>
+              <div className={styles.filterItem}>
                 <label htmlFor="online-only">Online</label>
                 <div>
                   <Input
@@ -220,21 +220,21 @@ export function CPDashboard() {
                 </div>
               </div>
 
-              <div className={styles['filter-item']}>
+              <div className={styles.filterItem}>
                 <label htmlFor="branches">Branches</label>
                 <Input type="select">
                   <option>Select branches</option>
                 </Input>
               </div>
 
-              <div className={styles['filter-item']}>
+              <div className={styles.filterItem}>
                 <label htmlFor="themes">Themes</label>
                 <Input type="select">
                   <option>Select themes</option>
                 </Input>
               </div>
 
-              <div className={styles['filter-item']}>
+              <div className={styles.filterItem}>
                 <label htmlFor="categories">Categories</label>
                 <Input type="select">
                   <option>Select categories</option>
@@ -244,15 +244,15 @@ export function CPDashboard() {
           </div>
         </Col>
 
-        <Col md={9} className={styles['dashboard-main']}>
-          <h2 className={styles['section-title']}>Events</h2>
+        <Col md={9} className={`${styles.dashboardMain} ${darkMode ? styles.darkMain : ''}`}>
+          <h2 className={styles.sectionTitle}>Events</h2>
 
           <Row>
             {displayedEvents.length > 0 ? (
               displayedEvents.map(event => (
-                <Col md={4} key={event.id} className={styles['event-card-col']}>
-                  <Card className={styles['event-card']}>
-                    <div className={styles['event-card-img-container']}>
+                <Col md={4} key={event.id} className={styles.eventCardCol}>
+                  <Card className={styles.eventCard}>
+                    <div className={styles.eventCardImgContainer}>
                       <FixedRatioImage
                         src={event.image}
                         alt={event.title}
@@ -260,28 +260,28 @@ export function CPDashboard() {
                       />
                     </div>
                     <CardBody>
-                      <h5 className={styles['event-title']}>{event.title}</h5>
-                      <p className={styles['event-date']}>
-                        <FaCalendarAlt className={styles['event-icon']} /> {formatDate(event.date)}
+                      <h5 className={styles.eventTitle}>{event.title}</h5>
+                      <p className={styles.eventDate}>
+                        <FaCalendarAlt /> {formatDate(event.date)}
                       </p>
-                      <p className={styles['event-location']}>
-                        <FaMapMarkerAlt className={styles['event-icon']} /> {event.location}
+                      <p className={styles.eventLocation}>
+                        <FaMapMarkerAlt /> {event.location}
                       </p>
-                      <p className={styles['event-organizer']}>
-                        <FaUserAlt className={styles['event-icon']} /> {event.organizer}
+                      <p className={styles.eventOrganizer}>
+                        <FaUserAlt /> {event.organizer}
                       </p>
                     </CardBody>
                   </Card>
                 </Col>
               ))
             ) : (
-              <div className={styles['no-events']}>No events available</div>
+              <div className={styles.noEvents}>No events available</div>
             )}
           </Row>
 
           {/* Simple pagination controls if needed */}
           {totalPages > 1 && (
-            <div className={styles['pagination-container']}>
+            <div className={styles.paginationContainer}>
               <Button
                 color="secondary"
                 disabled={pagination.currentPage === 1}
@@ -289,7 +289,7 @@ export function CPDashboard() {
               >
                 Previous
               </Button>
-              <span className={styles['pagination-info']}>
+              <span className={styles.paginationInfo}>
                 Page {pagination.currentPage} of {totalPages}
               </span>
               <Button
@@ -302,7 +302,7 @@ export function CPDashboard() {
             </div>
           )}
 
-          <div className={styles['dashboard-actions']}>
+          <div className={styles.dashboardActions}>
             <Button color="primary">Show Past Events</Button>
           </div>
         </Col>
