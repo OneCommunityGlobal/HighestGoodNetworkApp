@@ -6,6 +6,7 @@ export const ENDPOINTS = {
   USER_PROFILE: userId => `${APIEndpoint}/userprofile/${userId}`,
   USER_PROFILE_PROPERTY: userId => `${APIEndpoint}/userprofile/${userId}/property`,
   USER_PROFILES: `${APIEndpoint}/userprofile/`,
+  UPDATE_USER_FINAL_DAY: userId => `${APIEndpoint}/userprofile/${userId}/updateFinalDay`,
   UPDATE_REHIREABLE_STATUS: userId => `${APIEndpoint}/userprofile/${userId}/rehireable`,
   TOGGLE_VISIBILITY: userId => `${APIEndpoint}/userprofile/${userId}/toggleInvisibility`,
   USER_PROFILE_UPDATE: `${APIEndpoint}/userprofile/update`,
@@ -110,7 +111,7 @@ export const ENDPOINTS = {
   UPDATE_PARENT_TASKS: wbsId => `${APIEndpoint}/task/updateAllParents/${wbsId}`,
   MOVE_TASKS: wbsId => `${APIEndpoint}/tasks/moveTasks/${wbsId}`,
   WEEKLY_SUMMARIES_REPORT: () => `${APIEndpoint}/reports/weeklysummaries`,
-  WEEKLY_SUMMARIES_FILTERS:`${APIEndpoint}/weeklySummariesFilters`,
+  WEEKLY_SUMMARIES_FILTERS: `${APIEndpoint}/weeklySummariesFilters`,
   WEEKLY_SUMMARIES_FILTER_BY_ID: filterId => `${APIEndpoint}/weeklySummariesFilters/${filterId}`,
   WEEKLY_SUMMARIES_FILTER_REPLACE_CODES: `${APIEndpoint}/weeklySummariesFilters/replaceTeamcodes`,
   WEEKLY_SUMMARIES_FILTER_REPLACE_INDIVIDUAL_CODES: `${APIEndpoint}/weeklySummariesFilters/replaceIndividualTeamcodes`,
@@ -169,6 +170,20 @@ export const ENDPOINTS = {
   },
   POPULARITY_ROLES: `${APIEndpoint}/popularity/roles`,
 
+ENHANCED_POPULARITY: (range, roles, start, end, includeLowVolume) => {
+    let url = `${APIEndpoint}/api/popularity-enhanced/timeline?`;
+    if (range) url += `range=${range}&`;
+    if (roles && roles.length > 0) {
+      url += `roles=${encodeURIComponent(roles.join(','))}&`;
+    }
+    if (start) url += `start=${encodeURIComponent(start)}&`;
+    if (end) url += `end=${encodeURIComponent(end)}&`;
+    if (includeLowVolume !== undefined) url += `includeLowVolume=${includeLowVolume}&`;
+    return url.slice(0, -1);
+  },
+  ENHANCED_POPULARITY_ROLES: `${APIEndpoint}/api/popularity-enhanced/roles-enhanced`,
+  ENHANCED_POPULARITY_PAIRS: (roles) => 
+    `${APIEndpoint}/api/popularity-enhanced/role-pairs?roles=${encodeURIComponent(roles.join(','))}`,
 
   // titles endpoints
   TITLES: () => `${APIEndpoint}/title`,
@@ -230,7 +245,7 @@ export const ENDPOINTS = {
   NON_HGN_EMAIL_SUBSCRIPTION: `${APIEndpoint}/add-non-hgn-email-subscription`,
   CONFIRM_EMAIL_SUBSCRIPTION: `${APIEndpoint}/confirm-non-hgn-email-subscription`,
   REMOVE_EMAIL_SUBSCRIPTION: `${APIEndpoint}/remove-non-hgn-email-subscription`,
-  
+
   PERMISSION_MANAGEMENT_UPDATE: () => `${APIEndpoint}/permission-management`,
 
   // reasons endpoints
@@ -463,6 +478,29 @@ export const ENDPOINTS = {
   UPDATE_SAVED_FILTERS_INDIVIDUAL_TEAM_CODE: () =>
     `${APIEndpoint}/savedFilters/updateIndividualTeamCode`,
 
+  // Job Analytics endpoint
+  JOB_ANALYTICS_QUERY: (startDate, endDate, roles, granularity) => {
+    const params = [
+      startDate && endDate
+        ? `startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`
+        : null,
+
+      roles && roles !== "All"
+        ? `roles=${encodeURIComponent(roles)}`
+        : null,
+
+      granularity
+        ? `granularity=${encodeURIComponent(granularity)}`
+        : null,
+    ].filter(Boolean);
+
+    const qs = params.length ? `?${params.join("&")}` : "";
+
+    return `${APIEndpoint.replace("/api", "")}/job-analytics${qs}`;
+  },
+
+  JOB_ANALYTICS_ROLES: `${APIEndpoint.replace('/api', '')}/job-analytics/roles`,
+
   // pr dashboard endpoints
   PROMOTION_ELIGIBILITY: `${APIEndpoint}/promotion-eligibility`,
   PROMOTE_MEMBERS: `${APIEndpoint}/promote-members`,
@@ -471,6 +509,11 @@ export const ENDPOINTS = {
   //pull requests analysis
   PR_REVIEWS_INSIGHTS: `${APIEndpoint}/analytics/pr-review-insights`,
 
+  LESSON_PLANS: `${APIEndpoint}/education/lesson-plans`,
+  SAVE_INTEREST: `${APIEndpoint}/education/student/saved-interests`,
+  GET_SAVED: `${APIEndpoint}/education/student/saved-interests`,
+  REMOVE_INTEREST: `${APIEndpoint}/education/student/saved-interests`,
+  CHECK_IF_SAVED: `${APIEndpoint}/education/student/saved-interests/check`,
 };
 
 export const ApiEndpoint = APIEndpoint;

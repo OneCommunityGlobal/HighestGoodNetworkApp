@@ -12,21 +12,23 @@
 }
 
 .progress-wrapper {
-  display: inline-block;
+  display: inline-grid;  
+  width: fit-content;    
+  justify-items: start;
 }
 
 .team-task-progress-container {
-  display: flex;
-  flex-direction: row;
+  display: inline-flex;  
   align-items: center;
-  flex-wrap: wrap;          
+  gap: 6px;
+  flex-wrap: nowrap;
+  width: fit-content;
 }
 
 .team-task-progress-bar {
-  width: 100%;
-  margin-top: 4px;  
+  width: 100%;            
+  margin-top: 4px;
 }
-
 
 .team-member-task-review-button {
   margin-top: 0;
@@ -101,16 +103,13 @@
   justify-content: center; 
 }
 
-/* .team-task-progress {
-  position: relative;
-  width: 100px;
-  min-width: 120px;
-  max-width: 120px;
-} */
- .team-task-progress {
-  /* border: rgb(0, 213, 255) 1px solid !important; */
-  width: 45%;
-  height: auto !important;
+.team-task-progress {
+  width: 130px;
+  min-width: 130px;
+  max-width: 160px;
+  padding-right: 0 !important;
+  padding-left: 0 !important;
+  text-align: left;
 }
 
 /* .task-break {
@@ -140,18 +139,13 @@
   color: black;
 }
 
-/* .task-align {
-  text-align: left;
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  vertical-align: middle; 
-} */
- .task-align {
-  width: 55%;
+.task-align {
+  width: auto;
+  flex: 1 1 auto;
+  min-width: 0;
   height: auto !important;
-  /* border: teal 1px solid !important; */
 }
+
 .inner-task-align{
   /* border: purple 1px solid !important; */
   padding: 0px 5px 5px 3px;
@@ -170,8 +164,16 @@
 .team-member-tasks-user-name {
   width: 50%;
   text-align: center;
-  justify-content: center;
-  vertical-align: middle; 
+
+  vertical-align: top !important;   
+  display: flex;                    
+  flex-direction: column;
+  justify-content: flex-start !important;
+  align-items: center;    
+}
+
+.team-member-tasks td {
+  vertical-align: top !important;
 }
 
 .team-member-tasks-subtable th:first-child {
@@ -495,12 +497,33 @@
 
  .team-member-tasks-content {
   /* border: blue 10px solid; */
+  align-items: flex-start !important;
+  justify-content: flex-start !important;
   gap: 5px;
   height: auto !important;
   max-height: none !important; 
   overflow: visible !important;
   text-align: left;
+
+  display: flex;  
   /* min-width: 150px; */
+}
+
+.team-member-tasks-content-link {
+  display: inline-block;
+  max-width: 100%;
+  min-width: 0;
+
+  white-space: normal;            
+  word-break: break-word;         
+  overflow-wrap: anywhere;      
+}
+
+.team-member-tasks-content span {
+  display: inline;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .progress-text{
