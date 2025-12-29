@@ -399,6 +399,24 @@ export function Header(props) {
                         {SEND_EMAILS}
                       </DropdownItem>
                     )}
+                    {isAuthenticated && (
+                      <DropdownItem
+                        tag={Link}
+                        to="/communityportal/activity/:activityid/resources"
+                        className={fontColor}
+                      >
+                        {ACTIVITY_RESOURCE_MANGEMENT}
+                      </DropdownItem>
+                    )}
+                    {isAuthenticated && (
+                      <DropdownItem
+                        tag={Link}
+                        to="/communityportal/activity/:activityid/resourcesusage"
+                        className={fontColor}
+                      >
+                        {ACTIVITY_RESOURCE_USAGE}
+                      </DropdownItem>
+                    )}
                     {canAccessPermissionsManagement && (
                       <>
                         <DropdownItem divider className={styles.hideInMobile} />
@@ -409,98 +427,6 @@ export function Header(props) {
                     )}
                   </DropdownMenu>
                 </UncontrolledDropdown>
-                <NavItem className="responsive-spacing">
-                  <BellNotification />
-                </NavItem>
-                {(canAccessUserManagement ||
-                  canAccessBadgeManagement ||
-                  canAccessProjects ||
-                  canAccessTeams ||
-                  canAccessPopups ||
-                  canAccessSendEmails ||
-                  canAccessPermissionsManagement) && (
-                  <UncontrolledDropdown nav inNavbar className="responsive-spacing">
-                    <DropdownToggle nav caret>
-                      <span className="dashboard-text-link">{OTHER_LINKS}</span>
-                    </DropdownToggle>
-                    <DropdownMenu className={darkMode ? 'bg-yinmn-blue' : ''}>
-                      {canAccessUserManagement ? (
-                        <DropdownItem tag={Link} to="/usermanagement" className={fontColor}>
-                          {USER_MANAGEMENT}
-                        </DropdownItem>
-                      ) : null}
-                      {canAccessBadgeManagement ? (
-                        <DropdownItem tag={Link} to="/badgemanagement" className={fontColor}>
-                          {BADGE_MANAGEMENT}
-                        </DropdownItem>
-                      ) : null}
-                      {canAccessProjects && (
-                        <DropdownItem tag={Link} to="/projects" className={fontColor}>
-                          {PROJECTS}
-                        </DropdownItem>
-                      )}
-                      {canAccessTeams && (
-                        <DropdownItem tag={Link} to="/teams" className={fontColor}>
-                          {TEAMS}
-                        </DropdownItem>
-                      )}
-                      {canAccessSendEmails && (
-                        <DropdownItem tag={Link} to="/announcements" className={fontColor}>
-                          {SEND_EMAILS}
-                        </DropdownItem>
-                      )}
-                      {isAuthenticated && (
-                        <DropdownItem
-                          tag={Link}
-                          to="/communityportal/activity/:activityid/resources"
-                          className={fontColor}
-                        >
-                          {ACTIVITY_RESOURCE_MANGEMENT}
-                        </DropdownItem>
-                      )}
-                      {isAuthenticated && (
-                        <DropdownItem
-                          tag={Link}
-                          to="/communityportal/activity/:activityid/resourcesusage"
-                          className={fontColor}
-                        >
-                          {ACTIVITY_RESOURCE_USAGE}
-                        </DropdownItem>
-                      )}
-                      {canAccessPermissionsManagement && (
-                        <>
-                          <DropdownItem divider />
-                          <DropdownItem
-                            tag={Link}
-                            to="/permissionsmanagement"
-                            className={fontColor}
-                          >
-                            {PERMISSIONS_MANAGEMENT}
-                          </DropdownItem>
-                        </>
-                      )}
-                    </DropdownMenu>
-                  </UncontrolledDropdown>
-                )}
-                <NavItem>
-                  <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
-                    <img
-                      src={`${profilePic || '/pfp-default-header.png'}`}
-                      alt=""
-                      style={{ maxWidth: '60px', maxHeight: '60px' }}
-                      className="dashboardimg"
-                    />
-                  </NavLink>
-                </NavItem>
-                <UncontrolledDropdown nav>
-                  <DropdownToggle nav caret>
-                    <span className="dashboard-text-link">
-                      {WELCOME}, {firstName}
-                    </span>
-                  </DropdownToggle>
-                  <DropdownMenu className={darkMode ? 'bg-yinmn-blue' : ''}>
-                    <DropdownItem header>Hello {firstName}</DropdownItem>
-                    <DropdownItem divider />
               )}
               <NavItem className={styles.hideInMobile}>
                 <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
