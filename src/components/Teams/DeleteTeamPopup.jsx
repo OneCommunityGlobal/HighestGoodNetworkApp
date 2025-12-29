@@ -15,7 +15,7 @@ export const DeleteTeamPopup = React.memo(props => {
   const canPutTeam = props.hasPermission('putTeam');
 
   const wrapLongTeamName = teamName =>
-    teamName.length >= 60 ? teamName.slice(0, 50) + '...' : teamName;
+    teamName && teamName.length >= 60 ? teamName.slice(0, 50) + '...' : teamName;
 
   return (
     <Modal
