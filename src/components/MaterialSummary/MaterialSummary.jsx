@@ -121,32 +121,25 @@ export default function MaterialUsageDashboard() {
   ];
 
   return (
-    <div className={styles.dashboardWrapper + (darkMode ? ' bg-oxford-blue' : '')}>
-      <h1 className={styles.dashboardTitle + (darkMode ? ' text-light' : '')}>
-        Material Usage Dashboard
-      </h1>
+    <div className={`${styles.dashboardWrapper} ${darkMode ? styles.darkMode : ''}`}>
+      <h1 className={styles.dashboardTitle}>Material Usage Dashboard</h1>
       <div className={styles.gridContainer}>
         {/* Filters Section */}
         <div className={styles.filterPanel}>
-          <div className={styles.filterCard + (darkMode ? ' bg-space-cadet' : '')}>
+          <div className={styles.filterCard}>
             <div style={{ marginBottom: '16px' }}>
-              <h2 className={styles.filterCardTitle + (darkMode ? ' text-light' : '')}>Filters</h2>
-              <p className={styles.filterCardDesc + (darkMode ? ' text-light' : '')}>
-                Select options to filter the chart data
-              </p>
+              <h2 className={styles.filterCardTitle}>Filters</h2>
+              <p className={styles.filterCardDesc}>Select options to filter the chart data</p>
             </div>
             <div className={styles.filterFields}>
               {/* Project Filter */}
               <div className={styles.fieldGroup}>
-                <label
-                  htmlFor="project"
-                  className={styles.fieldLabel + (darkMode ? ' text-light' : '')}
-                >
+                <label htmlFor="project" className={styles.fieldLabel}>
                   Project
                 </label>
                 <select
                   id="project"
-                  className={styles.selectInput + (darkMode ? ' bg-yinmn-blue text-light' : '')}
+                  className={styles.selectInput}
                   value={selectedProject}
                   onChange={e => setSelectedProject(Number.parseInt(e.target.value, 10))}
                 >
@@ -160,15 +153,12 @@ export default function MaterialUsageDashboard() {
 
               {/* Material Type Filter */}
               <div className={styles.fieldGroup}>
-                <label
-                  htmlFor="material"
-                  className={styles.fieldLabel + (darkMode ? ' text-light' : '')}
-                >
+                <label htmlFor="material" className={styles.fieldLabel}>
                   Material Type
                 </label>
                 <select
                   id="material"
-                  className={styles.selectInput + (darkMode ? ' bg-yinmn-blue text-light' : '')}
+                  className={styles.selectInput}
                   value={selectedMaterial}
                   onChange={e => setSelectedMaterial(e.target.value)}
                 >
@@ -192,10 +182,7 @@ export default function MaterialUsageDashboard() {
                   onChange={e => setShowIncreaseOnly(e.target.checked)}
                   className={styles.checkboxInput}
                 />
-                <label
-                  htmlFor="increase"
-                  className={styles.checkboxLabel + (darkMode ? ' text-light' : '')}
-                >
+                <label htmlFor="increase" className={styles.checkboxLabel}>
                   Show only materials with increased usage
                 </label>
               </div>
@@ -204,10 +191,8 @@ export default function MaterialUsageDashboard() {
 
           {/* Increase Counter */}
           {showIncreaseOnly && increasePercentage !== 0 && (
-            <div className={styles.increaseCard + (darkMode ? ' bg-space-cadet' : '')}>
-              <div className={styles.increaseCardTitle + (darkMode ? ' text-light' : '')}>
-                Usage Trend
-              </div>
+            <div className={styles.increaseCard}>
+              <div className={styles.increaseCardTitle}>Usage Trend</div>
               <div className={styles.increaseTrendRow}>
                 <span
                   className={
@@ -218,7 +203,7 @@ export default function MaterialUsageDashboard() {
                 >
                   {increasePercentage > 0 ? '↑' : '↓'} {Math.abs(increasePercentage).toFixed(1)}%
                 </span>
-                <span className={styles.increaseText + (darkMode ? ' text-light' : '')}>
+                <span className={styles.increaseText}>
                   {increasePercentage > 0
                     ? 'Increase in material usage'
                     : 'Decrease in material usage'}{' '}
@@ -231,14 +216,14 @@ export default function MaterialUsageDashboard() {
 
         {/* Chart Section */}
         <div>
-          <div className={styles.chartPanel + (darkMode ? ' bg-space-cadet' : '')}>
+          <div className={styles.chartPanel}>
             <div style={{ marginBottom: '16px' }}>
-              <h2 className={styles.chartPanelTitle + (darkMode ? ' text-light' : '')}>
+              <h2 className={styles.chartPanelTitle}>
                 Material Usage Breakdown
                 {selectedMaterial !== 'all' &&
                   ` - ${selectedMaterial.charAt(0).toUpperCase() + selectedMaterial.slice(1)}`}
               </h2>
-              <p className={styles.chartPanelDesc + (darkMode ? ' text-light' : '')}>
+              <p className={styles.chartPanelDesc}>
                 {mockProjects.find(p => p.id === selectedProject)?.name}
               </p>
             </div>
@@ -246,7 +231,7 @@ export default function MaterialUsageDashboard() {
               {loading && (
                 <div className={styles.loadingArea}>
                   <div className={styles.loadingSpinner} />
-                  <p className={darkMode ? ' text-light' : ''}>Loading data...</p>
+                  <p className={styles.loadingText}>Loading data...</p>
                 </div>
               )}
               {!loading && chartData && (
@@ -281,7 +266,7 @@ export default function MaterialUsageDashboard() {
                   />
                 </div>
               )}
-              {!loading && !chartData && <p className=" text-light">No data available</p>}
+              {!loading && !chartData && <p className={styles.noDataText}>No data available</p>}
             </div>
             {/* Material Breakdown List */}
             {chartData && !loading && (
@@ -294,35 +279,16 @@ export default function MaterialUsageDashboard() {
                     return (
                       <div
                         key={`${chartData.labels[index]}-${value}`}
-                        className={
-                          styles.materialBreakdownItem + (darkMode ? ' bg-yinmn-blue' : '')
-                        }
+                        className={styles.materialBreakdownItem}
                       >
                         <div
                           className={styles.materialBreakdownDot}
                           style={{ backgroundColor: color }}
                         />
                         <div>
-                          <p
-                            className={
-                              styles.materialBreakdownName + (darkMode ? ' text-light' : '')
-                            }
-                          >
-                            {label}
-                          </p>
-                          <p
-                            className={
-                              styles.materialBreakdownValue + (darkMode ? ' text-light' : '')
-                            }
-                          >
-                            {value}{' '}
-                            <span
-                              className={
-                                styles.materialBreakdownUnit + (darkMode ? ' text-light' : '')
-                              }
-                            >
-                              units
-                            </span>
+                          <p className={styles.materialBreakdownName}>{label}</p>
+                          <p className={styles.materialBreakdownValue}>
+                            {value} <span className={styles.materialBreakdownUnit}>units</span>
                           </p>
                         </div>
                       </div>
