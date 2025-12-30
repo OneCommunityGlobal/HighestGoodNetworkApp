@@ -482,3 +482,8 @@
   background: linear-gradient(135deg, #23272a, #181a1b);
 }
 
+.selectedLabel {
+  font-weight: 600;
+  color: gray;
+  margin-top: 10px;
+}

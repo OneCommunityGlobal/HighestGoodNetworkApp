@@ -58,7 +58,6 @@ function Collaboration() {
   /** FETCH JOB ADS */
   const fetchJobAds = async (search, cats, page) => {
     const adsPerPage = 20;
-
     const categoryParam = cats.length ? encodeURIComponent(cats.join(',')) : '';
 
     try {
@@ -107,7 +106,6 @@ function Collaboration() {
 
   const handleSubmit = e => {
     e.preventDefault();
-
     setSearchTerm(query);
     setShowSearchResults(true);
     setSummaries(null);
@@ -116,10 +114,9 @@ function Collaboration() {
 
   /** CATEGORY SELECTION */
   const toggleCategory = category => {
-    setSelectedCategories(prev => {
-      return prev.includes(category) ? prev.filter(c => c !== category) : [...prev, category];
-    });
-
+    setSelectedCategories(prev =>
+      prev.includes(category) ? prev.filter(c => c !== category) : [...prev, category],
+    );
     setCurrentPage(1);
   };
 
@@ -166,10 +163,6 @@ function Collaboration() {
 
   const toggleReorderModal = () => setIsReorderModalOpen(prev => !prev);
 
-  const handleJobsReordered = () => {
-    fetchJobAds(query, selectedCategories, currentPage);
-  };
-
   /** RENDER HELPERS */
   const renderFilters = () => (
     <CollaborationJobFilters
@@ -191,58 +184,26 @@ function Collaboration() {
     />
   );
 
-  const renderCategoryChips = () => (
-    <div className={styles.chipContainer}>
-      {selectedCategories.map(cat => (
-        <div key={cat} className={`${styles.chip} btn btn-secondary`}>
-          {cat}
-          <button className={styles.chipClose} onClick={() => removeCategory(cat)}>
-            ✕
-          </button>
+  const renderCategoryChips = () =>
+    selectedCategories.length > 0 && (
+      <>
+        <p className={styles.selectedLabel}>Selected Categories:</p>
+        <div className={styles.chipContainer}>
+          {selectedCategories.map(cat => (
+            <div key={cat} className={`${styles.chip} btn btn-secondary`}>
+              {cat}
+              <button
+                type="button"
+                className={styles.chipClose}
+                onClick={() => removeCategory(cat)}
+              >
+                ✕
+              </button>
+            </div>
+          ))}
         </div>
-      ))}
-    </div>
-  );
-
-  /** SUMMARY VIEW */
-  if (summaries) {
-    return (
-      <div className={`${styles.jobLanding} ${darkMode ? styles.darkMode : ''}`}>
-        <div className={styles.jobHeader}>
-          <a
-            href="https://www.onecommunityglobal.org/collaboration/"
-            target="_blank"
-            rel="noreferrer"
-          >
-            <img src={OneCommunityImage} alt="One Community Logo" />
-          </a>
-        </div>
-
-        <div className={styles.jobContainer}>
-          {renderFilters()}
-          {renderCategoryChips()}
-
-          <div className={styles.jobsSummariesList}>
-            {summaries.jobs?.length > 0 ? (
-              summaries.jobs.map(summary => (
-                <div key={summary._id} className={styles.jobSummaryItem}>
-                  <h3>
-                    <a href={summary.jobDetailsLink}>{summary.title}</a>
-                  </h3>
-                  <div className={styles.jobSummaryContent}>
-                    <p>{summary.description}</p>
-                    <p>Date Posted: {new Date(summary.datePosted).toLocaleDateString()}</p>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <p>No summaries found.</p>
-            )}
-          </div>
-        </div>
-      </div>
+      </>
     );
-  }
 
   /** MAIN VIEW */
   return (
@@ -264,14 +225,21 @@ function Collaboration() {
         {showSearchResults ? (
           <div className={styles.jobDetails}>
             <div className={styles.jobQueries}>
-              {searchTerm.length || selectedCategories.length ? (
+              {searchTerm || selectedCategories.length ? (
                 <p className={styles.jobQuery}>
-                  Listing results for{' '}
-                  <strong>
-                    {searchTerm && `'${searchTerm}' `}
-                    {selectedCategories.length > 0 &&
-                      selectedCategories.map(c => `'${c}'`).join(', ')}
-                  </strong>
+                  Listing results
+                  {searchTerm && (
+                    <>
+                      {' '}
+                      for <strong>&apos;{searchTerm}&apos;</strong>
+                    </>
+                  )}
+                  {selectedCategories.length > 0 && (
+                    <>
+                      {' '}
+                      for <strong>{selectedCategories.length}</strong> selected categories
+                    </>
+                  )}
                 </p>
               ) : (
                 <p className={styles.jobQuery}>Listing all job ads.</p>
@@ -280,15 +248,6 @@ function Collaboration() {
               <button className="btn btn-secondary" onClick={handleShowSummaries}>
                 Show Summaries
               </button>
-
-              {searchTerm && (
-                <div className={`${styles.chip} btn btn-secondary`}>
-                  {searchTerm}
-                  <button className={styles.chipClose} onClick={() => setSearchTerm('')}>
-                    ✕
-                  </button>
-                </div>
-              )}
             </div>
 
             {jobAds.length ? (
