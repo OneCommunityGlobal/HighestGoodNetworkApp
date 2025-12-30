@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { ArrowUpDown, ArrowUp, ArrowDown, SquareArrowOutUpRight } from 'lucide-react';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 import mockEvents from './mockData';
 import styles from './Participation.module.css';
 
@@ -9,6 +11,7 @@ function NoShowInsights() {
   const [activeTab, setActiveTab] = useState('Event type');
   const [sortOrder, setSortOrder] = useState('none');
   const darkMode = useSelector(state => state.theme.darkMode);
+  const insightsRef = useRef(null);
 
   const filterByDate = events => {
     const today = new Date();
@@ -101,8 +104,57 @@ function NoShowInsights() {
     ));
   };
 
+  const handleExportPDF = async () => {
+    try {
+      if (typeof jsPDF === 'undefined' || typeof html2canvas === 'undefined') {
+        return;
+      }
+      if (!insightsRef.current) return;
+
+      const canvas = await html2canvas(insightsRef.current, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: null,
+      });
+
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'pt', 'a4');
+
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+
+      const imgWidth = pageWidth;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+      let y = 0;
+
+      let remainingHeight = imgHeight;
+      while (remainingHeight > 0) {
+        pdf.addImage(imgData, 'PNG', 0, y, imgWidth, imgHeight);
+        remainingHeight -= pageHeight;
+
+        if (remainingHeight > 0) {
+          pdf.addPage();
+          y -= pageHeight;
+        }
+      }
+
+      const now = new Date();
+      const localDate = now.toLocaleDateString('en-CA');
+      const filename = `no-show-insights_${dateFilter}_${activeTab}_${localDate}.pdf`;
+      pdf.save(filename);
+    } catch (pdfError) {
+      // eslint-disable-next-line no-console
+      console.error('PDF generation failed:', pdfError);
+      // eslint-disable-next-line no-alert
+      alert(`Error generating PDF: ${pdfError.message}`);
+    } finally {
+      setIsGeneratingPDF(false);
+    }
+  };
+
   return (
-    <div className={`${styles.insights} ${darkMode ? styles.insightsDark : ''}`}>
+    <div ref={insightsRef} className={`${styles.insights} ${darkMode ? styles.insightsDark : ''}`}>
       <div className={`${styles.insightsHeader} ${darkMode ? styles.insightsHeaderDark : ''}`}>
         <h3>No-show rate insights</h3>
         <div className={`${styles.insightsFilters} ${darkMode ? styles.insightsFiltersDark : ''}`}>
@@ -135,8 +187,16 @@ function NoShowInsights() {
           ))}
         </div>
         <div className={styles.icons}>
-          <SortIcon onClick={handleSortClick} className={styles.sortIcon} />
-          <SquareArrowOutUpRight />
+          <div className={styles.tooltipWrapper}>
+            <SortIcon onClick={handleSortClick} className={styles.sortIcon} />
+            <span className={styles.tooltip}>
+              {sortOrder === 'none' ? 'Default' : sortOrder === 'asc' ? 'Low → High' : 'High → Low'}
+            </span>
+          </div>
+          <div className={styles.tooltipWrapper}>
+            <SquareArrowOutUpRight onClick={handleExportPDF} />
+            <span className={styles.tooltip}>Export Data</span>
+          </div>
         </div>
       </div>
 

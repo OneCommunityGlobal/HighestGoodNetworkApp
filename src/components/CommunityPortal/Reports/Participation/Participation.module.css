@@ -481,6 +481,33 @@
     color: #ffffff;
   }
 
+.tooltipWrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.tooltip {
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 10px;
+  font-size: 12px;
+  background-color: #111;
+  color: #fff;
+  border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+  z-index: 10;
+}
+
+.tooltipWrapper:hover .tooltip {
+  opacity: 1;
+}
+
 /* ---------- PDF/Print helpers ---------- */
 .pageBreakBefore { break-before: page; page-break-before: always; }
 .pageBreakAfter  { break-after: page;  page-break-after: always; }
