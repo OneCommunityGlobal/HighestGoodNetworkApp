@@ -30,7 +30,7 @@ export const ENDPOINTS = {
 
   USERS_REMOVE_PROFILE_IMAGE: `${APIEndpoint}/userProfile/profileImage/remove`,
   USERS_UPDATE_PROFILE_FROM_WEBSITE: `${APIEndpoint}/userProfile/profileImage/imagefromwebsite`,
-  USER_PROFILE_BASIC_INFO:source=> `${APIEndpoint}/userProfile/basicInfo/${source}`,
+  USER_PROFILE_BASIC_INFO: source => `${APIEndpoint}/userProfile/basicInfo/${source}`,
   USER_AUTOCOMPLETE: searchText => `${APIEndpoint}/userProfile/autocomplete/${searchText}`,
   SEARCH_USER: `${APIEndpoint}/users/search`,
   TOGGLE_BIO_STATUS: userId => `${APIEndpoint}/userProfile/${userId}/toggleBio`,
@@ -170,7 +170,7 @@ export const ENDPOINTS = {
   },
   POPULARITY_ROLES: `${APIEndpoint}/popularity/roles`,
 
-ENHANCED_POPULARITY: (range, roles, start, end, includeLowVolume) => {
+  ENHANCED_POPULARITY: (range, roles, start, end, includeLowVolume) => {
     let url = `${APIEndpoint}/api/popularity-enhanced/timeline?`;
     if (range) url += `range=${range}&`;
     if (roles && roles.length > 0) {
@@ -182,7 +182,7 @@ ENHANCED_POPULARITY: (range, roles, start, end, includeLowVolume) => {
     return url.slice(0, -1);
   },
   ENHANCED_POPULARITY_ROLES: `${APIEndpoint}/api/popularity-enhanced/roles-enhanced`,
-  ENHANCED_POPULARITY_PAIRS: (roles) => 
+  ENHANCED_POPULARITY_PAIRS: (roles) =>
     `${APIEndpoint}/api/popularity-enhanced/role-pairs?roles=${encodeURIComponent(roles.join(','))}`,
 
   // titles endpoints
@@ -425,6 +425,7 @@ ENHANCED_POPULARITY: (range, roles, start, end, includeLowVolume) => {
   EVENTS: `${APIEndpoint}/events`,
   EVENT_TYPES: `${APIEndpoint}/events/types`,
   EVENT_LOCATIONS: `${APIEndpoint}/events/locations`,
+  EVENT_ATTENDANCE_STATS: `${APIEndpoint}/events/attendance/stats`,
   LB_SEND_MESSAGE: `${APIEndpoint}/lb/messages`,
   LB_READ_MESSAGE: `${APIEndpoint}/lb/messages/conversation`,
   LB_UPDATE_MESSAGE_STATUS: `${APIEndpoint}/lb/messages/statuses`,

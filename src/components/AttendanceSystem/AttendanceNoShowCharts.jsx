@@ -2,9 +2,11 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { events } from './mockData';
+import { ENDPOINTS } from '~/utils/URL';
+import { events as mockEvents } from './mockData';
 
 const attendanceColors = ['#0088FE', '#FF8042'];
 const noShowColors = ['#00C49F', '#FF0000'];
@@ -30,17 +32,149 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, per
 };
 
 function AttendanceNoShowCharts() {
-  const [selectedEvent, setSelectedEvent] = useState(events[0]);
+  const [events, setEvents] = useState(mockEvents);
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Fetch events data from backend
+  useEffect(() => {
+    const fetchEvents = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await axios.get(ENDPOINTS.EVENT_ATTENDANCE_STATS);
+
+        // Check if response has data in expected format
+        if (response.data && Array.isArray(response.data)) {
+          // Transform API data to match mock data format if needed
+          const transformedEvents = response.data.map(event => ({
+            id: event.id || event._id || String(event.id || event._id),
+            name: event.name || event.eventName || 'Unnamed Event',
+            registrations: event.registrations || event.totalRegistrations || 0,
+            attendees: event.attendees || event.totalAttendees || 0,
+            completed: event.completed || event.totalCompleted || 0,
+            walkouts: event.walkouts || event.totalWalkouts || 0,
+            date: event.date || event.eventDate || event.startDate || '',
+            time:
+              event.time || event.eventTime || `${event.startTime || ''} - ${event.endTime || ''}`,
+            link: event.link || event.eventLink || event.url || '#',
+            organizer: event.organizer || event.organizerName || 'Unknown',
+            capacity: event.capacity || event.maxCapacity || 0,
+            overallRating: event.overallRating || event.rating || 0,
+            status: event.status || event.eventStatus || 'Unknown',
+          }));
+
+          setEvents(transformedEvents);
+          if (transformedEvents.length > 0) {
+            setSelectedEvent(transformedEvents[0]);
+          }
+        } else if (response.data && response.data.events && Array.isArray(response.data.events)) {
+          // Handle nested response structure
+          const transformedEvents = response.data.events.map(event => ({
+            id: event.id || event._id || String(event.id || event._id),
+            name: event.name || event.eventName || 'Unnamed Event',
+            registrations: event.registrations || event.totalRegistrations || 0,
+            attendees: event.attendees || event.totalAttendees || 0,
+            completed: event.completed || event.totalCompleted || 0,
+            walkouts: event.walkouts || event.totalWalkouts || 0,
+            date: event.date || event.eventDate || event.startDate || '',
+            time:
+              event.time || event.eventTime || `${event.startTime || ''} - ${event.endTime || ''}`,
+            link: event.link || event.eventLink || event.url || '#',
+            organizer: event.organizer || event.organizerName || 'Unknown',
+            capacity: event.capacity || event.maxCapacity || 0,
+            overallRating: event.overallRating || event.rating || 0,
+            status: event.status || event.eventStatus || 'Unknown',
+          }));
+
+          setEvents(transformedEvents);
+          if (transformedEvents.length > 0) {
+            setSelectedEvent(transformedEvents[0]);
+          }
+        } else {
+          // If data format doesn't match, fall back to mock data
+          throw new Error('Unexpected data format from API');
+        }
+      } catch (err) {
+        // Fall back to mock data if API is unavailable or returns error
+        // eslint-disable-next-line no-console
+        console.warn('Failed to fetch events from API, using mock data:', err.message);
+        setEvents(mockEvents);
+        if (mockEvents.length > 0) {
+          setSelectedEvent(mockEvents[0]);
+        }
+        setError('Using mock data - API endpoint not available');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEvents();
+  }, []);
+
+  // Update selectedEvent when events change
+  useEffect(() => {
+    if (events.length > 0 && !selectedEvent) {
+      setSelectedEvent(events[0]);
+    }
+  }, [events, selectedEvent]);
 
   const handleEventChange = e => {
     const selectedEventId = e.target.value;
     const newSelectedEvent = events.find(event => event.id === selectedEventId);
-    setSelectedEvent(newSelectedEvent);
+    if (newSelectedEvent) {
+      setSelectedEvent(newSelectedEvent);
+    }
   };
 
   const calculatePercentage = (value, total) => {
+    if (!total || total === 0) return '0%';
     return `${((value / total) * 100).toFixed(1)}%`;
   };
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div
+        style={{
+          minHeight: '100vh',
+          backgroundColor: '#f9fafb',
+          padding: '16px',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          fontFamily: 'Arial, sans-serif',
+        }}
+      >
+        <div style={{ textAlign: 'center' }}>
+          <p style={{ fontSize: '18px', color: '#6b7280' }}>Loading event data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error or no data state
+  if (!selectedEvent || events.length === 0) {
+    return (
+      <div
+        style={{
+          minHeight: '100vh',
+          backgroundColor: '#f9fafb',
+          padding: '16px',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          fontFamily: 'Arial, sans-serif',
+        }}
+      >
+        <div style={{ textAlign: 'center' }}>
+          <p style={{ fontSize: '18px', color: '#6b7280' }}>No event data available</p>
+          {error && <p style={{ fontSize: '14px', color: '#9ca3af', marginTop: '8px' }}>{error}</p>}
+        </div>
+      </div>
+    );
+  }
 
   const attendanceData = [
     { name: 'Completed', value: selectedEvent.completed },
@@ -80,6 +214,20 @@ function AttendanceNoShowCharts() {
         >
           Event-wise Attendance Statistics
         </h1>
+        {error && (
+          <div
+            style={{
+              backgroundColor: '#fef3c7',
+              border: '1px solid #fbbf24',
+              borderRadius: '6px',
+              padding: '12px',
+              marginBottom: '24px',
+              textAlign: 'center',
+            }}
+          >
+            <p style={{ fontSize: '14px', color: '#92400e', margin: 0 }}>{error}</p>
+          </div>
+        )}
 
         {/* Event Selector */}
         <div style={{ marginBottom: '24px' }}>
