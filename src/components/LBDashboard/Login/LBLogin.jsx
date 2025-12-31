@@ -131,7 +131,8 @@ function LBLogin(props) {
 
               <FormGroup>
                 <Label for="password">Password</Label>
-                <InputGroup>
+
+                <InputGroup className={styles.passwordGroup}>
                   <Input
                     id="password"
                     name="password"
@@ -140,16 +141,18 @@ function LBLogin(props) {
                     onChange={handleChange}
                     value={enterPassword}
                     autoComplete="current-password"
-                    aria-describedby="password-visibility-help"
+                    className={styles.passwordInput}
                   />
+
                   <InputGroupText
+                    className={styles.eyeIcon}
                     onClick={() => setShowPassword(prev => !prev)}
-                    style={{
-                      cursor: 'pointer',
-                      background: 'transparent',
-                      borderLeft: 'none',
-                    }}
                     title={showPassword ? 'Hide password' : 'Show password'}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter' || e.key === ' ') setShowPassword(prev => !prev);
+                    }}
                   >
                     <i className={showPassword ? 'fa fa-eye-slash' : 'fa fa-eye'} />
                   </InputGroupText>
