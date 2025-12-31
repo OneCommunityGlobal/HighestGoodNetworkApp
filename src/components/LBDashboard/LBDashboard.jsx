@@ -23,8 +23,6 @@ import httpService from '../../services/httpService';
 import { ApiEndpoint } from '../../utils/URL';
 
 import styles from './LBDashboard.module.css';
-import DemandOverTime from './LbAnalytics/DemandOverTime/DemandOverTime';
-import moment from 'moment';
 
 const METRIC_OPTIONS = {
   DEMAND: [
@@ -67,8 +65,8 @@ const propertiesData = [
   { property: 'Room 5', value: 3.0 },
 ];
 
-const getClassNames = (baseClass, darkClass, darkMode) =>
-  `${baseClass} ${darkMode ? darkClass : ''}`;
+// const getClassNames = (baseClass, darkClass, darkMode) =>
+//   `${baseClass} ${darkMode ? darkClass : ''}`;
 
 function GraphCard({ title, metricLabel, darkMode }) {
   return (
