@@ -1395,6 +1395,7 @@ export default {
     fetched: false,
     members: [],
     foundUsers: [],
+    foundProjectMembers: [],
     error: '',
   },
   errors: {},

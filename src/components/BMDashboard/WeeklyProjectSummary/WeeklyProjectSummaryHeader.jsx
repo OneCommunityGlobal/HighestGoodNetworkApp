@@ -7,14 +7,14 @@ import {
   setDateRangeFilter,
   setComparisonPeriodFilter,
 } from '../../../actions/bmdashboard/weeklyProjectSummaryActions';
-import './WeeklyProjectSummary.css';
+import styles from './WeeklyProjectSummary.module.css';
 
-export default function WeeklyProjectSummaryHeader() {
+export default function WeeklyProjectSummaryHeader({ handleSaveAsPDF }) {
   const dispatch = useDispatch();
-  const projectFilter = useSelector(state => state.weeklyProjectSummary.projectFilter);
-  const dateRangeFilter = useSelector(state => state.weeklyProjectSummary.dateRangeFilter);
+  const projectFilter = useSelector(state => state.weeklyProjectSummary?.projectFilter);
+  const dateRangeFilter = useSelector(state => state.weeklyProjectSummary?.dateRangeFilter);
   const comparisonPeriodFilter = useSelector(
-    state => state.weeklyProjectSummary.comparisonPeriodFilter,
+    state => state.weeklyProjectSummary?.comparisonPeriodFilter,
   );
   const darkMode = useSelector(state => state.theme.darkMode);
 
@@ -56,11 +56,11 @@ export default function WeeklyProjectSummaryHeader() {
   const comparisonOptions = useMemo(() => [getLastTwoCompletedWeeks().prevWeek], []);
 
   return (
-    <div className={`weekly-summary-header-wrapper ${darkMode ? 'dark-mode' : ''}`}>
-      <header className="weekly-summary-header-container">
-        <h1 className="weekly-summary-header-title">Weekly Project Summary</h1>
+    <div className={`${styles.weeklySummaryHeaderWrapper} ${darkMode ? styles.darkMode : ''}`}>
+      <header className={`${styles.weeklySummaryHeaderContainer}`}>
+        <h1 className={`${styles.weeklySummaryHeaderTitle}`}>Weekly Project Summary</h1>
 
-        <div className="weekly-summary-header-controls">
+        <div className={`${styles.weeklySummaryHeaderControls}`}>
           <Input
             type="select"
             value={projectFilter}
@@ -100,7 +100,9 @@ export default function WeeklyProjectSummaryHeader() {
             ))}
           </Input>
 
-          <Button className="weekly-summary-share-btn">Share PDF</Button>
+          <Button className={`${styles.weeklySummaryShareBtn}`} onClick={handleSaveAsPDF}>
+            Share PDF
+          </Button>
         </div>
       </header>
     </div>

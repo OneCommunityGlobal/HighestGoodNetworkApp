@@ -3,7 +3,7 @@ import DatePicker from 'react-datepicker';
 import { FiCalendar } from 'react-icons/fi';
 import 'react-datepicker/dist/react-datepicker.css';
 import './TableFilter.css';
-import { Checkbox } from 'components/common/Checkbox';
+import { Checkbox } from '~/components/common/Checkbox';
 import TextSuggestion from '../../UserManagement/TextSuggestion';
 import DropDownSearchBox from '../../UserManagement/DropDownSearchBox';
 
@@ -48,17 +48,16 @@ function TableFilter({
   const [taskAssign, setTaskAssign] = useState(true);
   // const [startDate, setStartDate] = useState(new Date('01/01/2010'));
   // const [endDate, setEndDate] = useState(new Date());
-  const taskName = taskNameList.map((item) => item.taskName)
-  const taskHour = taskNameList.map((item) => item.estimatedHours)
-  const taskResource = taskNameList.map(function taskResource(item) { return [item.resources.map((e) => e[0].name)].join() })
+  const taskName = taskNameList.map(item => item.taskName);
+  const taskHour = taskNameList.map(item => item.estimatedHours);
+  const taskResource = taskNameList.map(function taskResource(item) {
+    return [item.resources.map(e => e[0].name)].join();
+  });
   const uniquetaskHour = [...new Set(taskHour)];
   const uniquetaskResource = [...new Set(taskResource)];
 
-
-
   return (
     <div className="table-filter-wrapper">
-
       <TextSuggestion
         id="name_search"
         list={taskName}
@@ -81,7 +80,6 @@ function TableFilter({
         value={resources}
         placeholder="Resources"
         className="table-filter-item table-filter-input"
-
       />
       <DropDownSearchBox
         items={taskStatus}
@@ -134,5 +132,5 @@ function TableFilter({
     </div>
   );
 }
-
+InputWithCalendarIcon.displayName = 'InputWithCalendarIcon';
 export default TableFilter;

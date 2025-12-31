@@ -4,6 +4,8 @@
   justify-content: center;
   width: 100%;
   padding: 0.6rem;
+  margin-top: 20px;
+  margin-bottom: -35px;
 }
 
 .donut-scrollable {

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import GET_BM_PROJECTS from '../../constants/bmdashboard/projectConstants';
 import { GET_ERRORS } from '../../constants/errors';
 

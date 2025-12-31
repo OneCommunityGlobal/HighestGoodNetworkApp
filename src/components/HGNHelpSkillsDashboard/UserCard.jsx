@@ -1,0 +1,59 @@
+import React from 'react';
+import styles from './style/UserCard.module.css';
+import avatar from './style/avatar.png';
+import emailIcon from './style/email_icon.png';
+import slackIcon from './style/slack_icon.png';
+
+import { useSelector } from 'react-redux';
+
+function UserCard({ user }) {
+  const darkMode = useSelector(state => state.theme?.darkMode);
+  const { name, email, slack, score, topSkills } = user;
+
+  const getScoreColor = userScore => {
+    if (userScore >= 5) return '#00754A';
+    return '#D93D3D';
+  };
+
+  return (
+    <div className={`${styles.userCard} ${darkMode ? styles.dark : ''}`}>
+      <img src={avatar} alt="Avatar" className={`${styles.avatar}`} />
+      <div className={`${styles.info}`}>
+        <div className={`${styles.userName}`} title={name}>
+          {name}
+        </div>
+        {email && (
+          <div className={`${styles.contactLine}`}>
+            <img src={emailIcon} alt="Email" className={`${styles.contactIcon}`} />
+            <span>{email}</span>
+          </div>
+        )}
+        {slack && (
+          <div className={`${styles.contactLine}`}>
+            <img src={slackIcon} alt="Slack" className={`${styles.contactIcon}`} />
+            <span>{slack}</span>
+          </div>
+        )}
+      </div>
+
+      <div className={`${styles.scoreSkillsWrapper}`}>
+        <div className={`${styles.scoreLine}`}>
+          <span className={`${styles.scoreLabel}`}>Score:</span>
+          <span className={`${styles.scoreValue}`} style={{ color: getScoreColor(score) }}>
+            {score}
+          </span>
+          <span className={`${styles.scoreMax}`}> / 10</span>
+        </div>
+
+        <div className={`${styles.skillsSection}`}>
+          <div className={`${styles.skillsLabel}`}>Top Skills:</div>
+          <div className={`${styles.skillsText}`}>
+            {Array.isArray(topSkills) ? topSkills.join(', ') : topSkills || ''}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default UserCard;

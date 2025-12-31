@@ -92,7 +92,7 @@ th[data-testid="desktop-earned-dates"] {
 }
 
 @media screen and (max-width: 991px) {
-  .dropdown-menu{
+  .badge_dropdown{
     max-height: 250px;
     width: 100%
   }

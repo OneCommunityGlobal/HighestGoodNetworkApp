@@ -1,66 +1,84 @@
 import { Form, FormGroup, Label, Input } from 'reactstrap';
+import styles from './ItemListView.module.css';
 
 export default function SelectItem({
   items,
   selectedProject,
   selectedItem,
   setSelectedItem,
+  selectedToolStatus,
+  setSelectedToolStatus,
+  selectedCondition,
+  setSelectedCondition,
   label,
 }) {
   let itemSet = [];
-  if (items.length) {
-    if (selectedProject === 'all') {
-      const uniqueNames = new Set();
-      itemSet = items
-        .filter(item => {
-          const name = item.itemType?.name;
-          if (!name || uniqueNames.has(name)) return false;
-          uniqueNames.add(name);
-          return true;
-        })
-        .map(item => ({
-          name: item.itemType?.name,
-          id: item.id || item._id, // Use existing id if available
-        }));
-    } else {
-      const uniqueNames = new Set();
-      itemSet = items
-        .filter(item => item.project?.name === selectedProject)
-        .filter(item => {
-          const name = item.itemType?.name;
-          if (!name || uniqueNames.has(name)) return false;
-          uniqueNames.add(name);
-          return true;
-        })
-        .map(item => ({
-          name: item.itemType?.name,
-          id: item.id || item._id,
-        }));
+  if (items?.length) {
+    if (label === 'Tool') {
+      if (selectedProject === 'all') {
+        itemSet = [...new Set(items.filter(m => m.itemType?.name).map(m => m.itemType.name))];
+      } else {
+        itemSet = [
+          ...new Set(
+            items
+              .filter(mat => mat.project?.name === selectedProject && mat.itemType?.name)
+              .map(m => m.itemType.name),
+          ),
+        ];
+      }
+    } else if (label === 'Tool Status') {
+      itemSet = ['Using', 'Available', 'Under Maintenance'];
+    } else if (label === 'Condition') {
+      if (selectedProject === 'all') {
+        itemSet = [...new Set(items.filter(m => m.condition).map(m => m.condition))];
+      } else {
+        itemSet = [
+          ...new Set(
+            items
+              .filter(mat => mat.project?.name === selectedProject && mat.condition)
+              .map(m => m.condition),
+          ),
+        ];
+      }
     }
   }
 
   return (
     <Form>
-      <FormGroup className="select_input">
-        <Label htmlFor="select-material" style={{ marginLeft: '10px' }}>
-          {label ? `${label}:` : 'Material:'}
-        </Label>
+      <FormGroup className={styles.selectInput}>
+        <Label htmlFor="select-material">{label ? `${label}:` : 'Material:'}</Label>
+
         <Input
           id="select-item"
           name="select-item"
           type="select"
-          value={selectedItem}
-          onChange={e => setSelectedItem(e.target.value)}
-          disabled={!items.length}
+          value={
+            label === 'Condition'
+              ? selectedCondition
+              : label === 'Tool Status'
+              ? selectedToolStatus
+              : selectedItem
+          }
+          onChange={e => {
+            const val = e.target.value;
+            if (label === 'Tool Status') {
+              setSelectedToolStatus(val);
+            } else if (label === 'Condition') {
+              setSelectedCondition(val);
+            } else {
+              setSelectedItem(val);
+            }
+          }}
+          disabled={!itemSet.length}
         >
-          {items.length ? (
+          {itemSet.length ? (
             <>
               <option value="all" key="all-option">
                 All
               </option>
-              {itemSet.map(item => (
-                <option key={`item-${item.id || item.name}`} value={item.name}>
-                  {item.name}
+              {itemSet.map(itemName => (
+                <option key={`item-${itemName}`} value={itemName}>
+                  {itemName}
                 </option>
               ))}
             </>

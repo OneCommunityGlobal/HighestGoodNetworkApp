@@ -2,12 +2,12 @@ import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { Form, FormGroup, Label, Input, Button } from 'reactstrap';
-import Joi from 'joi';
+import Joi from 'joi-browser';
 
-import { boxStyle } from 'styles';
-import { purchaseConsumable } from 'actions/bmdashboard/consumableActions';
+import { boxStyle } from '~/styles';
+import { purchaseConsumable } from '~/actions/bmdashboard/consumableActions';
 
-import './PurchaseForm.css';
+import styles from './PurchaseForm.module.css';
 
 export default function PurchaseForm() {
   const bmProjects = useSelector(state => state.bmProjects);
@@ -76,7 +76,7 @@ export default function PurchaseForm() {
     <Form className="purchase-consumable-form" onSubmit={handleSubmit}>
       <FormGroup>
         <Label for="select-project">
-          Project <span className="mandatory">*</span>
+          Project <span className={`${styles.mandatory}`}>*</span>
         </Label>
         <Input
           id="select-project"
@@ -100,7 +100,7 @@ export default function PurchaseForm() {
       </FormGroup>
       <FormGroup>
         <Label for="select-consumable">
-          Consumable <span className="mandatory">*</span>
+          Consumable <span className={`${styles.mandatory}`}>*</span>
         </Label>
         <Input
           id="select-consumable"
@@ -122,11 +122,11 @@ export default function PurchaseForm() {
         </Input>
       </FormGroup>
       <div className="purchase-consumable-flex-group">
-        <FormGroup className="flex-group-qty">
+        <FormGroup className={`${styles.flexGroupQty}`}>
           <Label for="input-quantity">
-            Quantity<span className="mandatory">*</span>
+            Quantity<span className={`${styles.mandatory}`}>*</span>
           </Label>
-          <div className="flex-group-qty-container">
+          <div className={`${styles.flexGroupQtyContainer}`}>
             <Input
               id="input-quantity"
               type="number"
@@ -141,7 +141,7 @@ export default function PurchaseForm() {
         </FormGroup>
         <FormGroup>
           <Label for="input-priority">
-            Priority<span className="mandatory">*</span>
+            Priority<span className={`${styles.mandatory}`}>*</span>
           </Label>
           <Input
             id="input-priority"

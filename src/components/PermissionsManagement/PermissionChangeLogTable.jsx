@@ -2,10 +2,10 @@
 import { useState } from 'react';
 import './PermissionChangeLogTable.css';
 import { FiChevronLeft, FiChevronRight, FiChevronDown, FiChevronUp } from 'react-icons/fi';
-import { formatDate, formattedAmPmTime } from 'utils/formatDate';
+import { formatDate, formattedAmPmTime } from '~/utils/formatDate';
 import { permissionLabelKeyMappingObj } from './PermissionsConst';
 
-function PermissionChangeLogTable({ changeLogs, darkMode }) {
+function PermissionChangeLogTable({ changeLogs, darkMode, roleNamesToHighlight = [] }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [expandedRows, setExpandedRows] = useState({});
   const itemsPerPage = 20;
@@ -22,10 +22,17 @@ function PermissionChangeLogTable({ changeLogs, darkMode }) {
     }
   };
 
+  const normalize = v =>
+    (v ?? '')
+      .toString()
+      .trim()
+      .toLowerCase();
+  const roleSet = new Set(roleNamesToHighlight.map(normalize)); // O(1) lookup
+
   const formatName = name => {
-    // if (name.startsWith('INDIVIDUAL:')) {
-    //   return name.replace('INDIVIDUAL:', '').trim();
-    // }
+    if (name.startsWith('INDIVIDUAL:')) {
+      return name.replace('INDIVIDUAL:', '').trim();
+    }
     return name;
   };
 
@@ -115,40 +122,41 @@ function PermissionChangeLogTable({ changeLogs, darkMode }) {
             </tr>
           </thead>
           <tbody>
-            {currentItems.map(log => (
-              <tr key={log._id}>
-                <td className={`permission-change-log-table--cell ${bgYinmnBlue}`}>{`${formatDate(
-                  log.logDateTime,
-                )} ${formattedAmPmTime(log.logDateTime)}`}</td>
-                <td
-                  className={`permission-change-log-table--cell ${bgYinmnBlue}`}
-                  style={
-                    {
-                      // Commented out the below code as log.name is undefined currently so accessing it causes the white
-                      // screen error on the Permissions Management page
-                      // fontWeight: log.name.startsWith('INDIVIDUAL:') ? 'bold' : 'normal',
-                    }
-                  }
-                >
-                  {formatName(log.name)}
-                </td>
-                <td className={`permission-change-log-table--cell permissions ${bgYinmnBlue}`}>
-                  {renderPermissions(log.permissions, log._id)}
-                </td>
-                <td className={`permission-change-log-table--cell permissions ${bgYinmnBlue}`}>
-                  {renderPermissions(log.permissionsAdded, `${log._id}_added`)}
-                </td>
-                <td className={`permission-change-log-table--cell permissions ${bgYinmnBlue}`}>
-                  {renderPermissions(log.permissionsRemoved, `${log._id}_removed`)}
-                </td>
-                <td className={`permission-change-log-table--cell ${bgYinmnBlue}`}>
-                  {log.requestorRole}
-                </td>
-                <td className={`permission-change-log-table--cell ${bgYinmnBlue}`}>
-                  {log.requestorEmail}
-                </td>
-              </tr>
-            ))}
+            {currentItems.map(log => {
+              const nameValue = log?.individualName ? formatName(log.individualName) : log.roleName;
+              const shouldHighlight = roleSet.has(normalize(nameValue));
+              return (
+                <tr key={log._id} className={shouldHighlight ? 'highlight-row' : ''}>
+                  <td className={`permission-change-log-table--cell ${bgYinmnBlue}`}>{`${formatDate(
+                    log.logDateTime,
+                  )} ${formattedAmPmTime(log.logDateTime)}`}</td>
+                  <td
+                    className={`permission-change-log-table--cell ${bgYinmnBlue}`}
+                    style={{
+                      // Uncommented lines below and in formatName, using individualName for users, and roleName for role changes
+                      fontWeight: log?.individualName ? 'bold' : 'normal',
+                    }}
+                  >
+                    {log?.individualName ? formatName(log.individualName) : log.roleName}
+                  </td>
+                  <td className={`permission-change-log-table--cell permissions ${bgYinmnBlue}`}>
+                    {renderPermissions(log.permissions, log._id)}
+                  </td>
+                  <td className={`permission-change-log-table--cell permissions ${bgYinmnBlue}`}>
+                    {renderPermissions(log.permissionsAdded, `${log._id}_added`)}
+                  </td>
+                  <td className={`permission-change-log-table--cell permissions ${bgYinmnBlue}`}>
+                    {renderPermissions(log.permissionsRemoved, `${log._id}_removed`)}
+                  </td>
+                  <td className={`permission-change-log-table--cell ${bgYinmnBlue}`}>
+                    {log.requestorRole}
+                  </td>
+                  <td className={`permission-change-log-table--cell ${bgYinmnBlue}`}>
+                    {log.requestorEmail}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

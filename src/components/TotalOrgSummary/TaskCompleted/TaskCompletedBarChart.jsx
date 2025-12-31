@@ -1,34 +1,19 @@
-import { useEffect, useState } from 'react';
 import TinyBarChart from '../TinyBarChart';
 import Loading from '../../common/Loading';
 
 export default function TaskCompletedBarChart({ isLoading, data, darkMode }) {
-  const initialCardSize = () => {
-    if (window.innerWidth <= 680) return { height: '300px' };
-    if (window.innerWidth <= 1418) return { height: '548px' };
-    return { height: '347px' };
-  };
-
-  const [cardSize, setCardSize] = useState(initialCardSize);
-
-  useEffect(() => {
-    const updateCardSize = () => setCardSize(initialCardSize());
-    window.addEventListener('resize', updateCardSize);
-    updateCardSize();
-    return () => window.removeEventListener('resize', updateCardSize);
-  }, []);
-
   const active = data?.active || {};
   const complete = data?.complete || {};
+  const raw = data?.raw || {};
 
   const stats = [
     {
-      name: 'Task Assigned',
+      name: 'Assigned',
       amount: active.current || 0,
       change: active.percentage || 0,
     },
     {
-      name: 'Task Completed',
+      name: 'Completed',
       amount: complete.current || 0,
       change: complete.percentage || 0,
     },
@@ -45,7 +30,7 @@ export default function TaskCompletedBarChart({ isLoading, data, darkMode }) {
       percentage: total > 0 ? `${((item.amount / total) * 100).toFixed(2)}%` : '0%',
       change: `${item.change >= 0 ? '+' : ''}${item.change}%`,
       fontcolor,
-      color: ['#8e44ad', '#3498db'], // Purple and Blue
+      color: ['#8e44ad', '#3498db'],
     };
   });
 
@@ -84,23 +69,85 @@ export default function TaskCompletedBarChart({ isLoading, data, darkMode }) {
     );
   };
 
+  // --- Export CSV helper ---
+  const exportCSV = () => {
+    if (!raw?.current?.length && !raw?.comparison?.length) {
+      // eslint-disable no-alert
+      alert('No raw data available to export.');
+      return;
+    }
+
+    let csv = 'Range,Status,Count\n';
+
+    if (raw.current) {
+      raw.current.forEach(item => {
+        csv += `Current,${item._id},${item.count}\n`;
+      });
+    }
+
+    if (raw.comparison) {
+      raw.comparison.forEach(item => {
+        csv += `Comparison,${item._id},${item.count}\n`;
+      });
+    }
+
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'task-stats.csv';
+    // eslint-disable-next-line testing-library/no-node-access
+    a.click();
+
+    URL.revokeObjectURL(url);
+  };
+
   return (
-    <div style={{ height: cardSize.height }}>
-      {isLoading ? (
-        <div className="d-flex justify-content-center align-items-center">
-          <div className="w-100vh">
+    <div
+      style={{
+        height: '380px',
+        minHeight: '300px',
+        maxHeight: '548px',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
+      {/* Export button */}
+      <div style={{ textAlign: 'right', marginBottom: '8px' }}>
+        <button
+          onClick={exportCSV}
+          style={{
+            padding: '6px 12px',
+            borderRadius: '6px',
+            border: '1px solid',
+            borderColor: darkMode ? '#555' : '#ccc',
+            background: darkMode ? '#333' : '#f9f9f9',
+            color: darkMode ? 'white' : 'black',
+            cursor: 'pointer',
+          }}
+        >
+          Export CSV
+        </button>
+      </div>
+
+      <div style={{ flex: 1, minHeight: 0 }}>
+        {isLoading ? (
+          <div className="d-flex justify-content-center align-items-center">
+            <div className="w-100vh" />
             <Loading />
           </div>
-        </div>
-      ) : (
-        <TinyBarChart
-          chartData={chartData}
-          maxY={maxY}
-          tickInterval={tickInterval}
-          renderCustomizedLabel={renderCustomizedLabel}
-          darkMode={darkMode}
-        />
-      )}
+        ) : (
+          <TinyBarChart
+            chartData={chartData}
+            maxY={maxY + 1}
+            tickInterval={tickInterval}
+            renderCustomizedLabel={renderCustomizedLabel}
+            darkMode={darkMode}
+            yAxisLabel="Total Tasks"
+          />
+        )}
+      </div>
     </div>
   );
 }

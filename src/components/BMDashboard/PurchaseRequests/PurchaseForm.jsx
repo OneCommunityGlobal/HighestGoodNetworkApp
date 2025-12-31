@@ -2,11 +2,11 @@ import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import Joi from 'joi';
+import Joi from 'joi-browser';
 import { Form, FormGroup, Label, Input, Button } from 'reactstrap';
-import { boxStyle } from 'styles';
+import { boxStyle } from '~/styles';
 import BMError from '../shared/BMError';
-import './PurchaseForm.css';
+import styles from './PurchaseForm.module.css';
 
 function PurchaseForm({
   fetchPrimaryDataAction,
@@ -104,12 +104,12 @@ function PurchaseForm({
   }
 
   return (
-    <main className="purchase-request-container">
-      <header className="purchase-header">
+    <main className={`${styles.purchaseRequestContainer}`}>
+      <header className={`${styles.purchaseHeader}`}>
         <h2>{formLabels.headerText}</h2>
         <p>{formLabels.headerSubText}</p>
       </header>
-      <Form className="purchase-form" onSubmit={handleSubmit}>
+      <Form className={`${styles.purchaseForm}`} onSubmit={handleSubmit}>
         <FormGroup>
           <Label for="select-project">{formLabels.primarySelectLabel}</Label>
           <Input
@@ -149,10 +149,10 @@ function PurchaseForm({
           </Input>
         </FormGroup>
 
-        <div className="purchase-flex-group">
-          <FormGroup className="purchase-qty-group">
+        <div className={`${styles.purchaseFlexGroup}`}>
+          <FormGroup className={`${styles.purchaseQtyGroup}`}>
             <Label for="input-quantity">{formLabels.quantityLabel}</Label>
-            <div className="purchase-qty-container">
+            <div className={`${styles.purchaseQtyContainer}`}>
               <Input
                 id="input-quantity"
                 type="number"
@@ -192,12 +192,12 @@ function PurchaseForm({
         </FormGroup>
 
         {validationError && (
-          <div className="purchase-error-message">
+          <div className={`${styles.purchaseErrorMessage}`}>
             <p>{validationError}</p>
           </div>
         )}
 
-        <div className="purchase-actions">
+        <div className={`${styles.purchaseActions}`}>
           <Button
             type="button"
             id="cancel-button"

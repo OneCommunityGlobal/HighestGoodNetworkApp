@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getFormState } from 'actions/formActions';
+import { getFormState } from '~/actions/formActions';
 import QuestionViewer from './Components/QuestionViewer';
 
 export default function FormViewer() {

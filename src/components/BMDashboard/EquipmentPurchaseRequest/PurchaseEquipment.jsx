@@ -3,11 +3,11 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { BsInfoCircle } from 'react-icons/bs';
 
-import { fetchBMProjects } from 'actions/bmdashboard/projectActions';
-import { fetchEquipmentTypes } from 'actions/bmdashboard/invTypeActions';
+import { fetchBMProjects } from '~/actions/bmdashboard/projectActions';
+import { fetchEquipmentTypes } from '~/actions/bmdashboard/invTypeActions';
 import BMError from '../shared/BMError';
 import PurchaseForm from './PurchaseForm';
-import './PurchaseEquipment.css';
+import stylesPurchaseEquipment from './PurchaseEquipment.module.css';
 
 export default function PurchaseEquipment() {
   const dispatch = useDispatch();
@@ -37,8 +37,8 @@ export default function PurchaseEquipment() {
   }
 
   return (
-    <main className="purchase-equipment-container">
-      <header className="purchase-equipment-header">
+    <main className={`${stylesPurchaseEquipment.purchaseEquipmentContainer}`}>
+      <header className={`${stylesPurchaseEquipment.purchaseEquipmentHeader}`}>
         <h2>Purchase Request: Equipments</h2>
         <div className="inv-form-info">
           <BsInfoCircle />
