@@ -134,7 +134,7 @@
 /* Chart container */
 .chart-container {
   width: 100%;
-  height: 400px;
+  height: 460px;
   background: white;
   padding: 20px;
   border-radius: 8px;
@@ -203,8 +203,12 @@
 /* Responsive styles */
 @media (max-width: 768px) {
   .chart-container {
-    height: 250px;
+    height: 320px;
     padding: 10px;
+  }
+
+  .chart-container canvas {
+    padding-bottom: 36px;
   }
 }
 
@@ -217,4 +221,9 @@
   .filter {
     width: 100%;
   }
+}
+
+/* Extra space for multi-line x-axis labels */
+.chart-container canvas {
+  padding-bottom: 28px;
 }

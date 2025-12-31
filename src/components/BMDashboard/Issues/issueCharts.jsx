@@ -85,17 +85,56 @@ function IssueChart() {
       label: year.toString(),
       data: labels.map(issueType => issues[issueType]?.[year] || 0),
       backgroundColor: yearColorMap[year],
-      borderWidth: 1,
+      borderColor: darkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.3)',
+      borderWidth: 1.5,
       borderRadius: 6,
     }));
 
     return { labels, datasets };
-  }, [issues, filters, uniqueYears, yearColorMap]);
+  }, [issues, filters, uniqueYears, yearColorMap, darkMode]);
+
+  const xAxisBackgroundPlugin = darkMode => ({
+    id: 'xAxisBackground',
+    beforeDraw: chart => {
+      const { ctx, chartArea, scales } = chart;
+      const xScale = scales.x;
+      if (!xScale) return;
+
+      ctx.save();
+
+      const ticks = xScale.ticks.length;
+
+      xScale.ticks.forEach((_, index) => {
+        // Shade ONLY alternate labels: one shaded, one normal
+        if (index % 2 !== 0) return;
+
+        const center = xScale.getPixelForTick(index);
+
+        const left = index === 0 ? xScale.left : (xScale.getPixelForTick(index - 1) + center) / 2;
+
+        const right =
+          index === ticks - 1 ? xScale.right : (center + xScale.getPixelForTick(index + 1)) / 2;
+
+        ctx.fillStyle = darkMode
+          ? 'rgba(255,255,255,0.05)' // dark mode band
+          : 'rgba(0,0,0,0.08)'; // light mode band (more visible)
+
+        ctx.fillRect(left, chartArea.top, right - left, chartArea.bottom - chartArea.top);
+      });
+
+      ctx.restore();
+    },
+  });
 
   const chartOptions = useMemo(
     () => ({
       responsive: true,
       maintainAspectRatio: false,
+      layout: {
+        padding: {
+          bottom: 56,
+        },
+      },
       plugins: {
         legend: {
           display: true,
@@ -123,19 +162,51 @@ function IssueChart() {
             label: ctx => `${ctx.dataset.label}: ${ctx.formattedValue}`,
           },
         },
+        xAxisBackground: true,
       },
       scales: {
         x: {
+          offset: true,
           title: {
             display: true,
             text: 'Issue Type',
             font: { size: 14 },
             color: darkMode ? '#cfd7e3' : '#232323',
+            padding: { top: 12 },
           },
           grid: { display: false },
           barPercentage: 0.9,
           categoryPercentage: 0.8,
-          ticks: { stepSize: 1, color: darkMode ? '#cfd7e3' : '#232323' },
+          ticks: {
+            color: darkMode ? '#cfd7e3' : '#232323',
+            padding: 18,
+            align: 'center',
+            autoSkip: false,
+            maxRotation: 0,
+            minRotation: 0,
+            callback: function(value) {
+              const label = this.getLabelForValue(value);
+              const maxCharsPerLine = 12;
+
+              if (label.length <= maxCharsPerLine) return label;
+
+              const words = label.split(' ');
+              const lines = [];
+              let currentLine = '';
+
+              words.forEach(word => {
+                if ((currentLine + ' ' + word).trim().length <= maxCharsPerLine) {
+                  currentLine = (currentLine + ' ' + word).trim();
+                } else {
+                  lines.push(currentLine);
+                  currentLine = word;
+                }
+              });
+
+              if (currentLine) lines.push(currentLine);
+              return lines;
+            },
+          },
         },
         y: {
           title: {
@@ -152,6 +223,8 @@ function IssueChart() {
     }),
     [darkMode],
   );
+
+  const chartPlugins = useMemo(() => [xAxisBackgroundPlugin(darkMode)], [darkMode]);
 
   const selectStyles = useMemo(() => {
     if (!darkMode) return {};
@@ -267,10 +340,21 @@ function IssueChart() {
 
         {!loading && !error && (
           <div
-            className={`${styles.chartWrapper} ${darkMode ? styles.chartWrapperDark : ''}`}
-            style={{ minHeight: 400 }}
+            className={`${styles.issueChartYearGroup} ${styles.issueTypeGroup} ${
+              darkMode ? styles.issueChartYearGroupDark : ''
+            }`}
           >
-            <Bar data={chartData} options={chartOptions} aria-labelledby="chart-title" />
+            <div
+              className={`${styles.chartWrapper} ${darkMode ? styles.chartWrapperDark : ''}`}
+              style={{ minHeight: 420, paddingBottom: 12 }}
+            >
+              <Bar
+                data={chartData}
+                options={chartOptions}
+                plugins={chartPlugins}
+                aria-labelledby="chart-title"
+              />
+            </div>
           </div>
         )}
       </div>
