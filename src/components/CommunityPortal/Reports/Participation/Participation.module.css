@@ -508,6 +508,105 @@
   opacity: 1;
 }
 
+/* ---------- Export PDF modal ---------- */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal {
+  width: 420px;
+  max-width: calc(100vw - 32px);
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.modalDark {
+  background: #1C2541;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modalTitle {
+  margin: 0;
+}
+
+.modalClose {
+  border: none;
+  background: transparent;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.modalBody {
+  margin-top: 12px;
+}
+
+.modalMeta {
+  font-size: 16px;
+  opacity: 0.85;
+  display: grid;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.modalError {
+  margin-bottom: 12px;
+  font-size: 13px;
+  color: #b00020;
+}
+
+.modalActions {
+  display: flex;
+  gap: 10px;
+}
+
+.exportOptionsButtons,
+.exportOptionsButtonsDark {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.exportOptionsButtons{
+  background: transparent;
+  border: 1px solid #ccc;
+  color: #555;
+}
+
+.exportOptionsButtons:hover{
+  color: #555;
+  background-color: #e0e0e0;
+}
+
+.exportOptionsButtonsDark{
+  border: 1px solid #ccc;
+  color: #111;
+}
+
+.exportOptionsButtonsDark:hover {
+  background: #3A506B;
+}
+
+.exportOptionsButtons:disabled,
+.exportOptionsButtonsDark:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+
+
 /* ---------- PDF/Print helpers ---------- */
 .pageBreakBefore { break-before: page; page-break-before: always; }
 .pageBreakAfter  { break-after: page;  page-break-after: always; }

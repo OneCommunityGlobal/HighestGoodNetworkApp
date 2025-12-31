@@ -12,6 +12,9 @@ function NoShowInsights() {
   const [sortOrder, setSortOrder] = useState('none');
   const darkMode = useSelector(state => state.theme.darkMode);
   const insightsRef = useRef(null);
+  const [isExportOpen, setIsExportOpen] = useState(false);
+  const [exportError, setExportError] = useState('');
+  const [isExporting, setIsExporting] = useState(false);
 
   const filterByDate = events => {
     const today = new Date();
@@ -104,7 +107,7 @@ function NoShowInsights() {
     ));
   };
 
-  const handleExportPDF = async () => {
+  const buildPdfFromView = async () => {
     try {
       if (typeof jsPDF === 'undefined' || typeof html2canvas === 'undefined') {
         return;
@@ -114,7 +117,7 @@ function NoShowInsights() {
       const canvas = await html2canvas(insightsRef.current, {
         scale: 2,
         useCORS: true,
-        backgroundColor: null,
+        backgroundColor: darkMode ? '#1C2541' : null,
       });
 
       const imgData = canvas.toDataURL('image/png');
@@ -138,70 +141,196 @@ function NoShowInsights() {
           y -= pageHeight;
         }
       }
-
-      const now = new Date();
-      const localDate = now.toLocaleDateString('en-CA');
-      const filename = `no-show-insights_${dateFilter}_${activeTab}_${localDate}.pdf`;
-      pdf.save(filename);
+      return pdf;
     } catch (pdfError) {
-      // eslint-disable-next-line no-console
-      console.error('PDF generation failed:', pdfError);
-      // eslint-disable-next-line no-alert
-      alert(`Error generating PDF: ${pdfError.message}`);
+      setExportError(pdfError?.message || 'Failed to share PDF.');
     } finally {
-      setIsGeneratingPDF(false);
+      setIsExporting(false);
+    }
+  };
+
+  const getPdfFilename = () => {
+    const now = new Date();
+    const localDate = now.toLocaleDateString('en-CA');
+    const filename = `no-show-insights_${dateFilter}_${activeTab}_${localDate}.pdf`;
+    return filename.replace(/\s+/g, '_').toLowerCase();
+  };
+
+  const handleDownloadPdf = async () => {
+    try {
+      setIsExporting(true);
+      setExportError('');
+      const pdf = await buildPdfFromView();
+      pdf.save(getPdfFilename());
+      setIsExportOpen(false);
+    } catch (e) {
+      setExportError(e?.message || 'Failed to download PDF.');
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const handleSharePdf = async () => {
+    try {
+      setIsExporting(true);
+      setExportError('');
+
+      const pdf = await buildPdfFromView();
+      const blob = pdf.output('blob');
+      const file = new File([blob], getPdfFilename(), { type: 'application/pdf' });
+
+      if (!navigator.share || !navigator.canShare?.({ files: [file] })) {
+        setExportError(
+          'Sharing is not supported in this browser. Please download the PDF instead.',
+        );
+        return;
+      }
+
+      await navigator.share({
+        title: 'No-show rate insights',
+        text: `Insights (${dateFilter}, ${activeTab})`,
+        files: [file],
+      });
+
+      setIsExportOpen(false);
+    } catch (e) {
+      setExportError(e?.message || 'Failed to share PDF.');
+    } finally {
+      setIsExporting(false);
     }
   };
 
   return (
-    <div ref={insightsRef} className={`${styles.insights} ${darkMode ? styles.insightsDark : ''}`}>
-      <div className={`${styles.insightsHeader} ${darkMode ? styles.insightsHeaderDark : ''}`}>
-        <h3>No-show rate insights</h3>
-        <div className={`${styles.insightsFilters} ${darkMode ? styles.insightsFiltersDark : ''}`}>
-          <select value={dateFilter} onChange={e => setDateFilter(e.target.value)}>
-            <option value="All">All Time</option>
-            <option value="Today">Today</option>
-            <option value="This Week">This Week</option>
-            <option value="This Month">This Month</option>
-          </select>
-        </div>
-      </div>
-
-      <div className={styles.insightsTabsContainer}>
+    <>
+      {isExportOpen && (
         <div
-          className={`${styles.insightsTabs} ${
-            darkMode ? styles.insightsTabsDark : styles.insightsTabLight
-          }`}
+          className={styles.modalOverlay}
+          onClick={() => !isExporting && setIsExportOpen(false)}
+          onKeyDown={() => !isExporting && setIsExportOpen(false)}
+          role="button"
+          tabIndex={0}
         >
-          {['Event type', 'Time', 'Location'].map(tab => (
-            <button
-              key={tab}
-              type="button"
-              className={`${styles.insightsTab} ${
-                darkMode ? styles.insightsTabDark : styles.insightsTabLight
-              } ${activeTab === tab ? styles.activeTab : ''}`}
-              onClick={() => setActiveTab(tab)}
-            >
-              {tab}
-            </button>
-          ))}
-        </div>
-        <div className={styles.icons}>
-          <div className={styles.tooltipWrapper}>
-            <SortIcon onClick={handleSortClick} className={styles.sortIcon} />
-            <span className={styles.tooltip}>
-              {sortOrder === 'none' ? 'Default' : sortOrder === 'asc' ? 'Low → High' : 'High → Low'}
-            </span>
-          </div>
-          <div className={styles.tooltipWrapper}>
-            <SquareArrowOutUpRight onClick={handleExportPDF} />
-            <span className={styles.tooltip}>Export Data</span>
-          </div>
-        </div>
-      </div>
+          <div
+            className={`${styles.modal} ${darkMode ? styles.modalDark : ''}`}
+            onClick={e => e.stopPropagation()}
+            onKeyDown={e => e.stopPropagation()}
+            role="button"
+            tabIndex={0}
+          >
+            <div className={styles.modalHeader}>
+              <h4 className={styles.modalTitle}>Export No-show Insights</h4>
+              <button
+                type="button"
+                className={styles.modalClose}
+                onClick={() => !isExporting && setIsExportOpen(false)}
+                aria-label="Close export modal"
+              >
+                ×
+              </button>
+            </div>
 
-      <div className={styles.insightsContent}>{renderStats()}</div>
-    </div>
+            <div className={styles.modalBody}>
+              <div className={styles.modalMeta}>
+                <div>
+                  <strong>Filter:</strong> {dateFilter}
+                </div>
+                <div>
+                  <strong>View:</strong> {activeTab}
+                </div>
+              </div>
+
+              {exportError && <div className={styles.modalError}>{exportError}</div>}
+
+              <div className={styles.modalActions}>
+                <button
+                  type="button"
+                  className={`${
+                    darkMode ? styles.exportOptionsButtonsDark : styles.exportOptionsButtons
+                  }`}
+                  onClick={handleDownloadPdf}
+                  disabled={isExporting}
+                >
+                  {isExporting ? 'Working…' : 'Download PDF'}
+                </button>
+
+                <button
+                  type="button"
+                  className={`${
+                    darkMode ? styles.exportOptionsButtonsDark : styles.exportOptionsButtons
+                  }`}
+                  onClick={handleSharePdf}
+                  disabled={isExporting}
+                >
+                  {isExporting ? 'Working…' : 'Share PDF'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      <div
+        ref={insightsRef}
+        className={`${styles.insights} ${darkMode ? styles.insightsDark : ''}`}
+      >
+        <div className={`${styles.insightsHeader} ${darkMode ? styles.insightsHeaderDark : ''}`}>
+          <h3>No-show rate insights</h3>
+          <div
+            className={`${styles.insightsFilters} ${darkMode ? styles.insightsFiltersDark : ''}`}
+          >
+            <select value={dateFilter} onChange={e => setDateFilter(e.target.value)}>
+              <option value="All">All Time</option>
+              <option value="Today">Today</option>
+              <option value="This Week">This Week</option>
+              <option value="This Month">This Month</option>
+            </select>
+          </div>
+        </div>
+
+        <div className={styles.insightsTabsContainer}>
+          <div
+            className={`${styles.insightsTabs} ${
+              darkMode ? styles.insightsTabsDark : styles.insightsTabLight
+            }`}
+          >
+            {['Event type', 'Time', 'Location'].map(tab => (
+              <button
+                key={tab}
+                type="button"
+                className={`${styles.insightsTab} ${
+                  darkMode ? styles.insightsTabDark : styles.insightsTabLight
+                } ${activeTab === tab ? styles.activeTab : ''}`}
+                onClick={() => setActiveTab(tab)}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
+          <div className={styles.icons}>
+            <div className={styles.tooltipWrapper}>
+              <SortIcon onClick={handleSortClick} className={styles.sortIcon} />
+              <span className={styles.tooltip}>
+                {sortOrder === 'none'
+                  ? 'Default'
+                  : sortOrder === 'asc'
+                  ? 'Low → High'
+                  : 'High → Low'}
+              </span>
+            </div>
+            <div className={styles.tooltipWrapper}>
+              <SquareArrowOutUpRight
+                onClick={() => {
+                  setExportError('');
+                  setIsExportOpen(true);
+                }}
+              />
+              <span className={styles.tooltip}>Export Data</span>
+            </div>
+          </div>
+        </div>
+
+        <div className={styles.insightsContent}>{renderStats()}</div>
+      </div>
+    </>
   );
 }
 
