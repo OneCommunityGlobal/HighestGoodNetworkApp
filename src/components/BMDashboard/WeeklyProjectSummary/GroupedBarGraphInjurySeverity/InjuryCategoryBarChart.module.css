@@ -1,0 +1,104 @@
+.injury-chart-container {
+  padding: 1rem;
+  background-color: #ffffff;
+  border-radius: 8px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.injury-chart-title {
+  color: #666666;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.injury-chart-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.filter {
+  display: flex;
+  flex-direction: column;
+}
+
+.injury-chart-label {
+  color: #444;
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+}
+
+.error {
+  color: #d9534f;
+}
+
+.empty {
+  color: #888;
+  text-align: center;
+  margin-top: 1rem;
+}
+
+/* ------------------- DARK MODE STYLES ------------------- */
+.darkMode {
+  background-color: #0f1824;
+  color: white;
+}
+
+.darkMode .injury-chart-container {
+  background-color: #0f1824;
+  color: white;
+}
+
+.darkMode .injury-chart-title {
+  color: white;
+}
+
+.darkMode .injury-chart-label {
+  color: white;
+}
+
+.darkMode .injury-chart-filters {
+  background-color: #142237;
+  color: black;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.darkMode .injury-select__control {
+  background-color: #2b3e59 !important;
+  color: white !important;
+  border-color: #555 !important;
+}
+
+.darkMode .injury-select__single-value,
+.darkMode .injury-select__multi-value__label,
+.darkMode .injury-select__input-container {
+  color: white !important;
+}
+
+.darkMode .injury-select__menu {
+  background-color: #2b3e59 !important;
+  color: white !important;
+}
+
+.darkMode .injury-select__option:hover {
+  color: black !important;
+}
+
+.darkMode .react-datepicker__input-container input {
+  background-color: #2b3e59 !important;
+  color: white !important;
+  border: 1px solid #555;
+  padding: 0.5rem;
+  border-radius: 4px;
+}
+
+.darkMode .error {
+  color: #ff6b6b;
+}
+
+.darkMode .empty {
+  color: #ccc;
+}
