@@ -4,54 +4,7 @@
 
 import { useState } from 'react';
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-
-const events = [
-  {
-    id: '1',
-    name: 'Conference A',
-    registrations: 100,
-    attendees: 78,
-    completed: 75,
-    walkouts: 5,
-    date: '2023-06-15',
-    time: '09:00 AM - 05:00 PM',
-    link: 'https://conferencea.com',
-    organizer: 'Tech Events Inc.',
-    capacity: 150,
-    overallRating: 4.5,
-    status: 'Completed',
-  },
-  {
-    id: '2',
-    name: 'Workshop B',
-    registrations: 50,
-    attendees: 44,
-    completed: 38,
-    walkouts: 2,
-    date: '2023-07-22',
-    time: '10:00 AM - 02:00 PM',
-    link: 'https://workshopb.com',
-    organizer: 'Skill Builders LLC',
-    capacity: 50,
-    overallRating: 4.8,
-    status: 'Upcoming',
-  },
-  {
-    id: '3',
-    name: 'Seminar C',
-    registrations: 75,
-    attendees: 63,
-    completed: 55,
-    walkouts: 5,
-    date: '2023-08-05',
-    time: '02:00 PM - 06:00 PM',
-    link: 'https://seminarc.com',
-    organizer: 'Knowledge Share Co.',
-    capacity: 100,
-    overallRating: 4.2,
-    status: 'In Progress',
-  },
-];
+import { events } from './mockData';
 
 const attendanceColors = ['#0088FE', '#FF8042'];
 const noShowColors = ['#00C49F', '#FF0000'];
