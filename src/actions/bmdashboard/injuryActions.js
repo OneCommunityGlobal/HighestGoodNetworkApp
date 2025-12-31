@@ -180,3 +180,33 @@ export const getInjuryData = async (projectId, startDate, endDate) => {
   // Return the data directly
   return response.data;
 };
+
+export const fetchInjuriesOverTime = (filters = {}) => {
+  return async dispatch => {
+    try {
+      const params = {};
+
+      if (filters.projectIds?.length) {
+        params.projectIds = filters.projectIds.join(',');
+      }
+      if (filters.startDate && filters.endDate) {
+        params.startDate = filters.startDate;
+        params.endDate = filters.endDate;
+      }
+      if (filters.types?.length) {
+        params.types = filters.types.join(',');
+      }
+      if (filters.departments?.length) {
+        params.departments = filters.departments.join(',');
+      }
+      if (filters.severities?.length) {
+        params.departments = filters.departments.join(',');
+      }
+
+      const res = await axios.get(ENDPOINTS.BM_INJURY_OVER_TIME, { params });
+      dispatch(setInjuryOverTime(res.data));
+    } catch (err) {
+      dispatch(setErrors(err.response?.data?.error || err.message));
+    }
+  };
+}
