@@ -993,6 +993,8 @@ setUpdatedTasks(prev => {
     projects: projectsIds,  // single source of truth
   };
 
+  console.log("user profile updated after clicking save on profile page: ", userProfileToUpdate);
+  console.log('roles: ', roles);
 
   // update tasks (optionally await if you need sequencing)
   for (let i = 0; i < updatedTasks.length; i += 1) {
@@ -1002,9 +1004,26 @@ setUpdatedTasks(prev => {
     // eslint-disable-next-line no-console
     axios.put(url, updatedTask.updatedTask).catch(err => console.error(err));
   }
-
+  const userId = userProfileToUpdate._id;
+  const permissionURL = `${ENDPOINTS.PERMISSION_MANAGEMENT_UPDATE()}/user/${userId}`;
+  const frontPermissions = userProfileToUpdate.permissions.frontPermissions;
+  const removedDefaultPermissions = userProfileToUpdate.permissions.removedDefaultPermissions;
+  const defaultPermissions = userProfileToUpdate.permissions.defaultPermissions;
+  const permissions = {
+      frontPermissions: frontPermissions,
+      removedDefaultPermissions: removedDefaultPermissions,
+      defaultPermissions: defaultPermissions,
+  };
+  const requestor = props.auth.user;
+  const permissionData = {
+    reason: `Role Changed to **${userProfileToUpdate.role}**`,
+    permissions: permissions,
+    requestor: requestor,
+  };
   try {
     const result = await props.updateUserProfile(userProfileToUpdate);
+
+    const permissionResult = await axios.patch(permissionURL, permissionData)
     if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
       await props.refreshToken(userProfile._id);
     }

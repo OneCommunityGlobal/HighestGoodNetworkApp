@@ -102,6 +102,7 @@ function UserPermissionsPopUp({
 
     const url = `${ENDPOINTS.PERMISSION_MANAGEMENT_UPDATE()}/user/${userId}`;
     const permissionData = {
+      reason: 'Permissions changed through Permission Management.',
       permissions: {
         frontPermissions: userPermissions,
         removedDefaultPermissions: userRemovedDefaultPermissions,
