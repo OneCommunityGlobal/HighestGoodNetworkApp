@@ -724,14 +724,12 @@ export default (
           exact
           component={ToolsAvailabilityPage}
         />
-
         <BMProtectedRoute
           path="/bmdashboard/injuriesovertimechart"
           fallback
           exact
           component={InjuriesOverTimeChart}
         />
-
         {/* PR Analytics Dashboard */}
         <Route path="/pull-request-analytics/reviews-insight" component={ReviewsInsight} />
         {/* Community Portal Routes */}

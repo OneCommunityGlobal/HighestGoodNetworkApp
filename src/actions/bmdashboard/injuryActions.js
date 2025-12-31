@@ -5,7 +5,6 @@ import {
   FETCH_INJURIES_FAILURE 
 } from './types';
 import { ENDPOINTS } from '../../utils/URL';
-import {setErrors} from './reusableActions.js';
 export const FETCH_BM_INJURY_DATA_REQUEST = 'FETCH_BM_INJURY_DATA_REQUEST';
 export const FETCH_BM_INJURY_DATA_SUCCESS = 'FETCH_BM_INJURY_DATA_SUCCESS';
 export const FETCH_BM_INJURY_DATA_FAILURE = 'FETCH_BM_INJURY_DATA_FAILURE';
