@@ -122,7 +122,6 @@ function CostPredictionChart({ projectId }) {
   const tickColor = darkMode ? '#e5e7eb' : '#9ca3af'; // tick text
   const axisLineCol = darkMode ? '#e5e7eb' : '#9ca3af'; // axis baseline & tick marks
   const legendColor = darkMode ? '#e5e7eb' : '#9ca3af'; // legend text
-  console.log('ticl', tickColor);
   return (
     <div className={styles.titleContainer}>
       <h2 className={styles.title}>Planned Vs Actual costs tracking</h2>

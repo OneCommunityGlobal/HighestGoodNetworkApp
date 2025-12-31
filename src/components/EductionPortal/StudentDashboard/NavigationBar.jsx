@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styles from './NavigationBar.module.css';
 
-const NavigationBar = () => {
+const NavigationBar = ({ darkMode = false }) => {
   const [activeDropdown, setActiveDropdown] = useState(null);
 
   const toggleDropdown = dropdown => {
