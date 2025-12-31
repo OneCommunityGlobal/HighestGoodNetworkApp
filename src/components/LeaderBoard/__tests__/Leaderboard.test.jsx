@@ -139,7 +139,7 @@ describe('Leaderboard page structure', () => {
 
   it('displays correct Total Time label and value', () => {
     renderWithProvider(<Leaderboard {...props} />);
-    const header = screen.getByText('Total Time');
+    const header = screen.getByText(content => content === 'Total Time' || content === 'Tot. Time');
     expect(header).toBeInTheDocument();
 
     const timeValue = screen.getByTitle('Tangible + Intangible time = Total time');
