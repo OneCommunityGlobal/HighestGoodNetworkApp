@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import moment from 'moment';
+
 import {
   Container,
   Button,
@@ -65,8 +66,8 @@ const propertiesData = [
   { property: 'Room 5', value: 3.0 },
 ];
 
-// const getClassNames = (baseClass, darkClass, darkMode) =>
-//   `${baseClass} ${darkMode ? darkClass : ''}`;
+const getClassNames = (baseClass, darkClass, darkMode) =>
+  `${baseClass} ${darkMode ? darkClass : ''}`;
 
 function GraphCard({ title, metricLabel, darkMode }) {
   return (
@@ -155,12 +156,6 @@ CategoryControls.propTypes = {
   onMetricPick: PropTypes.func.isRequired,
   onToggleDD: PropTypes.func.isRequired,
 };
-
-// Helper function to get class names
-const getClassNames = (baseClass, darkClass, darkMode) =>
-  `${baseClass} ${darkMode ? darkClass : ''}`;
-
-// Extracted header component
 
 const DashboardHeader = ({ darkMode, onBack }) => (
   <header className={styles.dashboardHeader}>
@@ -276,36 +271,37 @@ export function LBDashboard() {
   const [selectedMetricKey, setSelectedMetricKey] = useState(DEFAULTS.DEMAND);
   const [openDD, setOpenDD] = useState({ DEMAND: false, REVENUE: false, VACANCY: false });
   const darkMode = useSelector(state => state.theme.darkMode);
-// --- Villages backend data ---
-const [villagesRaw, setVillagesRaw] = useState([]);
-const [loadingVillages, setLoadingVillages] = useState(false);
-const [villagesError, setVillagesError] = useState(null);
 
-useEffect(() => {
-  let mounted = true;
+  // --- Villages backend data ---
+  const [villagesRaw, setVillagesRaw] = useState([]);
+  const [loadingVillages, setLoadingVillages] = useState(false);
+  const [villagesError, setVillagesError] = useState(null);
 
-  (async () => {
-    try {
-      setLoadingVillages(true);
-      setVillagesError(null);
+  useEffect(() => {
+    let mounted = true;
 
-      const res = await httpService.get(`${ApiEndpoint}/villages`);
-      if (!mounted) return;
+    (async () => {
+      try {
+        setLoadingVillages(true);
+        setVillagesError(null);
 
-      setVillagesRaw(Array.isArray(res?.data) ? res.data : []);
-    } catch (e) {
-      if (!mounted) return;
-      setVillagesError('Failed to load villages');
-      setVillagesRaw([]);
-    } finally {
-      if (mounted) setLoadingVillages(false);
-    }
-  })();
+        const res = await httpService.get(`${ApiEndpoint}/villages`);
+        if (!mounted) return;
 
-  return () => {
-    mounted = false;
-  };
-}, []);
+        setVillagesRaw(Array.isArray(res?.data) ? res.data : []);
+      } catch (e) {
+        if (!mounted) return;
+        setVillagesError('Failed to load villages');
+        setVillagesRaw([]);
+      } finally {
+        if (mounted) setLoadingVillages(false);
+      }
+    })();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const dateRange = [
     moment()
@@ -318,70 +314,70 @@ useEffect(() => {
     const all = Object.values(METRIC_OPTIONS).flat();
     return (all.find(o => o.key === selectedMetricKey) || {}).label || '';
   };
-// Decide which numeric value to calculate for the bar chart
-const effectiveMetric = useMemo(() => {
-  switch (selectedMetricKey) {
-    case 'avgBid':
-    case 'finalPrice':
-      return 'avgCurrentBid';
-    case 'pageVisits':
-    case 'numBids':
-    case 'avgRating':
-    case 'occupancyRate':
-    case 'avgStay':
-      return 'totalCurrentBid';
-    default:
-      return 'totalCurrentBid';
-  }
-}, [selectedMetricKey]);
 
-const valueFormatter = useMemo(() => {
-  if (selectedMetricKey === 'avgRating') return v => Number(v).toFixed(2);
-  if (selectedMetricKey === 'occupancyRate') return v => `${v}%`;
-  if (selectedMetricKey === 'avgStay') return v => `${v} days`;
-  if (selectedMetricKey === 'avgBid' || selectedMetricKey === 'finalPrice') {
-    return v => `₹${Number(v).toLocaleString()}`;
-  }
-  return v => Number(v);
-}, [selectedMetricKey]);
+  // Decide which numeric value to calculate for the bar chart
+  const effectiveMetric = useMemo(() => {
+    switch (selectedMetricKey) {
+      case 'avgBid':
+      case 'finalPrice':
+        return 'avgCurrentBid';
+      case 'pageVisits':
+      case 'numBids':
+      case 'avgRating':
+      case 'occupancyRate':
+      case 'avgStay':
+        return 'totalCurrentBid';
+      default:
+        return 'totalCurrentBid';
+    }
+  }, [selectedMetricKey]);
 
-// Derive villagesData from backend
-const villagesData = useMemo(() => {
-  if (!villagesRaw.length) return [];
+  const valueFormatter = useMemo(() => {
+    if (selectedMetricKey === 'avgRating') return v => Number(v).toFixed(2);
+    if (selectedMetricKey === 'occupancyRate') return v => `${v}%`;
+    if (selectedMetricKey === 'avgStay') return v => `${v} days`;
+    if (selectedMetricKey === 'avgBid' || selectedMetricKey === 'finalPrice') {
+      return v => `₹${Number(v).toLocaleString()}`;
+    }
+    return v => Number(v);
+  }, [selectedMetricKey]);
 
-  return villagesRaw
-    .map(v => {
-      const props = Array.isArray(v.properties) ? v.properties : [];
-      const bids = props.map(p => Number(p?.currentBid || 0));
-      const sum = bids.reduce((a, b) => a + b, 0);
-      const avg = bids.length ? sum / bids.length : 0;
+  // Derive villagesData from backend
+  const villagesData = useMemo(() => {
+    if (!villagesRaw.length) return [];
 
-      const value = effectiveMetric === 'avgCurrentBid' ? avg : sum;
+    return villagesRaw
+      .map(v => {
+        const props = Array.isArray(v.properties) ? v.properties : [];
+        const bids = props.map(p => Number(p?.currentBid || 0));
+        const sum = bids.reduce((a, b) => a + b, 0);
+        const avg = bids.length ? sum / bids.length : 0;
 
-      return {
-        village: v.name || v.regionId || 'Unknown',
-        value,
-      };
-    })
-    .sort((a, b) => b.value - a.value)
-    .slice(0, 20);
-}, [villagesRaw, effectiveMetric]);
+        const value = effectiveMetric === 'avgCurrentBid' ? avg : sum;
 
-const stripVillageWord = s => {
-  const str = String(s || '');
-  const suffix = ' village';
-  return str.toLowerCase().endsWith(suffix) ? str.slice(0, str.length - suffix.length) : str;
-};
+        return {
+          village: v.name || v.regionId || 'Unknown',
+          value,
+        };
+      })
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 20);
+  }, [villagesRaw, effectiveMetric]);
 
-const villagesDataClean = useMemo(
-  () =>
-    villagesData.map(d => ({
-      ...d,
-      village: stripVillageWord(d.village),
-    })),
-  [villagesData],
-);
+  const stripVillageWord = s => {
+    const str = String(s || '');
+    const suffix = ' village';
+    return str.toLowerCase().endsWith(suffix) ? str.slice(0, str.length - suffix.length) : str;
+  };
 
+  const villagesDataClean = useMemo(
+    () =>
+      villagesData.map(d => ({
+        ...d,
+        village: stripVillageWord(d.village),
+      })),
+    [villagesData],
+  );
 
   const handleCategoryClick = category => {
     setActiveCategory(category);
@@ -418,9 +414,8 @@ const villagesDataClean = useMemo(
       />
 
       <AnalysisSection title="By Village" darkMode={darkMode}>
-<div className={styles.chartRow}>
-  <div className={styles.chartCol}>
-
+        <Row xs="1" md="3" className="g-3">
+          <Col>
             <DemandOverTime
               compareType="villages"
               metric={mappedMetric}
@@ -428,9 +423,9 @@ const villagesDataClean = useMemo(
               darkMode={darkMode}
               dateRange={dateRange}
             />
-          </div>
+          </Col>
 
-          <div className={styles.chartCol}>
+          <Col>
             {loadingVillages && (
               <div className={getClassNames('', styles.darkText, darkMode)}>Loading villages…</div>
             )}
@@ -462,17 +457,17 @@ const villagesDataClean = useMemo(
                 ]}
               />
             )}
-          </div>
+          </Col>
 
-          <div className={styles.chartCol}>
+          <Col>
             <GraphCard title="Comparing Villages" metricLabel={metricLabel} darkMode={darkMode} />
-          </div>
-        </div>
+          </Col>
+        </Row>
       </AnalysisSection>
 
       <AnalysisSection title="By Property" darkMode={darkMode}>
-        <div className={styles.chartRow}>
-          <div className={styles.chartCol}>
+        <Row xs="1" md="2" className="g-3">
+          <Col>
             <DemandOverTime
               compareType="properties"
               metric={mappedMetric}
@@ -480,9 +475,9 @@ const villagesDataClean = useMemo(
               darkMode={darkMode}
               dateRange={dateRange}
             />
-          </div>
+          </Col>
 
-          <div className={styles.chartCol}>
+          <Col>
             <CompareBarGraph
               title="Comparing Ratings of Properties"
               orientation="vertical"
@@ -505,9 +500,8 @@ const villagesDataClean = useMemo(
                 { label: 'Properties', value: 'ALL' },
               ]}
             />
-          </div>
-        </div>
-
+          </Col>
+        </Row>
       </AnalysisSection>
 
       <AnalysisSection title="Insights from Reviews" darkMode={darkMode}>
