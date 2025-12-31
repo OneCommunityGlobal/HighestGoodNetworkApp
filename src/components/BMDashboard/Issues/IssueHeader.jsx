@@ -48,7 +48,7 @@ export function IssueHeader(props) {
           <button className="more-button" type="button" label="More Button">
             <MoreHorizontal size={20} />
           </button>
-          <Link to="/bmdashboard/projects" style={{ textDecoration: 'none' }}>
+          <Link to="/projects" style={{ textDecoration: 'none' }}>
             <button className="back-button" type="button">
               Back to Projects
             </button>
