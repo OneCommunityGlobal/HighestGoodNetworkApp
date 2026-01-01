@@ -192,9 +192,10 @@ function InjuriesOverTimeLine({ darkMode = false }) {
           onChange={setSelProjects}
           maxTagCount="responsive"
           maxTagPlaceholder={o => `+${o.length}`}
+          popupClassName={darkMode ? 'wrapperDark-dropdown' : ''}
         >
           {allProjects.map(p => (
-            <Option key={p.id} value={p.id}>
+            <Option className={styles.filterOptions} key={p.id} value={p.id}>
               {p.label}
             </Option>
           ))}
@@ -204,6 +205,7 @@ function InjuriesOverTimeLine({ darkMode = false }) {
           className={styles.filterSelect}
           value={dateRange}
           onChange={dates => setDateRange(dates || [null, null])}
+          popupClassName={darkMode ? 'wrapperDark-dropdown' : ''}
         />
 
         <Select
@@ -215,6 +217,7 @@ function InjuriesOverTimeLine({ darkMode = false }) {
           onChange={setSelInjTypes}
           maxTagCount="responsive"
           maxTagPlaceholder={o => `+${o.length}`}
+          popupClassName={darkMode ? 'wrapperDark-dropdown' : ''}
         >
           {allInjuryTypes.map(t => (
             <Option key={t} value={t}>
@@ -232,6 +235,7 @@ function InjuriesOverTimeLine({ darkMode = false }) {
           onChange={setSelDepts}
           maxTagCount="responsive"
           maxTagPlaceholder={o => `+${o.length}`}
+          popupClassName={darkMode ? 'wrapperDark-dropdown' : ''}
         >
           {allDepartments.map(d => (
             <Option key={d} value={d}>
@@ -249,6 +253,7 @@ function InjuriesOverTimeLine({ darkMode = false }) {
           onChange={setSelSeverities}
           maxTagCount="responsive"
           maxTagPlaceholder={o => `+${o.length}`}
+          popupClassName={darkMode ? 'wrapperDark-dropdown' : ''}
         >
           {allSeverities.map(s => (
             <Option key={s} value={s}>
