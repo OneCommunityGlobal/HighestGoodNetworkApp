@@ -157,7 +157,7 @@ function LessonForm() {
   };
 
   const onHandleCancel = () => {
-    window.location.href = `/bmdashboard/projects/${projectId}`;
+    history.goBack();
   };
 
   const handleDrop = e => {
