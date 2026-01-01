@@ -1,0 +1,153 @@
+.fileUploadForm {
+  height: 16rem;
+  width: 100%;
+  text-align: center;
+  position: relative;
+  margin-top: 0.5rem;
+}
+
+.fileUploadInput {
+  display: none;
+}
+
+/* LIGHT MODE - Use class to force light mode */
+.lightMode .fileUploadLabel,
+body:not(.darkMode) .fileUploadLabel,
+html:not([data-theme="dark"]) .fileUploadLabel,
+[data-theme="light"] .fileUploadLabel {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed #6c757d;
+  border-radius: 1rem;
+  background-color: #ffffff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.lightMode .fileUploadLabel p,
+body:not(.darkMode) .fileUploadLabel p,
+html:not([data-theme="dark"]) .fileUploadLabel p,
+[data-theme="light"] .fileUploadLabel p {
+  margin-top: 10px;
+  margin-bottom: 0;
+  color: #343a40;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.lightMode .fileUploadIcon,
+body:not(.darkMode) .fileUploadIcon,
+html:not([data-theme="dark"]) .fileUploadIcon,
+[data-theme="light"] .fileUploadIcon {
+  font-size: 2.5rem;
+  color: #495057;
+  transition: all 0.3s ease;
+}
+
+.lightMode .fileUploadLabel:hover,
+.lightMode .fileUploadLabel.dragActive,
+body:not(.darkMode) .fileUploadLabel:hover,
+body:not(.darkMode) .fileUploadLabel.dragActive {
+  border-color: #0d6efd;
+  background-color: #e7f5ff;
+  box-shadow: 0 4px 12px rgba(13, 110, 253, 0.15);
+  transform: translateY(-2px);
+}
+
+.lightMode .fileUploadLabel:hover p,
+.lightMode .fileUploadLabel.dragActive p,
+body:not(.darkMode) .fileUploadLabel:hover p,
+body:not(.darkMode) .fileUploadLabel.dragActive p {
+  color: #0a58ca;
+}
+
+.lightMode .fileUploadLabel:hover .fileUploadIcon,
+.lightMode .fileUploadLabel.dragActive .fileUploadIcon,
+body:not(.darkMode) .fileUploadLabel:hover .fileUploadIcon,
+body:not(.darkMode) .fileUploadLabel.dragActive .fileUploadIcon {
+  color: #0a58ca;
+  transform: scale(1.1);
+}
+
+.dragFileElement {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 1rem;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  left: 0px;
+}
+
+.darkMode .fileUploadLabel,
+[data-theme="dark"] .fileUploadLabel,
+@media (prefers-color-scheme: dark) {
+  .fileUploadLabel {
+    border-color: #6c757d;
+    background-color: #2d2d2d;
+  }
+  
+  .fileUploadLabel p {
+    color: #e9ecef;
+  }
+  
+  .fileUploadIcon {
+    color: #adb5bd;
+  }
+  
+  .fileUploadLabel:hover,
+  .fileUploadLabel.dragActive {
+    border-color: #0d6efd;
+    background-color: #1a2a3a;
+  }
+  
+  .fileUploadLabel:hover p,
+  .fileUploadLabel.dragActive p {
+    color: #0d6efd;
+  }
+  
+  .fileUploadLabel:hover .fileUploadIcon,
+  .fileUploadLabel.dragActive .fileUploadIcon {
+    color: #0d6efd;
+  }
+}
+
+.uploadButton {
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  border: 2px solid #0d6efd;
+  border-radius: 6px;
+  font-family: 'Oswald', sans-serif;
+  background-color: #0d6efd;
+  color: white;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.uploadButton:hover {
+  background-color: #0a58ca;
+  border-color: #0a58ca;
+  text-decoration-line: none;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(10, 88, 202, 0.2);
+}
+
+/* Dark mode button styles */
+@media (prefers-color-scheme: dark) {
+  .uploadButton {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+  }
+  
+  .uploadButton:hover {
+    background-color: #0a58ca;
+    border-color: #0a58ca;
+  }
+}

@@ -26,7 +26,7 @@ export const setErrors = payload => {
 };
 
 export const fetchEquipmentById = equipmentId => {
-  const url = ENDPOINTS.BM_EQUIPMENT_BY_ID(equipmentId);
+  const url = `${ENDPOINTS.BM_EQUIPMENT_BY_ID(equipmentId)}`;
   return async dispatch => {
     axios
       .get(url)
@@ -77,12 +77,12 @@ export const purchaseEquipment = async body => {
 export const updateMultipleEquipmentLogs = (projectId, bulkArr) => dispatch => {
   axios
     .put(
-      `${ENDPOINTS.BM_EQUIPMENT_LOGS}?project=${projectId}`, 
+      `${ENDPOINTS.BM_EQUIPMENT_LOGS}?project=${projectId}`,
       bulkArr
     )
     .then(res => {
-      dispatch(setEquipments(res.data)); 
-      toast.success('Equipment logs updated successfully!');  
+      dispatch(setEquipments(res.data));
+      toast.success('Equipment logs updated successfully!');
       return res.data;
     })
     .catch(err => {
@@ -91,3 +91,71 @@ export const updateMultipleEquipmentLogs = (projectId, bulkArr) => dispatch => {
       throw err;
     });
 }
+
+export const updateEquipment = (equipmentId, updateData) => async (dispatch, getState) => {
+  const url = `${ENDPOINTS.BM_EQUIPMENT_STATUS_UPDATE(equipmentId)}`;
+
+  try {
+    const state = getState();
+    let currentUserId = state?.auth?.user?.userid;
+
+    if (!currentUserId) {
+      currentUserId = state?.auth?.user?._id ||
+        state?.auth?.user?.id ||
+        state?.auth?._id ||
+        state?.auth?.id;
+    }
+
+    if (!currentUserId) {
+      const storedUserId = localStorage.getItem('userId');
+      if (storedUserId) {
+        currentUserId = storedUserId;
+      }
+    }
+
+    if (!currentUserId) {
+      console.error('No user ID found in any storage location');
+      console.error('Auth state:', state.auth);
+
+      const errorMsg = 'User not authenticated. Please log in.';
+      toast.error(errorMsg);
+      throw new Error(errorMsg);
+    }
+
+    const statusUpdateData = {
+      condition: updateData.condition,
+      lastUsedBy: updateData.lastUsedBy,
+      lastUsedFor: updateData.lastUsedFor,
+      replacementRequired: updateData.replacementRequired,
+      description: updateData.description || '',
+      notes: updateData.notes || '',
+      createdBy: currentUserId,
+    };
+
+    const res = await axios.put(url, statusUpdateData);
+
+    dispatch(setEquipment(res.data));
+    toast.success('Equipment status updated successfully!');
+    dispatch(fetchEquipmentById(equipmentId));
+
+    return res.data;
+  } catch (err) {
+
+    let errorMessage = 'Failed to update equipment status.';
+
+    if (err.response) {
+      errorMessage = err.response.data?.error ||
+        err.response.data?.message ||
+        err.response.statusText ||
+        errorMessage;
+      dispatch(setErrors(err.response.data));
+    } else if (err.request) {
+      errorMessage = 'No response from server. Please check your connection.';
+    } else {
+      errorMessage = err.message;
+    }
+
+    toast.error(errorMessage);
+    throw err;
+  }
+};
