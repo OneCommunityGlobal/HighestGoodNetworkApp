@@ -35,7 +35,6 @@
 }
 .Collapsible__trigger:before {
   display: inline-block;
-  font-family: 'FontAwesome';
   content: '\f107';
   margin-right: 40px;
   transition: transform 300ms;

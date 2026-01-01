@@ -105,7 +105,7 @@ export default function ProjectStatus() {
         legend: { display: false },
         tooltip: {
           backgroundColor: darkMode ? 'rgba(30, 41, 59, 0.95)' : 'rgba(0, 0, 0, 0.8)',
-          titleColor: darkMode ? '#ffffff' : '#ffffff',
+          titleColor: '#ffffff',
           bodyColor: darkMode ? '#e2e8f0' : '#ffffff',
           borderColor: darkMode ? '#475569' : 'rgba(0, 0, 0, 0.1)',
           borderWidth: 1,
