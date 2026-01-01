@@ -321,11 +321,6 @@
 
 .totalOrgChartTitle p {
   font-size: 1.8rem !important;
-  font-weight: bold;
-  text-align: center;
-  margin: 10px;
-  color: #333;
-  line-height: 1.3 !important;
 }
 
 /* Report Header Styles */
