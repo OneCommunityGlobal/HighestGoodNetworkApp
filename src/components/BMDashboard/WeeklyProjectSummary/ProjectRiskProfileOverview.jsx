@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useSelector } from 'react-redux';
 import {
   BarChart,
   Bar,
@@ -10,8 +11,8 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import Select from 'react-select';
+import { FaChevronDown } from 'react-icons/fa'; // Import an icon for better UX
 import httpService from '../../../services/httpService';
-import { useSelector } from 'react-redux';
 import styles from './ProjectRiskProfileOverview.module.css';
 
 export default function ProjectRiskProfileOverview() {
@@ -24,10 +25,13 @@ export default function ProjectRiskProfileOverview() {
   const [allDates, setAllDates] = useState([]);
   const [selectedDates, setSelectedDates] = useState([]);
   const [showDateDropdown, setShowDateDropdown] = useState(false);
+
+  // Redux: Get Dark Mode State
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const allSpanRef = useRef(null);
-  const dateSpanRef = useRef(null);
+  // Refs for detecting clicks outside
+  const projectRef = useRef(null);
+  const dateRef = useRef(null);
 
   useEffect(() => {
     async function fetchData() {
@@ -54,91 +58,168 @@ export default function ProjectRiskProfileOverview() {
     fetchData();
   }, []);
 
+  // --- Click Outside Logic ---
+  useEffect(() => {
+    function handleClickOutside(event) {
+      // Close Project Dropdown if clicked outside
+      if (projectRef.current && !projectRef.current.contains(event.target)) {
+        setShowProjectDropdown(false);
+      }
+      // Close Date Dropdown if clicked outside
+      if (dateRef.current && !dateRef.current.contains(event.target)) {
+        setShowDateDropdown(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   const filteredData = data.filter(
     p =>
       (selectedProjects.length === 0 || selectedProjects.includes(p.projectName)) &&
       (selectedDates.length === 0 || (p.dates || []).some(d => selectedDates.includes(d))),
   );
 
-  const getProjectLabel = () => {
-    if (selectedProjects.length === allProjects.length) return 'ALL';
-    if (selectedProjects.length === 0) return 'Select projects';
-    return `${selectedProjects.length} selected`;
+  // Enhanced Label Logic to show "Active" filters visually
+  const getSummaryLabel = (selected, all, defaultText) => {
+    if (selected.length === all.length) return 'All Selected';
+    if (selected.length === 0) return defaultText;
+    if (selected.length === 1) return selected[0];
+    if (selected.length <= 2) return selected.join(', ');
+    return `${selected[0]}, ${selected[1]} +${selected.length - 2}`;
   };
 
-  const getDateLabel = () => {
-    if (selectedDates.length === allDates.length) return 'ALL';
-    if (selectedDates.length === 0) return 'Select dates';
-    return `${selectedDates.length} selected`;
+  // Styles variables
+  const axisTextColor = darkMode ? '#e2e8f0' : '#444';
+  const gridColor = darkMode ? '#4a5568' : '#ccc';
+  const legendColor = darkMode ? '#e2e8f0' : '#333';
+
+  const tooltipContentStyle = {
+    backgroundColor: darkMode ? '#2a3f5f' : '#fff',
+    borderColor: darkMode ? '#3a506b' : '#ccc',
+    borderRadius: '8px',
+    boxShadow: darkMode ? '0 2px 10px rgba(0,0,0,0.5)' : '0 2px 8px #eee',
   };
 
-  if (loading) return <div className={`${styles.loading}`}>Loading project risk profiles...</div>;
-  if (error) return <div className={`${styles.error}`}>{error}</div>;
+  const tooltipItemStyle = { color: darkMode ? '#e0e0e0' : '#333' };
+  const tooltipLabelStyle = {
+    color: darkMode ? '#fff' : '#000',
+    fontWeight: 'bold',
+    marginBottom: '5px',
+  };
+
+  const customSelectStyles = {
+    control: base => ({
+      ...base,
+      fontSize: 14,
+      background: darkMode ? '#2d3748' : '#fff',
+      borderColor: darkMode ? '#4a5568' : '#e2e8f0',
+      color: darkMode ? '#e0e0e0' : '#333',
+    }),
+    menu: base => ({
+      ...base,
+      zIndex: 9999,
+      backgroundColor: darkMode ? '#2d3748' : '#fff',
+    }),
+    option: (base, state) => ({
+      ...base,
+      backgroundColor: state.isFocused ? (darkMode ? '#4a5568' : '#deebff') : 'transparent',
+      color: darkMode ? '#e0e0e0' : '#333',
+      cursor: 'pointer',
+    }),
+    multiValue: base => ({
+      ...base,
+      backgroundColor: darkMode ? '#4a5568' : '#e6f7ff',
+    }),
+    multiValueLabel: base => ({
+      ...base,
+      color: darkMode ? '#e0e0e0' : '#333',
+    }),
+    input: base => ({ ...base, color: darkMode ? '#e0e0e0' : '#333' }),
+  };
+
+  if (loading) return <div style={{ color: axisTextColor }}>Loading project risk profiles...</div>;
+  if (error) return <div style={{ color: 'red' }}>{error}</div>;
 
   return (
-    <div className={`${styles.wrapper} ${darkMode ? styles.darkMode : ''}`}>
-      <div className={`${styles.container}`}>
-        <h2 className={`${styles.heading}`}>Project Risk Profile Overview</h2>
+    <div className={styles.container}>
+      <h2 className={styles.heading}>Project Risk Profile Overview</h2>
 
-        <div className={`${styles.filterRow}`}>
-          {/* Project Dropdown */}
-          <div className={`${styles.dropdownWrapper}`}>
-            <span className={`${styles.dropdownLabel}`}>Project</span>
-            <button
-              ref={allSpanRef}
-              type="button"
-              className={`${styles.dropdownButton}`}
-              onClick={() => setShowProjectDropdown(prev => !prev)}
-              aria-label="Show project dropdown"
-            >
-              {getProjectLabel()}
-            </button>
-            {showProjectDropdown && (
-              <div className={`${styles.dropdownMenu}`}>
-                <Select
-                  isMulti
-                  classNamePrefix="customSelect"
-                  options={allProjects.map(p => ({ label: p, value: p }))}
-                  value={selectedProjects.map(p => ({ label: p, value: p }))}
-                  onChange={opts => setSelectedProjects(opts ? opts.map(o => o.value) : [])}
-                  closeMenuOnSelect={false}
-                  hideSelectedOptions={false}
-                  components={{ IndicatorSeparator: () => null, ClearIndicator: () => null }}
-                />
-              </div>
-            )}
+      <div className={styles.controlsContainer}>
+        {/* Project Filter */}
+        <div className={styles.filterWrapper} ref={projectRef}>
+          <div className={styles.filterLabel}>Project</div>
+          <div
+            className={styles.filterTrigger}
+            onClick={() => setShowProjectDropdown(!showProjectDropdown)}
+            role="button"
+            tabIndex={0}
+            onKeyPress={e => e.key === 'Enter' && setShowProjectDropdown(!showProjectDropdown)}
+          >
+            <span>{getSummaryLabel(selectedProjects, allProjects, 'Select Projects')}</span>
+            <FaChevronDown className={styles.triggerIcon} />
           </div>
 
-          {/* Date Dropdown */}
-          <div className={`${styles.dropdownWrapper}`}>
-            <span className={`${styles.dropdownLabel}`}>Dates</span>
-            <button
-              ref={dateSpanRef}
-              type="button"
-              className={`${styles.dropdownButton}`}
-              onClick={() => setShowDateDropdown(prev => !prev)}
-              aria-label="Show date dropdown"
-            >
-              {getDateLabel()}
-            </button>
-            {showDateDropdown && (
-              <div className={`${styles.dropdownMenu}`}>
-                <Select
-                  isMulti
-                  classNamePrefix="customSelect"
-                  options={allDates.map(d => ({ label: d, value: d }))}
-                  value={selectedDates.map(d => ({ label: d, value: d }))}
-                  onChange={opts => setSelectedDates(opts ? opts.map(o => o.value) : [])}
-                  closeMenuOnSelect={false}
-                  hideSelectedOptions={false}
-                  components={{ IndicatorSeparator: () => null, ClearIndicator: () => null }}
-                />
-              </div>
-            )}
-          </div>
+          {showProjectDropdown && (
+            <div className={styles.dropdownMenu}>
+              <Select
+                menuIsOpen
+                isMulti
+                classNamePrefix="custom-select"
+                options={allProjects.map(p => ({ label: p, value: p }))}
+                value={selectedProjects.map(p => ({ label: p, value: p }))}
+                onChange={opts => {
+                  const values = opts && opts.length ? opts.map(o => o.value) : [];
+                  setSelectedProjects(values);
+                }}
+                components={{ IndicatorSeparator: () => null }}
+                styles={customSelectStyles}
+                placeholder="Search projects..."
+              />
+            </div>
+          )}
         </div>
 
-        <ResponsiveContainer width="100%" height={350}>
+        {/* Date Filter */}
+        <div className={styles.filterWrapper} ref={dateRef}>
+          <div className={styles.filterLabel}>Dates</div>
+          <div
+            className={styles.filterTrigger}
+            onClick={() => setShowDateDropdown(!showDateDropdown)}
+            role="button"
+            tabIndex={0}
+            onKeyPress={e => e.key === 'Enter' && setShowDateDropdown(!showDateDropdown)}
+          >
+            <span>{getSummaryLabel(selectedDates, allDates, 'Select Dates')}</span>
+            <FaChevronDown className={styles.triggerIcon} />
+          </div>
+
+          {showDateDropdown && (
+            <div className={styles.dropdownMenu}>
+              <Select
+                menuIsOpen
+                isMulti
+                classNamePrefix="custom-select"
+                options={allDates.map(d => ({ label: d, value: d }))}
+                value={selectedDates.map(d => ({ label: d, value: d }))}
+                onChange={opts => {
+                  const values = opts && opts.length ? opts.map(o => o.value) : [];
+                  setSelectedDates(values);
+                }}
+                components={{ IndicatorSeparator: () => null }}
+                styles={customSelectStyles}
+                placeholder="Search dates..."
+              />
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className={styles.chartArea}>
+        <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={filteredData.map(item => ({
               ...item,
@@ -150,11 +231,25 @@ export default function ProjectRiskProfileOverview() {
             margin={{ top: 20, right: 30, left: 0, bottom: 5 }}
             barGap={8}
           >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="projectName" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
+            <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
+            <XAxis
+              dataKey="projectName"
+              tick={{ fill: axisTextColor }}
+              axisLine={{ stroke: gridColor }}
+              tickLine={{ stroke: gridColor }}
+            />
+            <YAxis
+              tick={{ fill: axisTextColor }}
+              axisLine={{ stroke: gridColor }}
+              tickLine={{ stroke: gridColor }}
+            />
+            <Tooltip
+              contentStyle={tooltipContentStyle}
+              itemStyle={tooltipItemStyle}
+              labelStyle={tooltipLabelStyle}
+              cursor={{ fill: darkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)' }}
+            />
+            <Legend wrapperStyle={{ color: legendColor }} />
             <Bar dataKey="predictedCostOverrun" name="Predicted Cost Overrun (%)" fill="#4285F4" />
             <Bar dataKey="totalOpenIssues" name="Issues" fill="#EA4335" />
             <Bar dataKey="predictedTimeDelay" name="Predicted Time Delay (%)" fill="#FBBC05" />
