@@ -1,119 +1,156 @@
-.formContainer{
+.masterContainer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 5% 10% 10% 10%;
+  background-color: #E8F4F9;
+}
 
+.darkModeMaster {
+  background-color: #1B2A41 !important; /* Oxford Blue */
+}
+
+.formContainer {
   padding: 5%;
   background-color: #FFFFFF;
   border-radius: 1%;
-
-  .formControl {
-   max-width: unset !important;
- }
 }
 
-.masterContainer{
- display: flex;
- flex-direction: column;
- height: 100%;
-   padding-left: 10%;
-   padding-right: 10%;
-   padding-top: 5%;
-   padding-bottom: 10%;
-    background-color: #E8F4F9;
+.darkModeForm {
+  background-color: #1C2541 !important; /* Space Cadet */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
 }
-.lessonLabel{
-   font-size: larger;
-   font-weight: bold;
+
+/* Dark Mode Input Fields (Yinmn Blue) */
+.darkModeInput {
+  background-color: #3A506B !important; /* Yinmn Blue */
+  color: #F8F9FA !important;
+  border: 1px solid #556B8D !important;
 }
-.lessonPlaceholderText{
- min-height: 20vh;
+
+.darkModeInput::placeholder {
+  color: #ADB5BD !important;
 }
+
+.formControl {
+  max-width: unset !important;
+}
+
+.lessonLabel {
+  font-size: larger;
+  font-weight: bold;
+}
+
+.lessonPlaceholderText {
+  min-height: 20vh;
+}
+
 .lessonPlaceholderText::placeholder {
- font-size: 16px; 
- color: #CED4DA; 
+  font-size: 16px;
+  color: #CED4DA;
+}
 
+.formSelectContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
 }
-.formSelectContainer{
-   display: flex;
-   flex-direction: row;
-   justify-content: flex-start;
 
+.singleFormSelect {
+  margin-right: 4%;
+  width: 25%;
 }
-.singleFormSelect{
-   margin-right: 4%;
-   width: 25%
-}
+
 .dragAndDropStyle {
-   border: 2px dashed #cccccc;
-   padding: .5%;
-   text-align: center;
-   cursor: pointer;
-
-   border-radius: 1%;
- }
- .fileSelected {
-  border-color: #0b0b0b; 
+  border: 2px dashed #cccccc;
+  padding: 0.5%;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 1%;
 }
- .imageDiv {
-   width: 50px; 
-   height: 50px; 
-   background-size: 100%;
-   background-repeat: no-repeat;
-   background-position: center center;
 
- }
- .textUnderImage {
-   text-align: center;
- }
- .textAndImageDiv{
-   display: flex;
-   flex-direction: column;
+.darkModeDragDrop {
+  background-color: #3A506B !important;
+  border-color: #007FFF !important; /* Azure */
+}
+
+.fileSelected {
+  border-color: #0b0b0b;
+}
+
+.imageDiv {
+  width: 50px;
+  height: 50px;
+  background-size: 100%;
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
+.textAndImageDiv {
+  display: flex;
+  flex-direction: column;
   align-items: center;
- }
- .buttonDiv{
-   display: flex;
-   justify-content: space-between;
- }
- .lessonFormButtonCancel{
-   width:25%;
-   height: 50px;
-  background-color: #FFFFFF !important;
-  color: #2E5061 !important; 
-  border-color: #2E5061 !important;
- }
- .lessonFormButtonSubmit{
-
-   width:25%;
-   height: 50px;
-   background-color:  #2E5061!important;
-   color: #FFFFFF !important;
-   border-color: #2E5061 !important;
-  }
-.dragandDropText{
- color: #B0B0B0;
 }
 
-/* Tags */
-.tagsDiv{
+.buttonDiv {
+  display: flex;
+  justify-content: space-between;
+}
+
+.lessonFormButtonCancel {
+  width: 25%;
+  height: 50px;
+  background-color: #FFFFFF !important;
+  color: #2E5061 !important;
+  border-color: #2E5061 !important;
+}
+
+.darkModeBtnCancel {
+  background-color: transparent !important;
+  color: #F8F9FA !important;
+  border-color: #F8F9FA !important;
+}
+
+.lessonFormButtonSubmit {
+  width: 25%;
+  height: 50px;
+  background-color: #2E5061 !important;
+  color: #FFFFFF !important;
+  border-color: #2E5061 !important;
+}
+
+.dragandDropText {
+  color: #B0B0B0;
+}
+
+/* Tags Styling */
+.tagsDiv {
   margin-top: 1%;
   display: flex;
   flex-wrap: wrap;
 }
+
 .tag {
-  flex-wrap: wrap;
   display: flex;
   align-items: center;
   min-width: 50px;
   padding: 4px 8px;
-  margin:1px;
-
+  margin: 1px;
   border: 1px solid black;
   border-radius: 4px;
   overflow: hidden;
   word-break: break-all;
 }
 
+.darkModeTag {
+  background-color: #3A506B !important; /* Yinmn Blue */
+  border-color: #007FFF !important; /* Azure */
+  color: #F8F9FA !important;
+}
+
 .tagSpan {
   flex: 1;
-  margin-right: 65px;
+  margin-right: 10px;
 }
 
 .removeTagBTN {
@@ -121,6 +158,7 @@
   background: none;
   border: none;
   cursor: pointer;
+  font-weight: bold;
 }
 
 .tagDropdown {
@@ -136,64 +174,49 @@
   z-index: 1000;
 }
 
+.darkModeDropdown {
+  background-color: #3A506B !important;
+  border-color: #556B8D !important;
+}
+
 .tagOption {
-    cursor: pointer;
-    display: flex;
-    width: 100%;
-    justify-content: space-between;
-    align-items: center;
-    padding: 5px 10px;
+  cursor: pointer;
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 10px;
+  border: none;
+  background: transparent;
 }
 
 .tagOption:hover {
-    background-color: #f5f5f5;
+  background-color: #f5f5f5;
+}
+
+.darkModeDropdown .tagOption:hover {
+  background-color: #1C2541 !important; /* Space Cadet */
 }
 
 .inputGroup {
-    position: relative;
-    display: flex;
-    width: 100%;
+  position: relative;
+  display: flex;
+  width: 100%;
 }
 
-
-.deleteTagBtn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0 5px;
-  color: #ff4444;
-}
-
-.deleteTagBtn:hover {
-  color: #cc0000;
-}
-  
-
-/* End Tags */
-  @media (max-width: 570px) {
-   .formSelectContainer {
-     align-items: center;
-     flex-direction: column;
-   }
-   .singleFormSelect{
-
-     width: 90%
- }
-
- .lessonFormButtonSubmit{
-
-   width:45%;
-
+@media (max-width: 570px) {
+  .formSelectContainer {
+    align-items: center;
+    flex-direction: column;
   }
-
-  .lessonFormButtonCancel{
-   width:45%;
-
- }
-
- .masterContainer{
-
+  .singleFormSelect {
+    width: 90%;
+  }
+  .lessonFormButtonSubmit,
+  .lessonFormButtonCancel {
+    width: 45%;
+  }
+  .masterContainer {
     padding-bottom: 20%;
-
- }
- }
+  }
+}
