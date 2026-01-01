@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
-import './Leaderboard.css';
+import styles from './Leaderboard.module.css';
 import { isEqual, debounce } from 'lodash';
 import { Link } from 'react-router-dom';
 import {
@@ -37,7 +37,7 @@ import axios from 'axios';
 import { getUserProfile } from '~/actions/userProfile';
 import { useDispatch, useSelector } from 'react-redux';
 import { boxStyleDark } from '../../styles';
-import '../Header/DarkMode.css';
+import '../Header/index.css';
 import '../UserProfile/TeamsAndProjects/autoComplete.css';
 import { ENDPOINTS } from '~/utils/URL';
 
@@ -59,14 +59,16 @@ function useDeepEffect(effectFunc, deps) {
 }
 
 function displayDaysLeft(lastDay) {
-  if (lastDay) {
-    const today = new Date();
-    const endDate = new Date(lastDay);
-    const differenceInTime = endDate.getTime() - today.getTime();
-    const differenceInDays = Math.ceil(differenceInTime / (1000 * 3600 * 24));
-    return -differenceInDays;
-  }
-  return null; // or any other appropriate default value
+  if (!lastDay) return null;
+  const ORG_TZ = 'America/Los_Angeles';
+  const today = moment()
+    .tz(ORG_TZ)
+    .startOf('day');
+  const endDate = moment(lastDay)
+    .tz(ORG_TZ)
+    .startOf('day');
+  const differenceInDays = endDate.diff(today, 'days');
+  return -differenceInDays;
 }
 
 function LeaderBoard({

@@ -487,8 +487,8 @@ class UserManagement extends React.PureComponent {
       }
       return;
     }
-    if (status === FinalDay.NotSetFinalDay) {
-      this.props.updateUserFinalDayStatusIsSet(user, 'Active', undefined, FinalDay.NotSetFinalDay);
+    if (status === FinalDay.RemoveFinalDay) {
+      this.props.updateUserFinalDayStatusIsSet(user, 'Active', undefined, FinalDay.RemoveFinalDay);
     } else {
       this.setState({
         finalDayDateOpen: true,

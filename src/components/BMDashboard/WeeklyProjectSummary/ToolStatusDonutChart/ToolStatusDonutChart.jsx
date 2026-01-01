@@ -203,7 +203,6 @@ export default function ToolStatusDonutChart() {
   return (
     <div className={wrapperClass}>
       <h3 className={styles.toolDonutTitle}>Proportion of Tools/Equipment</h3>
-
       <div className={styles.toolDonutFilters}>
         <div className={styles.filterItem}>
           <label htmlFor="tool-select" className={styles.filterLabel}>
