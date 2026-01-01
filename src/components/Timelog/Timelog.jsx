@@ -7,6 +7,7 @@ import pdfMake from 'pdfmake/build/pdfmake';
 import 'pdfmake/build/vfs_fonts';
 import htmlToPdfmake from 'html-to-pdfmake';
 import tipStyles from './TimeEntryTooltip.module.css';
+import leaderboardStyles from '../LeaderBoard/Leaderboard.module.css';
 import TooltipPortal from "./TooltipPortal";
 import {
   Container,
@@ -809,7 +810,7 @@ return (
               </div>
             </div>
           ) : null}
-          <Row className='row' style={{ minWidth: '100%' }}>
+          <Row className={`row ${leaderboardStyles.row}`} style={{ minWidth: '100%' }}> {/* Maybe here */}
             <Col md={12} className="px-0 mx-0">
               <Card className={darkMode ? 'border-0' : ''}>
                 <CardHeader

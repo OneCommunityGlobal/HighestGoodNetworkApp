@@ -1,10 +1,10 @@
+/* Chart labels stay dark in dark mode for readability against light label chips */
 .containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer .recharts-wrapper text,
 .containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer .recharts-wrapper tspan {
   fill: #000 !important;
   color: #000 !important;
   text-shadow: 1px 1px 3px rgba(0,0,0,0.25), 0 0 2px #fff;
 }
-/* Chart title stays white, but chart numbers/labels inside the donut graph are black for better contrast */
 /* Chart and graph titles/text should be white in dark mode for visibility */
 .containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer h3,
 .containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer p,
@@ -66,11 +66,6 @@
   background-color: #0056b3 !important;
   transform: translateY(-2px) !important;
   box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4) !important;
-}
-
-.containerTotalOrgWrapper:global(.bg-oxford-blue) .componentBorder {
-  background-color: #1c2541 !important;
-  border: none !important;
 }
 
 .containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer {
@@ -274,6 +269,47 @@
 }
 
 /* Dark mode dropdown consistency */
+/* Component containers - Clean borderless design */
+.componentContainer {
+  margin: 0 0 15px 0;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 10px;
+  border: 1.5px solid #e0e0e0;
+  box-shadow: 0 4px 16px rgba(37,99,235,0.10), 0 1.5px 4px rgba(0,0,0,0.08);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.componentBorder {
+  border: 1.5px solid #e0e0e0;
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(37,99,235,0.10), 0 1.5px 4px rgba(0,0,0,0.08);
+  background-color: #fff;
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.componentBorderLoose {
+  overflow: visible;
+}
+.containerTotalOrgWrapper:global(.bg-oxford-blue) .componentBorder {
+  background-color: #1c2541 !important;
+  border: 1.5px solid #2f4157 !important;
+  box-shadow: 0 4px 24px rgba(255,255,255,0.13), 0 1.5px 4px rgba(255,255,255,0.10) !important;
+}
+
+/* Grid layouts */
+.volunteerStatusGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  width: 100%;
+  margin-top: 15px;
+}
 
 .componentPieChartLabel {
   font-size: 12px;
