@@ -77,7 +77,7 @@
   color: rgba(245, 247, 250, 0.5) !important;
 }
 
-yy.wrapperDark .filterSelect :global(.ant-picker-suffix),
+.wrapperDark .filterSelect :global(.ant-picker-suffix),
 .wrapperDark .filterSelect :global(.ant-picker-clear) {
   color: rgba(245, 247, 250, 0.7) !important;
 }

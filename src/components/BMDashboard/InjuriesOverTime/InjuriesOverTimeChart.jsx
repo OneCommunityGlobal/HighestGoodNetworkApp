@@ -129,7 +129,7 @@ function InjuriesOverTimeLine({ darkMode = false }) {
 
   const chartData = useMemo(() => {
     const keysSet = new Set(filtered.map(r => dayjs(r.date).format('YYYY-MM')));
-    const monthKeys = Array.from(keysSet).sort();
+    const monthKeys = Array.from(keysSet).sort((a, b) => dayjs(a).valueOf() - dayjs(b).valueOf());
 
     const totals = new Map();
     filtered.forEach(r => {
