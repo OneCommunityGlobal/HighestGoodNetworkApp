@@ -1,0 +1,398 @@
+.downloadSection {
+  margin: 32px 0;
+  padding: 0;
+  background: transparent;
+}
+
+.downloadSection.darkMode {
+  background: transparent;
+}
+
+.downloadHeader {
+  margin-bottom: 24px;
+}
+
+.downloadTitle {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.5px;
+}
+
+.downloadSection.darkMode .downloadTitle {
+  color: #ffffff;
+}
+
+.downloadSubtitle {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
+  font-weight: 400;
+}
+
+.downloadSection.darkMode .downloadSubtitle {
+  color: #9ca3af;
+}
+
+.downloadCard {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e5e7eb;
+  transition: all 0.3s ease;
+}
+
+.downloadSection.darkMode .downloadCard {
+  background: #1f2937;
+  border-color: #374151;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.formatSelection {
+  margin-bottom: 24px;
+}
+
+.formatLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: #374151;
+  font-size: 14px;
+  margin-bottom: 12px;
+  letter-spacing: -0.2px;
+}
+
+.downloadSection.darkMode .formatLabel {
+  color: #d1d5db;
+}
+
+.labelIcon {
+  font-size: 18px;
+}
+
+.selectWrapper {
+  position: relative;
+  display: block;
+  width: 100%;
+}
+
+.formatSelect {
+  width: 100%;
+  padding: 14px 40px 14px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 500;
+  background-color: #f9fafb;
+  color: #1f2937;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: none;
+}
+
+.formatSelect:hover:not(:disabled) {
+  border-color: #3b82f6;
+  background-color: #ffffff;
+}
+
+.formatSelect:focus:not(:disabled) {
+  border-color: #3b82f6;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  background-color: #ffffff;
+}
+
+.formatSelect:disabled {
+  background-color: #f3f4f6;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.formatSelect.darkModeSelect {
+  background-color: #111827;
+  color: #f3f4f6;
+  border-color: #374151;
+}
+
+.formatSelect.darkModeSelect:hover:not(:disabled) {
+  border-color: #3b82f6;
+  background-color: #1f2937;
+}
+
+.formatSelect.darkModeSelect:focus:not(:disabled) {
+  background-color: #1f2937;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.formatSelect.darkModeSelect:disabled {
+  background-color: #0d1117;
+  color: #6b7280;
+}
+
+/* Style select dropdown options */
+.formatSelect option {
+  padding: 12px;
+  background-color: #ffffff;
+  color: #1f2937;
+  font-size: 15px;
+}
+
+.formatSelect.darkModeSelect option {
+  background-color: #1f2937;
+  color: #f3f4f6;
+}
+
+.selectArrow {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: #6b7280;
+  font-size: 12px;
+  transition: all 0.2s ease;
+  line-height: 1;
+}
+
+.downloadSection.darkMode .selectArrow {
+  color: #9ca3af;
+}
+
+.selectWrapper:has(.formatSelect:focus) .selectArrow {
+  transform: translateY(-50%) rotate(180deg);
+  color: #3b82f6;
+}
+
+.downloadButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  padding: 16px 24px;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-height: 56px;
+  box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3), 0 2px 4px -1px rgba(59, 130, 246, 0.2);
+  letter-spacing: -0.2px;
+}
+
+.downloadButton:hover:not(:disabled) {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.4), 0 4px 6px -2px rgba(59, 130, 246, 0.3);
+}
+
+.downloadButton:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3), 0 2px 4px -1px rgba(59, 130, 246, 0.2);
+}
+
+.downloadButton:disabled {
+  background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
+  cursor: not-allowed;
+  opacity: 0.7;
+  box-shadow: none;
+}
+
+.downloadButton.loading {
+  background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
+}
+
+.downloadButton.darkModeButton {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+}
+
+.downloadButton.darkModeButton:hover:not(:disabled) {
+  background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+}
+
+.downloadButton:focus-visible {
+  outline: 3px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+.downloadIcon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.reportInfo {
+  margin-top: 24px;
+  padding: 20px;
+  background: #f9fafb;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+}
+
+.reportInfo.darkModeInfo {
+  background: #111827;
+  border-color: #374151;
+}
+
+.infoRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  font-size: 14px;
+}
+
+.infoRow:not(:last-child) {
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.reportInfo.darkModeInfo .infoRow:not(:last-child) {
+  border-bottom-color: #374151;
+}
+
+.infoLabel {
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.reportInfo.darkModeInfo .infoLabel {
+  color: #9ca3af;
+}
+
+.infoValue {
+  color: #1f2937;
+  font-weight: 600;
+}
+
+.reportInfo.darkModeInfo .infoValue {
+  color: #f3f4f6;
+}
+
+.errorMessage {
+  margin-top: 20px;
+  padding: 16px 20px;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 12px;
+  color: #991b1b;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  animation: slideIn 0.3s ease;
+}
+
+.errorMessage.darkModeError {
+  background-color: #3f1f1f;
+  border-color: #7f1d1d;
+  color: #fca5a5;
+}
+
+.errorIcon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (min-width: 640px) {
+  .downloadCard {
+    padding: 40px;
+  }
+
+  .formatSelect {
+    max-width: 320px;
+  }
+
+  .downloadButton {
+    max-width: 400px;
+    margin: 0 auto;
+  }
+}
+
+@media (min-width: 768px) {
+  .downloadTitle {
+    font-size: 28px;
+  }
+
+  .downloadSubtitle {
+    font-size: 15px;
+  }
+
+  .formatLabel {
+    font-size: 15px;
+  }
+
+  .formatSelect {
+    font-size: 16px;
+  }
+
+  .downloadButton {
+    font-size: 17px;
+  }
+}
+
+@media (max-width: 639px) {
+  .downloadCard {
+    padding: 24px;
+  }
+
+  .downloadButton {
+    font-size: 15px;
+    min-height: 52px;
+  }
+
+  .infoRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .downloadButton:hover:not(:disabled) {
+    transform: none;
+  }
+}

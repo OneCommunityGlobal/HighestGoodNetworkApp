@@ -47,10 +47,6 @@
   box-shadow: 0 20px 25px -5px rgba(79, 70, 229, 0.1), 0 10px 10px -5px rgba(79, 70, 229, 0.04);
 }
 
-.breakdownCard.filtered .categoryHeader {
-  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-}
-
 .categoryCard::before {
   content: '';
   position: absolute;
@@ -161,8 +157,12 @@
 }
 
 @keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
 }
 
 .categoryHeader {
@@ -403,6 +403,7 @@
 .headerRight {
   display: flex;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .countBadge {
@@ -461,6 +462,8 @@
   margin-right: 0.5rem;
   width: 16px;
   text-align: center;
+  font-size: 1.25rem;
+  color: rgba(255, 255, 255, 0.9) !important;
 }
 
 .weightageCell {
@@ -602,8 +605,12 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Responsive Design */
@@ -611,26 +618,26 @@
   .categoryHeader {
     padding: 1rem;
   }
-  
+
   .headerContent {
     flex-direction: column;
     gap: 0.75rem;
     align-items: flex-start;
   }
-  
+
   .categoryTable {
     font-size: 0.875rem;
   }
-  
+
   .categoryTable thead th,
   .categoryTable tbody td {
     padding: 0.75rem 0.5rem;
   }
-  
+
   .categoryName {
     font-size: 0.875rem;
   }
-  
+
   .performanceIndicator {
     width: 70px;
     font-size: 0.6875rem;
@@ -644,17 +651,17 @@
     padding: 0.5rem 0.375rem;
     font-size: 0.8125rem;
   }
-  
+
   .categoryName {
     font-size: 0.8125rem;
   }
-  
+
   .performanceIndicator {
     width: 60px;
     font-size: 0.625rem;
     padding: 0.2rem 0.4rem;
   }
-  
+
   .categoryIcon {
     display: none;
   }
