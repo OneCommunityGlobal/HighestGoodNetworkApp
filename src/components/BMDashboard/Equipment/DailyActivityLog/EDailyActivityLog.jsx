@@ -69,6 +69,8 @@ function EDailyActivityLog(props) {
   const [date, setDate] = useState(TODAY);
   const [logType, setLogType] = useState('check-in'); // 'check-in' | 'check-out'
   const [rows, setRows] = useState([]);
+  const [showPreviousLogs, setShowPreviousLogs] = useState(false);
+  const [previousLogs, setPreviousLogs] = useState([]);
 
   useEffect(() => {
     dispatch(fetchBMProjects());
@@ -80,6 +82,28 @@ function EDailyActivityLog(props) {
       dispatch(fetchAllEquipments(selectedProject.value));
     }
   }, [selectedProject, dispatch]);
+
+  useEffect(() => {
+    if (!selectedProject || !date) {
+      setPreviousLogs([]);
+      return;
+    }
+
+    const mockLogs = equipments.flatMap(e =>
+      (e.logRecord || [])
+        .filter(l => l.date === date)
+        .map(l => ({
+          equipmentName: e.itemType?.name || 'Unknown',
+          type: l.type,
+          time: l.createdAt || '—',
+          working: e.purchaseRecord?.[0]?.quantity || 0,
+          available: '—',
+          using: '—',
+        })),
+    );
+
+    setPreviousLogs(mockLogs);
+  }, [selectedProject, date, equipments]);
 
   /* build rows whenever equipments slice updates */
   const derived = useMemo(() => buildRows(equipments), [equipments]);
@@ -310,6 +334,43 @@ function EDailyActivityLog(props) {
               })}
           </tbody>
         </Table>
+        {/* Previous Logs Panel */}
+        {selectedProject && (
+          <div className={`mt-4 ${darkMode ? 'text-light' : 'text-dark'}`}>
+            <Button color="link" className="fw-bold" onClick={() => setShowPreviousLogs(p => !p)}>
+              {showPreviousLogs ? '▼' : '▶'} Previous Logs (for this date & project)
+            </Button>
+
+            {showPreviousLogs && (
+              <Table bordered size="sm" className={darkMode ? 'table-dark' : 'table-light'}>
+                <thead>
+                  <tr>
+                    <th>Equipment</th>
+                    <th>Type</th>
+                    <th>Time</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {previousLogs.length === 0 && (
+                    <tr>
+                      <td colSpan="3" className="text-center">
+                        No logs found for this date.
+                      </td>
+                    </tr>
+                  )}
+
+                  {previousLogs.map((log, i) => (
+                    <tr key={i}>
+                      <td>{log.equipmentName}</td>
+                      <td>{log.type}</td>
+                      <td>{log.time}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            )}
+          </div>
+        )}
 
         {/* actions */}
         <div className="d-flex justify-content-end gap-2">
