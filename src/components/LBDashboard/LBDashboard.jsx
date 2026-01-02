@@ -321,26 +321,10 @@ export function LBDashboard() {
               another graph
             </Card>
           </div>
-        </details>
-      </section>
-
-      {/* Insights from Reviews */}
-      <section className={styles.section}>
-        <details>
-          <summary
-            className={`${styles.sectionSummary} ${darkMode ? styles.darkSectionSummary : ''}`}
-          >
-            Insights from Reviews
-          </summary>
-          <div className={`${styles.sectionBody} ${darkMode ? styles.darkSectionBody : ''}`}>
-            <Row xs="1" md="2" className="g-3">
-              <Col>
-                <RatingDistribution darkMode={darkMode} />
-              </Col>
-              <Col>
-                <ReviewWordCloud darkMode={darkMode} />
-              </Col>
-            </Row>
+          <div className={styles.chartCol}>
+            <Card className={getClassNames(styles.wordcloudCard, styles.darkCard, darkMode)}>
+              another graph
+            </Card>
           </div>
         </div>
       </AnalysisSection>
@@ -360,7 +344,14 @@ export function LBDashboard() {
       </AnalysisSection>
 
       <AnalysisSection title="Insights from Reviews" darkMode={darkMode}>
-        <ReviewWordCloud darkMode={darkMode} />
+        <div className={styles.chartRow}>
+          <div className={styles.chartCol}>
+            <RatingDistribution darkMode={darkMode} />
+          </div>
+          <div className={styles.chartCol}>
+            <ReviewWordCloud darkMode={darkMode} />
+          </div>
+        </div>
       </AnalysisSection>
     </Container>
   );
