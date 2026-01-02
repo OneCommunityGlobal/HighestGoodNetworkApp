@@ -20,14 +20,12 @@ import {
   fetchInjuryTypes,
   fetchInjuryProjects,
 } from '../../../../actions/bmdashboard/injuryActions';
-
-// YYYY-MM-DD (no tz shift)
-const toYMD = d =>
-  d instanceof Date && !isNaN(d)
-    ? `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(
-        d.getDate(),
-      ).padStart(2, '0')}`
-    : '';
+import {
+  toYMD,
+  getSelectStyles,
+  getDatePickerStyles,
+  getChartAxisProps,
+} from '../../../../utils/bmdashboard/chartUtils';
 
 function InjuryCategoryBarChart() {
   const dispatch = useDispatch();
@@ -130,6 +128,8 @@ function InjuryCategoryBarChart() {
 
   const showLabels = seriesProjectIds.length <= 4;
 
+  const selectStyles = useMemo(() => getSelectStyles(darkMode), [darkMode]);
+
   return (
     <div className={`${styles['injury-chart-container']} ${darkMode ? styles.darkMode : ''}`}>
       <div className={styles['injury-chart-header']}>
@@ -150,6 +150,7 @@ function InjuryCategoryBarChart() {
               value={projectNameFilter}
               onChange={setProjectNameFilter}
               placeholder="All names"
+              styles={selectStyles}
             />
           </div>
 
@@ -165,6 +166,7 @@ function InjuryCategoryBarChart() {
               value={severityFilter}
               onChange={setSeverityFilter}
               placeholder="All severities"
+              styles={selectStyles}
             />
           </div>
 
@@ -180,6 +182,7 @@ function InjuryCategoryBarChart() {
               value={injuryTypeFilter}
               onChange={setInjuryTypeFilter}
               placeholder="All types"
+              styles={selectStyles}
             />
           </div>
 
@@ -187,32 +190,42 @@ function InjuryCategoryBarChart() {
             <label htmlFor="start-date" className={styles['injury-chart-label']}>
               Start date
             </label>
-            <DatePicker
-              id="start-date"
-              selected={startDate}
-              onChange={setStartDate}
-              selectsStart
-              startDate={startDate}
-              endDate={endDate}
-              maxDate={endDate || undefined}
-              placeholderText="Start date"
-            />
+            <div className={styles['date-picker-wrapper']}>
+              <DatePicker
+                id="start-date"
+                selected={startDate}
+                onChange={setStartDate}
+                selectsStart
+                startDate={startDate}
+                endDate={endDate}
+                maxDate={endDate || undefined}
+                placeholderText="Start date"
+                className={styles['injury-date-picker']}
+                wrapperClassName={styles['injury-date-picker-wrapper']}
+                style={getDatePickerStyles(darkMode)}
+              />
+            </div>
           </div>
 
           <div className={styles.filter}>
             <label htmlFor="end-date" className={styles['injury-chart-label']}>
               End date
             </label>
-            <DatePicker
-              id="end-date"
-              selected={endDate}
-              onChange={setEndDate}
-              selectsEnd
-              startDate={startDate}
-              endDate={endDate}
-              minDate={startDate || undefined}
-              placeholderText="End date"
-            />
+            <div className={styles['date-picker-wrapper']}>
+              <DatePicker
+                id="end-date"
+                selected={endDate}
+                onChange={setEndDate}
+                selectsEnd
+                startDate={startDate}
+                endDate={endDate}
+                minDate={startDate || undefined}
+                placeholderText="End date"
+                className={styles['injury-date-picker']}
+                wrapperClassName={styles['injury-date-picker-wrapper']}
+                style={getDatePickerStyles(darkMode)}
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -237,16 +250,9 @@ function InjuryCategoryBarChart() {
               angle={-45}
               textAnchor="end"
               height={80}
-              tick={{ fill: darkMode ? '#fff' : '#000' }}
-              axisLine={{ stroke: darkMode ? '#888' : '#000' }}
-              tickLine={{ stroke: darkMode ? '#888' : '#000' }}
+              {...getChartAxisProps(darkMode)}
             />
-            <YAxis
-              allowDecimals={false}
-              tick={{ fill: darkMode ? '#fff' : '#000' }}
-              axisLine={{ stroke: darkMode ? '#888' : '#000' }}
-              tickLine={{ stroke: darkMode ? '#888' : '#000' }}
-            />
+            <YAxis allowDecimals={false} {...getChartAxisProps(darkMode)} />
             <Tooltip
               contentStyle={{
                 backgroundColor: darkMode ? '#2b3e59' : '#fff',
