@@ -12,6 +12,7 @@ import {
   Card,
 } from 'reactstrap';
 import ReviewWordCloud from './ReviewWordCloud/ReviewWordCloud';
+import RatingDistribution from './RatingDistribution/RatingDistribution';
 import styles from './LBDashboard.module.css';
 import DemandOverTime from './LbAnalytics/DemandOverTime/DemandOverTime';
 import moment from 'moment';
@@ -343,7 +344,14 @@ export function LBDashboard() {
       </AnalysisSection>
 
       <AnalysisSection title="Insights from Reviews" darkMode={darkMode}>
-        <ReviewWordCloud darkMode={darkMode} />
+        <div className={styles.chartRow}>
+          <div className={styles.chartCol}>
+            <RatingDistribution darkMode={darkMode} />
+          </div>
+          <div className={styles.chartCol}>
+            <ReviewWordCloud darkMode={darkMode} />
+          </div>
+        </div>
       </AnalysisSection>
     </Container>
   );
