@@ -6,6 +6,7 @@ export const ENDPOINTS = {
   USER_PROFILE: userId => `${APIEndpoint}/userprofile/${userId}`,
   USER_PROFILE_PROPERTY: userId => `${APIEndpoint}/userprofile/${userId}/property`,
   USER_PROFILES: `${APIEndpoint}/userprofile/`,
+  UPDATE_USER_FINAL_DAY: userId => `${APIEndpoint}/userprofile/${userId}/updateFinalDay`,
   UPDATE_REHIREABLE_STATUS: userId => `${APIEndpoint}/userprofile/${userId}/rehireable`,
   TOGGLE_VISIBILITY: userId => `${APIEndpoint}/userprofile/${userId}/toggleInvisibility`,
   USER_PROFILE_UPDATE: `${APIEndpoint}/userprofile/update`,
@@ -29,7 +30,7 @@ export const ENDPOINTS = {
 
   USERS_REMOVE_PROFILE_IMAGE: `${APIEndpoint}/userProfile/profileImage/remove`,
   USERS_UPDATE_PROFILE_FROM_WEBSITE: `${APIEndpoint}/userProfile/profileImage/imagefromwebsite`,
-  USER_PROFILE_BASIC_INFO: `${APIEndpoint}/userProfile/basicInfo`,
+  USER_PROFILE_BASIC_INFO:source=> `${APIEndpoint}/userProfile/basicInfo/${source}`,
   USER_AUTOCOMPLETE: searchText => `${APIEndpoint}/userProfile/autocomplete/${searchText}`,
   SEARCH_USER: `${APIEndpoint}/users/search`,
   TOGGLE_BIO_STATUS: userId => `${APIEndpoint}/userProfile/${userId}/toggleBio`,
@@ -169,6 +170,20 @@ export const ENDPOINTS = {
   },
   POPULARITY_ROLES: `${APIEndpoint}/popularity/roles`,
 
+ENHANCED_POPULARITY: (range, roles, start, end, includeLowVolume) => {
+    let url = `${APIEndpoint}/api/popularity-enhanced/timeline?`;
+    if (range) url += `range=${range}&`;
+    if (roles && roles.length > 0) {
+      url += `roles=${encodeURIComponent(roles.join(','))}&`;
+    }
+    if (start) url += `start=${encodeURIComponent(start)}&`;
+    if (end) url += `end=${encodeURIComponent(end)}&`;
+    if (includeLowVolume !== undefined) url += `includeLowVolume=${includeLowVolume}&`;
+    return url.slice(0, -1);
+  },
+  ENHANCED_POPULARITY_ROLES: `${APIEndpoint}/api/popularity-enhanced/roles-enhanced`,
+  ENHANCED_POPULARITY_PAIRS: (roles) => 
+    `${APIEndpoint}/api/popularity-enhanced/role-pairs?roles=${encodeURIComponent(roles.join(','))}`,
 
   // titles endpoints
   TITLES: () => `${APIEndpoint}/title`,
@@ -494,6 +509,11 @@ export const ENDPOINTS = {
   //pull requests analysis
   PR_REVIEWS_INSIGHTS: `${APIEndpoint}/analytics/pr-review-insights`,
 
+  LESSON_PLANS: `${APIEndpoint}/education/lesson-plans`,
+  SAVE_INTEREST: `${APIEndpoint}/education/student/saved-interests`,
+  GET_SAVED: `${APIEndpoint}/education/student/saved-interests`,
+  REMOVE_INTEREST: `${APIEndpoint}/education/student/saved-interests`,
+  CHECK_IF_SAVED: `${APIEndpoint}/education/student/saved-interests/check`,
   EDUCATOR_REPORT_EXPORT: (type, format, params = {}) => {
     const { studentId, classId, startDate, endDate } = params;
     let url = `${APIEndpoint}/educator/reports/export?type=${type}&format=${format}`;
