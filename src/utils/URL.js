@@ -451,6 +451,8 @@ POPULARITY_ROLES: `${APIEndpoint}/popularity/roles`,
   //pull requests analysis
   PR_REVIEWS_INSIGHTS: `${APIEndpoint}/analytics/pr-review-insights`,
 
+  TOOL_REPLACEMENTS: `${APIEndpoint}/tools/availability`,
+
 };
 
 export const ApiEndpoint = APIEndpoint;

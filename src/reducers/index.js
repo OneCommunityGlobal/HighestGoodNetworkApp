@@ -99,6 +99,7 @@ import reviewsInsightReducer from './prAnalytics/reviewsInsightReducer';
 // job analytics
 import { hoursPledgedReducer } from './jobAnalytics/hoursPledgedReducer';
 import { studentTasksReducer } from './studentTasksReducer';
+import { toolReplacementReducer } from './ToolReplacementReducer';
 
 const localReducers = {
   auth: authReducer,
@@ -182,6 +183,7 @@ const localReducers = {
   // student tasks
   studentTasks: studentTasksReducer,
   jobApplication: jobApplicationReducer,
+  toolReplacement: toolReplacementReducer,
 };
 
 const sessionReducers = {

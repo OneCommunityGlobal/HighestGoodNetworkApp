@@ -178,6 +178,9 @@ import WriteTaskUpload from './components/EductionPortal/Tasks/WriteTaskUpload';
 // Social Architecture
 
 import JobApplicationForm from './components/Collaboration/JobApplicationForm/JobApplicationForm';
+
+import { ToolReplacementChart } from './components/ToolReplacementChart/ToolReplacementChart';
+
 const ResourceManagement = lazy(() => import('./components/ResourceManagement/ResourceManagement'));
 const RequestResources = lazy(() => import('./components/SocialArchitecture/RequestResources'));
 
@@ -856,6 +859,7 @@ export default (
           exact
           component={PRReviewTeamAnalytics}
         />
+        <ProtectedRoute path="/tools/availability" exact component={ToolReplacementChart} />
         <Route path="*" component={NotFoundPage} />
       </Switch>
     </>
