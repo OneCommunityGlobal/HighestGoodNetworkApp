@@ -176,7 +176,7 @@ function LeaderBoard({
 
   useEffect(() => {
     const checkAbbreviatedView = () => {
-      const isAbbrev = window.innerWidth < window.screen.width * 0.75;
+      const isAbbrev = window.innerWidth < 1300;
       setIsAbbreviatedView(isAbbrev);
     };
 
@@ -674,7 +674,10 @@ function LeaderBoard({
               </div>
             </Alert>
           )}
-          <div id="leaderboard" className="my-custom-scrollbar table-wrapper-scroll-y mb-5">
+          <div
+            id="leaderboard"
+            className={`${styles['my-custom-scrollbar']} ${styles['table-wrapper-scroll-y']} mb-5`}
+          >
             <div className="search-container mx-1">
               <input
                 className={`form-control col-12 mb-2 ${
@@ -688,12 +691,11 @@ function LeaderBoard({
             </div>
             <Table
               data-testid="dark-mode-table"
-              className={`leaderboard table-fixed ${
+              className={`${styles.leaderboard} ${styles['table-fixed']} ${
                 darkMode ? 'text-light dark-mode bg-yinmn-blue' : ''
-              } ${isAbbreviatedView ? 'abbreviated-mode' : ''}`}
-              style={{ minWidth: '500px' }}
+              } ${isAbbreviatedView ? styles['abbreviated-mode'] : ''}`}
             >
-              <thead className="responsive-font-size">
+              <thead className={styles['responsive-font-size']}>
                 <tr className={darkMode ? 'bg-space-cadet' : ''} style={darkModeStyle}>
                   <th style={darkModeStyle}>
                     <span>{isAbbreviatedView ? 'Stat.' : 'Status'}</span>
@@ -743,11 +745,17 @@ function LeaderBoard({
                   </th>
                 </tr>
               </thead>
-              <tbody className="my-custome-scrollbar responsive-font-size">
-                <tr className={darkMode ? 'dark-leaderboard-row' : 'light-leaderboard-row'}>
+              <tbody
+                className={`${styles['my-custom-scrollbar']} ${styles['responsive-font-size']}`}
+              >
+                <tr
+                  className={
+                    darkMode ? styles['dark-leaderboard-row'] : styles['light-leaderboard-row']
+                  }
+                >
                   {isAbbreviatedView ? (
                     <td colSpan={2}>
-                      <div className="leaderboard-totals-container text-center">
+                      <div className={`${styles['leaderboard-totals-container']} text-center`}>
                         <span>{stateOrganizationData.name}</span>
                         {viewZeroHouraMembers(loggedInUser.role) && (
                           <span className="leaderboard-totals-title">
@@ -761,10 +769,10 @@ function LeaderBoard({
                   ) : (
                     <>
                       <td aria-label="Placeholder" />
-                      <td className="leaderboard-totals-container">
+                      <td className={`${styles['leaderboard-totals-container']}`}>
                         <span>{stateOrganizationData.name}</span>
                         {viewZeroHouraMembers(loggedInUser.role) && (
-                          <span className="leaderboard-totals-title">
+                          <span className={`${styles['leaderboard-totals-title']}`}>
                             0 hrs Totals:{' '}
                             {filteredUsers.filter(user => user.weeklycommittedHours === 0).length}{' '}
                             Members
@@ -798,7 +806,7 @@ function LeaderBoard({
                       color="primary"
                     />
                   </td>
-                  <td className="align-middle">
+                  <td className="align-middle" colSpan={2}>
                     <span title="Tangible + Intangible time = Total time">
                       {filteredUsers
                         .reduce((total, user) => total + parseFloat(user.totaltime), 0)
@@ -809,7 +817,6 @@ function LeaderBoard({
                         .toFixed(2)}
                     </span>
                   </td>
-                  <td aria-label="Placeholder" />
                 </tr>
                 {filteredUsers.map(item => {
                   const { hasTimeOff, isCurrentlyOff, additionalWeeks } = getTimeOffStatus(
@@ -823,7 +830,9 @@ function LeaderBoard({
                   return (
                     <tr
                       key={item.personId}
-                      className={darkMode ? 'dark-leaderboard-row' : 'light-leaderboard-row'}
+                      className={
+                        darkMode ? styles['dark-leaderboard-row'] : styles['light-leaderboard-row']
+                      }
                     >
                       <td className="align-middle">
                         <div>
@@ -1072,7 +1081,9 @@ function LeaderBoard({
                           title={mouseoverTextValue}
                           id="Total time"
                           className={
-                            item.totalintangibletime_hrs > 0 ? 'leaderboard-totals-title' : null
+                            item.totalintangibletime_hrs > 0
+                              ? styles['leaderboard-totals-title']
+                              : null
                           }
                         >
                           {item.totaltime}

@@ -52,6 +52,7 @@
 @media (max-width: 544px) {
   .leaderboard {
     font-size: 0.7rem;
+    min-width: 400px;
   } /*1rem = 16px*/
 
   .my-custom-scrollbar {
@@ -66,6 +67,10 @@
     border-top-width: 1px;
     border-top-style: solid;
     border-top-color: rgb(222, 226, 230);
+  }
+
+  .responsive-font-size {
+    font-size: 0.75rem !important;
   }
 }
 .row {
@@ -103,20 +108,16 @@
   flex-direction: column;
 }
 
-@media screen and (max-width: 544px) {
+@media (max-width: 1300px) {
+  .leaderboard thead th {
+    font-size: 0.75rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0.5rem 0.3rem;
+    vertical-align: middle;
+  }
   .responsive-font-size {
     font-size: 0.75rem !important;
   }
-}
-
-
-.leaderboard.abbreviated-mode thead th {
-  font-size: 0.75rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 120px;
-  min-width: 70px;
-  padding: 0.5rem 0.3rem;
-  vertical-align: middle;
 }
