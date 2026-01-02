@@ -10,6 +10,7 @@ function NoShowInsights() {
 
   const filterByDate = events => {
     const today = new Date();
+    today.setHours(23, 59, 59, 999);
     return events.filter(event => {
       const eventDate = new Date(event.eventDate);
       switch (dateFilter) {
@@ -18,8 +19,10 @@ function NoShowInsights() {
         case 'This Week': {
           const startOfWeek = new Date(today);
           startOfWeek.setDate(today.getDate() - today.getDay());
+          startOfWeek.setHours(0, 0, 0, 0);
           const endOfWeek = new Date(startOfWeek);
           endOfWeek.setDate(startOfWeek.getDate() + 6);
+          endOfWeek.setHours(23, 59, 59, 999);
           return eventDate >= startOfWeek && eventDate <= endOfWeek;
         }
         case 'This Month':
@@ -27,6 +30,24 @@ function NoShowInsights() {
             eventDate.getMonth() === today.getMonth() &&
             eventDate.getFullYear() === today.getFullYear()
           );
+        case 'Last 3 Months': {
+          const startDate = new Date(today);
+          startDate.setMonth(today.getMonth() - 3);
+          startDate.setHours(0, 0, 0, 0);
+          return eventDate >= startDate && eventDate <= today;
+        }
+        case 'Last 6 Months': {
+          const startDate = new Date(today);
+          startDate.setMonth(today.getMonth() - 6);
+          startDate.setHours(0, 0, 0, 0);
+          return eventDate >= startDate && eventDate <= today;
+        }
+        case 'Last 12 Months': {
+          const startDate = new Date(today);
+          startDate.setMonth(today.getMonth() - 12);
+          startDate.setHours(0, 0, 0, 0);
+          return eventDate >= startDate && eventDate <= today;
+        }
         default:
           return true;
       }
@@ -94,6 +115,9 @@ function NoShowInsights() {
             <option value="Today">Today</option>
             <option value="This Week">This Week</option>
             <option value="This Month">This Month</option>
+            <option value="Last 3 Months">Last 3 Months</option>
+            <option value="Last 6 Months">Last 6 Months</option>
+            <option value="Last 12 Months">Last 12 Months</option>
           </select>
         </div>
       </div>
