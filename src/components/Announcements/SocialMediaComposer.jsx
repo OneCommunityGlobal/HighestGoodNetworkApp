@@ -10,6 +10,8 @@ import {
   cancelScheduledPost,
   updateScheduledPost,
 } from '~/actions/facebookActions';
+import { getFacebookConnectionStatus } from '~/actions/facebookAuthActions';
+import FacebookConnection from './FacebookConnection';
 
 const PST_TZ = 'America/Los_Angeles';
 
@@ -17,15 +19,24 @@ export default function SocialMediaComposer({ platform }) {
   const dispatch = useDispatch();
   const authUser = useSelector(state => state.auth?.user);
 
-  // Memoize requestor to prevent infinite loops in useCallback dependencies
   const requestor = useMemo(() => {
     if (!authUser?.userid) return null;
     return {
       requestorId: authUser.userid,
+      name: `${authUser.firstName || ''} ${authUser.lastName || ''}`.trim(),
       role: authUser.role,
       permissions: authUser.permissions,
     };
-  }, [authUser?.userid, authUser?.role, authUser?.permissions]);
+  }, [
+    authUser?.userid,
+    authUser?.firstName,
+    authUser?.lastName,
+    authUser?.role,
+    authUser?.permissions,
+  ]);
+
+  // Connection status for showing warnings
+  const [isConnected, setIsConnected] = useState(null);
 
   // Composer state
   const [postContent, setPostContent] = useState('');
@@ -63,7 +74,7 @@ export default function SocialMediaComposer({ platform }) {
     { id: 'composer', label: '📝 Make Post' },
     { id: 'scheduled', label: '⏰ Scheduled' },
     { id: 'history', label: '📜 History' },
-    { id: 'details', label: '🧩 Details' },
+    { id: 'settings', label: '⚙️ Settings' },
   ];
 
   const tabStyle = tabId => ({
@@ -81,6 +92,15 @@ export default function SocialMediaComposer({ platform }) {
     textAlign: 'center',
     outline: 'none',
   });
+
+  // Check connection status on mount
+  useEffect(() => {
+    if (platform === 'facebook') {
+      dispatch(getFacebookConnectionStatus()).then(status => {
+        setIsConnected(status?.connected || false);
+      });
+    }
+  }, [dispatch, platform]);
 
   // Fetch scheduled posts
   const loadScheduledPosts = useCallback(async () => {
@@ -256,6 +276,7 @@ export default function SocialMediaComposer({ platform }) {
       .tz(PST_TZ)
       .format('MMM D, YYYY h:mm A');
 
+  // Shared styles
   const cardStyle = {
     border: '1px solid #ddd',
     borderRadius: '8px',
@@ -292,9 +313,47 @@ export default function SocialMediaComposer({ platform }) {
     cursor: 'pointer',
   };
 
+  const warningBanner = {
+    backgroundColor: '#fff3cd',
+    border: '1px solid #ffc107',
+    borderRadius: '6px',
+    padding: '12px',
+    marginBottom: '16px',
+    color: '#856404',
+  };
+
+  // Connection warning for non-connected state
+  const ConnectionWarning = () => {
+    if (platform !== 'facebook' || isConnected === null || isConnected) return null;
+    return (
+      <div style={warningBanner}>
+        <strong>⚠️ Facebook Not Connected</strong>
+        <p style={{ margin: '8px 0 0' }}>
+          Posts and scheduled posts will fail until a Facebook Page is connected. Go to the{' '}
+          <button
+            type="button"
+            onClick={() => setActiveSubTab('settings')}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: '#007bff',
+              cursor: 'pointer',
+              textDecoration: 'underline',
+              padding: 0,
+            }}
+          >
+            Settings tab
+          </button>{' '}
+          to connect.
+        </p>
+      </div>
+    );
+  };
+
   return (
     <div style={{ padding: '1rem' }}>
-      <h3>{platform}</h3>
+      <h3 style={{ textTransform: 'capitalize' }}>{platform}</h3>
+
       <div style={{ display: 'flex', borderBottom: '1px solid #ccc', marginBottom: '1rem' }}>
         {tabOrder.map(({ id, label }) => (
           <button key={id} type="button" onClick={() => setActiveSubTab(id)} style={tabStyle(id)}>
@@ -306,6 +365,7 @@ export default function SocialMediaComposer({ platform }) {
       {/* COMPOSER TAB */}
       {activeSubTab === 'composer' && (
         <div>
+          <ConnectionWarning />
           <textarea
             value={postContent}
             onChange={e => setPostContent(e.target.value)}
@@ -320,22 +380,27 @@ export default function SocialMediaComposer({ platform }) {
             }}
           />
           {platform === 'facebook' && (
-            <div style={{ display: 'flex', gap: '1rem', flexDirection: 'column' }}>
-              <input
-                type="text"
-                value={link}
-                onChange={e => setLink(e.target.value)}
-                placeholder="Optional link"
-                style={{ padding: '8px', borderRadius: '6px', border: '1px solid #ccc' }}
-              />
-              <input
-                type="text"
-                value={imageUrl}
-                onChange={e => setImageUrl(e.target.value)}
-                placeholder="Optional image URL"
-                style={{ padding: '8px', borderRadius: '6px', border: '1px solid #ccc' }}
-              />
-            </div>
+            <>
+              <div style={{ display: 'flex', gap: '1rem', flexDirection: 'column' }}>
+                <input
+                  type="text"
+                  value={link}
+                  onChange={e => setLink(e.target.value)}
+                  placeholder="Optional link"
+                  style={{ padding: '8px', borderRadius: '6px', border: '1px solid #ccc' }}
+                />
+                <input
+                  type="text"
+                  value={imageUrl}
+                  onChange={e => setImageUrl(e.target.value)}
+                  placeholder="Optional image URL"
+                  style={{ padding: '8px', borderRadius: '6px', border: '1px solid #ccc' }}
+                />
+              </div>
+              <p style={{ fontSize: '12px', color: '#666', margin: '8px 0' }}>
+                {postContent.length} characters (recommended: &lt;500 for best engagement)
+              </p>
+            </>
           )}
           <button
             type="button"
@@ -351,6 +416,7 @@ export default function SocialMediaComposer({ platform }) {
       {/* SCHEDULED TAB */}
       {activeSubTab === 'scheduled' && (
         <div>
+          <ConnectionWarning />
           <h4>Schedule a New Post</h4>
           <textarea
             value={scheduledContent}
@@ -371,33 +437,18 @@ export default function SocialMediaComposer({ platform }) {
               value={scheduledLink}
               onChange={e => setScheduledLink(e.target.value)}
               placeholder="Optional link"
-              style={{
-                padding: '8px',
-                borderRadius: '6px',
-                border: '1px solid #ccc',
-                flex: 1,
-              }}
+              style={{ padding: '8px', borderRadius: '6px', border: '1px solid #ccc', flex: 1 }}
             />
             <input
               type="text"
               value={scheduledImageUrl}
               onChange={e => setScheduledImageUrl(e.target.value)}
               placeholder="Optional image URL"
-              style={{
-                padding: '8px',
-                borderRadius: '6px',
-                border: '1px solid #ccc',
-                flex: 1,
-              }}
+              style={{ padding: '8px', borderRadius: '6px', border: '1px solid #ccc', flex: 1 }}
             />
           </div>
           <div
-            style={{
-              display: 'flex',
-              gap: '1rem',
-              alignItems: 'flex-end',
-              marginBottom: '1.5rem',
-            }}
+            style={{ display: 'flex', gap: '1rem', alignItems: 'flex-end', marginBottom: '1.5rem' }}
           >
             <label style={{ display: 'flex', flexDirection: 'column', fontWeight: 'bold' }}>
               Date & Time (PST)
@@ -519,16 +570,7 @@ export default function SocialMediaComposer({ platform }) {
           </div>
 
           {facebookApiError && (
-            <div
-              style={{
-                backgroundColor: '#fff3cd',
-                border: '1px solid #ffc107',
-                borderRadius: '6px',
-                padding: '12px',
-                marginBottom: '1rem',
-                color: '#856404',
-              }}
-            >
+            <div style={warningBanner}>
               <strong>Note:</strong> {facebookApiError}
             </div>
           )}
@@ -572,7 +614,7 @@ export default function SocialMediaComposer({ platform }) {
                         color: post.status === 'sent' ? '#2e7d32' : '#c62828',
                       }}
                     >
-                      {post.status === 'sent' ? '✓ Sent' : '✗ Failed'}
+                      {post.status === 'sent' ? '✔ Sent' : '✗ Failed'}
                     </span>
                   </div>
                 </div>
@@ -601,45 +643,43 @@ export default function SocialMediaComposer({ platform }) {
                     View on Facebook ↗
                   </a>
                 )}
-                {post.fullPicture && (
-                  <img
-                    src={post.fullPicture}
-                    alt=""
-                    style={{ maxWidth: '200px', marginTop: '8px', borderRadius: '4px' }}
-                  />
-                )}
-                {post.source === 'facebook' && (
-                  <p style={{ margin: '4px 0 0', fontSize: '12px', color: '#666' }}>
-                    {post.reactions !== undefined && `👍 ${post.reactions} `}
-                    {post.comments !== undefined && `💬 ${post.comments}`}
-                  </p>
-                )}
               </div>
             ))
           )}
         </div>
       )}
 
-      {/* DETAILS TAB */}
-      {activeSubTab === 'details' && (
+      {/* SETTINGS TAB */}
+      {activeSubTab === 'settings' && (
         <div>
-          <h4>{platform} Details</h4>
-          <p>
-            <strong>Max characters:</strong> No hard limit (Facebook recommends &lt;500 for
-            engagement)
-          </p>
-          <p>
-            <strong>Supports hashtags:</strong> Yes
-          </p>
-          <p>
-            <strong>Image support:</strong> Yes (via URL)
-          </p>
-          <p>
-            <strong>Recommended image dimensions:</strong> 1200×630 px
-          </p>
-          <p>
-            <strong>Scheduling timezone:</strong> Pacific Time (PST/PDT)
-          </p>
+          <h4>Facebook Settings</h4>
+          <FacebookConnection />
+
+          <div
+            style={{
+              marginTop: '24px',
+              padding: '16px',
+              backgroundColor: '#f8f9fa',
+              borderRadius: '8px',
+            }}
+          >
+            <h5 style={{ marginTop: 0 }}>Platform Details</h5>
+            <p>
+              <strong>Max characters:</strong> No hard limit (recommended &lt;500 for engagement)
+            </p>
+            <p>
+              <strong>Supports hashtags:</strong> Yes
+            </p>
+            <p>
+              <strong>Image support:</strong> Yes (via URL)
+            </p>
+            <p>
+              <strong>Recommended image dimensions:</strong> 1200×630 px
+            </p>
+            <p style={{ marginBottom: 0 }}>
+              <strong>Scheduling timezone:</strong> Pacific Time (PST/PDT)
+            </p>
+          </div>
         </div>
       )}
 

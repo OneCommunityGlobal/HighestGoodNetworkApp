@@ -235,6 +235,11 @@ export const ENDPOINTS = {
   FACEBOOK_SCHEDULE: `${APIEndpoint}/social/facebook/schedule`,
   FACEBOOK_SCHEDULED: `${APIEndpoint}/social/facebook/scheduled`,
   FACEBOOK_HISTORY: `${APIEndpoint}/social/facebook/history`,
+  FACEBOOK_AUTH_STATUS: `${APIEndpoint}/social/facebook/auth/status`,
+  FACEBOOK_AUTH_CALLBACK: `${APIEndpoint}/social/facebook/auth/callback`,
+  FACEBOOK_AUTH_CONNECT: `${APIEndpoint}/social/facebook/auth/connect`,
+  FACEBOOK_AUTH_DISCONNECT: `${APIEndpoint}/social/facebook/auth/disconnect`,
+  FACEBOOK_AUTH_VERIFY: `${APIEndpoint}/social/facebook/auth/verify`,
   
   PERMISSION_MANAGEMENT_UPDATE: () => `${APIEndpoint}/permission-management`,
 
