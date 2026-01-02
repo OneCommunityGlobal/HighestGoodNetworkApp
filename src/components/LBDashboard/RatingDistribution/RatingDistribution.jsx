@@ -12,6 +12,7 @@ import {
 } from 'chart.js';
 import Select from 'react-select';
 import { Row, Col, Card, CardBody } from 'reactstrap';
+import { VILLAGE_OPTIONS, PROPERTY_OPTIONS, getCustomSelectStyles } from '../constants';
 import styles from './RatingDistribution.module.css';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
@@ -91,52 +92,6 @@ function RatingDistribution({ darkMode }) {
     },
   ];
 
-  const villageOptions = [
-    { value: 'Eco Village', label: 'Eco Village' },
-    { value: 'Forest Retreat', label: 'Forest Retreat' },
-    { value: 'Desert Oasis', label: 'Desert Oasis' },
-    { value: 'River Valley', label: 'River Valley' },
-    { value: 'City Sanctuary', label: 'City Sanctuary' },
-  ];
-
-  const propertyOptions = [
-    {
-      label: 'Eco Village',
-      options: [
-        { value: 'Mountain View', label: 'Mountain View' },
-        { value: 'Solar Haven', label: 'Solar Haven' },
-      ],
-    },
-    {
-      label: 'Forest Retreat',
-      options: [
-        { value: 'Lakeside Cottage', label: 'Lakeside Cottage' },
-        { value: 'Woodland Cabin', label: 'Woodland Cabin' },
-      ],
-    },
-    {
-      label: 'Desert Oasis',
-      options: [
-        { value: 'Tiny Home', label: 'Tiny Home' },
-        { value: 'Earth Ship', label: 'Earth Ship' },
-      ],
-    },
-    {
-      label: 'River Valley',
-      options: [
-        { value: 'Riverside Cabin', label: 'Riverside Cabin' },
-        { value: 'Floating House', label: 'Floating House' },
-      ],
-    },
-    {
-      label: 'City Sanctuary',
-      options: [
-        { value: 'Urban Garden Apartment', label: 'Urban Garden Apartment' },
-        { value: 'Eco Loft', label: 'Eco Loft' },
-      ],
-    },
-  ];
-
   const dateRangeOptions = [
     { value: 'all', label: 'All Time' },
     { value: 'last30', label: 'Last 30 Days' },
@@ -152,51 +107,13 @@ function RatingDistribution({ darkMode }) {
 
   const [selectedDateRange, setSelectedDateRange] = useState(dateRangeOptions[0]);
   const [selectedCategory, setSelectedCategory] = useState(categoryOptions[0]);
-  const [selectedVillages, setSelectedVillages] = useState(villageOptions);
+  const [selectedVillages, setSelectedVillages] = useState(VILLAGE_OPTIONS);
   const [selectedProperties, setSelectedProperties] = useState([]);
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
   const [chartData, setChartData] = useState(null);
 
-  const customSelectStyles = {
-    control: provided => ({
-      ...provided,
-      backgroundColor: darkMode ? '#1C2541' : '#fff',
-      borderColor: darkMode ? '#225163' : '#ccc',
-      color: darkMode ? '#fff' : '#333',
-      minHeight: '38px',
-    }),
-    menu: provided => ({
-      ...provided,
-      backgroundColor: darkMode ? '#1C2541' : '#fff',
-      zIndex: 1000,
-    }),
-    option: (provided, state) => {
-      let optionBg;
-      if (state.isFocused) {
-        optionBg = darkMode ? '#3A506B' : '#f0f0f0';
-      } else {
-        optionBg = darkMode ? '#1C2541' : '#fff';
-      }
-      return {
-        ...provided,
-        backgroundColor: optionBg,
-        color: darkMode ? '#fff' : '#333',
-      };
-    },
-    multiValue: provided => ({
-      ...provided,
-      backgroundColor: darkMode ? '#3A506B' : '#e2e3fc',
-    }),
-    multiValueLabel: provided => ({
-      ...provided,
-      color: darkMode ? '#fff' : '#333',
-    }),
-    singleValue: provided => ({
-      ...provided,
-      color: darkMode ? '#fff' : '#333',
-    }),
-  };
+  const customSelectStyles = getCustomSelectStyles(darkMode);
 
   useEffect(() => {
     // Filter reviews based on selected filters
@@ -422,7 +339,7 @@ function RatingDistribution({ darkMode }) {
                   setSelectedCategory(option);
                   // Reset selections when category changes
                   if (option.value === 'village') {
-                    setSelectedVillages(villageOptions);
+                    setSelectedVillages(VILLAGE_OPTIONS);
                     setSelectedProperties([]);
                   } else {
                     setSelectedVillages([]);
@@ -448,7 +365,7 @@ function RatingDistribution({ darkMode }) {
                   isMulti
                   value={selectedVillages}
                   onChange={setSelectedVillages}
-                  options={villageOptions}
+                  options={VILLAGE_OPTIONS}
                   styles={customSelectStyles}
                   closeMenuOnSelect={false}
                   placeholder="Select villages..."
@@ -467,7 +384,7 @@ function RatingDistribution({ darkMode }) {
                   isMulti
                   value={selectedProperties}
                   onChange={setSelectedProperties}
-                  options={propertyOptions}
+                  options={PROPERTY_OPTIONS}
                   styles={customSelectStyles}
                   closeMenuOnSelect={false}
                   placeholder="Select properties..."
