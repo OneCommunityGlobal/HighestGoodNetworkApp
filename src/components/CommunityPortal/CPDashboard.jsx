@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Container, Row, Col, Card, CardBody, Button, Input } from 'reactstrap';
 import { FaCalendarAlt, FaMapMarkerAlt, FaUserAlt, FaSearch, FaTimes } from 'react-icons/fa';
+import { format } from 'date-fns';
+import { getUserTimezone, formatDateTimeWithTimezone } from '../../utils/timezoneUtils';
 import styles from './CPDashboard.module.css';
 import { ENDPOINTS } from '../../utils/URL';
 import axios from 'axios';
@@ -84,16 +86,40 @@ export function CPDashboard() {
     }
   };
 
+  // Phase 5: Format date with timezone conversion
   const formatDate = dateStr => {
     if (!dateStr) return 'Date TBD';
-    const date = new Date(dateStr);
-    return date.toLocaleString('en-US', {
-      weekday: 'long',
-      month: 'long',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit',
-    });
+    try {
+      const date = new Date(dateStr);
+      if (isNaN(date.getTime())) {
+        return 'Invalid date';
+      }
+      // Format: "Saturday, February 15"
+      return format(date, 'EEEE, MMMM d');
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return 'Date TBD';
+    }
+  };
+
+  // Phase 5: Format time with timezone conversion and abbreviation
+  const formatTime = timeStr => {
+    if (!timeStr) return 'Time TBD';
+    try {
+      const userTimezone = getUserTimezone();
+      return formatDateTimeWithTimezone(timeStr, userTimezone);
+    } catch (error) {
+      console.error('Error formatting time:', error);
+      return 'Time TBD';
+    }
+  };
+
+  // Phase 5: Get display location with placeholder
+  const getDisplayLocation = location => {
+    if (!location || location.trim() === '') {
+      return 'Location TBD';
+    }
+    return location;
   };
 
   const filteredEvents = events.filter(event => {
@@ -244,11 +270,17 @@ export function CPDashboard() {
                     </div>
                     <CardBody>
                       <h5 className={styles.eventTitle}>{event.title}</h5>
-                      <p className={styles.eventDate}>
-                        <FaCalendarAlt /> {formatDate(event.date)}
-                      </p>
+                      <div className={styles.eventDate}>
+                        <FaCalendarAlt />
+                        <div>
+                          <div>{formatDate(event.date)}</div>
+                          {event.startTime && (
+                            <div className={styles.eventTime}>{formatTime(event.startTime)}</div>
+                          )}
+                        </div>
+                      </div>
                       <p className={styles.eventLocation}>
-                        <FaMapMarkerAlt /> {event.location}
+                        <FaMapMarkerAlt /> {getDisplayLocation(event.location)}
                       </p>
                       <p className={styles.eventOrganizer}>
                         <FaUserAlt /> {event.organizer}
