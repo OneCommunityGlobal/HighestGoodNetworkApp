@@ -118,9 +118,13 @@ export const formatDateTimeWithTimezone = (dateString, userTimezone) => {
 
     // Format: "2:00 PM PST"
     const timeFormatted = converted.format('h:mm A');
-    const timezoneAbbr = converted.format('z');
     
-    return `${timeFormatted} ${timezoneAbbr}`;
+    // Use current date's timezone abbreviation for consistency across all events
+    // This ensures all events show the same abbreviation (PST or PDT) based on today,
+    // while still converting event times correctly to user's timezone
+    const currentTimezoneAbbr = moment().tz(userTimezone).format('z');
+    
+    return `${timeFormatted} ${currentTimezoneAbbr}`;
   } catch (error) {
     console.error('Error formatting date time with timezone:', error);
     return 'Time not set';

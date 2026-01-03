@@ -11,7 +11,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { format } from 'date-fns';
 // Phase 5: Import timezone utilities for complete implementation
-import { getUserTimezone, formatDateTimeWithTimezone } from '../../../utils/timezoneUtils';
+import { getUserTimezone, formatDateTimeWithTimezone } from '../../../../utils/timezoneUtils';
 import styles from './EventCard.module.css';
 
 function EventCard(props) {
