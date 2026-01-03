@@ -127,6 +127,7 @@ const buildDatasetsFromGroupMap = (groupMap, groupBy) =>
       data: group.dataPoints,
       borderColor: PROJECT_COLORS[colorIndex].borderColor,
       backgroundColor: PROJECT_COLORS[colorIndex].backgroundColor,
+      marginRight: 20,
       tension: 0.4,
       fill: false,
       pointRadius: ctx => (group.monthsWithData.has(ctx.dataIndex) ? 5 : 0),
@@ -256,6 +257,9 @@ export default function RentalChart() {
             size: 14,
           },
           color: darkMode ? '#ffffff' : '#1b2a41',
+          padding: {
+            bottom: 20,
+          },
         },
         tooltip: {
           callbacks: {
@@ -411,15 +415,7 @@ export default function RentalChart() {
   };
 
   return (
-    <div
-      className={`${styles.rentalContainer} ${darkMode ? styles.darkMode : ''}`}
-      style={{
-        padding: '20px',
-        borderRadius: '8px',
-        minHeight: '100vh',
-        marginTop: '-20px',
-      }}
-    >
+    <div className={`${styles.rentalContainer} ${darkMode ? styles.darkMode : ''}`}>
       <h1 className={darkMode ? styles.textLight : ''}>Rental Cost Over Time</h1>
 
       <div className={styles.chartFilters}>
