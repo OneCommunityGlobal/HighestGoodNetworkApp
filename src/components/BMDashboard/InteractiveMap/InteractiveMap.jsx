@@ -239,6 +239,8 @@ export default function InteractiveMap() {
 
         {/* FILTER ROW */}
         <div className={styles.filterRowExtra}>
+          <label className={styles.filterLabel}>Date Range:</label>
+
           <div className={styles.filterInputs}>
             <DatePicker
               selected={startDate}

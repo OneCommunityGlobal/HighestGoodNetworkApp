@@ -93,13 +93,17 @@
 }
 
 .dateInputDark {
-  background: #1a2738;
+  background: #1C2541;
   color: #ffffff;
   border-color: #465a74;
 }
 
 .dateInputDark:hover {
   border-color: #6acfde;
+}
+
+.calendarDark :global(.react-datepicker) {
+  background-color: #3A506B;
 }
 
 .dateInputDark:focus {
