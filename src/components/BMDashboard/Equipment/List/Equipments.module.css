@@ -57,3 +57,13 @@
   margin-bottom: 20px;
   text-align: center;
 }
+
+.linkButton {
+  color: #007bff;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.linkButton:hover {
+  text-decoration: underline;
+}

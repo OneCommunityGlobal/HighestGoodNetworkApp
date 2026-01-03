@@ -228,7 +228,7 @@ function MostFrequentKeywords() {
   }, [tags]);
 
   return (
-    <div className={`${styles.mfkContainer} ${darkMode ? 'darkMode' : ''}`}>
+    <div className={`${styles.mfkContainer} ${darkMode ? styles.darkMode : ''}`}>
       <h3 className={styles.mfkTitle}>📊 Most Frequent Keywords</h3>
       <div className={styles.mfkControls}>
         <div>

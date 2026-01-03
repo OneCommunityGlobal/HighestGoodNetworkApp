@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styles from './ResourceManagement.module.css';
 
 function SearchBar() {

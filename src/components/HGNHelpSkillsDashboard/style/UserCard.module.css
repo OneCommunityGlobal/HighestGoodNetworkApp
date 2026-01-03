@@ -1,6 +1,7 @@
 .userCard {
-  width: 360px;
-  height: auto;
+  max-width: 360px;
+  width: 100%;
+  box-sizing: border-box;
   padding: 30px 24px;
   background: #ffffff;
   border: 2px solid #eeeeee;
@@ -16,20 +17,24 @@
 .avatar {
   width: 140px;
   height: 140px;
+  max-width: 40%;
+  max-height: 140px;
   border-radius: 50%;
   margin-bottom: 8px;
+  object-fit: cover;
 }
 
 .info {
   display: flex;
   flex-direction: column;
-  align-items: flex-start; /* keeps name/email/slack left-aligned */
-  text-align: left;
+  align-items: center;
+  text-align: center;
   margin-top: 16px;
   padding: 0;
-  width: fit-content;
-  margin-left: auto;
-  margin-right: auto;
+  width: 100%;
+  box-sizing: border-box;
+  padding-left: 8px;
+  padding-right: 8px;
 }
 
 .userName {
@@ -38,7 +43,9 @@
   color: black;
   margin-bottom: 8px;
   white-space: nowrap;
-  /*font-size: Large;*/
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 .contactLine {
@@ -48,6 +55,7 @@
   font-size: 16px;
   color: #616161;
   margin-bottom: 6px;
+  justify-content: center;
 }
 
 .contactIcon {
@@ -103,4 +111,25 @@
   color: #616161;
   line-height: 22px;
   word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.userCard.dark {
+  background: #2f4157;
+  border-color: #333;
+  box-shadow: none;
+  color: #ffffff;
+}
+
+.userCard.dark .userName,
+.userCard.dark .scoreLine,
+.userCard.dark .scoreLabel,
+.userCard.dark .scoreValue,
+.userCard.dark .scoreMax {
+  color: #ffffff;
+}
+
+.userCard.dark .contactLine,
+.userCard.dark .skillsText {
+  color: #bbbbbb;
 }

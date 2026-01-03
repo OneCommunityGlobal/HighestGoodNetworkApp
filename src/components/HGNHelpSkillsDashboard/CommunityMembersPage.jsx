@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import RankedUserList from './RankedUserList'; // wherever your RankedUserList is
+import React, { useState, useMemo } from 'react';
+import RankedUserList from './RankedUserList';
 
 const availableSkills = ['React', 'Redux', 'HTML', 'CSS', 'MongoDB', 'Database', 'Agile'];
 
@@ -12,23 +12,32 @@ function CommunityMembersPage() {
     );
   };
 
+  // EFFECTIVE SKILLS = what we pass to RankedUserList
+  const effectiveSkills = useMemo(() => {
+    return selectedSkills.length > 0 ? selectedSkills : availableSkills;
+  }, [selectedSkills]);
+
   return (
     <div>
-      <h2>Select Skills to Filter Community Members</h2>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
-        {availableSkills.map(skill => (
-          <label key={skill}>
-            <input
-              type="checkbox"
-              checked={selectedSkills.includes(skill)}
-              onChange={() => handleCheckboxChange(skill)}
-            />
-            {skill}
-          </label>
-        ))}
+      <h1>Community Members</h1>
+
+      <div style={{ marginBottom: 16 }}>
+        <strong>Filter by skills:</strong>
+        <div style={{ display: 'flex', gap: 10, marginTop: 8, flexWrap: 'wrap' }}>
+          {availableSkills.map(skill => (
+            <label key={skill} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <input
+                type="checkbox"
+                checked={selectedSkills.includes(skill)}
+                onChange={() => handleCheckboxChange(skill)}
+              />
+              {skill}
+            </label>
+          ))}
+        </div>
       </div>
 
-      {selectedSkills.length > 0 && <RankedUserList selectedSkills={selectedSkills} />}
+      <RankedUserList selectedSkills={effectiveSkills} />
     </div>
   );
 }

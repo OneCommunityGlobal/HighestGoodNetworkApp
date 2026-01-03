@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
-import { updateUserFinalDayStatusIsSet } from '../../actions/userManagement';
+import { updateUserFinalDay } from '../../actions/userManagement';
 import { boxStyle } from '../../styles';
 import SetUpFinalDayPopUp from './SetUpFinalDayPopUp';
 import { SET_FINAL_DAY, CANCEL } from '../../languages/en/ui';
@@ -17,12 +17,13 @@ function SetUpFinalDayButton(props) {
     if (isSet) {
       // Delete the final day
       try {
-        await updateUserFinalDayStatusIsSet(
+        await updateUserFinalDay(
           userProfile,
-          userProfile.isActive ? 'Active' : 'Inactive',
           undefined,
-          FinalDay.NotSetFinalDay,
+          FinalDay.RemoveFinalDay,
         )(dispatch);
+
+        if (props.loadUserProfile) await props.loadUserProfile(userProfile._id);
 
         setIsSet(false);
         // eslint-disable-next-line no-unused-expressions
@@ -41,12 +42,13 @@ function SetUpFinalDayButton(props) {
 
   const handleSaveFinalDay = async (finalDayDate) => {
     try {
-      await updateUserFinalDayStatusIsSet(
+      await updateUserFinalDay(
         userProfile,
-        'Active',
         finalDayDate,
         FinalDay.FinalDay,
       )(dispatch);
+      
+      if (props.loadUserProfile) await props.loadUserProfile(userProfile._id);
 
       setIsSet(true);
       setFinalDayDateOpen(false);
