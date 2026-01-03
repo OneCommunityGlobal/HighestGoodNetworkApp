@@ -14,6 +14,8 @@ import { initMessagingSocket } from '../utils/messagingSocket';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import ThemeManager from './common/ThemeManager';
 
+// TODO: Fix undefined search parameters in Feedback page - Phase 1: Analysis & Planning
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
