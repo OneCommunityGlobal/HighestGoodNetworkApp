@@ -5,7 +5,6 @@ import {
   FETCH_INJURIES_FAILURE 
 } from './types';
 import { ENDPOINTS } from '../../utils/URL';
-
 export const FETCH_BM_INJURY_DATA_REQUEST = 'FETCH_BM_INJURY_DATA_REQUEST';
 export const FETCH_BM_INJURY_DATA_SUCCESS = 'FETCH_BM_INJURY_DATA_SUCCESS';
 export const FETCH_BM_INJURY_DATA_FAILURE = 'FETCH_BM_INJURY_DATA_FAILURE';
@@ -13,6 +12,7 @@ export const RESET_BM_INJURY_DATA = 'RESET_BM_INJURY_DATA';
 export const FETCH_BM_INJURY_SEVERITIES = 'FETCH_BM_INJURY_SEVERITIES';
 export const FETCH_BM_INJURY_TYPES = 'FETCH_BM_INJURY_TYPES';
 export const FETCH_BM_INJURY_PROJECTS = 'FETCH_BM_INJURY_PROJECTS';
+export const FETCH_BM_INJURY_OVER_TIME = 'FETCH_BM_INJURY_OVER_TIME';
 
 // Legacy constants for backward compatibility
 export const GET_INJURY_SEVERITY = 'GET_INJURY_SEVERITY';
@@ -47,6 +47,7 @@ const setInjuryDataError = payload => ({ type: FETCH_BM_INJURY_DATA_FAILURE, pay
 const setInjurySeverities = payload => ({ type: FETCH_BM_INJURY_SEVERITIES, payload });
 const setInjuryTypes = payload => ({ type: FETCH_BM_INJURY_TYPES, payload });
 const setInjuryProjects = payload => ({ type: FETCH_BM_INJURY_PROJECTS, payload });
+const setInjuryOverTime = payload => ({ type: FETCH_BM_INJURY_OVER_TIME, payload });
 
 // Legacy action creators for backward compatibility
 export const setInjurySeverity = payload => ({
@@ -179,3 +180,33 @@ export const getInjuryData = async (projectId, startDate, endDate) => {
   // Return the data directly
   return response.data;
 };
+
+export const fetchInjuriesOverTime = (filters = {}) => {
+  return async dispatch => {
+    try {
+      const params = {};
+
+      if (filters.projectIds?.length) {
+        params.projectIds = filters.projectIds.join(',');
+      }
+      if (filters.startDate && filters.endDate) {
+        params.startDate = filters.startDate;
+        params.endDate = filters.endDate;
+      }
+      if (filters.types?.length) {
+        params.types = filters.types.join(',');
+      }
+      if (filters.departments?.length) {
+        params.departments = filters.departments.join(',');
+      }
+      if (filters.severities?.length) {
+        params.departments = filters.departments.join(',');
+      }
+
+      const res = await axios.get(ENDPOINTS.BM_INJURY_OVER_TIME, { params });
+      dispatch(setInjuryOverTime(res.data));
+    } catch (err) {
+      dispatch(setErrors(err.response?.data?.error || err.message));
+    }
+  };
+}
