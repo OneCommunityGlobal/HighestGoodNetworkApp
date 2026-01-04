@@ -12,7 +12,7 @@ import {
 
 const initialState = {
   loading: false,
-  wishlist: [],
+  wishlists: [],
   error: null,
 };
 
@@ -24,16 +24,16 @@ export const wishlistsReducer = (state = initialState, action) => {
       return { ...state, loading: true, error: null };
 
     case FETCH_WISHLIST_SUCCESS:
-      return { ...state, loading: false, wishlist: action.payload };
+      return { ...state, loading: false, wishlists: action.payload };
 
     case ADD_TO_WISHLIST_SUCCESS:
-      return { ...state, loading: false, wishlist: [...state.wishlist, action.payload] };
+      return { ...state, loading: false, wishlist: [...state.wishlists, action.payload] };
 
     case REMOVE_FROM_WISHLIST_SUCCESS:
       return {
         ...state,
         loading: false,
-        wishlist: state.wishlist.filter(item => item.id !== action.payload.id),
+        wishlist: state.wishlists.filter(item => item.id !== action.payload.id),
       };
 
     case FETCH_WISHLIST_FAIL:

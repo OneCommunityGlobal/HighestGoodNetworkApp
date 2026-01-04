@@ -7,9 +7,17 @@ import { setCurrentWishListItem } from '~/reducers/listBidDashboard/wishListItem
 import Header from '../Header';
 
 function WishList(props) {
-  // const [wishlistId, setWishlistId] = useState('');
   const dispatch = useDispatch();
-  const { wishlists } = props;
+  const user = useSelector(state => state.auth.user);
+  const userId = user ? user.userid : null;
+
+  const wishlists = useSelector(state => state.wishlistItem.wishlists);
+
+  useEffect(() => {
+    if (userId) {
+      dispatch(fetchWishlist(userId));
+    }
+  }, [dispatch, userId]);
 
   return (
     <div className="item">

@@ -9,69 +9,44 @@ import {
   REMOVE_FROM_WISHLIST_SUCCESS,
   REMOVE_FROM_WISHLIST_FAIL,
 } from '../../constants/lbdashboard/wishlistConstants';
-import { ENDPOINTS } from '../../config/apiEndpoints';
+import { ENDPOINTS } from '../../utils/URL';
 
-export const fetchWishlist = () => async (dispatch) => {
-  try {
-    const token = localStorage.getItem('token');
-    dispatch({ type: FETCH_WISHLIST_REQUEST });
-    const response = await fetch(ENDPOINTS.LB_WISHLIST_FETCH, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token && { Authorization: token }),
-      },
-    });
-    const data = await response.json();
-    if (!response.ok || !data || data.error) {
-      throw new Error(data.error || 'Failed to fetch wishlist');
+export const fetchWishlist = (userId) => {
+  return async (dispatch) => {
+    try{
+      dispatch({ type: FETCH_WISHLIST_REQUEST });
+      const url = ENDPOINTS.LB_FETCH_WISHLIST(userId); 
+      const res = await axios.get(url);
+      dispatch({ type: FETCH_WISHLIST_SUCCESS, payload: res.data });
+    }catch(error){
+      dispatch({ type: FETCH_WISHLIST_FAIL, payload: error.message });
     }
-    dispatch({ type: FETCH_WISHLIST_SUCCESS, payload: data.data });
-  } catch (error) {
-    dispatch({ type: FETCH_WISHLIST_FAIL, payload: error.message });
   } 
 };
 
-export const addToWishlist = (listingId) => async (dispatch) => {
-  try {
-    const token = localStorage.getItem('token');
-    dispatch({ type: ADD_TO_WISHLIST_REQUEST });
-    const response = await fetch(ENDPOINTS.LB_WISHLIST_ADD, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token && { Authorization: token }),
-      },
-      body: JSON.stringify({ id: listingId }),
-    });
-    const data = await response.json();
-    if (!response.ok || !data || data.error) {
-      throw new Error(data.error || 'Failed to add to wishlist');
+export const addToWishlist = (userId, listingId) => {
+  return async (dispatch) => {
+    try {
+      dispatch({ type: ADD_TO_WISHLIST_REQUEST });
+      const url = ENDPOINTS.LB_ADD_TO_WISHLIST;
+      const res = await axios.post(url, { userId, listingId });
+      dispatch({ type: ADD_TO_WISHLIST_SUCCESS, payload: res.data });
+    } catch (error) {
+      dispatch({ type: ADD_TO_WISHLIST_FAIL, payload: error.message });
     }
-    dispatch({ type: ADD_TO_WISHLIST_SUCCESS, payload: data.data });
-  } catch (error) {
-    dispatch({ type: ADD_TO_WISHLIST_FAIL, payload: error.message });
-  } 
+  };
 };
 
-export const removeFromWishlist = (listingId) => async (dispatch) => {
-  try {
-    const token = localStorage.getItem('token');
-    dispatch({ type: REMOVE_FROM_WISHLIST_REQUEST });
-    const response = await fetch(ENDPOINTS.LB_WISHLIST_REMOVE, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token && { Authorization: token }),
-      },
-      body: JSON.stringify({ id: listingId }),
-    });
-    const data = await response.json();
-    if (!response.ok || !data || data.error) {
-      throw new Error(data.error || 'Failed to remove from wishlist');
+
+export const removeFromWishlist = (userId, listingId) => {
+  return async (dispatch) => {
+    try {
+      dispatch({ type: REMOVE_FROM_WISHLIST_REQUEST });
+      const url = ENDPOINTS.LB_REMOVE_FROM_WISHLIST(listingId);
+      const res = await axios.delete(url, { data: { userId } }); 
+      dispatch({ type: REMOVE_FROM_WISHLIST_SUCCESS, payload: res.data });
+    } catch (error) {
+      dispatch({ type: REMOVE_FROM_WISHLIST_FAIL, payload: error.message });
     }
-    dispatch({ type: REMOVE_FROM_WISHLIST_SUCCESS, payload: data.data });
-  } catch (error) {
-    dispatch({ type: REMOVE_FROM_WISHLIST_FAIL, payload: error.message });
-  } 
-}
+  };
+};
