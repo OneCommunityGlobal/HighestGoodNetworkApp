@@ -57,6 +57,21 @@
   box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
 }
 
+.filters select {
+  padding: 10px;
+  height: 48px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  margin-top: 5px;
+  font-size: 1rem;
+}
+
+.filters select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
+}
+
 .filters button {
   margin: 30px 0;
   border: 1px solid #000000;
@@ -73,6 +88,11 @@
 }
 
 .darkFilters input{
+  background: #0f172a;
+  border: 1px solid #ffffff;
+}
+
+.darkFilters select{
   background: #0f172a;
   border: 1px solid #ffffff;
 }
