@@ -20,6 +20,7 @@ export const ENDPOINTS = {
   MODIFY_BLUE_SQUARE: (userId, blueSquareId) =>
     `${APIEndpoint}/userprofile/${userId}/infringements/${blueSquareId}`,
 
+
   // Blue Square Email Triggers
   BLUE_SQUARE_RESEND_INFRINGEMENT_EMAILS: () => `${APIEndpoint}/blueSquare/resend-infringement-emails-only`,
   BLUE_SQUARE_RESEND_WEEKLY_SUMMARY_EMAILS: () => `${APIEndpoint}/blueSquare/resend-weekly-summary-emails`,
@@ -30,7 +31,7 @@ export const ENDPOINTS = {
 
   USERS_REMOVE_PROFILE_IMAGE: `${APIEndpoint}/userProfile/profileImage/remove`,
   USERS_UPDATE_PROFILE_FROM_WEBSITE: `${APIEndpoint}/userProfile/profileImage/imagefromwebsite`,
-  USER_PROFILE_BASIC_INFO:source=> `${APIEndpoint}/userProfile/basicInfo/${source}`,
+  USER_PROFILE_BASIC_INFO: source => `${APIEndpoint}/userProfile/basicInfo/${source}`,
   USER_AUTOCOMPLETE: searchText => `${APIEndpoint}/userProfile/autocomplete/${searchText}`,
   SEARCH_USER: `${APIEndpoint}/users/search`,
   TOGGLE_BIO_STATUS: userId => `${APIEndpoint}/userProfile/${userId}/toggleBio`,
@@ -170,7 +171,7 @@ export const ENDPOINTS = {
   },
   POPULARITY_ROLES: `${APIEndpoint}/popularity/roles`,
 
-ENHANCED_POPULARITY: (range, roles, start, end, includeLowVolume) => {
+  ENHANCED_POPULARITY: (range, roles, start, end, includeLowVolume) => {
     let url = `${APIEndpoint}/popularity-enhanced/timeline?`;
     if (range) url += `range=${range}&`;
     if (roles && roles.length > 0) {
@@ -182,7 +183,7 @@ ENHANCED_POPULARITY: (range, roles, start, end, includeLowVolume) => {
     return url.slice(0, -1);
   },
   ENHANCED_POPULARITY_ROLES: `${APIEndpoint}/popularity-enhanced/roles-enhanced`,
-  ENHANCED_POPULARITY_PAIRS: (roles) => 
+  ENHANCED_POPULARITY_PAIRS: (roles) =>
     `${APIEndpoint}/popularity-enhanced/role-pairs?roles=${encodeURIComponent(roles.join(','))}`,
 
   // titles endpoints
@@ -389,8 +390,7 @@ ENHANCED_POPULARITY: (range, roles, start, end, includeLowVolume) => {
   HGN_FORM_UPDATE_QUESTION: id => `${APIEndpoint}/questions/${id}`,
   HGN_FORM_SUBMIT: `${APIEndpoint}/hgnform`,
   HGN_FORM_UPDATE_USER_SKILLS_FOLLOWUP_SUBMIT: `${APIEndpoint}/skills/profile/updateFollowUp/`,
-
-  HGN_FORM_GET_TEAM_MEMBERS_BY_SKILL: skill => `${APIEndpoint}/userProfile/skills/${skill}`,
+  SKILLS_PROFILE: userId => `${APIEndpoint}/skills/profile/${userId}`,
 
   CREATE_JOB_FORM: `${APIEndpoint}/jobforms`,
   UPDATE_JOB_FORM: `${APIEndpoint}/jobforms`,
