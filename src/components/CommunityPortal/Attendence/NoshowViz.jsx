@@ -22,7 +22,7 @@ import {
   getUniqueEventTypes,
   getAttendanceByDay,
 } from '../../../actions/communityPortal/NoShowVizActions';
-import './NoshowViz.css';
+import styles from './NoshowViz.module.css';
 
 function EventNoShowChart() {
   const [period, setPeriod] = useState('month');
