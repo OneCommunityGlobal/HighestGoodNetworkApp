@@ -30,7 +30,7 @@ export const ENDPOINTS = {
 
   USERS_REMOVE_PROFILE_IMAGE: `${APIEndpoint}/userProfile/profileImage/remove`,
   USERS_UPDATE_PROFILE_FROM_WEBSITE: `${APIEndpoint}/userProfile/profileImage/imagefromwebsite`,
-  USER_PROFILE_BASIC_INFO: `${APIEndpoint}/userProfile/basicInfo`,
+  USER_PROFILE_BASIC_INFO:source=> `${APIEndpoint}/userProfile/basicInfo/${source}`,
   USER_AUTOCOMPLETE: searchText => `${APIEndpoint}/userProfile/autocomplete/${searchText}`,
   SEARCH_USER: `${APIEndpoint}/users/search`,
   TOGGLE_BIO_STATUS: userId => `${APIEndpoint}/userProfile/${userId}/toggleBio`,

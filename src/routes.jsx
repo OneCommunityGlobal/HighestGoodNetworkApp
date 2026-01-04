@@ -97,7 +97,8 @@ import ActivityAttendance from './components/CommunityPortal/Activities/Activity
 import ActivityAgenda from './components/CommunityPortal/Activities/ActivityAgenda';
 import NoshowViz from './components/CommunityPortal/Attendence/NoshowViz';
 import EventList from './components/CommunityPortal/Event/EventList/EventList';
-import Resources from './components/CommunityPortal/Activities/activityId/Resources';
+import ResourcesUsage from './components/CommunityPortal/Activities/activityId/ResourcesUsage';
+import ResourceManagement from './components/ResourceManagement/ResourceManagement';
 import EventParticipation from './components/CommunityPortal/Reports/Participation/EventParticipation';
 
 import MaterialSummary from './components/MaterialSummary/MaterialSummary';
@@ -192,10 +193,16 @@ import { UserRole } from './utils/enums';
 import WriteTaskUpload from './components/EductionPortal/Tasks/WriteTaskUpload';
 import IntermediateTaskList from './components/EductionPortal/IntermediateTasks/IntermediateTaskList';
 
+import EmbedInteractiveMap from './components/BMDashboard/InteractiveMap/EmbedInteractiveMap';
+import InteractiveMap from './components/BMDashboard/InteractiveMap/InteractiveMap';
+
+import SupportLogin from './components/SupportPortal/SupportLogin';
+import SupportDashboard from './components/SupportPortal/SupportDashboard';
+import SupportLogViewer from './components/SupportPortal/SupportLogViewer';
+
 // Social Architecture
 
 import JobApplicationForm from './components/Collaboration/JobApplicationForm/JobApplicationForm';
-const ResourceManagement = lazy(() => import('./components/ResourceManagement/ResourceManagement'));
 const RequestResources = lazy(() => import('./components/SocialArchitecture/RequestResources'));
 
 const ReusableListView = lazy(() => import('./components/BMDashboard/ReusableList'));
@@ -446,13 +453,6 @@ export default (
           component={SameFolderTasks}
           fallback
           routePermissions={RoutePermissions.workBreakdownStructure}
-        />
-        <ProtectedRoute
-          path="/communityportal/activity/:activityId/resources"
-          exact
-          component={ResourceManagement}
-          fallback
-          routePermissions={RoutePermissions.resourceManagement}
         />
         <ProtectedRoute
           path="/communityportal/resources/add"
@@ -763,6 +763,24 @@ export default (
           exact
           component={Register}
         />
+        <CPProtectedRoute path="/communityportal/ActivityAgenda" exact component={ActivityAgenda} />
+        <CPProtectedRoute
+          path="/communityportal/activity/:activityId/engagement/Comments"
+          exact
+          component={ActivityComments}
+        />
+        <CPProtectedRoute
+          path="/communityportal/activity/:activityId/resourcesusage"
+          exact
+          component={ResourcesUsage}
+        />
+        <CPProtectedRoute
+          path="/communityportal/activity/:activityId/resources"
+          exact
+          component={ResourceManagement}
+          fallback
+          routePermissions={RoutePermissions.resourceManagement}
+        />
         {/* Listing and Bidding Routes */}
         <LBProtectedRoute path="/lbdashboard" exact component={LBDashboard} />
         <LBProtectedRoute path="/lbdashboard/listOverview/:id" exact component={ListOveriew} />
@@ -831,12 +849,6 @@ export default (
           component={DatabaseDesign}
         />
         {/* <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} /> */}
-        <CPProtectedRoute path="/communityportal/ActivityAgenda" exact component={ActivityAgenda} />
-        <CPProtectedRoute
-          path="/communityportal/activity/:activityId/engagement/Comments"
-          exact
-          component={ActivityComments}
-        />
         {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
         {/* <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} /> */}
         {/* ----- END BM Dashboard Routing ----- */}
@@ -895,6 +907,10 @@ export default (
           exact
           component={PromotionEligibility}
         />
+        {/* /*  for support team*/}
+        <Route path="/support/login" component={SupportLogin} />
+        <Route path="/support/dashboard" component={SupportDashboard} />
+        <Route path="/support/log/:studentId" component={SupportLogViewer} />
         <ProtectedRoute
           path="/pr-team-analytics/popular-prs"
           exact
