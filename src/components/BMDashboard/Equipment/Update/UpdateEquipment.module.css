@@ -1,46 +1,69 @@
-.dragDropContainer {
-  border: 2px dashed #ccc;
-  text-align: center;
-  padding: 20px;
-  margin-bottom: 20px;
-}
-
-.updateConfirmText {
-  color: red;
-  font-weight: bold;
-  margin-bottom: 10px;
-}
-
-.cancelButton {
-  width: 100%;
-}
-
-.submitButton {
-  width: 100%;
-}
-
-.squareImage {
-  width: 100%;
-  height: auto;
-  max-width: 250px;
-  max-height: 250px;
-  object-fit: cover;
-  border-radius: 4px;
-}
-
-.squareImage {
-  width: 100%;
-  height: auto;
-  max-width: 250px;
-  max-height: 250px;
-  object-fit: cover;
-  border-radius: 4px;
-}
+/* UpdateEquipment.module.css - Minimal and Working */
 
 .readOnlyDiv {
-  padding: 8px;
-  background-color: #e6f5f2;
-  border-radius: 4px;
-  border: 1px solid #dee2e6;
-  color: #495057;
+  padding: 10px 12px;
+  background-color: #ffffff !important;
+  border-radius: 6px;
+  border: 1px solid #ced4da !important;
+  color: #212529 !important;
+  font-size: 1rem;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+/* Image */
+.squareImage {
+  width: 280px;
+  height: 280px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid #dee2e6 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Confirmation text */
+.updateConfirmText {
+  color: #0d6efd !important;
+  font-weight: 600;
+  margin: 20px 0;
+  padding: 12px 16px;
+  background-color: #f8f9fa !important;
+  border: 1px solid #cfe2ff !important;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+/* Additional styling for form labels in light mode */
+:global(.form-label) {
+  color: #212529 !important;
+  font-weight: 600 !important;
+}
+
+/* =========================
+   DARK MODE - Only change what's needed
+   ========================= */
+@media (prefers-color-scheme: dark) {
+  .readOnlyDiv {
+    background-color: #2d2d2d !important;
+    border-color: #444444 !important;
+    color: #e9ecef !important;
+  }
+  
+  .squareImage {
+    border-color: #444444 !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+  
+  .updateConfirmText {
+    color: #0dcaf0 !important;
+    background-color: #1a2a3a !important;
+    border-color: #0dcaf0 !important;
+  }
+  
+  :global(.form-label) {
+    color: #e9ecef !important;
+  }
 }
