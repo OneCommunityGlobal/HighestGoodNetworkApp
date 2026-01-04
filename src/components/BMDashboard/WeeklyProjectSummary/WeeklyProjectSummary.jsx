@@ -1,3 +1,5 @@
+// export default WeeklyProjectSummary;
+
 /* eslint-disable import/no-unresolved */
 import { useState, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -122,11 +124,57 @@ const projectStatusButtons = [
   },
 ];
 
+export function WeeklyProjectSummaryContent() {
+  const dispatch = useDispatch();
+  const materials = useSelector(state => state.materials?.materialslist || []);
+  const [openSections, setOpenSections] = useState({});
+
+  const getColorScheme = percentage => {
+    if (percentage === '-') return 'neutral';
+    if (percentage > 0) return 'positive';
+    if (percentage < 0) return 'negative';
+    return 'neutral';
+  };
+
+  const colorScheme = getColorScheme(monthOverMonth);
+
+  const titleClass = title.replace(/\s+/g, '-').toLowerCase();
+
+  return (
+    <div
+      className={`financial-card ${colorScheme} custom-box-shadow financial-card-background-${titleClass}`}
+      onMouseEnter={() => setShowTooltip(true)}
+      onMouseLeave={() => setShowTooltip(false)}
+    >
+      <div className="financial-card-title">{title}</div>
+      <div className={`financial-card-ellipse financial-card-ellipse-${titleClass}`} />
+      <div className="financial-card-value">{value === '-' ? '-' : value.toLocaleString()}</div>
+      <div className={`financial-card-month-over-month ${colorScheme}`}>
+        {monthOverMonth === '-'
+          ? '-'
+          : `${monthOverMonth > 0 ? '+' : ''}${monthOverMonth}% month over month`}
+      </div>
+
+      {showTooltip && Object.keys(additionalInfo).length > 0 && (
+        <div className="financial-card-tooltip">
+          {Object.entries(additionalInfo).map(([key]) => (
+            <div key={key} className="financial-card-tooltip-item">
+              <span className="tooltip-key">{key}:</span>
+              <span className="tooltip-value">{value}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function WeeklyProjectSummary() {
   const dispatch = useDispatch();
   const materials = useSelector(state => state.materials?.materialslist || []);
   const [openSections, setOpenSections] = useState({});
   const darkMode = useSelector(state => state.theme.darkMode);
+
   useEffect(() => {
     if (materials.length === 0) {
       dispatch(fetchAllMaterials());
@@ -159,7 +207,7 @@ function WeeklyProjectSummary() {
         key: 'Project Status',
         className: 'full',
         content: (
-          <div className={styles.projectStatusGrid}>
+          <div className={`${styles.projectStatusGrid}`}>
             {projectStatusButtons.map(button => {
               const uniqueId = uuidv4();
               return (
@@ -168,16 +216,14 @@ function WeeklyProjectSummary() {
                   className={`${styles.weeklyProjectSummaryCard} ${styles.statusCard}`}
                   style={{ backgroundColor: button.bgColor }}
                 >
-                  <div className={styles.weeklyCardTitle}>{button.title}</div>
-
+                  <div className={`${styles.weeklyCardTitle}`}>{button.title}</div>
                   <div
-                    className={styles.weeklyStatusButton}
+                    className={`${styles.weeklyStatusButton}`}
                     style={{ backgroundColor: button.buttonColor }}
                   >
-                    <span className={styles.weeklyStatusValue}>{button.value}</span>
+                    <span className={`${styles.weeklyStatusValue}`}>{button.value}</span>
                   </div>
-
-                  <div className={styles.weeklyStatusChange} style={{ color: button.textColor }}>
+                  <div className="weekly-status-change" style={{ color: button.textColor }}>
                     {button.change}
                   </div>
                 </div>
@@ -255,10 +301,7 @@ function WeeklyProjectSummary() {
         className: 'half',
         content: [
           <MostFrequentKeywords key="frequent-tags-card" />,
-          <div
-            key="injury-chart"
-            className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
-          >
+          <div key="injury-chart" className="weekly-project-summary-card normal-card">
             <InjuryCategoryBarChart />
           </div>,
         ],
@@ -269,21 +312,13 @@ function WeeklyProjectSummary() {
         className: 'large',
         content: (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
-            <div className={`${styles.weeklyProjectSummaryCard} ${styles.financialSmall}`}>
-              📊 Card
-            </div>
-            <div className={`${styles.weeklyProjectSummaryCard} ${styles.financialSmall}`}>
+            <div className="weekly-project-summary-card financial-small">📊 Card</div>
+            <div className="weekly-project-summary-card financial-small financial-chart">
               <ExpenseBarChart />
             </div>
-            <div className={`${styles.weeklyProjectSummaryCard} ${styles.financialSmall}`}>
-              📊 Card
-            </div>
-            <div className={`${styles.weeklyProjectSummaryCard} ${styles.financialSmall}`}>
-              📊 Card
-            </div>
-            <div className={`${styles.weeklyProjectSummaryCard} ${styles.fullCard}`}>
-              📊 Big Card
-            </div>
+            <div className="weekly-project-summary-card financial-small">📊 Card</div>
+            <div className="weekly-project-summary-card financial-small">📊 Card</div>
+            <div className="weekly-project-summary-card financial-big">📊 Big Card</div>
           </div>
         ),
       },
@@ -385,7 +420,7 @@ function WeeklyProjectSummary() {
 
       const styleElem = document.createElement('style');
       styleElem.textContent = `
-        img, svg {
+          img, svg {
           height: auto !important;
           page-break-inside: avoid !important;
         }
@@ -424,6 +459,7 @@ function WeeklyProjectSummary() {
       const fileName = `weekly-project-summary-${now.toISOString().slice(0, 10)}.pdf`;
 
       pdf.save(fileName);
+
       document.body.removeChild(pdfContainer);
     } catch (err) {
       // eslint-disable-next-line no-console
@@ -440,8 +476,8 @@ function WeeklyProjectSummary() {
       }`}
     >
       <WeeklyProjectSummaryHeader handleSaveAsPDF={handleSaveAsPDF} />
-      <div className={styles.weeklyProjectSummaryDashboardContainer}>
-        <div className={styles.weeklyProjectSummaryDashboardGrid}>
+      <div className={`${styles.weeklyProjectSummaryDashboardContainer}`}>
+        <div className={`${styles.weeklyProjectSummaryDashboardGrid}`}>
           {sections.map(({ title, key, className, content }) => (
             <div
               key={key}
@@ -455,7 +491,9 @@ function WeeklyProjectSummary() {
                 {title} <span>{openSections[key] ? '∧' : '∨'}</span>
               </button>
               {openSections[key] && (
-                <div className={styles.weeklyProjectSummaryDashboardCategoryContent}>{content}</div>
+                <div className={`${styles.weeklyProjectSummaryDashboardCategoryContent}`}>
+                  {content}
+                </div>
               )}
             </div>
           ))}

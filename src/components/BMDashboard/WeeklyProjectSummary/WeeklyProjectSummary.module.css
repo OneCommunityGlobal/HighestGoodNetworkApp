@@ -12,7 +12,7 @@
   padding: 0;
 }
 
-/* MERGED: was duplicated */
+/* ---------------- DASHBOARD CONTAINER ---------------- */
 .weeklyProjectSummaryDashboardContainer {
   width: 95%;
   margin: auto;
@@ -77,7 +77,7 @@
   background-color: var(--section-title-hover) !important;
 }
 
-/* Share Button (MERGED: was duplicated) */
+/* Share Button */
 .weeklySummaryShareBtn {
   background-color: var(--button-bg) !important;
   color: white;
@@ -91,7 +91,7 @@
   background-color: var(--button-hover) !important;
 }
 
-/* ---------------- DASHBOARD ---------------- */
+/* ---------------- GRID ---------------- */
 .weeklyProjectSummaryDashboardGrid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -124,7 +124,7 @@
   box-shadow: 0 2px 5px var(--card-shadow);
 }
 
-.dark-mode .weeklyProjectSummaryCard {
+.darkMode .weeklyProjectSummaryCard {
   background: var(--card-bg);
   box-shadow: 0 2px 5px rgba(255, 255, 255, 0.1);
 }
@@ -184,6 +184,7 @@
   overflow: hidden;
 }
 
+/* ---------------- SECTION ---------------- */
 .weeklyProjectSummaryDashboardSection {
   background: var(--section-bg);
   border-radius: 8px;
@@ -240,7 +241,7 @@
 }
 
 /* ---------------- DARK MODE STYLES ---------------- */
-.dark-mode {
+.darkMode {
   --bg-color: #1b2a41;
   --text-color: #ffffff;
   --card-bg: #2b3e59;
@@ -252,47 +253,46 @@
   --button-hover: #f5b13a;
 }
 
-.dark-mode .weeklyProjectSummaryDashboardCategoryTitle {
-  color: #ffffff;
+/* MERGED: keep background + FORCE all title text visible in dark mode */
+.darkMode .weeklyProjectSummaryDashboardCategoryTitle {
   background: #2d4059;
+  color: #ffffff;
 }
 
-.dark-mode .weeklyProjectSummaryDashboardCategoryTitle:hover {
+.darkMode .weeklyProjectSummaryDashboardCategoryTitle:hover {
   background: #3a506b;
 }
 
-.dark-mode .weeklyProjectSummaryDashboardCategoryContent {
+.darkMode .weeklyProjectSummaryDashboardCategoryTitle span {
+  color: #ffffff;
+}
+
+.darkMode .weeklyProjectSummaryDashboardCategoryTitle * {
+  color: #ffffff;
+}
+
+.darkMode .weeklyProjectSummaryDashboardCategoryContent {
   background-color: var(--section-bg);
   border-top: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.dark-mode .weeklySummaryHeaderContainer {
+.darkMode .weeklySummaryHeaderContainer {
   background: var(--section-bg);
   color: var(--text-color);
 }
 
-/* 
-   - In dark mode -> make Project Status texts visible (white)
-   - In light mode -> remain black (existing rules keep it black)
-*/
-.dark-mode .weeklyCardTitle,
-.dark-mode .weeklyStatusValue,
-.dark-mode .weekly-status-change {
-  color: #ffffff !important;
-}
-
-/* ---------------- TOOLTIP (MERGED: was duplicated) ---------------- */
+/* ---------------- TOOLTIP SCROLL FIX ---------------- */
 .quantityOfMaterialsUsedChartTooltip {
-  max-height: 80vh !important; /* Limit to 80% of viewport height */
-  overflow-y: auto !important; /* Enable vertical scrolling */
-  padding-right: 15px !important; /* Add some padding for the scrollbar */
+  max-height: 80vh !important;
+  overflow-y: auto !important;
+  padding-right: 15px !important;
 
   /* Firefox */
   scrollbar-width: thin;
   scrollbar-color: rgba(0, 0, 0, 0.3) rgba(0, 0, 0, 0.1);
 }
 
-/* Style the scrollbar for better visibility */
+/* Chrome/Safari scrollbar */
 .quantityOfMaterialsUsedChartTooltip::-webkit-scrollbar {
   width: 8px;
 }
@@ -308,21 +308,19 @@
 }
 
 /* Additional adjustments for dark mode if needed */
-.dark-mode .quantityOfMaterialsUsedChartTooltip::-webkit-scrollbar-track {
+.darkMode .quantityOfMaterialsUsedChartTooltip::-webkit-scrollbar-track {
   background: rgba(255, 255, 255, 0.1);
 }
 
-.dark-mode .quantityOfMaterialsUsedChartTooltip::-webkit-scrollbar-thumb {
+.darkMode .quantityOfMaterialsUsedChartTooltip::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.3);
 }
 
-.dark-mode .quantityOfMaterialsUsedChartTooltip {
+.darkMode .quantityOfMaterialsUsedChartTooltip {
   scrollbar-color: rgba(255, 255, 255, 0.3) rgba(255, 255, 255, 0.1);
 }
 
 /* ---------------- RESPONSIVE DESIGN ---------------- */
-
-/* Medium Screens - Wrap Items */
 @media (max-width: 1024px) {
   .weeklySummaryHeaderContainer {
     flex-direction: column;
@@ -340,7 +338,6 @@
   }
 }
 
-/* Small Screens - Make Dropdowns Vertical */
 @media (max-width: 768px) {
   .weeklySummaryHeaderContainer {
     flex-direction: column;
@@ -353,12 +350,10 @@
     width: 100%;
   }
 
-  /* Make Dropdowns Full Width */
   .weeklySummaryHeaderControls select {
     width: 100%;
   }
 
-  /* Make Button Full Width */
   .weeklySummaryShareBtn {
     width: 100%;
   }
@@ -372,10 +367,6 @@
   .weeklyProjectSummaryDashboardSection.half,
   .weeklyProjectSummaryDashboardSection.small {
     grid-column: span 1;
-  }
-
-  .projectStatusGrid {
-    grid-template-columns: 1fr;
   }
 }
 
@@ -397,7 +388,7 @@
 }
 
 /* ---------------- RESPONSIVE GRID LAYOUT ---------------- */
-/* MERGED: projectStatusGrid was duplicated, keep only this one */
+/* MERGED: keep ONLY one projectStatusGrid */
 .projectStatusGrid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
