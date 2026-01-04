@@ -53,6 +53,18 @@
   text-align: left;
 }
 
+/* allow the table area to scroll horizontally on narrow containers
+   instead of being squeezed into a small fixed column */
+.table-mobile {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.table-mobile table {
+  min-width: 800px; /* reasonable min width for table content */
+  width: 100%;
+}
+
 .table-row {
   background: white;
 }

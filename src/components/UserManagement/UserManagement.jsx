@@ -487,8 +487,8 @@ class UserManagement extends React.PureComponent {
       }
       return;
     }
-    if (status === FinalDay.NotSetFinalDay) {
-      this.props.updateUserFinalDayStatusIsSet(user, 'Active', undefined, FinalDay.NotSetFinalDay);
+    if (status === FinalDay.RemoveFinalDay) {
+      this.props.updateUserFinalDayStatusIsSet(user, 'Active', undefined, FinalDay.RemoveFinalDay);
     } else {
       this.setState({
         finalDayDateOpen: true,
@@ -841,7 +841,7 @@ class UserManagement extends React.PureComponent {
     return (
       <Container
         fluid
-        className={darkMode ? ' bg-oxford-blue text-light' : ''}
+        className={darkMode ? ' bg-oxford-blue text-light p-3' : 'p-3'}
         style={{ minHeight: '100%' }}
       >
         {/* {fetching ? (
