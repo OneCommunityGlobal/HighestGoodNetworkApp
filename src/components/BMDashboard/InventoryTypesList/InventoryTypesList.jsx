@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 
 import { fetchInvTypeByType } from '~/actions/bmdashboard/invTypeActions';
 import { fetchInvUnits } from '~/actions/bmdashboard/invUnitActions';
@@ -94,10 +95,9 @@ export function InventoryTypesList(props) {
       </Accordion>
 
       <div className={`${styles.buttonContainer}`}>
-        {/* NOTE: should redirect to the Equipment/Tool List Page, which is not implemented yet */}
-        <a href="#back-to-previous" target="_blank" id="back-to-previous" role="button">
-          Back to previous list page
-        </a>
+        <Link to="/bmdashboard/equipment" className="btn btn-secondary">
+          Back to Equipment List
+        </Link>
       </div>
     </div>
   );
