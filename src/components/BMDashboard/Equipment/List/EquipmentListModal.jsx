@@ -41,8 +41,6 @@ function Record({ record, recordType }) {
         <thead>
           <tr>
             <th>Date</th>
-            {/* <th>Quantity Used</th>
-            <th>Quantity Wasted</th> */}
             <th>Creator</th>
           </tr>
         </thead>
@@ -51,8 +49,6 @@ function Record({ record, recordType }) {
             return (
               <tr key={data._id}>
                 <td>{moment.utc(data.date).format('LL')}</td>
-                {/* <td>{`${data.quantityUsed}` || '-'}</td>
-                <td>{`${data.quantityWasted}` || '-'}</td> */}
                 <td>
                   <a href={`/userprofile/${data.createdBy._id}`}>
                     {`${data.createdBy.firstName} ${data.createdBy.lastName}`}

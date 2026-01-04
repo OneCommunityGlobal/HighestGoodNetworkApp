@@ -1,69 +1,470 @@
+/* Page Layout */
 .PageViewContainer {
-  padding: 0% !important;
-
+  min-height: 100vh;
+  padding: 2rem 1rem;
 }
 
 .Page {
-  background-color: #E8F4F9;
-  width: 100%;
-  height: auto;
-  margin: 0px;
-  padding: 1rem 2rem;
-  font-size: 15px;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
 .Box {
-  background-color: white;
-  border-radius: 1rem;
-  padding: 1.5rem;
-  height: auto;
-}
-
-.modalOpen {
-  padding-right: 0px !important;
-}
-
-.ModalViewContainer {
-  overflow-y: auto;
-  overflow-x: auto;
-  max-height: 75vh;
-  font-size: small;
-}
-
-@media (min-width: 1200px) {
-  .ModalViewContainer {
-    font-size: medium;
-  }
-}
-
-.InputsMargin {
-  margin: 0.2rem;
-}
-
-.cusorpointer {
-  cursor: pointer;
-}
-
-.BuildingTableHeaderLine {
-  font-weight: 500;
-  vertical-align: bottom;
-  border-bottom: 2px solid #dee2e6;
-  background-color: #E8F4F9;
-  border-top: 1px solid #dee2e6;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: 2rem;
+  transition: all 0.3s ease;
 }
 
 .BuildingTitle {
-  font-weight: bold;
-  margin-bottom: 20px;
-  text-align: center;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 2rem;
+  letter-spacing: 0.5px;
+  border-bottom: 3px solid #4dabf7;
+  padding-bottom: 0.75rem;
+  display: inline-block;
 }
 
-.linkButton {
-  color: #007bff;
+.InputsMargin {
+  margin-bottom: 1.5rem;
+}
+
+/* Table Wrapper */
+.tableWrapper {
+  overflow-x: auto;
+  border-radius: 8px;
+  margin-top: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.tableWrapper table {
+  margin-bottom: 0;
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+}
+
+/* Table Headers - Light Mode */
+.BuildingTableHeaderLine th {
+  background-color: #4dabf7;
+  color: #ffffff;
   font-weight: 600;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 1rem 0.75rem;
+  border: none;
+  white-space: nowrap;
+}
+
+.BuildingTableHeaderLine th:first-child {
+  border-top-left-radius: 8px;
+}
+
+.BuildingTableHeaderLine th:last-child {
+  border-top-right-radius: 8px;
+}
+
+/* Sortable Headers */
+.cusorpointer {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  user-select: none;
+  transition: opacity 0.2s ease;
+}
+
+.cusorpointer:hover {
+  opacity: 0.85;
+}
+
+.cusorpointer div:first-child {
+  flex: 1;
+}
+
+/* Table Body - Light Mode */
+.tableWrapper tbody tr {
+  transition: all 0.2s ease;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.tableWrapper tbody tr:hover {
+  transform: translateX(2px);
+}
+
+.tableWrapper tbody td {
+  padding: 1rem 0.75rem;
+  vertical-align: middle;
+  font-size: 0.9rem;
+}
+
+/* Link Styling */
+.linkButton {
+  color: #4dabf7;
   text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.linkButton::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -2px;
+  left: 0;
+  background-color: #4dabf7;
+  transition: width 0.3s ease;
+}
+
+.linkButton:hover::after {
+  width: 100%;
 }
 
 .linkButton:hover {
-  text-decoration: underline;
+  color: #339af0;
+}
+
+/* Buttons in Table - Light Mode */
+.tableWrapper button[type="button"] {
+  background: transparent;
+  border: none;
+  color: #4dabf7;
+  font-size: 1.25rem;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 4px;
+}
+
+.tableWrapper button[type="button"]:hover {
+  color: #339af0;
+  background: rgba(77, 171, 247, 0.1);
+}
+
+.tableWrapper .btn {
+  font-size: 0.8rem;
+  padding: 0.4rem 1rem;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border: 1.5px solid #4dabf7;
+}
+
+.tableWrapper .btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(77, 171, 247, 0.3);
+}
+
+/* Modal Styling - Light Mode */
+.ModalViewContainer {
+  backdrop-filter: blur(4px);
+}
+
+.ModalViewContainer .modal-content {
+  border-radius: 12px;
+  border: none;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+}
+
+.ModalViewContainer .modal-header {
+  border-bottom: 2px solid #e9ecef;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 12px 12px 0 0;
+}
+
+.ModalViewContainer .modal-header .modal-title {
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.ModalViewContainer .modal-body {
+  padding: 1.5rem;
+}
+
+.ModalViewContainer .modal-footer {
+  border-top: 2px solid #e9ecef;
+  padding: 1rem 1.5rem;
+}
+
+body.dark-mode table,
+body.dark-mode table *,
+body.bm-dashboard-dark table,
+body.bm-dashboard-dark table * {
+  background-color: inherit !important;
+}
+
+body.dark-mode table,
+body.bm-dashboard-dark table {
+  background-color: #2d2d2d !important;
+  color: #ffffff !important;
+  border-color: #404040 !important;
+}
+
+/* Table headers - FORCE background */
+body.dark-mode table thead,
+body.dark-mode table thead tr,
+body.dark-mode table thead th,
+body.bm-dashboard-dark table thead,
+body.bm-dashboard-dark table thead tr,
+body.bm-dashboard-dark table thead th {
+  background-color: #3d3d3d !important;
+  color: #ffffff !important;
+  border-color: #404040 !important;
+}
+
+/* Table body - FORCE background */
+body.dark-mode table tbody,
+body.dark-mode table tbody tr,
+body.dark-mode table tbody td,
+body.bm-dashboard-dark table tbody,
+body.bm-dashboard-dark table tbody tr,
+body.bm-dashboard-dark table tbody td {
+  background-color: #2d2d2d !important;
+  color: #ffffff !important;
+  border-color: #404040 !important;
+}
+
+/* Remove any white backgrounds on hover */
+body.dark-mode table tbody tr:hover,
+body.dark-mode table tbody tr:hover td,
+body.bm-dashboard-dark table tbody tr:hover,
+body.bm-dashboard-dark table tbody tr:hover td {
+  background-color: #3d3d3d !important;
+  color: #ffffff !important;
+}
+
+/* Reactstrap table classes */
+body.dark-mode .table,
+body.dark-mode .table-responsive,
+body.bm-dashboard-dark .table,
+body.bm-dashboard-dark .table-responsive {
+  --bs-table-bg: #2d2d2d !important;
+  --bs-table-color: #ffffff !important;
+  --bs-table-border-color: #404040 !important;
+  --bs-table-striped-bg: #2d2d2d !important;
+  --bs-table-striped-color: #ffffff !important;
+  --bs-table-active-bg: #3d3d3d !important;
+  --bs-table-active-color: #ffffff !important;
+  --bs-table-hover-bg: #3d3d3d !important;
+  --bs-table-hover-color: #ffffff !important;
+  background-color: #2d2d2d !important;
+  color: #ffffff !important;
+}
+
+/* Force all table descendants */
+body.dark-mode .table *,
+body.bm-dashboard-dark .table * {
+  border-color: #404040 !important;
+}
+
+/* Buttons inside tables */
+body.dark-mode table button,
+body.dark-mode table .btn,
+body.bm-dashboard-dark table button,
+body.bm-dashboard-dark table .btn {
+  background-color: transparent !important;
+  color: #4dabf7 !important;
+  border-color: #4dabf7 !important;
+}
+
+body.dark-mode table button:hover,
+body.dark-mode table .btn:hover,
+body.bm-dashboard-dark table button:hover,
+body.bm-dashboard-dark table .btn:hover {
+  background-color: #4dabf7 !important;
+  color: #ffffff !important;
+  border-color: #4dabf7 !important;
+}
+
+/* Specific button styles */
+body.dark-mode .btn-outline-primary,
+body.bm-dashboard-dark .btn-outline-primary {
+  color: #4dabf7 !important;
+  border-color: #4dabf7 !important;
+  background-color: transparent !important;
+}
+
+body.dark-mode .btn-outline-primary:hover,
+body.dark-mode .btn-outline-primary:focus,
+body.dark-mode .btn-outline-primary:active,
+body.bm-dashboard-dark .btn-outline-primary:hover,
+body.bm-dashboard-dark .btn-outline-primary:focus,
+body.bm-dashboard-dark .btn-outline-primary:active {
+  background-color: #4dabf7 !important;
+  color: #ffffff !important;
+  border-color: #4dabf7 !important;
+}
+
+/* Icon buttons */
+body.dark-mode table button[type="button"],
+body.bm-dashboard-dark table button[type="button"] {
+  color: #4dabf7 !important;
+  background: transparent !important;
+  border: none !important;
+}
+
+body.dark-mode table button[type="button"]:hover,
+body.bm-dashboard-dark table button[type="button"]:hover {
+  color: #74c0fc !important;
+}
+
+/* Links in tables */
+body.dark-mode table a,
+body.bm-dashboard-dark table a {
+  color: #4dabf7 !important;
+  background-color: transparent !important;
+}
+
+body.dark-mode table a:hover,
+body.bm-dashboard-dark table a:hover {
+  color: #74c0fc !important;
+}
+
+/* React-Select in dark mode */
+body.dark-mode .css-b62m3t-container,
+body.dark-mode .css-b62m3t-container *,
+body.bm-dashboard-dark .css-b62m3t-container,
+body.bm-dashboard-dark .css-b62m3t-container * {
+  background-color: #2d2d2d !important;
+}
+
+body.dark-mode .css-13cymwt-control,
+body.dark-mode .css-t3ipsp-control,
+body.dark-mode .css-1fdsijx-ValueContainer,
+body.dark-mode .css-hlgwow,
+body.bm-dashboard-dark .css-13cymwt-control,
+body.bm-dashboard-dark .css-t3ipsp-control,
+body.bm-dashboard-dark .css-1fdsijx-ValueContainer,
+body.bm-dashboard-dark .css-hlgwow {
+  background-color: #2d2d2d !important;
+  border-color: #404040 !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode .css-1dimb5e-singleValue,
+body.dark-mode .css-qbdosj-Input,
+body.dark-mode input,
+body.bm-dashboard-dark .css-1dimb5e-singleValue,
+body.bm-dashboard-dark .css-qbdosj-Input,
+body.bm-dashboard-dark input {
+  color: #ffffff !important;
+}
+
+body.dark-mode .css-1nmdiq5-menu,
+body.bm-dashboard-dark .css-1nmdiq5-menu {
+  background-color: #2d2d2d !important;
+  border: 1px solid #404040 !important;
+}
+
+body.dark-mode .css-d7l1ni-option,
+body.dark-mode .css-10wo9uf-option,
+body.bm-dashboard-dark .css-d7l1ni-option,
+body.bm-dashboard-dark .css-10wo9uf-option {
+  background-color: #2d2d2d !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode .css-d7l1ni-option:hover,
+body.dark-mode .css-10wo9uf-option:hover,
+body.bm-dashboard-dark .css-d7l1ni-option:hover,
+body.bm-dashboard-dark .css-10wo9uf-option:hover {
+  background-color: #3d3d3d !important;
+}
+
+/* Modal styling */
+body.dark-mode .modal-content,
+body.dark-mode .modal-header,
+body.dark-mode .modal-body,
+body.dark-mode .modal-footer,
+body.bm-dashboard-dark .modal-content,
+body.bm-dashboard-dark .modal-header,
+body.bm-dashboard-dark .modal-body,
+body.bm-dashboard-dark .modal-footer {
+  background-color: #2d2d2d !important;
+  color: #ffffff !important;
+  border-color: #404040 !important;
+}
+
+/* Form labels */
+body.dark-mode label,
+body.dark-mode .form-label,
+body.bm-dashboard-dark label,
+body.bm-dashboard-dark .form-label {
+  color: #ffffff !important;
+}
+
+/* Tooltip */
+body.dark-mode .tooltip,
+body.dark-mode .tooltip-inner,
+body.bm-dashboard-dark .tooltip,
+body.bm-dashboard-dark .tooltip-inner {
+  background-color: #3d3d3d !important;
+  color: #ffffff !important;
+}
+
+/* Container backgrounds */
+body.dark-mode .container,
+body.dark-mode .container-fluid,
+body.bm-dashboard-dark .container,
+body.bm-dashboard-dark .container-fluid {
+  background-color: transparent !important;
+}
+
+/* Row backgrounds */
+body.dark-mode .row,
+body.dark-mode .col,
+body.dark-mode [class*="col-"],
+body.bm-dashboard-dark .row,
+body.bm-dashboard-dark .col,
+body.bm-dashboard-dark [class*="col-"] {
+  background-color: transparent !important;
+}
+
+/* Dark Mode Additional Enhancements */
+body.dark-mode .Box,
+body.bm-dashboard-dark .Box {
+  background: #1a1a1a !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+body.dark-mode .BuildingTitle,
+body.bm-dashboard-dark .BuildingTitle {
+  color: #ffffff !important;
+  border-bottom-color: #4dabf7;
+}
+
+body.dark-mode .PageViewContainer,
+body.bm-dashboard-dark .PageViewContainer {
+  background-color: #0a0a0a;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .PageViewContainer {
+    padding: 1rem 0.5rem;
+  }
+  
+  .Box {
+    padding: 1rem;
+  }
+  
+  .BuildingTitle {
+    font-size: 1.5rem;
+  }
+  
+  .tableWrapper {
+    border-radius: 6px;
+  }
+  
+  .tableWrapper tbody td,
+  .BuildingTableHeaderLine th {
+    padding: 0.75rem 0.5rem;
+    font-size: 0.85rem;
+  }
 }

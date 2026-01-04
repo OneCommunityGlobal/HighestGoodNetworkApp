@@ -8,9 +8,54 @@ import styles from './Equipments.module.css';
 function EquipmentsInputs({ equipment, setEquipment, project, setProject }) {
   const dispatch = useDispatch();
   const projects = useSelector(state => state.bmProjects);
-  const [formattedProjects, setFormattedProjects] = useState([]); // For React-Select
-  const [formattedEquipments, setFormattedEquipments] = useState([]); // For React-Select
+  const darkMode = useSelector(state => state.theme.darkMode);
+  const [formattedProjects, setFormattedProjects] = useState([]);
+  const [formattedEquipments, setFormattedEquipments] = useState([]);
   const equipments = useSelector(state => state.bmEquipments.equipmentslist);
+
+  // Custom styles for react-select in dark mode
+  const customSelectStyles = {
+    control: provided => ({
+      ...provided,
+      backgroundColor: darkMode ? '#2d2d2d' : '#ffffff',
+      borderColor: darkMode ? '#404040' : '#ced4da',
+      color: darkMode ? '#ffffff' : '#000000',
+      '&:hover': {
+        borderColor: darkMode ? '#4dabf7' : '#80bdff',
+      },
+    }),
+    menu: provided => ({
+      ...provided,
+      backgroundColor: darkMode ? '#2d2d2d' : '#ffffff',
+      border: darkMode ? '1px solid #404040' : '1px solid #ced4da',
+    }),
+    option: (provided, state) => ({
+      ...provided,
+      backgroundColor: state.isFocused
+        ? darkMode
+          ? '#3d3d3d'
+          : '#f8f9fa'
+        : darkMode
+        ? '#2d2d2d'
+        : '#ffffff',
+      color: darkMode ? '#ffffff' : '#000000',
+      '&:hover': {
+        backgroundColor: darkMode ? '#3d3d3d' : '#e9ecef',
+      },
+    }),
+    singleValue: provided => ({
+      ...provided,
+      color: darkMode ? '#ffffff' : '#000000',
+    }),
+    input: provided => ({
+      ...provided,
+      color: darkMode ? '#ffffff' : '#000000',
+    }),
+    placeholder: provided => ({
+      ...provided,
+      color: darkMode ? '#888888' : '#6c757d',
+    }),
+  };
 
   useEffect(() => {
     dispatch(fetchBMProjects());
@@ -72,6 +117,7 @@ function EquipmentsInputs({ equipment, setEquipment, project, setProject }) {
                   options={formattedProjects}
                   value={project}
                   defaultValue={{ label: 'All Projects', value: '0' }}
+                  styles={customSelectStyles}
                 />
               </Col>
             </Row>
@@ -88,6 +134,7 @@ function EquipmentsInputs({ equipment, setEquipment, project, setProject }) {
                   options={formattedEquipments}
                   value={equipment}
                   defaultValue={{ label: 'All Equipments', value: '0' }}
+                  styles={customSelectStyles}
                 />
               </Col>
             </Row>
