@@ -122,52 +122,6 @@ const projectStatusButtons = [
   },
 ];
 
-export function WeeklyProjectSummaryContent() {
-  const dispatch = useDispatch();
-  const materials = useSelector(state => state.materials?.materialslist || []);
-  const [openSections, setOpenSections] = useState({});
-
-  const getColorScheme = percentage => {
-    if (percentage === '-') return 'neutral';
-    if (percentage > 0) return 'positive';
-    if (percentage < 0) return 'negative';
-    return 'neutral';
-  };
-
-  const colorScheme = getColorScheme(monthOverMonth);
-
-  const titleClass = title.replace(/\s+/g, '-').toLowerCase();
-
-  return (
-    <div
-      className={`financial-card ${colorScheme} custom-box-shadow financial-card-background-${titleClass}`}
-      onMouseEnter={() => setShowTooltip(true)}
-      onMouseLeave={() => setShowTooltip(false)}
-    >
-      <div className="financial-card-title">{title}</div>
-      <div className={`financial-card-ellipse financial-card-ellipse-${titleClass}`} />
-      <div className="financial-card-value">{value === '-' ? '-' : value.toLocaleString()}</div>
-      <div className={`financial-card-month-over-month ${colorScheme}`}>
-        {monthOverMonth === '-'
-          ? '-'
-          : `${monthOverMonth > 0 ? '+' : ''}${monthOverMonth}% month over month`}
-      </div>
-
-      {/* Tooltip for Additional Info */}
-      {showTooltip && Object.keys(additionalInfo).length > 0 && (
-        <div className="financial-card-tooltip">
-          {Object.entries(additionalInfo).map(([key]) => (
-            <div key={key} className="financial-card-tooltip-item">
-              <span className="tooltip-key">{key}:</span>
-              <span className="tooltip-value">{value}</span>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
 function WeeklyProjectSummary() {
   const dispatch = useDispatch();
   const materials = useSelector(state => state.materials?.materialslist || []);
@@ -205,26 +159,25 @@ function WeeklyProjectSummary() {
         key: 'Project Status',
         className: 'full',
         content: (
-          <div className={`${styles.projectStatusGrid}`}>
+          <div className={styles.projectStatusGrid}>
             {projectStatusButtons.map(button => {
               const uniqueId = uuidv4();
               return (
                 <div
                   key={uniqueId}
                   className={`${styles.weeklyProjectSummaryCard} ${styles.statusCard}`}
-                  style={{ backgroundColor: button.bgColor }} // Dynamic Background
+                  style={{ backgroundColor: button.bgColor }}
                 >
-                  <div className={`${styles.weeklyCardTitle}`}>{button.title}</div>
+                  <div className={styles.weeklyCardTitle}>{button.title}</div>
+
                   <div
-                    className={`${styles.weeklyStatusButton}`}
-                    style={{ backgroundColor: button.buttonColor }} // Dynamic Oval Color
+                    className={styles.weeklyStatusButton}
+                    style={{ backgroundColor: button.buttonColor }}
                   >
-                    <span className={`${styles.weeklyStatusValue}`}>{button.value}</span>
+                    <span className={styles.weeklyStatusValue}>{button.value}</span>
                   </div>
-                  <div
-                    className="weekly-status-change"
-                    style={{ color: button.textColor }} // Dynamic Change Color
-                  >
+
+                  <div className={styles.weeklyStatusChange} style={{ color: button.textColor }}>
                     {button.change}
                   </div>
                 </div>
@@ -233,7 +186,6 @@ function WeeklyProjectSummary() {
           </div>
         ),
       },
-      // New Issues Breakdown card
       {
         title: 'Issues Breakdown',
         key: 'Issues Breakdown',
@@ -303,7 +255,10 @@ function WeeklyProjectSummary() {
         className: 'half',
         content: [
           <MostFrequentKeywords key="frequent-tags-card" />,
-          <div key="injury-chart" className="weekly-project-summary-card normal-card">
+          <div
+            key="injury-chart"
+            className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+          >
             <InjuryCategoryBarChart />
           </div>,
         ],
@@ -314,13 +269,21 @@ function WeeklyProjectSummary() {
         className: 'large',
         content: (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
-            <div className="weekly-project-summary-card financial-small">📊 Card</div>
-            <div className="weekly-project-summary-card financial-small financial-chart">
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.financialSmall}`}>
+              📊 Card
+            </div>
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.financialSmall}`}>
               <ExpenseBarChart />
             </div>
-            <div className="weekly-project-summary-card financial-small">📊 Card</div>
-            <div className="weekly-project-summary-card financial-small">📊 Card</div>
-            <div className="weekly-project-summary-card financial-big">📊 Big Card</div>
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.financialSmall}`}>
+              📊 Card
+            </div>
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.financialSmall}`}>
+              📊 Card
+            </div>
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.fullCard}`}>
+              📊 Big Card
+            </div>
           </div>
         ),
       },
@@ -414,7 +377,6 @@ function WeeklyProjectSummary() {
 
       const clonedContent = contentElement.cloneNode(true);
 
-      // Remove buttons and controls not needed in PDF
       clonedContent
         .querySelectorAll(
           'button, .weekly-project-summary-dropdown-icon, .no-print, .weekly-summary-header-controls',
@@ -423,7 +385,7 @@ function WeeklyProjectSummary() {
 
       const styleElem = document.createElement('style');
       styleElem.textContent = `
-          img, svg {
+        img, svg {
           height: auto !important;
           page-break-inside: avoid !important;
         }
@@ -461,9 +423,7 @@ function WeeklyProjectSummary() {
       const now = new Date();
       const fileName = `weekly-project-summary-${now.toISOString().slice(0, 10)}.pdf`;
 
-      // Save the PDF
       pdf.save(fileName);
-
       document.body.removeChild(pdfContainer);
     } catch (err) {
       // eslint-disable-next-line no-console
@@ -474,10 +434,14 @@ function WeeklyProjectSummary() {
   };
 
   return (
-    <div className={`weekly-project-summary-container ${darkMode ? 'dark-mode' : ''}`}>
+    <div
+      className={`weekly-project-summary-container ${styles.weeklyProjectSummaryContainer} ${
+        darkMode ? styles.darkMode : ''
+      }`}
+    >
       <WeeklyProjectSummaryHeader handleSaveAsPDF={handleSaveAsPDF} />
-      <div className={`${styles.weeklyProjectSummaryDashboardContainer}`}>
-        <div className={`${styles.weeklyProjectSummaryDashboardGrid}`}>
+      <div className={styles.weeklyProjectSummaryDashboardContainer}>
+        <div className={styles.weeklyProjectSummaryDashboardGrid}>
           {sections.map(({ title, key, className, content }) => (
             <div
               key={key}
@@ -491,9 +455,7 @@ function WeeklyProjectSummary() {
                 {title} <span>{openSections[key] ? '∧' : '∨'}</span>
               </button>
               {openSections[key] && (
-                <div className={`${styles.weeklyProjectSummaryDashboardCategoryContent}`}>
-                  {content}
-                </div>
+                <div className={styles.weeklyProjectSummaryDashboardCategoryContent}>{content}</div>
               )}
             </div>
           ))}

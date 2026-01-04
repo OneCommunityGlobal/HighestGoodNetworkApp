@@ -12,9 +12,13 @@
   padding: 0;
 }
 
+/* MERGED: was duplicated */
 .weeklyProjectSummaryDashboardContainer {
-  width: 100%;
+  width: 95%;
+  margin: auto;
+  padding: 20px;
   background: var(--bg-color);
+  color: var(--text-color);
 }
 
 .weeklyProjectSummaryHeaderWrapper {
@@ -73,7 +77,7 @@
   background-color: var(--section-title-hover) !important;
 }
 
-/* Share Button */
+/* Share Button (MERGED: was duplicated) */
 .weeklySummaryShareBtn {
   background-color: var(--button-bg) !important;
   color: white;
@@ -88,14 +92,6 @@
 }
 
 /* ---------------- DASHBOARD ---------------- */
-.weeklyProjectSummaryDashboardContainer {
-  width: 95%;
-  margin: auto;
-  padding: 20px;
-  background: var(--bg-color);
-  color: var(--text-color);
-}
-
 .weeklyProjectSummaryDashboardGrid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -120,13 +116,6 @@
 }
 
 /* ---------------- CARDS ---------------- */
-.projectStatusGrid {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  grid-template-rows: repeat(2, auto);
-  gap: 10px;
-}
-
 .weeklyProjectSummaryCard {
   background: var(--card-bg);
   padding: 10px;
@@ -135,7 +124,7 @@
   box-shadow: 0 2px 5px var(--card-shadow);
 }
 
-.darkMode .weeklyProjectSummaryCard {
+.dark-mode .weeklyProjectSummaryCard {
   background: var(--card-bg);
   box-shadow: 0 2px 5px rgba(255, 255, 255, 0.1);
 }
@@ -146,7 +135,6 @@
   margin-top: 20px;
   grid-column: span 1;
 }
-
 
 .weekly-project-summary-card.financial-big {
   grid-column: span 4;
@@ -165,7 +153,6 @@
   margin: 0;
   font-weight: normal;
   font-size: 24px;
-
 }
 
 .fullCard {
@@ -253,7 +240,7 @@
 }
 
 /* ---------------- DARK MODE STYLES ---------------- */
-.darkMode {
+.dark-mode {
   --bg-color: #1b2a41;
   --text-color: #ffffff;
   --card-bg: #2b3e59;
@@ -265,38 +252,44 @@
   --button-hover: #f5b13a;
 }
 
-.darkMode .weeklyProjectSummaryDashboardCategoryTitle {
+.dark-mode .weeklyProjectSummaryDashboardCategoryTitle {
   color: #ffffff;
   background: #2d4059;
 }
 
-.darkMode .weeklyProjectSummaryDashboardCategoryTitle:hover {
+.dark-mode .weeklyProjectSummaryDashboardCategoryTitle:hover {
   background: #3a506b;
 }
 
-.darkMode .weeklyProjectSummaryDashboardCategoryContent {
+.dark-mode .weeklyProjectSummaryDashboardCategoryContent {
   background-color: var(--section-bg);
   border-top: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.darkMode .weeklySummaryHeaderContainer {
+.dark-mode .weeklySummaryHeaderContainer {
   background: var(--section-bg);
   color: var(--text-color);
 }
 
-.weeklySummaryShareBtn {
-  background-color: var(--button-bg) !important;
+/* 
+   - In dark mode -> make Project Status texts visible (white)
+   - In light mode -> remain black (existing rules keep it black)
+*/
+.dark-mode .weeklyCardTitle,
+.dark-mode .weeklyStatusValue,
+.dark-mode .weekly-status-change {
+  color: #ffffff !important;
 }
 
-.weeklySummaryShareBtn:hover {
-  background-color: var(--button-hover) !important;
-}
-
-/* First, set a max-height and make it scrollable */
+/* ---------------- TOOLTIP (MERGED: was duplicated) ---------------- */
 .quantityOfMaterialsUsedChartTooltip {
   max-height: 80vh !important; /* Limit to 80% of viewport height */
   overflow-y: auto !important; /* Enable vertical scrolling */
   padding-right: 15px !important; /* Add some padding for the scrollbar */
+
+  /* Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.3) rgba(0, 0, 0, 0.1);
 }
 
 /* Style the scrollbar for better visibility */
@@ -314,24 +307,19 @@
   border-radius: 4px;
 }
 
-/* Support for Firefox */
-.quantityOfMaterialsUsedChartTooltip {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(0, 0, 0, 0.3) rgba(0, 0, 0, 0.1);
-}
-
 /* Additional adjustments for dark mode if needed */
-.darkMode .quantityOfMaterialsUsedChartTooltip::-webkit-scrollbar-track {
+.dark-mode .quantityOfMaterialsUsedChartTooltip::-webkit-scrollbar-track {
   background: rgba(255, 255, 255, 0.1);
 }
 
-.darkMode .quantityOfMaterialsUsedChartTooltip::-webkit-scrollbar-thumb {
+.dark-mode .quantityOfMaterialsUsedChartTooltip::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.3);
 }
 
-.darkMode .quantityOfMaterialsUsedChartTooltip {
+.dark-mode .quantityOfMaterialsUsedChartTooltip {
   scrollbar-color: rgba(255, 255, 255, 0.3) rgba(255, 255, 255, 0.1);
 }
+
 /* ---------------- RESPONSIVE DESIGN ---------------- */
 
 /* Medium Screens - Wrap Items */
@@ -409,6 +397,7 @@
 }
 
 /* ---------------- RESPONSIVE GRID LAYOUT ---------------- */
+/* MERGED: projectStatusGrid was duplicated, keep only this one */
 .projectStatusGrid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
