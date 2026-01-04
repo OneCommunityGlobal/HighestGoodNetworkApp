@@ -1,9 +1,60 @@
 import { useEffect } from 'react';
 import { MultiSelect } from 'react-multi-select-component';
+import Select from 'react-select';
 import { Button, Row, Col, FormGroup } from 'reactstrap';
 import mainStyles from './WeeklySummariesReport.module.css';
 import WeeklySummariesToggleFilter from './WeeklySummariesToggleFilter.jsx';
 import { setField, removeItemFromField } from '~/utils/stateHelper';
+
+const getDarkSelectStyles = (darkMode, warning = false) => {
+  const controlBackground = darkMode ? '#0b1422' : '#ffffff';
+  const textColor = darkMode ? '#f5f7fb' : '#111827';
+
+  const focusedBorderColor = darkMode ? '#60a5fa' : '#2563eb';
+  const normalBorderColor = darkMode ? '#334155' : '#ced4da';
+  const warningBorderColor = '#e22a2a';
+
+  const getBorderColor = isFocused => {
+    if (warning) return warningBorderColor;
+    return isFocused ? focusedBorderColor : normalBorderColor;
+  };
+
+  const focusedOptionBg = darkMode ? '#16233a' : '#eee';
+  const normalOptionBg = darkMode ? '#0b1422' : '#ffffff';
+
+  return {
+    menuPortal: base => ({ ...base, zIndex: 9999 }),
+
+    control: (base, state) => ({
+      ...base,
+      backgroundColor: controlBackground,
+      borderColor: getBorderColor(state.isFocused),
+      color: textColor,
+      boxShadow: 'none',
+    }),
+
+    menu: base => ({
+      ...base,
+      backgroundColor: controlBackground,
+    }),
+
+    option: (base, state) => ({
+      ...base,
+      backgroundColor: state.isFocused ? focusedOptionBg : normalOptionBg,
+      color: textColor,
+    }),
+
+    multiValue: base => ({
+      ...base,
+      backgroundColor: darkMode ? '#1f2a44' : '#e5e7eb',
+    }),
+
+    multiValueLabel: base => ({
+      ...base,
+      color: textColor,
+    }),
+  };
+};
 
 export default function FilterEditForm({
   state,
@@ -60,23 +111,13 @@ export default function FilterEditForm({
           <div>
             <b>Select Team Code</b>
           </div>
-          <MultiSelect
-            className={`top-select ${mainStyles['report-multi-select-filter']} ${
-              mainStyles.textDark
-            } 
-                  ${darkMode ? 'dark-mode' : ''} ${
-              teamCodeWarningUsers.length > 0 ? 'warning-border' : ''
-            }`}
-            options={teamCodes.map(item => {
-              const [code, count] = item.label.split(' (');
-              return {
-                ...item,
-                label: `${code.padEnd(10, ' ')} (${count}`,
-              };
-            })}
+          <Select
+            isMulti
+            options={teamCodes}
             value={state.selectedCodes}
-            onChange={e => setField(setState, 'selectedCodes', e)}
-            labelledBy="Select"
+            onChange={value => setState({ ...state, selectedCodes: value })}
+            menuPortalTarget={document.body}
+            styles={getDarkSelectStyles(darkMode, teamCodeWarningUsers?.length > 0)}
           />
         </Col>
         <Col md={6} sm={12}>
@@ -123,13 +164,13 @@ export default function FilterEditForm({
           <div>
             <b>Select Color</b>
           </div>
-          <MultiSelect
-            className={`report-multi-select-filter second-select ${mainStyles.textDark} ${
-              darkMode ? 'dark-mode' : ''
-            }`}
+          <Select
+            isMulti
             options={colorOptions}
             value={state.selectedColors}
-            onChange={e => setField(setState, 'selectedColors', e)}
+            onChange={value => setState({ ...state, selectedColors: value })}
+            menuPortalTarget={document.body}
+            styles={getDarkSelectStyles(darkMode)}
           />
         </Col>
         <Col md={6} sm={12}>
@@ -177,12 +218,12 @@ export default function FilterEditForm({
             <b>Select Extra Members</b>
           </div>
           <MultiSelect
-            className={`report-multi-select-filter ${mainStyles.textDark} ${
-              darkMode ? 'dark-mode' : ''
+            className={`${mainStyles.extraMembersSelect} ${
+              darkMode ? mainStyles.extraMembersDark : ''
             }`}
             options={state.membersFromUnselectedTeam}
             value={state.selectedExtraMembers}
-            onChange={e => setField(setState, 'selectedExtraMembers', e)}
+            onChange={value => setState({ ...state, selectedExtraMembers: value })}
           />
         </Col>
         <Col md={6} sm={12}>

@@ -13,9 +13,9 @@
 }
 /* Normal (no hover) */
 .btn--dark-sea-green {
-  background-color: #cfe0cf !important;  /* normal look (light green) */
-  color: #ffffff !important;
-  border: 1px solid #9db59d !important;
+  background-color: #3f7f6f;   /* darker sea green */
+  color: #ffffff;
+  border: 1px solid #2f6658;
 }
 
 /* Hover = sea green */
@@ -99,11 +99,7 @@
   color: #111827;
 }
 
-.extraMembersDark :global(.dropdown-container) {
-  border: 1px solid #475569;
-  background: #0c1626;  /* separate bg */
-  color: #f5f7fb;
-}
+
 
 .extraMembersDark :global(.dropdown-content),
 .extraMembersDark :global(.options) {
@@ -111,11 +107,6 @@
   color: #f5f7fb;
 }
 
-.extraMembersDark :global(.search input) {
-  background: #0a1220 !important;
-  color: #f5f7fb !important;
-  border: 1px solid #475569 !important;
-}
 
 .switchToggleLabel{
   display: block;
@@ -535,4 +526,64 @@
 
 .saved-filter-button.active-filter .saved-filter-delete-btn:hover {
   color: #ffc107 !important;
+}
+
+
+/* Wrapper just for sizing */
+.extraMembersSelect {
+  width: 100%;
+}
+
+/* ========================= */
+/* DARK MODE – MultiSelect */
+/* ========================= */
+
+.extraMembersDark :global(.rmsc) {
+  background-color: #0f1b2b;
+  color: #f5f7fb;
+}
+
+
+/* dropdown panel */
+.extraMembersDark :global(.dropdown-content) {
+  background-color: #0b1422;
+  border: 1px solid #334155;
+}
+
+/* search box */
+.extraMembersDark :global(.search input) {
+  background-color: #0b1422 !important;
+  color: #f5f7fb !important;
+  border: 1px solid #334155 !important;
+}
+
+.extraMembersDark :global(.search input::placeholder) {
+  color: #94a3b8;
+}
+
+/* option list */
+.extraMembersDark :global(.options) {
+  background-color: #0b1422;
+}
+
+/* each row */
+.extraMembersDark :global(.select-item) {
+  color: #f5f7fb;
+}
+
+/* HOVER (this fixes your white row) */
+.extraMembersDark :global(.select-item:hover) {
+  background-color: #16233a !important;
+}
+
+/* SELECTED row */
+.extraMembersDark :global(.select-item.selected) {
+  background-color: #1f2a44 !important;
+}
+
+/* CLOSED input */
+.extraMembersDark :global(.dropdown-container) {
+  background-color: #0b1422 !important;
+  border: 1px solid #334155 !important;
+  color: #f5f7fb !important;
 }

@@ -2051,7 +2051,7 @@ const WeeklySummariesReport = props => {
                     ) : (
                       <Row>
                         <Col>
-                          <Alert color="info">No data available for this tab.</Alert>
+                          <Alert color="#000">No data available for this tab.</Alert>
                         </Col>
                       </Row>
                     )}

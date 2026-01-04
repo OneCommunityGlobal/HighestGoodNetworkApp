@@ -40,6 +40,103 @@ const defaultState = {
   selectedExtraMembersInvalid: [],
 };
 
+const mapSelectedCodes = (filter, teamCodes) => {
+  const selected = teamCodes
+    .filter(code => filter.selectedCodes.has(code.value))
+    .map(item => {
+      const [code, count] = item.label.split(' (');
+      return { ...item, label: `${code.padEnd(10, ' ')} (${count}` };
+    });
+
+  const selectedSet = new Set(selected.map(item => item.value));
+
+  const invalid = [...filter.selectedCodes]
+    .filter(item => !selectedSet.has(item))
+    .map(item => ({
+      label: `${item.padEnd(10, ' ')} (0)`,
+      value: item,
+      _ids: [],
+    }));
+
+  return { selected, invalid };
+};
+
+const mapSelectedColors = (filter, colorOptions) => {
+  const selected = colorOptions.filter(color => filter.selectedColors.has(color.value));
+
+  const selectedSet = new Set(selected.map(item => item.value));
+
+  const invalid = [...filter.selectedColors]
+    .filter(item => !selectedSet.has(item))
+    .map(item => ({ label: item, value: item }));
+
+  return { selected, invalid };
+};
+
+const mapSelectedMembers = (filter, summaries, memberDict) => {
+  const selected = summaries
+    .filter(summary => filter.selectedExtraMembers.has(summary._id))
+    .map(summary => ({
+      label: `${summary.firstName} ${summary.lastName}`,
+      value: summary._id,
+      role: summary.role,
+    }));
+
+  const selectedSet = new Set(selected.map(item => item.value));
+
+  const invalid = [...filter.selectedExtraMembers]
+    .filter(item => !selectedSet.has(item))
+    .map(item => ({
+      label: item in memberDict ? memberDict[item] : 'N/A',
+      value: item,
+      role: '',
+    }));
+
+  return { selected, invalid };
+};
+
+const isValidFilterName = name => name !== '' && name.length <= 7;
+
+const buildUpdatePayload = state => ({
+  filterName: state.filterName,
+  selectedCodes: [...state.selectedCodes, ...state.selectedCodesInvalid].map(code => code.value),
+  selectedColors: [...state.selectedColors, ...state.selectedColorsInvalid].map(
+    color => color.value,
+  ),
+  selectedExtraMembers: [...state.selectedExtraMembers, ...state.selectedExtraMembersInvalid].map(
+    member => member.value,
+  ),
+  selectedTrophies: state.selectedTrophies,
+  selectedSpecialColors: state.selectedSpecialColors,
+  selectedBioStatus: state.selectedBioStatus,
+  selectedOverTime: state.selectedOverTime,
+});
+
+const updateFilterApi = async (filterId, payload) => {
+  const res = await axios.patch(ENDPOINTS.WEEKLY_SUMMARIES_FILTER_BY_ID(filterId), payload);
+
+  if (res.status < 200 || res.status >= 300) {
+    throw new Error(`Status ${res.status}`);
+  }
+};
+
+const updateLocalSelectedFilter = (setSelectedFilter, prev, payload) => {
+  setSelectedFilter({
+    ...prev,
+    label: payload.filterName,
+    filterData: {
+      filterName: payload.filterName,
+      selectedCodes: new Set(payload.selectedCodes),
+      selectedColors: new Set(payload.selectedColors),
+      selectedExtraMembers: new Set(payload.selectedExtraMembers),
+      selectedTrophies: payload.selectedTrophies,
+      selectedSpecialColors: payload.selectedSpecialColors,
+      selectedBioStatus: payload.selectedBioStatus,
+      selectedOverTime: payload.selectedOverTime,
+    },
+  });
+};
+
 export default function UpdateFilterModal({
   isOpen,
   toggle,
@@ -63,6 +160,18 @@ export default function UpdateFilterModal({
 
   const deleteModalToggle = () => setDeleteModalOpen(!deleteModalOpen);
 
+  const focusedOptionBg = darkMode ? '#16233a' : '#eee';
+  const normalOptionBg = darkMode ? '#0b1422' : '#ffffff';
+  const optionTextColor = darkMode ? '#f5f7fb' : '#111827';
+
+  const inputBackgroundColor = update ? '#0b1422' : '#1f2937';
+
+  const darkInputStyle = {
+    backgroundColor: inputBackgroundColor,
+    color: '#f5f7fb',
+    borderColor: '#334155',
+  };
+
   useEffect(() => {
     if (isOpen) {
       setSelectedFilter(null); // reset state whenever modal opens
@@ -73,141 +182,72 @@ export default function UpdateFilterModal({
     setField(setState, 'filterName', value);
   };
 
-  const handleSelectedFilter = e => {
-    const filterChoice = e;
+  const handleSelectedFilter = filterChoice => {
     setSelectedFilter(filterChoice);
     setUpdate(false);
+
     const filter = filterChoice.filterData;
-    const selectedCodesChoice = teamCodes
-      .filter(code => filter.selectedCodes.has(code.value))
-      .map(item => {
-        const [code, count] = item.label.split(' (');
-        return {
-          ...item,
-          label: `${code.padEnd(10, ' ')} (${count}`,
-        };
-      });
-    const selectedCodesSet = new Set(selectedCodesChoice.map(item => item.value));
 
-    const selectedCodesInvalidChoice = [...filter.selectedCodes]
-      .filter(item => !selectedCodesSet.has(item))
-      .map(item => {
-        return {
-          label: `${item.padEnd(10, ' ')} (0)`,
-          value: item,
-          _ids: [],
-        };
-      });
-
-    const selectedColorsChoice = colorOptions.filter(color =>
-      filter.selectedColors.has(color.value),
+    const { selected: selectedCodes, invalid: selectedCodesInvalid } = mapSelectedCodes(
+      filter,
+      teamCodes,
     );
-    const selectedColorsSet = new Set(selectedColorsChoice.map(item => item.value));
-    const selectedColorsInvalidChoice = [...filter.selectedColors]
-      .filter(item => !selectedColorsSet.has(item))
-      .map(item => {
-        return {
-          label: item,
-          value: item,
-        };
-      });
 
-    const selectedExtraMembersChoice = summaries
-      .filter(summary => filter.selectedExtraMembers.has(summary._id))
-      .map(summary => ({
-        label: `${summary.firstName} ${summary.lastName}`,
-        value: summary._id,
-        role: summary.role,
-      }));
+    const { selected: selectedColors, invalid: selectedColorsInvalid } = mapSelectedColors(
+      filter,
+      colorOptions,
+    );
 
-    const selectedExtraMembersSet = new Set(selectedExtraMembersChoice.map(item => item.value));
-    const selectedExtraMembersInvalidChoice = [...filter.selectedExtraMembers]
-      .filter(item => !selectedExtraMembersSet.has(item))
-      .map(item => {
-        return {
-          label: item in memberDict ? memberDict[item] : 'N/A',
-          value: item,
-          role: '',
-        };
-      });
+    const {
+      selected: selectedExtraMembers,
+      invalid: selectedExtraMembersInvalid,
+    } = mapSelectedMembers(filter, summaries, memberDict);
 
-    setState(prevState => ({
-      ...prevState,
+    setState(prev => ({
+      ...prev,
       filterName: filterChoice.label,
-      selectedCodes: selectedCodesChoice,
-      selectedColors: selectedColorsChoice,
-      selectedExtraMembers: selectedExtraMembersChoice,
+      selectedCodes,
+      selectedColors,
+      selectedExtraMembers,
       selectedTrophies: filter.selectedTrophies,
       selectedSpecialColors: filter.selectedSpecialColors,
       selectedBioStatus: filter.selectedBioStatus,
       selectedOverTime: filter.selectedOverTime,
-      selectedCodesInvalid: selectedCodesInvalidChoice,
-      selectedColorsInvalid: selectedColorsInvalidChoice,
-      selectedExtraMembersInvalid: selectedExtraMembersInvalidChoice,
+      selectedCodesInvalid,
+      selectedColorsInvalid,
+      selectedExtraMembersInvalid,
     }));
   };
 
   const handleSubmit = async e => {
     e.preventDefault();
-    if (state.filterName !== '' && state.filterName.length <= 7) {
-      if (update && state.selectedFilter !== null) {
-        setIsProcessing(true);
-        // No errors -> submit form
-        const data = {
-          filterName: state.filterName,
-          selectedCodes: [...state.selectedCodes, ...state.selectedCodesInvalid].map(
-            code => code.value,
-          ),
-          selectedColors: [...state.selectedColors, ...state.selectedColorsInvalid].map(
-            color => color.value,
-          ),
-          selectedExtraMembers: [
-            ...state.selectedExtraMembers,
-            ...state.selectedExtraMembersInvalid,
-          ].map(member => member.value),
-          selectedTrophies: state.selectedTrophies,
-          selectedSpecialColors: state.selectedSpecialColors,
-          selectedBioStatus: state.selectedBioStatus,
-          selectedOverTime: state.selectedOverTime,
-        };
 
-        try {
-          const res = await axios.patch(
-            ENDPOINTS.WEEKLY_SUMMARIES_FILTER_BY_ID(selectedFilter.value),
-            data,
-          );
-          if (res.status < 200 || res.status >= 300) {
-            toast.error(`Failed to save new filter. Status ${res.status}`);
-          } else {
-            toast.success(`Successfully update filter ${selectedFilter.label}`);
-          }
-          await refetchFilters();
-        } catch (error) {
-          toast.error(`Failed to save new filter. Error ${error}`);
-        }
+    if (!isValidFilterName(state.filterName)) {
+      toast.error('Invalid filter name! Filter name must be from 1-7 characters.');
+      return;
+    }
 
-        setSelectedFilter(prev => ({
-          ...prev,
-          label: data.filterName,
-          filterData: {
-            filterName: data.filterName,
-            selectedCodes: new Set(data.selectedCodes),
-            selectedColors: new Set(data.selectedColors),
-            selectedExtraMembers: new Set(data.selectedExtraMembers),
-            selectedTrophies: data.selectedTrophies,
-            selectedSpecialColors: data.selectedSpecialColors,
-            selectedBioStatus: data.selectedBioStatus,
-            selectedOverTime: data.selectedOverTime,
-          },
-        }));
+    if (!update || !selectedFilter) {
+      toast.error('Please select a filter!');
+      return;
+    }
 
-        setIsProcessing(false);
-        setUpdate(false);
-      } else {
-        toast.error('Please select a filter!');
-      }
-    } else {
-      toast.error(`Invalid filter name! Filter name must be from 1-7 characters.`);
+    setIsProcessing(true);
+
+    const payload = buildUpdatePayload(state);
+
+    try {
+      await updateFilterApi(selectedFilter.value, payload);
+      toast.success(`Successfully update filter ${selectedFilter.label}`);
+      await refetchFilters();
+
+      updateLocalSelectedFilter(setSelectedFilter, selectedFilter, payload);
+
+      setUpdate(false);
+    } catch (error) {
+      toast.error(`Failed to save new filter. Error ${error}`);
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -284,10 +324,32 @@ export default function UpdateFilterModal({
         size="lg"
         isOpen={isOpen}
         toggle={toggle}
-        className={`${darkMode ? mainStyles.darkModal : ''}`}
+        contentClassName={darkMode ? mainStyles.darkModal : ''}
       >
-        <ModalHeader toggle={toggle}>Update or Delete Filter</ModalHeader>
-        <ModalBody>
+        <ModalHeader
+          toggle={toggle}
+          style={
+            darkMode
+              ? {
+                  backgroundColor: '#16233a',
+                  color: '#f5f7fb',
+                  borderBottom: '1px solid #334155',
+                }
+              : {}
+          }
+        >
+          Update or Delete Filter
+        </ModalHeader>
+        <ModalBody
+          style={
+            darkMode
+              ? {
+                  backgroundColor: '#0f1b2b',
+                  color: '#f5f7fb',
+                }
+              : {}
+          }
+        >
           <Form>
             <Label for="filterOverride" className={`${darkMode ? mainStyles.textWhite : ''}`}>
               Select a Filter
@@ -296,10 +358,40 @@ export default function UpdateFilterModal({
               id="filterOverride"
               options={filters}
               value={selectedFilter}
-              onChange={e => handleSelectedFilter(e)}
-              className={`top-select ${mainStyles.textDark} ${
-                !selectedFilter ? `${mainStyles.errorSelect}` : ''
-              }`}
+              onChange={handleSelectedFilter}
+              menuPortalTarget={document.body}
+              styles={{
+                menuPortal: base => ({ ...base, zIndex: 9999 }),
+
+                control: base => ({
+                  ...base,
+                  backgroundColor: darkMode ? '#0b1422' : '#ffffff',
+                  borderColor: darkMode ? '#334155' : '#ced4da',
+                  color: darkMode ? '#f5f7fb' : '#111827',
+                  boxShadow: 'none',
+                }),
+
+                menu: base => ({
+                  ...base,
+                  backgroundColor: darkMode ? '#0b1422' : '#ffffff',
+                }),
+
+                option: (base, state) => ({
+                  ...base,
+                  backgroundColor: state.isFocused ? focusedOptionBg : normalOptionBg,
+                  color: optionTextColor,
+                }),
+
+                singleValue: base => ({
+                  ...base,
+                  color: darkMode ? '#f5f7fb' : '#111827',
+                }),
+
+                placeholder: base => ({
+                  ...base,
+                  color: darkMode ? '#94a3b8' : '#6b7280',
+                }),
+              }}
             />
             {selectedFilter && (
               <FormGroup>
@@ -343,6 +435,7 @@ export default function UpdateFilterModal({
                   invalid={!state.filterName}
                   maxLength={7}
                   disabled={!update}
+                  style={darkMode ? darkInputStyle : {}}
                 />
                 {state.filterName === '' && (
                   <div className={`${darkMode ? mainStyles.errorTextDark : mainStyles.errorText}`}>
@@ -374,7 +467,16 @@ export default function UpdateFilterModal({
             )}
           </Form>
         </ModalBody>
-        <ModalFooter>
+        <ModalFooter
+          style={
+            darkMode
+              ? {
+                  backgroundColor: '#16233a',
+                  borderTop: '1px solid #334155',
+                }
+              : {}
+          }
+        >
           <Button color="secondary" onClick={toggle}>
             Close
           </Button>

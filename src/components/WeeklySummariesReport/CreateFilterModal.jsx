@@ -111,10 +111,32 @@ function CreateFilterModal({
       size="lg"
       isOpen={isOpen}
       toggle={toggle}
-      className={`${darkMode ? mainStyles.darkModal : ''}`}
+      contentClassName={darkMode ? mainStyles.darkModal : ''}
     >
-      <ModalHeader toggle={toggle}>Create A New Filter or Override Existing Filter</ModalHeader>
-      <ModalBody>
+      <ModalHeader
+        toggle={toggle}
+        style={
+          darkMode
+            ? {
+                backgroundColor: '#16233a',
+                color: '#f5f7fb',
+                borderBottom: '1px solid #334155',
+              }
+            : {}
+        }
+      >
+        Create A New Filter or Override Existing Filter
+      </ModalHeader>
+      <ModalBody
+        style={
+          darkMode
+            ? {
+                backgroundColor: '#0f1b2b',
+                color: '#f5f7fb',
+              }
+            : {}
+        }
+      >
         <Form>
           <Input
             type="select"
@@ -138,10 +160,39 @@ function CreateFilterModal({
                 options={filters}
                 value={selectedFilter}
                 onChange={setSelectedFilter}
-                className={`${mainStyles.textDark} ${
-                  !selectedFilter ? `${mainStyles.errorSelect}` : ''
-                }`}
+                menuPortalTarget={document.body}
+                styles={{
+                  menuPortal: base => ({ ...base, zIndex: 9999 }),
+                  control: base => ({
+                    ...base,
+                    backgroundColor: darkMode ? '#0b1422' : '#ffffff',
+                    borderColor: darkMode ? '#334155' : '#ced4da',
+                    color: darkMode ? '#f5f7fb' : '#111827',
+                    boxShadow: 'none',
+                  }),
+                  menu: base => ({
+                    ...base,
+                    backgroundColor: darkMode ? '#0b1422' : '#ffffff',
+                    color: darkMode ? '#f5f7fb' : '#111827',
+                  }),
+                  option: (base, s) => ({
+                    ...base,
+                    backgroundColor: s.isFocused
+                      ? darkMode
+                        ? '#16233a'
+                        : '#eee'
+                      : darkMode
+                      ? '#0b1422'
+                      : '#ffffff',
+                    color: darkMode ? '#f5f7fb' : '#111827',
+                  }),
+                  singleValue: base => ({
+                    ...base,
+                    color: darkMode ? '#f5f7fb' : '#111827',
+                  }),
+                }}
               />
+
               {!selectedFilter && (
                 <div className={`${darkMode ? mainStyles.errorTextDark : mainStyles.errorText}`}>
                   Please select a filter
@@ -163,6 +214,15 @@ function CreateFilterModal({
               required
               invalid={!state.filterName}
               maxLength={7}
+              style={
+                darkMode
+                  ? {
+                      backgroundColor: '#0b1422',
+                      color: '#f5f7fb',
+                      borderColor: '#334155',
+                    }
+                  : {}
+              }
             />
             {state.filterName === '' && (
               <div className={`${darkMode ? mainStyles.errorTextDark : mainStyles.errorText}`}>
@@ -184,11 +244,44 @@ function CreateFilterModal({
           />
         </Form>
       </ModalBody>
-      <ModalFooter>
-        <Button color="primary" onClick={handleSubmit}>
+      <ModalFooter
+        style={
+          darkMode
+            ? {
+                backgroundColor: '#0b1422',
+                borderTop: '1px solid #334155',
+              }
+            : {}
+        }
+      >
+        <Button
+          color="primary"
+          onClick={handleSubmit}
+          style={
+            darkMode
+              ? {
+                  backgroundColor: '#2563eb',
+                  borderColor: '#2563eb',
+                }
+              : {}
+          }
+        >
           Save
         </Button>
-        <Button color="secondary" onClick={toggle}>
+
+        <Button
+          color="secondary"
+          onClick={toggle}
+          style={
+            darkMode
+              ? {
+                  backgroundColor: '#334155',
+                  borderColor: '#334155',
+                  color: '#f5f7fb',
+                }
+              : {}
+          }
+        >
           Cancel
         </Button>
       </ModalFooter>
