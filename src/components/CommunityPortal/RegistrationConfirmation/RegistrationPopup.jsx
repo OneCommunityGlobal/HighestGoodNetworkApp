@@ -1,44 +1,46 @@
 import { useSelector } from 'react-redux';
-import './RegistrationPopup.css';
+import styles from './RegistrationPopup.module.css';
 
 function Popup({ onClose }) {
   const darkMode = useSelector(state => state.theme.darkMode);
   return (
-    <div className="popup-overlay">
-      <div className={`popup ${darkMode ? 'popup-dark' : ''}`}>
-        <div className="popup-header">
-          <span>✅ Registration Successful!</span>
-          <button type="button" className="close-btn" onClick={onClose}>
-            ✖
-          </button>
-        </div>
-        <h2>Thank you for Registering!</h2>
-        <p>
-          You have successfully registered for the event. We have reserved your space. See you
-          there!
-        </p>
-        <div className="popup-content">
-          <strong>Event Name</strong>
-          <p className="event-details">(Click for more details)</p>
-          <p className="user-full-name">User&apos;s Full Name</p>
-
-          <div className="event-info">
-            <span>📅 Tuesday, January 7th, 2025</span>
-            <span>⏰ 7:00 PM CST</span>
-            <span>📍 Location</span>
+    <div className={darkMode ? styles.darkMode : ''}>
+      <div className={`${styles.popupOverlay}`}>
+        <div className={`${styles.popup}`}>
+          <div className={`${styles.popupHeader}`}>
+            <span>✅ Registration Successful!</span>
+            <button type="button" className={`${styles.closeBtn}`} onClick={onClose}>
+              ✖
+            </button>
           </div>
+          <h2>Thank you for Registering!</h2>
+          <p>
+            You have successfully registered for the event. We have reserved your space. See you
+            there!
+          </p>
+          <div className={`${styles.popupContent}`}>
+            <strong>Event Name</strong>
+            <p className={`${styles.eventDetails}`}>(Click for more details)</p>
+            <p className={`${styles.userFullName}`}>User&apos;s Full Name</p>
 
-          <button type="button" className="calendar-btn">
-            Add to my calendar
-          </button>
+            <div className={`${styles.eventInfo}`}>
+              <span>📅 Tuesday, January 7th, 2025</span>
+              <span>⏰ 7:00 PM CST</span>
+              <span>📍 Location</span>
+            </div>
 
-          <div className="popup-footer">
-            <button type="button" className="email-btn">
-              View details in Email
+            <button type="button" className={`${styles.calendarBtn}`}>
+              Add to my calendar
             </button>
-            <button type="button" className="download-btn">
-              Download Ticket
-            </button>
+
+            <div className={`${styles.popupFooter}`}>
+              <button type="button" className={`${styles.emailBtn}`}>
+                View details in Email
+              </button>
+              <button type="button" className={`${styles.downloadBtn}`}>
+                Download Ticket
+              </button>
+            </div>
           </div>
         </div>
       </div>
