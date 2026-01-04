@@ -1,6 +1,8 @@
+import { useSelector } from 'react-redux';
 import styles from '../styles/SkillsSection.module.css';
 
 function BackendSkills({ profileData }) {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const safeProfileData = profileData || {};
   const skillInfo = safeProfileData.skillInfo || {};
   const backend = skillInfo.backend || {};
@@ -26,7 +28,7 @@ function BackendSkills({ profileData }) {
   };
 
   return (
-    <div className={`${styles.skillSection}`}>
+    <div className={`${styles.skillSection} ${darkMode ? 'dark-mode' : ''}`}>
       <div className={`${styles.skillsRow}`}>
         {skills.map(skill => (
           <div key={skill.label} className={`${styles.skillItem}`}>
