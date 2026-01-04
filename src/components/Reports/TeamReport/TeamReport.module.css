@@ -1,4 +1,4 @@
-* {
+:global(*) {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -6,7 +6,7 @@
 
 .team-report-main-info-wrapper {
   margin-top: 10px;
-  height:fit-content;
+  height: fit-content;
   width: 100%;
 }
 
@@ -61,7 +61,7 @@
 }
 
 .table-mobile table {
-  min-width: 800px; /* reasonable min width for table content */
+  min-width: 800px;
   width: 100%;
 }
 
@@ -69,7 +69,7 @@
   background: white;
 }
 
-.table-hover-dark:hover{
+.table-hover-dark:hover {
   background-color: #162e4c !important;
 }
 
@@ -88,7 +88,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: .5rem;
+  margin-top: 0.5rem;
 }
 
 .active-inactive-container-item {
@@ -109,9 +109,9 @@
   margin-left: -80px;
 }
 
-/* Force white header text only in dark mode */
-.report-page-wrapper.bg-oxford-blue .tableHeader thead tr td,
-.report-page-wrapper.bg-oxford-blue .tableHeader thead tr th,
-.report-page-wrapper.bg-oxford-blue .tableHeader thead tr strong {
+/* global selector — must be wrapped for CSS Modules */
+:global(.report-page-wrapper.bg-oxford-blue .tableHeader thead tr td),
+:global(.report-page-wrapper.bg-oxford-blue .tableHeader thead tr th),
+:global(.report-page-wrapper.bg-oxford-blue .tableHeader thead tr strong) {
   color: #ffffff !important;
 }
