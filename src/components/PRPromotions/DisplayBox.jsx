@@ -13,6 +13,8 @@ export default function DisplayBox({ onClose }) {
         { week: '2024-06-15', prCount: 10 },
         { week: '2024-06-22', prCount: 18 },
         { week: '2024-06-29', prCount: 14 },
+        { week: '2024-07-06', prCount: 16 },
+        { week: '2024-07-13', prCount: 20 },
       ],
     },
     {
@@ -29,7 +31,7 @@ export default function DisplayBox({ onClose }) {
     },
   ];
 
-  const [checkedItems, setCheckedItems] = useState(Array(mockPromotionData.length).fill(false));
+  const [checkedItems, setCheckedItems] = useState(new Array(mockPromotionData.length).fill(true));
   const allChecked = checkedItems.every(Boolean);
 
   const handleCheckedBoxChange = index => {
@@ -39,7 +41,7 @@ export default function DisplayBox({ onClose }) {
   };
 
   const handleSelectAll = () => {
-    setCheckedItems(Array(mockPromotionData.length).fill(!allChecked));
+    setCheckedItems(new Array(mockPromotionData.length).fill(!allChecked));
   };
 
   return (

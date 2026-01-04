@@ -1,19 +1,22 @@
-.volunteer-status-container {
+.volunteerStatusContainer {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start; /* keep aligned to top */
   width: 100%;
+  height: 100%;
+  gap: 12px;
 }
 
-.volunteer-status-chart {
+.volunteerStatusChart {
   position: relative;
-  width: 100%;
-  max-width: 400px;
-  height: 400px;
+  width: min(320px, 100%);
+  max-width: 320px;
+  aspect-ratio: 1 / 1;
+  overflow: visible;
 }
 
-.volunteer-status-center {
+.volunteerStatusCenter {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -22,41 +25,71 @@
   font-size: 14px;
 }
 
-.volunteer-status-center .volunteer-status-heading {
+.volunteerStatusHeading {
   color: #828282;
   font-size: 1.2rem;
+  text-align: center;
 }
 
-.volunteer-status-center .volunteer-count {
+.volunteerCount {
   color: #6c6c6c;
-  font-size: 2rem;
+  font-size: 1.8rem;
   font-weight: bolder;
 }
 
-.volunteer-status-center > p {
+.volunteerStatusCenter > p {
   font-weight: bold;
 }
 
-.volunteer-status-center div {
+.volunteerStatusCenter div {
   margin: 2px 0;
 }
 
-.volunteer-status-labels {
+.volunteerStatusLabels {
   display: flex;
   justify-content: center;
-  margin-top: 20px;
-  margin-bottom: 50px;
+  align-items: center;
+  gap: 16px;
+  margin-top: 32px;
+  margin-bottom: 24px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding: 0 8px;
+  width: 100%;
 }
 
-.volunteer-status-label {
+.volunteerStatusLabel {
   display: flex;
   align-items: center;
-  margin: 0 10px;
+  gap: 6px;
+  margin: 0;
+  font-size: 0.875rem;
+  white-space: nowrap;
 }
 
-.volunteer-status-color {
+.volunteerStatusColor {
   display: inline-block;
   width: 12px;
   height: 12px;
-  margin-right: 5px;
+  border-radius: 2px;
+}
+
+/* Dark mode support */
+:global(.bg-oxford-blue) .volunteerStatusHeading {
+  color: #f1f5ff;
+}
+
+:global(.bg-oxford-blue) .volunteerCount {
+  color: #ffffff;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .volunteerStatusChart {
+    width: min(280px, 100%);
+  }
+
+  .volunteerStatusLabels {
+    gap: 12px;
+  }
 }

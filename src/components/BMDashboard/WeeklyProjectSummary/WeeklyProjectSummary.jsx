@@ -249,7 +249,7 @@ function WeeklyProjectSummary() {
       {
         title: 'Material Consumption',
         key: 'Material Consumption',
-        className: 'large',
+        className: 'full',
         content: [1, 2, 3].map((_, index) => {
           let content;
           if (index === 1) {
