@@ -1,3 +1,10 @@
+// Helper to get dates relative to today for demo purposes
+const getDateString = daysOffset => {
+  const date = new Date();
+  date.setDate(date.getDate() + daysOffset);
+  return date.toISOString().split('T')[0];
+};
+
 export const events = [
   {
     id: '1',
@@ -6,7 +13,7 @@ export const events = [
     attendees: 78,
     completed: 75,
     walkouts: 5,
-    date: '2023-06-15',
+    date: getDateString(-30), // Past date - will show as Completed
     time: '09:00 AM - 05:00 PM',
     link: 'https://conferencea.com',
     organizer: 'Tech Events Inc.',
@@ -21,7 +28,7 @@ export const events = [
     attendees: 44,
     completed: 38,
     walkouts: 2,
-    date: '2023-07-22',
+    date: getDateString(7), // Future date - will show as Upcoming
     time: '10:00 AM - 02:00 PM',
     link: 'https://workshopb.com',
     organizer: 'Skill Builders LLC',
@@ -36,7 +43,7 @@ export const events = [
     attendees: 63,
     completed: 55,
     walkouts: 5,
-    date: '2023-08-05',
+    date: getDateString(0), // Today - will show as In Progress if current time is within range
     time: '02:00 PM - 06:00 PM',
     link: 'https://seminarc.com',
     organizer: 'Knowledge Share Co.',
