@@ -415,7 +415,7 @@ ENHANCED_POPULARITY: (range, roles, start, end, includeLowVolume) => {
   // lb dashboard endpoints
   LB_REGISTER: `${APIEndpoint}/lbdashboard/register`,
   LB_LOGIN: `${APIEndpoint}/lbdashboard/login`,
-  LB_FETCH_WISHLIST: userId => `${APIEndpoint}/lb/wishlist/${userId}`,
+  LB_FETCH_WISHLIST: userId => `${APIEndpoint}/lb/wishlist?userId=${userId}`,
   LB_ADD_TO_WISHLIST: `${APIEndpoint}/api/lb/wishlist/add`,
   LB_REMOVE_FROM_WISHLIST: listingId => `${APIEndpoint}/lb/wishlist/remove/${listingId}`,
 

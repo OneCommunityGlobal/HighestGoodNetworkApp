@@ -1,3 +1,4 @@
+import axios from 'axios';
 import {
   FETCH_WISHLIST_REQUEST,
   FETCH_WISHLIST_SUCCESS,
@@ -13,15 +14,28 @@ import { ENDPOINTS } from '../../utils/URL';
 
 export const fetchWishlist = (userId) => {
   return async (dispatch) => {
-    try{
+    console.log('[fetchWishlist] userId:', userId);
+
+    try {
       dispatch({ type: FETCH_WISHLIST_REQUEST });
-      const url = ENDPOINTS.LB_FETCH_WISHLIST(userId); 
+
+      const url = ENDPOINTS.LB_FETCH_WISHLIST(userId);
       const res = await axios.get(url);
-      dispatch({ type: FETCH_WISHLIST_SUCCESS, payload: res.data });
-    }catch(error){
-      dispatch({ type: FETCH_WISHLIST_FAIL, payload: error.message });
+
+      console.log('[fetchWishlist] response:', res.data);
+
+      dispatch({
+        type: FETCH_WISHLIST_SUCCESS,
+        payload: res.data
+      });
+    } catch (error) {
+      console.error('[fetchWishlist] error:', error);
+      dispatch({
+        type: FETCH_WISHLIST_FAIL,
+        payload: error.message
+      });
     }
-  } 
+  };
 };
 
 export const addToWishlist = (userId, listingId) => {
