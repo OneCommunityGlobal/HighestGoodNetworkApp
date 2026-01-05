@@ -3,6 +3,28 @@
   height: fit-content;
   width: clamp(100vw, 0.1rem + 1vw, 100%);
 }
+
+.headerRow {
+  display: grid;
+  grid-template-columns: auto 1fr auto; 
+  align-items: center;
+  width: 100%;
+  padding: 1rem; 
+}
+
+.leftSection {
+  justify-self: start;
+}
+
+.centerSection {
+  justify-self: center;  
+  width: fit-content;     
+}
+
+.rightSection {
+  justify-self: end;
+  min-width: max-content;
+}
 /*
   position: absolute;
   top: 0;

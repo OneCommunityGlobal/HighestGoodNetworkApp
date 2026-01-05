@@ -387,14 +387,14 @@ export function Header(props) {
         {showPromotionsPopup && 
         (<DisplayBox onClose={() => setShowPromotionsPopup(false)} />)}
         
-        <div className="d-flex justify-content-between align-items-center w-100 p-3">
+        <div className={styles.headerRow}>
           {/* Left Component - Timer */}
           <div className={styles.leftSection}>
             {isAuthenticated && <Timer darkMode={darkMode} />}
           </div>
 
           {/* Center Component - Owner Message */}
-          <div className={`${styles.centerSection} text-center flex-grow-1`}>
+          <div className={`${styles.centerSection} text-center`}>
             {isAuthenticated && (
               <div className={styles.ownerMessage}>
                 <OwnerMessage />
