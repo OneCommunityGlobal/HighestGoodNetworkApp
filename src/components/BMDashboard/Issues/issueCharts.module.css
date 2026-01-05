@@ -22,8 +22,9 @@
   max-width: 100%;
   margin: 0;
   padding: 30px 40px;
-  background: #0f1115; /* full-width dark panel */
-  border-radius: 0; /* remove rounded edges so it spans the screen */
+  
+    background:#1B2A41;
+  border-radius: 0;
   box-shadow: none;
   color: #ccd1dc;
   display: flex;
