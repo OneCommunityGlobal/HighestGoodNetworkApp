@@ -148,7 +148,7 @@ import UtilizationChart from './components/BMDashboard/UtilizationChart/Utilizat
 import RentalChart from './components/BMDashboard/RentalChart/RentalChart';
 import ReturnedLateChart from './components/BMDashboard/RentalChart/ReturnedLateChart';
 import CreateNewTeam from './components/BMDashboard/Team/CreateNewTeam/CreateNewTeam';
-import MostSusceptibleTools from './components/MostSusceptible/toolBreakdownChart';
+// import MostSusceptibleTools from './components/MostSusceptible/toolBreakdownChart';
 import HoursPledgedChart from './components/JobAnalytics/HoursPledgedChart/HoursPledgedChart';
 import InjurySeverityDashboard from './components/BMDashboard/Injuries/InjurySeverityChart';
 
