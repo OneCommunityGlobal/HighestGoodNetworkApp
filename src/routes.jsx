@@ -340,7 +340,6 @@ export default (
     <Route path="/form" component={FormEditor} />
     <Route path="/formviewer" component={FormViewer} />
     <Route path="/ProfileInitialSetup/:token" component={SetupProfile} />
-    <Route path="/mostsusceptibletoolschart" component={MostSusceptibleTools} />
     <Route path="/hours-pledged-chart" component={HoursPledgedChart} />
     <Route path="/TestEventReg" component={TestEventRegistration} />
     <Route path="/logattendance" component={AttendanceNoShow} />
