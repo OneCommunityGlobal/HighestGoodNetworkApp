@@ -1,13 +1,25 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Container, Row, Col, Button, Input, Label, Alert, Spinner } from 'reactstrap';
 import { FaComment, FaBell, FaUser } from 'react-icons/fa';
 import logo from '../../assets/images/logo2.png';
 import './booking.css';
 
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+
 const STORAGE_KEY = 'bookingDraft_v1';
+
+// Helper to safely save booking draft to localStorage
+function saveDraft(payload) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+  } catch (e) {
+    // fail silently
+  }
+}
 const NIGHTLY_RATE = 140;
 const UNAVAILABLE = ['2025-09-16', '2025-09-21', '2025-10-02', '2025-10-05', '2025-10-18'];
 
@@ -21,6 +33,7 @@ function isPastOrToday(dateStr) {
 export default function BookingPage() {
   const darkMode = useSelector(s => s.theme?.darkMode);
   const history = useHistory();
+  const location = useLocation();
 
   const [village, setVillage] = useState('Choose your Village');
   const [start, setStart] = useState('');
@@ -36,27 +49,44 @@ export default function BookingPage() {
 
   const userName = firstName || 'Guest';
 
+  // Restore logic: only run once on mount
   useEffect(() => {
     try {
-      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
-      const isBooked = localStorage.getItem('bookingComplete');
-      if (saved && isBooked !== 'true') {
-        setStart(saved.start || '');
-        setEnd(saved.end || '');
-        setName(saved.name || '');
-        setEmail(saved.email || '');
-        setPhone(saved.phone || '');
-        setCard(saved.card || '');
-        setCvv(saved.cvv || '');
-        setExp(saved.exp || '');
+      // First, try to restore from navigation state
+      if (location.state && location.state.booking) {
+        const b = location.state.booking;
+        setVillage(b.village || 'Choose your Village');
+        setStart(b.start || '');
+        setEnd(b.end || '');
+        setName(b.name || '');
+        setEmail(b.email || '');
+        setPhone(b.phone || '');
+        setCard(b.card || '');
+        setCvv(b.cvv || '');
+        setExp(b.exp || '');
+      } else {
+        // Fallback to localStorage draft
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+        if (saved) {
+          setVillage(saved.village || 'Choose your Village');
+          setStart(saved.start || '');
+          setEnd(saved.end || '');
+          setName(saved.name || '');
+          setEmail(saved.email || '');
+          setPhone(saved.phone || '');
+          setCard(saved.card || '');
+          setCvv(saved.cvv || '');
+          setExp(saved.exp || '');
+        }
       }
     } catch {}
-  }, []);
+  }, [location.state]);
 
+  // Always persist booking fields to localStorage when any change
   useEffect(() => {
-    const payload = { start, end, name, email, phone, card, cvv, exp };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
-  }, [start, end, name, email, phone, card, cvv, exp]);
+    const payload = { village, start, end, name, email, phone, card, cvv, exp };
+    saveDraft(payload);
+  }, [village, start, end, name, email, phone, card, cvv, exp]);
 
   const price = useMemo(() => {
     if (!start || !end) return null;
@@ -76,22 +106,47 @@ export default function BookingPage() {
   };
 
   const proceed = async () => {
+    if (village === 'Choose your Village') return toast.error('Please select a village.');
     if (!start || !end) return toast.error('Please choose dates.');
     if (dateDisabled(start) || dateDisabled(end))
       return toast.error('Selected date is unavailable.');
     if (!name.trim() || !email.trim() || !phone.trim())
       return toast.error('Fill Name, Email and Phone.');
+    if (!card.trim() || !cvv.trim() || !exp.trim())
+      return toast.error('Please fill in all payment details.');
     if (!price || price.error) return toast.error(price?.error || 'Invalid date range.');
 
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
       toast.success('Booking captured.');
-      localStorage.setItem('bookingComplete', 'true');
+      // Write final payload to localStorage and pass via navigation state
+      const payload = {
+        village,
+        start,
+        end,
+        name,
+        email,
+        phone,
+        card,
+        cvv,
+        exp,
+        price,
+      };
+      saveDraft(payload);
       history.push('/booking/confirm', {
-        booking: { start, end, guest: { name, email, phone }, price },
+        booking: { village, start, end, name, email, phone, card, cvv, exp, price },
       });
     }, 700);
+  };
+
+  const handleDateFocus = e => {
+    setTimeout(() => {
+      e.target.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      });
+    }, 50);
   };
 
   return (
@@ -184,20 +239,32 @@ export default function BookingPage() {
                     </Col>
                     <Col md={6}>
                       <Label className="field-label">Check-in</Label>
-                      <Input
-                        type="date"
-                        value={start}
-                        min={new Date().toISOString().split('T')[0]}
-                        onChange={e => setStart(e.target.value)}
+                      <DatePicker
+                        selected={start ? new Date(start) : null}
+                        onChange={date => setStart(date ? date.toISOString().split('T')[0] : '')}
+                        minDate={new Date()}
+                        placeholderText="Select check-in date"
+                        popperPlacement="bottom-start"
+                        popperModifiers={[
+                          { name: 'preventOverflow', options: { boundary: 'viewport' } },
+                          { name: 'flip', options: { fallbackPlacements: ['top'] } },
+                        ]}
+                        className="form-control"
                       />
                     </Col>
                     <Col md={6}>
                       <Label className="field-label">Check-out</Label>
-                      <Input
-                        type="date"
-                        value={end}
-                        min={start || new Date().toISOString().split('T')[0]}
-                        onChange={e => setEnd(e.target.value)}
+                      <DatePicker
+                        selected={end ? new Date(end) : null}
+                        onChange={date => setEnd(date ? date.toISOString().split('T')[0] : '')}
+                        minDate={start ? new Date(start) : new Date()}
+                        placeholderText="Select check-out date"
+                        popperPlacement="bottom-start"
+                        popperModifiers={[
+                          { name: 'preventOverflow', options: { boundary: 'viewport' } },
+                          { name: 'flip', options: { fallbackPlacements: ['top'] } },
+                        ]}
+                        className="form-control"
                       />
                     </Col>
                   </Row>
@@ -207,29 +274,35 @@ export default function BookingPage() {
                   <Label className="field-label">Phone</Label>
                   <Input value={phone} onChange={e => setPhone(e.target.value)} />
                   <div className="price-box mt-4">
-                    {price?.error && <Alert color="danger">{price.error}</Alert>}
-                    {!price && <Alert color="info">Select dates to see pricing</Alert>}
-                    {price && !price.error && (
+                    {village !== 'Choose your Village' ? (
                       <>
-                        <div className="price-row">
-                          <span>
-                            {price.nights} × ${NIGHTLY_RATE}
-                          </span>
-                          <span>${price.subtotal.toFixed(2)}</span>
-                        </div>
-                        <div className="price-row">
-                          <span>Taxes</span>
-                          <span>${price.taxes.toFixed(2)}</span>
-                        </div>
-                        <div className="price-row">
-                          <span>Fees</span>
-                          <span>${price.fees.toFixed(2)}</span>
-                        </div>
-                        <div className="price-row total">
-                          <span>Total</span>
-                          <span>${price.total.toFixed(2)}</span>
-                        </div>
+                        {price?.error && <Alert color="danger">{price.error}</Alert>}
+                        {!price && <Alert color="info">Select dates to see pricing</Alert>}
+                        {price && !price.error && (
+                          <>
+                            <div className="price-row">
+                              <span>
+                                {price.nights} × ${NIGHTLY_RATE}
+                              </span>
+                              <span>${price.subtotal.toFixed(2)}</span>
+                            </div>
+                            <div className="price-row">
+                              <span>Taxes</span>
+                              <span>${price.taxes.toFixed(2)}</span>
+                            </div>
+                            <div className="price-row">
+                              <span>Fees</span>
+                              <span>${price.fees.toFixed(2)}</span>
+                            </div>
+                            <div className="price-row total">
+                              <span>Total</span>
+                              <span>${price.total.toFixed(2)}</span>
+                            </div>
+                          </>
+                        )}
                       </>
+                    ) : (
+                      <Alert color="info">Please select a village to view pricing.</Alert>
                     )}
                   </div>
                   <div className="mt-4 text-end">
@@ -248,6 +321,96 @@ export default function BookingPage() {
           </Col>
         </Row>
       </Container>
+      {/* Datepicker styles injected for self-contained styling */}
+      <style>
+        {`
+      .react-datepicker-wrapper {
+        width: 100%;
+      }
+
+      .react-datepicker__input-container input {
+        width: 100%;
+        padding: 10px 12px;
+        border-radius: 6px;
+        border: 1px solid #ced4da;
+        font-size: 14px;
+      }
+
+      .react-datepicker {
+        border-radius: 10px;
+        border: 1px solid #d0d7de;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        font-size: 13px;
+      }
+
+      .react-datepicker__header {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #e5e7eb;
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      .react-datepicker__current-month,
+      .react-datepicker__day-name {
+        font-weight: 600;
+        color: #212529;
+      }
+
+      .react-datepicker__day {
+        width: 2.2rem;
+        line-height: 2.2rem;
+        margin: 0.15rem;
+      }
+
+      .react-datepicker__day--selected,
+      .react-datepicker__day--keyboard-selected {
+        background-color: #198754;
+        color: #fff;
+      }
+
+      .react-datepicker__day--disabled {
+        color: #adb5bd;
+      }
+
+      .react-datepicker__day:hover {
+        background-color: #e9ecef;
+      }
+
+      .dark-mode .react-datepicker {
+        background-color: #1e1e1e;
+        border-color: #333;
+      }
+
+      .dark-mode .react-datepicker__header {
+        background-color: #2a2a2a;
+        border-bottom-color: #333;
+      }
+
+      .dark-mode .react-datepicker__day,
+      .dark-mode .react-datepicker__day-name,
+      .dark-mode .react-datepicker__current-month {
+        color: #eaeaea;
+      }
+
+      .dark-mode .react-datepicker__day--selected {
+        background-color: #2ecc71;
+        color: #000;
+      }
+
+      .dark-mode .react-datepicker__day:hover {
+        background-color: #333;
+      }
+      .react-datepicker__month-container {
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      .react-datepicker-popper {
+        max-width: 100vw;
+        overflow: hidden;
+      }
+    `}
+      </style>
     </div>
   );
 }
