@@ -172,6 +172,7 @@ import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
 import EPLogin from './components/EductionPortal/Login';
 import BrowseLessonPlan from './components/EductionPortal/BrowseLessonPlan/BrowseLP';
 import EPDashboard from './components/EductionPortal';
+import ReportDownloadButton from './components/EductionPortal/AnalyticsDashboard/ReportDownloadButton';
 import GroupList from './components/EductionPortal/GroupList/GroupList';
 import EvaluationResultsWrapper from './components/EductionPortal/EvaluationResultsWrapper';
 import InsightWidget from './components/EductionPortal/AnalyticsDashboard/InsightsWidget';
@@ -817,6 +818,7 @@ export default (
         <Route path="/educationportal/InsightWidget" component={InsightWidget} />
         <Route path="/educationportal/lesson-library" exact component={BrowseLessonPlan} />
         <EPProtectedRoute path="/educationportal/tasks/upload" exact component={WriteTaskUpload} />
+        <Route path="/educationportal/reportButton" component={ReportDownloadButton} />
         <Route path="/educator/groups" exact component={GroupList} />
         <EPProtectedRoute
           path="/educationportal/tasks/intermediate"

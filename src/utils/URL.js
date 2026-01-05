@@ -516,6 +516,16 @@ export const ENDPOINTS = {
   GET_SAVED: `${APIEndpoint}/education/student/saved-interests`,
   REMOVE_INTEREST: `${APIEndpoint}/education/student/saved-interests`,
   CHECK_IF_SAVED: `${APIEndpoint}/education/student/saved-interests/check`,
+  EDUCATOR_REPORT_EXPORT: (type, format, params = {}) => {
+    const { studentId, classId, startDate, endDate } = params;
+    let url = `${APIEndpoint}/educator/reports/export?type=${type}&format=${format}`;
+    if (studentId) url += `&studentId=${studentId}`;
+    if (classId) url += `&classId=${classId}`;
+    if (startDate) url += `&startDate=${encodeURIComponent(startDate)}`;
+    if (endDate) url += `&endDate=${encodeURIComponent(endDate)}`;
+    return url;
+  },
+
 };
 
 export const ApiEndpoint = APIEndpoint;
