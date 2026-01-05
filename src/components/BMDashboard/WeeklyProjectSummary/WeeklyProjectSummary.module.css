@@ -13,6 +13,14 @@
   padding: 0;
 }
 
+.weeklyProjectSummaryDashboardContainer {
+  width: 95%;
+  margin: auto;
+  padding: 20px;
+  background: var(--bg-color);
+  color: var(--text-color);
+}
+
 .weeklyProjectSummaryHeaderWrapper {
   background-color: var(--bg-color) !important;
   transition: background-color 0.3s ease;
@@ -63,13 +71,18 @@
 /* Dropdown Styling */
 .weeklySummaryHeaderControls select {
   padding: 8px 12px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--border-color, #ccc);
   border-radius: 6px;
   min-width: 200px;
   font-size: 14px;
   background: var(--section-bg);
   color: var(--text-color);
   transition: all 0.3s ease;
+}
+
+.weeklySummaryHeaderControls select:focus {
+  outline: none;
+  border-color: var(--focus-border-color, #3b82f6);
 }
 
 /* Dropdown Hover */
@@ -204,6 +217,7 @@
   min-height: 500px;
   border-radius: 8px;
   overflow: hidden;
+  grid-column: span 4;
 }
 
 .weeklyProjectSummaryDashboardSection {
@@ -236,7 +250,7 @@
 .weeklyProjectSummaryDashboardCategoryContent {
   padding: 15px;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 20px;
   border-top: 1px solid var(--card-shadow);
   animation: fadeIn 0.3s ease-in-out;
@@ -277,6 +291,8 @@
   --section-title-hover: #3a506b;
   --button-bg: #e8a71c;
   --button-hover: #f5b13a;
+  --border-color: #4a5a77;
+  --focus-border-color: #e8a71c;
 }
 
 .darkMode .weeklyProjectSummaryDashboardCategoryTitle {
@@ -325,13 +341,17 @@
 }
 
 /* Tooltip styles */
+/* First, set a max-height and make it scrollable */
 .quantityOfMaterialsUsedChartTooltip {
-  max-height: 80vh !important;
-  overflow-y: auto !important;
-  padding-right: 15px !important;
+  max-height: 80vh !important; /* Limit to 80% of viewport height */
+  overflow-y: auto !important; /* Enable vertical scrolling */
+  padding-right: 15px !important; /* Add some padding for the scrollbar */
+  /* Support for Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.3) rgba(0, 0, 0, 0.1);
 }
 
-/* Style the scrollbar for better visibility */
+/* Style the scrollbar for better visibility - Webkit browsers */
 .quantityOfMaterialsUsedChartTooltip::-webkit-scrollbar {
   width: 8px;
 }
@@ -500,6 +520,65 @@
   .projectStatusGrid {
     grid-template-columns: 1fr;
   }
+}
+
+/* ---------------- STATUS CARD ---------------- */
+.statusCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 25px;
+  width: 100%;
+  max-width: 284px;
+  height: 190px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  padding: 20px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+/* ---------------- RESPONSIVE GRID LAYOUT ---------------- */
+.projectStatusGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 1600px;
+  margin: auto;
+}
+/* .projectStatusGrid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: repeat(2, auto);
+  gap: 10px;
+} */
+
+/* ---------------- OVAL STATUS BUTTON ---------------- */
+.weeklyStatusButton {
+  width: 130px;
+  height: 65px;
+  border-radius: 50px / 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  margin: 12px 0;
+}
+
+.weeklyCardTitle {
+  color: #000;
+  font-size: clamp(14px, 1.4vw, 18px);
+  font-weight: 600;
+}
+
+.weeklyStatusValue {
+  color: #000;
+  font-size: 40px;
+  font-weight: 600;
 }
 
 /* ---------------- RESPONSIVE BREAKPOINTS ---------------- */

@@ -1,4 +1,5 @@
 import { Radar } from 'react-chartjs-2';
+import { useSelector } from 'react-redux';
 import {
   Chart as ChartJS,
   RadialLinearScale,
@@ -45,6 +46,7 @@ const SKILL_MAPPINGS = [
 ];
 
 function RadarChart({ profileData }) {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const safeProfileData = profileData || {};
   const skillInfo = safeProfileData.skillInfo || {};
   const general = skillInfo.general || {};
@@ -86,7 +88,7 @@ function RadarChart({ profileData }) {
   };
 
   return (
-    <div className={`${styles.radarChart}`}>
+    <div className={`${styles.radarChart} ${darkMode ? 'dark-mode' : ''}`}>
       <Radar data={chartData} options={chartOptions} />
     </div>
   );
