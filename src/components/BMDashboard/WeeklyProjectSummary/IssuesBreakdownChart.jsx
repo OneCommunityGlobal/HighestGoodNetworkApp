@@ -99,17 +99,15 @@ export default function IssuesBreakdownChart() {
     })();
   }, []);
 
-  if (loading) return <div style={{ color: textColor }}>Loading...</div>;
-  if (error) return <div style={{ color: darkMode ? '#fca5a5' : '#dc2626' }}>Error: {error}</div>;
-  if (!data || data.length === 0) return <div style={{ color: textColor }}>No data available</div>;
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
+  if (!data || data.length === 0) return <div>No data available</div>;
 
   return (
     <div ref={containerRef} className={styles.container} style={themeVars}>
       <div className={styles.inner}>
         <div className={styles.headerRow}>
-          <h2 className={styles.heading} style={{ color: headingColor }}>
-            Issues breakdown by Type
-          </h2>
+          <h2 className={styles.heading}>Issues breakdown by Type</h2>
         </div>
 
         <div className={styles.legend}>
@@ -118,9 +116,7 @@ export default function IssuesBreakdownChart() {
               className={styles.legendBox}
               style={{ backgroundColor: PALETTE.equipmentIssues }}
             />
-            <span className={styles.legendLabel} style={{ color: legendTextColor }}>
-              Equipment Issues
-            </span>
+            <span className={styles.legendLabel}>Equipment Issues</span>
           </span>
           <span className={styles.legendItem}>
             <span className={styles.legendBox} style={{ backgroundColor: PALETTE.laborIssues }} />
