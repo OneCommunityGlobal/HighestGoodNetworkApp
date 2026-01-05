@@ -19,6 +19,7 @@ const LinkModButton = props => {
         setChanged={setChanged}
         role={props.role}
       />
+      {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/interactive-supports-focus */}
       <span
         style={{
           textDecoration: 'underline',

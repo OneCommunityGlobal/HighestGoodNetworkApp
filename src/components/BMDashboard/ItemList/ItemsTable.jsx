@@ -12,6 +12,7 @@ export default function ItemsTable({
   filteredItems,
   UpdateItemModal,
   dynamicColumns,
+  darkMode = false,
 }) {
   const [sortedData, setData] = useState(filteredItems);
   const [modal, setModal] = useState(false);
@@ -97,8 +98,8 @@ export default function ItemsTable({
         recordType={recordType}
       />
       <UpdateItemModal modal={updateModal} setModal={setUpdateModal} record={updateRecord} />
-      <div className={`${styles.itemsTableContainer}`}>
-        <Table>
+      <div className={`${styles.itemsTableContainer} ${darkMode ? styles.darkTableWrapper : ''}`}>
+        <Table className={darkMode ? styles.darkTable : ''}>
           <thead>
             <tr>
               {selectedProject === 'all' ? (

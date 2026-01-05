@@ -35,6 +35,12 @@ function TeamsTab(props) {
   const [removedTeams, setRemovedTeams] = useState([]);
 
   useEffect(() => {
+    if (typeof fetchTeamCodeAllUsers === 'function') {
+      fetchTeamCodeAllUsers();
+    }
+  }, []);
+
+  useEffect(() => {
     if (saved && removedTeams.length > 0) {
       removedTeams.forEach(teamId => {
         deleteTeamMember(teamId, userProfile._id);
@@ -56,9 +62,14 @@ function TeamsTab(props) {
       if (userProfile._id) {
         deleteTeamMember(teamId, userProfile._id);
       }
+      setUserProfile(prev => ({
+      ...prev,
+      teams: prev.teams.filter(t => t._id !== teamId),
+    }));
       toast.success('Team Deleted successfully');
       onDeleteTeam(teamId);
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Error deleting team:', error);
       toast.error('Failed to delete team');
     }
@@ -69,9 +80,16 @@ function TeamsTab(props) {
       if (userProfile?._id) {
         addTeamMember(team._id, userProfile._id, userProfile.firstName, userProfile.lastName);
       }
+      if (setUserProfile) {
+      setUserProfile(prev => ({
+        ...prev,
+        teams: [...(prev.teams || []), team],
+      }));
+    }
       onAssignTeam(team);
       toast.success('Team assigned successfully');
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Error assigning team:', error);
       toast.error('Failed to assign team');
     }
@@ -88,6 +106,7 @@ function TeamsTab(props) {
         onSelectAssignTeam={onSelectAssignTeam}
         handleSubmit={handleSubmit}
         userProfile={userProfile}
+        setUserProfile={setUserProfile}
         darkMode={darkMode}
       />
       <UserTeamsTable

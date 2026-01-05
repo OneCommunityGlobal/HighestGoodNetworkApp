@@ -38,7 +38,7 @@ function RolePermissions(props) {
     let content = '';
     if (description === 'save') {
       content = (
-        <div>
+        <div className="modal-info-content">
           <p>Here you can create new presets and save your changes</p>
           <ul>
             <li>
@@ -55,7 +55,7 @@ function RolePermissions(props) {
       );
     } else if (description === 'delete') {
       content = (
-        <div>
+        <div className="modal-info-content">
           <p>Here you can load saved presets and delete the current role.</p>
           <ul>
             <li>
@@ -187,7 +187,10 @@ function RolePermissions(props) {
       <header>
         <div className="user-role-tab__name-container">
           <div className="name-container__role-name">
-            <h1 className="user-role-tab__h1">Role Name: {roleName}</h1>
+            <h1 className="user-role-tab__h1" style={darkMode ? { color: '#fff' } : {}}>
+              {' '}
+              Role Name: {roleName}
+            </h1>
             {canEditRole && (
               <FontAwesomeIcon
                 icon={faEdit}
