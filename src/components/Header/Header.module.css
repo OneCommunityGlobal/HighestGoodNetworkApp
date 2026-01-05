@@ -6,10 +6,10 @@
 
 .headerRow {
   display: grid;
-  grid-template-columns: auto 1fr auto; 
+  grid-template-columns: auto 1fr auto;
   align-items: center;
   width: 100%;
-  padding: 1rem; 
+  padding: 1rem;
 }
 
 .leftSection {
@@ -17,13 +17,27 @@
 }
 
 .centerSection {
-  justify-self: center;  
-  width: fit-content;     
+  justify-self: center;   
+  width: fit-content;
 }
 
 .rightSection {
   justify-self: end;
   min-width: max-content;
+}
+
+@media (max-width: 768px) {
+  .headerRow {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    row-gap: 0.5rem;
+  }
+
+  .leftSection,
+  .rightSection,
+  .centerSection {
+    justify-self: center;
+  }
 }
 /*
   position: absolute;
