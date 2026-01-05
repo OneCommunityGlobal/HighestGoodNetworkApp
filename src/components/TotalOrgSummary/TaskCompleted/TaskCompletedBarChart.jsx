@@ -4,6 +4,7 @@ import Loading from '../../common/Loading';
 export default function TaskCompletedBarChart({ isLoading, data, darkMode }) {
   const active = data?.active || {};
   const complete = data?.complete || {};
+  const raw = data?.raw || {};
 
   const stats = [
     {
@@ -68,6 +69,40 @@ export default function TaskCompletedBarChart({ isLoading, data, darkMode }) {
     );
   };
 
+  // --- Export CSV helper ---
+  const exportCSV = () => {
+    if (!raw?.current?.length && !raw?.comparison?.length) {
+      // eslint-disable no-alert
+      alert('No raw data available to export.');
+      return;
+    }
+
+    let csv = 'Range,Status,Count\n';
+
+    if (raw.current) {
+      raw.current.forEach(item => {
+        csv += `Current,${item._id},${item.count}\n`;
+      });
+    }
+
+    if (raw.comparison) {
+      raw.comparison.forEach(item => {
+        csv += `Comparison,${item._id},${item.count}\n`;
+      });
+    }
+
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'task-stats.csv';
+    // eslint-disable-next-line testing-library/no-node-access
+    a.click();
+
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div
       style={{
@@ -78,7 +113,24 @@ export default function TaskCompletedBarChart({ isLoading, data, darkMode }) {
         flexDirection: 'column',
       }}
     >
-      <div style={{ textAlign: 'center', marginBottom: 0 }} />
+      {/* Export button */}
+      <div style={{ textAlign: 'right', marginBottom: '8px' }}>
+        <button
+          onClick={exportCSV}
+          style={{
+            padding: '6px 12px',
+            borderRadius: '6px',
+            border: '1px solid',
+            borderColor: darkMode ? '#555' : '#ccc',
+            background: darkMode ? '#333' : '#f9f9f9',
+            color: darkMode ? 'white' : 'black',
+            cursor: 'pointer',
+          }}
+        >
+          Export CSV
+        </button>
+      </div>
+
       <div style={{ flex: 1, minHeight: 0 }}>
         {isLoading ? (
           <div className="d-flex justify-content-center align-items-center">

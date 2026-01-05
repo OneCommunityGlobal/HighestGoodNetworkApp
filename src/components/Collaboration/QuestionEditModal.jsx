@@ -2,7 +2,7 @@
 /* eslint-disable no-console */
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import './QuestionEditModal.css';
+import styles from './QuestionEditModal.module.css';
 import { v4 as uuidv4 } from 'uuid';
 
 function QuestionEditModal({ question, onSave, onCancel }) {
@@ -104,11 +104,11 @@ function QuestionEditModal({ question, onSave, onCancel }) {
   };
 
   return (
-    <div className="question-edit-modal-overlay">
-      <div className="question-edit-modal">
+    <div className={styles.overlay}>
+      <div className={styles.modal}>
         <h3>Edit Question</h3>
-        <div className="edit-form">
-          <div className="form-group">
+        <div className={styles.editForm}>
+          <div className={styles.formGroup}>
             <label htmlFor="label">Question Label:</label>
             <input
               type="text"
@@ -120,7 +120,7 @@ function QuestionEditModal({ question, onSave, onCancel }) {
             />
           </div>
 
-          <div className="form-group">
+          <div className={styles.formGroup}>
             <label htmlFor="type">Input Type:</label>
             <select
               id="type"
@@ -137,7 +137,7 @@ function QuestionEditModal({ question, onSave, onCancel }) {
             </select>
           </div>
 
-          <div className="form-group">
+          <div className={styles.formGroup}>
             <label htmlFor="placeholder">Placeholder:</label>
             <input
               type="text"
@@ -148,7 +148,7 @@ function QuestionEditModal({ question, onSave, onCancel }) {
             />
           </div>
 
-          <div className="form-group">
+          <div className={styles.formGroup}>
             <label>
               <input
                 type="checkbox"
@@ -167,10 +167,10 @@ function QuestionEditModal({ question, onSave, onCancel }) {
 
           {/* Options for dropdown, radio, and checkbox types */}
           {['dropdown', 'radio', 'checkbox'].includes(editedQuestion.type) && (
-            <div className="form-group options-group">
-              <p className="options-label">Options:</p>
+            <div className={styles.optionsGroup}>
+              <p className={styles.optionsLabel}>Options:</p>
               {(editedQuestion.options || []).map((option, index) => (
-                <div key={uuidv4()} className="option-row">
+                <div key={uuidv4()} className={styles.optionRow}>
                   <input
                     type="text"
                     value={option}
@@ -180,23 +180,23 @@ function QuestionEditModal({ question, onSave, onCancel }) {
                   <button
                     type="button"
                     onClick={() => removeOption(index)}
-                    className="remove-option-button"
+                    className={styles.removeOptionButton}
                   >
                     ×
                   </button>
                 </div>
               ))}
-              <button type="button" onClick={addOption} className="add-option-button">
+              <button type="button" onClick={addOption} className={styles.addOptionButton}>
                 Add Option
               </button>
             </div>
           )}
 
-          <div className="modal-buttons">
-            <button type="button" onClick={handleSave} className="save-button">
+          <div className={styles.modalButtons}>
+            <button type="button" onClick={handleSave} className={styles.saveButton}>
               Save Changes
             </button>
-            <button type="button" onClick={onCancel} className="cancel-button">
+            <button type="button" onClick={onCancel} className={styles.cancelButton}>
               Cancel
             </button>
           </div>

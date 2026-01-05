@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import {
   BarChart,
@@ -32,6 +32,9 @@ export default function IssuesBreakdownChart() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const darkMode = useSelector(state => state.theme.darkMode);
+
+  const containerRef = useRef(null);
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
 
   /** Theme variables injected into the container so CSS can pick them up */
   const themeVars = useMemo(
@@ -71,6 +74,18 @@ export default function IssuesBreakdownChart() {
   const tooltipText = themeVars['--text-color'];
 
   useEffect(() => {
+    const handleResize = () => {
+      if (!containerRef.current) return;
+      const width = containerRef.current.offsetWidth;
+      setIsSmallScreen(width < 700);
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  useEffect(() => {
     (async () => {
       try {
         const res = await httpService.get(`${process.env.REACT_APP_APIENDPOINT}/issues/breakdown`);
@@ -89,7 +104,7 @@ export default function IssuesBreakdownChart() {
   if (!data || data.length === 0) return <div>No data available</div>;
 
   return (
-    <div className={styles.container} style={themeVars}>
+    <div ref={containerRef} className={styles.container} style={themeVars}>
       <div className={styles.inner}>
         <div className={styles.headerRow}>
           <h2 className={styles.heading}>Issues breakdown by Type</h2>
@@ -119,13 +134,20 @@ export default function IssuesBreakdownChart() {
 
       <div className={styles.chartContainer}>
         <ResponsiveContainer>
-          <BarChart data={data} margin={{ top: 30, right: 30, left: 0, bottom: 30 }} barGap={8}>
+          <BarChart data={data} margin={{ top: 30, right: 30, left: 0, bottom: isSmallScreen ? 60 : 30 }} barGap={8}>
             <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
 
             {/* Stronger axis text for dark mode; hide tick/axis lines for cleaner look */}
             <XAxis
               dataKey="projectName"
-              tick={{ fill: axisColor, fontWeight: 600, fontSize: 12 }}
+              tick={{
+                fill: axisColor,
+                fontWeight: 600,
+                fontSize: isSmallScreen ? 10 : 12,
+              }}
+              angle={isSmallScreen ? -45 : 0}
+              textAnchor={isSmallScreen ? 'end' : 'middle'}
+              height={isSmallScreen ? 70 : 30}
               tickLine={false}
               axisLine={false}
               interval={0}

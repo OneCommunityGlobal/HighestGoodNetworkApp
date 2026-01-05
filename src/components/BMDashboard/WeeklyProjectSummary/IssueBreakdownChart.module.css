@@ -17,6 +17,7 @@
   display: flex;
   flex-direction: column;
   width: 100%;
+
 }
 
 .headerRow {
@@ -69,8 +70,73 @@
 }
 
 /* ===========================
-   Recharts globals (CSS Modules safe)
+   Responsive adjustments
    =========================== */
+
+/* Tablets */
+@media (max-width: 1024px) {
+  .heading {
+    font-size: 28px;
+  }
+
+  .legendLabel {
+    font-size: 18px;
+  }
+
+  .chartContainer {
+    height: 420px;
+  }
+
+  :global(.recharts-label-list text) {
+    font-size: 10px;
+    stroke-width: 2px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .heading {
+    font-size: 22px;
+  }
+
+  .legend {
+    gap: 12px;
+  }
+
+  .legendLabel {
+    font-size: 16px;
+  }
+
+  .chartContainer {
+    height: 360px;
+  }
+
+  /* Increase label contrast and adjust stroke width */
+  :global(.recharts-label-list text) {
+    font-size: 9px;
+    fill: var(--chart-label-color, #111827) !important;
+    stroke-width: 1px;
+    opacity: 1;
+  }
+}
+
+/* Very small screens */
+@media (max-width: 480px) {
+  .chartContainer {
+    height: 320px;
+    width: 100%;
+  }
+
+  /* Reduce label size and opacity instead of hiding */
+  :global(.recharts-label-list text) {
+    font-size: 8px;
+    opacity: 0.85;
+    fill: var(--chart-label-color, #111827) !important;
+    stroke-width: 1px;
+  }
+}
+
+
 :global(.recharts-cartesian-axis-tick-value) {
   fill: var(--chart-axis-color, #374151) !important; /* strong contrast */
   font-weight: 600;
@@ -90,3 +156,4 @@
   stroke-width: 3px;
   font-weight: 700;
 }
+
