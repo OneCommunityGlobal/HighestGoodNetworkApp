@@ -6,39 +6,50 @@
 
 .headerRow {
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: auto 1fr auto; 
   align-items: center;
   width: 100%;
-  padding: 1rem;
 }
 
 .leftSection {
   justify-self: start;
+  display: flex;
+  align-items: center;
 }
 
 .centerSection {
-  justify-self: center;   
-  width: fit-content;
+  justify-self: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 .rightSection {
   justify-self: end;
-  min-width: max-content;
+  display: flex;
+  align-items: center;
 }
 
 @media (max-width: 768px) {
   .headerRow {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto auto auto;
-    row-gap: 0.5rem;
+    grid-template-columns: auto auto; /* left | right */
+    grid-template-rows: auto auto;
   }
 
-  .leftSection,
-  .rightSection,
-  .centerSection {
+  .logoSection {
+    grid-column: 1 / -1;
+    grid-row: 2;
     justify-self: center;
+    margin-top: 6px;
+  }
+
+  .rightSection {
+    grid-column: 2;
+    grid-row: 1;
   }
 }
+
 /*
   position: absolute;
   top: 0;
