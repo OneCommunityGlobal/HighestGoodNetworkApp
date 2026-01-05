@@ -747,6 +747,7 @@ function LeaderBoard({
                     <td colSpan={2}>
                       <div className="leaderboard-totals-container text-center">
                         <span>{stateOrganizationData.name}</span>
+                        <br />
                         {viewZeroHouraMembers(loggedInUser.role) && (
                           <span className="leaderboard-totals-title">
                             0 hrs Totals:{' '}
@@ -761,6 +762,7 @@ function LeaderBoard({
                       <td aria-label="Placeholder" />
                       <td className="leaderboard-totals-container">
                         <span>{stateOrganizationData.name}</span>
+                        <br />
                         {viewZeroHouraMembers(loggedInUser.role) && (
                           <span className="leaderboard-totals-title">
                             0 hrs Totals:{' '}
