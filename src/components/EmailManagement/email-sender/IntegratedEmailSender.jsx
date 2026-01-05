@@ -742,16 +742,30 @@ const IntegratedEmailSender = ({
 
   // Network status monitoring
   useEffect(() => {
+    let offlineToastId = null; // Track the offline toast
+
     const handleOnline = () => {
+      // Dismiss the offline toast if it exists
+      if (offlineToastId !== null) {
+        toast.dismiss(offlineToastId);
+        offlineToastId = null;
+      }
+
+      // Force state updates with explicit boolean values
       dispatch({ type: 'SET_IS_ONLINE', payload: true });
       dispatch({ type: 'SET_SHOW_OFFLINE_WARNING', payload: false });
-      toast.success('Connection restored!', { autoClose: 1000 });
+
+      // Show success toast
+      toast.success('Connection restored!', { autoClose: 2000 });
     };
 
     const handleOffline = () => {
+      // Force state updates with explicit boolean values
       dispatch({ type: 'SET_IS_ONLINE', payload: false });
       dispatch({ type: 'SET_SHOW_OFFLINE_WARNING', payload: true });
-      toast.warning('You are offline. Your work will be saved locally.', {
+
+      // Store the toast ID so we can dismiss it later
+      offlineToastId = toast.warning('You are offline. Your work will be saved locally.', {
         autoClose: false,
         closeButton: true,
       });
@@ -763,6 +777,11 @@ const IntegratedEmailSender = ({
     return () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
+
+      // Clean up: dismiss offline toast if component unmounts
+      if (offlineToastId !== null) {
+        toast.dismiss(offlineToastId);
+      }
     };
   }, []);
 
@@ -1380,7 +1399,18 @@ const IntegratedEmailSender = ({
 
   const handleClearDraft = useCallback(() => {
     if (window.confirm('Are you sure you want to clear the saved draft? This cannot be undone.')) {
-      clearDraft();
+      clearDraft(); // Clear from localStorage
+
+      // Reset all form states to clear the UI
+      dispatch({ type: 'SET_SELECTED_TEMPLATE', payload: null });
+      dispatch({ type: 'SET_CUSTOM_CONTENT', payload: '' });
+      dispatch({ type: 'SET_CUSTOM_SUBJECT', payload: '' });
+      dispatch({ type: 'SET_RECIPIENTS', payload: '' });
+      dispatch({ type: 'SET_VARIABLE_VALUES', payload: {} });
+      dispatch({ type: 'SET_EMAIL_DISTRIBUTION', payload: EMAIL_DISTRIBUTION.SPECIFIC });
+      dispatch({ type: 'SET_VALIDATION_ERRORS', payload: {} });
+      dispatch({ type: 'SET_RECIPIENT_LIST', payload: [] });
+
       toast.info('Draft cleared', { autoClose: 2000 });
     }
   }, []);
@@ -2106,8 +2136,11 @@ const IntegratedEmailSender = ({
                 <div className="mb-3">
                   <strong>Content Preview:</strong>
                   <div
-                    className="mt-2 p-3 border rounded"
-                    style={{ maxHeight: '400px', overflow: 'auto' }}
+                    className="mt-2 p-3 border rounded email-preview-content"
+                    style={{
+                      maxHeight: '400px',
+                      overflow: 'auto',
+                    }}
                     dangerouslySetInnerHTML={{ __html: previewContent.content }}
                   />
                 </div>

@@ -1166,3 +1166,27 @@
 .dark-mode .alert-warning small {
   color: rgba(255, 255, 255, 0.8);
 }
+
+/* Email preview content - constrain images for better readability */
+.email-preview-content img {
+  max-width: 100% !important;
+  height: auto !important;
+  display: block;
+  margin: 10px 0;
+  object-fit: contain;
+}
+
+/* Ensure text content after images is visible */
+.email-preview-content {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Better spacing for preview content */
+.email-preview-content p {
+  margin-bottom: 0.5rem;
+}
+
+.email-preview-content > *:last-child {
+  margin-bottom: 0;
+}

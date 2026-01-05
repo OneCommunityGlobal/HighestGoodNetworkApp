@@ -27,6 +27,8 @@ export function buildRenderedEmailFromTemplate(templateData, variableValues) {
       if (!variableValues?.[variable.name]) return;
 
       let value = variableValues[variable.name];
+
+      // Handle image variables
       if (variable.type === 'image') {
         const extracted = variableValues?.[`${variable.name}_extracted`];
         if (extracted) value = extracted;
@@ -34,7 +36,40 @@ export function buildRenderedEmailFromTemplate(templateData, variableValues) {
           const candidate = Validators.extractImageFromSource(value);
           if (candidate) value = candidate;
         }
+
+        // Wrap image URL in <img> tag for preview
+        if (value) {
+          value = `<img src="${value}" alt="${variable.name}" style="max-width: 100%; height: auto; display: block; margin: 10px 0; border-radius: 4px;">`;
+        }
       }
+
+      // Handle video variables
+      if (variable.type === 'video') {
+        if (value) {
+          // Check if it's a YouTube URL
+          const youtubeId = Validators.extractYouTubeId(value);
+          if (youtubeId) {
+            // Create YouTube embed or link
+            value = `<div style="margin: 10px 0;">
+              <a href="${value}" target="_blank" style="display: inline-block; padding: 10px 20px; background-color: #FF0000; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">
+                ▶ Watch Video on YouTube
+              </a>
+              <br>
+              <small style="color: #666; display: block; margin-top: 5px;">${value}</small>
+            </div>`;
+          } else {
+            // For direct video URLs, create a link
+            value = `<div style="margin: 10px 0;">
+              <a href="${value}" target="_blank" style="display: inline-block; padding: 10px 20px; background-color: #0066cc; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">
+                ▶ Watch Video
+              </a>
+              <br>
+              <small style="color: #666; display: block; margin-top: 5px;">${value}</small>
+            </div>`;
+          }
+        }
+      }
+
       const regex = new RegExp(`{{${variable.name}}}`, 'g');
       content = content.replace(regex, value);
       subject = subject.replace(regex, value);

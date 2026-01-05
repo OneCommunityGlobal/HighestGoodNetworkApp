@@ -36,6 +36,7 @@ import {
   FaLink,
   FaCalendar,
   FaAlignLeft,
+  FaVideo,
 } from 'react-icons/fa';
 import { Editor } from '@tinymce/tinymce-react';
 import { getTemplateEditorConfig } from '../../shared';
@@ -103,6 +104,7 @@ const EmailTemplateEditor = ({
       email: <FaEnvelope className="me-1" size={12} />,
       url: <FaLink className="me-1" size={12} />,
       date: <FaCalendar className="me-1" size={12} />,
+      video: <FaVideo className="me-1" size={12} />,
     };
     return iconMap[type] || <FaFileAlt className="me-1" size={12} />;
   }, []);
@@ -589,6 +591,8 @@ const EmailTemplateEditor = ({
             // Use placeholder values based on variable type
             if (variable.type === 'image') {
               variableValues[variable.name] = 'https://example.com/placeholder-image.jpg';
+            } else if (variable.type === 'video') {
+              variableValues[variable.name] = 'https://example.com/placeholder-video.mp4';
             } else if (variable.type === 'number') {
               variableValues[variable.name] = '123';
             } else if (variable.type === 'email') {
@@ -1043,6 +1047,7 @@ const EmailTemplateEditor = ({
               <option value="email">Email</option>
               <option value="url">URL</option>
               <option value="image">Image</option>
+              <option value="video">Video</option>
             </Input>
           </FormGroup>
         </ModalBody>
@@ -1100,6 +1105,7 @@ const EmailTemplateEditor = ({
                     <option value="email">Email</option>
                     <option value="url">URL</option>
                     <option value="image">Image</option>
+                    <option value="video">Video</option>
                   </Input>
                 </ListGroupItem>
               ))}
