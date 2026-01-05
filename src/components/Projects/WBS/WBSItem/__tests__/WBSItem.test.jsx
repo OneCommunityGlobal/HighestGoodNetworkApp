@@ -66,11 +66,11 @@ const renderComponent = (index, key, wbsId, projectId, name) => {
 describe('WBSItem component', () => {
   it('check index is displaying properly', () => {
     renderComponent(index, key, wbsId, projectId, name);
-    expect(screen.queryByText('0')).toBeInTheDocument();
+    expect(screen.getByText('0')).toBeInTheDocument();
   });
   it('check name and link associated with name displays properly', () => {
     renderComponent(index, key, wbsId, projectId, name);
-    expect(screen.queryByText('test')).toBeInTheDocument();
+    expect(screen.getByText('test')).toBeInTheDocument();
     const linkElement = screen.getByRole('link');
     const hrefAttributeElement = linkElement.getAttribute('href');
     expect(hrefAttributeElement).toBe(`/wbs/tasks/${wbsId}/${projectId}/${name}`);
@@ -83,7 +83,7 @@ describe('WBSItem component', () => {
 
   it('check if deleteWBS html elements get displayed in virtual DOM when the permission is present', () => {
     const { container } = renderComponent(index, key, wbsId, projectId, name);
-    expect(screen.queryByRole('button', { class: 'btn btn-outline-danger btn-sm' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { class: 'btn btn-outline-danger btn-sm' })).toBeInTheDocument();
   });
   it('check if modal opens when button is clicked', async () => {
     axios.get.mockResolvedValue({

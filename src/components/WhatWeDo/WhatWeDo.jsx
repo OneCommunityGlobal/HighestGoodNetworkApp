@@ -1,6 +1,5 @@
-// eslint-disable-next-line no-unused-vars
 import React from 'react';
-import './WhatWeDo.css';
+import styles from './WhatWeDo.module.css';
 
 const sections = [
   {
@@ -18,10 +17,10 @@ const sections = [
     link: 'https://onecommunityglobal.org/highest-good-society/',
   },
   {
-    src: 'http://onecommunityglobal.org/wp-content/uploads/2016/05/HG-Economics-150.png',
+    src: 'https://onecommunityglobal.org/wp-content/uploads/2016/05/HG-Economics-150.png',
     title: 'Highest Good Economics',
     description:
-      'Highest Good Economics: The One Community Non-profit, For-Profit, and Entrepreneurialism Open Source Portal for forward thinking and duplicable Highest Good economics creation.',
+      'Highest Good Economics: The One Community Non-profit, For-profit, and Entrepreneurialism Open Source Portal for forward thinking and duplicable Highest Good economics creation.',
     link: 'https://onecommunityglobal.org/highest-good-economics/',
   },
   {
@@ -40,7 +39,7 @@ const sections = [
     link: 'https://onecommunityglobal.org/highest-good-housing/',
   },
   {
-    src: 'http://onecommunityglobal.org/wp-content/uploads/2016/04/HG-Energy-150.png',
+    src: 'https://onecommunityglobal.org/wp-content/uploads/2016/04/HG-Energy-150.png',
     title: 'Highest Good Energy',
     description:
       'Highest Good Energy: Renewable and conscientious use of the air, water, and land that we all share.',
@@ -64,20 +63,25 @@ const sections = [
 
 function WhatWeDoSection() {
   return (
-    <div className="what-we-do-container">
+    <div className={styles.whatWeDoContainer}>
       <h2>What We Do</h2>
-      <div className="what-we-do-grid">
+      <div className={styles.whatWeDoGrid}>
         {sections.map((section, idx) => (
           <a
-            // eslint-disable-next-line react/no-array-index-key
             key={idx}
             href={section.link}
-            className="what-we-do-item"
+            className={styles.whatWeDoItem}
             target="_blank"
             rel="noopener noreferrer"
           >
-            <img src={section.src} alt={section.title} />
-            <div className="what-we-do-text">
+            <img
+              src={section.src}
+              alt={section.title}
+              onError={e => {
+                e.target.style.display = 'none';
+              }}
+            />
+            <div className={styles.whatWeDoText}>
               <h3>{section.title}</h3>
               <p>{section.description}</p>
             </div>

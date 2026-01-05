@@ -27,7 +27,7 @@ import TotalProjectReport from './TotalReport/TotalProjectReport';
 import TotalContributorsReport from './TotalReport/TotalContributorsReport';
 import AddLostTime from './LostTime/AddLostTime';
 import LostTimeHistory from './LostTime/LostTimeHistory';
-import '../Header/DarkMode.css';
+import '../Header/index.css';
 import ViewReportByDate from './ViewReportsByDate/ViewReportsByDate';
 import ReportFilter from './ReportFilter/ReportFilter';
 import Loading from '../common/Loading';
@@ -109,12 +109,14 @@ class ReportsPage extends Component {
     this.onDateChange = this.onDateChange.bind(this);
     this.handleClearFilters = this.handleClearFilters.bind(this);
     this.showContributorsReport = this.showContributorsReport.bind(this);
+    this.handleSearchClick = this.handleSearchClick.bind(this);
   }
 
   async componentDidMount() {
     const fetchProjects = this.props.fetchAllProjects();
     const fetchTeams = this.props.getAllUserTeams();
-    const fetchUserProfile = this.props.getUserProfileBasicInfo();
+    // Added 'Report' parameter to identify the source for fetching all user basic info
+    const fetchUserProfile = this.props.getUserProfileBasicInfo({source:'Report'});
 
     // parallel api calls
     await Promise.all([fetchProjects, fetchTeams, fetchUserProfile]);
@@ -453,9 +455,17 @@ class ReportsPage extends Component {
       showAddTimeForm: false,
       showAddProjHistory: false,
       showAddPersonHistory: false,
-      showAddTeamHistory: false
+      showAddTeamHistory: false,
+      showCharts: !prevState.showContributorsReport
     }));
   }
+
+  handleSearchClick() {
+    // This function is called when the search button is clicked
+    // The actual scroll behavior is handled in ReportTableSearchPanel
+    // No additional action needed here
+  }
+
 
   render() {
     const { darkMode } = this.props.state.theme;
@@ -496,15 +506,15 @@ class ReportsPage extends Component {
       this.state.peopleSearchData = this.filteredPeopleList(this.state.peopleSearchData);
     }
 
-    const isOxfordBlue = darkMode ? 'bg-oxford-blue' : '';
+    const isOxfordBlue = darkMode ? 'bg-oxford-blue text-light' : 'bg-white-smoke';
     const isYinmnBlue = darkMode ? 'bg-yinmn-blue' : '';
-    const textColor = darkMode ? 'text-light' : 'text-dark';
+    const textColor = darkMode ? 'text-blue-400' : 'text-dark';
     const boxStyling = darkMode ? boxStyleDark : boxStyle;
 
     return (
       <Container fluid className={`mb-5 container-component-wrapper ${isOxfordBlue}`}>
         <div
-          className={`category-data-container ${
+          className={`category-data-container ${isOxfordBlue} ${
             this.state.showPeople ||
             this.state.showProjects ||
             this.state.showTeams ||
@@ -522,7 +532,7 @@ class ReportsPage extends Component {
           type="button"
         >
           <div className="container-component-category">
-            <h2 className="mt-3 mb-5">
+            <h2 className="mt-3 ">
               {/* Loading spinner at the top */}
               {this.state.loading && (
                 <div className="loading-spinner-top">
@@ -530,7 +540,7 @@ class ReportsPage extends Component {
                 </div>
               )}
               <div className="d-flex align-items-center">
-                <h2 className="mr-2">Reports Page</h2>
+                <span className={`mr-2 `}>Reports Page</span>
                 <EditableInfoModal
                   areaName="ReportsPage"
                   areaTitle="Reports Page"
@@ -543,7 +553,7 @@ class ReportsPage extends Component {
               </div>
             </h2>
             <div>
-              <p className="mr-2">Select a Category</p>
+              <p >Select a Category</p>
             </div>
             <div className='report-container-data'>
               <div className='data-container' style={this.state.showCharts ? {width: '50%'} : {width: '100%'}}>
@@ -593,10 +603,11 @@ class ReportsPage extends Component {
                   style={darkMode ? boxStyleDark : boxStyle}
                 >
                   <ReportFilter
-                    filterStatus={this.state.filterStatus} 
+                    filterStatus={this.state.filterStatus}
                     setFilterStatus={this.setFilterStatus}
                     onWildCardSearch={this.onWildCardSearch}
                     onCreateNewTeamShow={this.onCreateNewTeamShow}
+                    onSearchClick={this.handleSearchClick}
                     darkMode={darkMode}
                   />
                   <ViewReportByDate
@@ -660,9 +671,9 @@ class ReportsPage extends Component {
 
                     </div>
                     <div className="total-report-item">
-                      <Button 
-                        type="button" 
-                        color="info" 
+                      <Button
+                        type="button"
+                        color="info"
                         onClick={this.showContributorsReport}
                       >
                         {this.state.showContributorsReport
