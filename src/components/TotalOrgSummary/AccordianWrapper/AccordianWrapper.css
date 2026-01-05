@@ -1,11 +1,16 @@
 .Collapsible {
   background-color: white;
-  border: 1px #ccc solid;
+  border: none;
   border-radius: 15px;
   margin: 10px;
-  box-shadow: 1px 1px #e0e0e0;
+  box-shadow: none;
   margin-left: 20px;
   margin-right: 20px;
+}
+
+/* Dark mode styling for accordions */
+.bg-oxford-blue .Collapsible {
+  background-color: #1b2a41;
 }
 
 .Collapsible__contentInner {

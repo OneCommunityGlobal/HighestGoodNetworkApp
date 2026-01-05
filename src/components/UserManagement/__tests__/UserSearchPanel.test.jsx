@@ -5,6 +5,7 @@ import thunk from 'redux-thunk';
 import { configureStore } from 'redux-mock-store';
 import UserSearchPanel from '../UserSearchPanel';
 import { renderWithProvider } from '../../../__tests__/utils';
+// import { overrides } from 'chart.js/dist/core/core.defaults';
 
 const mockStore = configureStore([thunk]);
 const nonJaeAccountMock = {
@@ -45,6 +46,16 @@ describe('user search panel', () => {
   let onSearch;
   let onActiveFilter;
   let store;
+  const renderPanel = () => {
+     renderWithProvider(
+      <UserSearchPanel
+        onSearch={onSearch}
+        onActiveFiter={onActiveFilter}
+        onNewUserClick={onNewUserClick}
+      />,
+      { store },
+    );
+  }
   beforeEach(() => {
     store = mockStore({
       auth: ownerAccountMock,
@@ -54,14 +65,6 @@ describe('user search panel', () => {
     onNewUserClick = vi.fn();
     onSearch = vi.fn();
     onActiveFilter = vi.fn();
-    renderWithProvider(
-      <UserSearchPanel
-        onSearch={onSearch}
-        onActiveFiter={onActiveFilter}
-        onNewUserClick={onNewUserClick}
-      />,
-      { store },
-    );
   });
 
   describe('Structure', () => {
@@ -69,9 +72,11 @@ describe('user search panel', () => {
     //   expect(screen.getByRole('button', { name: /create new user/i })).toBeInTheDocument();
     // });
     it('should render one textbox', () => {
+      renderPanel();
       expect(screen.getByRole('textbox')).toBeInTheDocument();
     });
     it('should render one combo box for selection', () => {
+      renderPanel();
       expect(screen.getByRole('combobox')).toBeInTheDocument();
     });
   });
@@ -80,46 +85,54 @@ describe('user search panel', () => {
     //   userEvent.click(screen.getByRole('button', { name: /create new user/i }));
     //   expect(onNewUserClick).toHaveBeenCalled();
     // });
-    it('should call onSearch each time the user types one letter', async () => {
+    it('should call onSearch each time the user types one letter', async() => {
+      renderPanel();
       await userEvent.type(screen.getByRole('textbox'), 'test', { allAtOnce: false });
       expect(onSearch).toHaveBeenCalledTimes(4);
     });
-    it('should change value when user types something', async () => {
+    it('should change value when user types something', async() => {
+      renderPanel();
       await userEvent.type(screen.getByRole('textbox'), 'test', { allAtOnce: false });
       expect(screen.getByRole('textbox')).toHaveValue('test');
     });
-    it('should change value when user select different option on the combobox', () => {
-      userEvent.selectOptions(screen.getByRole('combobox'), 'active');
+    it('should change value when user select different option on the combobox', async() => {
+      renderPanel();
+      await userEvent.selectOptions(screen.getByRole('combobox'), 'active');
       expect(screen.getByRole('combobox')).toHaveValue('active');
-      userEvent.selectOptions(screen.getByRole('combobox'), 'inactive');
+      await userEvent.selectOptions(screen.getByRole('combobox'), 'inactive');
       expect(screen.getByRole('combobox')).toHaveValue('inactive');
     });
-    it('should fire onActiveFilter() once the user change the value on combobox', () => {
-      userEvent.selectOptions(screen.getByRole('combobox'), 'active');
+    it('should fire onActiveFilter() once the user change the value on combobox', async() => {
+      renderPanel();
+      await userEvent.selectOptions(screen.getByRole('combobox'), 'active');
       expect(onActiveFilter).toHaveBeenCalled();
-      userEvent.selectOptions(screen.getByRole('combobox'), 'inactive');
+      await userEvent.selectOptions(screen.getByRole('combobox'), 'inactive');
       expect(onActiveFilter).toHaveBeenCalledTimes(2);
     });
   });
   describe('More Behaviors', () => {
     it('should not call onSearch when no user input', async () => {
+      renderPanel();
       await userEvent.type(screen.getByRole('textbox'), '');
       expect(onSearch).toHaveBeenCalledTimes(0);
     });
     it('should change value when user types something', async () => {
+      renderPanel();
       await userEvent.type(screen.getByRole('textbox'), 'test all at once', { allAtOnce: true });
       expect(screen.getByRole('textbox')).toHaveValue('test all at once');
     });
-    it('should change value when user select different option on the combobox', () => {
-      userEvent.selectOptions(screen.getByRole('combobox'), 'paused');
+    it('should change value when user select different option on the combobox', async() => {
+      renderPanel();
+      await userEvent.selectOptions(screen.getByRole('combobox'), 'paused');
       expect(screen.getByRole('combobox')).toHaveValue('paused');
-      userEvent.selectOptions(screen.getByRole('combobox'), 'all');
+      await userEvent.selectOptions(screen.getByRole('combobox'), 'all');
       expect(screen.getByRole('combobox')).toHaveValue('all');
     });
-    it('should fire onActiveFilter() once the user change the value on combobox', () => {
-      userEvent.selectOptions(screen.getByRole('combobox'), 'paused');
+    it('should fire onActiveFilter() once the user change the value on combobox', async() => {
+      renderPanel();
+      await userEvent.selectOptions(screen.getByRole('combobox'), 'paused');
       expect(onActiveFilter).toHaveBeenCalled();
-      userEvent.selectOptions(screen.getByRole('combobox'), 'all');
+      await userEvent.selectOptions(screen.getByRole('combobox'), 'all');
       expect(onActiveFilter).toHaveBeenCalledTimes(2);
     });
   });
