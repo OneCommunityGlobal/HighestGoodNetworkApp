@@ -56,7 +56,6 @@ const ActionButtons = ({ update, isProcessing, onSave, onCancel, onEdit, onDelet
   );
 };
 
-
 const defaultState = {
   filterName: '',
   selectedCodes: [],
@@ -470,7 +469,7 @@ export default function UpdateFilterModal({
                     teamCodes={teamCodes}
                     colorOptions={colorOptions}
                     tableData={tableData}
-               summaries={summaries}
+                    summaries={summaries}
                     teamCodeWarningUsers={teamCodeWarningUsers}
                   />
                 ) : (
