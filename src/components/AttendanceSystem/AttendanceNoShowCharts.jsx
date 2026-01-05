@@ -7,6 +7,7 @@ import axios from 'axios';
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { ENDPOINTS } from '~/utils/URL';
 import { events as mockEvents } from './mockData';
+import styles from './AttendanceNoShowCharts.module.css';
 
 const attendanceColors = ['#0088FE', '#FF8042'];
 const noShowColors = ['#00C49F', '#FF0000'];
@@ -254,19 +255,9 @@ function AttendanceNoShowCharts() {
   // Show loading state
   if (loading) {
     return (
-      <div
-        style={{
-          minHeight: '100vh',
-          backgroundColor: '#f9fafb',
-          padding: '16px',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          fontFamily: 'Arial, sans-serif',
-        }}
-      >
-        <div style={{ textAlign: 'center' }}>
-          <p style={{ fontSize: '18px', color: '#6b7280' }}>Loading event data...</p>
+      <div className={styles.loadingContainer}>
+        <div className={styles.loadingTextContainer}>
+          <p className={styles.loadingText}>Loading event data...</p>
         </div>
       </div>
     );
@@ -275,20 +266,10 @@ function AttendanceNoShowCharts() {
   // Show error or no data state
   if (!selectedEvent || events.length === 0) {
     return (
-      <div
-        style={{
-          minHeight: '100vh',
-          backgroundColor: '#f9fafb',
-          padding: '16px',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          fontFamily: 'Arial, sans-serif',
-        }}
-      >
-        <div style={{ textAlign: 'center' }}>
-          <p style={{ fontSize: '18px', color: '#6b7280' }}>No event data available</p>
-          {error && <p style={{ fontSize: '14px', color: '#9ca3af', marginTop: '8px' }}>{error}</p>}
+      <div className={styles.errorContainer}>
+        <div className={styles.errorTextContainer}>
+          <p className={styles.errorText}>No event data available</p>
+          {error && <p className={styles.errorMessage}>{error}</p>}
         </div>
       </div>
     );
@@ -305,63 +286,21 @@ function AttendanceNoShowCharts() {
   ];
 
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        backgroundColor: '#f9fafb',
-        padding: '16px',
-        fontFamily: 'Arial, sans-serif',
-        lineHeight: 1.6,
-        color: '#333',
-      }}
-    >
-      <div
-        style={{
-          maxWidth: '1200px',
-          margin: '0 auto',
-        }}
-      >
-        <h1
-          style={{
-            fontSize: '24px',
-            fontWeight: 'bold',
-            textAlign: 'center',
-            color: '#111827',
-            marginBottom: '24px',
-          }}
-        >
-          Event-wise Attendance Statistics
-        </h1>
+    <div className={styles.pageContainer}>
+      <div className={styles.contentWrapper}>
+        <h1 className={styles.pageTitle}>Event-wise Attendance Statistics</h1>
         {error && (
-          <div
-            style={{
-              backgroundColor: '#fef3c7',
-              border: '1px solid #fbbf24',
-              borderRadius: '6px',
-              padding: '12px',
-              marginBottom: '24px',
-              textAlign: 'center',
-            }}
-          >
-            <p style={{ fontSize: '14px', color: '#92400e', margin: 0 }}>{error}</p>
+          <div className={styles.alertContainer}>
+            <p className={styles.alertText}>{error}</p>
           </div>
         )}
 
         {/* Event Selector */}
-        <div style={{ marginBottom: '24px' }}>
+        <div className={styles.selectorContainer}>
           <select
             onChange={handleEventChange}
             value={selectedEvent.id}
-            style={{
-              width: '100%',
-              padding: '12px',
-              fontSize: '16px',
-              border: '1px solid #d1d5db',
-              borderRadius: '6px',
-              backgroundColor: 'white',
-              boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
-              outline: 'none',
-            }}
+            className={styles.eventSelect}
           >
             {events.map(event => (
               <option key={event.id} value={event.id}>
@@ -372,225 +311,62 @@ function AttendanceNoShowCharts() {
         </div>
 
         {/* Event Details Card */}
-        <div
-          style={{
-            backgroundColor: 'white',
-            borderRadius: '8px',
-            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-            padding: '24px',
-            marginBottom: '24px',
-          }}
-        >
-          <h2
-            style={{
-              fontSize: '24px',
-              fontWeight: '600',
-              color: '#111827',
-              marginBottom: '24px',
-            }}
-          >
-            {selectedEvent.name}
-          </h2>
+        <div className={styles.card}>
+          <h2 className={styles.cardTitle}>{selectedEvent.name}</h2>
 
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-              gap: '20px',
-            }}
-          >
-            <div style={{ marginBottom: '8px' }}>
-              <p
-                style={{
-                  fontSize: '12px',
-                  fontWeight: '500',
-                  color: '#6b7280',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                  marginBottom: '4px',
-                }}
-              >
-                Date
-              </p>
-              <p
-                style={{
-                  fontSize: '18px',
-                  fontWeight: '600',
-                  color: '#111827',
-                }}
-              >
-                {selectedEvent.date}
-              </p>
+          <div className={styles.detailsGrid}>
+            <div className={styles.detailItem}>
+              <p className={styles.detailLabel}>Date</p>
+              <p className={styles.detailValue}>{selectedEvent.date}</p>
             </div>
 
             <div style={{ marginBottom: '8px' }}>
-              <p
-                style={{
-                  fontSize: '12px',
-                  fontWeight: '500',
-                  color: '#6b7280',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                  marginBottom: '4px',
-                }}
-              >
-                Time
-              </p>
-              <p
-                style={{
-                  fontSize: '18px',
-                  fontWeight: '600',
-                  color: '#111827',
-                }}
-              >
-                {selectedEvent.time}
-              </p>
+              <p className={styles.detailLabel}>Time</p>
+              <p className={styles.detailValue}>{selectedEvent.time}</p>
             </div>
 
             <div style={{ marginBottom: '8px' }}>
-              <p
-                style={{
-                  fontSize: '12px',
-                  fontWeight: '500',
-                  color: '#6b7280',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                  marginBottom: '4px',
-                }}
-              >
-                Event Link
-              </p>
+              <p className={styles.detailLabel}>Event Link</p>
               <a
                 href={selectedEvent.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{
-                  fontSize: '18px',
-                  fontWeight: '600',
-                  color: '#2563eb',
-                  textDecoration: 'none',
-                  wordBreak: 'break-all',
-                }}
-                onMouseOver={e => {
-                  e.target.style.textDecoration = 'underline';
-                }}
-                onMouseOut={e => {
-                  e.target.style.textDecoration = 'none';
-                }}
-                onFocus={e => {
-                  e.target.style.textDecoration = 'underline';
-                }}
-                onBlur={e => {
-                  e.target.style.textDecoration = 'none';
-                }}
+                className={styles.link}
               >
                 {selectedEvent.link}
               </a>
             </div>
 
             <div style={{ marginBottom: '8px' }}>
-              <p
-                style={{
-                  fontSize: '12px',
-                  fontWeight: '500',
-                  color: '#6b7280',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                  marginBottom: '4px',
-                }}
-              >
-                Organizer
-              </p>
-              <p
-                style={{
-                  fontSize: '18px',
-                  fontWeight: '600',
-                  color: '#111827',
-                }}
-              >
-                {selectedEvent.organizer}
-              </p>
+              <p className={styles.detailLabel}>Organizer</p>
+              <p className={styles.detailValue}>{selectedEvent.organizer}</p>
             </div>
 
             <div style={{ marginBottom: '8px' }}>
-              <p
-                style={{
-                  fontSize: '12px',
-                  fontWeight: '500',
-                  color: '#6b7280',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                  marginBottom: '4px',
-                }}
-              >
-                Capacity
-              </p>
-              <p
-                style={{
-                  fontSize: '18px',
-                  fontWeight: '600',
-                  color: '#111827',
-                }}
-              >
-                {selectedEvent.capacity}
-              </p>
+              <p className={styles.detailLabel}>Capacity</p>
+              <p className={styles.detailValue}>{selectedEvent.capacity}</p>
             </div>
 
             {showCompletionMetrics && (
-              <div style={{ marginBottom: '8px' }}>
-                <p
-                  style={{
-                    fontSize: '12px',
-                    fontWeight: '500',
-                    color: '#6b7280',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.05em',
-                    marginBottom: '4px',
-                  }}
-                >
-                  Overall Rating
-                </p>
-                <p
-                  style={{
-                    fontSize: '18px',
-                    fontWeight: '600',
-                    color: '#111827',
-                  }}
-                >
-                  {selectedEvent.overallRating} / 5
-                </p>
+              <div className={styles.detailItem}>
+                <p className={styles.detailLabel}>Overall Rating</p>
+                <p className={styles.detailValue}>{selectedEvent.overallRating} / 5</p>
               </div>
             )}
 
             <div style={{ marginBottom: '8px' }}>
-              <p
-                style={{
-                  fontSize: '12px',
-                  fontWeight: '500',
-                  color: '#6b7280',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                  marginBottom: '4px',
-                }}
-              >
-                Status
-              </p>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <p className={styles.detailLabel}>Status</p>
+              <div className={styles.statusContainer}>
                 <span
+                  className={styles.statusDot}
                   style={{
-                    display: 'inline-block',
-                    width: '12px',
-                    height: '12px',
-                    borderRadius: '50%',
                     backgroundColor: statusColor,
                   }}
                 />
                 <p
+                  className={styles.statusValue}
                   style={{
-                    fontSize: '18px',
-                    fontWeight: '600',
                     color: statusColor,
-                    margin: 0,
                   }}
                 >
                   {currentStatus}
@@ -598,12 +374,7 @@ function AttendanceNoShowCharts() {
               </div>
               {currentStatus === 'In Progress' && (
                 <p
-                  style={{
-                    fontSize: '12px',
-                    color: '#6b7280',
-                    marginTop: '4px',
-                    fontStyle: 'italic',
-                  }}
+                  className={styles.liveMetricsNote}
                   title="Metrics are live and subject to change as the event continues"
                 >
                   Live metrics - subject to change
@@ -611,63 +382,25 @@ function AttendanceNoShowCharts() {
               )}
             </div>
 
-            <div style={{ marginBottom: '8px' }}>
-              <p
-                style={{
-                  fontSize: '12px',
-                  fontWeight: '500',
-                  color: '#6b7280',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                  marginBottom: '4px',
-                }}
-              >
-                Total Registrations
-              </p>
-              <p
-                style={{
-                  fontSize: '18px',
-                  fontWeight: '600',
-                  color: '#111827',
-                }}
-              >
-                {selectedEvent.registrations}
-              </p>
+            <div className={styles.detailItem}>
+              <p className={styles.detailLabel}>Total Registrations</p>
+              <p className={styles.detailValue}>{selectedEvent.registrations}</p>
             </div>
 
             {showAttendanceMetrics && (
-              <div style={{ marginBottom: '8px' }}>
-                <p
-                  style={{
-                    fontSize: '12px',
-                    fontWeight: '500',
-                    color: '#6b7280',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.05em',
-                    marginBottom: '4px',
-                  }}
-                >
+              <div className={styles.detailItem}>
+                <p className={styles.detailLabel}>
                   Total Attendees
                   {currentStatus === 'In Progress' && (
                     <span
-                      style={{
-                        marginLeft: '6px',
-                        fontSize: '10px',
-                        color: '#3b82f6',
-                      }}
+                      className={styles.liveBadge}
                       title="Live attendance count - subject to change"
                     >
                       (Live)
                     </span>
                   )}
                 </p>
-                <p
-                  style={{
-                    fontSize: '18px',
-                    fontWeight: '600',
-                    color: '#111827',
-                  }}
-                >
+                <p className={styles.detailValue}>
                   {selectedEvent.attendees} (
                   {calculatePercentage(selectedEvent.attendees, selectedEvent.registrations)})
                 </p>
@@ -676,51 +409,17 @@ function AttendanceNoShowCharts() {
 
             {showCompletionMetrics && (
               <>
-                <div style={{ marginBottom: '8px' }}>
-                  <p
-                    style={{
-                      fontSize: '12px',
-                      fontWeight: '500',
-                      color: '#6b7280',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.05em',
-                      marginBottom: '4px',
-                    }}
-                  >
-                    Completed
-                  </p>
-                  <p
-                    style={{
-                      fontSize: '18px',
-                      fontWeight: '600',
-                      color: '#111827',
-                    }}
-                  >
+                <div className={styles.detailItem}>
+                  <p className={styles.detailLabel}>Completed</p>
+                  <p className={styles.detailValue}>
                     {selectedEvent.completed} (
                     {calculatePercentage(selectedEvent.completed, selectedEvent.attendees)})
                   </p>
                 </div>
 
-                <div style={{ marginBottom: '8px' }}>
-                  <p
-                    style={{
-                      fontSize: '12px',
-                      fontWeight: '500',
-                      color: '#6b7280',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.05em',
-                      marginBottom: '4px',
-                    }}
-                  >
-                    Walkouts
-                  </p>
-                  <p
-                    style={{
-                      fontSize: '18px',
-                      fontWeight: '600',
-                      color: '#111827',
-                    }}
-                  >
+                <div className={styles.detailItem}>
+                  <p className={styles.detailLabel}>Walkouts</p>
+                  <p className={styles.detailValue}>
                     {selectedEvent.walkouts} (
                     {calculatePercentage(selectedEvent.walkouts, selectedEvent.attendees)})
                   </p>
@@ -729,23 +428,8 @@ function AttendanceNoShowCharts() {
             )}
 
             {currentStatus === 'Upcoming' && (
-              <div
-                style={{
-                  gridColumn: '1 / -1',
-                  backgroundColor: '#f3f4f6',
-                  borderRadius: '6px',
-                  padding: '12px',
-                  marginTop: '8px',
-                }}
-              >
-                <p
-                  style={{
-                    fontSize: '14px',
-                    color: '#6b7280',
-                    margin: 0,
-                    fontStyle: 'italic',
-                  }}
-                >
+              <div className={styles.upcomingContainer}>
+                <p className={styles.upcomingText}>
                   Attendance metrics will be available once the event starts.
                 </p>
               </div>
@@ -755,31 +439,12 @@ function AttendanceNoShowCharts() {
 
         {/* Charts Section */}
         {showCharts && (
-          <div
-            style={{
-              backgroundColor: 'white',
-              borderRadius: '8px',
-              boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-              padding: '24px',
-            }}
-          >
-            <h2
-              style={{
-                fontSize: '24px',
-                fontWeight: '600',
-                color: '#111827',
-                marginBottom: '24px',
-              }}
-            >
+          <div className={styles.chartsCard}>
+            <h2 className={styles.cardTitle}>
               Attendance and No-Show Breakdown
               {currentStatus === 'In Progress' && (
                 <span
-                  style={{
-                    fontSize: '14px',
-                    fontWeight: '400',
-                    color: '#3b82f6',
-                    marginLeft: '12px',
-                  }}
+                  className={styles.liveDataBadge}
                   title="Charts show live data that may change as the event continues"
                 >
                   (Live Data)
@@ -787,29 +452,12 @@ function AttendanceNoShowCharts() {
               )}
             </h2>
 
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '32px',
-              }}
-              className="charts-container"
-            >
+            <div className={styles.chartsContainer}>
               {/* Attendance Chart - Only show for In Progress or Completed */}
               {showCompletionMetrics && (
-                <div style={{ width: '100%' }}>
-                  <h3
-                    style={{
-                      fontSize: '18px',
-                      fontWeight: '500',
-                      color: '#111827',
-                      marginBottom: '12px',
-                      textAlign: 'center',
-                    }}
-                  >
-                    Attendance Breakdown
-                  </h3>
-                  <div style={{ height: '300px', width: '100%' }}>
+                <div className={styles.chartWrapper}>
+                  <h3 className={styles.chartSectionTitle}>Attendance Breakdown</h3>
+                  <div className={styles.chartContainer}>
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
                         <Pie
@@ -838,32 +486,14 @@ function AttendanceNoShowCharts() {
               )}
 
               {/* No-Show Chart */}
-              <div style={{ width: '100%' }}>
-                <h3
-                  style={{
-                    fontSize: '18px',
-                    fontWeight: '500',
-                    color: '#111827',
-                    marginBottom: '12px',
-                    textAlign: 'center',
-                  }}
-                >
+              <div className={styles.chartWrapper}>
+                <h3 className={styles.chartSectionTitle}>
                   Registration vs Attendance
                   {currentStatus === 'In Progress' && (
-                    <span
-                      style={{
-                        fontSize: '12px',
-                        fontWeight: '400',
-                        color: '#6b7280',
-                        display: 'block',
-                        marginTop: '4px',
-                      }}
-                    >
-                      (Live)
-                    </span>
+                    <span className={styles.chartLiveBadge}>(Live)</span>
                   )}
                 </h3>
-                <div style={{ height: '300px', width: '100%' }}>
+                <div className={styles.chartContainer}>
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie
@@ -894,53 +524,13 @@ function AttendanceNoShowCharts() {
         )}
 
         {currentStatus === 'Upcoming' && (
-          <div
-            style={{
-              backgroundColor: 'white',
-              borderRadius: '8px',
-              boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-              padding: '24px',
-              textAlign: 'center',
-            }}
-          >
-            <p
-              style={{
-                fontSize: '16px',
-                color: '#6b7280',
-                margin: 0,
-              }}
-            >
+          <div className={styles.upcomingChartsCard}>
+            <p className={styles.upcomingChartsText}>
               Charts will be available once the event starts.
             </p>
           </div>
         )}
       </div>
-
-      <style>
-        {`
-        @media (min-width: 768px) {
-          .charts-container {
-            flex-direction: row !important;
-            justify-content: space-between;
-          }
-          .charts-container > div {
-            width: 48% !important;
-          }
-        }
-
-        @media (max-width: 480px) {
-          h1 {
-            font-size: 20px !important;
-          }
-          h2 {
-            font-size: 20px !important;
-          }
-          h3 {
-            font-size: 16px !important;
-          }
-        }
-      `}
-      </style>
     </div>
   );
 }
