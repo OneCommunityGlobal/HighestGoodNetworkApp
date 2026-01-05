@@ -11,6 +11,7 @@ export default function WeeklySummariesToggleFilter({
   editable,
   formId,
   hasPermission,
+  canSeeBioHighlight,
 }) {
   const handleTrophyToggleChange = () => {
     toggleField(setState, 'selectedTrophies');
@@ -66,7 +67,7 @@ export default function WeeklySummariesToggleFilter({
           </div>
         </div>
       )}
-      {(hasPermissionToFilter || hasPermission?.('highlightEligibleBios')) && (
+      {(hasPermissionToFilter || canSeeBioHighlight) && (
         <div className={`${styles.filterStyle} ml-3`} style={{ minWidth: 'max-content' }}>
           <span>Filter by Bio Status</span>
           <div className={styles.switchToggleControl}>
@@ -139,4 +140,5 @@ WeeklySummariesToggleFilter.propTypes = {
   editable: PropTypes.bool,
   formId: PropTypes.string.isRequired,
   hasPermission: PropTypes.func,
+  canSeeBioHighlight: PropTypes.bool,
 };

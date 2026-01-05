@@ -26,6 +26,13 @@
   color: #ffffff !important;
 }
 
+.bioHighlight {
+  width: calc(100%, 24px);
+  margin-left: -12px;
+  margin-right: -12px;
+  padding: 8px 12px;
+}
+
 .reportWrapper {
   padding: 20px 0;
   
