@@ -24,3 +24,7 @@ h3 {
     flex-direction: column;
   }
 }
+
+:global(.dark-mode) h3 {
+  color: #fff;
+}

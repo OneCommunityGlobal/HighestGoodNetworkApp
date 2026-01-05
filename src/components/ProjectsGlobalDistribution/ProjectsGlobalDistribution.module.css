@@ -1,0 +1,18 @@
+.filter{
+  display: flex;
+  justify-content: space-around;
+  margin: 2em 0;
+}
+
+.filterLabel{
+  margin-right: 0.5em;
+}
+
+.chartContainer {
+  display: flex;
+  justify-content: center;
+}
+
+.darkmode, .filterDark {
+  background-color: #1b2a41 !important;
+}
