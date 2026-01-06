@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalFooter, ModalBody } from 'reactstrap';
 import { boxStyle, boxStyleDark } from '~/styles';
-import '../Header/DarkMode.css';
+import '../Header/index.css';
 
 function ListUsersPopUp({ open, onClose, userProfiles, removeUser, setEdit }) {
   const darkMode = useSelector(state => state.theme.darkMode);

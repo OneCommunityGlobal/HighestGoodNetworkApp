@@ -10,7 +10,13 @@ import hasPermission from '../../utils/permissions';
 export function HeaderRenderer(props) {
   const location = useLocation();
   const isCommunityPortal = location.pathname.startsWith('/communityportal');
-  
+  const isEducationEvaluation = location.pathname.startsWith('/educationportal/evaluation-results');
+
+  // Hide header for education portal evaluation results page
+  if (isEducationEvaluation) {
+    return null;
+  }
+
 // eslint-disable-next-line react/jsx-props-no-spreading
   return isCommunityPortal ? <CPHeader {...props} /> : <Header {...props}/>;
 }

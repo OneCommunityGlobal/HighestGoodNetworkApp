@@ -1,10 +1,12 @@
 // Activity List Component
 import { useState, useEffect } from 'react';
-import './ActivityList.css';
+import { useSelector } from 'react-redux';
+import styles from './ActivityList.module.css';
 // import { useHistory } from 'react-router-dom';
 
 function ActivityList() {
   const [activities, setActivities] = useState([]);
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [filter, setFilter] = useState({
     type: '',
     date: '',
@@ -21,12 +23,102 @@ function ActivityList() {
         date: '2024-01-10',
         location: 'Community Center',
       },
-      { id: 2, name: 'Book Club', type: 'Social', date: '2024-01-12', location: 'Library' },
+      {
+        id: 2,
+        name: 'Book Club',
+        type: 'Social',
+        date: '2024-01-12',
+        location: 'Library',
+      },
       {
         id: 3,
         name: 'Coding Workshop',
         type: 'Educational',
         date: '2023-12-30',
+        location: 'Tech Hub',
+      },
+      {
+        id: 4,
+        name: 'Painting Session',
+        type: 'Art',
+        date: '2024-01-15',
+        location: 'Art Studio',
+      },
+      {
+        id: 5,
+        name: 'Dance Class',
+        type: 'Fitness',
+        date: '2024-01-10',
+        location: 'Community Center',
+      },
+      {
+        id: 6,
+        name: 'Gardening Meetup',
+        type: 'Social',
+        date: '2024-01-20',
+        location: 'Botanical Garden',
+      },
+      {
+        id: 7,
+        name: 'Cooking Class',
+        type: 'Educational',
+        date: '2024-01-18',
+        location: 'Culinary School',
+      },
+      {
+        id: 8,
+        name: 'Photography Walk',
+        type: 'Art',
+        date: '2023-12-30',
+        location: 'City Park',
+      },
+      {
+        id: 9,
+        name: 'Marathon Training',
+        type: 'Fitness',
+        date: '2024-02-01',
+        location: 'Stadium',
+      },
+      {
+        id: 10,
+        name: 'Chess Tournament',
+        type: 'Social',
+        date: '2024-01-12',
+        location: 'Library',
+      },
+      {
+        id: 11,
+        name: 'Tech Talk',
+        type: 'Educational',
+        date: '2024-01-15',
+        location: 'Tech Hub',
+      },
+      {
+        id: 12,
+        name: 'Sculpture Workshop',
+        type: 'Art',
+        date: '2024-01-25',
+        location: 'Art Studio',
+      },
+      {
+        id: 13,
+        name: 'Pilates Class',
+        type: 'Fitness',
+        date: '2024-01-20',
+        location: 'Community Center',
+      },
+      {
+        id: 14,
+        name: 'Film Screening',
+        type: 'Social',
+        date: '2024-01-18',
+        location: 'Library',
+      },
+      {
+        id: 15,
+        name: 'Robotics Expo',
+        type: 'Educational',
+        date: '2024-01-10',
         location: 'Tech Hub',
       },
     ];
@@ -40,17 +132,25 @@ function ActivityList() {
 
   const filteredActivities = activities.filter(activity => {
     return (
-      (!filter.type || activity.type.includes(filter.type)) &&
+      (!filter.type || activity.type.toLowerCase().includes(filter.type.toLowerCase())) &&
       (!filter.date || activity.date === filter.date) &&
-      (!filter.location || activity.location.includes(filter.location))
+      (!filter.location || activity.location.toLowerCase().includes(filter.location.toLowerCase()))
     );
   });
 
-  return (
-    <div>
-      <h1>Activity List</h1>
+  const handleClearFilters = () => {
+    setFilter({
+      type: '',
+      date: '',
+      location: '',
+    });
+  };
 
-      <div className="filters">
+  return (
+    <div className={`${styles.body} ${darkMode ? styles.darkBody : ''}`}>
+      <h1 className={styles.h1}>Activity List</h1>
+
+      <div className={`${styles.filters} ${darkMode ? styles.darkFilters : ''}`}>
         <label>
           Type:
           <input
@@ -77,8 +177,16 @@ function ActivityList() {
             placeholder="Enter location"
           />
         </label>
+        <button
+          type="button"
+          onClick={handleClearFilters}
+          disabled={!filter.type && !filter.date && !filter.location}
+        >
+          Clear All
+        </button>
       </div>
-      <div className="activity-list">
+
+      <div className={`${styles.activityList} ${darkMode ? styles.darkActivityList : ''}`}>
         {filteredActivities.length > 0 ? (
           <ul>
             {filteredActivities.map(activity => (
