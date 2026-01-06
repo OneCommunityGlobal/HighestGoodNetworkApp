@@ -10,7 +10,7 @@
 }
 
 .issueChartEventContainerDark {
-  background: #121212;
+  background: #1C2541;
   box-shadow: 0 4px 12px rgba(0,0,0,0.9);
   color: #ccd1dc;
 }
@@ -33,7 +33,7 @@
 }
 
 .chartWrapperDark {
-  background: #1e1e1e;
+  background: #3A506B;
   box-shadow: 0 0 15px rgba(0,0,0,0.9);
   color: #ccd1dc;
 }
