@@ -1,4 +1,5 @@
-table thead th, table td {
+table thead th,
+table td {
   vertical-align: middle !important;
 }
 
@@ -10,7 +11,10 @@ table thead th, table td {
 }
 
 .itemsTableContainer {
-  overflow-x: scroll;
+  overflow: auto;
+  max-height: 600px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
 }
 
 .itemsListContainer section {
@@ -22,13 +26,14 @@ table thead th, table td {
   min-width: 1024px;
   overflow: scroll;
   font-size: small;
+  margin-bottom: 0 !important;
 }
 
 .itemsListContainer th {
   height: 2rem;
 }
 
-.itemsCell td{
+.itemsCell td {
   vertical-align: middle;
 }
 
@@ -45,6 +50,74 @@ table thead th, table td {
 
 .itemsCell svg:hover {
   color: black;
+}
+
+.searchRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 12px 0;
+  flex-wrap: wrap;
+}
+
+.searchBox {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.searchBox label {
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.searchBox input {
+  height: 38px;
+  width: 320px;
+  max-width: 80vw;
+  padding: 5px 34px 5px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.clearSearch {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  font-size: 18px;
+  cursor: pointer;
+  color: #6b7280;
+}
+
+.clearSearch:hover {
+  color: #111827;
+}
+
+.foundCount {
+  font-size: 0.9rem;
+  opacity: 0.85;
+}
+
+.stickyThead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.sortableTh {
+  cursor: pointer;
+  user-select: none;
+}
+
+.sortableTh:hover {
+  text-decoration: underline;
 }
 
 .selectInput {
@@ -81,6 +154,7 @@ table thead th, table td {
   padding: 5px;
   margin-bottom: 8px;
 }
+
 .btnPrimary {
   background-color: #468ef9;
   color: white;
@@ -89,14 +163,80 @@ table thead th, table td {
   border-radius: 4px;
   cursor: pointer;
 }
+
 .buttonsRow {
   display: flex;
   justify-content: center;
   gap: 15px;
   margin-bottom: 15px;
 }
+
 .btnPrimary:hover {
   background-color: #3b82f6;
+}
+
+.paginationBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid #e5e7eb;
+  border-top: none;
+  border-radius: 0 0 6px 6px;
+  flex-wrap: wrap;
+}
+
+.rowsPerPage {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+}
+
+.rowsPerPage select {
+  height: 32px;
+  padding: 0 8px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  background: #fff;
+}
+
+.rangeInfo {
+  font-size: 0.9rem;
+  opacity: 0.85;
+}
+
+.pageButtons {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pageButtons button {
+  height: 32px;
+  min-width: 32px;
+  padding: 0 8px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  background: white;
+  cursor: pointer;
+}
+
+.pageButtons button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.activePage {
+  background-color: #468ef9 !important;
+  color: white !important;
+  border-color: #468ef9 !important;
+}
+
+.ellipsis {
+  padding: 0 6px;
+  opacity: 0.75;
 }
 
 .darkMode {
@@ -144,6 +284,11 @@ table thead th, table td {
   border-color: #3f5269 !important;
 }
 
+.darkTable .stickyThead th {
+  background-color: #2f4157;
+  border-bottom: 1px solid #3f5269;
+}
+
 .darkTable tbody td,
 .darkTable tbody th {
   border-color: #2f4157 !important;
@@ -155,6 +300,36 @@ table thead th, table td {
 
 .darkTable tbody tr:nth-child(even) {
   background-color: #23375b;
+}
+
+.darkMode .searchBox input {
+  background-color: #2a3f5f;
+  color: #e8edf4;
+  border: 1px solid #3f5269;
+}
+
+.darkMode .searchBox input::placeholder {
+  color: #c8d2e0;
+}
+
+.darkMode .clearSearch:hover {
+  color: #ffffff;
+}
+
+.darkMode .paginationBar {
+  border-color: #2f4157;
+}
+
+.darkMode .rowsPerPage select {
+  background-color: #2a3f5f;
+  color: #e8edf4;
+  border: 1px solid #3f5269;
+}
+
+.darkMode .pageButtons button {
+  background-color: #1b2a41;
+  color: #e8edf4;
+  border: 1px solid #3f5269;
 }
 
 .darkDatePickerInput {
@@ -249,11 +424,13 @@ table thead th, table td {
   background-color: #2a3f5f !important;
 }
 
-/* Explicitly target react-datepicker time list via :global to override inline white background */
 .darkDatePicker :global(.react-datepicker__time-container),
 .darkDatePicker :global(.react-datepicker__time-container .react-datepicker__time),
 .darkDatePicker :global(.react-datepicker__time-container .react-datepicker__time-box),
-.darkDatePicker :global(.react-datepicker__time-container .react-datepicker__time-box ul.react-datepicker__time-list) {
+.darkDatePicker
+  :global(.react-datepicker__time-container
+    .react-datepicker__time-box
+    ul.react-datepicker__time-list) {
   background-color: #2a3f5f !important;
   border-color: #3f5269 !important;
   color: #e8edf4 !important;
@@ -279,7 +456,6 @@ table thead th, table td {
   display: none;
 }
 
-/* Light mode styles to improve time list contrast */
 .lightDatePickerInput {
   background-color: #ffffff !important;
   color: #111827 !important;
@@ -340,7 +516,10 @@ table thead th, table td {
 .lightDatePicker :global(.react-datepicker__time-container),
 .lightDatePicker :global(.react-datepicker__time-container .react-datepicker__time),
 .lightDatePicker :global(.react-datepicker__time-container .react-datepicker__time-box),
-.lightDatePicker :global(.react-datepicker__time-container .react-datepicker__time-box ul.react-datepicker__time-list) {
+.lightDatePicker
+  :global(.react-datepicker__time-container
+    .react-datepicker__time-box
+    ul.react-datepicker__time-list) {
   background-color: #ffffff !important;
   border-color: #d1d5db !important;
   color: #1f2937 !important;
@@ -364,4 +543,21 @@ table thead th, table td {
 
 .lightDatePickerPopper .react-datepicker__triangle {
   display: none;
+}
+
+@media (max-width: 900px) {
+  .selectInput {
+    grid-template-columns: 1fr;
+    max-width: 100%;
+  }
+
+  .selectInput label {
+    text-align: left;
+  }
+
+  .selectInput input,
+  .selectInput select {
+    max-width: 100%;
+    min-width: 0;
+  }
 }
