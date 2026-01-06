@@ -4,6 +4,7 @@ import { Bar } from 'react-chartjs-2';
 import Select from 'react-select';
 import { fetchIssues } from '../../../actions/bmdashboard/issueChartActions';
 import 'chart.js/auto';
+import { Chart as ChartJS } from 'chart.js';
 import styles from './issueChart.module.css';
 
 function IssueChart() {
@@ -172,6 +173,9 @@ function IssueChart() {
           displayColors: true,
           titleAlign: 'left',
           bodyAlign: 'left',
+        },
+        datalabels: {
+          display: false,
         },
         xAxisBackground: true,
       },
