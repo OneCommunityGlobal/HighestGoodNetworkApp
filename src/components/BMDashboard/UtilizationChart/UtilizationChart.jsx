@@ -7,6 +7,8 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import axios from 'axios';
 import styles from './UtilizationChart.module.css';
+import { useSelector } from 'react-redux';
+import { ENDPOINTS } from '../../../utils/URL';
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Title);
 
@@ -17,30 +19,52 @@ function UtilizationChart() {
   const [toolFilter, setToolFilter] = useState('ALL');
   const [projectFilter, setProjectFilter] = useState('ALL');
   const [error, setError] = useState(null);
+  const [toolTypes, setToolTypes] = useState([]);
+  const [projects, setProjects] = useState([]);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   const fetchChartData = async () => {
     try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_APIENDPOINT}/tools/utilization`,
-        {
-          params: {
-            startDate,
-            endDate,
-            tool: toolFilter,
-            project: projectFilter,
-          },
-          headers: {
-            Authorization: localStorage.getItem('token'),
-          },
-        }
-      );
+      const response = await axios.get(`${process.env.REACT_APP_APIENDPOINT}/tools/utilization`, {
+        params: {
+          startDate,
+          endDate,
+          tool: toolFilter,
+          project: projectFilter,
+        },
+        headers: {
+          Authorization: localStorage.getItem('token'),
+        },
+      });
       setToolsData(response.data);
     } catch (err) {
       setError('Failed to load utilization data.');
     }
   };
 
+  const fetchFilterData = async () => {
+    try {
+      const [toolTypesResponse, projectsResponse] = await Promise.all([
+        axios.get(ENDPOINTS.BM_TOOL_TYPES, {
+          headers: {
+            Authorization: localStorage.getItem('token'),
+          },
+        }),
+        axios.get(ENDPOINTS.BM_PROJECTS + 'Names', {
+          headers: {
+            Authorization: localStorage.getItem('token'),
+          },
+        }),
+      ]);
+      setToolTypes(toolTypesResponse.data);
+      setProjects(projectsResponse.data);
+    } catch (err) {
+      setError('Failed to load filter options. Please try refreshing the page.');
+    }
+  };
+
   useEffect(() => {
+    fetchFilterData();
     fetchChartData();
   }, []);
 
@@ -54,7 +78,7 @@ function UtilizationChart() {
       {
         label: 'Utilization (%)',
         data: toolsData.map(tool => tool.utilizationRate),
-        backgroundColor: '#a0e7e5',
+        backgroundColor: darkMode ? '#007bff' : '#a0e7e5',
         borderRadius: 6,
       },
     ],
@@ -64,6 +88,9 @@ function UtilizationChart() {
     indexAxis: 'y',
     responsive: true,
     plugins: {
+      legend: {
+        labels: { color: darkMode ? '#ffffff' : '#333' },
+      },
       datalabels: {
         color: '#333',
         anchor: 'end',
@@ -84,6 +111,7 @@ function UtilizationChart() {
             return `Utilization: ${tool.utilizationRate}%, Downtime: ${tool.downtime} hrs`;
           },
         },
+        footerColor: 'white',
       },
     },
     scales: {
@@ -92,18 +120,23 @@ function UtilizationChart() {
         title: {
           display: true,
           text: 'Time (%)',
+          color: darkMode ? '#ffffff' : '#333',
         },
+        ticks: { color: darkMode ? '#ffffff' : '#333' },
+        grid: { color: darkMode ? '#c7c7c7ff' : '#bebebeff' },
       },
       y: {
         ticks: {
           autoSkip: false,
+          color: darkMode ? '#ffffff' : '#333',
         },
+        grid: { color: darkMode ? '#c7c7c7ff' : '#bebebeff' },
       },
     },
   };
 
   return (
-    <div className={styles.utilizationChartContainer}>
+    <div className={`${styles.utilizationChartContainer} ${darkMode ? styles.darkMode : ''}`}>
       <h2 className={styles.chartTitle}>Utilization Chart</h2>
 
       {error ? (
@@ -117,7 +150,11 @@ function UtilizationChart() {
               className={styles.select}
             >
               <option value="ALL">All Tools</option>
-              {/* other options */}
+              {toolTypes.map(toolType => (
+                <option key={toolType._id} value={toolType._id}>
+                  {toolType.name}
+                </option>
+              ))}
             </select>
 
             <select
@@ -126,7 +163,11 @@ function UtilizationChart() {
               className={styles.select}
             >
               <option value="ALL">All Projects</option>
-              {/* other options */}
+              {projects.map(project => (
+                <option key={project.projectId} value={project.projectId}>
+                  {project.projectName}
+                </option>
+              ))}
             </select>
 
             <DatePicker
@@ -143,10 +184,7 @@ function UtilizationChart() {
               className={styles.datepickerWrapper}
             />
 
-            <button
-              onClick={handleApplyClick}
-              className={styles.button}
-            >
+            <button onClick={handleApplyClick} className={styles.button}>
               Apply
             </button>
           </div>

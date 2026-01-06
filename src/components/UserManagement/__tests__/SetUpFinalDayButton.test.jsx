@@ -130,6 +130,7 @@ describe('SetUpFinalDayButton', () => {
       await waitFor(() => expect(setYourFinalDayElement).toBeInTheDocument());
 
       const dateInput = screen.getByTestId('date-input');
+
       fireEvent.change(dateInput, { target: { value: '2099-12-07' } });
       const saveFinalDayPopup = screen.getByText('Save');
       axios.patch.mockResolvedValueOnce({data: {status: 200}});
