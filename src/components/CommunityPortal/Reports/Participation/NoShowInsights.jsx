@@ -1,12 +1,29 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
+import { Tooltip } from 'reactstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import mockEvents from './mockData';
 import styles from './Participation.module.css';
 
 function NoShowInsights() {
   const [dateFilter, setDateFilter] = useState('All');
   const [activeTab, setActiveTab] = useState('Event type');
+  const [tooltipOpen, setTooltipOpen] = useState(false);
   const darkMode = useSelector(state => state.theme.darkMode);
+
+  const toggleTooltip = () => setTooltipOpen(!tooltipOpen);
+
+  const getTooltipContent = () => {
+    const categoryDescription =
+      activeTab === 'Event type'
+        ? 'event types'
+        : activeTab === 'Time'
+        ? 'time periods'
+        : 'locations';
+
+    return `Percentages represent the average no-show rate for each ${categoryDescription} (${activeTab}), aggregated from all matching events within the selected time range. Higher percentages indicate a higher likelihood of participants not attending.`;
+  };
 
   const filterByDate = events => {
     const today = new Date();
@@ -87,7 +104,23 @@ function NoShowInsights() {
   return (
     <div className={`${styles.insights} ${darkMode ? styles.insightsDark : ''}`}>
       <div className={`${styles.insightsHeader} ${darkMode ? styles.insightsHeaderDark : ''}`}>
-        <h3>No-show rate insights</h3>
+        <div className={styles.insightsTitleWrapper}>
+          <h3>No-show rate insights</h3>
+          <span id="noShowInsightsTooltip" className={styles.infoIcon}>
+            <FontAwesomeIcon icon={faInfoCircle} />
+          </span>
+          <Tooltip
+            key={activeTab}
+            delay={{ show: 0, hide: 500 }}
+            autohide={false}
+            placement="right"
+            isOpen={tooltipOpen}
+            target="noShowInsightsTooltip"
+            toggle={toggleTooltip}
+          >
+            {getTooltipContent()}
+          </Tooltip>
+        </div>
         <div className={styles.insightsFilters}>
           <select value={dateFilter} onChange={e => setDateFilter(e.target.value)}>
             <option value="All">All Time</option>
@@ -104,7 +137,9 @@ function NoShowInsights() {
             key={tab}
             type="button"
             className={`${styles.insightsTab} ${activeTab === tab ? styles.activeTab : ''}`}
-            onClick={() => setActiveTab(tab)}
+            onClick={() => {
+              setActiveTab(tab);
+            }}
           >
             {tab}
           </button>
