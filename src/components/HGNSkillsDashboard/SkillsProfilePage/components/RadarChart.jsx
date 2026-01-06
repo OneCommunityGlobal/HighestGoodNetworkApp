@@ -1,4 +1,5 @@
 import { Radar } from 'react-chartjs-2';
+import { useSelector } from 'react-redux';
 import {
   Chart as ChartJS,
   RadialLinearScale,
@@ -348,24 +349,8 @@ function RadarChart({ profileData, compact = true }) {
   };
 
   return (
-    <div className={`${styles.radarChart} ${compact ? styles.compact : ''}`}>
-      {!compact && (
-        <div className={`${styles.chartTitle}`}>
-          <h4>Skills Overview</h4>
-          <p>Based on your 26-question skills assessment</p>
-        </div>
-      )}
-      <div className={`${styles.chartContainer}`}>
-        <Radar data={chartData} options={chartOptions} plugins={[customTooltipPlugin]} />
-      </div>
-      {!compact && (
-        <div className={`${styles.chartLegend}`}>
-          <div className={`${styles.legendItem}`}>
-            <div className={`${styles.legendColor}`}></div>
-            <span>Skill Level (0-10 scale)</span>
-          </div>
-        </div>
-      )}
+    <div className={`${styles.radarChart} ${darkMode ? 'dark-mode' : ''}`}>
+      <Radar data={chartData} options={chartOptions} />
     </div>
   );
 }

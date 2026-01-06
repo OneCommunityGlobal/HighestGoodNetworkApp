@@ -38,3 +38,11 @@
   }
   .leftSection h1, .leftSection h3 { text-align: left; }
 }
+
+:global(.dark-mode) .leftSection h1 {
+  color: #fff;
+}
+
+:global(.dark-mode) .leftSection h3 {
+  color: #ccc;
+}

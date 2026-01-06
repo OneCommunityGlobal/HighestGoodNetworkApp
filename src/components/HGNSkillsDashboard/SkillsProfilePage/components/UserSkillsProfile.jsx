@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import { useHistory, useParams, useLocation } from 'react-router-dom';
 import { ClipLoader } from 'react-spinners';
@@ -19,6 +20,7 @@ function UserSkillsProfile() {
   const [error, setError] = useState(null);
   const history = useHistory();
   const location = useLocation();
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   // Fetch data from backend on component mount
   useEffect(() => {
@@ -108,9 +110,11 @@ function UserSkillsProfile() {
     fetchData();
   }, []); // Empty dependency array - runs only once on mount
 
+  /* eslint-disable no-console */
+
   if (loading) {
     return (
-      <div className={`${styles.skillsLoader}`}>
+      <div className={`${styles.skillsLoader} ${darkMode ? 'dark-mode' : ''}`}>
         <ClipLoader color="#007bff" size={70} />
         <p>Loading Profile...</p>
       </div>
@@ -119,7 +123,7 @@ function UserSkillsProfile() {
 
   if (error) {
     return (
-      <div className={`${styles.skillsError}`}>
+      <div className={`${styles.skillsError} ${darkMode ? 'dark-mode' : ''}`}>
         <p>Error: {error}</p>
       </div>
     );
@@ -127,17 +131,17 @@ function UserSkillsProfile() {
 
   if (!profileData) {
     return (
-      <div className={`${styles.skillsError}`}>
+      <div className={`${styles.skillsError} ${darkMode ? 'dark-mode' : ''}`}>
         <p>No profile data available</p>
       </div>
     );
   }
 
   return (
-    <div className={styles.userProfileHome}>
-      <div className={styles.dashboardContainer}>
+    <div className={`${styles.userProfileHome} ${darkMode ? 'dark-mode' : ''}`}>
+      <div className={`${styles.dashboardContainer}`}>
         <LeftSection />
-        {/* Separator no longer needed with grid layout */}
+        <div className={`${styles.verticalSeparator}`} />
         <RightSection />
       </div>
     </div>

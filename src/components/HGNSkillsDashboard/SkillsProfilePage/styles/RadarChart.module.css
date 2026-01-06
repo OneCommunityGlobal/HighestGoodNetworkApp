@@ -208,3 +208,7 @@
     color: #e2e8f0;
   }
 }
+
+:global(.dark-mode) .radarChart canvas {
+  filter: invert(1) hue-rotate(180deg);
+}

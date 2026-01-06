@@ -70,3 +70,20 @@
     padding: 18px 16px;
   }
 }
+
+.userProfileHome:global(.dark-mode) {
+  background-color: #1b2a41;
+}
+
+:global(.dark-mode) .dashboardContainer {
+  background-color: #1e1e1e;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+}
+
+:global(.dark-mode) .verticalSeparator {
+  background-color: #444;
+}
+
+.skillsLoader:global(.dark-mode) p {
+  color: #fff;
+}

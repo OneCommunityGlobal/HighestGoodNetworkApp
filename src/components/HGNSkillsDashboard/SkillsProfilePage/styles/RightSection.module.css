@@ -33,3 +33,7 @@ h3 {
   }
   .skillsAndChart > *:first-child { flex: 0 0 auto; }
 }
+
+:global(.dark-mode) h3 {
+  color: #fff;
+}
