@@ -2,6 +2,16 @@
   overflow-x: auto;
 }
 
+.highlight-row {
+  background-color: #e0f7fa;
+  border-left: 4px solid #00bcd4;
+  transition: background 0.2s ease;
+}
+
+.highlight-row:hover {
+  background-color: #b2ebf2;
+}
+
 .permission-change-log-table {
   border-collapse: 'collapse';
   width: 100%;

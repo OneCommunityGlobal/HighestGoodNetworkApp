@@ -1,22 +1,27 @@
 import axios from 'axios';
 import * as actions from '../../constants/weeklySummaries';
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import { fetchWeeklySummariesBegin, fetchWeeklySummariesSuccess, fetchWeeklySummariesError, getWeeklySummaries, updateWeeklySummaries } from '../weeklySummaries'
-import { getUserProfileActionCreator } from '../userProfile';
+import { getUserProfileActionCreator } from "../userProfile";
 
-jest.mock('axios');
+vi.mock('axios');
+
 
 describe('Weekly Summaries Action', () => {
 
   it('Should return action FETCH_WEEKLY_SUMMARIES_BEGIN', () => {
 
+
     const data = fetchWeeklySummariesBegin();
+
+    expect(data).toEqual({ type: actions.FETCH_WEEKLY_SUMMARIES_BEGIN });
 
     expect(data).toEqual({ type: actions.FETCH_WEEKLY_SUMMARIES_BEGIN });
 
   });
 
   it('Should fetch weekly summaries success', () => {
+
 
     const weeklySummariesData = {
       id: 1,
@@ -50,11 +55,11 @@ describe('Weekly Summaries Action', () => {
 
 describe('Weekly Summaries', () => {
 
-  jest.mock('axios');
-  const dispatch = jest.fn();
+  vi.mock('axios');
+  const dispatch = vi.fn();
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('Get Weekly Summaries', () => {

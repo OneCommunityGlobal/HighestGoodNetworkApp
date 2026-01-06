@@ -1,5 +1,6 @@
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import CheckTypes from './CheckTypes';
+import styles from '../ToolItemList/ToolRecordsModal.module.css';
 
 function CheckTypesModal({ modal, setModal, type }) {
   const toggle = () => {
@@ -18,7 +19,7 @@ function CheckTypesModal({ modal, setModal, type }) {
         </i>
       </ModalHeader>
       <ModalBody>
-        <div className="records_modal_table_container">
+        <div className={`${styles.recordsModalTableContainer}`}>
           <CheckTypes type={type} />
         </div>
       </ModalBody>

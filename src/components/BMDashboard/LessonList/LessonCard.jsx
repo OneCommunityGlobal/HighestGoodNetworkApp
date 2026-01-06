@@ -4,10 +4,10 @@ import Card from 'react-bootstrap/Card';
 import Nav from 'react-bootstrap/Nav';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart } from '@fortawesome/free-regular-svg-icons';
-import './LessonCard.css';
-import ReactHtmlParser from 'react-html-parser';
-import { formatDateAndTime } from 'utils/formatDate';
+import parse from 'html-react-parser';
+import { formatDateAndTime } from '~/utils/formatDate';
 import DeleteLessonCardPopUp from './DeleteLessonCardPopUp';
+import styles from './LessonCard.module.css';
 
 function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, handleLike }) {
   const maxSummaryLength = 1500;
@@ -79,27 +79,29 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, 
   const lessonCards = filteredLessons.map(lesson => {
     const { isLiked, totalLikes } = getLikeStatus(lesson._id);
     return (
-      <Card key={`${lesson._id} + ${lesson.title} `} className="lesson-card">
+      <Card key={`${lesson._id} + ${lesson.title} `} className={`${styles.lessonCard}`}>
         <Card.Header
           onClick={() => toggleCardExpansion(lesson._id)}
           style={{ cursor: 'pointer' }}
-          className="lesson-card-header"
+          className={`${styles.lessonCardHeader}`}
         >
-          <Nav className="lesson-card-nav">
-            <div className="nav-title-and-date">
-              <Nav.Item className="lesson-card-nav-item nav-item-title">{lesson.title}</Nav.Item>
-              <Nav.Item className=" lesson-card-nav-item nav-item-date">
+          <Nav className={`${styles.lessonCardNav}`}>
+            <div className={`${styles.navTitleAndDate}`}>
+              <Nav.Item className={`${styles.lessonCardNavItem} ${styles.navItemTitle}`}>
+                {lesson.title}
+              </Nav.Item>
+              <Nav.Item className={`${styles.lessonCardNavItem} nav-item-date`}>
                 Date: {formatDateAndTime(lesson.date)}
               </Nav.Item>
             </div>
             <div>
-              <Nav.Item className="lesson-card-tag">
+              <Nav.Item className={`${styles.lessonCardTag}`}>
                 {lesson.tags &&
                   lesson.tags.length > 0 &&
                   lesson.tags.map(tag => (
                     <span
                       key={`tag-in-header-${tag}-${lesson._id}`}
-                      className="text-muted tag-item"
+                      className={`text-muted ${styles.tagItem}`}
                     >
                       {`#${tag}`}
                     </span>
@@ -110,18 +112,21 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, 
         </Card.Header>
         {expandedCards.includes(lesson._id) && (
           <>
-            <Card.Body className="scrollable-card-body">
-              <Card.Text className="card-tag-and-file">
+            <Card.Body className={`${styles.scrollableCardBody}`}>
+              <Card.Text className={`${styles.cardTagAndFile}`}>
                 Tags:{' '}
                 {lesson.tags &&
                   lesson.tags.length > 0 &&
                   lesson.tags.map(tag => (
-                    <span key={`tag-in-body-${tag}-${lesson._id}`} className="text-muted tag-item">
+                    <span
+                      key={`tag-in-body-${tag}-${lesson._id}`}
+                      className={`text-muted ${styles.tagItem}`}
+                    >
                       {`#${tag}`}
                     </span>
                   ))}
               </Card.Text>
-              <Card.Text className="lesson-summary">
+              <Card.Text className={`${styles.lessonSummary}`}>
                 {editableLessonId === lesson._id ? (
                   <>
                     <textarea
@@ -129,7 +134,9 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, 
                       value={editableLessonSummary}
                       onChange={e => setEditableLessonSummary(e.target.value)}
                     />
-                    {validationError && <span className="validation-error">{validationError}</span>}
+                    {validationError && (
+                      <span className={`${styles.validationError}`}>{validationError}</span>
+                    )}
                     <button type="submit" onClick={() => handleSaveEdit(lesson._id)}>
                       Save
                     </button>
@@ -148,20 +155,20 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, 
                 )}
               </Card.Text>
 
-              <Card.Text className="card-tag-and-file">
-                File: <span className="lesson-file">file</span>
+              <Card.Text className={`${styles.cardTagAndFile}`}>
+                File: <span className={`${styles.lessonFile}`}>file</span>
               </Card.Text>
             </Card.Body>
-            <Card.Footer className=" lesson-card-footer text-muted">
+            <Card.Footer className={`${styles.lessonCardFooter} text-muted`}>
               <div>
-                <span className="footer-items-author-and-from">
+                <span className={`${styles.footerItemsAuthorAndFrom}`}>
                   Author: {lesson.author?.name || 'Unknown'}
                 </span>
-                <span className="footer-items-author-and-from">
+                <span className={`${styles.footerItemsAuthorAndFrom}`}>
                   From: {lesson.relatedProject?.name || 'Unknown Project'}
                 </span>
               </div>
-              <div className="lesson-card-footer-items">
+              <div className={`${styles.lessonCardFooterItems}`}>
                 {currentUserId === lesson.author?.id && (
                   <div>
                     <button
@@ -216,10 +223,10 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, 
   return (
     <div>
       <div style={{ textAlign: 'right' }}>
-        <button type="submit" onClick={() => expandAll()} className="expand-lessons">
+        <button type="submit" onClick={() => expandAll()} className={`${styles.expandLessons}`}>
           Expand All
         </button>
-        <button type="submit" onClick={() => collapseAll()} className="expand-lessons">
+        <button type="submit" onClick={() => collapseAll()} className={`${styles.expandLessons}`}>
           Collapse All
         </button>
       </div>

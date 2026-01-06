@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import Joi from 'joi';
+import Joi from 'joi-browser';
 import { toast } from 'react-toastify';
 import { forcePasswordUpdate } from '../../actions/updatePassword';
 import { clearErrors } from '../../actions/errorsActions';

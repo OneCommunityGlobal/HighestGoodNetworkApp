@@ -1,13 +1,15 @@
 import axios from 'axios';
+
+
 import * as actions from '../role';
 import * as types from '../../constants/role';
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 
-jest.mock('axios');
+vi.mock('axios');
 
 describe('Role Actions', () => {
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('fetchAllRoles', () => {
@@ -48,7 +50,7 @@ describe('Role Actions', () => {
 
   describe('getAllRoles', () => {
     it('should dispatch RECEIVE_ROLES with fetched data', async () => {
-      const dispatch = jest.fn();
+      const dispatch = vi.fn();
       const mockData = [{ id: 1, name: 'Admin' }];
       axios.get.mockResolvedValueOnce({ data: mockData });
 
@@ -84,7 +86,7 @@ describe('Role Actions', () => {
 
   describe('updateRole', () => {
     it('should dispatch UPDATE_ROLE with updated role data', async () => {
-      const dispatch = jest.fn();
+      const dispatch = vi.fn();
       const roleId = 1;
       const updatedRole = { name: 'Super Admin' };
       const mockResponse = { data: { id: 1, name: 'Super Admin' } };
@@ -98,7 +100,7 @@ describe('Role Actions', () => {
     });
 
     it('should dispatch FETCH_ROLES_ERROR on failure', async () => {
-      const dispatch = jest.fn();
+      const dispatch = vi.fn();
       const roleId = 1;
       const updatedRole = { name: 'Super Admin' };
       const mockError = new Error('Failed to update');

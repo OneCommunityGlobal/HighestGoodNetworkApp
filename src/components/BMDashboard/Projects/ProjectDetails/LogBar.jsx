@@ -1,6 +1,9 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Button } from 'reactstrap';
 import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import styles from './ProjectDetails.module.css';
+
 // button styles for each section
 const buttonStyles = {
   dailyLogging: 'green',
@@ -10,6 +13,7 @@ const buttonStyles = {
 
 function LogBar(props) {
   const { projectId } = props;
+  const darkMode = useSelector(state => state.theme?.darkMode || false);
   const buttonLabels = {
     dailyLogging: {
       name: ['Time', 'Material', 'Tool/Equipment'],
@@ -25,16 +29,16 @@ function LogBar(props) {
       ],
     },
     team: {
-      name: ['Create New Team', 'Edit Existing Team', 'Log Issue'],
-      url: ['/teams', '/teams', '/bmdashboard/issues/add'],
+      name: ['Create New Team', 'Edit Existing Team', 'Log Issue', 'View Issues'],
+      url: ['/teams', '/teams', `/bmdashboard/issues/add/${projectId}`, '/bmdashboard/issues/'],
     },
   };
 
   return (
-    <div className="log-bar">
+    <div className={`${darkMode ? styles['log-bar-dark'] : styles['log-bar']}`}>
       {Object.keys(buttonStyles).map(section => (
-        <div key={uuidv4()} className="log-bar__section">
-          <h2>
+        <div key={uuidv4()} className={styles['log-bar__section']}>
+          <h2 style={{ color: darkMode ? '#ffffff' : '#333333' }}>
             {(() => {
               switch (section) {
                 case 'dailyLogging':
@@ -46,18 +50,26 @@ function LogBar(props) {
               }
             })()}
           </h2>
-          <ul className="log-bar__btn-group">
+          <ul className={styles['log-bar__btn-group']}>
             {buttonLabels[section].name.map((label, index) => (
               <li key={uuidv4()}>
                 {label !== 'Log Issue' ? (
                   <Link to={buttonLabels[section].url[index]}>
-                    <Button type="button" className={`button button--${buttonStyles[section]}`}>
+                    <Button
+                      type="button"
+                      className={`${styles.button} ${styles.btn} ${
+                        styles[`button--${buttonStyles[section]}`]
+                      }`}
+                    >
                       {label}
                     </Button>
                   </Link>
                 ) : (
-                  <Link to="/bmdashboard/issues/add">
-                    <Button type="button" className="button button--maroon">
+                  <Link to={`/bmdashboard/issues/add/${projectId}`}>
+                    <Button
+                      type="button"
+                      className={`${styles.button} ${styles.btn} ${styles['button--maroon']}`}
+                    >
                       Log Issue
                     </Button>
                   </Link>

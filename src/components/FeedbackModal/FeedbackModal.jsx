@@ -12,7 +12,7 @@ import {
 import { useSelector } from 'react-redux';
 import axios from 'axios';
 import { ENDPOINTS } from '../../utils/URL';
-import './FeedbackModal.css';
+import styles from './FeedbackModal.module.css';
 import StarRating from './StarRating';
 import MemberSearchBar from './MemberSearchBar';
 
@@ -237,7 +237,7 @@ function FeedbackModal() {
       </ModalHeader>
 
       <ModalBody className={darkMode ? 'bg-yinmn-blue text-light' : ''}>
-        <div className="feedback-form">
+        <div className={`${styles.feedbackForm}`}>
           <FormGroup tag="fieldset" className="mb-4">
             <legend>Were we able to help you last week?</legend>
             <FormGroup check>
@@ -264,15 +264,15 @@ function FeedbackModal() {
             </FormGroup>
           </FormGroup>
 
-          <div className="member-rating-section mt-4">
+          <div className={`${styles.memberRatingSection} mt-4`}>
             <h5>
               Please specify who you contacted, including those who didn&apos;t assist you, and
               provide a star rating based on your experience
             </h5>
 
             {ratedMembers.map(member => (
-              <div key={member.id} className="member-rating-row">
-                <div className="member-input-container">
+              <div key={member.id} className={`${styles.memberRatingRow}`}>
+                <div className={`${styles.memberInputContainer}`}>
                   <MemberSearchBar
                     id={member.id}
                     value={member.name}
@@ -280,17 +280,17 @@ function FeedbackModal() {
                     usersList={activeUsers}
                   />
                 </div>
-                <div className="rating-container">
+                <div className={`${styles.ratingContainer}`}>
                   <StarRating
                     id={member.id}
                     rating={member.rating}
                     onChange={rating => handleRatingChange(member.id, rating)}
                   />
                 </div>
-                <div className="remove-btn-container">
+                <div className={`${styles.removeBtnContainer}`}>
                   <button
                     type="button"
-                    className="remove-entry-btn"
+                    className={`${styles.removeEntryBtn}`}
                     onClick={() => removeMember(member.id)}
                     disabled={ratedMembers.length <= 1}
                     aria-label="Remove entry"
@@ -301,10 +301,10 @@ function FeedbackModal() {
               </div>
             ))}
 
-            <div className="text-center">
+            <div className={`${styles.textCenter}`}>
               <Button
                 color="primary"
-                className="add-member-btn"
+                className={`${styles.addMemberBtn}`}
                 onClick={() => addNewMember(false)}
               >
                 Add another entry
@@ -312,12 +312,12 @@ function FeedbackModal() {
             </div>
           </div>
 
-          <div className="inactive-members-section mt-4">
+          <div className={`${styles.inactiveMembersSection} mt-4`}>
             <h5>Can&apos;t find who you were looking for? Check Inactive members</h5>
 
             {inactiveRatedMembers.map(member => (
-              <div key={member.id} className="member-rating-row">
-                <div className="member-input-container">
+              <div key={member.id} className={`${styles.memberRatingRow}`}>
+                <div className={`${styles.memberInputContainer}`}>
                   <MemberSearchBar
                     id={member.id}
                     value={member.name}
@@ -326,17 +326,17 @@ function FeedbackModal() {
                     usersList={inactiveUsers}
                   />
                 </div>
-                <div className="rating-container">
+                <div className={`${styles.ratingContainer}`}>
                   <StarRating
                     id={member.id}
                     rating={member.rating}
                     onChange={rating => handleRatingChange(member.id, rating, true)}
                   />
                 </div>
-                <div className="remove-btn-container">
+                <div className={`${styles.removeBtnContainer}`}>
                   <button
                     type="button"
-                    className="remove-entry-btn"
+                    className={`${styles.removeEntryBtn}`}
                     onClick={() => removeMember(member.id, true)}
                     disabled={inactiveRatedMembers.length <= 1}
                     aria-label="Remove entry"
@@ -347,14 +347,18 @@ function FeedbackModal() {
               </div>
             ))}
 
-            <div className="text-center">
-              <Button color="primary" className="add-member-btn" onClick={() => addNewMember(true)}>
+            <div className={`${styles.textCenter}`}>
+              <Button
+                color="primary"
+                className={`${styles.addMemberBtn}`}
+                onClick={() => addNewMember(true)}
+              >
                 Add another entry
               </Button>
             </div>
           </div>
 
-          <div className="comments-section mt-4">
+          <div className={`${styles.commentsSection} mt-4`}>
             <h5>Additional comments</h5>
             <Input
               type="textarea"
@@ -365,10 +369,14 @@ function FeedbackModal() {
             />
           </div>
 
-          <div className="suggestions-link mt-3 text-center">
+          <div className={`${styles.suggestionsLink} mt-3 ${styles.textCenter}`}>
             <p>
               If you have any suggestions please click{' '}
-              <button type="button" className="link-button" onClick={openFeedbackSuggestions}>
+              <button
+                type="button"
+                className={`${styles.linkButton}`}
+                onClick={openFeedbackSuggestions}
+              >
                 here
               </button>
             </p>

@@ -2,13 +2,13 @@ import { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Form, FormControl, InputGroup, Button } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { fetchBMLessons } from 'actions/bmdashboard/lessonsAction';
-import './LessonListForm.css';
 import { toast } from 'react-toastify';
 import axios from 'axios';
-import { ENDPOINTS } from 'utils/URL';
+import { fetchBMLessons } from '~/actions/bmdashboard/lessonsAction';
+import { ENDPOINTS } from '~/utils/URL';
 import Lessons from './Lessons';
 import ConfirmationModal from './ConfirmationModal';
+import styles from './LessonListForm.module.css';
 
 function LessonList(props) {
   const { lessons, dispatch } = props;
@@ -280,20 +280,20 @@ function LessonList(props) {
   }, [lessons, tags, filterOption, sortOption]); // All dependencies that should trigger filtering
 
   return (
-    <div className="main-container">
-      <div className="form-container">
+    <div className={`${styles.mainContainer}`}>
+      <div className={`${styles.formContainer}`}>
         <Form>
           <div>
             <Form.Group controlId="exampleForm.ControlTextarea1">
-              <Form.Label className="lesson-label">Lesson List</Form.Label>
+              <Form.Label className={`${styles.lessonLabel}`}>Lesson List</Form.Label>
             </Form.Group>
           </div>
-          <div className="form-select-container">
+          <div className={`${styles.formSelectContainer}`}>
             <div>
-              <Form.Group className="single-form" controlId="Form.ControlSelect1">
+              <Form.Group className={`${styles.singleForm}`} controlId="Form.ControlSelect1">
                 <Form.Label>Filter:</Form.Label>
                 <FormControl
-                  className="single-form-select"
+                  className={`${styles.singleFormSelect}`}
                   as="select"
                   aria-label="Default select example"
                   value={filterOption}
@@ -307,10 +307,10 @@ function LessonList(props) {
               </Form.Group>
             </div>
             <div>
-              <Form.Group className="single-form" controlId="Form.ControlSelect2">
+              <Form.Group className={`${styles.singleForm}`} controlId="Form.ControlSelect2">
                 <Form.Label>Sort:</Form.Label>
                 <FormControl
-                  className="single-form-select"
+                  className={`${styles.singleFormSelect}`}
                   as="select"
                   aria-label="Default select example"
                   value={sortOption}
@@ -325,8 +325,8 @@ function LessonList(props) {
           </div>
           <Form.Group controlId="tagInput">
             <Form.Label>Tags:</Form.Label>
-            <div className="tags-input-container">
-              <InputGroup className="tags-wrapper">
+            <div className={`${styles.tagsInputContainer}`}>
+              <InputGroup className={`${styles.tagsWrapper}`}>
                 <input
                   type="text"
                   placeholder="Select tag"
@@ -336,30 +336,31 @@ function LessonList(props) {
                     setShowDropdown(true);
                   }}
                   onFocus={() => setShowDropdown(true)}
-                  className="form-control"
+                  className={`${styles.formControl}`}
                 />
                 {showDropdown && inputValue && (
-                  <div className="tag-dropdown">
+                  <div className={`${styles.tagDropdown}`}>
                     {getFilteredTags().map(tag => (
-                      <div
+                      <button
                         key={tag}
-                        className="tag-dropdown-item"
+                        type="button"
+                        className={styles.tagDropdownItem}
                         onClick={() => {
                           addTag(tag);
                           setShowDropdown(false);
                         }}
                       >
                         {tag}
-                      </div>
+                      </button>
                     ))}
                   </div>
                 )}
               </InputGroup>
-              <div className="tag-container">
+              <div className={`${styles.tagContainer}`}>
                 {tags.map(tag => (
-                  <div key={tag} className="tag">
+                  <div key={tag} className={`${styles.tag}`}>
                     <span>{tag}</span>
-                    <Button className="button-close" onClick={() => removeTag(tag)}>
+                    <Button className={`${styles.buttonClose}`} onClick={() => removeTag(tag)}>
                       x
                     </Button>
                   </div>
@@ -368,13 +369,13 @@ function LessonList(props) {
             </div>
 
             <Form.Label>Delete Tags (Press enter to add a tag to delete): </Form.Label>
-            <div className="tags-input-container">
-              <div className="delete-input-wrapper">
+            <div className={`${styles.tagsInputContainer}`}>
+              <div className={`${styles.deleteInputWrapper}`}>
                 <input
                   type="text"
                   placeholder="Search tag to delete"
                   value={deleteValue}
-                  className="form-control-delete"
+                  className={`${styles.formControlDelete}`}
                   onChange={e => {
                     setDeleteInputValue(e.target.value);
                     setShowDeleteDropdown(true);
@@ -383,24 +384,25 @@ function LessonList(props) {
                   onKeyDown={handleDeleteKeyDown}
                 />
                 {showDeleteDropdown && deleteValue && (
-                  <div className="tag-dropdown">
+                  <div className={`${styles.tagDropdown}`}>
                     {getFilteredTagsToDelete().map(tag => (
-                      <div
+                      <button
                         key={tag}
-                        className="tag-dropdown-item"
+                        type="button"
+                        className={styles.tagDropdownItem}
                         onClick={() => addDeleteTag(tag)}
                       >
                         {tag}
-                      </div>
+                      </button>
                     ))}
                   </div>
                 )}
-                <div className="tag-container">
+                <div className={`${styles.tagContainer}`}>
                   {tagsToDelete.map(tag => (
-                    <div key={tag} className="tag">
+                    <div key={tag} className={`${styles.tag}`}>
                       <span>{tag}</span>
                       <Button
-                        className="button-close"
+                        className={`${styles.buttonClose}`}
                         onClick={() => {
                           const newTags = tagsToDelete.filter((_, i) => i !== tag);
                           setTagsToDelete(newTags);

@@ -1,0 +1,123 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.popup {
+  background-color: rgb(187, 185, 185);
+  padding: 24px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  max-width: 800px;
+  width: 100%;
+  border: 6px solid black;
+}
+
+.popup-heading {
+  text-align: center;
+  font-size: 20px;
+  margin-bottom: 16px;
+  color: black;
+}
+
+.popup-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 24px;
+  background-color: #f0f0f0;
+}
+
+.popup-table th,
+.popup-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.popup-table thead th {
+  background-color: #f0f0f0;
+}
+
+.button-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.button {
+  padding: 8px 16px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  background-color: #f0f0f0;
+  color: #000;
+}
+
+.promoteButton {
+  padding: 8px 16px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  background-color: #f0f0f0;
+  color: black;
+  font-weight: bold;
+}
+
+.button-row .button:last-child:not(:disabled):hover {
+  background-color: #2563eb;
+  color: white;
+}
+
+.button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.button:disabled:hover {
+  background-color: #ccc;
+}
+
+.pr-count-badge {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 4px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  color: black;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.color-0 {
+  background-color: #9400d3;
+}
+
+.color-1 {
+  background-color: #4b0082;
+}
+
+.color-2 {
+  background-color: #0000ff;
+}
+
+.color-3 {
+  background-color: #00ff00;
+}
+
+.color-4 {
+  background-color: #ffff00;
+}
+
+.color-5 {
+  background-color: #ff7f00;
+}
+
+.color-6 {
+  background-color: #ff0000;
+}

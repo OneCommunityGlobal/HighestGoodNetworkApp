@@ -8,7 +8,7 @@ import {
   ModalHeader,
   ModalFooter,
 } from 'reactstrap';
-import BadgeImage from 'components/Badge/BadgeImage';
+import BadgeImage from '~/components/Badge/BadgeImage';
 import { boxStyle, boxStyleDark } from '../../styles';
 import '../Badge/BadgeReport.css';
 import './BadgeSummaryPreview.css';

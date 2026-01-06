@@ -1,0 +1,128 @@
+.profileDetails {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.profileDetails h3 {
+  color: #3ea0cb;
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.profileDetails h4 {
+  font-size: 16px;
+  color: #333;
+  margin: 15px 0 10px;
+}
+
+.horizontalSeparator {
+  border: 0;
+  border-top: 1px solid #e0e0e0;
+  margin: 10px 0;
+}
+
+.teamInfo,
+.contactsInfo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.teamInfo span,
+.contactsInfo span {
+  white-space: nowrap;
+}
+
+.teamInfo strong,
+.contactsInfo strong {
+  color: #869aa3;
+}
+
+.teamInfo .value,
+.contactsInfo .value {
+  font-weight: bold;
+}
+
+.value {
+  color: #666;
+  display: inline-block;
+  font-family: 'Arial', sans-serif;
+}
+
+strong {
+  /* color: #fffdfd; */
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.githubLink {
+  color: #1a73e8;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 1rem;
+  padding: 2px 2px;
+  border-radius: 10px;
+  transition: background-color 0.2s ease, color 0.2s ease; /* Smooth hover effect */
+}
+
+.githubLink:hover {
+  background-color: #f0f4f8;
+  color: #1557b0;
+  text-decoration: underline;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .githubLink {
+    padding: 1px 4px;
+  }
+}
+
+@media (max-width: 768px) {
+  .profileDetails {
+    width: 100%;
+  }
+  .teamInfo,
+  .contactsInfo {
+    flex-direction: column;
+    gap: 5px;
+  }
+}
+
+:global(.dark-mode) .profileDetails h3 {
+  color: #fff;
+}
+
+:global(.dark-mode) .profileDetails h4 {
+  color: #fff;
+}
+
+:global(.dark-mode) .horizontalSeparator {
+  border-top-color: #444;
+}
+
+:global(.dark-mode) .teamInfo,
+:global(.dark-mode) .contactsInfo {
+  color: #ccc;
+}
+
+:global(.dark-mode) .teamInfo strong,
+:global(.dark-mode) .contactsInfo strong {
+  color: #a6bace;
+}
+
+:global(.dark-mode) .value {
+  color: #ccc;
+}
+
+:global(.dark-mode) .githubLink {
+  color: #8ab4f8;
+}
+
+:global(.dark-mode) .githubLink:hover {
+  background-color: #333;
+  color: #adc8ff;
+}

@@ -4,7 +4,7 @@
  ****************************************************************************** */
 import axios from 'axios';
 import * as types from '../constants/popupEditorConstants';
-import { ENDPOINTS } from '../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 
 /** *****************************************
  * ACTION CREATORS

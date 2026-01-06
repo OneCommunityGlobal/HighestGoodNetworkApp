@@ -13,9 +13,15 @@ const Paging = ({ maxElemPerPage = 6, totalElementsCount, children, darkMode }) 
   const pagesCount = Math.ceil(totalElementsCount / maxElemPerPage);
 
   const renderPageNumberButton = pageNumber => (
-    // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
     <div
+      role="button"
+      tabIndex="0"
       onClick={() => setCurrentPage(pageNumber)}
+      onKeyDown={e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          setCurrentPage(pageNumber);
+        }
+      }}
       className={classnames(
         `${pageIndexButton}`,
         darkMode
@@ -103,13 +109,20 @@ const Paging = ({ maxElemPerPage = 6, totalElementsCount, children, darkMode }) 
       {totalElementsCount > maxElemPerPage && (
         <div className="pagination-buttons-wrapper">
           <FiChevronLeft
+            role="button"
+            tabIndex="0"
+            aria-label="Previous Page"
             className={classnames(`${pageIndexButton}`, {
               disabled: currentPage === 1,
             })}
             onClick={handlePrevArrowClick}
           />
+
           {renderPageIndexes()}
           <FiChevronRight
+            role="button"
+            tabIndex="0"
+            aria-label="Next Page"
             className={classnames(`${pageIndexButton}`, {
               disabled: currentPage === pagesCount,
             })}

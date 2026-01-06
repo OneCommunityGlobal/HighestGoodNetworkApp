@@ -1,7 +1,9 @@
+/* eslint-disable testing-library/no-node-access */
 import React from 'react';
-import * as d3 from 'd3/dist/d3.min';
+import * as d3 from 'd3';
+
 import { Button, Modal } from 'react-bootstrap';
-import './PeopleReport/PeopleReport.css';
+import styles from './PeopleReport/PeopleReport.module.css';
 import { boxStyle, boxStyleDark } from '../../styles';
 
 function InfringementsViz({ infringements, fromDate, toDate, darkMode }) {
@@ -36,13 +38,12 @@ function InfringementsViz({ infringements, fromDate, toDate, darkMode }) {
       const tooltipEl = function tooltipEl(d) {
         return (
           `${'<div class="tip__container">' +
-            '<div class="close">' +
-            '<button>&times</button>' +
-            '</div>' +
-            '<div>' +
-            'Exact date: '}${d3.timeFormat('%A, %B %e, %Y')(d.date)}<br>` +
-          `Count: ${
-            d.count === 1 ? d.count : `${d.count} <span class="detailsModal"><a>See All</a></span>`
+          '<div class="close">' +
+          '<button>&times</button>' +
+          '</div>' +
+          '<div>' +
+          'Exact date: '}${d3.timeFormat('%A, %B %e, %Y')(d.date)}<br>` +
+          `Count: ${d.count === 1 ? d.count : `${d.count} <span class="detailsModal"><a>See All</a></span>`
           }<br>` +
           `Description: ${d.des[0]}</div>` +
           `</div>`
@@ -260,9 +261,6 @@ function InfringementsViz({ infringements, fromDate, toDate, darkMode }) {
       });
     }
 
-    // eslint-disable-next-line no-console
-    // console.log('INFvalues', value);
-
     displayGraph(value, maxSquareCount);
   };
 
@@ -275,7 +273,7 @@ function InfringementsViz({ infringements, fromDate, toDate, darkMode }) {
       <Button onClick={handleModalShow} aria-expanded={graphVisible} style={darkMode ? boxStyleDark : boxStyle}>
         {graphVisible ? 'Hide Infringements Graph' : 'Show Infringements Graph'}
       </Button>
-      <div className={`kaitest ${darkMode ? 'bg-light mt-2' : ''}`} id="infplot" />
+      <div className={`${styles.kaitest} ${darkMode ? 'bg-light mt-2' : ''}`} id="infplot" data-testid="infplot" />
 
       <Modal size="lg" show={modalVisible} onHide={handleModalClose}>
         <Modal.Header closeButton>
@@ -283,22 +281,22 @@ function InfringementsViz({ infringements, fromDate, toDate, darkMode }) {
         </Modal.Header>
         <Modal.Body>
           <div id="inf">
-            <thead>
-              <tr>
-                <th>Descriptions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {focusedInf.des
-                ? focusedInf.des.map(desc => {
-                    return (
-                      <tr>
-                        <td>{desc}</td>
-                      </tr>
-                    );
-                  })
-                : null}
-            </tbody>
+            <table>
+              <thead>
+                <tr>
+                  <th>Descriptions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {focusedInf.des
+                  ? focusedInf.des.map((desc) => (
+                    <tr key={desc}>
+                      <td>{desc}</td>
+                    </tr>
+                  ))
+                  : null}
+              </tbody>
+            </table>
           </div>
         </Modal.Body>
         <Modal.Footer>

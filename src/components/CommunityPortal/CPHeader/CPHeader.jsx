@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 // import { getUserProfile } from '../../actions/userProfile'
 import { Link } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
@@ -14,9 +14,9 @@ import {
   DropdownMenu,
   DropdownItem,
 } from 'reactstrap';
-import DarkModeButton from 'components/Header/DarkModeButton';
-import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
-import BellNotification from 'components/Header/BellNotification';
+import DarkModeButton from '~/components/Header/DarkModeButton';
+import { fetchTaskEditSuggestions } from '~/components/TaskEditSuggestions/thunks';
+import BellNotification from '~/components/Header/BellNotification';
 import { getHeaderData } from '../../../actions/authActions';
 import { getAllRoles } from '../../../actions/role';
 import Timer from '../../Timer/Timer';
@@ -45,9 +45,12 @@ import {
   ACTIVITIES,
   REGISTRATION,
   SEND_EMAILS,
+  ACTIVITY_RESOURCE_MANGEMENT,
+  ACTIVITY_RESOURCE_USAGE,
 } from '../../../languages/en/ui';
 import Logout from '../../Logout/Logout';
-import styles from './CPHeader.module.css';
+// import './CPHeader.css';
+import styles from '../../Header/Header.module.css';
 import hasPermission, { cantUpdateDevAdminDetails } from '../../../utils/permissions';
 
 export function Header(props) {
@@ -58,6 +61,8 @@ export function Header(props) {
   const [profilePic, setProfilePic] = useState(props.auth.profilePic);
   const [isAuthUser, setIsAuthUser] = useState(true);
   const [displayUserId, setDisplayUserId] = useState(user.userid);
+  const collapseRef = useRef(null);
+  const toggleRef = useRef(null);
 
   const ALLOWED_ROLES_TO_INTERACT = useMemo(() => ['Owner', 'Administrator'], []);
   const canInteractWithViewingUser = useMemo(
@@ -163,86 +168,195 @@ export function Header(props) {
     }
   }, []);
 
-  const toggle = () => {
-    setIsOpen(prevIsOpen => !prevIsOpen);
-  };
-
   const openModal = () => {
     setLogoutPopup(true);
   };
 
-  const fontColor = darkMode ? 'text-white dropdown-item-hover' : '';
+  const toggle = () => {
+    setIsOpen(prevIsOpen => !prevIsOpen);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = event => {
+      if (
+        collapseRef.current &&
+        !collapseRef.current.contains(event.target) &&
+        !toggleRef.current?.contains(event.target)
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
+
+  const fontColor = darkMode
+    ? `${styles.darkDropdownText} ${styles.darkDropdownItem}`
+    : `${styles.mobileDropdownText} ${styles.mobileDropdownItem}`;
 
   return (
-    <div className={`${styles.headerWrapper}`}>
+    <div className={styles.headerWrapper}>
+      {isAuthenticated && (
+        <div className={`${styles.navbarOwnerMessage} ${styles.showInTablet} bg-dark pt-3 `}>
+          <OwnerMessage />
+        </div>
+      )}
       <Navbar className={`py-3 ${styles.navbar}`} color="dark" dark expand="xl">
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
 
-        <div
-          className={`${styles.timerMessageSection}`}
-          style={user.role === 'Owner' ? { marginRight: '0.5rem' } : { marginRight: '1rem' }}
-        >
-          {isAuthenticated && <Timer />}
-          {isAuthenticated && (
-            <div className={`${styles.ownerMessage}`}>
-              <OwnerMessage />
-            </div>
-          )}
+        {isAuthenticated && <Timer />}
+
+        {/* ITEM SHOWS OUTSIDE OF THE DROPDOWN IN MOBILE */}
+        <div className={`${styles.showInMobile} ml-auto mr-3`}>
+          <BellNotification userId={displayUserId} />
         </div>
-        <NavbarToggler onClick={toggle} />
+        {/* --------------------------------------------- */}
+
+        <div ref={toggleRef}>
+          <NavbarToggler onClick={toggle} className="mr-3" />
+        </div>
+
         {isAuthenticated && (
-          <Collapse isOpen={isOpen} navbar>
-            <Nav className={`ml-auto ${styles.navLinks}`} navbar>
+          <Collapse isOpen={isOpen} navbar innerRef={collapseRef}>
+            {isAuthenticated && (
+              <div className={`${styles.hideInTablet} ${styles.navbarOwnerMessage}`}>
+                <OwnerMessage />
+              </div>
+            )}
+            <Nav className={`ml-auto ${styles.menuContainer} mr-3`} navbar>
+              {/* --PROFILE SHOWS ON TOP IN MOBILE VIEW */}
+              <NavItem className={styles.showInMobile}>
+                <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
+                  <img
+                    alt=""
+                    src={`${profilePic || '/pfp-default-header.png'}`}
+                    style={{ maxWidth: '60px', maxHeight: '60px' }}
+                    className="dashboardimg"
+                  />
+                </NavLink>
+              </NavItem>
+              <UncontrolledDropdown inNavbar nav className={styles.showInMobile}>
+                <DropdownToggle nav caret>
+                  <span>
+                    {WELCOME}, {firstName}
+                  </span>
+                </DropdownToggle>
+                <DropdownMenu
+                  className={` ${darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown} ${
+                    styles.noMaxHeight
+                  }`}
+                >
+                  <DropdownItem
+                    tag={Link}
+                    to={`/userprofile/${displayUserId}`}
+                    className={fontColor}
+                  >
+                    {VIEW_PROFILE}
+                  </DropdownItem>
+                  {!cantUpdateDevAdminDetails(props.userProfile.email, props.userProfile.email) && (
+                    <DropdownItem
+                      tag={Link}
+                      to={`/updatepassword/${displayUserId}`}
+                      className={fontColor}
+                    >
+                      {UPDATE_PASSWORD}
+                    </DropdownItem>
+                  )}
+                  <DropdownItem className={fontColor}>
+                    <DarkModeButton />
+                  </DropdownItem>
+                  <DropdownItem onClick={openModal} className={fontColor}>
+                    {LOGOUT}
+                  </DropdownItem>
+                </DropdownMenu>
+              </UncontrolledDropdown>
+              {/* ------------------------------------- */}
+
               {canUpdateTask && (
                 <NavItem>
                   <NavLink tag={Link} to="/taskeditsuggestions">
-                    <div className={`${styles.redBackGroupHeader}`}>
+                    <div className={`${styles.redBackGroupHeader} ${styles.hideInMobile}`}>
                       <span>{props.taskEditSuggestionCount}</span>
                     </div>
+                    {/* --- MOBILE VIEW ONLY --- */}
+                    <span className={styles.showInMobile}>
+                      Task Edit Suggestion ({props.taskEditSuggestionCount})
+                    </span>
+                    {/* ------------------- */}
                   </NavLink>
                 </NavItem>
               )}
               <NavItem>
                 <NavLink tag={Link} to="/communityportal">
-                  <span className={`${styles.dashboardTextLink}`}>{DASHBOARD}</span>
+                  <span>{DASHBOARD}</span>
                 </NavLink>
               </NavItem>
               <UncontrolledDropdown nav inNavbar>
                 <DropdownToggle nav caret>
-                  <span className={`${styles.dashboardTextLink}`}>{ACTIVITY}</span>
+                  <span>{ACTIVITY}</span>
                 </DropdownToggle>
-                <DropdownMenu>
-                  <DropdownItem tag={Link} to="/communityportal/activities">
+                <DropdownMenu
+                  className={`${styles.noMaxHeight} ${
+                    darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown
+                  }`}
+                >
+                  <DropdownItem tag={Link} to="/communityportal/activities" className={fontColor}>
                     {ACTIVITIES}
                   </DropdownItem>
-                  <DropdownItem tag={Link} to="/communityportal/activities/registration">
+                  <DropdownItem
+                    tag={Link}
+                    to="/communityportal/activities/registration"
+                    className={fontColor}
+                  >
                     {REGISTRATION}
                   </DropdownItem>
                 </DropdownMenu>
               </UncontrolledDropdown>
               <NavItem>
                 <NavLink tag={Link} to="/communityportal/calendar">
-                  <span className={`${styles.dashboardTextLink}`}>{CALENDAR}</span>
+                  <span>{CALENDAR}</span>
                 </NavLink>
               </NavItem>
               <UncontrolledDropdown nav inNavbar>
                 <DropdownToggle nav caret>
-                  <span className={`${styles.dashboardTextLink}`}>{REPORTS}</span>
+                  <span>{REPORTS}</span>
                 </DropdownToggle>
-                <DropdownMenu>
-                  <DropdownItem tag={Link} to="/communityportal/reports/participation">
+                <DropdownMenu
+                  className={`${styles.noMaxHeight} ${
+                    darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown
+                  }`}
+                >
+                  <DropdownItem
+                    tag={Link}
+                    to="/communityportal/reports/participation"
+                    className={fontColor}
+                  >
                     {PARTICIPATION}
                   </DropdownItem>
-                  <DropdownItem tag={Link} to="/communityportal/reports/resourceusage">
+                  <DropdownItem
+                    tag={Link}
+                    to="/communityportal/reports/resourceusage"
+                    className={fontColor}
+                  >
                     {RESOURCE_USAGE}
                   </DropdownItem>
-                  <DropdownItem tag={Link} to="/communityportal/reports/event/personalization">
+                  <DropdownItem
+                    tag={Link}
+                    to="/communityportal/reports/event/personalization"
+                    className={fontColor}
+                  >
                     {EVENT_PERSONALIZATION}
                   </DropdownItem>
                 </DropdownMenu>
               </UncontrolledDropdown>
-              <NavItem className="responsive-spacing">
-                <BellNotification />
+              <NavItem className={styles.hideInMobile}>
+                <BellNotification userId={displayUserId} />
               </NavItem>
               {(canAccessUserManagement ||
                 canAccessBadgeManagement ||
@@ -251,11 +365,15 @@ export function Header(props) {
                 canAccessPopups ||
                 canAccessSendEmails ||
                 canAccessPermissionsManagement) && (
-                <UncontrolledDropdown nav inNavbar className="responsive-spacing">
+                <UncontrolledDropdown nav inNavbar>
                   <DropdownToggle nav caret>
-                    <span className={`${styles.dashboardTextLink}`}>{OTHER_LINKS}</span>
+                    <span>{OTHER_LINKS}</span>
                   </DropdownToggle>
-                  <DropdownMenu className={darkMode ? 'bg-yinmn-blue' : ''}>
+                  <DropdownMenu
+                    className={`${styles.noMaxHeight} ${
+                      darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown
+                    }`}
+                  >
                     {canAccessUserManagement ? (
                       <DropdownItem tag={Link} to="/usermanagement" className={fontColor}>
                         {USER_MANAGEMENT}
@@ -281,9 +399,27 @@ export function Header(props) {
                         {SEND_EMAILS}
                       </DropdownItem>
                     )}
+                    {isAuthenticated && (
+                      <DropdownItem
+                        tag={Link}
+                        to="/communityportal/activity/:activityid/resources"
+                        className={fontColor}
+                      >
+                        {ACTIVITY_RESOURCE_MANGEMENT}
+                      </DropdownItem>
+                    )}
+                    {isAuthenticated && (
+                      <DropdownItem
+                        tag={Link}
+                        to="/communityportal/activity/:activityid/resourcesusage"
+                        className={fontColor}
+                      >
+                        {ACTIVITY_RESOURCE_USAGE}
+                      </DropdownItem>
+                    )}
                     {canAccessPermissionsManagement && (
                       <>
-                        <DropdownItem divider />
+                        <DropdownItem divider className={styles.hideInMobile} />
                         <DropdownItem tag={Link} to="/permissionsmanagement" className={fontColor}>
                           {PERMISSIONS_MANAGEMENT}
                         </DropdownItem>
@@ -292,7 +428,7 @@ export function Header(props) {
                   </DropdownMenu>
                 </UncontrolledDropdown>
               )}
-              <NavItem>
+              <NavItem className={styles.hideInMobile}>
                 <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
                   <img
                     src={`${profilePic || '/pfp-default-header.png'}`}
@@ -302,36 +438,38 @@ export function Header(props) {
                   />
                 </NavLink>
               </NavItem>
-              <UncontrolledDropdown nav>
+              <UncontrolledDropdown nav className={styles.hideInMobile}>
                 <DropdownToggle nav caret>
-                  <span className={`${styles.dashboardTextLink}`}>
+                  <span>
                     {WELCOME}, {firstName}
                   </span>
                 </DropdownToggle>
-                <DropdownMenu className={darkMode ? 'bg-yinmn-blue' : ''}>
-                  <DropdownItem header>Hello {firstName}</DropdownItem>
+                <DropdownMenu
+                  className={`${styles.noMaxHeight} ${
+                    darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown
+                  }`}
+                >
+                  <DropdownItem header className={fontColor}>
+                    Hello {firstName}
+                  </DropdownItem>
                   <DropdownItem divider />
-                  <DropdownItem
-                    tag={Link}
-                    to={`/userprofile/${user.userid}`}
-                    className={darkMode ? 'text-light' : ''}
-                  >
+                  <DropdownItem tag={Link} to={`/userprofile/${user.userid}`} className={fontColor}>
                     {VIEW_PROFILE}
                   </DropdownItem>
                   {!cantUpdateDevAdminDetails(props.userProfile.email, props.userProfile.email) && (
                     <DropdownItem
                       tag={Link}
                       to={`/updatepassword/${user.userid}`}
-                      className={darkMode ? 'text-light' : ''}
+                      className={fontColor}
                     >
                       {UPDATE_PASSWORD}
                     </DropdownItem>
                   )}
-                  <DropdownItem className={darkMode ? 'text-light' : ''}>
+                  <DropdownItem className={fontColor}>
                     <DarkModeButton />
                   </DropdownItem>
                   <DropdownItem divider />
-                  <DropdownItem onClick={openModal} className={darkMode ? 'text-light' : ''}>
+                  <DropdownItem onClick={openModal} className={fontColor}>
                     {LOGOUT}
                   </DropdownItem>
                 </DropdownMenu>
