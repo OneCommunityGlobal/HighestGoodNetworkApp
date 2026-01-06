@@ -3,6 +3,7 @@
   min-height: 100vh;
   background-color: var(--bg-color);
   color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .weeklyProjectSummaryContainer html,
@@ -22,6 +23,11 @@
 
 .weeklyProjectSummaryHeaderWrapper {
   background-color: var(--bg-color) !important;
+  transition: background-color 0.3s ease;
+}
+
+.weeklyProjectSummaryContainer * {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
 /* ---------------- HEADER ---------------- */
@@ -29,6 +35,7 @@
   display: flex;
   justify-content: center;
   width: 100%;
+  background-color: var(--bg-color);
 }
 
 /* Header Container */
@@ -42,6 +49,7 @@
   background: var(--section-bg);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
+  transition: all 0.3s ease;
 }
 
 /* Title */
@@ -69,6 +77,7 @@
   font-size: 14px;
   background: var(--section-bg);
   color: var(--text-color);
+  transition: all 0.3s ease;
 }
 
 .weeklySummaryHeaderControls select:focus {
@@ -79,6 +88,18 @@
 /* Dropdown Hover */
 .weeklySummaryHeaderControls select:hover {
   background-color: var(--section-title-hover) !important;
+}
+
+/* Dark mode select styling */
+.darkMode select {
+  background-color: var(--card-bg) !important;
+  color: var(--text-color) !important;
+  border-color: var(--card-shadow) !important;
+}
+
+.darkMode select option {
+  background-color: var(--card-bg);
+  color: var(--text-color);
 }
 
 /* Share Button */
@@ -96,6 +117,14 @@
 }
 
 /* ---------------- DASHBOARD ---------------- */
+.weeklyProjectSummaryDashboardContainer {
+  width: 95%;
+  margin: auto;
+  padding: 20px;
+  background: var(--bg-color);
+  color: var(--text-color);
+  transition: all 0.3s ease;
+}
 
 .weeklyProjectSummaryDashboardGrid {
   display: grid;
@@ -121,13 +150,13 @@
 }
 
 /* ---------------- CARDS ---------------- */
-
 .weeklyProjectSummaryCard {
   background: var(--card-bg);
   padding: 10px;
   border-radius: 6px;
   text-align: center;
   box-shadow: 0 2px 5px var(--card-shadow);
+  transition: all 0.3s ease;
 }
 
 .darkMode .weeklyProjectSummaryCard {
@@ -141,7 +170,6 @@
   margin-top: 20px;
   grid-column: span 1;
 }
-
 
 .weekly-project-summary-card.financial-big {
   grid-column: span 4;
@@ -160,7 +188,6 @@
   margin: 0;
   font-weight: normal;
   font-size: 24px;
-
 }
 
 .fullCard {
@@ -198,6 +225,7 @@
   border-radius: 8px;
   padding: 10px;
   box-shadow: 0 2px 4px var(--card-shadow);
+  transition: all 0.3s ease;
 }
 
 .weeklyProjectSummaryDashboardCategoryTitle {
@@ -210,6 +238,9 @@
   justify-content: space-between;
   align-items: center;
   color: var(--text-color);
+  border: none;
+  width: 100%;
+  transition: all 0.3s ease;
 }
 
 .weeklyProjectSummaryDashboardCategoryTitle:hover {
@@ -224,6 +255,7 @@
   border-top: 1px solid var(--card-shadow);
   animation: fadeIn 0.3s ease-in-out;
   background: var(--section-bg);
+  transition: all 0.3s ease;
 }
 
 /* Adjust grid columns based on section size */
@@ -235,7 +267,7 @@
   grid-template-columns: 1fr;
 }
 
-/* ---------------- DARK MODE VARIABLES ---------------- */
+/* ---------------- LIGHT MODE VARIABLES ---------------- */
 :root {
   --bg-color: #ffffff;
   --text-color: #000000;
@@ -248,7 +280,7 @@
   --button-hover: #333;
 }
 
-/* ---------------- DARK MODE STYLES ---------------- */
+/* ---------------- DARK MODE VARIABLES ---------------- */
 .darkMode {
   --bg-color: #1b2a41;
   --text-color: #ffffff;
@@ -282,6 +314,33 @@
   color: var(--text-color);
 }
 
+.darkMode .weeklySummaryShareBtn {
+  background-color: var(--button-bg) !important;
+}
+
+.darkMode .weeklySummaryShareBtn:hover {
+  background-color: var(--button-hover) !important;
+}
+
+/* Fix status card colors for dark mode */
+.darkMode .statusCard {
+  background: var(--card-bg) !important;
+  color: var(--text-color) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.darkMode .weeklyCardTitle,
+.darkMode .weeklyStatusValue,
+.darkMode .weekly-status-change {
+  color: var(--text-color) !important;
+}
+
+/* Fix header wrapper in dark mode */
+.darkMode .weekly-summary-header-wrapper {
+  background-color: var(--bg-color) !important;
+}
+
+/* Tooltip styles */
 /* First, set a max-height and make it scrollable */
 .quantityOfMaterialsUsedChartTooltip {
   max-height: 80vh !important; /* Limit to 80% of viewport height */
@@ -307,7 +366,6 @@
   border-radius: 4px;
 }
 
-/* Additional adjustments for dark mode if needed */
 .darkMode .quantityOfMaterialsUsedChartTooltip::-webkit-scrollbar-track {
   background: rgba(255, 255, 255, 0.1);
 }
@@ -319,6 +377,92 @@
 .darkMode .quantityOfMaterialsUsedChartTooltip {
   scrollbar-color: rgba(255, 255, 255, 0.3) rgba(255, 255, 255, 0.1);
 }
+
+/* Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---------------- STATUS CARD ---------------- */
+.statusCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 25px;
+  width: 100%;
+  max-width: 284px;
+  height: 190px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  padding: 20px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+/* ---------------- RESPONSIVE GRID LAYOUT ---------------- */
+.projectStatusGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 1600px;
+  margin: auto;
+}
+
+/* ---------------- OVAL STATUS BUTTON ---------------- */
+.weeklyStatusButton {
+  width: 130px;
+  height: 65px;
+  border-radius: 50px / 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  margin: 12px 0;
+  transition: all 0.3s ease;
+}
+
+.weeklyCardTitle {
+  color: #000;
+  font-size: clamp(14px, 1.4vw, 18px);
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.darkMode .weeklyCardTitle {
+  color: var(--text-color) !important;
+}
+
+.weeklyStatusValue {
+  color: #000;
+  font-size: 40px;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.darkMode .weeklyStatusValue {
+  color: var(--text-color) !important;
+}
+
+.weekly-status-change {
+  transition: color 0.3s ease;
+}
+
+.darkMode .weekly-status-change {
+  color: var(--text-color) !important;
+}
+
 /* ---------------- RESPONSIVE DESIGN ---------------- */
 
 /* Medium Screens - Wrap Items */
@@ -466,4 +610,23 @@
   .projectStatusGrid {
     grid-template-columns: repeat(1, 1fr);
   }
+}
+
+/* Additional fixes for dark mode compatibility */
+.darkMode .weeklyProjectSummaryContainer {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+.darkMode .weeklyProjectSummaryDashboardContainer {
+  background-color: var(--bg-color);
+}
+
+.darkMode .weeklyProjectSummaryDashboardSection {
+  background: var(--section-bg);
+}
+
+/* Ensure text visibility in dark mode for all elements */
+.darkMode * {
+  color: inherit;
 }

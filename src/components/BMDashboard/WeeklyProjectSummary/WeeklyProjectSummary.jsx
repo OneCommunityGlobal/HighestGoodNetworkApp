@@ -124,52 +124,6 @@ const projectStatusButtons = [
   },
 ];
 
-export function WeeklyProjectSummaryContent() {
-  const dispatch = useDispatch();
-  const materials = useSelector(state => state.materials?.materialslist || []);
-  const [openSections, setOpenSections] = useState({});
-
-  const getColorScheme = percentage => {
-    if (percentage === '-') return 'neutral';
-    if (percentage > 0) return 'positive';
-    if (percentage < 0) return 'negative';
-    return 'neutral';
-  };
-
-  const colorScheme = getColorScheme(monthOverMonth);
-
-  const titleClass = title.replace(/\s+/g, '-').toLowerCase();
-
-  return (
-    <div
-      className={`financial-card ${colorScheme} custom-box-shadow financial-card-background-${titleClass}`}
-      onMouseEnter={() => setShowTooltip(true)}
-      onMouseLeave={() => setShowTooltip(false)}
-    >
-      <div className="financial-card-title">{title}</div>
-      <div className={`financial-card-ellipse financial-card-ellipse-${titleClass}`} />
-      <div className="financial-card-value">{value === '-' ? '-' : value.toLocaleString()}</div>
-      <div className={`financial-card-month-over-month ${colorScheme}`}>
-        {monthOverMonth === '-'
-          ? '-'
-          : `${monthOverMonth > 0 ? '+' : ''}${monthOverMonth}% month over month`}
-      </div>
-
-      {/* Tooltip for Additional Info */}
-      {showTooltip && Object.keys(additionalInfo).length > 0 && (
-        <div className="financial-card-tooltip">
-          {Object.entries(additionalInfo).map(([key]) => (
-            <div key={key} className="financial-card-tooltip-item">
-              <span className="tooltip-key">{key}:</span>
-              <span className="tooltip-value">{value}</span>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
 function WeeklyProjectSummary() {
   const dispatch = useDispatch();
   const materials = useSelector(state => state.materials?.materialslist || []);
@@ -307,7 +261,10 @@ function WeeklyProjectSummary() {
         className: 'half',
         content: [
           <MostFrequentKeywords key="frequent-tags-card" />,
-          <div key="injury-chart" className="weekly-project-summary-card normal-card">
+          <div
+            key="injury-chart"
+            className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+          >
             <InjuryCategoryBarChart />
           </div>,
         ],
@@ -318,13 +275,21 @@ function WeeklyProjectSummary() {
         className: 'large',
         content: (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
-            <div className="weekly-project-summary-card financial-small">📊 Card</div>
-            <div className="weekly-project-summary-card financial-small financial-chart">
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.financialSmall}`}>
+              📊 Card
+            </div>
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.financialSmall}`}>
               <ExpenseBarChart />
             </div>
-            <div className="weekly-project-summary-card financial-small">📊 Card</div>
-            <div className="weekly-project-summary-card financial-small">📊 Card</div>
-            <div className="weekly-project-summary-card financial-big">📊 Big Card</div>
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.financialSmall}`}>
+              📊 Card
+            </div>
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.financialSmall}`}>
+              📊 Card
+            </div>
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.financialBig}`}>
+              📊 Big Card
+            </div>
           </div>
         ),
       },
@@ -402,7 +367,7 @@ function WeeklyProjectSummary() {
       // eslint-disable-next-line no-promise-executor-return
       await new Promise(resolve => setTimeout(resolve, 500));
 
-      const contentElement = document.querySelector('.weekly-project-summary-container');
+      const contentElement = document.querySelector(`.${styles.weeklyProjectSummaryContainer}`);
       if (!contentElement) throw new Error('Weekly project summary container not found.');
 
       const pdfContainer = document.createElement('div');
