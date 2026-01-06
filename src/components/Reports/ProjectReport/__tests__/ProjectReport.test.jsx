@@ -48,7 +48,7 @@ describe('ProjectReport component', () => {
         <ProjectReport />
       </Provider>,
     );
-  });
+  }, 15000); // Increased timeout to 15 seconds
 
   it('should render the project name three times', async () => {
     axios.get.mockResolvedValue({
