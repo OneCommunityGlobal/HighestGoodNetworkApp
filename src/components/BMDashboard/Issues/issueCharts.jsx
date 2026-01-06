@@ -13,6 +13,7 @@ function IssueChart() {
   const { loading, issues, error } = useSelector(state => state.bmissuechart);
 
   const [filters, setFilters] = useState({ issueTypes: [], years: [] });
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 640);
 
   useEffect(() => {
     dispatch(fetchIssues());
@@ -31,6 +32,15 @@ function IssueChart() {
       setFilters({ issueTypes: allIssueTypes, years: allYears });
     }
   }, [issues]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 640);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const extractDropdownOptions = () => {
     const issueTypes = [...new Set(Object.keys(issues || {}))].map(issue => ({
@@ -200,13 +210,14 @@ function IssueChart() {
             padding: 8,
             align: 'center',
             autoSkip: false,
-            maxRotation: 0,
-            minRotation: 0,
+            maxRotation: isMobile ? 90 : 0,
+            minRotation: isMobile ? 90 : 0,
             font: { size: 12, weight: '500' },
             callback: function(value) {
               const label = this.getLabelForValue(value);
-              const maxCharsPerLine = 12;
+              if (isMobile) return label;
 
+              const maxCharsPerLine = 12;
               if (label.length <= maxCharsPerLine) return label;
 
               const words = label.split(' ');
@@ -262,7 +273,7 @@ function IssueChart() {
         mode: 'index',
       },
     }),
-    [darkMode],
+    [darkMode, isMobile],
   );
 
   const chartPlugins = useMemo(() => [xAxisBackgroundPlugin(darkMode)], [darkMode]);
