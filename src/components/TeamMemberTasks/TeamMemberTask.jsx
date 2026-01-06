@@ -292,11 +292,24 @@ const TeamMemberTask = React.memo(
                                 style={{
                                   fontSize: 24,
                                   cursor: 'pointer',
+                                  marginLeft: 6,
                                   color: darkMode ? 'lightgray' : 'black',
                                 }}
                                 title="Click to see user's timelog"
                               />
                             </Link>
+                            <p
+                              style={{
+                                fontSize: 16,
+                                cursor: 'pointer',
+                                color: darkMode ? 'lightgray' : 'black',
+                                marginLeft: 6,
+                                paddingTop: 15,
+                              }}
+                              title="Number of weeks this person has completed, based on the total weekly summaries they’ve submitted."
+                            >
+                              {user.weeklySummariesCount}
+                            </p>
                           </div>
                           {user.role !== 'Volunteer' && (
                             <div
@@ -372,13 +385,15 @@ const TeamMemberTask = React.memo(
                               }}
                             >{`${user.name}`}</Link>
 
-                            {user.role !== 'Volunteer' && (
+                            {user.role !== 'Volunteer' ? (
                               <div
                                 className="user-role"
                                 style={{ fontSize: '14px', color: darkMode ? 'lightgray' : 'gray' }}
                               >
                                 {user.role}
                               </div>
+                            ) : (
+                              <div></div>
                             )}
 
                             <div
@@ -506,8 +521,6 @@ const TeamMemberTask = React.memo(
                                           data-testid={`${task.taskName}`}
                                           style={{ color: darkMode ? '#339CFF' : undefined }}
                                         >
-                                          {/* <span>aaaaaaaa aaaaaaaaaa aaaaaa aaaaaaaaaaaaaaaa aaaa aaaaaaaaaaaaaaa aaa aaaaaa aaaa aaaaaaa aaaaaaaa aaaaaaaa aaaaaa aa bb</span> */}
-
                                           <span>{`${task.num} ${task.taskName}`} </span>
                                         </Link>
                                         <CopyToClipboard
@@ -595,26 +608,7 @@ const TeamMemberTask = React.memo(
                                         darkMode ? 'bg-yinmn-blue text-light' : ''
                                       }`}
                                     >
-                                      <>
-                                        {isAllowedToSeeDeadlineCount && (
-                                          <span
-                                            className={styles['deadlineCount']}
-                                            title="Click to view task change history"
-                                            data-testid={`deadline-${task.taskName}`}
-                                            onClick={() => handleOpenTaskChangeLog(task)}
-                                            onKeyDown={e => {
-                                              if (e.key === 'Enter' || e.key === ' ') {
-                                                e.preventDefault();
-                                                handleOpenTaskChangeLog(task);
-                                              }
-                                            }}
-                                            role="button"
-                                            tabIndex={0}
-                                            style={{ cursor: 'pointer' }}
-                                          >
-                                            {taskCounts[task._id] ?? task.deadlineCount ?? 0}
-                                          </span>
-                                        )}
+                                      <div className={styles['progress-wrapper']}>
                                         <div className={styles['team-task-progress-container']}>
                                           <div
                                             data-testid={`times-${task.taskName}`}
@@ -643,6 +637,27 @@ const TeamMemberTask = React.memo(
                                               />
                                               <div className={styles['followup-info-override']}>
                                                 <FollowUpInfoModal />
+                                                {isAllowedToSeeDeadlineCount && (
+                                                  <span
+                                                    className={styles['deadlineCount']}
+                                                    title="Click to view task change history"
+                                                    data-testid={`deadline-${task.taskName}`}
+                                                    onClick={() => handleOpenTaskChangeLog(task)}
+                                                    onKeyDown={e => {
+                                                      if (e.key === 'Enter' || e.key === ' ') {
+                                                        e.preventDefault();
+                                                        handleOpenTaskChangeLog(task);
+                                                      }
+                                                    }}
+                                                    role="button"
+                                                    tabIndex={0}
+                                                    style={{ cursor: 'pointer' }}
+                                                  >
+                                                    {taskCounts[task._id] ??
+                                                      task.deadlineCount ??
+                                                      0}
+                                                  </span>
+                                                )}
                                               </div>
                                             </div>
                                           )}
@@ -659,7 +674,7 @@ const TeamMemberTask = React.memo(
                                           )}
                                           className={styles['team-task-progress-bar']}
                                         />
-                                      </>
+                                      </div>
                                     </td>
                                   )}
                                 </tr>
