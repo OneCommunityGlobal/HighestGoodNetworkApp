@@ -17,13 +17,19 @@ const style = {
 };
 
 function LessonForm() {
+  // Redux and Router hooks
   const dispatch = useDispatch();
   const history = useHistory();
+  const { projectId } = useParams();
+
+  // Global state selectors
   const darkMode = useSelector(state => state.theme.darkMode);
   const user = useSelector(state => state.auth.user);
   const userId = user ? user.userid : null;
   const roles = useSelector(state => state.role.roles);
   const projects = useSelector(state => state.bmProjects);
+
+  // Local state for form inputs and UI controls
   const [LessonFormtags, setLessonFormTags] = useState([]);
   const [permanentTags, setPermanentTags] = useState([]);
   const [tagInput, setTagInput] = useState('');
@@ -32,11 +38,11 @@ function LessonForm() {
   const [selectedRole, setSelectedRole] = useState('All');
   const [LessonText, setLessonText] = useState(null);
   const [LessonTitleText, setLessonTitleText] = useState(null);
-  const { projectId } = useParams();
   const [projectname, setProjectName] = useState(null);
   const [filteredTags, setFilteredTags] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
 
+  // Filter tags for autocomplete as user types
   const handleTagInput = e => {
     e.preventDefault();
     const input = e.target.value;
@@ -52,6 +58,7 @@ function LessonForm() {
     }
   };
 
+  // Add a tag from the dropdown selection
   const handleTagSelection = selectedTag => {
     if (!LessonFormtags.includes(selectedTag)) {
       setLessonFormTags([...LessonFormtags, selectedTag]);
@@ -60,6 +67,7 @@ function LessonForm() {
     setShowDropdown(false);
   };
 
+  // Create a new tag via API if it doesn't exist, then add to local state
   const addTag = async e => {
     e.preventDefault();
     const trimmedTagInput = tagInput.trim().replace(/\s+/g, ' ');
@@ -95,12 +103,14 @@ function LessonForm() {
     }
   };
 
+  // Initial data fetch on component mount
   useEffect(() => {
     fetchTags();
     dispatch(fetchBMProjects(projectId));
     dispatch(getAllRoles());
   }, [dispatch, projectId]);
 
+  // Handle outside clicks to close the tag dropdown
   useEffect(() => {
     const handleClickOutside = event => {
       const dropdown = document.querySelector(`.${styles.tagDropdown}`);
@@ -115,6 +125,7 @@ function LessonForm() {
     };
   }, []);
 
+  // Set default project if projectId exists in URL
   useEffect(() => {
     if (projectId) {
       const foundProject = projects.find(project => project._id === projectId);
@@ -125,6 +136,7 @@ function LessonForm() {
     }
   }, [projectId, projects]);
 
+  // --- File Upload Handlers (Click and Drag-n-Drop) ---
   const handleFileSelection = e => {
     const file = e.target.files[0];
     setSelectedFile(file);
@@ -145,10 +157,6 @@ function LessonForm() {
     e.preventDefault();
   };
 
-  const onHandleCancel = () => {
-    history.goBack();
-  };
-
   const handleDrop = e => {
     e.preventDefault();
     const fileInput = document.getElementById('fileInput');
@@ -157,6 +165,11 @@ function LessonForm() {
     if (fileInput) {
       fileInput.value = '';
     }
+  };
+  // ----------------------------------------------------
+
+  const onHandleCancel = () => {
+    history.goBack();
   };
 
   const handleProjectChange = e => {
@@ -179,6 +192,7 @@ function LessonForm() {
     setLessonTitleText(lessonformtitleinput);
   };
 
+  // Compile form data and dispatch creation action
   const LessonFormSubmit = async e => {
     e.preventDefault();
     if (!selectedProject) {
@@ -212,6 +226,7 @@ function LessonForm() {
       <div className={`${styles.formContainer} ${darkMode ? styles.darkModeForm : ''}`}>
         <Form onSubmit={LessonFormSubmit}>
           <div className="WriteLessonAndTagDiv">
+            {/* Title Input */}
             <Form.Group className="LessonFrom" controlId="exampleForm.ControlTextarea1">
               <Form.Label className={`${styles.lessonLabel} ${darkMode ? 'text-light' : ''}`}>
                 Lesson Title
@@ -226,6 +241,8 @@ function LessonForm() {
                 maxLength={40}
               />
             </Form.Group>
+
+            {/* Content Input */}
             <Form.Group className="LessonForm" controlId="exampleForm.ControlTextarea1">
               <Form.Label className={`${styles.lessonLabel} ${darkMode ? 'text-light' : ''}`}>
                 Write a Lesson
@@ -242,6 +259,8 @@ function LessonForm() {
                 onChange={handleLessonInput}
               />
             </Form.Group>
+
+            {/* Tag Selection Area */}
             <Form.Group controlId="exampleForm.ControlInput1">
               <Form.Label className={darkMode ? 'text-light' : ''}>
                 Add tag (Press enter to add tag)
@@ -292,7 +311,9 @@ function LessonForm() {
               </div>
             </Form.Group>
           </div>
+
           <div className={`${styles.formSelectContainer}`}>
+            {/* Project Selection */}
             <div className={`${styles.singleFormSelect}`}>
               <Form.Group controlId="Form.ControlSelect1">
                 <Form.Label className={darkMode ? 'text-light' : ''}>Belongs to</Form.Label>
@@ -312,6 +333,8 @@ function LessonForm() {
                 </FormControl>
               </Form.Group>
             </div>
+
+            {/* Role View Selection */}
             <div className={`${styles.singleFormSelect}`}>
               <Form.Group controlId="Form.ControlSelect2">
                 <Form.Label className={darkMode ? 'text-light' : ''}>View by</Form.Label>
@@ -330,6 +353,8 @@ function LessonForm() {
               </Form.Group>
             </div>
           </div>
+
+          {/* File Upload / Drag & Drop Zone */}
           <div className="DragAndDropFormGroup">
             <Form.Group controlId="exampleForm.ControlFile1">
               <Form.Label className={darkMode ? 'text-light' : ''}>Upload Appendix</Form.Label>
@@ -363,6 +388,7 @@ function LessonForm() {
               </div>
             </Form.Group>
           </div>
+
           <div className={`${styles.buttonDiv}`}>
             <Button
               className={`${styles.lessonFormButtonCancel} ${
