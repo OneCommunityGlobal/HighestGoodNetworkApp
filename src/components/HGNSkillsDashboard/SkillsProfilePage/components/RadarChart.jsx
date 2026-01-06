@@ -194,7 +194,6 @@ function RadarChart({ profileData, compact = true }) {
       setSkillsData(processedData);
       setIsLoading(false);
     } catch (error) {
-      console.error('Error processing skills data:', error);
       setHasError(true);
       setIsLoading(false);
     }

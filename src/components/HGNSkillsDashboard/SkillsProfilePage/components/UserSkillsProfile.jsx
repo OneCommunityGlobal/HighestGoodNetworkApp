@@ -84,9 +84,6 @@ function UserSkillsProfile() {
         setProfileData(data);
         setLoading(false);
       } catch (err) {
-        console.error('Error fetching profile data:', err);
-        console.error('Error response:', err.response);
-
         let errorMessage = 'Failed to load profile data';
 
         if (err.response) {
