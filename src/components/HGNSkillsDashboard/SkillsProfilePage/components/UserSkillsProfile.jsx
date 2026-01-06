@@ -27,12 +27,6 @@ function UserSkillsProfile() {
         let effectiveUserId = routeUserId;
         const token = localStorage.getItem(config.tokenKey);
 
-        console.log('Debug Info:', {
-          routeUserId,
-          hasToken: !!token,
-          tokenPreview: token ? token.substring(0, 20) + '...' : 'No token',
-        });
-
         if (!token) {
           throw new Error('No token found. Please log in.');
         }
@@ -46,7 +40,6 @@ function UserSkillsProfile() {
           const decodedToken = jwtDecode(token);
           effectiveUserId = decodedToken.userid;
           decodedUserId = decodedToken.userid;
-          console.log('Decoded user ID from token:', effectiveUserId);
         } else {
           // Still decode for self-view comparison
           try {
@@ -61,11 +54,7 @@ function UserSkillsProfile() {
         }
 
         const url = ENDPOINTS.SKILLS_PROFILE(effectiveUserId);
-        console.log('Making API request to:', url);
         const response = await httpService.get(url);
-
-        console.log('API Response:', response);
-        console.log('Response Data:', response.data);
 
         const { data } = response;
         if (!data) throw new Error('Failed to fetch profile data');
@@ -106,15 +95,9 @@ function UserSkillsProfile() {
             err.response.data?.error ||
             err.response.data?.message ||
             `Server error: ${err.response.status}`;
-          console.log('Server error details:', {
-            status: err.response.status,
-            statusText: err.response.statusText,
-            data: err.response.data,
-          });
         } else if (err.request) {
           // Request was made but no response received
           errorMessage = 'No response from server. Check if backend is running on localhost:4500';
-          console.log('No response received:', err.request);
         } else {
           // Something else happened
           errorMessage = err.message;
