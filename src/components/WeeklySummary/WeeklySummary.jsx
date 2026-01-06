@@ -121,6 +121,7 @@ export class WeeklySummary extends Component {
     moveSelect: '-1',
     movePopup: false,
     moveConfirm: false,
+    isSavingMove: false,
   };
 
   // Minimum word count of 50 (handle words that also use non-ASCII characters by counting whitespace rather than word character sequences).
@@ -181,6 +182,7 @@ export class WeeklySummary extends Component {
 
     wordCount: Joi.number()
       .min(50)
+      .allow(0)
       .label('word count must be greater than 50 words'),
 
     summaryLastWeek: Joi.string()
@@ -216,6 +218,7 @@ export class WeeklySummary extends Component {
       summaries,
       fetchError,
       loading,
+      initialActiveTab,
     } = this.props;
     await getWeeklySummaries(displayUserId || currentUser.userid);
 
@@ -306,7 +309,7 @@ export class WeeklySummary extends Component {
       dueDateBeforeLast,
       dueDateThreeWeeksAgo,
       submittedCountInFourWeeks,
-      activeTab: '1',
+      activeTab: initialActiveTab || '1',
       fetchError,
       loading,
       editPopup: false,
@@ -338,8 +341,8 @@ export class WeeklySummary extends Component {
     }
   };
 
-  toggleMovePopup = showPopup => {
-    this.setState({ movePopup: !showPopup });
+  toggleMovePopup = () => {
+    this.setState(prev => ({ movePopup: !prev.movePopup }));
   };
 
   toggleShowPopup = showPopup => {
@@ -404,8 +407,6 @@ export class WeeklySummary extends Component {
           break;
       }
     }
-    // confitm move or not
-    this.toggleMovePopup(movePopup);
     // eslint-disable-next-line consistent-return
     return newformElements;
   };
@@ -545,7 +546,7 @@ export class WeeklySummary extends Component {
     this.setState({ formElements, errors });
   };
 
-  handleChangeInSummary = async () => {
+  handleChangeInSummary = async (isMove = false) => {
     // Extract state variables for ease of access
     const {
       submittedDate,
@@ -557,14 +558,13 @@ export class WeeklySummary extends Component {
       dueDateBeforeLast,
       dueDateThreeWeeksAgo,
       submittedCountInFourWeeks,
-      moveConfirm,
     } = this.state;
     let newformElements = { ...formElements };
     const newOriginSummaries = { ...originSummaries };
     const newUploadDatesElements = { ...uploadDatesElements };
     const dueDates = [dueDate, dueDateLastWeek, dueDateBeforeLast, dueDateThreeWeeksAgo];
     // Move or not, if did move, update the newformElements
-    if (moveConfirm) {
+    if (isMove) {
       newformElements = this.handleMove();
     }
     // Define summaries, updateDates for easier reference
@@ -581,26 +581,22 @@ export class WeeklySummary extends Component {
     }, 0);
     const diffInSubmittedCount = currentSubmittedCount - submittedCountInFourWeeks;
     if (diffInSubmittedCount !== 0) {
-      this.setState({ summariesCountShowing: newformElements.weeklySummariesCount + 1 });
+      this.setState({
+        summariesCountShowing: newformElements.weeklySummariesCount + diffInSubmittedCount,
+      });
     }
-    // eslint-disable-next-line no-shadow
-    const updateSummary = (summary, uploadDate, dueDate) => {
-      if (newformElements[summary] !== newOriginSummaries[summary]) {
-        newOriginSummaries[summary] = newformElements[summary];
-        newUploadDatesElements[uploadDate] =
-          newformElements[summary] === '' ? dueDate : submittedDate;
-        this.setState({
-          formElements: newformElements,
-          uploadDatesElements: newUploadDatesElements,
-          originSummaries: newOriginSummaries,
-        });
-      }
-    };
-    // Loop through summaries and update state variables
-    // eslint-disable-next-line no-plusplus
     for (let i = 0; i < summaries.length; i++) {
-      updateSummary(summaries[i], uploadDates[i], dueDates[i]);
+      if (newformElements[summaries[i]] !== newOriginSummaries[summaries[i]]) {
+        newOriginSummaries[summaries[i]] = newformElements[summaries[i]];
+        newUploadDatesElements[uploadDates[i]] =
+          newformElements[summaries[i]] === '' ? dueDates[i] : submittedDate;
+      }
     }
+    this.setState({
+      formElements: newformElements,
+      uploadDatesElements: newUploadDatesElements,
+      originSummaries: newOriginSummaries,
+    });
 
     // eslint-disable-next-line no-shadow
     const { updateWeeklySummaries, displayUserId, currentUser } = this.props;
@@ -622,14 +618,8 @@ export class WeeklySummary extends Component {
 
   // Updates user profile and weekly summaries
   updateUserData = async userId => {
-    const { getUserProfile, getWeeklySummaries } = this.props;
-    if (typeof getUserProfile === 'function') {
-      await getUserProfile(userId);
-    }
-    // always refresh summaries if that exists
-    if (typeof getWeeklySummaries === 'function') {
-      await getWeeklySummaries(userId);
-    }
+    const { getWeeklySummaries } = this.props;
+    if (typeof getWeeklySummaries === 'function') await getWeeklySummaries(userId);
   };
 
   // Handler for success scenario after save
@@ -640,7 +630,8 @@ export class WeeklySummary extends Component {
       pauseOnFocusLoss: false,
       autoClose: 3000,
     });
-    await this.updateUserData(displayUserId || currentUser.userid);
+    this.updateUserData(displayUserId || currentUser.userid);
+    window.location.reload();
   };
 
   // Handler for error scenario after save
@@ -653,29 +644,31 @@ export class WeeklySummary extends Component {
   };
 
   // Main save handler, used by both handleMoveSave and handleSave
-  mainSaveHandler = async closeAfterSave => {
+  mainSaveHandler = async (closeAfterSave, isMove = false) => {
     const toastIdOnSave = 'toast-on-save';
     const errors = this.validate();
 
     this.setState({ errors: errors });
     if (Object.keys(errors).length > 0) {
       this.setState({ moveConfirm: false });
-      return;
+      return false;
     }
 
-    const result = await this.handleChangeInSummary();
+    const result = await this.handleChangeInSummary(isMove);
 
     if (result === 200 || result?.status === 200) {
       await this.handleSaveSuccess(toastIdOnSave);
       if (closeAfterSave) {
         this.handleClose();
       }
+      return true;
     } else {
       this.handleSaveError(toastIdOnSave);
+      return false;
     }
   };
 
-  handleMoveSave = async event => {
+  handleMoveSave = event => {
     const { isNotAllowedToEdit, displayUserEmail } = this.props;
     if (isNotAllowedToEdit) {
       if (displayUserEmail === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY) {
@@ -690,12 +683,16 @@ export class WeeklySummary extends Component {
     if (event) {
       event.preventDefault();
     }
-    const { moveConfirm, moveSelect } = this.state;
-    this.setState({ moveConfirm: true });
-    this.mainSaveHandler(false);
-    if (moveConfirm) {
-      this.toggleTab(moveSelect);
-    }
+    const { moveSelect } = this.state;
+    const targetTab = moveSelect; // remember where to go
+    this.setState({ moveConfirm: true, isSavingMove: true }, async () => {
+      const ok = await this.mainSaveHandler(false, /* isMove */ true);
+      if (ok) {
+        this.toggleTab(targetTab);
+        this.toggleMovePopup(); // close modal only on success
+      }
+      this.setState({ moveConfirm: false, isSavingMove: false, moveSelect: '-1' });
+    });
   };
 
   handleSave = async event => {
@@ -770,10 +767,11 @@ export class WeeklySummary extends Component {
       toolbar:
         'bold italic underline link removeformat | bullist numlist outdent indent | styleselect fontsizeselect | table| strikethrough forecolor backcolor | subscript superscript charmap | help',
       branding: false,
-      min_height: 180,
+      min_height: 250,
       max_height: 500,
       autoresize_bottom_margin: 1,
-      content_style: 'body { font-size: 14px; }',
+      content_style:
+        'body { font-size: 14px; } .mce-content-body[data-mce-placeholder]:focus::before {content: "";}',
       images_upload_handler: customImageUploadHandler,
       skin: darkMode ? 'oxide-dark' : 'oxide',
       content_css: darkMode ? 'dark' : 'default',
@@ -1040,10 +1038,18 @@ export class WeeklySummary extends Component {
                       Are you SURE you want to move the summary?
                     </ModalBody>
                     <ModalFooter className={bodyBg}>
-                      <Button onClick={this.handleMoveSave} style={boxStyling}>
-                        Confirm and Save
+                      <Button
+                        onClick={this.handleMoveSave}
+                        style={boxStyling}
+                        disabled={this.state.isSavingMove || this.state.moveSelect === '-1'}
+                      >
+                        {this.state.isSavingMove ? 'Saving…' : 'Confirm and Save'}
                       </Button>
-                      <Button onClick={this.toggleMovePopup} style={boxStyling}>
+                      <Button
+                        onClick={this.toggleMovePopup}
+                        style={boxStyling}
+                        disabled={this.state.isSavingMove}
+                      >
                         Close
                       </Button>
                     </ModalFooter>
@@ -1100,7 +1106,7 @@ export class WeeklySummary extends Component {
                         style={{ marginLeft: '10px', lineHeight: '1.5', cursor: 'pointer' }}
                         className={darkMode ? 'text-light' : 'text-dark'}
                       >
-                        I used GPT (or other AI editor) with the most current prompt.
+                        I used ChatGPT (or other AI editor) with the most current prompt.
                       </label>
                     </FormGroup>
                     {errors.editorConfirm && (
@@ -1174,6 +1180,7 @@ WeeklySummary.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   summaries: PropTypes.object.isRequired,
   updateWeeklySummaries: PropTypes.func.isRequired,
+  initialActiveTab: PropTypes.string,
 };
 
 const mapStateToProps = ({ auth, weeklySummaries }) => ({

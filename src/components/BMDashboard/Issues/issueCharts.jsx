@@ -130,6 +130,9 @@ function IssueChart() {
             label: ctx => `${ctx.dataset.label}: ${ctx.formattedValue}`,
           },
         },
+        datalabels: {
+          display: false,
+        },
       },
       scales: {
         x: {

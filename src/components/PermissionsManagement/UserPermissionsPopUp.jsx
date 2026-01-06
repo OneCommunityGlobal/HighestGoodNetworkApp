@@ -3,7 +3,7 @@ import { Button, Dropdown, Form, Input } from 'reactstrap';
 import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
 import { getAllUserProfile } from '~/actions/userManagement';
-import './PermissionsManagement.css';
+import styles from './PermissionsManagement.module.css';
 import axios from 'axios';
 import { ENDPOINTS } from '~/utils/URL';
 // eslint-disable-next-line no-unused-vars
@@ -12,10 +12,11 @@ import {
   DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
   DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
   PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
-} from '~/utils/constants';
+} from '../../utils/constants';
+import { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import PermissionList from './PermissionList';
 import { addNewRole, getAllRoles } from '../../actions/role';
-import { cantUpdateDevAdminDetails } from '../../utils/permissions';
+
 import ReminderModal from './ReminderModal';
 
 function UserPermissionsPopUp({
@@ -40,9 +41,11 @@ function UserPermissionsPopUp({
   const [actualUserRolePermission, setActualUserRolePermission] = useState();
   const [selectedAccount, setSelectedAccount] = useState('');
   const [toastShown, setToastShown] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const setToDefault = () => {
     setUserPermissions([]);
+    setUserRemovedDefaultPermissions([]);
   };
 
   useEffect(() => {
@@ -73,6 +76,7 @@ function UserPermissionsPopUp({
     e.preventDefault();
     const shouldPreventEdit = cantUpdateDevAdminDetails(actualUserProfile?.email, authUser.email);
     if (shouldPreventEdit) {
+      setIsSubmitting(false);
       if (actualUserProfile?.email === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY) {
         // eslint-disable-next-line no-alert, prettier/prettier
         alert(DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY);
@@ -84,23 +88,22 @@ function UserPermissionsPopUp({
     }
     const userId = actualUserProfile?._id;
 
-    const url = ENDPOINTS.USER_PROFILE(userId);
-    const allUserInfo = await axios.get(url).then(res => res.data);
-    const newUserInfo = {
-      ...allUserInfo,
+    const url = `${ENDPOINTS.PERMISSION_MANAGEMENT_UPDATE()}/user/${userId}`;
+    const permissionData = {
       permissions: {
         frontPermissions: userPermissions,
         removedDefaultPermissions: userRemovedDefaultPermissions,
       },
+      requestor: authUser, // Fixed: use authUser instead of req.body.requestor
     };
 
     axios
-      .put(url, newUserInfo)
+      .patch(url, permissionData)
       .then(() => {
         if (!toastShown) {
           const SUCCESS_MESSAGE = `
-        Permissions have been updated successfully. 
-        Please inform the user to log out and log back in for the new permissions to take effect.`;
+            Permissions have been updated successfully. 
+            Please inform the user to log out and log back in for the new permissions to take effect.`;
           toast.success(SUCCESS_MESSAGE, {
             autoClose: 10000,
           });
@@ -112,11 +115,14 @@ function UserPermissionsPopUp({
       })
       .catch(err => {
         const ERROR_MESSAGE = `
-        Permission updated failed. ${err}
+          Permission update failed. ${err}
         `;
         toast.error(ERROR_MESSAGE, {
           autoClose: 10000,
         });
+      })
+      .finally(() => {
+        setIsSubmitting(false);
       });
   };
   useEffect(() => {
@@ -140,17 +146,17 @@ function UserPermissionsPopUp({
         />
       )}
       <Form
-        id="manage__user-permissions"
+        id={styles['manage__user-permissions']}
         onSubmit={e => {
           updateProfileOnSubmit(e);
         }}
         autoComplete="off"
       >
         <div
-          className={darkMode ? 'text-space-cadet' : ''}
+          className={darkMode ? styles['text-space-cadet'] : ''}
           style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '5px' }}
         >
-          <h4 className="user-permissions-pop-up__title">
+          <h4 className={styles['user-permissions-pop-up__title']}>
             User name<span className="red-asterisk">* </span>:
           </h4>
           <Button
@@ -187,7 +193,7 @@ function UserPermissionsPopUp({
               setIsOpen(true);
             }}
             placeholder="Shows only ACTIVE users"
-            className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
+            className={darkMode ? styles['bg-darkmode-liblack text-light border-0'] : ''}
             autoComplete="off"
             name="user-search"
           />
@@ -196,8 +202,8 @@ function UserPermissionsPopUp({
               tabIndex="-1"
               role="menu"
               aria-hidden="false"
-              className={`dropdown-menu${isOpen ? ' show dropdown__user-perms' : ''} ${
-                darkMode ? 'bg-darkmode-liblack text-light' : ''
+              className={`dropdown-menu${isOpen ? ` show ${styles['dropdown__user-perms']}` : ''} ${
+                darkMode ? styles['bg-darkmode-liblack text-light'] : ''
               }`}
               style={{ marginTop: '0px', width: '100%' }}
             >
@@ -218,7 +224,7 @@ function UserPermissionsPopUp({
                 })
                 .map(user => (
                   <div
-                    className="user__auto-complete"
+                    className={styles['user__auto-complete']}
                     key={user._id}
                     role="button"
                     tabIndex={0}
@@ -247,10 +253,14 @@ function UserPermissionsPopUp({
           )}
         </Dropdown>
         <div>
-          <h4 className={`user-permissions-pop-up__title ${darkMode ? 'text-space-cadet' : ''}`}>
+          <h4
+            className={`${styles['user-permissions-pop-up__title']} ${
+              darkMode ? styles['text-space-cadet'] : ''
+            }`}
+          >
             Permissions:
           </h4>
-          <ul className="user-role-tab__permission-list">
+          <ul className={styles['user-role-tab__permission-list']}>
             <PermissionList
               rolePermissions={userPermissions}
               immutablePermissions={actualUserRolePermission}

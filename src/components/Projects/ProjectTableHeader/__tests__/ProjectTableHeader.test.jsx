@@ -14,8 +14,9 @@ vi.mock('~/utils/permissions', () => ({
 }))
 
 // Mock the EditableInfoModal component
+// eslint-disable-next-line react/display-name
 vi.mock('components/UserProfile/EditableModal/EditableInfoModal', () => () => (
-  <div>Mock EditableInfoModal</div>
+    <div>Mock EditableInfoModal</div>
 ));
 
 // Helper function to render ProjectTableHeader with provided props and mock Redux store
@@ -77,6 +78,7 @@ describe('ProjectTableHeader Component', () => {
     const hasPermission = vi.fn((a) => true)
     stateWithDeletePermission.hasPermission = hasPermission;
     const { getByText } = renderProjectTableHeader(stateWithDeletePermission);
+    // eslint-disable-next-line testing-library/prefer-screen-queries
     expect(getByText('Archive')).toBeInTheDocument();
   });
 
@@ -92,6 +94,7 @@ describe('ProjectTableHeader Component', () => {
     const hasPermission = vi.fn((a) => false)
     stateWithoutDeletePermission.hasPermission = hasPermission;
     const { queryByText } = renderProjectTableHeader(stateWithoutDeletePermission);
+    // eslint-disable-next-line testing-library/prefer-screen-queries
     expect(queryByText('Delete')).not.toBeInTheDocument();
   });
 

@@ -3,13 +3,18 @@ import { Dropdown, Input } from 'reactstrap';
 import './TeamsAndProjects.css';
 import { useSelector } from 'react-redux';
 
+// eslint-disable-next-line react/display-name
 const AddProjectsAutoComplete = React.memo(props => {
   const [isOpen, toggle] = useState(false);
   const darkMode = useSelector(state => state.theme.darkMode);
 
   useEffect(() => {
-    if (!props.selectedProject) props.onInputChange('');
-    else props.onInputChange(props.selectedProject.projectName);
+    try {
+      if (!props.selectedProject) props.onInputChange('');
+     else props.onInputChange(props.selectedProject.projectName);
+    } catch (error) {
+      if (!props.selectedProject) props.onInputChange('');
+    }
   }, [props.selectedProject]);
 
   return (
@@ -23,6 +28,7 @@ const AddProjectsAutoComplete = React.memo(props => {
       <Input
         type="text"
         value={props.searchText}
+        // eslint-disable-next-line jsx-a11y/no-autofocus
         autoFocus={true}
         onChange={e => {
           props.onInputChange(e.target.value);
@@ -53,6 +59,7 @@ const AddProjectsAutoComplete = React.memo(props => {
             })
             .slice(0, 10)
             .map(item => (
+              // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
               <div
                 className="project-auto-complete"
                 key={item._id}
@@ -69,6 +76,7 @@ const AddProjectsAutoComplete = React.memo(props => {
           {props.projectsData.every(
             item => props.formatText(item.projectName) !== props.formatText(props.searchText),
           ) && (
+            // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
             <div
               className="project-auto-complete"
               onClick={() => {
