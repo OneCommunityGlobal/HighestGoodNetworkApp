@@ -226,6 +226,16 @@ function CommunityCalendar() {
     [darkMode],
   );
 
+  const handleRegister = useCallback(() => {
+    // eslint-disable-next-line no-alert
+    alert(`You are registered for ${selectedEvent.title}`);
+  }, [selectedEvent]);
+
+  const handleAddToCalendar = useCallback(() => {
+    // eslint-disable-next-line no-alert
+    alert(`Event "${selectedEvent.title}" added to calendar`);
+  }, [selectedEvent]);
+
   return (
     <div className={calendarClasses.container}>
       <header className={calendarClasses.header}>
@@ -356,8 +366,12 @@ function CommunityCalendar() {
               </div>
 
               <div className={styles.modalActions}>
-                <button className={styles.btnPrimary}>Register for Event</button>
-                <button className={styles.btnSecondary}>Add to Calendar</button>
+                <button className={styles.btnPrimary} onClick={handleRegister}>
+                  Register for Event
+                </button>
+                <button className={styles.btnSecondary} onClick={handleAddToCalendar}>
+                  Add to Calendar
+                </button>
               </div>
             </div>
           </div>
