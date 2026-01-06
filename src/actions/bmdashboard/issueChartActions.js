@@ -35,7 +35,6 @@ export const fetchLongestOpenIssues = (dates = [], projects = []) => async dispa
     const params = new URLSearchParams();
     if (dates.length) params.append('dates', dates.join(','));
     if (projects.length) params.append('projects', projects.join(','));
-    console.log("==========", projects)
 
     const response = await axios.get(`${ApiEndpoint}/bm/issues/longest-open?${params}`);
     dispatch({
