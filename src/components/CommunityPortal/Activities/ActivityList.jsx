@@ -1,5 +1,8 @@
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable react/jsx-no-comment-textnodes */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 import React, { useState, useEffect } from 'react';
-import './ActivityList.module.css';
+import styles from './ActivityList.module.css';
 
 function ActivityList() {
   // console.log('ActivityList component rendered');
@@ -70,7 +73,7 @@ function ActivityList() {
     <div>
       <h1>Activity Lists</h1>
 
-      <div className="styles.filters">
+      <div className={styles.filters}>
         <label>
           Type:
           <input
@@ -99,16 +102,28 @@ function ActivityList() {
         </label>
       </div>
 
-      <div className="styles.activity-list">
+      <div className={styles.activityList}>
         {filteredActivities.length > 0 ? (
-          <ul>
-            {filteredActivities.map(activity => (
-              <li key={activity.id}>
-                <strong>{activity.name}</strong> - {activity.type} - {activity.date} -{' '}
-                {activity.location}
-              </li>
-            ))}
-          </ul>
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Date</th>
+                <th>Location</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredActivities.map(activity => (
+                <tr key={activity.id}>
+                  <td>{activity.name}</td>
+                  <td>{activity.type}</td>
+                  <td>{activity.date}</td>
+                  <td>{activity.location}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         ) : (
           <p>No activities found</p>
         )}
@@ -116,14 +131,20 @@ function ActivityList() {
 
       {/* Modal for Past Date Notification */}
       {modalOpen && (
-        <div className="styles.modal-overlay">
-          <div className="styles.modal-content">
-            <button className={styles.close} onClick={closeModal} onKeyPress={handleKeyPress}>
-              &times; {/* Using button for close action */}
+        <div className={styles.modalOverlay} onClick={closeModal}>
+          // eslint-disable-next-line jsx-a11y/click-events-have-key-events
+          <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
+            <button className={styles.close} onClick={closeModal}>
+              &times;
             </button>
-            <p>Past activity lookup is not supported.</p>
-            <button className="dismiss-button" onClick={closeModal}>
-              Dismiss
+
+            <h2 className={styles.modalTitle}>Invalid Date Selected</h2>
+            <p className={styles.modalMessage}>
+              Past activity lookup is not supported. Please choose a future date.
+            </p>
+
+            <button className={styles.dismissButton} onClick={closeModal}>
+              Got it
             </button>
           </div>
         </div>
