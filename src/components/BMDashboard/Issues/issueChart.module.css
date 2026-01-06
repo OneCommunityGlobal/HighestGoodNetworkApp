@@ -161,10 +161,10 @@
   z-index: 0;
   background-image: repeating-linear-gradient(
     90deg,
-    rgba(0, 0, 0, 0.08) 0%,
-    rgba(0, 0, 0, 0.08) 12%,
-    transparent 12%,
-    transparent 24%
+    rgba(0, 0, 0, 0.035) 0%,
+    rgba(0, 0, 0, 0.035) 10%,
+    transparent 10%,
+    transparent 20%
   );
 }
 
@@ -184,8 +184,6 @@
     transparent 20%
   );
 }
-
-
 
 /* ================================
    FINAL VISUAL CONSISTENCY FIXES
