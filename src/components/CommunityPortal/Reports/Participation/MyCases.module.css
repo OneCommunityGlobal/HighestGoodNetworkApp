@@ -38,7 +38,8 @@
 }
 
 .myCasesPageDark .headerActions {
-  gap: 20px;     /* more room between dropdowns/buttons */
+  gap: 20px;
+  /* more room between dropdowns/buttons */
 }
 
 .sectionTitle {
@@ -65,7 +66,8 @@
 /* ---------- View Switcher ---------- */
 .viewSwitcher {
   display: flex;
-  gap: 12px; /* clean space between buttons */
+  gap: 12px;
+  /* clean space between buttons */
 }
 
 .viewSwitcher button,
@@ -86,6 +88,17 @@
   border-color: #007bff;
 }
 
+.myCasesPageDark .viewSwitcher button {
+  background-color: #3A506B;
+  color: #ffffff;
+  border: 1px solid #555;
+}
+
+.myCasesPageDark .viewSwitcher button.active {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
 .filterWrapper {
   margin: 10px 0;
 }
@@ -96,6 +109,12 @@
   border: 1px solid #ccc;
   border-radius: 4px;
   cursor: pointer;
+}
+
+.myCasesPageDark .filterDropdown {
+  background-color: #3A506B;
+  color: #ffffff;
+  border: 1px solid #555;
 }
 
 /* Hover and focus effects for the dropdown */
@@ -109,6 +128,13 @@
   font-weight: bold;
   border: 1px solid #ccc;
   border-radius: 4px;
+}
+
+.myCasesPageDark .createNew {
+  background-color: #3A506B;
+  /* Matches other dark elements */
+  color: #ffffff;
+  border: 1px solid #555;
 }
 
 .content {
@@ -323,7 +349,8 @@
 /* ---------- Expanded scroll area ---------- */
 .caseCards.expanded,
 .caseList.expanded {
-  max-height: 500px; /* enough space to show ~30 events */
+  max-height: 500px;
+  /* enough space to show ~30 events */
   overflow-y: auto;
   padding-right: 8px;
 }
@@ -347,7 +374,7 @@
     overflow: visible !important;
     page-break-inside: auto !important;
   }
-  
+
   .caseCard {
     background: white !important;
     color: #333 !important;
@@ -357,7 +384,7 @@
     break-inside: avoid-page !important;
     page-break-inside: avoid !important;
   }
-  
+
   .caseCardDark {
     background: #3A506B !important;
     color: #ffffff !important;
@@ -367,29 +394,29 @@
     break-inside: avoid-page !important;
     page-break-inside: avoid !important;
   }
-  
+
   .caseList {
     max-height: none !important;
     height: auto !important;
     overflow: visible !important;
     page-break-inside: auto !important;
   }
-  
+
   .caseListItem {
     break-inside: avoid-page !important;
     page-break-inside: avoid !important;
   }
-  
+
   .caseListItemDark {
     break-inside: avoid-page !important;
     page-break-inside: avoid !important;
   }
-  
+
   .eventBadge {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
-  
+
   .eventBadge[data-type='Yoga Class'] {
     background-color: #e9f7ef !important;
     color: #28a745 !important;
