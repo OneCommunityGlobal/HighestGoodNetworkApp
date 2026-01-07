@@ -1,12 +1,12 @@
 /* Styles for the Work Distribution Bar Chart */
-.work-distribution-container {
+.workDistributionContainer {
   font-family: Arial, sans-serif;
   padding: 20px;
   margin-top: 20px;
   margin-bottom: -35px;
 }
 
-.chart-title {
+.chartTitle {
   font-size: 18px;
   font-weight: bold;
   margin-bottom: 15px;
@@ -14,19 +14,19 @@
   color: #333;
 }
 
-.chart-container {
+.chartContainer {
   width: 100%;
   height: 400px;
   position: relative;
 }
 
 /* Bar chart specific styles */
-.bar-group {
+.barGroup {
   cursor: pointer;
   transition: opacity 0.2s;
 }
 
-.bar-group:hover {
+.barGroup:hover {
   opacity: 0.8;
 }
 
@@ -39,13 +39,13 @@
   margin-top: 20px;
 }
 
-.legend-item {
+.legendItem {
   display: flex;
   align-items: center;
   font-size: 14px;
 }
 
-.legend-color {
+.legendColor {
   width: 15px;
   height: 15px;
   margin-right: 5px;
@@ -65,11 +65,11 @@
 }
 
 /* Dark mode styles */
-.dark-mode .chart-title {
+.darkMode .chartTitle {
   color: #e0e0e0;
 }
 
-.dark-mode .tooltip {
+.darkMode .tooltip {
   background: rgba(28, 37, 65, 0.95);
   border-color: #2f4157;
   color: #e0e0e0;
@@ -77,7 +77,7 @@
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-  .chart-container {
+  .chartContainer {
     height: 300px;
   }
 
@@ -85,7 +85,7 @@
     gap: 10px;
   }
 
-  .legend-item {
+  .legendItem {
     font-size: 12px;
   }
 }
