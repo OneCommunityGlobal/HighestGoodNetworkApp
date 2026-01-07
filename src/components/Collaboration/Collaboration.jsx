@@ -12,7 +12,7 @@ const ENABLE_JOB_DUPLICATION = true; // TEMP: set false before production
 function Collaboration() {
   const [query, setQuery] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
-  const [category, setCategory] = useState('');
+  const [categoriesSelected, setCategoriesSelected] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [jobAds, setJobAds] = useState([]);
   const [allJobs, setAllJobs] = useState([]);
@@ -36,7 +36,7 @@ function Collaboration() {
       const url =
         `${ApiEndpoint}/jobs` +
         `?search=${encodeURIComponent(searchTerm || '')}` +
-        `&category=${encodeURIComponent(category || '')}`;
+        `&category=${encodeURIComponent(categoriesSelected.join(',') || '')}`;
 
       const res = await fetch(url);
       if (!res.ok) throw new Error('Fetch failed');
@@ -58,7 +58,7 @@ function Collaboration() {
       // setAllJobs(finalJobs);
 
       setAllJobs(jobs);
-      setTotalPages(Math.max(1, Math.ceil(jobs.length / ADS_PER_PAGE)));
+      setTotalPages(jobs.length > 0 ? Math.max(calculatedPages, 2) : 1);
     } catch {
       toast.error('Error fetching jobs');
     }
@@ -83,7 +83,7 @@ function Collaboration() {
   useEffect(() => {
     fetchJobs();
     setCurrentPage(1);
-  }, [searchTerm, category]);
+  }, [searchTerm, categoriesSelected]);
 
   useEffect(() => {
     const start = (currentPage - 1) * ADS_PER_PAGE;
@@ -102,7 +102,7 @@ function Collaboration() {
       const url =
         `${ApiEndpoint}/jobs/summaries` +
         `?search=${encodeURIComponent(searchTerm || '')}` +
-        `&category=${encodeURIComponent(category || '')}`;
+        `&category=${encodeURIComponent(categoriesSelected.join(',') || '')}`;
 
       const res = await fetch(url);
       const data = await res.json();
@@ -170,32 +170,53 @@ function Collaboration() {
             </button>
           </form>
 
-          <select
-            className={`${styles.jobSelect} ${darkMode ? styles.jobSelectDark : ''}`}
-            value={category}
-            onChange={e => setCategory(e.target.value)}
+          <button
+            type="button"
+            aria-haspopup="true"
+            aria-expanded={showCategoryDropdown}
+            onClick={() => setShowCategoryDropdown(prev => !prev)}
           >
-            <option value="">Select from Categories</option>
-            {categories.map(cat => (
-              <option key={cat} value={cat}>
-                {cat}
-              </option>
-            ))}
-          </select>
+            Select Categories ▼
+          </button>
         </nav>
         {showCategoryDropdown && (
-          <div role="menu">
+          <div
+            role="menu"
+            style={{
+              position: 'absolute',
+              bottom: '20px',
+              right: '16px',
+              background: 'rgba(0, 0, 0, 0.85)',
+              border: '1px solid #444',
+              borderRadius: '8px',
+              padding: '12px',
+              zIndex: 1000,
+              boxShadow: '0 8px 20px rgba(0,0,0,0.3)',
+              minWidth: '260px',
+              color: '#ffffff',
+            }}
+          >
             {categories.map(cat => (
-              <label key={cat} style={{ display: 'block' }}>
+              <label
+                key={cat}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  marginBottom: '8px',
+                  cursor: 'pointer',
+                  color: '#ffffff',
+                }}
+              >
                 <input
                   type="checkbox"
                   aria-label={cat}
-                  checked={category === cat}
+                  checked={categoriesSelected.includes(cat)}
                   onChange={() => {
-                    const next = category === cat ? '' : cat;
-                    setCategory(next);
+                    setCategoriesSelected(prev =>
+                      prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat],
+                    );
                     setCurrentPage(1);
-                    setShowCategoryDropdown(false);
                   }}
                 />
                 {cat}
@@ -217,11 +238,11 @@ function Collaboration() {
         {/* LISTING TEXT + SUMMARY BUTTON */}
         <div className="job-queries">
           <p className="job-query">
-            {searchTerm || category
+            {searchTerm || categoriesSelected.length > 0
               ? `Listing results for ${
-                  searchTerm && category
-                    ? `'${searchTerm}' + '${category}'`
-                    : `'${searchTerm || category}'`
+                  searchTerm && categoriesSelected.length > 0
+                    ? `'${searchTerm}' + '${categoriesSelected.join(', ')}'`
+                    : `'${searchTerm || categoriesSelected.join(', ')}'`
                 }`
               : 'Listing all job ads.'}
           </p>
@@ -230,9 +251,13 @@ function Collaboration() {
             Show Summaries
           </button>
         </div>
-        {category && (
+        {categoriesSelected.length > 0 && (
           <div className={styles.jobQueries}>
-            <span className={styles.chip}>{category}</span>
+            {categoriesSelected.map(cat => (
+              <span key={cat} className={styles.chip}>
+                {cat}
+              </span>
+            ))}
           </div>
         )}
 
