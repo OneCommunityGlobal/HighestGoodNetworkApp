@@ -14,7 +14,7 @@
 .participationLandingPageDark {
   max-width: 90%;
   margin: 0 auto;
-  background-color: #1B2A41;
+  background-color: #1b2a41;
   color: #ffffff;
 }
 
@@ -166,7 +166,7 @@
 .insightsDark {
   flex: 1;
   min-width: 48%;
-  background-color: #1C2541;
+  background-color: #1c2541;
   color: #ffffff;
   border-radius: 10px;
   border: 1px solid #ddd;
@@ -217,7 +217,7 @@
 .trackingFilters {
   display: flex;
   flex-wrap: nowrap;
-  gap: 12px;   /* spacing between dropdowns */
+  gap: 12px; /* spacing between dropdowns */
 }
 
 .trackingFilters select {
@@ -231,7 +231,7 @@
 .trackingFiltersDark {
   display: flex;
   gap: 10px;
-  background-color: #1C2541;
+  background-color: #1c2541;
 }
 
 .trackingFiltersDark select {
@@ -268,7 +268,7 @@
 
 /* Dark mode */
 .trackingRateDark {
-  background: #3A506B;
+  background: #3a506b;
   border-radius: 10px;
   width: 48%;
   padding: 10px;
@@ -301,7 +301,7 @@
   border: 1px solid #ccc;
   border-radius: 10px;
   padding: 10px;
-  background: #3A506B;
+  background: #3a506b;
   color: #ffffff;
 }
 
@@ -319,7 +319,7 @@
 }
 
 .trackingTableDark thead th {
-  background: #1C2541;
+  background: #1c2541;
   color: #ffffff;
 }
 
@@ -375,7 +375,7 @@
 .insightsFiltersDark {
   display: flex;
   gap: 10px;
-  background-color: #1C2541;
+  background-color: #1c2541;
 }
 
 .insightsFiltersDark select {
