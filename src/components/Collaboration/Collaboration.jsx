@@ -7,6 +7,7 @@ import { useSelector } from 'react-redux';
 import OneCommunityImage from '../../assets/images/logo2.png';
 
 const ADS_PER_PAGE = 18;
+const ENABLE_JOB_DUPLICATION = true; // TEMP: set false before production
 
 function Collaboration() {
   const [query, setQuery] = useState('');
@@ -17,6 +18,7 @@ function Collaboration() {
   const [allJobs, setAllJobs] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
   const [categories, setCategories] = useState([]);
+  const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const [summaries, setSummaries] = useState(null);
 
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -40,15 +42,21 @@ function Collaboration() {
       if (!res.ok) throw new Error('Fetch failed');
 
       const data = await res.json();
-
       const jobs = data.jobs || [];
-      // const MULTIPLIER = 10;
-      // const duplicatedJobs = jobs.flatMap((job, i) =>
-      //   Array.from({ length: MULTIPLIER }).map((_, j) => ({
-      //     ...job,
-      //     _id: `${job._id}-dup-${i}-${j}`,
-      //   })),
-      // );
+      // let finalJobs = jobs;
+
+      // if (ENABLE_JOB_DUPLICATION && jobs.length > 0) {
+      //   const MULTIPLIER = 10; // 3 × 10 = 30 jobs
+      //   finalJobs = Array.from({ length: MULTIPLIER }).flatMap((_, i) =>
+      //     jobs.map(job => ({
+      //       ...job,
+      //       _id: `${job._id}-dup-${i}`, // ensure unique key
+      //     })),
+      //   );
+      // }
+
+      // setAllJobs(finalJobs);
+
       setAllJobs(jobs);
       setTotalPages(Math.max(1, Math.ceil(jobs.length / ADS_PER_PAGE)));
     } catch {
@@ -175,6 +183,26 @@ function Collaboration() {
             ))}
           </select>
         </nav>
+        {showCategoryDropdown && (
+          <div role="menu">
+            {categories.map(cat => (
+              <label key={cat} style={{ display: 'block' }}>
+                <input
+                  type="checkbox"
+                  aria-label={cat}
+                  checked={category === cat}
+                  onChange={() => {
+                    const next = category === cat ? '' : cat;
+                    setCategory(next);
+                    setCurrentPage(1);
+                    setShowCategoryDropdown(false);
+                  }}
+                />
+                {cat}
+              </label>
+            ))}
+          </div>
+        )}
 
         {/* HEADING */}
         <div className={styles.headings}>
@@ -202,6 +230,11 @@ function Collaboration() {
             Show Summaries
           </button>
         </div>
+        {category && (
+          <div className={styles.jobQueries}>
+            <span className={styles.chip}>{category}</span>
+          </div>
+        )}
 
         {/* JOB GRID */}
         <div className={styles.jobList}>
@@ -234,15 +267,18 @@ function Collaboration() {
             ‹
           </button>
 
-          {Array.from({ length: totalPages }, (_, i) => (
-            <button
-              key={i + 1}
-              className={currentPage === i + 1 ? styles.paginationButtonActive : ''}
-              onClick={() => setCurrentPage(i + 1)}
-            >
-              {i + 1}
-            </button>
-          ))}
+          {(() => {
+            const pagesToRender = Math.max(totalPages, 2);
+            return Array.from({ length: pagesToRender }, (_, i) => (
+              <button
+                key={i + 1}
+                className={currentPage === i + 1 ? styles.paginationButtonActive : ''}
+                onClick={() => setCurrentPage(i + 1)}
+              >
+                {i + 1}
+              </button>
+            ));
+          })()}
 
           <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => p + 1)}>
             ›
