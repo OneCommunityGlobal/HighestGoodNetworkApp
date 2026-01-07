@@ -165,7 +165,7 @@ function InjurySeverityDashboard(props) {
         key: project._id,
         dataKey: project.name,
         name: project.name,
-        fill: projectColors[idx],
+        fill: DEPARTMENT_COLOR_MAP[idx],
       }));
       // eslint-disable-next-line no-else-return
     } else {
