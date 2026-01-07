@@ -13,7 +13,7 @@ import {
 import Select from 'react-select';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import './InjuryCategoryBarChart.css';
+import styles from './InjuryCategoryBarChart.module.css';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   fetchInjuryData,
@@ -142,53 +142,95 @@ function InjuryCategoryBarChart() {
     '#38BDF8', // cyan
   ];
 
+  const selectStyles = darkMode
+    ? {
+        control: base => ({
+          ...base,
+          backgroundColor: '#2b3e59',
+          color: 'white',
+        }),
+        menu: base => ({
+          ...base,
+          backgroundColor: '#2b3e59',
+          color: 'white',
+        }),
+        option: (base, state) => ({
+          ...base,
+          color: 'white',
+          backgroundColor: state.isSelected
+            ? 'rgba(255, 255, 255, 0.15)'
+            : state.isFocused
+            ? 'rgba(255, 255, 255, 0.1)'
+            : 'transparent',
+          '&:active': {
+            backgroundColor: 'rgba(255, 255, 255, 0.2)',
+          },
+        }),
+        singleValue: base => ({
+          ...base,
+          color: 'white',
+        }),
+      }
+    : {};
+
   return (
     <div className={`injury-chart-container ${darkMode ? 'darkMode' : ''}`}>
       <div className="injury-chart-header">
         <h3 className="injury-chart-title">Injury Severity by Category of Worker Injured</h3>
 
         <div className="injury-chart-filters">
-          <div className="filter">
-            <label htmlFor="project-names-select">Projects</label>
+          <div className="filter injury-filter">
+            <label style={{ pointerEvents: 'none' }} htmlFor="project-names-select">
+              Projects
+            </label>
             <Select
               inputId="project-names-select"
-              classNamePrefix="injury-select"
+              classNamePrefix="injurySelect"
               isMulti
               options={projectNameOptions}
               value={projectNameFilter}
               onChange={setProjectNameFilter}
               placeholder="All names"
+              styles={selectStyles}
             />
           </div>
 
-          <div className="filter">
-            <label htmlFor="severities-select">Severities</label>
+          <div className="filter injury-filter">
+            <label style={{ pointerEvents: 'none' }} htmlFor="severities-select">
+              Severities
+            </label>
             <Select
               inputId="severities-select"
-              classNamePrefix="injury-select"
+              classNamePrefix="injurySelect"
               isMulti
               options={severityOptions}
               value={severityFilter}
               onChange={setSeverityFilter}
               placeholder="All severities"
+              styles={selectStyles}
             />
           </div>
 
-          <div className="filter">
-            <label htmlFor="injury-types-select">Injury types</label>
+          <div className="filter injury-filter">
+            <label style={{ pointerEvents: 'none' }} htmlFor="injury-types-select">
+              Injury types
+            </label>
             <Select
               inputId="injury-types-select"
-              classNamePrefix="injury-select"
+              classNamePrefix="injurySelect"
               isMulti
               options={typeOptions}
               value={injuryTypeFilter}
               onChange={setInjuryTypeFilter}
               placeholder="All types"
+              styles={selectStyles}
             />
           </div>
 
-          <div className="filter">
-            <label htmlFor="start-date">Start date</label>
+          <div className="filter injury-filter">
+            <label style={{ pointerEvents: 'none' }} htmlFor="start-date">
+              Start date
+            </label>
             <DatePicker
               id="start-date"
               selected={startDate}
@@ -198,11 +240,14 @@ function InjuryCategoryBarChart() {
               endDate={endDate}
               maxDate={endDate || undefined}
               placeholderText="Start date"
+              className="injury-date-input"
             />
           </div>
 
-          <div className="filter">
-            <label htmlFor="end-date">End date</label>
+          <div className="filter injury-filter">
+            <label style={{ pointerEvents: 'none' }} htmlFor="end-date">
+              End date
+            </label>
             <DatePicker
               id="end-date"
               selected={endDate}
@@ -212,6 +257,7 @@ function InjuryCategoryBarChart() {
               endDate={endDate}
               minDate={startDate || undefined}
               placeholderText="End date"
+              className="injury-date-input"
             />
           </div>
         </div>
@@ -231,9 +277,16 @@ function InjuryCategoryBarChart() {
                 dy={12}
                 textAnchor="end"
                 height={90}
-                tick={{ fill: darkMode ? '#ffffff' : '#000000' }}
+                tick={{
+                  className: darkMode ? 'injury-xaxis-tick-dark' : 'injury-xaxis-tick-light',
+                }}
               />
-              <YAxis allowDecimals={false} />
+              <YAxis
+                allowDecimals={false}
+                tick={{
+                  className: darkMode ? 'injury-yaxis-tick-dark' : 'injury-yaxis-tick-light',
+                }}
+              />
               <CartesianGrid stroke={darkMode ? '#4a5568' : '#cccccc'} strokeDasharray="3 3" />
               <Tooltip
                 contentStyle={{

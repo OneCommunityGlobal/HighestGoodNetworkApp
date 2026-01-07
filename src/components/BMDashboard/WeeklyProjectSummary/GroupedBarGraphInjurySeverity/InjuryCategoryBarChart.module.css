@@ -1,0 +1,358 @@
+.injuryChartContainer {
+  padding: 1rem;
+}
+
+.injuryChartTitle {
+  color: #666666;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.injuryChartFilters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  margin-top: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.filter {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem; /* tighter, consistent spacing */
+  margin-bottom: 0.75rem;
+}
+
+.filter label {
+  pointer-events: none;
+  display: inline-block;
+  width: auto;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 0.25rem; /* space BELOW label */
+  padding: 0;            /* remove top padding */
+  line-height: 1.2;
+}
+
+.noClick {
+  pointer-events: none;
+}
+
+/* Ensure consistent spacing for DatePicker inputs */
+.filter .react-datepicker-wrapper {
+  margin-top: 0;
+}
+
+/* ------------------- DARK MODE STYLES ------------------- */
+.darkMode .injuryChartTitle {
+  color: white;
+}
+
+.darkMode .injurySelect__control {
+  background-color: #2b3e59 !important;
+  color: #ffffff !important;
+  border-color: #6b7280 !important;
+}
+
+.darkMode .injurySelect__control * {
+  color: #ffffff !important;
+}
+
+.darkMode .injurySelect__dropdown-indicator,
+.darkMode .injurySelect__clear-indicator {
+  color: #1C2541 !important;
+}
+
+.darkMode .injurySelect__dropdown-indicator:hover {
+  color: #1C2541 !important;
+}
+
+.darkMode .injurySelect__single-value,
+.darkMode .injurySelect__multi-value__label,
+.darkMode .injurySelect__input-container {
+  color: white !important;
+}
+
+.darkMode .injurySelect__input {
+  color: #ffffff !important;
+}
+
+.darkMode .injurySelect__indicator-separator {
+  background-color: #9ca3af !important;
+}
+
+.darkMode .injurySelect__placeholder {
+  color: #d1d5db !important;
+}
+
+.darkMode label {
+  color: #f3f4f6 !important;
+}
+
+.darkMode .injurySelect__single-value {
+  opacity: 0.85 !important;
+}
+
+.darkMode .injurySelect__menu {
+  background-color: #2b3e59 !important;
+  color: white !important;
+}
+
+.darkMode .injurySelect__menu-list {
+  background-color: #2b3e59 !important;
+}
+
+/* ------------------- DROPDOWN OPTION VISIBILITY FIX ------------------- */
+.darkMode .injurySelect__option {
+  color: #f3f4f6 !important;
+  background-color: #2b3e59 !important;
+}
+
+.darkMode .injurySelect__option--is-focused {
+  background-color: rgba(255, 255, 255, 0.12) !important;
+  color: #ffffff !important;
+}
+
+.darkMode .injurySelect__option--is-selected {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+  color: #ffffff !important;
+}
+
+/* ------------------- SELECT CONTROL FOCUS FIX ------------------- */
+.darkMode .injurySelect__control--is-focused {
+  border-color: #9ca3af !important;
+  box-shadow: none !important;
+}
+
+/* ------------------- SELECTED VALUE VISIBILITY FIX ------------------- */
+.darkMode .injurySelect__value-container {
+  color: #f3f4f6 !important;
+  opacity: 0.9;
+}
+
+/* ------------------- FILTER BAR SELECTED TEXT FINAL FIX ------------------- */
+.darkMode .injurySelect__control .injurySelect__single-value {
+  color: #ffffff !important;
+  opacity: 1 !important;
+}
+
+.darkMode .injurySelect__value-container--has-value {
+  background-color: transparent !important;
+}
+
+.darkMode .injurySelect__control {
+  color: #ffffff !important;
+}
+
+.darkMode .react-datepicker__input-container input {
+  background-color: #2b3e59 !important;
+  color: #e5e7eb !important;
+  border: 1px solid #6b7280 !important;
+  padding: 0.375rem 0.5rem !important;
+  border-radius: 4px !important;
+  box-shadow: none !important;
+  height: 38px !important;
+  line-height: 1.25 !important;
+  font-size: 0.95rem !important;
+}
+
+.darkMode .react-datepicker-wrapper {
+  width: 100%;
+}
+
+.darkMode .injurySelect__control--menu-is-open {
+  background-color: #2b3e59 !important;
+}
+
+/* ------------------- HIGH-CONTRAST BAR COLORS ------------------- */
+.barHighContrastDark {
+  fill: #4f9cff !important;
+  stroke: #e5e7eb !important;
+  stroke-width: 1.5px !important;
+}
+
+.barHighContrastLight {
+  fill: #2563eb !important;
+  stroke: #1f2937 !important;
+  stroke-width: 1.5px !important;
+}
+
+/* ------------------- AXIS & LABEL VISIBILITY IMPROVEMENTS ------------------- */
+.darkMode .injuryAxis text,
+.darkMode .injuryYAxis text {
+  fill: #e5e7eb !important;
+}
+
+.darkMode .injuryXAxis text {
+  fill: #f9fafb !important;
+  font-weight: 500;
+}
+
+.injuryAxis text,
+.injuryYAxis text,
+.injuryXAxis text {
+  fill: #374151 !important;
+}
+
+/* Rotate X-axis labels for readability */
+.rotateXLabels text {
+  transform-origin: center bottom;
+  transform: rotate(-35deg);
+  text-anchor: end;
+  font-size: 0.85rem;
+}
+
+/* ------------------- LEGEND FIXES ------------------- */
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.legendColorBox {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+}
+
+.darkMode .legendColorBox {
+  border: 1px solid #e5e7eb !important;
+}
+
+.darkMode .legendLabel {
+  color: #f3f4f6 !important;
+  opacity: 0.95;
+}
+
+.darkMode .legendItem span {
+  color: #f3f4f6 !important;
+}
+
+/* ------------------- BAR HOVER / TOOLTIP TEXT FIX ------------------- */
+.darkMode .recharts-tooltip-wrapper,
+.darkMode .recharts-tooltip-label,
+.darkMode .recharts-tooltip-item,
+.darkMode .recharts-tooltip-item span,
+.darkMode .recharts-tooltip-item-name,
+.darkMode .recharts-tooltip-item-value {
+  color: #f3f4f6 !important;
+}
+
+:global(.darkMode .recharts-tooltip-wrapper *) {
+  color: #f3f4f6 !important;
+}
+
+/* ------------------- GRIDLINE IMPROVEMENTS ------------------- */
+.darkMode .injuryGrid line {
+  stroke: #4b5563 !important;
+}
+
+.injuryGrid line {
+  stroke: #d1d5db !important;
+}
+
+/* ------------------- RESPONSIVE LAYOUT FIXES ------------------- */
+@media (max-width: 1024px) {
+  .injuryChartContainer {
+    padding: 0.75rem;
+  }
+
+  .injuryChartTitle {
+    font-size: 1.3rem;
+    text-align: center;
+  }
+
+  .injuryChartFilters {
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 768px) {
+  .injuryChartContainer {
+    padding: 0.6rem;
+  }
+
+  .injuryChartTitle {
+    font-size: 1.2rem;
+  }
+
+  .injuryChartFilters {
+    width: 100%;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .injurySelect__control,
+  .react-datepicker__input-container input {
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .injuryChartContainer {
+    padding: 0.5rem;
+  }
+
+  .injuryChartTitle {
+    font-size: 1.1rem;
+  }
+
+  .injuryChartFilters {
+    gap: 0.5rem;
+  }
+}
+/* ---------- FINAL FIX: SELECTED VALUE BACKGROUND IN DARK MODE ---------- */
+:global(.darkMode .injurySelect__value-container) {
+  background-color: #2b3e59 !important;
+}
+
+:global(.darkMode .injurySelect__value-container--has-value) {
+  background-color: #2b3e59 !important;
+}
+
+:global(.darkMode .injurySelect__single-value) {
+  color: #ffffff !important;
+  opacity: 1 !important;
+}
+
+/* FORCE FILTER LABEL VISIBILITY IN DARK MODE (PROJECTS, SEVERITIES, START/END DATE) */
+:global(.darkMode .filter label) {
+  color: #ffffff !important;
+}
+
+/* Explicit fix for Start Date / End Date labels rendered by DatePicker */
+:global(.darkMode label[for="start-date"]),
+:global(.darkMode label[for="end-date"]) {
+  color: #ffffff !important;
+}
+:global(.darkMode .react-datepicker__input-container input) {
+  background-color: #2b3e59 !important;
+  border: 1px solid grey;
+  border-radius: 2px;
+  color: #ffffff !important;
+}
+/* ================= LABEL VISIBILITY FIX ================= */
+:global(.darkMode .injury-filter label) {
+  color: #f3f4f6; /* greyish white, NOT pure white */
+  margin-top: 4px;
+  display: block;
+}
+
+/* ================= DATE INPUT DARK MODE FIX ================= */
+/* :global(.darkMode .injury-date-input) {
+  background-color: #2b3e59 !important; 
+  color: #f3f4f6 !important;
+}
+
+:global(.darkMode .injury-date-input::placeholder) {
+  color: #d1d5db !important;
+}
+
+:global(.darkMode .react-datepicker__input-container input) {
+  background-color: #2b3e59 !important;
+  color: #f3f4f6 !important;
+} */
