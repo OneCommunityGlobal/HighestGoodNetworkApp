@@ -343,7 +343,29 @@ export default function MostWastedMaterials() {
               min={1}
               max={20}
               value={topN}
-              onChange={e => setTopN(Math.max(1, Math.min(20, Number(e.target.value) || 1)))}
+              onFocus={e => e.target.select()}
+              onChange={e => {
+                const val = e.target.value;
+
+                // Allow empty input while typing
+                if (val === '') {
+                  setTopN('');
+                  return;
+                }
+
+                const num = Number(val);
+                if (!Number.isNaN(num)) {
+                  setTopN(num);
+                }
+              }}
+              onBlur={() => {
+                // Clamp value only when leaving the field
+                setTopN(prev => {
+                  const n = Number(prev);
+                  if (Number.isNaN(n)) return 1;
+                  return Math.max(1, Math.min(20, n));
+                });
+              }}
               style={{
                 width: '100%',
                 padding: '8px 12px',
