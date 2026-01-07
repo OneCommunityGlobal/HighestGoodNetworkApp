@@ -1,405 +1,256 @@
-import { useEffect, useState, useRef } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { toast } from 'react-toastify';
-import hasPermission from '~/utils/permissions';
+// src/pages/Collaboration/Collaboration.jsx
+import { useEffect, useState } from 'react';
 import styles from './Collaboration.module.css';
+import { toast } from 'react-toastify';
 import { ApiEndpoint } from '~/utils/URL';
+import { useSelector } from 'react-redux';
 import OneCommunityImage from '../../assets/images/logo2.png';
-import CollaborationJobFilters from './CollaborationJobFilters';
 
-const ADS_PER_PAGE = 20;
-
-const slugify = (s = '') =>
-  s
-    .toLowerCase()
-    .replace(/&/g, 'and')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/(^-|-$)/g, '');
+const ADS_PER_PAGE = 18;
 
 function Collaboration() {
   const [query, setQuery] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
-  const [categories, setCategories] = useState([]);
-  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [category, setCategory] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [jobAds, setJobAds] = useState([]);
+  const [allJobs, setAllJobs] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
+  const [categories, setCategories] = useState([]);
   const [summaries, setSummaries] = useState(null);
-  const [showSearchResults, setShowSearchResults] = useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const dropdownRef = useRef(null);
-  const [showTooltip, setShowTooltip] = useState(false);
-  const [tooltipPosition, setTooltipPosition] = useState(null);
-  const [isReorderModalOpen, setIsReorderModalOpen] = useState(false);
 
   const darkMode = useSelector(state => state.theme.darkMode);
-  const dispatch = useDispatch();
-  const userHasPermission = perm => dispatch(hasPermission(perm));
-  const canReorderJobs = userHasPermission('reorderJobs');
 
-  useEffect(() => {
-    if (!localStorage.getItem('tooltipDismissed')) {
-      setShowTooltip(true);
-      setTooltipPosition('search');
-    }
-  }, []);
+  const slugify = s =>
+    (s || '')
+      .toLowerCase()
+      .replace(/&/g, 'and')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '');
 
-  const fetchCategories = async () => {
+  /* ================= FETCH JOBS ================= */
+  const fetchJobs = async () => {
     try {
-      const response = await fetch(`${ApiEndpoint}/jobs/categories`);
-      if (!response.ok) throw new Error('Failed to Fetch');
+      const url =
+        `${ApiEndpoint}/jobs` +
+        `?search=${encodeURIComponent(searchTerm || '')}` +
+        `&category=${encodeURIComponent(category || '')}`;
 
-      const data = await response.json();
-      setCategories([...(data.categories || [])].sort((a, b) => a.localeCompare(b)));
-    } catch {
-      toast.error('Error fetching categories');
-    }
-  };
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('Fetch failed');
 
-  const fetchJobAds = async (search, cats, page) => {
-    const categoryParam = cats.length ? encodeURIComponent(cats.join(',')) : '';
+      const data = await res.json();
 
-    try {
-      const response = await fetch(
-        `${ApiEndpoint}/jobs?page=${page}&limit=${ADS_PER_PAGE}&search=${encodeURIComponent(
-          search,
-        )}&category=${categoryParam}`,
-      );
-
-      if (!response.ok) throw new Error('Request failed while fetching Job Ads');
-
-      const data = await response.json();
-
-      const sorted = [...(data.jobs || [])].sort((a, b) => {
-        if (a.displayOrder !== b.displayOrder) return a.displayOrder - b.displayOrder;
-        if (a.featured !== b.featured) return b.featured - a.featured;
-        return new Date(b.datePosted) - new Date(a.datePosted);
-      });
-
-      const pagination = data?.pagination || {};
-      const fromTotalPages =
-        typeof pagination.totalPages === 'number' ? pagination.totalPages : undefined;
-      const fromTotalCount =
-        typeof pagination.total === 'number'
-          ? Math.ceil(pagination.total / ADS_PER_PAGE)
-          : typeof data.total === 'number'
-          ? Math.ceil(data.total / ADS_PER_PAGE)
-          : undefined;
-
-      setJobAds(sorted);
-      setTotalPages(Math.max(1, fromTotalPages ?? fromTotalCount ?? 1));
+      const jobs = data.jobs || [];
+      // const MULTIPLIER = 10;
+      // const duplicatedJobs = jobs.flatMap((job, i) =>
+      //   Array.from({ length: MULTIPLIER }).map((_, j) => ({
+      //     ...job,
+      //     _id: `${job._id}-dup-${i}-${j}`,
+      //   })),
+      // );
+      setAllJobs(jobs);
+      setTotalPages(Math.max(1, Math.ceil(jobs.length / ADS_PER_PAGE)));
     } catch {
       toast.error('Error fetching jobs');
     }
   };
 
+  /* ================= FETCH CATEGORIES ================= */
+  const fetchCategories = async () => {
+    try {
+      const res = await fetch(`${ApiEndpoint}/jobs/categories`);
+      const data = await res.json();
+      setCategories((data.categories || []).sort());
+    } catch {
+      toast.error('Error fetching categories');
+    }
+  };
+
+  /* ================= EFFECTS ================= */
   useEffect(() => {
     fetchCategories();
   }, []);
 
   useEffect(() => {
-    fetchJobAds(query, selectedCategories, currentPage);
-  }, [query, selectedCategories, currentPage]);
+    fetchJobs();
+    setCurrentPage(1);
+  }, [searchTerm, category]);
 
-  const handleSearch = e => {
-    const value = e.target.value;
-    setQuery(value);
+  useEffect(() => {
+    const start = (currentPage - 1) * ADS_PER_PAGE;
+    const end = start + ADS_PER_PAGE;
+    setJobAds(allJobs.slice(start, end));
+  }, [allJobs, currentPage]);
 
-    if (!selectedCategories.length && !localStorage.getItem('tooltipDismissed')) {
-      setTooltipPosition('category');
-      setShowTooltip(true);
-    }
-  };
-
+  /* ================= HANDLERS ================= */
   const handleSubmit = e => {
     e.preventDefault();
     setSearchTerm(query);
-    setShowSearchResults(true);
-    setSummaries(null);
-    setCurrentPage(1);
   };
-
-  const toggleCategory = category => {
-    setSelectedCategories(prev =>
-      prev.includes(category) ? prev.filter(c => c !== category) : [...prev, category],
-    );
-    setCurrentPage(1);
-  };
-
-  const removeCategory = category => {
-    setSelectedCategories(prev => prev.filter(c => c !== category));
-    setCurrentPage(1);
-  };
-
-  useEffect(() => {
-    const handleClick = e => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-        setIsDropdownOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClick);
-    return () => document.removeEventListener('mousedown', handleClick);
-  }, []);
-
-  const dismissCategoryTooltip = () => {
-    setShowTooltip(false);
-    localStorage.setItem('tooltipDismissed', 'true');
-  };
-
-  const dismissSearchTooltip = () => setTooltipPosition('category');
 
   const handleShowSummaries = async () => {
-    const categoryParam = selectedCategories.join(',');
-
     try {
-      const response = await fetch(
-        `${ApiEndpoint}/jobs/summaries?search=${searchTerm}&category=${categoryParam}`,
-      );
-      if (!response.ok) throw new Error('Error Fetching Job Summaries');
-      setSummaries(await response.json());
+      const url =
+        `${ApiEndpoint}/jobs/summaries` +
+        `?search=${encodeURIComponent(searchTerm || '')}` +
+        `&category=${encodeURIComponent(category || '')}`;
+
+      const res = await fetch(url);
+      const data = await res.json();
+      setSummaries(data);
     } catch {
       toast.error('Error fetching summaries');
     }
   };
 
-  const toggleReorderModal = () => setIsReorderModalOpen(prev => !prev);
-
-  const handleJobsReordered = () => {
-    fetchJobAds(query, selectedCategories, currentPage);
-  };
-
-  const renderFilters = () => (
-    <CollaborationJobFilters
-      query={query}
-      handleSearch={handleSearch}
-      handleSubmit={handleSubmit}
-      canReorderJobs={canReorderJobs}
-      toggleReorderModal={toggleReorderModal}
-      showTooltip={showTooltip}
-      tooltipPosition={tooltipPosition}
-      dismissSearchTooltip={dismissSearchTooltip}
-      dismissCategoryTooltip={dismissCategoryTooltip}
-      dropdownRef={dropdownRef}
-      isDropdownOpen={isDropdownOpen}
-      setIsDropdownOpen={setIsDropdownOpen}
-      categories={categories}
-      selectedCategories={selectedCategories}
-      toggleCategory={toggleCategory}
-      isReorderModalOpen={isReorderModalOpen}
-      handleJobsReordered={handleJobsReordered}
-    />
-  );
-
-  const renderCategoryChips = () => (
-    <div className={styles.chipContainer}>
-      {selectedCategories.map(cat => (
-        <div key={cat} className={`${styles.chip} btn btn-secondary`}>
-          {cat}
-          <button className={styles.chipClose} onClick={() => removeCategory(cat)}>
-            ✕
-          </button>
-        </div>
-      ))}
-    </div>
-  );
-
+  /* ================= SUMMARIES VIEW ================= */
   if (summaries) {
     return (
-      <div className={`${styles.jobLanding} ${darkMode ? styles.darkMode : ''}`}>
+      <div className={`${styles.jobLanding} ${darkMode ? styles.dark : ''}`}>
         <div className={styles.jobHeader}>
-          <a
-            href="https://www.onecommunityglobal.org/collaboration/"
-            target="_blank"
-            rel="noreferrer"
-          >
+          <a href="https://www.onecommunityglobal.org/collaboration/">
             <img src={OneCommunityImage} alt="One Community Logo" />
           </a>
         </div>
 
-        <div className={styles.jobContainer}>
-          {renderFilters()}
-          {renderCategoryChips()}
+        <div className={styles.userCollaborationContainer}>
+          <h2>Job Summaries</h2>
 
-          <div className={styles.jobsSummariesList}>
-            {summaries.jobs?.length > 0 ? (
-              summaries.jobs.map(summary => (
-                <div key={summary._id} className={styles.jobSummaryItem}>
-                  <h3>
-                    <a href={summary.jobDetailsLink}>{summary.title}</a>
-                  </h3>
-                  <div className={styles.jobSummaryContent}>
-                    <p>{summary.description}</p>
-                    <p>Date Posted: {new Date(summary.datePosted).toLocaleDateString()}</p>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <p>No summaries found.</p>
-            )}
-          </div>
+          {summaries.jobs?.length ? (
+            summaries.jobs.map(job => (
+              <div key={job._id} className="job-summary-item">
+                <h3>
+                  <a href={job.jobDetailsLink}>{job.title}</a>
+                </h3>
+                <p>{job.description}</p>
+              </div>
+            ))
+          ) : (
+            <p>No summaries found.</p>
+          )}
+
+          <button className="btn btn-secondary" onClick={() => setSummaries(null)}>
+            ← Back to Job Listings
+          </button>
         </div>
       </div>
     );
   }
 
+  /* ================= MAIN VIEW ================= */
   return (
-    <div className={`${styles.jobLanding} ${darkMode ? styles.darkMode : ''}`}>
+    <div className={`${styles.jobLanding} ${darkMode ? styles.dark : ''}`}>
       <div className={styles.jobHeader}>
-        <a
-          href="https://www.onecommunityglobal.org/collaboration/"
-          target="_blank"
-          rel="noreferrer"
-        >
+        <a href="https://www.onecommunityglobal.org/collaboration/">
           <img src={OneCommunityImage} alt="One Community Logo" />
         </a>
       </div>
 
-      <div className={styles.jobContainer}>
-        {renderFilters()}
-        {renderCategoryChips()}
+      <div className={styles.userCollaborationContainer}>
+        {/* NAVBAR */}
+        <nav className={styles.navbar}>
+          <form className={styles.searchForm} onSubmit={handleSubmit}>
+            <input
+              type="text"
+              placeholder="Search by title..."
+              value={query}
+              onChange={e => setQuery(e.target.value)}
+            />
+            <button className="btn btn-secondary" type="submit">
+              Go
+            </button>
+          </form>
 
-        <div className="headings">
-          <h1 className="job-head">LIKE TO WORK WITH US? APPLY NOW!</h1>
+          <select
+            className={`${styles.jobSelect} ${darkMode ? styles.jobSelectDark : ''}`}
+            value={category}
+            onChange={e => setCategory(e.target.value)}
+          >
+            <option value="">Select from Categories</option>
+            {categories.map(cat => (
+              <option key={cat} value={cat}>
+                {cat}
+              </option>
+            ))}
+          </select>
+        </nav>
+
+        {/* HEADING */}
+        <div className={styles.headings}>
+          <h1 className={styles.jobHead}>LIKE TO WORK WITH US? APPLY NOW!</h1>
           <p>
-            <a
-              className="btn"
-              href="https://www.onecommunityglobal.org/collaboration/"
-              target="_blank"
-              rel="noreferrer"
-            >
+            <a className="btn" href="https://www.onecommunityglobal.org/collaboration/">
               ← Return to One Community Collaboration Page
             </a>
           </p>
         </div>
 
-        {showSearchResults ? (
-          <div className={styles.jobDetails}>
-            <div className={styles.jobQueries}>
-              {searchTerm.length || selectedCategories.length ? (
-                <p className={styles.jobQuery}>
-                  Listing results for{' '}
-                  <strong>
-                    {searchTerm && `'${searchTerm}' `}
-                    {selectedCategories.length > 0 &&
-                      selectedCategories.map(c => `'${c}'`).join(', ')}
-                  </strong>
-                </p>
-              ) : (
-                <p className={styles.jobQuery}>Listing all job ads.</p>
-              )}
+        {/* LISTING TEXT + SUMMARY BUTTON */}
+        <div className="job-queries">
+          <p className="job-query">
+            {searchTerm || category
+              ? `Listing results for ${
+                  searchTerm && category
+                    ? `'${searchTerm}' + '${category}'`
+                    : `'${searchTerm || category}'`
+                }`
+              : 'Listing all job ads.'}
+          </p>
 
-              <button className="btn btn-secondary" onClick={handleShowSummaries}>
-                Show Summaries
-              </button>
+          <button className="btn btn-secondary" type="button" onClick={handleShowSummaries}>
+            Show Summaries
+          </button>
+        </div>
 
-              {searchTerm && (
-                <div className={`${styles.chip} btn btn-secondary`}>
-                  {searchTerm}
-                  <button className={styles.chipClose} onClick={() => setSearchTerm('')}>
-                    ✕
-                  </button>
-                </div>
-              )}
+        {/* JOB GRID */}
+        <div className={styles.jobList}>
+          {jobAds.map(ad => (
+            <div key={ad._id} className={styles.jobAd}>
+              <img
+                src={
+                  ad.imageUrl ||
+                  `/api/placeholder/640/480?text=${encodeURIComponent(ad.category || 'Job')}`
+                }
+                alt={ad.title}
+              />
+              <a
+                href={`https://www.onecommunityglobal.org/collaboration/seeking-${slugify(
+                  ad.category,
+                )}`}
+              >
+                <h3>{ad.title}</h3>
+              </a>
             </div>
+          ))}
+        </div>
 
-            {jobAds.length ? (
-              <div className={styles.jobList}>
-                {jobAds.map(ad => (
-                  <div key={ad._id} className={styles.jobAd}>
-                    <img
-                      src={
-                        ad.imageUrl ||
-                        `/api/placeholder/640/480?text=${encodeURIComponent(
-                          ad.category || 'Job Opening',
-                        )}`
-                      }
-                      onError={e => {
-                        e.currentTarget.onerror = null;
-                        e.currentTarget.src =
-                          'https://img.icons8.com/cotton/64/working-with-a-laptop--v1.png';
-                      }}
-                      alt={`${ad.title || 'Job'} — ${ad.category || ''}`}
-                      loading="lazy"
-                    />
-                    <a
-                      href={`https://www.onecommunityglobal.org/collaboration/seeking-${slugify(
-                        ad.category || ad.title || 'general',
-                      )}`}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      <h3>{ad.title || ''}</h3>
-                    </a>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className={styles.jobNoResults}>
-                <h2>No job ads found.</h2>
-              </div>
-            )}
+        {/* PAGINATION */}
+        <div className={styles.pagination}>
+          <button disabled={currentPage === 1} onClick={() => setCurrentPage(1)}>
+            «
+          </button>
+          <button disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)}>
+            ‹
+          </button>
 
-            {totalPages >= 1 && (
-              <div className={styles.jobPagination}>
-                <button
-                  type="button"
-                  onClick={() => setCurrentPage(1)}
-                  disabled={currentPage === 1}
-                  aria-label="First page"
-                >
-                  «
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                  disabled={currentPage === 1}
-                  aria-label="Previous page"
-                >
-                  ‹
-                </button>
+          {Array.from({ length: totalPages }, (_, i) => (
+            <button
+              key={i + 1}
+              className={currentPage === i + 1 ? styles.paginationButtonActive : ''}
+              onClick={() => setCurrentPage(i + 1)}
+            >
+              {i + 1}
+            </button>
+          ))}
 
-                {Array.from({ length: totalPages }, (_, i) => {
-                  const pageNum = i + 1;
-                  const active = currentPage === pageNum;
-                  return (
-                    <button
-                      type="button"
-                      key={pageNum}
-                      className={active ? styles.activePage : ''}
-                      onClick={() => setCurrentPage(pageNum)}
-                      disabled={active}
-                      aria-current={active ? 'page' : undefined}
-                    >
-                      {pageNum}
-                    </button>
-                  );
-                })}
-
-                <button
-                  type="button"
-                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                  disabled={currentPage === totalPages}
-                  aria-label="Next page"
-                >
-                  ›
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setCurrentPage(totalPages)}
-                  disabled={currentPage === totalPages}
-                  aria-label="Last page"
-                >
-                  »
-                </button>
-              </div>
-            )}
-          </div>
-        ) : (
-          <div className={styles.jobHeadings}>
-            <h1 className={styles.jobHead}>Like to Work With Us? Apply Now!</h1>
-            <p className={styles.jobIntro}>Learn about who we are and who we want to work with!</p>
-          </div>
-        )}
+          <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => p + 1)}>
+            ›
+          </button>
+          <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(totalPages)}>
+            »
+          </button>
+        </div>
       </div>
     </div>
   );
