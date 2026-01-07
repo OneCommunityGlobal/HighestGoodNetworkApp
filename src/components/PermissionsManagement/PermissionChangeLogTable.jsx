@@ -18,7 +18,7 @@ function PermissionChangeLogTable({ changeLogs, darkMode, roleNamesToHighlight =
       .toString()
       .trim()
       .toLowerCase();
-  const roleSet = new Set(roleNamesToHiglhlight.map(normalize)); // O(1) lookup
+  const roleSet = new Set(roleNamesToHighlight.map(normalize)); // O(1) lookup
 
   const formatName = name => {
     if (name.startsWith('INDIVIDUAL:')) {
