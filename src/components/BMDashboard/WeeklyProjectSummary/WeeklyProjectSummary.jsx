@@ -269,14 +269,11 @@ function WeeklyProjectSummary() {
         title: 'Lessons Learned',
         key: 'Lessons Learned',
         className: 'half',
-        content: [
-          // <div key="text-card" className="weekly-project-summary-card normal-card">
-          //   📊 Card
-          // </div>,
-          <div key="injury-chart" className="weekly-project-summary-card normal-card">
+        content: (
+          <div className="weekly-project-summary-card normal-card" style={{ gridColumn: '1 / -1' }}>
             <InjuryCategoryBarChart />
-          </div>,
-        ],
+          </div>
+        ),
       },
       {
         title: 'Financials',

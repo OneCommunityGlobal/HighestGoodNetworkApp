@@ -1,7 +1,8 @@
-import './BlueSquare.css';
+import styles from './BlueSquare.module.css';
 import hasPermission from '~/utils/permissions';
 import { connect } from 'react-redux';
 import { formatCreatedDate, formatDate } from '~/utils/formatDate';
+import { useEffect } from 'react';
 
 
 const BlueSquare = (props) => {
@@ -26,25 +27,36 @@ const BlueSquare = (props) => {
       handleBlueSquare(true, 'viewBlueSquare', blueSquare._id);
     }
   };    
+  useEffect(() => {
+    if (window.location.hash === '#bluesquare') {
+      const blueSquareWindow = document.getElementById('bluesquare');
+      if (blueSquareWindow) {
+        const yOffset = -100;
+        const y = blueSquareWindow.getBoundingClientRect().top + window.scrollY + yOffset;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+      }
+    }
+  }, []);
   return (
-    <div className={`blueSquareContainer ${darkMode ? 'bg-darkmode-liblack' : ''}`}>
-      <div className={`blueSquares ${blueSquares?.length ? '' : 'NoBlueSquares'}`}>
+    <div id="bluesquare" className={`${styles.blueSquareContainer} ${darkMode ? 'bg-darkmode-liblack' : ''}`}>
+      <div className={`${styles.blueSquares} ${blueSquares?.length ? '' : styles.NoBlueSquares}`}>
         {blueSquares?.length ? (
           blueSquares
             .sort((a, b) => (a.date > b.date ? 1 : -1))  // sorting by most recent date(awareded) last
             .map((blueSquare, index) => (
+              // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/interactive-supports-focus, jsx-a11y/no-static-element-interactions
               <div
                 key={index}
                 role="button"
-                id="wrapper"
+                id={styles.wrapper}
                 data-testid="blueSquare"
-                className="blueSquareButton"
+                className={styles.blueSquareButton}
                 onClick={() => handleOnClick(blueSquare)}
               >
-                <div className="report" data-testid="report">
-                  <div className="title">{formatDate(blueSquare.date)}</div>
+                <div className={`${styles.report} `} data-testid="report">
+                  <div className={styles.title}>{formatDate(blueSquare.date)}</div>
                   {blueSquare.description && (
-                    <div className="summary">
+                    <div className={styles.summary}>
                       {blueSquare.createdDate ? `${formatCreatedDate(blueSquare.createdDate)}: ` : ''}
                       {blueSquare.description}
                     </div>
@@ -56,9 +68,10 @@ const BlueSquare = (props) => {
           <div>No blue squares.</div>
         )}
         {canAddInfringements && (
+          // eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events
           <div
             onClick={() => handleBlueSquare(true, 'addBlueSquare', '')}
-            className="blueSquareButton"
+            className={styles.blueSquareButton}
             color="primary"
             data-testid="addBlueSquare"
           >

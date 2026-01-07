@@ -1,12 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { Bar } from 'react-chartjs-2';
 import Select from 'react-select';
 import { fetchIssues } from '../../../actions/bmdashboard/issueChartActions';
-import './issueChart.css';
+import 'chart.js/auto';
+import styles from './issueChart.module.css';
 
 function IssueChart() {
   const dispatch = useDispatch();
+  const darkMode = useSelector(state => state.theme.darkMode);
   const { loading, issues, error } = useSelector(state => state.bmissuechart);
 
   const [filters, setFilters] = useState({ issueTypes: [], years: [] });
@@ -25,28 +27,25 @@ function IssueChart() {
             .map(year => parseInt(year, 10)),
         ),
       ].sort((a, b) => a - b);
-
       setFilters({ issueTypes: allIssueTypes, years: allYears });
     }
   }, [issues]);
 
   const extractDropdownOptions = () => {
-    const issueTypes = [...new Set(Object.keys(issues))].map(issue => ({
+    const issueTypes = [...new Set(Object.keys(issues || {}))].map(issue => ({
       label: issue,
       value: issue,
     }));
-
     const years = [
       ...new Set(
-        Object.values(issues)
+        Object.values(issues || {})
           .flatMap(issueData => Object.keys(issueData))
-          .map(year => parseInt(year, 10)),
+          .map(y => parseInt(y, 10)),
       ),
     ]
       .sort((a, b) => a - b)
       .map(year => ({ label: year.toString(), value: year }));
-
-    const addAll = options => [{ label: 'All', value: 'All' }, ...options];
+    const addAll = opts => [{ label: 'All', value: 'All' }, ...opts];
     return {
       issueTypes: addAll(issueTypes),
       years: addAll(years),
@@ -54,128 +53,321 @@ function IssueChart() {
   };
 
   const { issueTypes, years } = extractDropdownOptions();
+  const uniqueYears = years.filter(y => y.value !== 'All').map(y => y.value);
 
-  const generateColor = index => {
-    const hue = (index * 60) % 360;
-    return `hsl(${hue}, 70%, 50%)`;
-  };
-
-  const uniqueYears = years.filter(year => year.value !== 'All').map(year => year.value);
-  const yearColorMap = uniqueYears.reduce((acc, year, index) => {
-    acc[year] = generateColor(year, index);
+  const generateColor = idx => `hsl(${(idx * 60) % 360}, 70%, 50%)`;
+  const yearColorMap = uniqueYears.reduce((acc, year, idx) => {
+    acc[year] = generateColor(idx);
     return acc;
   }, {});
 
-  const handleFilterChange = (selectedOptions, field) => {
-    if (selectedOptions.some(option => option.value === 'All')) {
-      const allValues = field === 'issueTypes' ? Object.keys(issues) : uniqueYears;
+  const handleFilterChange = (selected, field) => {
+    if (selected.some(option => option.value === 'All')) {
       setFilters({
         ...filters,
-        [field]: allValues,
+        [field]: field === 'issueTypes' ? Object.keys(issues) : uniqueYears,
       });
     } else {
       setFilters({
         ...filters,
-        [field]: selectedOptions.map(option => option.value),
+        [field]: selected.map(option => option.value),
       });
     }
   };
 
-  const processData = () => {
-    if (!issues || Object.keys(issues).length === 0) return [{ issueType: 'No Data' }];
-
-    if (filters.issueTypes.length === 0 && filters.years.length >= 0) {
-      return [{ issueType: 'No Issues Selected' }];
-    }
-
-    const groupedData = {};
-    const allYears = [...filters.years].sort((a, b) => a - b);
-
+  const chartData = useMemo(() => {
+    if (!issues || Object.keys(issues).length === 0) return { labels: [], datasets: [] };
     const filteredIssueTypes = filters.issueTypes.length ? filters.issueTypes : Object.keys(issues);
+    const filteredYears = filters.years.length ? filters.years : uniqueYears;
+    const labels = filteredIssueTypes;
 
-    filteredIssueTypes.forEach(issueType => {
-      if (!issues[issueType]) return;
+    const datasets = filteredYears.map(year => ({
+      label: year.toString(),
+      data: labels.map(issueType => issues[issueType]?.[year] || 0),
+      backgroundColor: yearColorMap[year],
+      borderWidth: 1,
+      borderRadius: 6,
+    }));
 
-      const issueData = issues[issueType];
-      groupedData[issueType] = { issueType };
+    return { labels, datasets };
+  }, [issues, filters, uniqueYears, yearColorMap]);
 
-      allYears.forEach(year => {
-        groupedData[issueType][year] = 0;
-      });
-
-      Object.keys(issueData).forEach(year => {
-        const yearNum = parseInt(year, 10);
-        if (filters.years.includes(yearNum)) {
-          groupedData[issueType][yearNum] = issueData[year] || 0;
-        }
-      });
-    });
-
-    return Object.values(groupedData);
-  };
-
-  const processedData = processData();
-
-  const allYValues = processedData.flatMap(data =>
-    Object.values(data).filter(val => typeof val === 'number'),
+  const chartOptions = useMemo(
+    () => ({
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: true,
+          position: 'top',
+          labels: {
+            font: { size: 13, weight: '500' },
+            usePointStyle: true,
+            color: darkMode ? '#e8f0fe' : '#1a1a1a',
+            padding: 16,
+          },
+        },
+        title: {
+          display: true,
+          text: 'Number of Issues Reported by Type',
+          font: { size: 17, weight: '600' },
+          color: darkMode ? '#e8f0fe' : '#1a1a1a',
+          padding: { bottom: 20 },
+        },
+        tooltip: {
+          enabled: true,
+          mode: 'index',
+          intersect: false,
+          backgroundColor: darkMode ? '#2d3748' : '#ffffff',
+          titleColor: darkMode ? '#f7fafc' : '#1a1a1a',
+          bodyColor: darkMode ? '#f7fafc' : '#1a1a1a',
+          borderColor: darkMode ? '#4a5568' : '#e2e8f0',
+          borderWidth: 1,
+          cornerRadius: 8,
+          titleFont: { size: 14, weight: '600' },
+          bodyFont: { size: 13, weight: '500' },
+          callbacks: {
+            label: ctx => `${ctx.dataset.label}: ${ctx.formattedValue}`,
+          },
+          // Enhanced tooltip styling for better accessibility
+          displayColors: true,
+          titleAlign: 'left',
+          bodyAlign: 'left',
+        },
+      },
+      scales: {
+        x: {
+          title: {
+            display: true,
+            text: 'Issue Type',
+            font: { size: 14, weight: '600' },
+            color: darkMode ? '#e8f0fe' : '#1a1a1a',
+            padding: { top: 10 },
+          },
+          grid: {
+            display: false,
+            color: darkMode ? '#4a5568' : '#e2e8f0',
+          },
+          barPercentage: 0.9,
+          categoryPercentage: 0.8,
+          ticks: {
+            stepSize: 1,
+            color: darkMode ? '#e8f0fe' : '#1a1a1a',
+            font: { size: 12, weight: '500' },
+            padding: 8,
+          },
+          border: {
+            color: darkMode ? '#4a5568' : '#e2e8f0',
+            width: 1,
+          },
+        },
+        y: {
+          title: {
+            display: true,
+            text: 'No. of Issues',
+            font: { size: 14, weight: '600' },
+            color: darkMode ? '#e8f0fe' : '#1a1a1a',
+            padding: { bottom: 10 },
+          },
+          beginAtZero: true,
+          ticks: {
+            stepSize: 1,
+            color: darkMode ? '#e8f0fe' : '#1a1a1a',
+            font: { size: 12, weight: '500' },
+            padding: 8,
+          },
+          grid: {
+            color: darkMode ? '#4a5568' : '#e2e8f0',
+            lineWidth: 1,
+          },
+          border: {
+            color: darkMode ? '#4a5568' : '#e2e8f0',
+            width: 1,
+          },
+        },
+      },
+      // Enhanced interaction for better accessibility
+      interaction: {
+        intersect: false,
+        mode: 'index',
+      },
+    }),
+    [darkMode],
   );
 
-  const yTicks = [...new Set(allYValues.map(val => Math.floor(val)))].sort((a, b) => a - b);
-
-  const sortedProcessedData = processedData.sort((a, b) => {
-    const issueTypeA = a.issueType;
-    const issueTypeB = b.issueType;
-    return (
-      issueTypes.findIndex(option => option.value === issueTypeA) -
-      issueTypes.findIndex(option => option.value === issueTypeB)
-    );
-  });
+  const selectStyles = useMemo(() => {
+    if (!darkMode) return {};
+    return {
+      control: provided => ({
+        ...provided,
+        backgroundColor: '#2d3748',
+        borderColor: '#4a5568',
+        color: '#f7fafc',
+        '&:hover': {
+          borderColor: '#718096',
+        },
+        boxShadow: 'none',
+        minHeight: '42px',
+      }),
+      menu: provided => ({
+        ...provided,
+        backgroundColor: '#2d3748',
+        border: '1px solid #4a5568',
+        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.3)',
+        zIndex: 9999,
+      }),
+      input: provided => ({
+        ...provided,
+        color: '#f7fafc',
+      }),
+      singleValue: provided => ({
+        ...provided,
+        color: '#f7fafc',
+      }),
+      multiValue: provided => ({
+        ...provided,
+        backgroundColor: '#4a5568',
+        borderRadius: '6px',
+      }),
+      multiValueLabel: provided => ({
+        ...provided,
+        color: '#f7fafc',
+        fontSize: '14px',
+        fontWeight: '500',
+      }),
+      multiValueRemove: provided => ({
+        ...provided,
+        color: '#cbd5e0',
+        '&:hover': {
+          backgroundColor: '#e53e3e',
+          color: '#ffffff',
+        },
+      }),
+      option: (provided, state) => ({
+        ...provided,
+        backgroundColor: state.isFocused ? '#4a5568' : state.isSelected ? '#2b6cb0' : '#2d3748',
+        color: state.isSelected ? '#ffffff' : '#f7fafc',
+        '&:hover': {
+          backgroundColor: '#4a5568',
+          color: '#ffffff',
+        },
+        cursor: 'pointer',
+        fontSize: '14px',
+        fontWeight: '500',
+      }),
+      placeholder: provided => ({
+        ...provided,
+        color: '#a0aec0',
+        fontSize: '14px',
+      }),
+      indicatorSeparator: provided => ({
+        ...provided,
+        backgroundColor: '#4a5568',
+      }),
+      dropdownIndicator: provided => ({
+        ...provided,
+        color: '#a0aec0',
+        '&:hover': {
+          color: '#f7fafc',
+        },
+      }),
+      clearIndicator: provided => ({
+        ...provided,
+        color: '#a0aec0',
+        '&:hover': {
+          color: '#e53e3e',
+        },
+      }),
+    };
+  }, [darkMode]);
 
   return (
-    <div className="issue-chart-event-container">
-      <h2 className="issue-chart-event-title">Issues Chart</h2>
+    <div
+      className={darkMode ? 'bg-oxford-blue text-light dark' : ''}
+      style={{ minHeight: '100vh' }}
+    >
+      <div
+        className={`${styles.issueChartEventContainer} ${
+          darkMode ? styles.issueChartEventContainerDark : ''
+        }`}
+        role="region"
+        aria-label="Issues bar chart"
+      >
+        <h2
+          className={`${styles.issueChartEventTitle} ${
+            darkMode ? styles.issueChartEventTitleDark : ''
+          }`}
+        >
+          Issues Chart
+        </h2>
+        <div
+          className={styles.selectContainer}
+          style={{ justifyContent: 'center', gap: '20px', flexWrap: 'wrap' }}
+        >
+          <div style={{ minWidth: 200 }}>
+            <label
+              htmlFor="issue-type-select"
+              className={`${styles.issueChartLabel} ${darkMode ? styles.issueChartLabelDark : ''}`}
+            >
+              Issue Type:
+            </label>
+            <Select
+              inputId="issue-type-select"
+              className={`${styles.issueChartSelect} ${
+                darkMode ? styles.issueChartSelectDark : ''
+              }`}
+              isMulti
+              options={issueTypes}
+              onChange={selected => handleFilterChange(selected, 'issueTypes')}
+              value={issueTypes.filter(option => filters.issueTypes.includes(option.value))}
+              styles={selectStyles}
+              aria-label="Filter issues by type"
+              placeholder="Select issue types"
+            />
+          </div>
+          <div style={{ minWidth: 200 }}>
+            <label
+              htmlFor="year-select"
+              className={`${styles.issueChartLabel} ${darkMode ? styles.issueChartLabelDark : ''}`}
+            >
+              Year:
+            </label>
+            <Select
+              inputId="year-select"
+              className={`${styles.issueChartSelect} ${
+                darkMode ? styles.issueChartSelectDark : ''
+              }`}
+              isMulti
+              options={years}
+              onChange={selected => handleFilterChange(selected, 'years')}
+              value={years.filter(option => filters.years.includes(option.value))}
+              styles={selectStyles}
+              aria-label="Filter issues by year"
+              placeholder="Select years"
+            />
+          </div>
+        </div>
 
-      <div>
-        <label className="issue-chart-label" htmlFor="issue-type-select">
-          Issue Type:
-        </label>
-        <Select
-          inputId="issue-type-select"
-          className="issue-chart-select"
-          isMulti
-          options={issueTypes}
-          onChange={selectedOptions => handleFilterChange(selectedOptions, 'issueTypes')}
-          value={issueTypes.filter(option => filters.issueTypes.includes(option.value))}
-        />
+        {loading && (
+          <p className={`${styles.loadingText} ${darkMode ? styles.loadingTextDark : ''}`}>
+            Loading chart data...
+          </p>
+        )}
+        {error && (
+          <p className={`${styles.errorText} ${darkMode ? styles.errorTextDark : ''}`}>
+            Error: {error}
+          </p>
+        )}
 
-        <label className="issue-chart-label" htmlFor="year-select">
-          Year:
-        </label>
-        <Select
-          inputId="year-select"
-          className="issue-chart-select"
-          isMulti
-          // other props...
-        />
+        {!loading && !error && (
+          <div
+            className={`${styles.chartWrapper} ${darkMode ? styles.chartWrapperDark : ''}`}
+            style={{ minHeight: 400 }}
+          >
+            <Bar data={chartData} options={chartOptions} aria-labelledby="chart-title" />
+          </div>
+        )}
       </div>
-
-      {loading && <p>Loading...</p>}
-      {error && <p>Error: {error}</p>}
-      {!loading && !error && (
-        <ResponsiveContainer width="100%" height={400}>
-          <BarChart data={sortedProcessedData} margin={{ top: 60, right: 30, left: 20, bottom: 5 }}>
-            <XAxis dataKey="issueType" />
-            <YAxis ticks={yTicks} tickFormatter={tick => tick} />
-            <Tooltip />
-            <Legend />
-            {(filters.years.length ? filters.years : uniqueYears)
-              .sort((a, b) => a - b)
-              .map(year => (
-                <Bar key={year} dataKey={year} fill={yearColorMap[year]} />
-              ))}
-          </BarChart>
-        </ResponsiveContainer>
-      )}
     </div>
   );
 }
