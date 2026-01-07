@@ -231,3 +231,52 @@
   outline: none;
   border-color: #9c0;
 }
+/* =========================
+   PAGINATION BUTTONS
+   ========================= */
+
+.paginationButton {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background-color: #ffffff;
+  color: #333333;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.paginationButton:hover {
+  background-color: #f0f0f0;
+}
+
+/* ACTIVE PAGE (LIGHT MODE) */
+.paginationButtonActive {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #9c0;
+  background-color: #9c0;
+  color: #000000;
+  font-weight: 700;
+}
+
+/* =========================
+   DARK MODE PAGINATION
+   ========================= */
+
+.dark .paginationButton {
+  background-color: #1c1c1c;
+  border: 1px solid #444;
+  color: #dddddd;
+}
+
+.dark .paginationButton:hover {
+  background-color: #2a2a2a;
+}
+
+/* ACTIVE PAGE (DARK MODE) */
+.dark .paginationButtonActive {
+  background-color: #9c0;
+  border: 1px solid #9c0;
+  color: #000000;
+  font-weight: 700;
+}

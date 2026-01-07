@@ -46,7 +46,7 @@ function Collaboration() {
       // let finalJobs = jobs;
 
       // if (ENABLE_JOB_DUPLICATION && jobs.length > 0) {
-      //   const MULTIPLIER = 10; // 3 × 10 = 30 jobs
+      //   const MULTIPLIER = 15; // 3 × 10 = 30 jobs
       //   finalJobs = Array.from({ length: MULTIPLIER }).flatMap((_, i) =>
       //     jobs.map(job => ({
       //       ...job,
@@ -55,10 +55,10 @@ function Collaboration() {
       //   );
       // }
 
-      // setAllJobs(finalJobs);
-
       setAllJobs(jobs);
-      setTotalPages(jobs.length > 0 ? Math.max(calculatedPages, 2) : 1);
+
+      const calculatedPages = Math.ceil(jobs.length / ADS_PER_PAGE);
+      setTotalPages(Math.max(calculatedPages, 2));
     } catch {
       toast.error('Error fetching jobs');
     }
@@ -81,8 +81,8 @@ function Collaboration() {
   }, []);
 
   useEffect(() => {
-    fetchJobs();
     setCurrentPage(1);
+    fetchJobs();
   }, [searchTerm, categoriesSelected]);
 
   useEffect(() => {
@@ -184,14 +184,15 @@ function Collaboration() {
             role="menu"
             style={{
               position: 'absolute',
-              bottom: '20px',
-              right: '16px',
-              background: 'rgba(0, 0, 0, 0.85)',
+              // top: '100%',
+              marginTop: '7px',
+              right: 0,
+              background: 'rgba(0, 0, 0, 0.75)',
               border: '1px solid #444',
               borderRadius: '8px',
               padding: '12px',
               zIndex: 1000,
-              boxShadow: '0 8px 20px rgba(0,0,0,0.3)',
+              boxShadow: '0 8px 20px rgba(0,0,0,0.4)',
               minWidth: '260px',
               color: '#ffffff',
             }}
@@ -288,7 +289,11 @@ function Collaboration() {
           <button disabled={currentPage === 1} onClick={() => setCurrentPage(1)}>
             «
           </button>
-          <button disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)}>
+          <button
+            type="button"
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+          >
             ‹
           </button>
 
@@ -297,7 +302,12 @@ function Collaboration() {
             return Array.from({ length: pagesToRender }, (_, i) => (
               <button
                 key={i + 1}
-                className={currentPage === i + 1 ? styles.paginationButtonActive : ''}
+                type="button"
+                aria-current={currentPage === i + 1 ? 'page' : undefined}
+                disabled={currentPage === i + 1}
+                className={
+                  currentPage === i + 1 ? styles.paginationButtonActive : styles.paginationButton
+                }
                 onClick={() => setCurrentPage(i + 1)}
               >
                 {i + 1}
@@ -305,10 +315,10 @@ function Collaboration() {
             ));
           })()}
 
-          <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => p + 1)}>
+          <button type="button" onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}>
             ›
           </button>
-          <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(totalPages)}>
+          <button type="button" onClick={() => setCurrentPage(totalPages)}>
             »
           </button>
         </div>
