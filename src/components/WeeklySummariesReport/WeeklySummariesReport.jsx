@@ -710,98 +710,100 @@ const WeeklySummariesReport = props => {
         .filter(([, isSelected]) => isSelected)
         .map(([color]) => color);
 
-      const temp = summaries.filter(summary => {
-        const { activeTab } = state;
-        const hoursLogged = (summary.totalSeconds[navItems.indexOf(activeTab)] || 0) / 3600;
+      const temp = summaries
+        .map(s => ({ ...s }))
+        .filter(summary => {
+          const { activeTab } = state;
+          const hoursLogged = (summary.totalSeconds[navItems.indexOf(activeTab)] || 0) / 3600;
 
-        // 🛑 Add this block at the very top inside the filter
-        // if (summary?.isActive === false) {
-        //   const lastWeekStart = moment()
-        //     .tz('America/Los_Angeles')
-        //     .startOf('week')
-        //     .subtract(1, 'week')
-        //     .toDate();
-        //   const lastWeekEnd = moment()
-        //     .tz('America/Los_Angeles')
-        //     .endOf('week')
-        //     .subtract(1, 'week')
-        //     .toDate();
-        //   const summaryStart = new Date(summary.startDate);
-        //   const summaryEnd = new Date(summary.endDate);
-        //   const isLastWeek = summaryStart <= lastWeekEnd && summaryEnd >= lastWeekStart;
+          // 🛑 Add this block at the very top inside the filter
+          // if (summary?.isActive === false) {
+          //   const lastWeekStart = moment()
+          //     .tz('America/Los_Angeles')
+          //     .startOf('week')
+          //     .subtract(1, 'week')
+          //     .toDate();
+          //   const lastWeekEnd = moment()
+          //     .tz('America/Los_Angeles')
+          //     .endOf('week')
+          //     .subtract(1, 'week')
+          //     .toDate();
+          //   const summaryStart = new Date(summary.startDate);
+          //   const summaryEnd = new Date(summary.endDate);
+          //   const isLastWeek = summaryStart <= lastWeekEnd && summaryEnd >= lastWeekStart;
 
-        //   if (!isLastWeek) {
-        //     return false; // Skip inactive members unless their summary is from last week
-        //   }
-        // }
-        if (
-          summary?.isActive === false &&
-          !doesSummaryBelongToWeek(summary.startDate, summary.endDate, weekIndex)
-        ) {
-          return false;
-        }
-        const isMeetCriteria =
-          summary.totalTangibleHrs > 80 &&
-          summary.daysInTeam > 60 &&
-          summary.bioPosted !== 'posted';
-        const isBio = !selectedBioStatus || isMeetCriteria;
-        const isOverHours =
-          !selectedOverTime ||
-          (summary.weeklycommittedHours > 0 &&
-            hoursLogged > 0 &&
-            hoursLogged >= summary.promisedHoursByWeek[navItems.indexOf(activeTab)]);
+          //   if (!isLastWeek) {
+          //     return false; // Skip inactive members unless their summary is from last week
+          //   }
+          // }
+          if (
+            summary?.isActive === false &&
+            !doesSummaryBelongToWeek(summary.startDate, summary.endDate, weekIndex)
+          ) {
+            return false;
+          }
+          const isMeetCriteria =
+            summary.totalTangibleHrs > 80 &&
+            summary.daysInTeam > 60 &&
+            summary.bioPosted !== 'posted';
+          const isBio = !selectedBioStatus || isMeetCriteria;
+          const isOverHours =
+            !selectedOverTime ||
+            (summary.weeklycommittedHours > 0 &&
+              hoursLogged > 0 &&
+              hoursLogged >= summary.promisedHoursByWeek[navItems.indexOf(activeTab)]);
 
-        // Add trophy filter logic
-        const summarySubmissionDate = moment()
-          .tz('America/Los_Angeles')
-          .endOf('week')
-          .subtract(weekIndex, 'week')
-          .format('YYYY-MM-DD');
+          // Add trophy filter logic
+          const summarySubmissionDate = moment()
+            .tz('America/Los_Angeles')
+            .endOf('week')
+            .subtract(weekIndex, 'week')
+            .format('YYYY-MM-DD');
 
-        const hasTrophy =
-          !selectedTrophies ||
-          showTrophyIcon(summarySubmissionDate, summary?.startDate?.split('T')[0]);
+          const hasTrophy =
+            !selectedTrophies ||
+            showTrophyIcon(summarySubmissionDate, summary?.startDate?.split('T')[0]);
 
-        // Add special color filter logic
-        const matchesSpecialColor =
-          activeFilterColors.length === 0 || activeFilterColors.includes(summary.filterColor);
+          // Add special color filter logic
+          const matchesSpecialColor =
+            activeFilterColors.length === 0 || activeFilterColors.includes(summary.filterColor);
 
-        // Filtered by Team Code and Extra Members
-        const isInSelectedCode = selectedCodesArray.includes(summary.teamCode);
-        const isInSelectedExtraMember = selectedExtraMembersArray.includes(summary._id);
-        const noFilterSelected =
-          selectedCodesArray.length === 0 && selectedExtraMembersArray.length === 0;
+          // Filtered by Team Code and Extra Members
+          const isInSelectedCode = selectedCodesArray.includes(summary.teamCode);
+          const isInSelectedExtraMember = selectedExtraMembersArray.includes(summary._id);
+          const noFilterSelected =
+            selectedCodesArray.length === 0 && selectedExtraMembersArray.length === 0;
 
-        let matchesLoggedHoursRange = true;
-        if (selectedLoggedHoursRange && selectedLoggedHoursRange.length > 0) {
-          matchesLoggedHoursRange = selectedLoggedHoursRange.some(range => {
-            switch (range.value) {
-              case '=0':
-                return hoursLogged === 0;
-              case '0-10':
-                return hoursLogged > 0 && hoursLogged <= 10;
-              case '10-20':
-                return hoursLogged > 10 && hoursLogged <= 20;
-              case '20-40':
-                return hoursLogged > 20 && hoursLogged <= 40;
-              case '>40':
-                return hoursLogged > 40;
-              default:
-                return true;
-            }
-          });
-        }
-        return (
-          (noFilterSelected || isInSelectedCode || isInSelectedExtraMember) &&
-          (selectedColorsArray.length === 0 ||
-            selectedColorsArray.includes(summary.weeklySummaryOption)) &&
-          matchesSpecialColor &&
-          isOverHours &&
-          isBio &&
-          hasTrophy &&
-          matchesLoggedHoursRange
-        );
-      });
+          let matchesLoggedHoursRange = true;
+          if (selectedLoggedHoursRange && selectedLoggedHoursRange.length > 0) {
+            matchesLoggedHoursRange = selectedLoggedHoursRange.some(range => {
+              switch (range.value) {
+                case '=0':
+                  return hoursLogged === 0;
+                case '0-10':
+                  return hoursLogged > 0 && hoursLogged <= 10;
+                case '10-20':
+                  return hoursLogged > 10 && hoursLogged <= 20;
+                case '20-40':
+                  return hoursLogged > 20 && hoursLogged <= 40;
+                case '>40':
+                  return hoursLogged > 40;
+                default:
+                  return true;
+              }
+            });
+          }
+          return (
+            (noFilterSelected || isInSelectedCode || isInSelectedExtraMember) &&
+            (selectedColorsArray.length === 0 ||
+              selectedColorsArray.includes(summary.weeklySummaryOption)) &&
+            matchesSpecialColor &&
+            isOverHours &&
+            isBio &&
+            hasTrophy &&
+            matchesLoggedHoursRange
+          );
+        });
 
       // Use Dict and Set for quick access
       const filteredTeamDict = {};
@@ -2053,6 +2055,7 @@ const WeeklySummariesReport = props => {
             hasPermissionToFilter={hasPermissionToFilter}
             editable={true}
             formId="report"
+            canSeeBioHighlight={permissionState.canSeeBioHighlight}
           />
         </Col>
       </Row>
