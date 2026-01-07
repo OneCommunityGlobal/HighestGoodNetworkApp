@@ -160,3 +160,7 @@
 :global(.darkMode .injurySelect__input) {
   color: #000000 !important;
 }
+/* Recharts default tick text selector (X axis) */
+:global(.darkMode .recharts-xAxis .recharts-cartesian-axis-tick-value) {
+  fill: #ffffff !important;
+}
