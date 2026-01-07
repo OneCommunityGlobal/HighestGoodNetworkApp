@@ -132,7 +132,7 @@ function OwnerMessage({
       {ownerMessage ? getContent(ownerMessage) : getContent(ownerStandardMessage)}
 
       {(user.role === 'Owner' || canEditHeaderMessage) && (
-        <div className={styles.iconWrapper}>
+        <span className={styles.iconWrapper}>
           <button
             type="submit"
             className={styles.ownerMessageButton}
@@ -177,7 +177,7 @@ function OwnerMessage({
               />
             </button>
           )}
-        </div>
+        </span>
       )}
 
       <Modal isOpen={modal} toggle={() => toggle()} className={fontColor}>

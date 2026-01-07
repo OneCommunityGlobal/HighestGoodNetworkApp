@@ -1,5 +1,5 @@
 /* ======================================
-   1) Light mode fallback (Default)
+   1) Light mode fallback
    ====================================== */
 .activityAttendancePage {
   --bg-color: #ffffff;
@@ -18,7 +18,7 @@
 /* ======================================
    2) Dark mode overrides
    ====================================== */
-.darkMode {
+.activityAttendanceDarkMode {
   --bg-color: #1b2a41;
   --text-color: #ffffff;
   --heading-color: #e8a71c;
@@ -29,8 +29,8 @@
   --card-shadow: rgba(255, 255, 255, 0.1);
 }
 
-/* Shadow on images specifically in dark mode */
-.darkMode .activityAgendaImage img {
+/* Apply shadow on images if you have any .activity-agenda-image */
+.activityAgendaDarkMode .activityAgendaImage img {
   box-shadow: 0 4px 8px var(--card-shadow);
 }
 
@@ -62,7 +62,7 @@
   border-radius: 8px;
   box-shadow: 0 2px 5px var(--shadow-color);
   border: 1px solid var(--border-color);
-  flex: 0 0 auto;
+  flex: 0 0 auto; /* do not shrink below content */
 }
 
 .titleText h2 {
@@ -78,13 +78,19 @@
 }
 
 .searchContainer {
-  flex: 1 1 260px;
+  flex: 1 1 260px; /* grow/shrink but start at 260px */
   display: flex;
   justify-content: flex-end;
   margin-top: 15px;
 }
 
-.searchBar {
+@media (min-width: 600px) {
+  .searchContainer {
+    margin-top: 0;
+  }
+}
+
+.attendanceSearchBar {
   width: 100%;
   max-width: 260px;
   padding: 10px 14px;
@@ -96,10 +102,14 @@
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.searchBar:focus {
+.attendanceSearchBar:focus {
   border-color: var(--heading-color);
   box-shadow: 0 0 4px var(--heading-color);
   outline: none;
+}
+
+.activityAttendanceDarkMode .attendanceSearchBar::placeholder {
+  color: #cbd5e1;
 }
 
 /* ======================================
@@ -134,7 +144,7 @@
   position: relative;
   width: 180px;
   height: 180px;
-  flex: 0 0 180px;
+  flex: 0 0 180px; /* never shrink below 180px */
   margin: 0 auto;
 }
 
@@ -230,6 +240,7 @@
   min-height: 260px;
 }
 
+/* Header (Title + Export Button) */
 .updatesHeader {
   display: flex;
   flex-wrap: wrap;
@@ -242,6 +253,42 @@
   font-size: 1.2rem;
   font-weight: 600;
   color: var(--text-color);
+}
+
+.updatesHeaderLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.statusFilters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.statusFilterBtn {
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border-color);
+  background-color: transparent;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  margin-top: 10px;
+}
+
+.statusFilterBtnActive {
+  background-color: var(--heading-color);
+  color: var(--card-bg);
+  border-color: var(--heading-color);
+}
+
+@media (min-width: 500px) {
+  .statusFilterBtn {
+    margin-top: 0;
+  }
 }
 
 .exportBtn {
@@ -271,6 +318,7 @@
   overflow-y: auto;
 }
 
+/* “No Results” Message */
 .noResults {
   text-align: center;
   font-size: 0.95rem;
@@ -303,7 +351,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  flex: 0 0 35%;
+  flex: 0 0 35%; /* Takes 35% of row width */
 }
 
 .studentImg {
@@ -379,27 +427,32 @@
   .chartContainer {
     margin-bottom: 20px;
   }
+  /* Make stats cards full width */
   .statsGrid {
     grid-template-columns: 1fr;
   }
+
+  /* Stack student-row sections vertically */
   .studentRow {
     flex-direction: column;
     align-items: flex-start;
     padding: 12px 8px;
   }
-  .studentLeft, .studentCenter, .studentRight {
+
+  .studentLeft,
+  .studentCenter,
+  .studentRight {
     flex: 1 1 100%;
     margin-top: 8px;
     justify-content: flex-start;
   }
+
+  /* Ensure search + export buttons fill width */
   .searchContainer {
     width: 100%;
   }
   .exportBtn {
     width: 100%;
     text-align: center;
-  }
-  .statsCardHeader {
-    flex-direction: column;
   }
 }

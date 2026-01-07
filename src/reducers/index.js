@@ -139,7 +139,6 @@ const localReducers = {
   allUsersTimeEntries: allUsersTimeEntriesReducer,
   allUserProfilesBasicInfo: allUserProfilesBasicInfoReducer,
   projectById: projectByIdReducer,
-
   // bm dashboard
   materials: materialsReducer,
   tools: toolReducer,

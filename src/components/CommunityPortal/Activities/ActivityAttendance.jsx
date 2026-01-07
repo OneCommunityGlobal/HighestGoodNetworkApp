@@ -62,7 +62,6 @@ function StatsCard({ title, value, color, definition }) {
     <div className={styles.statsCard}>
       <div className={styles.statsCardHeader}>
         <h3>{title}</h3>
-        {/* Using a button avoids the tabIndex error and is better for screen readers */}
         <button
           className={styles.infoIconWrapper}
           title={definition}
