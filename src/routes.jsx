@@ -171,7 +171,7 @@ import CommunityCalendar from './components/CommunityPortal/Calendar/CommunityCa
 // Kicthen and Inventory Portal
 import KitchenandInventoryLogin from './components/KitchenandInventory/Login';
 import KIProtectedRoute from './components/common/KitchenandInventory/KIProtectedRoute';
-import KIDashboard from './components/KitchenandInventory/KIDashboard';
+import KIDashboard from './components/KitchenandInventory/KIDashboard/KIDashboard';
 
 // Education Portal
 import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
