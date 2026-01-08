@@ -1,0 +1,39 @@
+/* :global(body) {
+  font-family: 'Poppins', sans-serif;
+  background: #fff;
+  margin: 0;
+  padding: 0;
+} */
+.inventoryContainer {
+  padding: 40px 40px;
+  margin-left: 0;
+  font-size: 16px;
+  line-height: 1.6;
+  letter-spacing: 0.2px;
+  width: 100%;
+}
+.inventorypageheader {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  width: 100%;
+  padding-left: 0px;
+  padding-right: 0px;
+  margin-left: 10px;
+  margin-right: 20px;
+  background: #ffffff;
+  
+}
+
+.inventoryMetricCards {
+  width: 100%;
+  display: flex;
+  gap: 20px;
+  border: 1px solid #e0e0e0;
+  border-radius: 16px;
+  box-shadow: 6px 6px 20px rgba(0, 0, 0, 0.1);
+  margin-right: 40px;
+}
