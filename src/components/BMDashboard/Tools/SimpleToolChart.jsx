@@ -13,6 +13,7 @@ import {
   LabelList,
 } from 'recharts';
 import { format } from 'date-fns';
+import { toast } from 'react-toastify';
 
 const toolsData = [
   {
@@ -73,6 +74,36 @@ function DateRangePicker({ dateRange, setDateRange }) {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    if (
+      dateRange.from instanceof Date &&
+      !isNaN(dateRange.from) &&
+      dateRange.to instanceof Date &&
+      !isNaN(dateRange.to)
+    ) {
+      setTempRange({
+        from: format(dateRange.from, 'yyyy-MM-dd'),
+        to: format(dateRange.to, 'yyyy-MM-dd'),
+      });
+    }
+  }, [dateRange]);
+
+  const isValidCalendarDate = value => {
+    // Accept valid Date objects
+    if (value instanceof Date && !isNaN(value.getTime())) {
+      return true;
+    }
+
+    // Accept valid YYYY-MM-DD strings
+    if (typeof value !== 'string') return false;
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+
+    const [y, m, d] = value.split('-').map(Number);
+    const date = new Date(y, m - 1, d);
+
+    return date.getFullYear() === y && date.getMonth() === m - 1 && date.getDate() === d;
+  };
+
   const handleStartDateChange = e => {
     const val = e.target.value;
     setTempRange(prev => ({ ...prev, from: val }));
@@ -84,13 +115,27 @@ function DateRangePicker({ dateRange, setDateRange }) {
   };
 
   const applyDateRange = () => {
-    const parsedFrom = /^\d{4}-\d{2}-\d{2}$/.test(tempRange.from)
-      ? new Date(tempRange.from + 'T00:00:00')
-      : tempRange.from;
-    const parsedTo = /^\d{4}-\d{2}-\d{2}$/.test(tempRange.to)
-      ? new Date(tempRange.to + 'T23:59:59')
-      : tempRange.to;
-    setDateRange({ from: parsedFrom, to: parsedTo });
+    if (!isValidCalendarDate(tempRange.from) || !isValidCalendarDate(tempRange.to)) {
+      toast.error('Enter a valid date');
+      return;
+    }
+
+    const fromDate = new Date(`${tempRange.from}T00:00:00`);
+    const toDate = new Date(`${tempRange.to}T23:59:59`);
+
+    if (fromDate > toDate) {
+      toast.error('Enter a valid date');
+      return;
+    }
+
+    setDateRange({ from: fromDate, to: toDate });
+
+    // sync tempRange so selected dates render in the button label
+    setTempRange({
+      from: format(fromDate, 'yyyy-MM-dd'),
+      to: format(toDate, 'yyyy-MM-dd'),
+    });
+
     setIsOpen(false);
   };
 
@@ -114,7 +159,10 @@ function DateRangePicker({ dateRange, setDateRange }) {
         onClick={() => setIsOpen(!isOpen)}
       >
         <span>
-          {dateRange.from && dateRange.to
+          {dateRange.from instanceof Date &&
+          !isNaN(dateRange.from) &&
+          dateRange.to instanceof Date &&
+          !isNaN(dateRange.to)
             ? `${format(dateRange.from, 'MMM dd, yyyy')} - ${format(dateRange.to, 'MMM dd, yyyy')}`
             : 'Select date range'}
         </span>
