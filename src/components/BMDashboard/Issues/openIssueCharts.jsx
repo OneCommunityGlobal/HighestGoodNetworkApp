@@ -113,6 +113,18 @@ function IssueCharts() {
   } = getChartClasses(styles, darkMode);
   const selectStyles = createSelectStyles(darkMode, textColor);
 
+  const loadingMessageStyle = {
+    color: textColor,
+    textAlign: 'center',
+    padding: '20px',
+  };
+
+  const errorMessageStyle = {
+    color: errorColor,
+    textAlign: 'center',
+    padding: '20px',
+  };
+
   // Normalize issues for chart
   // Number issues per project to avoid conflicts when multiple projects are selected
   // Prefix with project name when multiple projects are selected to distinguish them
@@ -250,15 +262,9 @@ function IssueCharts() {
   let chartContent;
 
   if (error) {
-    chartContent = (
-      <div style={{ color: errorColor, textAlign: 'center', padding: '20px' }}>Error: {error}</div>
-    );
+    chartContent = <div style={errorMessageStyle}>Error: {error}</div>;
   } else if (loading) {
-    chartContent = (
-      <div style={{ color: textColor, textAlign: 'center', padding: '20px' }}>
-        Loading chart data...
-      </div>
-    );
+    chartContent = <div style={loadingMessageStyle}>Loading chart data...</div>;
   } else if (!normalizedIssues || normalizedIssues.length === 0) {
     chartContent = (
       <div className={noDataMessageClass}>

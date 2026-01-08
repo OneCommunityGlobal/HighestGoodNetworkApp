@@ -36,6 +36,7 @@ export function CPDashboard() {
   const [events, setEvents] = useState([]);
   const [searchInput, setSearchInput] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [onlineOnly, setOnlineOnly] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -97,6 +98,13 @@ export function CPDashboard() {
   };
 
   const filteredEvents = events.filter(event => {
+    // Filter by online only if checkbox is checked
+    if (onlineOnly) {
+      const isOnlineEvent = event.location?.toLowerCase() === 'virtual';
+      if (!isOnlineEvent) return false;
+    }
+
+    // Filter by search query if provided
     if (!searchQuery) return true;
     const term = searchQuery.toLowerCase();
 
@@ -199,7 +207,16 @@ export function CPDashboard() {
               <div className={styles.filterItem}>
                 <label htmlFor="online-only">Online</label>
                 <div>
-                  <Input type="checkbox" /> Online Only
+                  <Input
+                    type="checkbox"
+                    id="online-only"
+                    checked={onlineOnly}
+                    onChange={e => {
+                      setOnlineOnly(e.target.checked);
+                      setPagination(prev => ({ ...prev, currentPage: 1 }));
+                    }}
+                  />{' '}
+                  Online Only
                 </div>
               </div>
 

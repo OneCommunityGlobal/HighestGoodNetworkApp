@@ -14,127 +14,6 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.9);
 }
 
-.issueChartEventContainer {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 20px;
-  background: #f9f9f9;
-  border-radius: 8px;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.issueChartEventContainerDark {
-  background: #121212;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.9);
-  color: #ccd1dc;
-}
-
-.issueChartEventTitle {
-  text-align: center;
-  font-size: 24px;
-  color: #333;
-  margin-bottom: 20px;
-}
-
-.issueChartEventTitleDark {
-  color: #e0e6f0;
-}
-
-.buttonGroup {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 20px;
-}
-
-.chartButton {
-  padding: 10px 20px;
-  margin: 0 10px;
-  border: 2px solid #888;
-  background-color: white;
-  color: #333;
-  font-size: 16px;
-  cursor: pointer;
-  border-radius: 4px;
-  transition: all 0.3s ease;
-}
-
-.chartButtonDark {
-  border-color: #3d444d;
-  background-color: #22272e;
-  color: #cfd7e3;
-}
-
-.chartButtonActive {
-  background-color: #4caf50;
-  color: white;
-  border-color: #4caf50;
-}
-
-.chartButtonActiveDark {
-  background-color: #4caf50;
-  color: #fff;
-  border-color: #4caf50;
-}
-
-.chartWrapper {
-  padding: 20px;
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.chartWrapperDark {
-  background: #1e1e1e;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.9);
-}
-
-/* ---------- Labels ---------- */
-
-.issueChartLabel {
-  font-size: 16px;
-  font-weight: 500;
-  color: #2d3748;
-  margin-bottom: 8px;
-}
-
-.issueChartLabelDark {
-  color: #cbd5e0;
-}
-
-.selectContainer {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 20px;
-}
-
-.issueChartSelect {
-  padding: 2px 10px;
-  font-size: 16px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-  background-color: #fff;
-  color: #333;
-  cursor: pointer;
-  transition: border-color 0.3s ease;
-  outline: none;
-  margin-bottom: 20px;
-}
-
-.issueChartSelectDark {
-  background-color: #22272e;
-  border: 1px solid #3d444d;
-  color: #cfd7e3;
-}
-
-.issueChartSelect:focus {
-  border-color: #4caf50;
-}
-
-.issueChartSelectDark:focus {
-  border-color: #4caf50;
-}
-
 /* ---------- Filters row (Date + Projects) ---------- */
 
 .filtersContainer {
@@ -168,6 +47,19 @@
   display: flex;
   flex-direction: column;
   width: 100%;
+}
+
+/* ---------- Labels ---------- */
+
+.issueChartLabel {
+  font-size: 16px;
+  font-weight: 500;
+  color: #2d3748;
+  margin-bottom: 8px;
+}
+
+.issueChartLabelDark {
+  color: #cbd5e0;
 }
 
 /* ---------- Date range layout (no shifting) ---------- */
@@ -205,7 +97,7 @@
   width: 100%;
 }
 
-/* actual input fills wrapper and doesn't change layout */
+/* actual input fills wrapper and doesn’t change layout */
 .dateRangePickerStart
   :global(.react-datepicker__input-container input),
 .dateRangePickerEnd
@@ -262,24 +154,26 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.9);
 }
 
+/* ---------- No data message ---------- */
+
 .noDataMessage {
   display: flex;
   align-items: center;
   justify-content: center;
   height: 100%;
   width: 100%;
-  color: #666;
+  color: #718096;
 }
 
 .noDataMessageDark {
-  background: #1e1e1e;
-  color: #999;
+  background-color: #1a202c;
+  color: #a0aec0;
 }
 
 .noDataContent {
   text-align: center;
   padding: 40px 20px;
-  max-width: 400px;
+  max-width: 480px;
 }
 
 .noDataContent h3 {
