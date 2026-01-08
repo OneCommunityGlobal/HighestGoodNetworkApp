@@ -8,6 +8,7 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
+  Tooltip,
   ResponsiveContainer,
   LabelList,
 } from 'recharts';
@@ -17,25 +18,100 @@ import {
   fetchLongestOpenIssues,
   setProjectFilter,
 } from '../../../actions/bmdashboard/issueChartActions';
-import styles from './issueChart.module.css';
+import styles from './issueCharts.module.css';
+
+/* ---------- helpers ---------- */
+
+const getThemeColors = isDark => ({
+  textColor: isDark ? '#f7fafc' : '#1a202c',
+  gridColor: isDark ? '#4a5568' : '#e2e8f0',
+  tooltipBg: isDark ? '#2d3748' : '#ffffff',
+  tooltipBorder: isDark ? '#4a5568' : '#e2e8f0',
+  hoverBg: isDark ? '#2d3748' : '#e2e8f0',
+});
+
+const getErrorColor = isDark => (isDark ? '#fca5a5' : '#dc2626');
+
+const getOptionBackground = (isDark, isFocused) => {
+  if (isFocused) {
+    return isDark ? '#2d3748' : '#e2e8f0';
+  }
+  return isDark ? '#1a202c' : '#ffffff';
+};
+
+const getChartClasses = (css, isDark) => ({
+  containerClass: `${css.issueChartContainer} ${isDark ? css.issueChartContainerDark : ''}`,
+  labelClass: `${css.issueChartLabel} ${isDark ? css.issueChartLabelDark : ''}`,
+  filterSelectClass: `${css.filterSelect} ${isDark ? css.filterSelectDark : ''}`,
+  chartContainerClass: `${css.chartContainer} ${isDark ? css.chartContainerDark : ''}`,
+  noDataMessageClass: `${css.noDataMessage} ${isDark ? css.noDataMessageDark : ''}`,
+  noDataContentClass: `${css.noDataContent} ${isDark ? css.noDataContentDark : ''}`,
+});
+
+const createSelectStyles = (isDark, textColor) => ({
+  control: (base, state) => ({
+    ...base,
+    backgroundColor: isDark ? '#2d3748' : '#ffffff',
+    borderColor: isDark ? '#4a5568' : '#cbd5e0',
+    boxShadow: state.isFocused ? '0 0 0 1px #4caf50' : 'none',
+    '&:hover': {
+      borderColor: '#4caf50',
+    },
+    color: textColor,
+  }),
+  menu: base => ({
+    ...base,
+    backgroundColor: isDark ? '#1a202c' : '#ffffff',
+    color: textColor,
+  }),
+  option: (base, state) => ({
+    ...base,
+    backgroundColor: getOptionBackground(isDark, state.isFocused),
+    color: textColor,
+    cursor: 'pointer',
+  }),
+  singleValue: base => ({
+    ...base,
+    color: textColor,
+  }),
+  multiValue: base => ({
+    ...base,
+    backgroundColor: isDark ? '#4a5568' : '#e2e8f0',
+  }),
+  multiValueLabel: base => ({
+    ...base,
+    color: textColor,
+  }),
+  placeholder: base => ({
+    ...base,
+    color: isDark ? '#a0aec0' : '#718096',
+  }),
+});
+
+/* --------------------------- component --------------------------- */
 
 function IssueCharts() {
   const dispatch = useDispatch();
-
+  const darkMode = useSelector(state => state.theme?.darkMode);
   const { issues, loading, error, selectedProjects } = useSelector(state => state.bmissuechart);
   const projects = useSelector(state => state.bmProjects);
-  const darkMode = useSelector(state => state.theme?.darkMode);
 
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const chartContainerRef = useRef(null);
   const [containerWidth, setContainerWidth] = useState(window.innerWidth);
 
-  // Enhanced color scheme for accessibility
-  const textColor = darkMode ? '#f7fafc' : '#1a202c';
-  const gridColor = darkMode ? '#4a5568' : '#e2e8f0';
-  const tooltipBg = darkMode ? '#2d3748' : '#ffffff';
-  const tooltipBorder = darkMode ? '#4a5568' : '#e2e8f0';
+  const { textColor, gridColor, tooltipBg, tooltipBorder, hoverBg } = getThemeColors(darkMode);
+  const errorColor = getErrorColor(darkMode);
+  const {
+    containerClass,
+    labelClass,
+    filterSelectClass,
+    chartContainerClass,
+    noDataMessageClass,
+    noDataContentClass,
+  } = getChartClasses(styles, darkMode);
+  const selectStyles = createSelectStyles(darkMode, textColor);
 
   // Normalize issues for chart
   // Number issues per project to avoid conflicts when multiple projects are selected
@@ -117,14 +193,13 @@ function IssueCharts() {
     });
   }, [issues]);
 
-  // Load projects on mount
   useEffect(() => {
     dispatch(fetchBMProjects());
   }, [dispatch]);
 
-  // Fetch issues when filters change
   useEffect(() => {
     let dateRange = [];
+
     if (startDate && endDate) {
       dateRange = [
         `${startDate.toISOString().split('T')[0]},${endDate.toISOString().split('T')[0]}`,
@@ -139,7 +214,6 @@ function IssueCharts() {
     dispatch(fetchLongestOpenIssues(dateRange, selectedProjects));
   }, [dispatch, startDate, endDate, selectedProjects]);
 
-  // Handle chart container width
   useEffect(() => {
     function handleResize() {
       if (chartContainerRef.current) {
@@ -171,158 +245,139 @@ function IssueCharts() {
 
   const { margin, yAxisWidth } = getChartLayout();
 
-  if (loading) {
-    return (
+  /* ------------ decide what to show inside chart container ------------ */
+
+  let chartContent;
+
+  if (error) {
+    chartContent = (
+      <div style={{ color: errorColor, textAlign: 'center', padding: '20px' }}>Error: {error}</div>
+    );
+  } else if (loading) {
+    chartContent = (
       <div style={{ color: textColor, textAlign: 'center', padding: '20px' }}>
         Loading chart data...
       </div>
     );
-  }
-  if (error) {
-    return (
-      <div
-        style={{ color: darkMode ? '#fca5a5' : '#dc2626', textAlign: 'center', padding: '20px' }}
-      >
-        Error: {error}
+  } else if (!normalizedIssues || normalizedIssues.length === 0) {
+    chartContent = (
+      <div className={noDataMessageClass}>
+        <div className={noDataContentClass}>
+          <h3>No Open Issues Found</h3>
+          <p>There are currently no open issues matching your selected criteria.</p>
+          <p>Try adjusting your date range or project filters to see more results.</p>
+        </div>
       </div>
+    );
+  } else {
+    chartContent = (
+      <ResponsiveContainer width="100%" height={400}>
+        <BarChart data={normalizedIssues} layout="vertical" margin={margin}>
+          <CartesianGrid stroke={gridColor} />
+          <XAxis
+            type="number"
+            tick={{ fill: textColor }}
+            label={{
+              value: 'Duration in Months',
+              position: 'insideBottom',
+              offset: -5,
+              fill: textColor,
+            }}
+          />
+          <YAxis
+            dataKey="issueName"
+            type="category"
+            tick={{ fontSize: 14, fill: textColor }}
+            width={yAxisWidth}
+          />
+          <Tooltip
+            contentStyle={{
+              backgroundColor: tooltipBg,
+              borderColor: tooltipBorder,
+            }}
+            itemStyle={{ color: textColor }}
+            labelStyle={{ color: textColor }}
+            formatter={value => `${value} months`}
+            labelFormatter={label => `Issue : ${label}`}
+            cursor={{ fill: hoverBg, opacity: 0.8 }}
+          />
+          <Bar name="Duration Open" dataKey="durationOpen" fill="#6495ED" barSize={30}>
+            <LabelList
+              dataKey="durationOpen"
+              position="right"
+              formatter={v => `${v} months`}
+              style={{ fill: textColor }}
+            />
+          </Bar>
+        </BarChart>
+      </ResponsiveContainer>
     );
   }
 
-  const containerClass = `${styles.issueChartContainer} ${
-    darkMode ? styles.issueChartContainerDark : ''
-  }`;
-  const labelClass = `${styles.issueChartLabel} ${darkMode ? styles.issueChartLabelDark : ''}`;
+  /* --------------------------- render --------------------------- */
 
   return (
     <div className={containerClass}>
       <h2>Longest Open Issues</h2>
-      <label className={labelClass} htmlFor="start-date">
-        Date Range
-      </label>
-      <div className={styles.filterCenterWrapper}>
-        {/* Label: Date */}
-        <div className={styles.rowLabel}>Date</div>
 
-        {/* Row 1: Date picker */}
-        <div className={styles.dateRow}>
-          <span className={darkMode ? styles.dateLabelDark : styles.dateLabelLight}>From</span>
-          <div className={styles.dateField}>
-            <DatePicker
-              selected={startDate}
-              onChange={date => setStartDate(date)}
-              placeholderText="Start Date"
-              isClearable
-              className={darkMode ? styles.dateDark : styles.dateLight}
-            />
-          </div>
-          <span className={styles.dateLabel}>to</span>
-          <div className={styles.dateField}>
-            <DatePicker
-              selected={endDate}
-              onChange={date => setEndDate(date)}
-              placeholderText="End Date"
-              isClearable
-              className={darkMode ? styles.dateDark : styles.dateLight}
-            />
+      <div className={styles.filtersContainer}>
+        <div className={styles.dateFilter}>
+          <label className={labelClass} htmlFor="start-date">
+            Date Range:
+          </label>
+          <div className={styles.dateRangePicker}>
+            <div className={styles.dateRangePickerStart}>
+              <DatePicker
+                id="start-date"
+                selected={startDate}
+                onChange={date => setStartDate(date)}
+                selectsStart
+                startDate={startDate}
+                endDate={endDate}
+                maxDate={endDate}
+                placeholderText="Start Date"
+                isClearable
+                className={filterSelectClass}
+                calendarClassName={darkMode ? 'darkCalendar' : 'lightCalendar'}
+              />
+            </div>
+            <span className={styles.dateRangeSeparator}>to</span>
+            <div className={styles.dateRangePickerEnd}>
+              <DatePicker
+                selected={endDate}
+                onChange={date => setEndDate(date)}
+                selectsEnd
+                startDate={startDate}
+                endDate={endDate}
+                minDate={startDate}
+                maxDate={new Date()}
+                placeholderText="End Date"
+                isClearable
+                className={filterSelectClass}
+                calendarClassName={darkMode ? 'darkCalendar' : 'lightCalendar'}
+              />
+            </div>
           </div>
         </div>
 
-        {/* Row 2: Project selector */}
-        <label className={labelClass} htmlFor="start-date">
-          Project
-        </label>
-        <div className={styles.projectRow}>
+        <div className={styles.projectFilter}>
+          <label className={labelClass} htmlFor="projects-select">
+            Projects:
+          </label>
           <Select
+            id="projects-select"
             isMulti
-            id="project-select"
             options={projectOptions}
             onChange={handleProjectChange}
             value={projectOptions.filter(option => (selectedProjects ?? []).includes(option.value))}
             classNamePrefix="select"
-            classNames={{
-              control: () => (darkMode ? styles.controlDark : styles.controlLight),
-              menu: () => (darkMode ? styles.menuDark : styles.menuLight),
-              singleValue: () => (darkMode ? styles.valueDark : styles.valueLight),
-              placeholder: () => (darkMode ? styles.valueDark : styles.valueLight),
-              option: () => (darkMode ? styles.optionDark : styles.optionLight),
-              multiValue: () => (darkMode ? styles.multiValueDark : styles.multiValueLight),
-              multiValueLabel: () =>
-                darkMode ? styles.multiValueLabelDark : styles.multiValueLabelLight,
-              multiValueRemove: () =>
-                darkMode ? styles.multiValueRemoveDark : styles.multiValueRemoveLight,
-            }}
-            styles={{
-              option: (base, state) => ({
-                ...base,
-                backgroundColor: state.isSelected
-                  ? darkMode
-                    ? '#3a3f47'
-                    : '#dceeff'
-                  : state.isFocused
-                  ? darkMode
-                    ? '#3a3f47'
-                    : '#dceeff'
-                  : 'transparent',
-                color: darkMode ? '#cfd7e3' : 'black',
-              }),
-
-              multiValue: base => ({
-                ...base,
-                backgroundColor: darkMode ? '#3a3f47' : '#dceeff',
-                color: darkMode ? '#cfd7e3' : 'black',
-              }),
-
-              multiValueLabel: base => ({
-                ...base,
-                color: darkMode ? '#cfd7e3' : 'black',
-              }),
-
-              control: base => ({
-                ...base,
-                backgroundColor: darkMode ? '#22272e' : 'white',
-                borderColor: darkMode ? '#3d444d' : '#ccc',
-                color: darkMode ? '#cfd7e3' : 'black',
-              }),
-            }}
+            styles={selectStyles}
           />
         </div>
       </div>
 
-      {/* Chart */}
-      <div className={styles.chartContainer} ref={chartContainerRef}>
-        {normalizedIssues.length === 0 ? (
-          <p className={styles.noData}>No issues found.</p>
-        ) : (
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={normalizedIssues} layout="vertical" margin={margin}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis
-                type="number"
-                label={{
-                  value: 'Duration in Months',
-                  position: 'insideBottom',
-                  offset: -5,
-                  fill: darkMode ? '#fff' : '#000',
-                }}
-                tick={{ fill: darkMode ? '#ccc' : '#333' }}
-              />
-              <YAxis
-                dataKey="issueName"
-                type="category"
-                tick={{ fontSize: 14, fontWeight: 500, fill: darkMode ? '#fff' : '#000' }}
-                width={yAxisWidth}
-              />
-              <Bar dataKey="durationOpen" fill="#6495ED" barSize={30}>
-                <LabelList
-                  dataKey="durationOpen"
-                  position="right"
-                  formatter={v => `${v} mo`}
-                  fill={darkMode ? '#fff' : '#000'}
-                />
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        )}
+      <div className={chartContainerClass} ref={chartContainerRef}>
+        {chartContent}
       </div>
     </div>
   );
