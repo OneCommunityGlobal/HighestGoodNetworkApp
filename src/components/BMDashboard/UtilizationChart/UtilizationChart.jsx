@@ -78,7 +78,7 @@ function UtilizationChart() {
       {
         label: 'Utilization (%)',
         data: toolsData.map(tool => tool.utilizationRate),
-        backgroundColor: darkMode ? '#007bff' : '#a0e7e5',
+        backgroundColor: '#007bff',
         borderRadius: 6,
       },
     ],
@@ -92,7 +92,7 @@ function UtilizationChart() {
         labels: { color: darkMode ? '#ffffff' : '#333' },
       },
       datalabels: {
-        color: '#333',
+        color: darkMode ? '#ffffff' : '#333333',
         anchor: 'end',
         align: 'end',
         font: {
@@ -105,13 +105,13 @@ function UtilizationChart() {
         },
       },
       tooltip: {
+        bodyColor: darkMode ? '#ffffff' : '#333333',
         callbacks: {
           label: context => {
             const tool = toolsData[context.dataIndex];
             return `Utilization: ${tool.utilizationRate}%, Downtime: ${tool.downtime} hrs`;
           },
         },
-        footerColor: 'white',
       },
     },
     scales: {
