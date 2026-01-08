@@ -51,7 +51,7 @@ export const EMAIL = 'Email';
 export const JOB_TITLE = 'Job Title';
 export const WKLY_COMMITTED_HRS = 'Cmtd. Hrs';
 export const USER_RESUME_DATE = 'Paused Until';
-export const CREATE_NEW_USER = 'Create New User';
+export const CREATE_NEW_USER = 'Create User';
 export const CREATE_NEW_TEAM = 'Create New Team';
 export const SEARCH = 'Search';
 export const SHOW = 'Show';
@@ -88,6 +88,10 @@ export const CALENDAR = "Calendar";
 export const EVENT_PERSONALIZATION = "Event Personalization";
 export const REGISTRATION = "Registration";
 export const PR_PROMOTIONS = 'PR Promotions';
+export const JOB_ANALYTICS_REPORT = 'Job Analytics Report';
+export const ACTIVITY_RESOURCE_USAGE = 'Activity Resource Usage';
+export const ACTIVITY_RESOURCE_MANGEMENT = 'Activity Resource Management';
 
 
 export const SEND_EMAILS = 'Send Emails';
+export const BLUE_SQUARE_EMAIL_MANAGEMENT = 'Blue Square Email Management';

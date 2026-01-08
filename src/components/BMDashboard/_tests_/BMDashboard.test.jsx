@@ -95,7 +95,7 @@ describe('BMDashboard Tests', () => {
     );
 
     const dropdown = await screen.findByLabelText(/select projects/i);
-    userEvent.click(dropdown);
+    await userEvent.click(dropdown);
 
     expect(screen.getByText('Project 1')).toBeInTheDocument();
     expect(screen.getByText('Project 2')).toBeInTheDocument();
@@ -112,7 +112,7 @@ describe('BMDashboard Tests', () => {
     );
 
     const button = await screen.findByRole('button', { name: /go to project dashboard/i });
-    userEvent.click(button);
+    await userEvent.click(button);
 
     expect(screen.getByText(/please select a project/i)).toBeInTheDocument();
   });
@@ -129,12 +129,12 @@ describe('BMDashboard Tests', () => {
     );
 
     const selectDropdown = await screen.findByLabelText(/select projects/i);
-    userEvent.selectOptions(selectDropdown, '1');
+    await userEvent.selectOptions(selectDropdown, '1');
 
     const goToDashboardButton = await screen.findByRole('button', {
       name: /go to project dashboard/i,
     });
-    userEvent.click(goToDashboardButton);
+    await userEvent.click(goToDashboardButton);
 
     await waitFor(() => {
       expect(history.location.pathname).toBe('/bmdashboard/projects/1');

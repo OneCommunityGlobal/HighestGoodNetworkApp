@@ -1,6 +1,5 @@
 // eslint-disable-next-line no-unused-vars
 import React, { useRef, useEffect, useState, useMemo, useCallback } from 'react';
-import { debounce } from 'lodash';
 import { useDispatch, useSelector, connect } from 'react-redux';
 import moment from 'moment';
 import DatePicker from 'react-datepicker';
@@ -16,9 +15,9 @@ import {
   getTeamMembers,
   deleteTeamMember,
   addTeamMember,
-} from '../../../actions/allTeamsAction';
+} from '../../../TeamReport/TeamReport.module.css';
 
-import './TeamReport.css';
+import styles from './UserRoleTab.module.css'
 import { ReportPage } from '../sharedComponents/ReportPage';
 import UserLoginPrivileges from './components/UserLoginPrivileges';
 
@@ -39,6 +38,9 @@ export function TeamReport({ match }) {
     isActive: false,
     isInactive: false,
   });
+  
+  // Add state for the search input value (separate from searchParams)
+  const [searchInputValue, setSearchInputValue] = useState('');
   const hasFetchIds = useRef(new Set());
 
   const [selectedTeams] = useState([]);
@@ -150,17 +152,7 @@ export function TeamReport({ match }) {
     }
   };
 
-  const debounceSearchByName = debounce(value => {
-    setSearchParams(prevParams => ({
-      ...prevParams,
-      teamName: value,
-    }));
-  }, 300);
-
-  function handleSearchByName(event) {
-    event.persist();
-    debounceSearchByName(event.target.value);
-  }
+  // Removed automatic search - now search only happens on button click
 
   function handleCheckboxChange(event) {
     const { id, checked } = event.target;
@@ -200,6 +192,7 @@ export function TeamReport({ match }) {
       dispatch(getAllUserTeams());
     }
   }, [dispatch, allTeams]);
+
 
   useEffect(() => {
     let isMounted = true; // flag to check component mount status
@@ -411,13 +404,47 @@ export function TeamReport({ match }) {
               >
                 Name
               </label>
-              <input
-                type="text"
-                className="form-control rounded-1 w-auto"
-                placeholder="Search team name"
-                id="search-by-name"
-                onChange={event => handleSearchByName(event)}
-              />
+              <div className="input-group">
+                <input
+                  type="text"
+                  className="form-control rounded-1"
+                  placeholder="Search team name"
+                  id="search-by-name"
+                  value={searchInputValue}
+                  onChange={event => setSearchInputValue(event.target.value)}
+                />
+                <div className="input-group-append">
+                  <button
+                    type="button"
+                    className={`btn ${darkMode ? 'btn-outline-light' : 'btn-outline-secondary'}`}
+                    onClick={() => {
+                      // Trigger search when button is clicked
+                      setSearchParams(prevParams => ({
+                        ...prevParams,
+                        teamName: searchInputValue,
+                      }));
+                    }}
+                    title="Search teams"
+                  >
+                    🔍
+                  </button>
+                  <button
+                    type="button"
+                    className={`btn ${darkMode ? 'btn-outline-light' : 'btn-outline-secondary'}`}
+                    onClick={() => {
+                      // Clear search
+                      setSearchInputValue('');
+                      setSearchParams(prevParams => ({
+                        ...prevParams,
+                        teamName: '',
+                      }));
+                    }}
+                    title="Clear search"
+                  >
+                    ✕
+                  </button>
+                </div>
+              </div>
             </div>
 
             {/* Created After Date Picker */}
@@ -514,11 +541,9 @@ export function TeamReport({ match }) {
                 </td>
               </tr>
             </thead>
-            {allTeamsMembers && allTeamsMembers.length > 0 ? (
-              <tbody className="table">
-                {/* eslint-disable-next-line no-shadow */}
-                {/* Note: the handleSearch() function will cause the white page error */}
-                {handleSearch().map((teamData, index) => (
+            <tbody className="table">
+              {allTeamsMembers && allTeamsMembers.length > 0 ? (
+                handleSearch().map((teamData, index) => (
                   <tr className={`table-row ${darkMode ? 'bg-yinmn-blue text-light table-hover-dark' : ''}`} key={teamData._id}>
                     <td>
                       <input
@@ -566,23 +591,19 @@ export function TeamReport({ match }) {
                     <td>{handleDate(teamData?.createdDatetime)}</td>
                     <td>{handleDate(teamData?.modifiedDatetime)}</td>
                   </tr>
-                ))}
-              </tbody>
-            ) : (
-              <tbody>
+                ))
+              ) : (
                 <tr style={{ backgroundColor: darkMode ? '#3A506B' : 'white' }}>
-                  <td />
-                  <td />
-                  <td />
-                  <td>
-                    <strong className={darkMode ? 'text-light' : ''}>Loading...</strong>
+                  <td colSpan="7" className="text-center">
+                    <strong className={darkMode ? 'text-light' : ''}>
+                      {allTeamsMembers && allTeamsMembers.length === 0 
+                        ? 'No teams found. Please check your permissions or contact an administrator.' 
+                        : 'Loading teams...'}
+                    </strong>
                   </td>
-                  <td />
-                  <td />
-                  <td />
                 </tr>
-              </tbody>
-            )}
+              )}
+            </tbody>
           </table>
         </ReportPage.ReportBlock>
       </div>
@@ -600,3 +621,4 @@ export default connect(mapStateToProps, {
   deleteTeamMember,
   addTeamMember,
 })(TeamReport);
+
