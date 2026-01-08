@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 // import { unmountComponentAtNode } from 'react-dom';
 import userEvent from '@testing-library/user-event';
 import ActiveCell from './ActiveCell';
-import styles from '../components/Timelog/Timelog.module.css'
+import styles from '../Timelog/Timelog.module.css'
 
 
 describe('active cell status check', () => {

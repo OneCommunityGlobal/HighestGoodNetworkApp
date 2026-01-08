@@ -10,7 +10,8 @@ import { hrsFilterBtnColorMap } from '~/constants/colors';
 import { toast } from 'react-toastify';
 import TimeEntryForm from './TimeEntryForm';
 import DeleteModal from './DeleteModal';
-
+// eslint-disable-next-line import/no-extraneous-dependencies
+import ReactHtmlParser from 'react-html-parser';
 import { editTimeEntry, getTimeEntriesForWeek } from '../../actions/timeEntries';
 import { editTeamMemberTimeEntry } from '../../actions/task';
 import { updateIndividualTaskTime } from '../TeamMemberTasks/actions';
