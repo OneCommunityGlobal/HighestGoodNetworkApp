@@ -221,16 +221,23 @@ export default function MaterialUtilizationChart() {
         <BarChart
           data={chartDisplayData}
           stackOffset="expand"
-          margin={{ top: 20, right: 60, left: 20, bottom: 30 }}
+          margin={{ top: 20, right: 90, left: 20, bottom: 30 }}
         >
           <CartesianGrid strokeDasharray="3 3" vertical={false} />
-          <ReferenceLine y={0.85} stroke="#16a34a" strokeDasharray="4 4" strokeWidth={2}>
+          <ReferenceLine
+            y={0.85}
+            stroke="#16a34a"
+            strokeDasharray="4 4"
+            strokeWidth={2}
+            isFront={true}
+          >
             <Label
               value="Goal: 85%"
               position="right"
               fill="#16a34a"
               fontSize={12}
               fontWeight="bold"
+              offset={10}
             />
           </ReferenceLine>
           <XAxis
@@ -285,6 +292,10 @@ export default function MaterialUtilizationChart() {
   return (
     <div className={styles.container}>
       <h2 className={styles.title}>Material Utilization Ratio</h2>
+      <p className={styles.subtitle}>
+        Showing data from {format(dateRange.from, 'MMM dd, yyyy')} to{' '}
+        {format(dateRange.to, 'MMM dd, yyyy')}
+      </p>
 
       <div className={styles.filtersContainer}>
         {/* Date Filters */}
