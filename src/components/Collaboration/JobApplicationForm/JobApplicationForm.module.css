@@ -1,15 +1,18 @@
 .container {
   font-family: Arial, sans-serif;
-  margin: 0 auto;
-  padding: 20px;
+  margin: 0;
+  padding: 0;
   background-color: #d9d9d9;
   width: 100%;
+  min-height: 100vh;
 }
 
 .logo {
   display: flex;
   justify-content: center;
   align-items: center;
+  margin: 0;
+  padding: 0;
 }
 
 .header {
@@ -17,7 +20,8 @@
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  padding: 10px;
+  padding: 0;
+  margin: 0;
   border-radius: 5px;
 }
 
@@ -28,6 +32,9 @@
   width: 75%;
   padding: 2%;
   justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  box-sizing: border-box;
 }
 
 .headerLeft {
@@ -38,6 +45,8 @@
 .headerRight {
   display: flex;
   align-items: center;
+  flex-shrink: 1;
+  min-width: 0;
 }
 
 .jobTitleInput {
@@ -50,6 +59,11 @@
   padding: 5px;
   border: 1px solid #ccc;
   border-radius: 5px;
+  min-width: 150px;
+  max-width: 300px;
+  width: auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .goButton {
@@ -72,6 +86,27 @@
   text-align: center;
   font-size: 1.5em;
   margin-bottom: 10px;
+}
+
+.jaHeader {
+  margin-bottom: 20px;
+}
+
+.jaTitle {
+  font-size: 2.5em;
+  font-weight: 700;
+  margin-bottom: 15px;
+  text-align: left;
+  color: #333;
+  line-height: 1.2;
+}
+
+.jaDesc {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #555;
+  margin-bottom: 20px;
+  text-align: left;
 }
 
 .formSubtitle {
@@ -127,10 +162,37 @@
   font-size: medium;
 }
 
-.formGroup input {
+.formGroup input,
+.formGroup select {
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
+  height: auto;
+  min-height: 40px;
+  box-sizing: border-box;
+  font-size: 1rem;
+}
+
+.inputField {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  height: auto;
+  min-height: 40px;
+  box-sizing: border-box;
+  font-size: 1rem;
+}
+
+.selectField,
+.dateInput {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  height: auto;
+  min-height: 40px;
+  box-sizing: border-box;
+  font-size: 1rem;
+  width: 100%;
 }
 
 .submitButton {
@@ -344,6 +406,14 @@
   transition: color 0.3s;
 }
 
+.darkMode .jaTitle {
+  color: #ffffff;
+}
+
+.darkMode .jaDesc {
+  color: #e0e0e0;
+}
+
 .darkMode .resumeLabel {
   background: #1c2541;
   border-color: #2b3f57;
@@ -360,4 +430,143 @@
   background: rgba(255, 255, 255, 0.04);
   color: #cfe7ff;
   border-color: rgba(255, 255, 255, 0.05);
+}
+
+/* --- Admin Requirements Section --- */
+.adminRequirementsSection {
+  margin: 20px 0;
+  padding: 15px;
+  border-top: 2px solid #98cb03;
+  border-bottom: 2px solid #98cb03;
+  background-color: #f0f0f0;
+  border-radius: 8px;
+  display: block;
+  visibility: visible;
+  min-height: 50px;
+}
+
+/* --- User Requirements Section --- */
+.userRequirementsSection {
+  margin: 20px 0;
+  padding: 15px;
+  border-top: 2px solid #98cb03;
+  border-bottom: 2px solid #98cb03;
+  background-color: #f0f0f0;
+  border-radius: 8px;
+  display: block;
+  visibility: visible;
+  min-height: 50px;
+}
+
+.requirementsTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 15px 0;
+  color: #333;
+  text-align: left;
+}
+
+.requirementsList {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+@media (max-width: 768px) {
+  .requirementsList {
+    grid-template-columns: 1fr;
+  }
+}
+
+.requirementItem {
+  display: flex;
+  align-items: flex-start;
+}
+
+.requirementCheckbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: default;
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  width: 100%;
+}
+
+.requirementCheckboxInput {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.requirementCheckboxCustom {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.requirementCheckboxCustom svg {
+  display: none;
+}
+
+.requirementCheckboxInput:checked + .requirementCheckboxCustom,
+.requirementCheckboxCustom.checked {
+  background-color: #8cc63f;
+  border-color: #8cc63f;
+}
+
+.requirementCheckboxInput:checked + .requirementCheckboxCustom svg,
+.requirementCheckboxCustom.checked svg {
+  display: block;
+}
+
+.requirementCheckbox span:last-child {
+  color: #333;
+  flex: 1;
+}
+
+/* Dark mode for admin requirements */
+.darkMode .adminRequirementsSection {
+  background-color: #1c2541;
+  border-top-color: #98cb03;
+  border-bottom-color: #98cb03;
+}
+
+/* Dark mode for user requirements */
+.darkMode .userRequirementsSection {
+  background-color: #1c2541;
+  border-top-color: #98cb03;
+  border-bottom-color: #98cb03;
+}
+
+.darkMode .requirementsTitle {
+  color: #e0e0e0;
+}
+
+.darkMode .requirementCheckbox {
+  color: #e5e7eb;
+}
+
+.darkMode .requirementCheckboxCustom {
+  border-color: #4a5a6b;
+  background-color: #2a2a2a;
+}
+
+.darkMode .requirementCheckboxInput:checked + .requirementCheckboxCustom,
+.darkMode .requirementCheckboxCustom.checked {
+  background-color: #8cc63f;
+  border-color: #8cc63f;
+}
+
+.darkMode .requirementCheckbox span:last-child {
+  color: #e0e0e0;
 }

@@ -15,6 +15,25 @@ function SuggestedJobsList() {
   const [hasSearched, setHasSearched] = useState(false);
   const adsPerPage = 3;
   const darkMode = useSelector(state => state.theme.darkMode);
+
+  // Helper function to strip HTML tags and truncate text
+  const stripHtmlAndTruncate = (html, maxLength = 150) => {
+    if (!html) return 'No detailed description available.';
+
+    // Create a temporary DOM element to parse HTML
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    const text = doc.body.textContent || doc.body.innerText || '';
+
+    // Clean up extra whitespace
+    const cleaned = text.replace(/\s+/g, ' ').trim();
+
+    // Truncate if needed
+    if (cleaned.length > maxLength) {
+      return cleaned.substring(0, maxLength) + '...';
+    }
+
+    return cleaned || 'No detailed description available.';
+  };
   // Fetch categories on mount
   useEffect(() => {
     const fetchCategories = async () => {
@@ -33,24 +52,27 @@ function SuggestedJobsList() {
 
   // Fetch job ads whenever query, category or page changes
   useEffect(() => {
-    if (!query && !category) {
-      setJobAds([]); // Clear jobs if no filters selected
-      setTotalPages(0);
-      return; // Skip fetching
-    }
-
     const fetchJobAds = async () => {
       try {
         const url = `${ApiEndpoint}/jobs?page=${currentPage}&limit=${adsPerPage}&search=${encodeURIComponent(
-          query,
-        )}&category=${encodeURIComponent(category)}`;
+          query || '',
+        )}&category=${encodeURIComponent(category || '')}`;
         const response = await fetch(url, { method: 'GET' });
         if (!response.ok) throw new Error(`Failed to fetch jobs: ${response.statusText}`);
         const data = await response.json();
-        setJobAds(data.jobs);
-        setTotalPages(data.pagination.totalPages);
+        const jobs = data.jobs || [];
+        setJobAds(jobs);
+        setTotalPages(data.pagination?.totalPages || 0);
+        // Always mark as searched after fetching (whether we got results or not)
+        // This ensures we show "No results" instead of "Begin Your Search" after a fetch
+        setHasSearched(true);
       } catch (error) {
+        console.error('Error fetching jobs:', error);
         toast.error('Error fetching jobs');
+        setJobAds([]);
+        setTotalPages(0);
+        // Even on error, mark as searched so we show error state instead of placeholder
+        setHasSearched(true);
       }
     };
 
@@ -71,13 +93,7 @@ function SuggestedJobsList() {
     const selectedValue = e.target.value;
     setCategory(selectedValue);
     setCurrentPage(1); // Reset page to 1 on category change
-
-    // 👇 Reset hasSearched based on input
-    if (selectedValue === '' && query.trim() === '') {
-      setHasSearched(false);
-    } else {
-      setHasSearched(true);
-    }
+    setHasSearched(true); // Mark as searched when category is selected
   };
 
   // Pagination controls
@@ -209,7 +225,7 @@ function SuggestedJobsList() {
               </div>
 
               <p className={styles.jobDetails} style={{ color: darkMode ? 'white' : undefined }}>
-                {ad.description || 'No detailed description available.'}
+                {stripHtmlAndTruncate(ad.description)}
               </p>
 
               {ad.requirements && ad.requirements.length > 0 && (
@@ -262,21 +278,37 @@ function SuggestedJobsList() {
               Use the search bar or pick a category to explore available job roles!
             </h4>
             <div style={{ marginTop: '1.5rem' }}>
-              {['Engineering', 'Marketing', 'Design', 'Finance'].map(cat => (
-                <button
-                  type="submit"
-                  key={cat}
-                  className="btn btn-outline-primary"
-                  onClick={() => {
-                    setCategory(cat);
-                    setCurrentPage(1);
-                    setHasSearched(true);
-                  }}
-                  style={{ margin: '0.3rem' }}
-                >
-                  {cat}
-                </button>
-              ))}
+              {categories.length > 0
+                ? categories.slice(0, 4).map(cat => (
+                    <button
+                      type="button"
+                      key={cat}
+                      className="btn btn-outline-primary"
+                      onClick={() => {
+                        setCategory(cat);
+                        setCurrentPage(1);
+                        setHasSearched(true);
+                      }}
+                      style={{ margin: '0.3rem' }}
+                    >
+                      {cat}
+                    </button>
+                  ))
+                : ['Engineering', 'Marketing', 'Design', 'Finance'].map(cat => (
+                    <button
+                      type="button"
+                      key={cat}
+                      className="btn btn-outline-primary"
+                      onClick={() => {
+                        setCategory(cat);
+                        setCurrentPage(1);
+                        setHasSearched(true);
+                      }}
+                      style={{ margin: '0.3rem' }}
+                    >
+                      {cat}
+                    </button>
+                  ))}
             </div>
           </div>
         )}
