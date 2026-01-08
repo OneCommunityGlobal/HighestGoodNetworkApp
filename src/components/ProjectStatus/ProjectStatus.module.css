@@ -1,0 +1,244 @@
+.wrapper {
+  display: flex;
+  gap: 3rem;
+  align-items: flex-start;
+  padding: 1.5rem 2rem; /* <-- adds spacing from page edges */
+}
+
+.leftSection {
+  flex: 1;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+}
+
+.title {
+  font-weight: 700;
+  font-size: 22px;
+  margin-bottom: 1rem;
+}
+
+.controls {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.btn {
+  padding: 6px 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btnPrimary {
+  background: #3b82f6;
+  color: white;
+}
+
+.chartWrapper {
+  width: 400px;
+  height: 400px;
+  margin: 0 auto;
+}
+
+.legend {
+  display: flex;
+  justify-content: center;
+  margin-top: 12px;
+  gap: 1rem;
+}
+
+.legendItem {
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.swatch {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+}
+
+.total {
+  text-align: center;
+  margin-top: 10px;
+  font-weight: 600;
+  color: #444;
+}
+
+/* Panel styling */
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  font-size: 14px;
+  min-width: 220px;
+  padding: 1.2rem;
+  background: #f9fafb;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+}
+
+.statLabel {
+  color: #666;
+  margin-right: 10px; /* <-- ensures gap between label & value */
+}
+
+.statValue {
+  font-size: 18px;
+  font-weight: bold;
+  color: #111;
+}
+
+/* Loading and Error States */
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+.loadingText {
+  font-size: 16px;
+  color: #666;
+}
+
+.error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 2rem;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  margin: 1rem 0;
+}
+
+.errorText {
+  color: #dc2626;
+  font-weight: 500;
+  text-align: center;
+}
+
+.btnSecondary {
+  background: #6b7280;
+  color: white;
+}
+
+.btnSecondary:hover {
+  background: #4b5563;
+}
+
+/* Date Validation Error */
+.dateError {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.dateErrorText {
+  color: #dc2626;
+  font-weight: 500;
+  font-size: 14px;
+  text-align: center;
+}
+
+/* Dark Mode Styles */
+.darkMode {
+  background-color: #1e293b;
+  color: #e2e8f0;
+}
+
+.darkMode .title {
+  color: #ffffff;
+}
+
+.darkMode .panel {
+  background: #334155;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.darkMode .statLabel {
+  color: #cbd5e1;
+}
+
+.darkMode .statValue {
+  color: #ffffff;
+}
+
+.darkMode .total {
+  color: #e2e8f0;
+}
+
+.darkMode .loading {
+  color: #cbd5e1;
+}
+
+.darkMode .loadingText {
+  color: #cbd5e1;
+}
+
+.darkMode .dateError {
+  background: #991b1b;
+  border-color: #7f1d1d;
+}
+
+.darkMode .dateErrorText {
+  color: #fecaca;
+}
+
+.darkMode .error {
+  background: #7f1d1d;
+  border-color: #991b1b;
+}
+
+.darkMode .errorText {
+  color: #fecaca;
+}
+
+/* Dark mode for DatePicker */
+.darkMode .react-datepicker-wrapper input {
+  background: #334155;
+  color: #e2e8f0;
+  border-color: #475569;
+}
+
+.darkMode .react-datepicker-wrapper input::placeholder {
+  color: #94a3b8;
+}
+
+.darkMode .btnPrimary {
+  background: #3b82f6;
+  color: #ffffff;
+}
+
+.darkMode .btnPrimary:hover {
+  background: #2563eb;
+}
+
+.darkMode .btnSecondary {
+  background: #475569;
+  color: #ffffff;
+}
+
+.darkMode .btnSecondary:hover {
+  background: #334155;
+}

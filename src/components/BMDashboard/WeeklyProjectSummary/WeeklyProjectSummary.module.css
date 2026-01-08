@@ -282,6 +282,7 @@
   color: var(--text-color);
 }
 
+
 /* First, set a max-height and make it scrollable */
 .quantityOfMaterialsUsedChartTooltip {
   max-height: 80vh !important; /* Limit to 80% of viewport height */

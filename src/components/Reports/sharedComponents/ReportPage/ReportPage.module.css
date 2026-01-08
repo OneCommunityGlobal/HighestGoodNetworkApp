@@ -15,6 +15,9 @@
   row-gap: 32px;
   width: 100%;
   min-width: 0; /* allow children to shrink if needed */
+  padding: 24px;
+  justify-content: center;
+  align-items: center;
 }
 
 

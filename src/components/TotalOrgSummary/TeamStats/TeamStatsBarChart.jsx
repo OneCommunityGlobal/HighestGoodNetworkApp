@@ -11,7 +11,7 @@ import {
   LabelList,
   Label,
 } from 'recharts';
-import './TeamStatsBarChart.css';
+import styles from './TeamStatsBarChart.module.css';
 import { useSelector } from 'react-redux';
 import TeamStatsBarLabel from './TeamStatsBarLabel';
 

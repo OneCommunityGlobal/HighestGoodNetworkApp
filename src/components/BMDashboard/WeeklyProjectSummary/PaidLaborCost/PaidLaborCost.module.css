@@ -394,13 +394,11 @@
 
 /* .paid-labor-cost-date-range-input {
   flex: 1;
+  margin-top: 3px;
   padding: 0.2rem 2.5rem 0.2rem 0.2rem;
   border: 1px solid #ccc;
   border-radius: 4px;
-  background-color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background-color: white;
   cursor: pointer;
   font-size: 0 ninerem;
 } */
@@ -521,6 +519,7 @@
 }
 
 .paidLaborCostChartScrollWrapper {
+  /* Merged duplicate selector - combined properties from line 517 and line 536 */
   width: 100%;
   overflow-x: auto;
   background-color: var(--bg-color);

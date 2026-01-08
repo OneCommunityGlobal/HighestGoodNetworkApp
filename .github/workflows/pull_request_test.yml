@@ -19,18 +19,18 @@ jobs:
         run: |
           # Get list of changed CSS files in this PR
           changed_files=$(git diff --name-only --diff-filter=ACMR origin/${{ github.base_ref }}...HEAD | grep '\.css$' || true)
-          
+
           if [ -z "$changed_files" ]; then
             echo "No CSS files changed in this PR"
             exit 0
           fi
-          
+
           echo "Changed CSS files:"
           echo "$changed_files"
-          
+
           # Check if any of the changed files are disallowed
           disallowed=$(echo "$changed_files" | grep -vE '(\.module\.css$|index\.css$)' || true)
-          
+
           if [ -n "$disallowed" ]; then
             echo "❌ Disallowed CSS file detected! Only '.module.css' (or 'index.css') files are permitted."
             echo "The following files violate the CSS Module policy:"
@@ -43,16 +43,16 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-      with:
+      - uses: actions/checkout@v4
+        with:
           fetch-depth: 0
-    - uses: actions/setup-node@v4
-      with:
-        node-version: 20
-        cache: 'yarn'
-    - name: Install Dependencies
-      run: yarn install --frozen-lockfile
-    - name: Run Unit Tests for Changed Files Only
-      run: yarn run test:changed
-    - name: Run Lint
-      run: yarn run lint
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "yarn"
+      - name: Install Dependencies
+        run: yarn install --frozen-lockfile --ignore-platform
+      - name: Run Unit Tests for Changed Files Only
+        run: yarn run test:changed
+      - name: Run Lint
+        run: yarn run lint
