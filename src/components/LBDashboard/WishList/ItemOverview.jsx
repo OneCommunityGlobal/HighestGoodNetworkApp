@@ -1,4 +1,4 @@
-import './ItemOverview.module.css';
+import styles from './ItemOverview.module.css';
 import { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 
@@ -48,22 +48,24 @@ function WishListItem(props) {
   }, [wishlistItem]);
 
   return (
-    <div className="item">
-      <div className="item__container">
+    <div className={`item ${styles['item_overview_module']}`}>
+      <div className={styles['item__container']}>
         <Header />
-        <div className="item__overview">
-          <div className="item__details-left">
-            <div className="item__listing-details item__listing-details--mobile">
+        <div className={styles['item__overview']}>
+          <div className={styles['item__details-left']}>
+            <div
+              className={`${styles['item__listing-details']} ${styles['item__listing-details--mobile']}`}
+            >
               <h1>{currWishlistItem.unit}</h1>
               <h1>{currWishlistItem.title}</h1>
             </div>
             <div className="item__images">
               <ImageCarousel images={currWishlistItem.images} />
             </div>
-            <div className="item__amenities">
+            <div className={styles['item__amenities']}>
               <div>
                 <h2>Available amenities in this unit:</h2>
-                <ol className="margin__left">
+                <ol className={styles['margin__left']}>
                   {currWishlistItem.unitAmenities?.map(amenity => (
                     <li key={amenity}>{amenity}</li>
                   ))}
@@ -71,22 +73,22 @@ function WishListItem(props) {
               </div>
               <div>
                 <h2>Village level amenities:</h2>
-                <ol className="margin__left">
+                <ol className={styles['margin__left']}>
                   {currWishlistItem.villageAmenities?.map(amenity => (
                     <li key={amenity}>{amenity}</li>
                   ))}
                 </ol>
               </div>
             </div>
-            <div className="item__location">
-              <FaMapMarkerAlt className="item__icon" />
+            <div className={styles['item__location']}>
+              <FaMapMarkerAlt className={styles['item__icon']} />
               <a href="/">View on Property Map</a>
             </div>
           </div>
-          <div className="item__details-right">
-            <div className="item__listing-details">
-              <h1 className="item__listing-details--desktop">{currWishlistItem.unit}</h1>
-              <h1 className="item__listing-details--desktop">{currWishlistItem.title}</h1>
+          <div className={styles['item__details-right']}>
+            <div className={styles['item__listing-details']}>
+              <h1 className={styles['item__listing-details--desktop']}>{currWishlistItem.unit}</h1>
+              <h1 className={styles['item__listing-details--desktop']}>{currWishlistItem.title}</h1>
               <span>
                 This unit sells for a basic price of <b>{currWishlistItem.price}</b>. If you wish to
                 book it in advance bid your price and leave your details below and we will get back
@@ -95,8 +97,8 @@ function WishListItem(props) {
                 from now.
               </span>
             </div>
-            <div className="item__form">
-              <div className="item__rent">
+            <div className={styles['item__form']}>
+              <div className={styles['item__rent']}>
                 <label htmlFor="from">
                   Renting from
                   <input type="date" name="from" id="from" />
@@ -106,7 +108,7 @@ function WishListItem(props) {
                   <input type="date" name="to" id="to" />
                 </label>
               </div>
-              <div className="item__bidding">
+              <div className={styles['item__bidding']}>
                 <label htmlFor="name">
                   Name:
                   <input type="text" name="name" id="name" placeholder="Name" />
@@ -118,23 +120,27 @@ function WishListItem(props) {
               </div>
               <button type="button">Proceed to submit with details</button>
             </div>
-            <div className="err-message">
+            <div className={styles['err-message']}>
               <h6>The Dates you picked are not available</h6>
               <a href="/">Click here to see available dates</a>
             </div>
-            <div className="footer__icons">
-              <div className="save__list">
+            <div className={styles['footer__icons']}>
+              <div className={styles['save__list']}>
                 <button
                   type="button"
                   onClick={() => {
                     setIsWishlist(!isWishlist);
                   }}
                 >
-                  {isWishlist ? <IoMdHeart className="saved__item" /> : <IoMdHeartEmpty />}
+                  {isWishlist ? (
+                    <IoMdHeart className={styles['saved__item']} />
+                  ) : (
+                    <IoMdHeartEmpty />
+                  )}
                   Save
                 </button>
               </div>
-              <div className="start__chat">
+              <div className={styles['start__chat']}>
                 <button type="button">
                   <BsChat /> Chat with the Host
                 </button>

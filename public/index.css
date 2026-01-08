@@ -242,10 +242,6 @@ body.bm-dashboard-dark .nav-link {
   color: #ffffff !important;
 }
 
-body.dark-mode .navbar,
-body.bm-dashboard-dark .navbar {
-  background-color: #1b2a41 !important;
-}
 
 body.dark-mode .navbar-brand,
 body.bm-dashboard-dark .navbar-brand {
