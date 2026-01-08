@@ -1,21 +1,19 @@
+/* eslint-disable jsx-a11y/no-autofocus */
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
-import { boxStyle, boxStyleDark } from 'styles';
-import '../Header/DarkMode.css';
+import { boxStyle, boxStyleDark } from '~/styles';
+import '../Header/index.css';
 
 export const CreateNewTeamPopup = React.memo(props => {
   const darkMode = useSelector(state => state.theme.darkMode);
   const allTeams = useSelector(state => state.allTeamsData.allTeams);
 
   const [newTeam, setNewName] = useState('');
-
-  const closePopup = () => {
-    props.onClose();
-  };
-
   const [isValidTeam, onValidation] = useState(true);
   const [teamExists, setTeamExists] = useState(false);
+
+  const closePopup = () => props.onClose();
 
   useEffect(() => {
     setNewName(props.teamName);
@@ -53,10 +51,9 @@ export const CreateNewTeamPopup = React.memo(props => {
         {props.isEdit ? 'Update Team Name' : 'Create New Team'}
       </ModalHeader>
       <ModalBody style={{ textAlign: 'start' }} className={darkMode ? 'bg-yinmn-blue' : ''}>
-        <label className={darkMode ? 'text-light' : ''}>
+        <label htmlFor="teamName" className={darkMode ? 'text-light' : ''}>
           Name of the Team<span className="red-asterisk">* </span>
         </label>
-
         <Input
           autoFocus
           id="teamName"
@@ -85,4 +82,7 @@ export const CreateNewTeamPopup = React.memo(props => {
     </Modal>
   );
 });
+
+CreateNewTeamPopup.displayName = 'CreateNewTeamPopup';
+
 export default CreateNewTeamPopup;

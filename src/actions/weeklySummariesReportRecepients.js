@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import * as actions from '../constants/weeklySummariesReport';
-import { ENDPOINTS } from '../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 
 export const authorizeWeeklySummaries = message => ({
   type: actions.AUTHORIZE_WEEKLY_SUMMARY_REPORTS,

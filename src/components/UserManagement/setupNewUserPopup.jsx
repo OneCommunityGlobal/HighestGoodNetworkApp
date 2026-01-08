@@ -4,10 +4,10 @@ import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import _ from 'lodash';
 import httpService from '../../services/httpService';
-import { ENDPOINTS } from '../../utils/URL';
-import '../Header/DarkMode.css';
+import { ENDPOINTS } from '~/utils/URL';
+import '../Header/index.css';
 
-const SetupNewUserPopup = React.memo(props => {
+const SetupNewUserPopupComponent = (props) => {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const [email, setEmail] = useState('');
@@ -145,6 +145,9 @@ const SetupNewUserPopup = React.memo(props => {
       </ModalFooter>
     </Modal>
   );
-});
+};
+
+const SetupNewUserPopup = React.memo(SetupNewUserPopupComponent);
+SetupNewUserPopup.displayName = 'SetupNewUserPopup';
 
 export default SetupNewUserPopup;

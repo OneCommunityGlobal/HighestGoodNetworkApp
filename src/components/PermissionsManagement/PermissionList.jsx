@@ -27,26 +27,31 @@ function PermissionList(props) {
     setRemovedDefaultPermissions = () => {},
   } = props;
   return (
-    <ul className="user-role-tab__permissionList">
-      {permissionsList.map((permission, index) => (
-        <PermissionListItem
-          key={`${permission.label}-${permission.key || index}`}
-          rolePermissions={rolePermissions}
-          immutablePermissions={immutablePermissions}
-          removedDefaultPermissions={removedDefaultPermissions}
-          setRemovedDefaultPermissions={setRemovedDefaultPermissions}
-          label={permission.label}
-          permission={permission.key}
-          subperms={permission.subperms}
-          description={permission.description}
-          editable={editable}
-          depth={depth}
-          darkMode={props.darkMode}
-          setPermissions={setPermissions}
-          onChange={onChange}
-        />
-      ))}
-    </ul>
+    <div className="user-role-tab__permissionList" data-testid="permission-list">
+      {' '}
+      <ul>
+        {permissionsList.map(permission => (
+          <PermissionListItem
+            key={permission.label}
+            rolePermissions={rolePermissions}
+            immutablePermissions={immutablePermissions}
+            removedDefaultPermissions={removedDefaultPermissions}
+            setRemovedDefaultPermissions={setRemovedDefaultPermissions}
+            label={permission.label}
+            permission={permission.key}
+            subperms={permission.subperms}
+            description={permission.description}
+            editable={editable}
+            depth={depth}
+            // eslint-disable-next-line react/destructuring-assignment
+            darkMode={props.darkMode}
+            // functions
+            setPermissions={setPermissions}
+            onChange={onChange}
+          />
+        ))}
+      </ul>
+    </div>
   );
 }
 

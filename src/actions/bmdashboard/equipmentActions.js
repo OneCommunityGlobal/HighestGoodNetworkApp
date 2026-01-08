@@ -1,12 +1,12 @@
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { SET_EQUIPMENTS } from '../../constants/bmdashboard/equipmentConstants';
+import { GET_EQUIPMENT_BY_ID, SET_EQUIPMENTS } from '../../constants/bmdashboard/equipmentConstants';
 import { GET_ERRORS } from '../../constants/errors';
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 
 export const setEquipment = payload => {
   return {
-    type: SET_EQUIPMENTS,
+    type: GET_EQUIPMENT_BY_ID,
     payload,
   };
 };

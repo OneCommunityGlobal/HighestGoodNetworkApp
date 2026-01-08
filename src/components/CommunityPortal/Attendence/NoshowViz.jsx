@@ -219,7 +219,9 @@ function EventNoShowChart() {
       </div>
 
       <h2 className="event-title">Attendance Trend by Day of the Week</h2>
-      <label className="no-show-viz-label">Select Event Type: </label>
+      <label className="no-show-viz-label" htmlFor="event-type-select">
+        Select Event Type:
+      </label>
       <select
         className="no-show-viz-select"
         value={selectedEventType}

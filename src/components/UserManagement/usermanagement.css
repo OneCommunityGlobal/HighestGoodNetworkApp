@@ -44,15 +44,13 @@ thead {
 
 .usermanagement__tr .edituser_input,
 .usermanagement__tr .btn,
-.usermanagement__tr .copy_icon,
-.usermanagement__tr svg {
-  height: 100%;
+.usermanagement__tr .copy_icon {
   margin: 0;
-  padding: 0;
+  padding-top: 15px;
   box-sizing: border-box;
 }
 
-#usermanagement_title>div {
+#usermanagement_title > div {
   width: 180px;
   min-width: 180px;
   max-width: 180px;
@@ -61,7 +59,7 @@ thead {
   text-overflow: ellipsis;
 }
 
-#user_title>div {
+#user_title > div {
   width: 180px;
   min-width: 180px;
   max-width: 180px;
@@ -114,14 +112,13 @@ thead {
   align-items: center;
   justify-content: center;
   text-align: center;
-
 }
 
 .email_cell {
   position: relative;
 }
 
-.email_cell a:hover{
+.email_cell a:hover {
   text-decoration: none;
 }
 .title_cell {
@@ -146,13 +143,15 @@ td#usermanagement_role {
 
 td#usermanagement_role svg {
   font-size: 14px; /* Ensures icon fits within 20px */
+  width: 14px;
+  height: 14px;
 }
 
-#user_role{
+#user_role {
   max-width: initial;
 }
 
-.time_difference{
+.time_difference {
   cursor: pointer;
   position: absolute;
   top: 0;
@@ -167,8 +166,8 @@ td#usermanagement_role svg {
   top: 0;
   right: 0;
   margin: 2px 2px;
-  height: 100%;
-  max-height: 31px;
+  width: 16px;
+  height: 16px;
 }
 
 .usermanagement__order--input div {
@@ -366,12 +365,12 @@ tr:hover {
   border-radius: 4px;
   background-color: #e7e7e7;
   border: 1px solid #cacaca;
-  box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
 }
 
 .Logged-time-off-cards-container::-webkit-scrollbar-thumb {
   border-radius: 8px;
-  background-color: #007BFF;
+  background-color: #007bff;
   box-shadow: inset 0 0 3px #e7e7e7;
 }
 
@@ -403,7 +402,6 @@ tr:hover {
   box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
-
 .editbutton {
   color: #138496;
   font-size: 25px;
@@ -426,20 +424,19 @@ td {
   background-color: white;
 }
 
-
-.dark-usermanagement-data{
+.dark-usermanagement-data {
   background-color: #3a506b;
 }
 
-.dark-usermanagement-data:hover{
+.dark-usermanagement-data:hover {
   background-color: #111831;
 }
 
-.light-usermanagement-data{
+.light-usermanagement-data {
   background-color: white;
 }
 
-.light-usermanagement-data:hover{
+.light-usermanagement-data:hover {
   background-color: #f0f8ff;
 }
 
@@ -476,7 +473,7 @@ td {
   transition: opacity 0.2s ease-in-out;
 }
 
-.infringement-count{
+.infringement-count {
   cursor: pointer;
   position: absolute;
   bottom: 0;
@@ -486,6 +483,6 @@ td {
   color: dodgerblue;
 }
 
-.infringement-count a:hover{
+.infringement-count a:hover {
   text-decoration: none;
 }

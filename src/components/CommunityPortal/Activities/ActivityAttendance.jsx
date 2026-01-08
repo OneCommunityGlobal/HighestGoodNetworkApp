@@ -3,7 +3,7 @@ import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { v4 as uuidv4 } from 'uuid';
 import { FaRegClock, FaIdCard } from 'react-icons/fa';
-import './ActivityAttendance.css';
+import styles from './ActivityAttendance.module.css';
 import { useState } from 'react';
 import profileImg from '../../../assets/images/profile.png';
 
@@ -35,9 +35,9 @@ function StatsChart({ stats }) {
   };
 
   return (
-    <div className="chart-container">
+    <div className={styles.chartContainer}>
       <Doughnut data={data} options={options} />
-      <div className="chart-label">{percentage}%</div>
+      <div className={styles.chartLabel}>{percentage}%</div>
     </div>
   );
 }
@@ -52,15 +52,16 @@ const exportToCSV = students => {
   link.setAttribute('href', encodedUri);
   link.setAttribute('download', 'student_data.csv');
   document.body.appendChild(link);
+  // eslint-disable-next-line testing-library/no-node-access
   link.click();
   document.body.removeChild(link);
 };
 
 function StatsCard({ title, value, color }) {
   return (
-    <div className="stats-card">
+    <div className={styles.statsCard}>
       <h3>{title}</h3>
-      <p className="stats-value" style={{ color }}>
+      <p className={styles.statsValue} style={{ color }}>
         {value}
       </p>
     </div>
@@ -69,39 +70,71 @@ function StatsCard({ title, value, color }) {
 
 function StudentRow({ img, name, time, id }) {
   return (
-    <div className="student-row">
-      <div className="student-left">
-        <img src={img} alt={name} className="student-img" />
-        <div className="student-name">{name}</div>
+    <div className={styles.studentRow}>
+      <div className={styles.studentLeft}>
+        <img src={img} alt={name} className={styles.studentImg} />
+        <div className={styles.studentName}>{name}</div>
       </div>
-      <div className="student-center">
-        <div className="student-time">
-          <FaRegClock className="student-icon" /> {time}
+      <div className={styles.studentCenter}>
+        <div className={styles.studentTime}>
+          <FaRegClock className={styles.studentIcon} /> {time}
         </div>
       </div>
-      <div className="student-right">
-        <div className="student-id">
-          <FaIdCard className="student-icon" /> {id}
+      <div className={styles.studentRight}>
+        <div className={styles.studentId}>
+          <FaIdCard className={styles.studentIcon} /> {id}
         </div>
       </div>
     </div>
   );
 }
 
-function LiveUpdates({ students, searchTerm }) {
-  const filteredStudents = students.filter(student =>
-    student.name.toLowerCase().includes(searchTerm.toLowerCase()),
-  );
+function LiveUpdates({ students, searchTerm, selectedStatus, onStatusChange }) {
+  const normalizedSearch = searchTerm.trim().toLowerCase();
+
+  const filteredStudents = students.filter(student => {
+    const matchesStatus = selectedStatus === 'All' || student.status === selectedStatus;
+
+    const matchesSearch =
+      !normalizedSearch ||
+      student.name.toLowerCase().includes(normalizedSearch) ||
+      student.id.toLowerCase().includes(normalizedSearch);
+
+    return matchesStatus && matchesSearch;
+  });
+
+  const statuses = ['All', 'In', 'Out', 'Leave'];
 
   return (
-    <div className="live-updates">
-      <div className="updates-header">
-        <h3>Live Student Update</h3>
-        <button className="export-btn" type="button" onClick={() => exportToCSV(filteredStudents)}>
+    <div className={styles.liveUpdates}>
+      <div className={styles.updatesHeader}>
+        <div className={styles.updatesHeaderLeft}>
+          <h3>Live Student Update</h3>
+          <div className={styles.statusFilters}>
+            {statuses.map(status => (
+              <button
+                key={status}
+                type="button"
+                className={`${styles.statusFilterBtn} ${
+                  selectedStatus === status ? styles.statusFilterBtnActive : ''
+                }`}
+                onClick={() => onStatusChange(status)}
+              >
+                {status}
+              </button>
+            ))}
+          </div>
+        </div>
+        <button
+          className={styles.exportBtn}
+          type="button"
+          onClick={() => exportToCSV(filteredStudents)}
+        >
           Export Data
         </button>
       </div>
-      <div className="updates-list">
+
+      <div className={styles.updatesList}>
         {filteredStudents.length > 0 ? (
           filteredStudents.map(student => (
             <StudentRow
@@ -113,7 +146,7 @@ function LiveUpdates({ students, searchTerm }) {
             />
           ))
         ) : (
-          <p className="no-results">No students found.</p>
+          <p className={styles.noResults}>No students found.</p>
         )}
       </div>
     </div>
@@ -123,6 +156,7 @@ function LiveUpdates({ students, searchTerm }) {
 function ActivityAttendance() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('All');
 
   const statsData = [
     { id: uuidv4(), title: 'Total Community Members', value: 400, color: '#4CAF50' },
@@ -132,36 +166,40 @@ function ActivityAttendance() {
   ];
 
   const students = [
-    { img: profileImg, name: 'Ramakant Sharma', time: '12:30', id: '3CO-JVY' },
-    { img: profileImg, name: 'John Doe', time: '12:45', id: '3CO-JXK' },
-    { img: profileImg, name: 'Jane Smith', time: '01:00', id: '3CO-JYW' },
-    { img: profileImg, name: 'Alice Johnson', time: '01:15', id: '3CO-JZP' },
+    { img: profileImg, name: 'Ramakant Sharma', time: '12:30', id: '3CO-JVY', status: 'In' },
+    { img: profileImg, name: 'John Doe', time: '12:45', id: '3CO-JXK', status: 'Out' },
+    { img: profileImg, name: 'Jane Smith', time: '01:00', id: '3CO-JYW', status: 'Leave' },
+    { img: profileImg, name: 'Alice Johnson', time: '01:15', id: '3CO-JZP', status: 'In' },
   ];
 
   return (
-    <div className={`activity-attendance-page ${darkMode ? 'activity-attendance-dark-mode' : ''}`}>
-      <div className="dashboard-container">
+    <div
+      className={`${styles.activityAttendancePage} ${
+        darkMode ? styles.activityAttendanceDarkMode : ''
+      }`}
+    >
+      <div className={styles.dashboardContainer}>
         {/* Title and Search Bar */}
-        <div className="dashboard-title">
-          <div className="title-text">
+        <div className={styles.dashboardTitle}>
+          <div className={styles.titleText}>
             <h2>Welcome Admin</h2>
             <p>Senior Admin - One Community</p>
           </div>
-          <div className="search-container">
+          <div className={styles.searchContainer}>
             <input
               type="text"
               placeholder="Search Students..."
-              className="search-bar"
+              className={styles.attendanceSearchBar}
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
             />
           </div>
         </div>
 
-        <div className="dashboard-main">
-          <div className="stats-chart-container">
+        <div className={styles.dashboardMain}>
+          <div className={styles.statsChartContainer}>
             <StatsChart stats={statsData} />
-            <div className="stats-grid">
+            <div className={styles.statsGrid}>
               {statsData.map(stat => (
                 <StatsCard key={stat.id} title={stat.title} value={stat.value} color={stat.color} />
               ))}
@@ -169,7 +207,12 @@ function ActivityAttendance() {
           </div>
 
           {/* Live Student Updates */}
-          <LiveUpdates students={students} searchTerm={searchTerm} />
+          <LiveUpdates
+            students={students}
+            searchTerm={searchTerm}
+            selectedStatus={statusFilter}
+            onStatusChange={setStatusFilter}
+          />
         </div>
       </div>
     </div>

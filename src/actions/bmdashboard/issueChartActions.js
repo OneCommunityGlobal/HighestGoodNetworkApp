@@ -3,16 +3,13 @@ import {
   FETCH_ISSUES_BARCHART_REQUEST,
   FETCH_ISSUES_BARCHART_SUCCESS,
   FETCH_ISSUES_BARCHART_FAILURE,
-} from '../../constants/bmdashboard/issueConstants';
-// import { ENDPOINTS } from '../../utils/URL';
-import { ENDPOINTS, ApiEndpoint } from '../../utils/URL';
-import {
   FETCH_LONGEST_OPEN_ISSUES_REQUEST,
   FETCH_LONGEST_OPEN_ISSUES_SUCCESS,
   FETCH_LONGEST_OPEN_ISSUES_FAILURE,
   SET_DATE_FILTER,
   SET_PROJECT_FILTER,
 } from '../../constants/bmdashboard/issueConstants';
+import { ENDPOINTS, ApiEndpoint } from '../../utils/URL';
 
 // eslint-disable-next-line import/prefer-default-export
 export const fetchIssues = () => async dispatch => {

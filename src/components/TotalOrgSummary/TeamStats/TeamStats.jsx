@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { ENDPOINTS } from 'utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import axios from 'axios';
-import Loading from 'components/common/Loading';
+import Loading from '~/components/common/Loading';
 import TeamStatsBarChart from './TeamStatsBarChart';
 import './TeamStats.css';
 

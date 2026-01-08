@@ -3,7 +3,7 @@ import React from 'react';
 import { Table, Button } from 'react-bootstrap';
 import hasPermission from '../../utils/permissions';
 import { connect } from 'react-redux';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 
 /**
  * Shows the dates and times a user has edited their time entries. Admins are given the ability to delete these edits.

@@ -2,7 +2,7 @@ import axios from 'axios';
 
 import { toast } from 'react-toastify';
 import { GET_ERRORS } from '../../constants/errors';
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import {
   SET_MATERIALS,
   POST_UPDATE_MATERIAL_START,

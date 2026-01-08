@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { BsInfoCircle } from 'react-icons/bs';
-import BMError from 'components/BMDashboard/shared/BMError';
-import '../../BMDashboard.css';
+import BMError from '~/components/BMDashboard/shared/BMError';
 import { Button } from 'reactstrap';
-import CheckTypesModal from 'components/BMDashboard/shared/CheckTypesModal';
+import CheckTypesModal from '~/components/BMDashboard/shared/CheckTypesModal';
 import AddTypeForm from './AddTypeForm';
 
 export default function AddEquipmentType() {

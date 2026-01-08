@@ -2,7 +2,7 @@ import { Modal, Button, Form, FormGroup, Label, Input } from 'reactstrap';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 import axios from 'axios';
-import { ENDPOINTS } from 'utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 
 function JobCategoryCCModal({ categories, onClose, darkMode, onRefresh }) {
   const [email, setEmail] = useState('');

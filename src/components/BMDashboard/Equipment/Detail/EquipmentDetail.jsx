@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Container, Button } from 'reactstrap';
 import { useHistory, useParams } from 'react-router-dom';
-import { fetchEquipmentById } from 'actions/bmdashboard/equipmentActions';
+import { fetchEquipmentById } from '~/actions/bmdashboard/equipmentActions';
 import { v4 as uuidv4 } from 'uuid';
 import EquipmentModal from '../EquipmentModal';
 import styles from './EquipmentDetailPage.module.css';
@@ -63,8 +63,11 @@ function EquipmentDetail() {
     dispatch(fetchEquipmentById(equipmentId));
   }, [dispatch, equipmentId]);
 
-  const lastLogRecord = equipment?.logRecord?.[equipment.logRecord.length - 1];
-  let currentUsage = 'Unknown';
+  const lastLogRecord =
+    equipment?.logRecord && equipment.logRecord.length > 0
+      ? equipment.logRecord[equipment.logRecord.length - 1]
+      : null;
+  let currentUsage = null;
 
   if (lastLogRecord?.type === 'Check In') {
     currentUsage = 'Checked In';
@@ -72,42 +75,132 @@ function EquipmentDetail() {
     currentUsage = 'Checked Out';
   }
 
+  const formatValue = value => {
+    if (value === 0) return 0;
+    if (value === '' || value === null || value === undefined) return 'Not Available';
+    return value;
+  };
+
+  const formatPersonName = person => {
+    if (!person) return null;
+    const fullName = `${person.firstName || ''} ${person.lastName || ''}`.trim();
+    return fullName || null;
+  };
+
   function formatDateString(dateString) {
+    if (!dateString) return 'Not Available';
     const date = new Date(dateString);
-    return date.toLocaleDateString();
+    return Number.isNaN(date.getTime()) ? 'Not Available' : date.toLocaleDateString();
   }
 
   const formattedRentedOnDate = formatDateString(equipment?.rentedOnDate);
   const formattedRentedDueDate = formatDateString(equipment?.rentalDueDate);
+  const latestUpdateRecord =
+    equipment?.updateRecord && equipment.updateRecord.length > 0
+      ? equipment.updateRecord[equipment.updateRecord.length - 1]
+      : null;
+  const latestPurchaseRecord =
+    equipment?.purchaseRecord && equipment.purchaseRecord.length > 0
+      ? equipment.purchaseRecord[equipment.purchaseRecord.length - 1]
+      : null;
+
+  const formattedLastUpdateDate = formatDateString(latestUpdateRecord?.date);
+
+  const formatCurrency = amount => {
+    if (amount === 0 || amount) {
+      const numericAmount = Number(amount);
+      if (Number.isNaN(numericAmount)) return amount;
+      return `$${numericAmount.toLocaleString()}`;
+    }
+    return null;
+  };
+
+  const invoiceNumber =
+    latestPurchaseRecord?.invoiceId ||
+    latestPurchaseRecord?.invoiceNo ||
+    latestPurchaseRecord?.invoice;
+  const purchaseLink =
+    latestPurchaseRecord?.purchaseLink ||
+    equipment?.purchaseLink ||
+    equipment?.itemType?.purchaseLink;
+  const price = formatCurrency(latestPurchaseRecord?.price ?? equipment?.price ?? equipment?.cost);
+  const condition = equipment?.condition || latestUpdateRecord?.condition;
+  const shippingFee = formatCurrency(
+    latestPurchaseRecord?.shippingFee ?? equipment?.shippingFee ?? equipment?.shippingCost,
+  );
+  const taxes = formatCurrency(
+    latestPurchaseRecord?.tax ?? latestPurchaseRecord?.taxes ?? equipment?.taxes,
+  );
+  const supplierPhoneNumber =
+    equipment?.supplierPhoneNumber ||
+    latestPurchaseRecord?.supplierPhoneNumber ||
+    latestPurchaseRecord?.supplier?.phoneNumber;
+  const description = equipment?.itemType?.description || equipment?.description;
+  const currentStatus = latestUpdateRecord?.condition;
+  const lastUsedPerson = formatPersonName(latestUpdateRecord?.createdBy);
+  const lastUsedTask = latestUpdateRecord?.task || latestUpdateRecord?.usedFor;
+  const replacementRequested =
+    typeof latestUpdateRecord?.replacementRequired === 'boolean'
+      ? latestUpdateRecord.replacementRequired
+        ? 'Yes'
+        : 'No'
+      : latestUpdateRecord?.replacementRequired;
 
   const details = [
-    { label: 'Belongs to Project', value: equipment?.project?.name },
-    { label: 'Class', value: equipment?.itemType?.category },
-    { label: 'Name', value: equipment?.itemType?.name },
-    { label: 'Number', value: equipment?.code },
-    { label: 'Ownership', value: equipment?.purchaseStatus },
-    { label: 'Add Date', value: 'MM - DD - YYYY' },
+    { label: 'Belongs to Project', value: formatValue(equipment?.project?.name) },
+    { label: 'Class', value: formatValue(equipment?.itemType?.category) },
+    { label: 'Name', value: formatValue(equipment?.itemType?.name) },
+    { label: 'Number', value: formatValue(equipment?.code) },
+    { label: 'Ownership', value: formatValue(equipment?.purchaseStatus) },
+    { label: 'Add Date', value: formatDateString(equipment?.createdAt) },
     // Remove 'Rental Duration' from details if 'Ownership' is 'Purchase'
-    equipment?.purchaseStatus === 'Purchase' ? null : { label: 'Rental Duration' },
-    { label: 'Current Usage', value: currentUsage },
+    equipment?.purchaseStatus === 'Purchased' ? null : { label: 'Rental Duration' },
+    { label: 'Current Usage', value: formatValue(currentUsage) },
     { label: 'Dashed Line' },
-    { label: 'Input Invoice No or ID', value: 'No123ABC' },
-    { label: 'Price', value: '$150' },
-    { label: 'Add Condition', value: 'New' },
-    { label: 'Shipping Fee', value: '$25' },
-    { label: 'Taxes', value: '$15' },
-    { label: 'Supplier Phone Number', value: '555-33-3333' },
+    {
+      label: 'Input Invoice No or ID',
+      value: formatValue(invoiceNumber),
+    },
+    {
+      label: 'Price',
+      value: formatValue(price),
+    },
+    {
+      label: 'Add Condition',
+      value: formatValue(condition),
+    },
+    {
+      label: 'Shipping Fee',
+      value: formatValue(shippingFee),
+    },
+    {
+      label: 'Taxes',
+      value: formatValue(taxes),
+    },
+    {
+      label: 'Supplier Phone Number',
+      value: formatValue(supplierPhoneNumber),
+    },
     {
       label: 'Link To Buy/Rent',
-      value: 'https://www.homedepot.com/',
+      value: formatValue(purchaseLink),
     },
-    { label: 'Description', value: 'Testing Description' },
+    {
+      label: 'Description',
+      value: formatValue(description),
+    },
     { label: 'Dashed Line' },
-    { label: 'Current Status', value: 'Tested' },
-    { label: 'Last Update Date', value: '03-01-2024' },
-    { label: 'Last Used Person', value: 'Jae' },
-    { label: 'Last Used Task', value: 'Garden clean up' },
-    { label: 'Asked for a replacement?', value: 'No' },
+    { label: 'Current Status', value: formatValue(currentStatus) },
+    { label: 'Last Update Date', value: formattedLastUpdateDate },
+    {
+      label: 'Last Used Person',
+      value: formatValue(lastUsedPerson),
+    },
+    { label: 'Last Used Task', value: formatValue(lastUsedTask) },
+    {
+      label: 'Asked for a replacement?',
+      value: formatValue(replacementRequested),
+    },
   ];
 
   const generateKey = () => uuidv4();
@@ -116,9 +209,12 @@ function EquipmentDetail() {
     <DetailItem key={generateKey()} label={detail.label} value={detail.value} />
   );
 
-  const renderLinkItem = detail => (
-    <LinkItem key={generateKey()} label={detail.label} value={detail.value} />
-  );
+  const renderLinkItem = detail => {
+    if (detail.value === 'Not Available') {
+      return renderDetailItem(detail);
+    }
+    return <LinkItem key={generateKey()} label={detail.label} value={detail.value} />;
+  };
 
   const renderRentalDurationItem = detail => (
     <RentalDurationItem
@@ -129,14 +225,19 @@ function EquipmentDetail() {
     />
   );
 
-  const renderDescriptionItem = detail => (
-    <DescriptionItem
-      key={generateKey()}
-      label={detail.label}
-      value={detail.value}
-      // title={equipment?.itemType.name}
-    />
-  );
+  const renderDescriptionItem = detail => {
+    if (detail.value === 'Not Available') {
+      return renderDetailItem(detail);
+    }
+    return (
+      <DescriptionItem
+        key={generateKey()}
+        label={detail.label}
+        value={detail.value}
+        title={equipment?.itemType?.name || 'Description'}
+      />
+    );
+  };
 
   const renderDashedLineItem = detail => (
     <DashedLineItem key={generateKey()} label={detail.label} />
@@ -165,7 +266,11 @@ function EquipmentDetail() {
       </header>
       <main className={styles.equipmentDetailPageContent}>
         <p>
-          <img src={equipment?.imageUrl} alt="" className={styles.equipmentDetailPageImage} />
+          <img
+            src={equipment?.imageUrl}
+            alt={equipment?.itemType?.name || 'Equipment image'}
+            className={styles.equipmentDetailPageImage}
+          />
         </p>
         {details.filter(Boolean).map(renderDetails)}
         <Button
