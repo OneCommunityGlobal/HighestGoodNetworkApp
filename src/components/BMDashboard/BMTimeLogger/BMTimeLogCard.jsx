@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import BMError from '../shared/BMError';
 import { fetchBMProjectMembers } from '../../../actions/bmdashboard/projectMemberAction';
 import BMTimeLogDisplayMember from './BMTimeLogDisplayMember';
+import BMTimeLogSummary from './BMTimeLogSummary';
 
 function BMTimeLogCard(props) {
   const [isError, setIsError] = useState(false);
@@ -21,9 +22,22 @@ function BMTimeLogCard(props) {
   }, [props.selectedProject, dispatch]);
 
   useEffect(() => {
-    if (projectInfo && projectInfo.members) {
-      setMemberList(projectInfo.members);
-      setFilteredMembers(projectInfo.members);
+    // Backend returns entire project object with members array
+    // Reducer stores it as { members: entireProjectObject }
+    // So projectInfo.members is the entire project, and projectInfo.members.members is the actual members array
+    let members = [];
+    if (projectInfo?.members) {
+      // Check if projectInfo.members is the project object (has members property) or the array itself
+      if (Array.isArray(projectInfo.members)) {
+        members = projectInfo.members;
+      } else if (projectInfo.members.members && Array.isArray(projectInfo.members.members)) {
+        members = projectInfo.members.members;
+      }
+    }
+
+    if (members.length >= 0) {
+      setMemberList(members);
+      setFilteredMembers(members);
       setIsMemberFetched(true);
     }
   }, [projectInfo]);
@@ -80,6 +94,9 @@ function BMTimeLogCard(props) {
 
   return (
     <Container fluid>
+      {/* Time Log Summary Section */}
+      <BMTimeLogSummary projectId={props.selectedProject} />
+
       {isMemberFetched && (
         <>
           <Row className="my-3">
