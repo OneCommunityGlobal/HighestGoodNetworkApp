@@ -10,8 +10,6 @@ import { hrsFilterBtnColorMap } from '~/constants/colors';
 import { toast } from 'react-toastify';
 import TimeEntryForm from './TimeEntryForm';
 import DeleteModal from './DeleteModal';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import ReactHtmlParser from 'react-html-parser';
 import { editTimeEntry, getTimeEntriesForWeek } from '../../actions/timeEntries';
 import { editTeamMemberTimeEntry } from '../../actions/task';
 import { updateIndividualTaskTime } from '../TeamMemberTasks/actions';
@@ -190,7 +188,7 @@ function TimeEntry(props) {
             <div className={`${styles.timeEntryContainer}`}>
               <div className={`${styles.notesSection} ${darkMode ? styles.notesTextLight : ''}`}>
                 <div className={darkMode ? "dark-text-muted" : "text-muted"}>Notes:</div>
-                {ReactHtmlParser(notes)}
+                {parse(notes)}
               </div>
               <div className="d-flex justify-content-end">
                 {(hasATimeEntryEditPermission || isAuthUserAndSameDayEntry) &&
