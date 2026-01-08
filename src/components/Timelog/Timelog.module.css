@@ -211,11 +211,19 @@
 }
 
 .activeUser {
-  color: lawngreen;
+  color: lawngreen !important;
+}
+
+.activeUser i {
+  color: lawngreen !important;
 }
 
 .notActiveUser {
-  color: #dee2e6;
+  color: #dee2e6 !important;
+}
+
+.notActiveUser i {
+  color: #dee2e6 !important;
 }
 
 

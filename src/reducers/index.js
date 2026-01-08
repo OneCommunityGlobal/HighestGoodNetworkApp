@@ -100,6 +100,10 @@ import reviewsInsightReducer from './prAnalytics/reviewsInsightReducer';
 import { hoursPledgedReducer } from './jobAnalytics/hoursPledgedReducer';
 import { studentTasksReducer } from './studentTasksReducer';
 
+//education portal
+
+import browseLessonPlanReducer from './educationPortal/broweLPReducer';
+
 const localReducers = {
   auth: authReducer,
   allUserProfiles: allUserProfilesReducer,
@@ -135,7 +139,6 @@ const localReducers = {
   allUsersTimeEntries: allUsersTimeEntriesReducer,
   allUserProfilesBasicInfo: allUserProfilesBasicInfoReducer,
   projectById: projectByIdReducer,
-
   // bm dashboard
   materials: materialsReducer,
   tools: toolReducer,
@@ -182,6 +185,9 @@ const localReducers = {
   // student tasks
   studentTasks: studentTasksReducer,
   jobApplication: jobApplicationReducer,
+
+  // education portal
+  browseLessonPlan: browseLessonPlanReducer,
 };
 
 const sessionReducers = {
