@@ -24,6 +24,8 @@ import IssueCharts from '../Issues/openIssueCharts';
 import SupplierPerformanceGraph from './SupplierPerformanceGraph.jsx';
 import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
 import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
+import RentalChart from '../RentalChart/RentalChart';
+import ReturnedLateChart from '../RentalChart/ReturnedLateChart';
 
 const projectStatusButtons = [
   {
@@ -364,6 +366,28 @@ function WeeklyProjectSummary() {
             </div>
           );
         }),
+      },
+      {
+        title: 'Rental Tracking',
+        key: 'Rental Tracking',
+        className: 'full',
+        content: (
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr',
+              gap: '12px',
+            }}
+          >
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+              <RentalChart />
+            </div>
+
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+              <ReturnedLateChart />
+            </div>
+          </div>
+        ),
       },
       {
         title: 'Financials Tracking',
