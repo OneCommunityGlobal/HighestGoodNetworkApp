@@ -3,6 +3,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import axios from 'axios';
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { ENDPOINTS } from '~/utils/URL';
@@ -113,12 +114,24 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, per
     </text>
   );
 };
+  
+const CustomTooltip = ({ active, payload }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className={styles.chartTooltip}>
+        <p className={styles.chartTooltipItem}>{`${payload[0].name} : ${payload[0].value}`}</p>
+      </div>
+    );
+  }
+  return null;
+};
 
 function AttendanceNoShowCharts() {
   const [events, setEvents] = useState(mockEvents);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   // Fetch events data from backend
   useEffect(() => {
@@ -255,7 +268,7 @@ function AttendanceNoShowCharts() {
   // Show loading state
   if (loading) {
     return (
-      <div className={styles.loadingContainer}>
+      <div className={`${styles.loadingContainer} ${darkMode ? 'dark-mode' : ''}`}>
         <div className={styles.loadingTextContainer}>
           <p className={styles.loadingText}>Loading event data...</p>
         </div>
@@ -266,7 +279,7 @@ function AttendanceNoShowCharts() {
   // Show error or no data state
   if (!selectedEvent || events.length === 0) {
     return (
-      <div className={styles.errorContainer}>
+      <div className={`${styles.errorContainer} ${darkMode ? 'dark-mode' : ''}`}>
         <div className={styles.errorTextContainer}>
           <p className={styles.errorText}>No event data available</p>
           {error && <p className={styles.errorMessage}>{error}</p>}
@@ -285,8 +298,10 @@ function AttendanceNoShowCharts() {
     { name: 'No-Shows', value: selectedEvent.registrations - selectedEvent.attendees },
   ];
 
+
+
   return (
-    <div className={styles.pageContainer}>
+    <div className={`${styles.pageContainer} ${darkMode ? 'dark-mode' : ''}`}>
       <div className={styles.contentWrapper}>
         <h1 className={styles.pageTitle}>Event-wise Attendance Statistics</h1>
         {error && (
@@ -477,7 +492,10 @@ function AttendanceNoShowCharts() {
                             />
                           ))}
                         </Pie>
-                        <Tooltip />
+                        <Tooltip
+                          content={<CustomTooltip />}
+                          wrapperClassName={darkMode ? 'dark-mode' : ''}
+                        />
                         <Legend />
                       </PieChart>
                     </ResponsiveContainer>
@@ -513,7 +531,10 @@ function AttendanceNoShowCharts() {
                           />
                         ))}
                       </Pie>
-                      <Tooltip />
+                      <Tooltip
+                        content={<CustomTooltip />}
+                        wrapperClassName={darkMode ? 'dark-mode' : ''}
+                      />
                       <Legend />
                     </PieChart>
                   </ResponsiveContainer>

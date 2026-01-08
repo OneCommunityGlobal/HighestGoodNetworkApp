@@ -274,3 +274,90 @@
     font-size: 16px;
   }
 }
+
+/* Dark Mode Overrides */
+:global(.dark-mode) .pageContainer,
+:global(.dark-mode) .loadingContainer,
+:global(.dark-mode) .errorContainer {
+  background-color: #111827; /* Dark background */
+  color: #f9fafb;
+}
+
+:global(.dark-mode) .pageTitle,
+:global(.dark-mode) .cardTitle,
+:global(.dark-mode) .chartSectionTitle,
+:global(.dark-mode) .detailValue,
+:global(.dark-mode) .loadingText,
+:global(.dark-mode) .errorText {
+  color: #f9fafb;
+}
+
+:global(.dark-mode) .detailLabel,
+:global(.dark-mode) .upcomingText,
+:global(.dark-mode) .upcomingChartsText,
+:global(.dark-mode) .chartLiveBadge,
+:global(.dark-mode) .liveMetricsNote {
+  color: #9ca3af;
+}
+
+:global(.dark-mode) .card,
+:global(.dark-mode) .chartsCard,
+:global(.dark-mode) .upcomingChartsCard,
+:global(.dark-mode) .upcomingContainer {
+  background-color: #1f2937; /* Darker card background */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  color: #f9fafb;
+}
+
+:global(.dark-mode) .upcomingContainer {
+  background-color: #374151; /* slightly different for distinction */
+}
+
+:global(.dark-mode) .eventSelect {
+  background-color: #374151;
+  color: #f9fafb;
+  border-color: #4b5563;
+}
+
+:global(.dark-mode) .link {
+  color: #60a5fa; /* Lighter blue for dark mode */
+}
+
+:global(.dark-mode) .alertContainer {
+  background-color: #78350f; /* Dark orange/brown */
+  border-color: #b45309;
+}
+
+:global(.dark-mode) .alertText {
+  color: #fef3c7;
+}
+
+/* Scrollbar customization for dark mode if needed */
+:global(.dark-mode) ::-webkit-scrollbar-track {
+  background: #111827;
+}
+
+:global(.dark-mode) ::-webkit-scrollbar-thumb {
+  background: #374151;
+}
+
+/* Tooltip Customization */
+.chartTooltip {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.chartTooltipItem {
+  color: #333;
+}
+
+:global(.dark-mode) .chartTooltip {
+  background-color: #1f2937 !important;
+  border: 1px solid #4b5563 !important;
+  border-radius: 6px !important;
+}
+
+:global(.dark-mode) .chartTooltipItem {
+  color: #f9fafb !important;
+}
