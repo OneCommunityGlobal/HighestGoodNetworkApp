@@ -316,8 +316,27 @@ function ReportDetails({
             isFinalWeek={isFinalWeek}
           />
         </ListGroupItem>
+        <ListGroupItem darkMode={darkMode}>
+          <div
+            style={{
+              backgroundColor: isMeetCriteria ? '#ffff66' : 'transparent',
+              width: '100%',
+              padding: '6px 12px 6px 0px',
+            }}
+          >
+            <Bio
+              bioCanEdit={bioCanEdit && !cantEditJaeRelatedRecord}
+              userId={summary._id}
+              bioPosted={summary.bioPosted}
+              summary={summary}
+              getWeeklySummariesReport={getWeeklySummariesReport}
+            />
+          </div>
+        </ListGroupItem>
+
+        {/* TWO-COLUMN CONTENT BELOW */}
         <Row>
-          <Col md="6" xs="12" className="flex-grow-0">
+          <Col md="6" xs="12">
             <ListGroupItem darkMode={darkMode}>
               <TeamCodeRow
                 canEditTeamCode={canEditTeamCode && !cantEditJaeRelatedRecord}
@@ -327,17 +346,6 @@ function ReportDetails({
                 getWeeklySummariesReport={getWeeklySummariesReport}
               />
             </ListGroupItem>
-            <ListGroupItem darkMode={darkMode}>
-              <div style={{ backgroundColor: isMeetCriteria ? 'yellow' : 'none' }}>
-                <Bio
-                  bioCanEdit={bioCanEdit && !cantEditJaeRelatedRecord}
-                  userId={summary._id}
-                  bioPosted={summary.bioPosted}
-                  summary={summary}
-                  getWeeklySummariesReport={getWeeklySummariesReport}
-                />
-              </div>
-            </ListGroupItem>
 
             <ListGroupItem darkMode={darkMode}>
               <TotalValidWeeklySummaries
@@ -346,6 +354,7 @@ function ReportDetails({
                 darkMode={darkMode}
               />
             </ListGroupItem>
+
             <ListGroupItem darkMode={darkMode}>
               <p
                 style={{
@@ -359,10 +368,12 @@ function ReportDetails({
                 Hours logged: {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
               </p>
             </ListGroupItem>
+
             <ListGroupItem darkMode={darkMode}>
               <WeeklySummaryMessage summary={summary} weekIndex={weekIndex} />
             </ListGroupItem>
           </Col>
+
           <Col
             xs="6"
             style={{

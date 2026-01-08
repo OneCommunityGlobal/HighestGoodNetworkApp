@@ -1951,6 +1951,7 @@ const WeeklySummariesReport = props => {
             hasPermissionToFilter={hasPermissionToFilter}
             editable={true}
             formId="report"
+            canSeeBioHighlight={permissionState.canSeeBioHighlight}
           />
         </Col>
       </Row>

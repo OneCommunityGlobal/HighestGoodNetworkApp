@@ -59,14 +59,16 @@ function useDeepEffect(effectFunc, deps) {
 }
 
 function displayDaysLeft(lastDay) {
-  if (lastDay) {
-    const today = new Date();
-    const endDate = new Date(lastDay);
-    const differenceInTime = endDate.getTime() - today.getTime();
-    const differenceInDays = Math.ceil(differenceInTime / (1000 * 3600 * 24));
-    return -differenceInDays;
-  }
-  return null; // or any other appropriate default value
+  if (!lastDay) return null;
+  const ORG_TZ = 'America/Los_Angeles';
+  const today = moment()
+    .tz(ORG_TZ)
+    .startOf('day');
+  const endDate = moment(lastDay)
+    .tz(ORG_TZ)
+    .startOf('day');
+  const differenceInDays = endDate.diff(today, 'days');
+  return -differenceInDays;
 }
 
 function LeaderBoard({
@@ -747,6 +749,7 @@ function LeaderBoard({
                     <td colSpan={2}>
                       <div className="leaderboard-totals-container text-center">
                         <span>{stateOrganizationData.name}</span>
+                        <br />
                         {viewZeroHouraMembers(loggedInUser.role) && (
                           <span className="leaderboard-totals-title">
                             0 hrs Totals:{' '}
@@ -761,6 +764,7 @@ function LeaderBoard({
                       <td aria-label="Placeholder" />
                       <td className="leaderboard-totals-container">
                         <span>{stateOrganizationData.name}</span>
+                        <br />
                         {viewZeroHouraMembers(loggedInUser.role) && (
                           <span className="leaderboard-totals-title">
                             0 hrs Totals:{' '}
