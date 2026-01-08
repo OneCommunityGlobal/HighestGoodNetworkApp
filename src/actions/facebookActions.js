@@ -54,6 +54,30 @@ export const scheduleFacebookPost =
     }
   };
 
+/**
+ * Schedules a Facebook post with direct image file upload
+ */
+export const scheduleFacebookPostWithImage = (formData) => async () => {
+  try {
+    const { data } = await axios.post(ENDPOINTS.FACEBOOK_SCHEDULE_POST_UPLOAD, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      timeout: 60000,
+    });
+    toast.success('Facebook post scheduled.');
+    return data;
+  } catch (error) {
+    const detail =
+      error.response?.data?.details ||
+      error.response?.data?.error ||
+      error.response?.data ||
+      error.message;
+    toast.error(`Failed to schedule Facebook post: ${detail}`);
+    throw error;
+  }
+};
+
 // ============================================
 // NEW ACTIONS
 // ============================================
@@ -146,3 +170,25 @@ export const updateScheduledPost =
       throw error;
     }
   };
+
+export const postFacebookContentWithImage = (formData) => async () => {
+  try {
+    const { data } = await axios.post(ENDPOINTS.FACEBOOK_POST_UPLOAD, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      // Increase timeout for larger files
+      timeout: 60000,
+    });
+    toast.success('Facebook post created.');
+    return data;
+  } catch (error) {
+    const detail =
+      error.response?.data?.details ||
+      error.response?.data?.error ||
+      error.response?.data ||
+      error.message;
+    toast.error(`Failed to post to Facebook: ${detail}`);
+    throw error;
+  }
+};

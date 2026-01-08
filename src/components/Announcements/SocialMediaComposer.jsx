@@ -4,7 +4,9 @@ import { toast } from 'react-toastify';
 import moment from 'moment-timezone';
 import {
   postFacebookContent,
+  postFacebookContentWithImage,
   scheduleFacebookPost,
+  scheduleFacebookPostWithImage,
   fetchScheduledPosts,
   fetchPostHistory,
   cancelScheduledPost,
@@ -42,6 +44,8 @@ export default function SocialMediaComposer({ platform }) {
   const [postContent, setPostContent] = useState('');
   const [link, setLink] = useState('');
   const [imageUrl, setImageUrl] = useState('');
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
   const [isPosting, setIsPosting] = useState(false);
 
   // Scheduling state
@@ -49,6 +53,9 @@ export default function SocialMediaComposer({ platform }) {
   const [scheduledDateTime, setScheduledDateTime] = useState('');
   const [scheduledLink, setScheduledLink] = useState('');
   const [scheduledImageUrl, setScheduledImageUrl] = useState('');
+  // Scheduled image state
+  const [scheduledImageFile, setScheduledImageFile] = useState(null);
+  const [scheduledImagePreview, setScheduledImagePreview] = useState(null);
   const [isScheduling, setIsScheduling] = useState(false);
 
   // Scheduled posts list state
@@ -146,13 +153,77 @@ export default function SocialMediaComposer({ platform }) {
     if (activeSubTab === 'history') loadPostHistory();
   }, [activeSubTab, loadScheduledPosts, loadPostHistory]);
 
+  const handleImageFileChange = e => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+      if (!allowedTypes.includes(file.type)) {
+        toast.error('Please select a JPEG, PNG, GIF, or WebP image');
+        return;
+      }
+      if (file.size > 10 * 1024 * 1024) {
+        toast.error('Image must be under 10MB');
+        return;
+      }
+      setImageFile(file);
+      setImagePreview(URL.createObjectURL(file));
+      setImageUrl('');
+    }
+  };
+
+  const clearImageFile = () => {
+    setImageFile(null);
+    if (imagePreview) {
+      URL.revokeObjectURL(imagePreview);
+    }
+    setImagePreview(null);
+  };
+
+  // Handle scheduled image file selection
+  const handleScheduledImageFileChange = e => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+      if (!allowedTypes.includes(file.type)) {
+        toast.error('Please select a JPEG, PNG, GIF, or WebP image');
+        return;
+      }
+      if (file.size > 10 * 1024 * 1024) {
+        toast.error('Image must be under 10MB');
+        return;
+      }
+      setScheduledImageFile(file);
+      setScheduledImagePreview(URL.createObjectURL(file));
+      setScheduledImageUrl('');
+    }
+  };
+
+  const clearScheduledImageFile = () => {
+    setScheduledImageFile(null);
+    if (scheduledImagePreview) {
+      URL.revokeObjectURL(scheduledImagePreview);
+    }
+    setScheduledImagePreview(null);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (imagePreview) {
+        URL.revokeObjectURL(imagePreview);
+      }
+      if (scheduledImagePreview) {
+        URL.revokeObjectURL(scheduledImagePreview);
+      }
+    };
+  }, [imagePreview, scheduledImagePreview]);
+
   const handlePost = async () => {
     if (platform !== 'facebook') {
       toast.info(`Posting for ${platform} is not wired yet.`);
       return;
     }
-    if (!postContent.trim()) {
-      toast.error('Please enter content for your post.');
+    if (!postContent.trim() && !imageFile && !imageUrl.trim()) {
+      toast.error('Please enter content or add an image for your post.');
       return;
     }
     if (!requestor) {
@@ -162,17 +233,28 @@ export default function SocialMediaComposer({ platform }) {
 
     setIsPosting(true);
     try {
-      await dispatch(
-        postFacebookContent({
-          message: postContent.trim(),
-          link: link.trim() || undefined,
-          imageUrl: imageUrl.trim() || undefined,
-          requestor,
-        }),
-      );
+      if (imageFile) {
+        const formData = new FormData();
+        if (postContent.trim()) formData.append('message', postContent.trim());
+        if (link.trim()) formData.append('link', link.trim());
+        formData.append('image', imageFile);
+        formData.append('requestor', JSON.stringify(requestor));
+
+        await dispatch(postFacebookContentWithImage(formData));
+      } else {
+        await dispatch(
+          postFacebookContent({
+            message: postContent.trim() || undefined,
+            link: link.trim() || undefined,
+            imageUrl: imageUrl.trim() || undefined,
+            requestor,
+          }),
+        );
+      }
       setPostContent('');
       setLink('');
       setImageUrl('');
+      clearImageFile();
     } finally {
       setIsPosting(false);
     }
@@ -183,8 +265,9 @@ export default function SocialMediaComposer({ platform }) {
       toast.info('Scheduling is only available for Facebook right now.');
       return;
     }
-    if (!scheduledContent.trim()) {
-      toast.error('Please enter content for your scheduled post.');
+    // Updated validation: require either content or image
+    if (!scheduledContent.trim() && !scheduledImageFile && !scheduledImageUrl.trim()) {
+      toast.error('Please enter content or add an image for your scheduled post.');
       return;
     }
     if (!scheduledDateTime) {
@@ -204,20 +287,36 @@ export default function SocialMediaComposer({ platform }) {
 
     setIsScheduling(true);
     try {
-      await dispatch(
-        scheduleFacebookPost({
-          message: scheduledContent.trim(),
-          scheduledFor: scheduledDateTime,
-          timezone: PST_TZ,
-          link: scheduledLink.trim() || undefined,
-          imageUrl: scheduledImageUrl.trim() || undefined,
-          requestor,
-        }),
-      );
+      if (scheduledImageFile) {
+        // Use FormData for direct file upload
+        const formData = new FormData();
+        if (scheduledContent.trim()) formData.append('message', scheduledContent.trim());
+        formData.append('scheduledFor', scheduledDateTime);
+        formData.append('timezone', PST_TZ);
+        if (scheduledLink.trim()) formData.append('link', scheduledLink.trim());
+        formData.append('image', scheduledImageFile);
+        formData.append('requestor', JSON.stringify(requestor));
+
+        await dispatch(scheduleFacebookPostWithImage(formData));
+      } else {
+        // Use regular JSON post
+        await dispatch(
+          scheduleFacebookPost({
+            message: scheduledContent.trim() || undefined,
+            scheduledFor: scheduledDateTime,
+            timezone: PST_TZ,
+            link: scheduledLink.trim() || undefined,
+            imageUrl: scheduledImageUrl.trim() || undefined,
+            requestor,
+          }),
+        );
+      }
+
       setScheduledContent('');
       setScheduledDateTime('');
       setScheduledLink('');
       setScheduledImageUrl('');
+      clearScheduledImageFile();
       loadScheduledPosts();
     } finally {
       setIsScheduling(false);
@@ -389,14 +488,133 @@ export default function SocialMediaComposer({ platform }) {
                   placeholder="Optional link"
                   style={{ padding: '8px', borderRadius: '6px', border: '1px solid #ccc' }}
                 />
-                <input
-                  type="text"
-                  value={imageUrl}
-                  onChange={e => setImageUrl(e.target.value)}
-                  placeholder="Optional image URL"
-                  style={{ padding: '8px', borderRadius: '6px', border: '1px solid #ccc' }}
-                />
+
+                {/* Image Upload Section */}
+                <div
+                  style={{
+                    border: '1px solid #ddd',
+                    borderRadius: '8px',
+                    padding: '16px',
+                    backgroundColor: '#fafafa',
+                  }}
+                >
+                  <p style={{ margin: '0 0 12px', fontWeight: 'bold', fontSize: '14px' }}>
+                    📷 Add Image (optional)
+                  </p>
+
+                  {/* File Upload Option */}
+                  <div style={{ marginBottom: '12px' }}>
+                    <label
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        padding: '10px 16px',
+                        backgroundColor: imageFile ? '#e8f5e9' : '#f0f0f0',
+                        borderRadius: '6px',
+                        cursor: imageUrl ? 'not-allowed' : 'pointer',
+                        border: imageFile ? '2px solid #4caf50' : '1px solid #ccc',
+                        opacity: imageUrl ? 0.6 : 1,
+                        transition: 'all 0.2s',
+                      }}
+                    >
+                      📁 Upload from Device
+                      <input
+                        type="file"
+                        accept="image/jpeg,image/png,image/gif,image/webp"
+                        onChange={handleImageFileChange}
+                        style={{ display: 'none' }}
+                        disabled={!!imageUrl}
+                      />
+                    </label>
+
+                    {imageFile && (
+                      <span style={{ marginLeft: '12px', fontSize: '14px', color: '#333' }}>
+                        ✓ {imageFile.name} ({(imageFile.size / 1024 / 1024).toFixed(2)} MB)
+                        <button
+                          type="button"
+                          onClick={clearImageFile}
+                          style={{
+                            marginLeft: '8px',
+                            background: 'none',
+                            border: 'none',
+                            color: '#dc3545',
+                            cursor: 'pointer',
+                            fontSize: '16px',
+                            fontWeight: 'bold',
+                          }}
+                          title="Remove image"
+                        >
+                          ✕
+                        </button>
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Image Preview */}
+                  {imagePreview && (
+                    <div style={{ marginBottom: '12px' }}>
+                      <img
+                        src={imagePreview}
+                        alt="Preview"
+                        style={{
+                          maxWidth: '300px',
+                          maxHeight: '200px',
+                          borderRadius: '6px',
+                          border: '1px solid #ddd',
+                          objectFit: 'contain',
+                        }}
+                      />
+                    </div>
+                  )}
+
+                  {/* Divider */}
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      margin: '16px 0',
+                      opacity: imageFile ? 0.4 : 1,
+                    }}
+                  >
+                    <hr style={{ flex: 1, border: 'none', borderTop: '1px solid #ddd' }} />
+                    <span
+                      style={{
+                        padding: '0 16px',
+                        color: '#888',
+                        fontSize: '12px',
+                        fontWeight: 'bold',
+                      }}
+                    >
+                      OR
+                    </span>
+                    <hr style={{ flex: 1, border: 'none', borderTop: '1px solid #ddd' }} />
+                  </div>
+
+                  {/* URL Input Option */}
+                  <div>
+                    <input
+                      type="text"
+                      value={imageUrl}
+                      onChange={e => {
+                        setImageUrl(e.target.value);
+                        if (e.target.value) clearImageFile(); // Clear file when URL is entered
+                      }}
+                      placeholder="Paste image URL (e.g., https://example.com/image.jpg)"
+                      disabled={!!imageFile}
+                      style={{
+                        width: '100%',
+                        padding: '10px 12px',
+                        borderRadius: '6px',
+                        border: '1px solid #ccc',
+                        opacity: imageFile ? 0.5 : 1,
+                        backgroundColor: imageFile ? '#f5f5f5' : 'white',
+                      }}
+                    />
+                  </div>
+                </div>
               </div>
+
               <p style={{ fontSize: '12px', color: '#666', margin: '8px 0' }}>
                 {postContent.length} characters (recommended: &lt;500 for best engagement)
               </p>
@@ -431,22 +649,138 @@ export default function SocialMediaComposer({ platform }) {
               marginBottom: '1rem',
             }}
           />
-          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginBottom: '1rem' }}>
+
+          {/* Link input */}
+          <div style={{ marginBottom: '1rem' }}>
             <input
               type="text"
               value={scheduledLink}
               onChange={e => setScheduledLink(e.target.value)}
               placeholder="Optional link"
-              style={{ padding: '8px', borderRadius: '6px', border: '1px solid #ccc', flex: 1 }}
+              style={{
+                width: '100%',
+                padding: '8px',
+                borderRadius: '6px',
+                border: '1px solid #ccc',
+              }}
             />
+          </div>
+
+          {/* Image Upload Section */}
+          <div
+            style={{
+              border: '1px solid #ddd',
+              borderRadius: '8px',
+              padding: '16px',
+              marginBottom: '1rem',
+              backgroundColor: '#fafafa',
+            }}
+          >
+            <p style={{ margin: '0 0 12px', fontWeight: 'bold', fontSize: '14px' }}>
+              📷 Add Image (optional)
+            </p>
+
+            {/* File Upload */}
+            <div style={{ marginBottom: '12px' }}>
+              <label
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '10px 16px',
+                  backgroundColor: scheduledImageFile ? '#e8f5e9' : '#f0f0f0',
+                  borderRadius: '6px',
+                  cursor: scheduledImageUrl ? 'not-allowed' : 'pointer',
+                  border: scheduledImageFile ? '2px solid #4caf50' : '1px solid #ccc',
+                  opacity: scheduledImageUrl ? 0.6 : 1,
+                }}
+              >
+                📁 Upload from Device
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/gif,image/webp"
+                  onChange={handleScheduledImageFileChange}
+                  style={{ display: 'none' }}
+                  disabled={!!scheduledImageUrl}
+                />
+              </label>
+              {scheduledImageFile && (
+                <span style={{ marginLeft: '12px', fontSize: '14px' }}>
+                  ✓ {scheduledImageFile.name} ({(scheduledImageFile.size / 1024 / 1024).toFixed(2)}{' '}
+                  MB)
+                  <button
+                    type="button"
+                    onClick={clearScheduledImageFile}
+                    style={{
+                      marginLeft: '8px',
+                      background: 'none',
+                      border: 'none',
+                      color: '#dc3545',
+                      cursor: 'pointer',
+                      fontSize: '16px',
+                      fontWeight: 'bold',
+                    }}
+                  >
+                    ✕
+                  </button>
+                </span>
+              )}
+            </div>
+
+            {/* Preview */}
+            {scheduledImagePreview && (
+              <div style={{ marginBottom: '12px' }}>
+                <img
+                  src={scheduledImagePreview}
+                  alt="Preview"
+                  style={{
+                    maxWidth: '200px',
+                    maxHeight: '150px',
+                    borderRadius: '6px',
+                    border: '1px solid #ddd',
+                  }}
+                />
+              </div>
+            )}
+
+            {/* Divider */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                margin: '12px 0',
+                opacity: scheduledImageFile ? 0.4 : 1,
+              }}
+            >
+              <hr style={{ flex: 1, border: 'none', borderTop: '1px solid #ddd' }} />
+              <span style={{ padding: '0 12px', color: '#888', fontSize: '12px' }}>OR</span>
+              <hr style={{ flex: 1, border: 'none', borderTop: '1px solid #ddd' }} />
+            </div>
+
+            {/* URL Input */}
             <input
               type="text"
               value={scheduledImageUrl}
-              onChange={e => setScheduledImageUrl(e.target.value)}
-              placeholder="Optional image URL"
-              style={{ padding: '8px', borderRadius: '6px', border: '1px solid #ccc', flex: 1 }}
+              onChange={e => {
+                setScheduledImageUrl(e.target.value);
+                if (e.target.value) clearScheduledImageFile();
+              }}
+              placeholder="Paste image URL"
+              disabled={!!scheduledImageFile}
+              style={{
+                width: '100%',
+                padding: '8px',
+                borderRadius: '6px',
+                border: '1px solid #ccc',
+                opacity: scheduledImageFile ? 0.5 : 1,
+              }}
             />
+            <p style={{ margin: '8px 0 0', fontSize: '12px', color: '#666' }}>
+              Supported: JPEG, PNG, GIF, WebP (max 10MB)
+            </p>
           </div>
+
+          {/* Date/Time and Schedule Button */}
           <div
             style={{ display: 'flex', gap: '1rem', alignItems: 'flex-end', marginBottom: '1.5rem' }}
           >
@@ -486,13 +820,20 @@ export default function SocialMediaComposer({ platform }) {
                 <p style={{ margin: 0, fontWeight: 'bold' }}>
                   {formatDate(post.scheduledFor)} (PST)
                 </p>
-                <p style={{ margin: '8px 0', whiteSpace: 'pre-wrap' }}>{post.message}</p>
+                <p style={{ margin: '8px 0', whiteSpace: 'pre-wrap' }}>
+                  {post.message || '(Image only)'}
+                </p>
                 {post.link && (
                   <p style={{ margin: 0, fontSize: '13px', color: '#555' }}>Link: {post.link}</p>
                 )}
                 {post.imageUrl && (
                   <p style={{ margin: 0, fontSize: '13px', color: '#555' }}>
                     Image: {post.imageUrl}
+                  </p>
+                )}
+                {(post.hasImage || post.imageOriginalName) && (
+                  <p style={{ margin: 0, fontSize: '13px', color: '#4caf50' }}>
+                    📷 Image attached: {post.imageOriginalName || 'uploaded file'}
                   </p>
                 )}
                 <p
