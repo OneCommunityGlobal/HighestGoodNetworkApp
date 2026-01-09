@@ -96,6 +96,34 @@ const calculateEventStatus = event => {
   }
   return 'Completed';
 };
+
+// Transform API event data to match the expected format
+const transformEvent = event => {
+  const date = event.date || event.eventDate || event.startDate || '';
+  const time = event.time || event.eventTime || `${event.startTime || ''} - ${event.endTime || ''}`;
+  const baseEvent = {
+    id: event.id || event._id || String(event.id || event._id),
+    name: event.name || event.eventName || 'Unnamed Event',
+    registrations: event.registrations || event.totalRegistrations || 0,
+    attendees: event.attendees || event.totalAttendees || 0,
+    completed: event.completed || event.totalCompleted || 0,
+    walkouts: event.walkouts || event.totalWalkouts || 0,
+    date,
+    time,
+    link: event.link || event.eventLink || event.url || '#',
+    organizer: event.organizer || event.organizerName || 'Unknown',
+    capacity: event.capacity || event.maxCapacity || 0,
+    overallRating: event.overallRating || event.rating || 0,
+    startDate: event.startDate || date,
+    endDate: event.endDate || date,
+    startTime: event.startTime || '',
+    endTime: event.endTime || '',
+  };
+  // Calculate status from timestamps if available, otherwise use provided status
+  baseEvent.status =
+    calculateEventStatus(baseEvent) || event.status || event.eventStatus || 'Unknown';
+  return baseEvent;
+};
 const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
   const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
   const x = cx + radius * Math.cos(-midAngle * RADIAN);
@@ -114,7 +142,7 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, per
     </text>
   );
 };
-  
+
 const CustomTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
     return (
@@ -144,33 +172,7 @@ function AttendanceNoShowCharts() {
         // Check if response has data in expected format
         if (response.data && Array.isArray(response.data)) {
           // Transform API data to match mock data format if needed
-          const transformedEvents = response.data.map(event => {
-            const date = event.date || event.eventDate || event.startDate || '';
-            const time =
-              event.time || event.eventTime || `${event.startTime || ''} - ${event.endTime || ''}`;
-            const baseEvent = {
-              id: event.id || event._id || String(event.id || event._id),
-              name: event.name || event.eventName || 'Unnamed Event',
-              registrations: event.registrations || event.totalRegistrations || 0,
-              attendees: event.attendees || event.totalAttendees || 0,
-              completed: event.completed || event.totalCompleted || 0,
-              walkouts: event.walkouts || event.totalWalkouts || 0,
-              date,
-              time,
-              link: event.link || event.eventLink || event.url || '#',
-              organizer: event.organizer || event.organizerName || 'Unknown',
-              capacity: event.capacity || event.maxCapacity || 0,
-              overallRating: event.overallRating || event.rating || 0,
-              startDate: event.startDate || date,
-              endDate: event.endDate || date,
-              startTime: event.startTime || '',
-              endTime: event.endTime || '',
-            };
-            // Calculate status from timestamps if available, otherwise use provided status
-            baseEvent.status =
-              calculateEventStatus(baseEvent) || event.status || event.eventStatus || 'Unknown';
-            return baseEvent;
-          });
+          const transformedEvents = response.data.map(transformEvent);
 
           setEvents(transformedEvents);
           if (transformedEvents.length > 0) {
@@ -178,33 +180,7 @@ function AttendanceNoShowCharts() {
           }
         } else if (response.data && response.data.events && Array.isArray(response.data.events)) {
           // Handle nested response structure
-          const transformedEvents = response.data.events.map(event => {
-            const date = event.date || event.eventDate || event.startDate || '';
-            const time =
-              event.time || event.eventTime || `${event.startTime || ''} - ${event.endTime || ''}`;
-            const baseEvent = {
-              id: event.id || event._id || String(event.id || event._id),
-              name: event.name || event.eventName || 'Unnamed Event',
-              registrations: event.registrations || event.totalRegistrations || 0,
-              attendees: event.attendees || event.totalAttendees || 0,
-              completed: event.completed || event.totalCompleted || 0,
-              walkouts: event.walkouts || event.totalWalkouts || 0,
-              date,
-              time,
-              link: event.link || event.eventLink || event.url || '#',
-              organizer: event.organizer || event.organizerName || 'Unknown',
-              capacity: event.capacity || event.maxCapacity || 0,
-              overallRating: event.overallRating || event.rating || 0,
-              startDate: event.startDate || date,
-              endDate: event.endDate || date,
-              startTime: event.startTime || '',
-              endTime: event.endTime || '',
-            };
-            // Calculate status from timestamps if available, otherwise use provided status
-            baseEvent.status =
-              calculateEventStatus(baseEvent) || event.status || event.eventStatus || 'Unknown';
-            return baseEvent;
-          });
+          const transformedEvents = response.data.events.map(transformEvent);
 
           setEvents(transformedEvents);
           if (transformedEvents.length > 0) {
@@ -298,8 +274,6 @@ function AttendanceNoShowCharts() {
     { name: 'No-Shows', value: selectedEvent.registrations - selectedEvent.attendees },
   ];
 
-
-
   return (
     <div className={`${styles.pageContainer} ${darkMode ? 'dark-mode' : ''}`}>
       <div className={styles.contentWrapper}>
@@ -335,12 +309,12 @@ function AttendanceNoShowCharts() {
               <p className={styles.detailValue}>{selectedEvent.date}</p>
             </div>
 
-            <div style={{ marginBottom: '8px' }}>
+            <div className={styles.detailItem}>
               <p className={styles.detailLabel}>Time</p>
               <p className={styles.detailValue}>{selectedEvent.time}</p>
             </div>
 
-            <div style={{ marginBottom: '8px' }}>
+            <div className={styles.detailItem}>
               <p className={styles.detailLabel}>Event Link</p>
               <a
                 href={selectedEvent.link}
@@ -352,12 +326,12 @@ function AttendanceNoShowCharts() {
               </a>
             </div>
 
-            <div style={{ marginBottom: '8px' }}>
+            <div className={styles.detailItem}>
               <p className={styles.detailLabel}>Organizer</p>
               <p className={styles.detailValue}>{selectedEvent.organizer}</p>
             </div>
 
-            <div style={{ marginBottom: '8px' }}>
+            <div className={styles.detailItem}>
               <p className={styles.detailLabel}>Capacity</p>
               <p className={styles.detailValue}>{selectedEvent.capacity}</p>
             </div>
@@ -369,7 +343,7 @@ function AttendanceNoShowCharts() {
               </div>
             )}
 
-            <div style={{ marginBottom: '8px' }}>
+            <div className={styles.detailItem}>
               <p className={styles.detailLabel}>Status</p>
               <div className={styles.statusContainer}>
                 <span
