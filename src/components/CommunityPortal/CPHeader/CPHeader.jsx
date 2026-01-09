@@ -232,7 +232,7 @@ export function Header(props) {
             <Nav className={`ml-auto ${styles.menuContainer} mr-3`} navbar>
               {/* --PROFILE SHOWS ON TOP IN MOBILE VIEW */}
               <NavItem className={styles.showInMobile}>
-                <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
+                <NavLink tag={Link} to={`/communityportal/profile/${displayUserId}`}>
                   <img
                     alt=""
                     src={`${profilePic || '/pfp-default-header.png'}`}
@@ -254,7 +254,7 @@ export function Header(props) {
                 >
                   <DropdownItem
                     tag={Link}
-                    to={`/userprofile/${displayUserId}`}
+                    to={`/communityportal/profile/${displayUserId}`}
                     className={fontColor}
                   >
                     {VIEW_PROFILE}
@@ -429,7 +429,7 @@ export function Header(props) {
                 </UncontrolledDropdown>
               )}
               <NavItem className={styles.hideInMobile}>
-                <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
+                <NavLink tag={Link} to={`/communityportal/profile/${displayUserId}`}>
                   <img
                     src={`${profilePic || '/pfp-default-header.png'}`}
                     alt=""
@@ -453,7 +453,11 @@ export function Header(props) {
                     Hello {firstName}
                   </DropdownItem>
                   <DropdownItem divider />
-                  <DropdownItem tag={Link} to={`/userprofile/${user.userid}`} className={fontColor}>
+                  <DropdownItem
+                    tag={Link}
+                    to={`/communityportal/profile/${user.userid}`}
+                    className={fontColor}
+                  >
                     {VIEW_PROFILE}
                   </DropdownItem>
                   {!cantUpdateDevAdminDetails(props.userProfile.email, props.userProfile.email) && (

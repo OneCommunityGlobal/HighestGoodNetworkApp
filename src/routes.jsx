@@ -576,7 +576,8 @@ export default (
           allowedRoles={[UserRole.Owner]}
         />
         <ProtectedRoute path="/job-application" exact component={JobApplicationForm} />
-        <ProtectedRoute path="/popularity" component={PopularityTimelineChart} fallback />;
+        <ProtectedRoute path="/popularity" component={PopularityTimelineChart} fallback />
+        ;
         <ProtectedRoute
           path="/popularity-enhanced"
           component={EnhancedPopularityTimelineChart}
@@ -737,6 +738,11 @@ export default (
         {/* ----- Community Calendar Routing ----- */}
         <CPProtectedRoute path="/communityportal/calendar" exact component={CommunityCalendar} />
         <CPProtectedRoute path="/communityportal/activities" exact component={ActivityList} />
+        <CPProtectedRoute
+          path="/communityportal/profile/:userId"
+          fallback
+          component={UserProfile}
+        />
         <CPProtectedRoute
           path="/communityportal/ActivityAttendance"
           exact
