@@ -363,6 +363,11 @@ function UserProfile(props) {
   };
 
   const fetchCalculatedStartDate = async (userId, userProfileData) => {
+    if (!userProfileData?.endDate) {
+      const createdDate = userProfileData?.createdDate ? userProfileData.createdDate.split('T')[0] : '';
+      setCalculatedStartDate(createdDate);
+      return;
+    }
     try {
       const startDate = await dispatch(
         getTimeStartDateEntriesByPeriod(userId, userProfileData.createdDate, userProfileData.endDate),
@@ -1116,7 +1121,7 @@ setUpdatedTasks(prev => {
     const newUserProfile = {
       ...userProfile,
       isActive,
-      endDate: endDate || undefined,
+      ...(isActive ? {endDate: null} : {endDate}),
     };
 
     try {
@@ -1127,12 +1132,22 @@ setUpdatedTasks(prev => {
       );
       setUserProfile(newUserProfile);
       setOriginalUserProfile(newUserProfile);
-      window.location.reload();
+      // window.location.reload();
+      await loadUserProfile();
+      await loadUserTasks();
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('Failed to update user status:', error);
     }
     setActiveInactivePopupOpen(false);
+
+    if (!userProfile.deactivatedAt && !isActive) {
+      toast.success('User scheduled for deactivation.');
+    } else if (userProfile.deactivatedAt && isActive) {
+      toast.success('Scheduled deactivation canceled.');
+    } else if (!userProfile.isActive && isActive) {
+      toast.success('User reactivated.');
+    }
   };
 
   const activeInactivePopupClose = () => {
@@ -1313,10 +1328,14 @@ setUpdatedTasks(prev => {
     setUserEndDate(endDate);
   };
 
+  const shouldShowEndDate =
+  !userProfile.isActive || !!userProfile.deactivatedAt;
+
   return (
     <div className={darkMode ? 'bg-oxford-blue' : ''} style={{ minHeight: '100%' }}>
       <ActiveInactiveConfirmationPopup
         isActive={userProfile.isActive}
+        deactivatedAt={userProfile.deactivatedAt}
         fullName={`${userProfile.firstName} ${userProfile.lastName}`}
         open={activeInactivePopupOpen}
         setActiveInactive={setActiveInactive}
@@ -1483,6 +1502,7 @@ setUpdatedTasks(prev => {
             <span className="mr-2">
               <ActiveCell
                 isActive={userProfile.isActive}
+                deactivatedAt={userProfile.deactivatedAt}
                 user={userProfile}
                 canChange={canChangeUserStatus}
                 onClick={() => {
@@ -1616,7 +1636,7 @@ setUpdatedTasks(prev => {
             {'   '}
             To:{' '}
             <span className={darkMode ? 'text-light' : ''}>
-              {userProfile.endDate ? formatDateLocal(userProfile.endDate) : 'N/A'}
+              {shouldShowEndDate && userProfile.endDate ? formatDateLocal(userProfile.endDate) : 'N/A'}
             </span>
           </p>
           {showSelect ? (
