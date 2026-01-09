@@ -1,0 +1,51 @@
+.chartContainer {
+  width: 100%;
+  height: 350px; /* default height for desktop */
+  max-height: 400px;
+  min-height: 250px;
+  padding: 0.5rem;
+  border-radius: 8px;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  flex-direction: row;
+}
+
+/* Recharts text */
+.recharts-wrapper text {
+  font-size: 11px;
+}
+
+/* Filter container: horizontal on desktop, vertical on mobile */
+.filterContainer {
+  display: flex;
+  flex-wrap: nowrap; /* horizontal by default */
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.filterContainer label {
+  min-width: 150px;
+  display: flex;
+  flex-direction: column; /* ensures label and input align vertically on mobile */
+  font-size: 0.85rem;
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  .chartContainer {
+    height: 300px; /* slightly shorter on tablets */
+    padding: 0.3rem;
+    overflow-x: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .filterContainer {
+    flex-direction: column; /* vertical on mobile */
+    gap:0.8rem;
+    align-items: stretch;
+  }
+
+}
