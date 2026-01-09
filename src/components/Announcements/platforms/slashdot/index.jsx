@@ -59,13 +59,43 @@ const sanitizeTags = text =>
     )
     .filter(Boolean);
 
-const slugify = text =>
-  text
-    .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, '')
-    .replace(/[\s_-]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .trim();
+// const slugify = text =>
+//   text
+//     .toLowerCase()
+//     .replace(/[^a-z0-9\s-]/g, '')
+//     .replace(/[\s_-]+/g, '-')
+//     .replace(/^-+|-+$/g, '')
+//     .trim();
+const slugify = text => {
+  const lower = `${text || ''}`.toLowerCase();
+  const chars = [];
+  let lastWasDash = false;
+
+  for (const char of lower) {
+    const code = char.charCodeAt(0);
+    const isAlpha = code >= 97 && code <= 122;
+    const isDigit = code >= 48 && code <= 57;
+
+    if (isAlpha || isDigit) {
+      chars.push(char);
+      lastWasDash = false;
+      continue;
+    }
+
+    if (char === ' ' || char === '-' || char === '_') {
+      if (!lastWasDash && chars.length) {
+        chars.push('-');
+        lastWasDash = true;
+      }
+    }
+  }
+
+  if (chars[chars.length - 1] === '-') {
+    chars.pop();
+  }
+
+  return chars.join('');
+};
 
 const extractTagCandidates = (headline, summary, existing) => {
   if (Array.isArray(existing) && existing.length) return existing.slice(0, 6);
