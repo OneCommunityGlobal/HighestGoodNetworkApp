@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import styles from './ResourceManagement.module.css';
 
 // Move mock data OUTSIDE the component so it is stable and doesn't re-calculate
