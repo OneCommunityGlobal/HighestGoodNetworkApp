@@ -201,6 +201,8 @@ import SupportLogin from './components/SupportPortal/SupportLogin';
 import SupportDashboard from './components/SupportPortal/SupportDashboard';
 import SupportLogViewer from './components/SupportPortal/SupportLogViewer';
 
+import WeeklyProgressDashboard from './components/WeeklyProgress/WeeklyProgressDashboard';
+
 // Social Architecture
 
 import JobApplicationForm from './components/Collaboration/JobApplicationForm/JobApplicationForm';
@@ -415,6 +417,14 @@ export default (
           component={Reports}
           fallback
           routePermissions={RoutePermissions.reports}
+        />
+        {/* Weekly Progress (Phase 2) */}
+        <ProtectedRoute
+          path="/weeklyprogress"
+          exact
+          component={WeeklyProgressDashboard}
+          fallback
+          routePermissions={RoutePermissions.weeklySummariesReport}
         />
         <ProtectedRoute path="/teamlocations" exact component={TeamLocations} />
         <ProtectedRoute path="/job-analytics" component={JobAnalyticsPage} fallback />
