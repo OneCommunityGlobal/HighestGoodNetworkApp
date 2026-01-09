@@ -124,11 +124,27 @@ const formatLocalDate = date =>
   `${date.getFullYear()}-${padTimeUnit(date.getMonth() + 1)}-${padTimeUnit(date.getDate())}`;
 
 const formatLocalTime = date => `${padTimeUnit(date.getHours())}:${padTimeUnit(date.getMinutes())}`;
+const getSecureBase36 = length => {
+  const chars = [];
+  const max = 36 * 7;
+  while (chars.length < length) {
+    const bytes = new Uint8Array(length);
+    globalThis.crypto.getRandomValues(bytes);
+    for (const byte of bytes) {
+      if (byte >= max) continue;
+      chars.push((byte % 36).toString(36));
+      if (chars.length === length) break;
+    }
+  }
+  return chars.join('');
+};
 
 const createScheduleId = () =>
-  `schedule-${Date.now().toString(36)}-${Math.random()
-    .toString(36)
-    .slice(2, 8)}`;
+ `schedule-${Date.now().toString(36)}-${getSecureBase36(6)}`;
+// const createScheduleId = () =>
+//   `schedule-${Date.now().toString(36)}-${Math.random()
+//     .toString(36)
+//     .slice(2, 8)}`;
 
 const formatDisplayDateTime = (dateString, timeString) => {
   if (!dateString) return '—';
