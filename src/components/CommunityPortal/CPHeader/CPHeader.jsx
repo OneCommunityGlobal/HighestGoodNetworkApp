@@ -70,14 +70,9 @@ export function Header(props) {
     [ALLOWED_ROLES_TO_INTERACT, props.auth.user.role],
   );
 
-  const UserProfileLink = ({ userId, profilePic }) => (
-    <NavLink tag={Link} to={`/communityportal/profile/${userId}`}>
-      <img
-        src={profilePic || '/pfp-default-header.png'}
-        alt=""
-        style={{ maxWidth: '60px', maxHeight: '60px' }}
-        className="dashboardimg"
-      />
+  const userProfileLink = (
+    <NavLink tag={Link} to={`/communityportal/profile/${displayUserId}`}>
+      <img src={profilePic || '/pfp-default-header.png'} alt="" className="dashboardimg" />
     </NavLink>
   );
 
@@ -242,9 +237,7 @@ export function Header(props) {
             )}
             <Nav className={`ml-auto ${styles.menuContainer} mr-3`} navbar>
               {/* --PROFILE SHOWS ON TOP IN MOBILE VIEW */}
-              <NavItem className={styles.showInMobile}>
-                <UserProfileLink userId={displayUserId} profilePic={profilePic} />
-              </NavItem>
+              <NavItem className={styles.showInMobile}>{userProfileLink}</NavItem>
               <UncontrolledDropdown inNavbar nav className={styles.showInMobile}>
                 <DropdownToggle nav caret>
                   <span>
@@ -432,9 +425,7 @@ export function Header(props) {
                   </DropdownMenu>
                 </UncontrolledDropdown>
               )}
-              <NavItem className={styles.hideInMobile}>
-                <UserProfileLink userId={displayUserId} profilePic={profilePic} />
-              </NavItem>
+              <NavItem className={styles.hideInMobile}>{userProfileLink}</NavItem>
               <UncontrolledDropdown nav className={styles.hideInMobile}>
                 <DropdownToggle nav caret>
                   <span>
