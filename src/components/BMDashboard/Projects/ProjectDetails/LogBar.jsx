@@ -2,16 +2,18 @@ import { v4 as uuidv4 } from 'uuid';
 import { Button } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-// button styles for each section
+import styles from './ProjectDetails.module.css';
+
+// Button color styles for each section
 const buttonStyles = {
   dailyLogging: 'green',
   newItem: 'blue',
   team: 'indigo',
 };
 
-function LogBar(props) {
-  const { projectId } = props;
-  const darkMode = useSelector(state => state.theme.darkMode);
+function LogBar({ projectId }) {
+  const darkMode = useSelector(state => state.theme?.darkMode || false);
+
   const buttonLabels = {
     dailyLogging: {
       name: ['Time', 'Material', 'Tool/Equipment'],
@@ -33,40 +35,30 @@ function LogBar(props) {
   };
 
   return (
-    <div className={`log-bar ${darkMode ? 'log-bar-dark' : ''}`}>
+    <div className={darkMode ? styles['log-bar-dark'] : styles['log-bar']}>
       {Object.keys(buttonStyles).map(section => (
-        <div
-          key={uuidv4()}
-          className={`log-bar__section ${darkMode ? 'log-bar__section-dark' : ''}`}
-        >
-          <h2 className={darkMode ? 'log-bar__section-h2-dark' : ''}>
-            {(() => {
-              switch (section) {
-                case 'dailyLogging':
-                  return 'Daily Logging:';
-                case 'newItem':
-                  return 'Add a New Item:';
-                default:
-                  return 'Team';
-              }
-            })()}
+        <div key={uuidv4()} className={styles['log-bar__section']}>
+          <h2 style={{ color: darkMode ? '#ffffff' : '#333333' }}>
+            {section === 'dailyLogging'
+              ? 'Daily Logging:'
+              : section === 'newItem'
+              ? 'Add a New Item:'
+              : 'Team'}
           </h2>
-          <ul className="log-bar__btn-group">
+
+          <ul className={styles['log-bar__btn-group']}>
             {buttonLabels[section].name.map((label, index) => (
               <li key={uuidv4()}>
-                {label !== 'Log Issue' ? (
-                  <Link to={buttonLabels[section].url[index]}>
-                    <Button type="button" className={`button button--${buttonStyles[section]}`}>
-                      {label}
-                    </Button>
-                  </Link>
-                ) : (
-                  <Link to={`/bmdashboard/issues/add/${projectId}`}>
-                    <Button type="button" className="button button--maroon">
-                      Log Issue
-                    </Button>
-                  </Link>
-                )}
+                <Link to={buttonLabels[section].url[index]}>
+                  <Button
+                    type="button"
+                    className={`${styles.button} ${styles.btn} ${
+                      styles[`button--${buttonStyles[section]}`]
+                    } ${label === 'Log Issue' ? styles['button--maroon'] : ''}`}
+                  >
+                    {label}
+                  </Button>
+                </Link>
               </li>
             ))}
           </ul>
