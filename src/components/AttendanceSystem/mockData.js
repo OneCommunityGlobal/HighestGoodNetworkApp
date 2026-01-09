@@ -44,7 +44,7 @@ export const events = [
     completed: 55,
     walkouts: 5,
     date: getDateString(0), // Today - will show as In Progress if current time is within range
-    time: '08:00 AM - 06:00 PM',
+    time: '12:00 AM - 11:59 PM',
     link: 'https://seminarc.com',
     organizer: 'Knowledge Share Co.',
     capacity: 100,
