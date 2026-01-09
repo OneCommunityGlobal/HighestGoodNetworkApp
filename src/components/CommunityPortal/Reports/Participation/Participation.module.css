@@ -350,6 +350,31 @@
   margin: 0;
 }
 
+.insightsTitleWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.infoIcon {
+  cursor: pointer;
+  color: #6c757d;
+  font-size: 1rem;
+  transition: color 0.2s ease;
+}
+
+.infoIcon:hover {
+  color: #007bff;
+}
+
+.insightsHeaderDark .infoIcon {
+  color: #adb5bd;
+}
+
+.insightsHeaderDark .infoIcon:hover {
+  color: #66b3ff;
+}
+
 .insightsFilters select {
   margin-left: 10px;
   padding: 8px;
