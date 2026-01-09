@@ -1,4 +1,4 @@
-import './WishList.css';
+import styles from './WishList.module.css';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { FaMapMarkerAlt } from 'react-icons/fa';
@@ -22,39 +22,39 @@ function WishList() {
   if (!wishlists?.listingId?.length) return <div>No items in wishlist.</div>;
 
   return (
-    <div className="item">
-      <div className="item__container">
+    <div className={styles.item}>
+      <div className={styles.item__container}>
         <Header />
-        <div className="item__location list__location">
-          <FaMapMarkerAlt className="item__icon" />
+        <div className={styles.list__location}>
+          <FaMapMarkerAlt className={styles.item__icon} />
           <a href="/">View on Property Map</a>
         </div>
-        <h1 className="list__title">Wish List</h1>
+        <h1 className={styles.list__title}>Wish List</h1>
 
         {wishlists.listingId.map(item => (
-          <div className="item__body" key={item._id}>
-            <div className="item__details-wrapper">
+          <div className={styles.item__body} key={item._id}>
+            <div className={styles.item__details_wrapper}>
               {/* LEFT */}
-              <div className="list__details-left">
-                <div className="item-title_wrapper--mobile">
-                  <h1 className="list__item-title--mobile">{item.title}</h1>
-                  <h2 className="list__item-title--mobile">{item.unit || 'N/A'}</h2>
+              <div className={styles.list__details_left}>
+                <div className={styles.item_title_wrapper__mobile}>
+                  <h1 className={styles.list__item_title_mobile}>{item.title}</h1>
+                  <h2 className={styles.list__item_title_mobile}>{item.unit || ''}</h2>
                 </div>
                 {item.images?.[0] && (
-                  <img className="carousel-image" src={item.images[0]} alt={item.title} />
+                  <img className={styles.carousel_image} src={item.images[0]} alt={item.title} />
                 )}
               </div>
 
               {/* RIGHT */}
-              <div className="list__details-right">
-                <div className="item-title_wrapper item-title_wrapper--desktop">
-                  <span className="list__item-title item-title-right">{item.title}</span>
+              <div className={styles.list__details_right}>
+                <div className={styles.item_title_wrapper__desktop}>
+                  <span className={styles.item_title_right}>{item.title}</span>
                 </div>
 
-                <div className="item__details">
-                  <div className="list_item__amenities">
+                <div className={styles.item__details}>
+                  <div className={styles.list_item_amenities}>
                     <div>
-                      <span className="font600">Unit amenities:</span>
+                      <span className={styles.font600}>Available amenities in unit:</span>
                       <ol>
                         {item.amenities?.length ? (
                           item.amenities.map(a => <li key={a}>{a}</li>)
@@ -63,31 +63,19 @@ function WishList() {
                         )}
                       </ol>
                     </div>
-
-                    <div>
-                      <span className="font600">Village amenities:</span>
-                      <ol>
-                        {item.villageAmenities?.length ? (
-                          item.villageAmenities.map(a => <li key={a}>{a}</li>)
-                        ) : (
-                          <li>No village amenities listed</li>
-                        )}
-                      </ol>
-                    </div>
                   </div>
                 </div>
 
-                <div className="item__price">
-                  <span className="font600">Price per night:</span> {item.price}
+                <div className={styles.item__price}>
+                  <span className={styles.font600}>Basic per night price:</span> ${item.price}/DAY
                 </div>
 
-                {/* Dynamic URL with listing._id */}
                 <NavItem
                   tag={Link}
                   to={`/lbdashboard/wishlist/${item._id}`}
-                  className="list__details"
+                  className={styles.list__details}
                 >
-                  View this listing
+                  Click here to view availabilities
                 </NavItem>
               </div>
             </div>
