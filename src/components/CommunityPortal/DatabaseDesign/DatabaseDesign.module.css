@@ -35,17 +35,18 @@
 }
 
 .filtersSection {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(150px, 1fr));
   gap: 24px;
   margin-bottom: 32px;
-  flex-wrap: wrap;
+  align-items: end;
 }
 
-.filterGroup {
-  display: flex;
-  flex-direction: column;
+.filterGroup,
+.clearFiltersGroup {
+  display: grid;
+  grid-template-rows: auto 42px;
   gap: 8px;
-  min-width: 200px;
 }
 
 .filterGroup label {
@@ -59,6 +60,7 @@
 }
 
 .filterSelect {
+  height: 42px;
   padding: 10px 14px;
   border-radius: 8px;
   border: 1px solid #cbd5e5;
@@ -73,6 +75,47 @@
   border-color: #334155;
   color: #e2e8f0;
 }
+
+.checkboxWrapper {
+  height: 42px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e5;
+  background: #ffffff;
+  font-size: 0.95rem;
+  color: #0f172a;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.checkboxWrapper input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #2563eb;
+  cursor: pointer;
+}
+
+.checkboxWrapper:hover {
+  border-color: #94a3b8;
+}
+
+.darkMode .checkboxWrapper {
+  background: #1e293b;
+  border-color: #334155;
+  color: #e2e8f0;
+}
+
+.darkMode .checkboxWrapper:hover {
+  border-color: #475569;
+}
+
 
 .eventsSection {
   margin-top: 32px;
@@ -465,16 +508,22 @@
 }
 
 .clearFiltersButton {
-  padding: 10px 16px;
-  border-radius: 6px;
+  height: 42px;
+  width: 40%;
+  padding: 10px 14px;
+  border-radius: 8px;
   border: 1px solid #cbd5e5;
   background: #ffffff;
   color: #475569;
   cursor: pointer;
   font-size: 0.9rem;
   font-weight: 500;
-  align-self: flex-end;
   transition: background 0.2s, border-color 0.2s;
+}
+
+.clearFiltersGroup::before {
+  content: "";
+  height: 1.2em;
 }
 
 .clearFiltersButton:hover {

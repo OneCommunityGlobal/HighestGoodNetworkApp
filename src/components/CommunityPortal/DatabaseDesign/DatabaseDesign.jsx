@@ -27,6 +27,7 @@ function DatabaseDesign() {
   const [filters, setFilters] = useState({
     type: '',
     location: '',
+    hasCapacity: false,
   });
 
   useEffect(() => {
@@ -99,6 +100,7 @@ function DatabaseDesign() {
     setFilters({
       type: '',
       location: '',
+      hasCapacity: false,
     });
   };
 
@@ -214,11 +216,29 @@ function DatabaseDesign() {
           </select>
         </div>
 
-        {(filters.type || filters.location) && (
-          <button onClick={handleClearFilters} className={styles.clearFiltersButton}>
-            Clear Filters
-          </button>
-        )}
+        <div className={styles.filterGroup}>
+          <label htmlFor="availability">Availability</label>
+          <label className={styles.checkboxWrapper}>
+            <input
+              type="checkbox"
+              checked={filters.hasCapacity}
+              onChange={e => handleFilterChange('hasCapacity', e.target.checked)}
+            />
+            Only show events with available capacity
+          </label>
+        </div>
+
+        <div className={styles.filtersGroup}>
+          {(filters.type || filters.location || filters.hasCapacity) && (
+            <button
+              id="clearFilter"
+              onClick={handleClearFilters}
+              className={styles.clearFiltersButton}
+            >
+              Clear Filters
+            </button>
+          )}
+        </div>
       </div>
 
       {error && events.length > 0 && (
@@ -246,132 +266,144 @@ function DatabaseDesign() {
           </div>
         ) : (
           <div className={styles.eventsGrid}>
-            {events.map(event => {
-              const formattedDate = event.date
-                ? moment(event.date).format('dddd, MMM D, YYYY')
-                : 'Date TBD';
-              const formattedStartTime = event.startTime
-                ? moment(event.startTime).format('h:mm A')
-                : '';
-              const formattedEndTime = event.endTime ? moment(event.endTime).format('h:mm A') : '';
-              const timeRange =
-                formattedStartTime && formattedEndTime
-                  ? `${formattedStartTime} - ${formattedEndTime}`
-                  : 'Time TBD';
-              const isVirtual = event.location === 'Virtual';
-              const organizer = event.resources?.[0]?.name || 'Organizer TBD';
-              const capacity = event.maxAttendees || 0;
-              const currentAttendees = event.currentAttendees || 0;
+            {events
+              .filter(event => {
+                if (filters.hasCapacity) {
+                  const capacity = event.maxAttendees || 0;
+                  const currentAttendees = event.currentAttendees || 0;
+                  const hasCapacity = capacity === 0 ? true : currentAttendees < capacity; // unlimited if 0
+                  if (!hasCapacity) return false;
+                }
+                return true;
+              })
+              .map(event => {
+                const formattedDate = event.date
+                  ? moment(event.date).format('dddd, MMM D, YYYY')
+                  : 'Date TBD';
+                const formattedStartTime = event.startTime
+                  ? moment(event.startTime).format('h:mm A')
+                  : '';
+                const formattedEndTime = event.endTime
+                  ? moment(event.endTime).format('h:mm A')
+                  : '';
+                const timeRange =
+                  formattedStartTime && formattedEndTime
+                    ? `${formattedStartTime} - ${formattedEndTime}`
+                    : 'Time TBD';
+                const isVirtual = event.location === 'Virtual';
+                const organizer = event.resources?.[0]?.name || 'Organizer TBD';
+                const capacity = event.maxAttendees || 0;
+                const currentAttendees = event.currentAttendees || 0;
 
-              return (
-                <div
-                  key={event._id || event.id}
-                  className={`${styles.eventCard} ${
-                    isVirtual ? styles.virtualEvent : styles.inPersonEvent
-                  }`}
-                >
-                  <div className={styles.eventHeader}>
-                    <h3>{event.title}</h3>
-                    <span
-                      className={`${styles.statusBadge} ${
-                        styles[`status${event.status?.replace(/\s+/g, '')}`]
-                      }`}
-                    >
-                      {event.status}
-                    </span>
-                  </div>
+                return (
+                  <div
+                    key={event._id || event.id}
+                    className={`${styles.eventCard} ${
+                      isVirtual ? styles.virtualEvent : styles.inPersonEvent
+                    }`}
+                  >
+                    <div className={styles.eventHeader}>
+                      <h3>{event.title}</h3>
+                      <span
+                        className={`${styles.statusBadge} ${
+                          styles[`status${event.status?.replace(/\s+/g, '')}`]
+                        }`}
+                      >
+                        {event.status}
+                      </span>
+                    </div>
 
-                  <div className={styles.eventFormatIndicator}>
-                    {isVirtual ? (
-                      <span className={styles.formatBadge}>
-                        <FaVideo className={styles.formatIcon} />
-                        Virtual Event
-                      </span>
-                    ) : (
-                      <span className={styles.formatBadge}>
-                        <FaBuilding className={styles.formatIcon} />
-                        In-Person Event
-                      </span>
+                    <div className={styles.eventFormatIndicator}>
+                      {isVirtual ? (
+                        <span className={styles.formatBadge}>
+                          <FaVideo className={styles.formatIcon} />
+                          Virtual Event
+                        </span>
+                      ) : (
+                        <span className={styles.formatBadge}>
+                          <FaBuilding className={styles.formatIcon} />
+                          In-Person Event
+                        </span>
+                      )}
+                    </div>
+
+                    <div className={styles.eventDetails}>
+                      <div className={styles.eventDetailRow}>
+                        <FaCalendarAlt className={styles.detailIcon} />
+                        <span>{formattedDate}</span>
+                      </div>
+                      <div className={styles.eventDetailRow}>
+                        <FaClock className={styles.detailIcon} />
+                        <span>{timeRange}</span>
+                      </div>
+                      <div className={styles.eventDetailRow}>
+                        <FaMapMarkerAlt className={styles.detailIcon} />
+                        <span>{event.location}</span>
+                      </div>
+                      <div className={styles.eventDetailRow}>
+                        <FaUsers className={styles.detailIcon} />
+                        <span>
+                          {currentAttendees} / {capacity} attendees
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className={styles.eventMeta}>
+                      <span className={styles.eventType}>{event.type}</span>
+                      <span className={styles.organizer}>Organized by: {organizer}</span>
+                    </div>
+
+                    {event.description && (
+                      <p className={styles.eventDescription}>{event.description}</p>
                     )}
-                  </div>
 
-                  <div className={styles.eventDetails}>
-                    <div className={styles.eventDetailRow}>
-                      <FaCalendarAlt className={styles.detailIcon} />
-                      <span>{formattedDate}</span>
-                    </div>
-                    <div className={styles.eventDetailRow}>
-                      <FaClock className={styles.detailIcon} />
-                      <span>{timeRange}</span>
-                    </div>
-                    <div className={styles.eventDetailRow}>
-                      <FaMapMarkerAlt className={styles.detailIcon} />
-                      <span>{event.location}</span>
-                    </div>
-                    <div className={styles.eventDetailRow}>
-                      <FaUsers className={styles.detailIcon} />
-                      <span>
-                        {currentAttendees} / {capacity} attendees
-                      </span>
+                    <div className={styles.eventActions}>
+                      <button
+                        onClick={() => handleConfirmAttendance(event._id || event.id)}
+                        className={styles.actionButton}
+                        disabled={actionLoading[`confirm-${event._id || event.id}`]}
+                      >
+                        {actionLoading[`confirm-${event._id || event.id}`] ? (
+                          <>
+                            <FaSpinner className={styles.buttonSpinner} />
+                            Loading...
+                          </>
+                        ) : (
+                          'Confirm Attendance'
+                        )}
+                      </button>
+                      <button
+                        onClick={() => handleLogActivity(event._id || event.id)}
+                        className={styles.actionButton}
+                        disabled={actionLoading[`log-${event._id || event.id}`]}
+                      >
+                        {actionLoading[`log-${event._id || event.id}`] ? (
+                          <>
+                            <FaSpinner className={styles.buttonSpinner} />
+                            Loading...
+                          </>
+                        ) : (
+                          'Log Activity'
+                        )}
+                      </button>
+                      <button
+                        onClick={() => handleReports(event._id || event.id)}
+                        className={styles.actionButton}
+                        disabled={actionLoading[`reports-${event._id || event.id}`]}
+                      >
+                        {actionLoading[`reports-${event._id || event.id}`] ? (
+                          <>
+                            <FaSpinner className={styles.buttonSpinner} />
+                            Loading...
+                          </>
+                        ) : (
+                          'Reports'
+                        )}
+                      </button>
                     </div>
                   </div>
-
-                  <div className={styles.eventMeta}>
-                    <span className={styles.eventType}>{event.type}</span>
-                    <span className={styles.organizer}>Organized by: {organizer}</span>
-                  </div>
-
-                  {event.description && (
-                    <p className={styles.eventDescription}>{event.description}</p>
-                  )}
-
-                  <div className={styles.eventActions}>
-                    <button
-                      onClick={() => handleConfirmAttendance(event._id || event.id)}
-                      className={styles.actionButton}
-                      disabled={actionLoading[`confirm-${event._id || event.id}`]}
-                    >
-                      {actionLoading[`confirm-${event._id || event.id}`] ? (
-                        <>
-                          <FaSpinner className={styles.buttonSpinner} />
-                          Loading...
-                        </>
-                      ) : (
-                        'Confirm Attendance'
-                      )}
-                    </button>
-                    <button
-                      onClick={() => handleLogActivity(event._id || event.id)}
-                      className={styles.actionButton}
-                      disabled={actionLoading[`log-${event._id || event.id}`]}
-                    >
-                      {actionLoading[`log-${event._id || event.id}`] ? (
-                        <>
-                          <FaSpinner className={styles.buttonSpinner} />
-                          Loading...
-                        </>
-                      ) : (
-                        'Log Activity'
-                      )}
-                    </button>
-                    <button
-                      onClick={() => handleReports(event._id || event.id)}
-                      className={styles.actionButton}
-                      disabled={actionLoading[`reports-${event._id || event.id}`]}
-                    >
-                      {actionLoading[`reports-${event._id || event.id}`] ? (
-                        <>
-                          <FaSpinner className={styles.buttonSpinner} />
-                          Loading...
-                        </>
-                      ) : (
-                        'Reports'
-                      )}
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
+                );
+              })}
           </div>
         )}
       </div>
