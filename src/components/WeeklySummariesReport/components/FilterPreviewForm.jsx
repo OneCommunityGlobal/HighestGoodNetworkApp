@@ -1,5 +1,5 @@
-import styles from './SelectFilterModal.module.scss';
-import mainStyles from './WeeklySummariesReport.module.css';
+import styles from '../SelectFilterModal.module.scss';
+import mainStyles from '../WeeklySummariesReport.module.css';
 import WeeklySummariesToggleFilter from './WeeklySummariesToggleFilter.jsx';
 
 export default function FilterPreviewForm({ selectedFilter, darkMode, memberDict }) {
