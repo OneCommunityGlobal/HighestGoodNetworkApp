@@ -576,8 +576,7 @@ export default (
           allowedRoles={[UserRole.Owner]}
         />
         <ProtectedRoute path="/job-application" exact component={JobApplicationForm} />
-        <ProtectedRoute path="/popularity" component={PopularityTimelineChart} fallback />
-        ;
+        <ProtectedRoute path="/popularity" component={PopularityTimelineChart} fallback />;
         <ProtectedRoute
           path="/popularity-enhanced"
           component={EnhancedPopularityTimelineChart}
