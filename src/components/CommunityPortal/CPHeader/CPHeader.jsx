@@ -70,9 +70,15 @@ export function Header(props) {
     [ALLOWED_ROLES_TO_INTERACT, props.auth.user.role],
   );
 
+  const PROFILE_ROUTE = '/communityportal/profile';
   const userProfileLink = (
-    <NavLink tag={Link} to={`/communityportal/profile/${displayUserId}`}>
-      <img src={profilePic || '/pfp-default-header.png'} alt="" className="dashboardimg" />
+    <NavLink tag={Link} to={`${PROFILE_ROUTE}/${displayUserId}`}>
+      <img
+        src={profilePic || '/pfp-default-header.png'}
+        alt=""
+        style={{ maxWidth: '60px', maxHeight: '60px' }}
+        className="dashboardimg"
+      />
     </NavLink>
   );
 
@@ -251,7 +257,7 @@ export function Header(props) {
                 >
                   <DropdownItem
                     tag={Link}
-                    to={`/communityportal/profile/${displayUserId}`}
+                    to={`${PROFILE_ROUTE}/{displayUserId}`}
                     className={fontColor}
                   >
                     {VIEW_PROFILE}
@@ -443,7 +449,7 @@ export function Header(props) {
                   <DropdownItem divider />
                   <DropdownItem
                     tag={Link}
-                    to={`/communityportal/profile/${user.userid}`}
+                    to={`${PROFILE_ROUTE}/${user.userid}`}
                     className={fontColor}
                   >
                     {VIEW_PROFILE}
