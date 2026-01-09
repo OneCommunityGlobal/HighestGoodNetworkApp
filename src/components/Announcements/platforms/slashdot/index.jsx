@@ -138,8 +138,7 @@ const getSecureBase36 = length => {
   }
   return chars.join('');
 };
-const createScheduleId = () =>
- `schedule-${Date.now().toString(36)}-${getSecureBase36(6)}`;
+const createScheduleId = () => `schedule-${Date.now().toString(36)}-${getSecureBase36(6)}`;
 // const createScheduleId = () =>
 //   `schedule-${Date.now().toString(36)}-${Math.random()
 //     .toString(36)
