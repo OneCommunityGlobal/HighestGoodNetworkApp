@@ -1328,9 +1328,6 @@ setUpdatedTasks(prev => {
     setUserEndDate(endDate);
   };
 
-  const shouldShowEndDate =
-  !userProfile.isActive || !!userProfile.deactivatedAt;
-
   return (
     <div className={darkMode ? 'bg-oxford-blue' : ''} style={{ minHeight: '100%' }}>
       <ActiveInactiveConfirmationPopup
@@ -1636,7 +1633,7 @@ setUpdatedTasks(prev => {
             {'   '}
             To:{' '}
             <span className={darkMode ? 'text-light' : ''}>
-              {shouldShowEndDate && userProfile.endDate ? formatDateLocal(userProfile.endDate) : 'N/A'}
+              {userProfile.endDate ? formatDateLocal(userProfile.endDate) : 'N/A'}
             </span>
           </p>
           {showSelect ? (
