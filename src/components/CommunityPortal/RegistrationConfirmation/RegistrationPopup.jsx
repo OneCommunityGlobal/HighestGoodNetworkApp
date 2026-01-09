@@ -1,6 +1,6 @@
 import { useSelector } from 'react-redux';
 import styles from './RegistrationPopup.module.css';
-
+import PropTypes from 'prop-types';
 function Popup({ onClose }) {
   const darkMode = useSelector(state => state.theme.darkMode);
   return (
@@ -47,5 +47,7 @@ function Popup({ onClose }) {
     </div>
   );
 }
-
+Popup.propTypes = {
+  onClose: PropTypes.func.isRequired,
+};
 export default Popup;
