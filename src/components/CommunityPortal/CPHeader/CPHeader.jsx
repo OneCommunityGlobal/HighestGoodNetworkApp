@@ -70,6 +70,17 @@ export function Header(props) {
     [ALLOWED_ROLES_TO_INTERACT, props.auth.user.role],
   );
 
+  const UserProfileLink = ({ userId, profilePic }) => (
+    <NavLink tag={Link} to={`/communityportal/profile/${userId}`}>
+      <img
+        src={profilePic || '/pfp-default-header.png'}
+        alt=""
+        style={{ maxWidth: '60px', maxHeight: '60px' }}
+        className="dashboardimg"
+      />
+    </NavLink>
+  );
+
   // Users
   const canAccessUserManagement =
     props.hasPermission('postUserProfile', !isAuthUser && canInteractWithViewingUser) ||
@@ -232,14 +243,7 @@ export function Header(props) {
             <Nav className={`ml-auto ${styles.menuContainer} mr-3`} navbar>
               {/* --PROFILE SHOWS ON TOP IN MOBILE VIEW */}
               <NavItem className={styles.showInMobile}>
-                <NavLink tag={Link} to={`/communityportal/profile/${displayUserId}`}>
-                  <img
-                    alt=""
-                    src={`${profilePic || '/pfp-default-header.png'}`}
-                    style={{ maxWidth: '60px', maxHeight: '60px' }}
-                    className="dashboardimg"
-                  />
-                </NavLink>
+                <UserProfileLink userId={displayUserId} profilePic={profilePic} />
               </NavItem>
               <UncontrolledDropdown inNavbar nav className={styles.showInMobile}>
                 <DropdownToggle nav caret>
@@ -429,14 +433,7 @@ export function Header(props) {
                 </UncontrolledDropdown>
               )}
               <NavItem className={styles.hideInMobile}>
-                <NavLink tag={Link} to={`/communityportal/profile/${displayUserId}`}>
-                  <img
-                    src={`${profilePic || '/pfp-default-header.png'}`}
-                    alt=""
-                    style={{ maxWidth: '60px', maxHeight: '60px' }}
-                    className="dashboardimg"
-                  />
-                </NavLink>
+                <UserProfileLink userId={displayUserId} profilePic={profilePic} />
               </NavItem>
               <UncontrolledDropdown nav className={styles.hideInMobile}>
                 <DropdownToggle nav caret>
