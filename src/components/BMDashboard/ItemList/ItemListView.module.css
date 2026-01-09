@@ -1,3 +1,7 @@
+table thead th, table td {
+  vertical-align: middle !important;
+}
+
 .itemsListContainer {
   width: 100%;
   max-width: 1536px;
@@ -22,6 +26,10 @@
 
 .itemsListContainer th {
   height: 2rem;
+}
+
+.itemsCell td{
+  vertical-align: middle;
 }
 
 .itemsCell button {
@@ -52,8 +60,7 @@
 
 .selectInput label {
   font-weight: bold;
-  text-align: right;
-  min-width: 100px;
+  text-align: center;
   white-space: nowrap;
   margin-bottom: 8px;
 }
@@ -62,7 +69,7 @@
 .selectInput select {
   height: 38px;
   width: 100%;
-  min-width: 220px;
+  min-width: 180px;
   max-width: 240px;
   padding: 5px;
   border: 1px solid #ccc;
