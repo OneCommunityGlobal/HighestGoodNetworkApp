@@ -99,6 +99,129 @@ table thead th, table td {
   background-color: #3b82f6;
 }
 
+/* ==================== DARK MODE STYLES ==================== */
+
+/* Container - Global body selectors (from user's branch) */
+:global(body.dark-mode) .itemsListContainer,
+:global(body.bm-dashboard-dark) .itemsListContainer {
+  color: #ffffff;
+}
+
+:global(body.dark-mode) .itemsListContainer h3,
+:global(body.bm-dashboard-dark) .itemsListContainer h3 {
+  color: #ffffff;
+}
+
+/* Table styling - Global body selectors */
+:global(body.dark-mode) .itemsListContainer table,
+:global(body.bm-dashboard-dark) .itemsListContainer table {
+  color: #ffffff;
+}
+
+:global(body.dark-mode) .itemsListContainer th,
+:global(body.bm-dashboard-dark) .itemsListContainer th {
+  color: #ffffff !important;
+  background-color: #1C2541 !important;
+}
+
+:global(body.dark-mode) .itemsListContainer td,
+:global(body.bm-dashboard-dark) .itemsListContainer td {
+  color: #ffffff !important;
+  background-color: #2b3e59 !important;
+}
+
+:global(body.dark-mode) .itemsListContainer tbody tr:hover,
+:global(body.bm-dashboard-dark) .itemsListContainer tbody tr:hover {
+  background-color: #2f4157 !important;
+}
+
+:global(body.dark-mode) .itemsListContainer tbody tr:hover td,
+:global(body.bm-dashboard-dark) .itemsListContainer tbody tr:hover td {
+  background-color: #2f4157 !important;
+  color: #ffffff !important;
+}
+
+/* Input fields and selects - Global body selectors */
+:global(body.dark-mode) .selectInput input,
+:global(body.bm-dashboard-dark) .selectInput input,
+:global(body.dark-mode) .selectInput select,
+:global(body.bm-dashboard-dark) .selectInput select {
+  background-color: #1C2541 !important;
+  color: #ffffff !important;
+  border: 1px solid #3A506B !important;
+}
+
+:global(body.dark-mode) .selectInput input:focus,
+:global(body.bm-dashboard-dark) .selectInput input:focus,
+:global(body.dark-mode) .selectInput select:focus,
+:global(body.bm-dashboard-dark) .selectInput select:focus {
+  background-color: #1C2541 !important;
+  color: #ffffff !important;
+  border-color: #1C8BCC !important;
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(28, 139, 204, 0.25);
+}
+
+:global(body.dark-mode) .selectInput input::placeholder,
+:global(body.bm-dashboard-dark) .selectInput input::placeholder {
+  color: #a0a0a0 !important;
+  opacity: 1;
+}
+
+/* Labels - Global body selectors */
+:global(body.dark-mode) .selectInput label,
+:global(body.bm-dashboard-dark) .selectInput label {
+  color: #ffffff;
+}
+
+/* Buttons - Global body selectors */
+:global(body.dark-mode) .btnPrimary,
+:global(body.bm-dashboard-dark) .btnPrimary {
+  background-color: #1C8BCC !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+:global(body.dark-mode) .btnPrimary:hover,
+:global(body.bm-dashboard-dark) .btnPrimary:hover {
+  background-color: #1a7bb8 !important;
+  color: #ffffff !important;
+}
+
+/* Icons - Global body selectors */
+:global(body.dark-mode) .itemsCell svg,
+:global(body.bm-dashboard-dark) .itemsCell svg {
+  color: #a0a0a0 !important;
+}
+
+:global(body.dark-mode) .itemsCell svg:hover,
+:global(body.bm-dashboard-dark) .itemsCell svg:hover {
+  color: #1C8BCC !important;
+}
+
+/* Table borders - Global body selectors */
+:global(body.dark-mode) .itemsListContainer table td,
+:global(body.bm-dashboard-dark) .itemsListContainer table td,
+:global(body.dark-mode) .itemsListContainer table th,
+:global(body.bm-dashboard-dark) .itemsListContainer table th {
+  border-color: #3A506B !important;
+}
+
+/* Reactstrap Button overrides for dark mode - Global body selectors */
+:global(body.dark-mode) .itemsCell .btn,
+:global(body.bm-dashboard-dark) .itemsCell .btn {
+  color: #ffffff !important;
+  border-color: #3A506B !important;
+}
+
+:global(body.dark-mode) .itemsCell .btn:hover,
+:global(body.bm-dashboard-dark) .itemsCell .btn:hover {
+  background-color: #3A506B !important;
+  color: #ffffff !important;
+  border-color: #3A506B !important;
+}
+
+/* Class-based dark mode styles (from development branch) */
 .darkMode {
   color: #e8edf4;
 }
