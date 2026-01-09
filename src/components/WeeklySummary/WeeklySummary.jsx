@@ -32,7 +32,7 @@ import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
 import { Editor } from '@tinymce/tinymce-react';
 import moment from 'moment';
 import 'moment-timezone';
-import Joi from 'joi-browser';
+import Joi from 'joi';
 import { toast } from 'react-toastify';
 import classnames from 'classnames';
 import { getUserProfile } from '~/actions/userProfile';

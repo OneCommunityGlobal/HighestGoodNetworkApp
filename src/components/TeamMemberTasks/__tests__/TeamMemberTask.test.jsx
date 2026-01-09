@@ -85,10 +85,11 @@ describe('Team Member Task Component', () => {
     // verify if the icon changes to red or green based on whether the user has completed their weekly committed hours
 
     const icon = screen.getByTestId('icon');
+    const iconColor = window.getComputedStyle(icon).color;
     if (props.totaltangibletime_hrs >= props.weeklycommittedHours) {
-      expect(icon).toHaveStyle('color: rgb(0, 128, 0)');
+      expect(['rgb(0, 128, 0)', 'green']).toContain(iconColor);
     } else {
-      expect(icon).toHaveStyle('color: red');
+      expect(['rgb(255, 0, 0)', 'red']).toContain(iconColor);
     }
   });
   it('team member name and link should be displayed properly', () => {

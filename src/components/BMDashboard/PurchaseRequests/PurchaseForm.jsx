@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import Joi from 'joi-browser';
+import Joi from 'joi';
 import { Form, FormGroup, Label, Input, Button } from 'reactstrap';
 import { boxStyle } from '~/styles';
 import BMError from '../shared/BMError';
