@@ -3,7 +3,6 @@ import { ENDPOINTS } from '~/utils/URL';
 import axios from 'axios';
 import Loading from '~/components/common/Loading';
 import TeamStatsBarChart from './TeamStatsBarChart';
-import './TeamStats.css';
 
 const activeMembersMinimumDropDownOptions = [2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30];
 
