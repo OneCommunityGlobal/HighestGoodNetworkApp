@@ -73,6 +73,7 @@ import injuriesReducer from './injuries';
 
 import { weeklyProjectSummaryReducer } from './bmdashboard/weeklyProjectSummaryReducer';
 import messageReducer from './listBidDashboard/messagingReducer';
+// eslint-disable import/no-named-as-default
 import userPreferencesReducer from './listBidDashboard/userPreferencesReducer';
 import userSkillsReducer from './userSkillsReducer';
 // community portalgit
@@ -98,6 +99,10 @@ import reviewsInsightReducer from './prAnalytics/reviewsInsightReducer';
 // job analytics
 import { hoursPledgedReducer } from './jobAnalytics/hoursPledgedReducer';
 import { studentTasksReducer } from './studentTasksReducer';
+
+//education portal
+
+import browseLessonPlanReducer from './educationPortal/broweLPReducer';
 
 const localReducers = {
   auth: authReducer,
@@ -134,7 +139,6 @@ const localReducers = {
   allUsersTimeEntries: allUsersTimeEntriesReducer,
   allUserProfilesBasicInfo: allUserProfilesBasicInfoReducer,
   projectById: projectByIdReducer,
-
   // bm dashboard
   materials: materialsReducer,
   tools: toolReducer,
@@ -181,6 +185,9 @@ const localReducers = {
   // student tasks
   studentTasks: studentTasksReducer,
   jobApplication: jobApplicationReducer,
+
+  // education portal
+  browseLessonPlan: browseLessonPlanReducer,
 };
 
 const sessionReducers = {
