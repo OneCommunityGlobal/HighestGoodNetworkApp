@@ -1,7 +1,6 @@
 import CustomTooltip from '../../CustomTooltip';
 import Loading from '~/components/common/Loading';
 import { ResponsiveContainer, BarChart, XAxis, YAxis, Tooltip, Legend, Bar, Cell } from 'recharts';
-import './WorkDistributionBarChart.css';
 
 const COLORS = [
   '#14b32b',
