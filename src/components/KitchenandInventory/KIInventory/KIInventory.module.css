@@ -1,10 +1,12 @@
 /* :global(body) {
   font-family: 'Poppins', sans-serif;
-  background: #fff;
+  background: #ffffff;
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
 } */
 .inventoryContainer {
+  /* background-color: rgb(248, 240, 240); */
   padding: 40px 40px;
   margin-left: 0;
   font-size: 16px;
@@ -25,15 +27,86 @@
   margin-left: 10px;
   margin-right: 20px;
   background: #ffffff;
-  
 }
-
 .inventoryMetricCards {
   width: 100%;
   display: flex;
   gap: 20px;
-  border: 1px solid #e0e0e0;
+  /* border: 1px solid #e0e0e0; */
   border-radius: 16px;
-  box-shadow: 6px 6px 20px rgba(0, 0, 0, 0.1);
+  /* box-shadow: 6px 6px 15px rgba(0, 0, 0, 0.1); */
   margin-right: 40px;
+}
+.inventoryNavBar {
+  margin-top: 30px;
+  width: auto;
+  border: 2px solid #e0e0e0;
+  border-radius: 30px;
+  background-color: #f4eeee;
+}
+.inventoryNavBarItem {
+  margin-right: 20px;
+  padding-bottom: 8px;
+  font-weight: 500;
+  color: #555555;
+  cursor: pointer;
+}
+.inventoryNavBarLink {
+  color: #555555;
+}
+.inventoryNavBarItem:hover {
+  /* border-bottom: 3px solid #484b4f; */
+  background-color: #ffffff;
+  border-radius: 40px;
+  color: #007bff;
+}
+.inventoryNavBarItem:active {
+  border-bottom: 3px solid #007bff;
+  color: #007bff;
+  font-weight: 600;
+  background-color: #555555;
+}
+.inventoryNavBarIcon {
+  font-size: 20px;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+.inventoryInteraction {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+.inventorySearchBar {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 0px 8px;
+  width: auto;
+}
+.inventorySearchBar input {
+  border: none;
+  outline: none;
+  padding: 8px;
+  font-size: 16px;
+  border-radius: 8px;
+}
+.button {
+  margin: 0px 20px;
+  padding: 4px 15px;
+  border-radius: 10px;
+  background-color: rgb(244, 247, 244);
+  color: black;
+}
+.button:hover {
+  background-color: rgb(157, 243, 157);
+  color: black;
+  /* Darker blue on hover */
+}
+.addItemButton {
+  background-color: rgb(4, 144, 4);
+  color: white;
 }
