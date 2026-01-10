@@ -15,27 +15,47 @@ export default function RecordsModal({ modal, setModal, record, setRecord, recor
     };
 
     return (
-      <Modal
-        isOpen={modal}
-        size="xl"
-        className={darkMode ? 'dark-modal full-dark bg-yinmn-blue text-light' : ''}
-      >
-        <ModalHeader className={darkMode ? 'dark-modal-header bg-space-cadet text-white' : ''}>
-          {recordType} Record
-        </ModalHeader>
+      <>
+        {darkMode && (
+          <style>
+            {`
+              .dark-oxford-modal {
+                background-color: #1B2A41 !important; /* Muted Oxford Blue */
+                color: #ffffff !important;
+              }
+              .dark-oxford-modal .modal-header,
+              .dark-oxford-modal .modal-body,
+              .dark-oxford-modal .modal-footer {
+                background-color: #1B2A41 !important;
+                color: #ffffff !important;
+                border-color: rgba(255,255,255,0.08) !important;
+              }
+            `}
+          </style>
+        )}
+        <Modal
+          isOpen={modal}
+          size="xl"
+          className={darkMode ? 'dark-modal full-dark bg-yinmn-blue text-light' : ''}
+          contentClassName={darkMode ? 'dark-oxford-modal' : ''}
+        >
+          <ModalHeader className={darkMode ? 'dark-modal-header bg-space-cadet text-white' : ''}>
+            {recordType} Record
+          </ModalHeader>
 
-        <ModalBody className={darkMode ? 'dark-modal-body bg-yinmn-blue text-light' : ''}>
-          <div className={styles.records_modal_table_container}>
-            <Table className={darkMode ? 'dark-table bg-yinmn-blue text-white' : ''}>
-              <Record record={record} recordType={recordType} setRecord={setRecord} />
-            </Table>
-          </div>
-        </ModalBody>
+          <ModalBody className={darkMode ? 'dark-modal-body bg-yinmn-blue text-light' : ''}>
+            <div className={styles.records_modal_table_container}>
+              <Table className={darkMode ? 'dark-table bg-yinmn-blue text-white' : ''}>
+                <Record record={record} recordType={recordType} setRecord={setRecord} />
+              </Table>
+            </div>
+          </ModalBody>
 
-        <ModalFooter className={darkMode ? 'dark-modal-footer bg-space-cadet text-white' : ''}>
-          <Button onClick={toggle}>Close</Button>
-        </ModalFooter>
-      </Modal>
+          <ModalFooter className={darkMode ? 'dark-modal-footer bg-space-cadet text-white' : ''}>
+            <Button onClick={toggle}>Close</Button>
+          </ModalFooter>
+        </Modal>
+      </>
     );
   }
 

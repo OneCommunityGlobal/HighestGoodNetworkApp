@@ -241,7 +241,11 @@ export default function ItemsTable({
                     <td className="items_cell">
                       <button
                         type="button"
-                        style={darkMode ? { color: '#4a90e2' } : {}}
+                        style={
+                          darkMode
+                            ? { color: '#4a90e2', marginRight: '10px' }
+                            : { marginRight: '10px' }
+                        }
                         onClick={() => handleEditRecordsClick(el, 'Update')}
                         aria-label="Edit Record"
                       >
