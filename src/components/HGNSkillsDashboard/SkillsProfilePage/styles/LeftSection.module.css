@@ -33,3 +33,11 @@
     padding: 20px 0;
   }
 }
+
+:global(.dark-mode) .leftSection h1 {
+  color: #fff;
+}
+
+:global(.dark-mode) .leftSection h3 {
+  color: #ccc;
+}
