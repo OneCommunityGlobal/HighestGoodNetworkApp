@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import TinyBarChart from '../TinyBarChart';
 import Loading from '../../common/Loading';
+// new changes - Amalesh-totalorg-summary-bugfixes
 
 export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
   const initialCardSize = () => {
