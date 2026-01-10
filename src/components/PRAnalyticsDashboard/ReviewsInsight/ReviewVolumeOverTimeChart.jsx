@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import Select from 'react-select';
 import {
@@ -13,8 +13,9 @@ import {
 } from 'recharts';
 import styles from './ReviewVolumeOverTimeChart.module.css';
 
-function ReviewVolumeOverTimeChart() {
-  const darkMode = useSelector(state => state.theme.darkMode);
+function ReviewVolumeOverTimeChart({ darkMode: propDarkMode, villages = [], loadingVillages = false, villagesError = null }) {
+  const darkModeFromStore = useSelector(state => state.theme.darkMode);
+  const darkMode = propDarkMode !== undefined ? propDarkMode : darkModeFromStore;
   
   // State for filters
   const [fromDate, setFromDate] = useState('');
@@ -75,20 +76,108 @@ function ReviewVolumeOverTimeChart() {
     },
   ]);
 
-  // Mock options - replace with actual API data
-  const villageOptions = [
-    { value: 'All', label: 'All Villages' },
-    { value: 'Village1', label: 'Village 1' },
-    { value: 'Village2', label: 'Village 2' },
-    { value: 'Village3', label: 'Village 3' },
+  // Default village and property options (matching ReviewWordCloud)
+  const defaultVillageOptions = [
+    { value: 'Eco Village', label: 'Eco Village' },
+    { value: 'Forest Retreat', label: 'Forest Retreat' },
+    { value: 'Desert Oasis', label: 'Desert Oasis' },
+    { value: 'River Valley', label: 'River Valley' },
+    { value: 'City Sanctuary', label: 'City Sanctuary' },
   ];
 
-  const propertyOptions = [
-    { value: 'All', label: 'All Properties' },
-    { value: 'Property1', label: 'Property 1' },
-    { value: 'Property2', label: 'Property 2' },
-    { value: 'Property3', label: 'Property 3' },
+  const defaultPropertyOptions = [
+    { value: 'Mountain View', label: 'Mountain View', village: 'Eco Village' },
+    { value: 'Solar Haven', label: 'Solar Haven', village: 'Eco Village' },
+    { value: 'Lakeside Cottage', label: 'Lakeside Cottage', village: 'Forest Retreat' },
+    { value: 'Woodland Cabin', label: 'Woodland Cabin', village: 'Forest Retreat' },
+    { value: 'Tiny Home', label: 'Tiny Home', village: 'Desert Oasis' },
+    { value: 'Earth Ship', label: 'Earth Ship', village: 'Desert Oasis' },
+    { value: 'Riverside Cabin', label: 'Riverside Cabin', village: 'River Valley' },
+    { value: 'Floating House', label: 'Floating House', village: 'River Valley' },
+    { value: 'Urban Garden Apartment', label: 'Urban Garden Apartment', village: 'City Sanctuary' },
+    { value: 'Eco Loft', label: 'Eco Loft', village: 'City Sanctuary' },
   ];
+
+  // Extract village options - use API data if available, otherwise use defaults
+  const villageOptions = useMemo(() => {
+    if (Array.isArray(villages) && villages.length > 0) {
+      const apiVillages = villages
+        .filter(v => v && (v.name || v.regionId || v._id || v.id))
+        .map(v => ({
+          value: v._id || v.id || v.name || v.regionId || '',
+          label: v.name || v.regionId || 'Unknown Village',
+        }));
+      
+      // Merge with defaults if they're not already in API data
+      const defaultLabels = defaultVillageOptions.map(v => v.label);
+      const apiLabels = apiVillages.map(v => v.label);
+      const additionalDefaults = defaultVillageOptions.filter(v => !apiLabels.includes(v.label));
+      
+      return [...apiVillages, ...additionalDefaults];
+    }
+    return defaultVillageOptions;
+  }, [villages]);
+
+  // Extract property options - use API data if available, otherwise use defaults
+  // Support both flat list (for chart) and grouped structure (matching ReviewWordCloud)
+  const propertyOptions = useMemo(() => {
+    let apiProperties = [];
+    
+    if (Array.isArray(villages) && villages.length > 0) {
+      apiProperties = villages.flatMap(v => {
+        if (Array.isArray(v.properties) && v.properties.length > 0) {
+          return v.properties
+            .filter(p => p && (p._id || p.id || p.title || p.name))
+            .map(p => ({
+              value: p._id || p.id || p.title || p.name || '',
+              label: p.title || p.name || 'Unknown Property',
+              village: v.name || v.regionId || 'Unknown Village',
+            }));
+        }
+        return [];
+      });
+    }
+    
+    // Remove duplicates based on value, merge with defaults
+    const allPropertiesMap = new Map();
+    
+    // Add API properties first
+    apiProperties.forEach(p => {
+      allPropertiesMap.set(p.value || p.label, p);
+    });
+    
+    // Add defaults if they're not already in API data
+    defaultPropertyOptions.forEach(p => {
+      if (!allPropertiesMap.has(p.value)) {
+        allPropertiesMap.set(p.value, p);
+      }
+    });
+
+    // Return as flat list for the chart filter (react-select multi-select)
+    return Array.from(allPropertiesMap.values());
+  }, [villages]);
+
+  // Grouped property options for display (matching ReviewWordCloud structure)
+  const groupedPropertyOptions = useMemo(() => {
+    const grouped = {};
+    
+    propertyOptions.forEach(prop => {
+      const village = prop.village || 'Other';
+      if (!grouped[village]) {
+        grouped[village] = [];
+      }
+      grouped[village].push({
+        value: prop.value,
+        label: prop.label,
+      });
+    });
+
+    // Convert to react-select grouped format
+    return Object.entries(grouped).map(([village, properties]) => ({
+      label: village.toUpperCase(),
+      options: properties,
+    }));
+  }, [propertyOptions]);
 
   const handleCategoryChange = (e) => {
     setCategory(e.target.value);
@@ -104,18 +193,20 @@ function ReviewVolumeOverTimeChart() {
       const total = (data.Negative || 0) + (data.Neutral || 0) + (data.Positive || 0);
       return (
         <div className={`${styles.customTooltip} ${darkMode ? styles.darkTooltip : ''}`}>
-          <p className={styles.tooltipLabel}>{data.month}</p>
+          <p className={`${styles.tooltipLabel} ${darkMode ? styles.darkText : ''}`}>{data.month}</p>
           {payload.map((entry, index) => (
             <p key={index} style={{ color: entry.color }}>
               {entry.name}: {entry.value}
             </p>
           ))}
-          <p className={styles.tooltipTotal}>Total: {total}</p>
+          <p className={`${styles.tooltipTotal} ${darkMode ? styles.darkText : ''}`}>Total: {total}</p>
         </div>
       );
     }
     return null;
   };
+
+  // Chart will render with sample data regardless of villages loading state
 
   return (
     <div className={`${styles.chartContainer} ${darkMode ? styles.darkContainer : ''}`}>
@@ -123,7 +214,57 @@ function ReviewVolumeOverTimeChart() {
         Review Volume Over Time
       </h2>
 
-      {/* Filters Section */}
+      {/* Chart Display - On Top */}
+      <div className={styles.chartWrapper}>
+        <ResponsiveContainer width="100%" height={500} minWidth={0}>
+          <BarChart
+            data={chartData}
+            margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? '#444' : '#e0e0e0'} />
+            <XAxis
+              dataKey="month"
+              tick={{ fill: darkMode ? '#f1f1f1' : '#666', fontSize: 12 }}
+              angle={-45}
+              textAnchor="end"
+              height={80}
+              interval={0}
+              label={{
+                value: 'Time',
+                position: 'insideBottom',
+                offset: -10,
+                style: { textAnchor: 'middle', fill: darkMode ? '#f1f1f1' : '#666', fontSize: 14 },
+              }}
+            />
+            <YAxis
+              tick={{ fill: darkMode ? '#f1f1f1' : '#666', fontSize: 12 }}
+              width={60}
+              label={{
+                value: 'Review Volume',
+                angle: -90,
+                position: 'insideLeft',
+                offset: 10,
+                style: { textAnchor: 'middle', fill: darkMode ? '#f1f1f1' : '#666', fontSize: 14 },
+              }}
+            />
+            <Tooltip content={<CustomTooltip />} />
+            <Legend
+              wrapperStyle={{ paddingTop: '20px' }}
+              iconType="rect"
+              formatter={(value) => {
+                // Fix typo: "Negagative" -> "Negative"
+                if (value === 'Negative') return 'Negative';
+                return value;
+              }}
+            />
+            <Bar dataKey="Negative" stackId="a" fill="#DC3545" name="Negative" />
+            <Bar dataKey="Neutral" stackId="a" fill="#6C757D" name="Neutral" />
+            <Bar dataKey="Positive" stackId="a" fill="#28A745" name="Positive" />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+
+      {/* Filters Section - On Bottom */}
       <div className={`${styles.filtersContainer} ${darkMode ? styles.darkFilters : ''}`}>
         {/* Dates Filter */}
         <div className={styles.filterGroup}>
@@ -136,7 +277,8 @@ function ReviewVolumeOverTimeChart() {
               value={fromDate}
               onChange={(e) => setFromDate(e.target.value)}
               max={toDate || undefined}
-              className={`${styles.dateInput} ${darkMode ? styles.darkInput : ''}`}
+              className={`${styles.dateInput} ${darkMode ? `${styles.darkInput} calendar-icon-dark` : ''}`}
+              style={darkMode ? { colorScheme: 'dark' } : {}}
             />
             <span className={`${styles.dateSeparator} ${darkMode ? styles.darkText : ''}`}>
               to
@@ -146,7 +288,8 @@ function ReviewVolumeOverTimeChart() {
               value={toDate}
               onChange={(e) => setToDate(e.target.value)}
               min={fromDate || undefined}
-              className={`${styles.dateInput} ${darkMode ? styles.darkInput : ''}`}
+              className={`${styles.dateInput} ${darkMode ? `${styles.darkInput} calendar-icon-dark` : ''}`}
+              style={darkMode ? { colorScheme: 'dark' } : {}}
             />
           </div>
         </div>
@@ -317,53 +460,6 @@ function ReviewVolumeOverTimeChart() {
             />
           </div>
         )}
-      </div>
-
-      {/* Chart Display */}
-      <div className={styles.chartWrapper}>
-        <ResponsiveContainer width="100%" height={500}>
-          <BarChart
-            data={chartData}
-            margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? '#444' : '#e0e0e0'} />
-            <XAxis
-              dataKey="month"
-              tick={{ fill: darkMode ? '#f1f1f1' : '#666', fontSize: 12 }}
-              angle={-45}
-              textAnchor="end"
-              height={80}
-              label={{
-                value: 'Time',
-                position: 'insideBottom',
-                offset: -10,
-                style: { textAnchor: 'middle', fill: darkMode ? '#f1f1f1' : '#666', fontSize: 14 },
-              }}
-            />
-            <YAxis
-              tick={{ fill: darkMode ? '#f1f1f1' : '#666', fontSize: 12 }}
-              label={{
-                value: 'Review Volume',
-                angle: -90,
-                position: 'insideLeft',
-                style: { textAnchor: 'middle', fill: darkMode ? '#f1f1f1' : '#666', fontSize: 14 },
-              }}
-            />
-            <Tooltip content={<CustomTooltip />} />
-            <Legend
-              wrapperStyle={{ paddingTop: '20px' }}
-              iconType="rect"
-              formatter={(value) => {
-                // Fix typo: "Negagative" -> "Negative"
-                if (value === 'Negative') return 'Negative';
-                return value;
-              }}
-            />
-            <Bar dataKey="Negative" stackId="a" fill="#DC3545" name="Negative" />
-            <Bar dataKey="Neutral" stackId="a" fill="#6C757D" name="Neutral" />
-            <Bar dataKey="Positive" stackId="a" fill="#28A745" name="Positive" />
-          </BarChart>
-        </ResponsiveContainer>
       </div>
     </div>
   );

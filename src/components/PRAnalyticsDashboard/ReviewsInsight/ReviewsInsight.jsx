@@ -252,7 +252,7 @@ function ReviewsInsight() {
         </div>
       )}
 
-      {/* Reviews Section */}
+      {/* Reviews Section - Always visible */}
       <div className={`${styles.reviewsSection} ${darkMode ? styles.darkModeForeground : ''}`}>
         <h2 className={`${styles.sectionTitle} ${darkMode ? styles.darkModeForeground : ''}`}>
           Reviews
