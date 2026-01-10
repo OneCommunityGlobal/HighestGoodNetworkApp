@@ -3,7 +3,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import { useHistory, useParams, useLocation } from 'react-router-dom';
 import { ClipLoader } from 'react-spinners';
-import { useDispatch } from 'react-redux';
 import httpService from '~/services/httpService';
 import { ENDPOINTS } from '~/utils/URL';
 import LeftSection from './LeftSection';
@@ -109,8 +108,6 @@ function UserSkillsProfile() {
 
     fetchData();
   }, []); // Empty dependency array - runs only once on mount
-
-  /* eslint-disable no-console */
 
   if (loading) {
     return (

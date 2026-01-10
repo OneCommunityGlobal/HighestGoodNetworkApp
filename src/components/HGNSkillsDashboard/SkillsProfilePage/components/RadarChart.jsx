@@ -158,6 +158,7 @@ const SKILL_MAPPINGS = [
 ];
 
 function RadarChart({ profileData, compact = true }) {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
   const [skillsData, setSkillsData] = useState([]);
