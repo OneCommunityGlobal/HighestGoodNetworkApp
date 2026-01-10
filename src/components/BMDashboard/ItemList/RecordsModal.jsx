@@ -45,6 +45,10 @@ export default function RecordsModal({ modal, setModal, record, setRecord, recor
 export function Record({ record, recordType, setRecord }) {
   const dispatch = useDispatch();
   const darkMode = useSelector(state => state.theme.darkMode);
+  const formatQuantity = (value, unit) => {
+    if (value == null) return '-';
+    return unit ? `${value} ${unit}` : `${value}`;
+  };
 
   const handleApprove = async (purchaseId, quantity) => {
     try {
@@ -96,8 +100,8 @@ export function Record({ record, recordType, setRecord }) {
             record.updateRecord.map(data => (
               <tr key={data._id} className={darkMode ? 'dark-row text-white bg-yinmn-blue' : ''}>
                 <td>{moment.utc(data.date).format('LL')}</td>
-                <td>{`${data.quantityUsed} ${record.itemType?.unit}` || '-'}</td>
-                <td>{`${data.quantityWasted} ${record.itemType?.unit}` || '-'}</td>
+                <td>{formatQuantity(data.quantityUsed, record.itemType?.unit)}</td>
+                <td>{formatQuantity(data.quantityWasted, record.itemType?.unit)}</td>
                 <td>
                   <a
                     href={`/userprofile/${data.createdBy._id}`}
