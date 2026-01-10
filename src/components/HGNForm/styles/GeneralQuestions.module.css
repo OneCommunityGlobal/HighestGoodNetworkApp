@@ -7,6 +7,13 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* Dark mode container */
+.darkContainer {
+  background-color: #1c2541;
+  border-color: #3a506b;
+  color: #fff;
+}
+
 @media (max-width: 768px) {
   .generalQuestions {
     width: 80%;
@@ -54,6 +61,11 @@
   font-weight: 400;
   text-align: center;
   padding: 5px;
+}
+
+/* Dark mode strip */
+.darkStrip {
+  background-color: #3a506b;
 }
 .hours{
   display: flex;
@@ -135,6 +147,23 @@
   font-size: 1.1em;
   margin-bottom: 10px;
 }
+
+/* Dark mode text overrides */
+.darkContainer .question { color: #93c5fd; }
+.darkContainer p { color: #b3bfca; }
+.darkContainer label { color: #e5eef6; }
+.darkContainer .timeCell, .darkContainer .dayLabel { color: #e5eef6; }
+.darkContainer .availabilityGrid { color: #e5eef6; }
+
+/* Inputs */
+.darkContainer .locations input[type="text"] {
+  background-color: transparent;
+  color: #fff;
+  border-color: #8aa0b4;
+}
+
+/* Buttons */
+.darkContainer .buttonContainer button { border-color: #3a506b; color: #ffffff; }
 
 .locations {
   display: flex;
@@ -368,6 +397,7 @@
   background-color: #2e5163;
   border-radius: 10px;
   width: 20%;
+  color: #ffffff;
 }
 
 .nextButton:hover {

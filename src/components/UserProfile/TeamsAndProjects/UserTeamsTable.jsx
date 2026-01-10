@@ -6,7 +6,7 @@ import hasPermission from '../../../utils/permissions';
 import { boxStyle, boxStyleDark } from '~/styles';
 import { connect } from 'react-redux';
 import Switch from './Switch';
-import './TeamsAndProjects.css';
+
 import './UserTeamsTable.css';
 
 import { AutoCompleteTeamCode } from './AutoCompleteTeamCode';
@@ -18,9 +18,15 @@ import { TeamMember } from './TeamMember';
 import axios from 'axios';
 import { ENDPOINTS } from '~/utils/URL.js';
 import { toast } from 'react-toastify';
+import {
+  useUpdateFiltersWithIndividualCodesChangeMutation
+} from '~/actions/weeklySummariesFilterAction';
 
 const UserTeamsTable = props => {
   const { darkMode } = props;
+
+  const userProfile = props.userProfile ?? {};
+  const teams = userProfile.teams ?? [];
 
   const [showDropdown, setShowDropdown] = useState(false);
 
@@ -28,11 +34,13 @@ const UserTeamsTable = props => {
 
   const [arrayInputAutoComplete, setArrayInputAutoComplete] = useState(props.inputAutoComplete);
 
-  const [teamCode, setTeamCode] = useState(
-    props.userProfile ? props.userProfile.teamCode : props.teamCode,
-  );
+  const [teamCode, setTeamCode] = useState(userProfile?.teamCode ?? props.teamCode ?? '');
 
   const [isOpenModalTeamMember, setIsOpenModalTeamMember] = useState(false);
+
+  const [
+      updateFilterWithIndividualCodesChange,
+    ] = useUpdateFiltersWithIndividualCodesChangeMutation();
 
   const [members, setMembers] = useState({
     members: [],
@@ -49,10 +57,8 @@ const UserTeamsTable = props => {
   const fullCodeRegex = /^(|([a-zA-Z0-9]-[a-zA-Z0-9]{3,5}|[a-zA-Z0-9]{5,7}|.-[a-zA-Z0-9]{3}))$/;
 
   useEffect(() => {
-    if (props.userProfile?.teamCode) {
-      setTeamCode(props.userProfile.teamCode);
-    }
-  }, [props.userProfile?.teamCode]);
+     if (userProfile?.teamCode) setTeamCode(userProfile.teamCode);
+   }, [userProfile?.teamCode, userProfile?.teams]);
 
   const handleCodeChange = async (e, autoComplete) => {
     const validation = autoComplete ? e : e.target.value;
@@ -68,6 +74,12 @@ const UserTeamsTable = props => {
           try {
             const url = ENDPOINTS.USER_PROFILE_PROPERTY(props.userProfile._id);
             await axios.patch(url, { key: 'teamCode', value: refInput.current });
+            // Update weekly summaries filter
+            const res = await updateFilterWithIndividualCodesChange({
+              oldTeamCode: teamCode,
+              newTeamCode: refInput.current,
+              userId: props.userProfile._id,
+            })
             toast.success('Team code updated!');
           } catch {
             toast.error('It is not possible to save the team code.');
@@ -137,6 +149,7 @@ const UserTeamsTable = props => {
 
       isUpdate ? toast.info('Team updated successfully') : setIsOpenModalTeamMember(true);
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.log(error);
     }
   };
@@ -273,8 +286,8 @@ const UserTeamsTable = props => {
             )}
           </thead>
           <tbody className={`user-team-body ${darkMode ? 'text-light' : ''}`}>
-            {props.userTeamsById.length > 0 ? (
-              props.userTeamsById.map((team, index) => (
+            {teams.length > 0 ? (
+              teams.map((team, index) => (
                 <tr key={index} className={`tr ${darkMode ? 'dark-mode' : ''}`}>
                   <td style={{ alignContent: 'center' }}>{index + 1}</td>
                   <td style={{ alignContent: 'center' }}>{`${team.teamName}`}</td>
@@ -308,7 +321,7 @@ const UserTeamsTable = props => {
                             color="danger"
                             onClick={e => {
                               props.onDeleteClick(team._id);
-                            }}
+                                                          }}
                           >
                             Delete
                           </Button>
