@@ -1,0 +1,194 @@
+.chartContainer {
+  width: 100%;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 2px 2px 4px 1px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.darkContainer {
+  background-color: #1b2a41;
+  box-shadow: 2px 2px 4px 1px rgba(0, 0, 0, 0.3);
+}
+
+.chartTitle {
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 30px;
+  color: #000000;
+}
+
+.darkText {
+  color: #f1f1f1;
+}
+
+.filtersContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-bottom: 30px;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+}
+
+.darkFilters {
+  background-color: #1c2541;
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 200px;
+  flex: 1;
+}
+
+.filterLabel {
+  font-weight: 600;
+  font-size: 14px;
+  color: #333333;
+}
+
+.dateRangeContainer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dateInput {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: #ffffff;
+  color: #000000;
+  box-shadow: 2px 2px 4px 1px rgba(0, 0, 0, 0.1);
+  transition: border-color 0.3s;
+}
+
+.dateInput:hover {
+  border-color: #40a9ff;
+}
+
+.dateInput:focus {
+  outline: none;
+  border-color: #1890ff;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+
+.darkInput {
+  background-color: #1c2541;
+  border-color: #34495e;
+  color: #f1f1f1;
+}
+
+.darkInput:hover {
+  border-color: #4a5568;
+}
+
+.darkInput:focus {
+  border-color: #5a6578;
+  box-shadow: 0 0 0 2px rgba(90, 101, 120, 0.3);
+}
+
+.dateSeparator {
+  font-weight: 500;
+  color: #666666;
+  white-space: nowrap;
+}
+
+.categorySelect {
+  padding: 8px 12px;
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: #ffffff;
+  color: #000000;
+  box-shadow: 2px 2px 4px 1px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: border-color 0.3s;
+}
+
+.categorySelect:hover {
+  border-color: #40a9ff;
+}
+
+.categorySelect:focus {
+  outline: none;
+  border-color: #1890ff;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+
+.darkSelect {
+  background-color: #1c2541;
+  border-color: #34495e;
+  color: #f1f1f1;
+}
+
+.darkSelect:hover {
+  border-color: #4a5568;
+}
+
+.darkSelect:focus {
+  border-color: #5a6578;
+  box-shadow: 0 0 0 2px rgba(90, 101, 120, 0.3);
+}
+
+.multiSelect {
+  width: 100%;
+}
+
+.chartWrapper {
+  width: 100%;
+  height: 500px;
+  margin-top: 20px;
+  min-height: 500px;
+}
+
+.customTooltip {
+  background-color: rgba(255, 255, 255, 0.95);
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.darkTooltip {
+  background-color: rgba(28, 37, 65, 0.95);
+  border-color: #444;
+  color: #f1f1f1;
+}
+
+.tooltipLabel {
+  font-weight: bold;
+  margin-bottom: 5px;
+  font-size: 14px;
+}
+
+.tooltipTotal {
+  font-weight: bold;
+  margin-top: 5px;
+  padding-top: 5px;
+  border-top: 1px solid #ddd;
+}
+
+.darkTooltip .tooltipTotal {
+  border-top-color: #555;
+}
+
+/* Standardized graph size to match other graphs on dashboard */
+@media (min-width: 768px) {
+  .chartContainer {
+    min-height: 600px;
+  }
+  
+  .chartWrapper {
+    min-height: 400px;
+    max-height: 400px;
+  }
+}
