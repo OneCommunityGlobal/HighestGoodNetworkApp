@@ -1,0 +1,63 @@
+.tag_color {
+  width: 5px !important;
+  padding: 3px !important;
+}
+
+.tag_color_lv_1 {
+  opacity: 1;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+.tag_color_lv_2 {
+  opacity: 0.8;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+.tag_color_lv_3 {
+  opacity: 0.5;
+}
+.tag_color_lv_4 {
+  opacity: 0.3;
+}
+
+.tag_color_0 {
+  background: rebeccapurple !important;
+}
+
+.tag_color_1 {
+  background: coral !important;
+}
+
+.tag_color_2 {
+  background: forestgreen !important;
+}
+
+.tag_color_3 {
+  background: aquamarine !important;
+}
+
+.tag_color_4 {
+  background: lightskyblue !important;
+}
+
+.tag_color_5 {
+  background: mediumslateblue !important;
+}
+
+.tag_color_6 {
+  background: indigo !important;
+}
+
+.tag_color_7 {
+  background: hotpink !important;
+}
+
+.tag_color_8 {
+  background: lightcyan !important;
+}
+
+.tag_color_9 {
+  background: orangered !important;
+}
+
+.tag_color_10 {
+  background: skyblue !important;
+}

@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import TeamsReportCharts from '../TeamsReportCharts';
 // Completely mock the TeamsReportCharts component
 vi.mock('../TeamsReportCharts', () => ({

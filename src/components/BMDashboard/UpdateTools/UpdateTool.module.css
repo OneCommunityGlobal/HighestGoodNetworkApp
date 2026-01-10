@@ -1,0 +1,86 @@
+.updateToolContainer {
+  padding: 0% !important;
+
+}
+
+.updateToolPage {
+  background-color: #E8F4F9;
+  width: 100%;
+  height: auto;
+  margin: 0px;
+  padding: 1rem 2rem;
+  font-size: 15px;
+}
+
+.updateTool {
+  background-color: white;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  height: auto;
+}
+
+.toolImage {
+  height: 10rem;
+  width: 10rem;
+  margin-bottom: 1rem;
+}
+
+.toolFormField {
+  margin-bottom: .5rem;
+}
+
+.toolFormLabel {
+  font-weight: 500;
+  font-size: 15px;
+  color: #1C8BCC;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.toolFormError {
+  font-weight: 500;
+  font-size: 11px !important;
+  color: red;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.toolFormTableError {
+  font-weight: 500;
+  font-size: 11px !important;
+  color: red;
+}
+
+.toolFormErrorClr {
+  color: red;
+}
+
+.toolFormValue {
+  font-weight: 400;
+  font-size: 15px;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.toolButtonOutline {
+  color: #2E5061 !important;
+}
+
+.toolButtonOutline:hover {
+  background-color: #2E5061 !important;
+  color: white !important
+}
+
+.toolButtonBg {
+  background-color: #2E5061 !important
+}
+
+.toolButtonBg:hover {
+  background-color: white !important;
+  color: #2E5061 !important;
+}
+
+.updateModalContainer {
+  overflow-y: scroll;
+  height: 75vh;
+}

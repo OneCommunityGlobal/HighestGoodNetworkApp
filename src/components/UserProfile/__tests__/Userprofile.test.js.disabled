@@ -1,0 +1,305 @@
+/** Entire test suite needs to be rewritten due to how dramatically the  UserProfile implementation was changed. **/
+
+
+/**
+ * import React, { useReducer } from 'react';
+import { Route } from 'react-router-dom';
+import {
+  screen, fireEvent, wait,
+} from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import configureMockStore from 'redux-mock-store';
+import thunk from 'redux-thunk';
+import {
+  authMock, userProfileMock, timeEntryMock, userProjectMock, allProjectsMock, allTeamsMock,
+} from '../mockStates';
+import { renderWithRouterMatch } from '../utils';
+import Userprofile from '../../components/UserProfile/UserProfile.container';
+import * as actions from '../../actions/userProfile';
+import { wrap } from 'lodash';
+
+jest.mock('../../actions/allTeamsAction.js');
+jest.mock('../../actions/userProfile.js');
+jest.mock('../../actions/team.js');
+jest.mock('../../actions/projects.js');
+
+const mockStore = configureMockStore([thunk]);
+describe('User profile page', () => {
+  const userId = authMock.user.userid;
+  let store;
+  beforeEach(() => {
+    store = mockStore({
+      auth: authMock,
+      userProfile: userProfileMock,
+      user: authMock.user,
+      timeEntries: timeEntryMock,
+      userProjects: userProjectMock,
+      allProjects: allProjectsMock,
+      allTeams: allTeamsMock,
+    });
+    store.dispatch = jest.fn();
+    renderWithRouterMatch(
+      <Route path="/userprofile/:userId">
+        {props => <Userprofile {...props} />}
+      </Route>,
+      {
+        route: `/userprofile/${userId}`,
+        store,
+      },
+    );
+  });
+  describe('Structure', () => {
+    it('should render a image', () => {
+      expect(screen.getByRole('img')).toBeInTheDocument();
+    });
+    it('should render the user`s name', () => {
+      expect(screen.getByRole('heading', { name: `${userProfileMock.firstName} ${userProfileMock.lastName}` }));
+    });
+    it('should render the user`s job title', () => {
+      expect(screen.getByRole('heading', { name: `${userProfileMock.jobTitle}` }));
+    });
+    it('should render an assign team button', () => {
+      expect(screen.getByRole('button', { name: /assign team/i })).toBeInTheDocument();
+    });
+    it('should render delete buttons', () => {
+      expect(screen.getAllByRole('button', { name: /delete/i })).toHaveLength(userProfileMock.teams.length + userProfileMock.projects.length);
+    });
+    it('should render multiple links', () => {
+      expect(screen.getAllByRole('link')).toHaveLength(userProfileMock.personalLinks.length + userProfileMock.adminLinks.length + 2);
+    });
+    it('should render a edit link button', () => {
+      expect(screen.getByTestId('edit-link')).toBeInTheDocument();
+    });
+    it('should render one save change button', () => {
+      expect(screen.getByRole('button', { name: /save changes/i })).toBeInTheDocument();
+    });
+    it('should render one cancel button', () => {
+      expect(screen.getByRole('link', { name: /cancel/i })).toBeInTheDocument();
+    });
+    it('should render `Basic Information` Tab', () => {
+      expect(screen.getByText('Basic Information')).toBeInTheDocument();
+    });
+    it('should render `Volunteering Times` Tab', () => {
+      expect(screen.getByText('Volunteering Times')).toBeInTheDocument();
+    });
+    it('should render Teams tab', () => {
+      expect(screen.getAllByText('Teams')).toHaveLength(2);
+    });
+    it('should render Projects tab', () => {
+      expect(screen.getAllByText('Projects')).toHaveLength(2);
+    });
+
+    it('should render a time tab', () => {
+      expect(screen.getByTestId('volunteering-time-tab')).toBeInTheDocument();
+    });
+    it('should render a links field', () => {
+      expect(screen.getByTestId('user-link')).toBeInTheDocument();
+    });
+    it('should render a bluesquare field', () => {
+      expect(screen.getByTestId('blueSqaure-field')).toBeInTheDocument();
+    });
+    it('should render a `save changes` button', () => {
+      expect(screen.getByRole('button', { name: /save changes/i })).toBeInTheDocument();
+    });
+    //Broke maybe on purpose
+    // it('should render a reset password button', () => {
+    //   expect(screen.getByRole('button', { name: /reset password/i }));
+    // });
+  });
+  describe('behavior', () => {
+    it('should show User Profile information when the user clicks on the tip button', async () =>{
+      userEvent.click(screen.getByTitle(/Click for information about this/i));
+      expect(screen.getByText(/This is your One Community Profile Page/i)).toBeInTheDocument();
+    })
+    it('should fire toggleTab to Basic Information tab when the user clicks on the Basic Information tab link', async () =>{
+      userEvent.click(screen.getByText(/basic information/i));
+    });
+    it('should fire toggleTab to Volunteering Times tab when the user clicks on the Basic Information tab link', async () =>{
+      userEvent.click(screen.getByText(/volunteering times/i));
+    });
+    it('should fire toggleTab to Teams tab when the user clicks on the Teams tab link', async () =>{
+      userEvent.click(screen.getAllByText(/teams/i)[0]);
+    });
+    it('should fire toggleTab to Projects tab when the user clicks on the Projects tab link', async () =>{
+      userEvent.click(screen.getAllByText(/projects/i)[0]);
+    });
+    it('should fire toggleTab to Edit History tab when the user clicks on the Edit History tab link', async () =>{
+      userEvent.click(screen.getByTestId('edit-history-tab'));
+    });
+    it('should change value while user typing in first name field', async () => {
+      const firstName = screen.getByPlaceholderText(/first name/i);
+      userEvent.clear(firstName);
+      userEvent.type(firstName,'testFirstName');
+      expect(firstName).toHaveValue('testFirstName');
+    });
+    it('should change value while user typing in last name field', async () => {
+      const lastName = screen.getByPlaceholderText(/last name/i);
+      userEvent.clear(lastName);
+      userEvent.type(lastName,'testLastName');
+      expect(lastName).toHaveValue('testLastName');
+    });
+    it('should change value while user typing in job title field', async () => {
+      const jobTitle = screen.getByPlaceholderText(/job title/i);
+      userEvent.clear(jobTitle);
+      userEvent.type(jobTitle,'SWE');
+      expect(jobTitle).toHaveValue('SWE');
+    });
+    it('should change value while user typing in email field', async () => {
+      const email = screen.getByPlaceholderText(/email/i);
+      userEvent.clear(email);
+      userEvent.type(email,'testaccount@hgn.com');
+      expect(email).toHaveValue('testaccount@hgn.com');
+    });
+    it('should change value while user typing in phone field', async () => {
+      // TEST IS FAILING NEED TO FIX
+      // const phoneNumber = screen.getByPlaceholderText(/phone/i);
+      // userEvent.clear(phoneNumber);
+      // userEvent.type(phoneNumber,'5465468798');
+      // expect(phoneNumber).toHaveValue(5465468798);
+    });
+    it('should change value while user click on phone switch', async () => {
+      const phoneSwitch = screen.getByTestId('phone-switch');
+      userEvent.click(phoneSwitch);
+      expect(phoneSwitch).toBeChecked();
+    });
+    it('should change value while user click on email switch', async () => {
+      const emailSwitch = screen.getByTestId('email-switch');
+      userEvent.click(emailSwitch);
+      expect(emailSwitch).toBeChecked();
+    });
+    it('should change value while user click on bluesquare switch', async () => {
+      const blueSwitch = screen.getByTestId('blue-switch');
+      userEvent.click(blueSwitch);
+      expect(blueSwitch).toBeChecked();
+    });
+    it('should change value while user click on bluesquare switch', async () => {
+      const blueSwitch = screen.getByTestId('blue-switch');
+      userEvent.click(blueSwitch);
+      expect(blueSwitch).toBeChecked();
+    });
+    it('should change value while user typing in start date field', async () => {
+      const startDate = screen.getByPlaceholderText(/start date/i);
+      userEvent.type(startDate,'2020-03-06');
+      expect(startDate).toHaveValue('2020-03-06');
+    });
+    it('should change value while user typing in weekly committed field', async () => {
+      const weekCommittedHour = screen.getByTestId('weeklyCommittedHours');
+      fireEvent.change(weekCommittedHour, { target: { value: "20" } }); 
+      expect(weekCommittedHour).toHaveValue(20);
+    });
+    it('should change value while user typing in total committed field', async () => {
+      // TEST IS FAILING NEED TO FIX
+      // const weekCommittedHour = screen.getByPlaceholderText(/totalCommittedHours/i);
+      // fireEvent.change(weekCommittedHour, { target: { value: "40" } }); 
+      // expect(weekCommittedHour).toHaveValue(40);
+    });
+    it('should trigger onDeleteTeam when delete user from a team while user click on delete button', async() =>{
+      const deleteButtons = screen.getAllByRole('button', {name : /delete/i});
+       userEvent.click(deleteButtons[1]);
+      expect(screen.getAllByRole('button', { name: /delete/i })).toHaveLength(userProfileMock.teams.length + userProfileMock.projects.length - 1);
+    })
+    it('should trigger onDeleteTeam when delete user from a project while user click on delete button', async() =>{
+      const deleteButtons = screen.getAllByRole('button', {name : /delete/i});
+       userEvent.click(deleteButtons[5]);
+      expect(screen.getAllByRole('button', { name: /delete/i })).toHaveLength(userProfileMock.teams.length + userProfileMock.projects.length - 1);
+    })
+    it('should fire handleSubmit when the user clicks on the Save Changes button after changing some value', async () =>{
+      fireEvent.change(screen.getByTestId('weeklyCommittedHours'), { target: { value: "40" } }); 
+      userEvent.click(screen.getByRole('button', { name: /save changes/i}));
+      expect(actions.updateUserProfile).toHaveBeenCalled();
+    });
+    it('should fire updateLink when the user clicks on the Edit link button', async() =>{
+      userEvent.click(screen.getByRole('button', { name : /edit/i }));
+      expect(screen.getByText(/admin links/i)).toBeInTheDocument();
+      expect(screen.getByText(/personal links/i)).toBeInTheDocument();
+      userEvent.click(screen.getAllByRole('button', { name : /update/i })[1]) 
+    });
+    it('should trigger onAssignTeam when user click on assign team button', async() =>{
+      // TEST IS FAILING NEED TO FIX
+      // let beforeAddingNewTeam = userProfileMock.teams.length + userProfileMock.projects.length
+      // const assignTeamButton = screen.getByRole('button', {name : /assign team/i});
+      // userEvent.click(assignTeamButton);
+      // const teamFieldInput = screen.getAllByRole('textbox',{name: ''})[screen.getAllByRole('textbox',{name: ''}).length - 1];
+      // userEvent.click(screen.getByRole('button', {name :  /confirm/i}));
+      // expect(screen.getByText('Please choose a valid team which is not already added.')).toBeInTheDocument();
+      // fireEvent.change(teamFieldInput, { target: { value: "Marketing Team" } }); 
+      // userEvent.click(screen.getByRole('button', {name :  /confirm/i}));
+    })
+    it('should trigger onAssignProject when user click on assign project button', async() =>{
+      // TEST IS FAILING NEED TO FIX
+      // const assignProjectButton = screen.getByRole('button', {name : /assign project/i});
+      // userEvent.click(assignProjectButton);
+      // expect(screen.getByText(/add project/i)).toBeInTheDocument();
+      // userEvent.click(screen.getByRole('button', {name :  /confirm/i}));
+      // expect(screen.getByText('Please choose a valid project which is not already added.')).toBeInTheDocument();
+      // const projectFieldInput = screen.getAllByRole('textbox',{name: ''})[screen.getAllByRole('textbox',{name: ''}).length - 1];
+      // userEvent.type(projectFieldInput,"HG Education");
+      // userEvent.click(screen.getByRole('button', {name :  /confirm/i}));
+    })
+    it('should trigger handleImageUpload when user click on change photo', async () =>{
+      // TEST IS FAILING NEED TO FIX
+      // const imageFile = new File(['New Photo'], 'newProfile.png', { type: 'image/png' });
+      // const uploadPhotoBtn = screen.getByText(/Change photo/i);
+      // userEvent.upload(uploadPhotoBtn,imageFile);
+      // expect(uploadPhotoBtn.files[0]).toStrictEqual(imageFile)
+      // expect(uploadPhotoBtn.files).toHaveLength(1)
+    })
+  });
+
+  describe('BlueSquare Handler', () => {
+    it("should trigger addBlueSquare when admin click on + button", async () => {
+      userEvent.click(screen.getByText('+'));
+      expect(screen.getByRole('button', {name : 'Submit'})).toBeInTheDocument();
+    })
+    it("should trigger addBlueSquare when admin click on random blue square", async () => {
+      userEvent.click(screen.getAllByRole('button')[3]);
+      expect(screen.getByText('Summary')).toBeInTheDocument();
+    })
+  });
+});
+
+describe('Non-admin user', () => {
+  const userId = authMock.user.userid;
+  let store;
+  beforeEach(() => {
+    store = mockStore({
+      auth:{
+        isAdmin: false,
+        user: {
+          userid: '5edf141c78f1380017b829a6',
+          role: 'Volunteer',
+          expiryTimestamp: '2020-08-22T22:51:06.544Z',
+          iat: 1597272666,
+        },
+        firstName: authMock.firstName,
+        profilePic: authMock.profilePic,
+      },
+      userProfile: userProfileMock,
+      user: authMock.user,
+      timeEntries: timeEntryMock,
+      userProjects: userProjectMock,
+      allProjects: allProjectsMock,
+      allTeams: allTeamsMock,
+    });
+    store.dispatch = jest.fn();
+    renderWithRouterMatch(
+      <Route path="/userprofile/:userId">
+        {props => <Userprofile {...props} />}
+      </Route>,
+      {
+        route: `/userprofile/${userId}`,
+        store,
+      },
+    );
+  });
+  describe('BlueSquare Handler', () => {
+    it('should not render the + button', () => {
+      expect(screen.queryByText('+')).toBeFalsy();
+    });
+    it("should fire putUserProfileImportantInfo to view the blue square once the user click", async () => {
+      userEvent.click(screen.getAllByRole('button')[3]);
+      expect(screen.getByText('Summary')).toBeInTheDocument();
+    })
+  });
+});
+ */

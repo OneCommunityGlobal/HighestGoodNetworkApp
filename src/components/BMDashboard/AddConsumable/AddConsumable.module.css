@@ -1,0 +1,70 @@
+.consumableContainer {
+  padding: 0% !important;
+  min-height: 100vh;
+}
+
+.consumablePage {
+  background-color: #E8F4F9;
+  width: 100%;
+  min-height: 100%;
+  margin: 0px;
+  padding: 1rem 2rem;
+  font-size: 15px;
+}
+
+
+.consumable {
+  background-color: white;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  height: auto;
+}
+
+.consumableTitle {
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.consumableFormLabel {
+  font-weight: 500;
+  font-size: 15px;
+  color: #1C8BCC;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.consumableFormValue {
+  font-weight: 400;
+  font-size: 15px;
+  display: flex;
+  justify-content: flex-start;
+}
+
+
+.consumableButtonBg {
+  margin-top: 15px;
+  margin-left: 10px;
+  background-color: #2E5061 !important
+}
+
+.consumableButtonBg:hover {
+  background-color: white !important;
+  color: #2E5061 !important;
+}
+
+.consumableFormError {
+  font-weight: 500;
+  font-size: 11px !important;
+  color: red;
+  display: flex;
+  justify-content: flex-start;
+}
+
+@media (max-width: 780px) {
+
+  #AddConsumableForm {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+}

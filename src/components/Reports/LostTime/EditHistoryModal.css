@@ -1,0 +1,7 @@
+.history-btn {
+  margin-left: 5px;
+}
+.history-btn-div {
+  display: flex;
+  flex-direction: row;
+}
