@@ -11,6 +11,20 @@ import {
 import { getHeaderData } from '~/actions/authActions';
 import { getUserProfile } from '~/actions/userProfile';
 
+const InfoTip = ({ text }) => (
+  <span
+    title={text}
+    style={{
+      marginLeft: 6,
+      cursor: 'help',
+      fontSize: 12,
+      opacity: 0.8,
+    }}
+  >
+    ⓘ
+  </span>
+);
+
 const TODAY = new Date().toISOString().split('T')[0];
 
 const buildToolNumbers = (name = 'EQ', qty = 0) => {
@@ -69,6 +83,9 @@ function EDailyActivityLog(props) {
   const [date, setDate] = useState(TODAY);
   const [logType, setLogType] = useState('check-in'); // 'check-in' | 'check-out'
   const [rows, setRows] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [toastMessage, setToastMessage] = useState(null);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   useEffect(() => {
     dispatch(fetchBMProjects());
@@ -77,7 +94,8 @@ function EDailyActivityLog(props) {
   /* fetch equipments whenever project changes */
   useEffect(() => {
     if (selectedProject?.value) {
-      dispatch(fetchAllEquipments(selectedProject.value));
+      setIsLoading(true);
+      dispatch(fetchAllEquipments(selectedProject.value)).finally(() => setIsLoading(false));
     }
   }, [selectedProject, dispatch]);
 
@@ -122,6 +140,9 @@ function EDailyActivityLog(props) {
   };
 
   const handleSubmit = () => {
+    setShowConfirm(true);
+  };
+  const confirmSubmit = () => {
     const payload = rows.flatMap(r =>
       r.selectedNumbers.map(() => ({
         equipmentId: r.id,
@@ -135,193 +156,218 @@ function EDailyActivityLog(props) {
     );
 
     dispatch(updateMultipleEquipmentLogs(selectedProject.value, payload));
+    setShowConfirm(false);
+    setToastMessage('Entry recorded.');
   };
 
   return (
-    <div
-      className={`container-fluid ${darkMode ? 'bg-oxford-blue text-light' : ''}`}
-      style={{ height: '100%' }}
-    >
-      <div className="container">
-        <h4 className="mb-4">Daily Equipment Log</h4>
-
-        {/* header */}
-        <div className="row mb-3">
-          <div className="col-md-3">
-            <label className="form-label fw-bold" htmlFor="date">
-              Date
-            </label>
-            <input
-              type="date"
-              id="date"
-              className="form-control"
-              value={date}
-              onChange={e => setDate(e.target.value)}
-            />
-          </div>
-
-          <div className="col-md-5">
-            <label className="form-label fw-bold" htmlFor="project-select">
-              Project
-            </label>
-            <Select
-              inputId="project-select" // associate label via inputId for react-select
-              value={selectedProject}
-              onChange={setSelectedProject}
-              options={bmProjects.map(p => ({ label: p.name, value: p._id }))}
-              placeholder="Select project…"
-              isClearable
-              styles={{ maxWidth: '150px' }}
-            />
-          </div>
-
-          <div className="col-md-4">
-            <p className="form-label fw-bold" id="log-type-label">
-              Log Type
-            </p>
-            <ButtonGroup className="d-block" aria-labelledby="log-type-label">
-              <Button
-                color={logType === 'check-in' ? 'primary' : 'secondary'}
-                onClick={() => flipLogType('check-in')}
-              >
-                Check In
-              </Button>
-              <Button
-                color={logType === 'check-out' ? 'primary' : 'secondary'}
-                onClick={() => flipLogType('check-out')}
-              >
-                Check Out
-              </Button>
-            </ButtonGroup>
+    <>
+      {showConfirm && (
+        <div className="alert alert-warning d-flex justify-content-between align-items-center">
+          <span>Are you sure? This will update equipment availability.</span>
+          <div className="d-flex gap-2">
+            <Button size="sm" color="secondary" onClick={() => setShowConfirm(false)}>
+              Cancel
+            </Button>
+            <Button size="sm" color="danger" onClick={confirmSubmit}>
+              Confirm
+            </Button>
           </div>
         </div>
+      )}
+      <div
+        className={`container-fluid ${darkMode ? 'bg-oxford-blue text-light' : ''}`}
+        style={{ height: '100%' }}
+      >
+        <div className="container">
+          <h4 className="mb-4">Daily Equipment Log</h4>
 
-        {/* table */}
-        <Table bordered responsive>
-          <thead className={`${darkMode ? 'table-dark' : 'table-light'} align-middle`}>
-            <tr className={`${darkMode ? 'text-light' : 'text-dark'} `}>
-              <th>Name</th>
-              <th>Working</th>
-              <th>Available</th>
-              <th>Using</th>
-              <th>Tool / Equipment&nbsp;#</th>
-            </tr>
-          </thead>
-          <tbody>
-            {!selectedProject && (
-              <tr>
-                <td
-                  colSpan={5}
-                  className={`text-center py-3 ${darkMode ? 'text-light' : 'text-dark'} `}
+          {/* header */}
+          <div className="row mb-3">
+            <div className="col-md-3">
+              <label className="form-label fw-bold" htmlFor="date">
+                Date
+              </label>
+              <input
+                type="date"
+                id="date"
+                className="form-control"
+                value={date}
+                onChange={e => setDate(e.target.value)}
+              />
+            </div>
+
+            <div className="col-md-5">
+              <label className="form-label fw-bold" htmlFor="project-select">
+                Project
+              </label>
+              <Select
+                inputId="project-select" // associate label via inputId for react-select
+                value={selectedProject}
+                onChange={setSelectedProject}
+                options={bmProjects.map(p => ({ label: p.name, value: p._id }))}
+                placeholder="Select project…"
+                isClearable
+                styles={{ maxWidth: '150px' }}
+              />
+            </div>
+
+            <div className="col-md-4">
+              <p className="form-label fw-bold" id="log-type-label">
+                Log Type
+              </p>
+              <ButtonGroup className="d-block" aria-labelledby="log-type-label">
+                <Button
+                  color={logType === 'check-in' ? 'primary' : 'secondary'}
+                  onClick={() => flipLogType('check-in')}
                 >
-                  Select a project to load equipments.
-                </td>
-              </tr>
-            )}
+                  Check In
+                </Button>
+                <Button
+                  color={logType === 'check-out' ? 'primary' : 'secondary'}
+                  onClick={() => flipLogType('check-out')}
+                >
+                  Check Out
+                </Button>
+              </ButtonGroup>
+            </div>
+          </div>
 
-            {selectedProject && rows.length === 0 && (
+          {/* table */}
+          <Table bordered responsive>
+            <thead className={`${darkMode ? 'table-dark' : 'table-light'} align-middle`}>
               <tr className={`${darkMode ? 'text-light' : 'text-dark'} `}>
-                <td colSpan={5} className="text-center py-3">
-                  No equipments found for this project.
-                </td>
+                <th>Name</th>
+                <th>Working</th>
+                <th>Available</th>
+                <th>Using</th>
+                <th>Tool / Equipment&nbsp;#</th>
               </tr>
-            )}
+            </thead>
+            <tbody>
+              {!selectedProject && (
+                <tr>
+                  <td
+                    colSpan={5}
+                    className={`text-center py-3 ${darkMode ? 'text-light' : 'text-dark'} `}
+                  >
+                    Select a project to load equipments.
+                  </td>
+                </tr>
+              )}
 
-            {selectedProject &&
-              rows.length > 0 &&
-              rows.map((r, idx) => {
-                const validList = logType === 'check-in' ? r.availableNumbers : r.inUseNumbers;
-                const limit = logType === 'check-in' ? r.availableQty : r.usingQty;
+              {selectedProject && isLoading && (
+                <tr>
+                  <td colSpan={5} className="text-center py-3">
+                    Loading equipment data…
+                  </td>
+                </tr>
+              )}
 
-                return (
-                  <tr key={r.id} className={`${darkMode ? 'text-light' : 'text-dark'} `}>
-                    <td>{r.name}</td>
-                    <td>{r.workingQty}</td>
-                    <td>{r.availableQty}</td>
-                    <td>{r.usingQty}</td>
-                    <td style={{ textAlign: 'center' }}>
-                      <Select
-                        isMulti
-                        closeMenuOnSelect={false}
-                        value={r.selectedNumbers.map(v => ({ label: v, value: v }))}
-                        options={validList.map(n => ({ label: n, value: n }))}
-                        onChange={sel => onToolSelect(idx, sel)}
-                        placeholder={`Pick up to ${limit}…`}
-                        menuPortalTarget={document.body}
-                        styles={{
-                          container: base => ({
-                            ...base,
-                            width: 300, // lock it to 300px
-                            minWidth: 300,
-                            maxWidth: 300,
-                          }),
-                          control: base => ({
-                            ...base,
-                            width: '100%', // fill the container
-                            overflow: 'hidden',
-                            whiteSpace: 'nowrap',
-                          }),
-                          placeholder: base => ({
-                            ...base,
-                            color: '#000',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap',
-                          }),
-                          singleValue: base => ({
-                            ...base,
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap',
-                          }),
-                          multiValue: base => ({
-                            ...base,
-                            maxWidth: '60%',
-                            overflow: 'hidden',
-                          }),
-                          multiValueLabel: base => ({
-                            ...base,
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap',
-                          }),
-                          indicatorsContainer: base => ({
-                            ...base,
-                            flexWrap: 'nowrap',
-                          }),
-                          menu: base => ({
-                            ...base,
-                            width: 300,
-                            minWidth: 300,
-                            maxWidth: 300,
-                            zIndex: 9999,
-                          }),
-                          option: (base, state) => ({
-                            ...base,
-                            color: '#000',
-                            backgroundColor: state.isFocused ? '#f0f0f0' : '#fff',
-                          }),
-                          menuPortal: base => ({ ...base, zIndex: 9999 }),
-                        }}
-                      />
-                    </td>
-                  </tr>
-                );
-              })}
-          </tbody>
-        </Table>
+              {selectedProject && rows.length === 0 && (
+                <tr className={`${darkMode ? 'text-light' : 'text-dark'} `}>
+                  <td colSpan={5} className="text-center py-3">
+                    No equipments found for this project.
+                  </td>
+                </tr>
+              )}
 
-        {/* actions */}
-        <div className="d-flex justify-content-end gap-2">
-          <Button color="secondary" onClick={handleCancel}>
-            Cancel
-          </Button>
-          <Button color="primary" onClick={handleSubmit}>
-            Submit
-          </Button>
+              {selectedProject &&
+                rows.length > 0 &&
+                rows.map((r, idx) => {
+                  const validList = logType === 'check-in' ? r.availableNumbers : r.inUseNumbers;
+                  const limit = logType === 'check-in' ? r.availableQty : r.usingQty;
+
+                  return (
+                    <tr key={r.id} className={`${darkMode ? 'text-light' : 'text-dark'} `}>
+                      <td>{r.name}</td>
+                      <td>{r.workingQty}</td>
+                      <td>{r.availableQty}</td>
+                      <td>{r.usingQty}</td>
+                      <td style={{ textAlign: 'center' }}>
+                        <Select
+                          isMulti
+                          closeMenuOnSelect={false}
+                          value={r.selectedNumbers.map(v => ({ label: v, value: v }))}
+                          options={validList.map(n => ({ label: n, value: n }))}
+                          onChange={sel => onToolSelect(idx, sel)}
+                          placeholder={`Pick up to ${limit}…`}
+                          menuPortalTarget={document.body}
+                          styles={{
+                            container: base => ({
+                              ...base,
+                              width: 300, // lock it to 300px
+                              minWidth: 300,
+                              maxWidth: 300,
+                            }),
+                            control: base => ({
+                              ...base,
+                              width: '100%', // fill the container
+                              overflow: 'hidden',
+                              whiteSpace: 'nowrap',
+                            }),
+                            placeholder: base => ({
+                              ...base,
+                              color: '#000',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              whiteSpace: 'nowrap',
+                            }),
+                            singleValue: base => ({
+                              ...base,
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              whiteSpace: 'nowrap',
+                            }),
+                            multiValue: base => ({
+                              ...base,
+                              maxWidth: '60%',
+                              overflow: 'hidden',
+                            }),
+                            multiValueLabel: base => ({
+                              ...base,
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              whiteSpace: 'nowrap',
+                            }),
+                            indicatorsContainer: base => ({
+                              ...base,
+                              flexWrap: 'nowrap',
+                            }),
+                            menu: base => ({
+                              ...base,
+                              width: 300,
+                              minWidth: 300,
+                              maxWidth: 300,
+                              zIndex: 9999,
+                            }),
+                            option: (base, state) => ({
+                              ...base,
+                              color: '#000',
+                              backgroundColor: state.isFocused ? '#f0f0f0' : '#fff',
+                            }),
+                            menuPortal: base => ({ ...base, zIndex: 9999 }),
+                          }}
+                        />
+                      </td>
+                    </tr>
+                  );
+                })}
+            </tbody>
+          </Table>
+
+          {/* actions */}
+          <div className="d-flex justify-content-end gap-2">
+            <Button color="secondary" onClick={handleCancel}>
+              Cancel
+            </Button>
+            <Button color="primary" onClick={handleSubmit}>
+              Submit
+            </Button>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 
