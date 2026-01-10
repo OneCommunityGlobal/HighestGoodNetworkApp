@@ -122,140 +122,138 @@ export default function ExpenseBarChart() {
   }, [projectId, categoryFilter, startDate, endDate]);
 
   return (
-    <div style={{ width: '100%', padding: '0.5rem' }}>
-      <div style={{ textAlign: 'center', marginBottom: '0.75rem' }}>
-        <h4 style={{ margin: 0, color: '#000000ff', fontSize: '1.4rem' }}>
-          Planned vs Actual Cost
-        </h4>
-        {errorMessage && (
-          <div style={{ color: 'red', fontSize: '0.9rem', marginTop: '0.5rem' }}>
-            {errorMessage}
+    <div className={styles.cardWrapper}>
+      <div className={styles.card}>
+        <div style={{ width: '100%', padding: '0.5rem' }}>
+          <div style={{ textAlign: 'center', marginBottom: '0.75rem' }}>
+            <h4 style={{ margin: 0, color: '#000000ff', fontSize: '1.4rem' }}>
+              Planned vs Actual Cost
+            </h4>
+            {errorMessage && (
+              <div style={{ color: 'red', fontSize: '0.9rem', marginTop: '0.5rem' }}>
+                {errorMessage}
+              </div>
+            )}
           </div>
-        )}
-      </div>
+          <div className={styles.scrollWrapper}>
+            <div className={styles.scrollContent}>
+              <div className={styles.filterContainer}>
+                <label style={{ minWidth: '150px' }}>
+                  Project:
+                  <select
+                    value={projectId}
+                    onChange={e => setProjectId(e.target.value)}
+                    style={{ marginLeft: '0.3rem', width: '100%' }}
+                  >
+                    <option value="">All</option>
+                    {projects.map(p => (
+                      <option key={p} value={p}>
+                        {p}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label style={{ minWidth: '150px' }}>
+                  Category:
+                  <select
+                    value={categoryFilter}
+                    onChange={e => setCategoryFilter(e.target.value)}
+                    style={{ marginLeft: '0.3rem', width: '100%' }}
+                  >
+                    <option value="ALL">All</option>
+                    {categories.map(cat => (
+                      <option key={cat} value={cat}>
+                        {cat}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label style={{ minWidth: '150px' }}>
+                  Start Date:
+                  <input
+                    type="date"
+                    value={startDate}
+                    onChange={e => setStartDate(e.target.value)}
+                    style={{ marginLeft: '0.3rem', width: '100%' }}
+                  />
+                </label>
+                <label style={{ minWidth: '150px' }}>
+                  End Date:
+                  <input
+                    type="date"
+                    value={endDate}
+                    onChange={e => setEndDate(e.target.value)}
+                    style={{ marginLeft: '0.3rem', width: '100%' }}
+                  />
+                </label>
 
-      <div className={styles.filterContainer}>
-        <label style={{ minWidth: '150px' }}>
-          Project:
-          <select
-            value={projectId}
-            onChange={e => setProjectId(e.target.value)}
-            style={{ marginLeft: '0.3rem', width: '100%' }}
-          >
-            <option value="">All</option>
-            {projects.map(p => (
-              <option key={p} value={p}>
-                {p}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label style={{ minWidth: '150px' }}>
-          Category:
-          <select
-            value={categoryFilter}
-            onChange={e => setCategoryFilter(e.target.value)}
-            style={{ marginLeft: '0.3rem', width: '100%' }}
-          >
-            <option value="ALL">All</option>
-            {categories.map(cat => (
-              <option key={cat} value={cat}>
-                {cat}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label style={{ minWidth: '150px' }}>
-          Start Date:
-          <input
-            type="date"
-            value={startDate}
-            onChange={e => setStartDate(e.target.value)}
-            style={{ marginLeft: '0.3rem', width: '100%' }}
-          />
-        </label>
-        <label style={{ minWidth: '150px' }}>
-          End Date:
-          <input
-            type="date"
-            value={endDate}
-            onChange={e => setEndDate(e.target.value)}
-            style={{ marginLeft: '0.3rem', width: '100%' }}
-          />
-        </label>
+                {/* Reset Filters button */}
+                <div style={{ minWidth: '120px' }}>
+                  <button
+                    type="button"
+                    onClick={resetFilters}
+                    style={{
+                      padding: '0.5rem 1.2em',
+                      borderRadius: '6px',
+                      border: '1px solid #d9d2d2ff',
+                      background: '#dededeff',
+                      cursor: 'pointer',
+                      fontSize: '0.95rem',
+                    }}
+                    aria-label="Reset filters"
+                    title="Reset filters"
+                  >
+                    Reset Filter
+                  </button>
+                </div>
+              </div>
 
-        {/* Reset Filters button */}
-        <div style={{ minWidth: '120px' }}>
-          <button
-            type="button"
-            onClick={resetFilters}
-            style={{
-              padding: '0.5rem 1.2em',
-              borderRadius: '6px',
-              border: '1px solid #d9d2d2ff',
-              background: '#dededeff',
-              cursor: 'pointer',
-              fontSize: '0.95rem',
-            }}
-            aria-label="Reset filters"
-            title="Reset filters"
-          >
-            Reset Filter
-          </button>
+              <div className={styles.chartContainer}>
+                <div className={styles.scrollInner}>
+                  <ResponsiveContainer width="100%" height={350}>
+                    <BarChart
+                      data={data}
+                      margin={{ top: 10, right: 10, left: 35, bottom: 35 }}
+                      style={{ backgroundColor: bgColor }}
+                    >
+                      <XAxis
+                        dataKey="project"
+                        tick={{ fontSize: windowWidth < 480 ? 8 : 15, fill: textColor }} // smaller font on small screens
+                        interval={0}
+                        angle={windowWidth < 480 ? -90 : 0} // rotate more on mobile
+                        textAnchor="end"
+                        label={{
+                          value: 'Project Name',
+                          position: 'insideBottom',
+                          dy: windowWidth < 480 ? 40 : 25,
+                          fontSize: 15,
+                          fill: textColor,
+                        }}
+                        stroke={gridColor}
+                      />
+                      <YAxis
+                        tick={{ fontSize: 15, fill: textColor }}
+                        axisLine={{ stroke: gridColor }}
+                        tickLine={{ stroke: gridColor }}
+                      />
+                      <Legend verticalAlign="top" height={36} />
+                      <Tooltip
+                        labelFormatter={label => `Project: ${label}`}
+                        formatter={(value, name) => [`$${Number(value).toLocaleString()}`, name]}
+                      />
+                      <Bar dataKey="planned" fill="#4285F4" name="Planned">
+                        <LabelList dataKey="planned" position="top" style={{ fontSize: 12 }} />
+                      </Bar>
+                      <Bar dataKey="actual" fill="#EA4335" name="Actual">
+                        <LabelList dataKey="actual" position="top" style={{ fontSize: 12 }} />
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          gap: '1rem',
-          fontSize: '0.75rem',
-          marginBottom: '0.75rem',
-          flexWrap: 'wrap',
-        }}
-      ></div>
-
-      <div className={styles.chartContainer}>
-        <ResponsiveContainer>
-          <BarChart
-            data={data}
-            margin={{ top: 10, right: 10, left: 35, bottom: 35 }}
-            style={{ backgroundColor: bgColor }}
-          >
-            <XAxis
-              dataKey="project"
-              tick={{ fontSize: windowWidth < 480 ? 8 : 15, fill: textColor }} // smaller font on small screens
-              interval={0}
-              angle={windowWidth < 480 ? -90 : 0} // rotate more on mobile
-              textAnchor="end"
-              label={{
-                value: 'Project Name',
-                position: 'insideBottom',
-                dy: windowWidth < 480 ? 40 : 25,
-                fontSize: 15,
-                fill: textColor,
-              }}
-              stroke={gridColor}
-            />
-            <YAxis
-              tick={{ fontSize: 15, fill: textColor }}
-              axisLine={{ stroke: gridColor }}
-              tickLine={{ stroke: gridColor }}
-            />
-            <Legend verticalAlign="top" height={36} />
-            <Tooltip
-              labelFormatter={label => `Project: ${label}`}
-              formatter={(value, name) => [`$${Number(value).toLocaleString()}`, name]}
-            />
-            <Bar dataKey="planned" fill="#4285F4" name="Planned">
-              <LabelList dataKey="planned" position="top" style={{ fontSize: 12 }} />
-            </Bar>
-            <Bar dataKey="actual" fill="#EA4335" name="Actual">
-              <LabelList dataKey="actual" position="top" style={{ fontSize: 12 }} />
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
       </div>
     </div>
   );

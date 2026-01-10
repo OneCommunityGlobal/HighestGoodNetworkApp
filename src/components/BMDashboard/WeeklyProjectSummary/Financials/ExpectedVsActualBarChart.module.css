@@ -6,10 +6,27 @@
   padding: 0.5rem;
   border-radius: 8px;
   box-sizing: border-box;
-  overflow-x: hidden;
-  flex-direction: row;
+  overflow: hidden;
 }
-
+.cardWrapper {
+  width: 100%;
+  max-width: 100%;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+/* Card container */
+.card {
+  width: 100%;
+  max-width: 100%; /* laptop */
+  background: var(--card-bg, #ffffff);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  padding: 1rem;
+  box-sizing: border-box;
+  overflow: hidden;
+}
 /* Recharts text */
 .recharts-wrapper text {
   font-size: 11px;
@@ -31,21 +48,61 @@
   flex-direction: column; /* ensures label and input align vertically on mobile */
   font-size: 0.85rem;
 }
-
+.scrollWrapper {
+  width: 100%;
+  box-sizing: border-box;
+}
 /* Responsive tweaks */
+/* Tablet */
+@media (max-width: 1024px) {
+  .card {
+    max-width: 95%;
+    padding: 0.75rem;
+  }
+  .chartContainer {
+    overflow-x: scroll;          /*  horizontal scroll */
+    -webkit-overflow-scrolling: touch;
+  }
+  .scrollWrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .scrollInner {
+    min-width: 50px;          /*  forces scroll */
+  }
+}
+
 @media (max-width: 768px) {
   .chartContainer {
-    height: 300px; /* slightly shorter on tablets */
+    height: 300px;
     padding: 0.3rem;
+    overflow-x: scroll;
+  }
+  .scrollWrapper {
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .scrollInner {
+    min-width: 50px;          /*  forces scroll */
   }
 }
 
 @media (max-width: 480px) {
-  .filterContainer {
-    flex-direction: column; /* vertical on mobile */
-    gap:0.8rem;
-    align-items: stretch;
+  .card {
+    max-width: 100%;
+    padding: 0.5rem;
+    border-radius: 8px;
   }
 
+  .chartContainer {
+    height: 260px;
+    padding: 0.25rem;
+  }
+  .scrollWrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .scrollInner {
+    min-width: 50px;          /*  forces scroll */
+  }
 }
