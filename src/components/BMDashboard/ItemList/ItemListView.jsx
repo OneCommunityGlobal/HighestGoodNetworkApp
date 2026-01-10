@@ -7,7 +7,7 @@ import SelectForm from './SelectForm';
 import SelectItem from './SelectItem';
 import ItemsTable from './ItemsTable';
 
-import styles from './itemListView.module.css';
+import styles from './ItemListView.module.css';
 
 export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamicColumns }) {
   const darkMode = useSelector(state => state.theme.darkMode);
