@@ -1,0 +1,333 @@
+.container-tasks {
+  margin: 20px;
+  /* width: calc(100% - 40px); */
+}
+
+.task-name {
+  min-width: 200px;
+}
+
+.level-space-1 {
+  margin-left: 0px;
+}
+
+.level-space-2 {
+  margin-left: 15px;
+}
+
+.level-space-3 {
+  margin-left: 25px;
+}
+
+.level-space-4 {
+  margin-left: 35px;
+}
+
+.loading {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.loading-task {
+  position: relative;
+  z-index: -50;
+  opacity: 0.1;
+}
+.load {
+  position: relative;
+}
+.dot {
+  height: 24px;
+  width: 24px;
+  background-color: #bbb;
+  border-radius: 50%;
+  display: inline-flex;
+  justify-content: center; /* Center horizontally */
+  align-items: center;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  line-height: 1;
+  margin: 2px;
+  flex-shrink: 0;
+  
+}
+
+.img-circle {
+  border-radius: 50%;
+  height: 24px;
+  width: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.task-hour {
+  width: 35px;
+}
+
+.task-resouces-input {
+  width: 90%;
+}
+
+.task-resouces-btn {
+  width: 10%;
+}
+
+.task-reousces-list {
+  margin-top: 3px;
+  float: left;
+  width: 100%;
+}
+
+.wbsTaskController {
+  display: contents;
+}
+
+.text-break {
+  word-wrap: break-word !important;
+  word-break: break-word !important;
+}
+
+.wbsTask {
+  line-height: 22px;
+}
+/* Ensured task-action-buttons has a flex display to properly align the buttons */
+.task-action-buttons {
+  display: flex;
+  justify-content: flex-start;
+}
+/* Added controlBtn class to ensure uniform margin between buttons */
+.controlBtn {
+  margin-right: 8px; /* Adds margin between buttons */
+  float: left;
+  /* margin-left: 10px; */
+}
+
+
+.controlTd {
+  background-color: #effff2;
+}
+
+.controlBtn_remove {
+  float: right;
+}
+
+.newTask {
+  background-color: #effff2;
+}
+
+.table td {
+  padding: 4px 8px;
+  line-height: 1.2;
+  height: 40px;
+  text-align: center;
+  vertical-align: middle;
+}
+.table th {
+  text-align: center; /* Centers the text horizontally */
+  vertical-align: middle; /* Centers the text vertically */
+  padding: 4px 8px; /* Adds padding for spacing */
+  line-height: 1.2; /* Adjusts the line height */
+  height: 40px; /* Matches the height of the table rows */
+}
+
+#edit-modal-td {
+  text-align: left;
+  vertical-align: top;
+  width: 30%;
+}
+
+
+
+.taskNum {
+  width: 80px;
+}
+
+.taskName {
+  height: auto;
+  text-align: left !important;
+}
+
+.taskDrop {
+  width: 100%;
+  background: #effff2;
+  display: none;
+}
+
+.name {
+  margin-right: 2px;
+}
+
+.resourceMoreToggle {
+  display: flex;
+  
+  justify-content: center; /* Centers horizontally */
+  align-items: center; /* Centers vertically */
+  gap: 6px;
+  overflow: hidden;
+  transition: max-height 0.3s ; /* Smooth transition */ 
+  max-width: 100%;
+}
+
+.resourceMoreToggle.expanded {
+  max-height: 1000px; /* Large enough to accommodate content dynamically */
+  padding: 10px; /* Optional: add spacing during expansion */
+}
+.resourceMore {
+  display: none;
+  justify-content: center; /* Centers the element horizontally */
+  align-items: center;
+}
+
+.warning {
+  color: red;
+  font-size: 10px;
+}
+
+.toggle-all {
+  float: right;
+}
+
+.tasks-table {
+  overflow-x: auto;
+  width: 100% !important;
+}
+
+.tasks-detail-header {
+  vertical-align: middle !important;
+}
+
+.action-edit-btn {
+  padding-right: 5px;
+}
+
+.flex-responsive {
+  display: flex;
+  flex-direction: row;
+  margin-right: 10px;
+  min-width: 100px;
+  padding-left: 8mm
+}
+
+.mw-4 {
+  max-width: 4rem;
+}
+
+.hoursLabel {
+  width: 85px;
+}
+
+@media (max-width: 250px) {
+  .flex-responsive{
+    flex-direction: column;
+  }
+
+  .text-nowrap{
+    text-wrap: wrap !important;
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  .desktop-view {
+    display: none;
+  }
+
+  .table td {
+    padding: 5px;
+    line-height: 1.2;
+    height: 40px
+  }
+}
+
+@media (min-width: 200px) and (max-width: 1496px) {
+
+  .flex-responsive {
+    display: flex;
+    flex-direction: row;
+
+  }
+}
+
+
+.add_new_task_form-group{
+  width: 100%;
+  padding: 0;
+  display: flex;
+  border: .01em solid #cdcbcb;
+  align-items: center;
+}
+
+.add_new_task_form-label{
+  width: 30%;
+  padding: .5em .25em;
+  margin-left: .25em;
+}
+.add_new_task_form-input_area{
+  width: 70%;
+  padding: 0;
+  margin: .25em;
+  border-left: 1px solid #bbb;
+  padding-left: .25em;
+}
+
+.bg-yinmn-blue:hover{
+  background-color: #3A506B !important;
+}
+
+.bg-yinmn-blue-light:hover{
+  background-color:#2f4157;
+}
+
+.tasks-detail-task-name { /* task column height and width changes*/
+  width: 35%; 
+  height: auto; 
+}
+.tasks-detail-actions {  /* action column width reduced */
+  width: 6%; 
+}
+.wbs-button-group {
+  justify-content: flex-start;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.wbs-button-group button {
+  margin: 5px;
+}
+
+@media (max-width: 968px) {
+  .wbs-button-group {
+    align-items: flex-start;
+    margin-bottom: 10px;
+  }
+
+  .datePicker {
+    font-size: small !important; 
+    --rdp-cell-size: auto !important;
+    width: 100%;
+    overflow: auto;
+  }
+  .datePicker :global(.rdp-cell) {
+    padding: 0px !important;
+  }
+}
+
+.text-dark.end-modal-dt .DayPickerInput{
+  position: relative;
+}
+
+.text-dark.end-modal-dt .DayPickerInput-OverlayWrapper{
+  position: absolute;
+  bottom: 18.70em;
+  left: -5em; 
+  z-index: 9999;
+}
+
+@media (max-width: 768px) { /* arranging the buttons */
+  .button-group button {
+    margin-bottom: 10px;
+  }
+}
