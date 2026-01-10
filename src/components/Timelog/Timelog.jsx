@@ -7,6 +7,7 @@ import pdfMake from 'pdfmake/build/pdfmake';
 import 'pdfmake/build/vfs_fonts';
 import htmlToPdfmake from 'html-to-pdfmake';
 import tipStyles from './TimeEntryTooltip.module.css';
+import leaderboardStyles from '../LeaderBoard/Leaderboard.module.css';
 import TooltipPortal from "./TooltipPortal";
 import {
   Container,
@@ -765,7 +766,7 @@ const generateAllTimeEntryItems = () => {
 
 return (
   <div
-    className={`${timeLog['container-timelog-wrapper']} ${darkMode ? `bg-oxford-blue ${timeLog['bg-oxford-blue']}` : ''}`}
+    className={`mb-5 ${timeLog['container-timelog-wrapper']} ${darkMode ? `bg-oxford-blue ${timeLog['bg-oxford-blue']}` : ''}`}
     style={darkMode ? (!props.isDashboard ? { padding: "0 15px 300px 15px" } : {}) : {}}
   >
 
@@ -780,7 +781,7 @@ return (
           <br />
         </Container>
       ) : (
-        <Container style={{ textAlign: 'right', minWidth: '100%' }}>
+        <Container style={{ textAlign: 'right'}}>
           {props.isDashboard ? null : (
             <EditableInfoModal
               areaName="DashboardTimelog"
@@ -809,7 +810,7 @@ return (
               </div>
             </div>
           ) : null}
-          <Row className='row' style={{ minWidth: '100%' }}>
+          <Row className={`row ${leaderboardStyles.row}`} style={{ minWidth: '100%' }}> {/* Maybe here */}
             <Col md={12} className="px-0 mx-0">
               <Card className={darkMode ? 'border-0' : ''}>
                 <CardHeader

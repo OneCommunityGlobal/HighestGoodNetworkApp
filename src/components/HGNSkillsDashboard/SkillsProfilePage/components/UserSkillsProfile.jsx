@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import { useHistory, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { ClipLoader } from 'react-spinners';
-import { useDispatch } from 'react-redux';
 import LeftSection from './LeftSection';
 import RightSection from './RightSection';
 import styles from '../styles/UserSkillsProfile.module.css';
 import jwtDecode from 'jwt-decode';
+import { ENDPOINTS } from '~/utils/URL';
 
 function UserSkillsProfile() {
   const { userId: routeUserId } = useParams();
@@ -16,6 +17,7 @@ function UserSkillsProfile() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const history = useHistory();
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   // Fetch data from backend on component mount
   useEffect(() => {
@@ -34,9 +36,11 @@ function UserSkillsProfile() {
           throw new Error('User ID not found in token.');
         }
 
-        const response = await axios.get(
-          `${process.env.REACT_APP_APIENDPOINT}/skills/profile/${effectiveUserId}`,
-        );
+        const response = await axios.get(ENDPOINTS.SKILLS_PROFILE(effectiveUserId), {
+          headers: {
+            Authorization: `${token}`,
+          },
+        });
         // console.log('Profile Data:', response.data);
 
         const { data } = response;
@@ -64,9 +68,11 @@ function UserSkillsProfile() {
     fetchData();
   }, []); // Empty dependency array - runs only once on mount
 
+  /* eslint-disable no-console */
+
   if (loading) {
     return (
-      <div className={`${styles.skillsLoader}`}>
+      <div className={`${styles.skillsLoader} ${darkMode ? 'dark-mode' : ''}`}>
         <ClipLoader color="#007bff" size={70} />
         <p>Loading Profile...</p>
       </div>
@@ -75,7 +81,7 @@ function UserSkillsProfile() {
 
   if (error) {
     return (
-      <div className={`${styles.skillsError}`}>
+      <div className={`${styles.skillsError} ${darkMode ? 'dark-mode' : ''}`}>
         <p>Error: {error}</p>
       </div>
     );
@@ -83,17 +89,17 @@ function UserSkillsProfile() {
 
   if (!profileData) {
     return (
-      <div className={`${styles.skillsError}`}>
+      <div className={`${styles.skillsError} ${darkMode ? 'dark-mode' : ''}`}>
         <p>No profile data available</p>
       </div>
     );
   }
 
   return (
-    <div className="user-profile-home">
-      <div className="dashboard-container">
+    <div className={`${styles.userProfileHome} ${darkMode ? 'dark-mode' : ''}`}>
+      <div className={`${styles.dashboardContainer}`}>
         <LeftSection />
-        <div className="vertical-separator" />
+        <div className={`${styles.verticalSeparator}`} />
         <RightSection />
       </div>
     </div>

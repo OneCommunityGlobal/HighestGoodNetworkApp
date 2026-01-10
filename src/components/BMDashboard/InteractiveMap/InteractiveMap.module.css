@@ -1,329 +1,348 @@
-/* eslint-disable */
-/* Light Mode Map */
-:global(.light-mode-map) {
-  background-color: white;
+/* ----------------------------------
+   PAGE BACKGROUND
+---------------------------------- */
+.lightPage {
+  background: #ffffff;
+  width: 100%;
+  height: 100%;
+  color: #222;
+  --legend-bg: rgba(255, 255, 255, 0.9);
 }
 
-/* Dark Mode Map */
-:global(.dark-mode-map) {
-  filter: brightness(0.9) contrast(1.1);
-  background-color: #0d1b2a;
+.darkPage {
+  background: #0d1b2a;
+  width: 100%;
+  height: 100%;
+  color: #e6e6e6;
+  --legend-bg: rgba(0, 0, 0, 0.55);
 }
 
-/* Remove underline from zoom controls */
-:global(.leaflet-control-zoom a) {
-  text-decoration: none !important;
+/* ----------------------------------
+   MAIN CONTAINER
+---------------------------------- */
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  padding: 12px 18px;
+  z-index: 0;
 }
 
-:global(.leaflet-control-zoom a:hover) {
-  text-decoration: none !important;
+/* ----------------------------------
+   HEADER
+---------------------------------- */
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 8px 4px 16px;
+  position: relative;
+  z-index: 1200;
 }
 
-/* Remove default popup background and styling */
+.titleText {
+  font-size: 22px;
+  font-weight: 600;
+  margin: 0;
+  color: inherit;
+}
+
+/* ----------------------------------
+   ENABLE CONTROLS TO RENDER CORRECTLY
+---------------------------------- */
+
+/* Before: pointer-events:none blocked legend + hid it entirely */
+:global(.leaflet-control-container) {
+  pointer-events: auto !important;
+  z-index: 450 !important;  /* prevent covering header */
+}
+
+/* Leaflet bottom-right container */
+:global(.leaflet-bottom.leaflet-right) {
+  bottom: 20px !important;
+  right: 20px !important;
+  z-index: 600 !important;
+  pointer-events: auto !important; /* container does not capture clicks */
+}
+
+/* ----------------------------------
+   FILTER ROW
+---------------------------------- */
+.filterRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  z-index: 2000;
+}
+
+/* ----------------------------------
+   DATE INPUT FIELDS
+---------------------------------- */
+.dateInput {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  width: 150px;
+  transition: 0.15s ease;
+}
+
+.dateInputDark {
+  background: #1a2738;
+  color: #ffffff;
+  border-color: #465a74;
+}
+
+.dateInputDark:hover {
+  border-color: #6acfde;
+}
+
+.dateInputDark:focus {
+  outline: none;
+  border-color: #6acfde;
+  box-shadow: 0 0 4px rgba(106, 207, 222, 0.6);
+}
+
+/* Light mode */
+.lightPage .dateInput {
+  background: #ffffff;
+  color: #222;
+  border-color: #ccc;
+}
+
+.lightPage .dateInput:hover {
+  border-color: #6acfde;
+}
+
+.lightPage .dateInput:focus {
+  outline: none;
+  border-color: #3a8bbd;
+  box-shadow: 0 0 3px rgba(58, 139, 189, 0.6);
+}
+
+/* Error message */
+.errorMsg {
+  color: #de6a6a;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* ----------------------------------
+   MAP AREA
+---------------------------------- */
+.mapArea {
+  position: relative;
+  width: 100%;
+  height: 90vh;
+  border-radius: 12px;
+  overflow: visible !important;
+  margin-top: 10px;
+}
+
+.mapContainer {
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+}
+
+/* ----------------------------------
+   DARK MAP OVERLAY EFFECT
+---------------------------------- */
+.darkMap {
+  filter: brightness(0.78) contrast(1.1);
+}
+
+/* ----------------------------------
+   POPUPS
+---------------------------------- */
 :global(.leaflet-popup-content-wrapper) {
-  background: transparent !important;
-  box-shadow: none !important;
-  border: none !important;
-  padding: 0 !important;
-  margin: 0 !important;
+  border-radius: 10px !important;
+  padding: 10px 12px !important;
 }
 
 :global(.leaflet-popup-content) {
   margin: 0 !important;
-  padding: 0 !important;
-  line-height: 1.3 !important;
+  font-size: 14px !important;
 }
 
-:global(.leaflet-popup-tip) {
-  background: transparent !important;
-  box-shadow: none !important;
-  border: none !important;
-}
-
-/* Light Mode Popup - Custom Styling */
-:global(.light-mode-popup.leaflet-popup-content-wrapper) {
-  background: transparent !important;
-  box-shadow: none !important;
-  border: none !important;
-}
-
-:global(.light-mode-popup .leaflet-popup-content) {
-  background: transparent !important;
+/* Light */
+.lightPage :global(.leaflet-popup-content-wrapper) {
+  background: #ffffff !important;
   color: #222 !important;
-  margin: 0 !important;
-  padding: 0 !important;
+  border: 1px solid #e3e3e3 !important;
 }
 
-:global(.light-mode-popup .leaflet-popup-tip) {
-  background: transparent !important;
-  box-shadow: none !important;
-  border: none !important;
+/* Dark */
+.darkPage :global(.leaflet-popup-content-wrapper),
+.darkPage :global(.leaflet-popup-tip) {
+  background: #2d4059 !important;
+  border: 1px solid #4b5f79 !important;
+  color: #f5f5f5 !important;
 }
 
-/* Dark Mode Popup - Custom Styling */
-:global(.dark-mode-popup.leaflet-popup-content-wrapper) {
-  background: transparent !important;
-  box-shadow: none !important;
-  border: none !important;
+/* ----------------------------------
+   TOOLTIP
+---------------------------------- */
+.lightTooltip,
+.darkTooltip {
+  padding: 6px 10px;
+  font-size: 13px;
+  border-radius: 6px;
 }
 
-:global(.dark-mode-popup .leaflet-popup-content) {
-  background: transparent !important;
-  color: white !important;
-  margin: 0 !important;
-  padding: 0 !important;
-}
-
-:global(.dark-mode-popup .leaflet-popup-tip) {
-  background: transparent !important;
-  box-shadow: none !important;
-  border: none !important;
-}
-
-/* Light Mode Tooltip */
-:global(.light-mode-tooltip.leaflet-tooltip) {
-  background-color: white !important;
+.lightTooltip {
+  background: #ffffff !important;
+  border: 1px solid #e3e3e3 !important;
   color: #222 !important;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  font-size: 11px;
-  font-weight: 500;
-  padding: 4px 8px;
 }
 
-/* Dark Mode Tooltip */
-:global(.dark-mode-tooltip.leaflet-tooltip) {
-  background-color: #2d4059 !important;
-  color: white !important;
-  border: 1px solid #3a506b;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-  font-size: 11px;
-  font-weight: 500;
-  padding: 4px 8px;
+.darkTooltip {
+  background: #2d4059 !important;
+  border: 1px solid #4b5f79 !important;
+  color: #ffffff !important;
 }
 
-/* Tooltip arrows */
-:global(.light-mode-tooltip.leaflet-tooltip-top::before) {
-  border-top-color: white !important;
+/* ----------------------------------
+   MAP CONTROLS
+---------------------------------- */
+.darkPage :global(.leaflet-control-attribution) {
+  background: rgba(45, 64, 89, 0.85) !important;
+  color: #ddd !important;
 }
 
-:global(.light-mode-tooltip.leaflet-tooltip-bottom::before) {
-  border-bottom-color: white !important;
+.darkPage :global(.leaflet-control-attribution a) {
+  color: #6acfde !important;
 }
 
-:global(.dark-mode-tooltip.leaflet-tooltip-top::before) {
-  border-top-color: #2d4059 !important;
+/* Hide zoom buttons */
+:global(.leaflet-control-zoom) {
+  display: none !important;
 }
 
-:global(.dark-mode-tooltip.leaflet-tooltip-bottom::before) {
-  border-bottom-color: #2d4059 !important;
+:global(.leaflet-control) {
+  z-index: 2000 !important;
 }
 
-/* Map controls styling */
-:global(.dark-mode-map .leaflet-control-attribution) {
-  background-color: rgba(45, 64, 89, 0.9) !important;
-  color: #b0b8c4 !important;
-  border: 1px solid #3a506b;
-  backdrop-filter: blur(10px);
-}
-
-:global(.dark-mode-map .leaflet-control-attribution a) {
-  color: #6ACFDE !important;
-}
-
-:global(.light-mode-map .leaflet-control-attribution) {
-  background-color: rgba(255, 255, 255, 0.9) !important;
-  color: #666 !important;
-  border: 1px solid #ddd;
-}
-
-:global(.light-mode-map .leaflet-control-attribution a) {
-  color: #4CAF50 !important;
-}
-
-:global(.dark-mode-map .leaflet-control-zoom a) {
-  background-color: #2d4059 !important;
-  color: white !important;
-  border-color: #3a506b !important;
-  transition: all 0.2s ease;
-  text-decoration: none !important;
-}
-
-:global(.dark-mode-map .leaflet-control-zoom a:hover) {
-  background-color: #3a506b !important;
-  transform: translateY(-1px);
-  text-decoration: none !important;
-}
-
-:global(.light-mode-map .leaflet-control-zoom a) {
-  background-color: white !important;
-  color: #222 !important;
-  border-color: #ddd !important;
-  transition: all 0.2s ease;
-  text-decoration: none !important;
-}
-
-:global(.light-mode-map .leaflet-control-zoom a:hover) {
-  background-color: #f5f5f5 !important;
-  text-decoration: none !important;
-}
-
-:global(.dark-mode-map .leaflet-control-zoom-in),
-:global(.dark-mode-map .leaflet-control-zoom-out) {
-  border-bottom: 1px solid #3a506b !important;
-}
-
-:global(.light-mode-map .leaflet-control-zoom-in),
-:global(.light-mode-map .leaflet-control-zoom-out) {
-  border-bottom: 1px solid #ddd !important;
-}
-
-/* Marker cluster styling for dark mode */
-:global(.dark-mode-map .marker-cluster-small) {
-  background-color: rgba(110, 204, 57, 0.7) !important;
-}
-
-:global(.dark-mode-map .marker-cluster-small div) {
-  background-color: rgba(81, 163, 32, 0.8) !important;
-  color: white !important;
-}
-
-:global(.dark-mode-map .marker-cluster-medium) {
-  background-color: rgba(240, 194, 12, 0.7) !important;
-}
-
-:global(.dark-mode-map .marker-cluster-medium div) {
-  background-color: rgba(200, 160, 0, 0.8) !important;
-  color: white !important;
-}
-
-:global(.dark-mode-map .marker-cluster-large) {
-  background-color: rgba(241, 128, 23, 0.7) !important;
-}
-
-:global(.dark-mode-map .marker-cluster-large div) {
-  background-color: rgba(200, 100, 0, 0.8) !important;
-  color: white !important;
-}
-
-/* Default marker cluster styling */
-:global(.marker-cluster-small) {
-  background-color: rgba(181, 226, 140, 0.8);
-}
-
-:global(.marker-cluster-small div) {
-  background-color: rgba(110, 204, 57, 0.8);
-  color: white;
-}
-
-:global(.marker-cluster-medium) {
-  background-color: rgba(241, 211, 87, 0.8);
-}
-
-:global(.marker-cluster-medium div) {
-  background-color: rgba(240, 194, 12, 0.8);
-  color: white;
-}
-
-:global(.marker-cluster-large) {
-  background-color: rgba(253, 156, 115, 0.8);
-}
-
-:global(.marker-cluster-large div) {
-  background-color: rgba(241, 128, 23, 0.8);
-  color: white;
-}
-
-/* Marker cluster hover effects */
+/* ----------------------------------
+   CLUSTERS
+---------------------------------- */
 :global(.marker-cluster) {
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: transform 0.2s ease;
 }
 
 :global(.marker-cluster:hover) {
-  transform: scale(1.1);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  transform: scale(1.12);
 }
 
-/* Layer control styling */
-:global(.dark-mode-map .leaflet-control-layers) {
-  background-color: #2d4059 !important;
-  color: white !important;
-  border: 1px solid #3a506b;
+/* ----------------------------------
+   LABELS & LEGEND
+---------------------------------- */
+.bottomLeftLabel {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.75);
+  border-radius: 8px;
+  font-size: 13px;
+  backdrop-filter: blur(4px);
+  z-index: 1000;
 }
 
-:global(.light-mode-map .leaflet-control-layers) {
-  background-color: white !important;
-  color: #222 !important;
-  border: 1px solid #ddd;
+.darkPage .bottomLeftLabel {
+  background: rgba(0, 0, 0, 0.55);
+  color: #ffffff;
 }
 
-:global(.dark-mode-map .leaflet-control-layers-toggle) {
-  background-color: #2d4059 !important;
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  margin: 4px 0;
 }
 
-:global(.light-mode-map .leaflet-control-layers-toggle) {
-  background-color: white !important;
+.legendDot {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  margin-right: 8px;
 }
 
-:global(.dark-mode-map .leaflet-control-layers-expanded) {
-  background-color: #2d4059 !important;
-  color: white !important;
+/* ----------------------------------
+   POPUP BUTTON
+---------------------------------- */
+.detailsButton {
+  margin-top: 8px;
+  padding: 7px 12px;
+  background: #1f6feb;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: 0.15s ease;
 }
 
-:global(.light-mode-map .leaflet-control-layers-expanded) {
-  background-color: white !important;
-  color: #222 !important;
+.detailsButton:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
 }
 
-:global(.dark-mode-map .leaflet-control-layers label) {
-  color: white !important;
+.legendBox {
+  position: absolute; /* absolute inside the map container */
+  width: 160px;       /* fixed width */
+  height: 180px;      /* fixed height */
+  cursor: move;
+  user-select: none;
+  padding: 10px 12px;
+  background: var(--legend-bg);
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  border: 1px solid rgba(0,0,0,0.15);
+  backdrop-filter: blur(4px);
+  font-size: 13px;
+  z-index: 10000; /* higher than map */
+  pointer-events: auto !important;
+  opacity: 1 !important;
+  left: auto;    /* initial position handled in JSX */
+  top: auto;     /* initial position handled in JSX */
+  bottom: 20px;  /* fallback bottom-right */
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
 }
 
-:global(.light-mode-map .leaflet-control-layers label) {
-  color: #222 !important;
+
+.darkPage .legendBox {
+  border: 1px solid rgba(255,255,255,0.15);
+  color: #fff;
 }
 
-:global(.dark-mode-map .leaflet-control-layers input) {
-  accent-color: #6ACFDE;
+/* New filter row styles */
+.filterRowExtra {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+  margin-bottom: 16px;
 }
 
-:global(.light-mode-map .leaflet-control-layers input) {
-  accent-color: #4CAF50;
+.filterInputs {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
-/* Custom scrollbar for dark mode */
-:global(.dark-mode-map ::-webkit-scrollbar) {
-  width: 8px;
-}
-
-:global(.dark-mode-map ::-webkit-scrollbar-track) {
-  background: #2d4059;
-}
-
-:global(.dark-mode-map ::-webkit-scrollbar-thumb) {
-  background: #3a506b;
-  border-radius: 4px;
-}
-
-:global(.dark-mode-map ::-webkit-scrollbar-thumb:hover) {
-  background: #4a6180;
-}
-
-:global(.light-mode-map ::-webkit-scrollbar) {
-  width: 8px;
-}
-
-:global(.light-mode-map ::-webkit-scrollbar-track) {
-  background: #f1f1f1;
-}
-
-:global(.light-mode-map ::-webkit-scrollbar-thumb) {
-  background: #c1c1c1;
-  border-radius: 4px;
-}
-
-:global(.light-mode-map ::-webkit-scrollbar-thumb:hover) {
-  background: #a8a8a8;
+.totalProjects {
+  font-weight: 500;
+  margin-left: auto;
 }
