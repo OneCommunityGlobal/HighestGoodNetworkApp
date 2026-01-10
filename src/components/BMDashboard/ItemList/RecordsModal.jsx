@@ -2,7 +2,7 @@ import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Table } from 'react
 import moment from 'moment';
 import { useDispatch, useSelector } from 'react-redux';
 
-import styles from './recordsModal.module.css';
+import styles from './RecordsModal.module.css';
 import { approvePurchase, rejectPurchase } from '../../../actions/bmdashboard/materialsActions';
 
 export default function RecordsModal({ modal, setModal, record, setRecord, recordType }) {
