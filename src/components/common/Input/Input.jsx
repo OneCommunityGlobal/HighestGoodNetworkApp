@@ -3,7 +3,7 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import { useState } from 'react';
 import PropTypes from 'prop-types';
-import styles from './Input.module.css';
+import styles from './input.module.css';
 import { useSelector } from 'react-redux';
 
 // eslint-disable-next-line react/function-component-definition
