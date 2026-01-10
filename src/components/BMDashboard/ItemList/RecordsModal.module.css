@@ -1,4 +1,4 @@
-.recordsModalTableContainer {
+.records_modal_table_container {
   overflow: scroll;
   height: 75vh;
   text-align: center;
@@ -6,13 +6,51 @@
   white-space: nowrap;
 }
 
+/* 🌙 Dark Mode */
+:global(.dark-mode) .records_modal_table_container {
+  background-color: #3A506B; /* Yinmn Blue */
+  color: #ffffff;
+}
+
+/* Email links — Azure blue in dark mode */
+:global(.dark-mode) .records_modal_table_container a {
+  color: #4FA3FF; /* Azure */
+  text-decoration: underline;
+}
+
+:global(.dark-mode) .records_modal_table_container a:hover {
+  color: #6BB6FF; /* lighter Azure on hover */
+}
+
+/* Header row (first row) — Space Cadet */
+:global(.dark-mode) .records_modal_table_container thead tr th {
+  background-color: #1C2541 !important; /* Space Cadet */
+  color: #ffffff !important;
+  border-color: #3A506B !important;
+}
+
+/* Body rows — Yinmn Blue */
+:global(.dark-mode) .records_modal_table_container tbody tr td {
+  background-color: #3A506B !important; /* Yinmn Blue */
+  color: #ffffff !important;
+  border-color: #1C2541 !important;
+}
+
+/* Hover on any body row — Space Cadet */
+:global(.dark-mode) .records_modal_table_container tbody tr:hover td {
+  background-color: #1C2541 !important; /* Space Cadet */
+  color: #ffffff !important;
+}
+
+/* Responsive */
 @media (min-width: 1200px) {
-  .recordsModalTableContainer {
+  .records_modal_table_container {
     font-size: medium;
   }
 }
 
-.approveButton {
+/* Buttons */
+.approve_button {
   background-color: green;
   color: white;
   border: none;
@@ -22,7 +60,13 @@
   margin-right: 8px;
 }
 
-.rejectButton {
+:global(.dark-mode) .approve_button {
+  background-color: #1C2541; /* Space Cadet */
+  color: #ffffff;
+  border: 1px solid #3A506B;
+}
+
+.reject_button {
   background-color: red;
   color: white;
   border: none;
@@ -30,4 +74,29 @@
   cursor: pointer;
   border-radius: 4px;
   margin-right: 8px;
+}
+
+:global(.dark-mode) .reject_button {
+  background-color: #1C2541; /* Space Cadet */
+  color: #ffffff;
+  border: 1px solid #3A506B;
+}
+
+/* Scrollbar */
+:global(.dark-mode) .records_modal_table_container::-webkit-scrollbar {
+  background: #1C2541;
+}
+
+:global(.dark-mode) .records_modal_table_container::-webkit-scrollbar-thumb {
+  background: #3A506B;
+  border-radius: 6px;
+}
+:global(.dark-mode) .blue_link {
+  color: #4FA3FF !important;   /* Azure blue */
+  text-decoration: none !important;
+}
+
+:global(.dark-mode) .blue_link:hover {
+  color: #6BB6FF !important;   /* lighter blue */
+  text-decoration: none !important;
 }
