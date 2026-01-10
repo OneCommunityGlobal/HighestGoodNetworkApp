@@ -74,6 +74,10 @@
   margin: 0;
 }
 
+.item__navbar-right--dark h2 {
+  color: #ffffff !important;
+}
+
 .item__icons{
   padding-left: 0.5rem;
   margin: 0;
@@ -100,6 +104,12 @@
   height: auto;
 }
 
+.item__overview--dark {
+  background-color: #0f1629 !important;
+  color: #ffffff !important;
+  border: 1px solid #1C2541;
+}
+
 .item__details-left {
   width: 50%;
   height: 100%;
@@ -109,6 +119,10 @@
   padding: 2.5% 2.5% 1.5% 2.5%;
 }
 
+.item__details-left--dark {
+  color: #ffffff !important;
+}
+
 .item__listing-details--mobile {
   display: none;
 }
@@ -116,6 +130,15 @@
 .item__listing-details h1,
 .item__listing-details p {
   color: #000;
+}
+
+.item__listing-details--dark h1,
+.item__listing-details--dark p {
+  color: #ffffff !important;
+}
+
+.item__heading--dark {
+  color: #ffffff !important;
 }
 
 .item__images {
@@ -130,11 +153,23 @@
   gap: 10px;
 }
 
+.item__amenities--dark {
+  color: #ffffff !important;
+}
+
 .item__amenities h2 {
   font-size: 16px;
   text-align: left;
   color: #060606;
   font-weight: bold;
+}
+
+.item__amenities-heading--dark {
+  color: #ffffff !important;
+}
+
+.item__amenities-text--dark {
+  color: #e8eaed !important;
 }
 
 .item__amenities div {
@@ -155,6 +190,18 @@
   width: 50%;
 }
 
+.err-message--dark {
+  color: #ff6b6b;
+}
+
+.err-message--dark h6 {
+  color: #ff6b6b;
+}
+
+.item__error-link--dark {
+  color: #81b0ff !important;
+}
+
 .item__location {
   display: flex;
   width: 100%;
@@ -162,6 +209,10 @@
   margin: 2%;
   padding-left: 5%;
   margin-top: 5%;
+}
+
+.item__location--dark {
+  color: #ffffff !important;
 }
 
 .item__location img {
@@ -172,6 +223,11 @@
 .item__location a {
   text-decoration: underline;
   cursor: pointer;
+  color: #1976d2;
+}
+
+.item__location-link--dark {
+  color: #81b0ff !important;
 }
 
 .item__icon {
@@ -183,6 +239,87 @@
   width: 50%;
   height: 100%;
   padding: 2.5%;
+}
+
+.item__details-right--dark {
+  color: #ffffff !important;
+}
+
+.item__description--dark {
+  color: #e8eaed !important;
+}
+
+.item__form {
+  /* Base form styles */
+}
+
+.item__form--dark {
+  color: #ffffff !important;
+}
+
+.item__form-label--dark {
+  color: #ffffff !important;
+}
+
+.item__form-input {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: #fff;
+  color: #000;
+  margin-top: 2.5%;
+  width: 100%;
+  transition: border-color 0.3s, background-color 0.3s, color 0.3s;
+}
+
+.item__form-input--dark {
+  background-color: #1C2541 !important;
+  border-color: #3A506B !important;
+  color: #ffffff !important;
+}
+
+.item__form-input--dark::placeholder {
+  color: #9ca3af !important;
+}
+
+.item__form-input--dark::-webkit-calendar-picker-indicator {
+  filter: invert(1) brightness(1.2);
+  cursor: pointer;
+}
+
+.item__form-input--dark[type="date"] {
+  color-scheme: dark !important;
+}
+
+.item__form-submit {
+  background: #13ae5c;
+  color: white;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+  width: 100%;
+  margin-top: 15px;
+}
+
+.item__form-submit:hover {
+  background: #0f9a50;
+  transform: scale(1.01);
+}
+
+.item__form-submit:active {
+  transform: scale(0.99);
+}
+
+.item__form-submit--dark {
+  background: #43a047;
+  color: white;
+}
+
+.item__form-submit--dark:hover {
+  background: #388e3c;
 }
 
 .item__rent {
@@ -199,24 +336,6 @@
   flex-direction: column;
 }
 
-.item__form button {
-  background: #13ae5c;
-  color: white;
-  padding: 10px;
-  border-radius: 10px;
-  border: none;
-  cursor: pointer;
-  transition: background 0.3s ease, transform 0.2s ease;
-}
-
-.item__form button:hover {
-  background: #0f9a50;
-  transform: scale(1.01);
-}
-
-.item__form button:active {
-  transform: scale(0.99);
-}
 .item__rent input[type='date'] {
   border: 1px solid #ccc;
   margin-top: 2.5%;
@@ -227,11 +346,13 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  gap: 10px;
+  margin-top: 15px;
 }
 
 .item__bidding label {
   display: flex;
-  width: 50%;
+  width: 100%;
   flex-direction: column;
 }
 
@@ -248,7 +369,7 @@
   margin-top: 2.5%;
 }
 
-.save__list button {
+.save__list-button {
   background: #d1d1d1;
   padding: 2.5%;
   border-radius: 998px;
@@ -262,6 +383,20 @@
   align-items: center;
   cursor: pointer;
   transition: background 0.3s ease, transform 0.2s ease;
+  color: #000;
+}
+
+.save__list-button:hover {
+  background: #c1c1c1;
+}
+
+.save__list-button--dark {
+  background: #1C2541 !important;
+  color: #ffffff !important;
+}
+
+.save__list-button--dark:hover {
+  background: #2d3f5e !important;
 }
 
 .start__chat {
@@ -271,7 +406,7 @@
   margin-top: 2.5%;
 }
 
-.start__chat button {
+.start__chat-button {
   background: #d1d1d1;
   padding: 2.5%;
   border-radius: 998px;
@@ -284,18 +419,46 @@
   align-items: center;
   cursor: pointer;
   transition: background 0.3s ease, transform 0.2s ease;
+  color: #000;
+}
+
+.start__chat-button:hover {
+  background: #c1c1c1;
+}
+
+.start__chat-button--dark {
+  background: #1C2541 !important;
+  color: #ffffff !important;
+}
+
+.start__chat-button--dark:hover {
+  background: #2d3f5e !important;
 }
 
 .saved__item {
   color: red;
 }
 
+.item__icon-empty--dark {
+  color: #ffffff !important;
+}
+
 .item_overview_module {
   /* Additional styles for the overview module wrapper */
 }
 
+.item_overview_module--dark {
+  background-color: #0a0f1a !important;
+  color: #ffffff !important;
+}
+
 .item__container {
   /* Container styles */
+}
+
+.item__container--dark {
+  background-color: #0a0f1a !important;
+  color: #ffffff !important;
 }
 
 @media screen and (max-width: 1200px) {
@@ -392,7 +555,7 @@
   .item__listing-details--desktop {
     display: none;
   }
-  .start__chat button {
+  .start__chat-button {
     background: #d1d1d1;
     padding: 2.5%;
     border-radius: 998px;
@@ -478,19 +641,19 @@
     align-items: center;
   }
 
-  .item__form label {
+    .item__form label {
     display: flex;
     width: 150px;
     flex-direction: column;
   }
   
-  .item__form input[type='date'] {
+  .item__form-input {
     border: 1px solid #ccc;
     margin-top: 2.5%;
     width: 90%;
   }
 
-  .start__chat button {
+  .start__chat-button {
     background: #d1d1d1;
     padding: 2.5%;
     border-radius: 998px;

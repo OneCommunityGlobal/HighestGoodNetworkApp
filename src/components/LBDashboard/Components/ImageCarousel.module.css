@@ -66,3 +66,33 @@
 .indicator.active {
   background-color: #333;
 }
+
+/* Dark mode styles */
+.carouselContainer--dark {
+  /* Container dark mode styles if needed */
+}
+
+.imgArrow--dark {
+  background-color: rgba(255, 255, 255, 0.7) !important;
+  color: #000 !important;
+}
+
+.imgArrow--dark:hover {
+  background-color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.indicator--dark {
+  background-color: #666 !important;
+}
+
+.indicator--dark:hover {
+  background-color: #888 !important;
+}
+
+.active--dark {
+  background-color: #fff !important;
+}
+
+.no-images--dark {
+  color: #e1e1e1 !important;
+}
