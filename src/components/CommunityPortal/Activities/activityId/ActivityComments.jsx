@@ -646,7 +646,7 @@ function ActivityComments() {
    */
   const filteredFeedbacks = feedbacks
     .filter(feedback => {
-      // If search term is provided, check if it matches reviewer name or feedback text
+      // Search logic: check if search term matches reviewer name or feedback text
       const searchTerm = feedbackSearch.trim().toLowerCase();
       let matchesSearch = true;
 
@@ -654,18 +654,18 @@ function ActivityComments() {
         const reviewerName = (feedback.name || '').toLowerCase();
         const feedbackText = (feedback.text || '').toLowerCase();
 
-        // Search in reviewer name and feedback text (partial match)
+        // Explicit search matching: check both fields with OR logic
         matchesSearch = reviewerName.includes(searchTerm) || feedbackText.includes(searchTerm);
       }
 
-      // Apply rating filter
+      // Rating filter logic
       const matchesFilter =
         feedbackFilter === 'All' || feedback.rating.toString() === feedbackFilter;
 
       return matchesSearch && matchesFilter;
     })
     .sort((a, b) => {
-      // Sort by creation date (using createdAt field)
+      // Sort by creation date with null safety
       const dateA = a.createdAt ? new Date(a.createdAt) : new Date(0);
       const dateB = b.createdAt ? new Date(b.createdAt) : new Date(0);
 
