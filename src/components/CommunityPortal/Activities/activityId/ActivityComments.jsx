@@ -637,23 +637,42 @@ function ActivityComments() {
 
   /**
    * Filter and sort feedbacks based on search, filter, and sort criteria
+   *
+   * Search Parameters:
+   * - Reviewer name (feedback.name): Searches in the reviewer's name
+   * - Feedback text (feedback.text): Searches in the feedback comment/description
+   *
+   * The search uses case-insensitive partial matching (contains) for both fields.
    */
   const filteredFeedbacks = feedbacks
     .filter(feedback => {
-      // Search Parameters: reviewer name, feedback text
+      // Search logic: check if search term matches reviewer name or feedback text
       const searchTerm = feedbackSearch.trim().toLowerCase();
-      const reviewerName = (feedback.name || '').toLowerCase();
-      const feedbackText = (feedback.text || '').toLowerCase();
-      const matchesSearch = reviewerName.includes(searchTerm) || feedbackText.includes(searchTerm);
+      let matchesSearch = true;
+
+      if (searchTerm) {
+        const reviewerName = (feedback.name || '').toLowerCase();
+        const feedbackText = (feedback.text || '').toLowerCase();
+
+        // Explicit search matching: check both fields with OR logic
+        matchesSearch = reviewerName.includes(searchTerm) || feedbackText.includes(searchTerm);
+      }
+
+      // Rating filter logic
       const matchesFilter =
         feedbackFilter === 'All' || feedback.rating.toString() === feedbackFilter;
+
       return matchesSearch && matchesFilter;
     })
     .sort((a, b) => {
-      if (feedbackSort === 'Oldest') return new Date(a.timestamp) - new Date(b.timestamp);
+      // Sort by creation date with null safety
+      const dateA = a.createdAt ? new Date(a.createdAt) : new Date(0);
+      const dateB = b.createdAt ? new Date(b.createdAt) : new Date(0);
+
+      if (feedbackSort === 'Oldest') return dateA - dateB;
       if (feedbackSort === 'Highest Rated') return b.rating - a.rating;
       if (feedbackSort === 'Lowest Rated') return a.rating - b.rating;
-      return new Date(b.timestamp) - new Date(a.timestamp); // Newest
+      return dateB - dateA; // Newest (default)
     });
 
   return (
