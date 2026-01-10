@@ -1,0 +1,654 @@
+:root {
+  --ep-primary: #4a90e2;
+  --ep-primary-2: #82b7ff;
+  --ep-secondary: #f5f5f5;
+  --ep-text-color: #333;
+  --ep-text-muted: #666;
+  --ep-text-light: #999;
+  --ep-border-color: #ddd;
+  --ep-card-bg: #fff;
+  --ep-grid-stroke: #e0e0e0;
+  --ep-chart-tick: #999;
+  --ep-success: #27ae60;
+  --ep-warning: #e74c3c;
+  --ep-background: #f9f9f9;
+}
+
+.dark {
+  --ep-text-color: #e5e7eb;
+  --ep-muted-text: #b5bac5;
+  --ep-card-bg: #0f1724;
+  --ep-card-alt-bg: #111827;
+  --ep-primary: #4A90E2;
+  --ep-primary-2: #82B7FF;
+  --ep-card-shadow: none;
+  --ep-grid-stroke: #2f4157;
+  --ep-chart-tick: #ffffff;
+}
+
+.eventpopularity {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  background-color: var(--ep-background);
+  min-height: 100vh;
+}
+
+.eventpopularity.dark {
+  --ep-text-color: #e0e0e0;
+  --ep-text-muted: #b0b0b0;
+  --ep-text-light: #888;
+  --ep-card-bg: #2a2a2a;
+  --ep-secondary: #3a3a3a;
+  --ep-border-color: #444;
+  --ep-grid-stroke: #444;
+  --ep-chart-tick: #888;
+  --ep-background: #1a1a1a;
+}
+
+/* Header */
+.epHeader {
+  margin-bottom: 30px;
+}
+
+.epTitle {
+  font-size: 28px;
+  font-weight: bold;
+  margin: 0 0 10px 0;
+  color: var(--ep-text-color);
+}
+
+.epSubtitle {
+  color: var(--ep-text-muted);
+  font-size: 14px;
+  margin: 0;
+}
+
+/* Filter Panel */
+.epFilterPanel {
+  background: var(--ep-card-bg);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.epFilterHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.epFilterTitle {
+  font-size: 16px;
+  font-weight: bold;
+  margin: 0;
+  color: var(--ep-text-color);
+}
+
+.epResetBtn {
+  padding: 8px 16px;
+  background-color: var(--ep-warning);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: bold;
+  transition: all 0.2s ease;
+}
+
+.epResetBtn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.epResetBtn:active {
+  transform: translateY(0);
+}
+
+.epFilterGroup {
+  margin-bottom: 20px;
+}
+
+.epFilterLabel {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 12px;
+  font-weight: bold;
+  color: var(--ep-text-color);
+}
+
+.epDateInputs {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.epDateInput {
+  padding: 8px 12px;
+  border: 1px solid var(--ep-border-color);
+  border-radius: 4px;
+  font-size: 12px;
+  background-color: var(--ep-card-bg);
+  color: var(--ep-text-color);
+  flex: 1;
+  max-width: 150px;
+}
+
+.epDateInput:focus {
+  outline: none;
+  border-color: var(--ep-primary);
+  box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.1);
+}
+
+.epDateSeparator {
+  color: var(--ep-text-light);
+  font-size: 12px;
+}
+
+.epButtonGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.epFilterBtn {
+  padding: 8px 16px;
+  background-color: var(--ep-secondary);
+  color: var(--ep-text-color);
+  border: 1px solid var(--ep-border-color);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.epFilterBtn:hover {
+  background-color: var(--ep-secondary);
+  border-color: var(--ep-primary);
+}
+
+.epFilterBtn:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+}
+
+.epFilterBtn.epFilterBtnActive {
+  background-color: var(--ep-primary);
+  color: white;
+  border-color: var(--ep-primary);
+  font-weight: bold;
+}
+
+/* Main Grid */
+.epgrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  transition: grid-template-columns 0.3s ease;
+}
+
+.epgrid.withDetailView {
+  grid-template-columns: 1fr 1fr;
+}
+
+/* Cards */
+.epCard,
+.epChartCard {
+  background: var(--ep-card-bg);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
+
+.epCardTitle {
+  font-size: 16px;
+  font-weight: bold;
+  margin: 0 0 20px 0;
+  color: var(--ep-text-color);
+}
+
+/* Events List */
+.epEventsList {
+  margin-bottom: 20px;
+}
+
+.epRowHeader {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--ep-text-light);
+  margin-bottom: 12px;
+  font-weight: bold;
+  padding: 0 8px;
+}
+
+.epEventRow {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+  padding: 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  background-color: transparent;
+  border-left: 3px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.epEventRow:hover {
+  background-color: var(--ep-secondary);
+}
+
+.epEventRow:focus {
+  outline: none;
+  box-shadow: inset 0 0 0 2px var(--ep-primary);
+}
+
+.epEventRow.epEventRowActive {
+  background-color: rgba(74, 144, 226, 0.1);
+  border-left-color: var(--ep-primary);
+  padding-left: 5px;
+}
+
+.epEventName {
+  width: 140px;
+  margin-right: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ep-text-color);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.epEventRow.epEventRowActive .epEventName {
+  color: var(--ep-primary);
+}
+
+.epProgressBar {
+  flex-grow: 1;
+  height: 6px;
+  background: var(--ep-border-color);
+  border-radius: 3px;
+  overflow: hidden;
+  margin: 0 10px;
+}
+
+.epProgressFill {
+  height: 100%;
+  background: var(--ep-primary);
+  transition: width 0.3s ease;
+}
+
+.epEventStats {
+  min-width: 80px;
+  font-size: 12px;
+  color: var(--ep-text-muted);
+  text-align: right;
+}
+
+/* Stats Grid */
+.epStatsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.epStatCard {
+  background: var(--ep-secondary);
+  border-radius: 4px;
+  padding: 16px 12px;
+  text-align: center;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.epStatCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.epStatCard:focus {
+  outline: none;
+  border-color: var(--ep-primary);
+}
+
+.epStatCard.epStatCardPrimary {
+  background: rgba(74, 144, 226, 0.1);
+  border: 2px solid var(--ep-primary);
+}
+
+.epStatTitle {
+  color: var(--ep-text-color);
+  margin: 0 0 5px 0;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.epStatCardPrimary .epStatTitle {
+  color: var(--ep-primary);
+}
+
+.epStatSubtitle {
+  font-size: 11px;
+  color: var(--ep-text-light);
+  margin: 0;
+}
+
+/* Chart */
+.epChartContainer {
+  margin-bottom: 20px;
+}
+
+.epChartTooltip {
+  padding: 8px;
+  font-size: 12px;
+}
+
+.epTooltipTime {
+  margin: 0 0 4px 0;
+  font-weight: bold;
+  color: var(--ep-text-color);
+}
+
+.epTooltipRegistered {
+  margin: 2px 0;
+  color: var(--ep-primary);
+}
+
+.epTooltipAttended {
+  margin: 2px 0;
+  color: var(--ep-primary-2);
+}
+
+.epTooltipHint {
+  margin: 4px 0 0 0;
+  color: var(--ep-text-light);
+  font-size: 11px;
+}
+
+/* Participation Cards */
+.epParticipationGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.epParticipationCard {
+  background: var(--ep-secondary);
+  border-radius: 4px;
+  padding: 12px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.epParticipationCard:hover {
+  background-color: rgba(74, 144, 226, 0.05);
+  transform: scale(1.02);
+}
+
+.epParticipationCard:focus {
+  outline: none;
+  border-color: var(--ep-primary);
+}
+
+.epCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.epCardHeader .epCardTitle {
+  font-size: 14px;
+  margin: 0;
+}
+
+.epCardArrow {
+  font-size: 12px;
+  color: var(--ep-text-light);
+  transition: transform 0.2s ease;
+}
+
+.epParticipationCard:hover .epCardArrow {
+  transform: translateX(2px);
+}
+
+.epParticipantsInfo {
+  font-size: 11px;
+  margin-top: 6px;
+  color: var(--ep-text-muted);
+}
+
+.epTrend {
+  font-size: 11px;
+  font-weight: bold;
+  margin: 6px 0 0 0;
+}
+
+.trendPositive {
+  color: var(--ep-success);
+}
+
+.trendNegative {
+  color: var(--ep-warning);
+}
+
+/* Detail View Panel */
+.epDetailViewPanel {
+  margin-top: 20px;
+  background: var(--ep-card-bg);
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  padding: 20px;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.epDetailHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 15px;
+}
+
+.epDetailTitle {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 0;
+  color: var(--ep-text-color);
+  flex: 1;
+}
+
+.epCloseBtn {
+  padding: 6px 12px;
+  background-color: var(--ep-warning);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: all 0.2s ease;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.epCloseBtn:hover {
+  opacity: 0.9;
+}
+
+.epDetailGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 15px;
+}
+
+.epDetailCard {
+  background: var(--ep-secondary);
+  padding: 16px;
+  border-radius: 4px;
+  text-align: center;
+  border: 1px solid var(--ep-border-color);
+}
+
+.epDetailCardFull {
+  grid-column: span 4;
+}
+
+.epDetailLabel {
+  font-size: 12px;
+  color: var(--ep-text-light);
+  margin: 0 0 8px 0;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.epDetailValue {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0;
+  color: var(--ep-text-color);
+  word-break: break-word;
+}
+
+.epDetailValueLarge {
+  font-size: 32px;
+  font-weight: bold;
+  margin: 0;
+  color: var(--ep-success);
+}
+
+.epDetailActionBtn {
+  padding: 10px 20px;
+  background-color: var(--ep-primary);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: bold;
+  margin-top: 10px;
+  transition: all 0.2s ease;
+}
+
+.epDetailActionBtn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.epDetailActionBtn:active {
+  transform: translateY(0);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .epgrid {
+    grid-template-columns: 1fr;
+  }
+
+  .epStatsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .epDetailGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .epDetailCardFull {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 768px) {
+  .eventpopularity {
+    padding: 12px;
+  }
+
+  .epTitle {
+    font-size: 20px;
+  }
+
+  .epCard,
+  .epChartCard {
+    padding: 16px;
+  }
+
+  .epFilterPanel {
+    padding: 16px;
+  }
+
+  .epEventName {
+    width: 100px;
+    font-size: 12px;
+  }
+
+  .epEventStats {
+    min-width: 60px;
+    font-size: 11px;
+  }
+
+  .epStatsGrid,
+  .epParticipationGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .epDetailGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .epDetailCardFull {
+    grid-column: span 1;
+  }
+
+  .epDateInputs {
+    flex-direction: column;
+  }
+
+  .epDateInput {
+    max-width: 100%;
+  }
+
+  .epButtonGroup {
+    flex-direction: column;
+  }
+
+  .epFilterBtn {
+    width: 100%;
+  }
+}
+
+/* Focus Management */
+*:focus-visible {
+  outline: 2px solid var(--ep-primary);
+  outline-offset: 2px;
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
