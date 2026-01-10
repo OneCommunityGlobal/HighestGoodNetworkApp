@@ -22,12 +22,14 @@
 .filter {
   display: flex;
   flex-direction: column;
+  gap: 0.5rem;
 }
 
 .injury-chart-label {
   color: #444;
   font-size: 0.9rem;
   margin-bottom: 0.25rem;
+  font-weight: 500;
 }
 
 .error {
@@ -52,11 +54,11 @@
 }
 
 .darkMode .injury-chart-title {
-  color: white;
+  color: #ffffff;
 }
 
 .darkMode .injury-chart-label {
-  color: white;
+  color: #e0e0e0 !important;
 }
 
 .darkMode .injury-chart-filters {
@@ -66,39 +68,156 @@
   padding: 1rem;
 }
 
-.darkMode .injury-select__control {
+/* React-Select dark mode styles */
+.darkMode :global(.injury-select__control) {
   background-color: #2b3e59 !important;
-  color: white !important;
+  border-color: #555 !important;
+  color: #ffffff !important;
+}
+
+.darkMode :global(.injury-select__control:hover) {
+  border-color: #777 !important;
+}
+
+.darkMode :global(.injury-select__control--is-focused) {
+  border-color: #0d55b3 !important;
+  box-shadow: 0 0 0 1px #0d55b3 !important;
+}
+
+.darkMode :global(.injury-select__single-value),
+.darkMode :global(.injury-select__multi-value__label),
+.darkMode :global(.injury-select__input-container) {
+  color: #ffffff !important;
+}
+
+.darkMode :global(.injury-select__input-container input) {
+  color: #ffffff !important;
+}
+
+.darkMode :global(.injury-select__placeholder) {
+  color: #a0a0a0 !important;
+}
+
+.darkMode :global(.injury-select__menu) {
+  background-color: #2b3e59 !important;
   border-color: #555 !important;
 }
 
-.darkMode .injury-select__single-value,
-.darkMode .injury-select__multi-value__label,
-.darkMode .injury-select__input-container {
-  color: white !important;
-}
-
-.darkMode .injury-select__menu {
+.darkMode :global(.injury-select__option) {
   background-color: #2b3e59 !important;
-  color: white !important;
+  color: #ffffff !important;
 }
 
-.darkMode .injury-select__option:hover {
-  color: black !important;
+.darkMode :global(.injury-select__option:hover),
+.darkMode :global(.injury-select__option--is-focused) {
+  background-color: #0d55b3 !important;
+  color: #ffffff !important;
 }
 
-.darkMode .react-datepicker__input-container input {
+.darkMode :global(.injury-select__option--is-selected) {
+  background-color: #375071 !important;
+  color: #ffffff !important;
+}
+
+.darkMode :global(.injury-select__multi-value) {
+  background-color: #375071 !important;
+}
+
+.darkMode :global(.injury-select__multi-value__remove) {
+  color: #ffffff !important;
+}
+
+.darkMode :global(.injury-select__multi-value__remove:hover) {
+  background-color: #0d55b3 !important;
+  color: #ffffff !important;
+}
+
+.darkMode :global(.injury-select__indicator-separator) {
+  background-color: #555 !important;
+}
+
+.darkMode :global(.injury-select__dropdown-indicator),
+.darkMode :global(.injury-select__clear-indicator) {
+  color: #ffffff !important;
+}
+
+.darkMode :global(.injury-select__dropdown-indicator:hover),
+.darkMode :global(.injury-select__clear-indicator:hover) {
+  color: #0d55b3 !important;
+}
+
+/* React-DatePicker dark mode styles */
+.darkMode :global(.react-datepicker__input-container input) {
   background-color: #2b3e59 !important;
-  color: white !important;
-  border: 1px solid #555;
-  padding: 0.5rem;
-  border-radius: 4px;
+  color: #ffffff !important;
+  border: 1px solid #555 !important;
+  padding: 0.5rem !important;
+  border-radius: 4px !important;
+}
+
+.darkMode :global(.react-datepicker__input-container input::placeholder) {
+  color: #a0a0a0 !important;
+}
+
+.darkMode :global(.react-datepicker__input-container input:focus) {
+  border-color: #0d55b3 !important;
+  outline: none !important;
+  box-shadow: 0 0 0 1px #0d55b3 !important;
+}
+
+.darkMode :global(.react-datepicker) {
+  background-color: #3A506B !important;
+  border-color: #555 !important;
+  color: #ffffff !important;
+}
+
+.darkMode :global(.react-datepicker__header) {
+  background-color: #1C2541 !important;
+  border-bottom-color: #555 !important;
+}
+
+.darkMode :global(.react-datepicker__current-month),
+.darkMode :global(.react-datepicker__day-name),
+.darkMode :global(.react-datepicker__day),
+.darkMode :global(.react-datepicker__time-name) {
+  color: #ffffff !important;
+}
+
+.darkMode :global(.react-datepicker__day:hover),
+.darkMode :global(.react-datepicker__day--keyboard-selected) {
+  background-color: #0d55b3 !important;
+  color: #ffffff !important;
+}
+
+.darkMode :global(.react-datepicker__day--selected),
+.darkMode :global(.react-datepicker__day--in-selecting-range),
+.darkMode :global(.react-datepicker__day--in-range) {
+  background-color: #0d55b3 !important;
+  color: #ffffff !important;
+}
+
+.darkMode :global(.react-datepicker__navigation-icon::before) {
+  border-color: #ffffff !important;
+}
+
+/* Chart elements dark mode */
+.darkMode :global(.recharts-cartesian-axis-tick-value) {
+  fill: #ffffff !important;
+}
+
+.darkMode :global(.recharts-legend-item-text) {
+  color: #ffffff !important;
+}
+
+/* Loading and error text in dark mode */
+.darkMode :global(p) {
+  color: #ffffff !important;
 }
 
 .darkMode .error {
-  color: #ff6b6b;
+  color: #ff6b6b !important;
 }
 
 .darkMode .empty {
-  color: #ccc;
+  color: #a0a0a0 !important;
 }
