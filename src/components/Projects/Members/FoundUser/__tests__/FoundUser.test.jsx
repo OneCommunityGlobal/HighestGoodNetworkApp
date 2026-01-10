@@ -33,6 +33,7 @@ describe('FoundUser Component', () => {
     uid: 'user123',
     firstName: 'John',
     lastName: 'Smith',
+    isActive: 'true',
     email: 'john.smith@example.com',
     assigned: false,
     projectId: 'project123',
@@ -55,15 +56,20 @@ describe('FoundUser Component', () => {
     const { getByText, getByRole } = renderUserTable(sampleUser);
 
     // Verify that user data is displayed correctly
+    // eslint-disable-next-line testing-library/prefer-screen-queries
     expect(getByText('1')).toBeInTheDocument();
+    // eslint-disable-next-line testing-library/prefer-screen-queries
     expect(getByText('John Smith')).toBeInTheDocument();
+    // eslint-disable-next-line testing-library/prefer-screen-queries
     expect(getByText('john.smith@example.com')).toBeInTheDocument();
+    // eslint-disable-next-line testing-library/prefer-screen-queries
     expect(getByRole('button')).toBeInTheDocument();
   });
 
   it('should render the assign button if user is not assigned', () => {
     const { getByRole } = renderUserTable(sampleUser);
 
+    // eslint-disable-next-line testing-library/prefer-screen-queries
     const assignButton = getByRole('button');
     expect(assignButton).toBeInTheDocument();
   });
@@ -77,6 +83,7 @@ describe('FoundUser Component', () => {
     const { queryByRole } = renderUserTable(assignedUser);
 
     // verify that button is not rendered
+    // eslint-disable-next-line testing-library/prefer-screen-queries
     const assignButton = queryByRole('button');
     expect(assignButton).toBeNull();
   });
@@ -85,12 +92,14 @@ describe('FoundUser Component', () => {
     const { getByText } = renderUserTable(sampleUser);
 
     // Verify that the user profile link is generated correctly
+    // eslint-disable-next-line testing-library/prefer-screen-queries
     const profileLink = getByText('John Smith');
     expect(profileLink).toHaveAttribute('href', '/userprofile/user123');
   });
 
   it('calls assignProject function when the assign button is clicked', async () => {
     const { getByRole } = renderUserTable(sampleUser);
+    // eslint-disable-next-line testing-library/prefer-screen-queries
     const assignButton = getByRole('button');
 
     // Simulate a button click
@@ -108,6 +117,7 @@ describe('FoundUser Component', () => {
         'Assign',
         'John',
         'Smith',
+        'true',
       );
     });
   });

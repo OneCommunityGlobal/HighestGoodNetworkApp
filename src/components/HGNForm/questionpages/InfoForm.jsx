@@ -1,17 +1,18 @@
 import { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector, useSelector as useReduxSelector } from 'react-redux';
 import { setformData } from '~/actions/hgnFormAction';
 import { Spinner } from 'reactstrap';
 import styles from '../styles/InfoForm.module.css';
 
 function InfoForm() {
+  const darkMode = useReduxSelector(state => state.theme.darkMode);
   const formData = useSelector(state => state.hgnForm);
   const dispatch = useDispatch();
   const user = useSelector(state => state.auth.user);
   const isOwner = user.role === 'Owner';
-  const { userProfilesBasicInfo } = useSelector(state => state.allUserProfilesBasicInfo);
-  const userProfile = userProfilesBasicInfo.find(profile => profile._id === user.userid);
+  const userProfile = useSelector(state => state.allUserProfilesBasicInfo?.userProfilesBasicInfo);
+
   const [newVolunteer, setNewVolunteer] = useState({
     ...formData,
     github: formData?.github || '',
@@ -136,6 +137,7 @@ function InfoForm() {
 
       // PAGE 5: Follow-up form fields
       followup_platform: '',
+      followup_mern_work_experience: '',
       followup_other_skills: '',
       followup_suggestion: '',
       followup_additional_info: '',
@@ -145,7 +147,7 @@ function InfoForm() {
   };
 
   return !loading ? (
-    <div className={`${styles.infoFormContainer}`}>
+    <div className={`${styles.infoFormContainer} ${darkMode ? styles.dark : ''}`}>
       <form onSubmit={handleNext}>
         <div className={`${styles.formInputs}`}>
           <label htmlFor="name">
@@ -163,7 +165,6 @@ function InfoForm() {
             pattern=".{2,}"
             title="Name must be at least 2 characters long"
             placeholder="Your First and Last Name"
-            disabled={!!(userProfile !== undefined || userProfile !== null)}
           />
           {showError && (
             <span className={`${styles.errorMessage}`}>
@@ -187,7 +188,7 @@ function InfoForm() {
           />
         </div>
         <div className={`${styles.formInputs}`}>
-          <label htmlFor="github">
+          <label htmlFor="github" className={`${styles.labelInline}`}>
             GitHub <span style={{ color: 'red' }}>*</span>
           </label>
           <input
@@ -202,7 +203,7 @@ function InfoForm() {
           />
         </div>
         <div className={`${styles.formInputs}`}>
-          <label htmlFor="slack">
+          <label htmlFor="slack" className={`${styles.labelInline}`}>
             Slack <span style={{ color: 'red' }}>*</span>
           </label>
           <input
@@ -233,17 +234,21 @@ function InfoForm() {
             required
           />
 
-          <label style={{ color: '#2f5061', margin: '0 5px' }} htmlFor="sameAsName">
+          <label
+            style={{ color: darkMode ? '#78a5c4' : '#2f5061', margin: '0 5px' }}
+            htmlFor="sameAsName"
+          >
             Yes, my Slack handle is my first and last name <span style={{ color: 'red' }}>*</span>
           </label>
         </div>
 
         <span
           className={`${styles.errorMessage}`}
-          style={{ color: '#2e5163', margin: '20px 20px' }}
+          style={{ color: darkMode ? '#b5bac5' : '#2e5163', margin: '20px 20px' }}
         >
-          <strong>NOTE:</strong> Your name and email need to match what is on your DropBox and
-          Google Doc. Please edit them on your Profile Page if they don’t.{' '}
+          <strong style={{ color: darkMode ? '#78a5c4' : '#2f5061' }}>NOTE:</strong> Your name and
+          email need to match what is on your DropBox and Google Doc. Please edit them on your
+          Profile Page if they don’t.{' '}
         </span>
 
         <div className={`${styles.buttonContainer}`}>

@@ -1,4 +1,4 @@
-.itemNavbar {
+.item__navbar{
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -8,14 +8,14 @@
   margin: 0 !important;
 }
 
-.itemNavbarLeft {
+.item__navbar-left{
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
 }
 
-.itemSelector {
+.item__selector{
   width: 200px;
   background-color: #fff;
   border-radius: 5px;
@@ -24,7 +24,7 @@
   cursor: pointer;
 }
 
-.itemSelector select{
+.item__selector select{
   width: 100%;
   border: none;
   outline: none;
@@ -32,7 +32,7 @@
   cursor: pointer;
 }
 
-.itemButton{
+.item__button{
   background-color: rgb(190, 190, 190);
   padding: 0.2rem 0.5rem;
   border-radius: 5px;
@@ -40,7 +40,7 @@
   cursor: pointer;
 }
 
-.itemButton:hover{
+.item__button:hover{
   background-color: black;
 
   padding: 0.2rem 0.5rem;
@@ -50,7 +50,7 @@
   transition: all 0.3s ease;
 }
 
-.itemButton p{
+.item__button p{
   font-family: sans-serif;
   color: #fff;
   font-size: 14px;
@@ -58,7 +58,7 @@
   margin: 0;
 }
 
-.itemNavbarRight {
+.item__navbar-right{
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
@@ -66,7 +66,7 @@
   width: 100%;
 }
 
-.itemNavbarRight h2{
+.item__navbar-right h2{
   font-family: sans-serif;
   color: #000000;
   font-size: 14px;
@@ -74,22 +74,22 @@
   margin: 0;
 }
 
-.itemIcons {
+.item__icons{
   padding-left: 0.5rem;
   margin: 0;
 }
 
-.itemNavIcon{
+.item__nav-icon{
   margin-left: 1rem;
   font-size: 19px;
   margin-bottom: 0.2rem;
 }
 
-.itemNavLink{
+.item__nav-link{
   color: rgba(0, 0, 0) !important;
 }
 
-.itemOverview {
+.item__overview {
   background-color: #e0e0e0;
   display: flex;
   justify-content: space-evenly;
@@ -100,7 +100,7 @@
   height: auto;
 }
 
-.itemDetailsLeft {
+.item__details-left {
   width: 50%;
   height: 100%;
   display: flex;
@@ -109,45 +109,45 @@
   padding: 2.5% 2.5% 1.5% 2.5%;
 }
 
-.itemListingDetailsMobile {
+.item__listing-details--mobile {
   display: none;
 }
 
-.itemListingDetails h1,
-.itemListingDetails p{
+.item__listing-details h1,
+.item__listing-details p {
   color: #000;
 }
 
-.itemImages {
+.item__images {
   width: 100%;
   margin-bottom: 2.5%;
 }
 
-.itemAmenities {
+.item__amenities {
   display: flex;
   justify-content: center;
   width: 100%;
   gap: 10px;
 }
 
-.itemAmenities h2 {
+.item__amenities h2 {
   font-size: 16px;
   text-align: left;
   color: #060606;
   font-weight: bold;
 }
 
-.itemAmenities div {
+.item__amenities div {
   display: flex;
   flex-direction: column;
   width: 100%;
 }
 
-.marginLeft {
+.margin__left {
   margin-left: -1.3rem;
 }
 
-.errMessage{
+.err-message{
   color: red;
   font-size: 12px;
   margin-top: 5px;
@@ -155,7 +155,7 @@
   width: 50%;
 }
 
-.itemLocation {
+.item__location {
   display: flex;
   width: 100%;
   height: 30px;
@@ -164,33 +164,28 @@
   margin-top: 5%;
 }
 
-.itemLocation img {
+.item__location img {
   width: 30px;
   height: 30px;
 }
 
-.itemLocation a {
+.item__location a {
   text-decoration: underline;
   cursor: pointer;
 }
 
-.itemIcon {
+.item__icon {
   color: red;
   font-size: 1.3rem
 }
 
-.itemDetailsRight {
+.item__details-right {
   width: 50%;
   height: 100%;
   padding: 2.5%;
 }
 
-.itemListingDetails h1,
-.itemListingDetails p{
-  color: #000;
-}
-
-.itemRent {
+.item__rent {
   display: flex;
   flex-direction: row;
   align-items: flex-start;
@@ -198,13 +193,13 @@
   gap: 10px;
 }
 
-.itemRent label {
+.item__rent label {
   display: flex;
   width: 50%;
   flex-direction: column;
 }
 
-.itemForm button {
+.item__form button {
   background: #13ae5c;
   color: white;
   padding: 10px;
@@ -214,46 +209,46 @@
   transition: background 0.3s ease, transform 0.2s ease;
 }
 
-.itemForm button:hover {
+.item__form button:hover {
   background: #0f9a50;
   transform: scale(1.01);
 }
 
-.itemForm button:active {
+.item__form button:active {
   transform: scale(0.99);
 }
-.itemRent input[type='date'] {
+.item__rent input[type='date'] {
   border: 1px solid #ccc;
   margin-top: 2.5%;
   width: 100%;
 }
 
-.itemBidding {
+.item__bidding {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
 }
 
-.itemBidding label {
+.item__bidding label {
   display: flex;
   width: 50%;
   flex-direction: column;
 }
 
-.footerIcons {
+.footer__icons {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
 }
 
-.saveList {
+.save__list {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   margin-top: 2.5%;
 }
 
-.saveList button {
+.save__list button {
   background: #d1d1d1;
   padding: 2.5%;
   border-radius: 998px;
@@ -269,14 +264,14 @@
   transition: background 0.3s ease, transform 0.2s ease;
 }
 
-.startChat {
+.start__chat {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   margin-top: 2.5%;
 }
 
-.startChat button {
+.start__chat button {
   background: #d1d1d1;
   padding: 2.5%;
   border-radius: 998px;
@@ -291,12 +286,20 @@
   transition: background 0.3s ease, transform 0.2s ease;
 }
 
-.savedItem {
+.saved__item {
   color: red;
 }
 
+.item_overview_module {
+  /* Additional styles for the overview module wrapper */
+}
+
+.item__container {
+  /* Container styles */
+}
+
 @media screen and (max-width: 1200px) {
-  .itemNavbar{
+  .item__navbar{
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -304,26 +307,27 @@
     background-color: green;
     padding: 1.1rem 1rem  !important;
   }
-  .itemNavIcon{
+  .item__nav-icon{
     margin-left: 0.5rem;
     font-size: 16px;
     margin-bottom: 0.25rem;
   }
-  .itemNavbarRight {
+  .item__navbar-right {
     justify-content: space-between;
   }
-  .itemNavbarRight h2{
+  .item__navbar-right h2{
     font-family: sans-serif;
     color: #000000;
     font-size: 12px;
     padding: 0;
     margin: 0.3rem 0 0;
   }
-  .itemIcons{
+  .item__icons{
     padding-left: 0.2rem;
     margin: 0 0 0rem;
   }
-  .navbarNav {
+
+  .item_overview_module .navbar-nav {
     display: flex;
     flex-direction: row !important;
     padding-left: 0;
@@ -334,11 +338,12 @@
 
 @media screen and (max-width: 800px) {
 
-  .itemNavbarRight {
+  .item__navbar-right {
     padding: 1rem 0 0;
+    justify-content: space-between;
   }
 
-  .itemNavbar{
+  .item__navbar{
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -346,49 +351,48 @@
     background-color: green;
     padding: 1rem 2rem !important;
   }
-  .itemNavbarRight {
-    justify-content: space-between;
-  }
-  .itemNavbarRight h2{
+
+  .item__navbar-right h2{
     font-family: sans-serif;
     color: #000000;
     font-size: 12px;
     padding: 0;
     margin: 0.3rem 0 0;
   }
-  .itemIcons{
+  .item__icons{
     padding-left: 0.2rem;
     margin: 0 0 0rem;
   }
-  .itemNavIcon{
+  .item__nav-icon{
     margin-left: 0.8rem;
     font-size: 16px;
     margin-bottom: 0;
   }
-  .navbarNav {
+
+  .item_overview_module .navbar-nav {
     display: flex;
     flex-direction: row !important;
     padding-left: 0;
     margin-bottom: 0;
     list-style: none;
   }
-  .itemOverview {
+  .item__overview {
     flex-direction: column;
     align-items: center;
   }
-  .itemDetailsLeft {
+  .item__details-left {
     width: 98%;
   }
-  .itemListingDetailsMobile {
+  .item__listing-details--mobile {
     display: block;
   }
-  .itemDetailsRight {
+  .item__details-right {
     width: 98%;
   }
-  .itemListingDetailsDesktop {
+  .item__listing-details--desktop {
     display: none;
   }
-  .startChat button {
+  .start__chat button {
     background: #d1d1d1;
     padding: 2.5%;
     border-radius: 998px;
@@ -397,19 +401,19 @@
     display: flex;
     justify-content: center;
   }
-  .itemRent {
+  .item__rent {
     justify-content: space-between;
   }
 }
 
 @media screen and (max-width: 500px) {
-  .navbarLight .navbarToggler {
+  .navbar-light .navbar-toggler {
     color: rgba(0, 0, 0, 0.5);
     border: 0.5px solid black !important;
     padding: 0.2rem 0.5rem !important;
   }
 
-  .itemNavbar{
+  .item__navbar{
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -419,11 +423,11 @@
     position: relative;
   }
 
-  .itemContainer{
+  .item__container{
     overflow: visible ;
   }
 
-  .menuButton {
+  .menu-button {
     background: none;
     border: none;
     font-size: 24px;
@@ -431,21 +435,21 @@
     position: relative;
   }
 
-  .menuIcon {
+  .menu-icon {
     font-size: 20px;
     position: relative;
   }
 
-  .navbarTogglerIcon {
+  .navbar-toggler-icon {
     height: 25px !important;
     width: 25px !important;
   }
 
-  .itemNavbarRight {
+  .item__navbar-right {
     padding: 1rem 0 0;
   }
 
-  .itemNavbarRight h2{
+  .item__navbar-right h2{
     font-family: sans-serif;
     color: #000000;
     font-size: 12px;
@@ -453,40 +457,40 @@
     margin: 0.5rem 0 0;
   }
 
-  .itemIcons{
+  .item__icons{
     padding-left: 0.2rem;
     margin: 0 0 0rem;
   }
 
-  .itemNavIcon{
+  .item__nav-icon{
     margin-left: 0.5rem;
     margin-top: 0.2rem;
     font-size: 14px;
   }
 
-  .itemOverview {
+  .item__overview {
     padding: 10px;
     margin: 10px;
   }
 
-  .itemAmenities {
+  .item__amenities {
     flex-direction: column;
     align-items: center;
   }
 
-  .itemForm label {
+  .item__form label {
     display: flex;
     width: 150px;
     flex-direction: column;
   }
   
-  .itemForm input[type='date'] {
+  .item__form input[type='date'] {
     border: 1px solid #ccc;
     margin-top: 2.5%;
     width: 90%;
   }
 
-  .startChat button {
+  .start__chat button {
     background: #d1d1d1;
     padding: 2.5%;
     border-radius: 998px;
@@ -500,12 +504,11 @@
 }
 
 @media screen and (max-width: 340px) {
-  .itemSelector {
+  .item__selector {
     width: 150px
 
   }
-  .navbarTogglerIcon{
-    width: 20px !important;
+  .navbar-toggler-icon{
     width: 20px !important;
   }
 }

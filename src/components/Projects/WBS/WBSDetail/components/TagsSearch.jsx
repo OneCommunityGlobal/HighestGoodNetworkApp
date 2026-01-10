@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { connect } from 'react-redux';
 import TagSent from './TagSent';
-import './TagsSearch.css';
+import styles from './TagsSearch.module.css';
 import ReadOnlySectionWrapper from '../EditTask/ReadOnlySectionWrapper';
 import { findProjectMembers } from '../../../../../actions/projectMembers';
 
@@ -14,7 +14,10 @@ function TagsSearch(props) {
     disableInput,
     darkMode,
     members,
+    membersFromStore,
+    foundProjectMembers,
   } = props;
+
   const [searchWord, setSearchWord] = useState('');
   const [isFocused, setIsFocused] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -37,6 +40,7 @@ function TagsSearch(props) {
         try {
           props.findProjectMembers(props.projectId, currentValue);
         } catch (error) {
+          // eslint-disable-next-line no-console
           console.error('Error searching project members:', error);
         } finally {
           setIsLoading(false);
@@ -48,39 +52,40 @@ function TagsSearch(props) {
   };
 
   const filteredMembers = useMemo(() => {
-    // console.log('Filtering members:', { searchWord, membersCount: members?.length, isFocused });
-    
-    const resourceNames = new Set(resourceItems.map(item => item.name.toLowerCase()));
+    const resourceNames = new Set((resourceItems || []).map(item => String(item?.name || '').toLowerCase()));
+    const baseList =
+      Array.isArray(members) && members.length > 0
+        ? members
+        : Array.isArray(membersFromStore) && membersFromStore.length > 0
+          ? membersFromStore
+          : [];
 
-    if (members && members.length > 0) {
-      return members.filter(member => {
-        const fullName = `${member.firstName} ${member.lastName}`.toLowerCase();
+    const applyFiltering = (list) =>
+      list
+        .filter(m => m && m.isActive === true) 
+        .filter(member => {
+          const fullName = `${member.firstName || member.first || ''} ${member.lastName || member.last || ''}`
+            .trim()
+            .toLowerCase();
 
-        if (resourceNames.has(fullName)) return false;
+          if (!fullName) return false;
+          if (resourceNames.has(fullName)) return false;
 
-        if (searchWord.trim().length > 0) {
-          return fullName.includes(searchWord.toLowerCase());
-        }
+          if (searchWord.trim().length > 0) {
+            return fullName.includes(searchWord.toLowerCase());
+          }
 
-        return isFocused;
-      });
-    }
+          return isFocused;
+        });
 
-    if (searchWord.trim().length > 0 && props.state.projectMembers.foundProjectMembers) {
-      return props.state.projectMembers.foundProjectMembers.filter(member => {
-        const fullName = `${member.firstName} ${member.lastName}`.toLowerCase();
-        return !resourceNames.has(fullName);
-      });
+    if (baseList.length > 0) return applyFiltering(baseList);
+
+    if (searchWord.trim().length > 0 && Array.isArray(foundProjectMembers)) {
+      return applyFiltering(foundProjectMembers);
     }
 
     return [];
-  }, [
-    members,
-    resourceItems,
-    searchWord,
-    isFocused,
-    props.state.projectMembers.foundProjectMembers,
-  ]);
+  }, [members, membersFromStore, foundProjectMembers, resourceItems, searchWord, isFocused]);
 
   const handleClick = (event, member) => {
     const userId = member._id || member.userID;
@@ -118,24 +123,26 @@ function TagsSearch(props) {
           )}
 
           {shouldShowDropdown && (
-            <ul className="my-element dropdown-menu d-flex flex-column align-items-start justify-content-start w-100 scrollbar shadow-lg rounded-3 position-absolute top-100 start-0 z-3 bg-light scrollable-menu">
+            <ul className={`my-element dropdown-menu d-flex flex-column align-items-start justify-content-start w-100 ${styles.scrollbar} shadow-lg rounded-3 position-absolute top-100 start-0 z-3 bg-light ${styles['scrollable-menu']}`}>
               {filteredMembers.map((member, index) => (
-                <a
-                  key={member._id || member.userID || index}
-                  className="text-decoration-none w-100"
+                <li
+                key={member._id || member.userID || index}
+                className="dropdown-item border-bottom fs-6 w-100 p-1"
+              >
+                <button
+                  type="button"
+                  className="btn w-100 text-start p-0 text-dark"
+                  onMouseDown={event => handleClick(event, member)}
                 >
-                  <li
-                    className="dropdown-item border-bottom fs-6 w-100 p-1"
-                    onMouseDown={event => handleClick(event, member)}
-                  >
-                    {`${member.firstName || member.first} ${member.lastName || member.last}`}
-                  </li>
-                </a>
+                  {`${member.firstName || member.first} ${member.lastName || member.last}`}
+                </button>
+              </li>
               ))}
             </ul>
           )}
         </div>
       </div>
+
       <div className="d-flex flex-wrap align-items-start justify-content-start">
         {resourceItems?.map((elm, index) => (
           <ul
@@ -151,8 +158,9 @@ function TagsSearch(props) {
 }
 
 const mapStateToProps = state => ({
-  members: state.projectMembers.members,
-  state,
+  // ✅ do NOT overwrite `members` prop anymore
+  membersFromStore: state.projectMembers.members,
+  foundProjectMembers: state.projectMembers.foundProjectMembers,
 });
 
 export default connect(mapStateToProps, {

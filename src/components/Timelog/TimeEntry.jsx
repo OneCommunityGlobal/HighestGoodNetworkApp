@@ -3,7 +3,7 @@ import { Card, Row, Col } from 'reactstrap';
 import { useDispatch, connect } from 'react-redux';
 import parse from 'html-react-parser';
 import moment from 'moment-timezone';
-import './Timelog.css';
+import styles from './Timelog.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-regular-svg-icons';
 import hasPermission, { cantUpdateDevAdminDetails } from '~/utils/permissions';
@@ -14,6 +14,7 @@ import DeleteModal from './DeleteModal';
 
 import { editTimeEntry, getTimeEntriesForWeek } from '../../actions/timeEntries';
 import { editTeamMemberTimeEntry } from '../../actions/task';
+import { updateIndividualTaskTime } from '../TeamMemberTasks/actions';
 
 /**
  * This component can be imported in TimeLog component's week tabs and Tasks tab
@@ -92,6 +93,13 @@ function TimeEntry(props) {
       } else if (from === 'WeeklyTab') {
         await dispatch(editTimeEntry(timeEntryId, newData));
         await dispatch(getTimeEntriesForWeek(timeEntryUserId, tab));
+        dispatch(
+            updateIndividualTaskTime({
+              newTime: { hours: newData.isTangible ? newData.hours : -newData.hours, minutes: newData.isTangible ? newData.minutes : -newData.minutes },
+              taskId: newData.taskId,
+              personId: newData.personId,
+            }),
+          );
       }
     } catch (error) {
       toast.error(`Error: ${error.message}`);
@@ -114,6 +122,9 @@ function TimeEntry(props) {
     editFilteredColor();
   }, []);
 
+  const hasHtmlTags =
+  typeof notes === 'string' && /<\/?[a-z][\s\S]*>/i.test(notes);
+
   return (
     <div style={{ display: 'flex' }}>
       <div
@@ -133,22 +144,22 @@ function TimeEntry(props) {
         }}
       >
         <Row className="mx-0">
-          <Col md={3} className="date-block px-0">
+          <Col md={3} className={`${styles['date-block']} px-0`}>
             <div className="date-div">
               <div>
-                <h4 className={darkMode ? 'text-light' : ''}>{moment(dateOfWork).format('MMM D')}</h4>
-                {displayYear && <h5 className={darkMode ? 'text-light' : ''}>{moment(dateOfWork).format('YYYY')}</h5>}
-                <h5 className={darkMode? "dark-text-info" : "text-info"}>{moment(dateOfWork).format('dddd')}</h5>
+                <h4 className={darkMode ? `${styles['text-light']} text-light` : ''}>{moment(dateOfWork).format('MMM D')}</h4>
+                {displayYear && <h5 className={darkMode ? `${styles['text-light']} text-light` : ''}>{moment(dateOfWork).format('YYYY')}</h5>}
+                <h5 className={darkMode? `${styles['dark-text-info']} dark-text-info` : "text-info"}>{moment(dateOfWork).format('dddd')}</h5>
               </div>
             </div>
           </Col>
           <Col md={4} className="px-0">
-            <h4 className={darkMode ? "dark-text-info" : "text-success"}>
+            <h4 className={darkMode ? `${styles['dark-text-info']} dark-text-info` : `${styles['text-success']} text-success`}>
               {hours}h {minutes}m
             </h4>
-            <div className={darkMode ? "dark-text-muted" : "text-muted"}>Project/Task:</div>
+            <div className={darkMode ? `${styles['dark-text-muted']} dark-text-muted` : `${styles['text-muted']} text-muted`}>Project/Task:</div>
             <p
-  className={darkMode ? 'text-light' : 'text-dark'}
+  className={darkMode ? `${styles['text-light']} text-light` : `${styles['text-dark']} text-dark`}
   style={{ margin: 0 }}
 >
   {projectName}
@@ -159,7 +170,7 @@ function TimeEntry(props) {
             <div className="mb-3">
               {canEditTangibility ? (
                 <>
-                  <span className={darkMode ? "dark-text-muted" : "text-muted"}>Tangible:&nbsp;</span>
+                  <span className={darkMode ? `${styles['dark-text-muted']} dark-text-muted` : `${styles['text-muted']} text-muted`}>Tangible:&nbsp;</span>
                   <input
                     type="checkbox"
                     name="isTangible"
@@ -175,10 +186,12 @@ function TimeEntry(props) {
             </div>
           </Col>
           <Col md={5} className="pl-2 pr-0">
-            <div className="time-entry-container">
-              <div className={`notes-section ${darkMode ? 'notes-text-light' : ''}`}>
-                <div className={darkMode ? "dark-text-muted" : "text-muted"}>Notes:</div>
-                {parse(notes)}
+            <div className={`${styles['time-entry-container']}`}>
+              <div className={`${styles['notes-section']} ${darkMode ? styles['notes-text-light'] : ''}`}>
+                <div className={darkMode ? `${styles['dark-text-muted']}` : `${styles['text-muted']}`}>Notes:</div>
+                {hasHtmlTags
+                  ? parse(notes) 
+                  : <span>{notes != null ? String(notes) : ''}</span>} 
               </div>
               <div className="d-flex justify-content-end">
                 {(hasATimeEntryEditPermission || isAuthUserAndSameDayEntry) &&

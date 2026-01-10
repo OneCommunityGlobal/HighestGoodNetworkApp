@@ -49,25 +49,24 @@ function WishListItem(props) {
   }, [wishlistItem]);
 
   return (
-    <div className={styles.item}>
-      <div className={styles.itemContainer}>
+    <div className={`item ${styles['item_overview_module']}`}>
+      <div className={styles['item__container']}>
         <Header />
-
-        <div className={styles.itemOverview}>
-          <div className={styles.itemDetailsLeft}>
-            <div className={styles.itemListingDetailsMobile}>
+        <div className={styles['item__overview']}>
+          <div className={styles['item__details-left']}>
+            <div
+              className={`${styles['item__listing-details']} ${styles['item__listing-details--mobile']}`}
+            >
               <h1>{currWishlistItem.unit}</h1>
               <h1>{currWishlistItem.title}</h1>
             </div>
-
-            <div className={styles.itemImages}>
+            <div className={styles['item__images']}>
               <ImageCarousel images={currWishlistItem.images} />
             </div>
-
-            <div className={styles.itemAmenities}>
+            <div className={styles['item__amenities']}>
               <div>
                 <h2>Available amenities in this unit:</h2>
-                <ol className={styles.marginLeft}>
+                <ol className={styles['margin__left']}>
                   {currWishlistItem.unitAmenities?.map(amenity => (
                     <li key={amenity}>{amenity}</li>
                   ))}
@@ -75,24 +74,22 @@ function WishListItem(props) {
               </div>
               <div>
                 <h2>Village level amenities:</h2>
-                <ol className={styles.marginLeft}>
+                <ol className={styles['margin__left']}>
                   {currWishlistItem.villageAmenities?.map(amenity => (
                     <li key={amenity}>{amenity}</li>
                   ))}
                 </ol>
               </div>
             </div>
-
-            <div className={styles.itemLocation}>
-              <FaMapMarkerAlt className={styles.itemIcon} />
+            <div className={styles['item__location']}>
+              <FaMapMarkerAlt className={styles['item__icon']} />
               <Link to="/">View on Property Map</Link>
             </div>
           </div>
-
-          <div className={styles.itemDetailsRight}>
-            <div className={styles.itemListingDetails}>
-              <h1 className={styles.itemListingDetailsDesktop}>{currWishlistItem.unit}</h1>
-              <h1 className={styles.itemListingDetailsDesktop}>{currWishlistItem.title}</h1>
+          <div className={styles['item__details-right']}>
+            <div className={styles['item__listing-details']}>
+              <h1 className={styles['item__listing-details--desktop']}>{currWishlistItem.unit}</h1>
+              <h1 className={styles['item__listing-details--desktop']}>{currWishlistItem.title}</h1>
               <span>
                 This unit sells for a basic price of <b>{currWishlistItem.price}</b>. If you wish to
                 book it in advance, bid your price and leave your details below and we will get back
@@ -100,9 +97,8 @@ function WishListItem(props) {
                 <b>2 weeks</b> from now.
               </span>
             </div>
-
-            <div className={styles.itemForm}>
-              <div className={styles.itemRent}>
+            <div className={styles['item__form']}>
+              <div className={styles['item__rent']}>
                 <label htmlFor="from">
                   Renting from
                   <input type="date" name="from" id="from" />
@@ -112,8 +108,7 @@ function WishListItem(props) {
                   <input type="date" name="to" id="to" />
                 </label>
               </div>
-
-              <div className={styles.itemBidding}>
+              <div className={styles['item__bidding']}>
                 <label htmlFor="name">
                   Name:
                   <input type="text" name="name" id="name" placeholder="Name" />
@@ -123,24 +118,29 @@ function WishListItem(props) {
                   <input type="number" name="bidding" id="bidding" placeholder="Bidding Price" />
                 </label>
               </div>
-
               <button type="button">Proceed to submit with details</button>
             </div>
-
-            <div className={styles.errMessage}>
+            <div className={styles['err-message']}>
               <h6>The Dates you picked are not available</h6>
               <Link to="/">Click here to see available dates</Link>
             </div>
-
-            <div className={styles.footerIcons}>
-              <div className={styles.saveList}>
-                <button type="button" onClick={() => setIsWishlist(prev => !prev)}>
-                  {isWishlist ? <IoMdHeart className={styles.savedItem} /> : <IoMdHeartEmpty />}
+            <div className={styles['footer__icons']}>
+              <div className={styles['save__list']}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsWishlist(!isWishlist);
+                  }}
+                >
+                  {isWishlist ? (
+                    <IoMdHeart className={styles['saved__item']} />
+                  ) : (
+                    <IoMdHeartEmpty />
+                  )}
                   &nbsp;Save
                 </button>
               </div>
-
-              <div className={styles.startChat}>
+              <div className={styles['start__chat']}>
                 <button type="button">
                   <BsChat />
                   &nbsp;Chat with the Host
