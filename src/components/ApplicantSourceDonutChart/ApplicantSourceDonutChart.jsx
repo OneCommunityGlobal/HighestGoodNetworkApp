@@ -1,11 +1,12 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import axios from 'axios';
+import httpService from '../../services/httpService';
 import { PieChart, Pie, Cell, Tooltip, Legend, Label, ResponsiveContainer } from 'recharts';
 import DatePicker from 'react-datepicker';
 import Select from 'react-select';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useSelector } from 'react-redux';
 import { ENDPOINTS } from '../../utils/URL';
+import config from '../../config.json';
 import styles from './ApplicantSourceDonutChart.module.css';
 
 const COLORS = ['#FF4D4F', '#FFC107', '#1890FF', '#00C49F', '#8884D8'];
@@ -34,15 +35,24 @@ const ApplicantSourceDonutChart = () => {
     setError('');
 
     try {
-      const token = localStorage.getItem('token');
-      if (!token) throw new Error('No token found. Please log in.');
+      const token = localStorage.getItem(config.tokenKey);
+      if (!token) {
+        setError('Please log in to view applicant source data.');
+        setLoading(false);
+        setData([]);
+        setComparisonText('');
+        return;
+      }
+
+      // Ensure token is set in httpService for global axios defaults
+      httpService.setjwt(token);
 
       if (
-        filterStartDate
-        && filterEndDate
-        && filterStartDate instanceof Date
-        && filterEndDate instanceof Date
-        && filterStartDate.getTime() > filterEndDate.getTime()
+        filterStartDate &&
+        filterEndDate &&
+        filterStartDate instanceof Date &&
+        filterEndDate instanceof Date &&
+        filterStartDate.getTime() > filterEndDate.getTime()
       ) {
         setError('Start date cannot be greater than end date');
         setLoading(false);
@@ -64,10 +74,7 @@ const ApplicantSourceDonutChart = () => {
         params.comparisonType = filterComparisonType;
       }
 
-      const response = await axios.get(url, {
-        headers: { Authorization: token },
-        params,
-      });
+      const response = await httpService.get(url, { params });
 
       const result = response.data || {};
       const formattedSources = Array.isArray(result.sources)
@@ -82,7 +89,16 @@ const ApplicantSourceDonutChart = () => {
       console.log('Comparison Text from backend:', result.comparisonText);
     } catch (err) {
       console.error('Error fetching data:', err);
-      setError(err.response?.data?.message || err.message || 'Error fetching data.');
+      // Handle 401 errors gracefully without showing toast notifications
+      if (err.response?.status === 401) {
+        setError('Authentication required. Please log in to view applicant source data.');
+      } else {
+        setError(
+          err.response?.data?.message ||
+            err.message ||
+            'Error fetching data. Please try again later.',
+        );
+      }
       setData([]);
       setComparisonText('');
     } finally {
@@ -188,7 +204,13 @@ const ApplicantSourceDonutChart = () => {
     const lineSpacing = isMobile ? 12 : 16;
 
     return (
-      <text x={cx} y={cy} textAnchor="middle" dominantBaseline="middle" fill={darkMode ? '#e5e7eb' : '#2c3e50'}>
+      <text
+        x={cx}
+        y={cy}
+        textAnchor="middle"
+        dominantBaseline="middle"
+        fill={darkMode ? '#e5e7eb' : '#2c3e50'}
+      >
         {lines.map((line, index) => {
           // Word wrap for long lines on mobile
           const words = line.split(' ');
@@ -239,7 +261,9 @@ const ApplicantSourceDonutChart = () => {
     return Math.max(100, Math.min(proposed, 160));
   }, [chartWidth]);
 
-  const computedInnerRadius = useMemo(() => Math.round(computedOuterRadius * 0.75), [computedOuterRadius]);
+  const computedInnerRadius = useMemo(() => Math.round(computedOuterRadius * 0.75), [
+    computedOuterRadius,
+  ]);
   const chartHeight = useMemo(() => {
     if (!chartWidth) return 400;
     const base = Math.max(360, Math.min(chartWidth * 0.85, 520));
@@ -273,195 +297,196 @@ const ApplicantSourceDonutChart = () => {
   return (
     <div className={pageClassName}>
       <div className={containerClassName}>
-      <h2
-        className={headingClassName}
-        style={{ textAlign: 'center', color: darkMode ? undefined : '#3977FF' }}
-      >
-        Source of Applicants
-      </h2>
+        <h2
+          className={headingClassName}
+          style={{ textAlign: 'center', color: darkMode ? undefined : '#3977FF' }}
+        >
+          Source of Applicants
+        </h2>
 
-      {/* Filters */}
-      <div className={filterRowClassName}>
-        {comparisonType === '' && (
-          <>
-            <div className={styles.filterInput}>
-              <DatePicker
-                selected={startDate}
-                onChange={handleStartDateChange}
-                placeholderText="Start Date"
-                className={`filter-date ${darkMode ? styles.darkInput : ''}`}
-              />
-            </div>
-            <div className={styles.filterInput}>
-              <DatePicker
-                selected={endDate}
-                onChange={handleEndDateChange}
-                placeholderText="End Date"
-                className={`filter-date ${darkMode ? styles.darkInput : ''}`}
-                minDate={startDate}
-              />
-            </div>
-          </>
-        )}
-        <div className={styles.filterInput}>
-          <Select
-            isMulti
-            value={selectedRoles}
-            onChange={handleRoleChange}
-            options={[
-              'Project Manager',
-              'Frontend Developer',
-              'Backend Developer',
-              'Full Stack Developer',
-              'DevOps Engineer',
-              'API Engineer',
-              'QA Engineer',
-              'Test Analyst',
-              'Support Engineer',
-              'Tech Lead',
-              'Architect',
-              'Junior Developer',
-              'Intern',
-            ].map(label => ({ label, value: label }))}
-            placeholder="Select Roles"
-            classNamePrefix={darkMode ? 'hgn-select-dark' : 'hgn-select'}
-            styles={
-              darkMode
-                ? {
-                    control: provided => ({
-                      ...provided,
-                      backgroundColor: '#1f2937',
-                      borderColor: '#3b82f6',
-                      color: '#e5e7eb',
-                    }),
-                    menu: provided => ({
-                      ...provided,
-                      backgroundColor: '#111827',
-                      color: '#e5e7eb',
-                    }),
-                    singleValue: provided => ({
-                      ...provided,
-                      color: '#e5e7eb',
-                    }),
-                    option: (provided, state) => ({
-                      ...provided,
-                      backgroundColor: state.isFocused ? '#2563eb' : '#111827',
-                      color: '#e5e7eb',
-                    }),
-                    multiValue: provided => ({
-                      ...provided,
-                      backgroundColor: '#2563eb',
-                    }),
-                    multiValueLabel: provided => ({
-                      ...provided,
-                      color: '#e5e7eb',
-                    }),
-                    multiValueRemove: provided => ({
-                      ...provided,
-                      color: '#bfdbfe',
-                      ':hover': {
-                        backgroundColor: '#1d4ed8',
+        {/* Filters */}
+        <div className={filterRowClassName}>
+          {comparisonType === '' && (
+            <>
+              <div className={styles.filterInput}>
+                <DatePicker
+                  selected={startDate}
+                  onChange={handleStartDateChange}
+                  placeholderText="Start Date"
+                  className={`filter-date ${darkMode ? styles.darkInput : ''}`}
+                />
+              </div>
+              <div className={styles.filterInput}>
+                <DatePicker
+                  selected={endDate}
+                  onChange={handleEndDateChange}
+                  placeholderText="End Date"
+                  className={`filter-date ${darkMode ? styles.darkInput : ''}`}
+                  minDate={startDate}
+                />
+              </div>
+            </>
+          )}
+          <div className={styles.filterInput}>
+            <Select
+              isMulti
+              value={selectedRoles}
+              onChange={handleRoleChange}
+              options={[
+                'Project Manager',
+                'Frontend Developer',
+                'Backend Developer',
+                'Full Stack Developer',
+                'DevOps Engineer',
+                'API Engineer',
+                'QA Engineer',
+                'Test Analyst',
+                'Support Engineer',
+                'Tech Lead',
+                'Architect',
+                'Junior Developer',
+                'Intern',
+              ].map(label => ({ label, value: label }))}
+              placeholder="Select Roles"
+              classNamePrefix={darkMode ? 'hgn-select-dark' : 'hgn-select'}
+              styles={
+                darkMode
+                  ? {
+                      control: provided => ({
+                        ...provided,
+                        backgroundColor: '#1f2937',
+                        borderColor: '#3b82f6',
                         color: '#e5e7eb',
-                      },
-                    }),
-                  }
-                : undefined
-            }
-          />
+                      }),
+                      menu: provided => ({
+                        ...provided,
+                        backgroundColor: '#111827',
+                        color: '#e5e7eb',
+                      }),
+                      singleValue: provided => ({
+                        ...provided,
+                        color: '#e5e7eb',
+                      }),
+                      option: (provided, state) => ({
+                        ...provided,
+                        backgroundColor: state.isFocused ? '#2563eb' : '#111827',
+                        color: '#e5e7eb',
+                      }),
+                      multiValue: provided => ({
+                        ...provided,
+                        backgroundColor: '#2563eb',
+                      }),
+                      multiValueLabel: provided => ({
+                        ...provided,
+                        color: '#e5e7eb',
+                      }),
+                      multiValueRemove: provided => ({
+                        ...provided,
+                        color: '#bfdbfe',
+                        ':hover': {
+                          backgroundColor: '#1d4ed8',
+                          color: '#e5e7eb',
+                        },
+                      }),
+                    }
+                  : undefined
+              }
+            />
+          </div>
+          <div className={styles.filterInput}>
+            <Select
+              options={[
+                { label: 'This same week last year', value: 'week' },
+                { label: 'This same month last year', value: 'month' },
+                { label: 'This same year', value: 'year' },
+                { label: 'Custom Dates (no comparison)', value: '' },
+              ]}
+              value={
+                comparisonType
+                  ? [
+                      { label: 'This same week last year', value: 'week' },
+                      { label: 'This same month last year', value: 'month' },
+                      { label: 'This same year', value: 'year' },
+                      { label: 'Custom Dates (no comparison)', value: '' },
+                    ].find(opt => opt.value === comparisonType)
+                  : null
+              }
+              onChange={handleComparisonTypeChange}
+              placeholder="Comparison Type"
+              classNamePrefix={darkMode ? 'hgn-select-dark' : 'hgn-select'}
+              styles={
+                darkMode
+                  ? {
+                      control: provided => ({
+                        ...provided,
+                        backgroundColor: '#1f2937',
+                        borderColor: '#3b82f6',
+                        color: '#e5e7eb',
+                      }),
+                      menu: provided => ({
+                        ...provided,
+                        backgroundColor: '#111827',
+                        color: '#e5e7eb',
+                      }),
+                      singleValue: provided => ({
+                        ...provided,
+                        color: '#e5e7eb',
+                      }),
+                      option: (provided, state) => ({
+                        ...provided,
+                        backgroundColor: state.isFocused ? '#2563eb' : '#111827',
+                        color: '#e5e7eb',
+                      }),
+                    }
+                  : undefined
+              }
+            />
+          </div>
         </div>
-        <div className={styles.filterInput}>
-          <Select
-            options={[
-              { label: 'This same week last year', value: 'week' },
-              { label: 'This same month last year', value: 'month' },
-              { label: 'This same year', value: 'year' },
-              { label: 'Custom Dates (no comparison)', value: '' },
-            ]}
-            value={
-              comparisonType
-                ? [
-                    { label: 'This same week last year', value: 'week' },
-                    { label: 'This same month last year', value: 'month' },
-                    { label: 'This same year', value: 'year' },
-                    { label: 'Custom Dates (no comparison)', value: '' },
-                  ].find(opt => opt.value === comparisonType)
-                : null
-            }
-            onChange={handleComparisonTypeChange}
-            placeholder="Comparison Type"
-            classNamePrefix={darkMode ? 'hgn-select-dark' : 'hgn-select'}
-            styles={
-              darkMode
-                ? {
-                    control: provided => ({
-                      ...provided,
-                      backgroundColor: '#1f2937',
-                      borderColor: '#3b82f6',
-                      color: '#e5e7eb',
-                    }),
-                    menu: provided => ({
-                      ...provided,
-                      backgroundColor: '#111827',
-                      color: '#e5e7eb',
-                    }),
-                    singleValue: provided => ({
-                      ...provided,
-                      color: '#e5e7eb',
-                    }),
-                    option: (provided, state) => ({
-                      ...provided,
-                      backgroundColor: state.isFocused ? '#2563eb' : '#111827',
-                      color: '#e5e7eb',
-                    }),
-                  }
-                : undefined
-            }
-          />
-        </div>
-      </div>
 
-      {/* Chart */}
-      <div ref={chartWrapperRef} className={chartWrapperClassName}>
-        {loading && <p style={{ textAlign: 'center' }}>Loading data...</p>}
-        {!loading && error && (
-          <p style={{ textAlign: 'center', color: darkMode ? '#fca5a5' : 'red' }}>{error}</p>
-        )}
-        {!loading && !error && data.length === 0 && (
-          <p style={{ textAlign: 'center' }}>No data available for selected filters.</p>
-        )}
-        {!loading && !error && data.length > 0 && (
-          <ResponsiveContainer width="100%" height={chartHeight}>
-            <PieChart margin={{ top: 40, right: 40, left: 40, bottom: 20 }}>
-              <Pie
-                data={data}
-                cx="50%"
-                cy="50%"
-                innerRadius={computedInnerRadius}
-                outerRadius={computedOuterRadius}
-                dataKey="value"
-                label={
-                  showSliceLabels
-                    ? ({ name, value }) => `${name}: ${((value / total) * 100).toFixed(1)}% (${value})`
-                    : undefined
-                }
-                labelLine={showSliceLabels}
-              >
-                {data.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                ))}
-                {comparisonText && <Label content={renderCenterText} />}
-              </Pie>
-              <Tooltip />
-              <Legend
-                layout={legendLayout}
-                verticalAlign={legendVerticalAlign}
-                align={legendAlign}
-                wrapperStyle={legendWrapperStyle}
-              />
-            </PieChart>
-          </ResponsiveContainer>
-        )}
-      </div>
+        {/* Chart */}
+        <div ref={chartWrapperRef} className={chartWrapperClassName}>
+          {loading && <p style={{ textAlign: 'center' }}>Loading data...</p>}
+          {!loading && error && (
+            <p style={{ textAlign: 'center', color: darkMode ? '#fca5a5' : 'red' }}>{error}</p>
+          )}
+          {!loading && !error && data.length === 0 && (
+            <p style={{ textAlign: 'center' }}>No data available for selected filters.</p>
+          )}
+          {!loading && !error && data.length > 0 && (
+            <ResponsiveContainer width="100%" height={chartHeight}>
+              <PieChart margin={{ top: 40, right: 40, left: 40, bottom: 20 }}>
+                <Pie
+                  data={data}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={computedInnerRadius}
+                  outerRadius={computedOuterRadius}
+                  dataKey="value"
+                  label={
+                    showSliceLabels
+                      ? ({ name, value }) =>
+                          `${name}: ${((value / total) * 100).toFixed(1)}% (${value})`
+                      : undefined
+                  }
+                  labelLine={showSliceLabels}
+                >
+                  {data.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                  {comparisonText && <Label content={renderCenterText} />}
+                </Pie>
+                <Tooltip />
+                <Legend
+                  layout={legendLayout}
+                  verticalAlign={legendVerticalAlign}
+                  align={legendAlign}
+                  wrapperStyle={legendWrapperStyle}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          )}
+        </div>
       </div>
     </div>
   );
