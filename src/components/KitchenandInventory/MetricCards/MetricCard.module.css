@@ -12,9 +12,21 @@
   font-size: 1rem;
   font-weight: bold;
   margin-bottom: 12px;
+  margin-left: 10px;
 }
 
 .metricCardBody {
+  margin-left: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   font-size: 2rem;
   color: #333333;
+}
+.metricCardIcon {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+  margin-right: 20px;
 }

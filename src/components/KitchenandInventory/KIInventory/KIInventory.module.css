@@ -1,10 +1,7 @@
-/* :global(body) {
-  font-family: 'Poppins', sans-serif;
-  background: #ffffff;
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-} */
+:global(.active.dark-mode.nav-link) {
+  background-color: #ffffff;
+  border-radius: 40px;
+}
 .inventoryContainer {
   /* background-color: rgb(248, 240, 240); */
   padding: 40px 40px;
@@ -40,9 +37,9 @@
 .inventoryNavBar {
   margin-top: 30px;
   width: auto;
-  border: 2px solid #e0e0e0;
+  border: 1px solid #e0e0e0;
   border-radius: 30px;
-  background-color: #f4eeee;
+  background-color: #eceff3;
 }
 .inventoryNavBarItem {
   margin-right: 20px;
@@ -55,16 +52,8 @@
   color: #555555;
 }
 .inventoryNavBarItem:hover {
-  /* border-bottom: 3px solid #484b4f; */
   background-color: #ffffff;
   border-radius: 40px;
-  color: #007bff;
-}
-.inventoryNavBarItem:active {
-  border-bottom: 3px solid #007bff;
-  color: #007bff;
-  font-weight: 600;
-  background-color: #555555;
 }
 .inventoryNavBarIcon {
   font-size: 20px;
@@ -81,32 +70,55 @@
 }
 .inventorySearchBar {
   display: flex;
+  width: auto;
   align-items: center;
   border: 1px solid #ccc;
-  border-radius: 8px;
+  border-radius: 10px;
   padding: 0px 8px;
   width: auto;
+  background-color: #f2f4f7;
 }
 .inventorySearchBar input {
+  width: 300px;
   border: none;
   outline: none;
-  padding: 8px;
+  padding: 4px;
   font-size: 16px;
   border-radius: 8px;
+  background-color: #f2f4f7;
 }
 .button {
   margin: 0px 20px;
-  padding: 4px 15px;
+  padding: 4px 12px;
   border-radius: 10px;
   background-color: rgb(244, 247, 244);
   color: black;
 }
 .button:hover {
-  background-color: rgb(157, 243, 157);
   color: black;
   /* Darker blue on hover */
+}
+.clearSearch {
+  border: none;
+  color: rgb(121, 121, 165);
+  font-weight: bold;
+  font-size: 20px;
+  border-radius: 100%;
+  padding: 0;
+  margin-bottom: 4px;
+  cursor: pointer;
 }
 .addItemButton {
   background-color: rgb(4, 144, 4);
   color: white;
+}
+.addItemButton:hover {
+  background-color: rgb(95, 229, 95);
+}
+.scanQRButton {
+  background-color: rgb(0, 120, 215);
+  color: white;
+}
+.scanQRButton:hover {
+  background-color: rgb(99, 172, 232);
 }
