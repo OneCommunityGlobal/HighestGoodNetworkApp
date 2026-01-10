@@ -1,4 +1,5 @@
 import { Form, FormGroup, Label, Input } from 'reactstrap';
+import { useSelector } from 'react-redux';
 import styles from './ItemListView.module.css';
 
 export default function SelectForm({
@@ -8,6 +9,7 @@ export default function SelectForm({
   setSelectedCondition,
   setSelectedToolStatus,
 }) {
+  const darkMode = useSelector(state => state.theme.darkMode);
   let projectsSet = [];
   if (items.length) {
     projectsSet = [...new Set(items.map(el => el.project?.name))];
@@ -22,7 +24,7 @@ export default function SelectForm({
 
   return (
     <Form>
-      <FormGroup className={`${styles.selectInput}`}>
+      <FormGroup className={`${styles.selectInput} ${darkMode ? styles.darkBg : ''}`}>
         <Label htmlFor="select-project">Project:</Label>
         <Input
           id="select-project"

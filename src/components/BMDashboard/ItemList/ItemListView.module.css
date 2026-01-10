@@ -161,6 +161,7 @@ table thead th, table td {
   background-color: #2a3f5f !important;
   color: #e8edf4 !important;
   border: 1px solid #3f5269 !important;
+  padding: 4px;
 }
 
 .darkDatePickerInput::placeholder {
@@ -284,6 +285,7 @@ table thead th, table td {
   background-color: #ffffff !important;
   color: #111827 !important;
   border: 1px solid #d1d5db !important;
+  padding: 4px;
 }
 
 .lightDatePicker {
@@ -364,4 +366,25 @@ table thead th, table td {
 
 .lightDatePickerPopper .react-datepicker__triangle {
   display: none;
+}
+.dropdownRow{
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 15px;
+  align-items: center;
+}
+.datePickerGroup{
+  margin: -8px auto 10px 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0; 
+}
+
+:global(html body.dark-mode select.form-control.form-control) {
+   background-color: #2a3f5f !important; 
+}
+:global(html body.dark-mode) .darkBg option {
+  background-color: #2a3f5f !important;
+  color: #f9fafb !important;
 }
