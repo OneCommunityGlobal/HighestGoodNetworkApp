@@ -7,12 +7,28 @@ import './TeamStats.css';
 
 const activeMembersMinimumDropDownOptions = [2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30];
 
-function TeamStats({ isLoading, usersInTeamStats, endDate }) {
+function TeamStats({ isLoading, usersInTeamStats, endDate, darkMode }) {
   const [activeMembersMinimum, setActiveMembersMinimum] = useState(
     activeMembersMinimumDropDownOptions[0],
   );
   const [teamsWithActiveMembers, setTeamsWithActiveMembers] = useState(null);
   const [teamsStatsFetchingError, setTeamsStatsFetchingError] = useState(null);
+
+  const selectStyle = {
+    backgroundColor: darkMode ? '#111827' : '#ffffff',
+    color: darkMode ? '#f8fafc' : '#111827',
+    WebkitTextFillColor: darkMode ? '#f8fafc' : '#111827', // ✅ helps if global CSS forces colors
+    border: darkMode ? '1px solid rgba(255,255,255,0.25)' : '1px solid #e0e0e0',
+    borderRadius: 5,
+    padding: '2px 8px',
+    margin: '0 0.3rem',
+    fontSize: '1.05em',
+  };
+
+  const optionStyle = {
+    backgroundColor: darkMode ? '#111827' : '#ffffff',
+    color: darkMode ? '#f8fafc' : '#111827',
+  };
 
   useEffect(() => {
     const fetchTeamsData = async () => {
@@ -80,11 +96,13 @@ function TeamStats({ isLoading, usersInTeamStats, endDate }) {
                 onChange={handleActiveMembersMinimumChange}
                 value={activeMembersMinimum}
                 className="team-stats-active-members-dropdown"
+                style={selectStyle}
               >
                 {activeMembersMinimumDropDownOptions.map(activeMembersMinimumOption => (
                   <option
                     key={`${activeMembersMinimumOption}-dropdown`}
                     value={activeMembersMinimumOption}
+                    style={optionStyle}
                   >
                     {activeMembersMinimumOption}
                   </option>
