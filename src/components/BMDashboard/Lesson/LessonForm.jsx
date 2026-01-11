@@ -23,11 +23,10 @@ function LessonForm() {
   const roles = useSelector(state => state.role.roles); // grab all roles from store
   // const projects = useSelector(state => state.allProjects.projects); // grab all projects from store(not BM projects)
   const projects = useSelector(state => state.bmProjects); // grab all BM projects from store
-  const [LessonFormtags, setLessonFormTags] = useState(['Building 1', 'Building 2', 'Building 3']); // save all tags user inputs
-  const [permanentTags, setPermanentTags] = useState(['Building 1', 'Building 2', 'Building 3']);
+  const [LessonFormtags, setLessonFormTags] = useState([]); // save all tags user inputs
+  const [permanentTags, setPermanentTags] = useState([]);
   const [tagInput, setTagInput] = useState(''); // track user input in tag input
   const [selectedFile, setSelectedFile] = useState(null); // track file that was selected or droped in upload appendix
-  const [prevselectedProject, setprevSelectedProject] = useState(null); // used to track the previously project selected for deletion in tags when changed
   const [selectedProject, setSelectedProject] = useState(null); // Track selected project in Belongs to dropdown
   const [selectedRole, setSelectedRole] = useState('All'); // track selected role in View by dropdown
   const [LessonText, setLessonText] = useState(null); // track lesson text
@@ -91,12 +90,6 @@ function LessonForm() {
     const newTags = LessonFormtags.filter(tag => tag !== tagToRemove);
     setLessonFormTags(newTags);
   };
-  // removes the previously added project from tags if a new one is selected from belongs to dropdown
-  const removePreviousProject = prevproject => {
-    const newTags = LessonFormtags.filter(project => project !== prevproject);
-    setLessonFormTags(newTags);
-  };
-
   const fetchTags = async () => {
     try {
       const response = await axios.get(ENDPOINTS.BM_TAGS);
@@ -139,7 +132,6 @@ function LessonForm() {
         // Set the project name as a tag
         setProjectName(foundProject.name);
         setSelectedProject(projectId);
-        setLessonFormTags([projectname]);
       }
     }
   }, [projectId, projects]);
@@ -195,38 +187,10 @@ function LessonForm() {
     const lessonformtitleinput = e.target.value;
     setLessonTitleText(lessonformtitleinput);
   };
-  useEffect(() => {
-    if (selectedProject && prevselectedProject !== selectedProject) {
-      // Find the project with the selected ID
-      const foundProject = projects.find(project => project._id === selectedProject);
-      // Check if the found project is valid
-      if (foundProject) {
-        setprevSelectedProject(selectedProject);
-        // Remove the tag for the previously selected project
-        if (prevselectedProject) {
-          removePreviousProject(
-            projects.find(project => project._id === prevselectedProject)?.name,
-          );
-        }
-        // Add the project name to the tags array
-        setLessonFormTags(tags => [...tags, foundProject.name]);
-      }
-    }
-  }, [selectedProject, prevselectedProject, projects]);
 
   // Lesson submit. all the data from user input is in here
   const LessonFormSubmit = async e => {
     e.preventDefault();
-    // console.log(LessonFormtags, "Tags")
-    // console.log(selectedProject, "selected project")
-    // console.log(selectedRole, "selecedRole")
-    // console.log(selectedFile, "selected file")
-    // console.log(LessonText, "lesson text")
-    // console.log(LessonTitleText,"lesson title")
-    if (!LessonFormtags.length) {
-      toast.info('Need atleast one tag');
-      return;
-    }
     if (!selectedProject) {
       toast.info('Need to select a project');
       return;

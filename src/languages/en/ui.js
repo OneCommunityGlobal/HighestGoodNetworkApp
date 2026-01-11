@@ -88,6 +88,9 @@ export const CALENDAR = "Calendar";
 export const EVENT_PERSONALIZATION = "Event Personalization";
 export const REGISTRATION = "Registration";
 export const PR_PROMOTIONS = 'PR Promotions';
+export const JOB_ANALYTICS_REPORT = 'Job Analytics Report';
+export const ACTIVITY_RESOURCE_USAGE = 'Activity Resource Usage';
+export const ACTIVITY_RESOURCE_MANGEMENT = 'Activity Resource Management';
 
 
 export const SEND_EMAILS = 'Send Emails';
