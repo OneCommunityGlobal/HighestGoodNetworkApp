@@ -67,6 +67,7 @@ export default function AnniversaryCelebrated({ isLoading, data, darkMode }) {
           <SiGmail
             size={30}
             color="red"
+            className="anniversaryGmailIcon"
             style={{ cursor: 'pointer', display: 'block' }}
             onClick={() => handleEmailClick(email)}
           />
@@ -110,8 +111,36 @@ export default function AnniversaryCelebrated({ isLoading, data, darkMode }) {
   const filterUsers = users =>
     users.filter(u => `${u.firstName} ${u.lastName}`.toLowerCase().includes(search.toLowerCase()));
 
+  const searchInputStyle = {
+    margin: '10px 0',
+    padding: '5px 10px',
+    borderRadius: '5px',
+    border: darkMode ? '1px solid rgba(255, 255, 255, 0.25)' : '1px solid gray',
+    width: '60%',
+    backgroundColor: darkMode ? '#111827' : '#fff',
+    color: darkMode ? '#f8fafc' : '#111827',
+    WebkitTextFillColor: darkMode ? '#f8fafc' : '#111827',
+  };
+
   return (
     <div className="mt-3">
+      <style>
+        {`
+          #anniversary-search::placeholder {
+            color: ${darkMode ? 'rgba(248,250,252,0.75)' : 'rgba(17,24,39,0.6)'} !important;
+          }
+        
+
+        .anniversaryGmailIcon {
+            color: #ea4335 !important;
+            fill: #ea4335 !important;
+          }
+
+          .anniversaryGmailIcon path {
+            fill: #ea4335 !important;
+          }
+        `}
+      </style>
       {/* Comparison percentages with counts */}
       {hasComparisonData && (
         <span
@@ -150,17 +179,19 @@ export default function AnniversaryCelebrated({ isLoading, data, darkMode }) {
       {/* Search + Export Controls */}
       <div className="d-flex justify-content-between align-items-center mb-2">
         <input
+          id="anniversary-search"
           type="text"
           placeholder="Search by name"
           value={search}
           onChange={e => setSearch(e.target.value)}
-          style={{
-            margin: '10px 0',
-            padding: '5px 10px',
-            borderRadius: '5px',
-            border: '1px solid gray',
-            width: '60%',
-          }}
+          //style={{
+          //  margin: '10px 0',
+          //  padding: '5px 10px',
+          //  borderRadius: '5px',
+          //  border: '1px solid gray',
+          //  width: '60%',
+          //}}
+          style={searchInputStyle}
         />
         <button onClick={exportData} className="btn btn-secondary">
           Export Data
