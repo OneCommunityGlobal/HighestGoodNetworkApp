@@ -2,6 +2,7 @@ import React from 'react';
 import { Dropdown, Input } from 'reactstrap';
 import './TeamsAndProjects.css';
 import { useSelector } from 'react-redux';
+const TEAM_NAME_MAX_LENGTH = 100;
 
 // eslint-disable-next-line react/display-name
 const AddTeamsAutoComplete = React.memo((props) => {
@@ -53,11 +54,18 @@ const AddTeamsAutoComplete = React.memo((props) => {
           setSearchText(e.target.value);
           setIsOpen(true);
         }}
+        maxLength={TEAM_NAME_MAX_LENGTH}
         className={darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}
         placeholder="Search or select a team..."
         aria-label="Add to Team"
       />
-
+      <small 
+        className={darkMode ? 'text-light' : 'text-muted'} 
+        style={{ display: 'block', marginTop: '0.25rem', fontSize: '0.875rem' }}
+      >
+        {searchText.length}/{TEAM_NAME_MAX_LENGTH} characters
+      </small>
+      
       {isOpen && (
         <div
           tabIndex="-1"

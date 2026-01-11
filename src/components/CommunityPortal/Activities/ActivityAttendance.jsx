@@ -2,7 +2,7 @@ import { useSelector } from 'react-redux';
 import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { v4 as uuidv4 } from 'uuid';
-import { FaRegClock, FaIdCard } from 'react-icons/fa';
+import { FaRegClock, FaIdCard, FaInfoCircle } from 'react-icons/fa';
 import styles from './ActivityAttendance.module.css';
 import { useState } from 'react';
 import profileImg from '../../../assets/images/profile.png';
@@ -57,10 +57,20 @@ const exportToCSV = students => {
   document.body.removeChild(link);
 };
 
-function StatsCard({ title, value, color }) {
+function StatsCard({ title, value, color, definition }) {
   return (
     <div className={styles.statsCard}>
-      <h3>{title}</h3>
+      <div className={styles.statsCardHeader}>
+        <h3>{title}</h3>
+        <button
+          className={styles.infoIconWrapper}
+          title={definition}
+          aria-label={`Definition of ${title}`}
+          type="button"
+        >
+          <FaInfoCircle className={styles.infoIcon} />
+        </button>
+      </div>
       <p className={styles.statsValue} style={{ color }}>
         {value}
       </p>
@@ -159,10 +169,34 @@ function ActivityAttendance() {
   const [statusFilter, setStatusFilter] = useState('All');
 
   const statsData = [
-    { id: uuidv4(), title: 'Total Community Members', value: 400, color: '#4CAF50' },
-    { id: uuidv4(), title: 'Registered', value: 100, color: '#2196F3' },
-    { id: uuidv4(), title: 'No Show', value: 15, color: '#F44336' },
-    { id: uuidv4(), title: 'Community Visitor', value: 19, color: '#FF9800' },
+    {
+      id: uuidv4(),
+      title: 'Total Community Members',
+      value: 400,
+      color: '#4CAF50',
+      definition: 'All members registered in the community, including inactive users and visitors.',
+    },
+    {
+      id: uuidv4(),
+      title: 'Registered',
+      value: 100,
+      color: '#2196F3',
+      definition: 'Members registered for the selected event/session only.',
+    },
+    {
+      id: uuidv4(),
+      title: 'No Show',
+      value: 15,
+      color: '#F44336',
+      definition: 'Registered members who did not check in or attend the event.',
+    },
+    {
+      id: uuidv4(),
+      title: 'Community Visitor',
+      value: 19,
+      color: '#FF9800',
+      definition: 'Non-registered participants who attended the event.',
+    },
   ];
 
   const students = [
@@ -201,7 +235,13 @@ function ActivityAttendance() {
             <StatsChart stats={statsData} />
             <div className={styles.statsGrid}>
               {statsData.map(stat => (
-                <StatsCard key={stat.id} title={stat.title} value={stat.value} color={stat.color} />
+                <StatsCard
+                  key={stat.id}
+                  title={stat.title}
+                  value={stat.value}
+                  color={stat.color}
+                  definition={stat.definition}
+                />
               ))}
             </div>
           </div>

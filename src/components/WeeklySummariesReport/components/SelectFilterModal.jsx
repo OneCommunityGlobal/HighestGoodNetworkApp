@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Form, Label } from 'reactstrap';
 import Select from 'react-select';
 // import styles from './SelectFilterModal.module.scss';
-import mainStyles from './WeeklySummariesReport.module.css';
+import mainStyles from '../WeeklySummariesReport.module.css';
 import FilterPreviewForm from './FilterPreviewForm.jsx';
 
 export default function SelectFilterModal({
