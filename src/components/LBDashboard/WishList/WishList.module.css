@@ -66,8 +66,9 @@
 }
 
 .item_title_wrapper__mobile {
-  display: none;
+  display: block !important;
 }
+
 
 .item_title_right {
   position: absolute;

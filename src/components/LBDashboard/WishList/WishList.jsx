@@ -36,10 +36,6 @@ function WishList() {
             <div className={styles.item__details_wrapper}>
               {/* LEFT */}
               <div className={styles.list__details_left}>
-                <div className={styles.item_title_wrapper__mobile}>
-                  <h1 className={styles.list__item_title_mobile}>{item.title}</h1>
-                  <h2 className={styles.list__item_title_mobile}>{item.unit || ''}</h2>
-                </div>
                 {item.images?.[0] && (
                   <img className={styles.carousel_image} src={item.images[0]} alt={item.title} />
                 )}
@@ -47,8 +43,12 @@ function WishList() {
 
               {/* RIGHT */}
               <div className={styles.list__details_right}>
-                <div className={styles.item_title_wrapper__desktop}>
+                {/* <div className={styles.item_title_wrapper__desktop}>
                   <span className={styles.item_title_right}>{item.title}</span>
+                </div> */}
+                <div className={styles.item_title_wrapper__mobile}>
+                  <h1 className={styles.list__item_title_mobile}>{item.title}</h1>
+                  <h2 className={styles.list__item_title_mobile}>{item.unit || ''}</h2>
                 </div>
 
                 <div className={styles.item__details}>
