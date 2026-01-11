@@ -332,7 +332,7 @@ function IssueCharts() {
                 color: darkMode ? '#cfd7e3' : '#333',
                 boxShadow: 'none',
                 '&:hover': {
-                  borderColor: darkMode ? '#4caf50' : '#4caf50',
+                  borderColor: '#4caf50',
                 },
               }),
               menu: base => ({
@@ -362,7 +362,7 @@ function IssueCharts() {
                 ...base,
                 color: darkMode ? '#fff' : '#333',
                 ':hover': {
-                  backgroundColor: darkMode ? '#4caf50' : '#4caf50',
+                  backgroundColor: '#4caf50',
                   color: '#fff',
                 },
               }),
