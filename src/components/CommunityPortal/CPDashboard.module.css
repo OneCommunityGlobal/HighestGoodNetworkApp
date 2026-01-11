@@ -140,6 +140,27 @@
 }
 
 .filterItem input:not([type='checkbox']):not([type='radio']),
+.radioRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 10px;
+}
+
+.radioGroup {
+  margin-right: 8px;
+}
+
+.radioInput {
+  margin-right: 6px;
+}
+
+.radioLabel {
+  margin-bottom: 0;
+  vertical-align: middle;
+}
+
+.filterItem input:not([type="checkbox"]):not([type="radio"]),
 .filterItem select {
   padding: 12px 15px;
   margin-top: 10px;

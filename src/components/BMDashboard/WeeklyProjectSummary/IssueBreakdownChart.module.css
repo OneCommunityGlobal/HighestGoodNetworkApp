@@ -11,21 +11,13 @@
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  border: 1px solid var(--border-color, #e2e8f0);
-}
-
-/* Dark mode support */
-.container:global(.dark-mode),
-:global(.dark-mode) .container {
-  background: var(--card-bg, #1a202c);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  border-color: var(--border-color, #2d3748);
 }
 
 .inner {
   display: flex;
   flex-direction: column;
   width: 100%;
+  
 }
 
 .headerRow {
@@ -39,16 +31,9 @@
   text-align: left;
   margin: 0;
   font-size: 36px;
-  font-weight: 600;
-  color: var(--text-color, #2d3748);
+  font-weight: 400;
+  color: var(--text-color, #888);
   margin-bottom: 16px;
-  text-shadow: none;
-}
-
-/* Dark mode heading */
-:global(.dark-mode) .heading {
-  color: var(--text-color, #f7fafc);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .legend {
@@ -56,31 +41,11 @@
   gap: 24px;
   justify-content: center;
   flex-wrap: wrap;
-  padding: 16px;
-  background: rgba(0, 0, 0, 0.02);
-  border-radius: 8px;
-  margin-bottom: 8px;
-}
-
-/* Dark mode legend */
-:global(.dark-mode) .legend {
-  background: rgba(255, 255, 255, 0.05);
 }
 
 .legendItem {
   display: flex;
   align-items: center;
-  padding: 8px 12px;
-  border-radius: 6px;
-  transition: background-color 0.2s ease;
-}
-
-.legendItem:hover {
-  background: rgba(0, 0, 0, 0.05);
-}
-
-:global(.dark-mode) .legendItem:hover {
-  background: rgba(255, 255, 255, 0.1);
 }
 
 .legendBox {
@@ -89,11 +54,10 @@
   height: 22px;
   border-radius: 4px;
   margin-right: 8px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .legendLabel {
-  color: var(--text-color, #4a5568);
+  color: var(--text-color, #666);
   font-size: 22px;
   font-weight: 500;
   text-shadow: none;
@@ -101,7 +65,7 @@
 
 /* Dark mode legend label */
 :global(.dark-mode) .legendLabel {
-  color: var(--text-color, #e2e8f0);
+  color: #ffffff;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
@@ -111,17 +75,11 @@
   margin-top: 20px;
   background: var(--section-bg, transparent);
   border-radius: 12px;
-  padding: 16px;
-  border: 1px solid var(--border-color, #e2e8f0);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
-/* Dark mode chart container */
-:global(.dark-mode) .chartContainer {
-  background: var(--section-bg, #2d3748);
-  border-color: var(--border-color, #4a5568);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
+/* ===========================
+   Responsive adjustments
+   =========================== */
 
 /* Responsive design */
 @media (max-width: 768px) {
@@ -129,6 +87,8 @@
     padding: 20px;
   }
 
+/* Tablets */
+@media (max-width: 1024px) {
   .heading {
     font-size: 28px;
   }
@@ -148,20 +108,22 @@
   }
 
   .chartContainer {
-    height: 400px;
-    margin-top: 16px;
-    padding: 12px;
+    height: 420px;
+  }
+
+  :global(.recharts-label-list text) {
+    font-size: 10px;
+    stroke-width: 2px;
   }
 }
 
-@media (max-width: 480px) {
+/* Mobile */
+@media (max-width: 768px) {
   .heading {
-    font-size: 24px;
+    font-size: 22px;
   }
 
   .legend {
-    flex-direction: column;
-    align-items: center;
     gap: 12px;
   }
 
@@ -170,14 +132,23 @@
   }
 
   .chartContainer {
-    height: 350px;
+    height: 360px;
+  }
+
+  /* Increase label contrast and adjust stroke width */
+  :global(.recharts-label-list text) {
+    font-size: 9px;
+    fill: var(--chart-label-color, #111827) !important;
+    stroke-width: 1px;
+    opacity: 1;
   }
 }
 
-/* High contrast mode support */
-@media (prefers-contrast: high) {
-  .container {
-    border-width: 2px;
+/* Very small screens */
+@media (max-width: 480px) {
+  .chartContainer {
+    height: 320px;
+    width: 100%;
   }
 
   .heading {
@@ -190,12 +161,67 @@
 
   .legendBox {
     border: 1px solid currentColor;
+  /* Reduce label size and opacity instead of hiding */
+  :global(.recharts-label-list text) {
+    font-size: 8px;
+    opacity: 0.85;
+    fill: var(--chart-label-color, #111827) !important;
+    stroke-width: 1px;
   }
 }
 
-/* Reduced motion support */
-@media (prefers-reduced-motion: reduce) {
-  .legendItem {
-    transition: none;
-  }
+
+:global(.recharts-cartesian-axis-tick-value) {
+  fill: var(--chart-axis-color, #374151) !important; /* strong contrast */
+  font-weight: 600;
+  font-size: 12px;
 }
+/* Selected value text — DARK MODE (keep text black) */
+:global(.darkMode .injurySelect__single-value) {
+  color: #000000 !important;
+}
+
+:global(.darkMode .injurySelect__multi-value__label) {
+  color: #000000 !important;
+}
+
+/* Ensure input text while typing is also black */
+:global(.darkMode .injurySelect__input-container),
+:global(.darkMode .injurySelect__input) {
+  color: #000000 !important;
+}
+
+/* Ensure clear (×) and dropdown arrow are black in dark mode */
+:global(.darkMode .injurySelect__clear-indicator),
+:global(.darkMode .injurySelect__dropdown-indicator) {
+  color: #000000 !important;
+}
+
+:global(.darkMode .injurySelect__clear-indicator:hover),
+:global(.darkMode .injurySelect__dropdown-indicator:hover) {
+  color: #000000 !important;
+}
+:global(.filter label) {
+  margin-bottom: 4px;
+}
+/* Ensure filter blocks always stack label + input vertically */
+:global(.filter) {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Consistent spacing between label and input */
+
+/* Ensure date inputs behave same as dropdowns */
+:global(.filter .react-datepicker-wrapper) {
+  width: 100%;
+}
+
+:global(.filter .react-datepicker__input-container input) {
+  width: 180px;
+  max-width: 180px;
+}
+
+:global(.filter .injurySelect__control) {
+  width: 100%;
+}}}

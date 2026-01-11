@@ -98,7 +98,6 @@ import ActivityAgenda from './components/CommunityPortal/Activities/ActivityAgen
 import NoshowViz from './components/CommunityPortal/Attendence/NoshowViz';
 import EventList from './components/CommunityPortal/Event/EventList/EventList';
 import ResourcesUsage from './components/CommunityPortal/Activities/activityId/ResourcesUsage';
-import ResourceManagement from './components/ResourceManagement/ResourceManagement';
 import EventParticipation from './components/CommunityPortal/Reports/Participation/EventParticipation';
 
 import MaterialSummary from './components/MaterialSummary/MaterialSummary';
@@ -132,6 +131,8 @@ import BiddingHomepage from './components/LBDashboard/BiddingHomepage/BiddingHom
 import WishList from './components/LBDashboard/WishList/WishList';
 import WishListItem from './components/LBDashboard/WishList/ItemOverview';
 
+//mostwatedmaterials
+import MostWastedMaterials from './components/MostWastedMaterials/MostWastedMaterials.jsx';
 // BM Dashboard
 import BMProtectedRoute from './components/common/BMDashboard/BMProtectedRoute';
 import BMDashboard from './components/BMDashboard';
@@ -148,7 +149,7 @@ import UtilizationChart from './components/BMDashboard/UtilizationChart/Utilizat
 import RentalChart from './components/BMDashboard/RentalChart/RentalChart';
 import ReturnedLateChart from './components/BMDashboard/RentalChart/ReturnedLateChart';
 import CreateNewTeam from './components/BMDashboard/Team/CreateNewTeam/CreateNewTeam';
-import MostSusceptibleTools from './components/MostSusceptible/toolBreakdownChart';
+// import MostSusceptibleTools from './components/MostSusceptible/toolBreakdownChart';
 import HoursPledgedChart from './components/JobAnalytics/HoursPledgedChart/HoursPledgedChart';
 import InjurySeverityDashboard from './components/BMDashboard/Injuries/InjurySeverityChart';
 
@@ -197,13 +198,16 @@ import IntermediateTaskList from './components/EductionPortal/IntermediateTasks/
 import EmbedInteractiveMap from './components/BMDashboard/InteractiveMap/EmbedInteractiveMap';
 import InteractiveMap from './components/BMDashboard/InteractiveMap/InteractiveMap';
 
+import SimpleToolChart from './components/BMDashboard/Tools/SimpleToolChart';
+
 import SupportLogin from './components/SupportPortal/SupportLogin';
 import SupportDashboard from './components/SupportPortal/SupportDashboard';
 import SupportLogViewer from './components/SupportPortal/SupportLogViewer';
+import JobApplicationForm from './components/Collaboration/JobApplicationForm/JobApplicationForm';
 
 // Social Architecture
 
-import JobApplicationForm from './components/Collaboration/JobApplicationForm/JobApplicationForm';
+const ResourceManagement = lazy(() => import('./components/ResourceManagement/ResourceManagement'));
 const RequestResources = lazy(() => import('./components/SocialArchitecture/RequestResources'));
 
 const ReusableListView = lazy(() => import('./components/BMDashboard/ReusableList'));
@@ -338,7 +342,6 @@ export default (
     <Route path="/form" component={FormEditor} />
     <Route path="/formviewer" component={FormViewer} />
     <Route path="/ProfileInitialSetup/:token" component={SetupProfile} />
-    <Route path="/mostsusceptibletoolschart" component={MostSusceptibleTools} />
     <Route path="/hours-pledged-chart" component={HoursPledgedChart} />
     <Route path="/TestEventReg" component={TestEventRegistration} />
     <Route path="/logattendance" component={AttendanceNoShow} />
@@ -628,6 +631,7 @@ export default (
         <Route path="/bmdashboard/login" component={BMLogin} />
         <Route path="/LessonsLearntChart" component={LessonsLearntChart} />
         <Route path="/UtilizationChart" component={UtilizationChart} />
+        <Route path="/mostsusceptibletoolschart" component={SimpleToolChart} />
         <Route path="/projectglobaldistribution" component={ProjectsGlobalDistribution} />
         <BMProtectedRoute
           path="/bmdashboard/materials/purchase"
@@ -722,6 +726,11 @@ export default (
           path="/bmdashboard/timelog/:projectId"
           fallback
           component={BMTimeLogCard}
+        />
+        <BMProtectedRoute
+          path="/bmdashboard/mostwastedmaterials"
+          exact
+          component={MostWastedMaterials}
         />
         <BMProtectedRoute
           path="/bmdashboard/tools-availability"
@@ -887,6 +896,15 @@ export default (
         <ProtectedRoute path="/hgn/profile/skills" exact component={UserSkillsProfile} />
         <ProtectedRoute
           path="/hgn/profile/skills/:userId?"
+          exact
+          fallback
+          component={UserSkillsProfile}
+          allowedRoles={[UserRole.Administrator, UserRole.CoreTeam, UserRole.Owner]}
+          routePermissions={RoutePermissions.accessHgnSkillsDashboard}
+        />
+        {/* Alternative route for HGN Skills Profile */}
+        <ProtectedRoute
+          path="/hgn-skills/profile/:userId?"
           exact
           fallback
           component={UserSkillsProfile}
