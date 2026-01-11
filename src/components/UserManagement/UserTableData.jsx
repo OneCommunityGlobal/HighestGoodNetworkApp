@@ -138,6 +138,7 @@ const UserTableDataComponent = (props) => {
       <td className="usermanagement__active--input" style={{ position: 'relative' }}>
         <ActiveCell
           isActive={props.isActive}
+          deactivatedAt={props.deactivatedAt}
           canChange={canChangeUserStatus}
           key={`active_cell${props.index}`}
           index={props.index}
