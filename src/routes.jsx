@@ -172,6 +172,7 @@ import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
 import EPLogin from './components/EductionPortal/Login';
 import BrowseLessonPlan from './components/EductionPortal/BrowseLessonPlan/BrowseLP';
 import EPDashboard from './components/EductionPortal';
+import ReportDownloadButton from './components/EductionPortal/AnalyticsDashboard/ReportDownloadButton';
 import GroupList from './components/EductionPortal/GroupList/GroupList';
 import EvaluationResultsWrapper from './components/EductionPortal/EvaluationResultsWrapper';
 import InsightWidget from './components/EductionPortal/AnalyticsDashboard/InsightsWidget';
@@ -270,6 +271,7 @@ const EnhancedPopularityTimelineChart = lazy(() =>
 
 // PR Analytics Dashboard
 import ReviewsInsight from './components/PRAnalyticsDashboard/ReviewsInsight/ReviewsInsight';
+import ProjectsGlobalDistribution from './components/ProjectsGlobalDistribution/ProjectsGlobalDistribution';
 
 const JobAnalyticsPage = lazy(() =>
   import('./components/Reports/HitsAndApplicationRatio/JobAnalyticsPage'),
@@ -626,6 +628,7 @@ export default (
         <Route path="/bmdashboard/login" component={BMLogin} />
         <Route path="/LessonsLearntChart" component={LessonsLearntChart} />
         <Route path="/UtilizationChart" component={UtilizationChart} />
+        <Route path="/projectglobaldistribution" component={ProjectsGlobalDistribution} />
         <BMProtectedRoute
           path="/bmdashboard/materials/purchase"
           fallback
@@ -815,6 +818,7 @@ export default (
         <Route path="/educationportal/InsightWidget" component={InsightWidget} />
         <Route path="/educationportal/lesson-library" exact component={BrowseLessonPlan} />
         <EPProtectedRoute path="/educationportal/tasks/upload" exact component={WriteTaskUpload} />
+        <Route path="/educationportal/reportButton" component={ReportDownloadButton} />
         <Route path="/educator/groups" exact component={GroupList} />
         <EPProtectedRoute
           path="/educationportal/tasks/intermediate"

@@ -5,20 +5,24 @@ function useTheme() {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   useEffect(() => {
+    const body = document.body;
+
     if (darkMode) {
-      document.body.classList.add('dark-mode');
-      document.body.classList.add('bm-dashboard-dark');
+      body.classList.add('dark-mode');
+      body.classList.add('bm-dashboard-dark');
     } else {
-      document.body.classList.remove('dark-mode');
-      document.body.classList.remove('bm-dashboard-dark');
+      body.classList.remove('dark-mode');
+      body.classList.remove('bm-dashboard-dark');
     }
 
     // Cleanup function
     return () => {
-      document.body.classList.remove('dark-mode');
-      document.body.classList.remove('bm-dashboard-dark');
+      body.classList.remove('dark-mode');
+      body.classList.remove('bm-dashboard-dark');
     };
   }, [darkMode]);
+
+  return darkMode;
 }
 
 export default useTheme;
