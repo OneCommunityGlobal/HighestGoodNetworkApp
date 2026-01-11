@@ -7,9 +7,9 @@ import { getUserProfileBasicInfo } from '../../../actions/userManagement';
 import {
   fetchUserPreferences,
   updateUserPreferences,
-} from '../../../actions/lbDashboard/userPreferenceActions';
+} from '../../../actions/lbdashboard/userPreferenceActions';
 import { toast } from 'react-toastify';
-import { fetchExistingChats, fetchMessages } from '../../../actions/lbDashboard/messagingActions';
+import { fetchExistingChats, fetchMessages } from '../../../actions/lbdashboard/messagingActions';
 import axios from 'axios';
 import { ENDPOINTS } from '../../../utils/URL';
 import {
