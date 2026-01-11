@@ -152,8 +152,8 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, 
                   <span>
                     {parse(
                       (lesson?.content || '').length > maxSummaryLength
-                        ? `${lesson.content.slice(0, maxSummaryLength)}...`
-                        : lesson.content || '',
+                        ? `${(lesson?.content || '').slice(0, maxSummaryLength)}...`
+                        : lesson?.content || '',
                     )}
                   </span>
                 )}
