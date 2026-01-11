@@ -218,6 +218,14 @@
   color: lawngreen !important;
 }
 
+.scheduledUser {
+  color: orange !important;
+}
+
+.scheduledUser i {
+  color: orange !important;
+}
+
 .notActiveUser {
   color: #dee2e6 !important;
 }

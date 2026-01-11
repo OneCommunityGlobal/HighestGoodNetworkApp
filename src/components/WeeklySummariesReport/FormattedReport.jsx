@@ -476,6 +476,7 @@ function TeamCodeRow({
   getWeeklySummariesReport,
 }) {
   const [teamCode, setTeamCode] = useState(summary.teamCode);
+  const [savedTeamCode, setSavedTeamCode] = useState(summary.teamCode);
   const [hasError, setHasError] = useState(false);
   const fullCodeRegex = /^.{5,7}$/;
   const dispatch = useDispatch();
@@ -498,16 +499,15 @@ function TeamCodeRow({
 
   const handleCodeChange = e => {
     const { value } = e.target;
-    if (value.length <= 7) {
-      const regexTest = fullCodeRegex.test(value);
-      if (regexTest) {
-        setHasError(false);
-        setTeamCode(value);
-        handleOnChange(summary, value);
-      } else {
-        setTeamCode(value);
-        setHasError(true);
-      }
+    const regexTest = fullCodeRegex.test(value);
+    if (value.length <= 7 && regexTest) {
+      setHasError(false);
+      setTeamCode(value);
+      setSavedTeamCode(value);
+      handleOnChange(summary, value);
+    } else {
+      setTeamCode(savedTeamCode);
+      setHasError(true);
     }
   };
 
@@ -523,9 +523,13 @@ function TeamCodeRow({
             <Input
               id="codeInput"
               value={teamCode}
-              onChange={e => {
-                if (e.target.value !== teamCode) {
-                  handleCodeChange(e);
+              onChange={e => setTeamCode(e.target.value)}
+              onBlur={e => {
+                handleCodeChange(e);
+              }}
+              onKeyDown={e => {
+                if (e.key === 'Enter') {
+                  e.currentTarget.blur(); // triggers onBlur
                 }
               }}
               placeholder="X-XXX"
