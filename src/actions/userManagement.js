@@ -311,7 +311,7 @@ export const updateUserFinalDay = (user, finalDayDate, isSet) => {
  * fetching all user profiles basic info
  *  Added `source` parameter to identify the calling component.
  */
-export const getUserProfileBasicInfo = ({ userId, source }) => {
+export const getUserProfileBasicInfo = ({ userId, source } = {}) => {
   // API request to fetch basic user profile information
   let userProfileBasicInfoPromise;
   if (userId)

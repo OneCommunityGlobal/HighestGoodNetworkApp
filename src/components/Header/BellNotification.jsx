@@ -7,7 +7,7 @@ import { getMessagingSocket } from '../../utils/messagingSocket';
 import {
   clearDBNotifications,
   clearNotifications,
-} from '../../actions/lbdashboard/messagingActions';
+} from '../../actions/lbDashboard/messagingActions';
 import { ENDPOINTS } from '../../utils/URL';
 
 // Import getUserTasks action for fetching user-specific tasks

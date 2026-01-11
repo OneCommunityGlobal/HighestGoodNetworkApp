@@ -883,9 +883,13 @@ export function Header(props) {
           </Card>
         </div>
       )}
-      {props.auth.isAuthenticated && unreadNotifications?.length > 0 ? (
-        <NotificationCard notification={unreadNotifications[0]} />
-      ) : null}
+      {props.auth.isAuthenticated && (
+        <div className={styles.notificationOverlay}>
+          {unreadNotifications?.length > 0 ? (
+            <NotificationCard notification={unreadNotifications[0]} />
+          ) : null}
+        </div>
+      )}
       <div className={darkMode ? styles.headerMargin : styles.headerMarginLight} />
     </div>
   );  
