@@ -27,13 +27,13 @@ export const wishlistsReducer = (state = initialState, action) => {
       return { ...state, loading: false, wishlists: action.payload };
 
     case ADD_TO_WISHLIST_SUCCESS:
-      return { ...state, loading: false, wishlist: [...state.wishlists, action.payload] };
+      return { ...state, loading: false, wishlists: [...state.wishlists, action.payload] };
 
     case REMOVE_FROM_WISHLIST_SUCCESS:
       return {
         ...state,
         loading: false,
-        wishlist: state.wishlists.filter(item => item.id !== action.payload.id),
+        wishlists: state.wishlists.filter(item => item._id !== action.payload._id),
       };
 
     case FETCH_WISHLIST_FAIL:

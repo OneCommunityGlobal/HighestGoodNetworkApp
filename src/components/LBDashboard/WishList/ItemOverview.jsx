@@ -16,9 +16,9 @@ function WishListItem() {
   const { wishlists } = useSelector(state => state.wishlists);
 
   const listing = wishlists?.listingId?.find(item => item._id === id);
-  console.log('Listing found:', listing);
   const user = useSelector(state => state.auth.user);
   const userId = user?.userid;
+  console.log('User ID:', userId);
   const [isWishlisted, setIsWishlisted] = useState(() => {
     return wishlists?.listingId?.some(item => item._id === id) ?? false;
   });
