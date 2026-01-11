@@ -91,7 +91,7 @@ export function CPDashboard() {
     if (!dateStr) return 'Date TBD';
     try {
       const date = new Date(dateStr);
-      if (isNaN(date.getTime())) {
+      if (Number.isNaN(date.getTime())) {
         return 'Invalid date';
       }
       // Format: "Saturday, February 15"
