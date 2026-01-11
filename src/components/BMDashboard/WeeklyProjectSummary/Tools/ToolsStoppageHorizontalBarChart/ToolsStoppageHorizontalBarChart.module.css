@@ -95,6 +95,14 @@
   background-color: #007bff!important;
 }
 
+.darkSelectWrapper :global(.customSelect__control) {
+  background-color: #1a1a1a !important;
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #f5f7fa !important;
+}
+
+
+
 /* Filter controls layout for small screens */
 @media (max-width: 768px) {
   :global(.datepickerWrapper) {

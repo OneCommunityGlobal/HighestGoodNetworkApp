@@ -364,17 +364,19 @@ export default function ToolsStoppageHorizontalBarChart() {
           </div>
         </Col>
         <Col xs={12} md={4}>
-          <Select
-            className="w-100"
-            classNamePrefix="customSelect"
-            value={selectedProject}
-            onChange={opt => setSelectedProject(opt)}
-            options={projectOptions}
-            placeholder="Select a project ID to view data"
-            isClearable={false}
-            isDisabled={projects.length === 0}
-            styles={darkMode ? selectDarkStyles : {}}
-          />
+          <div className={`${darkMode ? styles.darkSelectWrapper : ''}`}>
+            <Select
+              className="w-100"
+              classNamePrefix="customSelect"
+              value={selectedProject}
+              onChange={opt => setSelectedProject(opt)}
+              options={projectOptions}
+              placeholder="Select a project ID to view data"
+              isClearable={false}
+              isDisabled={projects.length === 0}
+              styles={darkMode ? selectDarkStyles : {}}
+            />
+          </div>
         </Col>
         <Col xs={12} md={2}>
           <Button

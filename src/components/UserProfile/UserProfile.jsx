@@ -202,14 +202,12 @@ function UserProfile(props) {
 
   /* useEffect functions */ // added by luis, the below useEffect
   useEffect(() => {
-    loadUserProfile();
     getCurretLoggedinUserEmail();
     dispatch(fetchAllProjects());
     dispatch(getAllUserTeams());
     dispatch(getAllTimeOffRequests());
     dispatch(getAllTeamCode());
     fetchSpecialWarnings();
-    canEditTeamCode && fetchTeamCodeAllUsers();
   }, []);
 
  
@@ -267,69 +265,61 @@ function UserProfile(props) {
     setIsProjectsEqual(compare);
   };
 
-  const loadSummaryIntroDetails = async (teamId, user) => {
+  const buildSummaryIntroDetails = async (teamId, user) => {
     const currentManager = user;
-
+  
     if (!teamId) {
-      setSummaryIntro(
-        `This week’s summary was managed by ${currentManager.firstName} ${currentManager.lastName} and includes .
-         These people did NOT provide a summary .
-         <Insert the proofread and single-paragraph summary created by ChatGPT>`,
-      );
-      return;
+      return `This week’s summary was managed by ${currentManager.firstName} ${currentManager.lastName} and includes .
+       These people did NOT provide a summary .
+       <Insert the proofread and single-paragraph summary created by ChatGPT>`;
     }
-
+  
     try {
       const res = await axios.get(ENDPOINTS.TEAM_USERS(teamId));
       const { data } = res;
-
+  
       const activeMembers = data.filter(
         member => member._id !== currentManager._id && member.isActive,
       );
-
-      //submitted a summary, maybe didn't complete their hours just yet
+  
       const memberSubmitted = await Promise.all(
         activeMembers
           .filter(member => member.weeklySummaries[0].summary !== '')
           .map(async member => {
             const results = await dispatch(getTimeEntriesForWeek(member._id, 0));
-
             const returnData = calculateTotalTime(results.data, true);
-
+  
             return returnData < member.weeklycommittedHours
               ? `${member.firstName} ${member.lastName} hasn't completed hours`
               : `${member.firstName} ${member.lastName}`;
           }),
       );
-
+  
       const memberNotSubmitted = activeMembers
         .filter(member => member.weeklySummaries[0].summary === '')
-        .map(member => {
-          if (getTimeOffStatus(member._id)) {
-            return `${member.firstName} ${member.lastName} off for the week`;
-          } else {
-            return `${member.firstName} ${member.lastName}`;
-          }
-        });
-
+        .map(member =>
+          getTimeOffStatus(member._id)
+            ? `${member.firstName} ${member.lastName} off for the week`
+            : `${member.firstName} ${member.lastName}`,
+        );
+  
       const memberSubmittedString =
         memberSubmitted.length !== 0
           ? memberSubmitted.join(', ')
           : '<list all team members names included in the summary>';
-
+  
       const memberDidntSubmitString =
         memberNotSubmitted.length !== 0
           ? memberNotSubmitted.join(', ')
           : '<list all team members names NOT included in the summary>';
-
-      const summaryIntroString = `This week's summary was managed by ${currentManager.firstName} ${currentManager.lastName} and includes ${memberSubmittedString}. These people did NOT provide a summary ${memberDidntSubmitString}. <Insert the proofread and single-paragraph summary created by ChatGPT>`;
-
-      setSummaryIntro(summaryIntroString);
+  
+      return `This week's summary was managed by ${currentManager.firstName} ${currentManager.lastName} and includes ${memberSubmittedString}. These people did NOT provide a summary ${memberDidntSubmitString}. <Insert the proofread and single-paragraph summary created by ChatGPT>`;
     } catch (error) {
-      // eslint-disable-next-line no-console
       console.error('Error fetching team users:', error);
+      return '';
     }
   };
+  
 
   const calculateTotalTime = (data, isTangible) => {
     const filteredData = data.filter(entry => entry.isTangible === isTangible);
@@ -373,6 +363,11 @@ function UserProfile(props) {
   };
 
   const fetchCalculatedStartDate = async (userId, userProfileData) => {
+    if (!userProfileData?.endDate) {
+      const createdDate = userProfileData?.createdDate ? userProfileData.createdDate.split('T')[0] : '';
+      setCalculatedStartDate(createdDate);
+      return;
+    }
     try {
       const startDate = await dispatch(
         getTimeStartDateEntriesByPeriod(userId, userProfileData.createdDate, userProfileData.endDate),
@@ -497,10 +492,6 @@ function UserProfile(props) {
 
       // Fetch calculated start date from first time entry
       await fetchCalculatedStartDate(userId, newUserProfile);
-
-      // run after main profile is loaded
-      const teamId = newUserProfile?.teams?.[0]?._id || null;
-      await loadSummaryIntroDetails(teamId, response.data);
 
       // Note: Removed automatic getTimeStartDateEntriesByPeriod call to prevent overwriting manual startDate changes
       // Users can now toggle between manual and calculated startDate via button
@@ -784,24 +775,24 @@ setUpdatedTasks(prev => {
             blueSquare: newBlueSquare,
           })
           .then(res => {
-            const newBlueSqrs = [
+
+            const updatedInfringements = [
               ...userProfile.infringements,
               {
                 _id: res.data._id,
                 ...newBlueSquare,
-              },
+              }
             ];
-            toast.success('Blue Square Added!');
-            const updatedInfringements = res.data.infringements;
 
-            setOriginalUserProfile({
-              ...originalUserProfile,
+            setOriginalUserProfile(prev => ({
+              ...prev,
               infringements: updatedInfringements,
-            });
-            setUserProfile({
-              ...userProfile,
+            }));
+
+            setUserProfile(prev => ({
+              ...prev,
               infringements: updatedInfringements,
-            });
+            }));
           })
           .catch(error => {
             // eslint-disable-next-line no-console
@@ -846,15 +837,50 @@ setUpdatedTasks(prev => {
     try {
       dispatch(getSpecialWarnings(userId)).then(res => {
         if (res.error) {
-          console.log(res.error);
+          // eslint-disable-next-line no-console
+          console.error('Error fetching special warnings:', res.error);
           return;
         }
         setSpecialWarnings(res);
       });
     } catch (err) {
-      console.log(err);
+      // eslint-disable-next-line no-console
+      console.error('Error in fetchSpecialWarnings:', err);
     }
   };
+
+  const getWarningMessage = (warningData, noSummary, inCompleteHours) => {
+    const bothWarnings = warningData?.warningsArray;
+    let allBlSq = {};
+    let noneBlSq = {};
+    let inCompleteHoursMixedBlSq = false;
+    const inCompleteHoursMessage = '"completing most of your hours but not all"';
+    const noSummaryMessage = '"not submitting a weekly summary"'
+    if(warningData?.issueBlueSquare) {
+      allBlSq = Object.values(warningData?.issueBlueSquare).every(blueSquare => blueSquare === true);
+      noneBlSq = Object.values(warningData?.issueBlueSquare).every(blueSquare => blueSquare === false);
+      inCompleteHoursMixedBlSq = warningData?.issueBlueSquare['Blu Sq Rmvd - Hrs Close Enoug'] === true;
+    }
+    const inCompleteHoursBlSq = warningData.description === 'Blu Sq Rmvd - Hrs Close Enoug';
+
+    let message = null;
+    if(bothWarnings) {
+      if(allBlSq) {
+        message = `Issued a blue square for an Admin having to remove past blue squares ${inCompleteHours.warnings.length - 1} times for ${inCompleteHoursMessage} and ${noSummary.warnings.length - 1} times for ${noSummaryMessage}.`
+      } else if(noneBlSq) {
+        message = '';
+      } else if(inCompleteHoursMixedBlSq) {
+        message = `Issued a blue square for an Admin having to remove past blue squares ${inCompleteHours.warnings.length - 1} times for ${inCompleteHoursMessage} and received a warning for removing past blue squares ${noSummary.warnings.length - 1} times for ${noSummaryMessage}.`
+      } else {
+        message = `Issued a blue square for an Admin having to remove past blue squares ${noSummary.warnings.length - 1} times for ${noSummaryMessage} and received a warning for removing past blue squares ${inCompleteHours.warnings.length - 1} times for ${inCompleteHoursMessage}.`
+      }
+    } else if(inCompleteHoursBlSq) {
+        message = `Issued a blue square for an Admin having to remove past blue squares ${inCompleteHours.warnings.length - 1} times for ${inCompleteHoursMessage}.`
+    } else {
+      message = `Issued a blue square for an Admin having to remove past blue squares ${noSummary.warnings.length - 1} times for ${noSummaryMessage}.`
+    }
+    return message
+  }
 
   const handleLogWarning = async newWarningData => {
     let warningData = {};
@@ -890,7 +916,6 @@ setUpdatedTasks(prev => {
         userId: props.auth.user.userid,
       },
     };
-
     let toastMessage = '';
     dispatch(postWarningByUserId(warningData))
       .then(response => {
@@ -898,6 +923,8 @@ setUpdatedTasks(prev => {
           toast.error('Warning failed to log try again');
           return;
         } else {
+          const noSummary = response.find(warning => warning.title === 'Blu Sq Rmvd - For No Summary')
+          const inCompleteHours = response.find(warning => warning.title === 'Blu Sq Rmvd - Hrs Close Enoug')
           setShowModal(false);
           fetchSpecialWarnings();
 
@@ -906,13 +933,23 @@ setUpdatedTasks(prev => {
           } else if (warningData.color === 'yellow') {
             toastMessage = 'Warning successfully logged';
           } else {
-            toastMessage = 'Successfully logged and Blue Square issued';
+            const blSqMessage = getWarningMessage(warningData, noSummary, inCompleteHours)
+            if(blSqMessage) {
+              modifyBlueSquares('', 
+                moment(warningData.date).format("YYYY-MM-DD"),
+                blSqMessage, 
+                'add')
+                toastMessage = 'Successfully logged and Blue Square issued';
+            } else {
+              toastMessage = 'Warning successfully logged';
+            }
           }
         }
         toast.success(toastMessage);
       })
       .catch(err => {
-        console.log(err);
+        // eslint-disable-next-line no-console
+        console.error('Error updating user profile:', err);
       });
   };
 
@@ -1084,7 +1121,7 @@ setUpdatedTasks(prev => {
     const newUserProfile = {
       ...userProfile,
       isActive,
-      endDate: endDate || undefined,
+      ...(isActive ? {endDate: null} : {endDate}),
     };
 
     try {
@@ -1095,12 +1132,22 @@ setUpdatedTasks(prev => {
       );
       setUserProfile(newUserProfile);
       setOriginalUserProfile(newUserProfile);
-      window.location.reload();
+      // window.location.reload();
+      await loadUserProfile();
+      await loadUserTasks();
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('Failed to update user status:', error);
     }
     setActiveInactivePopupOpen(false);
+
+    if (!userProfile.deactivatedAt && !isActive) {
+      toast.success('User scheduled for deactivation.');
+    } else if (userProfile.deactivatedAt && isActive) {
+      toast.success('Scheduled deactivation canceled.');
+    } else if (!userProfile.isActive && isActive) {
+      toast.success('User reactivated.');
+    }
   };
 
   const activeInactivePopupClose = () => {
@@ -1285,6 +1332,7 @@ setUpdatedTasks(prev => {
     <div className={darkMode ? 'bg-oxford-blue' : ''} style={{ minHeight: '100%' }}>
       <ActiveInactiveConfirmationPopup
         isActive={userProfile.isActive}
+        deactivatedAt={userProfile.deactivatedAt}
         fullName={`${userProfile.firstName} ${userProfile.lastName}`}
         open={activeInactivePopupOpen}
         setActiveInactive={setActiveInactive}
@@ -1451,6 +1499,7 @@ setUpdatedTasks(prev => {
             <span className="mr-2">
               <ActiveCell
                 isActive={userProfile.isActive}
+                deactivatedAt={userProfile.deactivatedAt}
                 user={userProfile}
                 canChange={canChangeUserStatus}
                 onClick={() => {
@@ -1551,12 +1600,18 @@ setUpdatedTasks(prev => {
             >
               {showSelect ? 'Hide Team Weekly Summaries' : 'Show Team Weekly Summaries'}
             </Button>
-            {(canGetProjectMembers && teams.length !== 0) ||
-            ['Owner', 'Administrator', 'Manager'].includes(requestorRole) ? (
+            {((canGetProjectMembers && teams.length !== 0) ||
+              ['Owner', 'Administrator', 'Manager'].includes(requestorRole)) && (
               <Button
-                onClick={() => {
-                  console.log(summaryIntro)
-                  navigator.clipboard.writeText(summaryIntro);
+                onClick={async () => {
+                  const teamId = userProfile?.teams?.[0]?._id || null;
+                  const intro = await buildSummaryIntroDetails(teamId, userProfile);
+                  if (!intro) {
+                    toast.error('Unable to generate summary intro right now.');
+                    return;
+                  }
+                  setSummaryIntro(intro);
+                  await navigator.clipboard.writeText(intro);
                   toast.success('Summary Intro Copied!');
                 }}
                 color="primary"
@@ -1566,8 +1621,6 @@ setUpdatedTasks(prev => {
               >
                 Generate Summary Intro
               </Button>
-            ) : (
-              ''
             )}
           </div>
           <h6 className={darkMode ? 'text-light' : 'text-azure'}>{jobTitle}</h6>
