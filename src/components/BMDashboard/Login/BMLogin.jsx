@@ -62,23 +62,23 @@ function BMLogin(props) {
         message: validate.error.details[0].message,
       });
     }
-    const loginAction = loginBMUser({ email: enteredEmail, password: enterPassword });
-    if (typeof loginAction !== 'function') {
-      return setValidationError(null);
-    }
-    const res = await dispatch(loginAction);
+    const res = await dispatch(loginBMUser({ email: enteredEmail, password: enterPassword }));
     // server side error validation
-    if (!res || res.statusText !== 'OK') {
-      if (res?.status === 422 && res?.data) {
+    if (res.statusText !== 'OK') {
+      if (res.status === 422) {
         return setValidationError({
           label: res.data.label,
           message: res.data.message,
         });
       }
-      return setValidationError(null);
+      // TODO: add additional error handling
+      return setValidationError({
+        label: '',
+        message: '',
+      });
     }
     // initiate push to BM Dashboard if validated (ie received token)
-    return setHasAccess(!!res?.data?.token);
+    return setHasAccess(!!res.data.token);
   };
 
   // push Dashboard if not authenticated

@@ -24,6 +24,9 @@ beforeEach(() => {
     auth: {
       isAuthenticated: true,
       user: {
+        access: {
+          canAccessBMPortal: true,
+        },
         permissions: {
           frontPermissions: [],
           backPermissions: [],
@@ -147,11 +150,9 @@ describe('BMLogin component', () => {
     fireEvent.change(screen.getByLabelText(/password/i), { target: { value: 'Test12345' } });
     fireEvent.click(screen.getByText('Submit'));
 
-    // eslint-disable-next-line testing-library/no-unnecessary-act
-    await act(async () => {
-      fireEvent.click(screen.getByText('Submit'));
+    await waitFor(() => {
+      expect(history.push).toHaveBeenCalledWith('/bmdashboard');
     });
-    expect(history.push).toHaveBeenCalledWith('/bmdashboard'); // if you're using `useNavigate` from React Router v6+
   });
 
   it('displays specific validation error for status 422', async () => {
@@ -189,7 +190,11 @@ describe('BMLogin component', () => {
   });
 
   it('handles post rejection without validation error', async () => {
-    mockLoginBMUser.mockImplementationOnce(() => async () => undefined);
+    mockLoginBMUser.mockImplementationOnce(() => async () => ({
+      statusText: 'ERROR',
+      status: 500,
+      data: {},
+    }));
 
     renderComponent(store);
     fireEvent.change(screen.getByLabelText(/email/i), { target: { value: 'test@gmail.com' } });
