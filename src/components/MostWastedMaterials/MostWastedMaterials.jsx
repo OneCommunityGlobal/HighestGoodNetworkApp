@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { useSelector } from 'react-redux';
 import { Bar, BarChart, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip } from 'recharts';
 
 // Mock data for demonstration
@@ -168,6 +169,7 @@ function CustomTooltip({ active, payload, label }) {
 }
 
 export default function MostWastedMaterialsDashboard() {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [selectedProject, setSelectedProject] = useState(mockProjects[0]);
   const [dateRange, setDateRange] = useState({
     from: '2024-01-01',
@@ -328,17 +330,17 @@ export default function MostWastedMaterialsDashboard() {
                 height={80}
                 fontSize={12}
                 interval={0}
-                tick={{ fill: '#374151' }}
+                tick={{ fill: darkMode ? '#ffffff' : '#374151' }}
               />
               <YAxis
                 label={{
                   value: 'Percentage of Material Wasted (%)',
                   angle: -90,
                   position: 'insideLeft',
-                  style: { textAnchor: 'middle', fill: '#374151' },
+                  style: { textAnchor: 'middle', fill: darkMode ? '#ffffff' : '#374151' },
                 }}
                 fontSize={12}
-                tick={{ fill: '#374151' }}
+                tick={{ fill: darkMode ? '#ffffff' : '#374151' }}
               />
               <Tooltip content={<CustomTooltip />} />
               <Bar
