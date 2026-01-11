@@ -727,11 +727,7 @@ export default (
           fallback
           component={BMTimeLogCard}
         />
-        <BMProtectedRoute
-          path="/bmdashboard/mostwastedmaterials"
-          exact
-          component={MostWastedMaterials}
-        />
+        <BMProtectedRoute path="/mostwastedmaterials" exact component={MostWastedMaterials} />
         <BMProtectedRoute
           path="/bmdashboard/tools-availability"
           fallback
