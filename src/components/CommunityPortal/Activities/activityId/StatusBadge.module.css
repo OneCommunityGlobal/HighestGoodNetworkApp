@@ -1,0 +1,25 @@
+.badge {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.activated {
+  background: #e8f8e8;
+  color: #1d7a1d;
+}
+
+.joined {
+  background: #eef3ff;
+  color: #3f51b5;
+}
+
+.interested {
+  background: #fff4d6;
+  color: #8a6d1d;
+}
+
+.bgOxfordBlue {
+  background-color: #1b2a41;
+}

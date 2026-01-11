@@ -229,3 +229,54 @@
 .loadMoreBtn:hover {
   background: #ddd;
 }
+
+.container {
+  max-width: 900px;
+  margin: 24px auto;
+  font-family: Arial, sans-serif;
+}
+
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.select {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: white;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+.table thead {
+  background: #fafafa;
+}
+
+.table th {
+  text-align: left;
+  font-weight: 600;
+  padding: 10px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.table td {
+  padding: 10px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.bgOxfordBlue {
+  background-color: #1b2a41
+}

@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import styles from './ActivityComments.module.css';
+import StatusBadge from './StatusBadge';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchMembersList } from '../../../../actions//communityPortal/activities/activityId/MembersListActions';
+//import { fetchMembersList } from 'actions/communityPortal/activities/activityId/MembersListActions';
 
 // Utility function to calculate relative time
 const getRelativeTime = createdAt => {
@@ -244,6 +248,10 @@ const mockFeedbacks = [
 ];
 
 function ActivityComments() {
+  const darkMode = useSelector(state => state.theme.darkMode);
+  const dispatch = useDispatch();
+  const { loading, members, error } = useSelector(state => state.membersList);
+
   // Utility function to restore Date objects from localStorage
   const restoreDates = items => {
     return items.map(item => ({
@@ -648,6 +656,22 @@ function ActivityComments() {
       return new Date(b.timestamp) - new Date(a.timestamp); // Newest
     });
 
+  useEffect(() => {
+    dispatch(fetchMembersList());
+  }, []);
+
+  const [sortBy, setSortBy] = useState('name-asc');
+
+  const sortedMembers = [...members].sort((a, b) => {
+    const aVal = a.name.toLowerCase();
+    const bVal = b.name.toLowerCase();
+
+    if (sortBy === 'name-asc') return aVal.localeCompare(bVal);
+    if (sortBy === 'name-desc') return bVal.localeCompare(aVal);
+
+    return 0;
+  });
+
   return (
     <div>
       {/* Event Card */}
@@ -834,6 +858,12 @@ function ActivityComments() {
           onClick={() => setActiveTab('Engagement')}
         >
           Engagement
+        </button>
+        <button
+          className={`${styles.tab} ${activeTab === 'Members List' ? styles.tabActive : ''}`}
+          onClick={() => setActiveTab('Members List')}
+        >
+          Members List
         </button>
       </div>
 
@@ -1227,6 +1257,48 @@ function ActivityComments() {
               </div>
             </div>
           )}
+        </div>
+      )}
+
+      {/* Members List */}
+      {activeTab === 'Members List' && (
+        <div className={`${styles.container} ${darkMode ? styles.bgOxfordBlue : ''}`}>
+          <div className={styles.headerRow}>
+            <h2 className={styles.title}>Members List</h2>
+
+            <select
+              value={sortBy}
+              onChange={e => setSortBy(e.target.value)}
+              className={`${styles.select} ${darkMode ? styles.bgOxfordBlue : ''}`}
+            >
+              <option value="name-asc">Name A–Z</option>
+              <option value="name-desc">Name Z–A</option>
+            </select>
+          </div>
+
+          <table className={`${styles.table} ${darkMode ? styles.bgOxfordBlue : ''}`}>
+            <thead>
+              <tr className={`${darkMode ? styles.bgOxfordBlue : ''}`}>
+                <th>Name</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Joined</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {sortedMembers.map((m, index) => (
+                <tr key={index}>
+                  <td>{m.name}</td>
+                  <td>{m.role}</td>
+                  <td>
+                    <StatusBadge status={m.status} />
+                  </td>
+                  <td>{m.joined}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
     </div>
