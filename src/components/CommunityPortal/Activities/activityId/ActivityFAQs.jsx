@@ -14,8 +14,8 @@ function ActivityFAQs() {
   const [filteredFAQs, setFilteredFAQs] = useState([]);
 
   useEffect(() => {
-    // Note: Backend API integration for fetching event-specific FAQs will be implemented
-    // in Phase 5. Currently using mock data for development and testing.
+    // Note: Backend API integration for fetching event-specific FAQs will be implemented later.
+    // Currently using mock data for development and testing.
     const mockFAQs = [
       {
         id: 1,
