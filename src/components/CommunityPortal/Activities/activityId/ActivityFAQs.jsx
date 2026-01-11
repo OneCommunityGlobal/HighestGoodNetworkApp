@@ -8,15 +8,14 @@ function ActivityFAQs() {
   const { activityid } = useParams();
   const [faqs, setFaqs] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [expandedFAQ, setExpandedFAQ] = useState(null);
   const [selectedFilter, setSelectedFilter] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredFAQs, setFilteredFAQs] = useState([]);
 
   useEffect(() => {
-    // TODO: Fetch FAQs for this specific activity/event
-    // For now, using mock data
+    // Note: Backend API integration for fetching event-specific FAQs will be implemented
+    // in Phase 5. Currently using mock data for development and testing.
     const mockFAQs = [
       {
         id: 1,
@@ -111,18 +110,16 @@ function ActivityFAQs() {
     setSearchQuery(query);
   };
 
+  // Determine empty state message
+  const hasActiveFilters = searchQuery.trim() || selectedFilter !== 'All';
+  const emptyStateMessage = hasActiveFilters
+    ? 'No FAQs found matching your search criteria. Try adjusting your search or filters.'
+    : 'No FAQs available for this event.';
+
   if (loading) {
     return (
       <div className={styles.container}>
         <div className={styles.loading}>Loading FAQs...</div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className={styles.container}>
-        <div className={styles.error}>Error loading FAQs: {error}</div>
       </div>
     );
   }
@@ -186,12 +183,8 @@ function ActivityFAQs() {
               </div>
             ))}
           </div>
-        ) : searchQuery.trim() || selectedFilter !== 'All' ? (
-          <div className={styles.noFaqs}>
-            No FAQs found matching your search criteria. Try adjusting your search or filters.
-          </div>
         ) : (
-          <div className={styles.noFaqs}>No FAQs available for this event.</div>
+          <div className={styles.noFaqs}>{emptyStateMessage}</div>
         )}
       </div>
 
