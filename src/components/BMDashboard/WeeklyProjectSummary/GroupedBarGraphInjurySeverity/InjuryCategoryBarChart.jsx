@@ -48,6 +48,9 @@ function InjuryCategoryBarChart() {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
 
+  // ✅ NEW: key to force Recharts remount when needed (fixes "renders only on hover")
+  const [chartKey, setChartKey] = useState(0);
+
   useEffect(() => {
     dispatch(fetchSeverities());
     dispatch(fetchInjuryTypes());
@@ -129,6 +132,30 @@ function InjuryCategoryBarChart() {
   }, [data]);
 
   const showLabels = seriesProjectIds.length <= 4;
+
+  // Force a resize/reflow after data/filter changes so chart draws immediately (no hover needed)
+  useEffect(() => {
+    // Only do this once the chart is supposed to be visible
+    if (loading || error) return;
+
+    const raf = requestAnimationFrame(() => {
+      window.dispatchEvent(new Event('resize')); // triggers ResponsiveContainer measure
+      setChartKey(k => k + 1); // extra-safe: forces a clean remount
+    });
+
+    return () => cancelAnimationFrame(raf);
+  }, [
+    loading,
+    error,
+    darkMode,
+    chartData.length,
+    seriesProjectIds.length,
+    projectNameFilter,
+    severityFilter,
+    injuryTypeFilter,
+    startDate,
+    endDate,
+  ]);
 
   return (
     <div className={`${styles['injury-chart-container']} ${darkMode ? styles.darkMode : ''}`}>
@@ -221,7 +248,7 @@ function InjuryCategoryBarChart() {
       {!loading && error && <p className={styles.error}>Error: {String(error)}</p>}
 
       {!loading && !error && (
-        <ResponsiveContainer width="100%" height={420}>
+        <ResponsiveContainer key={chartKey} width="100%" height={420}>
           <BarChart
             data={chartData}
             margin={{ top: 16, right: 24, bottom: 8, left: 8 }}
@@ -248,6 +275,8 @@ function InjuryCategoryBarChart() {
               tickLine={{ stroke: darkMode ? '#888' : '#000' }}
             />
             <Tooltip
+              //tooltip only; no shaded hover overlay across the chart
+              cursor={false}
               contentStyle={{
                 backgroundColor: darkMode ? '#2b3e59' : '#fff',
                 color: darkMode ? '#fff' : '#000',
