@@ -1,4 +1,5 @@
 import { Label, Form, Row, Col } from 'reactstrap';
+import PropTypes from 'prop-types';
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Select from 'react-select';
@@ -12,6 +13,26 @@ function EquipmentsInputs({ equipment, setEquipment, project, setProject }) {
   const [formattedProjects, setFormattedProjects] = useState([]);
   const [formattedEquipments, setFormattedEquipments] = useState([]);
   const equipments = useSelector(state => state.bmEquipments.equipmentslist);
+
+  // Helper function to get option styles based on state and dark mode
+  const getOptionStyles = (provided, state) => {
+    let backgroundColor;
+
+    if (state.isFocused) {
+      backgroundColor = darkMode ? '#3d3d3d' : '#f8f9fa';
+    } else {
+      backgroundColor = darkMode ? '#2d2d2d' : '#ffffff';
+    }
+
+    return {
+      ...provided,
+      backgroundColor,
+      color: darkMode ? '#ffffff' : '#000000',
+      '&:hover': {
+        backgroundColor: darkMode ? '#3d3d3d' : '#e9ecef',
+      },
+    };
+  };
 
   // Custom styles for react-select in dark mode
   const customSelectStyles = {
@@ -29,20 +50,7 @@ function EquipmentsInputs({ equipment, setEquipment, project, setProject }) {
       backgroundColor: darkMode ? '#2d2d2d' : '#ffffff',
       border: darkMode ? '1px solid #404040' : '1px solid #ced4da',
     }),
-    option: (provided, state) => ({
-      ...provided,
-      backgroundColor: state.isFocused
-        ? darkMode
-          ? '#3d3d3d'
-          : '#f8f9fa'
-        : darkMode
-        ? '#2d2d2d'
-        : '#ffffff',
-      color: darkMode ? '#ffffff' : '#000000',
-      '&:hover': {
-        backgroundColor: darkMode ? '#3d3d3d' : '#e9ecef',
-      },
-    }),
+    option: getOptionStyles,
     singleValue: provided => ({
       ...provided,
       color: darkMode ? '#ffffff' : '#000000',
@@ -75,9 +83,9 @@ function EquipmentsInputs({ equipment, setEquipment, project, setProject }) {
     let _formattedEquipments = [{ label: 'All Equipments', value: '0' }];
 
     if (equipments.length) {
-      if (project.value === '0')
+      if (project.value === '0') {
         equipmentsSet = [...new Set(equipments.map(rec => rec.itemType?.name))];
-      else
+      } else {
         equipmentsSet = [
           ...new Set(
             equipments
@@ -85,6 +93,7 @@ function EquipmentsInputs({ equipment, setEquipment, project, setProject }) {
               .map(rec => rec.itemType?.name),
           ),
         ];
+      }
     }
     const temp = equipmentsSet.map(con => {
       return { label: con, value: con };
@@ -144,5 +153,18 @@ function EquipmentsInputs({ equipment, setEquipment, project, setProject }) {
     </div>
   );
 }
+
+EquipmentsInputs.propTypes = {
+  equipment: PropTypes.shape({
+    label: PropTypes.string,
+    value: PropTypes.string,
+  }).isRequired,
+  setEquipment: PropTypes.func.isRequired,
+  project: PropTypes.shape({
+    label: PropTypes.string,
+    value: PropTypes.string,
+  }).isRequired,
+  setProject: PropTypes.func.isRequired,
+};
 
 export default EquipmentsInputs;
