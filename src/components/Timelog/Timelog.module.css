@@ -100,6 +100,9 @@
   padding: 0.5rem 1rem;
   cursor: pointer;
   transition: all 0.2s ease;
+  /* padding: 10px; */
+  display: inline-block;
+  text-decoration: none;
 }
 
 .activeLightMode {
@@ -122,11 +125,6 @@
   border-color: #1C1C1C #dee2e6 #dee2e6 !important; /* optional */
 }
 
-.navLink {
-  padding: 10px;
-  display: inline-block;
-  text-decoration: none;
-}
 
 /* Dark mode default for inactive tabs */
 .darkMode {
@@ -265,6 +263,14 @@
 
 .activeUser i {
   color: lawngreen !important;
+}
+
+.scheduledUser {
+  color: orange !important;
+}
+
+.scheduledUser i {
+  color: orange !important;
 }
 
 .notActiveUser {
