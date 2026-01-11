@@ -9,6 +9,7 @@
   padding: 10px;
 }
 
+/* Card variations */
 .totalCard {
   background: linear-gradient(to bottom, #87ceeb, #1e90ff, #4169e1);
   margin-top: 10px;
@@ -24,6 +25,7 @@
   margin: 10px;
 }
 
+/* Card content */
 .cardBody {
   display: flex;
   flex-direction: column;
@@ -42,10 +44,13 @@
   margin-right: 5px;
 }
 
+/* Filters */
 .selectedFilter {
-  border: #e6f0ff;
+  border: 2px solid #007bff; /* keep HEAD border */
+  background-color: #e6f0ff;
 }
 
+/* Status indicators */
 .faCircleIsActive {
   color: lawngreen;
 }
@@ -54,7 +59,7 @@
   color: #dee2e6;
 }
 
-/* If you still use this class elsewhere, we can keep it here too */
+/* Team name column */
 .teamNameCol {
   width: 40%;
   max-width: 40%;
@@ -63,9 +68,11 @@
   overflow-wrap: anywhere;
 }
 
+/* Top overview section */
 .overviewTop {
   display: flex;
   gap: 10px;
   align-items: center;
   margin: 10px 0;
 }
+

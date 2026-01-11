@@ -26,7 +26,7 @@ import {
   updateWeeklySummaryEmailAssignment,
 } from '../../actions/weeklySummaryEmailBCCAction';
 import { getAllUserProfiles } from '../../actions/projectMembers';
-import '../Reports/TeamReport/TeamReport.module.css'; // For css only
+import styles from '../Reports/TeamReport/TeamReport.module.css'; // For css only
 
 const WeeklySummaryEmailAssignmentPopUp = React.memo(props => {
   const darkMode = useSelector(state => state.theme.darkMode);

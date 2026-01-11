@@ -1,4 +1,4 @@
-.permissions-management {
+rpermissions-management {
   padding: 0.5rem 1rem;
   width: 40%;
   min-width: 350px;
@@ -150,7 +150,7 @@
   font-size: 30px;
 }
 
-.ContainerReminder{
+.ContainerReminder {
   width: 90%;
   max-width: 400px;
   padding: 20px;
@@ -169,19 +169,19 @@
   box-shadow: 0px 2px 10px black;
 }
 
-.ReminderTitle{
+.ReminderTitle {
   display: flex;
   justify-content: center;
   flex: 1;
 }
-.ReminderTitle h2{
+.ReminderTitle h2 {
   color: black;
   font-size: 22px;
   align-items: center;
   display: flex;
 }
 
-.ReminderBody{
+.ReminderBody {
   padding: 10px 0;
   border-bottom: 1px solid #ccc;
   border-top: 1px solid #ccc;
@@ -191,14 +191,14 @@
   overflow-wrap: break-word;
 }
 
-.ReminderButton{
+.ReminderButton {
   display: flex;
   gap: 10px;
   justify-content: center;
   width: 100%;
   padding-top: 10px;
 }
-.ReminderButton button:first-child{
+.ReminderButton button:first-child {
   height: 80%;
   width: 140px;
   background-color: #007bff;
@@ -208,7 +208,7 @@
   font-weight: 500;
 }
 
-.ReminderButton button:nth-child(2){
+.ReminderButton button:nth-child(2) {
   background-color: red;
   color: #fff;
   height: 80%;
@@ -219,7 +219,6 @@
   font-weight: 500;
 }
 
- 
 @media only screen and (max-width: 1110px) {
   .permissions-management__header {
     flex-direction: column;
@@ -242,13 +241,13 @@
     top: 35%;
     right: 11%;
   }
-  .ReminderTitle{
+  .ReminderTitle {
     display: flex;
     justify-content: center;
     flex: 10;
     padding-left: 10px;
   }
-  .ReminderButton button:first-child{
+  .ReminderButton button:first-child {
     height: 100%;
     width: 140px;
     background-color: #007bff;
@@ -257,7 +256,6 @@
     cursor: pointer;
     font-weight: 500;
   }
-  
 }
 
 @media only screen and (min-width: 1400px) {
@@ -265,7 +263,7 @@
     width: 300px;
     right: 13%;
   }
-  .ReminderTitle{
+  .ReminderTitle {
     display: flex;
     justify-content: center;
     flex: 1;
@@ -279,7 +277,7 @@
     right: 15%;
   }
 
-  .ReminderTitle{
+  .ReminderTitle {
     display: flex;
     justify-content: center;
     flex: 1;
@@ -295,9 +293,10 @@
 @media (max-width: 600px) {
   .ContainerReminder {
     width: 95%;
-    max-width: none; 
-    padding: 15px; 
+    max-width: none;
+    padding: 15px;
     margin: 20px auto;
     position: relative;
   }
 }
+

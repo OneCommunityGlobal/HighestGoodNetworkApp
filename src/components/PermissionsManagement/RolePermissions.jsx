@@ -15,7 +15,7 @@ import { updateRole, getAllRoles } from '../../actions/role';
 import PermissionList from './PermissionList';
 import permissionLabel from './PermissionsConst';
 import hasPermission from '../../utils/permissions';
-import './RolePermissions.css';
+import styles from './RolePermissions.module.css';
 // import { roleOperationLabels } from './PermissionsConst';
 
 function RolePermissions(props) {

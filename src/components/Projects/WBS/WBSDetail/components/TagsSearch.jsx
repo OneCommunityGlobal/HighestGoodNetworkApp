@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { connect } from 'react-redux';
 import TagSent from './TagSent';
-import './TagsSearch.css';
+import styles from './TagsSearch.module.css';
 import ReadOnlySectionWrapper from '../EditTask/ReadOnlySectionWrapper';
 import { findProjectMembers } from '../../../../../actions/projectMembers';
 
@@ -51,41 +51,46 @@ function TagsSearch(props) {
     }
   };
 
-  const filteredMembers = useMemo(() => {
-    const resourceNames = new Set((resourceItems || []).map(item => String(item?.name || '').toLowerCase()));
-    const baseList =
-      Array.isArray(members) && members.length > 0
-        ? members
-        : Array.isArray(membersFromStore) && membersFromStore.length > 0
-          ? membersFromStore
-          : [];
+const filteredMembers = useMemo(() => {
+  // Safe set of resource names
+  const resourceNames = new Set(
+    (resourceItems || []).map(item => String(item?.name || '').toLowerCase())
+  );
 
-    const applyFiltering = (list) =>
-      list
-        .filter(m => m && m.isActive === true) 
-        .filter(member => {
-          const fullName = `${member.firstName || member.first || ''} ${member.lastName || member.last || ''}`
-            .trim()
-            .toLowerCase();
+  // Determine which list of members to filter
+  const baseList =
+    Array.isArray(members) && members.length > 0
+      ? members
+      : Array.isArray(membersFromStore) && membersFromStore.length > 0
+        ? membersFromStore
+        : [];
 
-          if (!fullName) return false;
-          if (resourceNames.has(fullName)) return false;
+  const applyFiltering = list =>
+    list
+      .filter(m => m && m.isActive === true)
+      .filter(member => {
+        const fullName = `${member.firstName || member.first || ''} ${member.lastName || member.last || ''}`
+          .trim()
+          .toLowerCase();
 
-          if (searchWord.trim().length > 0) {
-            return fullName.includes(searchWord.toLowerCase());
-          }
+        if (!fullName) return false;
+        if (resourceNames.has(fullName)) return false;
 
-          return isFocused;
-        });
+        if (searchWord.trim().length > 0) {
+          return fullName.includes(searchWord.toLowerCase());
+        }
 
-    if (baseList.length > 0) return applyFiltering(baseList);
+        return isFocused;
+      });
 
-    if (searchWord.trim().length > 0 && Array.isArray(foundProjectMembers)) {
-      return applyFiltering(foundProjectMembers);
-    }
+  if (baseList.length > 0) return applyFiltering(baseList);
 
-    return [];
-  }, [members, membersFromStore, foundProjectMembers, resourceItems, searchWord, isFocused]);
+  if (searchWord.trim().length > 0 && Array.isArray(foundProjectMembers)) {
+    return applyFiltering(foundProjectMembers);
+  }
+
+  return [];
+}, [members, membersFromStore, foundProjectMembers, resourceItems, searchWord, isFocused]);
 
   const handleClick = (event, member) => {
     const userId = member._id || member.userID;

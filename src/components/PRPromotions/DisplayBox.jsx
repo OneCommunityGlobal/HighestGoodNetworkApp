@@ -82,14 +82,17 @@ export default function DisplayBox({ onClose }) {
                 <td>{promotion.teamCode}</td>
                 <td>{promotion.teamReviewerName}</td>
                 <td>
-                  {promotion.weeklyPRs.map((pr, prIndex) => (
-                    <span
-                      key={`${promotion.prReviewer}-${pr.week}`}
-                      className={`${styles['pr-count-badge']} ${styles[`color-${prIndex}`]}`}
-                    >
-                      {pr.prCount}
-                    </span>
-                  ))}
+                  {promotion.weeklyPRs.map((pr, prIndex) => {
+                    const colorClass = styles[`color-${prIndex % 5}`] || '';
+                    return (
+                      <span
+                        key={`${promotion.prReviewer}-${pr.week}`}
+                        className={`${styles['pr-count-badge']} ${colorClass}`}
+                      >
+                        {pr.prCount}
+                      </span>
+                    );
+                  })}
                 </td>
               </tr>
             ))}

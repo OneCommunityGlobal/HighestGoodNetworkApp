@@ -1,15 +1,13 @@
 /* eslint-disable react/destructuring-assignment */
-import './Team.css';
-import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
-import { connect, useSelector, useDispatch } from 'react-redux';
+import React, { useState, useEffect } from 'react';
 import { Button } from 'reactstrap';
 import hasPermission from '~/utils/permissions';
 import { boxStyle, boxStyleDark } from '~/styles';
 import { DELETE } from '../../languages/en/ui';
 import { getTeamMembers } from '../../actions/allTeamsAction';
 import { fetchTeamMembersCached, getCachedTeamMembers } from './teamMembersCache';
-
+import PropTypes from 'prop-types';
+import { connect, useSelector, useDispatch } from 'react-redux';
 function computeCounts(members, loading, localMembers) {
   const list = Array.isArray(members) ? members : [];
 

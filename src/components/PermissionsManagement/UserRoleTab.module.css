@@ -17,7 +17,7 @@
   appearance: button;
   text-decoration: none;
   color: white;
-  background-color: rgb(0, 123, 255);
+  background-color: #0056b3;
   padding: 0.3rem 2rem;
   border-radius: 0.5rem;
 }
@@ -132,12 +132,12 @@
   opacity: 0.5;
   cursor: not-allowed;
   background-color: #f5f5f5;
-  color: #999;
+  color: #6b6b6b;
 }
 
 .icon-button:disabled:hover {
   background-color: #f5f5f5;
-  color: #999;
+  color: #6b6b6b;
 }
 
 .infos-name-container {
