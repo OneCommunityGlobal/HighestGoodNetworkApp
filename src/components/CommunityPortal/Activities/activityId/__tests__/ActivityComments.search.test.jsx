@@ -46,61 +46,44 @@ describe('ActivityComments - Feedback Search Functionality', () => {
     });
   };
 
+  // Helper function for common assertions
+  const expectSingleResult = (results, expectedName, expectedText) => {
+    expect(results).toHaveLength(1);
+    if (expectedName) expect(results[0].name).toBe(expectedName);
+    if (expectedText) expect(results[0].text).toContain(expectedText);
+  };
+
   describe('Search by reviewer name', () => {
-    test('should find feedback by exact reviewer name match', () => {
-      const results = filterFeedbacks(mockFeedbacks, 'Sarah Johnson');
-      expect(results).toHaveLength(1);
-      expect(results[0].name).toBe('Sarah Johnson');
-    });
-
-    test('should find feedback by partial reviewer name match', () => {
-      const results = filterFeedbacks(mockFeedbacks, 'Sarah');
-      expect(results).toHaveLength(1);
-      expect(results[0].name).toBe('Sarah Johnson');
-    });
-
-    test('should be case-insensitive when searching by name', () => {
-      const results = filterFeedbacks(mockFeedbacks, 'sarah');
-      expect(results).toHaveLength(1);
-      expect(results[0].name).toBe('Sarah Johnson');
-    });
-
-    test('should find multiple results for partial name match', () => {
-      const results = filterFeedbacks(mockFeedbacks, 'Mike');
-      expect(results).toHaveLength(1);
-      expect(results[0].name).toBe('Mike Chen');
+    test.each([
+      ['Sarah Johnson', 'Sarah Johnson', null],
+      ['Sarah', 'Sarah Johnson', null],
+      ['sarah', 'Sarah Johnson', null],
+      ['Mike', 'Mike Chen', null],
+    ])('should find feedback for search term "%s"', (searchTerm, expectedName) => {
+      const results = filterFeedbacks(mockFeedbacks, searchTerm);
+      expectSingleResult(results, expectedName, null);
     });
   });
 
   describe('Search by feedback text', () => {
-    test('should find feedback by exact text match', () => {
-      const results = filterFeedbacks(mockFeedbacks, 'fantastic event');
-      expect(results).toHaveLength(1);
-      expect(results[0].text).toContain('fantastic');
-    });
-
-    test('should find feedback by partial text match', () => {
-      const results = filterFeedbacks(mockFeedbacks, 'enjoyed');
-      expect(results).toHaveLength(1);
-      expect(results[0].text).toContain('enjoyed');
-    });
-
-    test('should be case-insensitive when searching by text', () => {
-      const results = filterFeedbacks(mockFeedbacks, 'FANTASTIC');
-      expect(results).toHaveLength(1);
-      expect(results[0].text).toContain('fantastic');
+    test.each([
+      ['fantastic event', null, 'fantastic'],
+      ['enjoyed', null, 'enjoyed'],
+      ['FANTASTIC', null, 'fantastic'],
+    ])('should find feedback for text search "%s"', (searchTerm, expectedName, expectedText) => {
+      const results = filterFeedbacks(mockFeedbacks, searchTerm);
+      expectSingleResult(results, expectedName, expectedText);
     });
   });
 
   describe('Search edge cases', () => {
-    test('should return all feedbacks when search term is empty', () => {
-      const results = filterFeedbacks(mockFeedbacks, '');
-      expect(results).toHaveLength(3);
-    });
-
-    test('should return all feedbacks when search term is only whitespace', () => {
-      const results = filterFeedbacks(mockFeedbacks, '   ');
-      expect(results).toHaveLength(3);
+    test.each([
+      ['', 3],
+      ['   ', 3],
+      ['nonexistent', 0],
+    ])('should return %d results for search term "%s"', (searchTerm, expectedCount) => {
+      const results = filterFeedbacks(mockFeedbacks, searchTerm);
+      expect(results).toHaveLength(expectedCount);
     });
 
     test('should handle null or undefined name gracefully', () => {
@@ -126,37 +109,30 @@ describe('ActivityComments - Feedback Search Functionality', () => {
       const results = filterFeedbacks([feedbackWithNullText], 'John');
       expect(results).toHaveLength(1);
     });
-
-    test('should return empty array when no matches found', () => {
-      const results = filterFeedbacks(mockFeedbacks, 'nonexistent');
-      expect(results).toHaveLength(0);
-    });
   });
 
   describe('Search with rating filter', () => {
-    test('should filter by rating and search term together', () => {
-      const results = filterFeedbacks(mockFeedbacks, 'event', '5');
-      expect(results).toHaveLength(1);
-      expect(results[0].rating).toBe(5);
-    });
-
-    test('should return empty when search matches but rating filter does not', () => {
-      const results = filterFeedbacks(mockFeedbacks, 'Sarah', '1');
-      expect(results).toHaveLength(0);
-    });
+    test.each([
+      ['event', '5', 1, 5],
+      ['Sarah', '1', 0, null],
+    ])(
+      'should filter by rating %s and search "%s" to return %d results',
+      (searchTerm, rating, expectedCount, expectedRating) => {
+        const results = filterFeedbacks(mockFeedbacks, searchTerm, rating);
+        expect(results).toHaveLength(expectedCount);
+        if (expectedRating) expect(results[0].rating).toBe(expectedRating);
+      },
+    );
   });
 
   describe('Partial matching', () => {
-    test('should match partial words in reviewer name', () => {
-      const results = filterFeedbacks(mockFeedbacks, 'John');
+    test.each([
+      ['John', 'name', 'Johnson'],
+      ['absolutely', 'text', 'absolutely'],
+    ])('should match partial words in %s', (searchTerm, field, expectedContent) => {
+      const results = filterFeedbacks(mockFeedbacks, searchTerm);
       expect(results).toHaveLength(1);
-      expect(results[0].name).toContain('Johnson');
-    });
-
-    test('should match partial words in feedback text', () => {
-      const results = filterFeedbacks(mockFeedbacks, 'absolutely');
-      expect(results).toHaveLength(1);
-      expect(results[0].text).toContain('absolutely');
+      expect(results[0][field]).toContain(expectedContent);
     });
   });
 });
