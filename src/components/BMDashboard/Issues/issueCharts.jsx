@@ -213,8 +213,8 @@ function IssueChart() {
             maxRotation: isMobile ? 90 : 0,
             minRotation: isMobile ? 90 : 0,
             font: { size: 12, weight: '500' },
-            callback: function(value) {
-              const label = this.getLabelForValue(value);
+            callback: (value, index, ticks) => {
+              const label = chartData?.labels?.[index] ?? ticks?.[index]?.label ?? String(value);
               if (isMobile) return label;
 
               const maxCharsPerLine = 12;
