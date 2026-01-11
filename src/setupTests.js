@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
+import { vi, expect } from 'vitest';
 import '@testing-library/jest-dom';
-import { vi } from 'vitest';
 
 // Mock axios with proper error handling
 vi.mock('axios', () => {

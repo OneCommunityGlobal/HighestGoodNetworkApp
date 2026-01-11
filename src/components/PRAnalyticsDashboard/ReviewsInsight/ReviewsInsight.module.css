@@ -211,6 +211,24 @@
 }
 
 
+.reviewsSection {
+  margin-top: 40px;
+  padding-top: 40px;
+  border-top: 2px solid #e0e0e0;
+}
+
+.darkModeForeground.reviewsSection {
+  border-top-color: #444;
+}
+
+.sectionTitle {
+  font-size: 28px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 30px;
+  color: #000000;
+}
+
 @media screen and (max-width: 1080px) {
   .riGraphs {
     flex-direction: column;

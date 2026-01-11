@@ -1,0 +1,419 @@
+.chartContainer {
+  width: 100%;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 2px 2px 4px 1px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  transition: background-color 0.3s, color 0.3s;
+  height: 100%;
+  min-height: 600px;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  overflow-y: auto;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.darkContainer {
+  background-color: #1b2a41;
+  box-shadow: 2px 2px 4px 1px rgba(0, 0, 0, 0.3);
+}
+
+.chartTitle {
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 30px;
+  color: #000000;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  max-width: 100%;
+}
+
+.darkText {
+  color: #f1f1f1;
+}
+
+.filtersContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-top: 30px;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  align-items: flex-start;
+  overflow-x: hidden;
+  overflow-y: auto;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.darkFilters {
+  background-color: #1c2541;
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 200px;
+  flex: 0 1 auto;
+  max-width: 100%;
+}
+
+/* Dates filter group should take more space */
+.filterGroup:first-child {
+  flex: 1 1 auto;
+  min-width: 280px;
+}
+
+/* Category filter group */
+.filterGroup:nth-child(2) {
+  flex: 0 1 auto;
+  min-width: 200px;
+  max-width: 250px;
+}
+
+.filterLabel {
+  font-weight: 600;
+  font-size: 14px;
+  color: #333333;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
+}
+
+.darkText.filterLabel {
+  color: #ffffff;
+}
+
+.dateRangeContainer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  flex-wrap: nowrap;
+}
+
+.dateInput {
+  flex: 1;
+  min-width: 120px;
+  max-width: 160px;
+  padding: 8px 12px;
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: #ffffff;
+  color: #000000;
+  box-shadow: 2px 2px 4px 1px rgba(0, 0, 0, 0.1);
+  transition: border-color 0.3s, background-color 0.3s, color 0.3s;
+}
+
+.dateInput:hover {
+  border-color: #40a9ff;
+}
+
+.dateInput:focus {
+  outline: none;
+  border-color: #1890ff;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+
+/* Ensure dark mode styles override base styles */
+.dateInput.darkInput {
+  background-color: #1c2541 !important;
+  border-color: #34495e !important;
+  color: #f1f1f1 !important;
+}
+
+.darkInput {
+  background-color: #1c2541 !important;
+  border-color: #34495e !important;
+  color: #f1f1f1 !important;
+}
+
+.darkInput:hover {
+  border-color: #4a5568 !important;
+  background-color: #1c2541 !important;
+}
+
+.darkInput:focus {
+  border-color: #5a6578 !important;
+  box-shadow: 0 0 0 2px rgba(90, 101, 120, 0.3) !important;
+  background-color: #1c2541 !important;
+  color: #f1f1f1 !important;
+}
+
+/* Dark mode date input styling - invert calendar icon for visibility */
+.darkInput::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  cursor: pointer;
+  opacity: 1;
+}
+
+.darkInput::-webkit-datetime-edit-text,
+.darkInput::-webkit-datetime-edit-month-field,
+.darkInput::-webkit-datetime-edit-day-field,
+.darkInput::-webkit-datetime-edit-year-field {
+  color: #f1f1f1 !important;
+  background-color: transparent !important;
+}
+
+.darkInput::-webkit-datetime-edit-text:focus,
+.darkInput::-webkit-datetime-edit-month-field:focus,
+.darkInput::-webkit-datetime-edit-day-field:focus,
+.darkInput::-webkit-datetime-edit-year-field:focus {
+  background-color: rgba(90, 101, 120, 0.2) !important;
+  color: #f1f1f1 !important;
+}
+
+/* Firefox date input dark mode styling */
+.darkInput[type="date"]::-moz-placeholder {
+  color: #9ca3af;
+  opacity: 1;
+}
+
+.darkInput[type="date"]::-webkit-input-placeholder {
+  color: #9ca3af;
+  opacity: 1;
+}
+
+.darkInput[type="date"]:-ms-input-placeholder {
+  color: #9ca3af;
+  opacity: 1;
+}
+
+.darkInput[type="date"]::placeholder {
+  color: #9ca3af;
+  opacity: 1;
+}
+
+/* Force dark color scheme for native calendar popup */
+.darkInput[type="date"],
+.darkInput[type="date"].calendar-icon-dark {
+  color-scheme: dark !important;
+}
+
+/* Additional dark mode styling for date inputs */
+.darkInput[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1) brightness(1.2);
+  cursor: pointer;
+  opacity: 1;
+}
+
+/* Global styles for native calendar popup in dark mode */
+/* Note: Native date picker popup styling is browser-specific and limited */
+/* The color-scheme: dark property hints to the browser to use dark theme */
+
+.dateSeparator {
+  font-weight: 500;
+  color: #666666;
+  white-space: nowrap;
+}
+
+.darkText.dateSeparator {
+  color: #cccccc;
+}
+
+.categorySelect {
+  width: 100%;
+  min-width: 180px;
+  max-width: 220px;
+  padding: 8px 12px;
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: #ffffff;
+  color: #000000;
+  box-shadow: 2px 2px 4px 1px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: border-color 0.3s;
+}
+
+.categorySelect:hover {
+  border-color: #40a9ff;
+}
+
+.categorySelect:focus {
+  outline: none;
+  border-color: #1890ff;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+
+.darkSelect {
+  background-color: #1c2541;
+  border-color: #34495e;
+  color: #f1f1f1;
+}
+
+.darkSelect:hover {
+  border-color: #4a5568;
+}
+
+.darkSelect:focus {
+  border-color: #5a6578;
+  box-shadow: 0 0 0 2px rgba(90, 101, 120, 0.3);
+}
+
+.multiSelect {
+  width: 100%;
+}
+
+.chartWrapper {
+  width: 100%;
+  flex: 1;
+  margin-top: 30px;
+  margin-bottom: 0;
+  min-height: 400px;
+  position: relative;
+  overflow-x: auto;
+  overflow-y: hidden;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.customTooltip {
+  background-color: rgba(255, 255, 255, 0.95);
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.darkTooltip {
+  background-color: rgba(28, 37, 65, 0.95);
+  border-color: #444;
+  color: #f1f1f1;
+}
+
+.tooltipLabel {
+  font-weight: bold;
+  margin-bottom: 5px;
+  font-size: 14px;
+  color: #000000;
+}
+
+.darkTooltip .tooltipLabel {
+  color: #f1f1f1;
+}
+
+.tooltipTotal {
+  font-weight: bold;
+  margin-top: 5px;
+  padding-top: 5px;
+  border-top: 1px solid #ddd;
+  color: #000000;
+}
+
+.darkTooltip .tooltipTotal {
+  border-top-color: #555;
+  color: #f1f1f1;
+}
+
+/* Standardized graph size to match other graphs on dashboard */
+@media (min-width: 768px) {
+  .chartContainer {
+    min-height: 600px;
+  }
+  
+  .chartWrapper {
+    min-height: 500px;
+    height: 500px;
+  }
+}
+
+/* Mobile responsive styles */
+@media (max-width: 768px) {
+  .chartContainer {
+    padding: 15px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .chartWrapper {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    min-height: 400px;
+    box-sizing: border-box;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .chartTitle {
+    font-size: 20px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+    padding: 0 10px;
+    box-sizing: border-box;
+  }
+
+  .filtersContainer {
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .filterGroup {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  .filterLabel {
+    max-width: 100%;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    box-sizing: border-box;
+  }
+
+  .dateRangeContainer {
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .dateInput {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .dateSeparator {
+    align-self: center;
+    margin: 5px 0;
+  }
+
+  .categorySelect {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .multiSelect {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+}
