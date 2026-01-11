@@ -187,16 +187,42 @@
   box-shadow: 0 2px 8px var(--shadow-color);
 }
 
-.statsCard h3 {
+.statsValue {
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.statsCardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   margin-bottom: 8px;
-  font-size: 1rem;
+}
+
+.statsCardHeader h3 {
+  margin-bottom: 0;
+  font-size: 0.9rem;
   font-weight: 500;
   color: var(--text-color);
 }
 
-.statsValue {
-  font-size: 1.3rem;
-  font-weight: 700;
+.infoIconWrapper {
+  display: flex;
+  align-items: center;
+  cursor: help;
+  color: var(--border-color);
+  transition: color 0.2s ease;
+}
+
+.infoIconWrapper:hover, 
+.infoIconWrapper:focus {
+  color: var(--heading-color);
+  outline: none;
+}
+
+.infoIcon {
+  font-size: 0.85rem;
 }
 
 /* ======================================
@@ -276,12 +302,6 @@
   cursor: pointer;
   transition: background-color 0.2s ease, transform 0.1s ease;
   margin-top: 10px;
-}
-
-@media (min-width: 500px) {
-  .exportBtn {
-    margin-top: 0;
-  }
 }
 
 .exportBtn:hover {
@@ -385,10 +405,21 @@
 }
 
 /* ======================================
-   11) RESPONSIVE ADJUSTMENTS
+   11) MEDIA QUERIES
    ====================================== */
+@media (min-width: 600px) {
+  .searchContainer {
+    margin-top: 0;
+  }
+}
+
+@media (min-width: 500px) {
+  .exportBtn {
+    margin-top: 0;
+  }
+}
+
 @media (max-width: 750px) {
-  /* Stack chart + stats vertically */
   .statsChartContainer {
     flex-direction: column;
     align-items: center;
