@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { MultiSelect } from 'react-multi-select-component';
 import { Button, Row, Col, FormGroup } from 'reactstrap';
-import mainStyles from './WeeklySummariesReport.module.css';
+import mainStyles from '../WeeklySummariesReport.module.css';
 import WeeklySummariesToggleFilter from './WeeklySummariesToggleFilter.jsx';
 import { setField, removeItemFromField } from '~/utils/stateHelper';
 
