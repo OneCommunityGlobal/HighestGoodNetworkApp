@@ -54,6 +54,7 @@ export const convertToUserTimezone = (dateString, userTimezone) => {
     try {
       return new Date(dateString);
     } catch (fallbackError) {
+      console.error('Error in fallback date conversion:', fallbackError);
       return new Date();
     }
   }
@@ -100,11 +101,12 @@ export const formatDateTimeWithTimezone = (dateString, userTimezone) => {
       // Fallback if timezone not available
       try {
         const date = new Date(dateString);
-        if (isNaN(date.getTime())) {
+        if (Number.isNaN(date.getTime())) {
           return 'Invalid time';
         }
         return moment(date).format('h:mm A');
       } catch (error) {
+        console.error('Error formatting time without timezone:', error);
         return 'Time not set';
       }
     }
