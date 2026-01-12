@@ -2,7 +2,6 @@
 
 #root {
   background-color: #ffffff !important;
-}
 
 /* Global Dark Mode Styles */
 body.dark-mode,
@@ -345,17 +344,23 @@ body.bm-dashboard-dark .page-item.active .page-link {
 
 /* Fix the position of the header at the top */
 .top {
-  position: fixed;
-  right: 10px;
-  bottom: 10px;
-}
+    position: fixed;
+    right: 10px;
+    bottom: 10px;
+  }
+  
+  /* Allow the page content to scroll horizontally */
+  .container-fluid {
+    overflow-x: auto;
+  }
+  
+  /* Hide the horizontal scrollbar */
+  .container-fluid::-webkit-scrollbar {
+    display: none;
+  }
 
-/* Allow the page content to scroll horizontally */
-.container-fluid {
-  overflow-x: auto;
+  .tab-content {
+  background-color: transparent;
+  border: none;
 }
-
-/* Hide the horizontal scrollbar */
-.container-fluid::-webkit-scrollbar {
-  display: none;
 }
