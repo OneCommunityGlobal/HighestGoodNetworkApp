@@ -152,6 +152,14 @@
   margin-bottom: 0px !important;
 }
 
+.reactCalendarDarkMode :global(.react-calendar__navigation) {
+  background: #1e293b;
+}
+
+.reactCalendarDarkMode :global(.react-calendar__navigation button) {
+  color: #ffffff;
+}
+
 .reactCalendar :global(.react-calendar__tile) {
   display: grid;
   height: 100px;
@@ -359,11 +367,6 @@
 .reactCalendar :global(.react-calendar__tile--now) :global(abbr),
 .reactCalendar :global(.react-calendar__tile--now) {
   color: #856404 !important;
-}
-
-.reactCalendarDarkMode :global(.react-calendar__tile--now) {
-  background-color: #3d4a5c !important;
-  color: #fff;
 }
 
 .reactCalendarDarkMode :global(.react-calendar__tile--now) :global(abbr),
