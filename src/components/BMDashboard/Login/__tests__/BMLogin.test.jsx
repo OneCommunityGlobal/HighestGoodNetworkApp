@@ -62,6 +62,12 @@ const renderComponent = testStore => {
   );
 };
 
+const fillAndSubmit = ({ email = 'test@gmail.com', password = 'Test12345' } = {}) => {
+  fireEvent.change(screen.getByLabelText(/email/i), { target: { value: email } });
+  fireEvent.change(screen.getByLabelText(/password/i), { target: { value: password } });
+  fireEvent.click(screen.getByText('Submit'));
+};
+
 describe('BMLogin component', () => {
   it('renders without crashing', () => {
     renderComponent(store);
@@ -119,9 +125,7 @@ describe('BMLogin component', () => {
 
   it('shows validation error for invalid email', () => {
     renderComponent(store);
-    fireEvent.change(screen.getByLabelText(/email/i), { target: { value: 'test' } });
-    fireEvent.change(screen.getByLabelText(/password/i), { target: { value: '12' } });
-    fireEvent.click(screen.getByText('Submit'));
+    fillAndSubmit({ email: 'test', password: '12' });
 
     expect(screen.getByLabelText(/email/i)).toBeInvalid();
     expect(screen.getByText('"email" must be a valid email')).toBeInTheDocument();
@@ -129,9 +133,7 @@ describe('BMLogin component', () => {
 
   it('shows validation error for short password', () => {
     renderComponent(store);
-    fireEvent.change(screen.getByLabelText(/email/i), { target: { value: 'test@gmail.com' } });
-    fireEvent.change(screen.getByLabelText(/password/i), { target: { value: '12' } });
-    fireEvent.click(screen.getByText('Submit'));
+    fillAndSubmit({ password: '12' });
 
     expect(screen.getByLabelText(/password/i)).toBeInvalid();
     expect(
@@ -146,9 +148,7 @@ describe('BMLogin component', () => {
     }));
 
     renderComponent(store);
-    fireEvent.change(screen.getByLabelText(/email/i), { target: { value: 'test@gmail.com' } });
-    fireEvent.change(screen.getByLabelText(/password/i), { target: { value: 'Test12345' } });
-    fireEvent.click(screen.getByText('Submit'));
+    fillAndSubmit();
 
     await waitFor(() => {
       expect(history.push).toHaveBeenCalledWith('/bmdashboard');
@@ -163,9 +163,7 @@ describe('BMLogin component', () => {
     }));
 
     renderComponent(store);
-    fireEvent.change(screen.getByLabelText(/email/i), { target: { value: 'test@gmail.com' } });
-    fireEvent.change(screen.getByLabelText(/password/i), { target: { value: 'Test12345' } });
-    fireEvent.click(screen.getByText('Submit'));
+    fillAndSubmit();
 
     await waitFor(() => {
       expect(screen.getByText('User not found')).toBeInTheDocument();
@@ -180,9 +178,7 @@ describe('BMLogin component', () => {
     }));
 
     renderComponent(store);
-    fireEvent.change(screen.getByLabelText(/email/i), { target: { value: 'test@gmail.com' } });
-    fireEvent.change(screen.getByLabelText(/password/i), { target: { value: 'Test12345' } });
-    fireEvent.click(screen.getByText('Submit'));
+    fillAndSubmit();
 
     await waitFor(() => {
       expect(screen.queryByText(/invalid/i)).not.toBeInTheDocument();
@@ -197,9 +193,7 @@ describe('BMLogin component', () => {
     }));
 
     renderComponent(store);
-    fireEvent.change(screen.getByLabelText(/email/i), { target: { value: 'test@gmail.com' } });
-    fireEvent.change(screen.getByLabelText(/password/i), { target: { value: 'Test12345' } });
-    fireEvent.click(screen.getByText('Submit'));
+    fillAndSubmit();
 
     await waitFor(() => {
       expect(screen.queryByText(/invalid/i)).not.toBeInTheDocument();
