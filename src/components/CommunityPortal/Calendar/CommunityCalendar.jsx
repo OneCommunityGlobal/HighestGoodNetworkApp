@@ -17,6 +17,7 @@ function CommunityCalendar() {
   const [showEventModal, setShowEventModal] = useState(false);
   const [overflowDate, setOverflowDate] = useState(null);
   const popupRef = useRef(null);
+  const [calendarView, setCalendarView] = useState('month');
 
   const currentDate = new Date();
   const currentMonth = currentDate.getMonth();
@@ -170,6 +171,96 @@ function CommunityCalendar() {
     'Full Event': 'statusFull',
   };
 
+  function WeeklyTimeGrid({ events, selectedDate, onEventClick, darkMode }) {
+    const hours = Array.from({ length: 24 }, (_, i) => i);
+
+    // Find the Sunday of the currently selected week
+    const startOfWeek = useMemo(() => {
+      const d = new Date(selectedDate);
+      const day = d.getDay(); // 0 (Sun) to 6 (Sat)
+      d.setDate(d.getDate() - day);
+      return d;
+    }, [selectedDate]);
+
+    // Create an array of 7 Date objects for the header
+    const weekDays = useMemo(() => {
+      return Array.from({ length: 7 }, (_, i) => {
+        const day = new Date(startOfWeek);
+        day.setDate(startOfWeek.getDate() + i);
+        return day;
+      });
+    }, [startOfWeek]);
+
+    return (
+      <div className={`${styles.weekGridContainer} ${darkMode ? styles.weekGridDark : ''}`}>
+        {/* HEADER: Day Names and Numbers */}
+        <div className={styles.weekGridHeader}>
+          <div className={styles.timeGutter}></div>
+          {weekDays.map(date => (
+            <div key={date.toString()} className={styles.dayColumnHeader}>
+              <div className={styles.dayLabel}>
+                {date.toLocaleDateString('en-US', { weekday: 'short' })}
+              </div>
+              <div className={styles.dateLabel}>{date.getDate()}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* BODY: Time Rows */}
+        <div className={styles.weekGridBody}>
+          {hours.map(hour => (
+            <div key={hour} className={styles.hourRow}>
+              <div className={styles.timeLabel}>
+                {hour === 0
+                  ? '12 AM'
+                  : hour > 12
+                  ? `${hour - 12} PM`
+                  : hour === 12
+                  ? '12 PM'
+                  : `${hour} AM`}
+              </div>
+              {weekDays.map(date => {
+                // Filter events that happen on THIS day at THIS hour
+                const cellEvents = events.filter(e => {
+                  const eventDate = new Date(e.date);
+                  // Check if date matches and if the hour in "10:00 AM" matches our current row
+                  const eventHour = parseInt(e.time.split(':')[0]);
+                  const isPM = e.time.toLowerCase().includes('pm');
+                  const normalizedEventHour =
+                    isPM && eventHour !== 12
+                      ? eventHour + 12
+                      : !isPM && eventHour === 12
+                      ? 0
+                      : eventHour;
+
+                  return (
+                    eventDate.toDateString() === date.toDateString() && normalizedEventHour === hour
+                  );
+                });
+
+                return (
+                  <div key={date.toString()} className={styles.gridCell}>
+                    {cellEvents.map(event => (
+                      <button
+                        key={event.id}
+                        type="button"
+                        className={styles.gridEvent}
+                        onClick={() => onEventClick(event)}
+                      >
+                        <div className={styles.gridEventTime}>{event.time}</div>
+                        <div className={styles.gridEventTitle}>{event.title}</div>
+                      </button>
+                    ))}
+                  </div>
+                );
+              })}
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   // Render event tiles
   const tileContent = useCallback(
     ({ date, view }) => {
@@ -189,20 +280,24 @@ function CommunityCalendar() {
                 key={e.id}
                 type="button"
                 className={`${styles.eventItem} ${styles[statusKey] || ''}`}
-                onClick={() => handleEventClick(e)}
+                onClick={e_obj => {
+                  e_obj.stopPropagation();
+                  handleEventClick(e);
+                }}
                 title={e.title}
               >
                 {e.title}
               </button>
             );
           })}
-
           {hiddenCount > 0 && (
             <button
               type="button"
               className={styles.moreEvents}
-              onClick={() => setOverflowDate(date)}
-              title="View all events"
+              onClick={e_obj => {
+                e_obj.stopPropagation();
+                setOverflowDate(date);
+              }}
             >
               +{hiddenCount} more
             </button>
@@ -317,6 +412,16 @@ function CommunityCalendar() {
       <header className={calendarClasses.header}>
         <h1>Community Calendar</h1>
         <div className={calendarClasses.filters}>
+          <select
+            value={calendarView}
+            onChange={e => setCalendarView(e.target.value)}
+            className={styles.viewSelector}
+          >
+            <option value="month">Day View (Month)</option>
+            <option value="week">Week View (Time Grid)</option>
+            <option value="year">Month View (Year)</option>
+            <option value="decade">Year View (Decade)</option>
+          </select>
           <select value={filter.type} onChange={handleFilterChange('type')}>
             <option value="all">All Types</option>
             {uniqueFilterValues.types.map(t => (
@@ -346,13 +451,25 @@ function CommunityCalendar() {
             <CalendarActivitySection />
           </div>
           <div className={calendarClasses.calendarSection}>
-            <ReactCalendar
-              className={calendarClasses.reactCalendar}
-              tileContent={tileContent}
-              tileClassName={tileClassName}
-              onClickDay={handleDateSelect}
-              value={selectedDate}
-            />
+            {calendarView === 'week' ? (
+              <WeeklyTimeGrid
+                events={filteredEvents}
+                selectedDate={selectedDate}
+                onEventClick={handleEventClick}
+                darkMode={darkMode}
+              />
+            ) : (
+              <ReactCalendar
+                className={calendarClasses.reactCalendar}
+                tileContent={tileContent}
+                tileClassName={tileClassName}
+                onClickDay={handleDateSelect}
+                value={selectedDate}
+                view={calendarView}
+                onViewChange={({ view }) => setCalendarView(view)}
+              />
+            )}
+
             <section
               className={`${styles.selectedDatePanel} ${
                 darkMode ? styles.selectedDatePanelDarkMode : ''
