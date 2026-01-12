@@ -102,16 +102,9 @@
   color: #ffffff !important;
 }
 
-/* Labels: JSX uses global class `filter`, so target it globally */
-:global(.darkMode .filter label) {
-  color: #ffffff !important;
-}
+
 
 /* DatePicker input: keep same dark background + white text */
-:global(.darkMode .react-datepicker__input-container input) {
-  background-color: #2b3e59 !important;
-  color: #ffffff !important;
-}
 
 /* Selected value text → BLACK in dark mode */
 :global(.darkMode .injury-select__single-value),
@@ -135,10 +128,7 @@
   width: 100%;
 }
 
-/* Match input widths */
-:global(.filter .react-datepicker__input-container input) {
-  width: 100%;
-}
+
 :global(.filter .react-datepicker__input-container input) {
   width: 180px;
   max-width: 180px;
@@ -147,9 +137,7 @@
 :global(.filter .injurySelect__control) {
   width: 100%;
 }
-:global(.darkMode .injurySelect__single-value) {
-  color: #000000 !important;
-}
+
 
 :global(.darkMode .injurySelect__multi-value__label) {
   color: #000000 !important;
