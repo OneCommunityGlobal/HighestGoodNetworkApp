@@ -183,9 +183,6 @@ function IssueChart() {
         datalabels: {
           display: false,
         },
-        datalabels: {
-          display: false,
-        },
         xAxisBackground: true,
       },
       scales: {
@@ -200,9 +197,9 @@ function IssueChart() {
           grid: { display: false },
           barPercentage: 0.9,
           categoryPercentage: 0.8,
-          ticks: { stepSize: 1, color: darkMode ? '#cfd7e3' : '#232323' },
           ticks: {
             color: darkMode ? '#e8f0fe' : '#1a1a1a',
+            stepSize: 1,
             padding: 8,
             align: 'center',
             autoSkip: false,
