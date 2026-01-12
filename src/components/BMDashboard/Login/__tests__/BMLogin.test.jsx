@@ -20,6 +20,7 @@ const mockStore = configureStore([thunk]);
 let store;
 
 const TEST_PASSWORD = 'test-password'; // NOSONAR - test-only credential
+const SHORT_PASSWORD = '12'; // NOSONAR - test-only invalid password
 
 beforeEach(() => {
   store = mockStore({
@@ -127,7 +128,7 @@ describe('BMLogin component', () => {
 
   it('shows validation error for invalid email', () => {
     renderComponent(store);
-    fillAndSubmit({ email: 'test', password: '12' });
+    fillAndSubmit({ email: 'test', password: SHORT_PASSWORD });
 
     expect(screen.getByLabelText(/email/i)).toBeInvalid();
     expect(screen.getByText('"email" must be a valid email')).toBeInTheDocument();
@@ -135,7 +136,7 @@ describe('BMLogin component', () => {
 
   it('shows validation error for short password', () => {
     renderComponent(store);
-    fillAndSubmit({ password: '12' });
+    fillAndSubmit({ password: SHORT_PASSWORD });
 
     expect(screen.getByLabelText(/password/i)).toBeInvalid();
     expect(
