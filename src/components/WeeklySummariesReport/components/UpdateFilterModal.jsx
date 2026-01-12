@@ -16,10 +16,16 @@ import {
 
 import { ENDPOINTS } from '~/utils/URL';
 import Select from 'react-select';
-import mainStyles from './WeeklySummariesReport.module.css';
+import mainStyles from '../WeeklySummariesReport.module.css';
 import { setField } from '~/utils/stateHelper';
 import FilterPreviewForm from './FilterPreviewForm';
 import FilterEditForm from './FilterEditForm';
+import DeleteFilterConfirmationModal from './DeleteFilterConfirmationModal';
+import {
+  useDeleteWeeklySummariesFilterMutation,
+  useUpdateWeeklySummariesFilterMutation,
+} from '../../../actions/weeklySummariesFilterAction';
+import { normalizeFilter } from '~/utils/weeklySummariesFilterHelper';
 
 const defaultState = {
   filterName: '',
@@ -47,19 +53,23 @@ export default function UpdateFilterModal({
   darkMode,
   hasPermissionToFilter,
   canSeeBioHighlight,
-  refetchFilters,
   teamCodes,
   colorOptions,
   tableData,
   summaries,
   teamCodeWarningUsers,
   memberDict,
+  currentAppliedFilter,
+  applyFilter,
 }) {
   const [state, setState] = useState(defaultState);
   const [update, setUpdate] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+
+  const [updateFilter] = useUpdateWeeklySummariesFilterMutation();
+  const [deleteFilter] = useDeleteWeeklySummariesFilterMutation();
 
   const deleteModalToggle = () => setDeleteModalOpen(!deleteModalOpen);
 
@@ -172,34 +182,19 @@ export default function UpdateFilterModal({
         };
 
         try {
-          const res = await axios.patch(
-            ENDPOINTS.WEEKLY_SUMMARIES_FILTER_BY_ID(selectedFilter.value),
+          const res = await updateFilter({
+            id: selectedFilter.value,
             data,
-          );
-          if (res.status < 200 || res.status >= 300) {
-            toast.error(`Failed to save new filter. Status ${res.status}`);
-          } else {
-            toast.success(`Successfully update filter ${selectedFilter.label}`);
-          }
-          await refetchFilters();
-        } catch (error) {
-          toast.error(`Failed to save new filter. Error ${error}`);
-        }
+          }).unwrap(); // unwrap = throw exception if error
 
-        setSelectedFilter(prev => ({
-          ...prev,
-          label: data.filterName,
-          filterData: {
-            filterName: data.filterName,
-            selectedCodes: new Set(data.selectedCodes),
-            selectedColors: new Set(data.selectedColors),
-            selectedExtraMembers: new Set(data.selectedExtraMembers),
-            selectedTrophies: data.selectedTrophies,
-            selectedSpecialColors: data.selectedSpecialColors,
-            selectedBioStatus: data.selectedBioStatus,
-            selectedOverTime: data.selectedOverTime,
-          },
-        }));
+          toast.success(`Successfully updated filter ${selectedFilter.label}`);
+          if (currentAppliedFilter && selectedFilter.value === currentAppliedFilter.value) {
+            applyFilter(normalizeFilter(res));
+          }
+          setSelectedFilter(normalizeFilter(res));
+        } catch (error) {
+          toast.error(`Failed to save new filter. Error: ${error}`);
+        }
 
         setIsProcessing(false);
         setUpdate(false);
@@ -214,15 +209,15 @@ export default function UpdateFilterModal({
   const handleDelete = async () => {
     setIsProcessing(true);
     try {
-      const res = await axios.delete(ENDPOINTS.WEEKLY_SUMMARIES_FILTER_BY_ID(selectedFilter.value));
-      if (res.status < 200 || res.status >= 300) {
-        toast.error(`Failed to delete filter. Status ${res.status}`);
-      } else {
-        toast.success(`Successfully delete filter ${selectedFilter.label}`);
-      }
-      await refetchFilters();
+      const res = await deleteFilter({
+        id: selectedFilter.value,
+      }).unwrap(); // unwrap = throw exception if error
+
+      toast.success(`Successfully deleted filter ${selectedFilter.label}`);
+
+      // refetch();
     } catch (error) {
-      toast.error(`Failed to delete filter. Error ${error}`);
+      toast.error(`Failed to delete filter. Error: ${JSON.stringify(error)}`);
     }
     setSelectedFilter(null);
     setIsProcessing(false);
@@ -381,35 +376,14 @@ export default function UpdateFilterModal({
         </ModalFooter>
       </Modal>
 
-      <Modal
-        isOpen={deleteModalOpen}
-        toggle={deleteModalToggle}
-        className={`${darkMode ? mainStyles.darkModal : ''}`}
-      >
-        <ModalHeader toggle={deleteModalToggle}>Confirm Delete</ModalHeader>
-        <ModalBody>
-          {isProcessing ? (
-            <div className="d-flex align-items-center">
-              <Spinner size="sm" color="danger" className="mr-2" />
-              Deleting...
-            </div>
-          ) : (
-            `Are you sure you want to delete filter ${selectedFilter ? selectedFilter.label : ''}?`
-          )}
-        </ModalBody>
-        <ModalFooter>
-          {!isProcessing && (
-            <>
-              <Button color="secondary" onClick={deleteModalToggle}>
-                Cancel
-              </Button>
-              <Button color="danger" onClick={handleDelete}>
-                Yes, Delete
-              </Button>
-            </>
-          )}
-        </ModalFooter>
-      </Modal>
+      <DeleteFilterConfirmationModal
+        deleteModalOpen={deleteModalOpen}
+        deleteModalToggle={deleteModalToggle}
+        selectedFilter={selectedFilter}
+        handleDelete={handleDelete}
+        isProcessing={isProcessing}
+        darkMode={darkMode}
+      />
     </>
   );
 }
