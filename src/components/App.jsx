@@ -12,6 +12,7 @@ import Loading from './common/Loading';
 import '../App.css';
 import { initMessagingSocket } from '../utils/messagingSocket';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import ThemeManager from './common/ThemeManager';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -228,6 +229,7 @@ class App extends Component {
           <QueryClientProvider client={queryClient}>
             <ModalProvider>
               <Router>
+                <ThemeManager />
                 <UpdateDocumentTitle />
                 {routes}
               </Router>
