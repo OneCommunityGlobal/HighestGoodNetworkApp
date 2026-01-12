@@ -4,6 +4,7 @@ import { Bar } from 'react-chartjs-2';
 import Select from 'react-select';
 import { fetchIssues } from '../../../actions/bmdashboard/issueChartActions';
 import 'chart.js/auto';
+import { Chart as ChartJS } from 'chart.js';
 import styles from './issueChart.module.css';
 
 function IssueChart() {
@@ -12,6 +13,7 @@ function IssueChart() {
   const { loading, issues, error } = useSelector(state => state.bmissuechart);
 
   const [filters, setFilters] = useState({ issueTypes: [], years: [] });
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 640);
 
   useEffect(() => {
     dispatch(fetchIssues());
@@ -30,6 +32,15 @@ function IssueChart() {
       setFilters({ issueTypes: allIssueTypes, years: allYears });
     }
   }, [issues]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 640);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const extractDropdownOptions = () => {
     const issueTypes = [...new Set(Object.keys(issues || {}))].map(issue => ({
@@ -85,17 +96,56 @@ function IssueChart() {
       label: year.toString(),
       data: labels.map(issueType => issues[issueType]?.[year] || 0),
       backgroundColor: yearColorMap[year],
-      borderWidth: 1,
+      borderColor: darkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.3)',
+      borderWidth: 1.5,
       borderRadius: 6,
     }));
 
     return { labels, datasets };
-  }, [issues, filters, uniqueYears, yearColorMap]);
+  }, [issues, filters, uniqueYears, yearColorMap, darkMode]);
+
+  const xAxisBackgroundPlugin = darkMode => ({
+    id: 'xAxisBackground',
+    beforeDraw: chart => {
+      const { ctx, chartArea, scales } = chart;
+      const xScale = scales.x;
+      if (!xScale) return;
+
+      ctx.save();
+
+      const ticks = xScale.ticks.length;
+
+      xScale.ticks.forEach((_, index) => {
+        // Shade ONLY alternate labels: one shaded, one normal
+        if (index % 2 !== 0) return;
+
+        const center = xScale.getPixelForTick(index);
+
+        const left = index === 0 ? xScale.left : (xScale.getPixelForTick(index - 1) + center) / 2;
+
+        const right =
+          index === ticks - 1 ? xScale.right : (center + xScale.getPixelForTick(index + 1)) / 2;
+
+        ctx.fillStyle = darkMode
+          ? 'rgba(255,255,255,0.05)' // dark mode band
+          : 'rgba(0,0,0,0.08)'; // light mode band (more visible)
+
+        ctx.fillRect(left, chartArea.top, right - left, chartArea.bottom - chartArea.top);
+      });
+
+      ctx.restore();
+    },
+  });
 
   const chartOptions = useMemo(
     () => ({
       responsive: true,
       maintainAspectRatio: false,
+      layout: {
+        padding: {
+          bottom: 56,
+        },
+      },
       plugins: {
         legend: {
           display: true,
@@ -134,9 +184,14 @@ function IssueChart() {
           titleAlign: 'left',
           bodyAlign: 'left',
         },
+        datalabels: {
+          display: false,
+        },
+        xAxisBackground: true,
       },
       scales: {
         x: {
+          offset: true,
           title: {
             display: true,
             text: 'Issue Type',
@@ -151,10 +206,36 @@ function IssueChart() {
           barPercentage: 0.9,
           categoryPercentage: 0.8,
           ticks: {
-            stepSize: 1,
             color: darkMode ? '#e8f0fe' : '#1a1a1a',
-            font: { size: 12, weight: '500' },
             padding: 8,
+            align: 'center',
+            autoSkip: false,
+            maxRotation: isMobile ? 90 : 0,
+            minRotation: isMobile ? 90 : 0,
+            font: { size: 12, weight: '500' },
+            callback: (value, index, ticks) => {
+              const label = chartData?.labels?.[index] ?? ticks?.[index]?.label ?? String(value);
+              if (isMobile) return label;
+
+              const maxCharsPerLine = 12;
+              if (label.length <= maxCharsPerLine) return label;
+
+              const words = label.split(' ');
+              const lines = [];
+              let currentLine = '';
+
+              words.forEach(word => {
+                if ((currentLine + ' ' + word).trim().length <= maxCharsPerLine) {
+                  currentLine = (currentLine + ' ' + word).trim();
+                } else {
+                  lines.push(currentLine);
+                  currentLine = word;
+                }
+              });
+
+              if (currentLine) lines.push(currentLine);
+              return lines;
+            },
           },
           border: {
             color: darkMode ? '#4a5568' : '#e2e8f0',
@@ -192,8 +273,10 @@ function IssueChart() {
         mode: 'index',
       },
     }),
-    [darkMode],
+    [darkMode, isMobile],
   );
+
+  const chartPlugins = useMemo(() => [xAxisBackgroundPlugin(darkMode)], [darkMode]);
 
   const selectStyles = useMemo(() => {
     if (!darkMode) return {};
@@ -361,10 +444,21 @@ function IssueChart() {
 
         {!loading && !error && (
           <div
-            className={`${styles.chartWrapper} ${darkMode ? styles.chartWrapperDark : ''}`}
-            style={{ minHeight: 400 }}
+            className={`${styles.issueChartYearGroup} ${styles.issueTypeGroup} ${
+              darkMode ? styles.issueChartYearGroupDark : ''
+            }`}
           >
-            <Bar data={chartData} options={chartOptions} aria-labelledby="chart-title" />
+            <div
+              className={`${styles.chartWrapper} ${darkMode ? styles.chartWrapperDark : ''}`}
+              style={{ minHeight: 420, paddingBottom: 12 }}
+            >
+              <Bar
+                data={chartData}
+                options={chartOptions}
+                plugins={chartPlugins}
+                aria-labelledby="chart-title"
+              />
+            </div>
           </div>
         )}
       </div>
