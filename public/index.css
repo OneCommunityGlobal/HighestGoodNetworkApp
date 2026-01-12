@@ -1,5 +1,10 @@
 /* public/index.css */
 
+.tab-content {
+  background-color: transparent !important;
+  border: none;
+}
+
 /* Global Dark Mode Styles */
 body.dark-mode,
 body.bm-dashboard-dark {
