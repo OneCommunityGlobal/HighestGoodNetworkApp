@@ -64,8 +64,8 @@
   padding: 8px 12px;
   border-radius: 6px;
   border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 6px 0;
+  /* border-radius: 8px;
+  padding: 6px 0; */
   z-index: 999;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
   animation: fadeInDropdown 0.12s ease-in-out;
