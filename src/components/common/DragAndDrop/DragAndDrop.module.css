@@ -1,15 +1,15 @@
-#file-upload-form{
+.fileUploadForm {
   height: 16rem;
   width: 100%;
   text-align: center;
   position: relative;
 }
 
-#file-upload-input{
-    display: none;
+.fileUploadInput {
+  display: none;
 }
 
-#file-upload-label{
+.fileUploadLabel {
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -22,23 +22,22 @@
   background-color: #ffffff;
 }
 
-#file-upload-label.drag-active{
+.dragActive {
   background-color: #f8fafc;
 }
 
-#drag-file-element {
+.dragFileElement {
   position: absolute;
   width: 100%;
   height: 100%;
   border-radius: 1rem;
-  top: 0px;
-  right: 0px;
-  bottom: 0px;
-  left: 0px;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
 }
 
-
-.upload-button {
+.uploadButton {
   cursor: pointer;
   padding: 0.25rem;
   font-size: 1rem;
@@ -47,14 +46,11 @@
   background-color: transparent;
 }
 
-.upload-button:hover {
+.uploadButton:hover {
   text-decoration-line: underline;
 }
 
-/* .file-preview-container{
-  display: flex;
-  flex-direction: row;
-  gap: 0.5rem;
-  width: 100%;
-  height: 10vh; 
-} */
+.fileUploadIcon {
+  font-size: 2rem;
+  margin-bottom: 8px;
+}
