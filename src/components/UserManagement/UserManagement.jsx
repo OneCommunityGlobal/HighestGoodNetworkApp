@@ -35,7 +35,7 @@ import UserSearchPanel from './UserSearchPanel';
 import NewUserPopup from './NewUserPopup';
 import ActivationDatePopup from './ActivationDatePopup';
 import { UserStatus, UserDeleteType, FinalDay } from '../../utils/enums';
-import hasPermission, { cantDeactivateOwner } from '../../utils/permissions';
+import hasPermission, {cantDeactivateOwner, cantUpdateDevAdminDetails } from '../../utils/permissions';
 // Commented out because it's not used
 // import { searchWithAccent } from '../../utils/search';
 import SetupHistoryPopup from './SetupHistoryPopup';
@@ -44,7 +44,6 @@ import ActiveInactiveConfirmationPopup from './ActiveInactiveConfirmationPopup';
 import SetUpFinalDayPopUp from './SetUpFinalDayPopUp';
 import LogTimeOffPopUp from './logTimeOffPopUp';
 import SetupNewUserPopup from './setupNewUserPopup';
-import { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
 
 class UserManagement extends React.PureComponent {
@@ -488,8 +487,8 @@ class UserManagement extends React.PureComponent {
       }
       return;
     }
-    if (status === FinalDay.NotSetFinalDay) {
-      this.props.updateUserFinalDayStatusIsSet(user, 'Active', undefined, FinalDay.NotSetFinalDay);
+    if (status === FinalDay.RemoveFinalDay) {
+      this.props.updateUserFinalDayStatusIsSet(user, 'Active', undefined, FinalDay.RemoveFinalDay);
     } else {
       this.setState({
         finalDayDateOpen: true,
@@ -842,7 +841,7 @@ class UserManagement extends React.PureComponent {
     return (
       <Container
         fluid
-        className={darkMode ? ' bg-oxford-blue text-light' : ''}
+        className={darkMode ? ' bg-oxford-blue text-light p-3' : 'p-3'}
         style={{ minHeight: '100%' }}
       >
         {/* {fetching ? (

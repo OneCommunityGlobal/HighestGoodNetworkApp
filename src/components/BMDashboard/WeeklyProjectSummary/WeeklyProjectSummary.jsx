@@ -8,11 +8,16 @@ import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
 import PaidLaborCost from './PaidLaborCost/PaidLaborCost';
 import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
 import QuantityOfMaterialsUsed from './QuantityOfMaterialsUsed/QuantityOfMaterialsUsed';
+import InjuryCategoryBarChart from './GroupedBarGraphInjurySeverity/InjuryCategoryBarChart';
 import ToolsHorizontalBarChart from './Tools/ToolsHorizontalBarChart';
 import ExpenseBarChart from './Financials/ExpenseBarChart';
 import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
 import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMaterialCostPerProject';
 import styles from './WeeklyProjectSummary.module.css';
+import OpenIssueCharts from '../Issues/openIssueCharts';
+import SupplierPerformanceGraph from './SupplierPerformanceGraph.jsx';
+import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
+import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
 import IssueCharts from '../Issues/openIssueCharts';
 
 const projectStatusButtons = [
@@ -241,7 +246,7 @@ function WeeklyProjectSummary() {
         className: 'full',
         content: (
           <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
-            <IssueCharts />
+            <OpenIssueCharts />
           </div>
         ),
       },
@@ -259,17 +264,11 @@ function WeeklyProjectSummary() {
         title: 'Lessons Learned',
         key: 'Lessons Learned',
         className: 'half',
-        content: [1, 2].map(() => {
-          const uniqueId = uuidv4();
-          return (
-            <div
-              key={uniqueId}
-              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
-            >
-              📊 Card
-            </div>
-          );
-        }),
+        content: (
+          <div className="weekly-project-summary-card normal-card" style={{ gridColumn: '1 / -1' }}>
+            <InjuryCategoryBarChart />
+          </div>
+        ),
       },
       {
         title: 'Financials',

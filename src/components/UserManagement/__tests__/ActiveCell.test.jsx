@@ -1,58 +1,61 @@
 // import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
+import { render, fireEvent, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import ActiveCell from '../ActiveCell'; // Adjust the import path as necessary.
+import userEvent from '@testing-library/user-event';
+import styles from '../../Timelog/Timelog.module.css'
 
 describe('ActiveCell', () => {
   it('renders with the correct active class', () => {
-    const { container } = render(<ActiveCell isActive canChange={false} />);
-    expect(container.firstChild).toHaveClass('activeUser');
+    render(<ActiveCell isActive canChange={false} />);
+    const cell = screen.getByTitle('Active');
+    expect(cell).toHaveClass(styles.activeUser);
   });
 
   it('renders with the correct inactive class', () => {
-    const { container } = render(<ActiveCell isActive={false} canChange={false} />);
-    expect(container.firstChild).toHaveClass('notActiveUser');
+    render(<ActiveCell isActive={false} canChange={false} />);
+    const cell = screen.getByTitle('Inactive')
+    expect(cell).toHaveClass(styles.notActiveUser);
   });
 
   it('sets the correct id when index is provided', () => {
     const index = 3;
-    const { container } = render(<ActiveCell index={index} canChange />);
-    expect(container.querySelector(`#active_cell_${index}`)).toBeInTheDocument();
+    render(<ActiveCell index={index} canChange />);
+    const cell = screen.getByTitle('Click here to change the user status');
+    expect(cell).toHaveAttribute('id', `active_cell_${index}`);
   });
 
   it('has the correct title attribute when canChange is true', () => {
-    const { getByTitle } = render(<ActiveCell canChange />);
-    expect(getByTitle('Click here to change the user status')).toBeInTheDocument();
+    render(<ActiveCell canChange />);
+    expect(screen.getByTitle('Click here to change the user status')).toBeInTheDocument();
   });
 
   it('has the correct title attribute based on isActive prop', () => {
-    const { getByTitle } = render(<ActiveCell isActive canChange={false} />);
-    expect(getByTitle('Active')).toBeInTheDocument();
+    render(<ActiveCell isActive canChange={false} />);
+    expect(screen.getByTitle('Active')).toBeInTheDocument();
   });
 
-  it('calls onClick when canChange is true and the cell is clicked', () => {
+  it('calls onClick when canChange is true and the cell is clicked', async() => {
     const mockOnClick = vi.fn();
-    const { container } = render(<ActiveCell canChange onClick={mockOnClick} />);
-
-    fireEvent.click(container.firstChild);
+    render(<ActiveCell canChange onClick={mockOnClick} />);
+    await userEvent.click(screen.getByTitle('Click here to change the user status'));
     expect(mockOnClick).toHaveBeenCalled();
   });
 
-  it('does not call onClick when canChange is false', () => {
+  it('does not call onClick when canChange is false', async() => {
     const mockOnClick = vi.fn();
-    const { container } = render(<ActiveCell canChange={false} onClick={mockOnClick} />);
-
-    fireEvent.click(container.firstChild);
+    render(<ActiveCell canChange={false} onClick={mockOnClick} />);
+    await userEvent.click(screen.getByTitle('Inactive'));
     expect(mockOnClick).not.toHaveBeenCalled();
   });
 
   it('cursor style changes based on canChange prop', () => {
     // Test when canChange is true
-    const { container: containerTrue } = render(<ActiveCell canChange />);
-    expect(containerTrue.firstChild).toHaveStyle('cursor: pointer');
+    render(<ActiveCell canChange />);
+    expect(screen.getByTitle('Click here to change the user status')).toHaveStyle('cursor: pointer');
 
     // Test when canChange is false
-    const { container: containerFalse } = render(<ActiveCell canChange={false} />);
-    expect(containerFalse.firstChild).toHaveStyle('cursor: default');
+    render(<ActiveCell canChange={false} />);
+    expect(screen.getByTitle('Inactive')).toHaveStyle('cursor: default');
   });
 });

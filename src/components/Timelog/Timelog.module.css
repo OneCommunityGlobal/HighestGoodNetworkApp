@@ -1,0 +1,368 @@
+.dateBlock {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.cardBodyShadow {
+  box-shadow: 2px 2px 4px 1px lightgray;
+}
+
+.cardHeaderShadow {
+  box-shadow: 2px 2px 4px 1px lightgray;
+  margin-bottom: 1px;
+}
+
+.cardBodyShadowDark {
+  box-shadow: 2px 2px 4px 1px #000 !important;
+}
+
+.cardHeaderShadowDark {
+  box-shadow: 2px 2px 4px 1px #000 !important;
+  margin-bottom: 1px !important;
+}
+
+.timeEntryContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.notesSection {
+  flex: 1;
+  margin-bottom: 13px;
+  overflow-wrap: break-word;
+}
+
+.buttons {
+  display: flex;
+  justify-content: flex-start;
+  gap: 10px;
+  right: 0;
+  bottom: 0;
+  position: absolute;
+}
+
+.red .progressBar {
+  background-color: red;
+}
+
+.orange .progressBar {
+  background-color: orange;
+}
+
+.green .progressBar {
+  background-color: green;
+}
+
+.blue .progressBar {
+  background-color: blue;
+}
+
+.indigo .progressBar {
+  background-color: #000066;
+}
+
+.violet .progressBar {
+  background-color: #990099;
+}
+
+.purple .progressBar {
+  background-color: #660099;
+}
+
+.navbarBorder {
+  border-radius: 5px;
+  border: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.tabPane {
+  width: 100%;
+}
+
+.searchTimeEntriesBtn {
+  margin-left: 6px;
+  margin-top: 0px;
+}
+
+.minWidth100 {
+  min-width: 100%;
+}
+
+.timelogPageContainer {
+  width: 100%;
+  padding: 0 17%;
+}
+.navLink {
+  color: #007bff;
+  background-color: transparent;
+  border: 1px solid transparent;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  /* padding: 10px; */
+  display: inline-block;
+  text-decoration: none;
+}
+
+.activeLightMode {
+  color: #495057 !important;
+  background-color: #fff !important;
+  border-color: #dee2e6 #dee2e6 #fff !important;
+}
+
+.tabContentLight {
+  margin-top: -4px !important;
+  background-color: #fff !important;
+  border: 1px solid transparent !important;
+  border-color: #fff #dee2e6 #dee2e6 !important;
+}
+
+.tabContentDark {
+  margin-top: -4px !important;
+  background-color: #1c2541 !important;/* or your dark background */
+  border: 1px solid transparent !important;
+  border-color: #1C1C1C #dee2e6 #dee2e6 !important; /* optional */
+}
+
+
+/* Dark mode default for inactive tabs */
+.darkMode {
+  background-color: #2b3e59;
+  color: #007bff;
+}
+
+/* Active tab in light mode */
+.active {
+  background-color: #e0e0e0;
+  color: #000;
+}
+
+/* ✅ Active + Dark Mode combination */
+.activeDarkMode {
+
+  background-color: #1C1C1C !important;
+  color: #fff !important;
+  border-bottom: 0 !important;
+  border-color: #dee2e6 #dee2e6 #fff !important;
+
+
+.notesTextLight p{
+  color: #fff; /* White text for dark mode */
+}
+.text-dark {
+  color: #000 !important; /* Force black text */
+}
+
+/* Hotfix: Prevent red color for project name and notes in Timelog */
+.notes-section, .notes-section *:not(a),
+.text-success, .text-light, .text-muted, .dark-text-info, .dark-text-muted {
+  color: #222 !important;
+}
+
+.notes-text-light, .notes-text-light *, .dark-text-info, .dark-text-muted {
+  color: #f1f1f1 !important;
+}
+
+/* Hotfix: Make "Viewing time Entries from" text white in dark mode */
+.bg-oxford-blue .text-dark {
+  color: #fff !important;
+}
+
+
+@media screen and (max-width: 1400px) and (min-width: 1100px) {
+  .timelogPageContainer {
+    padding: 0 10%;
+  }
+}
+
+@media screen and (max-width: 1100px) and (min-width: 800px) {
+  .timelogPageContainer {
+    padding: 0 9%;
+    margin-left: 15px;
+  }
+}
+
+@media screen and (max-width: 800px) {
+  .timelogPageContainer {
+    padding: 0 8%;
+    margin-left: 15px;
+  }
+}
+
+@media screen and (max-width: 575px) and (min-width: 399px) {
+  .searchTimeEntriesBtn {
+    margin-top: 15px;
+  }
+}
+
+@media (max-width: 544px) {
+  .tabPane {
+    max-height: 1000px;
+    overflow-y: scroll;
+    width: 100%;
+  }
+
+  /* 
+  .right-padding-temp-fix {
+    padding-right: 0px !important;
+  } */
+}
+
+#projectSelected {
+  max-width: 100%;
+}
+
+#projectSelected option {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.rightPaddingTempFix {
+  padding-right: 0px !important;
+}
+
+.button {
+  margin-left: 10px;
+  /* Add space between buttons */
+  padding: 5px 10px;
+  /* Add padding to the buttons */
+  border: curved;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.editButton {
+  background-color: blue !important;
+  /* Blue for the Edit button */
+  color: white;
+}
+
+.saveButton {
+  background-color: green;
+  /* Green for the Save button */
+  color: white;
+}
+
+.cancelButton {
+  background-color: red;
+  /* Red for the Cancel button */
+  color: white;
+}
+
+.editTextarea {
+  min-height: 150px;
+  resize: vertical;
+}
+
+.activeUser {
+  color: lawngreen !important;
+}
+
+.activeUser i {
+  color: lawngreen !important;
+}
+
+.scheduledUser {
+  color: orange !important;
+}
+
+.scheduledUser i {
+  color: orange !important;
+}
+
+.notActiveUser {
+  color: #dee2e6 !important;
+}
+
+.notActiveUser i {
+  color: #dee2e6 !important;
+}
+
+
+.customTextAlignment {
+  text-align: center;
+}
+
+
+.tasksAndTimelogHeaderRow {
+  display: flex;
+  grid-template-columns: auto auto;
+  align-items: center;
+}
+
+.tasksAndTimelogHeaderAddTimeDiv {
+  float: left;
+}
+
+.taskboardHeaderTitle {
+  font-size: 1.8rem;
+}
+
+@media screen and (max-width: 1240px) {
+  .tasksAndTimelogHeaderRow {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+  }
+
+  .tasksAndTimelogHeaderAddTimeDiv {
+    float: none;
+    margin-top: 10px;
+  }
+
+  .taskAndTimelogCardNav {
+    font-size: .9rem;
+  }
+}
+
+@media (min-width: 992px) {
+  .customTextAlignment {
+    text-align: right;
+  }
+}
+
+
+.containerTimelogWrapper {
+  min-height: 100%;
+  min-width: 100%;
+}
+
+@media only screen and (max-width: 544px) {
+  .responsiveFontSize {
+    font-size: 0.75rem !important;
+  }
+}
+
+@media only screen and (max-width: 575px) {
+  .dateSelectorForm {
+    margin-left: 5px;
+  }
+}
+
+/* Ensure the button content (text + icon) is aligned horizontally */
+.followupButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  /* Maintain spacing between text and icon */
+}
+
+/* Adjust the icon position to ensure it stays on the right */
+.followupTooltipButton {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Keep the icon aligned within the button */
+.customStyle {
+  font-size: 14px;
+  margin-left: 5px;
+}}
+
+.highlightGreen {
+  color: #7cfc00 !important;
+  padding: 1px;
+}
