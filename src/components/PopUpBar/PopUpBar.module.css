@@ -1,28 +1,20 @@
-.popup_container {
+.popupContainer {
   position: sticky;
-  top: 0;
-  left: 0;
   width: 100%;
+  top: 0;
+  left: 0%;
   margin: 0;
   text-align: center;
   background-color: #ffcc00;
-  opacity: 0.8;
+  color: #fff;
   z-index: 2;
+  opacity: 0.8;
+}
+.popupContainer.blackText{
+  color: #000000
 }
 
-/* global selectors must be marked global in CSS Modules */
-:global(body.dark-mode),
-:global(#root.dark-mode),
-:global(.dark-mode),
-:global(.dark-mode #root) {
-  background-color: #1d2c44 !important;
-}
-
-.popup_container.black_text {
-  color: #000000;
-}
-
-.close_button {
+.closeButton {
   background: none;
   border: none;
   font-size: 18px;
@@ -34,14 +26,13 @@
   transform: translateY(-50%);
 }
 
-/* media query must be top-level */
-@media (max-width: 768px) {
-  .close_button.btn_padding {
+.closeButton.btnPadding{
+  @media (max-width: 768px) { 
     top: 70%;
   }
 }
 
-/* global child selector */
-.close_button > :global(.container-fluid) {
+.closeButton > .containerFluid {
   padding: 0px;
 }
+  

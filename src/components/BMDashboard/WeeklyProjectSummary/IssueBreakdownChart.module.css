@@ -184,10 +184,6 @@
   flex-direction: column;
 }
 
-/* Consistent spacing between label and input */
-:global(.filter label) {
-  margin-bottom: 6px;
-}
 
 /* Ensure date inputs behave same as dropdowns */
 :global(.filter .react-datepicker-wrapper) {
