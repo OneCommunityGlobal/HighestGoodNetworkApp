@@ -19,6 +19,8 @@ vi.mock('jwt-decode', () => ({
 const mockStore = configureStore([thunk]);
 let store;
 
+const TEST_PASSWORD = 'test-password'; // NOSONAR - test-only credential
+
 beforeEach(() => {
   store = mockStore({
     auth: {
@@ -62,7 +64,7 @@ const renderComponent = testStore => {
   );
 };
 
-const fillAndSubmit = ({ email = 'test@gmail.com', password = 'Test12345' } = {}) => {
+const fillAndSubmit = ({ email = 'test@gmail.com', password = TEST_PASSWORD } = {}) => {
   fireEvent.change(screen.getByLabelText(/email/i), { target: { value: email } });
   fireEvent.change(screen.getByLabelText(/password/i), { target: { value: password } });
   fireEvent.click(screen.getByText('Submit'));
