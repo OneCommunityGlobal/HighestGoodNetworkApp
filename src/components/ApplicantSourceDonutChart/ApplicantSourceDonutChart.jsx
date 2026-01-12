@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import httpService from '../../services/httpService';
 import { PieChart, Pie, Cell, Tooltip, Legend, Label, ResponsiveContainer } from 'recharts';
 import DatePicker from 'react-datepicker';
@@ -94,107 +94,168 @@ const ApplicantSourceDonutChart = () => {
   const chartWrapperRef = useRef(null);
   const [chartWidth, setChartWidth] = useState(0);
 
-  const fetchDataWithFilters = async ({
-    startDate: filterStartDate,
-    endDate: filterEndDate,
-    roles: filterRoles,
-    comparisonType: filterComparisonType,
-  }) => {
-    setLoading(true);
-    setError('');
+  const fetchDataWithFilters = useCallback(
+    async ({
+      startDate: filterStartDate,
+      endDate: filterEndDate,
+      roles: filterRoles,
+      comparisonType: filterComparisonType,
+    }) => {
+      setLoading(true);
+      setError('');
 
-    try {
-      const token = localStorage.getItem(config.tokenKey);
-      if (!token) {
-        setError('Please log in to view applicant source data.');
-        setLoading(false);
+      try {
+        if (typeof localStorage === 'undefined' || !localStorage) {
+          setError('LocalStorage is not available. Please log in again.');
+          setLoading(false);
+          resetDataState(setData, setComparisonText);
+          return;
+        }
+
+        const token = localStorage.getItem(config?.tokenKey || 'token');
+        if (!token || typeof token !== 'string') {
+          setError('Please log in to view applicant source data.');
+          setLoading(false);
+          resetDataState(setData, setComparisonText);
+          return;
+        }
+
+        // Ensure token is set in httpService for global axios defaults
+        if (httpService && typeof httpService.setjwt === 'function') {
+          httpService.setjwt(token);
+        }
+
+        if (
+          filterStartDate &&
+          filterEndDate &&
+          filterStartDate instanceof Date &&
+          filterEndDate instanceof Date &&
+          filterStartDate.getTime() > filterEndDate.getTime()
+        ) {
+          setError('Start date cannot be greater than end date');
+          setLoading(false);
+          resetDataState(setData, setComparisonText);
+          return;
+        }
+
+        const url = ENDPOINTS?.APPLICANT_SOURCES;
+        if (!url || typeof url !== 'string') {
+          throw new Error('Invalid API endpoint configuration');
+        }
+        const params = {};
+
+        if (filterStartDate) params.startDate = toDateOnlyString(filterStartDate);
+        if (filterEndDate) params.endDate = toDateOnlyString(filterEndDate);
+        if (filterRoles?.length > 0) {
+          const roleValues = filterRoles
+            .map(r => {
+              if (typeof r === 'object' && r !== null && r.value !== undefined) {
+                return r.value;
+              }
+              return typeof r === 'string' ? r : '';
+            })
+            .filter(val => val !== '');
+          if (roleValues.length > 0) {
+            params.roles = roleValues.join(',');
+          }
+        }
+        if (filterComparisonType && filterComparisonType !== '') {
+          params.comparisonType = filterComparisonType;
+        }
+
+        if (!httpService || typeof httpService.get !== 'function') {
+          throw new Error('HTTP service is not available');
+        }
+
+        const response = await httpService.get(url, { params });
+
+        if (!response || typeof response !== 'object') {
+          throw new Error('Invalid response from server');
+        }
+
+        const result = response.data || {};
+        const formattedSources = Array.isArray(result.sources)
+          ? result.sources
+              .map(item => {
+                if (!item || typeof item !== 'object') {
+                  return null;
+                }
+                const value = Number(item.value ?? item.count ?? 0);
+                if (Number.isNaN(value) || !Number.isFinite(value) || value < 0) {
+                  return null;
+                }
+                return {
+                  name: item.name || item.source || 'Unknown',
+                  value,
+                };
+              })
+              .filter(item => item !== null)
+          : [];
+
+        setData(formattedSources);
+        setComparisonText(typeof result.comparisonText === 'string' ? result.comparisonText : '');
+      } catch (err) {
+        // Handle 401 errors gracefully without showing toast notifications
+        if (err?.response?.status === 401) {
+          setError('Authentication required. Please log in to view applicant source data.');
+        } else {
+          setError(
+            err?.response?.data?.message ||
+              err?.message ||
+              'Error fetching data. Please try again later.',
+          );
+        }
         resetDataState(setData, setComparisonText);
-        return;
-      }
-
-      // Ensure token is set in httpService for global axios defaults
-      httpService.setjwt(token);
-
-      if (
-        filterStartDate &&
-        filterEndDate &&
-        filterStartDate instanceof Date &&
-        filterEndDate instanceof Date &&
-        filterStartDate.getTime() > filterEndDate.getTime()
-      ) {
-        setError('Start date cannot be greater than end date');
+      } finally {
         setLoading(false);
-        resetDataState(setData, setComparisonText);
-        return;
       }
-
-      const url = ENDPOINTS.APPLICANT_SOURCES;
-      const params = {};
-
-      if (filterStartDate) params.startDate = toDateOnlyString(filterStartDate);
-      if (filterEndDate) params.endDate = toDateOnlyString(filterEndDate);
-      if (filterRoles?.length > 0) {
-        const roleValues = filterRoles.map(r => (typeof r === 'object' ? r.value : r));
-        params.roles = roleValues.join(',');
-      }
-      if (filterComparisonType && filterComparisonType !== '') {
-        params.comparisonType = filterComparisonType;
-      }
-
-      const response = await httpService.get(url, { params });
-
-      const result = response.data || {};
-      const formattedSources = Array.isArray(result.sources)
-        ? result.sources.map(item => ({
-            name: item.name || item.source || 'Unknown',
-            value: Number(item.value ?? item.count ?? 0),
-          }))
-        : [];
-
-      setData(formattedSources);
-      setComparisonText(result.comparisonText || '');
-    } catch (err) {
-      // Handle 401 errors gracefully without showing toast notifications
-      if (err.response?.status === 401) {
-        setError('Authentication required. Please log in to view applicant source data.');
-      } else {
-        setError(
-          err.response?.data?.message ||
-            err.message ||
-            'Error fetching data. Please try again later.',
-        );
-      }
-      resetDataState(setData, setComparisonText);
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [],
+  );
 
   useEffect(() => {
     fetchDataWithFilters({ startDate: null, endDate: null, roles: [], comparisonType: '' });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     const updateDimensions = () => {
-      if (chartWrapperRef.current) {
-        setChartWidth(chartWrapperRef.current.offsetWidth);
+      if (chartWrapperRef.current && typeof chartWrapperRef.current.offsetWidth === 'number') {
+        const width = chartWrapperRef.current.offsetWidth;
+        if (Number.isFinite(width) && width > 0) {
+          setChartWidth(width);
+        }
       }
     };
 
     updateDimensions();
 
     let observer;
-    if (typeof window !== 'undefined' && 'ResizeObserver' in window && chartWrapperRef.current) {
-      observer = new window.ResizeObserver(updateDimensions);
-      observer.observe(chartWrapperRef.current);
-    } else {
+    if (typeof window !== 'undefined' && window.ResizeObserver && chartWrapperRef.current) {
+      try {
+        observer = new window.ResizeObserver(updateDimensions);
+        observer.observe(chartWrapperRef.current);
+      } catch (err) {
+        // Fallback to window resize if ResizeObserver fails
+        if (typeof window.addEventListener === 'function') {
+          window.addEventListener('resize', updateDimensions);
+        }
+      }
+    } else if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
       window.addEventListener('resize', updateDimensions);
     }
 
     return () => {
-      if (observer) {
-        observer.disconnect();
-      } else {
+      if (observer && typeof observer.disconnect === 'function') {
+        try {
+          observer.disconnect();
+        } catch (err) {
+          // Ignore cleanup errors
+        }
+      } else if (
+        typeof window !== 'undefined' &&
+        typeof window.removeEventListener === 'function'
+      ) {
         window.removeEventListener('resize', updateDimensions);
       }
     };
@@ -203,29 +264,55 @@ const ApplicantSourceDonutChart = () => {
   const handleStartDateChange = date => {
     setStartDate(date);
     if (comparisonType === '') {
-      fetchDataWithFilters({ startDate: date, endDate, roles: selectedRoles, comparisonType });
+      fetchDataWithFilters({
+        startDate: date || null,
+        endDate: endDate || null,
+        roles: selectedRoles || [],
+        comparisonType: comparisonType || '',
+      });
     }
   };
 
   const handleEndDateChange = date => {
     setEndDate(date);
     if (comparisonType === '') {
-      fetchDataWithFilters({ startDate, endDate: date, roles: selectedRoles, comparisonType });
+      fetchDataWithFilters({
+        startDate: startDate || null,
+        endDate: date || null,
+        roles: selectedRoles || [],
+        comparisonType: comparisonType || '',
+      });
     }
   };
 
   const handleRoleChange = roles => {
-    setSelectedRoles(roles);
-    fetchDataWithFilters({ startDate, endDate, roles, comparisonType });
+    const safeRoles = Array.isArray(roles) ? roles : [];
+    setSelectedRoles(safeRoles);
+    fetchDataWithFilters({
+      startDate: startDate || null,
+      endDate: endDate || null,
+      roles: safeRoles,
+      comparisonType: comparisonType || '',
+    });
   };
 
   const handleComparisonTypeChange = option => {
-    const newComparisonType = option ? option.value : '';
+    const newComparisonType =
+      option && typeof option === 'object' && option.value !== undefined ? option.value : '';
     setComparisonType(newComparisonType);
 
     if (newComparisonType !== '') {
       const today = new Date();
+      if (!(today instanceof Date) || !Number.isFinite(today.getTime())) {
+        setError('Invalid date configuration. Please refresh the page.');
+        return;
+      }
+
       const pastDate = new Date(today);
+      if (!(pastDate instanceof Date) || !Number.isFinite(pastDate.getTime())) {
+        setError('Invalid date configuration. Please refresh the page.');
+        return;
+      }
 
       if (newComparisonType === 'week') {
         pastDate.setDate(today.getDate() - 7);
@@ -235,26 +322,47 @@ const ApplicantSourceDonutChart = () => {
         pastDate.setFullYear(today.getFullYear() - 1);
       }
 
+      if (!Number.isFinite(pastDate.getTime())) {
+        setError('Invalid date calculation. Please try again.');
+        return;
+      }
+
       fetchDataWithFilters({
         startDate: pastDate,
         endDate: today,
-        roles: selectedRoles,
+        roles: selectedRoles || [],
         comparisonType: newComparisonType,
       });
     } else {
       fetchDataWithFilters({
-        startDate,
-        endDate,
-        roles: selectedRoles,
+        startDate: startDate || null,
+        endDate: endDate || null,
+        roles: selectedRoles || [],
         comparisonType: '',
       });
     }
   };
 
-  const total = data.reduce((sum, item) => sum + item.value, 0);
+  const total = useMemo(() => {
+    return data.reduce((sum, item) => {
+      const value = item?.value ?? 0;
+      return sum + (Number.isFinite(value) && value >= 0 ? value : 0);
+    }, 0);
+  }, [data]);
 
   const renderCenterText = ({ viewBox }) => {
+    if (!viewBox || typeof viewBox !== 'object') {
+      return null;
+    }
     const { cx, cy } = viewBox;
+    if (
+      typeof cx !== 'number' ||
+      typeof cy !== 'number' ||
+      !Number.isFinite(cx) ||
+      !Number.isFinite(cy)
+    ) {
+      return null;
+    }
     const lines = comparisonText ? comparisonText.split('\n') : [];
 
     if (!lines.length) {
@@ -439,8 +547,10 @@ const ApplicantSourceDonutChart = () => {
                   dataKey="value"
                   label={
                     showSliceLabels
-                      ? ({ name, value }) =>
-                          `${name}: ${((value / total) * 100).toFixed(1)}% (${value})`
+                      ? ({ name, value }) => {
+                          const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
+                          return `${name}: ${percentage}% (${value})`;
+                        }
                       : undefined
                   }
                   labelLine={showSliceLabels}
