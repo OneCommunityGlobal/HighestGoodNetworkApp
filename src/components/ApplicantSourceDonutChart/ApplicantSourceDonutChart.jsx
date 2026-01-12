@@ -443,8 +443,8 @@ const ApplicantSourceDonutChart = () => {
   }, [chartWidth]);
   const showSliceLabels = chartWidth > 640;
   const legendLayout = chartWidth < 640 ? 'vertical' : 'horizontal';
-  const legendVerticalAlign = chartWidth < 640 ? 'bottom' : 'bottom';
-  const legendAlign = chartWidth < 640 ? 'center' : 'center';
+  const legendVerticalAlign = 'bottom';
+  const legendAlign = 'center';
   const legendWrapperStyle = useMemo(() => {
     if (chartWidth < 640) {
       return {
