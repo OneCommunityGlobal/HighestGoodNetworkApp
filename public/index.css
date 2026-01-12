@@ -1,5 +1,9 @@
 /* public/index.css */
 
+.tab-content {
+  background-color: transparent !important;
+}
+
 /* Global Dark Mode Styles */
 body.dark-mode,
 body.bm-dashboard-dark {
@@ -340,3 +344,8 @@ body.bm-dashboard-dark .page-item.active .page-link {
   .container-fluid::-webkit-scrollbar {
     display: none;
   }
+
+  .tab-content {
+  background-color: transparent;
+  border: none;
+}

@@ -969,8 +969,13 @@ function LeaderBoard({
                             onClick={() => trophyIconToggle(item)}
                             onKeyDown={() => trophyIconToggle(item)}
                           >
-                            <p style={{ fontSize: '10px', marginLeft: '1px' }}>
-                              <strong>{iconContent}</strong>
+                            <p
+                              className={darkMode ? styles.trophyTextWhite : undefined}
+                              style={{ fontSize: '10px', marginLeft: '1px' }}
+                            >
+                              <strong className={darkMode ? styles.trophyTextWhite : undefined}>
+                                {iconContent}
+                              </strong>
                             </p>
                           </i>
                         )}
