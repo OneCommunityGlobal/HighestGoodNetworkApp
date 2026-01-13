@@ -15,6 +15,8 @@ function ActivityList() {
     date: '',
     location: '',
   });
+  const [locationSuggestions, setLocationSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   useEffect(() => {
     const fetchActivities = async () => {
@@ -46,9 +48,35 @@ function ActivityList() {
     fetchActivities();
   }, []);
 
+  // Get location suggestions with STRICT prefix-based matching only
+  const getLocationSuggestions = (input) => {
+    if (!input.trim()) {
+      return [];
+    }
+
+    // Get unique locations
+    const uniqueLocations = [...new Set(activities.map(a => a.location))];
+    const lowerInput = input.toLowerCase();
+
+    // ONLY return locations that START with the input (prefix matching)
+    const prefixMatches = uniqueLocations.filter(loc =>
+      loc.toLowerCase().startsWith(lowerInput)
+    );
+
+    // Limit to top 10 results
+    return prefixMatches.slice(0, 10);
+  };
+
   const handleFilterChange = e => {
     const { name, value } = e.target;
     setFilter({ ...filter, [name]: value });
+
+    // Update location suggestions when location input changes
+    if (name === 'location') {
+      const suggestions = getLocationSuggestions(value);
+      setLocationSuggestions(suggestions);
+      setShowSuggestions(true);
+    }
   };
 
   const filteredActivities = activities.filter(activity => {
@@ -59,12 +87,20 @@ function ActivityList() {
     );
   });
 
+  const handleSuggestionClick = (location) => {
+    setFilter({ ...filter, location });
+    setShowSuggestions(false);
+    setLocationSuggestions([]);
+  };
+
   const handleClearFilters = () => {
     setFilter({
       type: '',
       date: '',
       location: '',
     });
+    setLocationSuggestions([]);
+    setShowSuggestions(false);
   };
 
   return (
@@ -90,13 +126,40 @@ function ActivityList() {
 
         <label>
           Location:
-          <input
-            type="text"
-            name="location"
-            value={filter.location}
-            onChange={handleFilterChange}
-            placeholder="Enter location"
-          />
+          <div style={{ position: 'relative' }}>
+            <input
+              type="text"
+              name="location"
+              value={filter.location}
+              onChange={handleFilterChange}
+              onFocus={() => {
+                if (filter.location) {
+                  const suggestions = getLocationSuggestions(filter.location);
+                  setLocationSuggestions(suggestions);
+                  setShowSuggestions(true);
+                }
+              }}
+              onBlur={() => {
+                // Delay to allow click on suggestion
+                setTimeout(() => setShowSuggestions(false), 200);
+              }}
+              placeholder="Enter location"
+              autoComplete="off"
+            />
+            {showSuggestions && locationSuggestions.length > 0 && (
+              <div className={`${styles.suggestions} ${darkMode ? styles.darkSuggestions : ''}`}>
+                {locationSuggestions.map((location, index) => (
+                  <div
+                    key={index}
+                    className={styles.suggestionItem}
+                    onClick={() => handleSuggestionClick(location)}
+                  >
+                    {location}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </label>
         <button
           type="button"
