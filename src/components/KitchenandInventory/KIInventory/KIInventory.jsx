@@ -8,7 +8,7 @@ import classnames from 'classnames';
 import { TbToolsKitchen2 } from 'react-icons/tb';
 import { LiaSeedlingSolid } from 'react-icons/lia';
 import { GiMasonJar } from 'react-icons/gi';
-import { MdOutlineQrCodeScanner } from 'react-icons/md';
+import { PiBarcode } from 'react-icons/pi';
 import {
   FiSearch,
   FiPackage,
@@ -35,13 +35,11 @@ const KIInventory = () => {
   const toggleTab = tab => {
     if (activeTab !== tabs[tab]) setActiveTab(tabs[tab]);
   };
-  // console.log('Active Tab:', activeTab);
-  // console.log('Search Term:', searchTerm);
   return (
-    <div className={`${styles.inventoryContainer}`}>
-      <header className={`${styles.inventorypageheader}`}>
+    <div className={classnames(styles.inventoryContainer, darkMode ? styles.darkContainer : '')}>
+      <header className={classnames(styles.inventoryPageHeader, darkMode ? styles.darkHeader : '')}>
         <div>
-          <h2>Inventory Management</h2>
+          <h2 className={styles.inventoryText}>Inventory Management</h2>
           <p>Track ingredients, equipment, and supplies across all kitchen operations</p>
         </div>
         <div className={styles.inventoryMetricCards}>
@@ -58,65 +56,72 @@ const KIInventory = () => {
             <RiLeafLine />
           </MetricCard>
         </div>
-        <Nav className={`${styles.inventoryNavBar}`}>
-          <NavItem
-            className={`${styles.inventoryNavBarItem} ${classnames({
-              active: activeTab === tabs[0],
-            })}`}
-          >
-            <NavLink style={{ color: 'black' }} onClick={() => toggleTab(0)}>
+        <Nav className={classnames(styles.inventoryNavBar, darkMode ? styles.darkNavBar : '')}>
+          <NavItem>
+            <NavLink
+              className={classnames(styles.inventoryNavBarLink, {
+                activetab: activeTab === tabs[0],
+              })}
+              onClick={() => toggleTab(0)}
+            >
               <TbToolsKitchen2 className={styles.inventoryNavBarIcon} />
               Ingredients
             </NavLink>
           </NavItem>
-          <NavItem
-            className={`${styles.inventoryNavBarItem} ${classnames({
-              active: activeTab === tabs[1],
-            })}`}
-          >
-            <NavLink style={{ color: 'black' }} onClick={() => toggleTab(1)}>
+          <NavItem>
+            <NavLink
+              className={classnames(styles.inventoryNavBarLink, {
+                active: activeTab === tabs[1],
+              })}
+              onClick={() => toggleTab(1)}
+            >
               <FiPackage className={styles.inventoryNavBarIcon} />
               Equipment & Supplies
             </NavLink>
           </NavItem>
-          <NavItem
-            className={`${styles.inventoryNavBarItem} ${classnames({
-              active: activeTab === tabs[2],
-            })}`}
-          >
-            <NavLink style={{ color: 'black' }} onClick={() => toggleTab(2)}>
+          <NavItem>
+            <NavLink
+              className={classnames(styles.inventoryNavBarLink, {
+                active: activeTab === tabs[2],
+              })}
+              onClick={() => toggleTab(2)}
+            >
               <LiaSeedlingSolid className={styles.inventoryNavBarIcon} />
               Seeds
             </NavLink>
           </NavItem>
-          <NavItem
-            className={`${styles.inventoryNavBarItem} ${classnames({
-              active: activeTab === tabs[3],
-            })}`}
-          >
-            <NavLink style={{ color: 'black' }} onClick={() => toggleTab(3)}>
+          <NavItem>
+            <NavLink
+              className={classnames(styles.inventoryNavBarLink, {
+                active: activeTab === tabs[3],
+              })}
+              onClick={() => toggleTab(3)}
+            >
               <GiMasonJar className={styles.inventoryNavBarIcon} />
               Canning Supplies
             </NavLink>
           </NavItem>
-          <NavItem
-            className={`${styles.inventoryNavBarItem} ${classnames({
-              active: activeTab === tabs[4],
-            })}`}
-            style={{ paddingRight: 0, marginRight: 0 }}
-          >
-            <NavLink style={{ color: 'black' }} onClick={() => toggleTab(4)}>
+          <NavItem style={{ paddingRight: 0, marginRight: 0 }}>
+            <NavLink
+              className={classnames(styles.inventoryNavBarLink, {
+                active: activeTab === tabs[4],
+              })}
+              onClick={() => toggleTab(4)}
+            >
               <FiShoppingCart className={styles.inventoryNavBarIcon} />
               Animal Supplies
             </NavLink>
           </NavItem>
         </Nav>
         <div className={`${styles.inventoryInteraction}`}>
-          <div className={styles.inventorySearchBar}>
-            <span>
+          <div
+            className={classnames(styles.inventorySearchBar, darkMode ? styles.darkSearchBar : '')}
+          >
+            <span className={`${styles.otherIcons}`}>
               <FiSearch />
             </span>
             <input
+              className={classnames(styles.searchBarInput, darkMode ? styles.darkSearchInput : '')}
               type="text"
               placeholder={`Search ${activeTab}...`}
               value={searchTerm}
@@ -129,14 +134,19 @@ const KIInventory = () => {
             </button>
           </div>
           <div>
-            <button className={`${styles.button} ${styles.addItemButton}`}>{'+ Add Item'}</button>
-            <button className={`${styles.button} ${styles.scanQRButton}`}>
-              {<MdOutlineQrCodeScanner />} {'Scan QR'}
+            <button className={classnames(styles.button, styles.addItemButton)}>
+              {'+ Add Item'}
+            </button>
+            <button className={classnames(styles.button, styles.scanBarcodeButton)}>
+              <span className={`${styles.otherIcons}`}>{<PiBarcode />}</span> {'Scan Barcode'}
             </button>
           </div>
         </div>
       </header>
-      <TabContent activeTab={activeTab} className={styles.inventoryTabContent}>
+      <TabContent
+        activeTab={activeTab}
+        className={`${styles.inventoryTabContent} ${darkMode ? styles.darkTabContent : ''}`}
+      >
         <TabPane tabId={tabs[0]}>
           <div>Ingredients Content</div>
         </TabPane>
