@@ -224,6 +224,8 @@
   border-radius: 4px;
   margin-bottom: 5px;
   white-space: nowrap;
+}
+
 /* Ensure tileEvents text is readable on selected date */
 .reactCalendar :global(.react-calendar__tile.selectedDate) .tileEvents {
   color: #1a202c;
