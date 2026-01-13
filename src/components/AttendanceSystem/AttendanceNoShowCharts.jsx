@@ -222,7 +222,7 @@ function AttendanceNoShowCharts() {
                             />
                           ))}
                         </Pie>
-                        <Tooltip />
+                        <Tooltip wrapperClassName={styles.rechartsTooltip} />
                         <Legend />
                       </PieChart>
                     </ResponsiveContainer>
@@ -251,7 +251,7 @@ function AttendanceNoShowCharts() {
                             />
                           ))}
                         </Pie>
-                        <Tooltip />
+                        <Tooltip wrapperClassName={styles.rechartsTooltip} />
                         <Legend />
                       </PieChart>
                     </ResponsiveContainer>

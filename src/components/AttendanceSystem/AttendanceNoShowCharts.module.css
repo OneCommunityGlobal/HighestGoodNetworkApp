@@ -112,6 +112,26 @@
   height: 300px;
 }
 
+/* Recharts Tooltip */
+.rechartsTooltip {
+  background-color: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 14px;
+  color: #111827;
+}
+
+.rechartsTooltip :global(.recharts-tooltip-label) {
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 4px;
+}
+
+.rechartsTooltip :global(.recharts-tooltip-item) {
+  color: #111827;
+}
+
 /* Dark mode support */
 [data-theme="dark"] .page {
   background-color: #1e2329;
@@ -162,6 +182,22 @@
 /* Chart blocks */
 [data-theme="dark"] .chartBlock {
   background-color: transparent;
+}
+
+/* Recharts Tooltip */
+[data-theme="dark"] .rechartsTooltip {
+  background-color: #24292f !important;
+  border-color: #383e44 !important;
+  color: #f0f0f0;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6);
+}
+
+[data-theme="dark"] .rechartsTooltip :global(.recharts-tooltip-label) {
+  color: #e5e7eb;
+}
+
+[data-theme="dark"] .rechartsTooltip :global(.recharts-tooltip-item) {
+  color: #f0f0f0;
 }
 
 /* Responsive titles (dark mode) */
