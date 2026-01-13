@@ -154,3 +154,8 @@
   font-weight: bold;
   padding: 5px 15px;
 }
+
+.actionButtons {
+  display: flex;
+  gap: 10px; 
+}

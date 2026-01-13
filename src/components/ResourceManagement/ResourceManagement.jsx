@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import styles from './ResourceManagement.module.css';
+import * as XLSX from 'xlsx';
 
 function SearchBar() {
   return (
@@ -103,13 +104,88 @@ function ResourceManagement() {
     },
   ]);
 
+  /* -------------------- NEW STATE (NON-BREAKING) -------------------- */
+  const [selectedIds, setSelectedIds] = useState(new Set());
+
+  const columns = [
+    { key: 'user', label: 'User' },
+    { key: 'timeDuration', label: 'Time/Duration' },
+    { key: 'facilities', label: 'Facilities' },
+    { key: 'materials', label: 'Materials' },
+    { key: 'date', label: 'Date' },
+  ];
+
+  const toggleSelect = id => {
+    setSelectedIds(prev => {
+      const updated = new Set(prev);
+      updated.has(id) ? updated.delete(id) : updated.add(id);
+      return updated;
+    });
+  };
+
+  const getExportRows = () =>
+    selectedIds.size > 0 ? resources.filter(r => selectedIds.has(r.id)) : resources;
+
+  const exportCSV = rows => {
+    const header = columns.map(col => col.label).join(',');
+    const body = rows
+      .map(row => columns.map(col => `"${row[col.key] ?? ''}"`).join(','))
+      .join('\n');
+
+    const blob = new Blob([`${header}\n${body}`], {
+      type: 'text/csv;charset=utf-8;',
+    });
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `used-resources_${new Date().toISOString().slice(0, 10)}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const exportXLSX = rows => {
+    const formattedRows = rows.map(row => {
+      const obj = {};
+      columns.forEach(col => {
+        obj[col.label] = row[col.key];
+      });
+      return obj;
+    });
+
+    const worksheet = XLSX.utils.json_to_sheet(formattedRows);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Used Resources');
+
+    XLSX.writeFile(workbook, `used-resources_${new Date().toISOString().slice(0, 10)}.xlsx`);
+  };
+
+  const handleExport = format => {
+    const rows = getExportRows();
+    if (!rows.length) return;
+    format === 'csv' ? exportCSV(rows) : exportXLSX(rows);
+  };
+  /* ------------------------------------------------------------------ */
+
   return (
     <div className={styles.resourceManagementDashboard}>
       <div className={styles.dashboardTitle}>
         <h2>Used Resources</h2>
-        <button type="button" className={styles.addLogButton}>
-          Add New Log
-        </button>
+        <div className={styles.actionButtons}>
+          <button type="button" className={styles.addLogButton}>
+            Add New Log
+          </button>
+          <button type="button" className={styles.addLogButton} onClick={() => handleExport('csv')}>
+            Export CSV
+          </button>
+          <button
+            type="button"
+            className={styles.addLogButton}
+            onClick={() => handleExport('xlsx')}
+          >
+            Export XLSX
+          </button>
+        </div>
       </div>
 
       <SearchBar />
@@ -117,7 +193,13 @@ function ResourceManagement() {
       <div className={styles.resourceList}>
         <div className={styles.resourceHeading}>
           <div className={styles.checkboxContainer}>
-            <input type="checkbox" />
+            <input
+              type="checkbox"
+              checked={selectedIds.size === resources.length}
+              onChange={e =>
+                setSelectedIds(e.target.checked ? new Set(resources.map(r => r.id)) : new Set())
+              }
+            />
           </div>
           <div className={styles.resourceHeadingItem}>User</div>
           <div className={styles.resourceHeadingItem}>Time/Duration</div>
@@ -131,7 +213,11 @@ function ResourceManagement() {
           <div key={resource.id}>
             <div className={styles.resourceItem}>
               <div className={styles.checkboxContainer}>
-                <input type="checkbox" />
+                <input
+                  type="checkbox"
+                  checked={selectedIds.has(resource.id)}
+                  onChange={() => toggleSelect(resource.id)}
+                />
               </div>
               <div className={styles.resourceItemDetail}>{resource.user}</div>
               <div className={styles.resourceItemDetail}>{resource.timeDuration}</div>
