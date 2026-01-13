@@ -110,6 +110,11 @@ function CommunityCalendar() {
     [getEventsForDate],
   );
 
+  const handleEventClick = useCallback(event => {
+    setSelectedEvent(event);
+    setShowEventModal(true);
+  }, []);
+
   const handleEventKeyPress = useCallback(
     (e, event) => {
       if (e.key === 'Enter' || e.key === ' ') {
@@ -119,11 +124,6 @@ function CommunityCalendar() {
     },
     [handleEventClick],
   );
-
-  const handleEventClick = useCallback(event => {
-    setSelectedEvent(event);
-    setShowEventModal(true);
-  }, []);
 
   const closeEventModal = useCallback(() => {
     setShowEventModal(false);
