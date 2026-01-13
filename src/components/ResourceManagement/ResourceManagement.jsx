@@ -1,10 +1,11 @@
 import { useState, useMemo } from 'react';
 import styles from './ResourceManagement.module.css';
 import { useSelector } from 'react-redux';
-import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react'; // Added Calendar icon
+import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
 import { MOCK_RESOURCES } from './MockData';
 import { toast } from 'react-toastify';
 import PropTypes from 'prop-types';
+import * as XLSX from 'xlsx';
 
 function SearchBar({ onSortToggle, darkMode, searchTerm, onSearchTermChange }) {
   return (
@@ -42,11 +43,10 @@ const Pagination = ({ totalPages, currentPage, setCurrentPage, darkMode }) => {
   const getPaginationGroup = () => {
     let pages = [];
     const threshold = 5;
-    // Flattened logic to avoid unnecessary nesting
+
     if (totalPages <= threshold) {
       pages = Array.from({ length: totalPages }, (_, i) => i + 1);
     } else if (currentPage <= 3) {
-      // This was previously nested inside an 'else' block
       pages = [1, 2, 3, 4, 5, '...', totalPages];
     } else if (currentPage > totalPages - 3) {
       pages = [
@@ -72,6 +72,7 @@ const Pagination = ({ totalPages, currentPage, setCurrentPage, darkMode }) => {
       }`}
     >
       <button
+        type="button"
         disabled={currentPage === 1}
         onClick={() => setCurrentPage(prev => prev - 1)}
         className={styles.paginationLeft}
@@ -94,6 +95,7 @@ const Pagination = ({ totalPages, currentPage, setCurrentPage, darkMode }) => {
       ))}
 
       <button
+        type="button"
         disabled={currentPage === totalPages}
         onClick={() => setCurrentPage(prev => prev + 1)}
         className={styles.paginationRight}
@@ -110,16 +112,19 @@ function ResourceManagement() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedIds, setSelectedIds] = useState(new Set());
   const itemsPerPage = 5;
 
   const onSearchTermChange = e => {
     setSearchTerm(e.target.value);
-    setCurrentPage(1); // Reset to page 1 on search
+    setCurrentPage(1);
   };
 
   const filteredResources = useMemo(() => {
     const term = searchTerm.toLowerCase().trim();
+
     if (!term) return resources;
+
     return resources.filter(
       r =>
         r.user.toLowerCase().includes(term) ||
@@ -129,27 +134,122 @@ function ResourceManagement() {
   }, [resources, searchTerm]);
 
   const sortedResources = useMemo(() => {
-    let sortableItems = [...filteredResources];
+    const sortableItems = [...filteredResources];
+
     sortableItems.sort((a, b) => {
-      let valA = sortConfig.key === 'date' ? a.timestamp : a[sortConfig.key]?.toLowerCase();
-      let valB = sortConfig.key === 'date' ? b.timestamp : b[sortConfig.key]?.toLowerCase();
+      const valA = sortConfig.key === 'date' ? a.timestamp : a[sortConfig.key]?.toLowerCase();
+      const valB = sortConfig.key === 'date' ? b.timestamp : b[sortConfig.key]?.toLowerCase();
+
       if (valA < valB) return sortConfig.direction === 'asc' ? -1 : 1;
       if (valA > valB) return sortConfig.direction === 'asc' ? 1 : -1;
+
       return 0;
     });
+
     return sortableItems;
   }, [filteredResources, sortConfig]);
 
   const totalPages = Math.ceil(sortedResources.length / itemsPerPage);
 
+  const columns = [
+    { key: 'user', label: 'User' },
+    { key: 'timeDuration', label: 'Time/Duration' },
+    { key: 'facilities', label: 'Facilities' },
+    { key: 'materials', label: 'Materials' },
+    { key: 'date', label: 'Date' },
+  ];
+
+  const toggleSelect = id => {
+    setSelectedIds(prev => {
+      const updated = new Set(prev);
+
+      if (updated.has(id)) {
+        updated.delete(id);
+      } else {
+        updated.add(id);
+      }
+
+      return updated;
+    });
+  };
+
+  const toggleSelectAll = e => {
+    setSelectedIds(e.target.checked ? new Set(sortedResources.map(r => r.id)) : new Set());
+  };
+
+  const getExportRows = () =>
+    selectedIds.size > 0 ? sortedResources.filter(r => selectedIds.has(r.id)) : sortedResources;
+
+  const exportCSV = rows => {
+    const header = columns.map(col => col.label).join(',');
+    const body = rows
+      .map(row =>
+        columns.map(col => `"${String(row[col.key] ?? '').replaceAll('"', '""')}"`).join(','),
+      )
+      .join('\n');
+
+    const blob = new Blob([`${header}\n${body}`], {
+      type: 'text/csv;charset=utf-8;',
+    });
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+
+    link.href = url;
+    link.download = `used-resources_${new Date().toISOString().slice(0, 10)}.csv`;
+    link.click();
+
+    URL.revokeObjectURL(url);
+  };
+
+  const exportXLSX = rows => {
+    const formattedRows = rows.map(row => {
+      const obj = {};
+
+      columns.forEach(col => {
+        obj[col.label] = row[col.key];
+      });
+
+      return obj;
+    });
+
+    const worksheet = XLSX.utils.json_to_sheet(formattedRows);
+    const workbook = XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Used Resources');
+    XLSX.writeFile(workbook, `used-resources_${new Date().toISOString().slice(0, 10)}.xlsx`);
+  };
+
+  const handleExport = format => {
+    const rows = getExportRows();
+
+    if (!rows.length) {
+      toast.info('No resources available to export.');
+      return;
+    }
+
+    if (format === 'csv') {
+      exportCSV(rows);
+    } else {
+      exportXLSX(rows);
+    }
+  };
+
   const requestSort = key => {
     let direction = 'asc';
-    if (sortConfig.key === key && sortConfig.direction === 'asc') direction = 'desc';
+
+    if (sortConfig.key === key && sortConfig.direction === 'asc') {
+      direction = 'desc';
+    }
+
     setSortConfig({ key, direction });
   };
 
   const toggleGlobalDirection = () => {
-    setSortConfig(prev => ({ ...prev, direction: prev.direction === 'asc' ? 'desc' : 'asc' }));
+    setSortConfig(prev => ({
+      ...prev,
+      direction: prev.direction === 'asc' ? 'desc' : 'asc',
+    }));
   };
 
   return (
@@ -160,9 +260,24 @@ function ResourceManagement() {
     >
       <div className={styles.dashboardTitle}>
         <h2>Used Resources</h2>
-        <button type="button" className={styles.addLogButton}>
-          Add New Log
-        </button>
+
+        <div className={styles.actionButtons}>
+          <button type="button" className={styles.addLogButton}>
+            Add New Log
+          </button>
+
+          <button type="button" className={styles.addLogButton} onClick={() => handleExport('csv')}>
+            Export CSV
+          </button>
+
+          <button
+            type="button"
+            className={styles.addLogButton}
+            onClick={() => handleExport('xlsx')}
+          >
+            Export XLSX
+          </button>
+        </div>
       </div>
 
       <SearchBar
@@ -174,11 +289,16 @@ function ResourceManagement() {
 
       <div className={styles.resourceList}>
         <div className={styles.resourceTable}>
-          {/* THE HEADER ROW - SHARED COLUMN CLASSES */}
           <div className={styles.resourceHeaderRow}>
             <div className={styles.colCheck}>
-              <input type="checkbox" aria-label="Select all" />
+              <input
+                type="checkbox"
+                aria-label="Select all"
+                checked={selectedIds.size === sortedResources.length && sortedResources.length > 0}
+                onChange={toggleSelectAll}
+              />
             </div>
+
             <div className={styles.colUser}>
               <button
                 type="button"
@@ -188,6 +308,7 @@ function ResourceManagement() {
                 User {sortConfig.key === 'user' && (sortConfig.direction === 'asc' ? '🔼' : '🔽')}
               </button>
             </div>
+
             <div className={styles.colDuration}>
               <button
                 type="button"
@@ -199,8 +320,10 @@ function ResourceManagement() {
                   (sortConfig.direction === 'asc' ? '🔼' : '🔽')}
               </button>
             </div>
+
             <div className={styles.colFacilities}>Facilities</div>
             <div className={styles.colMaterials}>Materials</div>
+
             <div className={styles.colDate}>
               <button
                 type="button"
@@ -212,26 +335,35 @@ function ResourceManagement() {
             </div>
           </div>
 
-          {/* THE DATA ROWS */}
           {sortedResources
             .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
             .map(resource => (
               <div key={resource.id} className={styles.resourceItem}>
                 <div className={styles.colCheck}>
-                  <input type="checkbox" aria-label={`Select ${resource.user}`} />
+                  <input
+                    type="checkbox"
+                    aria-label={`Select ${resource.user}`}
+                    checked={selectedIds.has(resource.id)}
+                    onChange={() => toggleSelect(resource.id)}
+                  />
                 </div>
+
                 <div className={`${styles.resourceItemDetail} ${styles.colUser}`}>
                   {resource.user}
                 </div>
+
                 <div className={`${styles.resourceItemDetail} ${styles.colDuration}`}>
                   {resource.timeDuration}
                 </div>
+
                 <div className={`${styles.resourceItemDetail} ${styles.colFacilities}`}>
                   {resource.facilities}
                 </div>
+
                 <div className={`${styles.resourceItemDetail} ${styles.colMaterials}`}>
                   {resource.materials}
                 </div>
+
                 <div className={`${styles.resourceItemDetail} ${styles.colDate}`}>
                   <Calendar size={14} className={styles.calendarIcon} /> {resource.date}
                 </div>
@@ -257,11 +389,19 @@ SearchBar.propTypes = {
   onSearchTermChange: PropTypes.func.isRequired,
 };
 
+SearchBar.defaultProps = {
+  darkMode: false,
+};
+
 Pagination.propTypes = {
   totalPages: PropTypes.number.isRequired,
   currentPage: PropTypes.number.isRequired,
   setCurrentPage: PropTypes.func.isRequired,
   darkMode: PropTypes.bool,
+};
+
+Pagination.defaultProps = {
+  darkMode: false,
 };
 
 export default ResourceManagement;

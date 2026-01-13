@@ -276,3 +276,8 @@
 .darkModeResourceManagementDashboard .calendarIcon {
   color: #94a3b8;
 }
+
+.actionButtons {
+  display: flex;
+  gap: 10px; 
+}
