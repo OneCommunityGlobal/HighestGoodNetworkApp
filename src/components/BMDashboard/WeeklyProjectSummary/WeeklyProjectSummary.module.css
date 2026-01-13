@@ -190,6 +190,7 @@
   min-height: 500px;
   border-radius: 8px;
   overflow: hidden;
+  grid-column: span 4;
 }
 
 .weeklyProjectSummaryDashboardSection {
@@ -218,7 +219,8 @@
 .weeklyProjectSummaryDashboardCategoryContent {
   padding: 15px;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  /* grid-template-columns: repeat(4, 1fr); */
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 20px;
   border-top: 1px solid var(--card-shadow);
   animation: fadeIn 0.3s ease-in-out;
@@ -405,6 +407,12 @@
   max-width: 1600px;
   margin: auto;
 }
+/* .projectStatusGrid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: repeat(2, auto);
+  gap: 10px;
+} */
 
 /* ---------------- OVAL STATUS BUTTON ---------------- */
 .weeklyStatusButton {
