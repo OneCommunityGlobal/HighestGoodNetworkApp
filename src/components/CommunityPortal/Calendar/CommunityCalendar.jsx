@@ -110,6 +110,16 @@ function CommunityCalendar() {
     [getEventsForDate],
   );
 
+  const handleEventKeyPress = useCallback(
+    (e, event) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        handleEventClick(event);
+      }
+    },
+    [handleEventClick],
+  );
+
   const handleEventClick = useCallback(event => {
     setSelectedEvent(event);
     setShowEventModal(true);
@@ -199,9 +209,7 @@ function CommunityCalendar() {
 
               {hoveredEventId === event.id && (
                 <div
-                  className={`${styles.eventTooltip} ${
-                    darkMode ? styles.eventTooltipDark : ''
-                  }`}
+                  className={`${styles.eventTooltip} ${darkMode ? styles.eventTooltipDark : ''}`}
                 >
                   <strong>{event.title}</strong>
                   <span className={styles.tooltipDetail}>
@@ -231,6 +239,9 @@ function CommunityCalendar() {
           )}
         </div>
       );
+    },
+    [getEventsForDate, handleEventClick, darkMode, hoveredEventId],
+  );
 
   const tileClassName = useCallback(
     ({ date, view }) => {
