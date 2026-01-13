@@ -9,6 +9,50 @@ import { ENDPOINTS } from '../../utils/URL';
 import config from '../../config.json';
 import styles from './ApplicantSourceDonutChart.module.css';
 
+const CustomTooltip = ({ active, payload, darkMode }) => {
+  if (active && payload && payload.length) {
+    const data = payload[0];
+    const name = data.name || 'Unknown';
+    const value = data.value || 0;
+    const total = payload.reduce((sum, item) => sum + (item.value || 0), 0);
+    const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
+
+    return (
+      <div
+        style={{
+          backgroundColor: darkMode ? '#1e293b' : '#ffffff',
+          border: `1px solid ${darkMode ? '#475569' : '#e5e7eb'}`,
+          borderRadius: '6px',
+          padding: '10px 12px',
+          boxShadow: darkMode
+            ? '0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2)'
+            : '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+          color: darkMode ? '#e2e8f0' : '#1f2937',
+        }}
+      >
+        <div
+          style={{
+            fontWeight: 600,
+            marginBottom: '4px',
+            color: darkMode ? '#f1f5f9' : '#111827',
+            fontSize: '14px',
+          }}
+        >
+          {name}
+        </div>
+        <div style={{ fontSize: '13px', color: darkMode ? '#cbd5e1' : '#4b5563' }}>
+          Value: <strong style={{ color: darkMode ? '#e2e8f0' : '#1f2937' }}>{value}</strong>
+        </div>
+        <div style={{ fontSize: '13px', color: darkMode ? '#cbd5e1' : '#4b5563' }}>
+          Percentage:{' '}
+          <strong style={{ color: darkMode ? '#e2e8f0' : '#1f2937' }}>{percentage}%</strong>
+        </div>
+      </div>
+    );
+  }
+  return null;
+};
+
 const COLORS = ['#FF4D4F', '#FFC107', '#1890FF', '#00C49F', '#8884D8'];
 const toDateOnlyString = date => (date ? date.toISOString().split('T')[0] : null);
 
@@ -560,7 +604,7 @@ const ApplicantSourceDonutChart = () => {
                   ))}
                   {comparisonText && <Label content={renderCenterText} />}
                 </Pie>
-                <Tooltip />
+                <Tooltip content={<CustomTooltip darkMode={darkMode} />} />
                 <Legend
                   layout={legendLayout}
                   verticalAlign={legendVerticalAlign}

@@ -101,3 +101,31 @@
     align-items: center;
   }
 }
+
+/* Dark mode tooltip styles */
+.dark :global(.recharts-tooltip-wrapper) {
+  z-index: 1000;
+}
+
+.dark :global(.recharts-default-tooltip) {
+  background-color: #1e293b !important;
+  border: 1px solid #475569 !important;
+  border-radius: 6px !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2) !important;
+}
+
+.dark :global(.recharts-tooltip-label) {
+  color: #f1f5f9 !important;
+  font-weight: 600 !important;
+  margin-bottom: 4px !important;
+}
+
+.dark :global(.recharts-tooltip-item) {
+  color: #e2e8f0 !important;
+}
+
+.dark :global(.recharts-tooltip-item-name),
+.dark :global(.recharts-tooltip-item-separator),
+.dark :global(.recharts-tooltip-item-value) {
+  color: #e2e8f0 !important;
+}
