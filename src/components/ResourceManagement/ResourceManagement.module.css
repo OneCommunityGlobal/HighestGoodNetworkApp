@@ -407,3 +407,7 @@
 .darkMode input[type='checkbox'] {
   filter: invert(1) hue-rotate(180deg);
 }
+.actionButtons {
+  display: flex;
+  gap: 10px; 
+}
