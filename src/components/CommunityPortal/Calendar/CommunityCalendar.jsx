@@ -17,6 +17,7 @@ function CommunityCalendar() {
   const [showEventModal, setShowEventModal] = useState(false);
   const [hoveredEventId, setHoveredEventId] = useState(null);
   const [overflowDate, setOverflowDate] = useState(null);
+  const darkMode = useSelector(state => state.theme.darkMode);
   const popupRef = useRef(null);
 
   const currentDate = new Date();
@@ -268,8 +269,6 @@ function CommunityCalendar() {
     }),
     [mockEvents],
   );
-
-  const darkMode = useSelector(s => s.theme.darkMode);
 
   const calendarClasses = useMemo(
     () => ({
