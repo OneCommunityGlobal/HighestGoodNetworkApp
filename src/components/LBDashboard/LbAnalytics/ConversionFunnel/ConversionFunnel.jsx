@@ -35,10 +35,10 @@ const ConversionFunnelFilters = ({
   return (
     <div className={`${styles.filtersContainer} ${darkMode ? styles.darkFiltersContainer : ''}`}>
       <div className={styles.filterGroup}>
-        <label className={styles.filterLabel}>Date Range:</label>
+        <span className={styles.filterLabel}>Date Range:</span>
         <div className={styles.dateRangePicker}>
           <div className={styles.datePickerWrapper}>
-            <label className={styles.dateLabel}>From:</label>
+            <span className={styles.dateLabel}>From:</span>
             <DatePicker
               selected={dateRange[0]}
               onChange={handleStartDateChange}
@@ -51,7 +51,7 @@ const ConversionFunnelFilters = ({
             />
           </div>
           <div className={styles.datePickerWrapper}>
-            <label className={styles.dateLabel}>To:</label>
+            <span className={styles.dateLabel}>To:</span>
             <DatePicker
               selected={dateRange[1]}
               onChange={handleEndDateChange}
@@ -68,7 +68,7 @@ const ConversionFunnelFilters = ({
       </div>
 
       <div className={styles.filterGroup}>
-        <label className={styles.filterLabel}>Category:</label>
+        <span className={styles.filterLabel}>Category:</span>
         <div className={styles.categoryButtons}>
           <button
             type="button"
@@ -92,9 +92,9 @@ const ConversionFunnelFilters = ({
       </div>
 
       <div className={styles.filterGroup}>
-        <label className={styles.filterLabel}>
+        <span className={styles.filterLabel}>
           {category === 'village' ? 'Select Villages:' : 'Select Properties:'}
-        </label>
+        </span>
         <div className={styles.multiSelectWrapper}>
           {category === 'village' ? (
             <MultiSelect
