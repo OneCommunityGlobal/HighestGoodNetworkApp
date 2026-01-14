@@ -2,6 +2,24 @@
 import '@testing-library/jest-dom';
 import { vi } from 'vitest';
 
+// Mock URL APIs used by plotly
+const mockCreateObjectURL = vi.fn(() => 'mock-url');
+const mockRevokeObjectURL = vi.fn();
+
+if (!global.URL) {
+  global.URL = {};
+}
+global.URL.createObjectURL = mockCreateObjectURL;
+global.URL.revokeObjectURL = mockRevokeObjectURL;
+
+if (typeof window !== 'undefined') {
+  if (!window.URL) {
+    window.URL = {};
+  }
+  window.URL.createObjectURL = mockCreateObjectURL;
+  window.URL.revokeObjectURL = mockRevokeObjectURL;
+}
+
 // Mock axios with proper error handling
 vi.mock('axios', () => {
   const mockAxios = {
