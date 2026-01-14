@@ -49,7 +49,7 @@ function ActivityList() {
   }, []);
 
   // Get location suggestions with STRICT prefix-based matching only
-  const getLocationSuggestions = (input) => {
+  const getLocationSuggestions = input => {
     if (!input.trim()) {
       return [];
     }
@@ -59,9 +59,7 @@ function ActivityList() {
     const lowerInput = input.toLowerCase();
 
     // ONLY return locations that START with the input (prefix matching)
-    const prefixMatches = uniqueLocations.filter(loc =>
-      loc.toLowerCase().startsWith(lowerInput)
-    );
+    const prefixMatches = uniqueLocations.filter(loc => loc.toLowerCase().startsWith(lowerInput));
 
     // Limit to top 10 results
     return prefixMatches.slice(0, 10);
@@ -83,11 +81,12 @@ function ActivityList() {
     return (
       (!filter.type || activity.type.toLowerCase().includes(filter.type.toLowerCase())) &&
       (!filter.date || activity.date === filter.date) &&
-      (!filter.location || activity.location.toLowerCase().includes(filter.location.toLowerCase()))
+      (!filter.location ||
+        activity.location.toLowerCase().startsWith(filter.location.toLowerCase()))
     );
   });
 
-  const handleSuggestionClick = (location) => {
+  const handleSuggestionClick = location => {
     setFilter({ ...filter, location });
     setShowSuggestions(false);
     setLocationSuggestions([]);
@@ -147,12 +146,28 @@ function ActivityList() {
               autoComplete="off"
             />
             {showSuggestions && locationSuggestions.length > 0 && (
-              <div className={`${styles.suggestions} ${darkMode ? styles.darkSuggestions : ''}`}>
+              <div
+                className={`${styles.suggestions} ${darkMode ? styles.darkSuggestions : ''}`}
+                role="listbox"
+                aria-label="Location suggestions"
+              >
                 {locationSuggestions.map((location, index) => (
                   <div
                     key={index}
                     className={styles.suggestionItem}
-                    onClick={() => handleSuggestionClick(location)}
+                    role="option"
+                    tabIndex={0}
+                    aria-selected="false"
+                    onMouseDown={e => {
+                      e.preventDefault(); // Prevent blur from firing
+                      handleSuggestionClick(location);
+                    }}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        handleSuggestionClick(location);
+                      }
+                    }}
                   >
                     {location}
                   </div>

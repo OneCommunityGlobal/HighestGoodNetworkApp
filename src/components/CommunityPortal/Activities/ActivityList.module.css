@@ -168,7 +168,18 @@
   background-color: #f3f4f6;
 }
 
+.suggestionItem:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: -2px;
+  background-color: #f3f4f6;
+}
+
 .darkSuggestions .suggestionItem:hover {
+  background-color: #334155;
+}
+
+.darkSuggestions .suggestionItem:focus {
+  outline-color: #60a5fa;
   background-color: #334155;
 }
 
