@@ -323,8 +323,35 @@ function IssueChart() {
               htmlFor="issue-type-select"
               className={`${styles.issueChartLabel} ${darkMode ? styles.issueChartLabelDark : ''}`}
             >
-              Issue Type:
+              Issue Type ({filters.issueTypes.length} selected):
             </label>
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '6px' }}>
+              <button
+                type="button"
+                onClick={() =>
+                  setFilters(prev => ({
+                    ...prev,
+                    issueTypes: Object.keys(issues),
+                  }))
+                }
+                style={{ cursor: 'pointer', fontSize: '12px' }}
+              >
+                Select All
+              </button>
+
+              <button
+                type="button"
+                onClick={() =>
+                  setFilters(prev => ({
+                    ...prev,
+                    issueTypes: [],
+                  }))
+                }
+                style={{ cursor: 'pointer', fontSize: '12px' }}
+              >
+                Clear All
+              </button>
+            </div>
             <Select
               inputId="issue-type-select"
               className={`${styles.issueChartSelect} ${
@@ -344,8 +371,34 @@ function IssueChart() {
               htmlFor="year-select"
               className={`${styles.issueChartLabel} ${darkMode ? styles.issueChartLabelDark : ''}`}
             >
-              Year:
+              Year ({filters.years.length} selected):
             </label>
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '6px' }}>
+              <button
+                type="button"
+                onClick={() =>
+                  setFilters(prev => ({
+                    ...prev,
+                    years: uniqueYears.map(y => Number(y)), // ✅ FIXED
+                  }))
+                }
+                style={{ cursor: 'pointer', fontSize: '12px' }}
+              >
+                Select All
+              </button>
+              <button
+                type="button"
+                onClick={() =>
+                  setFilters(prev => ({
+                    ...prev,
+                    years: [],
+                  }))
+                }
+                style={{ cursor: 'pointer', fontSize: '12px' }}
+              >
+                Clear All
+              </button>
+            </div>
             <Select
               inputId="year-select"
               className={`${styles.issueChartSelect} ${
