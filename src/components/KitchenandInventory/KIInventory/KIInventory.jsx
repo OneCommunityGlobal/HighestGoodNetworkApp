@@ -24,11 +24,11 @@ import { RiLeafLine } from 'react-icons/ri';
 const KIInventory = () => {
   const darkMode = useSelector(state => state.theme.darkMode);
   const tabs = [
-    'Ingredients',
-    'Equipment & Supplies',
-    'Seeds',
-    'Canning Supplies',
-    'Animal Supplies',
+    'ingredients',
+    'equipment & supplies',
+    'seeds',
+    'canning supplies',
+    'animal supplies',
   ];
   const [activeTab, setActiveTab] = useState(tabs[0]);
   const [searchTerm, setSearchTerm] = useState('');
