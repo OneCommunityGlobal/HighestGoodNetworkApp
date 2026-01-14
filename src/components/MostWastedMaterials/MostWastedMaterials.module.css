@@ -33,6 +33,17 @@
   color: #e2e8f0;
 }
 
+.subtitle {
+  color: #6b7280;
+  margin-top: 8px;
+  font-size: 14px;
+  transition: color 0.3s ease;
+}
+
+.darkMode .subtitle {
+  color: #a0aec0;
+}
+
 .card {
   background-color: #ffffff;
   border-radius: 8px;
@@ -51,7 +62,7 @@
 
 .filterGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 20px;
 }
 
@@ -130,31 +141,7 @@
   color: #e2e8f0;
 }
 
-.dropdownItem:hover {
-  background-color: #f3f4f6;
-}
-
-.darkMode .dropdownItem:hover {
-  background-color: #5a6578;
-}
-
-.dateFilterGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-}
-
-.dateLabel {
-  font-size: 12px;
-  color: #6b7280;
-  transition: color 0.3s ease;
-}
-
-.darkMode .dateLabel {
-  color: #a0aec0;
-}
-
-.dateInput {
+.input {
   width: 100%;
   padding: 8px 12px;
   border: 1px solid #d1d5db;
@@ -165,26 +152,70 @@
   transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 
-.darkMode .dateInput {
+.darkMode .input {
   background-color: #4a5568;
   border-color: #718096;
   color: #e2e8f0;
 }
 
-.dateInput:focus {
+.input:focus {
   outline: none;
   border-color: #3b82f6;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-.darkMode .dateInput:focus {
+.darkMode .input:focus {
   border-color: #63b3ed;
   box-shadow: 0 0 0 3px rgba(99, 179, 237, 0.2);
+}
+
+.actionButtons {
+  margin-top: 16px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.actionButton {
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background-color: #fff;
+  cursor: pointer;
+  color: #374151;
+  font-size: 14px;
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+.darkMode .actionButton {
+  background-color: #4a5568;
+  border-color: #718096;
+  color: #e2e8f0;
+}
+
+.actionButton:hover {
+  background-color: #f3f4f6;
+}
+
+.darkMode .actionButton:hover {
+  background-color: #5a6578;
 }
 
 .chartContainer {
   width: 100%;
   height: 500px;
+}
+
+.noData {
+  height: 500px;
+  display: grid;
+  place-items: center;
+  color: #6b7280;
+  transition: color 0.3s ease;
+}
+
+.darkMode .noData {
+  color: #a0aec0;
 }
 
 /* Chart specific styles */
@@ -215,25 +246,4 @@
 .darkMode .recharts-default-tooltip {
   background-color: #2d3748 !important;
   border: 1px solid #4a5568 !important;
-}
-
-/* Chart label text */
-.chartLabel {
-  fill: #374151;
-  font-size: 12px;
-  font-weight: 500;
-  transition: fill 0.3s ease;
-}
-
-.darkMode .chartLabel {
-  fill: #e2e8f0;
-}
-
-/* Bar color - remains consistent in both modes */
-.barFill {
-  fill: #3b82f6;
-}
-
-.darkMode .barFill {
-  fill: #4299e1;
 }
