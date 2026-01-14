@@ -24,11 +24,11 @@ const ConversionFunnelFilters = ({
   onPropertiesChange,
   darkMode,
 }) => {
-  const handleStartDateChange = (date) => {
+  const handleStartDateChange = date => {
     onDateRangeChange([date, dateRange[1]]);
   };
 
-  const handleEndDateChange = (date) => {
+  const handleEndDateChange = date => {
     onDateRangeChange([dateRange[0], date]);
   };
 
@@ -147,7 +147,7 @@ const ConversionFunnelChart = ({ data, darkMode }) => {
   // Fixed node positions for clean layout
   const nodePositions = {
     x: [0.02, 0.26, 0.26, 0.56, 0.92, 0.92, 0.92, 0.92],
-    y: [0.08, 0.62, 0.08, 0.48, 0.82, 0.38, 0.60, 0.08],
+    y: [0.08, 0.62, 0.08, 0.48, 0.82, 0.38, 0.6, 0.08],
   };
 
   const plotData = [
@@ -169,7 +169,7 @@ const ConversionFunnelChart = ({ data, darkMode }) => {
           color: darkMode ? '#f5f5f5' : '#444444',
           family: 'Arial, sans-serif',
         },
-        label: labels.map((label) => {
+        label: labels.map(label => {
           const labelValues = {
             'Users Attracted': numbers.usersAttracted,
             'Showed Interest': numbers.showedInterest,
@@ -178,7 +178,7 @@ const ConversionFunnelChart = ({ data, darkMode }) => {
             'Did Not Place Bids': numbers.didNotPlaceBids,
             'Paying Guests': numbers.payingGuests,
             'Did Not Convert': numbers.didNotConvert,
-            'Bounced': numbers.bounced,
+            Bounced: numbers.bounced,
           };
           return `${label}<br>${labelValues[label]?.toLocaleString() || ''}`;
         }),
@@ -191,7 +191,8 @@ const ConversionFunnelChart = ({ data, darkMode }) => {
         target,
         value,
         color: linkColors,
-        hovertemplate: '%{source.customdata} → %{target.customdata}<br>%{value:,} users<extra></extra>',
+        hovertemplate:
+          '%{source.customdata} → %{target.customdata}<br>%{value:,} users<extra></extra>',
       },
     },
   ];
@@ -286,7 +287,7 @@ const ConversionFunnelChart = ({ data, darkMode }) => {
       {
         text: '● Drop-off Points',
         x: 1.02,
-        y: 0.60,
+        y: 0.6,
         xref: 'paper',
         yref: 'paper',
         xanchor: 'left',
@@ -325,7 +326,9 @@ const ConversionFunnelChart = ({ data, darkMode }) => {
  */
 const ConversionFunnel = ({ darkMode }) => {
   const [dateRange, setDateRange] = useState([
-    moment().subtract(6, 'months').toDate(),
+    moment()
+      .subtract(6, 'months')
+      .toDate(),
     moment().toDate(),
   ]);
   const [category, setCategory] = useState('village'); // 'village' or 'property'
@@ -359,7 +362,7 @@ const ConversionFunnel = ({ darkMode }) => {
     // Calculate date range in days to vary data
     const daysDiff = moment(dateRange[1]).diff(moment(dateRange[0]), 'days');
     const dateMultiplier = Math.min(daysDiff / 180, 2); // Cap at 2x for 6+ months
-    
+
     // Calculate selection multiplier based on villages/properties
     let selectionMultiplier = 1;
     if (category === 'village' && selectedVillages.length > 0) {
@@ -367,16 +370,16 @@ const ConversionFunnel = ({ darkMode }) => {
     } else if (category === 'property' && selectedProperties.length > 0) {
       selectionMultiplier = selectedProperties.length / propertyOptions.length;
     }
-    
+
     // Base numbers vary by category
     const baseUsers = category === 'village' ? 10000 : 8500;
     const baseMultiplier = dateMultiplier * selectionMultiplier;
-    
+
     // Add variation to conversion rates (not just fixed percentages)
     const interestRate = 0.35 + Math.random() * 0.25; // 35-60% show interest
     const bidRate = 0.35 + Math.random() * 0.25; // 35-60% of interested place bids
-    const conversionRate = 0.30 + Math.random() * 0.25; // 30-55% of bidders convert
-    
+    const conversionRate = 0.3 + Math.random() * 0.25; // 30-55% of bidders convert
+
     // Sample conversion funnel data - varies based on filters
     const usersAttracted = Math.round(baseUsers * baseMultiplier);
     const showedInterest = Math.round(usersAttracted * interestRate);
@@ -391,16 +394,16 @@ const ConversionFunnel = ({ darkMode }) => {
     const sankeyData = {
       // Nodes (labels for each stage)
       labels: [
-        'Users Attracted',     // 0
-        'Showed Interest',     // 1
+        'Users Attracted', // 0
+        'Showed Interest', // 1
         'Did Not Show Interest', // 2
-        'Placed Bids',        // 3
+        'Placed Bids', // 3
         'Did Not Place Bids', // 4
-        'Paying Guests',      // 5
-        'Did Not Convert',    // 6
-        'Bounced',            // 7
+        'Paying Guests', // 5
+        'Did Not Convert', // 6
+        'Bounced', // 7
       ],
-      
+
       // Links between nodes (source -> target with value)
       source: [
         0, // Users Attracted -> Showed Interest
@@ -421,15 +424,15 @@ const ConversionFunnel = ({ darkMode }) => {
         7, // -> Bounced
       ],
       value: [
-        showedInterest,      // 4200
-        didNotShowInterest,  // 5800
-        placedBids,          // 1800
-        didNotPlaceBids,     // 2400
-        payingGuests,        // 720
-        didNotConvert,       // 1080
-        bounced,             // 5800
+        showedInterest, // 4200
+        didNotShowInterest, // 5800
+        placedBids, // 1800
+        didNotPlaceBids, // 2400
+        payingGuests, // 720
+        didNotConvert, // 1080
+        bounced, // 5800
       ],
-      
+
       // Colors for nodes (matching the image provided)
       nodeColors: [
         '#5DBEAF', // Users Attracted (teal)
@@ -441,18 +444,18 @@ const ConversionFunnel = ({ darkMode }) => {
         '#34495E', // Did Not Convert (grey-blue)
         '#5DBEAF', // Bounced (teal)
       ],
-      
+
       // Colors for links
       linkColors: [
-        'rgba(107, 91, 149, 0.4)',  // Users -> Showed Interest (purple)
-        'rgba(44, 62, 80, 0.4)',    // Users -> Did Not Show Interest (dark)
-        'rgba(243, 156, 18, 0.4)',  // Showed -> Placed Bids (orange)
-        'rgba(44, 62, 80, 0.4)',    // Showed -> Did Not Place Bids (dark)
-        'rgba(231, 76, 60, 0.4)',   // Placed -> Paying (red)
-        'rgba(52, 73, 94, 0.4)',    // Placed -> Did Not Convert (grey)
-        'rgba(93, 190, 175, 0.4)',  // Did Not Show -> Bounced (teal)
+        'rgba(107, 91, 149, 0.4)', // Users -> Showed Interest (purple)
+        'rgba(44, 62, 80, 0.4)', // Users -> Did Not Show Interest (dark)
+        'rgba(243, 156, 18, 0.4)', // Showed -> Placed Bids (orange)
+        'rgba(44, 62, 80, 0.4)', // Showed -> Did Not Place Bids (dark)
+        'rgba(231, 76, 60, 0.4)', // Placed -> Paying (red)
+        'rgba(52, 73, 94, 0.4)', // Placed -> Did Not Convert (grey)
+        'rgba(93, 190, 175, 0.4)', // Did Not Show -> Bounced (teal)
       ],
-      
+
       // Numerical data for display
       numbers: {
         usersAttracted,
@@ -472,11 +475,11 @@ const ConversionFunnel = ({ darkMode }) => {
     }, 300);
   }, [dateRange, category, selectedVillages, selectedProperties]);
 
-  const handleDateRangeChange = (range) => {
+  const handleDateRangeChange = range => {
     setDateRange(range);
   };
 
-  const handleCategoryChange = (newCategory) => {
+  const handleCategoryChange = newCategory => {
     setCategory(newCategory);
     // Reset selections when category changes
     if (newCategory === 'village') {
@@ -486,11 +489,11 @@ const ConversionFunnel = ({ darkMode }) => {
     }
   };
 
-  const handleVillagesChange = (villages) => {
+  const handleVillagesChange = villages => {
     setSelectedVillages(villages);
   };
 
-  const handlePropertiesChange = (properties) => {
+  const handlePropertiesChange = properties => {
     setSelectedProperties(properties);
   };
 
@@ -509,7 +512,7 @@ const ConversionFunnel = ({ darkMode }) => {
         onPropertiesChange={handlePropertiesChange}
         darkMode={darkMode}
       />
-      
+
       <div className={styles.chartContainer}>
         {loading ? (
           <div className={styles.loading}>Loading conversion funnel data...</div>
