@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { Bar, BarChart, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip } from 'recharts';
+import { useSelector } from 'react-redux'; // Import useSelector to access dark mode state
+import styles from './MostWastedMaterials.module.css'; // Import the CSS module
 
 // Mock data for demonstration
 const mockProjects = [
@@ -49,6 +51,7 @@ const mockData = {
 function CustomDropdown({ options, selected, onSelect }) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const darkMode = useSelector(state => state.theme.darkMode); // Get dark mode state
 
   useEffect(() => {
     const handleClickOutside = event => {
@@ -62,39 +65,13 @@ function CustomDropdown({ options, selected, onSelect }) {
 
   return (
     <div style={{ position: 'relative' }} ref={dropdownRef}>
-      <button
-        type="button"
-        onClick={() => setIsOpen(!isOpen)}
-        style={{
-          width: '100%',
-          padding: '8px 16px',
-          textAlign: 'left',
-          backgroundColor: '#ffffff',
-          border: '1px solid #d1d5db',
-          borderRadius: '6px',
-          cursor: 'pointer',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}
-      >
+      <button type="button" onClick={() => setIsOpen(!isOpen)} className={styles.dropdownButton}>
         <span>{selected.name}</span>
         <span style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}>▼</span>
       </button>
 
       {isOpen && (
-        <div
-          style={{
-            position: 'absolute',
-            zIndex: 10,
-            width: '100%',
-            marginTop: '4px',
-            backgroundColor: '#ffffff',
-            border: '1px solid #d1d5db',
-            borderRadius: '6px',
-            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-          }}
-        >
+        <div className={styles.dropdownMenu}>
           {options.map(option => (
             <button
               type="button"
@@ -103,16 +80,9 @@ function CustomDropdown({ options, selected, onSelect }) {
                 onSelect(option);
                 setIsOpen(false);
               }}
-              style={{
-                width: '100%',
-                padding: '8px 16px',
-                textAlign: 'left',
-                backgroundColor: 'transparent',
-                border: 'none',
-                cursor: 'pointer',
-              }}
+              className={styles.dropdownItem}
               onMouseEnter={e => {
-                e.target.style.backgroundColor = '#f3f4f6';
+                e.target.style.backgroundColor = darkMode ? '#5a6578' : '#f3f4f6';
               }}
               onMouseLeave={e => {
                 e.target.style.backgroundColor = 'transparent';
@@ -130,11 +100,13 @@ function CustomDropdown({ options, selected, onSelect }) {
 // Custom Label component for displaying percentages on bars
 function CustomLabel(props) {
   const { x, y, width, value } = props;
+  const darkMode = useSelector(state => state.theme.darkMode); // Get dark mode state
+
   return (
     <text
       x={x + width / 2}
       y={y - 5}
-      fill="#374151"
+      className={styles.chartLabel}
       textAnchor="middle"
       fontSize="12"
       fontWeight="500"
@@ -146,19 +118,35 @@ function CustomLabel(props) {
 
 // Custom Tooltip Component
 function CustomTooltip({ active, payload, label }) {
+  const darkMode = useSelector(state => state.theme.darkMode); // Get dark mode state
+
   if (active && payload && payload.length) {
     return (
       <div
         style={{
-          backgroundColor: '#ffffff',
-          border: '1px solid #e5e7eb',
+          backgroundColor: darkMode ? '#2d3748' : '#ffffff',
+          border: `1px solid ${darkMode ? '#4a5568' : '#e5e7eb'}`,
           borderRadius: '8px',
-          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+          boxShadow: darkMode ? '0 4px 6px rgba(0, 0, 0, 0.3)' : '0 4px 6px rgba(0, 0, 0, 0.1)',
           padding: '12px',
         }}
       >
-        <p style={{ fontWeight: '500', color: '#111827', margin: '0 0 4px 0' }}>{label}</p>
-        <p style={{ fontSize: '14px', color: '#6b7280', margin: '0' }}>
+        <p
+          style={{
+            fontWeight: '500',
+            color: darkMode ? '#e2e8f0' : '#111827',
+            margin: '0 0 4px 0',
+          }}
+        >
+          {label}
+        </p>
+        <p
+          style={{
+            fontSize: '14px',
+            color: darkMode ? '#cbd5e0' : '#6b7280',
+            margin: '0',
+          }}
+        >
           Waste: {payload[0].value}%
         </p>
       </div>
@@ -174,6 +162,7 @@ export default function MostWastedMaterialsDashboard() {
     to: new Date().toISOString().split('T')[0],
   });
   const [chartData, setChartData] = useState([]);
+  const darkMode = useSelector(state => state.theme.darkMode); // Get dark mode state
 
   useEffect(() => {
     const data = mockData[selectedProject.id] || mockData.all;
@@ -182,58 +171,16 @@ export default function MostWastedMaterialsDashboard() {
   }, [selectedProject, dateRange]);
 
   return (
-    <div
-      style={{
-        width: '100%',
-        maxWidth: '1200px',
-        margin: '0 auto',
-        padding: '24px',
-        backgroundColor: '#f9fafb',
-        minHeight: '100vh',
-      }}
-    >
-      <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-        <h1
-          style={{
-            fontSize: '32px',
-            fontWeight: 'bold',
-            color: '#111827',
-            margin: '0',
-          }}
-        >
-          Most Wasted Materials
-        </h1>
+    <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
+      <div className={styles.header}>
+        <h1 className={styles.title}>Most Wasted Materials</h1>
       </div>
 
-      <div
-        style={{
-          backgroundColor: '#ffffff',
-          borderRadius: '8px',
-          border: '1px solid #e5e7eb',
-          padding: '24px',
-          marginBottom: '24px',
-          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
-        }}
-      >
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-            gap: '20px',
-          }}
-        >
+      <div className={styles.card}>
+        <div className={styles.filterGrid}>
           {/* Project Filter */}
           <div>
-            <label
-              htmlFor="project-filter"
-              style={{
-                display: 'block',
-                fontSize: '14px',
-                fontWeight: '600',
-                color: '#374151',
-                marginBottom: '8px',
-              }}
-            >
+            <label htmlFor="project-filter" className={styles.filterLabel}>
               Project Filter
             </label>
             <CustomDropdown
@@ -245,21 +192,12 @@ export default function MostWastedMaterialsDashboard() {
 
           {/* Date Range Filter */}
           <div>
-            <label
-              htmlFor="date-filter"
-              style={{
-                display: 'block',
-                fontSize: '14px',
-                fontWeight: '600',
-                color: '#374151',
-                marginBottom: '8px',
-              }}
-            >
+            <label htmlFor="date-filter" className={styles.filterLabel}>
               Date Filter
             </label>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+            <div className={styles.dateFilterGrid}>
               <div>
-                <label htmlFor="date-from" style={{ fontSize: '12px', color: '#6b7280' }}>
+                <label htmlFor="date-from" className={styles.dateLabel}>
                   From
                 </label>
                 <input
@@ -267,17 +205,11 @@ export default function MostWastedMaterialsDashboard() {
                   type="date"
                   value={dateRange.from}
                   onChange={e => setDateRange(prev => ({ ...prev, from: e.target.value }))}
-                  style={{
-                    width: '100%',
-                    padding: '8px 12px',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '6px',
-                    fontSize: '14px',
-                  }}
+                  className={styles.dateInput}
                 />
               </div>
               <div>
-                <label htmlFor="date-to" style={{ fontSize: '12px', color: '#6b7280' }}>
+                <label htmlFor="date-to" className={styles.dateLabel}>
                   To
                 </label>
                 <input
@@ -285,13 +217,7 @@ export default function MostWastedMaterialsDashboard() {
                   type="date"
                   value={dateRange.to}
                   onChange={e => setDateRange(prev => ({ ...prev, to: e.target.value }))}
-                  style={{
-                    width: '100%',
-                    padding: '8px 12px',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '6px',
-                    fontSize: '14px',
-                  }}
+                  className={styles.dateInput}
                 />
               </div>
             </div>
@@ -300,16 +226,8 @@ export default function MostWastedMaterialsDashboard() {
       </div>
 
       {/* Chart */}
-      <div
-        style={{
-          backgroundColor: '#ffffff',
-          borderRadius: '8px',
-          border: '1px solid #e5e7eb',
-          padding: '24px',
-          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
-        }}
-      >
-        <div style={{ width: '100%', height: '500px' }}>
+      <div className={styles.card}>
+        <div className={styles.chartContainer}>
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
               data={chartData}
@@ -320,7 +238,7 @@ export default function MostWastedMaterialsDashboard() {
                 bottom: 60,
               }}
             >
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+              <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? '#4a5568' : '#e5e7eb'} />
               <XAxis
                 dataKey="material"
                 angle={-45}
@@ -328,22 +246,25 @@ export default function MostWastedMaterialsDashboard() {
                 height={80}
                 fontSize={12}
                 interval={0}
-                tick={{ fill: '#374151' }}
+                tick={{ fill: darkMode ? '#cbd5e0' : '#374151' }}
               />
               <YAxis
                 label={{
                   value: 'Percentage of Material Wasted (%)',
                   angle: -90,
                   position: 'insideLeft',
-                  style: { textAnchor: 'middle', fill: '#374151' },
+                  style: {
+                    textAnchor: 'middle',
+                    fill: darkMode ? '#cbd5e0' : '#374151',
+                  },
                 }}
                 fontSize={12}
-                tick={{ fill: '#374151' }}
+                tick={{ fill: darkMode ? '#cbd5e0' : '#374151' }}
               />
               <Tooltip content={<CustomTooltip />} />
               <Bar
                 dataKey="wastePercentage"
-                fill="#3b82f6"
+                fill={darkMode ? '#4299e1' : '#3b82f6'}
                 radius={[4, 4, 0, 0]}
                 label={<CustomLabel />}
               />

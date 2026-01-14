@@ -1,0 +1,239 @@
+/* MostWastedMaterials.module.css */
+
+/* Light mode (default) */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+  background-color: #f9fafb;
+  min-height: 100vh;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.darkMode {
+  background-color: #1a202c !important;
+  color: #e2e8f0 !important;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.title {
+  font-size: 32px;
+  font-weight: bold;
+  color: #111827;
+  margin: 0;
+  transition: color 0.3s ease;
+}
+
+.darkMode .title {
+  color: #e2e8f0;
+}
+
+.card {
+  background-color: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.darkMode .card {
+  background-color: #2d3748;
+  border-color: #4a5568;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.filterGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.filterLabel {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+  transition: color 0.3s ease;
+}
+
+.darkMode .filterLabel {
+  color: #cbd5e0;
+}
+
+.dropdownButton {
+  width: 100%;
+  padding: 8px 16px;
+  text-align: left;
+  background-color: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+.darkMode .dropdownButton {
+  background-color: #4a5568;
+  border-color: #718096;
+  color: #e2e8f0;
+}
+
+.dropdownButton:hover {
+  border-color: #9ca3af;
+}
+
+.darkMode .dropdownButton:hover {
+  border-color: #a0aec0;
+  background-color: #4a5568;
+}
+
+.dropdownMenu {
+  position: absolute;
+  z-index: 10;
+  width: 100%;
+  margin-top: 4px;
+  background-color: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.darkMode .dropdownMenu {
+  background-color: #4a5568;
+  border-color: #718096;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.dropdownItem {
+  width: 100%;
+  padding: 8px 16px;
+  text-align: left;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  color: #374151;
+  transition: background-color 0.2s ease, color 0.3s ease;
+}
+
+.darkMode .dropdownItem {
+  color: #e2e8f0;
+}
+
+.dropdownItem:hover {
+  background-color: #f3f4f6;
+}
+
+.darkMode .dropdownItem:hover {
+  background-color: #5a6578;
+}
+
+.dateFilterGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.dateLabel {
+  font-size: 12px;
+  color: #6b7280;
+  transition: color 0.3s ease;
+}
+
+.darkMode .dateLabel {
+  color: #a0aec0;
+}
+
+.dateInput {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  background-color: #ffffff;
+  color: #374151;
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+.darkMode .dateInput {
+  background-color: #4a5568;
+  border-color: #718096;
+  color: #e2e8f0;
+}
+
+.dateInput:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.darkMode .dateInput:focus {
+  border-color: #63b3ed;
+  box-shadow: 0 0 0 3px rgba(99, 179, 237, 0.2);
+}
+
+.chartContainer {
+  width: 100%;
+  height: 500px;
+}
+
+/* Chart specific styles */
+.darkMode .recharts-cartesian-grid-horizontal line,
+.darkMode .recharts-cartesian-grid-vertical line {
+  stroke: #4a5568;
+}
+
+.darkMode .recharts-x-axis .recharts-cartesian-axis-tick-value,
+.darkMode .recharts-y-axis .recharts-cartesian-axis-tick-value {
+  fill: #cbd5e0;
+}
+
+.darkMode .recharts-x-axis .recharts-cartesian-axis-line,
+.darkMode .recharts-y-axis .recharts-cartesian-axis-line {
+  stroke: #718096;
+}
+
+.darkMode .recharts-tooltip-wrapper {
+  background-color: #2d3748 !important;
+  border-color: #4a5568 !important;
+}
+
+.darkMode .recharts-tooltip-item {
+  color: #e2e8f0 !important;
+}
+
+.darkMode .recharts-default-tooltip {
+  background-color: #2d3748 !important;
+  border: 1px solid #4a5568 !important;
+}
+
+/* Chart label text */
+.chartLabel {
+  fill: #374151;
+  font-size: 12px;
+  font-weight: 500;
+  transition: fill 0.3s ease;
+}
+
+.darkMode .chartLabel {
+  fill: #e2e8f0;
+}
+
+/* Bar color - remains consistent in both modes */
+.barFill {
+  fill: #3b82f6;
+}
+
+.darkMode .barFill {
+  fill: #4299e1;
+}
