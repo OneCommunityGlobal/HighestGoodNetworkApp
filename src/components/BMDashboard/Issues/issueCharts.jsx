@@ -127,7 +127,12 @@ function IssueChart() {
           titleFont: { size: 14, weight: '600' },
           bodyFont: { size: 13, weight: '500' },
           callbacks: {
-            label: ctx => `${ctx.dataset.label}: ${ctx.formattedValue}`,
+            label: ctx => {
+              const issueType = ctx.label;
+              const year = ctx.dataset.label;
+              const count = ctx.formattedValue;
+              return `${issueType} | ${year}: ${count}`;
+            },
           },
           // Enhanced tooltip styling for better accessibility
           displayColors: true,
@@ -154,7 +159,9 @@ function IssueChart() {
             stepSize: 1,
             color: darkMode ? '#e8f0fe' : '#1a1a1a',
             font: { size: 12, weight: '500' },
-            padding: 8,
+            padding: 10,
+            maxRotation: 35,
+            minRotation: 20,
           },
           border: {
             color: darkMode ? '#4a5568' : '#e2e8f0',
