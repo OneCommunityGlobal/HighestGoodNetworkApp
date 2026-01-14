@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Bar } from 'react-chartjs-2';
 import Select from 'react-select';
@@ -10,6 +10,7 @@ function IssueChart() {
   const dispatch = useDispatch();
   const darkMode = useSelector(state => state.theme.darkMode);
   const { loading, issues, error } = useSelector(state => state.bmissuechart);
+  const chartRef = useRef(null);
 
   const [filters, setFilters] = useState({ issueTypes: [], years: [] });
 
@@ -30,6 +31,42 @@ function IssueChart() {
       setFilters({ issueTypes: allIssueTypes, years: allYears });
     }
   }, [issues]);
+
+  const handleExportCSV = () => {
+    if (!chartData || chartData.labels.length === 0) return;
+
+    const rows = [];
+    rows.push(['Issue Type', 'Year', 'Count']);
+
+    chartData.datasets.forEach(dataset => {
+      dataset.data.forEach((count, index) => {
+        rows.push([chartData.labels[index], dataset.label, count]);
+      });
+    });
+
+    const csvContent = rows.map(r => r.join(',')).join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'issues_chart_data.csv';
+    link.click();
+
+    URL.revokeObjectURL(url);
+  };
+
+  const handleExportPNG = () => {
+    if (!chartRef.current) return;
+
+    const chart = chartRef.current;
+    const url = chart.toBase64Image();
+
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'issues_chart.png';
+    link.click();
+  };
 
   const extractDropdownOptions = () => {
     const issueTypes = [...new Set(Object.keys(issues || {}))].map(issue => ({
@@ -307,6 +344,15 @@ function IssueChart() {
         >
           Issues Chart
         </h2>
+        <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+          <button type="button" onClick={handleExportCSV} disabled={chartData.labels.length === 0}>
+            Export CSV
+          </button>
+
+          <button type="button" onClick={handleExportPNG} disabled={chartData.labels.length === 0}>
+            Export PNG
+          </button>
+        </div>
         <div
           className={styles.selectContainer}
           style={{ justifyContent: 'center', gap: '20px', flexWrap: 'wrap' }}
@@ -419,12 +465,21 @@ function IssueChart() {
           </p>
         )}
 
-        {!loading && !error && (
+        {!loading && !error && chartData.labels.length === 0 && (
+          <p className={styles.noDataText}>No data for selected filters</p>
+        )}
+
+        {!loading && !error && chartData.labels.length > 0 && (
           <div
             className={`${styles.chartWrapper} ${darkMode ? styles.chartWrapperDark : ''}`}
             style={{ minHeight: 400 }}
           >
-            <Bar data={chartData} options={chartOptions} aria-labelledby="chart-title" />
+            <Bar
+              ref={chartRef}
+              data={chartData}
+              options={chartOptions}
+              aria-labelledby="chart-title"
+            />
           </div>
         )}
       </div>
