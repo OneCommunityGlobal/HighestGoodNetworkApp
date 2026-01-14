@@ -14,6 +14,7 @@ import {
 import ReviewWordCloud from './ReviewWordCloud/ReviewWordCloud';
 import styles from './LBDashboard.module.css';
 import DemandOverTime from './LbAnalytics/DemandOverTime/DemandOverTime';
+import ConversionFunnel from './LbAnalytics/ConversionFunnel/ConversionFunnel';
 import moment from 'moment';
 
 const METRIC_OPTIONS = {
@@ -338,6 +339,14 @@ export function LBDashboard() {
               darkMode={darkMode}
               dateRange={dateRange}
             />
+          </div>
+        </div>
+      </AnalysisSection>
+
+      <AnalysisSection title="Conversion Funnel" darkMode={darkMode}>
+        <div className={styles.chartRow}>
+          <div className={styles.fullWidthChartCol}>
+            <ConversionFunnel darkMode={darkMode} />
           </div>
         </div>
       </AnalysisSection>
