@@ -95,9 +95,13 @@ export default function ToolItemsTable({
       setConditionCol({ iconsToDisplay: faSort, sortOrder: 'default' });
       setToolStatusCol({ iconsToDisplay: faSort, sortOrder: 'default' });
     } else if (columnName === 'ToolStatusColumn') {
-      // Add logic for sorting by Status if needed
-      const usingRows = newSortedData.filter(item => item.itemType?.using?.includes(item._id));
-      const notUsingRows = newSortedData.filter(item => !item.itemType?.using?.includes(item._id));
+      const usingRows = newSortedData.filter(item =>
+        item.itemType?.using?.some(id => id.toString() === item._id.toString()),
+      );
+      const notUsingRows = newSortedData.filter(
+        item => !item.itemType?.using?.some(id => id.toString() === item._id.toString()),
+      );
+
       if (toolStatusCol.sortOrder === 'default' || toolStatusCol.sortOrder === 'desc') {
         newSortedData.splice(0, newSortedData.length, ...notUsingRows, ...usingRows);
         setToolStatusCol({ iconsToDisplay: faSortUp, sortOrder: 'asc' });
@@ -109,7 +113,6 @@ export default function ToolItemsTable({
       setInventoryItemTypeCol({ iconsToDisplay: faSort, sortOrder: 'default' });
       setConditionCol({ iconsToDisplay: faSort, sortOrder: 'default' });
     } else if (columnName === 'ConditionColumn') {
-      // Add logic for sorting by Condition if needed
       if (conditionCol.sortOrder === 'default' || conditionCol.sortOrder === 'desc') {
         newSortedData.sort((a, b) => (a.condition || '').localeCompare(b.condition || ''));
         setConditionCol({ iconsToDisplay: faSortUp, sortOrder: 'asc' });
@@ -155,12 +158,12 @@ export default function ToolItemsTable({
               )}
               {dynamicColumns.map(
                 ({ label }) =>
-                  (label == 'Condition' && (
+                  (label === 'Condition' && (
                     <th onClick={() => sortData('ConditionColumn')} key={label}>
                       {label} <FontAwesomeIcon icon={conditionCol.iconsToDisplay} size="lg" />
                     </th>
                   )) ||
-                  (label == 'Using' && (
+                  (label === 'Using' && (
                     <th onClick={() => sortData('ToolStatusColumn')} key={label}>
                       {label} <FontAwesomeIcon icon={toolStatusCol.iconsToDisplay} size="lg" />
                     </th>
@@ -174,20 +177,29 @@ export default function ToolItemsTable({
           <tbody>
             {sortedData && sortedData.length > 0 ? (
               sortedData.map(el => {
+                const isInUsing = el.itemType?.using?.some(
+                  id => id.toString() === el._id.toString(),
+                );
+                const isInAvailable = el.itemType?.available?.some(
+                  id => id.toString() === el._id.toString(),
+                );
+
                 return (
                   <tr key={el._id}>
                     <td>{el.project?.name}</td>
                     <td>{el.itemType?.name}</td>
                     <td>{el.purchaseStatus === 'Purchased' ? 'Yes' : 'No'}</td>
+
                     <td>
-                      {el.itemType?.using?.includes(el._id) ? (
+                      {isInUsing ? (
                         <FontAwesomeIcon icon={faCheck} size="lg" color="green" />
                       ) : (
                         <FontAwesomeIcon icon={faTimes} size="lg" color="red" />
                       )}
                     </td>
+
                     <td>
-                      {el.itemType?.available?.includes(el._id) &&
+                      {isInAvailable &&
                       el.condition !== 'Lost' &&
                       el.condition !== 'Needs Replacing' ? (
                         <FontAwesomeIcon icon={faCheck} size="lg" color="green" />
@@ -195,6 +207,7 @@ export default function ToolItemsTable({
                         <FontAwesomeIcon icon={faTimes} size="lg" color="red" />
                       )}
                     </td>
+
                     <td>
                       <div className={`${styles.conditionCell}`}>
                         {el.condition === 'Lost' ||
@@ -208,7 +221,9 @@ export default function ToolItemsTable({
                         {el.condition}
                       </div>
                     </td>
+
                     <td>{el.code}</td>
+
                     <td className={`${styles.itemsCell}`}>
                       <button
                         type="button"
