@@ -166,9 +166,15 @@ import FollowUpEmailTemplate from './components/CommunityPortal/Activities/Follo
 import Register from './components/CommunityPortal/Activities/Register/Register';
 import ActivitiesPage from './components/CommunityPortal/Activities/ActivitiesPage';
 import EventStats from './components/CommunityPortal/EventPersonalization/EventStats';
-
 // Community Calendar
 import CommunityCalendar from './components/CommunityPortal/Calendar/CommunityCalendar';
+
+// Kicthen and Inventory Portal
+import KitchenandInventoryLogin from './components/KitchenandInventory/Login';
+import KIProtectedRoute from './components/common/KitchenandInventory/KIProtectedRoute';
+import KIDashboard from './components/KitchenandInventory/KIDashboard/KIDashboard';
+
+// Education Portal
 import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
 import EPLogin from './components/EductionPortal/Login';
 import BrowseLessonPlan from './components/EductionPortal/BrowseLessonPlan/BrowseLP';
@@ -865,6 +871,10 @@ export default (
         {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
         {/* <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} /> */}
         {/* ----- END BM Dashboard Routing ----- */}
+        {/* ----- Kitchen and Inventory Portal Routes ----- */}
+        <KIProtectedRoute path="/kitchenandinventory" exact component={KIDashboard} />
+        <Route path="/kitchenandinventory/login" exact component={KitchenandInventoryLogin} />
+        {/* ----- End of Kitchen and Inventory Portal Routes ----- */}
         <Route path="/login" component={Login} />
         <Route path="/forgotpassword" component={ForgotPassword} />
         <Route path="/subscribe" component={SubscribePage} />
