@@ -61,21 +61,84 @@ body {
   background: #fff;
   border: 1px solid #ece7f4;
   border-radius: 14px;
-  padding: 14px 16px;
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  gap: 12px 16px;
-  align-items: center;
+  padding: 16px;
   margin: 0 15px 18px 15px;
+}
+
+.darkFilterBar {
+  background: #2C3E50;
+  border-color: #34495E;
+}
+
+.filterGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.metricSection {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding-top: 12px;
+  border-top: 1px solid #ece7f4;
+}
+
+.darkFilterBar .metricSection {
+  border-top-color: #34495E;
 }
 
 .filterLabel {
   font-size: 12px;
   color: #4a4a4a;
+  font-weight: 600;
 }
 
 .darkFilterLabel {
   color: #b0b0b0;
+}
+
+.dateInput,
+.selectInput {
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  background: #fff;
+}
+
+.dateInput:focus,
+.selectInput:focus {
+  outline: none;
+  border-color: #6a4ff7;
+}
+
+.darkDateInput,
+.darkSelectInput {
+  background: #34495E;
+  border-color: #4A5F7F;
+  color: #fff;
+}
+
+.selectInput {
+  appearance: none;
+  background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"12\" height=\"12\" viewBox=\"0 0 12 12\"><path fill=\"%23333\" d=\"M6 9L1 4h10z\"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 32px;
+}
+
+.darkSelectInput {
+  background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"12\" height=\"12\" viewBox=\"0 0 12 12\"><path fill=\"%23fff\" d=\"M6 9L1 4h10z\"/></svg>');
 }
 
 .categoryGroup {
@@ -108,6 +171,21 @@ body {
   background: #000 !important;
   border-color: #000 !important;
   color: #fff !important;
+}
+
+.darkFilterBtn {
+  background: #34495E !important;
+  border-color: #4A5F7F !important;
+}
+
+.darkFilterBtn:hover {
+  background: #4A5F7F !important;
+  border-color: #5D7FA3 !important;
+}
+
+.darkFilterBtn.active {
+  background: #E74C3C !important;
+  border-color: #E74C3C !important;
 }
 
 .dd :global(.dropdown-toggle) {
@@ -152,7 +230,7 @@ body {
 }
 
 .currentMetric {
-  justify-self: end;
+  margin-left: auto;
   font-size: 14px;
 }
 
@@ -187,12 +265,23 @@ body {
   min-height: 220px;
 }
 
+.graphCardBody {
+  padding: 14px 22px 20px 6px;
+}
+
 .graphTitle {
   display: flex;
   align-items: center;
   justify-content: space-between;
   font-weight: 600;
+  font-size: 18px;
   margin-bottom: 8px;
+}
+
+.graphCanvas {
+  margin-left: -18px;
+  margin-right: -8px;
+  width: calc(100% + 26px);
 }
 
 .metricPill {
@@ -262,24 +351,6 @@ body {
   box-shadow: 0 2px 8px #1C2541;
 }
 
-.darkFilterBar {
-  background: #1C2541;
-  border-color: #3A506B;
-  color: #e1e1e1;
-  box-shadow: 0 2px 8px #1C1C1C;
-}
-
-.darkFilterBtn {
-  background: #3A506B !important;
-  border-color: #3A506B !important;
-  color: #fff !important;
-}
-
-.active.darkFilterBtn {
-  background: #225163 !important;
-  border-color: #225163 !important;
-}
-
 .darkDropdown {
   background: #1C2541;
   border-color: #3A506B;
@@ -338,4 +409,42 @@ body {
 
 .chartCard, .darkChartCard {
   box-shadow: 0 4px 16px rgba(28, 37, 65, 0.25);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .filterGrid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .metricSection {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .categoryGroup {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .filterBtn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .currentMetric {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .dashboardHeader {
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .title {
+    font-size: 20px;
+  }
 }

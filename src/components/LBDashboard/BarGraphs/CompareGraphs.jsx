@@ -31,9 +31,9 @@ export function CompareBarGraph({
   xTicks,
   yTicks,
   barSize,
-  height = 320,
-  yCategoryWidth = 140,
-  margins = { top: 8, right: 24, bottom: 36, left: 36 },
+  height = 420,
+  yCategoryWidth = 70,
+  margins = { top: 16, right: 20, bottom: 46, left: 0 },
   maxBars,
   showYAxisTitle = true,
   yTickFormatter,
@@ -42,7 +42,7 @@ export function CompareBarGraph({
 
   return (
     <Card className={styles.graphCard}>
-      <CardBody>
+      <CardBody className={styles.graphCardBody}>
         {/* Title row + chips */}
         <div className={styles.graphTitle} style={{ display: 'flex', alignItems: 'center' }}>
           <span style={{ flex: 1 }}>{title}</span>
@@ -81,20 +81,28 @@ export function CompareBarGraph({
                     domain={xDomain || ['dataMin', 'dataMax']}
                     ticks={xTicks}
                     tickFormatter={valueFormatter}
-                    label={{ value: xLabel, position: 'insideBottom', offset: -4 }}
+                    tick={{ fontSize: 11 }}
+                    label={{
+                      value: xLabel,
+                      position: 'insideBottom',
+                      offset: -10,
+                      style: { fontSize: 15 },
+                    }}
                   />
                   <YAxis
                     type="category"
                     dataKey={nameKey}
                     width={yCategoryWidth}
+                    tick={{ fontSize: 11 }}
+                    tickFormatter={yTickFormatter}
                     label={
                       showYAxisTitle
                         ? {
                             value: yLabel,
                             angle: -90,
                             position: 'insideLeft',
-                            offset: 6,
-                            style: { fontSize: 12, fill: '#8c8c8c', fontWeight: 600 },
+                            offset: 0,
+                            style: { fontSize: 15, fill: '#8c8c8c', fontWeight: 600 },
                           }
                         : undefined
                     }
@@ -105,13 +113,27 @@ export function CompareBarGraph({
                   <XAxis
                     dataKey={nameKey}
                     interval={0}
-                    label={{ value: xLabel, position: 'insideBottom', offset: -4 }}
+                    tick={{ fontSize: 11, angle: 0 }}
+                    height={60}
+                    label={{
+                      value: xLabel,
+                      position: 'insideBottom',
+                      offset: -10,
+                      style: { fontSize: 15 },
+                    }}
                   />
                   <YAxis
                     domain={yDomain || ['dataMin', 'dataMax']}
                     ticks={yTicks}
                     tickFormatter={valueFormatter}
-                    label={{ value: yLabel, angle: -90, position: 'insideLeft', offset: 10 }}
+                    tick={{ fontSize: 15 }}
+                    label={{
+                      value: yLabel,
+                      angle: -90,
+                      position: 'insideLeft',
+                      offset: 15,
+                      style: { fontSize: 12 },
+                    }}
                   />
                 </>
               )}
@@ -125,6 +147,8 @@ export function CompareBarGraph({
                   dataKey={valueKey}
                   position={isHorizontal ? 'right' : 'top'}
                   formatter={valueFormatter}
+                  style={{ fontSize: 15, fontWeight: 600 }}
+                  offset={8}
                 />
               </Bar>
             </BarChart>
