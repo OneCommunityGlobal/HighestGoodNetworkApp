@@ -18,12 +18,14 @@ function CPLogin(props) {
   // If access login page from URL directly, redirect to CP Dashboard
   const prevLocation = location.state?.from || { pathname: '/communityportal' };
 
-  // push to dashboard if user is authenticated
+  // push to dashboard if user is authenticated and has CP Portal access
   useEffect(() => {
-    if (auth.user.access && auth.user.access.canAccessCPPortal) {
+    if (auth.isAuthenticated && auth.user?.access?.canAccessBMPortal) {
       history.push(prevLocation.pathname);
     }
-  }, []);
+  }, [auth.isAuthenticated, auth.user?.access?.canAccessBMPortal, history, prevLocation.pathname]);
+
+  // Also check hasAccess state (set after successful login)
   useEffect(() => {
     if (hasAccess) {
       history.push(prevLocation.pathname);
@@ -62,23 +64,31 @@ function CPLogin(props) {
         message: validate.error.details[0].message,
       });
     }
-    const res = await dispatch(loginBMUser({ email: enteredEmail, password: enterPassword }));
+    const loginAction = loginBMUser({ email: enteredEmail, password: enterPassword });
+    if (typeof loginAction !== 'function') {
+      return setValidationError(null);
+    }
+    const res = await dispatch(loginAction);
     // server side error validation
-    if (res.statusText !== 'OK') {
-      if (res.status === 422) {
+    if (!res || res.statusText !== 'OK') {
+      if (res?.status === 422 && res?.data) {
         return setValidationError({
           label: res.data.label,
           message: res.data.message,
         });
       }
-      // TODO: add additional error handling
-      return setValidationError({
-        label: '',
-        message: '',
-      });
+      return setValidationError(null);
     }
-    // initiate push to BM Dashboard if validated (ie received token)
-    return setHasAccess(!!res.data.token);
+    // initiate push to CP Dashboard if validated (ie received token)
+    // The auth state will be updated by loginBMUser, which will trigger the useEffect
+    // But also set hasAccess as a fallback
+    if (res?.data && res.data?.token) {
+      setHasAccess(true);
+      // Small delay to ensure auth state is updated
+      setTimeout(() => {
+        history.push(prevLocation.pathname);
+      }, 100);
+    }
   };
 
   // push Dashboard if not authenticated
