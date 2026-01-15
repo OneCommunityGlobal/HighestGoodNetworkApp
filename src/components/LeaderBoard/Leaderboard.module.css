@@ -99,7 +99,12 @@
 }
 
 .leaderboard-totals-title {
-  color: #339cff;
+  color: #339cff !important;
+  font-weight: bold;
+}
+
+.leaderboard-totals-title-dark {
+  color: #48edff !important;
   font-weight: bold;
 }
 

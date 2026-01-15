@@ -380,7 +380,7 @@ const TeamMemberTask = React.memo(
                                     moment(user.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
                                   )
                                     ? 'rgba(128, 128, 128, 0.5)'
-                                    : darkMode && '#339CFF',
+                                    : darkMode && '#48edff',
                                 fontSize: '20px',
                               }}
                             >{`${user.name}`}</Link>

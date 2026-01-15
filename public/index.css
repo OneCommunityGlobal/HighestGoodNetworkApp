@@ -16,7 +16,7 @@ body.bm-dashboard-dark #root {
 /* Enhanced text visibility for dark mode */
 body.dark-mode *,
 body.bm-dashboard-dark * {
-  color: #ffffff !important;
+  color: #ffffff;
 }
 
 body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, 
@@ -31,7 +31,7 @@ body.dark-mode p, body.dark-mode span, body.dark-mode div,
 body.dark-mode label, body.dark-mode a, body.dark-mode li,
 body.bm-dashboard-dark p, body.bm-dashboard-dark span, body.bm-dashboard-dark div,
 body.bm-dashboard-dark label, body.bm-dashboard-dark a, body.bm-dashboard-dark li {
-  color: #ffffff !important;
+  color: #ffffff;
 }
 
 body.dark-mode .text-muted,

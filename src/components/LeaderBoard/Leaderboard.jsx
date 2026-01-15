@@ -951,7 +951,7 @@ function LeaderBoard({
                               ((isAllowedOtherThanOwner || isOwner || item.personId === userId) &&
                                 userOnTimeOff[item.personId]?.isInTimeOff === true)
                                 ? `${darkMode ? '#9499a4' : 'rgba(128, 128, 128, 0.5)'}` // Gray out the name if on time off
-                                : '#007BFF', // Default color
+                                : `${darkMode ? '#48edff' : '#007BFF'}`, // Default color
                           }}
                         >
                           {item.name}
@@ -1082,7 +1082,9 @@ function LeaderBoard({
                           id="Total time"
                           className={
                             item.totalintangibletime_hrs > 0
-                              ? styles['leaderboard-totals-title']
+                              ? darkMode
+                                ? styles['leaderboard-totals-title-dark']
+                                : styles['leaderboard-totals-title']
                               : null
                           }
                         >
