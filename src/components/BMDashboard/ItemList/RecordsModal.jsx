@@ -1,10 +1,13 @@
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Table } from 'reactstrap';
 import moment from 'moment';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+
 import styles from './RecordsModal.module.css';
 import { approvePurchase, rejectPurchase } from '../../../actions/bmdashboard/materialsActions';
 
 export default function RecordsModal({ modal, setModal, record, setRecord, recordType }) {
+  const darkMode = useSelector(state => state.theme.darkMode);
+
   if (record) {
     const toggle = () => {
       setModal(false);
@@ -12,89 +15,98 @@ export default function RecordsModal({ modal, setModal, record, setRecord, recor
     };
 
     return (
-      <Modal isOpen={modal} size="xl">
-        <ModalHeader>{recordType} Record</ModalHeader>
-        <ModalBody>
-          <div className={`${styles.recordsModalTableContainer}`}>
-            <Table>
-              <Record record={record} recordType={recordType} setRecord={setRecord} />
-            </Table>
-          </div>
-        </ModalBody>
-        <ModalFooter>
-          <Button onClick={toggle}>Close</Button>
-        </ModalFooter>
-      </Modal>
+      <>
+        {darkMode && (
+          <style>
+            {`
+              .dark-oxford-modal {
+                background-color: #1B2A41 !important; /* Muted Oxford Blue */
+                color: #ffffff !important;
+              }
+              .dark-oxford-modal .modal-header,
+              .dark-oxford-modal .modal-body,
+              .dark-oxford-modal .modal-footer {
+                background-color: #1B2A41 !important;
+                color: #ffffff !important;
+                border-color: rgba(255,255,255,0.08) !important;
+              }
+            `}
+          </style>
+        )}
+        <Modal
+          isOpen={modal}
+          size="xl"
+          className={darkMode ? 'dark-modal full-dark bg-yinmn-blue text-light' : ''}
+          contentClassName={darkMode ? 'dark-oxford-modal' : ''}
+        >
+          <ModalHeader className={darkMode ? 'dark-modal-header bg-space-cadet text-white' : ''}>
+            {recordType} Record
+          </ModalHeader>
+
+          <ModalBody className={darkMode ? 'dark-modal-body bg-yinmn-blue text-light' : ''}>
+            <div className={styles.records_modal_table_container}>
+              <Table className={darkMode ? 'dark-table bg-yinmn-blue text-white' : ''}>
+                <Record record={record} recordType={recordType} setRecord={setRecord} />
+              </Table>
+            </div>
+          </ModalBody>
+
+          <ModalFooter className={darkMode ? 'dark-modal-footer bg-space-cadet text-white' : ''}>
+            <Button onClick={toggle}>Close</Button>
+          </ModalFooter>
+        </Modal>
+      </>
     );
   }
+
   return null;
 }
 
 export function Record({ record, recordType, setRecord }) {
-  const handleUndefined = value => {
-    return value !== undefined && value !== null ? value : 'N/A';
+  const dispatch = useDispatch();
+  const darkMode = useSelector(state => state.theme.darkMode);
+  const formatQuantity = (value, unit) => {
+    if (value == null) return '-';
+    return unit ? `${value} ${unit}` : `${value}`;
   };
 
-  const dispatch = useDispatch();
-  // const handleApprove = async (purchaseId, quantity) => {
-  //   await dispatch(approvePurchase(purchaseId, quantity));
-  // };
-
-  // const handleReject = async purchaseId => {
-  //   await dispatch(rejectPurchase(purchaseId));
-  // };
   const handleApprove = async (purchaseId, quantity) => {
     try {
       const response = await dispatch(approvePurchase(purchaseId, quantity));
-      // Only update the state if the purchase was successfully approved
       if (response && response.status === 200) {
-        const updatedPurchases = record.purchaseRecord.map(purchase => {
-          if (purchase._id === purchaseId) {
-            return {
-              ...purchase,
-              status: 'Approved',
-            };
-          }
-          return purchase;
-        });
+        const updatedPurchases = record.purchaseRecord.map(purchase =>
+          purchase._id === purchaseId ? { ...purchase, status: 'Approved' } : purchase,
+        );
+
         setRecord({
           ...record,
           purchaseRecord: updatedPurchases,
         });
       }
-    } catch (error) {
-      // Optionally, you can handle UI feedback for the error
-    }
+    } catch (error) {}
   };
+
   const handleReject = async purchaseId => {
     try {
       const response = await dispatch(rejectPurchase(purchaseId));
-      // Only update the state if the purchase was successfully rejected
       if (response && response.status === 200) {
-        const updatedPurchases = record.purchaseRecord.map(purchase => {
-          if (purchase._id === purchaseId) {
-            return {
-              ...purchase,
-              status: 'Rejected',
-            };
-          }
-          return purchase;
-        });
+        const updatedPurchases = record.purchaseRecord.map(purchase =>
+          purchase._id === purchaseId ? { ...purchase, status: 'Rejected' } : purchase,
+        );
+
         setRecord({
           ...record,
           purchaseRecord: updatedPurchases,
         });
       }
-    } catch (error) {
-      // Optionally, you can handle UI feedback for the error
-    }
+    } catch (error) {}
   };
 
   if (recordType === 'Update') {
     return (
       <>
-        <thead>
-          <tr>
+        <thead className={darkMode ? 'dark-thead bg-space-cadet text-white' : ''}>
+          <tr className={darkMode ? 'dark-row text-white bg-yinmn-blue' : ''}>
             <th>Date</th>
             <th>Quantity Used</th>
             <th>Quantity Wasted</th>
@@ -102,27 +114,27 @@ export function Record({ record, recordType, setRecord }) {
             <th>Email</th>
           </tr>
         </thead>
-        <tbody>
-          {record?.updateRecord && record?.updateRecord.length ? (
-            record.updateRecord.map(data => {
-              return (
-                <tr key={data._id}>
-                  <td>{moment.utc(data.date).format('LL')}</td>
-                  <td>{`${handleUndefined(data.quantityUsed)} ${record.itemType?.unit || ''}`}</td>
-                  <td>
-                    {`${handleUndefined(data.quantityWasted)} ${record.itemType?.unit || ''}`}
-                  </td>
-                  <td>
-                    <a href={`/userprofile/${data.createdBy._id}`}>
-                      {`${data.createdBy.firstName} ${data.createdBy.lastName}`}
-                    </a>
-                  </td>
-                  <td>{data?.createdBy?.email}</td>
-                </tr>
-              );
-            })
+
+        <tbody className={darkMode ? 'dark-tbody bg-yinmn-blue text-light' : ''}>
+          {record?.updateRecord?.length ? (
+            record.updateRecord.map(data => (
+              <tr key={data._id} className={darkMode ? 'dark-row text-white bg-yinmn-blue' : ''}>
+                <td>{moment.utc(data.date).format('LL')}</td>
+                <td>{formatQuantity(data.quantityUsed, record.itemType?.unit)}</td>
+                <td>{formatQuantity(data.quantityWasted, record.itemType?.unit)}</td>
+                <td>
+                  <a
+                    href={`/userprofile/${data.createdBy._id}`}
+                    className={darkMode ? styles.blue_link : ''}
+                  >
+                    {`${data.createdBy.firstName} ${data.createdBy.lastName}`}
+                  </a>
+                </td>
+                <td>{data?.createdBy?.email}</td>
+              </tr>
+            ))
           ) : (
-            <tr>
+            <tr className={darkMode ? 'text-light bg-space-cadet' : ''}>
               <td colSpan={4} style={{ fontWeight: 'bold' }}>
                 There are no updates for this item.
               </td>
@@ -132,11 +144,12 @@ export function Record({ record, recordType, setRecord }) {
       </>
     );
   }
+
   if (recordType === 'Purchase') {
     return (
       <>
-        <thead>
-          <tr>
+        <thead className={darkMode ? 'dark-thead bg-space-cadet text-white' : ''}>
+          <tr className={darkMode ? 'dark-row text-white bg-yinmn-blue' : ''}>
             <th>Priority</th>
             <th>Brand</th>
             <th>Quantity</th>
@@ -144,49 +157,53 @@ export function Record({ record, recordType, setRecord }) {
             <th>Email</th>
             <th>Date</th>
             <th>Status</th>
+            <th>Action</th>
           </tr>
         </thead>
-        <tbody>
-          {record?.purchaseRecord && record?.purchaseRecord.length ? (
+
+        <tbody className={darkMode ? 'dark-tbody bg-yinmn-blue text-light' : ''}>
+          {record?.purchaseRecord?.length ? (
             record.purchaseRecord.map(
-              ({ _id, date, status, brandPref, priority, quantity, requestedBy }) => {
-                return (
-                  <tr key={_id}>
-                    <td>{priority}</td>
-                    <td>{brandPref}</td>
-                    <td>{handleUndefined(quantity)}</td>
-                    <td>
-                      <a href={`/userprofile/${requestedBy._id}`}>
-                        {`${requestedBy.firstName} ${requestedBy.lastName}`}
-                      </a>
-                    </td>
-                    <td>{requestedBy.email}</td>
-                    <td>{moment(date).format('MM/DD/YY')}</td>
-                    <td>{status}</td>
-                    <td>
-                      <Button
-                        type="button"
-                        onClick={() => handleApprove(_id, quantity)}
-                        className={`${styles.approveButton}`}
-                        disabled={status === 'Approved' || status === 'Rejected'}
-                      >
-                        Approve
-                      </Button>
-                      <Button
-                        type="button"
-                        onClick={() => handleReject(_id)}
-                        className={`${styles.rejectButton}`}
-                        disabled={status === 'Approved' || status === 'Rejected'}
-                      >
-                        Reject
-                      </Button>
-                    </td>
-                  </tr>
-                );
-              },
+              ({ _id, date, status, brandPref, priority, quantity, requestedBy }) => (
+                <tr key={_id} className={darkMode ? 'dark-row text-white bg-yinmn-blue' : ''}>
+                  <td>{priority}</td>
+                  <td>{brandPref}</td>
+                  <td>{quantity || '-'}</td>
+                  <td>
+                    <a
+                      href={`/userprofile/${requestedBy._id}`}
+                      className={darkMode ? styles.blue_link : ''}
+                    >
+                      {`${requestedBy.firstName} ${requestedBy.lastName}`}
+                    </a>
+                  </td>
+                  <td>{requestedBy.email}</td>
+                  <td>{moment(date).format('MM/DD/YY')}</td>
+                  <td>{status}</td>
+                  <td>
+                    <Button
+                      type="button"
+                      onClick={() => handleApprove(_id, quantity)}
+                      className={styles.approve_button}
+                      disabled={status === 'Approved' || status === 'Rejected'}
+                    >
+                      Approve
+                    </Button>
+
+                    <Button
+                      type="button"
+                      onClick={() => handleReject(_id)}
+                      className={styles.reject_button}
+                      disabled={status === 'Approved' || status === 'Rejected'}
+                    >
+                      Reject
+                    </Button>
+                  </td>
+                </tr>
+              ),
             )
           ) : (
-            <tr>
+            <tr className={darkMode ? 'text-light bg-space-cadet' : ''}>
               <td colSpan={6} style={{ fontWeight: 'bold' }}>
                 There are no purchase records.
               </td>
@@ -196,5 +213,6 @@ export function Record({ record, recordType, setRecord }) {
       </>
     );
   }
+
   return null;
 }
