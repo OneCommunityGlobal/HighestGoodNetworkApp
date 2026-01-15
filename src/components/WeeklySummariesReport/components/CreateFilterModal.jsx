@@ -39,6 +39,56 @@ const defaultState = {
   selectedOverTime: false,
 };
 
+const modalDarkSelectStyles = {
+  control: (base, state) => ({
+    ...base,
+    backgroundColor: '#0f172a',
+    color: '#ffffff',
+    borderColor: state.isFocused ? '#4dabf7' : '#3a506b',
+    boxShadow: state.isFocused ? '0 0 0 0.15rem rgba(77,171,247,.25)' : 'none',
+    ':hover': {
+      borderColor: '#4dabf7',
+    },
+  }),
+
+  valueContainer: base => ({
+    ...base,
+    color: '#ffffff',
+  }),
+
+  singleValue: base => ({
+    ...base,
+    color: '#ffffff',
+  }),
+
+  input: base => ({
+    ...base,
+    color: '#ffffff',
+  }),
+
+  placeholder: base => ({
+    ...base,
+    color: '#94a3b8',
+  }),
+
+  menu: base => ({
+    ...base,
+    backgroundColor: '#0f172a',
+    zIndex: 9999,
+  }),
+
+  menuList: base => ({
+    ...base,
+    backgroundColor: '#0f172a',
+  }),
+
+  option: (base, state) => ({
+    ...base,
+    backgroundColor: state.isSelected ? '#334155' : state.isFocused ? '#243b55' : '#0f172a',
+    color: '#ffffff',
+  }),
+};
+
 function CreateFilterModal({
   isOpen,
   toggle,
@@ -122,7 +172,7 @@ function CreateFilterModal({
       size="lg"
       isOpen={isOpen}
       toggle={toggle}
-      className={`${darkMode ? mainStyles.darkModal : ''}`}
+      contentClassName={darkMode ? mainStyles.wsrDarkModalContent : undefined}
     >
       <ModalHeader toggle={toggle}>Create A New Filter or Override Existing Filter</ModalHeader>
       <ModalBody>
@@ -149,9 +199,8 @@ function CreateFilterModal({
                 options={filters}
                 value={selectedFilter}
                 onChange={setSelectedFilter}
-                className={`${mainStyles.textDark} ${
-                  !selectedFilter ? `${mainStyles.errorSelect}` : ''
-                }`}
+                classNamePrefix="custom-select"
+                styles={darkMode ? modalDarkSelectStyles : undefined}
               />
               {!selectedFilter && (
                 <div className={`${darkMode ? mainStyles.errorTextDark : mainStyles.errorText}`}>

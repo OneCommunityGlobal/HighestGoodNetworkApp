@@ -515,3 +515,371 @@
 .saved-filter-button.active-filter .saved-filter-delete-btn:hover {
   color: #ffc107 !important;
 }
+
+.dark-mode .dropdown-heading {
+  color: white !important;
+}
+
+.dark-mode .dropdown-content {
+  background-color: #1b2a41 !important;
+  color: white !important;
+}
+
+.dark-mode .select-item {
+  color: white !important;
+}
+
+.dark-mode .select-item:hover {
+  background-color: #243b55 !important;
+}
+
+.dark-mode .chip {
+  background-color: #243b55 !important;
+  color: white !important;
+}
+
+.dark-mode ::-webkit-scrollbar {
+  width: 6px;
+}
+
+.dark-mode ::-webkit-scrollbar-thumb {
+  background-color: #4dabf7;
+  border-radius: 4px;
+}
+
+.dark-mode input {
+  background-color: #1b2a41 !important;
+  color: white !important;
+  border-color: #3a506b !important;
+}
+
+
+/* Dropdown list */
+:global(.ms-dark) :global(.dropdown-content) {
+  background-color: #1b2a41 !important;
+}
+
+
+/* react-select scrollbar — PORTAL SAFE */
+:global(.custom-select__menu-list::-webkit-scrollbar) {
+  width: 6px;
+}
+
+:global(.custom-select__menu-list::-webkit-scrollbar-track) {
+  background: #1b2a41;
+}
+
+:global(.custom-select__menu-list::-webkit-scrollbar-thumb) {
+  background-color: #4dabf7;
+  border-radius: 4px;
+}
+
+/* ===== DARK MODE FIX: react-multi-select-component ===== */
+
+.dark-mode .extra-members-multiselect .dropdown-container {
+  background-color: #1e293b !important;
+  border: 1px solid #475569 !important;
+}
+
+.dark-mode .extra-members-multiselect .dropdown-heading {
+  background-color: #1e293b !important;
+  color: #ffffff !important;
+}
+
+.dark-mode .extra-members-multiselect .dropdown-heading-value {
+  color: #ffffff !important;
+}
+
+.dark-mode .extra-members-multiselect svg {
+  stroke: #ffffff !important;
+}
+
+.dark-mode .extra-members-multiselect .options {
+  background-color: #0f172a !important;
+}
+
+.dark-mode .extra-members-multiselect .select-item {
+  color: #ffffff !important;
+}
+
+.dark-mode .extra-members-multiselect .select-item:hover {
+  background-color: #334155 !important;
+}
+
+
+/* ===== Weekly Summary Filter Modal (Dark) ===== */
+
+.wsr-dark-modal-content {
+  background-color: #1b2a41 !important;
+  color: #ffffff;
+}
+
+.wsr-dark-modal-content .modal-header,
+.wsr-dark-modal-content .modal-body,
+.wsr-dark-modal-content .modal-footer {
+  background-color: #1b2a41;
+  border-color: #3a506b;
+}
+
+/* Close button */
+.wsr-dark-modal-content .close {
+  color: #ffffff;
+  opacity: 0.8;
+}
+
+/* Inputs */
+.wsr-dark-modal-content .form-control {
+  background-color: #0f172a;
+  color: #ffffff;
+  border-color: #3a506b;
+}
+
+.wsr-dark-modal-content .form-control::placeholder {
+  color: #94a3b8;
+}
+
+/* Native select */
+.wsr-dark-modal-content select.form-control {
+  background-color: #0f172a;
+  color: #ffffff;
+}
+
+/* === FORCE OVERRIDE EXISTING DARK MODE MODAL === */
+
+body.dark-mode .modal-content.wsr-dark-modal-content {
+  background-color: #1b2a41 !important;
+  color: #ffffff !important;
+  border: 1px solid #3a506b;
+}
+
+body.dark-mode .modal-content.wsr-dark-modal-content .modal-header,
+body.dark-mode .modal-content.wsr-dark-modal-content .modal-body,
+body.dark-mode .modal-content.wsr-dark-modal-content .modal-footer {
+  background-color: #1b2a41 !important;
+  border-color: #3a506b !important;
+}
+
+/* Close button */
+body.dark-mode .modal-content.wsr-dark-modal-content .close {
+  color: #ffffff !important;
+}
+
+body.dark-mode .modal-content.wsr-dark-modal-content .form-control {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+  border-color: #3a506b !important;
+}
+
+body.dark-mode .modal-content.wsr-dark-modal-content .form-control::placeholder {
+  color: #94a3b8 !important;
+}
+
+body.dark-mode .modal-content.wsr-dark-modal-content select.form-control {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode .modal-content.wsr-dark-modal-content .custom-select__control {
+  background-color: #0f172a !important;
+  border-color: #3a506b !important;
+}
+
+body.dark-mode .modal-content.wsr-dark-modal-content .custom-select__menu {
+  background-color: #0f172a !important;
+}
+
+body.dark-mode .modal-content.wsr-dark-modal-content .custom-select__option {
+  color: #ffffff !important;
+}
+
+body.dark-mode .modal-content.wsr-dark-modal-content
+.custom-select__option--is-focused {
+  background-color: #243b55 !important;
+}
+
+body.dark-mode .modal-content {
+  background-color: #2e5061;
+  color: #ffffff !important;
+}
+
+.dark-mode .modal-footer {
+  background-color: #1b2a41 !important;
+}
+
+.wsrDarkModalContent {
+  background-color: #1b2a41 !important;
+  color: #fff !important;
+  border: 1px solid #3a506b !important;
+}
+
+/* Header / Body / Footer are Bootstrap global classes, so target them using :global */
+.wsrDarkModalContent :global(.modal-header),
+.wsrDarkModalContent :global(.modal-body),
+.wsrDarkModalContent :global(.modal-footer) {
+  background-color: #1b2a41 !important;
+  border-color: #3a506b !important;
+  color: #fff !important;
+}
+
+.wsrDarkModalContent :global(.close) {
+  color: #fff !important;
+  opacity: 0.85;
+}
+
+.wsrDarkModalContent :global(.form-control),
+.wsrDarkModalContent :global(select.form-control) {
+  background-color: #0f172a !important;
+  color: #fff !important;
+  border-color: #3a506b !important;
+}
+
+.wsrDarkModalContent :global(.form-control::placeholder) {
+  color: #94a3b8 !important;
+}
+
+/* =============================== */
+/* FORCE DARK INPUTS IN FILTER MODAL */
+/* =============================== */
+
+.wsrDarkModalContent :global(input),
+.wsrDarkModalContent :global(select),
+.wsrDarkModalContent :global(textarea) {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+}
+
+/* Placeholder */
+.wsrDarkModalContent :global(input::placeholder) {
+  color: #94a3b8 !important;
+}
+
+/* Focus state */
+.wsrDarkModalContent :global(input:focus),
+.wsrDarkModalContent :global(select:focus),
+.wsrDarkModalContent :global(textarea:focus) {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+  border-color: #4dabf7 !important;
+  box-shadow: 0 0 0 0.15rem rgba(77, 171, 247, 0.25) !important;
+}
+
+/* ===== react-multi-select-component DARK MODE ===== */
+
+:global(.ms-dark) :global(.dropdown-container) {
+  background-color: #0f172a !important;
+  border-color: #3a506b !important;
+}
+
+:global(.ms-dark) :global(.dropdown-heading) {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+}
+
+:global(.ms-dark) :global(.dropdown-heading-value) {
+  color: #ffffff !important;
+}
+
+:global(.ms-dark) :global(.dropdown-heading-dropdown-arrow) {
+  stroke: #ffffff !important;
+}
+
+/* Dropdown list */
+:global(.ms-dark) :global(.dropdown-content),
+:global(.ms-dark) :global(.options) {
+  background-color: #0f172a !important;
+}
+
+/* Search box */
+:global(.ms-dark) :global(input) {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+}
+
+/* 🔥 Missing wrapper */
+:global(.ms-dark) :global(.panel-content) {
+  background-color: #0f172a !important;
+}
+
+/* Search box wrapper */
+:global(.ms-dark) :global(.search) {
+  background-color: #0f172a !important;
+  border-bottom: 1px solid #3a506b;
+}
+
+/* Search input */
+:global(.ms-dark) :global(.search input) {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+}
+
+/* Options list */
+:global(.ms-dark) :global(.options) {
+  background-color: #0f172a !important;
+}
+
+/* Each option row (INCLUDING Select All) */
+:global(.ms-dark) :global(.select-item) {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+}
+
+/* Hover */
+:global(.ms-dark) :global(.select-item:hover) {
+  background-color: #243b55 !important;
+}
+
+/* Checkbox */
+:global(.ms-dark) :global(.select-item input[type='checkbox']) {
+  accent-color: #4dabf7;
+}
+
+/* Scrollbar */
+:global(.ms-dark) :global(.options::-webkit-scrollbar) {
+  width: 6px;
+}
+
+:global(.ms-dark) :global(.options::-webkit-scrollbar-thumb) {
+  background-color: #4dabf7;
+  border-radius: 4px;
+}
+
+:global(.ms-dark) :global(.options::-webkit-scrollbar-track) {
+  background-color: #0f172a;
+}
+
+/* ===== react-select DARK MODE ===== */
+
+.wsr-dark-modal-content .custom-select__control {
+  background-color: #0f172a !important;
+  border-color: #3a506b !important;
+  color: white !important;
+}
+
+.wsr-dark-modal-content .custom-select__single-value {
+  color: white !important;
+}
+
+.wsr-dark-modal-content .custom-select__placeholder {
+  color: #94a3b8 !important;
+}
+
+.wsr-dark-modal-content .custom-select__input {
+  color: white !important;
+}
+
+.wsr-dark-modal-content .custom-select__menu {
+  background-color: #0f172a !important;
+}
+
+.wsr-dark-modal-content .custom-select__option {
+  background-color: #0f172a !important;
+  color: white !important;
+}
+
+.wsr-dark-modal-content .custom-select__option--is-focused {
+  background-color: #243b55 !important;
+}
+
+.wsr-dark-modal-content .custom-select__option--is-selected {
+  background-color: #334155 !important;
+}

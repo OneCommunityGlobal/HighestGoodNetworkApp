@@ -22,7 +22,6 @@ import {
   DropdownItem,
 } from 'reactstrap';
 import ReactTooltip from 'react-tooltip';
-import { MultiSelect } from 'react-multi-select-component';
 import Select, { components } from 'react-select';
 import moment from 'moment';
 import { boxStyle, boxStyleDark } from '~/styles';
@@ -57,7 +56,7 @@ import CreateFilterModal from './components/CreateFilterModal';
 import UpdateFilterModal from './components/UpdateFilterModal';
 import SelectFilterModal from './components/SelectFilterModal';
 import styles from './WeeklySummariesReport.module.css';
-import { setField, toggleField, removeItemFromField, setChildField } from '~/utils/stateHelper';
+import { setField } from '~/utils/stateHelper';
 import WeeklySummariesToggleFilter from './components/WeeklySummariesToggleFilter';
 import {
   useGetWeeklySummariesFiltersQuery,
@@ -68,6 +67,83 @@ import {
 
 const navItems = ['This Week', 'Last Week', 'Week Before Last', 'Three Weeks Ago'];
 const fullCodeRegex = /^.{5,7}$/;
+
+const baseSelectStyles = {
+  menuList: base => ({
+    ...base,
+    maxHeight: '700px',
+    overflowY: 'auto',
+  }),
+  option: (base, state) => ({
+    ...base,
+    fontSize: '13px',
+  }),
+};
+
+const darkSelectStyles = {
+  ...baseSelectStyles,
+
+  control: (base, state) => ({
+    ...base,
+    backgroundColor: '#1b2a41',
+    borderColor: state.isFocused ? '#4dabf7' : '#3a506b',
+    boxShadow: 'none',
+    color: '#fff',
+  }),
+
+  menu: base => ({
+    ...base,
+    backgroundColor: '#1b2a41',
+    zIndex: 9999,
+  }),
+
+  menuList: base => ({
+    ...base,
+    backgroundColor: '#1b2a41',
+  }),
+
+  option: (base, state) => ({
+    ...base,
+    backgroundColor: state.isSelected ? '#4dabf7' : state.isFocused ? '#243b55' : '#1b2a41',
+    color: '#fff',
+    cursor: 'pointer',
+  }),
+
+  multiValue: base => ({
+    ...base,
+    backgroundColor: '#243b55',
+  }),
+
+  multiValueLabel: base => ({
+    ...base,
+    color: '#fff',
+  }),
+
+  multiValueRemove: base => ({
+    ...base,
+    color: '#ccc',
+    ':hover': {
+      backgroundColor: '#ff6b6b',
+      color: '#fff',
+    },
+  }),
+
+  placeholder: base => ({
+    ...base,
+    color: '#aaa',
+  }),
+
+  input: base => ({
+    ...base,
+    color: '#fff',
+  }),
+
+  singleValue: base => ({
+    ...base,
+    color: '#fff',
+  }),
+};
+
 const getWeekDates = () => {
   return Array.from({ length: 4 }).map((_, index) => ({
     fromDate: moment()
@@ -340,45 +416,6 @@ const WeeklySummariesReport = props => {
       return null;
     }
   };
-
-  // const fetchFilters = async () => {
-  //   // Get all filters
-  //   let filterList = [];
-
-  //   try {
-  //     const filterResponse = await axios.get(ENDPOINTS.WEEKLY_SUMMARIES_FILTERS);
-  //     if (filterResponse.status < 200 || filterResponse.status >= 300) {
-  //       toast.error(`API request to get filter list failed with status ${filterResponse.status}`);
-  //     } else {
-  //       filterList = filterResponse.data;
-  //     }
-  //   } catch (e) {
-  //     toast.error(`API request to get filter list failed with error ${e}`);
-  //   }
-  //   const updatedFilterChoices = [];
-
-  //   filterList.forEach(filter => {
-  //     updatedFilterChoices.push({
-  //       label: filter.filterName,
-  //       value: filter._id,
-  //       filterData: {
-  //         filterName: filter.filterName,
-  //         selectedCodes: new Set(filter.selectedCodes),
-  //         selectedColors: new Set(filter.selectedColors),
-  //         selectedExtraMembers: new Set(filter.selectedExtraMembers),
-  //         selectedTrophies: filter.selectedTrophies,
-  //         selectedSpecialColors: filter.selectedSpecialColors,
-  //         selectedBioStatus: filter.selectedBioStatus,
-  //         selectedOverTime: filter.selectedOverTime,
-  //       },
-  //     });
-  //   });
-
-  //   setState(prevState => ({
-  //     ...prevState,
-  //     filterChoices: [...updatedFilterChoices],
-  //   }));
-  // };
 
   // Initial data loading
   const createIntialSummaries = async () => {
@@ -1223,12 +1260,6 @@ const WeeklySummariesReport = props => {
       //   const userId = Object.keys(userIdObj)[0];
       //   props.updateSavedFiltersForIndividualTeamCodeChange(oldTeamCode, newTeamCode, userId);
 
-      //   // Refresh saved filters after the update
-      //   setTimeout(() => {
-      //     props.getSavedFilters();
-      //   }, 1000);
-      // }
-
       return null;
     } catch (error) {
       return null;
@@ -1457,7 +1488,7 @@ const WeeklySummariesReport = props => {
   const handleSelectExtraMembersChange = event => {
     setState(prev => ({
       ...prev,
-      selectedExtraMembers: event,
+      selectedExtraMembers: event || [],
     }));
   };
 
@@ -1498,19 +1529,6 @@ const WeeklySummariesReport = props => {
     createIntialSummaries().then(() => {
       if (!window._isMounted) return;
       refreshCurrentTab();
-
-      // const nav =
-      //   performance && performance.getEntriesByType
-      //     ? performance.getEntriesByType('navigation')[0]
-      //     : null;
-
-      // // Only refresh if this navigation was a browser reload
-      // if (nav && nav.type === 'reload') {
-      //   refreshCurrentTab();
-      // } else {
-      //   // If you prefer always refreshing after initial load:
-      //   // refreshCurrentTab();
-      // }
     });
 
     return () => {
@@ -1695,7 +1713,6 @@ const WeeklySummariesReport = props => {
               filters={filterChoices}
               applyFilter={applyFilter}
               memberDict={state.memberDict}
-              darkMode={darkMode}
             />
             {permissionState.canManageFilter && (
               <UpdateFilterModal
@@ -1817,18 +1834,7 @@ const WeeklySummariesReport = props => {
                 className={`custom-select-container ${darkMode ? 'dark-mode' : ''} ${
                   state.teamCodeWarningUsers.length > 0 ? 'warning-border' : ''
                 }`}
-                styles={{
-                  menuList: base => ({
-                    ...base,
-                    maxHeight: '700px',
-                    overflowY: 'auto',
-                  }),
-                  option: (base, state) => ({
-                    ...base,
-                    fontSize: '13px',
-                    backgroundColor: state.isFocused ? '#eee' : 'white',
-                  }),
-                }}
+                styles={darkMode ? darkSelectStyles : baseSelectStyles}
               />
 
               {/* Save/Delete Buttons - only visible when codes are selected */}
@@ -1856,6 +1862,7 @@ const WeeklySummariesReport = props => {
               )}
             </div>
           </div>
+
           {/* Saved Filter Buttons List */}
           {filterChoices && filterChoices.length > 0 && (
             <div
@@ -1931,17 +1938,12 @@ const WeeklySummariesReport = props => {
             }}
             placeholder="Select color filters..."
             classNamePrefix="custom-select"
-            className={`${styles.multiSelectFilter} text-dark ${darkMode ? 'dark-mode' : ''}`}
+            className={`${styles.multiSelectFilter} ${darkMode ? 'dark-mode' : 'text-dark'}`}
             styles={{
-              menuList: base => ({
+              ...(darkMode ? darkSelectStyles : baseSelectStyles),
+              menuPortal: base => ({
                 ...base,
-                maxHeight: '700px',
-                overflowY: 'auto',
-              }),
-              option: (base, state) => ({
-                ...base,
-                fontSize: '13px',
-                backgroundColor: state.isFocused ? '#eee' : 'white',
+                zIndex: 9999,
               }),
             }}
           />
@@ -1955,15 +1957,30 @@ const WeeklySummariesReport = props => {
           />
         </Col>
       </Row>
-      <Row className={styles['mx-max-sm-0']}>
+      <Row className={styles['mx-max-sm-0']} style={{ marginBottom: '10px' }}>
         <Col lg={{ size: 5, offset: 1 }} md={{ size: 6 }} xs={{ size: 12 }}>
-          <div>Select Extra Members</div>
-          <MultiSelect
-            className={`${styles['report-multi-select-filter']} ${styles.textDark} 
-              ${darkMode ? 'dark-mode' : ''}`}
+          <div>Select Extra Memberss</div>
+          <Select
+            isMulti
+            isSearchable
+            closeMenuOnSelect={false}
+            hideSelectedOptions={false}
+            blurInputOnSelect={false}
             options={state.membersFromUnselectedTeam}
             value={state.selectedExtraMembers}
             onChange={handleSelectExtraMembersChange}
+            components={{
+              Option: CheckboxOption,
+              MenuList: CustomMenuList,
+            }}
+            placeholder="Select extra members..."
+            classNamePrefix="custom-select"
+            className={`custom-select-container ${darkMode ? 'dark-mode' : ''}`}
+            styles={{
+              ...(darkMode ? darkSelectStyles : baseSelectStyles),
+              menuPortal: base => ({ ...base, zIndex: 9999 }),
+            }}
+            menuPortalTarget={document.body}
           />
         </Col>
         <Col lg={{ size: 5 }} md={{ size: 6 }} xs={{ size: 12 }}>
@@ -1985,17 +2002,12 @@ const WeeklySummariesReport = props => {
             hideSelectedOptions={false}
             blurInputOnSelect={false}
             closeMenuOnSelect={false}
-            className={`${styles.multiSelectFilter} text-dark ${darkMode ? 'dark-mode' : ''}`}
+            className={`${styles.multiSelectFilter} ${darkMode ? 'dark-mode' : 'text-dark'}`}
             styles={{
-              menuList: base => ({
+              ...(darkMode ? darkSelectStyles : baseSelectStyles),
+              menuPortal: base => ({
                 ...base,
-                maxHeight: '700px',
-                overflowY: 'auto',
-              }),
-              option: (base, state) => ({
-                ...base,
-                fontSize: '13px',
-                backgroundColor: state.isFocused ? '#eee' : 'white',
+                zIndex: 9999,
               }),
             }}
             value={state.selectedLoggedHoursRange}
@@ -2163,7 +2175,12 @@ const WeeklySummariesReport = props => {
                     ) : (
                       <Row>
                         <Col>
-                          <Alert color="info">No data available for this tab.</Alert>
+                          <Alert
+                            color="black"
+                            style={{ marginTop: '20px', textAlign: 'center', color: 'black' }}
+                          >
+                            No data available for this tab.
+                          </Alert>
                         </Col>
                       </Row>
                     )}
