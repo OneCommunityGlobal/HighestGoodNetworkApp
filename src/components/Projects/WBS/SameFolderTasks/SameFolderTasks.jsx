@@ -4,12 +4,15 @@ import axios from 'axios';
 import { connect } from 'react-redux';
 import { ENDPOINTS } from '~/utils/URL';
 import { Table } from 'reactstrap';
+import { useHistory } from 'react-router-dom';
+
 import EditTaskModal from '../WBSDetail/EditTask/EditTaskModal';
 import { getPopupById } from '../../../../actions/popupEditorAction';
 import { TASK_DELETE_POPUP_ID } from '../../../../constants/popupId';
 
 function SameFolderTasks(props) {
   const { taskId } = props.match.params;
+  const history = useHistory();
 
   let isMounted = true;
 
@@ -22,33 +25,38 @@ function SameFolderTasks(props) {
   const [projectId, setProjectId] = useState('');
   const [wbsName, setWbsName] = useState('');
 
+  const noOtherTasksInFolder = task.mother === null || task.mother === taskId;
+
   useEffect(() => {
     const fetchTaskData = async () => {
       try {
         const res = await axios.get(ENDPOINTS.GET_TASK(taskId));
         if (isMounted) {
           setTask(res?.data || {});
-          setWBSId(res?.data.wbsId || '');
+          setWBSId(res?.data?.wbsId || '');
         }
       } catch (error) {
         // eslint-disable-next-line no-console
         console.log(error);
       }
     };
+
     fetchTaskData();
 
     return () => {
       isMounted = false;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     const fetchWBSData = async () => {
       try {
+        if (!wbsId) return;
         const res = await axios.get(ENDPOINTS.GET_WBS(wbsId));
         if (isMounted) {
-          setProjectId(res?.data?.projectId);
-          setWbsName(res?.data?.wbsName);
+          setProjectId(res?.data?.projectId || '');
+          setWbsName(res?.data?.wbsName || '');
         }
       } catch (error) {
         // eslint-disable-next-line no-console
@@ -56,13 +64,24 @@ function SameFolderTasks(props) {
       }
     };
 
-    fetchAllTasks();
-    fetchWBSData();
+    if (wbsId) {
+      setLoading(true);
+      fetchAllTasks();
+      fetchWBSData();
+    }
 
     return () => {
       isMounted = false;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [wbsId]);
+
+  useEffect(() => {
+    if (!noOtherTasksInFolder) return;
+    if (!wbsId || !projectId || !wbsName) return;
+
+    history.replace(`/wbs/tasks/${wbsId}/${projectId}/${encodeURIComponent(wbsName)}`);
+  }, [noOtherTasksInFolder, wbsId, projectId, wbsName, history]);
 
   const fetchAllTasks = async () => {
     try {
@@ -75,19 +94,20 @@ function SameFolderTasks(props) {
     } catch (error) {
       // eslint-disable-next-line no-console
       console.log(error);
+      setLoading(false);
     }
   };
 
-  if (task.mother === null || task.mother === taskId) {
+  if (noOtherTasksInFolder) {
     return (
-      <div className="App">
-        <p>There are no other tasks in this task&apos;s folder.</p>
-        <a href={`/wbs/tasks/${wbsId}/${projectId}/${wbsName}`}>
-          Click here to visit the source WBS ({wbsName}) that contains this task
-        </a>
+      <div className="d-flex justify-content-center align-items-center pt-4">
+        <div className="spinner-border text-success" role="status">
+          <span className="sr-only">Loading...</span>
+        </div>
       </div>
     );
   }
+
   return (
     <div className="container">
       {loading ? (
@@ -201,7 +221,9 @@ function SameFolderTasks(props) {
                               <span className="dot">{element.name.substring(0, 2)}</span>
                             </a>
                           );
-                        } catch (error) { }
+                        } catch (error) {
+                          return null;
+                        }
                       })}
                   </td>
                   <td>
