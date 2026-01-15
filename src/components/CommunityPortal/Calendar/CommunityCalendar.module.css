@@ -1096,6 +1096,12 @@
   margin-bottom: 20px;
 }
 
+.weekGridBody {
+  flex: 1;
+  overflow-y: scroll;
+  background: #ffffff;
+}
+
 .weekGridHeader {
   display: grid;
   grid-template-columns: 80px repeat(7, 1fr);
@@ -1121,12 +1127,6 @@
   font-size: 1.1rem;
   font-weight: 600;
   color: #1e293b;
-}
-
-.weekGridBody {
-  flex: 1;
-  overflow-y: scroll;
-  background-color: #fff;
 }
 
 .hourRow {
@@ -1176,11 +1176,56 @@
   text-overflow: ellipsis;
 }
 
-.weekGridDark {
-  background: #0f172a;
-  border-color: #1e293b;
+/* Dark Mode Support */
+.weekGridContainerDark {
+  background: #1a2332;
+  border-color: #2d3748;
 }
-.weekGridDark .weekGridHeader { background: #1e293b; border-bottom-color: #334155; }
-.weekGridDark .dateLabel { color: #f1f5f9; }
-.weekGridDark .hourRow { border-bottom-color: #1e293b; }
-.weekGridDark .timeLabel { border-right-color: #334155; }
+
+.weekGridContainerDark .weekGridBody {
+  background: #0f172a;
+}
+
+.weekGridHeaderDark {
+  background: #232d3f;
+  border-bottom-color: #2d3748;
+}
+
+.dayLabelDark {
+  color: #a0aec0;
+}
+
+.dateLabelDark {
+  color: #ffffff;
+}
+
+.hourRowDark {
+  border-bottom-color: #2d3748;
+}
+
+.timeLabelDark {
+  color: #718096;
+  border-right-color: #2d3748;
+}
+
+.gridCellDark {
+  border-left-color: #2d3748;
+}
+
+.gridCellDark:hover {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.gridEventDark {
+  background: #064e3b;
+  border-left: 4px solid #10b981;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.gridEventTitleDark {
+  color: #d1fae5;
+}
+
+.gridEventTimeDark {
+  color: #a7f3d0;
+}

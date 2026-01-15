@@ -174,15 +174,12 @@ function CommunityCalendar() {
   function WeeklyTimeGrid({ events, selectedDate, onEventClick, darkMode }) {
     const hours = Array.from({ length: 24 }, (_, i) => i);
 
-    // Find the Sunday of the currently selected week
     const startOfWeek = useMemo(() => {
       const d = new Date(selectedDate);
-      const day = d.getDay(); // 0 (Sun) to 6 (Sat)
-      d.setDate(d.getDate() - day);
+      d.setDate(d.getDate() - d.getDay());
       return d;
     }, [selectedDate]);
 
-    // Create an array of 7 Date objects for the header
     const weekDays = useMemo(() => {
       return Array.from({ length: 7 }, (_, i) => {
         const day = new Date(startOfWeek);
@@ -192,25 +189,27 @@ function CommunityCalendar() {
     }, [startOfWeek]);
 
     return (
-      <div className={`${styles.weekGridContainer} ${darkMode ? styles.weekGridDark : ''}`}>
-        {/* HEADER: Day Names and Numbers */}
-        <div className={styles.weekGridHeader}>
-          <div className={styles.timeGutter}></div>
+      <div
+        className={`${styles.weekGridContainer} ${darkMode ? styles.weekGridContainerDark : ''}`}
+      >
+        <div className={`${styles.weekGridHeader} ${darkMode ? styles.weekGridHeaderDark : ''}`}>
+          <div className={styles.timeGutter} />
           {weekDays.map(date => (
             <div key={date.toString()} className={styles.dayColumnHeader}>
-              <div className={styles.dayLabel}>
+              <div className={`${styles.dayLabel} ${darkMode ? styles.dayLabelDark : ''}`}>
                 {date.toLocaleDateString('en-US', { weekday: 'short' })}
               </div>
-              <div className={styles.dateLabel}>{date.getDate()}</div>
+              <div className={`${styles.dateLabel} ${darkMode ? styles.dateLabelDark : ''}`}>
+                {date.getDate()}
+              </div>
             </div>
           ))}
         </div>
 
-        {/* BODY: Time Rows */}
         <div className={styles.weekGridBody}>
           {hours.map(hour => (
-            <div key={hour} className={styles.hourRow}>
-              <div className={styles.timeLabel}>
+            <div key={hour} className={`${styles.hourRow} ${darkMode ? styles.hourRowDark : ''}`}>
+              <div className={`${styles.timeLabel} ${darkMode ? styles.timeLabelDark : ''}`}>
                 {hour === 0
                   ? '12 AM'
                   : hour > 12
@@ -219,36 +218,47 @@ function CommunityCalendar() {
                   ? '12 PM'
                   : `${hour} AM`}
               </div>
+
               {weekDays.map(date => {
-                // Filter events that happen on THIS day at THIS hour
                 const cellEvents = events.filter(e => {
                   const eventDate = new Date(e.date);
-                  // Check if date matches and if the hour in "10:00 AM" matches our current row
-                  const eventHour = parseInt(e.time.split(':')[0]);
+                  const [hStr] = e.time.split(':');
+                  let h = parseInt(hStr, 10);
                   const isPM = e.time.toLowerCase().includes('pm');
-                  const normalizedEventHour =
-                    isPM && eventHour !== 12
-                      ? eventHour + 12
-                      : !isPM && eventHour === 12
-                      ? 0
-                      : eventHour;
+                  const isAM = e.time.toLowerCase().includes('am');
+                  if (isPM && h !== 12) h += 12;
+                  if (isAM && h === 12) h = 0;
 
-                  return (
-                    eventDate.toDateString() === date.toDateString() && normalizedEventHour === hour
-                  );
+                  return eventDate.toDateString() === date.toDateString() && h === hour;
                 });
 
                 return (
-                  <div key={date.toString()} className={styles.gridCell}>
-                    {cellEvents.map(event => (
+                  <div
+                    key={date.toString()}
+                    className={`${styles.gridCell} ${darkMode ? styles.gridCellDark : ''}`}
+                  >
+                    {cellEvents.map(ev => (
                       <button
-                        key={event.id}
+                        key={ev.id}
                         type="button"
-                        className={styles.gridEvent}
-                        onClick={() => onEventClick(event)}
+                        className={`${styles.gridEvent} ${darkMode ? styles.gridEventDark : ''}`}
+                        onClick={() => onEventClick(ev)}
+                        aria-label={`Open event ${ev.title} at ${ev.time}`}
                       >
-                        <div className={styles.gridEventTime}>{event.time}</div>
-                        <div className={styles.gridEventTitle}>{event.title}</div>
+                        <div
+                          className={`${styles.gridEventTime} ${
+                            darkMode ? styles.gridEventTimeDark : ''
+                          }`}
+                        >
+                          {ev.time}
+                        </div>
+                        <div
+                          className={`${styles.gridEventTitle} ${
+                            darkMode ? styles.gridEventTitleDark : ''
+                          }`}
+                        >
+                          {ev.title}
+                        </div>
                       </button>
                     ))}
                   </div>
