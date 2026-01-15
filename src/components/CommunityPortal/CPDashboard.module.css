@@ -282,3 +282,12 @@
   -webkit-appearance: none;
   appearance: none;
 }
+.noEvents{
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+  font-size: 1.25rem;
+  font-style: italic;
+  color:#6b7280;
+}
