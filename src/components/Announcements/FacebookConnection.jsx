@@ -14,6 +14,7 @@ const PST_TZ = 'America/Los_Angeles';
 export default function FacebookConnection() {
   const dispatch = useDispatch();
   const authUser = useSelector(state => state.auth?.user);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   const requestor = useMemo(() => {
     if (!authUser?.userid) return null;
@@ -151,12 +152,19 @@ export default function FacebookConnection() {
   const statusBadge = getStatusBadge();
 
   // Styles
+  const textColor = darkMode ? '#e5e7eb' : '#333';
+  const mutedTextColor = darkMode ? '#cbd5e1' : '#666';
+  const surfaceBg = darkMode ? '#0f172a' : '#fafafa';
+  const borderColor = darkMode ? '#1f2937' : '#ddd';
+  const panelBg = darkMode ? '#111827' : '#fff';
+
   const containerStyle = {
-    border: '1px solid #ddd',
+    border: `1px solid ${borderColor}`,
     borderRadius: '8px',
     padding: '16px',
     marginBottom: '16px',
-    backgroundColor: '#fafafa',
+    backgroundColor: surfaceBg,
+    color: textColor,
   };
 
   const headerStyle = {
@@ -190,7 +198,7 @@ export default function FacebookConnection() {
   };
 
   const btnDanger = {
-    backgroundColor: '#dc3545',
+    backgroundColor: darkMode ? '#b91c1c' : '#dc3545',
     color: 'white',
     padding: '8px 16px',
     borderRadius: '6px',
@@ -213,28 +221,31 @@ export default function FacebookConnection() {
   };
 
   const modalContent = {
-    backgroundColor: 'white',
+    backgroundColor: panelBg,
     padding: '24px',
     borderRadius: '8px',
     width: '90%',
     maxWidth: '450px',
     maxHeight: '80vh',
     overflow: 'auto',
+    color: textColor,
   };
 
   const pageItemStyle = {
     padding: '12px',
-    border: '1px solid #ddd',
+    border: `1px solid ${borderColor}`,
     borderRadius: '6px',
     marginBottom: '8px',
     cursor: 'pointer',
     transition: 'background-color 0.2s',
+    backgroundColor: panelBg,
+    color: textColor,
   };
 
   if (loading) {
     return (
       <div style={containerStyle}>
-        <p>Loading connection status...</p>
+        <p style={{ color: mutedTextColor }}>Loading connection status...</p>
       </div>
     );
   }
@@ -249,7 +260,7 @@ export default function FacebookConnection() {
           <div>
             <h4 style={{ margin: 0 }}>Facebook Page Connection</h4>
             {connectionStatus?.connected && (
-              <p style={{ margin: '4px 0 0', fontSize: '14px', color: '#666' }}>
+              <p style={{ margin: '4px 0 0', fontSize: '14px', color: mutedTextColor }}>
                 {connectionStatus.pageName}
               </p>
             )}
@@ -260,7 +271,7 @@ export default function FacebookConnection() {
 
       {connectionStatus?.connected ? (
         <div>
-          <div style={{ fontSize: '13px', color: '#666', marginBottom: '12px' }}>
+          <div style={{ fontSize: '13px', color: mutedTextColor, marginBottom: '12px' }}>
             <p style={{ margin: '4px 0' }}>
               <strong>Page ID:</strong> {connectionStatus.pageId}
             </p>
@@ -302,14 +313,14 @@ export default function FacebookConnection() {
           )}
 
           {!canManageConnection && (
-            <p style={{ fontSize: '13px', color: '#666', fontStyle: 'italic' }}>
+            <p style={{ fontSize: '13px', color: mutedTextColor, fontStyle: 'italic' }}>
               Only Owners and Administrators can manage the Facebook connection.
             </p>
           )}
         </div>
       ) : (
         <div>
-          <p style={{ color: '#666', marginBottom: '12px' }}>
+          <p style={{ color: mutedTextColor, marginBottom: '12px' }}>
             Connect a Facebook Page to enable posting and scheduling.
           </p>
 
@@ -338,7 +349,7 @@ export default function FacebookConnection() {
         <div style={modalOverlay}>
           <div style={modalContent}>
             <h4 style={{ marginTop: 0 }}>Select a Facebook Page</h4>
-            <p style={{ color: '#666', fontSize: '14px' }}>
+            <p style={{ color: mutedTextColor, fontSize: '14px' }}>
               Choose the Page you want to connect for posting:
             </p>
 
@@ -351,14 +362,14 @@ export default function FacebookConnection() {
                 role="button"
                 tabIndex={0}
                 onMouseEnter={e => {
-                  e.currentTarget.style.backgroundColor = '#f0f0f0';
+                  e.currentTarget.style.backgroundColor = darkMode ? '#1f2937' : '#f0f0f0';
                 }}
                 onMouseLeave={e => {
-                  e.currentTarget.style.backgroundColor = 'white';
+                  e.currentTarget.style.backgroundColor = panelBg;
                 }}
               >
-                <p style={{ margin: 0, fontWeight: 'bold' }}>{page.pageName}</p>
-                <p style={{ margin: '4px 0 0', fontSize: '12px', color: '#666' }}>
+                <p style={{ margin: 0, fontWeight: 'bold', color: textColor }}>{page.pageName}</p>
+                <p style={{ margin: '4px 0 0', fontSize: '12px', color: mutedTextColor }}>
                   {page.category} • ID: {page.pageId}
                 </p>
               </div>

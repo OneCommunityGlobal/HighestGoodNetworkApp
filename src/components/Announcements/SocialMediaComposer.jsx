@@ -20,6 +20,7 @@ const PST_TZ = 'America/Los_Angeles';
 export default function SocialMediaComposer({ platform }) {
   const dispatch = useDispatch();
   const authUser = useSelector(state => state.auth?.user);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   const requestor = useMemo(() => {
     if (!authUser?.userid) return null;
@@ -84,15 +85,31 @@ export default function SocialMediaComposer({ platform }) {
     { id: 'settings', label: '⚙️ Settings' },
   ];
 
+  const textColor = darkMode ? '#e5e7eb' : '#333';
+  const mutedTextColor = darkMode ? '#cbd5e1' : '#666';
+  const surfaceBg = darkMode ? '#0f172a' : '#fff';
+  const cardBg = darkMode ? '#111827' : '#fafafa';
+  const borderColor = darkMode ? '#1f2937' : '#ddd';
+  const inputBg = darkMode ? '#0b1220' : '#fff';
+  const inputBorder = darkMode ? '#1f2937' : '#ccc';
+
   const tabStyle = tabId => ({
     padding: '10px 16px',
     cursor: 'pointer',
-    borderTop: 'none',
-    borderLeft: 'none',
-    borderRight: 'none',
-    borderBottom: activeSubTab === tabId ? '3px solid #007bff' : '3px solid transparent',
-    backgroundColor: activeSubTab === tabId ? '#dbeeff' : '#dedede',
-    color: activeSubTab === tabId ? '#007bff' : '#333',
+    border: 'none',
+    borderBottom:
+      activeSubTab === tabId
+        ? `3px solid ${darkMode ? '#60a5fa' : '#007bff'}`
+        : '3px solid transparent',
+    backgroundColor:
+      activeSubTab === tabId
+        ? darkMode
+          ? '#1d2b44'
+          : '#dbeeff'
+        : darkMode
+        ? '#111a2c'
+        : '#dedede',
+    color: activeSubTab === tabId ? (darkMode ? '#bfdbfe' : '#007bff') : textColor,
     fontSize: '14px',
     fontWeight: activeSubTab === tabId ? 'bold' : 'normal',
     flex: 1,
@@ -375,34 +392,37 @@ export default function SocialMediaComposer({ platform }) {
 
   // Shared styles
   const cardStyle = {
-    border: '1px solid #ddd',
+    border: `1px solid ${borderColor}`,
     borderRadius: '8px',
     padding: '12px',
     marginBottom: '12px',
-    backgroundColor: '#fafafa',
+    backgroundColor: cardBg,
+    color: textColor,
   };
 
   const btnPrimary = {
-    backgroundColor: '#007bff',
+    backgroundColor: darkMode ? '#2563eb' : '#007bff',
+    border: `1px solid ${darkMode ? '#1d4ed8' : '#006fe6'}`,
     color: 'white',
     padding: '8px 14px',
     borderRadius: '6px',
-    border: 'none',
     cursor: 'pointer',
     marginRight: '8px',
+    transition: 'background-color 0.15s ease',
   };
 
   const btnDanger = {
-    backgroundColor: '#dc3545',
+    backgroundColor: darkMode ? '#b91c1c' : '#dc3545',
     color: 'white',
     padding: '8px 14px',
     borderRadius: '6px',
     border: 'none',
     cursor: 'pointer',
+    transition: 'background-color 0.15s ease',
   };
 
   const btnSuccess = {
-    backgroundColor: '#28a745',
+    backgroundColor: darkMode ? '#22c55e' : '#28a745',
     color: 'white',
     padding: '10px 16px',
     borderRadius: '6px',
@@ -411,12 +431,12 @@ export default function SocialMediaComposer({ platform }) {
   };
 
   const warningBanner = {
-    backgroundColor: '#fff3cd',
+    backgroundColor: darkMode ? '#3b3000' : '#fff3cd',
     border: '1px solid #ffc107',
     borderRadius: '6px',
     padding: '12px',
     marginBottom: '16px',
-    color: '#856404',
+    color: darkMode ? '#fef3c7' : '#856404',
   };
 
   // Connection warning for non-connected state
@@ -448,10 +468,16 @@ export default function SocialMediaComposer({ platform }) {
   };
 
   return (
-    <div style={{ padding: '1rem' }}>
-      <h3 style={{ textTransform: 'capitalize' }}>{platform}</h3>
+    <div style={{ padding: '1rem', backgroundColor: surfaceBg, color: textColor }}>
+      <h3 style={{ textTransform: 'capitalize', color: textColor }}>{platform}</h3>
 
-      <div style={{ display: 'flex', borderBottom: '1px solid #ccc', marginBottom: '1rem' }}>
+      <div
+        style={{
+          display: 'flex',
+          borderBottom: `1px solid ${borderColor}`,
+          marginBottom: '1rem',
+        }}
+      >
         {tabOrder.map(({ id, label }) => (
           <button key={id} type="button" onClick={() => setActiveSubTab(id)} style={tabStyle(id)}>
             {label}
@@ -472,8 +498,16 @@ export default function SocialMediaComposer({ platform }) {
               height: '150px',
               padding: '12px',
               borderRadius: '6px',
-              border: '1px solid #ccc',
+              border: `1px solid ${inputBorder}`,
               marginBottom: '1rem',
+              backgroundColor: inputBg,
+              color: textColor,
+            }}
+            onFocus={e => {
+              e.target.style.outline = `1px solid ${darkMode ? '#60a5fa' : '#007bff'}`;
+            }}
+            onBlur={e => {
+              e.target.style.outline = 'none';
             }}
           />
           {platform === 'facebook' && (
@@ -484,16 +518,29 @@ export default function SocialMediaComposer({ platform }) {
                   value={link}
                   onChange={e => setLink(e.target.value)}
                   placeholder="Optional link"
-                  style={{ padding: '8px', borderRadius: '6px', border: '1px solid #ccc' }}
+                  style={{
+                    padding: '8px',
+                    borderRadius: '6px',
+                    border: `1px solid ${inputBorder}`,
+                    backgroundColor: inputBg,
+                    color: textColor,
+                  }}
+                  onFocus={e => {
+                    e.target.style.outline = `1px solid ${darkMode ? '#60a5fa' : '#007bff'}`;
+                  }}
+                  onBlur={e => {
+                    e.target.style.outline = 'none';
+                  }}
                 />
 
                 {/* Image Upload Section */}
                 <div
                   style={{
-                    border: '1px solid #ddd',
+                    border: `1px solid ${borderColor}`,
                     borderRadius: '8px',
                     padding: '16px',
-                    backgroundColor: '#fafafa',
+                    backgroundColor: cardBg,
+                    color: textColor,
                   }}
                 >
                   <p style={{ margin: '0 0 12px', fontWeight: 'bold', fontSize: '14px' }}>
@@ -508,10 +555,18 @@ export default function SocialMediaComposer({ platform }) {
                         alignItems: 'center',
                         gap: '8px',
                         padding: '10px 16px',
-                        backgroundColor: imageFile ? '#e8f5e9' : '#f0f0f0',
+                        backgroundColor: imageFile
+                          ? darkMode
+                            ? '#1b4332'
+                            : '#e8f5e9'
+                          : darkMode
+                          ? '#1b273a'
+                          : '#f0f0f0',
                         borderRadius: '6px',
                         cursor: imageUrl ? 'not-allowed' : 'pointer',
-                        border: imageFile ? '2px solid #4caf50' : '1px solid #ccc',
+                        border: imageFile
+                          ? `2px solid ${darkMode ? '#34d399' : '#4caf50'}`
+                          : `1px solid ${inputBorder}`,
                         opacity: imageUrl ? 0.6 : 1,
                         transition: 'all 0.2s',
                       }}
@@ -527,7 +582,7 @@ export default function SocialMediaComposer({ platform }) {
                     </label>
 
                     {imageFile && (
-                      <span style={{ marginLeft: '12px', fontSize: '14px', color: '#333' }}>
+                      <span style={{ marginLeft: '12px', fontSize: '14px', color: textColor }}>
                         ✓ {imageFile.name} ({(imageFile.size / 1024 / 1024).toFixed(2)} MB)
                         <button
                           type="button"
@@ -559,7 +614,7 @@ export default function SocialMediaComposer({ platform }) {
                           maxWidth: '300px',
                           maxHeight: '200px',
                           borderRadius: '6px',
-                          border: '1px solid #ddd',
+                          border: `1px solid ${borderColor}`,
                           objectFit: 'contain',
                         }}
                       />
@@ -575,7 +630,9 @@ export default function SocialMediaComposer({ platform }) {
                       opacity: imageFile ? 0.4 : 1,
                     }}
                   >
-                    <hr style={{ flex: 1, border: 'none', borderTop: '1px solid #ddd' }} />
+                    <hr
+                      style={{ flex: 1, border: 'none', borderTop: `1px solid ${borderColor}` }}
+                    />
                     <span
                       style={{
                         padding: '0 16px',
@@ -586,7 +643,9 @@ export default function SocialMediaComposer({ platform }) {
                     >
                       OR
                     </span>
-                    <hr style={{ flex: 1, border: 'none', borderTop: '1px solid #ddd' }} />
+                    <hr
+                      style={{ flex: 1, border: 'none', borderTop: `1px solid ${borderColor}` }}
+                    />
                   </div>
 
                   {/* URL Input Option */}
@@ -604,16 +663,17 @@ export default function SocialMediaComposer({ platform }) {
                         width: '100%',
                         padding: '10px 12px',
                         borderRadius: '6px',
-                        border: '1px solid #ccc',
+                        border: `1px solid ${inputBorder}`,
                         opacity: imageFile ? 0.5 : 1,
-                        backgroundColor: imageFile ? '#f5f5f5' : 'white',
+                        backgroundColor: imageFile ? (darkMode ? '#111827' : '#f5f5f5') : inputBg,
+                        color: textColor,
                       }}
                     />
                   </div>
                 </div>
               </div>
 
-              <p style={{ fontSize: '12px', color: '#666', margin: '8px 0' }}>
+              <p style={{ fontSize: '12px', color: mutedTextColor, margin: '8px 0' }}>
                 {postContent.length} characters (recommended: &lt;500 for best engagement)
               </p>
             </>
@@ -643,8 +703,10 @@ export default function SocialMediaComposer({ platform }) {
               height: '100px',
               padding: '12px',
               borderRadius: '6px',
-              border: '1px solid #ccc',
+              border: `1px solid ${inputBorder}`,
               marginBottom: '1rem',
+              backgroundColor: inputBg,
+              color: textColor,
             }}
           />
 
@@ -659,7 +721,9 @@ export default function SocialMediaComposer({ platform }) {
                 width: '100%',
                 padding: '8px',
                 borderRadius: '6px',
-                border: '1px solid #ccc',
+                border: `1px solid ${inputBorder}`,
+                backgroundColor: inputBg,
+                color: textColor,
               }}
             />
           </div>
@@ -667,11 +731,12 @@ export default function SocialMediaComposer({ platform }) {
           {/* Image Upload Section */}
           <div
             style={{
-              border: '1px solid #ddd',
+              border: `1px solid ${borderColor}`,
               borderRadius: '8px',
               padding: '16px',
               marginBottom: '1rem',
-              backgroundColor: '#fafafa',
+              backgroundColor: cardBg,
+              color: textColor,
             }}
           >
             <p style={{ margin: '0 0 12px', fontWeight: 'bold', fontSize: '14px' }}>
@@ -686,10 +751,18 @@ export default function SocialMediaComposer({ platform }) {
                   alignItems: 'center',
                   gap: '8px',
                   padding: '10px 16px',
-                  backgroundColor: scheduledImageFile ? '#e8f5e9' : '#f0f0f0',
+                  backgroundColor: scheduledImageFile
+                    ? darkMode
+                      ? '#1b4332'
+                      : '#e8f5e9'
+                    : darkMode
+                    ? '#1b273a'
+                    : '#f0f0f0',
                   borderRadius: '6px',
                   cursor: scheduledImageUrl ? 'not-allowed' : 'pointer',
-                  border: scheduledImageFile ? '2px solid #4caf50' : '1px solid #ccc',
+                  border: scheduledImageFile
+                    ? `2px solid ${darkMode ? '#34d399' : '#4caf50'}`
+                    : `1px solid ${inputBorder}`,
                   opacity: scheduledImageUrl ? 0.6 : 1,
                 }}
               >
@@ -735,7 +808,7 @@ export default function SocialMediaComposer({ platform }) {
                     maxWidth: '200px',
                     maxHeight: '150px',
                     borderRadius: '6px',
-                    border: '1px solid #ddd',
+                    border: `1px solid ${borderColor}`,
                   }}
                 />
               </div>
@@ -750,9 +823,9 @@ export default function SocialMediaComposer({ platform }) {
                 opacity: scheduledImageFile ? 0.4 : 1,
               }}
             >
-              <hr style={{ flex: 1, border: 'none', borderTop: '1px solid #ddd' }} />
+              <hr style={{ flex: 1, border: 'none', borderTop: `1px solid ${borderColor}` }} />
               <span style={{ padding: '0 12px', color: '#888', fontSize: '12px' }}>OR</span>
-              <hr style={{ flex: 1, border: 'none', borderTop: '1px solid #ddd' }} />
+              <hr style={{ flex: 1, border: 'none', borderTop: `1px solid ${borderColor}` }} />
             </div>
 
             {/* URL Input */}
@@ -769,11 +842,13 @@ export default function SocialMediaComposer({ platform }) {
                 width: '100%',
                 padding: '8px',
                 borderRadius: '6px',
-                border: '1px solid #ccc',
+                border: `1px solid ${inputBorder}`,
                 opacity: scheduledImageFile ? 0.5 : 1,
+                backgroundColor: scheduledImageFile ? (darkMode ? '#111827' : '#f5f5f5') : inputBg,
+                color: textColor,
               }}
             />
-            <p style={{ margin: '8px 0 0', fontSize: '12px', color: '#666' }}>
+            <p style={{ margin: '8px 0 0', fontSize: '12px', color: mutedTextColor }}>
               Supported: JPEG, PNG, GIF, WebP (max 10MB)
             </p>
           </div>
@@ -791,8 +866,10 @@ export default function SocialMediaComposer({ platform }) {
                 style={{
                   padding: '8px',
                   borderRadius: '6px',
-                  border: '1px solid #ccc',
+                  border: `1px solid ${inputBorder}`,
                   minWidth: '240px',
+                  backgroundColor: inputBg,
+                  color: textColor,
                 }}
               />
             </label>
@@ -809,9 +886,9 @@ export default function SocialMediaComposer({ platform }) {
           <hr />
           <h4>Upcoming Scheduled Posts</h4>
           {loadingScheduled ? (
-            <p>Loading...</p>
+            <p style={{ color: mutedTextColor }}>Loading...</p>
           ) : scheduledPosts.length === 0 ? (
-            <p style={{ color: '#666' }}>No scheduled posts.</p>
+            <p style={{ color: mutedTextColor }}>No scheduled posts.</p>
           ) : (
             scheduledPosts.map(post => (
               <div key={post._id} style={cardStyle}>
@@ -822,15 +899,21 @@ export default function SocialMediaComposer({ platform }) {
                   {post.message || '(Image only)'}
                 </p>
                 {post.link && (
-                  <p style={{ margin: 0, fontSize: '13px', color: '#555' }}>Link: {post.link}</p>
+                  <p style={{ margin: 0, fontSize: '13px', color: textColor }}>Link: {post.link}</p>
                 )}
                 {post.imageUrl && (
-                  <p style={{ margin: 0, fontSize: '13px', color: '#555' }}>
+                  <p style={{ margin: 0, fontSize: '13px', color: textColor }}>
                     Image: {post.imageUrl}
                   </p>
                 )}
                 {(post.hasImage || post.imageOriginalName) && (
-                  <p style={{ margin: 0, fontSize: '13px', color: '#4caf50' }}>
+                  <p
+                    style={{
+                      margin: 0,
+                      fontSize: '13px',
+                      color: darkMode ? '#34d399' : '#4caf50',
+                    }}
+                  >
                     📷 Image attached: {post.imageOriginalName || 'uploaded file'}
                   </p>
                 )}
@@ -838,7 +921,8 @@ export default function SocialMediaComposer({ platform }) {
                   style={{
                     margin: '4px 0 8px',
                     fontSize: '12px',
-                    color: post.status === 'pending' ? '#28a745' : '#ffc107',
+                    color:
+                      post.status === 'pending' ? (darkMode ? '#34d399' : '#28a745') : '#ffc107',
                   }}
                 >
                   Status: {post.status}
@@ -872,7 +956,13 @@ export default function SocialMediaComposer({ platform }) {
               <select
                 value={historyStatus}
                 onChange={e => setHistoryStatus(e.target.value)}
-                style={{ padding: '6px', borderRadius: '4px' }}
+                style={{
+                  padding: '6px',
+                  borderRadius: '4px',
+                  backgroundColor: inputBg,
+                  color: textColor,
+                  border: `1px solid ${inputBorder}`,
+                }}
               >
                 <option value="all">All</option>
                 <option value="sent">Sent</option>
@@ -884,7 +974,13 @@ export default function SocialMediaComposer({ platform }) {
               <select
                 value={historyPostMethod}
                 onChange={e => setHistoryPostMethod(e.target.value)}
-                style={{ padding: '6px', borderRadius: '4px' }}
+                style={{
+                  padding: '6px',
+                  borderRadius: '4px',
+                  backgroundColor: inputBg,
+                  color: textColor,
+                  border: `1px solid ${inputBorder}`,
+                }}
               >
                 <option value="all">All</option>
                 <option value="direct">Direct Posts</option>
@@ -896,7 +992,13 @@ export default function SocialMediaComposer({ platform }) {
               <select
                 value={historySource}
                 onChange={e => setHistorySource(e.target.value)}
-                style={{ padding: '6px', borderRadius: '4px' }}
+                style={{
+                  padding: '6px',
+                  borderRadius: '4px',
+                  backgroundColor: inputBg,
+                  color: textColor,
+                  border: `1px solid ${inputBorder}`,
+                }}
               >
                 <option value="mongodb">Database</option>
                 <option value="all">Database + Facebook API</option>
@@ -915,9 +1017,9 @@ export default function SocialMediaComposer({ platform }) {
           )}
 
           {loadingHistory ? (
-            <p>Loading...</p>
+            <p style={{ color: mutedTextColor }}>Loading...</p>
           ) : postHistory.length === 0 ? (
-            <p style={{ color: '#666' }}>No post history found.</p>
+            <p style={{ color: mutedTextColor }}>No post history found.</p>
           ) : (
             postHistory.map((post, idx) => (
               <div key={post.postId || post._id || idx} style={cardStyle}>
@@ -937,8 +1039,22 @@ export default function SocialMediaComposer({ platform }) {
                           fontSize: '11px',
                           padding: '2px 8px',
                           borderRadius: '12px',
-                          backgroundColor: post.postMethod === 'direct' ? '#e3f2fd' : '#f3e5f5',
-                          color: post.postMethod === 'direct' ? '#1565c0' : '#7b1fa2',
+                          backgroundColor:
+                            post.postMethod === 'direct'
+                              ? darkMode
+                                ? '#1d4ed8'
+                                : '#e3f2fd'
+                              : darkMode
+                              ? '#4338ca'
+                              : '#f3e5f5',
+                          color:
+                            post.postMethod === 'direct'
+                              ? darkMode
+                                ? '#bfdbfe'
+                                : '#1565c0'
+                              : darkMode
+                              ? '#e0e7ff'
+                              : '#7b1fa2',
                         }}
                       >
                         {post.postMethod === 'direct' ? '⚡ Direct' : '📅 Scheduled'}
@@ -949,22 +1065,38 @@ export default function SocialMediaComposer({ platform }) {
                         fontSize: '11px',
                         padding: '2px 8px',
                         borderRadius: '12px',
-                        backgroundColor: post.status === 'sent' ? '#e8f5e9' : '#ffebee',
-                        color: post.status === 'sent' ? '#2e7d32' : '#c62828',
+                        backgroundColor:
+                          post.status === 'sent'
+                            ? darkMode
+                              ? '#14532d'
+                              : '#e8f5e9'
+                            : darkMode
+                            ? '#3f1d2e'
+                            : '#ffebee',
+                        color:
+                          post.status === 'sent'
+                            ? darkMode
+                              ? '#bbf7d0'
+                              : '#2e7d32'
+                            : darkMode
+                            ? '#fecdd3'
+                            : '#c62828',
                       }}
                     >
                       {post.status === 'sent' ? '✔ Sent' : '✗ Failed'}
                     </span>
                   </div>
                 </div>
-                <p style={{ margin: '8px 0', whiteSpace: 'pre-wrap' }}>{post.message}</p>
+                <p style={{ margin: '8px 0', whiteSpace: 'pre-wrap', color: textColor }}>
+                  {post.message}
+                </p>
                 {post.lastError && (
                   <p
                     style={{
                       margin: '4px 0',
                       fontSize: '13px',
-                      color: '#c62828',
-                      backgroundColor: '#ffebee',
+                      color: darkMode ? '#fecdd3' : '#c62828',
+                      backgroundColor: darkMode ? '#3f1d2e' : '#ffebee',
                       padding: '8px',
                       borderRadius: '4px',
                     }}
@@ -998,8 +1130,10 @@ export default function SocialMediaComposer({ platform }) {
             style={{
               marginTop: '24px',
               padding: '16px',
-              backgroundColor: '#f8f9fa',
+              backgroundColor: cardBg,
               borderRadius: '8px',
+              border: `1px solid ${borderColor}`,
+              color: textColor,
             }}
           >
             <h5 style={{ marginTop: 0 }}>Platform Details</h5>
@@ -1040,11 +1174,13 @@ export default function SocialMediaComposer({ platform }) {
         >
           <div
             style={{
-              backgroundColor: 'white',
+              backgroundColor: cardBg,
               padding: '24px',
               borderRadius: '8px',
               width: '90%',
               maxWidth: '500px',
+              color: textColor,
+              border: `1px solid ${borderColor}`,
             }}
           >
             <h4>Edit Scheduled Post</h4>
@@ -1056,8 +1192,10 @@ export default function SocialMediaComposer({ platform }) {
                 height: '100px',
                 padding: '10px',
                 borderRadius: '6px',
-                border: '1px solid #ccc',
+                border: `1px solid ${inputBorder}`,
                 marginBottom: '1rem',
+                backgroundColor: inputBg,
+                color: textColor,
               }}
             />
             <label style={{ display: 'block', marginBottom: '1rem' }}>
@@ -1070,9 +1208,11 @@ export default function SocialMediaComposer({ platform }) {
                   display: 'block',
                   padding: '8px',
                   borderRadius: '6px',
-                  border: '1px solid #ccc',
+                  border: `1px solid ${inputBorder}`,
                   width: '100%',
                   marginTop: '4px',
+                  backgroundColor: inputBg,
+                  color: textColor,
                 }}
               />
             </label>
