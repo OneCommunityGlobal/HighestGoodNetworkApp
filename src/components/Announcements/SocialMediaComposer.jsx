@@ -265,7 +265,6 @@ export default function SocialMediaComposer({ platform }) {
       toast.info('Scheduling is only available for Facebook right now.');
       return;
     }
-    // Updated validation: require either content or image
     if (!scheduledContent.trim() && !scheduledImageFile && !scheduledImageUrl.trim()) {
       toast.error('Please enter content or add an image for your scheduled post.');
       return;
@@ -288,7 +287,6 @@ export default function SocialMediaComposer({ platform }) {
     setIsScheduling(true);
     try {
       if (scheduledImageFile) {
-        // Use FormData for direct file upload
         const formData = new FormData();
         if (scheduledContent.trim()) formData.append('message', scheduledContent.trim());
         formData.append('scheduledFor', scheduledDateTime);
