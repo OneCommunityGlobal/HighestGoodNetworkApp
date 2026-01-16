@@ -206,67 +206,86 @@
   font-size: 14px;
 }
 
-.issueHeaderContainer.darkMode {
+.darkMode .issueHeaderContainer {
   background-color: #1b2a41;
   color: #f8fafc;
 }
 
-.issueHeaderContainer.darkMode .topRow {
+.darkMode .issueHeaderContainer .topRow {
   border-bottom: 1px solid #4a5463;
 }
 
-.issueHeaderContainer.darkMode .titleSection {
+.darkMode .issueHeaderContainer .titleSection {
   color: #ffffff;
 }
 
-.issueHeaderContainer.darkMode .section {
+.darkMode .issueHeaderContainer .section {
   color: #e0e0e0;
 }
 
-.issueHeaderContainer.darkMode .moreButton {
+.darkMode .issueHeaderContainer .moreButton {
   background-color: #333d4e;
   color: #f8fafc;
 }
 
-.issueHeaderContainer.darkMode .searchIcon {
+.darkMode .issueHeaderContainer .searchIcon {
   color: #b0b0b0;
 }
 
-.issueHeaderContainer.darkMode .searchInput {
+.darkMode .issueHeaderContainer .searchInput {
   background-color: #27374a;
   border-color: #4a5463;
   color: #f8fafc;
 }
 
-.issueHeaderContainer.darkMode .searchInput::placeholder {
+.darkMode .issueHeaderContainer .searchInput::placeholder {
   color: #b0b0b0;
 }
 
-.issueHeaderContainer.darkMode .searchResults {
+.darkMode .issueHeaderContainer .searchResults {
   background-color: #1b2a41;
   border-color: #3d444d;
 }
 
-.issueHeaderContainer.darkMode .searchResultItem {
+.darkMode .issueHeaderContainer .searchResultItem {
   border-bottom: 1px solid #27374a;
 }
 
-.issueHeaderContainer.darkMode .searchResultItem:hover {
+.darkMode .issueHeaderContainer .searchResultItem:hover {
   background-color: #27374a;
 }
 
-.issueHeaderContainer.darkMode .resultName {
+.darkMode .issueHeaderContainer .resultName {
   color: #f8fafc;
 }
 
-.issueHeaderContainer.darkMode .resultCategory {
+.darkMode .issueHeaderContainer .resultCategory {
   color: #a3a3a3;
 }
 
-.issueHeaderContainer.darkMode .searchNoResults {
+.darkMode .issueHeaderContainer .searchNoResults {
   color: #a3a3a3;
 }
-.issueHeaderContainer.darkMode .backButton {
+.darkMode .issueHeaderContainer .backButton {
   background-color: #3a3a3a;
   color: #e0e0e0;
+}
+
+.darkMode .issueHeaderContainer .projectTab {
+  background-color: #27374a;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.darkMode .issueHeaderContainer .tabItem {
+  color: #cbd5e1;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.darkMode .issueHeaderContainer .tabItem.active {
+  background-color: #1b2a41;
+  color: #f8fafc;
+}
+
+.darkMode .issueHeaderContainer .tabItem:not(.active):hover {
+  background-color: #334155;
 }

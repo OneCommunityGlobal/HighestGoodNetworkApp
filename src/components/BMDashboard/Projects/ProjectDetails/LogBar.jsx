@@ -52,7 +52,11 @@ function LogBar(props) {
                 return (
                   <li key={uuidv4()}>
                     <Link to={buttonLabels[section].url[index]}>
-                      <Button type="button" className={`${styles.buttonBtn} ${styles[colorClass]}`}>
+                      <Button
+                        type="button"
+                        color="link"
+                        className={`${styles.buttonBtn} ${styles[colorClass]}`}
+                      >
                         {label}
                       </Button>
                     </Link>

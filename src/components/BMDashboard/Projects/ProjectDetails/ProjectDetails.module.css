@@ -67,45 +67,56 @@
   align-items: center;
 }
 
+/* Base */
 .buttonBtn {
   border: 0;
   border-radius: 10px;
   padding: 0.5em 1em;
   cursor: pointer;
-  transition: transform 0.2s, filter 0.3s;
-  flex: 1 1 auto;
+  transition: transform 0.2s ease, filter 0.2s ease;
   min-width: 100px;
+  color: #fff;
 }
 
+/* LIGHT MODE hover */
 .buttonBtn:hover {
-  filter: brightness(130%);
-  transform: translateY(-2px);
+  color: #fff; /* prevent blue text */
+  text-decoration: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45); /* prevent underline */
 }
 
-/* colors */
-.buttonBtn.green {
+/* LIGHT MODE COLORS */
+.green {
   background-color: #015d4a;
-  color: #fff;
 }
 
-.buttonBtn.blue {
+.blue {
   background-color: #0f6386;
-  color: #fff;
 }
 
-.buttonBtn.indigo {
+.indigo {
   background-color: #203844;
-  color: #fff;
 }
 
-.buttonBtn.maroon {
+.maroon {
   background-color: #980101;
-  color: #fff;
 }
 
-.buttonBtn.maroon:hover {
-  filter: brightness(140%);
-  transform: translateY(-2px);
+/* DARK MODE COLORS */
+.darkMode .green {
+  background-color: #014d3d;
+}
+
+.darkMode .blue {
+  background-color: #0b4c6a;
+}
+
+.darkMode .indigo {
+  background-color: #1b2f44;
+}
+
+.darkMode .maroon {
+  background-color: #7a0101;
 }
 
 @media (min-width: 550px) {
