@@ -4,6 +4,9 @@ import { Container, Row, Col, Card, CardBody, Button, Input, FormGroup, Label } 
 import { FaCalendarAlt, FaMapMarkerAlt, FaUserAlt, FaSearch, FaTimes } from 'react-icons/fa';
 import styles from './CPDashboard.module.css';
 import { ENDPOINTS } from '../../utils/URL';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { toast } from 'react-toastify';
 import axios from 'axios';
 import { el } from 'date-fns/locale';
 
@@ -38,6 +41,8 @@ export function CPDashboard() {
   const [searchInput, setSearchInput] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [onlineOnly, setOnlineOnly] = useState(false);
+  const [selectedDate, setSelectedDate] = useState('');
+  const [dateError, setDateError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [dateFilter, setDateFilter] = useState('');
   const [error, setError] = useState(null);
@@ -48,6 +53,19 @@ export function CPDashboard() {
     total: 0,
     limit: 6,
   });
+
+  const handleDateChange = date => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // midnight today
+
+    if (date < today) {
+      toast.error('Past dates are not supported. Please select a future date.');
+      setSelectedDate('');
+      return;
+    }
+    setDateError('');
+    setSelectedDate(date);
+  };
 
   const FALLBACK_IMG =
     'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=600&q=60';
@@ -269,7 +287,26 @@ export function CPDashboard() {
                     Clear date filter
                   </Button>
                 </div>
-                <Input type="date" placeholder="Ending After" className={styles['date-filter']} />
+                <div className={styles['date-filter-container']}>
+                  <DatePicker
+                    selected={selectedDate}
+                    onChange={date => handleDateChange(date)}
+                    placeholderText="Ending After"
+                    id="ending-after"
+                    className={styles['date-filter']}
+                  />
+                  {dateError && <p className={styles['date-error-message']}>{dateError}</p>}
+                </div>
+                <div className={styles['date-filter-container']}>
+                  <DatePicker
+                    selected={selectedDate}
+                    onChange={date => handleDateChange(date)}
+                    placeholderText="Ending After"
+                    id="ending-after"
+                    className={styles['date-filter']}
+                  />
+                  {dateError && <p className={styles['date-error-message']}>{dateError}</p>}
+                </div>
               </div>
 
               <div className={styles.filterItem}>

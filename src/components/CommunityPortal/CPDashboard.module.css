@@ -85,11 +85,11 @@
   height: 34px;
   border-radius: 50%;
   cursor: pointer;
-  background: transparent;          /* 🔹 icon background now white */
+  background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #1b3c55;               /* blue magnifying-glass icon */
+  color: #1b3c55;
   font-size: 0.9rem;
 }
 
@@ -159,9 +159,17 @@
   vertical-align: middle;
 }
 
-.filterItem input:not([type="checkbox"]):not([type="radio"]),
-.filterItem select {
-  padding: 12px 15px;
+.filter-section-divider {
+  height: fit-content;
+  margin: 10px 10px;
+  border-radius: 1px;
+  display: flex;
+  flex-direction: column;
+}
+
+.filter-item input:not([type='checkbox']):not([type='radio']),
+.filter-item select {
+  padding: 4px 15px;
   margin-top: 10px;
   border-radius: 8px;
   width: 100%;
@@ -175,7 +183,7 @@
   display: inline-block;      /* <– keeps input on same line as text */
   width: auto;
   padding: 0;
-  margin: 5px 0px 0px 120px;       /* top margin to line up under "Dates" */
+  margin: 5px 0px 0px 120px;
   vertical-align: middle;
 }
 
@@ -272,6 +280,25 @@
 .dashboardActions button:hover {
   background-color: #34495e;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.date-filter {
+  padding-left: 10px;
+  margin-top: 15px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+}
+
+.date-filter-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 6px 10px 20px;
+}
+
+.date-error-message {
+  color: red;
+  margin-top: 5px;
 }
 
 /* Hide browser's built-in clear icon for search inputs */
