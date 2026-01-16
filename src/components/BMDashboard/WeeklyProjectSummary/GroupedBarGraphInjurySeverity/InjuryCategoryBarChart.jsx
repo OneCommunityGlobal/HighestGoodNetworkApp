@@ -8,7 +8,6 @@ import {
   Legend,
   LabelList,
   ResponsiveContainer,
-  CartesianGrid,
 } from 'recharts';
 import Select from 'react-select';
 import DatePicker from 'react-datepicker';
@@ -142,39 +141,38 @@ function InjuryCategoryBarChart() {
     '#38BDF8', // cyan
   ];
 
-  const selectStyles = darkMode
-    ? {
-        control: base => ({
-          ...base,
-          backgroundColor: '#2b3e59',
-          color: 'white',
-        }),
-        menu: base => ({
-          ...base,
-          backgroundColor: '#2b3e59',
-          color: 'white',
-        }),
-        option: (base, state) => ({
-          ...base,
-          color: 'white',
-          backgroundColor: state.isSelected
-            ? 'rgba(255, 255, 255, 0.15)'
-            : state.isFocused
-            ? 'rgba(255, 255, 255, 0.1)'
-            : 'transparent',
-          '&:active': {
-            backgroundColor: 'rgba(255, 255, 255, 0.2)',
-          },
-        }),
-        singleValue: base => ({
-          ...base,
-          color: 'white',
-        }),
-      }
-    : {};
+  const selectStyles = darkMode && {
+    control: base => ({
+      ...base,
+      backgroundColor: '#2b3e59',
+      color: 'white',
+    }),
+    menu: base => ({
+      ...base,
+      backgroundColor: '#2b3e59',
+      color: 'white',
+    }),
+    option: (base, state) => ({
+      ...base,
+      color: 'white',
+      backgroundColor: state.isSelected
+        ? 'rgba(255, 255, 255, 0.15)'
+        : state.isFocused
+        ? 'rgba(255, 255, 255, 0.1)'
+        : 'transparent',
+      '&:active': {
+        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+      },
+    }),
+    singleValue: base => ({
+      ...base,
+      color: 'white',
+    }),
+  };
+  // : {};
 
   return (
-    <div className={`injury-chart-container ${darkMode ? 'darkMode' : ''}`}>
+    <div className={`injury-chart-container ${darkMode && 'darkMode'}`}>
       <div className="injury-chart-header">
         <h3 className="injury-chart-title">Injury Severity by Category of Worker Injured</h3>
 
@@ -298,7 +296,6 @@ function InjuryCategoryBarChart() {
                 backgroundColor: darkMode ? '#2b3e59' : '#fff',
                 border: `1px solid ${darkMode ? '#4a5568' : '#cccccc'}`,
                 color: darkMode ? '#fff' : '#000',
-                border: 'none',
               }}
               labelStyle={{
                 color: darkMode ? '#fff' : '#000',
