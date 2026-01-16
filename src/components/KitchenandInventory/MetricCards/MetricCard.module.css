@@ -1,24 +1,21 @@
 .metricCard {
   width: 100%;
   border-radius: 8px;
-  box-shadow: 4px 0px 10px rgba(0, 0, 0, 0.1), -4px 0px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 4px 0px 10px rgba(54, 54, 54, 0.1), -4px 0px 10px rgba(0, 0, 0, 0.1);
   padding: 16px;
 }
-
 .metricCardHeader {
   font-size: 1rem;
   font-weight: bold;
   margin-bottom: 12px;
   margin-left: 10px;
 }
-
 .metricCardBody {
   margin-left: 10px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   font-size: 2rem;
-  color: #333333;
 }
 .metricCardIcon {
   margin: 0;
