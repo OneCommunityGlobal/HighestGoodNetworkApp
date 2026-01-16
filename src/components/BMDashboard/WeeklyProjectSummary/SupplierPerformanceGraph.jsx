@@ -72,7 +72,8 @@ const SupplierPerformanceDashboard = function({ height = 420, onDataLoaded }) {
   const chartTheme = {
     textColor: darkMode ? '#e0e0e0' : '#333',
     axisColor: darkMode ? '#a0a0a0' : '#666',
-    gridColor: darkMode ? '#364156' : '#E2E8F0',
+    // UPDATE: Set a lighter grey for dark mode so grid lines are clearly visible
+    gridColor: darkMode ? '#9CA3AF' : '#E2E8F0',
     barColor: '#4CAF50',
     labelFill: darkMode ? '#ffffff' : '#333',
   };
@@ -136,7 +137,6 @@ const SupplierPerformanceDashboard = function({ height = 420, onDataLoaded }) {
       {/* Filters Row */}
       <div className={styles['supplier-performance-filters']}>
         <div className={styles['supplier-performance-filter-group']}>
-          {/* Linked Label to Input via htmlFor and id */}
           <label htmlFor="supplier-date-select">Dates</label>
           <Input
             id="supplier-date-select"
@@ -154,7 +154,6 @@ const SupplierPerformanceDashboard = function({ height = 420, onDataLoaded }) {
         </div>
 
         <div className={styles['supplier-performance-filter-group']}>
-          {/* Linked Label to Input via htmlFor and id */}
           <label htmlFor="supplier-project-select">Project</label>
           <Input
             id="supplier-project-select"
@@ -188,7 +187,8 @@ const SupplierPerformanceDashboard = function({ height = 420, onDataLoaded }) {
         {!loading && !error && supplierData.length > 0 && (
           <ResponsiveContainer width="100%" height={height}>
             <BarChart data={supplierData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.gridColor} opacity={0.3} />
+              {/* Added grid lines: Dotted (3 3) and custom theme color */}
+              <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.gridColor} opacity={0.5} />
 
               <XAxis
                 dataKey="supplierName"

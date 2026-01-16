@@ -19,7 +19,6 @@ import OpenIssueCharts from '../Issues/openIssueCharts';
 import SupplierPerformanceGraph from './SupplierPerformanceGraph.jsx';
 import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
 import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
-import IssueCharts from '../Issues/openIssueCharts';
 
 const projectStatusButtons = [
   {
