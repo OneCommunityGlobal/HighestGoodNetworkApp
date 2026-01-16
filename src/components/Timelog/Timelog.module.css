@@ -108,8 +108,7 @@
 }
 
 /* Hotfix: Prevent red color for project name and notes in Timelog */
-.notes-section, .notes-section *:not(a),
-.text-success, .text-light, .text-muted, .dark-text-info, .dark-text-muted {
+.text-success, .text-light, .text-muted {
   color: #222 !important;
 }
 

@@ -758,7 +758,13 @@ function LeaderBoard({
                       <div className={`${styles['leaderboard-totals-container']} text-center`}>
                         <span>{stateOrganizationData.name}</span>
                         {viewZeroHouraMembers(loggedInUser.role) && (
-                          <span className="leaderboard-totals-title">
+                          <span
+                            className={
+                              darkMode
+                                ? `${styles['leaderboard-totals-title-dark']}`
+                                : `${styles['leaderboard-totals-title']}`
+                            }
+                          >
                             0 hrs Totals:{' '}
                             {filteredUsers.filter(user => user.weeklycommittedHours === 0).length}{' '}
                             Members
@@ -772,7 +778,13 @@ function LeaderBoard({
                       <td className={`${styles['leaderboard-totals-container']}`}>
                         <span>{stateOrganizationData.name}</span>
                         {viewZeroHouraMembers(loggedInUser.role) && (
-                          <span className={`${styles['leaderboard-totals-title']}`}>
+                          <span
+                            className={
+                              darkMode
+                                ? `${styles['leaderboard-totals-title-dark']}`
+                                : `${styles['leaderboard-totals-title']}`
+                            }
+                          >
                             0 hrs Totals:{' '}
                             {filteredUsers.filter(user => user.weeklycommittedHours === 0).length}{' '}
                             Members
