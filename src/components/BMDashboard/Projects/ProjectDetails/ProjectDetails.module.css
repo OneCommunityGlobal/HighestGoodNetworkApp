@@ -276,7 +276,7 @@
 
 .darkMode .projectLog thead:hover {
   background-color: #6b7280;
-  color: #e5e7eb;
+  color: #f8fafc;
 }
 
 @media (min-width: 992px) {

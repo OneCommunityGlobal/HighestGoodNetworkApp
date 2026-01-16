@@ -1,7 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { connect } from 'react-redux';
 import TagSent from './TagSent';
-import styles from './TagsSearch.module.css';
 import ReadOnlySectionWrapper from '../EditTask/ReadOnlySectionWrapper';
 import { findProjectMembers } from '../../../../../actions/projectMembers';
 

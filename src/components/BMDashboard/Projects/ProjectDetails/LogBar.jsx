@@ -33,19 +33,18 @@ function LogBar(props) {
       url: ['/teams', '/teams', `/bmdashboard/issues/add/${projectId}`, '/bmdashboard/issues/'],
     },
   };
+  const getSectionTitle = section => {
+    if (section === 'dailyLogging') return 'Daily Logging:';
+    if (section === 'newItem') return 'Add a New Item:';
+    return 'Team';
+  };
 
   return (
     <div className={`${darkMode ? styles.darkMode : ''}`}>
       <div className={`${styles.logBar}`}>
         {Object.keys(buttonStyles).map(section => (
           <div key={uuidv4()} className={`${styles.logBarSection}`}>
-            <h2>
-              {section === 'dailyLogging'
-                ? 'Daily Logging:'
-                : section === 'newItem'
-                ? 'Add a New Item:'
-                : 'Team'}
-            </h2>
+            <h2>{getSectionTitle(section)}</h2>
             <ul className={`${styles.logBarBtnGroup}`}>
               {buttonLabels[section].name.map((label, index) => {
                 const colorClass = label === 'Log Issue' ? 'maroon' : buttonStyles[section];

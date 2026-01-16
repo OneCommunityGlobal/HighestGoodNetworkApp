@@ -19,7 +19,6 @@ thead {
   vertical-align: middle;
 }
 
-
 #teams__members {
   width: 15px;
 }
@@ -54,12 +53,12 @@ thead {
 
 #card_active {
   background: #fbad4c;
-  color: white;
+  color: #3b2f1a;
 }
 
 #card_in_active {
   background: #fbad4c;
-  color: white;
+  color: #3b2f1a;
 }
 
 .teams__order--input div {
@@ -92,7 +91,6 @@ thead {
 
 .isNotActive i {
   color: #dee2e6;
-
 }
 
 .isNotActive {
