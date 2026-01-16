@@ -3,9 +3,7 @@
 /* eslint-disable camelcase */
 /* eslint-disable import/prefer-default-export */
 import { useState, useEffect, useRef } from 'react';
-import '../../Teams/Team.css';
 import 'react-datepicker/dist/react-datepicker.css';
-import './TasksTable.css';
 import Select from 'react-select';
 import { Checkbox } from '~/components/common/Checkbox';
 import TextSearchBox from '~/components/UserManagement/TextSearchBox';
@@ -136,7 +134,7 @@ export function TasksTable({ darkMode, tasks, projectId }) {
             Clear filters
           </button>
         </div>
-        
+
       </div>
 
       <TasksDetail

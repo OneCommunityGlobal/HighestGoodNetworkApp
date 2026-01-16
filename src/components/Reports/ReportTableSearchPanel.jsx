@@ -1,7 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { SEARCH } from '../../languages/en/ui';
-import './reportsPage.css';
 
 /**
  * The search panel stateless component for Report grid
@@ -19,24 +18,24 @@ function ReportTableSearchPanel({ onSearch, wildCardSearchText, onSearchClick })
     setTimeout(() => {
       // Try to find the table data container (where results are shown)
       let resultsContainer = document.querySelector('.table-data-container');
-      
+
       // If table data container is not visible, scroll to the report container data
       if (!resultsContainer || resultsContainer.offsetHeight === 0) {
         resultsContainer = document.querySelector('.report-container-data');
       }
-      
+
       if (resultsContainer) {
         // Get header height to offset the scroll position
         const header = document.querySelector('.header-wrapper, .navbar, [data-testid="header"]');
         const headerHeight = header ? header.offsetHeight : 80; // fallback to 80px
-        
+
         // Add some extra padding to ensure header is clearly visible
         const extraPadding = 30;
-        
+
         // Scroll to results but leave space for the header
         const elementTop = resultsContainer.offsetTop;
         const offsetPosition = elementTop - headerHeight - extraPadding;
-        
+
         window.scrollTo({
           top: Math.max(0, offsetPosition), // Ensure we don't scroll to negative position
           behavior: 'smooth'
@@ -50,7 +49,7 @@ function ReportTableSearchPanel({ onSearch, wildCardSearchText, onSearchClick })
           const extraPadding = 30;
           const elementTop = categoryContainer.offsetTop;
           const offsetPosition = elementTop - headerHeight - extraPadding;
-          
+
           window.scrollTo({
             top: Math.max(0, offsetPosition),
             behavior: 'smooth'
