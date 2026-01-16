@@ -1,10 +1,9 @@
-import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import ReactCalendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import CalendarActivitySection from './CalendarActivitySection';
 import styles from './CommunityCalendar.module.css';
-import { and } from 'ajv/dist/compile/codegen';
 
 const mockEvents = [
   {
@@ -343,13 +342,13 @@ function CommunityCalendar() {
   );
 
   // Memoized filter change handlers
-  const handleTypeFilterChange = useCallback(e => {
+  /*   const handleTypeFilterChange = useCallback(e => {
     setFilter(prev => ({ ...prev, type: e.target.value }));
-  }, []);
+  }, []); */
 
-  const handleLocationFilterChange = useCallback(e => {
+  /*   const handleLocationFilterChange = useCallback(e => {
     setFilter(prev => ({ ...prev, location: e.target.value }));
-  }, []);
+  }, []); */
 
   // Memoized dark mode selector
   const darkMode = useSelector(state => state.theme.darkMode);
