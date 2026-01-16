@@ -1,30 +1,26 @@
 /* eslint-disable import/no-unresolved */
-import { useState, useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
-import CostPredictionChart from './CostPredictionChart';
-import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
 import PaidLaborCost from './PaidLaborCost/PaidLaborCost';
 import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
 import QuantityOfMaterialsUsed from './QuantityOfMaterialsUsed/QuantityOfMaterialsUsed';
-import ProjectRiskProfileOverview from './ProjectRiskProfileOverview';
-import IssuesBreakdownChart from './IssuesBreakdownChart';
 import InjuryCategoryBarChart from './GroupedBarGraphInjurySeverity/InjuryCategoryBarChart';
 import ToolsHorizontalBarChart from './Tools/ToolsHorizontalBarChart';
 import ExpenseBarChart from './Financials/ExpenseBarChart';
 import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
 import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMaterialCostPerProject';
-import EmbedInteractiveMap from '../InteractiveMap/EmbedInteractiveMap';
-import InteractiveMap from '../InteractiveMap/InteractiveMap';
 import styles from './WeeklyProjectSummary.module.css';
-import IssueCharts from '../Issues/openIssueCharts';
+import OpenIssueCharts from '../Issues/openIssueCharts';
 import SupplierPerformanceGraph from './SupplierPerformanceGraph.jsx';
 import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
 import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
 import ToolsStoppageHorizontalBarChart from './Tools/ToolsStoppageHorizontalBarChart/ToolsStoppageHorizontalBarChart';
+import IssueCharts from '../Issues/openIssueCharts';
+import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
 
 const projectStatusButtons = [
   {
@@ -176,6 +172,7 @@ function WeeklyProjectSummary() {
   const materials = useSelector(state => state.materials?.materialslist || []);
   const [openSections, setOpenSections] = useState({});
   const darkMode = useSelector(state => state.theme.darkMode);
+
   useEffect(() => {
     if (materials.length === 0) {
       dispatch(fetchAllMaterials());
@@ -197,12 +194,6 @@ function WeeklyProjectSummary() {
 
   const sections = useMemo(
     () => [
-      {
-        title: 'Risk profile for projects',
-        key: 'Risk profile for projects',
-        className: 'full',
-        content: <ProjectRiskProfileOverview />,
-      },
       {
         title: 'Project Status',
         key: 'Project Status',
@@ -236,21 +227,10 @@ function WeeklyProjectSummary() {
           </div>
         ),
       },
-      // New Issues Breakdown card
-      {
-        title: 'Issues Breakdown',
-        key: 'Issues Breakdown',
-        className: 'full',
-        content: (
-          <div className={`${styles.weeklyProjectSummaryCard} ${styles.fullCard}`}>
-            <IssuesBreakdownChart />
-          </div>
-        ),
-      },
       {
         title: 'Material Consumption',
         key: 'Material Consumption',
-        className: 'full',
+        className: 'large',
         content: [1, 2, 3].map((_, index) => {
           let content;
           if (index === 1) {
@@ -277,14 +257,14 @@ function WeeklyProjectSummary() {
         className: 'full',
         content: (
           <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
-            <IssueCharts />
+            <OpenIssueCharts />
           </div>
         ),
       },
       {
         title: 'Tools and Equipment Tracking',
         key: 'Tools and Equipment Tracking',
-        className: 'full',
+        className: 'half',
         content: (
           <>
             {/* <div className="weekly-project-summary-card normal-card tools-tracking-layout"> */}
@@ -313,12 +293,11 @@ function WeeklyProjectSummary() {
         title: 'Lessons Learned',
         key: 'Lessons Learned',
         className: 'half',
-        content: [
-          <MostFrequentKeywords key="frequent-tags-card" />,
-          <div key="injury-chart" className="weekly-project-summary-card normal-card">
+        content: (
+          <div className="weekly-project-summary-card normal-card" style={{ gridColumn: '1 / -1' }}>
             <InjuryCategoryBarChart />
-          </div>,
-        ],
+          </div>
+        ),
       },
       {
         title: 'Financials',
@@ -345,16 +324,18 @@ function WeeklyProjectSummary() {
         ),
       },
       {
-        title: 'Global Distribution and Project Status Overview',
+        title: 'Global Distribution and Project Status',
         key: 'Global Distribution and Project Status',
-        className: 'full',
+        className: 'half',
         content: (
-          <div
-            className={`${styles.weeklyProjectSummaryCard} ${styles.mapCard}`}
-            style={{ height: '500px', padding: '0' }}
-          >
-            <InteractiveMap />
-          </div>
+          <>
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.wideCard}`}>
+              📊 Wide Card
+            </div>
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+              📊 Normal Card
+            </div>
+          </>
         ),
       },
       {
@@ -368,7 +349,7 @@ function WeeklyProjectSummary() {
               key={uniqueId}
               className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
             >
-              {index === 1 ? <PaidLaborCost /> : <DistributionLaborHours />}
+              {index === 1 ? <PaidLaborCost /> : '📊 Card'}
             </div>
           );
         }),
@@ -380,15 +361,8 @@ function WeeklyProjectSummary() {
         content: [1, 2, 3, 4].map((_, index) => {
           const uniqueId = uuidv4();
           return (
-            <div
-              key={uniqueId}
-              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
-            >
-              {(() => {
-                if (index === 2) return <CostPredictionChart projectId={1} />;
-                if (index === 3) return <ActualVsPlannedCost />;
-                return '📊 Card';
-              })()}
+            <div key={uniqueId} className="weekly-project-summary-card normal-card">
+              {index === 3 ? <ActualVsPlannedCost /> : '📊 Card'}
             </div>
           );
         }),
