@@ -169,7 +169,8 @@ export default function EventDashboard() {
     if (!slot) {
       return null;
     }
-
+    const diff = slot.registered - slot.attended;
+    const noShow = diff > 0 ? diff : 0;
     const attendanceRate =
       slot.registered > 0 ? Math.round((slot.attended / slot.registered) * 100) : 0;
 
@@ -177,7 +178,7 @@ export default function EventDashboard() {
       time: slot.time,
       registered: slot.registered,
       attended: slot.attended,
-      noShow: slot.registered - slot.attended,
+      noShow,
       attendanceRate,
     };
   }, [selectedTimeSlot, filteredTimeData]);
@@ -194,7 +195,8 @@ export default function EventDashboard() {
       return null;
     }
 
-    const noShow = eventType.registered - eventType.attended;
+    const diff = eventType.registered - eventType.attended;
+    const noShow = diff > 0 ? diff : 0;
     const attendanceRate =
       eventType.registered > 0 ? Math.round((eventType.attended / eventType.registered) * 100) : 0;
 
