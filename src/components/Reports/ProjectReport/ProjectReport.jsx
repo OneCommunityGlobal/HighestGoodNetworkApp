@@ -17,7 +17,6 @@ import hasPermission from '../../../utils/permissions';
 import viewWBSpermissionsRequired from '../../../utils/viewWBSpermissionsRequired';
 import { projectReportViewData } from './selectors';
 import '../../Teams/Team.css';
-import './ProjectReport.css';
 import { boxStyle, boxStyleDark } from '../../../styles';
 import { PieChartByProject } from './PiechartByProject/PieChartByProject';
 
@@ -114,7 +113,7 @@ export function ProjectReport({ match }) {
       const { activeCount, nonActiveCount } = projectMembers.members.reduce((acc, member) => {
         if (member.isActive) {
           return { ...acc, activeCount: acc.activeCount + 1 };
-        } 
+        }
         return { ...acc, nonActiveCount: acc.nonActiveCount + 1 };
       }, { activeCount: 0, nonActiveCount: 0 });
 

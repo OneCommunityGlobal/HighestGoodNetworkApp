@@ -1,9 +1,18 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import { Bar, BarChart, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip } from 'recharts';
+import { useMemo, useRef, useState } from 'react';
+import {
+  Bar,
+  BarChart,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  LabelList,
+} from 'recharts';
 
-// Mock data for demonstration
+// ---------------- Mock data (unchanged) ----------------
 const mockProjects = [
   { id: 'all', name: 'All Projects' },
   { id: 'project-1', name: 'Construction Site A' },
@@ -45,26 +54,42 @@ const mockData = {
   ],
 };
 
-// Custom Dropdown Component
-function CustomDropdown({ options, selected, onSelect }) {
+// ---------------- Small utils ----------------
+const fmtPct = n => new Intl.NumberFormat(undefined, { maximumFractionDigits: 1 }).format(n);
+
+const downloadCSV = (rows, filename = 'most-wasted-materials.csv') => {
+  if (!rows?.length) return;
+
+  /* eslint-disable testing-library/no-node-access */
+  const headers = Object.keys(rows[0]);
+  const body = rows.map(r => headers.map(h => JSON.stringify(r[h] ?? '')).join(','));
+  const csv = [headers.join(','), ...body].join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+  /* eslint-enable testing-library/no-node-access */
+};
+
+// ---------------- Reusable Dropdown ----------------
+// `buttonId` links the label's htmlFor to this button for a11y.
+function CustomDropdown({ options, selected, onSelect, buttonId = undefined }) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  useEffect(() => {
-    const handleClickOutside = event => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
   return (
     <div style={{ position: 'relative' }} ref={dropdownRef}>
+      {/* id ties this button to the <label htmlFor> */}
       <button
+        id={buttonId}
         type="button"
         onClick={() => setIsOpen(!isOpen)}
+        aria-haspopup="listbox"
+        aria-expanded={isOpen}
         style={{
           width: '100%',
           padding: '8px 16px',
@@ -84,6 +109,8 @@ function CustomDropdown({ options, selected, onSelect }) {
 
       {isOpen && (
         <div
+          role="listbox"
+          aria-labelledby={buttonId}
           style={{
             position: 'absolute',
             zIndex: 10,
@@ -99,6 +126,8 @@ function CustomDropdown({ options, selected, onSelect }) {
             <button
               type="button"
               key={option.id}
+              role="option"
+              aria-selected={selected.id === option.id}
               onClick={() => {
                 onSelect(option);
                 setIsOpen(false);
@@ -127,26 +156,10 @@ function CustomDropdown({ options, selected, onSelect }) {
   );
 }
 
-// Custom Label component for displaying percentages on bars
-function CustomLabel(props) {
-  const { x, y, width, value } = props;
-  return (
-    <text
-      x={x + width / 2}
-      y={y - 5}
-      fill="#374151"
-      textAnchor="middle"
-      fontSize="12"
-      fontWeight="500"
-    >
-      {`${value}%`}
-    </text>
-  );
-}
-
-// Custom Tooltip Component
+// ---------------- Tooltip ----------------
 function CustomTooltip({ active, payload, label }) {
-  if (active && payload && payload.length) {
+  if (active && payload?.length) {
+    const v = payload[0].value;
     return (
       <div
         style={{
@@ -157,29 +170,44 @@ function CustomTooltip({ active, payload, label }) {
           padding: '12px',
         }}
       >
-        <p style={{ fontWeight: '500', color: '#111827', margin: '0 0 4px 0' }}>{label}</p>
-        <p style={{ fontSize: '14px', color: '#6b7280', margin: '0' }}>
-          Waste: {payload[0].value}%
+        <p
+          style={{
+            fontWeight: '500',
+            color: '#111827',
+            margin: '0 0 4px 0',
+          }}
+        >
+          {label}
         </p>
+        <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>Waste: {fmtPct(v)}%</p>
       </div>
     );
   }
   return null;
 }
 
-export default function MostWastedMaterialsDashboard() {
+// ---------------- Main Component (mock-only) ----------------
+export default function MostWastedMaterials() {
   const [selectedProject, setSelectedProject] = useState(mockProjects[0]);
   const [dateRange, setDateRange] = useState({
     from: '2024-01-01',
     to: new Date().toISOString().split('T')[0],
   });
-  const [chartData, setChartData] = useState([]);
 
-  useEffect(() => {
-    const data = mockData[selectedProject.id] || mockData.all;
-    const sortedData = [...data].sort((a, b) => b.wastePercentage - a.wastePercentage);
-    setChartData(sortedData);
-  }, [selectedProject, dateRange]);
+  // New controls
+  const [topN, setTopN] = useState(8);
+  const [sortDir, setSortDir] = useState('desc'); // 'desc' = most→least; 'asc' = least→most
+
+  // Compute chart data from mock (respect filters + topN + sort)
+  const chartData = useMemo(() => {
+    const raw = mockData[selectedProject.id] || mockData.all || [];
+    const sorted = [...raw].sort((a, b) =>
+      sortDir === 'desc'
+        ? b.wastePercentage - a.wastePercentage
+        : a.wastePercentage - b.wastePercentage,
+    );
+    return sorted.slice(0, Math.max(1, Math.min(20, topN || 1)));
+  }, [selectedProject, sortDir, topN, dateRange]);
 
   return (
     <div
@@ -193,18 +221,15 @@ export default function MostWastedMaterialsDashboard() {
       }}
     >
       <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-        <h1
-          style={{
-            fontSize: '32px',
-            fontWeight: 'bold',
-            color: '#111827',
-            margin: '0',
-          }}
-        >
+        <h1 style={{ fontSize: '32px', fontWeight: 'bold', color: '#111827', margin: 0 }}>
           Most Wasted Materials
         </h1>
+        <p style={{ color: '#6b7280', marginTop: 8, fontSize: 14 }}>
+          Y-axis: % of material wasted · X-axis: material name
+        </p>
       </div>
 
+      {/* Filters */}
       <div
         style={{
           backgroundColor: '#ffffff',
@@ -212,26 +237,25 @@ export default function MostWastedMaterialsDashboard() {
           border: '1px solid #e5e7eb',
           padding: '24px',
           marginBottom: '24px',
-          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
         }}
       >
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
             gap: '20px',
           }}
         >
-          {/* Project Filter */}
           <div>
             <label
               htmlFor="project-filter"
               style={{
                 display: 'block',
-                fontSize: '14px',
-                fontWeight: '600',
+                fontSize: 14,
+                fontWeight: 600,
                 color: '#374151',
-                marginBottom: '8px',
+                marginBottom: 8,
               }}
             >
               Project Filter
@@ -240,62 +264,148 @@ export default function MostWastedMaterialsDashboard() {
               options={mockProjects}
               selected={selectedProject}
               onSelect={setSelectedProject}
+              buttonId="project-filter"
             />
           </div>
 
-          {/* Date Range Filter */}
           <div>
             <label
-              htmlFor="date-filter"
+              htmlFor="mw-from"
               style={{
                 display: 'block',
-                fontSize: '14px',
-                fontWeight: '600',
+                fontSize: 14,
+                fontWeight: 600,
                 color: '#374151',
-                marginBottom: '8px',
+                marginBottom: 8,
               }}
             >
-              Date Filter
+              From
             </label>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-              <div>
-                <label htmlFor="date-from" style={{ fontSize: '12px', color: '#6b7280' }}>
-                  From
-                </label>
-                <input
-                  id="date-from"
-                  type="date"
-                  value={dateRange.from}
-                  onChange={e => setDateRange(prev => ({ ...prev, from: e.target.value }))}
-                  style={{
-                    width: '100%',
-                    padding: '8px 12px',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '6px',
-                    fontSize: '14px',
-                  }}
-                />
-              </div>
-              <div>
-                <label htmlFor="date-to" style={{ fontSize: '12px', color: '#6b7280' }}>
-                  To
-                </label>
-                <input
-                  id="date-to"
-                  type="date"
-                  value={dateRange.to}
-                  onChange={e => setDateRange(prev => ({ ...prev, to: e.target.value }))}
-                  style={{
-                    width: '100%',
-                    padding: '8px 12px',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '6px',
-                    fontSize: '14px',
-                  }}
-                />
-              </div>
-            </div>
+            <input
+              id="mw-from"
+              type="date"
+              value={dateRange.from}
+              onChange={e => setDateRange(r => ({ ...r, from: e.target.value }))}
+              style={{
+                width: '100%',
+                padding: '8px 12px',
+                border: '1px solid #d1d5db',
+                borderRadius: 6,
+                fontSize: 14,
+              }}
+            />
           </div>
+
+          <div>
+            <label
+              htmlFor="mw-to"
+              style={{
+                display: 'block',
+                fontSize: 14,
+                fontWeight: 600,
+                color: '#374151',
+                marginBottom: 8,
+              }}
+            >
+              To
+            </label>
+            <input
+              id="mw-to"
+              type="date"
+              value={dateRange.to}
+              onChange={e => setDateRange(r => ({ ...r, to: e.target.value }))}
+              style={{
+                width: '100%',
+                padding: '8px 12px',
+                border: '1px solid #d1d5db',
+                borderRadius: 6,
+                fontSize: 14,
+              }}
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="mw-topn"
+              style={{
+                display: 'block',
+                fontSize: 14,
+                fontWeight: 600,
+                color: '#374151',
+                marginBottom: 8,
+              }}
+            >
+              Top N
+            </label>
+            <input
+              id="mw-topn"
+              type="number"
+              min={1}
+              max={20}
+              value={topN}
+              onFocus={e => e.target.select()}
+              onChange={e => {
+                const val = e.target.value;
+
+                // Allow empty input while typing
+                if (val === '') {
+                  setTopN('');
+                  return;
+                }
+
+                const num = Number(val);
+                if (!Number.isNaN(num)) {
+                  setTopN(num);
+                }
+              }}
+              onBlur={() => {
+                // Clamp value only when leaving the field
+                setTopN(prev => {
+                  const n = Number(prev);
+                  if (Number.isNaN(n)) return 1;
+                  return Math.max(1, Math.min(20, n));
+                });
+              }}
+              style={{
+                width: '100%',
+                padding: '8px 12px',
+                border: '1px solid #d1d5db',
+                borderRadius: 6,
+                fontSize: 14,
+              }}
+            />
+          </div>
+        </div>
+
+        <div style={{ marginTop: 16, display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+          <button
+            type="button"
+            onClick={() => setSortDir(d => (d === 'desc' ? 'asc' : 'desc'))}
+            style={{
+              padding: '8px 12px',
+              border: '1px solid #d1d5db',
+              borderRadius: 6,
+              background: '#fff',
+              cursor: 'pointer',
+            }}
+            title="Toggle sort order"
+          >
+            Sort: {sortDir === 'desc' ? 'Most → Least' : 'Least → Most'}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => downloadCSV(chartData)}
+            style={{
+              padding: '8px 12px',
+              border: '1px solid #d1d5db',
+              borderRadius: 6,
+              background: '#fff',
+              cursor: 'pointer',
+            }}
+          >
+            Export CSV
+          </button>
         </div>
       </div>
 
@@ -306,50 +416,57 @@ export default function MostWastedMaterialsDashboard() {
           borderRadius: '8px',
           border: '1px solid #e5e7eb',
           padding: '24px',
-          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
         }}
       >
-        <div style={{ width: '100%', height: '500px' }}>
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart
-              data={chartData}
-              margin={{
-                top: 30,
-                right: 30,
-                left: 20,
-                bottom: 60,
-              }}
-            >
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-              <XAxis
-                dataKey="material"
-                angle={-45}
-                textAnchor="end"
-                height={80}
-                fontSize={12}
-                interval={0}
-                tick={{ fill: '#374151' }}
-              />
-              <YAxis
-                label={{
-                  value: 'Percentage of Material Wasted (%)',
-                  angle: -90,
-                  position: 'insideLeft',
-                  style: { textAnchor: 'middle', fill: '#374151' },
-                }}
-                fontSize={12}
-                tick={{ fill: '#374151' }}
-              />
-              <Tooltip content={<CustomTooltip />} />
-              <Bar
-                dataKey="wastePercentage"
-                fill="#3b82f6"
-                radius={[4, 4, 0, 0]}
-                label={<CustomLabel />}
-              />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
+        {chartData.length === 0 ? (
+          <div
+            style={{
+              height: 500,
+              display: 'grid',
+              placeItems: 'center',
+              color: '#6b7280',
+            }}
+          >
+            No data for the selected filters.
+          </div>
+        ) : (
+          <div style={{ width: '100%', height: 500 }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={chartData} margin={{ top: 30, right: 30, left: 20, bottom: 60 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                <XAxis
+                  dataKey="material"
+                  angle={-45}
+                  textAnchor="end"
+                  height={80}
+                  fontSize={12}
+                  interval={0}
+                  tick={{ fill: '#374151' }}
+                />
+                <YAxis
+                  label={{
+                    value: 'Percentage of Material Wasted (%)',
+                    angle: -90,
+                    position: 'insideLeft',
+                    style: { textAnchor: 'middle', fill: '#374151' },
+                  }}
+                  fontSize={12}
+                  tick={{ fill: '#374151' }}
+                />
+                <Tooltip content={<CustomTooltip />} />
+                <Bar dataKey="wastePercentage" fill="#3b82f6" radius={[4, 4, 0, 0]}>
+                  <LabelList
+                    dataKey="wastePercentage"
+                    position="top"
+                    formatter={v => `${fmtPct(v)}%`}
+                    className="fill-gray-700"
+                  />
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        )}
       </div>
     </div>
   );

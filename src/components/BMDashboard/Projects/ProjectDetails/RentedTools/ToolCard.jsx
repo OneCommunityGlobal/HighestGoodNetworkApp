@@ -4,9 +4,16 @@ function ToolCard() {
     <div className={`${styles.singleCard}`}>
       <div className={`${styles.singleCardImg}`}>
         <img
-          alt=""
+          alt="Equipment"
           src="https://www.theforkliftcenter.com/images/forklift-hero-left.png"
           width="100%"
+          style={{
+            imageRendering: 'auto',
+            filter: 'none',
+            objectFit: 'cover',
+            maxWidth: '100%',
+            height: 'auto',
+          }}
         />
       </div>
       <div className={`${styles.singleCardBody}`}>

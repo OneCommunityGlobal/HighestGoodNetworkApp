@@ -30,12 +30,11 @@ import UserTableHeader from './UserTableHeader';
 import UserTableData from './UserTableData';
 import UserTableSearchHeader from './UserTableSearchHeader';
 import UserTableFooter from './UserTableFooter';
-import './usermanagement.css';
 import UserSearchPanel from './UserSearchPanel';
 import NewUserPopup from './NewUserPopup';
 import ActivationDatePopup from './ActivationDatePopup';
 import { UserStatus, UserDeleteType, FinalDay } from '../../utils/enums';
-import hasPermission, { cantDeactivateOwner } from '../../utils/permissions';
+import hasPermission, {cantDeactivateOwner, cantUpdateDevAdminDetails } from '../../utils/permissions';
 // Commented out because it's not used
 // import { searchWithAccent } from '../../utils/search';
 import SetupHistoryPopup from './SetupHistoryPopup';
@@ -44,7 +43,6 @@ import ActiveInactiveConfirmationPopup from './ActiveInactiveConfirmationPopup';
 import SetUpFinalDayPopUp from './SetUpFinalDayPopUp';
 import LogTimeOffPopUp from './logTimeOffPopUp';
 import SetupNewUserPopup from './setupNewUserPopup';
-import { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
 
 class UserManagement extends React.PureComponent {
@@ -120,7 +118,7 @@ class UserManagement extends React.PureComponent {
 
   // eslint-disable-next-line react/sort-comp
   async componentDidUpdate(prevProps, prevState) {
-    
+
     if (prevProps.state.theme.darkMode !== this.props.state.theme.darkMode) {
       const {darkMode} = this.props.state.theme;
       // eslint-disable-next-line no-unused-vars
@@ -128,17 +126,17 @@ class UserManagement extends React.PureComponent {
       const { roles: rolesPermissions } = this.props.state.role;
       const { requests: timeOffRequests } = this.props.state.timeOffRequests;
 
-      
+
       this.getFilteredData(userProfiles, rolesPermissions, timeOffRequests, darkMode, this.state.editable, this.state.isMobile, this.state.mobileFontSize,);
     }
-    
-    const searchStateChanged = (prevState.firstNameSearchText !== this.state.firstNameSearchText) || 
-                               (prevState.lastNameSearchText !== this.state.lastNameSearchText) || 
-                               (prevState.roleSearchText !== this.state.roleSearchText) || 
+
+    const searchStateChanged = (prevState.firstNameSearchText !== this.state.firstNameSearchText) ||
+                               (prevState.lastNameSearchText !== this.state.lastNameSearchText) ||
+                               (prevState.roleSearchText !== this.state.roleSearchText) ||
                                prevState.titleSearchText !== this.state.titleSearchText ||
-                               (prevState.weeklyHrsSearchText !== this.state.weeklyHrsSearchText) || 
+                               (prevState.weeklyHrsSearchText !== this.state.weeklyHrsSearchText) ||
                                (prevState.emailSearchText !== this.state.emailSearchText);
-  
+
     const pageSizeChanged = prevState.pageSize !== this.state.pageSize;
     const userProfilesChanged = prevProps.state.allUserProfiles.userProfiles !== this.props.state.allUserProfiles.userProfiles;
 
@@ -394,7 +392,7 @@ class UserManagement extends React.PureComponent {
   };
 
   /**
-   * 
+   *
    * reload user list and close user creation popup
    */
   userCreated = () => {
@@ -422,15 +420,15 @@ class UserManagement extends React.PureComponent {
 
   onUserUpdate = updatedUser => {
     const { userProfiles } = this.props.state.allUserProfiles;
-  
+
     // Update the userProfiles array with the updated user
     const updatedProfiles = userProfiles.map(user =>
       user._id === updatedUser._id ? updatedUser : user,
     );
-  
+
     // Update the state with the new userProfiles
     this.props.state.allUserProfiles.userProfiles = updatedProfiles;
-  
+
     // Re-render the table
     this.getFilteredData(
       updatedProfiles,
@@ -488,8 +486,8 @@ class UserManagement extends React.PureComponent {
       }
       return;
     }
-    if (status === FinalDay.NotSetFinalDay) {
-      this.props.updateUserFinalDayStatusIsSet(user, 'Active', undefined, FinalDay.NotSetFinalDay);
+    if (status === FinalDay.RemoveFinalDay) {
+      this.props.updateUserFinalDayStatusIsSet(user, 'Active', undefined, FinalDay.RemoveFinalDay);
     } else {
       this.setState({
         finalDayDateOpen: true,
@@ -573,18 +571,18 @@ class UserManagement extends React.PureComponent {
   /**
    * Callback to trigger the status change on confirmation ok click.
    */
-  setActiveInactive = isActive => {    
+  setActiveInactive = isActive => {
     this.setState(
-      {      
-        activeInactivePopupOpen: false,      
-        selectedUser: undefined,      
+      {
+        activeInactivePopupOpen: false,
+        selectedUser: undefined,
       });
-          
-      this.props.updateUserStatus(      
-        this.state.selectedUser, isActive ? UserStatus.Active : UserStatus.InActive, undefined,    
+
+      this.props.updateUserStatus(
+        this.state.selectedUser, isActive ? UserStatus.Active : UserStatus.InActive, undefined,
       )
-      // ).finally(() => {      
-      //  this.setState({ isUpdating: false });    
+      // ).finally(() => {
+      //  this.setState({ isUpdating: false });
       // });
   };
 
@@ -842,7 +840,7 @@ class UserManagement extends React.PureComponent {
     return (
       <Container
         fluid
-        className={darkMode ? ' bg-oxford-blue text-light' : ''}
+        className={darkMode ? ' bg-oxford-blue text-light p-3' : 'p-3'}
         style={{ minHeight: '100%' }}
       >
         {/* {fetching ? (

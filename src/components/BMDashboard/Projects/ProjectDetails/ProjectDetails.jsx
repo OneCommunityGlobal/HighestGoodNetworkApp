@@ -15,7 +15,7 @@ function ProjectDetails() {
 
   if (!currProject) {
     return (
-      <Container className={`${styles.projectDetails} ${darkMode ? styles.darkMode : ''} `}>
+      <Container className={`${styles.projectDetails}`}>
         <h2>Project Not Found</h2>
         <p>Please check if the project exists or try selecting another project.</p>
       </Container>
@@ -25,24 +25,19 @@ function ProjectDetails() {
   return (
     <div className={`${darkMode ? styles.darkMode : ''}`}>
       <Container fluid className={`${styles.projectDetails}`}>
-        <Row>
-          <Col>
-            <h1 className={styles.projectDetailsTitle}>{currProject.name} Dashboard</h1>
+        <h1 className={styles.projectDetailsTitle}>{currProject.name} Dashboard</h1>
+        <LogBar projectId={projectId} />
 
-            <LogBar projectId={projectId} />
-
-            <Row className={styles.cardsRow}>
-              <Col className={styles.cardsCol}>
-                <RentedToolsDisplay projectId={projectId} />
-              </Col>
-              <Col className={styles.cardsCol}>
-                <MaterialsDisplay projectId={projectId} />
-              </Col>
-            </Row>
-
-            <ProjectLog projectId={projectId} />
+        <Row className={`${styles.cardsRow}`}>
+          <Col className={`${styles.cardsCol}`}>
+            <RentedToolsDisplay projectId={projectId} />
+          </Col>
+          <Col className={`${styles.cardsCol}`}>
+            <MaterialsDisplay projectId={projectId} />
           </Col>
         </Row>
+
+        <ProjectLog projectId={projectId} />
       </Container>
     </div>
   );

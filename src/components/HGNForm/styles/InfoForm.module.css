@@ -8,14 +8,24 @@
   padding: 10px 10px;
 }
 
+.dark {
+  background-color: #1c2541;
+  border-color: #3a506b;
+  color: #fff;
+}
+
 .infoFormContainer label {
   text-align: left;
-  color:black;
-  
-  margin-right:88%;
+  color: black;
+
+  margin-right: 88%;
   margin-left: 10px;
   margin-top: 20px;
   margin-bottom: 20px;
+}
+
+.dark label {
+  color: #fff;
 }
 
 .formInputs {
@@ -37,10 +47,20 @@
   border-bottom: 2px solid #2e5163;
 }
 
+.dark .infoInput {
+  background-color: transparent;
+  color: #fff;
+  border-bottom-color: #8aa0b4;
+}
+
+.dark .infoInput::placeholder {
+  color: #b5bac5;
+}
+
 .buttonContainer {
   display: flex;
   justify-content: space-between;
-  margin:10px;
+  margin: 10px;
 }
 
 .buttonContainer button {
@@ -55,21 +75,26 @@
 
 .hgnReturnButton {
   color: white;
-  background-color:#2e5163 ;
+  background-color: #2e5163;
   border-radius: 10px;
   width: 20%;
-  margin-left:0;
+  margin-left: 0;
+}
+
+.dark .buttonContainer button {
+  border-color: #3a506b;
 }
 
 .hgnReturnButton:hover {
-  background-color:#4e748d;
-  border-color: #4e748d ;
+  background-color: #4e748d;
+  border-color: #4e748d;
 }
 
 .nextButton {
   background-color: #2e5163;
   border-radius: 10px;
   width: 20%;
+  color: #ffffff;
 }
 
 .nextButton:hover {
@@ -139,7 +164,7 @@
   color: #ff0000;
   font-size: 0.875rem;
   margin-top: 4px;
-  padding:10px;
+  padding: 10px;
   /* margin-left: 10px; */
   display: block;
   width: 50%;
@@ -156,16 +181,25 @@
   padding: 0;
 }
 
-.formInputsSlack input{
+.formInputsSlack input {
   margin-bottom: 0;
 }
 
-.errorMessage {
-  color: #ff0000;
-  font-size: 0.875rem;
-  margin: 20px;
-  display: block;
-  width: 50%;
+.labelInline {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-right: 0;
+  white-space: nowrap;
+}
+
+.slackConfirmLabel {
+  color: #2f5061;
+  margin: 0 5px;
+}
+
+.dark .slackConfirmLabel {
+  color: #78a5c4;
 }
 
 @media (max-width: 768px) {

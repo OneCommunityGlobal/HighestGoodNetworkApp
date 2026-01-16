@@ -2,12 +2,11 @@ import PropTypes from 'prop-types';
 import { Doughnut } from 'react-chartjs-2';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { Chart, ArcElement } from 'chart.js';
-import './DonutChart.css';
 
 Chart.register(ArcElement);
 
 function DonutChart(props) {
-  const { title, totalCount, percentageChange, data, colors, comparisonType } = props;
+  const { title, totalCount, percentageChange, data, colors, comparisonType, darkMode } = props;
 
   const chartData = {
     labels: data.map(item => item.label),
@@ -51,7 +50,9 @@ function DonutChart(props) {
         <div className="donut-chart">
           <Doughnut data={chartData} options={options} plugins={[ChartDataLabels]} />
           <div className="donut-center">
-            <h5 className="donut-heading">{title}</h5>
+            <h5 className="donut-heading" style={{ color: darkMode ? 'white' : 'black' }}>
+              {title}
+            </h5>
             <h4 className="donut-count">{totalCount}</h4>
             {comparisonType !== 'No Comparison' && (
               <h6 className="donut-comparison-percent" style={{ color: percentageChangeColor }}>

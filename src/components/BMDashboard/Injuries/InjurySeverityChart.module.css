@@ -1,0 +1,95 @@
+.customTooltip {
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.customTooltip.dark {
+  background-color: #1c2541;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.filterSelect .ant-select-selector,
+.filterSelect .ant-select-selection-item,
+.filterSelect .ant-select-selection-placeholder {
+  color: #333333 !important;
+}
+
+.filterSelect .ant-select-selector {
+  background-color: #ffffff !important;
+}
+
+/* RangePicker placeholder */
+.filterSelect .ant-picker-input > input::placeholder {
+  color: #666666 !important;
+}
+
+.filterSelect .ant-picker {
+  background-color: #ffffff !important;
+}
+
+.oxideDark {
+  background-color: #1b2a41;
+}
+
+/* Only in darkMode: target filterSelect under .oxideDark */
+.oxideDark .filterSelect .ant-select-selector {
+  background-color: #1c2541 !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+.oxideDark .filterSelect .ant-select-selection-item,
+.oxideDark .filterSelect .ant-select-selection-placeholder {
+  color: #f5f5f5 !important;
+}
+.oxideDark .filterSelect .ant-select-arrow {
+  color: #f5f5f5 !important;
+}
+.oxideDark .filterSelect .ant-select-clear {
+  color: #f5f5f5 !important;
+}
+.oxideDark .filterSelect .ant-select-dropdown {
+  background-color: #1c2541 !important;
+}
+.oxideDark .filterSelect .ant-select-item-option-content {
+  color: #f5f5f5 !important;
+}
+
+.oxideDark .filterSelect.ant-picker {
+  background-color: #1c2541 !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.oxideDark .filterSelect.ant-picker .ant-picker-input > input,
+.oxideDark .filterSelect.ant-picker .ant-picker-input > input::placeholder {
+  color: #f5f5f5 !important;
+}
+.oxideDark .filterSelect .ant-picker-suffix {
+  color: #f5f5f5 !important;
+}
+.oxideDark .filterSelect .ant-picker-clear {
+  color: #f5f5f5 !important;
+}
+.oxideDark .filterSelect .ant-picker-dropdown {
+  background-color: #1c2541 !important;
+  color: #f5f5f5 !important;
+}
+
+/* Chart axis labels and text in dark mode */
+.oxideDark .recharts-text {
+  fill: #f5f5f5 !important;
+}
+
+.oxideDark .recharts-cartesian-axis-tick-value {
+  fill: #f5f5f5 !important;
+}
+
+.oxideDark .recharts-legend-item-text {
+  color: #f5f5f5 !important;
+}
+
+.oxideDark .recharts-cartesian-grid-horizontal line,
+.oxideDark .recharts-cartesian-grid-vertical line {
+  stroke: rgba(255, 255, 255, 0.2) !important;
+}

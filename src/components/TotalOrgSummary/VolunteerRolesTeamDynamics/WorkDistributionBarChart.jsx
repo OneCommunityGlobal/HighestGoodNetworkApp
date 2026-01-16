@@ -1,3 +1,4 @@
+import CustomTooltip from '../../CustomTooltip';
 import Loading from '~/components/common/Loading';
 import { ResponsiveContainer, BarChart, XAxis, YAxis, Tooltip, Legend, Bar, Cell } from 'recharts';
 
@@ -69,42 +70,46 @@ export default function WorkDistributionBarChart({ isLoading, workDistributionSt
   }
 
   return (
-    <ResponsiveContainer width="100%" height="100%" minWidth={400} minHeight={430}>
-      <BarChart
-        data={data}
-        barCategoryGap="20%"
-        margin={{ top: 40, right: 20, left: 10, bottom: 20 }}
-      >
-        <XAxis
-          dataKey="_id"
-          tick={{ fontSize: 10, fill: isDarkMode ? '#FFFFFF' : '#333333' }}
-          interval={0}
-          angle={-30}
-          textAnchor="end"
-        />
-        <YAxis
-          tick={{ fontSize: 12, fill: isDarkMode ? '#FFFFFF' : '#333333' }}
-          label={{
-            value: 'Total Hours',
-            angle: -90,
-            position: 'insideLeft',
-            fill: isDarkMode ? '#FFFFFF' : '#333333',
-            fontSize: 14,
-          }}
-        />
-        <Tooltip />
-        <Legend />
-        <Bar
-          dataKey="totalHours"
-          fill="#8884d8"
-          legendType="none"
-          label={<CustomizedLabel sum={sum} />}
-        >
-          {data.map((entry, index) => (
-            <Cell key={`cell-${entry._id}`} fill={COLORS[index % COLORS.length]} />
-          ))}
-        </Bar>
-      </BarChart>
-    </ResponsiveContainer>
+    <div className="work-distribution-container">
+      <div className="work-distribution-chart" style={{ minWidth: 500 }}>
+        <ResponsiveContainer width="100%" height="100%" minWidth={400} minHeight={430}>
+          <BarChart
+            data={data}
+            barCategoryGap="20%"
+            margin={{ top: 40, right: 20, left: 10, bottom: 20 }}
+          >
+            <XAxis
+              dataKey="_id"
+              tick={{ fontSize: 10, fill: isDarkMode ? '#FFFFFF' : '#333333' }}
+              interval={0}
+              angle={-30}
+              textAnchor="end"
+            />
+            <YAxis
+              tick={{ fontSize: 12, fill: isDarkMode ? '#FFFFFF' : '#333333' }}
+              label={{
+                value: 'Total Hours',
+                angle: -90,
+                position: 'insideLeft',
+                fill: isDarkMode ? '#FFFFFF' : '#333333',
+                fontSize: 14,
+              }}
+            />
+            <Tooltip content={<CustomTooltip yAxisLabel="totalHours" />} />
+            <Legend />
+            <Bar
+              dataKey="totalHours"
+              fill="#8884d8"
+              legendType="none"
+              label={<CustomizedLabel sum={sum} />}
+            >
+              {data.map((entry, index) => (
+                <Cell key={`cell-${entry._id}`} fill={COLORS[index % COLORS.length]} />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
   );
 }

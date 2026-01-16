@@ -28,14 +28,15 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin: 2em;
-  padding: 1em 1em;
   width: 100%;
-  background-color: white;
+  background-color: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #eaeeef;
 }
 
 .darkMode .logBar {
-  background-color: #374151;
+  background-color: #2e5061;
+  border: 1px solid #4b5563;
 }
 
 .logBarSection {
@@ -47,7 +48,9 @@
 .logBarSection h2,
 .cardsContainer h2,
 .projectLog h2 {
+  margin-top: 0.5em;
   font-size: 1em;
+  margin-bottom: 1em;
   font-weight: bold;
 }
 
@@ -61,6 +64,7 @@
   flex-wrap: wrap;
   gap: 0.5em;
   justify-content: center;
+  align-items: center;
 }
 
 .buttonBtn {
@@ -145,7 +149,6 @@
   }
 }
 
-/* containers with cards */
 .cardsContainer {
   align-items: center;
   margin: 1em 2em;
@@ -239,11 +242,10 @@
 
 /* project log table */
 .projectLog {
-  margin: 2em;
-  padding: 1em 2em;
   width: 100%;
   font-weight: lighter;
   white-space: nowrap;
+  border-radius: 8px;
 }
 
 .darkMode .projectLog {
@@ -300,13 +302,6 @@
 ul.logBarBtnGroup {
   padding: 5;
 } /* Row containing the RentedTools and Materials columns */
-.cardsRow {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 1.5em;
-  margin-top: 2em;
-}
 
 /* Each column within the cardsRow */
 .cardsRow {
