@@ -209,6 +209,38 @@ button.sendButton:hover {
   display: block;
 }
 
+.tabIconWrapper {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+.scheduleBadge {
+  position: absolute;
+  top: -6px;
+  right: -10px;
+  background: #f55151;
+  color: #fff;
+  border-radius: 999px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  min-width: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #fff;
+  line-height: 1;
+}
+
+.tabNavItem.dark .scheduleBadge {
+  border-color: #14233a;
+}
+
 .tabLabel {
   font-size: 0.75rem;
   text-align: center;
