@@ -297,16 +297,6 @@ export function CPDashboard() {
                   />
                   {dateError && <p className={styles['date-error-message']}>{dateError}</p>}
                 </div>
-                <div className={styles['date-filter-container']}>
-                  <DatePicker
-                    selected={selectedDate}
-                    onChange={date => handleDateChange(date)}
-                    placeholderText="Ending After"
-                    id="ending-after"
-                    className={styles['date-filter']}
-                  />
-                  {dateError && <p className={styles['date-error-message']}>{dateError}</p>}
-                </div>
               </div>
 
               <div className={styles.filterItem}>
