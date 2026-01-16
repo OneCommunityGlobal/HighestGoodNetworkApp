@@ -153,8 +153,6 @@
 .reactCalendar :global(.react-calendar__tile) {
   display: grid;
   height: 100px;
-  transition: background-color 0.3s, border-color 0.3s ease; 
-  overflow: hidden;
   border: 1px solid #dee2e6 !important;
   box-sizing: border-box;
   transition: background 0.3s, border-color 0.3s ease;
