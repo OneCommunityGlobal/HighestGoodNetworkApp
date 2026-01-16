@@ -262,8 +262,6 @@ export default function EventDashboard() {
           <label htmlFor="dateRange" className={styles.epFilterLabel}>
             Date Range
           </label>
-
-          <input id="dateRange" type="date" />
           <div className={styles.epDateInputs}>
             <input
               type="date"
