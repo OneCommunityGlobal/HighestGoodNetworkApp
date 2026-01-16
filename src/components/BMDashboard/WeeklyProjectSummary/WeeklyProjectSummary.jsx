@@ -19,7 +19,7 @@ import SupplierPerformanceGraph from './SupplierPerformanceGraph.jsx';
 import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
 import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
 import ToolsStoppageHorizontalBarChart from './Tools/ToolsStoppageHorizontalBarChart/ToolsStoppageHorizontalBarChart';
-import IssueCharts from '../Issues/openIssueCharts';
+// import IssueCharts from '../Issues/openIssueCharts';
 import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
 
 const projectStatusButtons = [
