@@ -53,14 +53,18 @@ import PasswordInputModal from './PasswordInputModal';
 import { showTrophyIcon } from '../../utils/anniversaryPermissions';
 import SelectTeamPieChart from './SelectTeamPieChart';
 import { setTeamCodes } from '../../actions/teamCodes';
-import CreateFilterModal from './CreateFilterModal';
-import UpdateFilterModal from './UpdateFilterModal';
-import SelectFilterModal from './SelectFilterModal';
-// import './WeeklySummariesReport.css';
-import SaveFilterModal from './SaveFilterModal';
+import CreateFilterModal from './components/CreateFilterModal';
+import UpdateFilterModal from './components/UpdateFilterModal';
+import SelectFilterModal from './components/SelectFilterModal';
 import styles from './WeeklySummariesReport.module.css';
 import { setField, toggleField, removeItemFromField, setChildField } from '~/utils/stateHelper';
-import WeeklySummariesToggleFilter from './WeeklySummariesToggleFilter';
+import WeeklySummariesToggleFilter from './components/WeeklySummariesToggleFilter';
+import {
+  useGetWeeklySummariesFiltersQuery,
+  useDeleteWeeklySummariesFilterMutation,
+  useUpdateFiltersWithIndividualCodesChangeMutation,
+  useUpdateFiltersWithReplacedTeamCodesMutation,
+} from '../../actions/weeklySummariesFilterAction';
 
 const navItems = ['This Week', 'Last Week', 'Week Before Last', 'Three Weeks Ago'];
 const fullCodeRegex = /^.{5,7}$/;
@@ -122,8 +126,6 @@ const initialState = {
   membersFromUnselectedTeam: [],
   filterChoices: [],
   memberDict: {},
-  // Saved filters functionality
-  saveFilterModalOpen: false,
 };
 
 const intialPermissionState = {
@@ -202,6 +204,17 @@ const WeeklySummariesReport = props => {
   const toggleCreateFilterModal = () => setCreateFilterModalOpen(prev => !prev);
   const toggleUpdateFilterModal = () => setUpdateFilterModalOpen(prev => !prev);
   const toggleSelectFilterModal = () => setSelectFilterModalOpen(prev => !prev);
+  // Filters state
+  const {
+    data: filterChoices = [],
+    isLoading: filtersLoading,
+  } = useGetWeeklySummariesFiltersQuery();
+  const [deleteFilter] = useDeleteWeeklySummariesFilterMutation();
+  const [
+    updateFilterWithIndividualCodesChange,
+  ] = useUpdateFiltersWithIndividualCodesChangeMutation();
+  const [updateFilterWithReplacedTeamCodes] = useUpdateFiltersWithReplacedTeamCodesMutation();
+
   useEffect(() => {
     // Update local state whenever allBadgeData prop changes
     if (props.allBadgeData && props.allBadgeData.length > 0) {
@@ -214,7 +227,6 @@ const WeeklySummariesReport = props => {
 
   // Saved filters functionality
   const [currentAppliedFilter, setCurrentAppliedFilter] = useState(null);
-  const [showModificationModal, setShowModificationModal] = useState(false);
 
   // Misc functionalities
   /**
@@ -329,44 +341,44 @@ const WeeklySummariesReport = props => {
     }
   };
 
-  const fetchFilters = async () => {
-    // Get all filters
-    let filterList = [];
+  // const fetchFilters = async () => {
+  //   // Get all filters
+  //   let filterList = [];
 
-    try {
-      const filterResponse = await axios.get(ENDPOINTS.WEEKLY_SUMMARIES_FILTERS);
-      if (filterResponse.status < 200 || filterResponse.status >= 300) {
-        toast.error(`API request to get filter list failed with status ${filterResponse.status}`);
-      } else {
-        filterList = filterResponse.data;
-      }
-    } catch (e) {
-      toast.error(`API request to get filter list failed with error ${e}`);
-    }
-    const updatedFilterChoices = [];
+  //   try {
+  //     const filterResponse = await axios.get(ENDPOINTS.WEEKLY_SUMMARIES_FILTERS);
+  //     if (filterResponse.status < 200 || filterResponse.status >= 300) {
+  //       toast.error(`API request to get filter list failed with status ${filterResponse.status}`);
+  //     } else {
+  //       filterList = filterResponse.data;
+  //     }
+  //   } catch (e) {
+  //     toast.error(`API request to get filter list failed with error ${e}`);
+  //   }
+  //   const updatedFilterChoices = [];
 
-    filterList.forEach(filter => {
-      updatedFilterChoices.push({
-        label: filter.filterName,
-        value: filter._id,
-        filterData: {
-          filterName: filter.filterName,
-          selectedCodes: new Set(filter.selectedCodes),
-          selectedColors: new Set(filter.selectedColors),
-          selectedExtraMembers: new Set(filter.selectedExtraMembers),
-          selectedTrophies: filter.selectedTrophies,
-          selectedSpecialColors: filter.selectedSpecialColors,
-          selectedBioStatus: filter.selectedBioStatus,
-          selectedOverTime: filter.selectedOverTime,
-        },
-      });
-    });
+  //   filterList.forEach(filter => {
+  //     updatedFilterChoices.push({
+  //       label: filter.filterName,
+  //       value: filter._id,
+  //       filterData: {
+  //         filterName: filter.filterName,
+  //         selectedCodes: new Set(filter.selectedCodes),
+  //         selectedColors: new Set(filter.selectedColors),
+  //         selectedExtraMembers: new Set(filter.selectedExtraMembers),
+  //         selectedTrophies: filter.selectedTrophies,
+  //         selectedSpecialColors: filter.selectedSpecialColors,
+  //         selectedBioStatus: filter.selectedBioStatus,
+  //         selectedOverTime: filter.selectedOverTime,
+  //       },
+  //     });
+  //   });
 
-    setState(prevState => ({
-      ...prevState,
-      filterChoices: [...updatedFilterChoices],
-    }));
-  };
+  //   setState(prevState => ({
+  //     ...prevState,
+  //     filterChoices: [...updatedFilterChoices],
+  //   }));
+  // };
 
   // Initial data loading
   const createIntialSummaries = async () => {
@@ -520,9 +532,6 @@ const WeeklySummariesReport = props => {
         });
 
       const chartData = [];
-
-      // Get all filters
-      fetchFilters();
 
       // Store the data in the tab-specific state
       setState(prevState => ({
@@ -710,98 +719,100 @@ const WeeklySummariesReport = props => {
         .filter(([, isSelected]) => isSelected)
         .map(([color]) => color);
 
-      const temp = summaries.filter(summary => {
-        const { activeTab } = state;
-        const hoursLogged = (summary.totalSeconds[navItems.indexOf(activeTab)] || 0) / 3600;
+      const temp = summaries
+        .map(s => ({ ...s }))
+        .filter(summary => {
+          const { activeTab } = state;
+          const hoursLogged = (summary.totalSeconds[navItems.indexOf(activeTab)] || 0) / 3600;
 
-        // 🛑 Add this block at the very top inside the filter
-        // if (summary?.isActive === false) {
-        //   const lastWeekStart = moment()
-        //     .tz('America/Los_Angeles')
-        //     .startOf('week')
-        //     .subtract(1, 'week')
-        //     .toDate();
-        //   const lastWeekEnd = moment()
-        //     .tz('America/Los_Angeles')
-        //     .endOf('week')
-        //     .subtract(1, 'week')
-        //     .toDate();
-        //   const summaryStart = new Date(summary.startDate);
-        //   const summaryEnd = new Date(summary.endDate);
-        //   const isLastWeek = summaryStart <= lastWeekEnd && summaryEnd >= lastWeekStart;
+          // 🛑 Add this block at the very top inside the filter
+          // if (summary?.isActive === false) {
+          //   const lastWeekStart = moment()
+          //     .tz('America/Los_Angeles')
+          //     .startOf('week')
+          //     .subtract(1, 'week')
+          //     .toDate();
+          //   const lastWeekEnd = moment()
+          //     .tz('America/Los_Angeles')
+          //     .endOf('week')
+          //     .subtract(1, 'week')
+          //     .toDate();
+          //   const summaryStart = new Date(summary.startDate);
+          //   const summaryEnd = new Date(summary.endDate);
+          //   const isLastWeek = summaryStart <= lastWeekEnd && summaryEnd >= lastWeekStart;
 
-        //   if (!isLastWeek) {
-        //     return false; // Skip inactive members unless their summary is from last week
-        //   }
-        // }
-        if (
-          summary?.isActive === false &&
-          !doesSummaryBelongToWeek(summary.startDate, summary.endDate, weekIndex)
-        ) {
-          return false;
-        }
-        const isMeetCriteria =
-          summary.totalTangibleHrs > 80 &&
-          summary.daysInTeam > 60 &&
-          summary.bioPosted !== 'posted';
-        const isBio = !selectedBioStatus || isMeetCriteria;
-        const isOverHours =
-          !selectedOverTime ||
-          (summary.weeklycommittedHours > 0 &&
-            hoursLogged > 0 &&
-            hoursLogged >= summary.promisedHoursByWeek[navItems.indexOf(activeTab)]);
+          //   if (!isLastWeek) {
+          //     return false; // Skip inactive members unless their summary is from last week
+          //   }
+          // }
+          if (
+            summary?.isActive === false &&
+            !doesSummaryBelongToWeek(summary.startDate, summary.endDate, weekIndex)
+          ) {
+            return false;
+          }
+          const isMeetCriteria =
+            summary.totalTangibleHrs > 80 &&
+            summary.daysInTeam > 60 &&
+            summary.bioPosted !== 'posted';
+          const isBio = !selectedBioStatus || isMeetCriteria;
+          const isOverHours =
+            !selectedOverTime ||
+            (summary.weeklycommittedHours > 0 &&
+              hoursLogged > 0 &&
+              hoursLogged >= summary.promisedHoursByWeek[navItems.indexOf(activeTab)]);
 
-        // Add trophy filter logic
-        const summarySubmissionDate = moment()
-          .tz('America/Los_Angeles')
-          .endOf('week')
-          .subtract(weekIndex, 'week')
-          .format('YYYY-MM-DD');
+          // Add trophy filter logic
+          const summarySubmissionDate = moment()
+            .tz('America/Los_Angeles')
+            .endOf('week')
+            .subtract(weekIndex, 'week')
+            .format('YYYY-MM-DD');
 
-        const hasTrophy =
-          !selectedTrophies ||
-          showTrophyIcon(summarySubmissionDate, summary?.startDate?.split('T')[0]);
+          const hasTrophy =
+            !selectedTrophies ||
+            showTrophyIcon(summarySubmissionDate, summary?.startDate?.split('T')[0]);
 
-        // Add special color filter logic
-        const matchesSpecialColor =
-          activeFilterColors.length === 0 || activeFilterColors.includes(summary.filterColor);
+          // Add special color filter logic
+          const matchesSpecialColor =
+            activeFilterColors.length === 0 || activeFilterColors.includes(summary.filterColor);
 
-        // Filtered by Team Code and Extra Members
-        const isInSelectedCode = selectedCodesArray.includes(summary.teamCode);
-        const isInSelectedExtraMember = selectedExtraMembersArray.includes(summary._id);
-        const noFilterSelected =
-          selectedCodesArray.length === 0 && selectedExtraMembersArray.length === 0;
+          // Filtered by Team Code and Extra Members
+          const isInSelectedCode = selectedCodesArray.includes(summary.teamCode);
+          const isInSelectedExtraMember = selectedExtraMembersArray.includes(summary._id);
+          const noFilterSelected =
+            selectedCodesArray.length === 0 && selectedExtraMembersArray.length === 0;
 
-        let matchesLoggedHoursRange = true;
-        if (selectedLoggedHoursRange && selectedLoggedHoursRange.length > 0) {
-          matchesLoggedHoursRange = selectedLoggedHoursRange.some(range => {
-            switch (range.value) {
-              case '=0':
-                return hoursLogged === 0;
-              case '0-10':
-                return hoursLogged > 0 && hoursLogged <= 10;
-              case '10-20':
-                return hoursLogged > 10 && hoursLogged <= 20;
-              case '20-40':
-                return hoursLogged > 20 && hoursLogged <= 40;
-              case '>40':
-                return hoursLogged > 40;
-              default:
-                return true;
-            }
-          });
-        }
-        return (
-          (noFilterSelected || isInSelectedCode || isInSelectedExtraMember) &&
-          (selectedColorsArray.length === 0 ||
-            selectedColorsArray.includes(summary.weeklySummaryOption)) &&
-          matchesSpecialColor &&
-          isOverHours &&
-          isBio &&
-          hasTrophy &&
-          matchesLoggedHoursRange
-        );
-      });
+          let matchesLoggedHoursRange = true;
+          if (selectedLoggedHoursRange && selectedLoggedHoursRange.length > 0) {
+            matchesLoggedHoursRange = selectedLoggedHoursRange.some(range => {
+              switch (range.value) {
+                case '=0':
+                  return hoursLogged === 0;
+                case '0-10':
+                  return hoursLogged > 0 && hoursLogged <= 10;
+                case '10-20':
+                  return hoursLogged > 10 && hoursLogged <= 20;
+                case '20-40':
+                  return hoursLogged > 20 && hoursLogged <= 40;
+                case '>40':
+                  return hoursLogged > 40;
+                default:
+                  return true;
+              }
+            });
+          }
+          return (
+            (noFilterSelected || isInSelectedCode || isInSelectedExtraMember) &&
+            (selectedColorsArray.length === 0 ||
+              selectedColorsArray.includes(summary.weeklySummaryOption)) &&
+            matchesSpecialColor &&
+            isOverHours &&
+            isBio &&
+            hasTrophy &&
+            matchesLoggedHoursRange
+          );
+        });
 
       // Use Dict and Set for quick access
       const filteredTeamDict = {};
@@ -1096,20 +1107,6 @@ const WeeklySummariesReport = props => {
     }
   };
 
-  const handleOverHoursToggleChange = () => {
-    setState(prev => ({
-      ...prev,
-      selectedOverTime: !prev.selectedOverTime,
-    }));
-  };
-
-  const handleBioStatusToggleChange = () => {
-    setState(prev => ({
-      ...prev,
-      selectedBioStatus: !prev.selectedBioStatus,
-    }));
-  };
-
   const handleChartStatusToggleChange = () => {
     setState(prevState => ({
       ...prevState,
@@ -1203,27 +1200,34 @@ const WeeklySummariesReport = props => {
         };
       });
 
-      // Update the big filters in the database that contains userId
+      // Update the filters in the database that contains userId
       if (oldTeamCode && newTeamCode && oldTeamCode !== newTeamCode) {
-        const res = await axios.post(ENDPOINTS.WEEKLY_SUMMARIES_FILTER_REPLACE_INDIVIDUAL_CODES, {
-          oldTeamCode,
-          newTeamCode,
-          userId: Object.keys(userIdObj)[0],
-        });
-        await fetchFilters();
+        try {
+          const res = await updateFilterWithIndividualCodesChange({
+            oldTeamCode,
+            newTeamCode,
+            userId: Object.keys(userIdObj)[0],
+          }).unwrap(); // unwrap = throw exception if error
+
+          toast.success(`Successfully update all filters with new team code ${newTeamCode}`);
+        } catch (error) {
+          toast.error(
+            `Failed to update filters with the new team code. Error: ${JSON.stringify(error)}`,
+          );
+        }
       }
 
       // Update saved filters for team codes only in the database with the new team code
-      if (oldTeamCode && newTeamCode && oldTeamCode !== newTeamCode) {
-        // Get the user ID from the userIdObj
-        const userId = Object.keys(userIdObj)[0];
-        props.updateSavedFiltersForIndividualTeamCodeChange(oldTeamCode, newTeamCode, userId);
+      // if (oldTeamCode && newTeamCode && oldTeamCode !== newTeamCode) {
+      //   // Get the user ID from the userIdObj
+      //   const userId = Object.keys(userIdObj)[0];
+      //   props.updateSavedFiltersForIndividualTeamCodeChange(oldTeamCode, newTeamCode, userId);
 
-        // Refresh saved filters after the update
-        setTimeout(() => {
-          props.getSavedFilters();
-        }, 1000);
-      }
+      //   // Refresh saved filters after the update
+      //   setTimeout(() => {
+      //     props.getSavedFilters();
+      //   }, 1000);
+      // }
 
       return null;
     } catch (error) {
@@ -1246,23 +1250,6 @@ const WeeklySummariesReport = props => {
     } catch (error) {
       return null;
     }
-  };
-
-  const handleTrophyToggleChange = () => {
-    setState(prevState => ({
-      ...prevState,
-      selectedTrophies: !prevState.selectedTrophies,
-    }));
-  };
-
-  const handleSpecialColorToggleChange = (color, isEnabled) => {
-    setState(prevState => ({
-      ...prevState,
-      selectedSpecialColors: {
-        ...prevState.selectedSpecialColors,
-        [color]: isEnabled,
-      },
-    }));
   };
 
   const handleSpecialColorDotClick = (userId, color) => {
@@ -1288,99 +1275,20 @@ const WeeklySummariesReport = props => {
     });
   };
 
-  // Saved filters functionality
-  const handleSaveFilter = async filterName => {
-    const filterConfig = {
-      selectedCodes: state.selectedCodes.map(code => code.value),
-    };
+  const handleDeleteFilter = async filter => {
+    try {
+      const res = await deleteFilter({
+        id: filter.value,
+      }).unwrap(); // unwrap = throw exception if error
 
-    const result = await props.createSavedFilter({
-      name: filterName,
-      filterConfig,
-    });
-
-    if (result.status === 201) {
-      setState(prevState => ({
-        ...prevState,
-        saveFilterModalOpen: false,
-      }));
-      // Refresh the saved filters list
-      props.getSavedFilters();
-    }
-  };
-
-  const handleUpdateFilter = async filterName => {
-    if (!currentAppliedFilter) return;
-
-    const filterConfig = {
-      selectedCodes: state.selectedCodes.map(code => code.value),
-    };
-
-    const result = await props.updateSavedFilter(currentAppliedFilter._id, {
-      name: filterName,
-      filterConfig,
-    });
-
-    if (result.status === 200) {
-      setShowModificationModal(false);
-      // Update the current applied filter with the new data
-      setCurrentAppliedFilter(result.data);
-      // Refresh the saved filters list
-      props.getSavedFilters();
-    }
-  };
-
-  const handleApplyFilter = filter => {
-    // Validate that the saved filter codes still exist in current team codes
-    const validCodes = filter.filterConfig.selectedCodes
-      .map(codeValue => state.teamCodes.find(currentCode => currentCode.value === codeValue))
-      .filter(Boolean);
-
-    setState(prevState => ({
-      ...prevState,
-      selectedCodes: validCodes,
-    }));
-
-    // Set the current applied filter
-    setCurrentAppliedFilter(filter);
-  };
-
-  const handleDeleteFilter = async filterId => {
-    const result = await props.deleteSavedFilter(filterId);
-    if (result.status === 200) {
+      toast.success(`Successfully deleted filter ${filter.label}`);
       // Clear current applied filter if it was deleted
-      if (currentAppliedFilter && currentAppliedFilter._id === filterId) {
+      if (currentAppliedFilter && currentAppliedFilter._id === filter.value) {
         setCurrentAppliedFilter(null);
       }
-      // Refresh the saved filters list
-      props.getSavedFilters();
+    } catch (error) {
+      toast.error(`Failed to delete filter. Error: ${JSON.stringify(error)}`);
     }
-  };
-
-  const handleOpenSaveFilterModal = () => {
-    // If no current filter is applied, always create a new filter
-    if (!currentAppliedFilter) {
-      setState(prevState => ({
-        ...prevState,
-        saveFilterModalOpen: true,
-      }));
-      return;
-    }
-
-    // If there's a current filter applied, always show modification modal
-    // regardless of whether the selection has changed or not
-    setShowModificationModal(true);
-  };
-
-  const handleCloseSaveFilterModal = () => {
-    setState(prevState => ({
-      ...prevState,
-      saveFilterModalOpen: false,
-    }));
-  };
-
-  const handleCloseModificationModal = () => {
-    setShowModificationModal(false);
   };
 
   const passwordInputModalToggle = () => {
@@ -1501,20 +1409,19 @@ const WeeklySummariesReport = props => {
         });
 
         // Update big filters
-        const res = await axios.post(ENDPOINTS.WEEKLY_SUMMARIES_FILTER_REPLACE_CODES, {
-          oldTeamCodes,
-          newTeamCode: replaceCode,
-          // filtersToUpdate,
-        });
-        if (res.status < 200 || res.status >= 300) {
-          toast.error(`Failed to replace codes in filters. Status ${res.status}`);
-        } else {
+        try {
+          const res = await updateFilterWithReplacedTeamCodes({
+            oldTeamCodes,
+            newTeamCode: replaceCode,
+          }).unwrap(); // unwrap = throw exception if error
+
           toast.success(`Successfully replace codes in all filters`);
+        } catch (error) {
+          toast.error(`Failed to replace codes in filters. Status ${error.status}`);
         }
-        await fetchFilters();
 
         // Update saved filters for team code only in the database with the new team code
-        await props.updateSavedFiltersForTeamCodeChange(oldTeamCodes, replaceCode);
+        // await props.updateSavedFiltersForTeamCodeChange(oldTeamCodes, replaceCode);
 
         setState(prev => ({
           ...prev,
@@ -1580,6 +1487,7 @@ const WeeklySummariesReport = props => {
       selectedBioStatus: filter.selectedBioStatus,
       selectedOverTime: filter.selectedOverTime,
     }));
+    setCurrentAppliedFilter(selectedFilter);
   };
 
   // Setup effect hooks for initial data load
@@ -1712,25 +1620,6 @@ const WeeklySummariesReport = props => {
     >
       {passwordInputModalToggle()}
       {popUpElements()}
-      <SaveFilterModal
-        isOpen={state.saveFilterModalOpen}
-        onClose={handleCloseSaveFilterModal}
-        onSave={handleSaveFilter}
-        selectedCodes={state.selectedCodes}
-        darkMode={darkMode}
-        existingFilterNames={props.savedFilters.map(filter => filter.name)}
-      />
-      <SaveFilterModal
-        isOpen={showModificationModal}
-        onClose={handleCloseModificationModal}
-        onSave={handleSaveFilter}
-        onUpdate={handleUpdateFilter}
-        selectedCodes={state.selectedCodes}
-        darkMode={darkMode}
-        existingFilterNames={props.savedFilters.map(filter => filter.name)}
-        currentFilter={currentAppliedFilter}
-        isModification
-      />
       <Row className={styles['mx-max-sm-0']}>
         <Col lg={{ size: 10, offset: 1 }}>
           <h3 className="mt-3 mb-5">
@@ -1803,7 +1692,7 @@ const WeeklySummariesReport = props => {
             <SelectFilterModal
               isOpen={selectFilterModalOpen}
               toggle={toggleSelectFilterModal}
-              filters={state.filterChoices}
+              filters={filterChoices}
               applyFilter={applyFilter}
               memberDict={state.memberDict}
               darkMode={darkMode}
@@ -1812,17 +1701,18 @@ const WeeklySummariesReport = props => {
               <UpdateFilterModal
                 isOpen={updateFilterModalOpen}
                 toggle={toggleUpdateFilterModal}
-                filters={state.filterChoices}
+                filters={filterChoices}
                 darkMode={darkMode}
                 hasPermissionToFilter={hasPermissionToFilter}
                 canSeeBioHighlight={permissionState.canSeeBioHighlight}
-                refetchFilters={fetchFilters}
                 teamCodes={state.teamCodes}
                 colorOptions={state.colorOptions}
                 tableData={state.tableData}
                 summaries={state.summaries}
                 teamCodeWarningUsers={state.teamCodeWarningUsers}
                 memberDict={state.memberDict}
+                currentAppliedFilter={currentAppliedFilter}
+                applyFilter={applyFilter}
               />
             )}
             {permissionState.canManageFilter && (
@@ -1846,13 +1736,14 @@ const WeeklySummariesReport = props => {
                 darkMode={darkMode}
                 hasPermissionToFilter={hasPermissionToFilter}
                 canSeeBioHighlight={permissionState.canSeeBioHighlight}
-                filters={state.filterChoices}
-                refetchFilters={fetchFilters}
+                filters={filterChoices}
                 teamCodes={state.teamCodes}
                 colorOptions={state.colorOptions}
                 tableData={state.tableData}
                 summaries={state.summaries}
                 teamCodeWarningUsers={state.teamCodeWarningUsers}
+                currentAppliedFilter={currentAppliedFilter}
+                applyFilter={applyFilter}
               />
             )}
           </div>
@@ -1941,12 +1832,12 @@ const WeeklySummariesReport = props => {
               />
 
               {/* Save/Delete Buttons - only visible when codes are selected */}
-              {state.selectedCodes.length > 0 && hasPermissionToFilter && (
+              {state.selectedCodes.length > 0 && permissionState.canManageFilter && (
                 <div className={styles['filter-save-buttons']}>
                   <button
                     type="button"
                     className={`${styles['filter-save-btn']} ${styles.save}`}
-                    onClick={handleOpenSaveFilterModal}
+                    onClick={() => setCreateFilterModalOpen(true)}
                     title="Save current filter"
                     aria-label="Save current filter"
                   >
@@ -1965,19 +1856,26 @@ const WeeklySummariesReport = props => {
               )}
             </div>
           </div>
-          {/* Saved Filter Buttons */}
-          {props.savedFilters && props.savedFilters.length > 0 && (
+          {/* Saved Filter Buttons List */}
+          {filterChoices && filterChoices.length > 0 && (
             <div
-              style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', alignItems: 'center' }}
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: '5px',
+                alignItems: 'center',
+                maxHeight: '100px',
+                overflowY: 'auto',
+              }}
               className="my-3"
             >
-              {props.savedFilters.map(filter => (
+              {filterChoices.map(filter => (
                 <div
-                  key={filter._id}
+                  key={filter.value}
                   className={`${styles['saved-filter-button']} ${
                     darkMode ? styles['dark-mode'] : ''
                   } ${
-                    currentAppliedFilter && currentAppliedFilter._id === filter._id
+                    currentAppliedFilter && currentAppliedFilter.value === filter.value
                       ? styles['active-filter']
                       : ''
                   }`}
@@ -1993,21 +1891,21 @@ const WeeklySummariesReport = props => {
                       border: 'none',
                       padding: 0,
                       fontWeight:
-                        currentAppliedFilter && currentAppliedFilter._id === filter._id
+                        currentAppliedFilter && currentAppliedFilter.value === filter.value
                           ? 'bold'
                           : 'normal',
                     }}
-                    onClick={() => handleApplyFilter(filter)}
-                    title={`Apply filter: ${filter.name}`}
+                    onClick={() => applyFilter(filter)}
+                    title={`Apply filter: ${filter.label}`}
                   >
-                    {filter.name}
+                    {filter.label}
                   </button>
                   <button
                     type="button"
                     className={styles['saved-filter-delete-btn']}
-                    onClick={() => handleDeleteFilter(filter._id)}
+                    onClick={() => handleDeleteFilter(filter)}
                     title="Delete filter"
-                    aria-label={`Delete filter ${filter.name}`}
+                    aria-label={`Delete filter ${filter.label}`}
                   >
                     <i className="fa fa-times" />
                   </button>
@@ -2053,6 +1951,7 @@ const WeeklySummariesReport = props => {
             hasPermissionToFilter={hasPermissionToFilter}
             editable={true}
             formId="report"
+            canSeeBioHighlight={permissionState.canSeeBioHighlight}
           />
         </Col>
       </Row>
