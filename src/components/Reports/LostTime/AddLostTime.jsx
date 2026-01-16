@@ -3,7 +3,6 @@ import { useDispatch, connect, useSelector } from 'react-redux';
 import MemberAutoComplete from '~/components/Teams/MembersAutoComplete';
 import AddProjectsAutoComplete from '~/components/UserProfile/TeamsAndProjects/AddProjectsAutoComplete';
 import AddTeamsAutoComplete from '~/components/UserProfile/TeamsAndProjects/AddTeamsAutoComplete';
-import "../reportsPage.css";
 import { Editor } from '@tinymce/tinymce-react';
 import moment from 'moment-timezone';
 import { Button, Col, Form, FormGroup, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader, Row } from 'reactstrap';
@@ -45,7 +44,7 @@ function AddLostTime(props) {
       return "null";
      }
   }
-    
+
 
   const TINY_MCE_INIT_OPTIONS = {
     license_key: 'gpl',
@@ -70,7 +69,7 @@ function AddLostTime(props) {
   const [entryType, setEntryType] = useState('');
   const [isSubmitting, setSubmitting] = useState(false);
   const [inputs, setInputs] = useState(initialForm);
-  
+
   const [selectedTeam, setSelectTeam] = useState(undefined);
   const [selectedProject, setSelectProject] = useState(undefined);
   const [searchText, setSearchText] = useState('');
@@ -182,12 +181,12 @@ function AddLostTime(props) {
     } if (entryType === 'team') {
       return (
         <FormGroup>
-          <Label className={fontColor}>Team Name</Label> 
+          <Label className={fontColor}>Team Name</Label>
           <span className="red-asterisk">* </span>
           <AddTeamsAutoComplete
             teamsData={{allTeams: props.teams}}
             onDropDownSelect={selectTeam}
-            setNewTeamName={setNewTeamName} 
+            setNewTeamName={setNewTeamName}
             setInputs={setInputs}
             newTeamName={newTeamName}
             selectedTeam={selectedTeam}
@@ -202,7 +201,7 @@ function AddLostTime(props) {
           )}
         </FormGroup>
       )
-    } 
+    }
       return null
   };
 
@@ -318,7 +317,7 @@ function AddLostTime(props) {
     setErrors(result);
     return isEmpty(result);
   };
-  
+
 
   const handleSubmit = async event => {
     if (event) event.preventDefault();
@@ -378,7 +377,7 @@ function AddLostTime(props) {
                 <Label htmlFor="project" className={fontColor}>Project</Label>
               </div>
               <div className='type-item'>
-                <Input  
+                <Input
                   type="radio"
                   id="person"
                   name='entryType'
@@ -396,7 +395,7 @@ function AddLostTime(props) {
                   onChange={handleTypeChange}
                 />
                 <Label htmlFor="team" className={fontColor}>Team</Label>
-              </div>              
+              </div>
             </div>
             {'events' in errors && (
                   <div className="text-danger">
