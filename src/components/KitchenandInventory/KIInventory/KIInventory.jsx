@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
 import styles from './KIInventory.module.css';
@@ -17,9 +17,6 @@ import {
   FiShoppingCart,
 } from 'react-icons/fi';
 import { RiLeafLine } from 'react-icons/ri';
-
-// import { ENDPOINTS } from '../../utils/URL';
-// import axios from 'axios';
 
 const KIInventory = () => {
   const darkMode = useSelector(state => state.theme.darkMode);
