@@ -4,7 +4,7 @@ import { boxStyle, boxStyleDark } from '~/styles';
 import BadgeDevelopmentTable from './BadgeDevelopmentTable';
 import BadgeTypes from './BadgeTypes';
 import CreateNewBadgePopup from './CreateNewBadgePopup';
-import '../Header/DarkMode.css';
+import '../Header/index.css';
 import { matches } from 'lodash';
 
 function BadgeDevelopment(props) {
