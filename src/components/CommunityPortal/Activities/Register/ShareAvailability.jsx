@@ -111,8 +111,8 @@ function ShareAvailability({ activity, availability, activityId }) {
     let socialUrl = '';
 
     switch (platform) {
-      case 'X':
-        socialUrl = `https://twitter.com/intent/tweet?${url}&text=${text}`;
+      case 'x':
+        socialUrl = `https://x.com/intent/tweet?url=${url}&text=${text}`;
         break;
       case 'facebook':
         socialUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
@@ -127,6 +127,7 @@ function ShareAvailability({ activity, availability, activityId }) {
       default:
         return;
     }
+    console.log('Testing X URL:', socialUrl);
     window.open(socialUrl, '_blank', 'width=600,height=400');
   };
 
@@ -347,7 +348,7 @@ function ShareAvailability({ activity, availability, activityId }) {
                       className={`${styles.socialButton} ${styles.twitter} ${
                         darkMode ? styles.socialButtonDark : ''
                       }`}
-                      onClick={() => handleSocialShare('twitter')}
+                      onClick={() => handleSocialShare('x')}
                       title="Share on Twitter"
                     >
                       𝕏 Twitter
