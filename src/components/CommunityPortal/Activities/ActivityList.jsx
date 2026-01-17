@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import styles from './ActivityList.module.css';
+import { Button } from 'reactstrap';
 // import { useHistory } from 'react-router-dom';
 
 function ActivityList() {
@@ -12,6 +13,9 @@ function ActivityList() {
     date: '',
     location: '',
   });
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     // Fetch activities (mock or replace with API call)
@@ -146,6 +150,11 @@ function ActivityList() {
     });
   };
 
+  const totalPages = Math.ceil(filteredActivities.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+
+  const paginatedActivities = filteredActivities.slice(startIndex, startIndex + itemsPerPage);
+
   return (
     <div className={`${styles.body} ${darkMode ? styles.darkBody : ''}`}>
       <h1 className={styles.h1}>Activity List</h1>
@@ -187,9 +196,9 @@ function ActivityList() {
       </div>
 
       <div className={`${styles.activityList} ${darkMode ? styles.darkActivityList : ''}`}>
-        {filteredActivities.length > 0 ? (
+        {paginatedActivities.length > 0 ? (
           <ul>
-            {filteredActivities.map(activity => (
+            {paginatedActivities.map(activity => (
               <li key={activity.id}>
                 <strong>{activity.name}</strong> - {activity.type} - {activity.date} -{' '}
                 {activity.location}
@@ -200,6 +209,26 @@ function ActivityList() {
           <p>No activities found</p>
         )}
       </div>
+
+      {totalPages > 1 && (
+        <div className={styles.pagination}>
+          <Button onClick={() => setCurrentPage(p => p - 1)} disabled={currentPage === 1}>
+            Prev
+          </Button>
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+            <Button
+              key={page}
+              onClick={() => setCurrentPage(page)}
+              className={page === currentPage ? styles.activePage : ''}
+            >
+              {page}
+            </Button>
+          ))}
+          <Button onClick={() => setCurrentPage(p => p + 1)} disabled={currentPage === totalPages}>
+            Next
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
