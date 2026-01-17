@@ -107,6 +107,7 @@ function ShareAvailability({ activity, availability, activityId }) {
   const handleSocialShare = platform => {
     const url = encodeURIComponent(shareContent.shareUrl);
     const text = encodeURIComponent(shareContent.title);
+    const content = encodeURIComponent(shareContent.fullText);
 
     let socialUrl = '';
 
@@ -115,10 +116,10 @@ function ShareAvailability({ activity, availability, activityId }) {
         socialUrl = `https://x.com/intent/tweet?url=${url}&text=${text}`;
         break;
       case 'facebook':
-        socialUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
+        socialUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}&text=${content}`;
         break;
       case 'linkedin':
-        socialUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${url}`;
+        socialUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${url}&text=${content}`;
         break;
       case 'whatsapp':
         const whatsappText = encodeURIComponent(`${shareContent.title}\n${shareContent.shareUrl}`);
@@ -127,7 +128,6 @@ function ShareAvailability({ activity, availability, activityId }) {
       default:
         return;
     }
-    console.log('Testing X URL:', socialUrl);
     window.open(socialUrl, '_blank', 'width=600,height=400');
   };
 
