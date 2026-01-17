@@ -4,6 +4,7 @@ import { BiPencil } from 'react-icons/bi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSortDown, faSort, faSortUp } from '@fortawesome/free-solid-svg-icons';
 import RecordsModal from './RecordsModal';
+import MaterialUsageChart from '../MaterialUsage/MaterialUsageChart';
 import styles from './ItemListView.module.css';
 
 export default function ItemsTable({
@@ -12,6 +13,7 @@ export default function ItemsTable({
   filteredItems,
   UpdateItemModal,
   dynamicColumns,
+  darkMode = false,
 }) {
   const [sortedData, setData] = useState(filteredItems);
   const [modal, setModal] = useState(false);
@@ -19,6 +21,8 @@ export default function ItemsTable({
   const [recordType, setRecordType] = useState('');
   const [updateModal, setUpdateModal] = useState(false);
   const [updateRecord, setUpdateRecord] = useState(null);
+  const [showChartModal, setShowChartModal] = useState(false);
+  const [chartProjectId, setChartProjectId] = useState(null);
   const [projectNameCol, setProjectNameCol] = useState({
     iconsToDisplay: faSort,
     sortOrder: 'default',
@@ -45,9 +49,24 @@ export default function ItemsTable({
   };
 
   const handleViewRecordsClick = (data, type) => {
-    setModal(true);
-    setRecord(data);
-    setRecordType(type);
+    if (type === 'UsageRecord') {
+      // For UsageRecord, show the chart directly
+      const projectId = data.project?._id || data.projectId;
+      if (projectId) {
+        setChartProjectId(projectId);
+        setShowChartModal(true);
+      } else {
+        // If no project ID, fall back to the regular modal
+        setModal(true);
+        setRecord(data);
+        setRecordType(type);
+      }
+    } else {
+      // For other record types, show the regular modal
+      setModal(true);
+      setRecord(data);
+      setRecordType(type);
+    }
   };
 
   const sortData = columnName => {
@@ -89,6 +108,7 @@ export default function ItemsTable({
 
   return (
     <>
+      {/* Regular Records Modal for Update and Purchase records */}
       <RecordsModal
         modal={modal}
         setModal={setModal}
@@ -96,9 +116,15 @@ export default function ItemsTable({
         setRecord={setRecord}
         recordType={recordType}
       />
+
+      {/* Direct Chart Modal for Usage Records */}
+      {showChartModal && chartProjectId && (
+        <MaterialUsageChart projectId={chartProjectId} toggle={() => setShowChartModal(false)} />
+      )}
+
       <UpdateItemModal modal={updateModal} setModal={setUpdateModal} record={updateRecord} />
-      <div className={`${styles.itemsTableContainer}`}>
-        <Table>
+      <div className={`${styles.itemsTableContainer} ${darkMode ? styles.darkTableWrapper : ''}`}>
+        <Table className={darkMode ? styles.darkTable : ''}>
           <thead>
             <tr>
               {selectedProject === 'all' ? (

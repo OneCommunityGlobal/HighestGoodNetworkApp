@@ -40,8 +40,15 @@ export default function ImageCarousel({ images }) {
         {images.map((image, index) => (
           <span
             key={image}
+            role="button"
+            tabIndex={0}
             className={`indicator ${index === currentIndex ? 'active' : ''}`}
             onClick={() => handleIndicatorClick(index)}
+            onKeyDown={e => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                handleIndicatorClick(index);
+              }
+            }}
           />
         ))}
       </div>

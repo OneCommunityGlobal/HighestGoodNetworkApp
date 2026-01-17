@@ -1,0 +1,282 @@
+/* ======================================================
+   BASE LAYOUT
+   ====================================================== */
+
+.jobLanding {
+  width: 100%;
+  min-height: 100%;
+}
+
+.userCollaborationContainer {
+  width: 90%;
+  margin: 0 auto;
+  background-color: #ffffff;
+  border-radius: 10px;
+  padding-bottom: 24px;
+}
+
+/* ======================================================
+   HEADER
+   ====================================================== */
+
+.jobHeader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px 0;
+}
+
+.jobHeader img {
+  width: clamp(160px, 30vw, 600px);
+  height: auto;
+}
+
+/* ======================================================
+   NAVBAR
+   ====================================================== */
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #9c0;
+  padding: 12px;
+  gap: 12px;
+}
+
+.navbarLeft,
+.jobNavbarRight {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.searchForm {
+  display: flex;
+  gap: 8px;
+}
+
+/* ======================================================
+   CATEGORY SELECT (LIGHT MODE)
+   ====================================================== */
+
+.jobSelect {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background-color: #ffffff;
+  color: #333333;
+  font-size: 14px;
+}
+
+/* ======================================================
+   CATEGORY SELECT (DARK MODE – FIXED)
+   ====================================================== */
+
+.jobSelectDark {
+  background-color: #1c1c1c;
+  color: #f1f1f1;
+  border: 1px solid #444;
+}
+
+/* dropdown options */
+.jobSelectDark option {
+  background-color: #1c1c1c;
+  color: #f1f1f1;
+}
+
+/* selected option visibility (Chrome / Safari fix) */
+.jobSelectDark option:checked {
+  background-color: #2a2a2a;
+  color: #ffffff;
+}
+
+/* focus */
+.jobSelectDark:focus {
+  outline: none;
+  border-color: #9c0;
+}
+
+/* ======================================================
+   HEADINGS
+   ====================================================== */
+
+.headings {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.jobHead {
+  color: #07471e;
+  font-weight: 800;
+}
+
+/* ======================================================
+   JOB GRID (6 × 3 GUARANTEED)
+   ====================================================== */
+
+.jobList {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 20px;
+  width: 100%;
+  padding: 20px;
+}
+
+.jobAd {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  padding: 14px;
+  text-align: center;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.jobAd:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+}
+
+.jobAd img {
+  width: 100%;
+  border-bottom: 1px solid #ddd;
+}
+
+.jobAd h3 {
+  margin-top: 10px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #183a9b;
+}
+
+/* ======================================================
+   PAGINATION
+   ====================================================== */
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin: 20px 0;
+}
+
+/* ======================================================
+   DARK MODE ROOT
+   ====================================================== */
+
+.dark {
+  background-color: #1b2a41;
+  color: #f1f1f1;
+}
+
+.dark .userCollaborationContainer {
+  background-color: #1b2a41;
+}
+
+.dark .navbar {
+  background-color: #1c2541;
+}
+
+.dark .jobAd {
+  background: linear-gradient(135deg, #23272a, #181a1b);
+  border-color: #333;
+}
+
+.dark .jobAd h3 {
+  color: #e0e0e0;
+}
+
+/* ======================================================
+   RESPONSIVE
+   ====================================================== */
+
+@media (max-width: 1200px) {
+  .jobList {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .jobList {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .jobList {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .navbar {
+    flex-direction: column;
+  }
+}
+/* ======================================================
+   DARK MODE – SEARCH INPUT FIX
+   ====================================================== */
+
+.dark .searchForm input {
+  background-color: #1c1c1c;
+  color: #f1f1f1;
+  border: 1px solid #444;
+}
+
+/* Placeholder text */
+.dark .searchForm input::placeholder {
+  color: #b0b0b0;
+}
+
+/* Focus state */
+.dark .searchForm input:focus {
+  outline: none;
+  border-color: #9c0;
+}
+/* =========================
+   PAGINATION BUTTONS
+   ========================= */
+
+.paginationButton {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background-color: #ffffff;
+  color: #333333;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.paginationButton:hover {
+  background-color: #f0f0f0;
+}
+
+/* ACTIVE PAGE (LIGHT MODE) */
+.paginationButtonActive {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #9c0;
+  background-color: #9c0;
+  color: #000000;
+  font-weight: 700;
+}
+
+/* =========================
+   DARK MODE PAGINATION
+   ========================= */
+
+.dark .paginationButton {
+  background-color: #1c1c1c;
+  border: 1px solid #444;
+  color: #dddddd;
+}
+
+.dark .paginationButton:hover {
+  background-color: #2a2a2a;
+}
+
+/* ACTIVE PAGE (DARK MODE) */
+.dark .paginationButtonActive {
+  background-color: #9c0;
+  border: 1px solid #9c0;
+  color: #000000;
+  font-weight: 700;
+}

@@ -4,12 +4,13 @@ import Card from 'react-bootstrap/Card';
 import Nav from 'react-bootstrap/Nav';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart } from '@fortawesome/free-regular-svg-icons';
-import ReactHtmlParser from 'react-html-parser';
-import { formatDateAndTime } from 'utils/formatDate';
+import parse from 'html-react-parser';
+import { formatDateAndTime } from '~/utils/formatDate';
 import DeleteLessonCardPopUp from './DeleteLessonCardPopUp';
 import styles from './LessonCard.module.css';
 
 function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, handleLike }) {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const maxSummaryLength = 1500;
   const [expandedCards, setExpandedCards] = useState([]);
   const auth = useSelector(state => state.auth);
@@ -79,7 +80,10 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, 
   const lessonCards = filteredLessons.map(lesson => {
     const { isLiked, totalLikes } = getLikeStatus(lesson._id);
     return (
-      <Card key={`${lesson._id} + ${lesson.title} `} className={`${styles.lessonCard}`}>
+      <Card
+        key={`${lesson._id} + ${lesson.title} `}
+        className={`${styles.lessonCard} ${darkMode ? styles.darkCard : ''}`}
+      >
         <Card.Header
           onClick={() => toggleCardExpansion(lesson._id)}
           style={{ cursor: 'pointer' }}
@@ -146,10 +150,10 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, 
                   </>
                 ) : (
                   <span>
-                    {ReactHtmlParser(
-                      lesson.content.length > maxSummaryLength
+                    {parse(
+                      (lesson?.content || '').length > maxSummaryLength
                         ? `${lesson.content.slice(0, maxSummaryLength)}...`
-                        : lesson.content,
+                        : lesson.content || '',
                     )}
                   </span>
                 )}

@@ -1,8 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button, Label, Input, Form, FormGroup, Row, Col } from 'reactstrap';
 import { toast } from 'react-toastify';
-import { useHistory } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useHistory, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { ENDPOINTS } from '../../../utils/URL';
 import styles from './Issue.module.css';
@@ -20,6 +19,7 @@ function Issue() {
   const defaultOption = 'Safety';
   const maxDescriptionCharacterLimit = 500;
   const history = useHistory();
+  const { projectId } = useParams();
 
   const dropdownOptions = ['Safety', 'METs quality / functionality', 'Labor', 'Weather', 'Other'];
   const userData = localStorage.getItem('token');
@@ -89,7 +89,7 @@ function Issue() {
 
   const handleCancel = e => {
     e.preventDefault();
-    history.push('/bmdashboard/');
+    history.goBack();
   };
 
   const validateData = currentFormData => {
@@ -155,8 +155,9 @@ function Issue() {
       issueType: formData.dropdown,
       issueConsequences,
       issueResolved: formData.resolved === 'Yes',
-      issueDescription: formData.description,
+      issueText: formData.description,
       createdBy: userId,
+      projectId,
     };
     if (!isDataValid) {
       return false;
@@ -165,6 +166,7 @@ function Issue() {
       .post(`${ENDPOINTS.BM_ISSUE_FORM}`, currentFormData)
       .then(() => {
         toast.success('Issue Form Submitted Successfully');
+        history.push(`/bmdashboard/projects/${projectId}`);
         return true;
       })
       .catch(() => {

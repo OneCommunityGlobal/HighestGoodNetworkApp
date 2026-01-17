@@ -19,7 +19,7 @@
   white-space: nowrap;
 }
 
-.dropdown-item {
+.issue-dashboard-dropdown-item {
   display: flex;
   align-items: center;
   padding: 0.5rem 1rem;
@@ -43,7 +43,7 @@
   border-color: #e9ecef;
 }
 
-.dropdown .btn-link {
+.issue-dashboard-dropdown .btn-link {
   color: #6c757d;
   text-decoration: none;
 }
@@ -56,7 +56,7 @@
 }
 
 /* Improved dropdown positioning */
-.dropdown {
+.issue-dashboard-dropdown {
   position: static;  /* Make it relative to the table cell instead */
 }
 
@@ -88,7 +88,7 @@ td.text-end {
 }
 
 /* Fix for the dropdown menu to appear inside table */
-td.text-end .dropdown .dropdown-menu {
+td.text-end .issue-dashboard-dropdown .issue-dashboard-dropdown-menu {
   position: absolute;
   right: 3rem !important;
   top: 65px !important;

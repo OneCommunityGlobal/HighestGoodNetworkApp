@@ -1,10 +1,9 @@
-import { useState, useEffect, useMemo } from 'react';
-import { ENDPOINTS } from 'utils/URL';
+import { useState, useEffect, useMemo, React, useRef } from 'react';
+import { ENDPOINTS } from '~/utils/URL';
 import axios from 'axios';
-import { getWeeklySummaries } from 'actions/weeklySummaries';
-import { Link, useLocation } from 'react-router-dom';
+import { getWeeklySummaries } from '~/actions/weeklySummaries';
+import { Link, useLocation, useHistory } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
-import { useHistory } from 'react-router-dom';
 import {
   Collapse,
   Navbar,
@@ -23,8 +22,8 @@ import {
   Button,
   Card,
 } from 'reactstrap';
-import PopUpBar from 'components/PopUpBar';
-import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
+import PopUpBar from '~/components/PopUpBar';
+import { fetchTaskEditSuggestions } from '~/components/TaskEditSuggestions/thunks';
 import { toast } from 'react-toastify';
 import { getHeaderData } from '../../actions/authActions';
 import { getAllRoles } from '../../actions/role';
@@ -49,10 +48,13 @@ import {
   SEND_EMAILS,
   TOTAL_ORG_SUMMARY,
   TOTAL_CONSTRUCTION_SUMMARY,
+  PR_PROMOTIONS,
+  BLUE_SQUARE_EMAIL_MANAGEMENT,
+  JOB_ANALYTICS_REPORT,
 } from '../../languages/en/ui';
 import Logout from '../Logout/Logout';
 import '../../App.css';
-import './Header.css';
+import styles from './Header.module.css';
 import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import {
   getUnreadUserNotifications,
@@ -62,6 +64,9 @@ import NotificationCard from '../Notification/notificationCard';
 import DarkModeButton from './DarkModeButton';
 import BellNotification from './BellNotification';
 import { getUserProfile } from '../../actions/userProfile';
+import PermissionWatcher from '../Auth/PermissionWatcher';
+import DisplayBox from '../PRPromotions/DisplayBox';
+import PropTypes from 'prop-types';
 
 export function Header(props) {
   const location = useLocation();
@@ -74,72 +79,82 @@ export function Header(props) {
   const [displayUserId, setDisplayUserId] = useState(user.userid);
   const [popup, setPopup] = useState(false);
   const [isAuthUser, setIsAuthUser] = useState(true);
+  const collapseRef = useRef(null);
+  const toggleRef = useRef(null);
+  const [isAckLoading, setIsAckLoading] = useState(false);
+  const [ showPromotionsPopup, setShowPromotionsPopup ] = useState(false);
 
   const ALLOWED_ROLES_TO_INTERACT = useMemo(() => ['Owner', 'Administrator'], []);
   const canInteractWithViewingUser = useMemo(
     () => ALLOWED_ROLES_TO_INTERACT.includes(props.auth.user.role),
     [ALLOWED_ROLES_TO_INTERACT, props.auth.user.role],
   );
+  const headerDisabled = isAuthUser ? false : !canInteractWithViewingUser;
 
   // Reports
   const canGetReports = props.hasPermission(
     'getReports',
-    !isAuthUser && canInteractWithViewingUser,
+    !isAuthUser ,
   );
   const canGetWeeklySummaries = props.hasPermission(
     'getWeeklySummaries',
-    !isAuthUser && canInteractWithViewingUser,
+    !isAuthUser,
   );
   const canGetWeeklyVolunteerSummary = props.hasPermission('getWeeklySummaries');
+  const canGetJobAnalytics = props.hasPermission('getJobReports');
 
   // Users
   const canAccessUserManagement =
-    props.hasPermission('postUserProfile', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('deleteUserProfile', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('changeUserStatus', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('getUserProfiles', !isAuthUser && canInteractWithViewingUser);
+    props.hasPermission('postUserProfile', !isAuthUser ) ||
+    props.hasPermission('deleteUserProfile', !isAuthUser ) ||
+    props.hasPermission('changeUserStatus', !isAuthUser ) ||
+    props.hasPermission('getUserProfiles', !isAuthUser ) ||
+    props.hasPermission('setFinalDay', !isAuthUser);
 
   // Badges
   const canAccessBadgeManagement =
-    props.hasPermission('seeBadges', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('createBadges', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('updateBadges', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('deleteBadges', !isAuthUser && canInteractWithViewingUser);
+    props.hasPermission('seeBadges', !isAuthUser ) ||
+    props.hasPermission('createBadges', !isAuthUser ) ||
+    props.hasPermission('updateBadges', !isAuthUser) ||
+    props.hasPermission('deleteBadges', !isAuthUser );
   // Projects
   const canAccessProjects =
-    props.hasPermission('postProject', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('deleteProject', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('putProject', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('getProjectMembers', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('assignProjectToUsers', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('postWbs', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('deleteWbs', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('postTask', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('updateTask', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('deleteTask', !isAuthUser && canInteractWithViewingUser);
+    props.hasPermission('postProject', !isAuthUser ) ||
+    props.hasPermission('deleteProject', !isAuthUser ) ||
+    props.hasPermission('putProject', !isAuthUser ) ||
+    props.hasPermission('getProjectMembers', !isAuthUser ) ||
+    props.hasPermission('assignProjectToUsers', !isAuthUser ) ||
+    props.hasPermission('postWbs', !isAuthUser ) ||
+    props.hasPermission('deleteWbs', !isAuthUser ) ||
+    props.hasPermission('postTask', !isAuthUser ) ||
+    props.hasPermission('updateTask', !isAuthUser ) ||
+    props.hasPermission('deleteTask', !isAuthUser);
   // Tasks
   const canUpdateTask = props.hasPermission(
     'updateTask',
-    !isAuthUser && canInteractWithViewingUser,
+    !isAuthUser,
   );
   // Teams
   const canAccessTeams =
-    props.hasPermission('postTeam', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('putTeam', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('deleteTeam', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('assignTeamToUsers', !isAuthUser && canInteractWithViewingUser);
+    props.hasPermission('postTeam', !isAuthUser ) ||
+    props.hasPermission('putTeam', !isAuthUser) ||
+    props.hasPermission('deleteTeam', !isAuthUser ) ||
+    props.hasPermission('assignTeamToUsers', !isAuthUser);
   // Popups
   const canAccessPopups =
-    props.hasPermission('createPopup', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('updatePopup', !isAuthUser && canInteractWithViewingUser);
+    props.hasPermission('createPopup', !isAuthUser) ||
+    props.hasPermission('updatePopup', !isAuthUser );
   // SendEmails
   const canAccessSendEmails = props.hasPermission('sendEmails', !isAuthUser);
   // Permissions
   const canAccessPermissionsManagement =
-    props.hasPermission('postRole', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('putRole', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('deleteRole', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('putUserProfilePermissions', !isAuthUser && canInteractWithViewingUser);
+    props.hasPermission('postRole', !isAuthUser ) ||
+    props.hasPermission('putRole', !isAuthUser ) ||
+    props.hasPermission('deleteRole', !isAuthUser ) ||
+    props.hasPermission('putUserProfilePermissions', !isAuthUser);
+  
+  // Blue Square Email Management
+  const canAccessBlueSquareEmailManagement = props.hasPermission('resendBlueSquareAndSummaryEmails', !isAuthUser);
 
   const userId = user.userid;
   const [isModalVisible, setModalVisible] = useState(false);
@@ -153,7 +168,6 @@ export function Header(props) {
   const history = useHistory();
 
   const [showProjectDropdown, setShowProjectDropdown] = useState(false);
-  const [isAckLoading, setIsAckLoading] = useState(false);
 
   useEffect(() => {
     const handleStorageEvent = () => {
@@ -183,6 +197,44 @@ export function Header(props) {
     };
   }, [user.userid, props.auth.firstName]);
 
+  // Debugging Enhancement: Monitor window resize events for responsive testing
+  useEffect(() => {
+    const handleResize = () => {
+      const currentWidth = window.innerWidth;
+      // eslint-disable-next-line no-console
+      console.log(`[Header Debug] Window resized to: ${currentWidth}px`);
+      
+      // Log breakpoint information for debugging
+      if (currentWidth >= 1728) {
+        // eslint-disable-next-line no-console
+        console.log(`[Header Debug] Breakpoint: Large screen (90%+) - Owner message below timer`);
+      } else if (currentWidth >= 1400) {
+        // eslint-disable-next-line no-console
+        console.log(`[Header Debug] Breakpoint: Desktop - Centered layout`);
+      } else if (currentWidth >= 1200) {
+        // eslint-disable-next-line no-console
+        console.log(`[Header Debug] Breakpoint: Medium desktop - Centered layout`);
+      } else if (currentWidth >= 768) {
+        // eslint-disable-next-line no-console
+        console.log(`[Header Debug] Breakpoint: Tablet - Stacked layout`);
+      } else {
+        // eslint-disable-next-line no-console
+        console.log(`[Header Debug] Breakpoint: Mobile - Compact vertical layout`);
+      }
+    };
+
+    // Log initial window size
+    handleResize();
+
+    // Add resize event listener
+    window.addEventListener('resize', handleResize);
+
+    // Cleanup event listener on component unmount
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
   useEffect(() => {
     if (props.auth.isAuthenticated) {
       props.getHeaderData(props.auth.user.userid);
@@ -198,10 +250,10 @@ export function Header(props) {
       props.getAllRoles();
     }
     // Fetch unread notification
-    if (isAuthenticated && userId) {
-      dispatch(getUnreadUserNotifications(userId));
+    if (isAuthenticated && displayUserId) {
+      dispatch(getUnreadUserNotifications(displayUserId));
     }
-  }, []);
+  }, [isAuthenticated, displayUserId, roles.length]);
 
   useEffect(() => {
     if (props.notification?.error) {
@@ -217,28 +269,30 @@ export function Header(props) {
   const openModal = () => {
     setLogoutPopup(true);
   };
-  
+
   const handlePermissionChangeAck = async () => {
     // handle setting the ack true
     try {
-      setIsAckLoading(true)
-      const {firstName: name, lastName, personalLinks, adminLinks, _id} = props.userProfile
-      axios.put(ENDPOINTS.USER_PROFILE(_id), {
-        // req fields for updation
-        firstName: name, 
-        lastName, 
-        personalLinks,
-        adminLinks,
-        
-        isAcknowledged: true,
-      }).then(()=>{
-        setIsAckLoading(false);
-        dispatch(getUserProfile(_id));
-      });
+      setIsAckLoading(true);
+      const { firstName: name, lastName, personalLinks, adminLinks, _id } = props.userProfile;
+      axios
+        .put(ENDPOINTS.USER_PROFILE(_id), {
+          // req fields for updation
+          firstName: name,
+          lastName,
+          personalLinks,
+          adminLinks,
+
+          isAcknowledged: true,
+        })
+        .then(() => {
+          setIsAckLoading(false);
+          dispatch(getUserProfile(_id));
+        });
     } catch (e) {
       // console.log('update ack', e);
     }
-  }
+  };
 
   const removeViewingUser = () => {
     setPopup(false);
@@ -271,7 +325,7 @@ export function Header(props) {
     if (!userId || hasProfileLoaded) return;
     try {
       const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
-      const newUserProfile = response.data;
+      const newUserProfile = response?.data;
       setUserDashboardProfile(newUserProfile);
       setHasProfileLoaded(true); // Set flag to true after loading the profile
     } catch (err) {
@@ -323,77 +377,158 @@ export function Header(props) {
     setShowProjectDropdown(location.pathname.startsWith('/bmdashboard/projects/'));
   }, [location.pathname]);
 
-  const fontColor = darkMode ? 'text-white dropdown-item-hover' : '';
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        collapseRef.current && 
+        !collapseRef.current.contains(event.target) &&
+        !toggleRef.current?.contains(event.target)
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
+
+  const fontColor = darkMode ? `${styles.darkDropdownText} ${styles.darkDropdownItem}` : `${styles.mobileDropdownText} ${styles.mobileDropdownItem}`;
 
   if (location.pathname === '/login') return null;
 
-  const viewingUser = JSON.parse(window.sessionStorage.getItem('viewingUser'))
+  const viewingUser = JSON.parse(window.sessionStorage.getItem('viewingUser'));
   return (
-    <div className={`header-wrapper ${darkMode ? ' dark-mode' : ''}`}>
-      <Navbar className="py-3 navbar" color="dark" dark expand="md">
+    <div className={`${styles.headerWrapper}`} data-testid="header">
+      <Navbar className={`py-3 ${styles.navbar}`} color="dark" dark expand="xl">
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
-        <div
-          className="timer-message-section"
-          style={user.role === 'Owner' ? { marginRight: '0.5rem' } : { marginRight: '1rem' }}
-        >
-          {isAuthenticated && <Timer darkMode={darkMode} />}
-          {isAuthenticated && (
-            <div className="owner-message">
-              <OwnerMessage />
+        {showPromotionsPopup && <DisplayBox onClose={() => setShowPromotionsPopup(false)} />}
+  
+        <div className={styles.headerRow}>
+            <div className={styles.leftSection}>
+              {isAuthenticated && <Timer darkMode={darkMode} />}
             </div>
-          )}
-        </div>
-        <NavbarToggler onClick={toggle} />
-        {isAuthenticated && (
-          <Collapse isOpen={isOpen} navbar>
-            <Nav className="ml-auto nav-links d-flex" navbar>
-              <div
-                className="d-flex justify-content-center align-items-center"
-                style={{ width: '100%' }}
-              >
+
+            <div className={styles.centerSection}>
+              {isAuthenticated && <OwnerMessage />}
+            </div>
+            <div className={styles.rightSection}>
+            <Collapse isOpen={isOpen} navbar ref={collapseRef}>
+            <Nav className={`ml-auto ${styles.menuContainer} mr-3`} navbar>
+                <NavItem className={styles.showInMobile}>
+                  <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
+                    <img
+                      src={`${profilePic || '/pfp-default-header.png'}`}
+                      alt=""
+                      style={{ maxWidth: '60px', maxHeight: '60px' }}
+                      className="dashboardimg"
+                    />
+                  </NavLink>
+                </NavItem>
+  
+                <UncontrolledDropdown nav inNavbar className={styles.showInMobile}>
+                  <DropdownToggle nav caret>
+                    <span>
+                      {WELCOME}, {firstName}
+                    </span>
+                  </DropdownToggle>
+                  <DropdownMenu
+                    className={`${styles.noMaxHeight} ${
+                      darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown
+                    }`}
+                  >
+                    <DropdownItem
+                      tag={Link}
+                      to={`/userprofile/${displayUserId}`}
+                      className={fontColor}
+                    >
+                      {VIEW_PROFILE}
+                    </DropdownItem>
+  
+                    {!cantUpdateDevAdminDetails(props.userProfile.email, props.userProfile.email) && (
+                      <DropdownItem
+                        tag={Link}
+                        to={`/updatepassword/${displayUserId}`}
+                        className={fontColor}
+                      >
+                        {UPDATE_PASSWORD}
+                      </DropdownItem>
+                    )}
+  
+                    <DropdownItem className={fontColor}>
+                      <DarkModeButton />
+                    </DropdownItem>
+  
+                    <DropdownItem onClick={openModal} className={fontColor}>
+                      {LOGOUT}
+                    </DropdownItem>
+                  </DropdownMenu>
+                </UncontrolledDropdown>
+  
                 {canUpdateTask && (
-                  <NavItem className="responsive-spacing">
-                    <NavLink tag={Link} to="/taskeditsuggestions">
-                      <div className="redBackGroupHeader">
+                  <NavItem>
+                    <NavLink tag={Link} to="/taskeditsuggestions" disabled={headerDisabled}>
+                      <div className={`${styles.redBackGroupHeader} ${styles.hideInMobile}`}>
                         <span>{props.taskEditSuggestionCount}</span>
                       </div>
+                      <span className={styles.showInMobile}>
+                        Task Edit Suggestion ({props.taskEditSuggestionCount})
+                      </span>
                     </NavLink>
                   </NavItem>
                 )}
-                <NavItem className="responsive-spacing">
-                  <NavLink tag={Link} to="/dashboard">
-                    <span className="dashboard-text-link">{DASHBOARD}</span>
+  
+                <NavItem>
+                  <NavLink tag={Link} to="/dashboard" disabled={headerDisabled}>
+                    <span>{DASHBOARD}</span>
                   </NavLink>
                 </NavItem>
-                <NavItem className="responsive-spacing">
-                  <NavLink tag={Link} to="/timelog">
-                    <span className="dashboard-text-link">{TIMELOG}</span>
+  
+                <NavItem>
+                  <NavLink tag={Link} to="/timelog#currentWeek" disabled={headerDisabled}>
+                    <span>{TIMELOG}</span>
                   </NavLink>
                 </NavItem>
-
+  
                 {showProjectDropdown && (
-                  <UncontrolledDropdown nav inNavbar className="responsive-spacing">
-                    <DropdownToggle nav caret>
-                      <span className="dashboard-text-link">{PROJECTS}</span>
+                  <UncontrolledDropdown nav inNavbar>
+                    <DropdownToggle nav caret disabled={headerDisabled}>
+                      <span>{PROJECTS}</span>
                     </DropdownToggle>
-                    <DropdownMenu className={darkMode ? 'bg-yinmn-blue' : ''}>
-                      <DropdownItem
-                        tag={Link}
-                        to="/bmdashboard/materials/add"
-                        className={fontColor}
-                      >
+                    <DropdownMenu
+                      className={`${styles.noMaxHeight} ${
+                        darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown
+                      }`}
+                      disabled={headerDisabled}
+                    >
+                      <DropdownItem tag={Link} to="/bmdashboard/materials/add" className={fontColor}>
                         Add Material
                       </DropdownItem>
-                      <DropdownItem tag={Link} to="/bmdashboard/logMaterial" className={fontColor}>
+                      <DropdownItem
+                        tag={Link}
+                        to="/bmdashboard/logMaterial"
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
                         Log Material
                       </DropdownItem>
-                      <DropdownItem tag={Link} to="/bmdashboard/materials" className={fontColor}>
+                      <DropdownItem
+                        tag={Link}
+                        to="/bmdashboard/materials"
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
                         Material List
                       </DropdownItem>
                       <DropdownItem
                         tag={Link}
                         to="/bmdashboard/equipment/add"
                         className={fontColor}
+                        disabled={headerDisabled}
                       >
                         Add Equipment/Tool
                       </DropdownItem>
@@ -401,6 +536,7 @@ export function Header(props) {
                         tag={Link}
                         to="/bmdashboard/equipment/:equipmentId"
                         className={fontColor}
+                        disabled={headerDisabled}
                       >
                         Log Equipment/Tool
                       </DropdownItem>
@@ -408,119 +544,232 @@ export function Header(props) {
                         tag={Link}
                         to="/bmdashboard/tools/:equipmentId/update"
                         className={fontColor}
+                        disabled={headerDisabled}
                       >
                         Update Equipment/Tool
                       </DropdownItem>
-                      <DropdownItem tag={Link} to="/bmdashboard/equipment" className={fontColor}>
+                      <DropdownItem
+                        tag={Link}
+                        to="/bmdashboard/equipment"
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
                         Equipment/Tool List
                       </DropdownItem>
-                      <DropdownItem tag={Link} to="/bmdashboard/Issue" className={fontColor}>
+                      <DropdownItem
+                        tag={Link}
+                        to="/bmdashboard/Issue"
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
                         Issue
                       </DropdownItem>
-                      <DropdownItem tag={Link} to="/bmdashboard/lessonform/" className={fontColor}>
+                      <DropdownItem
+                        tag={Link}
+                        to="/bmdashboard/lessonform/"
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
                         Lesson
+                      </DropdownItem>
+                      <DropdownItem tag={Link} to="/teams" className={fontColor}>
+                        Team
                       </DropdownItem>
                     </DropdownMenu>
                   </UncontrolledDropdown>
                 )}
-              </div>
-              <div className="d-flex align-items-center justify-content-center">
+  
                 {canGetReports || canGetWeeklySummaries || canGetWeeklyVolunteerSummary ? (
-                  <UncontrolledDropdown nav inNavbar className="responsive-spacing">
+                  <UncontrolledDropdown nav inNavbar>
                     <DropdownToggle nav caret>
-                      <span className="dashboard-text-link">{REPORTS}</span>
+                      <span>{REPORTS}</span>
                     </DropdownToggle>
-                    <DropdownMenu className={darkMode ? 'bg-yinmn-blue' : ''}>
+                    <DropdownMenu
+                      className={`${styles.noMaxHeight} ${
+                        darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown
+                      }`}
+                    >
                       {canGetReports && (
-                        <DropdownItem tag={Link} to="/reports" className={`${fontColor}`}>
+                        <DropdownItem
+                          tag={Link}
+                          to="/reports"
+                          className={fontColor}
+                          disabled={headerDisabled}
+                        >
                           {REPORTS}
                         </DropdownItem>
                       )}
                       {canGetWeeklySummaries && (
-                        <DropdownItem tag={Link} to="/weeklysummariesreport" className={fontColor}>
+                        <DropdownItem
+                          tag={Link}
+                          to="/weeklysummariesreport"
+                          className={fontColor}
+                          disabled={headerDisabled}
+                        >
                           {WEEKLY_SUMMARIES_REPORT}
                         </DropdownItem>
                       )}
                       {canGetWeeklyVolunteerSummary && (
-                        <DropdownItem tag={Link} to="/totalorgsummary" className={fontColor}>
+                        <DropdownItem
+                          tag={Link}
+                          to="/totalorgsummary"
+                          className={fontColor}
+                          disabled={headerDisabled}
+                        >
                           {TOTAL_ORG_SUMMARY}
                         </DropdownItem>
                       )}
-                      <DropdownItem tag={Link} to="/teamlocations" className={fontColor}>
+                      {canGetJobAnalytics && (
+                        <DropdownItem
+                          tag={Link}
+                          to="/application/analytics"
+                          className={fontColor}
+                          disabled={headerDisabled}
+                        >
+                          {JOB_ANALYTICS_REPORT}
+                        </DropdownItem>
+                      )}
+                      <DropdownItem
+                        tag={Link}
+                        to="/teamlocations"
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
                         {TEAM_LOCATIONS}
                       </DropdownItem>
                       <DropdownItem
                         tag={Link}
                         to="/bmdashboard/totalconstructionsummary"
                         className={fontColor}
+                        disabled={headerDisabled}
                       >
                         {TOTAL_CONSTRUCTION_SUMMARY}
+                      </DropdownItem>
+                      <DropdownItem
+                        onClick={() => setShowPromotionsPopup(true)}
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
+                        {PR_PROMOTIONS}
                       </DropdownItem>
                     </DropdownMenu>
                   </UncontrolledDropdown>
                 ) : (
-                  <NavItem className="responsive-spacing">
-                    <NavLink tag={Link} to="/teamlocations">
-                      <span className="dashboard-text-link">{TEAM_LOCATIONS}</span>
+                  <NavItem>
+                    <NavLink tag={Link} to="/teamlocations" disabled={headerDisabled}>
+                      <span>{TEAM_LOCATIONS}</span>
                     </NavLink>
                   </NavItem>
                 )}
-                <NavItem className="responsive-spacing">
-                  <BellNotification userId={displayUserId}/>
-                </NavItem>
+  
                 {(canAccessUserManagement ||
                   canAccessBadgeManagement ||
                   canAccessProjects ||
                   canAccessTeams ||
                   canAccessPopups ||
                   canAccessSendEmails ||
-                  canAccessPermissionsManagement) && (
-                  <UncontrolledDropdown nav inNavbar className="responsive-spacing">
+                  canAccessPermissionsManagement ||
+                  canAccessBlueSquareEmailManagement) && (
+                  <UncontrolledDropdown nav inNavbar>
                     <DropdownToggle nav caret>
-                      <span className="dashboard-text-link">{OTHER_LINKS}</span>
+                      <span>{OTHER_LINKS}</span>
                     </DropdownToggle>
-                    <DropdownMenu className={darkMode ? 'bg-yinmn-blue' : ''}>
+                    <DropdownMenu
+                      className={`${styles.noMaxHeight} ${
+                        darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown
+                      }`}
+                    >
                       {canAccessUserManagement && (
-                        <DropdownItem tag={Link} to="/usermanagement" className={fontColor}>
+                        <DropdownItem
+                          tag={Link}
+                          to="/usermanagement"
+                          className={fontColor}
+                          disabled={headerDisabled}
+                        >
                           {USER_MANAGEMENT}
                         </DropdownItem>
                       )}
                       {canAccessBadgeManagement && (
-                        <DropdownItem tag={Link} to="/badgemanagement" className={fontColor}>
+                        <DropdownItem
+                          tag={Link}
+                          to="/badgemanagement"
+                          className={fontColor}
+                          disabled={headerDisabled}
+                        >
                           {BADGE_MANAGEMENT}
                         </DropdownItem>
                       )}
                       {canAccessProjects && (
-                        <DropdownItem tag={Link} to="/projects" className={fontColor}>
+                        <DropdownItem
+                          tag={Link}
+                          to="/projects"
+                          className={fontColor}
+                          disabled={headerDisabled}
+                        >
                           {PROJECTS}
                         </DropdownItem>
                       )}
                       {canAccessTeams && (
-                        <DropdownItem tag={Link} to="/teams" className={fontColor}>
+                        <DropdownItem
+                          tag={Link}
+                          to="/teams"
+                          className={fontColor}
+                          disabled={headerDisabled}
+                        >
                           {TEAMS}
                         </DropdownItem>
                       )}
                       {canAccessSendEmails && (
-                        <DropdownItem tag={Link} to="/announcements" className={fontColor}>
+                        <DropdownItem
+                          tag={Link}
+                          to="/announcements"
+                          className={fontColor}
+                          disabled={headerDisabled}
+                        >
                           {SEND_EMAILS}
                         </DropdownItem>
                       )}
                       {canAccessPermissionsManagement && (
                         <>
-                          <DropdownItem divider />
+                          <DropdownItem divider className={styles.hideInMobile} />
                           <DropdownItem
                             tag={Link}
                             to="/permissionsmanagement"
                             className={fontColor}
+                            disabled={headerDisabled}
                           >
                             {PERMISSIONS_MANAGEMENT}
                           </DropdownItem>
                         </>
                       )}
+                      <DropdownItem divider className={styles.hideInMobile} />
+                      <DropdownItem
+                        tag={Link}
+                        to="/pr-dashboard/overview"
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
+                        PR Team Analytics
+                      </DropdownItem>
+                      {canAccessBlueSquareEmailManagement && (
+                        <DropdownItem
+                          tag={Link}
+                          to="/bluesquare-email-management"
+                          className={fontColor}
+                          disabled={headerDisabled}
+                        >
+                          {BLUE_SQUARE_EMAIL_MANAGEMENT}
+                        </DropdownItem>
+                      )}
                     </DropdownMenu>
                   </UncontrolledDropdown>
                 )}
-                <NavItem className="responsive-spacing">
+  
+                <NavItem className={styles.hideInMobile}>
+                  <BellNotification userId={displayUserId} />
+                </NavItem>
+  
+                <NavItem className={styles.hideInMobile}>
                   <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
                     <div
                       style={{
@@ -531,20 +780,27 @@ export function Header(props) {
                         backgroundImage: `url(${profilePic || '/pfp-default-header.png'})`,
                         backgroundSize: 'contain',
                         backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
+                        backgroundRepeat: 'no-repeat',
                       }}
                       className="dashboardimg"
                     />
                   </NavLink>
                 </NavItem>
-                <UncontrolledDropdown nav className="responsive-spacing">
+                <UncontrolledDropdown nav className={styles.hideInMobile}>
                   <DropdownToggle nav caret>
-                    <span className="dashboard-text-link">
+                    <span>
                       {WELCOME}, {firstName}
                     </span>
                   </DropdownToggle>
-                  <DropdownMenu className={darkMode ? 'bg-yinmn-blue' : ''}>
-                    <DropdownItem header className={darkMode ? 'text-custom-grey' : ''}>
+                  <DropdownMenu
+                    className={`${styles.noMaxHeight} ${
+                      darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown
+                    }`}
+                  >
+                    <DropdownItem
+                      header
+                      className={darkMode ? 'text-custom-grey' : styles.mobileDropdownText}
+                    >
                       Hello {firstName}
                     </DropdownItem>
                     <DropdownItem divider />
@@ -552,13 +808,12 @@ export function Header(props) {
                       tag={Link}
                       to={`/userprofile/${displayUserId}`}
                       className={fontColor}
+                      disabled={headerDisabled}
                     >
                       {VIEW_PROFILE}
                     </DropdownItem>
-                    {!cantUpdateDevAdminDetails(
-                      props.userProfile.email,
-                      props.userProfile.email,
-                    ) && (
+  
+                    {!cantUpdateDevAdminDetails(props.userProfile.email, props.userProfile.email) && (
                       <DropdownItem
                         tag={Link}
                         to={`/updatepassword/${displayUserId}`}
@@ -571,15 +826,15 @@ export function Header(props) {
                       <DarkModeButton />
                     </DropdownItem>
                     <DropdownItem divider />
-                    <DropdownItem onClick={openModal} className={fontColor}>
+                    <DropdownItem onClick={openModal} className={fontColor} disabled={headerDisabled}>
                       {LOGOUT}
                     </DropdownItem>
                   </DropdownMenu>
                 </UncontrolledDropdown>
-              </div>
-            </Nav>
-          </Collapse>
-        )}
+              </Nav>
+            </Collapse>
+          </div>
+        </div>
       </Navbar>
       {!isAuthUser && (
         <PopUpBar
@@ -587,9 +842,10 @@ export function Header(props) {
           lastName={viewingUser.lastName}
           message={`You are currently viewing the header for ${viewingUser.firstName} ${viewingUser.lastName}`}
           onClickClose={() => setPopup(prevPopup => !prevPopup)}
-          />
+        />
       )}
-      {props.auth.isAuthenticated && props.userProfile?.permissions?.isAcknowledged===false && (
+      <PermissionWatcher props={props} />
+      {props.auth.isAuthenticated && props.userProfile?.permissions?.isAcknowledged === false && (
         <PopUpBar
           firstName={viewingUser?.firstName || firstName}
           lastName={viewingUser?.lastName}
@@ -598,7 +854,6 @@ export function Header(props) {
           textColor="black_text"
           isLoading={isAckLoading}
         />
-
       )}
       <div>
         <Modal isOpen={popup} className={darkMode ? 'text-light' : ''}>
@@ -619,22 +874,21 @@ export function Header(props) {
         </Modal>
       </div>
       {props.auth.isAuthenticated && isModalVisible && (
-        <div className={`${darkMode ? 'bg-oxford-blue' : ''} card-wrapper`}>
-          <Card color="primary" className='headerCard'>
+        <div className={`${darkMode ? 'bg-oxford-blue' : ''} ${styles.cardWrapper}`}>
+          <Card color="primary" className={styles.headerCard}>
             <div className="close-button">
               <Button close onClick={closeModal} />
             </div>
-            <div className="card-content">{modalContent}</div>
+            <div className={`${styles.cardContent}`}>{modalContent}</div>
           </Card>
         </div>
       )}
-      {/* Only render one unread message at a time */}
       {props.auth.isAuthenticated && unreadNotifications?.length > 0 ? (
         <NotificationCard notification={unreadNotifications[0]} />
       ) : null}
-      <div className={darkMode ? 'header-margin' : 'header-margin-light'} />
+      <div className={darkMode ? styles.headerMargin : styles.headerMarginLight} />
     </div>
-  );
+  );  
 }
 
 const mapStateToProps = state => ({
@@ -645,7 +899,28 @@ const mapStateToProps = state => ({
   notification: state.notification,
   darkMode: state.theme.darkMode,
 });
-
+Header.propTypes = {
+  hasPermission: PropTypes.func.isRequired,
+  auth: PropTypes.shape({
+    isAuthenticated: PropTypes.bool,
+    user: PropTypes.shape({
+      userid: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      role: PropTypes.string
+    }),
+    firstName: PropTypes.string,
+    profilePic: PropTypes.string
+  }),
+  getHeaderData: PropTypes.func,
+  getAllRoles: PropTypes.func,
+  getWeeklySummaries: PropTypes.func,
+  role: PropTypes.shape({
+    roles: PropTypes.array
+  }),
+  notification: PropTypes.object,
+  userProfile: PropTypes.object,
+  darkMode: PropTypes.bool,
+  taskEditSuggestionCount: PropTypes.number,
+};
 export default connect(mapStateToProps, {
   getHeaderData,
   getAllRoles,

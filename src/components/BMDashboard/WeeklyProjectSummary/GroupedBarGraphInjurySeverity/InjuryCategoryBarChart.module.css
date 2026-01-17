@@ -1,0 +1,154 @@
+/* ---------- FINAL FIX: SELECTED VALUE BACKGROUND IN DARK MODE ---------- */
+:global(.darkMode .injurySelect__value-container) {
+  background-color: #2b3e59 !important;
+}
+
+:global(.darkMode .injurySelect__value-container--has-value) {
+  background-color: #2b3e59 !important;
+}
+
+:global(.darkMode .injurySelect__single-value) {
+  color: #ffffff !important;
+  opacity: 1 !important;
+}
+
+/* FORCE FILTER LABEL VISIBILITY IN DARK MODE (PROJECTS, SEVERITIES, START/END DATE) */
+:global(.darkMode .filter label) {
+  color: #ffffff !important;
+}
+
+/* Explicit fix for Start Date / End Date labels rendered by DatePicker */
+:global(.darkMode label[for="start-date"]),
+:global(.darkMode label[for="end-date"]) {
+  color: #ffffff !important;
+}
+:global(.darkMode .react-datepicker__input-container input) {
+  background-color: #2b3e59 !important;
+  border: 1px solid grey;
+  border-radius: 2px;
+  color: #ffffff !important;
+}
+/* ================= LABEL VISIBILITY FIX ================= */
+:global(.darkMode .injury-filter label) {
+  color: #f3f4f6; /* greyish white, NOT pure white */
+  margin-top: 4px;
+  display: block;
+}
+
+/* ================= DATE INPUT DARK MODE FIX ================= */
+/* :global(.darkMode .injury-date-input) {
+  background-color: #2b3e59 !important; 
+  color: #f3f4f6 !important;
+}
+
+:global(.darkMode .injury-date-input::placeholder) {
+  color: #d1d5db !important;
+}
+
+:global(.darkMode .react-datepicker__input-container input) {
+  background-color: #2b3e59 !important;
+  color: #f3f4f6 !important;
+} */
+/* ---- HOTFIX: react-select classNamePrefix is `injury-select` (with a hyphen), so we must target those global classes ---- */
+
+:global(.darkMode .injury-select__control) {
+  background-color: #2b3e59 !important;
+  border-color: #6b7280 !important;
+}
+
+:global(.darkMode .injury-select__control *),
+:global(.darkMode .injury-select__single-value),
+:global(.darkMode .injury-select__input-container),
+:global(.darkMode .injury-select__input),
+:global(.darkMode .injury-select__multi-value__label),
+:global(.darkMode .injury-select__placeholder) {
+  color: #ffffff !important;
+  opacity: 1 !important;
+}
+
+/* Ensure selected value is clearly visible in the control */
+:global(.darkMode .injury-select__value-container),
+:global(.darkMode .injury-select__value-container--has-value) {
+  color: #ffffff !important;
+}
+
+/* Multi-select chip background + text */
+:global(.darkMode .injury-select__multi-value) {
+  background-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+:global(.darkMode .injury-select__multi-value__remove) {
+  color: #ffffff !important;
+}
+
+/* Menu options */
+:global(.darkMode .injury-select__menu),
+:global(.darkMode .injury-select__menu-list) {
+  background-color: #2b3e59 !important;
+}
+
+:global(.darkMode .injury-select__option) {
+  background-color: #2b3e59 !important;
+  color: #f3f4f6 !important;
+}
+
+:global(.darkMode .injury-select__option--is-focused) {
+  background-color: rgba(255, 255, 255, 0.12) !important;
+  color: #ffffff !important;
+}
+
+:global(.darkMode .injury-select__option--is-selected) {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+  color: #ffffff !important;
+}
+
+
+
+/* DatePicker input: keep same dark background + white text */
+
+/* Selected value text → BLACK in dark mode */
+:global(.darkMode .injury-select__single-value),
+:global(.darkMode .injury-select__multi-value__label) {
+  color: #000000 !important;
+  opacity: 1 !important;
+}
+/* Ensure filter blocks always stack label + input vertically */
+:global(.filter) {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Consistent spacing between label and input */
+:global(.filter label) {
+  margin-bottom: 6px;
+}
+
+/* Ensure date inputs behave same as dropdowns */
+:global(.filter .react-datepicker-wrapper) {
+  width: 100%;
+}
+
+
+:global(.filter .react-datepicker__input-container input) {
+  width: 180px;
+  max-width: 180px;
+}
+
+:global(.filter .injurySelect__control) {
+  width: 100%;
+}
+
+
+:global(.darkMode .injurySelect__multi-value__label) {
+  color: #000000 !important;
+}
+
+/* Ensure input text while typing is also black */
+:global(.darkMode .injurySelect__input-container),
+:global(.darkMode .injurySelect__input) {
+  color: #000000 !important;
+}
+/* Recharts default tick text selector (X axis) */
+:global(.darkMode .recharts-xAxis .recharts-cartesian-axis-tick-value) {
+  fill: #ffffff !important;
+}

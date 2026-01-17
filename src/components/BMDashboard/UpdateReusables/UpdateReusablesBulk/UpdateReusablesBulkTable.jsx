@@ -1,10 +1,9 @@
-import { useState } from 'react';
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button, Table } from 'reactstrap';
 import { toast } from 'react-toastify';
 import moment from 'moment';
-import { fetchAllReusables, postReusableUpdateBulk } from 'actions/bmdashboard/reusableActions';
+import { fetchAllReusables, postReusableUpdateBulk } from '~/actions/bmdashboard/reusableActions';
 import UpdateReusable from '../UpdateReusable';
 import styles from './UpdateReusablesBulk.module.css';
 

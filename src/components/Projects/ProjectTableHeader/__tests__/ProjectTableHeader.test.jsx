@@ -8,31 +8,34 @@ import { userProfileMock } from '../../../../__tests__/mockStates'
 
 const mockStore = configureMockStore([thunk])
 
-// Mock the hasPermission function
-jest.mock('utils/permissions', () => ({
-  hasPermission: jest.fn((a) => true),
-}));
+vi.mock('~/utils/permissions', () => ({
+  __esModule: true,
+  default: vi.fn(() => true),
+}))
 
 // Mock the EditableInfoModal component
-jest.mock('components/UserProfile/EditableModal/EditableInfoModal', () => () => (
-  <div>Mock EditableInfoModal</div>
+// eslint-disable-next-line react/display-name
+vi.mock('components/UserProfile/EditableModal/EditableInfoModal', () => () => (
+    <div>Mock EditableInfoModal</div>
 ));
 
 // Helper function to render ProjectTableHeader with provided props and mock Redux store
 const renderProjectTableHeader = (projectTableHeaderProps) => {
 
   const initialState = {
+    auth: {
+      user: {
+        role: projectTableHeaderProps.role || 'Owner',
+        permissions: { frontPermissions: [], backPermissions: [] },
+      },
+    },
+    role: { roles: [] },
     userProfile: {
       ...userProfileMock,
-      role: 'Owner',
-      permissions: {
-        frontPermissions: ['deleteProject'],
-        backPermissions: ['deleteProject'],
-      }
-
+      role: projectTableHeaderProps.role,
+      permissions: projectTableHeaderProps.permissions || {},
     },
-    ...projectTableHeaderProps,
-  }
+  };
   const store = mockStore(initialState);
 
   return render(
@@ -51,7 +54,7 @@ describe('ProjectTableHeader Component', () => {
   const sampleProps = {
     role: 'Owner',
   };
-  const hasPermission = jest.fn((a) => true)
+  const hasPermission = vi.fn((a) => true)
   sampleProps.hasPermission = hasPermission;
 
   // Test case to check if component renders without crashing
@@ -72,9 +75,10 @@ describe('ProjectTableHeader Component', () => {
         }
       }
     };
-    const hasPermission = jest.fn((a) => true)
+    const hasPermission = vi.fn((a) => true)
     stateWithDeletePermission.hasPermission = hasPermission;
     const { getByText } = renderProjectTableHeader(stateWithDeletePermission);
+    // eslint-disable-next-line testing-library/prefer-screen-queries
     expect(getByText('Archive')).toBeInTheDocument();
   });
 
@@ -87,9 +91,10 @@ describe('ProjectTableHeader Component', () => {
         role: 'Volunteer',
       }
     };
-    const hasPermission = jest.fn((a) => false)
+    const hasPermission = vi.fn((a) => false)
     stateWithoutDeletePermission.hasPermission = hasPermission;
     const { queryByText } = renderProjectTableHeader(stateWithoutDeletePermission);
+    // eslint-disable-next-line testing-library/prefer-screen-queries
     expect(queryByText('Delete')).not.toBeInTheDocument();
   });
 
