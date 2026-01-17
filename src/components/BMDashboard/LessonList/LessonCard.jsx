@@ -10,6 +10,7 @@ import DeleteLessonCardPopUp from './DeleteLessonCardPopUp';
 import styles from './LessonCard.module.css';
 
 function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, handleLike }) {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const maxSummaryLength = 1500;
   const [expandedCards, setExpandedCards] = useState([]);
   const auth = useSelector(state => state.auth);
@@ -79,7 +80,10 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, 
   const lessonCards = filteredLessons.map(lesson => {
     const { isLiked, totalLikes } = getLikeStatus(lesson._id);
     return (
-      <Card key={`${lesson._id} + ${lesson.title} `} className={`${styles.lessonCard}`}>
+      <Card
+        key={`${lesson._id} + ${lesson.title} `}
+        className={`${styles.lessonCard} ${darkMode ? styles.darkCard : ''}`}
+      >
         <Card.Header
           onClick={() => toggleCardExpansion(lesson._id)}
           style={{ cursor: 'pointer' }}
@@ -147,9 +151,9 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, 
                 ) : (
                   <span>
                     {parse(
-                      lesson.content.length > maxSummaryLength
+                      (lesson?.content || '').length > maxSummaryLength
                         ? `${lesson.content.slice(0, maxSummaryLength)}...`
-                        : lesson.content,
+                        : lesson.content || '',
                     )}
                   </span>
                 )}

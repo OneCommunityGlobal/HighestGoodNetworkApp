@@ -6,7 +6,6 @@ import { Line } from 'react-chartjs-2';
 import DatePicker from 'react-datepicker';
 import styles from './RentalChart.module.css';
 import { toast } from 'react-toastify';
-import ChartDataLabels from 'chartjs-plugin-datalabels';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -18,16 +17,7 @@ import {
   Legend,
 } from 'chart.js';
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  ChartDataLabels,
-);
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 // these colors can be randomly generated once more projects are shared here. Colors generated from ChatGPT
 const PROJECT_COLORS = [
@@ -54,8 +44,101 @@ const MONTHS = [
   'December',
 ];
 
+/* ---------- helper functions to keep processChartData simple ---------- */
+
+const filterRentalData = (data, selectedProject, selectedTool, dateRange) =>
+  data.filter(item => {
+    if (selectedProject !== 'All' && item.projectId !== selectedProject) {
+      return false;
+    }
+    if (selectedTool !== 'All' && item.toolName !== selectedTool) {
+      return false;
+    }
+    const itemDate = new Date(item.date);
+    return itemDate >= dateRange.startDate && itemDate <= dateRange.endDate;
+  });
+
+const buildMonthsRange = dateRange => {
+  const startYear = dateRange.startDate.getFullYear();
+  const endYear = dateRange.endDate.getFullYear();
+  const startMonth = dateRange.startDate.getMonth();
+  const endMonth = dateRange.endDate.getMonth();
+
+  const totalMonths = (endYear - startYear) * 12 + (endMonth - startMonth) + 1;
+
+  const labels = [];
+  const monthsInRange = [];
+
+  for (let i = 0; i < totalMonths; i += 1) {
+    const year = startYear + Math.floor((startMonth + i) / 12);
+    const month = (startMonth + i) % 12;
+    labels.push(`${MONTHS[month]} ${year}`);
+    monthsInRange.push({ year, month });
+  }
+
+  return { labels, monthsInRange, totalMonths };
+};
+
+const aggregateDataByGroup = (filteredData, monthsInRange, totalMonths, groupBy, chartType) => {
+  const groupMap = new Map();
+
+  for (const item of filteredData) {
+    const groupKey = groupBy === 'project' ? item.projectId : item.toolName;
+    const date = new Date(item.date);
+    const year = date.getFullYear();
+    const month = date.getMonth();
+
+    const monthIndex = monthsInRange.findIndex(m => m.year === year && m.month === month);
+    if (monthIndex === -1) {
+      continue;
+    }
+
+    const value =
+      chartType === 'percentage'
+        ? (item.rentalCost / item.totalMaterialCost) * 100
+        : item.rentalCost;
+
+    if (!groupMap.has(groupKey)) {
+      groupMap.set(groupKey, {
+        key: groupKey,
+        dataPoints: new Array(totalMonths).fill(undefined),
+        monthsWithData: new Set(),
+      });
+    }
+
+    const group = groupMap.get(groupKey);
+    const currentValue = group.dataPoints[monthIndex];
+    const newValue = currentValue === undefined ? value : currentValue + value;
+
+    group.dataPoints[monthIndex] = newValue;
+    group.monthsWithData.add(monthIndex);
+  }
+
+  return groupMap;
+};
+
+const buildDatasetsFromGroupMap = (groupMap, groupBy) =>
+  Array.from(groupMap.values()).map((group, index) => {
+    const colorIndex = index % PROJECT_COLORS.length;
+    const label = groupBy === 'project' ? `Project ${group.key.substring(0, 8)}...` : group.key;
+
+    return {
+      label,
+      data: group.dataPoints,
+      borderColor: PROJECT_COLORS[colorIndex].borderColor,
+      backgroundColor: PROJECT_COLORS[colorIndex].backgroundColor,
+      marginRight: 20,
+      tension: 0.4,
+      fill: false,
+      pointRadius: ctx => (group.monthsWithData.has(ctx.dataIndex) ? 5 : 0),
+      pointHoverRadius: 8,
+      spanGaps: true,
+    };
+  });
+
+/* ---------------------------------------------------------------------- */
+
 export default function RentalChart() {
-  const containerRef = useRef(null);
   const chartRef = useRef(null);
   const [chartData, setChartData] = useState({
     labels: [],
@@ -77,119 +160,22 @@ export default function RentalChart() {
   const [availableProjects, setAvailableProjects] = useState([]);
   const [availableTools, setAvailableTools] = useState([]);
   const [rawData, setRawData] = useState([]);
-  const [hiddenSeries, setHiddenSeries] = useState({});
 
-  // Function to process data for the chart
   const processChartData = data => {
-    // apply all data
-    let filteredData = data;
+    const filteredData = filterRentalData(data, selectedProject, selectedTool, dateRange);
+    const { labels, monthsInRange, totalMonths } = buildMonthsRange(dateRange);
+    const groupMap = aggregateDataByGroup(
+      filteredData,
+      monthsInRange,
+      totalMonths,
+      groupBy,
+      chartType,
+    );
+    const datasets = buildDatasetsFromGroupMap(groupMap, groupBy);
 
-    // filter by project
-    if (selectedProject !== 'All') {
-      filteredData = filteredData.filter(item => item.projectId === selectedProject);
-    }
-
-    // filter by tool
-    if (selectedTool !== 'All') {
-      filteredData = filteredData.filter(item => item.toolName === selectedTool);
-    }
-
-    // Filter by date range
-    filteredData = filteredData.filter(item => {
-      const itemDate = new Date(item.date);
-      return itemDate >= dateRange.startDate && itemDate <= dateRange.endDate;
-    });
-
-    // Determine date range for x-axis
-    const startYear = dateRange.startDate.getFullYear();
-    const endYear = dateRange.endDate.getFullYear();
-    const startMonth = dateRange.startDate.getMonth();
-    const endMonth = dateRange.endDate.getMonth();
-
-    // total number of months in the range
-    const totalMonths = (endYear - startYear) * 12 + (endMonth - startMonth) + 1;
-
-    // label generating for each month
-    const labels = [];
-    const monthsInRange = [];
-
-    for (let i = 0; i < totalMonths; i += 1) {
-      const year = startYear + Math.floor((startMonth + i) / 12);
-      const month = (startMonth + i) % 12;
-      labels.push(`${MONTHS[month]} ${year}`);
-      monthsInRange.push({ year, month });
-    }
-
-    // group by project ID OR group name
-    const groupMap = new Map();
-
-    filteredData.forEach(item => {
-      // determine the group key
-      const groupKey = groupBy === 'project' ? item.projectId : item.toolName;
-      const date = new Date(item.date);
-      const year = date.getFullYear();
-      const month = date.getMonth();
-
-      // find index if in range
-      const monthIndex = monthsInRange.findIndex(m => m.year === year && m.month === month);
-      if (monthIndex === -1) return;
-
-      const value =
-        chartType === 'percentage'
-          ? ((item.rentalCost / item.totalMaterialCost) * 100).toFixed(1)
-          : item.rentalCost;
-
-      if (!groupMap.has(groupKey)) {
-        groupMap.set(groupKey, {
-          key: groupKey,
-          dataPoints: Array(totalMonths).fill(undefined),
-          monthsWithData: new Set(),
-        });
-      }
-
-      // If multiple entries exist for the same group and month, sum them up
-      const currentValue = groupMap.get(groupKey).dataPoints[monthIndex];
-      const newValue =
-        currentValue === undefined ? parseFloat(value) : currentValue + parseFloat(value);
-
-      // store value we have this month to track data
-      groupMap.get(groupKey).dataPoints[monthIndex] = newValue;
-      groupMap.get(groupKey).monthsWithData.add(monthIndex);
-    });
-
-    // convert map to datasets
-    const datasets = Array.from(groupMap.values()).map((group, index) => {
-      const colorIndex = index % PROJECT_COLORS.length;
-
-      // Format the label based on what we're grouping by
-      const label = groupBy === 'project' ? `Project ${group.key.substring(0, 8)}...` : group.key;
-
-      return {
-        label,
-        data: group.dataPoints,
-        borderColor: PROJECT_COLORS[colorIndex].borderColor,
-        backgroundColor: PROJECT_COLORS[colorIndex].backgroundColor,
-        tension: 0.4,
-        fill: false,
-        pointRadius: ctx => {
-          const monthIndex = ctx.dataIndex;
-          return group.monthsWithData.has(monthIndex) ? 5 : 0;
-        },
-        pointHoverRadius: 8,
-        spanGaps: true,
-      };
-    });
-
-    // create transformed data
-    const transformedData = {
-      labels,
-      datasets,
-    };
-
-    setChartData(transformedData);
+    setChartData({ labels, datasets });
   };
 
-  // only fetch and store data once
   useEffect(() => {
     const fetchRentalData = async () => {
       try {
@@ -197,18 +183,14 @@ export default function RentalChart() {
         const response = await axios.get(ENDPOINTS.BM_RENTAL_CHART);
         if (response.data.success) {
           const { data } = response.data;
-          // Store the raw data
           setRawData(data);
 
-          // unique project IDs for dropdown
           const projectIds = [...new Set(data.map(item => item.projectId))];
           setAvailableProjects(projectIds);
 
-          // unique tool names for dropdown
           const toolNames = [...new Set(data.map(item => item.toolName))];
           setAvailableTools(toolNames);
 
-          // process data for chart
           processChartData(data);
         } else {
           setError('Failed to fetch data');
@@ -224,9 +206,9 @@ export default function RentalChart() {
     };
 
     fetchRentalData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // get dynamic chart generated
   function generateChartTitle() {
     let title = 'Rental Costs';
 
@@ -242,92 +224,42 @@ export default function RentalChart() {
       }
     }
 
-    // Format dates for the title
-    const formatDate = date => {
-      return `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
-    };
+    const formatDate = date => `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
 
     title += ` (${formatDate(dateRange.startDate)} - ${formatDate(dateRange.endDate)})`;
 
     return title;
   }
 
-  // process data if filter is changed
   useEffect(() => {
     if (rawData.length > 0) {
       processChartData(rawData);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chartType, selectedProject, selectedTool, dateRange, groupBy, rawData]);
 
-  useEffect(() => {
-    setHiddenSeries({});
-  }, [chartData.datasets]);
-
-  const readThemeVars = node => {
-    const styles =
-      typeof window !== 'undefined'
-        ? getComputedStyle(node ?? document.documentElement)
-        : {
-            getPropertyValue: () => '',
-          };
-    const getVar = (name, fallback) => {
-      const value = styles.getPropertyValue(name);
-      return value ? value.trim() : fallback;
-    };
-
-    return {
-      background: getVar('--chart-bg', darkMode ? '#1b2a41' : '#ffffff'),
-      legendColor: getVar('--chart-legend-color', darkMode ? '#e0e0e0' : '#1b2a41'),
-      axisColor: getVar('--chart-axis-color', darkMode ? '#e0e0e0' : '#333333'),
-      gridColor: getVar('--chart-grid-color', darkMode ? 'rgba(255,255,255,0.16)' : '#d9d9d9'),
-      tooltipBg: getVar('--chart-tooltip-bg', darkMode ? '#1b2a41' : 'rgba(255,255,255,0.92)'),
-      tooltipTitle: getVar('--chart-tooltip-title', darkMode ? '#ffffff' : '#1b2a41'),
-      tooltipText: getVar('--chart-tooltip-text', darkMode ? '#e0e0e0' : '#333333'),
-      legendBg: getVar(
-        '--chart-legend-bg',
-        darkMode ? 'rgba(27,42,65,0.7)' : 'rgba(255,255,255,0.75)',
-      ),
-      pointLabel: getVar('--chart-point-label', darkMode ? '#e0e0e0' : '#1b2a41'),
-      pointLabelBg: getVar(
-        '--chart-point-label-bg',
-        darkMode ? 'rgba(15,23,42,0.75)' : 'rgba(255,255,255,0.8)',
-      ),
-    };
-  };
-
-  const [themeVars, setThemeVars] = useState(() => readThemeVars(document.documentElement));
-
-  useEffect(() => {
-    const node = containerRef.current || document.documentElement;
-    // wait until class toggles have applied
-    const id = requestAnimationFrame(() => setThemeVars(readThemeVars(node)));
-    return () => cancelAnimationFrame(id);
-  }, [darkMode]);
-
-  const options = useMemo(() => {
-    return {
+  const options = useMemo(
+    () => ({
       responsive: true,
       maintainAspectRatio: false,
-      backgroundColor: themeVars.background,
-      layout: {
-        padding: {
-          left: 16,
-          right: 28,
-          top: 32,
-          bottom: 16,
-        },
-      },
+      backgroundColor: darkMode ? '#1b2a41' : '#ffffff',
       plugins: {
         legend: {
-          display: false,
+          position: 'top',
+          labels: {
+            color: darkMode ? '#e0e0e0' : '#333333',
+          },
         },
         title: {
           display: true,
           text: generateChartTitle(),
           font: {
-            size: 18,
+            size: 14,
           },
-          color: themeVars.legendColor,
+          color: darkMode ? '#ffffff' : '#1b2a41',
+          padding: {
+            bottom: 20,
+          },
         },
         tooltip: {
           callbacks: {
@@ -339,32 +271,49 @@ export default function RentalChart() {
               if (context.parsed.y !== null) {
                 label +=
                   chartType === 'percentage'
-                    ? `${context.parsed.y}%`
+                    ? `${context.parsed.y.toFixed(1)}%`
                     : `$${context.parsed.y.toFixed(2)}`;
               }
               return label;
             },
           },
-          backgroundColor: themeVars.tooltipBg,
-          titleColor: themeVars.tooltipTitle,
-          bodyColor: themeVars.tooltipText,
-          borderColor: themeVars.gridColor,
+          backgroundColor: darkMode ? '#1b2a41' : 'rgba(255,255,255,0.8)',
+          titleColor: darkMode ? '#ffffff' : '#1b2a41',
+          bodyColor: darkMode ? '#ffffff' : '#333333',
+          borderColor: darkMode ? 'rgba(255,255,255, 0.2)' : '#1b2a41',
           borderWidth: 1,
         },
         datalabels: {
-          color: themeVars.pointLabel,
-          backgroundColor: themeVars.pointLabelBg,
-          borderRadius: 4,
-          padding: { top: 4, bottom: 4, left: 6, right: 6 },
-          align: 'top',
-          anchor: 'end',
-          offset: 6,
-          clip: false,
-          clamp: true,
-          display: ctx => ctx.dataset.data[ctx.dataIndex] !== undefined,
+          color: darkMode ? '#e0e0e0' : '#333333',
+          // move each dataset to a slightly different side of the point
+          anchor: ctx => {
+            // horizontal side of the point
+            if (ctx.datasetIndex === 0) return 'end'; // right
+            if (ctx.datasetIndex === 1) return 'start'; // left
+            return 'center'; // 3rd stays centered if any
+          },
+
+          align: ctx => {
+            // vertical side of the anchor
+            if (ctx.datasetIndex === 0) return 'bottom'; // slightly below
+            if (ctx.datasetIndex === 1) return 'top'; // slightly above
+            return 'top';
+          },
+          offset: 8, // distance in px away from the point (same for all is fine)
+          font: {
+            size: 12,
+          },
+
           formatter: value => {
-            if (value === undefined || value === null || Number.isNaN(value)) return '';
-            return chartType === 'percentage' ? `${value}%` : `$${Math.round(value)}`;
+            if (value == null || Number.isNaN(value)) return '';
+
+            // percentage mode → whole-number percent
+            if (chartType === 'percentage') {
+              return `${value.toFixed(0)}%`; // e.g., 348%
+            }
+
+            // cost mode → dollars (you can use 0 or 2 decimals as you like)
+            return `$${value.toFixed(2)}`; // e.g., $175.00
           },
         },
       },
@@ -373,13 +322,13 @@ export default function RentalChart() {
           title: {
             display: true,
             text: 'Month/Year',
-            color: themeVars.axisColor,
+            color: darkMode ? '#e0e0e0' : '#333333',
           },
           ticks: {
-            color: themeVars.axisColor,
+            color: darkMode ? '#e0e0e0' : '#333333',
           },
           grid: {
-            color: themeVars.gridColor,
+            color: darkMode ? '#e0e0e0' : '#333333',
           },
         },
         y: {
@@ -390,21 +339,22 @@ export default function RentalChart() {
               chartType === 'percentage'
                 ? 'Percentage of Total Materials Cost (%)'
                 : 'Total Rental Cost ($)',
-            color: themeVars.axisColor,
+            color: darkMode ? '#e0e0e0' : '#333333',
           },
           ticks: {
             callback(value) {
               return chartType === 'percentage' ? `${value}%` : `$${value}`;
             },
-            color: themeVars.axisColor,
+            color: darkMode ? '#e0e0e0' : '#333333',
           },
           grid: {
-            color: themeVars.gridColor,
+            color: darkMode ? 'rgba(255,255,255,0.1)' : '#1b2a41',
           },
         },
       },
-    };
-  }, [chartType, generateChartTitle, themeVars]);
+    }),
+    [darkMode, chartType, dateRange, selectedProject, selectedTool],
+  );
 
   const handleTypeChange = e => {
     setChartType(e.target.value);
@@ -419,17 +369,25 @@ export default function RentalChart() {
   };
 
   const handleStartDateChange = date => {
-    setDateRange(prev => ({
-      startDate: date,
-      endDate: prev.endDate < date ? date : prev.endDate,
-    }));
+    setDateRange(prev => {
+      const newStart = date;
+      const newEndTime = Math.max(newStart.getTime(), prev.endDate.getTime());
+      return {
+        startDate: newStart,
+        endDate: new Date(newEndTime),
+      };
+    });
   };
 
   const handleEndDateChange = date => {
-    setDateRange(prev => ({
-      startDate: prev.startDate > date ? date : prev.startDate,
-      endDate: date,
-    }));
+    setDateRange(prev => {
+      const newEnd = date;
+      const newStartTime = Math.min(prev.startDate.getTime(), newEnd.getTime());
+      return {
+        startDate: new Date(newStartTime),
+        endDate: newEnd,
+      };
+    });
   };
 
   const renderChartContent = () => {
@@ -456,49 +414,12 @@ export default function RentalChart() {
     return <Line ref={chartRef} data={chartData} options={options} />;
   };
 
-  const handleLegendToggle = index => {
-    const chart = chartRef.current;
-    if (!chart) return;
-    const isVisible = chart.isDatasetVisible(index);
-    chart.setDatasetVisibility(index, !isVisible);
-    chart.update();
-    setHiddenSeries(prev => ({
-      ...prev,
-      [index]: isVisible,
-    }));
-  };
-
-  const legendItems = chartData.datasets.map((dataset, index) => {
-    const isHiddenFromChart = chartRef.current?.isDatasetVisible
-      ? !chartRef.current.isDatasetVisible(index)
-      : hiddenSeries[index];
-    return {
-      label: dataset.label || `Series ${index + 1}`,
-      color: dataset.borderColor,
-      hidden: !!isHiddenFromChart,
-      index,
-    };
-  });
-
   return (
-    <div
-      ref={containerRef}
-      className={`${styles.rentalContainer} ${darkMode ? styles.darkMode : ''}`}
-      style={{
-        backgroundColor: themeVars.background,
-        padding: '20px',
-        borderRadius: '8px',
-        minHeight: '100vh',
-        marginTop: '-20px',
-        overflow: 'auto',
-      }}
-    >
+    <div className={`${styles.rentalContainer} ${darkMode ? styles.darkMode : ''}`}>
       <h1 className={darkMode ? styles.textLight : ''}>Rental Cost Over Time</h1>
-      <div className={styles.chartControls} style={{ marginBottom: '20px' }}>
-        <div
-          className={`${styles.filterRow} ${styles.topFilters}`}
-          style={{ display: 'flex', marginBottom: '10px', gap: '20px' }}
-        >
+
+      <div className={styles.chartFilters}>
+        <div className={`${styles.filterRow} ${styles.topFilters}`}>
           <div className={styles.filterGroup}>
             <label htmlFor="chart-type" className={darkMode ? styles.textLight : ''}>
               Display:{' '}
@@ -507,11 +428,7 @@ export default function RentalChart() {
               id="chart-type"
               value={chartType}
               onChange={handleTypeChange}
-              className={
-                darkMode
-                  ? `${styles.rentalChartSelect} ${styles.darkSelect}`
-                  : styles.rentalChartSelect
-              }
+              className={`${styles.rentalChartSelect} ${darkMode ? styles.darkSelect : ''}`}
             >
               <option value="cost">Total Rental Cost</option>
               <option value="percentage">% of Materials Cost</option>
@@ -526,11 +443,7 @@ export default function RentalChart() {
               id="project-filter"
               value={selectedProject}
               onChange={handleProjectChange}
-              className={
-                darkMode
-                  ? `${styles.rentalChartSelect} ${styles.darkSelect}`
-                  : styles.rentalChartSelect
-              }
+              className={`${styles.rentalChartSelect} ${darkMode ? styles.darkSelect : ''}`}
             >
               <option value="All">All Projects</option>
               {availableProjects.map(projectId => (
@@ -550,11 +463,7 @@ export default function RentalChart() {
               value={selectedTool}
               onChange={handleToolChange}
               disabled={groupBy === 'project' && selectedProject !== 'All'}
-              className={
-                darkMode
-                  ? `${styles.rentalChartSelect} ${styles.darkSelect}`
-                  : styles.rentalChartSelect
-              }
+              className={`${styles.rentalChartSelect} ${darkMode ? styles.darkSelect : ''}`}
             >
               <option value="All">All Tools</option>
               {availableTools.map(tool => (
@@ -566,10 +475,7 @@ export default function RentalChart() {
           </div>
         </div>
 
-        <div
-          className={`${styles.filterRow} ${styles.dateFilters}`}
-          style={{ display: 'flex', gap: '20px' }}
-        >
+        <div className={`${styles.filterRow} ${styles.dateFilters}`}>
           <div className={styles.filterGroup}>
             <label style={{ marginRight: '8px' }} className={darkMode ? styles.textLight : ''}>
               From:{' '}
@@ -584,18 +490,12 @@ export default function RentalChart() {
               showYearDropdown
               showMonthDropdown
               dropdownMode="select"
-              className={
-                darkMode ? `${styles.datePicker} ${styles.darkDatePicker}` : styles.datePicker
-              }
+              className={`${styles.datePicker} ${darkMode ? styles.darkDatePicker : ''}`}
             />
           </div>
 
-          <div className={styles.filterGroup} style={{ marginRight: '150px' }}>
-            <label
-              label
-              style={{ marginRight: '10px' }}
-              className={darkMode ? styles.textLight : ''}
-            >
+          <div className={styles.filterGroup}>
+            <label style={{ marginRight: '10px' }} className={darkMode ? styles.textLight : ''}>
               To:{' '}
             </label>
             <DatePicker
@@ -609,54 +509,13 @@ export default function RentalChart() {
               showYearDropdown
               showMonthDropdown
               dropdownMode="select"
-              className={
-                darkMode ? `${styles.datePicker} ${styles.darkDatePicker}` : styles.datePicker
-              }
+              className={`${styles.datePicker} ${darkMode ? styles.darkDatePicker : ''}`}
             />
           </div>
         </div>
       </div>
 
-      <div
-        className={`${styles.chartWrapper} ${darkMode ? styles.darkChart : ''}`}
-        style={{
-          backgroundColor: themeVars.background,
-          padding: '20px',
-          borderRadius: '8px',
-          border: darkMode ? '1px solid #333' : '1px solid #ddd',
-          minHeight: '600px',
-        }}
-      >
-        {legendItems.length > 0 && (
-          <div
-            className={styles.chartLegend}
-            role="list"
-            aria-label="Toggle data series visibility"
-          >
-            {legendItems.map(item => (
-              <div
-                key={`${item.label}-${item.index}`}
-                role="listitem"
-                className={styles.chartLegendItemWrapper}
-              >
-                <button
-                  type="button"
-                  className={styles.chartLegendItem}
-                  onClick={() => handleLegendToggle(item.index)}
-                  aria-label={`Toggle ${item.label}`}
-                  aria-pressed={!item.hidden}
-                >
-                  <span
-                    className={styles.chartLegendSwatch}
-                    style={{ backgroundColor: item.color }}
-                    aria-hidden="true"
-                  />
-                  <span className={styles.chartLegendText}>{item.label}</span>
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
+      <div className={`${styles.chartWrapper} ${darkMode ? styles.darkChart : styles.lightChart}`}>
         {renderChartContent()}
       </div>
     </div>
