@@ -146,14 +146,19 @@ function PermissionChangeLogTable({ changeLogs, darkMode, roleNamesToHighlight =
                   <td
                     className={`permission-change-log-table--cell ${bgYinmnBlue}`}
                     style={{
-                      // Uncommented lines below and in formatName, using individualName for users, and roleName for role changes
-                      fontWeight: log?.individualName ? 'bold' : 'normal',
+                      fontWeight: log?.reason?.includes('Role') ? 'normal' : 'bold',
+                      color: log?.individualName ? 'black' : '#D30000',
                     }}
                   >
                     {log?.individualName ? formatName(log.individualName) : log.roleName}
                   </td>
-                  <td className={`permission-change-log-table--cell permissions ${bgYinmnBlue}`}>
-                    {log?.reason ? renderRoleChange(log.reason) : ''}
+                  <td
+                    className={`permission-change-log-table--cell permissions ${bgYinmnBlue}`}
+                    style={{
+                      color: log?.reason?.includes('Role') ? 'blue' : 'black',
+                    }}
+                  >
+                    {log?.reason ? renderRoleChange(log.reason) : 'Permissions changed.'}
                   </td>
                   <td className={`permission-change-log-table--cell permissions ${bgYinmnBlue}`}>
                     {renderPermissions(log.permissionsAdded, `${log._id}_added`, log.reason)}

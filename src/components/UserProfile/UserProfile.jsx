@@ -998,8 +998,6 @@ setUpdatedTasks(prev => {
     projects: projectsIds,  // single source of truth
   };
 
-  console.log("user profile updated after clicking save on profile page: ", userProfileToUpdate);
-  console.log('roles: ', roles);
 
   // update tasks (optionally await if you need sequencing)
   for (let i = 0; i < updatedTasks.length; i += 1) {
@@ -1020,8 +1018,9 @@ setUpdatedTasks(prev => {
       defaultPermissions: defaultPermissions,
   };
   const requestor = props.auth.user;
+  // Ensures a change log with reason and user's modified permissions when their role is changed
   const permissionData = {
-    reason: `Role Changed to **${userProfileToUpdate.role}**`,
+    reason: `Role Changed to **${userProfileToUpdate.role}**.`,
     permissions: permissions,
     requestor: requestor,
   };
