@@ -1,5 +1,13 @@
 {
+  "extends": ["stylelint-config-standard"],
   "rules": {
-    "no-duplicate-selectors": true
+    "no-duplicate-selectors": true,
+    "selector-pseudo-class-no-unknown": [
+      true,
+      {
+        "ignorePseudoClasses": ["global", "local"]
+      }
+    ],
+    "selector-class-pattern": null
   }
 }
