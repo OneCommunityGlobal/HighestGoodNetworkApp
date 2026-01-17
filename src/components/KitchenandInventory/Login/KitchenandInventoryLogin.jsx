@@ -6,7 +6,7 @@ import Joi from 'joi-browser';
 
 import { loginBMUser } from '~/actions/authActions';
 
-function CPLogin(props) {
+function KILogin(props) {
   const { dispatch, auth, history, location } = props;
   // state
   const [enteredEmail, setEnteredEmail] = useState('');
@@ -15,17 +15,15 @@ function CPLogin(props) {
   const [hasAccess, setHasAccess] = useState(false);
 
   // get the previous location from the state if available
-  // If access login page from URL directly, redirect to CP Dashboard
-  const prevLocation = location.state?.from || { pathname: '/communityportal' };
+  // If access login page from URL directly, redirect to kitchen and inventory Dashboard
+  const prevLocation = location.state?.from || { pathname: '/kitchenandinventory' };
 
-  // push to dashboard if user is authenticated and has CP Portal access
+  // push to dashboard if user is authenticated
   useEffect(() => {
-    if (auth.isAuthenticated && auth.user?.access?.canAccessBMPortal) {
+    if (auth.user.access && auth.user.access.canAccessBMPortal) {
       history.push(prevLocation.pathname);
     }
-  }, [auth.isAuthenticated, auth.user?.access?.canAccessBMPortal, history, prevLocation.pathname]);
-
-  // Also check hasAccess state (set after successful login)
+  }, []);
   useEffect(() => {
     if (hasAccess) {
       history.push(prevLocation.pathname);
@@ -64,31 +62,23 @@ function CPLogin(props) {
         message: validate.error.details[0].message,
       });
     }
-    const loginAction = loginBMUser({ email: enteredEmail, password: enterPassword });
-    if (typeof loginAction !== 'function') {
-      return setValidationError(null);
-    }
-    const res = await dispatch(loginAction);
+    const res = await dispatch(loginBMUser({ email: enteredEmail, password: enterPassword }));
     // server side error validation
-    if (!res || res.statusText !== 'OK') {
-      if (res?.status === 422 && res?.data) {
+    if (res.statusText !== 'OK') {
+      if (res.status === 422) {
         return setValidationError({
           label: res.data.label,
           message: res.data.message,
         });
       }
-      return setValidationError(null);
+      // TODO: add additional error handling
+      return setValidationError({
+        label: '',
+        message: '',
+      });
     }
-    // initiate push to CP Dashboard if validated (ie received token)
-    // The auth state will be updated by loginBMUser, which will trigger the useEffect
-    // But also set hasAccess as a fallback
-    if (res?.data && res.data?.token) {
-      setHasAccess(true);
-      // Small delay to ensure auth state is updated
-      setTimeout(() => {
-        history.push(prevLocation.pathname);
-      }, 100);
-    }
+    // initiate push to Kitchen and Inventory Dashboard if validated (ie received token)
+    return setHasAccess(!!res.data.token);
   };
 
   // push Dashboard if not authenticated
@@ -98,10 +88,10 @@ function CPLogin(props) {
 
   return (
     <div className="container mt-5">
-      <h2>Log In To Community Portal</h2>
+      <h2>Log In To Kitchen and Inventory Portal</h2>
       <Form onSubmit={handleSubmit}>
         <FormText>
-          Enter your current user credentials to access the Community Portal Dashboard
+          Enter your current user credentials to access the Kitchen and Inventory Portal Dashboard
         </FormText>
         <p>Note: You must use your Production/Main credentials for this login.</p>
         <FormGroup>
@@ -140,4 +130,4 @@ const mapStateToProps = state => ({
   auth: state.auth,
 });
 
-export default connect(mapStateToProps)(CPLogin);
+export default connect(mapStateToProps)(KILogin);

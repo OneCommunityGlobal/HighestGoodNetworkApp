@@ -1,3 +1,4 @@
+import styles from '../Timelog/Timelog.module.css';
 /**
  * Reusable component that enables the toggling of a user's active / inactive status
  * @param {bool} props.isActive
@@ -5,8 +6,6 @@
  * @param {func} props.onClick
  * @param {bool} props.canChange The permission to change the status via onClick
  */
-import styles from '~/components/Timelog/Timelog.module.css';
-
 function ActiveCell(props) {
   const { isActive, deactivatedAt, canChange, onClick, index } = props;
 
