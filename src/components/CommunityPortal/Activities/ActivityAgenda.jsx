@@ -6,6 +6,144 @@ import axios from 'axios';
 import { ENDPOINTS } from '../../../utils/URL';
 import ActivityImg from '../../../assets/images/yoga-img.png';
 
+// Helper function to format time string
+const formatTime = timeString => {
+  if (!timeString) return 'TBD';
+  try {
+    const date = new Date(timeString);
+    if (isNaN(date.getTime())) {
+      return timeString;
+    }
+    return date.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  } catch {
+    return timeString;
+  }
+};
+
+// Helper function to format date string
+const formatDate = dateString => {
+  if (!dateString) return null;
+  try {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) {
+      return null;
+    }
+    return date.toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  } catch {
+    return null;
+  }
+};
+
+// Helper function to check if error is a network error
+const isNetworkError = error => {
+  return error.code === 'ECONNREFUSED' || error.message.includes('Network Error');
+};
+
+// Helper function to fetch event by ID
+const fetchEventById = async activityid => {
+  try {
+    const response = await axios.get(ENDPOINTS.EVENT_BY_ID(activityid));
+    return response.data || null;
+  } catch (idError) {
+    if (idError.response && idError.response.status === 404) {
+      return null;
+    }
+    if (isNetworkError(idError)) {
+      throw new Error('Unable to connect to server. Please check your internet connection.');
+    }
+    return null;
+  }
+};
+
+// Helper function to fetch event from events list
+const fetchEventFromList = async activityid => {
+  try {
+    const response = await axios.get(ENDPOINTS.EVENTS);
+    const events = response.data?.events || [];
+    return events.find(
+      e => e._id === activityid || e.id === activityid || String(e._id) === String(activityid),
+    );
+  } catch (fallbackError) {
+    if (isNetworkError(fallbackError)) {
+      throw new Error('Unable to connect to server. Please check your internet connection.');
+    }
+    throw new Error('Failed to fetch events. Please try again later.');
+  }
+};
+
+// Helper function to build schedule from event data
+const buildSchedule = (event, formatTimeFn) => {
+  if (event.resources && Array.isArray(event.resources) && event.resources.length > 0) {
+    return event.resources
+      .filter(resource => resource != null)
+      .map((resource, index) => ({
+        time:
+          event.startTime && event.endTime
+            ? `${formatTimeFn(event.startTime)} to ${formatTimeFn(event.endTime)}`
+            : `Session ${index + 1}`,
+        activity: resource?.name || 'Activity',
+        resourceLocation: resource?.location || event.location || 'Not specified',
+      }));
+  }
+  if (event.startTime && event.endTime) {
+    return [
+      {
+        time: `${formatTimeFn(event.startTime)} to ${formatTimeFn(event.endTime)}`,
+        activity: event.type || 'Event',
+        resourceLocation: event.location || 'Not specified',
+      },
+    ];
+  }
+  return [];
+};
+
+// Helper function to transform event data
+const transformEventData = (event, schedule, ActivityImg) => {
+  return {
+    activityName: event.title || 'Untitled Event',
+    description: event.description || 'No description available.',
+    schedule: Array.isArray(schedule) ? schedule : [],
+    image: event.coverImage || ActivityImg,
+    date: formatDate(event.date),
+    location: event.location || 'Not specified',
+    type: event.type || 'Event',
+    status: event.status || 'New',
+    maxAttendees: typeof event.maxAttendees === 'number' ? event.maxAttendees : 0,
+    currentAttendees: typeof event.currentAttendees === 'number' ? event.currentAttendees : 0,
+  };
+};
+
+// Helper function to get error message from error object
+const getErrorMessage = (err, activityid) => {
+  if (err.message) {
+    return err.message;
+  }
+  if (err.response) {
+    if (err.response.status === 404) {
+      return `Event with ID "${activityid}" not found.`;
+    }
+    if (err.response.status >= 500) {
+      return 'Server error. Please try again later.';
+    }
+    if (err.response.status === 401 || err.response.status === 403) {
+      return 'You do not have permission to view this event.';
+    }
+    return `Error ${err.response.status}: ${err.response.statusText || 'Request failed'}`;
+  }
+  if (err.request) {
+    return 'No response from server. Please check your connection.';
+  }
+  return 'Failed to fetch event data';
+};
+
 function ActivityAgenda() {
   const { activityid } = useParams();
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -27,43 +165,9 @@ function ActivityAgenda() {
       setError(null);
       setImageError(false);
       try {
-        // Try to fetch event by ID first
-        let event = null;
-
-        try {
-          const response = await axios.get(ENDPOINTS.EVENT_BY_ID(activityid));
-          if (response.data) {
-            event = response.data;
-          }
-        } catch (idError) {
-          // Check if it's a 404 or network error
-          if (idError.response && idError.response.status === 404) {
-            // Event not found at this endpoint, try fallback
-          } else if (idError.code === 'ECONNREFUSED' || idError.message.includes('Network Error')) {
-            throw new Error('Unable to connect to server. Please check your internet connection.');
-          }
-        }
-
-        // If endpoint doesn't exist or returned 404, fetch all events and filter by ID
+        let event = await fetchEventById(activityid);
         if (!event) {
-          try {
-            const response = await axios.get(ENDPOINTS.EVENTS);
-            const events = response.data?.events || [];
-            event = events.find(
-              e =>
-                e._id === activityid || e.id === activityid || String(e._id) === String(activityid),
-            );
-          } catch (fallbackError) {
-            if (
-              fallbackError.code === 'ECONNREFUSED' ||
-              fallbackError.message.includes('Network Error')
-            ) {
-              throw new Error(
-                'Unable to connect to server. Please check your internet connection.',
-              );
-            }
-            throw new Error('Failed to fetch events. Please try again later.');
-          }
+          event = await fetchEventFromList(activityid);
         }
 
         if (!event || typeof event !== 'object') {
@@ -72,101 +176,11 @@ function ActivityAgenda() {
           );
         }
 
-        // Format date and time helper functions with validation
-        const formatTime = timeString => {
-          if (!timeString) return 'TBD';
-          try {
-            const date = new Date(timeString);
-            // Check if date is valid
-            if (isNaN(date.getTime())) {
-              return timeString;
-            }
-            return date.toLocaleTimeString('en-US', {
-              hour: '2-digit',
-              minute: '2-digit',
-            });
-          } catch {
-            return timeString;
-          }
-        };
-
-        const formatDate = dateString => {
-          if (!dateString) return null;
-          try {
-            const date = new Date(dateString);
-            // Check if date is valid
-            if (isNaN(date.getTime())) {
-              return null;
-            }
-            return date.toLocaleDateString('en-US', {
-              weekday: 'long',
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            });
-          } catch {
-            return null;
-          }
-        };
-
-        // Build schedule from resources or use event time
-        let schedule = [];
-        if (event.resources && Array.isArray(event.resources) && event.resources.length > 0) {
-          schedule = event.resources
-            .filter(resource => resource != null) // Filter out null/undefined resources
-            .map((resource, index) => ({
-              time:
-                event.startTime && event.endTime
-                  ? `${formatTime(event.startTime)} to ${formatTime(event.endTime)}`
-                  : `Session ${index + 1}`,
-              activity: resource?.name || 'Activity',
-              resourceLocation: resource?.location || event.location || 'Not specified',
-            }));
-        } else if (event.startTime && event.endTime) {
-          schedule = [
-            {
-              time: `${formatTime(event.startTime)} to ${formatTime(event.endTime)}`,
-              activity: event.type || 'Event',
-              resourceLocation: event.location || 'Not specified',
-            },
-          ];
-        }
-
-        // Transform event data to match component structure with validation
-        const transformedData = {
-          activityName: event.title || 'Untitled Event',
-          description: event.description || 'No description available.',
-          schedule: Array.isArray(schedule) ? schedule : [],
-          image: event.coverImage || ActivityImg,
-          date: formatDate(event.date),
-          location: event.location || 'Not specified',
-          type: event.type || 'Event',
-          status: event.status || 'New',
-          maxAttendees: typeof event.maxAttendees === 'number' ? event.maxAttendees : 0,
-          currentAttendees: typeof event.currentAttendees === 'number' ? event.currentAttendees : 0,
-        };
-
+        const schedule = buildSchedule(event, formatTime);
+        const transformedData = transformEventData(event, schedule, ActivityImg);
         setEventData(transformedData);
       } catch (err) {
-        // Provide more specific error messages
-        let errorMessage = 'Failed to fetch event data';
-        if (err.message) {
-          errorMessage = err.message;
-        } else if (err.response) {
-          // Handle HTTP errors
-          if (err.response.status === 404) {
-            errorMessage = `Event with ID "${activityid}" not found.`;
-          } else if (err.response.status >= 500) {
-            errorMessage = 'Server error. Please try again later.';
-          } else if (err.response.status === 401 || err.response.status === 403) {
-            errorMessage = 'You do not have permission to view this event.';
-          } else {
-            errorMessage = `Error ${err.response.status}: ${err.response.statusText ||
-              'Request failed'}`;
-          }
-        } else if (err.request) {
-          errorMessage = 'No response from server. Please check your connection.';
-        }
+        const errorMessage = getErrorMessage(err, activityid);
         setError(errorMessage);
       } finally {
         setLoading(false);
@@ -176,65 +190,76 @@ function ActivityAgenda() {
     fetchEventData();
   }, [activityid]);
 
-  // Validate activityid parameter
+  // Helper function to get page class name
+  const getPageClassName = () => {
+    return `activity-agenda-page ${darkMode ? 'activity-agenda-dark-mode' : ''}`;
+  };
+
+  // Render error state for missing activity ID
+  const renderMissingIdError = () => (
+    <div className={getPageClassName()}>
+      <div className="activity-agenda-container">
+        <div className="activity-agenda-content">
+          <h1>Error</h1>
+          <p>Activity ID is missing. Please provide a valid activity ID in the URL.</p>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Render loading state
+  const renderLoading = () => (
+    <div className={getPageClassName()}>
+      <div className="activity-agenda-container">
+        <div className="activity-agenda-content">
+          <h1>Loading...</h1>
+          <p>Please wait while we fetch the activity details.</p>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Render error state
+  const renderError = () => (
+    <div className={getPageClassName()}>
+      <div className="activity-agenda-container">
+        <div className="activity-agenda-content">
+          <h1>Error</h1>
+          <p>{error}</p>
+          <p>Please check the activity ID and try again.</p>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Render no data state
+  const renderNoData = () => (
+    <div className={getPageClassName()}>
+      <div className="activity-agenda-container">
+        <div className="activity-agenda-content">
+          <h1>No Data</h1>
+          <p>No activity data found for the provided ID.</p>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Early returns for different states
   if (!activityid) {
-    return (
-      <div className={`activity-agenda-page ${darkMode ? 'activity-agenda-dark-mode' : ''}`}>
-        <div className="activity-agenda-container">
-          <div className="activity-agenda-content">
-            <h1>Error</h1>
-            <p>Activity ID is missing. Please provide a valid activity ID in the URL.</p>
-          </div>
-        </div>
-      </div>
-    );
+    return renderMissingIdError();
   }
-
-  // Loading state
   if (loading) {
-    return (
-      <div className={`activity-agenda-page ${darkMode ? 'activity-agenda-dark-mode' : ''}`}>
-        <div className="activity-agenda-container">
-          <div className="activity-agenda-content">
-            <h1>Loading...</h1>
-            <p>Please wait while we fetch the activity details.</p>
-          </div>
-        </div>
-      </div>
-    );
+    return renderLoading();
   }
-
-  // Error state
   if (error) {
-    return (
-      <div className={`activity-agenda-page ${darkMode ? 'activity-agenda-dark-mode' : ''}`}>
-        <div className="activity-agenda-container">
-          <div className="activity-agenda-content">
-            <h1>Error</h1>
-            <p>{error}</p>
-            <p>Please check the activity ID and try again.</p>
-          </div>
-        </div>
-      </div>
-    );
+    return renderError();
   }
-
-  // No data state
   if (!eventData) {
-    return (
-      <div className={`activity-agenda-page ${darkMode ? 'activity-agenda-dark-mode' : ''}`}>
-        <div className="activity-agenda-container">
-          <div className="activity-agenda-content">
-            <h1>No Data</h1>
-            <p>No activity data found for the provided ID.</p>
-          </div>
-        </div>
-      </div>
-    );
+    return renderNoData();
   }
 
   return (
-    <div className={`activity-agenda-page ${darkMode ? 'activity-agenda-dark-mode' : ''}`}>
+    <div className={getPageClassName()}>
       <div className="activity-agenda-container">
         <div className="activity-agenda-image">
           <img
