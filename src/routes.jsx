@@ -719,7 +719,6 @@ export default (
           allowedRoles={[UserRole.Administrator, UserRole.Owner, UserRole.Manager]}
           routePermissions={RoutePermissions.projects}
         />
-
         <ProtectedRoute path="/faq" exact component={FaqSearch} />
         <ProtectedRoute
           path="/faq-management"
