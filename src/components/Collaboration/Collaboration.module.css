@@ -1,378 +1,282 @@
-.job-header {
-  display:flex;
-  justify-content: center;
-  align-items: center;
-}
-.job-select {
-  appearance: auto; /* let the browser handle it */
-  -webkit-appearance: auto;
-  background-color: #fff;
-  color: #000;
-  max-width:100%;
-  width:max-content;
+/* ======================================================
+   BASE LAYOUT
+   ====================================================== */
+
+.jobLanding {
+  width: 100%;
+  min-height: 100%;
 }
 
-.collaboration-container {
-  width: 60%;
-  max-width: 1000px;
-  display: flex;
-}
-.headings,
-.job-ad {
-  text-align: center;
-}
-.user-collaboration-container {
+.userCollaborationContainer {
   width: 90%;
   margin: 0 auto;
-  flex-direction: column;
-  align-items: center;
-  background-color: #fff;
-  border: 1px solid #ddd;
-  /* border-radius: 10px; */
+  background-color: #ffffff;
+  border-radius: 10px;
+  padding-bottom: 24px;
 }
-.user-collaboration-container .job-queries {
+
+/* ======================================================
+   HEADER
+   ====================================================== */
+
+.jobHeader {
   display: flex;
-  flex-direction: row;
-  gap:2rem;
-  padding:2rem;
-  margin:1rem;
-}
-.filter-chips-container {
-  display:flex;
-  flex-direction: row;
-  padding:1.1rem;
-  margin:0.1rem;
-  gap:1rem;
-  max-width: 100%;
-  width:max-content;
-  flex-wrap: wrap;
-}
-.filter-chips {
-  display:flex;
-  flex-direction:row;
-  gap:0.1rem;
-  align-items:center;
- /* align-content: space-between; */
- cursor: pointer;                          /* shows hand cursor */
-transition: background-color 0.2s ease, 
-            box-shadow 0.2s ease;         /* smooth hover effect */
-    border: 1px solid #ccc;         
-  border-radius: 10px;      /* makes it pill-shaped */
-}
-.filter-chips:hover {
-  background-color: #f0f0f0; /* highlight on hover */
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
-.user-collaboration-dark-mode .filter-chips:hover {
-   background: linear-gradient(135deg, #23272a, #181a1b);
-  border-color: #333;
- color: #e0e0e0;
-
-  /* background-color: #f0f0f0;  highlight on hover */
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
-.filter-chips > .btn.btn-primary {
-  margin-right:0.1rem;
-  padding:0;
-  border:none;
-/*  background-color:transparent;
-  color:white; */
-  color: #f1f1f1;
-  background-color: yellow; /* blue; */
-  border: 1px solid #444;
-
+  justify-content: center;
+  align-items: center;
+  padding: 16px 0;
 }
 
-.job-queries-title {
-  display:flex;
-  padding:1rem;
-  margin:1rem;
-}
-.job-landing .header img {
+.jobHeader img {
+  width: clamp(160px, 30vw, 600px);
   height: auto;
-  margin: 0 auto;
-  flex-direction: column;
-} 
-.job-navbar {
-  width: 100%;
+}
+
+/* ======================================================
+   NAVBAR
+   ====================================================== */
+
+.navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.1rem; 
-  padding: 1rem;
-  flex-flow: row wrap;
   background-color: #9c0;
-  gap:1rem;
-  
+  padding: 12px;
+  gap: 12px;
 }
-.job-navbar > .btn {
-  padding:0.4rem;
-  margin:0.2rem;
-}
-.search-form input {
-  margin-left: 0.5rem; /* 10px; */
-  
-  margin-right: 0.1rem; /* 10px; */
-  padding: 0.1rem; /* 5px; */
-  margin-bottom: 0;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-.pagination button,
-.search {
-  padding: 5px 10px;
-  cursor: pointer;
-}
-select {
-  padding: 5px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-.job-list-pagination{
 
-   display: flex;
-  flex-direction: column;
-}
-.job-list {
+.navbarLeft,
+.jobNavbarRight {
   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin:10px;
-  padding:10px;
-}
-.job-ad {
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  overflow: hidden;
-  background: linear-gradient(135deg, #fff, #f9f9f9);
-  transition: transform 0.3s, box-shadow 0.3s;
-  width:250px;
-  height:auto; /*100px; */
-  overflow: hidden;
-   width: calc((100% - 2rem) / 2);
-  flex-shrink: 0;
-}
-.delete-icon {
-  filter:none;
-}
-.delete-icon.dark-mode {
-  filter:invert(1);
-}
-.job-list .job-ad img {
-  height:105px;
-  width:100%;
-  border-bottom: 1px solid #ddd;
-}
-.job-ad h3 {
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #333;
-  margin: 10px 0;
-  transition: color 0.3s;
-}
-.job-ad a {
-  text-decoration: none;
-  color: inherit;
-  display:flex;
-}
-.job-ad a:hover h3 {
-  color: #007acc;
-}
-.job-ad:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-}
-.pagination {
-  margin-top: 20px;
-  margin-bottom: 20px;
-  display:flex;
-  justify-content: center;
-}
-.pagination button {
-  margin: 0 5px;
-  
-}
-.pagination button:disabled {
-  background-color: #ccc;
-  cursor: default;
-}
-.headings {
-  margin-bottom: 10px;
-}
-.search {
-  background-color: #fff;
-  border: 1px solid #fff;
-  border-radius: 5px;
-}
-.search-form .btn {
-
-  margin-top: 0;
-  margin-left: 10px;
-  min-width: auto;
-  max-width: 250px;
-  padding: 5px 15px 5px 15px;
-}
-.filter-chip-heading {
-  padding-left:1rem;
+  align-items: center;
+  gap: 10px;
 }
 
+.searchForm {
+  display: flex;
+  gap: 8px;
+}
 
-.user-collaboration-dark-mode {
-  background-color: #1B2A41;
+/* ======================================================
+   CATEGORY SELECT (LIGHT MODE)
+   ====================================================== */
+
+.jobSelect {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background-color: #ffffff;
+  color: #333333;
+  font-size: 14px;
+}
+
+/* ======================================================
+   CATEGORY SELECT (DARK MODE – FIXED)
+   ====================================================== */
+
+.jobSelectDark {
+  background-color: #1c1c1c;
+  color: #f1f1f1;
+  border: 1px solid #444;
+}
+
+/* dropdown options */
+.jobSelectDark option {
+  background-color: #1c1c1c;
   color: #f1f1f1;
 }
-/* #1C1C1C 
-#3A506B
-#1C2541
-#1C2541
-#6C757D
-#225163
-*/
-.user-collaboration-dark-mode .user-collaboration-container {
-  background-color: #1B2A41;
+
+/* selected option visibility (Chrome / Safari fix) */
+.jobSelectDark option:checked {
+  background-color: #2a2a2a;
+  color: #ffffff;
 }
 
-.user-collaboration-dark-mode .job-navbar {
-  background-color: #1C2541;
-  border-bottom: 1px solid white;
-  border-color: white;
+/* focus */
+.jobSelectDark:focus {
+  outline: none;
+  border-color: #9c0;
 }
 
-.user-collaboration-dark-mode .job-ad {
+/* ======================================================
+   HEADINGS
+   ====================================================== */
+
+.headings {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.jobHead {
+  color: #07471e;
+  font-weight: 800;
+}
+
+/* ======================================================
+   JOB GRID (6 × 3 GUARANTEED)
+   ====================================================== */
+
+.jobList {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 20px;
+  width: 100%;
+  padding: 20px;
+}
+
+.jobAd {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  padding: 14px;
+  text-align: center;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.jobAd:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+}
+
+.jobAd img {
+  width: 100%;
+  border-bottom: 1px solid #ddd;
+}
+
+.jobAd h3 {
+  margin-top: 10px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #183a9b;
+}
+
+/* ======================================================
+   PAGINATION
+   ====================================================== */
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin: 20px 0;
+}
+
+/* ======================================================
+   DARK MODE ROOT
+   ====================================================== */
+
+.dark {
+  background-color: #1b2a41;
+  color: #f1f1f1;
+}
+
+.dark .userCollaborationContainer {
+  background-color: #1b2a41;
+}
+
+.dark .navbar {
+  background-color: #1c2541;
+}
+
+.dark .jobAd {
   background: linear-gradient(135deg, #23272a, #181a1b);
   border-color: #333;
 }
 
-.user-collaboration-dark-mode .job-ad h3,
-.user-collaboration-dark-mode .jobs-summaries-list h3 {
+.dark .jobAd h3 {
   color: #e0e0e0;
 }
 
-.user-collaboration-dark-mode .job-tooltip,
-.user-collaboration-dark-mode .category-tooltip {
-  background-color: #225163;
-  color: #f1f1f1;
-  box-shadow: 2px 2px 4px 1px black;
-  border-color: #3A506B;
-}
+/* ======================================================
+   RESPONSIVE
+   ====================================================== */
 
-.user-collaboration-dark-mode .job-tooltip p{
-  color: #f1f1f1;
-}
-
-.user-collaboration-dark-mode .job-tooltip button {
-  color: #f1f1f1;
-  background-color: #6C757D;
-  padding: 5px 10px;
-  border-radius: 5px;
-}
-
-.user-collaboration-dark-mode .job-tooltip::after {
-  border-color: transparent #225163 transparent transparent;
-}
-
-.user-collaboration-dark-mode .pagination button {
-  color: #f1f1f1;
-  background-color: blue;
-  border: 1px solid #444;
-
-}
-
-.user-collaboration-dark-mode .pagination button:disabled {
-  background-color: #333333;
-  color: #888888;
-}
-
-.user-collaboration-dark-mode .search-form input,
-.user-collaboration-dark-mode select {
-   background-color: #1C1C1C; 
-   color: #f1f1f1;
-  border: 1px solid white; ; 
-}
-
-.user-collaboration-dark-mode .search-form input::placeholder{
-  color: #ffffff;   
-}
-
-.user-collaboration-dark-mode .job-select {
-  background-color: #1C1C1C;
-  color: #f1f1f1;
-  border: 1px solid #444;
-  background-image: url("data:image/svg+xml;utf8,<svg fill='lightgray' height='20' viewBox='0 0 20 20' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  background-size: 18px 18px;
-  padding-right: 36px;
-}
-
-
-.user-collaboration-dark-mode .filter-chip-heading {
-  background-color: #1C1C1C;
-  color: #f1f1f1;
-  border: 1px solid #444;
-}
-
-
-.user-collaboration-dark-mode .search-form .btn,
-.user-collaboration-dark-mode .btn {
-  color: #f1f1f1;
-  background-color: blue;
-  border: 1px solid #444;
-}
-
-.user-collaboration-dark-mode .job-query {
-  color:#f1f1f1;
-}
-
-.user-collaboration-dark-mode .job-query strong {
-  color: #9c0;
-}
-
-.user-collaboration-dark-mode .job-head {
-  color: #f1f1f1;
-}
-
-.job-headings {
-  text-align: center;
-}
-.jobs-summaries-list {
-  padding-left: 28px;  
-}
-.user-collaboration-dark-mode .job-intro {
-  color: #f1f1f1;
-}
-
-.user-collaboration-dark-mode .jobs-summaries-list {
-  gap: 10px;
-}
-
-.user-collaboration-dark-mode .job-summary-item {
-  background: linear-gradient(135deg, #23272a, #181a1b);
-  /* padding: 1rem; */
-  border-radius: 0.5rem;
-}
-
-.user-collaboration-dark-mode .job-summary-item p {
-  color: #e0e0e0;
-}
-
-.user-collaboration-dark-mode button {
-  color: #f1f1f1;
-  background-color: blue;
-  border: 1px solid #444;
-
-}
-
-.user-collaboration-dark-mode .job-select:focus,
-.user-collaboration-dark-mode .job-select:active {
-  background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='20' viewBox='0 0 20 20' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 15l5-5 5 5z'/></svg>");
-}
- @media (min-width:768px) {
-  .job-ad {
-  background-color: #9c0;
-     width: calc((100% - 4rem) / 5);
+@media (max-width: 1200px) {
+  .jobList {
+    grid-template-columns: repeat(4, 1fr);
   }
-  
+}
+
+@media (max-width: 900px) {
+  .jobList {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .jobList {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .navbar {
+    flex-direction: column;
+  }
+}
+/* ======================================================
+   DARK MODE – SEARCH INPUT FIX
+   ====================================================== */
+
+.dark .searchForm input {
+  background-color: #1c1c1c;
+  color: #f1f1f1;
+  border: 1px solid #444;
+}
+
+/* Placeholder text */
+.dark .searchForm input::placeholder {
+  color: #b0b0b0;
+}
+
+/* Focus state */
+.dark .searchForm input:focus {
+  outline: none;
+  border-color: #9c0;
+}
+/* =========================
+   PAGINATION BUTTONS
+   ========================= */
+
+.paginationButton {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background-color: #ffffff;
+  color: #333333;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.paginationButton:hover {
+  background-color: #f0f0f0;
+}
+
+/* ACTIVE PAGE (LIGHT MODE) */
+.paginationButtonActive {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #9c0;
+  background-color: #9c0;
+  color: #000000;
+  font-weight: 700;
+}
+
+/* =========================
+   DARK MODE PAGINATION
+   ========================= */
+
+.dark .paginationButton {
+  background-color: #1c1c1c;
+  border: 1px solid #444;
+  color: #dddddd;
+}
+
+.dark .paginationButton:hover {
+  background-color: #2a2a2a;
+}
+
+/* ACTIVE PAGE (DARK MODE) */
+.dark .paginationButtonActive {
+  background-color: #9c0;
+  border: 1px solid #9c0;
+  color: #000000;
+  font-weight: 700;
 }

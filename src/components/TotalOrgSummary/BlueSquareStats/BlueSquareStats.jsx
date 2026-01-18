@@ -4,7 +4,6 @@ import Loading from '~/components/common/Loading';
 import DonutChart from '../DonutChart/DonutChart';
 
 function BlueSquareStats({ isLoading, blueSquareStats, comparisonType, darkMode }) {
-  console.log('Naidu', darkMode);
   if (isLoading) {
     return (
       <div className="d-flex justify-content-center align-items-center">

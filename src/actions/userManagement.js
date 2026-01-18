@@ -111,7 +111,6 @@ export const getAllUserProfile = () => {
   return async dispatch => {
     await dispatch(userProfilesFetchStartAction());
     if (!userProfilesPromise || typeof userProfilesPromise.then !== 'function') {
-      console.warn('getAllUserProfile: userProfilesPromise is invalid');
       return Promise.resolve([]);
     }
     return userProfilesPromise
@@ -264,9 +263,7 @@ export const updateUserFinalDayStatusIsSet = (user, status, finalDayDate, isSet)
       // Prepare patch data
       const patchData = {
         status,
-        endDate: finalDayDate
-          ? moment.utc(finalDayDate).format('YYYY-MM-DD')
-          : undefined,
+        endDate: finalDayDate ? new Date(finalDayDate) : undefined,
         isSet,
       };
 
@@ -287,17 +284,43 @@ export const updateUserFinalDayStatusIsSet = (user, status, finalDayDate, isSet)
   };
 };
 
+export const updateUserFinalDay = (user, finalDayDate, isSet) => {
+  return async dispatch => {
+    try {
+      const patchData = {
+        endDate: finalDayDate ? new Date(finalDayDate) : undefined,
+        isSet,
+      };
+      const response = await axios.patch(ENDPOINTS.UPDATE_USER_FINAL_DAY(user._id), patchData);
+
+      const updatedUserProfile = {
+        ...user,
+        ...response.data,
+      };
+
+      dispatch(userProfileUpdateAction(updatedUserProfile));
+    } catch (error) {
+      toast.error('Error updating user profile:', error);
+      throw new Error('Failed to update user profile.');
+    }
+  };
+};
+
+
 /**
  * fetching all user profiles basic info
+ *  Added `source` parameter to identify the calling component.
  */
-export const getUserProfileBasicInfo = (userId) => {
+export const getUserProfileBasicInfo = ({ userId, source }) => {
   // API request to fetch basic user profile information
- let userProfileBasicInfoPromise;
- if (userId)
+  let userProfileBasicInfoPromise;
+  if (userId)
     userProfileBasicInfoPromise = axios.get(`${ENDPOINTS.USER_PROFILE_BASIC_INFO}?userId=${userId}`);
- else
+  else if (source)
+    userProfileBasicInfoPromise = axios.get(ENDPOINTS.USER_PROFILE_BASIC_INFO(source));
+  else
     userProfileBasicInfoPromise = axios.get(ENDPOINTS.USER_PROFILE_BASIC_INFO);
-  
+
   return async dispatch => {
     // Dispatch action indicating the start of the fetch process
     await dispatch(userProfilesBasicInfoFetchStartAction());
