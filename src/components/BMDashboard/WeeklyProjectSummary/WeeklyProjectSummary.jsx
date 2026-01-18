@@ -19,7 +19,7 @@ import OpenIssueCharts from '../Issues/openIssueCharts';
 import SupplierPerformanceGraph from './SupplierPerformanceGraph.jsx';
 import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
 import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
-import IssueCharts from '../Issues/openIssueCharts';
+import WorkforceSkillGap from './WorkforceSkillGap/WorkforceSkillGap';
 
 const projectStatusButtons = [
   {
@@ -169,7 +169,7 @@ export function WeeklyProjectSummaryContent() {
 function WeeklyProjectSummary() {
   const dispatch = useDispatch();
   const materials = useSelector(state => state.materials?.materialslist || []);
-  const [openSections, setOpenSections] = useState({});
+  const [openSections, setOpenSections] = useState({ 'Workforce Skill Gap': true });
   const darkMode = useSelector(state => state.theme.darkMode);
 
   useEffect(() => {
@@ -334,6 +334,19 @@ function WeeklyProjectSummary() {
             </div>
           );
         }),
+      },
+      {
+        title: 'Workforce Skill Gap',
+        key: 'Workforce Skill Gap',
+        className: 'half',
+        content: (
+          <div
+            className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+            style={{ gridColumn: '1 / -1', minHeight: '400px' }}
+          >
+            <WorkforceSkillGap />
+          </div>
+        ),
       },
       {
         title: 'Financials Tracking',
