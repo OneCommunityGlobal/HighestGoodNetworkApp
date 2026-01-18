@@ -11,7 +11,7 @@ const formatTime = timeString => {
   if (!timeString) return 'TBD';
   try {
     const date = new Date(timeString);
-    if (isNaN(date.getTime())) {
+    if (Number.isNaN(date.getTime())) {
       return timeString;
     }
     return date.toLocaleTimeString('en-US', {
@@ -28,7 +28,7 @@ const formatDate = dateString => {
   if (!dateString) return null;
   try {
     const date = new Date(dateString);
-    if (isNaN(date.getTime())) {
+    if (Number.isNaN(date.getTime())) {
       return null;
     }
     return date.toLocaleDateString('en-US', {
@@ -53,7 +53,7 @@ const fetchEventById = async activityid => {
     const response = await axios.get(ENDPOINTS.EVENT_BY_ID(activityid));
     return response.data || null;
   } catch (idError) {
-    if (idError.response && idError.response.status === 404) {
+    if (idError.response?.status === 404) {
       return null;
     }
     if (isNetworkError(idError)) {
