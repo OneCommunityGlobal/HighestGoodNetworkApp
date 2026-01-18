@@ -9,6 +9,37 @@ const CPProtectedRoute = ({ component: Component, render, auth, fallback, ...res
     <Route
       {...rest}
       render={props => {
+        // Check if auth state is properly initialized
+        if (!auth || typeof auth.isAuthenticated === 'undefined') {
+          return (
+            <div
+              className="d-flex justify-content-center align-items-center"
+              style={{ minHeight: '50vh' }}
+            >
+              <div className="text-center">
+                <i className="fa fa-spinner fa-pulse fa-2x text-primary"></i>
+                <p className="mt-2">Initializing authentication...</p>
+              </div>
+            </div>
+          );
+        }
+
+        // Check if we have a token but auth is still initializing
+        const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+        if (token && !auth.isAuthenticated) {
+          return (
+            <div
+              className="d-flex justify-content-center align-items-center"
+              style={{ minHeight: '50vh' }}
+            >
+              <div className="text-center">
+                <i className="fa fa-spinner fa-pulse fa-2x text-primary"></i>
+                <p className="mt-2">Verifying authentication...</p>
+              </div>
+            </div>
+          );
+        }
+
         if (!auth.isAuthenticated) {
           return <Redirect to={{ pathname: '/login', state: { from: props.location } }} />;
         }
