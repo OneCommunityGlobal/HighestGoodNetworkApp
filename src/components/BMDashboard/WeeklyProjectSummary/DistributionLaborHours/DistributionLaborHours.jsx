@@ -134,7 +134,19 @@ export default function DistributionLaborHours() {
                 cy="50%"
                 outerRadius={100}
                 labelLine={false}
-                label={({ value }) => `${((value / totalHours) * 100).toFixed(1)}%`}
+                label={({ x, y, value }) => (
+                  <text
+                    x={x}
+                    y={y}
+                    fill={darkMode ? '#ffffff' : '#1f2937'}
+                    textAnchor="middle"
+                    dominantBaseline="central"
+                    fontSize={12}
+                    fontWeight="600"
+                  >
+                    {`${((value / totalHours) * 100).toFixed(1)}%`}
+                  </text>
+                )}
               >
                 {filteredData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
