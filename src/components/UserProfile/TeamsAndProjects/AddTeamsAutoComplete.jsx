@@ -25,10 +25,10 @@ const AddTeamsAutoComplete = React.memo((props) => {
   }, [allTeams, searchText]);
 
   const handlePick = (team) => {
-    setInputs(team);                 // parent expects the TEAM OBJECT
+    props.onDropDownSelect(team);   // 👈 parent handles state
     setSearchText(team.teamName);
     setIsOpen(false);
-  };
+    };
 
   const showCreateNew =
     !!searchText &&
@@ -59,13 +59,13 @@ const AddTeamsAutoComplete = React.memo((props) => {
         placeholder="Search or select a team..."
         aria-label="Add to Team"
       />
-      <small 
-        className={darkMode ? 'text-light' : 'text-muted'} 
+      <small
+        className={darkMode ? 'text-light' : 'text-muted'}
         style={{ display: 'block', marginTop: '0.25rem', fontSize: '0.875rem' }}
       >
         {searchText.length}/{TEAM_NAME_MAX_LENGTH} characters
       </small>
-      
+
       {isOpen && (
         <div
           tabIndex="-1"
