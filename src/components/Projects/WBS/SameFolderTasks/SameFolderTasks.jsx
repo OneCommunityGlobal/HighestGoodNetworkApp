@@ -101,9 +101,13 @@ function SameFolderTasks(props) {
   if (noOtherTasksInFolder) {
     return (
       <div className="d-flex justify-content-center align-items-center pt-4">
-        <div className="spinner-border text-success" role="status">
+        <output
+          className="spinner-border text-success"
+          aria-live="polite"
+          aria-busy="true"
+        >
           <span className="sr-only">Loading...</span>
-        </div>
+        </output>
       </div>
     );
   }
