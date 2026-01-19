@@ -226,6 +226,7 @@ function SameFolderTasks(props) {
                             </a>
                           );
                         } catch (error) {
+                          console.error('Failed to render element:', error);
                           return null;
                         }
                       })}
