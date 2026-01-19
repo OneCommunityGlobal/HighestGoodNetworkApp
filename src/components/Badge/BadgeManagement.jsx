@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
 import classnames from 'classnames';
@@ -10,6 +10,7 @@ import { fetchAllBadges, setActiveTab } from '../../actions/badgeManagement';
 
 function BadgeManagement(props) {
   const { darkMode, activeTab, setActiveTab, role } = props;
+  const [isHovered, setIsHovered] = useState(false);
 
   useEffect(() => {
     props.fetchAllBadges();
@@ -59,12 +60,21 @@ function BadgeManagement(props) {
         </NavItem>
         <NavItem>
           <NavLink
-            className={`${classnames({ active: activeTab === '2' })} ${
-              darkMode && activeTab !== '2' ? 'bg-light' : ''
-            }`}
+            className={classnames({ active: activeTab === '2' })}
             onClick={() => handleTabChange('2')}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
             style={
-              darkMode ? { ...boxStyleDark, cursor: 'pointer' } : { ...boxStyle, cursor: 'pointer' }
+              darkMode && activeTab !== '2'
+                ? {
+                    ...boxStyleDark,
+                    cursor: 'pointer',
+                    backgroundColor: isHovered ? '#4a6072' : '#3a506b',
+                    color: '#ffffff',
+                  }
+                : darkMode
+                ? { ...boxStyleDark, cursor: 'pointer' }
+                : { ...boxStyle, cursor: 'pointer' }
             }
           >
             Badge Development

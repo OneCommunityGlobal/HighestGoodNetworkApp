@@ -239,7 +239,11 @@ function AssignBadge(props) {
         <FormText color={darkMode ? 'white' : 'muted'}>
           Please select badge(s) from the badge list.
         </FormText>
-        <Alert color="dark" className="mt-3">
+        <Alert
+          color="dark"
+          className="mt-3"
+          style={darkMode ? { backgroundColor: '#4b5563', color: '#ffffff' } : {}}
+        >
           {selectedUserIds?.length} user(s) selected,
           {selectedBadges?.length} badge(s) selected
         </Alert>
