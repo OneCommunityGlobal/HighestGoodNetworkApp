@@ -367,3 +367,77 @@ body.bm-dashboard-dark .page-item.active .page-link {
   background-color: transparent;
   border: none;
 }
+
+
+
+/* ===== HARD FORCE DARK MODAL (PORTAL SAFE) ===== */
+body.dark-mode .modal-content {
+  background-color: #1b2a41 !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode .modal-header,
+body.dark-mode .modal-body,
+body.dark-mode .modal-footer {
+  background-color: #1b2a41 !important;
+  border-color: #3a506b !important;
+  color: #ffffff !important;
+}
+
+/* 🔥 KILL DEFAULT REACT-SELECT WHITE MENU */
+body .react-select__menu,
+body .css-1nmdiq5-menu {
+  background-color: #0f172a !important;
+}
+
+body .react-select__menu-list,
+body .css-1nmdiq5-menu-list {
+  background-color: #0f172a !important;
+}
+
+body .react-select__option,
+body .css-10wo9uf-option {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+}
+
+body .react-select__option--is-focused,
+body .css-10wo9uf-option--is-focused {
+  background-color: #243b55 !important;
+}
+
+body .react-select__option--is-selected,
+body .css-10wo9uf-option--is-selected {
+  background-color: #334155 !important;
+}
+
+/* ===== REACT-SELECT DARK MODE (SCOPED) ===== */
+body.dark-mode .rs__control {
+  background-color: #0f172a !important;
+  border-color: #3a506b !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode .rs__menu {
+  background-color: #0f172a !important;
+}
+
+body.dark-mode .rs__menu-list {
+  background-color: #0f172a !important;
+}
+
+body.dark-mode .rs__option {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode .rs__option--is-focused {
+  background-color: #243b55 !important;
+}
+
+body.dark-mode .rs__option--is-selected {
+  background-color: #334155 !important;
+}
+
+
+

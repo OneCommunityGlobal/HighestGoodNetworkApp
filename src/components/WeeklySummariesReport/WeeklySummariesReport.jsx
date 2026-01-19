@@ -1673,7 +1673,6 @@ const WeeklySummariesReport = props => {
             )}
 
             <Button
-              color={darkMode ? 'light' : 'primary'}
               outline
               className="mx-1"
               type="button"

@@ -206,7 +206,6 @@
 .chip {
   display: flex;
   align-items: center;
-  background: #e0e0e0;
   border-radius: 20px;
   padding: 4px 10px;
   height: fit-content;
@@ -274,8 +273,8 @@
 }
 
 .darkChip {
-  background-color: #1b2a41 !important;
-  color: white !important;   
+  background: #1b2a41 !important;
+  color: #ffffff !important; 
 }
 
 .redChip {
@@ -882,4 +881,17 @@ body.dark-mode .modal-content {
 
 .wsr-dark-modal-content .custom-select__option--is-selected {
   background-color: #334155 !important;
+}
+
+/* FINAL, WORKING DARK MODAL FIX */
+:global(.modal-content.wsr-dark-modal-content) {
+  background-color: #1b2a41 !important;
+  color: #ffffff !important;
+}
+
+:global(.modal-content.wsr-dark-modal-content .modal-header),
+:global(.modal-content.wsr-dark-modal-content .modal-body),
+:global(.modal-content.wsr-dark-modal-content .modal-footer) {
+  background-color: #1b2a41 !important;
+  border-color: #3a506b !important;
 }
