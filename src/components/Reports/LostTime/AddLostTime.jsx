@@ -41,8 +41,7 @@ function AddLostTime(props) {
       .trim()
       .replace(/\s+/g, '');
      } catch (error) {
-      console.log(error);
-      return "null";
+        return error;
      }
   }
 
@@ -129,14 +128,11 @@ function AddLostTime(props) {
   };
 
   const selectTeam = (team) => {
-    console.log('TEAM SELECTED:', team);
-
     setInputs(prev => {
     const next = {
         ...prev,
         teamId: team._id,
       };
-      console.log('INPUTS AFTER TEAM SET:', next);
       return next;
   });
 
