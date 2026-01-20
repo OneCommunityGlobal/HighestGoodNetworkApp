@@ -5,8 +5,17 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSortDown, faSort, faSortUp } from '@fortawesome/free-solid-svg-icons';
 import RecordsModal from './RecordsModal';
 import MaterialUsageChart from '../MaterialUsage/MaterialUsageChart';
+import StockHealthIndicator from '../MaterialList/StockHealthIndicator';
+import UsagePercentageBar from '../MaterialList/UsagePercentageBar';
 import styles from './ItemListView.module.css';
 
+/**
+ * ItemsTable Component
+ * Renders data table with columns including new visual indicators:
+ * - Stock Health Indicator: color-coded stock health status
+ * - Usage % Bar: visual progress bar for material usage
+ * Supports sorting, filtering, and modal interactions
+ */
 export default function ItemsTable({
   selectedProject,
   selectedItem,
@@ -141,9 +150,15 @@ export default function ItemsTable({
               ) : (
                 <th>Name</th>
               )}
-              {dynamicColumns.map(({ label }) => (
-                <th key={label}>{label}</th>
-              ))}
+              <th>PID</th>
+              <th>Measurement</th>
+              <th>Bought</th>
+              <th>Used</th>
+              <th>Usage %</th>
+              <th>Available</th>
+              <th>Stock Health</th>
+              <th>Wasted</th>
+              <th>Hold</th>
               <th>Usage Record</th>
               <th>Updates</th>
               <th>Purchases</th>
@@ -157,9 +172,19 @@ export default function ItemsTable({
                   <tr key={el._id}>
                     <td>{el.project?.name}</td>
                     <td>{el.itemType?.name}</td>
-                    {dynamicColumns.map(({ label, key }) => (
-                      <td key={label}>{getNestedValue(el, key)}</td>
-                    ))}
+                    <td>{el.productId || 'N/A'}</td>
+                    <td>{el.itemType?.unit || 'N/A'}</td>
+                    <td>{el.stockBought}</td>
+                    <td>{el.stockUsed}</td>
+                    <td>
+                      <UsagePercentageBar material={el} darkMode={darkMode} />
+                    </td>
+                    <td>{el.stockAvailable}</td>
+                    <td>
+                      <StockHealthIndicator material={el} darkMode={darkMode} />
+                    </td>
+                    <td>{el.stockWasted}</td>
+                    <td>{el.stockHold}</td>
                     <td className={`${styles.itemsCell}`}>
                       <button
                         type="button"
@@ -209,7 +234,7 @@ export default function ItemsTable({
               })
             ) : (
               <tr>
-                <td colSpan={11} style={{ textAlign: 'center' }}>
+                <td colSpan={14} style={{ textAlign: 'center' }}>
                   No items data
                 </td>
               </tr>
