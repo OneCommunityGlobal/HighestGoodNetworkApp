@@ -176,16 +176,20 @@
   cursor: pointer;
 }
 
-[data-theme="dark"] .promotionTable tbody tr:hover td {
-  color: #f0f0f0; 
+[data-theme="dark"] .promotionTable tbody tr:hover td.statusMet {
+  color: #3fb950;
+}
+
+[data-theme="dark"] .promotionTable tbody tr:hover td.statusNotMet {
+  color: #f85149;
 }
 
 [data-theme="dark"] .statusMet {
-  color: #53d06e;
+  color: #3fb950 !important;
 }
 
 [data-theme="dark"] .statusNotMet {
-  color: #fa7970;
+  color: #f85149 !important;
 }
 
 @media (max-width: 768px) {
