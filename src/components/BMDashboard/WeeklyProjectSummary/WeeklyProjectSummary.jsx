@@ -19,7 +19,6 @@ import OpenIssueCharts from '../Issues/openIssueCharts';
 import SupplierPerformanceGraph from './SupplierPerformanceGraph.jsx';
 import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
 import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
-import IssueCharts from '../Issues/openIssueCharts';
 
 const projectStatusButtons = [
   {
@@ -265,9 +264,14 @@ function WeeklyProjectSummary() {
         key: 'Tools and Equipment Tracking',
         className: 'half',
         content: (
-          <div className="weekly-project-summary-card normal-card" style={{ minHeight: '300px' }}>
-            <ToolsHorizontalBarChart darkMode={darkMode} />
-          </div>
+          <>
+            <div className="weekly-project-summary-card normal-card" style={{ minHeight: '300px' }}>
+              <ToolsHorizontalBarChart darkMode={darkMode} />
+            </div>
+            <div className="weekly-project-summary-card normal-card" style={{ minHeight: '300px' }}>
+              <SupplierPerformanceGraph darkMode={darkMode} />
+            </div>
+          </>
         ),
       },
       {
