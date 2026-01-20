@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
 import classnames from 'classnames';
 import SocialMediaComposer from './SocialMediaComposer';
+import TruthSocialAutoPoster from '../AutoPoster/TruthSocialAutoPoster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faEnvelope,
@@ -143,6 +144,10 @@ function Announcements({ title, email: initialEmail }) {
             <SocialMediaComposer platform="weeklyreport" />
           </TabPane>
 
+          <TabPane tabId="truthsocial">
+            <TruthSocialAutoPoster darkMode={darkMode} />
+          </TabPane>
+
           {[
             'x',
             'facebook',
@@ -164,7 +169,6 @@ function Announcements({ title, email: initialEmail }) {
             'livejournal',
             'slashdot',
             'blogger',
-            'truthsocial',
           ].map(platform => (
             <TabPane tabId={platform} key={platform}>
               <SocialMediaComposer platform={platform} />
