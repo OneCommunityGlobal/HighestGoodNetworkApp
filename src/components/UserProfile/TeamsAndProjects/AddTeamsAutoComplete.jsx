@@ -25,7 +25,7 @@ const AddTeamsAutoComplete = React.memo((props) => {
   }, [allTeams, searchText]);
 
   const handlePick = (team) => {
-    props.onDropDownSelect(team);   // 👈 parent handles state
+    props.onDropDownSelect(team);
     setSearchText(team.teamName);
     setIsOpen(false);
     };
