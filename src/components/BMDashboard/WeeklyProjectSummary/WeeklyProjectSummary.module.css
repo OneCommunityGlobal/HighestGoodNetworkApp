@@ -468,3 +468,63 @@
     grid-template-columns: repeat(1, 1fr);
   }
 }
+
+/* ---------------- FINANCIAL CARD ---------------- */
+.financialCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  width: 220px;   /* fixed width like Project Status */
+  height: auto;   /* shrink to fit content */
+  margin: 0 auto; /* center inside grid cell */
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.financialCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+}
+
+.financialCardTitle {
+  color: #000;
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.financialCardOval {
+  width: 130px;
+  height: 65px;
+  border-radius: 50px / 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f0f0f0; /* overridden dynamically */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  margin: 12px 0;
+}
+
+.financialCardValue {
+  font-size: 36px;
+  font-weight: 600;
+  color: #000; /* overridden dynamically */
+}
+
+.financialGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+  justify-items: center; /* prevent full-width stretch */
+}
+
+@media (max-width: 768px) {
+  .financialGrid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+}

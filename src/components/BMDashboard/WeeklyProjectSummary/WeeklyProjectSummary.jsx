@@ -120,50 +120,41 @@ const projectStatusButtons = [
   },
 ];
 
+const financialData = [
+  {
+    id: uuidv4(),
+    title: 'Total Project Cost',
+    value: '-',
+    bgColor: '#E0F2FE',
+    textColor: '#0369A1',
+  },
+  {
+    id: uuidv4(),
+    title: 'Total Material Cost',
+    value: '-',
+    bgColor: '#F3E8FF',
+    textColor: '#6D28D9',
+  },
+  {
+    id: uuidv4(),
+    title: 'Total Labor Cost',
+    value: '-',
+    bgColor: '#FEE2E2',
+    textColor: '#B91C1C',
+  },
+  {
+    id: uuidv4(),
+    title: 'Total Equipment Cost',
+    value: '-',
+    bgColor: '#DCFCE7',
+    textColor: '#15803D',
+  },
+];
+
 export function WeeklyProjectSummaryContent() {
   const dispatch = useDispatch();
   const materials = useSelector(state => state.materials?.materialslist || []);
   const [openSections, setOpenSections] = useState({});
-
-  const getColorScheme = percentage => {
-    if (percentage === '-') return 'neutral';
-    if (percentage > 0) return 'positive';
-    if (percentage < 0) return 'negative';
-    return 'neutral';
-  };
-
-  const colorScheme = getColorScheme(monthOverMonth);
-
-  const titleClass = title.replace(/\s+/g, '-').toLowerCase();
-
-  return (
-    <div
-      className={`financial-card ${colorScheme} custom-box-shadow financial-card-background-${titleClass}`}
-      onMouseEnter={() => setShowTooltip(true)}
-      onMouseLeave={() => setShowTooltip(false)}
-    >
-      <div className="financial-card-title">{title}</div>
-      <div className={`financial-card-ellipse financial-card-ellipse-${titleClass}`} />
-      <div className="financial-card-value">{value === '-' ? '-' : value.toLocaleString()}</div>
-      <div className={`financial-card-month-over-month ${colorScheme}`}>
-        {monthOverMonth === '-'
-          ? '-'
-          : `${monthOverMonth > 0 ? '+' : ''}${monthOverMonth}% month over month`}
-      </div>
-
-      {/* Tooltip for Additional Info */}
-      {showTooltip && Object.keys(additionalInfo).length > 0 && (
-        <div className="financial-card-tooltip">
-          {Object.entries(additionalInfo).map(([key]) => (
-            <div key={key} className="financial-card-tooltip-item">
-              <span className="tooltip-key">{key}:</span>
-              <span className="tooltip-value">{value}</span>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
 }
 
 function WeeklyProjectSummary() {
@@ -285,14 +276,33 @@ function WeeklyProjectSummary() {
         key: 'Financials',
         className: 'large',
         content: (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
-            <div className="weekly-project-summary-card">
-              <FinancialStatButtons />
-            </div>
+          <div className={`${styles.financialGrid}`}>
+            {financialData.map(card => (
+              <div
+                key={card.id}
+                className={`${styles.weeklyProjectSummaryCard} ${styles.financialCard}`}
+                style={{ backgroundColor: card.bgColor }}
+              >
+                <div className={`${styles.weeklyCardTitle}`} style={{ color: card.textColor }}>
+                  {card.title}
+                </div>
+                <div
+                  className={`${styles.weeklyStatusButton}`}
+                  style={{ backgroundColor: card.ovalColor }}
+                >
+                  <span className={`${styles.weeklyStatusValue}`}>
+                    {card.value === '-' ? '-' : card.value.toLocaleString()}
+                  </span>
+                </div>
+                <div className={`${styles.weeklyCardValue}`} style={{ color: card.textColor }}>
+                  {card.value === '-' ? '-' : card.value.toLocaleString()}
+                </div>
+              </div>
+            ))}
+
             <div className="weekly-project-summary-card financial-small financial-chart">
               <ExpenseBarChart />
             </div>
-            <div className="weekly-project-summary-card financial-big">📊 Big Card</div>
           </div>
         ),
       },
