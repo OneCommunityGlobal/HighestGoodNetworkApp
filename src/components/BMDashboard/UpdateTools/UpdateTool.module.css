@@ -84,3 +84,28 @@
   overflow-y: scroll;
   height: 75vh;
 }
+
+/* Bootstrap 4 modal background override */
+.darkBlueModal {
+  background-color: #0b1f33 !important;
+  color: #e6edf5 !important;
+}
+
+/* Header */
+.darkBlueModal .modal-header {
+  background-color: #102a43 !important;
+  border-bottom: 1px solid #1f3b5c;
+  color: #ffffff !important;
+}
+
+/* Body */
+.darkBlueModal .modal-body {
+  background-color: #0b1f33 !important;
+  color: #e6edf5 !important;
+}
+
+/* Footer */
+.darkBlueModal .modal-footer {
+  background-color: #102a43 !important;
+  border-top: 1px solid #1f3b5c;
+}

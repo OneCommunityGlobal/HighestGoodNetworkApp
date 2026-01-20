@@ -242,10 +242,6 @@ body.bm-dashboard-dark .nav-link {
   color: #ffffff !important;
 }
 
-body.dark-mode .navbar,
-body.bm-dashboard-dark .navbar {
-  background-color: #1b2a41 !important;
-}
 
 body.dark-mode .navbar-brand,
 body.bm-dashboard-dark .navbar-brand {
@@ -329,11 +325,33 @@ body.bm-dashboard-dark .page-item.active .page-link {
 }
 
 /* Fix the position of the header at the top */
-.top {
-    position: fixed;
-    right: 10px;
-    bottom: 10px;
-  }
+.back-to-top {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+
+  width: 48px;
+  height: 48px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background-color: #2A1B3D;
+  color: #ffffff;
+
+  border-radius: 50%;
+  font-size: 22px;
+  text-decoration: none;
+
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+  z-index: 1000;
+}
+
+.back-to-top:hover {
+  transform: translateY(-4px);
+  opacity: 0.9;
+}
   
   /* Allow the page content to scroll horizontally */
   .container-fluid {
@@ -344,3 +362,8 @@ body.bm-dashboard-dark .page-item.active .page-link {
   .container-fluid::-webkit-scrollbar {
     display: none;
   }
+
+  .tab-content {
+  background-color: transparent;
+  border: none;
+}

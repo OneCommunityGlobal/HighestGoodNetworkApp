@@ -87,8 +87,6 @@ import wishListReducer from './listBidDashboard/wishListItemReducer';
 
 // listing and biddding dashboard
 
-import browseLessonPlanReducer from './educationPortal/broweLessonPlanReducer';
-
 import {
   listOverviewReducer,
   listingAvailabilityReducer,
@@ -101,6 +99,11 @@ import reviewsInsightReducer from './prAnalytics/reviewsInsightReducer';
 // job analytics
 import { hoursPledgedReducer } from './jobAnalytics/hoursPledgedReducer';
 import { studentTasksReducer } from './studentTasksReducer';
+import { weeklySummariesFiltersApi } from '../actions/weeklySummariesFilterAction';
+
+//education portal
+
+import browseLessonPlanReducer from './educationPortal/broweLPReducer';
 
 const localReducers = {
   auth: authReducer,
@@ -137,6 +140,7 @@ const localReducers = {
   allUsersTimeEntries: allUsersTimeEntriesReducer,
   allUserProfilesBasicInfo: allUserProfilesBasicInfoReducer,
   projectById: projectByIdReducer,
+  [weeklySummariesFiltersApi.reducerPath]: weeklySummariesFiltersApi.reducer,
 
   // bm dashboard
   materials: materialsReducer,
@@ -181,12 +185,12 @@ const localReducers = {
   // job analytics
   hoursPledged: hoursPledgedReducer,
 
-  //education portal
-  browseLessonPlanReducer: browseLessonPlanReducer,
-
   // student tasks
   studentTasks: studentTasksReducer,
   jobApplication: jobApplicationReducer,
+
+  // education portal
+  browseLessonPlan: browseLessonPlanReducer,
 };
 
 const sessionReducers = {
