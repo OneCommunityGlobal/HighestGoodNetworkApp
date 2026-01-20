@@ -449,10 +449,6 @@ export function Header(props) {
                     darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown
                   }`}
                 >
-                  <DropdownItem header className={fontColor}>
-                    Hello {firstName}
-                  </DropdownItem>
-                  <DropdownItem divider />
                   <DropdownItem tag={Link} to={`/userprofile/${user.userid}`} className={fontColor}>
                     {VIEW_PROFILE}
                   </DropdownItem>
