@@ -4,7 +4,7 @@ import React from 'react';
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
-import { configureStore } from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { Router } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
@@ -14,7 +14,7 @@ import PermissionsManagement from '../PermissionsManagement';
 import { ENDPOINTS } from '~/utils/URL';
 
 vi.mock('axios');
-const mockStore = configureStore([thunk]);
+const mockStore = configureMockStore([thunk]);
 
 describe('PermissionsManagement', () => {
   const history = createMemoryHistory();

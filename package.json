@@ -135,6 +135,7 @@
     "prestart": "npm run test",
     "postinstall": "node ./postinstall.js",
     "start": "vite",
+    "start:skip-tests": "vite",
     "build": "vite build",
     "test": "cross-env CI=true vitest",
     "test:watch": "vitest --reporter=verbose",

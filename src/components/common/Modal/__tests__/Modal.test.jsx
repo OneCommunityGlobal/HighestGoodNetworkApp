@@ -2,11 +2,11 @@
 import React from 'react';
 import { render, fireEvent, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { configureStore } from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import '@testing-library/jest-dom';
 import ModalExample from '../Modal';
 
-const mockStore = configureStore([]);
+const mockStore = configureMockStore([]);
 const initialState = {
   theme: { darkMode: false },
 };
