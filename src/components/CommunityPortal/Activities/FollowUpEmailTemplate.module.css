@@ -122,3 +122,97 @@
   margin: 10px auto;
 }
 
+/* ================================
+   NEW: Subject + Preheader + CTA hierarchy
+   ================================ */
+
+.subjectLine {
+  font-size: 12px;
+  color: #777;
+  margin: 0 0 10px 0;
+}
+
+/* Preheader text: shown in inbox preview, hidden in body */
+.preheader {
+  display: none;
+  font-size: 1px;
+  color: #ffffff;
+  line-height: 1px;
+  max-height: 0;
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+}
+
+/* CTA intro line before button */
+.ctaIntro {
+  margin-top: 12px;
+}
+
+/* Primary CTA button (use this instead of feedbackLink) */
+.primaryCta {
+  display: inline-block;
+  width: 100%;
+  margin-top: 10px;
+  padding: 12px 16px;
+  background-color: #007bff;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.primaryCta:hover {
+  background-color: #3399ff;
+  box-shadow: 0px 4px 10px rgba(0, 123, 255, 0.2);
+  text-decoration: none;
+}
+
+.primaryCta:active {
+  background-color: #0056b3;
+  box-shadow: none;
+}
+
+/* Small “takes 2 minutes” helper under CTA */
+.ctaSubtext {
+  font-size: 12px;
+  color: #777;
+  text-align: center;
+  margin-top: 6px;
+}
+
+/* ================================
+   NEW: Other options section
+   ================================ */
+
+.otherOptions {
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px solid #eee;
+}
+
+.otherOptionsTitle {
+  font-size: 14px;
+  font-weight: bold;
+  color: #444;
+  margin: 0 0 6px 0;
+}
+
+.otherOptionsList {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.secondaryLink {
+  font-size: 14px;
+  color: #666;
+  text-decoration: underline;
+}
+
+.secondaryLink:hover {
+  color: #333;
+}
