@@ -1,5 +1,6 @@
 /* eslint-disable no-nested-ternary */
 import { useState } from 'react';
+import PropTypes from 'prop-types';
 import styles from './WeeklySummariesReport.module.scss';
 import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
 
@@ -7,7 +8,6 @@ function BioFunction(props) {
   const {
     bioPosted,
     totalTangibleHrs,
-    daysInTeam,
     textColors,
     summary,
     bioCanEdit,
@@ -17,7 +17,8 @@ function BioFunction(props) {
 
   const [bioStatus, setBioStatus] = useState(bioPosted);
 
-  const isMeetCriteria = totalTangibleHrs > 80 && daysInTeam > 60 && bioPosted !== 'posted';
+  const isMeetCriteria =
+    totalTangibleHrs > 80 && summary?.weeklySummariesCount >= 8 && bioPosted !== 'posted';
   const style = {
     color: textColors[summary?.weeklySummaryOption] || textColors.Default,
   };
@@ -53,5 +54,18 @@ function BioFunction(props) {
     </div>
   );
 }
+
+BioFunction.propTypes = {
+  bioPosted: PropTypes.string.isRequired,
+  totalTangibleHrs: PropTypes.number.isRequired,
+  textColors: PropTypes.object.isRequired,
+  summary: PropTypes.shape({
+    weeklySummariesCount: PropTypes.number,
+    weeklySummaryOption: PropTypes.string,
+  }).isRequired,
+  bioCanEdit: PropTypes.bool.isRequired,
+  handleProfileChange: PropTypes.func.isRequired,
+  userId: PropTypes.string.isRequired,
+};
 
 export default BioFunction;

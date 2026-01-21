@@ -753,7 +753,7 @@ const WeeklySummariesReport = props => {
           }
           const isMeetCriteria =
             summary.totalTangibleHrs > 80 &&
-            summary.daysInTeam > 60 &&
+            summary.weeklySummariesCount >= 8 &&
             summary.bioPosted !== 'posted';
           const isBio = !selectedBioStatus || isMeetCriteria;
           const isOverHours =
