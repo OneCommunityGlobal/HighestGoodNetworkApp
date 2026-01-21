@@ -1,0 +1,228 @@
+.container {
+  padding: 2rem 1rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+.formWrapper {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  padding: 3rem;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.formHeader {
+  margin-bottom: 2.5rem;
+  text-align: center;
+  padding-bottom: 2rem;
+  border-bottom: 2px solid #e9ecef;
+}
+
+.formHeader h1 {
+  font-size: 2rem;
+  color: #212529;
+  margin: 0 0 0.75rem 0;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.formHeader p {
+  color: #6c757d;
+  font-size: 1rem;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.label {
+  font-weight: 600;
+  color: #212529;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.required {
+  color: #dc3545;
+  margin-left: 0.25rem;
+}
+
+.input,
+.textarea,
+.select {
+  padding: 0.875rem 1rem;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  color: #495057;
+  background: white;
+  transition: all 0.2s ease;
+}
+
+.input:hover,
+.textarea:hover,
+.select:hover {
+  border-color: #007bff;
+}
+
+.input:focus,
+.textarea:focus,
+.select:focus {
+  outline: none;
+  border-color: #0056b3;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+  background: white;
+}
+
+.input::placeholder,
+.textarea::placeholder {
+  color: #adb5bd;
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 140px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+.help {
+  font-size: 0.8rem;
+  color: #6c757d;
+  margin-top: 0.5rem;
+  line-height: 1.4;
+}
+
+.formActions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid #e9ecef;
+  justify-content: flex-end;
+}
+
+.submitButton,
+.cancelButton {
+  padding: 0.875rem 2rem;
+  font-weight: 600;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.95rem;
+}
+
+.submitButton {
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+  color: white;
+  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2);
+}
+
+.submitButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 123, 255, 0.3);
+}
+
+.submitButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.cancelButton {
+  background: white;
+  color: #007bff;
+  border: 2px solid #007bff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.cancelButton:hover:not(:disabled) {
+  background: #007bff;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2);
+}
+
+.cancelButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Success/Error Messages */
+.successMessage,
+.errorMessage {
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+  border-left: 4px solid;
+}
+
+.successMessage {
+  background: #d1f0e6;
+  color: #0f5f38;
+  border-left-color: #28a745;
+}
+
+.errorMessage {
+  background: #fce4e4;
+  color: #842029;
+  border-left-color: #dc3545;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .formWrapper {
+    padding: 2rem;
+  }
+
+  .formHeader h1 {
+    font-size: 1.5rem;
+  }
+
+  .form {
+    gap: 1.25rem;
+  }
+
+  .formActions {
+    flex-direction: column-reverse;
+  }
+
+  .submitButton,
+  .cancelButton {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .formWrapper {
+    padding: 1rem;
+  }
+
+  .formHeader h1 {
+    font-size: 1.25rem;
+  }
+
+  .formHeader p {
+    font-size: 0.9rem;
+  }
+}
