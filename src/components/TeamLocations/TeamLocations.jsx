@@ -101,10 +101,15 @@ const TeamLocations = forwardRef(() => {
 
   // We don't need the back to top button on this page
   useEffect(() => {
-    const backToTopButton = document.querySelector('.top');
-    backToTopButton.style.display = 'none';
+    let btn = document.querySelector('.top');
+    if (!btn) return undefined;
+
+    const prevDisplay = btn.style.display;
+    btn.style.display = 'none';
+
     return () => {
-      backToTopButton.style.display = 'block';
+      btn = document.querySelector('.top');
+      if (btn) btn.style.display = prevDisplay || 'block';
     };
   }, []);
 
