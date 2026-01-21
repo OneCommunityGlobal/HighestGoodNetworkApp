@@ -17,7 +17,9 @@ function FollowUpEmailTemplate() {
       <p className={styles.subjectLine}>
         <strong>Subject:</strong> {subject}
       </p>
-
+      <p className={styles.previewLine}>
+        <strong>Preview:</strong> {previewText}
+      </p>
       {/* Preheader / preview text (email clients show this) */}
       <span className={styles.preheader}>{previewText}</span>
 
@@ -117,7 +119,16 @@ function FollowUpEmailTemplate() {
         as a user or a creator. This also shows that you agree to our Terms of Use and Privacy
         Policies. If you no longer want to receive mails from us, click the unsubscribe link below.
       </p>
-
+      <p style={{ textAlign: 'center', fontSize: '12px', marginTop: '6px' }}>
+        <a
+          href="https://onecommunityglobal.org/unsubscribe"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={styles.footerLinks}
+        >
+          Unsubscribe
+        </a>
+      </p>
       <div className={styles.footerLinksContainer}>
         <a
           href="https://onecommunityglobal.org/terms-and-conditions/"
