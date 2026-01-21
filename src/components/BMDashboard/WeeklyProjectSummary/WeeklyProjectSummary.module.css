@@ -481,6 +481,14 @@
   line-height: 1;
 }
 
+/* This targets the value text specifically when in Dark Mode */
+:global(body.dark-mode) .weeklyStatusValue,
+:global(body.bm-dashboard-dark) .weeklyStatusValue {
+    /* If you want the pink color back, it needs !important to beat the global rule */
+    color: #090336 !important; 
+    /* OR, if you prefer white text, we should darken the background bubble instead */
+}
+
 /* Title/value should NEVER be hard-coded black */
 .weeklyCardTitle {
   color: var(--card-title, var(--text-color));
