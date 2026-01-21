@@ -85,12 +85,26 @@ function PermissionChangeLogTable({ changeLogs, darkMode, roleNamesToHighlight =
       .map(permission => permissionLabelKeyMappingObj?.[permission])
       .filter(e => e);
 
+    const displayPermissions = expandedRows[rowId]
+      ? filteredPermissions // Show all filtered permissions if expanded
+      : filteredPermissions.slice(0, 5); // Show first 5 if collapsed
+
     return (
       <div className="permissions-cell">
-        {expandedRows[rowId]
-          ? filteredPermissions.join(', ') // Show all filtered permissions if expanded
-          : filteredPermissions.slice(0, 5).join(', ') +
-            (filteredPermissions.length > 5 ? ', ...' : '')}
+        {displayPermissions.length > 0 ? (
+          <ul className="permissions-list">
+            {displayPermissions.map(permission => (
+              <li key={`${rowId}-${permission}`}>{permission}</li>
+            ))}
+            {!expandedRows[rowId] && filteredPermissions.length > 5 && (
+              <li style={{ fontStyle: 'italic', color: '#666' }}>
+                ... and {filteredPermissions.length - 5} more
+              </li>
+            )}
+          </ul>
+        ) : (
+          <span style={{ fontStyle: 'italic', color: '#666' }}>None</span>
+        )}
         {filteredPermissions.length > 5 && (
           <button className="toggle-button" onClick={() => toggleExpandRow(rowId)} type="button">
             {expandedRows[rowId] ? <FiChevronUp /> : <FiChevronDown />}
