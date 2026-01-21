@@ -257,6 +257,7 @@ function ToolItemListViewInner({ itemType, items, errors = {}, UpdateItemModal, 
                   selectedItem={selectedItem}
                   setSelectedProject={value => updateFilter({ selectedProject: value })}
                   setSelectedItem={value => updateFilter({ selectedItem: value })}
+                  isDarkMode={isDarkMode}
                 />
               </div>
 
@@ -267,6 +268,7 @@ function ToolItemListViewInner({ itemType, items, errors = {}, UpdateItemModal, 
                   selectedItem={selectedItem}
                   setSelectedItem={value => updateFilter({ selectedItem: value })}
                   label="Tool"
+                  isDarkMode={isDarkMode}
                 />
               </div>
             </div>

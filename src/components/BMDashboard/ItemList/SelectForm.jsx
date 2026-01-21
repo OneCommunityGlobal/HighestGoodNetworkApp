@@ -7,6 +7,7 @@ export default function SelectForm({
   setSelectedItem,
   selectedProject, // optional (controlled)
   selectedItem, // optional (controlled)
+  darkStyle,
 }) {
   let projectsSet = [];
   if (items.length) {
@@ -46,12 +47,12 @@ export default function SelectForm({
 
   return (
     <Form>
-      <FormGroup className={`${styles.selectInput}`}>
+      <FormGroup className={styles.selectInput}>
         <Label htmlFor="select-project">Project:</Label>
-        <Input
+        <select
           id="select-project"
           name="select-project"
-          type="select"
+          className={styles.filterSelect}
           onChange={handleChange}
           disabled={!items.length}
           value={isControlled ? selectedProject : undefined}
@@ -68,7 +69,7 @@ export default function SelectForm({
           ) : (
             <option>No data</option>
           )}
-        </Input>
+        </select>
       </FormGroup>
     </Form>
   );

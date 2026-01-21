@@ -32,7 +32,7 @@
 /* Row 1: Project + Tool side by side */
 .projectToolColumn {
   display: flex;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   gap: 1rem;
   align-items: flex-end;
 }
@@ -66,7 +66,7 @@
 .availSearchRow {
   display: flex;
   width: 100%;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   align-items: flex-end;
   gap: 1rem;
 }
@@ -82,7 +82,6 @@
 .searchGroup {
   display: flex;
   flex-direction: column;
-  flex: 0 0 260px;
   margin-left: auto;
 }
 
@@ -148,7 +147,7 @@
 /* DARK theme inputs */
 .darkTheme .filterSelect,
 .darkTheme .searchInput {
-  background-color: #26445c;
+  background-color: #1e293b;
   color: #f5f7fb;
   border-color: #1d3c52;
 }
@@ -312,3 +311,36 @@
   display: flex;
   gap: 20px;
   justify-content: center; */
+
+  /* Base select */
+
+
+/* Bootstrap override */
+.darkTheme .form-select,
+.darkTheme .filterSelect {
+  background-color: #1e293b !important;
+  color: #e5e7eb !important;
+  border-color: #334155 !important;
+}
+
+/* Dropdown options */
+.darkTheme .form-select option,
+.darkTheme .filterSelect option {
+  background-color: #1e293b;
+  color: #e5e7eb;
+}
+
+.darkTheme .form-select:focus {
+  box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
+  border-color: #3b82f6;
+}
+
+
+
+/* dropdown options */
+.forceDarkSelect select option,
+.forceDarkSelect .form-select option {
+  background-color: #1e293b !important;
+  color: #e5e7eb !important;
+}
+
