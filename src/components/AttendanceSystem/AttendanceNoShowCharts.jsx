@@ -2,7 +2,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 const events = [
@@ -53,7 +53,7 @@ const events = [
   },
 ];
 
-const attendanceColors = ['#0088FE', '#FF8042'];
+const attendanceColors = ['#0088FE', '#FF8042', '#FFBB28'];
 const noShowColors = ['#00C49F', '#FF0000'];
 
 const RADIAN = Math.PI / 180;
@@ -66,23 +66,24 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, per
     <text
       x={x}
       y={y}
-      fill="black"
-      textAnchor={x > cx ? 'start' : 'end'}
+      fill="white"
+      textAnchor="middle"
       dominantBaseline="central"
       fontSize="12"
+      fontWeight="bold"
     >
-      {`${(percent * 100).toFixed(1)}%`}
+      {percent > 0 ? `${(percent * 100).toFixed(0)}%` : ''}
     </text>
   );
 };
 
 function AttendanceNoShowCharts() {
-  const [selectedEvent, setSelectedEvent] = useState(events[0]);
+  const [selectedId, setSelectedId] = useState(events[0].id);
+
+  const selectedEvent = useMemo(() => events.find(e => e.id === selectedId), [selectedId]);
 
   const handleEventChange = e => {
-    const selectedEventId = e.target.value;
-    const newSelectedEvent = events.find(event => event.id === selectedEventId);
-    setSelectedEvent(newSelectedEvent);
+    setSelectedId(e.target.value);
   };
 
   const calculatePercentage = (value, total) => {
