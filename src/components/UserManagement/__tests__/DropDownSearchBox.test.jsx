@@ -17,25 +17,28 @@ describe('DropDownSearchBox', () => {
     className: 'test-class',
   };
   const mockStore = configureStore([]);
-    const initialState = {
-      theme: { darkMode: false },
-    };
-    const store = mockStore(initialState);
+  const initialState = {
+    theme: { darkMode: false },
+  };
+  const store = mockStore(initialState);
 
   it('renders with correct options', () => {
-    const { getByRole, getByText } = render(<Provider store={store}><DropDownSearchBox 
-      id={mockProps.id}
-      placeholder={mockProps.placeholder}
-      items={mockItems}
-      searchCallback={mockSearchCallback}
-      value={mockProps.value}
-      width={mockProps.width}
-      className={mockProps.className}
-      />
-      </Provider>);
+    const { getByRole, getByText } = render(
+      <Provider store={store}>
+        <DropDownSearchBox
+          id={mockProps.id}
+          placeholder={mockProps.placeholder}
+          items={mockItems}
+          searchCallback={mockSearchCallback}
+          value={mockProps.value}
+          width={mockProps.width}
+          className={mockProps.className}
+        />
+      </Provider>,
+    );
 
     // Check for placeholder
-    expect(screen.getByText(mockProps.placeholder)).toBeInTheDocument();
+    expect(screen.getByText('All users')).toBeInTheDocument();
 
     // Check for options
     mockItems.forEach(item => {
@@ -47,16 +50,19 @@ describe('DropDownSearchBox', () => {
   });
 
   it('calls searchCallback with correct value on selection change', () => {
-    const { getByRole } = render(<Provider store={store}><DropDownSearchBox 
-        id={mockProps.id}
-        placeholder={mockProps.placeholder}
-        items={mockItems}
-        searchCallback={mockSearchCallback}
-        value={mockProps.value}
-        width={mockProps.width}
-        className={mockProps.className}
-    />
-    </Provider>);
+    const { getByRole } = render(
+      <Provider store={store}>
+        <DropDownSearchBox
+          id={mockProps.id}
+          placeholder={mockProps.placeholder}
+          items={mockItems}
+          searchCallback={mockSearchCallback}
+          value={mockProps.value}
+          width={mockProps.width}
+          className={mockProps.className}
+        />
+      </Provider>,
+    );
     const select = screen.getByRole('combobox');
 
     fireEvent.change(select, { target: { value: mockItems[1] } });

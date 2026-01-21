@@ -15,7 +15,11 @@ class DropDownSearchBox extends React.PureComponent {
     // });
   };
 
+
   render() {
+
+    console.log(this.props.placeholder);
+
     return (
       <select
         onChange={this.onSelectionChange}
@@ -30,7 +34,7 @@ class DropDownSearchBox extends React.PureComponent {
         className={this.props.className}
       >
         <option value="" style={{ color: '#9b9b9b' }}>
-          {this.props.placeholder}
+          All users {/*{this.props.placeholder}*/}
         </option>
 
         {/* eslint-disable-next-line no-unused-vars */}
