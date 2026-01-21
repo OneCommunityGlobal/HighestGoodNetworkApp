@@ -111,7 +111,7 @@ export const ENDPOINTS = {
   UPDATE_PARENT_TASKS: wbsId => `${APIEndpoint}/task/updateAllParents/${wbsId}`,
   MOVE_TASKS: wbsId => `${APIEndpoint}/tasks/moveTasks/${wbsId}`,
   WEEKLY_SUMMARIES_REPORT: () => `${APIEndpoint}/reports/weeklysummaries`,
-  WEEKLY_SUMMARIES_FILTERS:`${APIEndpoint}/weeklySummariesFilters`,
+  WEEKLY_SUMMARIES_FILTERS: `${APIEndpoint}/weeklySummariesFilters`,
   WEEKLY_SUMMARIES_FILTER_BY_ID: filterId => `${APIEndpoint}/weeklySummariesFilters/${filterId}`,
   WEEKLY_SUMMARIES_FILTER_REPLACE_CODES: `${APIEndpoint}/weeklySummariesFilters/replaceTeamcodes`,
   WEEKLY_SUMMARIES_FILTER_REPLACE_INDIVIDUAL_CODES: `${APIEndpoint}/weeklySummariesFilters/replaceIndividualTeamcodes`,
@@ -231,7 +231,7 @@ export const ENDPOINTS = {
   NON_HGN_EMAIL_SUBSCRIPTION: `${APIEndpoint}/add-non-hgn-email-subscription`,
   CONFIRM_EMAIL_SUBSCRIPTION: `${APIEndpoint}/confirm-non-hgn-email-subscription`,
   REMOVE_EMAIL_SUBSCRIPTION: `${APIEndpoint}/remove-non-hgn-email-subscription`,
-  
+
   PERMISSION_MANAGEMENT_UPDATE: () => `${APIEndpoint}/permission-management`,
 
   // reasons endpoints
@@ -463,6 +463,29 @@ export const ENDPOINTS = {
   UPDATE_SAVED_FILTERS_TEAM_CODES: () => `${APIEndpoint}/savedFilters/updateTeamCodes`,
   UPDATE_SAVED_FILTERS_INDIVIDUAL_TEAM_CODE: () =>
     `${APIEndpoint}/savedFilters/updateIndividualTeamCode`,
+
+  // Job Analytics endpoint
+  JOB_ANALYTICS_QUERY: (startDate, endDate, roles, granularity) => {
+    const params = [
+      startDate && endDate
+        ? `startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`
+        : null,
+
+      roles && roles !== "All"
+        ? `roles=${encodeURIComponent(roles)}`
+        : null,
+
+      granularity
+        ? `granularity=${encodeURIComponent(granularity)}`
+        : null,
+    ].filter(Boolean);
+
+    const qs = params.length ? `?${params.join("&")}` : "";
+
+    return `${APIEndpoint.replace("/api", "")}/job-analytics${qs}`;
+  },
+
+  JOB_ANALYTICS_ROLES: `${APIEndpoint.replace('/api', '')}/job-analytics/roles`,
 
   // pr dashboard endpoints
   PROMOTION_ELIGIBILITY: `${APIEndpoint}/promotion-eligibility`,

@@ -888,10 +888,14 @@ const WeeklySummariesReport = props => {
           // Add special color filter logic
           // const matchesSpecialColor =
           //   activeFilterColors.length === 0 || activeFilterColors.includes(summary.filterColor);
+          // const matchesSpecialColor =
+          //   // activeFilterColors.length === 0 ||
+          //   // activeFilterColors.some(color => summary.filterColor?.includes?.(color));
+          //   activeFilterColors.length === 0 || activeFilterColors.includes(summary.filterColor); // old one
+
           const matchesSpecialColor =
-            // activeFilterColors.length === 0 ||
-            // activeFilterColors.some(color => summary.filterColor?.includes?.(color));
-            activeFilterColors.length === 0 || activeFilterColors.includes(summary.filterColor);
+            activeFilterColors.length === 0 ||
+            activeFilterColors.some(color => summary.filterColor?.includes(color));
 
           // Filtered by Team Code and Extra Members
           const isInSelectedCode = selectedCodesArray.includes(summary.teamCode);
@@ -2214,6 +2218,11 @@ const WeeklySummariesReport = props => {
     }
   }, [state.activeTab, state.summariesByTab]); // Dependencies might need adjustment
 
+  // 🔹 Convert toggle object → array of selected colors
+  const selectedSpecialColorList = Object.entries(state.selectedSpecialColors || {})
+    .filter(([_, isEnabled]) => isEnabled)
+    .map(([color]) => color);
+
   const { role, darkMode } = props;
   const { error } = props;
   const hasPermissionToFilter = role === 'Owner' || role === 'Administrator';
@@ -2244,6 +2253,32 @@ const WeeklySummariesReport = props => {
       />
     );
   }
+
+  const applySpecialColorFilter = user => {
+    //   // No filter toggled → show all users
+    //   if (selectedSpecialColorList.length === 0) return true;
+
+    //   // User has no filterColor → hide
+    //   if (!Array.isArray(user.filterColor)) return false;
+
+    //   // Match ANY selected color
+    //   return user.filterColor.some(color => selectedSpecialColorList.includes(color));
+    // };
+    const selected = state.selectedSpecialColors;
+
+    // no filters enabled → show all users
+    if (!selected || Object.values(selected).every(v => !v)) {
+      return true;
+    }
+
+    const userColors = Array.isArray(user.filterColor) ? user.filterColor : [];
+
+    return (
+      (selected.purple && userColors.includes('purple')) ||
+      (selected.green && userColors.includes('green')) ||
+      (selected.navy && userColors.includes('navy'))
+    );
+  };
 
   return (
     <Container
