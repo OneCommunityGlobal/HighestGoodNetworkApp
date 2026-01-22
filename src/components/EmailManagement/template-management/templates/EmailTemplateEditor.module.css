@@ -115,20 +115,6 @@
 }
 
 /* Compact retry button */
-.email-template-editor .retry-button {
-  font-weight: 500;
-  padding: 0.5rem 1rem;
-  border-radius: 0.375rem;
-  transition: all 0.15s ease-in-out;
-  font-size: 0.875rem;
-  min-width: 100px;
-}
-
-/* Empty variables state styling */
-.email-template-editor .empty-variables-state {
-  margin: 1rem 0;
-}
-
 .email-template-editor .empty-variables-state .border {
   border-color: #e9ecef !important;
   background-color: #f8f9fa;
@@ -313,32 +299,12 @@
 
 /* Ensure full width for form fields */
 .email-template-editor .basic-info-section .form-group {
-  width: 100%;
-}
-
-/* ==========================================================================
-   VARIABLES SECTION - INLINE & COMPACT
-   ========================================================================== */
-
-.email-template-editor .variables-section {
-  background: transparent;
-  padding: 0;
-  margin-bottom: 1.5rem;
-}
-
 .email-template-editor .variables-header {
   margin-bottom: 0.75rem;
 }
 
 .email-template-editor .variables-header h5 {
   color: #374151;
-  font-weight: 600;
-  margin-bottom: 0;
-  font-size: 0.9375rem;
-  display: flex;
-  align-items: center;
-}
-
 .email-template-editor .variables-header .btn {
   font-size: 0.75rem;
   padding: 0.25rem 0.5rem;
@@ -362,17 +328,6 @@
   border-color: #e5e7eb !important;
   border-radius: 0.375rem;
   background: #f9fafb;
-}
-
-/* Variables Chips - Inline Flow Layout */
-.email-template-editor .variables-chips {
-  margin-top: 0.5rem;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.email-template-editor .variable-chip {
   display: inline-flex;
   align-items: center;
   gap: 0.375rem;
@@ -385,11 +340,6 @@
   white-space: nowrap;
 }
 
-.email-template-editor .variable-chip:hover {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  border-color: #d1d5db;
-  transform: translateY(-1px);
-}
 
 .email-template-editor .variable-code {
   font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;

@@ -30,4 +30,6 @@ yarn-error.log*
 
 **\ **
 
-/public/tinymce/
+/public/tinymce/Community/
+Community/
+public/tinymce/
