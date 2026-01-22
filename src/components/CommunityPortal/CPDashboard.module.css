@@ -183,7 +183,7 @@
   display: inline-block;      /* <– keeps input on same line as text */
   width: auto;
   padding: 0;
-  margin: 5px 0px 0px 120px;
+  margin: 5px 0px 0px 120px;       /* top margin to line up under "Dates" */
   vertical-align: middle;
 }
 
@@ -282,21 +282,28 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-.date-filter {
+.dateFilter {
   padding-left: 10px;
   margin-top: 15px;
   padding-top: 0px;
   padding-bottom: 0px;
 }
 
-.date-filter-container {
+/* .date-filter-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 6px 10px 20px;
+} */
+
+.dateFilterContainer {
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 6px 10px 20px;
 }
 
-.date-error-message {
+.dateErrorMessage {
   color: red;
   margin-top: 5px;
 }

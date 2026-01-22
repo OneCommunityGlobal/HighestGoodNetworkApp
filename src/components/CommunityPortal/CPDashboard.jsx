@@ -287,15 +287,15 @@ export function CPDashboard() {
                     Clear date filter
                   </Button>
                 </div>
-                <div className={styles['date-filter-container']}>
+                <div className={styles.dateFilterContainer}>
                   <DatePicker
                     selected={selectedDate}
                     onChange={date => handleDateChange(date)}
                     placeholderText="Ending After"
                     id="ending-after"
-                    className={styles['date-filter']}
+                    className={styles.dateFilter}
                   />
-                  {dateError && <p className={styles['date-error-message']}>{dateError}</p>}
+                  {dateError && <p className={styles.dateErrorMessage}>{dateError}</p>}
                 </div>
               </div>
 
