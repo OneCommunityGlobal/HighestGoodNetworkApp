@@ -224,6 +224,20 @@ export const ENDPOINTS = {
     return url;
   },
 
+  INJURIES_DISTRIBUTION: (projectId, startDate, endDate, groupBy = 'severity') => {
+    let url = `${APIEndpoint}/injuries/distribution`;
+    const params = new URLSearchParams();
+    if (projectId && projectId !== 'all') params.append('projectId', projectId);
+    if (startDate) params.append('startDate', startDate);
+    if (endDate) params.append('endDate', endDate);
+    if (groupBy) params.append('groupBy', groupBy);
+    
+    const queryString = params.toString();
+    return queryString ? `${url}?${queryString}` : url;
+  },
+  
+  INJURY_PROJECTS: () => `${APIEndpoint}/injuries/projects`,
+
   PRESETS: () => `${APIEndpoint}/rolePreset`,
   PRESETS_BY_ID: roleNameOrPresetId => `${APIEndpoint}/rolePreset/${roleNameOrPresetId}`,
 
