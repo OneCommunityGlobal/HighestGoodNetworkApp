@@ -33,15 +33,27 @@ const FixedRatioImage = ({ src, alt, fallback }) => (
   </div>
 );
 
+// Default filter values
+const DEFAULT_FILTERS = {
+  dateFilter: '',
+  onlineOnly: false,
+  branches: '',
+  themes: '',
+  categories: '',
+};
+
 export function CPDashboard() {
   const [events, setEvents] = useState([]);
   const [searchInput, setSearchInput] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
-  const [onlineOnly, setOnlineOnly] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [dateFilter, setDateFilter] = useState('');
   const [error, setError] = useState(null);
   const darkMode = useSelector(state => state.theme.darkMode);
+
+  // Consolidated filter states
+  const [pendingFilters, setPendingFilters] = useState(DEFAULT_FILTERS);
+  const [appliedFilters, setAppliedFilters] = useState(DEFAULT_FILTERS);
+
   const [pagination, setPagination] = useState({
     currentPage: 1,
     totalPages: 5,
@@ -55,7 +67,6 @@ export function CPDashboard() {
   useEffect(() => {
     const fetchEvents = async () => {
       setIsLoading(true);
-
       try {
         const response = await axios.get(ENDPOINTS.EVENTS);
         setEvents(response.data.events || []);
@@ -99,19 +110,16 @@ export function CPDashboard() {
     });
   };
 
-  function isTomorrow(dateString) {
+  const isTomorrow = dateString => {
     const input = new Date(dateString);
-
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-
     const tomorrow = new Date(today);
     tomorrow.setDate(today.getDate() + 1);
-
     return input >= tomorrow && input < new Date(tomorrow.getTime() + 24 * 60 * 60 * 1000);
-  }
+  };
 
-  function isComingWeekend(dateString) {
+  const isComingWeekend = dateString => {
     const input = new Date(dateString);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -122,28 +130,48 @@ export function CPDashboard() {
     const sunday = new Date(saturday);
     sunday.setDate(saturday.getDate() + 1);
     sunday.setHours(23, 59, 59, 999);
-
     return input >= saturday && input <= sunday;
-  }
+  };
 
+  // Handler to update pending filter values
+  const handleFilterChange = (filterName, value) => {
+    setPendingFilters(prev => ({
+      ...prev,
+      [filterName]: value,
+    }));
+  };
+
+  // Apply all pending filters
+  const handleApplyFilters = () => {
+    setAppliedFilters(pendingFilters);
+    setPagination(prev => ({ ...prev, currentPage: 1 }));
+  };
+
+  // Clear all filters
+  const handleClearFilters = () => {
+    setPendingFilters(DEFAULT_FILTERS);
+    setAppliedFilters(DEFAULT_FILTERS);
+    setPagination(prev => ({ ...prev, currentPage: 1 }));
+  };
+
+  // Filter events based on applied filters
   const filteredEvents = events.filter(event => {
-    // Filter by online only if checkbox is checked
-    if (onlineOnly) {
+    // Filter by online only
+    if (appliedFilters.onlineOnly) {
       const isOnlineEvent = event.location?.toLowerCase() === 'virtual';
       if (!isOnlineEvent) return false;
     }
 
-    // Filter by date filter
-    if (dateFilter === 'tomorrow') {
+    // Filter by date
+    if (appliedFilters.dateFilter === 'tomorrow') {
       return isTomorrow(event.date);
-    } else if (dateFilter === 'weekend') {
+    } else if (appliedFilters.dateFilter === 'weekend') {
       return isComingWeekend(event.date);
     }
 
-    // Filter by search query if provided
+    // Filter by search query
     if (!searchQuery) return true;
     const term = searchQuery.toLowerCase();
-
     return (
       event.title?.toLowerCase().includes(term) ||
       event.location?.toLowerCase().includes(term) ||
@@ -152,7 +180,6 @@ export function CPDashboard() {
   });
 
   const totalPages = Math.ceil(filteredEvents.length / pagination.limit) || 1;
-
   const displayedEvents = filteredEvents.slice(
     (pagination.currentPage - 1) * pagination.limit,
     pagination.currentPage * pagination.limit,
@@ -226,16 +253,17 @@ export function CPDashboard() {
           <div className={styles.filterSection}>
             <h4>Search Filters</h4>
             <div className={styles.filterSectionDivider}>
+              {/* Date Filter */}
               <div className={styles.filterItem}>
-                <label htmlFor="date-tomorrow"> Dates</label>
+                <label htmlFor="date-tomorrow">Dates</label>
                 <div className={styles.radioRow}>
                   <FormGroup check className={styles.radioGroup + ' d-flex align-items-center'}>
                     <Input
                       id="date-tomorrow"
                       type="radio"
                       name="dates"
-                      checked={dateFilter === 'tomorrow'}
-                      onChange={() => setDateFilter('tomorrow')}
+                      checked={pendingFilters.dateFilter === 'tomorrow'}
+                      onChange={() => handleFilterChange('dateFilter', 'tomorrow')}
                       className={styles.radioInput}
                     />
                     <Label
@@ -251,8 +279,8 @@ export function CPDashboard() {
                       id="date-weekend"
                       type="radio"
                       name="dates"
-                      checked={dateFilter === 'weekend'}
-                      onChange={() => setDateFilter('weekend')}
+                      checked={pendingFilters.dateFilter === 'weekend'}
+                      onChange={() => handleFilterChange('dateFilter', 'weekend')}
                       className={styles.radioInput}
                     />
                     <Label
@@ -264,49 +292,70 @@ export function CPDashboard() {
                     </Label>
                   </FormGroup>
                 </div>
-                <div className={styles.dashboardActions}>
-                  <Button color="primary" onClick={() => setDateFilter('')}>
-                    Clear date filter
-                  </Button>
-                </div>
                 <Input type="date" placeholder="Ending After" className={styles['date-filter']} />
               </div>
 
+              {/* Online Only Filter */}
               <div className={styles.filterItem}>
                 <label htmlFor="online-only">Online</label>
                 <div>
                   <Input
                     type="checkbox"
                     id="online-only"
-                    checked={onlineOnly}
-                    onChange={e => {
-                      setOnlineOnly(e.target.checked);
-                      setPagination(prev => ({ ...prev, currentPage: 1 }));
-                    }}
+                    checked={pendingFilters.onlineOnly}
+                    onChange={e => handleFilterChange('onlineOnly', e.target.checked)}
                   />{' '}
                   Online Only
                 </div>
               </div>
 
+              {/* Branches Filter */}
               <div className={styles.filterItem}>
                 <label htmlFor="branches">Branches</label>
-                <Input type="select">
-                  <option>Select branches</option>
+                <Input
+                  type="select"
+                  id="branches"
+                  value={pendingFilters.branches}
+                  onChange={e => handleFilterChange('branches', e.target.value)}
+                >
+                  <option value="">Select branches</option>
                 </Input>
               </div>
 
+              {/* Themes Filter */}
               <div className={styles.filterItem}>
                 <label htmlFor="themes">Themes</label>
-                <Input type="select">
-                  <option>Select themes</option>
+                <Input
+                  type="select"
+                  id="themes"
+                  value={pendingFilters.themes}
+                  onChange={e => handleFilterChange('themes', e.target.value)}
+                >
+                  <option value="">Select themes</option>
                 </Input>
               </div>
 
+              {/* Categories Filter */}
               <div className={styles.filterItem}>
                 <label htmlFor="categories">Categories</label>
-                <Input type="select">
-                  <option>Select categories</option>
+                <Input
+                  type="select"
+                  id="categories"
+                  value={pendingFilters.categories}
+                  onChange={e => handleFilterChange('categories', e.target.value)}
+                >
+                  <option value="">Select categories</option>
                 </Input>
+              </div>
+
+              {/* Apply and Clear Buttons */}
+              <div className={styles.filterActions}>
+                <Button color="success" onClick={handleApplyFilters} className={styles.applyBtn}>
+                  Apply Filters
+                </Button>
+                <Button color="secondary" onClick={handleClearFilters} className={styles.clearBtn}>
+                  Clear Filters
+                </Button>
               </div>
             </div>
           </div>
@@ -347,7 +396,7 @@ export function CPDashboard() {
             )}
           </Row>
 
-          {/* Simple pagination controls if needed */}
+          {/* Pagination controls */}
           {totalPages > 1 && (
             <div className={styles.paginationContainer}>
               <Button
@@ -378,5 +427,4 @@ export function CPDashboard() {
     </Container>
   );
 }
-
 export default CPDashboard;
