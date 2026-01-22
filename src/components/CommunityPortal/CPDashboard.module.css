@@ -85,11 +85,11 @@
   height: 34px;
   border-radius: 50%;
   cursor: pointer;
-  background: transparent;
+  background: transparent;          /* 🔹 icon background now white */
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #1b3c55;
+  color: #1b3c55;               /* blue magnifying-glass icon */
   font-size: 0.9rem;
 }
 
