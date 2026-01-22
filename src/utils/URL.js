@@ -246,6 +246,19 @@ export const ENDPOINTS = {
   NON_HGN_EMAIL_SUBSCRIPTION: `${APIEndpoint}/add-non-hgn-email-subscription`,
   CONFIRM_EMAIL_SUBSCRIPTION: `${APIEndpoint}/confirm-non-hgn-email-subscription`,
   REMOVE_EMAIL_SUBSCRIPTION: `${APIEndpoint}/remove-non-hgn-email-subscription`,
+  FACEBOOK_POST: `${APIEndpoint}/social/facebook/post`,
+  FACEBOOK_POST_UPLOAD: `${APIEndpoint}/social/facebook/post/upload`,
+  FACEBOOK_SCHEDULE_POST_UPLOAD: `${APIEndpoint}/social/facebook/schedule/upload`,
+  FACEBOOK_SCHEDULE_POST: `${APIEndpoint}/social/facebook/schedule`,
+  FACEBOOK_SCHEDULE: `${APIEndpoint}/social/facebook/schedule`,
+  FACEBOOK_SCHEDULED: `${APIEndpoint}/social/facebook/scheduled`,
+  FACEBOOK_HISTORY: `${APIEndpoint}/social/facebook/history`,
+  FACEBOOK_AUTH_STATUS: `${APIEndpoint}/social/facebook/auth/status`,
+  FACEBOOK_AUTH_CALLBACK: `${APIEndpoint}/social/facebook/auth/callback`,
+  FACEBOOK_AUTH_CONNECT: `${APIEndpoint}/social/facebook/auth/connect`,
+  FACEBOOK_AUTH_DISCONNECT: `${APIEndpoint}/social/facebook/auth/disconnect`,
+  FACEBOOK_AUTH_VERIFY: `${APIEndpoint}/social/facebook/auth/verify`,
+  
 
   PERMISSION_MANAGEMENT_UPDATE: () => `${APIEndpoint}/permission-management`,
 

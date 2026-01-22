@@ -3590,6 +3590,11 @@
   resolved "https://registry.npmjs.org/@unrs/resolver-binding-win32-x64-msvc/-/resolver-binding-win32-x64-msvc-1.11.1.tgz"
   integrity sha512-lrW200hZdbfRtztbygyaq/6jP6AKE8qQN2KvPcJ+x7wiD038YtnYtZ82IMNJ69GJibV7bwL3y9FgK+5w/pYt6g==
 
+"@vitejs/plugin-basic-ssl@^2.1.0":
+  version "2.1.3"
+  resolved "https://registry.yarnpkg.com/@vitejs/plugin-basic-ssl/-/plugin-basic-ssl-2.1.3.tgz#2c5e93f31c969816fdab79045b12ba5b653df677"
+  integrity sha512-mxZpCH6SjsAFkiVgaclJGTcYIHm2qxw4x2EP/AUlEVqHhk8ojU75thpvTalc5lAvIK3sJjpVxhzYNoLXOuJGKw==
+
 "@vitejs/plugin-react@^4.5.0":
   version "4.7.0"
   resolved "https://registry.npmjs.org/@vitejs/plugin-react/-/plugin-react-4.7.0.tgz"
