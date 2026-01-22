@@ -1,0 +1,153 @@
+.commentBox {
+  width: 100%;
+  margin-bottom: 1.5rem;
+}
+
+.commentBoxDark {
+  color: #e0e0e0;
+}
+
+.commentForm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.inputWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.commentInput {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.938rem;
+  line-height: 1.5;
+  resize: vertical;
+  min-height: 100px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  background-color: #ffffff;
+  color: #111827;
+}
+
+.commentInput:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.commentInput:disabled {
+  background-color: #f3f4f6;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.commentInputDark {
+  background-color: #1f2937;
+  border-color: #374151;
+  color: #e0e0e0;
+}
+
+.commentInputDark:focus {
+  border-color: #60a5fa;
+  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+}
+
+.commentInputDark:disabled {
+  background-color: #111827;
+}
+
+.inputError {
+  border-color: #ef4444 !important;
+}
+
+.inputError:focus {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+}
+
+.errorMessage {
+  margin-top: 0.5rem;
+  color: #ef4444;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.commentActions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.characterCount {
+  font-size: 0.813rem;
+  color: #6b7280;
+}
+
+.characterCountDark {
+  color: #9ca3af;
+}
+
+.characterCountError {
+  color: #ef4444 !important;
+  font-weight: 600;
+}
+
+.submitButton {
+  padding: 0.625rem 1.25rem;
+  background-color: #2563eb;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.938rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.submitButton:hover:not(:disabled) {
+  background-color: #2563eb;
+}
+
+.submitButton:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.submitButton:disabled {
+  background-color: #6b7280;
+  color: #ffffff;
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+.submitButtonDark {
+  background-color: #2563eb;
+}
+
+.submitButtonDark:hover:not(:disabled) {
+  background-color: #2563eb;
+}
+
+.submitButtonDark:disabled {
+  background-color: #4b5563;
+  color: #e0e0e0;
+}
+
+@media (max-width: 768px) {
+  .commentInput {
+    font-size: 1rem;
+    min-height: 120px;
+  }
+
+  .commentActions {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.5rem;
+  }
+
+  .submitButton {
+    width: 100%;
+  }
+}
