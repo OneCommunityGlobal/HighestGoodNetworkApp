@@ -14,7 +14,7 @@
   padding: 0;
   margin: 0;
   box-sizing: border-box;
-  overflow: hidden;
+  overflow: visible;
 }
 /* Card container */
 .card {
@@ -25,7 +25,8 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   padding: 1rem;
   box-sizing: border-box;
-  overflow: hidden;
+  overflow: visible;
+
 }
 /* Recharts text */
 .recharts-wrapper text {
