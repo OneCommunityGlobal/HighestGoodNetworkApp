@@ -1,0 +1,288 @@
+/* Main Container */
+.container {
+  padding: 24px;
+  background-color: #ffffff; /* Clean white background */
+  font-family: 'Inter', sans-serif; /* Example modern font, adjust to match project if needed */
+  color: #333;
+  width: 100%;
+}
+
+.header {
+  margin-bottom: 24px;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 8px 0;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+}
+
+/* Dashboard Cards */
+.cardsContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.card {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.cardTitle {
+  font-size: 14px;
+  font-weight: 500;
+  color: #666;
+}
+
+.cardIcon {
+  font-size: 20px;
+  /* Colors for icons matching the screenshot roughly */
+}
+
+.cardValue {
+  font-size: 32px;
+  font-weight: 700;
+  color: #333;
+  margin: 0;
+}
+
+/* Section Navbar */
+.navbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 16px;
+  margin-bottom: 32px;
+}
+
+.navItem {
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #666;
+  cursor: pointer;
+  background: none;
+  border: none;
+  transition: all 0.2s;
+}
+
+.navItem:hover {
+  background-color: #f5f5f5;
+  color: #333;
+}
+
+.activeNavItem {
+  background-color: #333; /* Or a specific green from branding */
+  color: white;
+}
+.activeNavItem:hover {
+    background-color: #444;
+    color: white;
+}
+
+
+/* Processing Overview Section Layout */
+.overviewContainer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+@media (max-width: 900px) {
+  .overviewContainer {
+    grid-template-columns: 1fr;
+  }
+}
+
+.sectionBox {
+  background: #fff;
+  /* border: 1px solid #e0e0e0; */
+  /* border-radius: 12px; */
+  /* padding: 24px; */
+}
+
+.sectionHeader {
+    margin-bottom: 24px;
+}
+.sectionTitle {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 0 4px 0;
+}
+.sectionSubtitle {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+}
+
+
+/* Processing Methods List */
+.methodList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.methodItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; /* Center vertically */
+  padding: 16px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+}
+
+.methodInfo {
+    display: flex;
+    flex-direction: column;
+}
+
+.methodName {
+  font-weight: 600;
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+.methodSub {
+  font-size: 13px;
+  color: #888;
+}
+
+.methodStats {
+    text-align: right;
+}
+
+.methodValue {
+    display: block;
+    font-size: 18px;
+    font-weight: 700;
+    color: #333;
+}
+.methodStatus {
+    font-size: 12px;
+    color: #28a745; /* Green for active */
+    background: #e6f4ea;
+    padding: 2px 8px;
+    border-radius: 12px;
+    display: inline-block;
+    margin-top: 4px;
+}
+
+/* Supplies List */
+.suppliesList {
+    width: 100%;
+}
+.supplyCategory {
+    margin-bottom: 24px;
+}
+.categoryTitle {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 12px;
+}
+
+.supplyItem {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 14px;
+}
+
+.supplyName {
+    color: #666;
+}
+
+.supplyQuantity {
+    font-weight: 500;
+    color: #888;
+}
+
+.addSupplyBtn {
+    width: 100%;
+    padding: 12px;
+    border: 1px dashed #ccc;
+    background: white;
+    color: #666;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    margin-top: 16px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+.addSupplyBtn:hover {
+    border-color: #888;
+    color: #333;
+    background-color: #fafafa;
+}
+
+/* Icon colors specific classes */
+.iconPurple { color: #9c27b0; }
+.iconOrange { color: #ed6c02; }
+.iconBlue { color: #0288d1; }
+.iconGreen { color: #2e7d32; }
+
+/* Placeholder Styles */
+.placeholderContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 48px;
+  background: #f9f9f9;
+  border-radius: 12px;
+  border: 1px dashed #e0e0e0;
+  min-height: 300px;
+}
+
+.placeholderContent {
+  text-align: center;
+  color: #888;
+}
+
+.placeholderIcon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  color: #ccc;
+}
+
+.placeholderContent h2 {
+  font-size: 20px;
+  color: #666;
+  margin-bottom: 8px;
+}

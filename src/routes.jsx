@@ -269,6 +269,9 @@ const JobAnalyticsPage = lazy(() =>
 );
 
 const SuggestedJobsListBuilder = lazy(() => import('./components/Collaboration/SuggestedJobsList'));
+const ProcessingLandingPage = lazy(() =>
+  import('./components/KitchenInterfaces/Processing/ProcessingLandingPage'),
+);
 export default (
   <Switch>
     {/* ----- LB Dashboard Routing Starts----- */}
@@ -323,6 +326,13 @@ export default (
     <LBProtectedRoute path="/lbdashboard/biddingoverview" component={LBBidOverview} />
     <LBProtectedRoute path="/lbdashboard/biddinghomepage" component={BiddingHomepage} />
     {/* ----- LB Dashboard Routing Ends----- */}
+
+    {/* Kitchen & Inventory Routes */}
+    <ProtectedRoute
+      path="/kitchenandinventory/processing"
+      component={ProcessingLandingPage}
+      fallback
+    />
 
     <Route path="/EventPopularity" component={EventPopularity} />
     <Route path="/MaterialSummary" component={MaterialSummary} />
