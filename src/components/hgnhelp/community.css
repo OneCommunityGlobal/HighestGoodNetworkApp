@@ -1,0 +1,145 @@
+.members-container {
+    padding: 20px;
+    background-color: white;
+    font-family: Arial, sans-serif;
+  }
+  
+  .heading {
+    font-size: 24px;
+    margin-bottom: 20px;
+    text-align: left;
+  }
+  
+  .controls {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    align-items: center;
+  }
+  
+  .search-input {
+    padding: 8px 12px;
+    flex: 1;
+    max-width: 400px;
+    border: 1px solid black;
+    border-radius: 4px;
+  }
+  
+  .control-button {
+    padding: 8px 12px;
+    background: white;
+    border: 1px solid black;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  
+  .icon {
+    margin-right: 5px;
+  }
+  
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+
+    gap: 80px;
+  }
+  
+  .member-card {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+    text-align: center;
+    width: 100%;
+    
+  }
+  
+  .member-name {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 10px 0;
+  }
+  
+  .member-text {
+    font-size: 14px;
+    color: #444;
+    margin: 2px 0;
+  }
+  
+  .member-footer {
+    margin-top: 10px;
+    text-align: left;
+  }
+  
+  
+  .score {
+
+    color: black; 
+  }
+  
+  .green {
+    color: green;
+  }
+  
+  .red {
+    color: red;
+  }
+  
+  
+  .skills {
+    margin-top: 5px;
+    font-size: 14px;
+    color: black;
+  }
+
+  .skills-label {
+   
+    text-decoration: underline;
+    font-weight: bold;
+  }
+  
+  .highlight {
+    border: 2px solid blue;
+  }
+  
+  .slackicon {
+    width: 15px;
+    height: 15px;
+    margin-right: 2px;
+  }
+
+  .profile-img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin: 0 auto 10px;
+    display: block;
+  }
+  
+
+  @media (max-width: 600px) {
+    .heading {
+      font-size: 20px;
+      text-align: center;
+    }
+  
+    .controls {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  
+    .search-input, .control-button {
+      width: 100%;
+      max-width: none;
+    }
+  
+    .cards-grid {
+      gap: 20px;
+    }
+  
+    .member-footer {
+      text-align: center;
+    }
+  }
