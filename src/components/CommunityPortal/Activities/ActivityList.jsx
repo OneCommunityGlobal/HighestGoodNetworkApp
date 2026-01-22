@@ -1,8 +1,6 @@
-// Activity List Component
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import styles from './ActivityList.module.css';
-// import { useHistory } from 'react-router-dom';
 
 function ActivityList() {
   const [activities, setActivities] = useState([]);
@@ -179,6 +177,9 @@ function ActivityList() {
         </label>
         <button
           type="button"
+          className={`${styles.clearFiltersButton} ${
+            darkMode ? styles.clearFiltersButtonDark : ''
+          }`}
           onClick={handleClearFilters}
           disabled={!filter.type && !filter.date && !filter.location}
         >
