@@ -5,38 +5,67 @@ import companyLogo from '../../../assets/images/logo2.png';
 
 function FollowUpEmailTemplate() {
   const { eventId = 1234, email = '' } = useParams(); // || { email: '' };
+  const eventName = '[Event Name]';
+  const eventDate = '[Event Date]';
+
+  const subject =
+    eventName !== '[Event Name]' ? `Help us improve: ${eventName}` : 'Help Us Improve Our Events';
+  const previewText = 'Tell us what you thought — takes less than 2 minutes.';
   return (
     <div className={styles.emailTemplateContainer}>
+      {/* Subject (for template clarity / preview) */}
+      <p className={styles.subjectLine}>
+        <strong>Subject:</strong> {subject}
+      </p>
+      <p className={styles.previewLine}>
+        <strong>Preview:</strong> {previewText}
+      </p>
+      {/* Preheader / preview text (email clients show this) */}
+      <span className={styles.preheader}>{previewText}</span>
+
       {/* Company Logo */}
       <img src={companyLogo} alt="One Community Logo" className={styles.emailLogo} />
 
       <h2>Hi {email || '[Name]'},</h2>
       <p>
-        We hope you enjoyed our recent event. Your feedback is valuable to us as we strive to
-        improve our future events.
+        Thanks for attending <strong>{eventName}</strong> on <strong>{eventDate}</strong>. Your
+        feedback helps us improve future events and make them more valuable for you.
       </p>
 
-      <p>
-        Please take a moment to share your thoughts:
-        <br />
-        <Link
-          to={`/communityportal/activities/FeedbackForm/${eventId}/${email || 'no-email'}`}
-          className={styles.feedbackLink}
-        >
-          Survey Form
-        </Link>
-      </p>
+      <p className={styles.ctaIntro}>Please take a moment to share your thoughts:</p>
+      <Link
+        to={`/communityportal/activities/FeedbackForm/${eventId}/${email || 'no-email'}`}
+        className={styles.primaryCta}
+      >
+        Complete Survey
+      </Link>
+      <p className={styles.ctaSubtext}>Takes less than 2 minutes.</p>
 
-      <p>If you’d like to:</p>
-      <ul>
-        <li>
-          Reschedule: <a href="https://www.onecommunityevents.org/reschedule">Reschedule Link</a>
-        </li>
-        <li>
-          Register for alternative events:{' '}
-          <a href="https://www.onecommunityevents.org/alternative-events">Alternative Events</a>
-        </li>
-      </ul>
+      <div className={styles.otherOptions}>
+        <p className={styles.otherOptionsTitle}>Other options</p>
+        <ul className={styles.otherOptionsList}>
+          <li>
+            <a
+              className={styles.secondaryLink}
+              href="https://www.onecommunityevents.org/reschedule"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Reschedule
+            </a>
+          </li>
+          <li>
+            <a
+              className={styles.secondaryLink}
+              href="https://www.onecommunityevents.org/alternative-events"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Browse alternative events
+            </a>
+          </li>
+        </ul>
+      </div>
 
       <p>Best regards,</p>
       <p>One Community Team</p>
@@ -90,7 +119,16 @@ function FollowUpEmailTemplate() {
         as a user or a creator. This also shows that you agree to our Terms of Use and Privacy
         Policies. If you no longer want to receive mails from us, click the unsubscribe link below.
       </p>
-
+      <p style={{ textAlign: 'center', fontSize: '12px', marginTop: '6px' }}>
+        <a
+          href="https://onecommunityglobal.org/unsubscribe"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={styles.footerLinks}
+        >
+          Unsubscribe
+        </a>
+      </p>
       <div className={styles.footerLinksContainer}>
         <a
           href="https://onecommunityglobal.org/terms-and-conditions/"
