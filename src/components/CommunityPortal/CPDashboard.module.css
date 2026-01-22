@@ -139,51 +139,44 @@
   gap: 20px;
 }
 
+
 .radioRow {
   display: flex;
+  gap: 16px;          /* spacing between radio options */
   flex-wrap: wrap;
-  gap: 5px;
-  margin-top: 10px;
 }
 
-.radioGroup {
-  margin-right: 8px;
-}
-
-.radioInput {
-  margin-right: 6px;
+.radioColumn {
+  display: flex;
+  flex-direction: column;  /* stack vertically */
+  gap: 8px;                /* space between radios */
 }
 
 .radioLabel {
-  margin-bottom: 0;
-  vertical-align: middle;
+  display: flex;
+  align-items: center;
+  gap: 6px;           /* spacing between radio and text */
+  cursor: pointer;
 }
 
-.filterItem input:not([type="checkbox"]):not([type="radio"]),
-.filterItem select {
-  padding: 12px 15px;
-  margin-top: 10px;
-  border-radius: 8px;
-  width: 100%;
-  height: auto;
-  font-size: 1rem;
-  transition: all 0.3s ease;
-}
-
-.filterItem input[type="radio"],
-.filterItem input[type="checkbox"] {
-  display: inline-block;      /* <– keeps input on same line as text */
+.radioInput {
+  margin: 0;
   width: auto;
-  padding: 0;
-  margin: 5px 0px 0px 120px;       /* top margin to line up under "Dates" */
   vertical-align: middle;
 }
 
-.filterItem input:focus,
-.filterItem select:focus {
-  border-color: #2c3e50;
-  box-shadow: 0 0 5px rgba(44, 62, 80, 0.4);
-  outline: none;
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 6px;           /* spacing between checkbox and text */
+  cursor: pointer;
+}
+
+.checkboxInput {
+  margin: 0;
+  width: auto;
+  vertical-align: middle;
 }
 
 .dashboardMain {
@@ -255,6 +248,7 @@
 .dashboardActions {
   text-align: center;
   margin-top: 20px;
+  margin-bottom: 20px;
 }
 
 .dashboardActions button {
