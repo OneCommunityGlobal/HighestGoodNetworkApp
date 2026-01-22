@@ -7,7 +7,7 @@
 }
 
 .descriptionSectionDark {
-  background-color: #2d2d2d;
+  background-color: rgba(30, 41, 59, 0.8);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
@@ -189,4 +189,230 @@
   .descriptionParagraph {
     font-size: 14px;
   }
+}
+
+.participantAvatars {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.participantAvatarsDark {
+  /* inherits parent dark mode context */
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: #eef2ff;
+  color: #1f2937;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 13px;
+  border: 2px solid #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.avatarDark {
+  background-color: #4f46e5;
+  color: #ffffff;
+  border-color: rgba(79, 70, 229, 0.3);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.avatarMore {
+  min-width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: #e6e6e6;
+  color: #374151;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 13px;
+  border: 2px solid #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  flex-shrink: 0;
+}
+
+.avatarMoreDark {
+  background-color: #6366f1;
+  color: #ffffff;
+  border-color: rgba(99, 102, 241, 0.3);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.commentEntry {
+  display: flex;
+  gap: 12px;
+  padding: 12px 16px;
+  margin-bottom: 12px;
+  border-radius: 10px;
+  background-color: #f3f4f6;
+  transition: background-color 0.3s ease;
+}
+
+.commentEntryDark {
+  background-color: rgba(148, 163, 184, 0.16);
+}
+
+.commentAvatar {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.commentContent {
+  flex: 1;
+}
+
+.commentAuthor {
+  margin: 0 0 4px 0;
+  font-weight: 600;
+  font-size: 14px;
+  color: #1f2937;
+}
+
+.commentAuthorDark {
+  color: #f8fafc;
+}
+
+.commentText {
+  margin: 0;
+  font-size: 14px;
+  color: #374151;
+  line-height: 1.5;
+}
+
+.commentTextDark {
+  color: #e5e7eb;
+}
+
+.participantRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.participantRowDark {
+  color: #ffffff;
+}
+
+.participantAvatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: #e5e7eb;
+  color: #111827;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.participantAvatarDark {
+  background-color: #374151;
+  color: #ffffff;
+}
+
+.participantInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.participantName {
+  font-size: 14px;
+}
+
+/* FAQ Card */
+.faqCard {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  background-color: #ffffff;
+}
+
+.faqCardDark {
+  background-color: #1f2937;
+  border-color: #374151;
+}
+
+/* Question */
+.faqQuestionRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.faqQBadge {
+  min-width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background-color: #2563eb;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.faqQuestionText {
+  font-weight: 600;
+  color: #111827;
+}
+
+.faqQuestionTextDark {
+  color: #f9fafb;
+}
+
+/* Answer */
+.faqAnswerRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.faqABadge {
+  min-width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background-color: #10b981;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.faqAnswerText {
+  color: #374151;
+  line-height: 1.5;
+}
+
+.faqAnswerTextDark {
+  color: #d1d5db;
 }
