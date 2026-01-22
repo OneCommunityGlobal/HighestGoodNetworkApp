@@ -1,0 +1,167 @@
+.headerContainer {
+  background-color: #ffffff;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 0 32px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: 'Inter', sans-serif;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+/* Left side: Logo & Brand */
+.brandSection {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logoImage {
+  height: 40px;
+  width: auto;
+  border-radius: 8px; /* Slight rounding if square */
+}
+
+.brandTextContainer {
+  display: flex;
+  flex-direction: column;
+  white-space: nowrap;
+}
+
+.brandTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  line-height: 1.2;
+}
+
+.brandSubtitle {
+  font-size: 11px;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Center-Right: Navigation */
+.navContainer {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.navItem {
+  text-decoration: none;
+  color: #555;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 20px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.navItem:hover {
+  background-color: #f5f5f5;
+  color: #333;
+  text-decoration: none;
+}
+
+/* Active State */
+.activeLink {
+  background-color: #e6f4ea; /* Light green background */
+  color: #2e7d32; /* Darker green text */
+  font-weight: 600;
+}
+.activeLink:hover {
+  background-color: #dcedc8;
+  color: #1b5e20;
+}
+
+/* Dropdown Arrow Indicator (simple css triangle or unicode) */
+.dropdownArrow {
+  font-size: 10px;
+  margin-left: 4px;
+  color: #777;
+}
+
+/* Mobile Menu Button */
+.menuToggle {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #333;
+  cursor: pointer;
+}
+
+/* Background Overlay */
+.overlay {
+    display: none;
+}
+
+
+/* Responsive Adjustments */
+@media (max-width: 900px) {
+  .headerContainer {
+    padding: 0 16px;
+    height: 64px; /* Fixed height again */
+    flex-wrap: nowrap; /* Prevent wrap */
+    padding-bottom: 0;
+    padding-top: 0;
+  }
+  
+  .brandTextContainer {
+     white-space: nowrap;
+  }
+  
+  .menuToggle {
+    display: block;
+  }
+
+  .navContainer {
+    position: absolute;
+    top: 64px;
+    left: 0;
+    width: 100%;
+    background-color: white;
+    flex-direction: column;
+    padding: 16px 0;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transform: translateY(-150%);
+    transition: transform 0.3s ease-in-out;
+    z-index: 999;
+    align-items: flex-start;
+  }
+  
+  .navOpen {
+      transform: translateY(0);
+  }
+  
+  .navItem {
+      width: 100%;
+      padding: 12px 24px;
+      border-radius: 0;
+  }
+  
+  /* Overlay */
+  .overlay {
+      display: block;
+      position: fixed;
+      top: 64px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.3);
+      z-index: 998;
+  }
+  
+   /* Prevent horizontal scrolling on container overrides */
+  .navContainer::-webkit-scrollbar {
+    display: none;
+  }
+}
+

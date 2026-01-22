@@ -326,14 +326,6 @@ export default (
     <LBProtectedRoute path="/lbdashboard/biddingoverview" component={LBBidOverview} />
     <LBProtectedRoute path="/lbdashboard/biddinghomepage" component={BiddingHomepage} />
     {/* ----- LB Dashboard Routing Ends----- */}
-
-    {/* Kitchen & Inventory Routes */}
-    <ProtectedRoute
-      path="/kitchenandinventory/processing"
-      component={ProcessingLandingPage}
-      fallback
-    />
-
     <Route path="/EventPopularity" component={EventPopularity} />
     <Route path="/MaterialSummary" component={MaterialSummary} />
     <Route path="/form" component={FormEditor} />
@@ -358,6 +350,11 @@ export default (
         <ProtectedRoute path="/weekly-summary" exact component={WeeklySummaryPage} />
         <ProtectedRoute path="/hgnhelp" exact component={HelpPage} />
         <ProtectedRoute path="/dashboard" exact component={Dashboard} />
+        <ProtectedRoute
+          path="/kitchenandinventory/processing"
+          component={ProcessingLandingPage}
+          fallback
+        />
         <ProtectedRoute path="/dashboard/:userId" exact component={Dashboard} />
         <ProtectedRoute path="/project/members/:projectId" fallback component={Members} />
         <ProtectedRoute path="/timelog/" exact render={() => <Timelog userId={null} />} />
