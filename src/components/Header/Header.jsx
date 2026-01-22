@@ -166,7 +166,6 @@ export function Header(props) {
   const unreadNotifications = props.notification?.unreadNotifications; // List of unread notifications
   const dispatch = useDispatch();
   const history = useHistory();
-
   const [showProjectDropdown, setShowProjectDropdown] = useState(false);
 
   useEffect(() => {
