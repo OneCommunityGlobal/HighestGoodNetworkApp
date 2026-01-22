@@ -1,0 +1,126 @@
+/* Light mode for multi select*/
+:global(.customSelect__control) {
+  background-color: #fff !important;
+  color: #000 !important;
+  border-color: #ccc;
+  font-size: 10px;
+}
+
+:global(.customSelect__single-value) {
+  font-size: 10px;
+  color: #000 !important;
+}
+
+:global(.datePickerInput) {
+  font-size: 10px !important;
+  padding: 6px 8px;
+  border-radius: 4px;
+}
+
+:global(.darkTheme .form-control .datePickerInput) {
+  background-color: #2b3e59 !important;
+  color: #fff !important;
+  border: 1px solid #666 !important;
+  font-size: 10px !important;
+}
+
+:global(.customCalendar .react-datepicker__day--keyboard-selected) {
+  background-color: #7d7e7f !important;
+}
+
+/* Hover day styling in dark theme */
+:global(.customCalendar .react-datepicker__day:hover) {
+  background-color: #3b5a81 !important;
+  color: #fff !important;
+  border-radius: 50%;
+}
+
+/* Dark theme calendar container */
+:global(.darkThemeCalendar) { 
+  background-color: #2b3e59 !important;
+  color: #fff !important;
+  border: 1px solid #6b6767 !important;
+}
+
+/* Dark theme header */
+:global(.darkThemeCalendar .react-datepicker__header) {
+  background-color: #1c2541 !important;
+  color: #e0e0e0 !important;
+  border-bottom: 1px solid #666 !important;
+  font-size: 12px !important;
+}
+
+/* Selected day styling in dark theme */
+:global(.darkThemeCalendar .react-datepicker__day--selected) {
+  background-color: #4a90e2 !important;
+  color: #fff !important;
+  border-radius: 50%;
+}
+
+:global(.darkThemeCalendar .react-datepicker__day--keyboard-selected) {
+  background-color: #316893 !important;
+}
+
+/* Hover day styling in dark theme */
+:global(.darkThemeCalendar .react-datepicker__day:hover) {
+  background-color: #3b5a81 !important;
+  color: #fff !important;
+  border-radius: 50%;
+}
+
+/* Dark mode for multi select*/
+:global(.darkTheme .customSelect__control) {
+  background-color: #fff!important;
+  color: #000!important;
+  border-color: #ccc!important;
+  font-size: 10px!important;
+}
+
+:global(.darkTheme .customSelect__menu) {
+  background-color: #2b3e59!important;
+  border-color: #666!important;
+  color: #fff!important;
+}
+
+:global(.darkTheme .customSelect__option) {
+  background-color: #2b3e59!important;
+  color: #fff!important;
+}
+
+:global(.darkTheme .customSelect__option--is-focused) {
+  background-color: #6c757d!important;
+}
+
+:global(.darkTheme .customSelect__option--is-selected) {
+  background-color: #007bff!important;
+}
+
+.darkSelectWrapper :global(.customSelect__control) {
+  background-color: #1a1a1a !important;
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #f5f7fa !important;
+}
+
+
+
+/* Filter controls layout for small screens */
+@media (max-width: 768px) {
+  :global(.datepickerWrapper) {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  :global(.datepickerWrapper .btn) {
+    margin-top: 8px;
+    width: 100%;
+  }
+
+  :global(.customSelect__control) {
+    font-size: 10px;
+  }
+
+  :global(.customSelect__multi-value) {
+    font-size: 10px;
+  }
+}

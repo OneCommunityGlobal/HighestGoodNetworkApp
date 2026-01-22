@@ -57,6 +57,7 @@
     "diff": "^8.0.3",
     "dompurify": "^3.2.5",
     "elliptic": "^6.6.1",
+    "fast-png": "^7.0.1",
     "font-awesome": "^4.7.0",
     "fs-extra": "^11.3.0",
     "history": "^4.10.1",
