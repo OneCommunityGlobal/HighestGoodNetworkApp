@@ -24,10 +24,12 @@
 :global(textarea) {
   margin-top: 5px; /* Space above input fields */
   width: 100%;
-  padding: 12px; /* Increased padding */
+  padding: 12px;
+  /* Increased padding */
   border: 1px solid #ccc;
   border-radius: 4px;
-  box-sizing: border-box; /* Ensures padding is included in width */
+  box-sizing: border-box;
+  /* Ensures padding is included in width */
 }
 
 .inputFileUpload {
@@ -39,10 +41,12 @@ button.sendButton {
   color: #fff;
   border: none;
   border-radius: 4px;
-  padding: 12px 24px; /* Increased padding */
+  padding: 12px 24px;
+  /* Increased padding */
   cursor: pointer;
   margin-top: 20px;
-  box-sizing: border-box; /* Ensures padding is included in width */
+  box-sizing: border-box;
+  /* Ensures padding is included in width */
 }
 
 button.sendButton:hover {
@@ -66,6 +70,10 @@ button.sendButton:hover {
   /* Editor takes up remaining space */
   margin-right: 20px;
   /* Add some spacing between editor and email inputs */
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
 }
 
 .editor :global(h2) {
@@ -79,11 +87,13 @@ button.sendButton:hover {
 
 .emails {
   margin-top: 65px;
-  padding: 24px; /* Increased padding */
+  padding: 24px;
+  /* Increased padding */
   border: solid 1px #cacaca;
   border-radius: 20px;
   width: 300px;
-  box-sizing: border-box; /* Ensures padding is included in width */
+  box-sizing: border-box;
+  /* Ensures padding is included in width */
   /* Set a fixed width for the email inputs container */
 }
 
@@ -138,22 +148,28 @@ button.sendButton:hover {
   .emails {
     width: 100%;
     margin-top: 20px;
-    padding: 20px 12px; /* Adjust padding for smaller screens */
-    box-sizing: border-box; /* Ensures padding is included in width */
+    padding: 20px 12px;
+    /* Adjust padding for smaller screens */
+    box-sizing: border-box;
+    /* Ensures padding is included in width */
   }
   
   .sendButton {
     width: 100%;
     margin-bottom: 10px;
-    padding: 12px; /* Ensures padding is consistent */
-    box-sizing: border-box; /* Ensures padding is included in width */
+    padding: 12px;
+    /* Ensures padding is consistent */
+    box-sizing: border-box;
+    /* Ensures padding is included in width */
   }
   
   .inputTextForAnnouncement,
   :global(textarea) {
     width: 100%;
-    padding: 12px; /* Ensures padding is consistent */
-    box-sizing: border-box; /* Ensures padding is included in width */
+    padding: 12px;
+    /* Ensures padding is consistent */
+    box-sizing: border-box;
+    /* Ensures padding is included in width */
   }
 }
 
@@ -271,15 +287,15 @@ button.sendButton:hover {
 
 .tabGrid.dark > .navItem .tabNavItem {
   box-shadow:
-    -2px 0 6px rgba(0,0,0,0.25),
-     2px 0 6px rgba(0,0,0,0.25);
+    -2px 0 6px rgba(0, 0, 0, 0.25),
+    2px 0 6px rgba(0, 0, 0, 0.25);
 }
 
 .tabGrid.dark > .navItem:nth-child(-n+12) .tabNavItem {
   box-shadow:
-    -2px 0 6px rgba(0,0,0,0.25),
-     2px 0 6px rgba(0,0,0,0.25),
-     0 6px 6px rgba(0,0,0,0.35);
+    -2px 0 6px rgba(0, 0, 0, 0.25),
+    2px 0 6px rgba(0, 0, 0, 0.25),
+    0 6px 6px rgba(0, 0, 0, 0.35);
 }
 
 .tabGrid.dark::-webkit-scrollbar-track {
@@ -437,13 +453,13 @@ button.sendButton:hover {
 .tabGrid > .navItem .tabNavItem {
   /* left + right only */
   box-shadow:
-    -2px 0 6px rgba(0,0,0,0.12),
-     2px 0 6px rgba(0,0,0,0.12);
+    -2px 0 6px rgba(0, 0, 0, 0.12),
+    2px 0 6px rgba(0, 0, 0, 0.12);
 }
 
 .tabGrid > .navItem:nth-child(-n+12) .tabNavItem {
   box-shadow:
-    -2px 0 6px rgba(0,0,0,0.12),
-     2px 0 6px rgba(0,0,0,0.12),
-     0 6px 6px rgba(0,0,0,0.20);
+    -2px 0 6px rgba(0, 0, 0, 0.12),
+    2px 0 6px rgba(0, 0, 0, 0.12),
+    0 6px 6px rgba(0, 0, 0, 0.20);
 }

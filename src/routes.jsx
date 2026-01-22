@@ -32,6 +32,7 @@ import SubscribePage from './components/EmailSubscribeForm/SubscribePage';
 import UnsubscribePage from './components/EmailSubscribeForm/UnsubscribePage';
 import UnsubscribeForm from './components/EmailSubscribeForm/Unsubscribe';
 import EmailSender from './components/common/EmailSender/EmailSender';
+import { EmailTemplateManager } from './components/EmailManagement';
 
 import FormEditor from './components/Forms/FormEditor';
 import FormViewer from './components/Forms/FormViewer';
@@ -537,10 +538,185 @@ export default (
           routePermissions={RoutePermissions.announcements}
         />
         <ProtectedRoute
+          path="/announcements/email"
+          exact
+          component={Announcements}
+          routePermissions={RoutePermissions.announcements}
+        />
+        <ProtectedRoute
+          path="/announcements/email/sender"
+          exact
+          component={Announcements}
+          routePermissions={RoutePermissions.announcements}
+        />
+        <ProtectedRoute
+          path="/announcements/email/templates"
+          exact
+          component={Announcements}
+          routePermissions={RoutePermissions.announcements}
+        />
+        <ProtectedRoute
+          path="/announcements/email/templates/:templateId"
+          exact
+          component={Announcements}
+          routePermissions={RoutePermissions.announcements}
+        />
+        <ProtectedRoute
+          path="/announcements/email/templates/create"
+          exact
+          component={Announcements}
+          routePermissions={RoutePermissions.announcements}
+        />
+        <ProtectedRoute
+          path="/announcements/email/emails"
+          exact
+          component={Announcements}
+          routePermissions={RoutePermissions.announcements}
+        />
+        <ProtectedRoute
+          path="/announcements/email/batches"
+          exact
+          component={Announcements}
+          routePermissions={RoutePermissions.announcements}
+        />
+        <ProtectedRoute
+          path="/announcements/x"
+          exact
+          component={Announcements}
+          routePermissions={RoutePermissions.announcements}
+        />
+        <ProtectedRoute
+          path="/announcements/facebook"
+          exact
+          component={Announcements}
+          routePermissions={RoutePermissions.announcements}
+        />
+        <ProtectedRoute
+          path="/announcements/linkedin"
+          exact
+          component={Announcements}
+          routePermissions={RoutePermissions.announcements}
+        />
+        <ProtectedRoute
+          path="/announcements/pinterest"
+          exact
+          component={Announcements}
+          routePermissions={RoutePermissions.announcements}
+        />
+        <ProtectedRoute
+          path="/announcements/instagram"
+          exact
+          component={Announcements}
+          routePermissions={RoutePermissions.announcements}
+        />
+        <ProtectedRoute
+          path="/announcements/threads"
+          exact
+          component={Announcements}
+          routePermissions={RoutePermissions.announcements}
+        />
+        <ProtectedRoute
+          path="/announcements/mastodon"
+          exact
+          component={Announcements}
+          routePermissions={RoutePermissions.announcements}
+        />
+        <ProtectedRoute
+          path="/announcements/bluesky"
+          exact
+          component={Announcements}
+          routePermissions={RoutePermissions.announcements}
+        />
+        <ProtectedRoute
+          path="/announcements/youtube"
+          exact
+          component={Announcements}
+          routePermissions={RoutePermissions.announcements}
+        />
+        <ProtectedRoute
+          path="/announcements/reddit"
+          exact
+          component={Announcements}
+          routePermissions={RoutePermissions.announcements}
+        />
+        <ProtectedRoute
+          path="/announcements/tumblr"
+          exact
+          component={Announcements}
+          routePermissions={RoutePermissions.announcements}
+        />
+        <ProtectedRoute
+          path="/announcements/imgur"
+          exact
+          component={Announcements}
+          routePermissions={RoutePermissions.announcements}
+        />
+        <ProtectedRoute
+          path="/announcements/diigo"
+          exact
+          component={Announcements}
+          routePermissions={RoutePermissions.announcements}
+        />
+        <ProtectedRoute
+          path="/announcements/myspace"
+          exact
+          component={Announcements}
+          routePermissions={RoutePermissions.announcements}
+        />
+        <ProtectedRoute
+          path="/announcements/medium"
+          exact
+          component={Announcements}
+          routePermissions={RoutePermissions.announcements}
+        />
+        <ProtectedRoute
+          path="/announcements/plurk"
+          exact
+          component={Announcements}
+          routePermissions={RoutePermissions.announcements}
+        />
+        <ProtectedRoute
+          path="/announcements/bitily"
+          exact
+          component={Announcements}
+          routePermissions={RoutePermissions.announcements}
+        />
+        <ProtectedRoute
+          path="/announcements/livejournal"
+          exact
+          component={Announcements}
+          routePermissions={RoutePermissions.announcements}
+        />
+        <ProtectedRoute
+          path="/announcements/slashdot"
+          exact
+          component={Announcements}
+          routePermissions={RoutePermissions.announcements}
+        />
+        <ProtectedRoute
+          path="/announcements/blogger"
+          exact
+          component={Announcements}
+          routePermissions={RoutePermissions.announcements}
+        />
+        <ProtectedRoute
+          path="/announcements/truthsocial"
+          exact
+          component={Announcements}
+          routePermissions={RoutePermissions.announcements}
+        />
+        <ProtectedRoute
           path="/sendemail"
           exact
           component={EmailSender}
           allowedRoles={[UserRole.Administrator, UserRole.Owner]}
+          routePermissions={RoutePermissions.projects}
+        />
+        <ProtectedRoute
+          path="/email-templates"
+          exact
+          component={EmailTemplateManager}
+          allowedRoles={[UserRole.Administrator, UserRole.Owner, UserRole.Manager]}
           routePermissions={RoutePermissions.projects}
         />
         <ProtectedRoute path="/faq" exact component={FaqSearch} />

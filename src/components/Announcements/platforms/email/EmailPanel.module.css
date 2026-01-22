@@ -1,0 +1,765 @@
+/* Email Panel - Optimized and Production Ready */
+
+/* Screen reader only content */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Top Bar Navigation - Clean */
+.email-top-bar {
+  width: 100%;
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin-bottom: 16px !important;
+  box-shadow: none;
+  border-radius: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.email-tab-buttons-full-width {
+  display: flex;
+  width: 100%;
+  gap: 8px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: none;
+  background: transparent;
+}
+
+.email-tab-button-full {
+  flex: 1;
+  padding: 12px 20px !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  border: 1px solid #dee2e6 !important;
+  border-radius: 8px !important;
+  position: relative;
+  transition: all 0.2s ease !important;
+  text-align: center;
+  background-color: #ffffff !important;
+  color: #6c757d !important;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+  text-decoration: none;
+}
+
+/* Dark mode tab buttons */
+.email-update-container.dark-mode .email-tab-button-full {
+  background-color: #374151 !important;
+  color: #e5e7eb !important;
+  border: 1px solid #4b5563 !important;
+}
+
+.email-update-container.dark-mode .email-tab-button-full:hover:not(.active) {
+  background-color: #4b5563 !important;
+  color: #f9fafb !important;
+}
+
+.email-update-container.dark-mode .email-tab-button-full.active {
+  background-color: #3b82f6 !important;
+  color: white !important;
+  border-color: #3b82f6 !important;
+}
+
+/* Comprehensive dark mode for all text elements in email platform */
+.email-update-container.dark-mode,
+.email-update-container.dark-mode * {
+  color: #e9ecef;
+}
+
+.email-update-container.dark-mode .text-muted,
+.email-update-container.dark-mode .text-secondary {
+  color: #9ca3af !important;
+}
+
+.email-update-container.dark-mode .text-primary {
+  color: #60a5fa !important;
+}
+
+.email-update-container.dark-mode .text-success {
+  color: #10b981 !important;
+}
+
+.email-update-container.dark-mode .text-danger {
+  color: #f87171 !important;
+}
+
+.email-update-container.dark-mode .text-warning {
+  color: #f59e0b !important;
+}
+
+.email-update-container.dark-mode .text-info {
+  color: #06b6d4 !important;
+}
+
+.email-update-container.dark-mode .text-dark {
+  color: #e9ecef !important;
+}
+
+.email-update-container.dark-mode .text-light {
+  color: #9ca3af !important;
+}
+
+/* Dark mode for all cards and containers */
+.email-update-container.dark-mode .card {
+  background-color: #2d3748;
+  border-color: #4a5568;
+  color: #e9ecef;
+}
+
+.email-update-container.dark-mode .card-header {
+  background-color: #374151;
+  border-bottom-color: #4a5568;
+  color: #e9ecef;
+}
+
+.email-update-container.dark-mode .card-body {
+  background-color: #2d3748;
+  color: #e9ecef;
+}
+
+/* Dark mode for all form elements */
+.email-update-container.dark-mode .form-control,
+.email-update-container.dark-mode .form-select,
+.email-update-container.dark-mode textarea {
+  background-color: #374151;
+  border-color: #4a5568;
+  color: #e9ecef;
+}
+
+.email-update-container.dark-mode .form-control:focus,
+.email-update-container.dark-mode .form-select:focus,
+.email-update-container.dark-mode textarea:focus {
+  background-color: #374151;
+  border-color: #60a5fa;
+  color: #e9ecef;
+  box-shadow: 0 0 0 0.25rem rgba(96, 165, 250, 0.25);
+}
+
+.email-update-container.dark-mode .form-label,
+.email-update-container.dark-mode label {
+  color: #e9ecef;
+}
+
+/* Dark mode for alerts */
+.email-update-container.dark-mode .alert-danger {
+  background-color: #7f1d1d;
+  color: #fecaca;
+  border: 1px solid #991b1b;
+}
+
+.email-update-container.dark-mode .alert-success {
+  background-color: #065f46;
+  color: #d1fae5;
+  border: 1px solid #047857;
+}
+
+.email-update-container.dark-mode .alert-info {
+  background-color: #1e3a8a;
+  color: #dbeafe;
+  border: 1px solid #1d4ed8;
+}
+
+.email-update-container.dark-mode .alert-warning {
+  background-color: #92400e;
+  color: #fef3c7;
+  border: 1px solid #d97706;
+}
+
+/* Active state */
+.email-tab-button-full.active {
+  background-color: #3b82f6 !important;
+  color: white !important;
+  border-color: #3b82f6 !important;
+}
+
+/* Hover states */
+.email-tab-button-full:hover:not(.active) {
+  background-color: #f3f4f6 !important;
+  color: #374151 !important;
+  border-color: #9ca3af !important;
+}
+
+/* Focus states for accessibility */
+.email-tab-button-full:focus {
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25) !important;
+  outline: none !important;
+  z-index: 10;
+}
+
+.email-tab-button-full:focus-visible {
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.5) !important;
+}
+
+/* Container Layout - With proper background support */
+.email-update-container {
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+/* Light mode background */
+.email-update-container.light-mode {
+  background-color: #f8f9fa;
+  color: #212529;
+}
+
+/* Dark mode background */
+.email-update-container.dark-mode {
+  background-color: #1a1d23;
+  color: #e9ecef;
+}
+
+/* Content Area - Clean without unnecessary backgrounds */
+.email-content-area {
+  width: 100%;
+  padding: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  margin-top: 0;
+  min-height: auto;
+  transition: none;
+  position: relative;
+}
+
+
+/* Error Display Styling */
+.alert {
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  border: 1px solid transparent;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.alert-danger {
+  color: #721c24;
+  background-color: #f8d7da;
+  border-color: #f5c6cb;
+}
+
+.email-update-container.dark-mode .alert-danger {
+  color: #f87171;
+  background-color: #374151;
+  border-color: #4b5563;
+}
+
+.btn-close {
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1;
+  color: #000;
+  opacity: 0.5;
+  cursor: pointer;
+  padding: 0.25rem;
+}
+
+.email-update-container.dark-mode .btn-close {
+  color: #e9ecef;
+}
+
+.btn-close:hover {
+  opacity: 0.75;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .email-top-bar {
+    margin-bottom: 12px !important;
+  }
+  
+  .email-tab-button-full {
+    padding: 10px 16px !important;
+    font-size: 13px !important;
+    min-height: 40px;
+  }
+  
+  .alert {
+    padding: 0.75rem;
+    font-size: 0.875rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .email-tab-buttons-full-width {
+    gap: 4px;
+  }
+  
+  .email-tab-button-full {
+    padding: 8px 12px !important;
+    font-size: 12px !important;
+    min-height: 36px;
+  }
+  
+  .alert {
+    padding: 0.5rem;
+    font-size: 0.8125rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .btn-close {
+    align-self: flex-end;
+    margin-top: -0.25rem;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .email-tab-button-full {
+    border: 2px solid #000 !important;
+  }
+  
+  .email-tab-button-full.active {
+    background: #000 !important;
+    color: #fff !important;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .email-tab-button-full {
+    transition: none !important;
+  }
+}
+
+/* Print styles */
+@media print {
+  .email-top-bar {
+    display: none;
+  }
+}
+
+/* Tabbed Email Interface Styles */
+.email-tabs-container {
+  width: 100%;
+  background: transparent;
+}
+
+.email-tabs-container .nav-tabs {
+  border-bottom: 2px solid #dee2e6;
+  margin-bottom: 1.5rem;
+}
+
+.email-update-container.dark-mode .email-tabs-container .nav-tabs {
+  border-bottom-color: #4a5568;
+}
+
+.email-tabs-container .nav-link {
+  padding: 0.75rem 1.5rem;
+  font-weight: 500;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+  border-radius: 0.5rem 0.5rem 0 0;
+  margin-bottom: -2px;
+}
+
+.email-tabs-container .nav-link:hover {
+  background-color: rgba(0, 123, 255, 0.1);
+}
+
+.email-update-container.dark-mode .email-tabs-container .nav-link:hover {
+  background-color: rgba(59, 130, 246, 0.2);
+}
+
+.email-tabs-container .nav-link.active {
+  border-bottom: 2px solid #007bff !important;
+  font-weight: 600;
+}
+
+.email-update-container.dark-mode .email-tabs-container .nav-link.active {
+  border-bottom-color: #3b82f6 !important;
+}
+
+.email-tabs-container .tab-content {
+  width: 100%;
+}
+
+/* Responsive tabs */
+@media (max-width: 576px) {
+  .email-tabs-container .nav-link {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+  }
+}
+
+/* ==========================================================================
+   EDIT EMAIL TEMPLATE - IMPROVED VARIABLE CHIPS UI (ORIGINAL ICON SIZE)
+   ========================================================================== */
+
+/* Variables Section Header */
+.variables-header {
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.email-update-container.dark-mode .variables-header {
+  border-bottom-color: #4a5568;
+}
+
+.variables-header h5 {
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+/* Variables Grid Layout - Change from inline to grid */
+.variables-chips {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+/* Individual Variable Card - Improved from inline chip */
+.variable-chip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 1rem;
+  background: #ffffff;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 8px;
+  gap: 0.75rem;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.variable-chip:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.12);
+  transform: translateY(-2px);
+}
+
+.email-update-container.dark-mode .variable-chip {
+  background: #2d3748;
+  border-color: #4a5568;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.email-update-container.dark-mode .variable-chip:hover {
+  border-color: #60a5fa;
+  box-shadow: 0 4px 8px rgba(96, 165, 250, 0.15);
+}
+
+/* Variable Code/Name - Improved styling */
+.variable-code {
+  font-family: 'SFMono-Regular', 'Consolas', 'Liberation Mono', 'Menlo', monospace;
+  background: #f9fafb;
+  padding: 0.35rem 0.65rem;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1f2937;
+  border: 1px solid #e5e7eb;
+}
+
+.email-update-container.dark-mode .variable-code {
+  background: #374151;
+  color: #e9ecef;
+  border-color: #4a5568;
+}
+
+/* Type Badge - Better styling */
+.variable-type-badge {
+  font-size: 0.75rem !important;
+  font-weight: 600 !important;
+  padding: 0.35rem 0.65rem !important;
+  background: #eff6ff !important;
+  color: #1e40af !important;
+  border: 1px solid #dbeafe !important;
+  border-radius: 5px !important;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.email-update-container.dark-mode .variable-type-badge {
+  background: #1e3a8a !important;
+  color: #93c5fd !important;
+  border-color: #1e40af !important;
+}
+
+/* Action Buttons - Reasonable visible size */
+.chip-action-btn {
+  padding: 0.25rem !important;
+  border-radius: 6px !important;
+  font-size: 0.875rem !important;
+  width: 32px !important;
+  height: 32px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.2s ease !important;
+}
+
+.chip-action-btn:hover {
+  transform: scale(1.1) !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Edit Button Colors */
+.chip-action-btn.btn-outline-primary {
+  color: #1e40af !important;
+  background: #eff6ff !important;
+  border-color: #dbeafe !important;
+}
+
+.chip-action-btn.btn-outline-primary:hover {
+  background: #dbeafe !important;
+  border-color: #3b82f6 !important;
+  color: #1e40af !important;
+}
+
+.email-update-container.dark-mode .chip-action-btn.btn-outline-primary {
+  background: #1e3a8a !important;
+  color: #93c5fd !important;
+  border-color: #1e40af !important;
+}
+
+/* Delete Button Colors */
+.chip-action-btn.btn-outline-danger {
+  color: #dc2626 !important;
+  background: #fef2f2 !important;
+  border-color: #fecaca !important;
+}
+
+.chip-action-btn.btn-outline-danger:hover {
+  background: #fecaca !important;
+  border-color: #dc2626 !important;
+  color: #dc2626 !important;
+}
+
+.email-update-container.dark-mode .chip-action-btn.btn-outline-danger {
+  background: #7f1d1d !important;
+  color: #fca5a5 !important;
+  border-color: #991b1b !important;
+}
+
+/* Responsive - Mobile */
+@media (max-width: 768px) {
+  .variables-chips {
+    grid-template-columns: 1fr;
+  }
+  
+  .variable-chip {
+    padding: 0.75rem 0.85rem;
+    flex-wrap: wrap;
+  }
+  
+  .chip-action-btn {
+    width: 30px !important;
+    height: 30px !important;
+    font-size: 0.8125rem !important;
+  }
+}
+
+/* ==========================================================================
+   EDIT EMAIL TEMPLATE - IMPROVED VARIABLE CHIPS UI (EXISTING CLASS NAMES)
+   ========================================================================== */
+
+/* Variables Section Header */
+.variables-header {
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.email-update-container.dark-mode .variables-header {
+  border-bottom-color: #4a5568;
+}
+
+.variables-header h5 {
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+/* Variables Grid Layout - Change from inline to grid */
+.variables-chips {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+/* Individual Variable Card - Improved from inline chip */
+.variable-chip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 1rem;
+  background: #ffffff;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 8px;
+  gap: 0.75rem;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.variable-chip:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.12);
+  transform: translateY(-2px);
+}
+
+.email-update-container.dark-mode .variable-chip {
+  background: #2d3748;
+  border-color: #4a5568;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.email-update-container.dark-mode .variable-chip:hover {
+  border-color: #60a5fa;
+  box-shadow: 0 4px 8px rgba(96, 165, 250, 0.15);
+}
+
+/* Variable Code/Name - Improved styling */
+.variable-code {
+  font-family: 'SFMono-Regular', 'Consolas', 'Liberation Mono', 'Menlo', monospace;
+  background: #f9fafb;
+  padding: 0.35rem 0.65rem;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1f2937;
+  border: 1px solid #e5e7eb;
+}
+
+.email-update-container.dark-mode .variable-code {
+  background: #374151;
+  color: #e9ecef;
+  border-color: #4a5568;
+}
+
+/* Type Badge - Better styling */
+.variable-type-badge {
+  font-size: 0.75rem !important;
+  font-weight: 600 !important;
+  padding: 0.35rem 0.65rem !important;
+  background: #eff6ff !important;
+  color: #1e40af !important;
+  border: 1px solid #dbeafe !important;
+  border-radius: 5px !important;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.email-update-container.dark-mode .variable-type-badge {
+  background: #1e3a8a !important;
+  color: #93c5fd !important;
+  border-color: #1e40af !important;
+}
+
+/* Action Buttons - Improved size and styling */
+.chip-action-btn {
+  padding: 0.6rem !important;
+  border-radius: 6px !important;
+  font-size: 1.5rem !important;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.chip-action-btn svg,
+.chip-action-btn i {
+  font-size: 1.5rem !important;
+  width: 1.5rem !important;
+  height: 1.5rem !important;
+}
+
+.chip-action-btn:hover {
+  transform: scale(1.15);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Edit Button Colors */
+.chip-action-btn.btn-outline-primary {
+  color: #1e40af !important;
+  background: #eff6ff !important;
+  border-color: #dbeafe !important;
+}
+
+.chip-action-btn.btn-outline-primary:hover {
+  background: #dbeafe !important;
+  border-color: #3b82f6 !important;
+  color: #1e40af !important;
+}
+
+.email-update-container.dark-mode .chip-action-btn.btn-outline-primary {
+  background: #1e3a8a !important;
+  color: #93c5fd !important;
+  border-color: #1e40af !important;
+}
+
+/* Delete Button Colors */
+.chip-action-btn.btn-outline-danger {
+  color: #dc2626 !important;
+  background: #fef2f2 !important;
+  border-color: #fecaca !important;
+}
+
+.chip-action-btn.btn-outline-danger:hover {
+  background: #fecaca !important;
+  border-color: #dc2626 !important;
+  color: #dc2626 !important;
+}
+
+.email-update-container.dark-mode .chip-action-btn.btn-outline-danger {
+  background: #7f1d1d !important;
+  color: #fca5a5 !important;
+  border-color: #991b1b !important;
+}
+
+/* Responsive - Mobile */
+@media (max-width: 768px) {
+  .variables-chips {
+    grid-template-columns: 1fr;
+  }
+  
+  .variable-chip {
+    padding: 0.75rem 0.85rem;
+    flex-wrap: wrap;
+  }
+  
+  .chip-action-btn {
+    width: 42px;
+    height: 42px;
+    font-size: 1.4rem !important;
+  }
+  
+  .chip-action-btn svg,
+  .chip-action-btn i {
+    font-size: 1.4rem !important;
+    width: 1.4rem !important;
+    height: 1.4rem !important;
+  }
+}

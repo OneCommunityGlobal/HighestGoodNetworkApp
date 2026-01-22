@@ -82,7 +82,8 @@ import { eventFeedbackReducer } from './communityPortal/eventFeedback';
 
 import { jobApplicationReducer } from './jobApplication/jobApplicationReducer';
 
-// lbdashboard
+import emailTemplateReducer from './emailTemplateReducer';
+import emailOutboxReducer from './emailOutboxReducer';
 import wishListReducer from './listBidDashboard/wishListItemReducer';
 
 // listing and biddding dashboard
@@ -174,8 +175,9 @@ const localReducers = {
   // lbdashboard
   lbmessaging: messageReducer,
   lbuserpreferences: userPreferencesReducer,
+  emailTemplates: emailTemplateReducer,
+  emailOutbox: emailOutboxReducer,
 
-  WishListItem: wishListReducer,
 
   listOverview: listOverviewReducer,
   listingAvailability: listingAvailabilityReducer,

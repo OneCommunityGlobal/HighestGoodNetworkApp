@@ -7,12 +7,23 @@ function ConfirmationMessage({ message, isSuccess, confirmationMessageCallback }
     <div className={styles.confirmationContainer}>
       {isSuccess && <div className={styles.oneCommunityIcon} />}
       <p />
+      {/* {isSuccess && (
+        <div className={styles.envelope}>
+          <div className={styles.iconContainer}>
+            <div className={styles.checkmark}>✓</div>
+          </div>
+        </div>
+      )} */}
+      {/* Fix1: Indicating to the user that their email has been successfully verified */}
       {isSuccess && (
         <div className={styles.envelope}>
           <div className={styles.iconContainer}>
             <div className={styles.checkmark}>✓</div>
           </div>
         </div>
+      )}
+      {isSuccess && (
+        <h2 className={styles.successHeading}>Your email has been successfully verified!</h2>
       )}
       {!isSuccess && (
         <div className={styles.envelope}>

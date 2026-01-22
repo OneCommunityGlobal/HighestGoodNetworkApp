@@ -4,7 +4,7 @@ import styles from './Announcements.module.css';
 import { useSelector } from 'react-redux';
 import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
 import classnames from 'classnames';
-import SocialMediaComposer from './SocialMediaComposer';
+import { useHistory, useLocation } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faEnvelope,
@@ -15,11 +15,75 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { faFacebook, faLinkedin, faMedium } from '@fortawesome/free-brands-svg-icons';
 import ReactTooltip from 'react-tooltip';
-import EmailPanel from './platforms/email';
+import { EmailPanel, SocialMediaComposer } from './platforms';
 
 function Announcements({ title, email: initialEmail }) {
   const [activeTab, setActiveTab] = useState('email');
   const darkMode = useSelector(state => state.theme.darkMode);
+  const history = useHistory();
+  const location = useLocation();
+
+  // Get active tab from URL path
+  const getActiveTabFromURL = () => {
+    const path = location.pathname;
+
+    // Check for each platform
+    const platforms = [
+      'x',
+      'facebook',
+      'linkedin',
+      'pinterest',
+      'instagram',
+      'threads',
+      'mastodon',
+      'bluesky',
+      'youtube',
+      'reddit',
+      'tumblr',
+      'imgur',
+      'diigo',
+      'myspace',
+      'medium',
+      'plurk',
+      'bitily',
+      'livejournal',
+      'slashdot',
+      'blogger',
+      'truthsocial',
+    ];
+
+    for (const platform of platforms) {
+      if (path.includes(`/${platform}`)) {
+        return platform;
+      }
+    }
+
+    // Check for email platform
+    if (path.includes('/email')) {
+      return 'email';
+    }
+
+    // Default to email for main announcements page
+    return 'email';
+  };
+
+  // Update URL when activeTab changes
+  const updateURL = tab => {
+    if (tab === 'email') {
+      history.push('/announcements/email');
+    } else {
+      // For all social media platforms
+      history.push(`/announcements/${tab}`);
+    }
+  };
+
+  // Update activeTab when URL changes (e.g., browser back/forward)
+  useEffect(() => {
+    const newTab = getActiveTabFromURL();
+    if (newTab !== activeTab) {
+      setActiveTab(newTab);
+    }
+  }, [location.pathname]);
 
   const getIconColor = id => {
     switch (id) {
@@ -38,7 +102,7 @@ function Announcements({ title, email: initialEmail }) {
       case 'weeklyreport':
         return '#00C853';
       default:
-        return null;
+        return undefined;
     }
   };
 
@@ -65,14 +129,14 @@ function Announcements({ title, email: initialEmail }) {
     {
       id: 'livejournal',
       label: 'LiveJournal',
-      customIconSrc: 'social-media-logos/liveJournal_icon.png',
+      customIconSrc: '/social-media-logos/liveJournal_icon.png',
     },
-    { id: 'slashdot', label: 'Slashdot', customIconSrc: 'social-media-logos/slashdot_icon.png' },
-    { id: 'blogger', label: 'Blogger', customIconSrc: 'social-media-logos/blogger_icon.png' },
+    { id: 'slashdot', label: 'Slashdot', customIconSrc: '/social-media-logos/slashdot_icon.png' },
+    { id: 'blogger', label: 'Blogger', customIconSrc: '/social-media-logos/blogger_icon.png' },
     {
       id: 'truthsocial',
       label: 'Truth Social',
-      customIconSrc: 'social-media-logos/truthsocial_icon.png',
+      customIconSrc: '/social-media-logos/truthsocial_icon.png',
     },
     { id: 'email', icon: faEnvelope, label: 'Email' },
   ];
@@ -101,7 +165,10 @@ function Announcements({ title, email: initialEmail }) {
                 [styles.active]: activeTab === id,
                 [styles.dark]: darkMode,
               })}
-              onClick={() => setActiveTab(id)}
+              onClick={() => {
+                setActiveTab(id);
+                updateURL(id);
+              }}
               aria-selected={activeTab === id}
             >
               <div className={styles.tabIcon}>

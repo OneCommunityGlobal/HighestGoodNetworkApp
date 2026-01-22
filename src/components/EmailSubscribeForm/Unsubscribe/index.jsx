@@ -7,6 +7,7 @@ import styles from './SubscribePage.module.css'; // Import the CSS module
 import {
   removeNonHgnUserEmailSubscription,
   addNonHgnUserEmailSubscription,
+  confirmNonHgnUserEmailSubscription,
 } from '../../../actions/sendEmails';
 import ConfirmationMessage from './ConfirmationMessage';
 
@@ -33,7 +34,6 @@ function SubscribePage() {
       });
     }
   }, [query]);
-
   const validateEmail = emailval => {
     return /\S+@\S+\.\S+/.test(emailval);
   };

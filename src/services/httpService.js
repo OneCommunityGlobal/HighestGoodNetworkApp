@@ -2,6 +2,9 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import logService from './logService';
 
+// Set base URL for API requests
+axios.defaults.baseURL = process.env.REACT_APP_API_URL || 'http://localhost:4500';
+
 if (axios.defaults && axios.defaults.headers && axios.defaults.headers.post) {
   axios.defaults.headers.post['Content-Type'] = 'application/json';
 }
@@ -9,7 +12,7 @@ if (axios.defaults && axios.defaults.headers && axios.defaults.headers.post) {
 if (axios.interceptors && axios.interceptors.response && axios.interceptors.response.use) {
   axios.interceptors.response.use(null, error => {
     if (!(error.response && error.response.status >= 400 && error.response.status <= 500)) {
-      logService.log(error);
+      logService.logError(error);
       toast.error('An unexpected error occurred.');
     }
     return Promise.reject(error);
