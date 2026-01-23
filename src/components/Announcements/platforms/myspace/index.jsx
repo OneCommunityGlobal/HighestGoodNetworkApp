@@ -127,9 +127,6 @@ const generateRandomSlug = () => {
   }
   return fallback.slice(0, 12);
 };
-
-const createScheduleId = () => `schedule-${Date.now().toString(36)}-${generateRandomSlug()}`;
-
 const createScheduleId = () => `schedule-${Date.now().toString(36)}-${generateRandomSlug()}`;
 
 const normalizeScheduleRecord = record => {
