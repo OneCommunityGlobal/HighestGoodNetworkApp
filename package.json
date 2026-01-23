@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "license": "GPL-2.0",
   "engines": {
-    "node": ">=14.0.0 <15"
+    "node": ">=20.0.0 <21"
   },
   "private": true,
   "dependencies": {
