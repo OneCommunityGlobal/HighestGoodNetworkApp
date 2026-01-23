@@ -115,10 +115,18 @@ const formatLocalDate = date =>
 
 const formatLocalTime = date => `${padTimeUnit(date.getHours())}:${padTimeUnit(date.getMinutes())}`;
 
-const createScheduleId = () =>
-  `schedule-${Date.now().toString(36)}-${Math.random()
+const generateRandomSlug = () => {
+  if (typeof window !== 'undefined' && window.crypto?.getRandomValues) {
+    const buffer = new Uint32Array(2);
+    window.crypto.getRandomValues(buffer);
+    return Array.from(buffer, value => value.toString(36).slice(0, 4)).join('');
+  }
+  return Math.random()
     .toString(36)
-    .slice(2, 8)}`;
+    .slice(2, 10);
+};
+
+const createScheduleId = () => `schedule-${Date.now().toString(36)}-${generateRandomSlug()}`;
 
 const normalizeScheduleRecord = record => {
   if (!record || typeof record !== 'object') return null;
