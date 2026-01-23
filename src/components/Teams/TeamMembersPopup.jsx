@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import PropTypes from 'prop-types';
 import {
   Button,
   Modal,
@@ -9,92 +10,84 @@ import {
   Alert,
   Spinner,
 } from 'reactstrap';
-import hasPermission from 'utils/permissions';
-import { boxStyle, boxStyleDark } from 'styles';
-import '../Header/DarkMode.css';
+import hasPermission from '~/utils/permissions';
+import { boxStyle, boxStyleDark } from '~/styles';
+import '../Header/index.css';
 import moment from 'moment';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons';
-import { connect, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import MembersAutoComplete from './MembersAutoComplete';
-
 import ToggleSwitch from './ToggleSwitch/ToggleSwitch';
 import InfoModal from './InfoModal';
-import styles from './ToggleSwitch/ToggleSwitch.module.scss';
+
+/* ---------- small helpers to reduce cognitive complexity ---------- */
+
+function ValidationAlerts({ duplicateUserAlert, isValidUser }) {
+  if (duplicateUserAlert) {
+    return <Alert color="danger">Member is already a part of this team.</Alert>;
+  }
+  if (isValidUser === false) {
+    return <Alert color="danger">Please choose a valid user.</Alert>;
+  }
+  return null;
+}
+function labelForFilter(mode) {
+  switch (mode) {
+    case 'active':
+      return 'Active';
+    case 'inactive':
+      return 'In Active';
+    default:
+      return 'All';
+  }
+}
+
+function bgForFilter(mode) {
+  switch (mode) {
+    case 'active':
+      return 'limegreen';
+    case 'inactive':
+      return '#ccc';
+    default:
+      return 'dodgerblue';
+  }
+}
+
+function textForFilter(mode) {
+  return mode === 'inactive' ? 'black' : 'white';
+}
+
+function applyStatusFilter(list, mode) {
+  if (mode === 'active') return list.filter(u => u?.isActive === true);
+  if (mode === 'inactive') return list.filter(u => u?.isActive !== true);
+  return list;
+}
 
 export const TeamMembersPopup = React.memo(props => {
   const darkMode = useSelector(state => state.theme.darkMode);
   const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon');
-  const [isChecked, setIsChecked] = useState(1); // 0 = false, 1 = true, 2 = all
-  const [checkedStatus, setCheckedStatus] = useState('Active'); // 0 = false, 1 = true, 2 = all
+  const canAssignTeamToUsers = hasPermission('assignTeamToUsers');
+
+  const [filterMode, setFilterMode] = useState('all');
   const [selectedUser, setSelectedUser] = useState(undefined);
   const [isValidUser, setIsValidUser] = useState(true);
   const [searchText, setSearchText] = useState('');
   const [duplicateUserAlert, setDuplicateUserAlert] = useState(false);
-  const [memberList, setMemberList] = useState([]);
   const [sortOrder, setSortOrder] = useState(0);
   const [deletedPopup, setDeletedPopup] = useState(false);
-  const trackColor = isChecked === 0 ? '#ccc' : isChecked === 1 ? 'limegreen' : 'dodgerblue';
-
-  const closeDeletedPopup = () => {
-    setDeletedPopup(!deletedPopup);
-  };
-
-
-  const handleDelete = id => {
-    props.onDeleteClick(`${id}`);
-    setDeletedPopup(true);
-  };
-
-  const handleToggle = (event) => {
-    setIsChecked(parseInt(event.target.value));
-    setCheckedStatus(
-      parseInt(event.target.value) == 0
-        ? 'Inactive'
-        : parseInt(event.target.value) == 1
-        ? 'Active'
-        : 'See All',
-    );
-  };
-
   const [infoModal, setInfoModal] = useState(false);
 
-  const canAssignTeamToUsers = props.hasPermission('assignTeamToUsers');
-
-  const validation = props.members.teamMembers || props.members;
-
-  const closePopup = () => {
-    setMemberList([]);
-    props.onClose();
-    setSortOrder(0);
-    setIsChecked(1);
-    setCheckedStatus('Active');
-  };
-  const onAddUser = () => {
-    if (selectedUser) {
-      const isDuplicate = validation.some(x => x._id === selectedUser._id);
-      if (!isDuplicate) {
-        props.onAddUser(selectedUser);
-        setSearchText('');
-        setDuplicateUserAlert(false);
-      } else {
-        setSearchText('');
-        setDuplicateUserAlert(true);
-      }
-    } else {
-      setDuplicateUserAlert(false);
-      setIsValidUser(false);
-    }
-  };
-  const selectUser = user => {
-    setSelectedUser(user);
-    setIsValidUser(true);
-    setDuplicateUserAlert(false);
-  };
+  // Normalize members
+  const validation = useMemo(() => {
+    const raw = props.members;
+    if (Array.isArray(raw)) return raw.filter(Boolean);
+    if (raw && Array.isArray(raw.teamMembers)) return raw.teamMembers.filter(Boolean);
+    return [];
+  }, [props.members]);
 
   const sortByPermission = useCallback((a, b) => {
-    // Sort by index
-    const rolesPermission = [
+    const order = [
       'owner',
       'administrator',
       'core team',
@@ -103,64 +96,118 @@ export const TeamMembersPopup = React.memo(props => {
       'assistant manager',
       'volunteer',
     ];
-    return rolesPermission.indexOf(a.toLowerCase()) - rolesPermission.indexOf(b.toLowerCase());
+    return order.indexOf(a.toLowerCase()) - order.indexOf(b.toLowerCase());
   }, []);
 
   const sortByAlpha = useCallback((a, b) => {
-    const nameA = `${a.firstName} ${a.lastName}`.toLowerCase();
-    const nameB = `${b.firstName} ${b.lastName}`.toLowerCase();
+    const nameA = `${a?.firstName || ''} ${a?.lastName || ''}`.toLowerCase();
+    const nameB = `${b?.firstName || ''} ${b?.lastName || ''}`.toLowerCase();
     return nameA.localeCompare(nameB);
   }, []);
 
-  /**
-   * The function to sort the memberlist
-   * @param {-1 | 0 | 1} [sort = 0]
-   * -1: ascending order by date
-   * 0: alphabetized order by name
-   * 1: descending order by date
-   */
-  const sortList = (sort = 0) => {
-    let sortedList = [];
+  const sortedMembers = useMemo(() => {
+    const src = validation;
 
-    if (sort === 0) {
-      const groupByPermissionList = validation.reduce((pre, cur) => {
-        const { role } = cur;
-        return {
-          ...pre,
-          [role]: pre[role] ? [...pre[role], cur] : [cur],
-        };
+    // permission → alpha
+    if (sortOrder === 0) {
+      const grouped = src.reduce((pre, cur) => {
+        const roleKey = (cur.role || '').toString().toLowerCase();
+        let arr = pre[roleKey];
+        if (!arr) {
+          arr = [];
+          pre[roleKey] = arr;
+        }
+        arr.push(cur);
+        return pre;
       }, {});
-      sortedList = Object.keys(groupByPermissionList)
+      return Object.keys(grouped)
         .sort(sortByPermission)
-        .map(key => groupByPermissionList[key])
-        .map(list => list.toSorted(sortByAlpha))
-        .flat();
-    } else {
-      const sortByDateList = validation.toSorted((a, b) => {
-        return moment(a.addDateTime).diff(moment(b.addDateTime)) * -sort;
-      });
-
-      const dataList = Object.values(
-        sortByDateList.reduce((pre, cur) => {
-          const date = moment(cur.addDateTime).format('MMM-DD-YY');
-          return {
-            ...pre,
-            [date]: pre[date] ? [...pre[date], cur] : [cur],
-          };
-        }, {}),
-      );
-
-      dataList.forEach(item => {
-        sortedList.push(...item.toSorted(sortByAlpha));
-      });
+        .flatMap(role => [...grouped[role]].sort(sortByAlpha));
     }
-    setMemberList(sortedList);
+
+    // date → alpha (null last)
+    const byDate = [...src].sort((a, b) => {
+      const da = a?.addDateTime ? moment(a.addDateTime) : null;
+      const db = b?.addDateTime ? moment(b.addDateTime) : null;
+      if (!da && !db) return 0;
+      if (!da) return 1;
+      if (!db) return -1;
+      return da.diff(db) * -sortOrder;
+    });
+
+    const buckets = byDate.reduce((pre, cur) => {
+      const key = cur?.addDateTime ? moment(cur.addDateTime).format('MMM-DD-YY') : '__NO_DATE__';
+      let arr = pre[key];
+      if (!arr) {
+        arr = [];
+        pre[key] = arr;
+      }
+      arr.push(cur);
+      return pre;
+    }, {});
+    const out = [];
+    for (const list of Object.values(buckets)) {
+      out.push(...[...list].sort(sortByAlpha));
+    }
+    return out;
+  }, [validation, sortOrder, sortByPermission, sortByAlpha]);
+
+  const memberVisibility = useMemo(() => {
+    const teamsData = props.teamData;
+    const map = {};
+    if (Array.isArray(teamsData) && teamsData.length > 0) {
+      for (const m of teamsData[0]?.members || []) {
+        map[m.userId] = m.visible;
+      }
+    }
+    return map;
+  }, [props.teamData]);
+
+  useEffect(() => {
+    setIsValidUser(true);
+    setDuplicateUserAlert(false);
+  }, [props.open]);
+
+  const toggleInfoModal = () => setInfoModal(p => !p);
+  const closeDeletedPopup = () => setDeletedPopup(p => !p);
+
+  const handleDelete = id => {
+    props.onDeleteClick(`${id}`);
+    setDeletedPopup(true);
   };
 
-  const returnUserRole = user => {
-    const rolesArr = ['Manager', 'Mentor', 'Assistant Manager'];
-    if (rolesArr.includes(user.role)) return true;
-    return false;
+  const closePopup = () => {
+    props.onClose();
+    setSortOrder(0);
+    setFilterMode('all');
+  };
+
+  const selectUser = user => {
+    setSelectedUser(user);
+    setIsValidUser(true);
+    setDuplicateUserAlert(false);
+  };
+
+  // avoid negated condition
+  const onAddUser = () => {
+    if (selectedUser) {
+      const isDuplicate = validation.some(x => x?._id === selectedUser._id);
+      if (isDuplicate) {
+        setSearchText('');
+        setDuplicateUserAlert(true);
+      } else {
+        props.onAddUser(selectedUser);
+        setSearchText('');
+        setDuplicateUserAlert(false);
+      }
+      return;
+    }
+    setDuplicateUserAlert(false);
+    setIsValidUser(false);
+  };
+
+  const UpdateTeamMembersVisibility = (userId, choice) => {
+    props.onUpdateTeamMemberVisibility(userId, choice);
   };
 
   const icons = {
@@ -168,55 +215,107 @@ export const TeamMembersPopup = React.memo(props => {
     '0': { icon: faSort, style: { color: 'lightgrey' } },
     '1': { icon: faSortDown },
   };
-
-  const toggleOrder = useCallback(() => {
-    setSortOrder(pre => {
-      if (pre !== -1) {
-        return pre - 1;
-      }
-      return 1;
-    });
-  }, []);
-
-  const [memberVisibility, setMemberVisibility] = useState({});
-  const getMemberVisibility = () => {
-    const teamsData = props.teamData;
-    const newMemberVisibility = {};
-    if (teamsData !== null && teamsData !== undefined && teamsData.length !== 0) {
-      teamsData[0]?.members.forEach(member => {
-        newMemberVisibility[member.userId] = member.visible;
-      });
-    }
-    return newMemberVisibility;
-  };
-
-  useEffect(() => {
-    sortList(sortOrder);
-    const newMemberVisibility = getMemberVisibility();
-    setMemberVisibility(newMemberVisibility);
-  }, [validation, sortOrder]);
-
-  useEffect(() => {
-    setIsValidUser(true);
-    setDuplicateUserAlert(false);
-  }, [props.open]);
-
-  // call the handler to update the team member's visibility
-  const UpdateTeamMembersVisibility = (userId, choice) => {
-    props.onUpdateTeamMemberVisibility(userId, choice);
-  };
-
-  const toggleInfoModal = () => {
-    setInfoModal(!infoModal);
-  };
+  const toggleOrder = useCallback(() => setSortOrder(pre => (pre === -1 ? 1 : pre - 1)), []);
 
   const emptyState = (
     <tr>
-      <td colSpan={6} className="empty-data-message">
+      <td colSpan={canAssignTeamToUsers ? 6 : 5} className="empty-data-message">
         There are no users on this team.
       </td>
     </tr>
   );
+
+  const showTableSpinner = props.open && props.fetching && validation.length === 0;
+
+  const cycleFilter = () => {
+    let next = 'all';
+    if (filterMode === 'all') next = 'active';
+    else if (filterMode === 'active') next = 'inactive';
+    setFilterMode(next);
+  };
+
+  /* ------- row renderer (extracting logic lowers complexity) ------- */
+  const renderRow = (user, index) => {
+    const uid = user?._id ?? `row-${index}`;
+    const first = user?.firstName ?? '';
+    const last = user?.lastName ?? '';
+    const role = user?.role ?? '';
+    const dateTxt = user?.addDateTime ? moment(user.addDateTime).format('MMM-DD-YY') : '-';
+    const isActiveDot = user?.isActive === true;
+
+    const nameCell = ['Manager', 'Mentor', 'Assistant Manager'].includes(role) ? (
+      <b>
+        {first} {last} ({role})
+      </b>
+    ) : (
+      <span>
+        {first} {last} ({role})
+      </span>
+    );
+
+    return (
+      <tr key={`${props.selectedTeamName}-${uid}`}>
+        <td style={{ verticalAlign: 'middle', textAlign: 'center' }}>
+          <div className={isActiveDot ? 'isActive' : 'isNotActive'}>
+            <i className="fa fa-circle" aria-hidden="true" />
+          </div>
+        </td>
+        <td className="def-width" style={{ verticalAlign: 'middle', textAlign: 'center' }}>
+          {index + 1}
+        </td>
+        <td className="def-width" style={{ verticalAlign: 'middle', textAlign: 'center' }}>
+          {nameCell}{' '}
+          {hasVisibilityIconPermission && props?.selectedTeamName && user?.isVisible === false && (
+            <i className="fa fa-eye-slash" title="User is invisible" />
+          )}
+        </td>
+        <td style={{ verticalAlign: 'middle', textAlign: 'center' }}>{dateTxt}</td>
+        <td
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '100%',
+          }}
+        >
+          <ToggleSwitch
+            key={`${props.selectedTeamName}-${uid}`}
+            switchType="limit-visibility"
+            userId={user?._id || null}
+            choice={memberVisibility[user?._id]}
+            UpdateTeamMembersVisibility={user?._id ? UpdateTeamMembersVisibility : () => {}}
+          />
+        </td>
+        {canAssignTeamToUsers && (
+          <td style={{ whiteSpace: 'nowrap', minWidth: '100px', textAlign: 'center' }}>
+            <Button
+              color="danger"
+              onClick={() => user?._id && handleDelete(user._id)}
+              disabled={!user?._id}
+              style={darkMode ? boxStyleDark : boxStyle}
+            >
+              Delete
+            </Button>
+          </td>
+        )}
+      </tr>
+    );
+  };
+
+  const renderBody = () => {
+    if (showTableSpinner) {
+      return (
+        <tr>
+          <td align="center" colSpan={canAssignTeamToUsers ? 6 : 5}>
+            <Spinner color={`${darkMode ? 'light' : 'dark'}`} animation="border" size="sm" />
+          </td>
+        </tr>
+      );
+    }
+    const visibleList = applyStatusFilter(sortedMembers, filterMode);
+    if (visibleList.length === 0) return emptyState;
+    return visibleList.map((u, i) => renderRow(u, i));
+  };
 
   return (
     <Container fluid>
@@ -225,16 +324,15 @@ export const TeamMembersPopup = React.memo(props => {
       <Modal
         isOpen={props.open}
         toggle={closePopup}
-        autoFocus={false}
         size="lg"
         className={`${darkMode ? 'dark-mode text-light' : ''} ${
           props.open ? ' open-team-members-popup-modal' : ''
         }`}
       >
-        <ModalHeader
-          className={darkMode ? 'bg-space-cadet' : ''}
-          toggle={closePopup}
-        >{`Members of ${props.selectedTeamName}`}</ModalHeader>
+        <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={closePopup}>
+          {`Members of ${props.selectedTeamName}`}
+        </ModalHeader>
+
         <div className={darkMode ? 'bg-space-cadet' : ''}>
           {canAssignTeamToUsers && (
             <div className="input-group-prepend" style={{ margin: '10px' }}>
@@ -255,61 +353,87 @@ export const TeamMembersPopup = React.memo(props => {
             </div>
           )}
         </div>
+
         <ModalBody
           className={darkMode ? 'bg-yinmn-blue' : ''}
           style={{ textAlign: 'center', overflowX: 'auto' }}
         >
-          {duplicateUserAlert && (
-            <Alert color="danger">Member is already a part of this team.</Alert>
-          )}
-          {!duplicateUserAlert && isValidUser === false && (
-            <Alert color="danger">Please choose a valid user.</Alert>
-          )}
+          <ValidationAlerts duplicateUserAlert={duplicateUserAlert} isValidUser={isValidUser} />
+
+          <div>
+            <p style={{ fontWeight: 600 }}>
+              {`All : ${applyStatusFilter(validation, 'all').length}, `}
+              {`Active : ${applyStatusFilter(validation, 'active').length}, `}
+              {`In Active : ${applyStatusFilter(validation, 'inactive').length}`}
+            </p>
+          </div>
 
           <table
             className={`table table-bordered table-responsive-xlg ${
               darkMode ? 'dark-mode text-light' : ''
             }`}
+            style={{ tableLayout: 'fixed' }}
           >
             <thead>
               <tr className={darkMode ? 'bg-space-cadet' : ''}>
-              <th style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                <button
-                  onClick={() => {
-                    const newStatus = (isChecked + 1) % 3;
-                    setIsChecked(newStatus);
-                    setCheckedStatus(
-                      newStatus === 0 ? 'Inactive' : newStatus === 1 ? 'Active' : 'See All'
-                    );
-                  }}
+                <th
                   style={{
-                    backgroundColor:
-                      isChecked === 0 ? '#ccc' : isChecked === 1 ? 'limegreen' : 'dodgerblue',
-                    color: isChecked === 0 ? 'black' : 'white', // 🔁 Dynamic text color
-                    border: 'none',
-                    padding: '6px 12px',
-                    borderRadius: '5px',
-                    fontWeight: 'bold',
-                    cursor: 'pointer',
-                    width: '100px',
-                    minWidth: '100px',
+                    width: 120,
                     textAlign: 'center',
-                    whiteSpace: 'nowrap',
+                    background: darkMode ? '#1f2a44' : '#e9f2ff',
+                    verticalAlign: 'middle',
                   }}
                 >
-                  {checkedStatus}
-                </button>
-              </th>
-                <th class="def-width">#</th>
-                <th class="def-width">User Name</th>
-                <th style={{ cursor: 'pointer' }} onClick={toggleOrder}>
+                  <button
+                    type="button"
+                    onClick={cycleFilter}
+                    style={{
+                      backgroundColor: bgForFilter(filterMode),
+                      color: textForFilter(filterMode),
+                      border: 'none',
+                      padding: '6px 12px',
+                      borderRadius: '5px',
+                      fontWeight: 'bold',
+                      cursor: 'pointer',
+                      minWidth: 90,
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {labelForFilter(filterMode)}
+                  </button>
+                </th>
+
+                <th
+                  className="def-width"
+                  style={{ width: 56, textAlign: 'center', verticalAlign: 'middle' }}
+                >
+                  #
+                </th>
+
+                <th
+                  className="def-width"
+                  style={{ minWidth: 220, textAlign: 'center', verticalAlign: 'middle' }}
+                >
+                  User Name
+                </th>
+
+                <th
+                  style={{
+                    width: 120,
+                    cursor: 'pointer',
+                    textAlign: 'center',
+                    verticalAlign: 'middle',
+                  }}
+                  onClick={toggleOrder}
+                >
                   Date Added{' '}
                   <FontAwesomeIcon
                     icon={icons[sortOrder].icon}
                     className={icons[sortOrder].className}
                   />
                 </th>
-                <th>
+
+                <th style={{ width: 110, textAlign: 'center', verticalAlign: 'middle' }}>
                   See All{' '}
                   <i
                     data-toggle="tooltip"
@@ -321,83 +445,29 @@ export const TeamMembersPopup = React.memo(props => {
                     onClick={toggleInfoModal}
                   />
                 </th>
+
                 {canAssignTeamToUsers && (
-                  <th aria-label="Assign Team to Users">
+                  <th
+                    style={{ width: 120, textAlign: 'center', verticalAlign: 'middle' }}
+                    aria-label="Assign Team to Users"
+                  >
                     <span style={{ display: 'none' }}>Assign Team to Users</span>
                   </th>
                 )}
               </tr>
             </thead>
-            <tbody>
-            {props.fetching ?
-                 <tr><td align='center' colSpan={6}><Spinner  color={`${darkMode ? 'light' : 'dark'}`} animation="border" size="sm" /></td></tr> :
-                 !memberList.length ?
-                   emptyState :
-                   ((Array.isArray(props.members.teamMembers) &&
-                     props.members.teamMembers.length > 0) ||
-                     (typeof props.members.fetching === 'boolean' &&
-                       !props.members.fetching &&
-                       props.members.teamMembers) ||
-                     (Array.isArray(props.members) && props.members.length > 0)) &&
-                   memberList.toSorted().map((user, index) => {
-                     return (
-                       <tr key={`${props.selectedTeamName}-${user.id}-${index}`}>
-                         <td style={{ verticalAlign: 'middle', textAlign: 'center' }}>
-                           <div className={user.isActive ? 'isActive' : 'isNotActive'}>
-                             <i className="fa fa-circle" aria-hidden="true" />
-                           </div>
-                         </td>
-                         <td className="def-width" style={{ verticalAlign: 'middle', textAlign: 'center' }}>{index + 1}</td>
-                         <td className="def-width" style={{ verticalAlign: 'middle', textAlign: 'center' }}>
-                           {returnUserRole(user) ? (
-                             <b>
-                               {user.firstName} {user.lastName} ({user.role})
-                             </b>
-                           ) : (
-                             <span>
-                               {user.firstName} {user.lastName} ({user.role})
-                             </span>
-                           )}{' '}
-                           {hasVisibilityIconPermission && !user.isVisible && (  // Invisibility icon from 'Cillian'
-                             <i className="fa fa-eye-slash" title="User is invisible" />
-                           )}
-                         </td>
-                         {/* <td>{user}</td> */}
-                         <td style={{ verticalAlign: 'middle', textAlign: 'center' }}>
-                          {moment(user.addDateTime).format('MMM-DD-YY')}
-                          </td>
-                         <td style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-                           <ToggleSwitch
-                             key={`${props.selectedTeamName}-${user._id}`}
-                             switchType="limit-visibility"
-                             userId={user._id}
-                             choice={memberVisibility[user._id]}
-                             UpdateTeamMembersVisibility={UpdateTeamMembersVisibility}
-                           />
-                         </td>
-                         {canAssignTeamToUsers && (
-                           <td style={{ whiteSpace: 'nowrap', minWidth: '100px', textAlign: 'center' }}>
-                             <Button
-                               color="danger"
-                               onClick={() => handleDelete(user._id)}
-                               style={darkMode ? boxStyleDark : boxStyle}
-                             >
-                               Delete
-                             </Button>
-                           </td>
-                         )}
-                       </tr>
-                     );
-                   })}
-            </tbody>
+
+            <tbody>{renderBody()}</tbody>
           </table>
         </ModalBody>
+
         <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
           <Button color="secondary" onClick={closePopup} style={darkMode ? boxStyleDark : boxStyle}>
             Close
           </Button>
         </ModalFooter>
       </Modal>
+
       <Modal
         isOpen={deletedPopup}
         toggle={closeDeletedPopup}
@@ -411,9 +481,9 @@ export const TeamMembersPopup = React.memo(props => {
         </ModalHeader>
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           <p>
-            Team member successfully deleted! Ryunosuke Satoro famously said, “Individually we are
-            one drop, together we are an ocean.” Through the action you just took, this ocean is now
-            one drop smaller.
+            Team member successfully deleted! Ryunosuke Satoro famously said, &ldquo;Individually we
+            are one drop, together we are an ocean.&rdquo; Through the action you just took, this
+            ocean is now one drop smaller.
           </p>
         </ModalBody>
       </Modal>
@@ -421,4 +491,38 @@ export const TeamMembersPopup = React.memo(props => {
   );
 });
 
-export default connect(null, { hasPermission })(TeamMembersPopup);
+TeamMembersPopup.displayName = 'TeamMembersPopup';
+
+TeamMembersPopup.propTypes = {
+  open: PropTypes.bool.isRequired,
+  fetching: PropTypes.bool,
+  members: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.object),
+    PropTypes.shape({ teamMembers: PropTypes.arrayOf(PropTypes.object) }),
+  ]),
+  teamData: PropTypes.arrayOf(
+    PropTypes.shape({
+      members: PropTypes.arrayOf(
+        PropTypes.shape({
+          userId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+          visible: PropTypes.bool,
+        }),
+      ),
+    }),
+  ),
+  usersdata: PropTypes.arrayOf(PropTypes.object),
+  selectedTeamName: PropTypes.string.isRequired,
+  onDeleteClick: PropTypes.func.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onAddUser: PropTypes.func.isRequired,
+  onUpdateTeamMemberVisibility: PropTypes.func.isRequired,
+};
+
+TeamMembersPopup.defaultProps = {
+  members: [],
+  teamData: [],
+  usersdata: [],
+  fetching: false,
+};
+
+export default TeamMembersPopup;

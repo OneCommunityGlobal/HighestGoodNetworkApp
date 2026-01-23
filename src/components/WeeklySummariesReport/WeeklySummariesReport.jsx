@@ -1,11 +1,8 @@
-/* eslint-disable react/destructuring-assignment */
-/* eslint-disable no-shadow */
-/* eslint-disable react/require-default-props */
-/* eslint-disable react/forbid-prop-types */
-import { useEffect } from 'react';
-import { useState } from 'react';
+/* eslint-disable jsx-a11y/label-has-associated-control */
+import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { toast } from 'react-toastify';
 import {
   Alert,
   Container,
@@ -19,20 +16,33 @@ import {
   Button,
   Input,
   Spinner,
+  ButtonDropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
 } from 'reactstrap';
 import ReactTooltip from 'react-tooltip';
 import { MultiSelect } from 'react-multi-select-component';
+import Select, { components } from 'react-select';
 import moment from 'moment';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 import 'moment-timezone';
 import axios from 'axios';
 
-import { ENDPOINTS } from 'utils/URL';
-import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
+import { ENDPOINTS } from '~/utils/URL';
+import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
 import { getAllUserTeams, getAllTeamCode } from '../../actions/allTeamsAction';
 import TeamChart from './TeamChart';
 import SkeletonLoading from '../common/SkeletonLoading';
 import { getWeeklySummariesReport } from '../../actions/weeklySummariesReport';
+import {
+  getSavedFilters,
+  createSavedFilter,
+  deleteSavedFilter,
+  updateSavedFilter,
+  updateSavedFiltersForTeamCodeChange,
+  updateSavedFiltersForIndividualTeamCodeChange,
+} from '../../actions/savedFilterActions';
 import WeeklySummaryRecipientsPopup from './WeeklySummaryRecepientsPopup';
 import FormattedReport from './FormattedReport';
 import GeneratePdfReport from './GeneratePdfReport';
@@ -40,9 +50,21 @@ import hasPermission from '../../utils/permissions';
 import { getInfoCollections } from '../../actions/information';
 import { fetchAllBadges } from '../../actions/badgeManagement';
 import PasswordInputModal from './PasswordInputModal';
+import { showTrophyIcon } from '../../utils/anniversaryPermissions';
 import SelectTeamPieChart from './SelectTeamPieChart';
 import { setTeamCodes } from '../../actions/teamCodes';
-import './WeeklySummariesReport.css';
+import CreateFilterModal from './components/CreateFilterModal';
+import UpdateFilterModal from './components/UpdateFilterModal';
+import SelectFilterModal from './components/SelectFilterModal';
+import styles from './WeeklySummariesReport.module.css';
+import { setField, toggleField, removeItemFromField, setChildField } from '~/utils/stateHelper';
+import WeeklySummariesToggleFilter from './components/WeeklySummariesToggleFilter';
+import {
+  useGetWeeklySummariesFiltersQuery,
+  useDeleteWeeklySummariesFilterMutation,
+  useUpdateFiltersWithIndividualCodesChangeMutation,
+  useUpdateFiltersWithReplacedTeamCodesMutation,
+} from '../../actions/weeklySummariesFilterAction';
 
 const navItems = ['This Week', 'Last Week', 'Week Before Last', 'Three Weeks Ago'];
 const fullCodeRegex = /^.{5,7}$/;
@@ -74,24 +96,36 @@ const initialState = {
   isValidPwd: true,
   badges: [],
   loadBadges: false,
-  hasSeeBadgePermission: false,
   selectedCodes: [],
   selectedColors: [],
   filteredSummaries: [],
   teamCodes: [],
   colorOptions: [],
   auth: [],
+  selectedLoggedHoursRange: '',
   selectedOverTime: false,
   selectedBioStatus: false,
+  selectedTrophies: false,
   chartShow: false,
   replaceCode: '',
   replaceCodeError: null,
   replaceCodeLoading: false,
   allRoleInfo: [],
+  teamCodeWarningUsers: [],
   loadedTabs: [navItems[1]], // Initialize with default tab
   summariesByTab: {}, // Store tab-specific data
   tabsLoading: { [navItems[1]]: false }, // Track loading state per tab
   formattedReportLoading: false,
+  loadTrophies: false,
+  selectedSpecialColors: {
+    purple: false,
+    green: false,
+    navy: false,
+  },
+  selectedExtraMembers: [],
+  membersFromUnselectedTeam: [],
+  filterChoices: [],
+  memberDict: {},
 };
 
 const intialPermissionState = {
@@ -99,13 +133,101 @@ const intialPermissionState = {
   canEditSummaryCount: false,
   codeEditPermission: false,
   canSeeBioHighlight: false,
+  canManageFilter: false,
+  hasSeeBadgePermission: false,
 };
+
+const CheckboxOption = props => {
+  return (
+    <components.Option {...props}>
+      <input
+        type="checkbox"
+        checked={props.isSelected}
+        onChange={() => null} // react-select handles selection internally
+        style={{ marginRight: 8 }}
+      />
+      <label style={{ fontWeight: 'bold' }}>{props.label}</label>
+    </components.Option>
+  );
+};
+
+// Custom MenuList with "Select All / Deselect All" header
+const CustomMenuList = props => {
+  const { children, selectProps } = props;
+  const allSelected = (selectProps.value?.length || 0) === (selectProps.options?.length || 0);
+
+  const toggleSelectAll = () => {
+    if (allSelected) {
+      selectProps.onChange([]);
+    } else {
+      selectProps.onChange(selectProps.options);
+    }
+  };
+
+  return (
+    <components.MenuList {...props}>
+      <div
+        style={{
+          padding: '6px 10px',
+          borderBottom: '1px solid #ccc',
+          display: 'flex',
+          alignItems: 'center',
+        }}
+      >
+        <input
+          type="checkbox"
+          checked={allSelected}
+          onChange={toggleSelectAll}
+          style={{ marginRight: 8 }}
+        />
+        <label style={{ fontWeight: 'bold' }}>{allSelected ? 'Deselect All' : 'Select All'}</label>
+      </div>
+      {children}
+    </components.MenuList>
+  );
+};
+
 /* eslint-disable react/function-component-definition */
 const WeeklySummariesReport = props => {
-  const { loading, infoCollections, getInfoCollections } = props;
+  const { loading, getInfoCollections } = props;
   const weekDates = getWeekDates();
   const [state, setState] = useState(initialState);
   const [permissionState, setPermissionState] = useState(intialPermissionState);
+
+  // Create filters including toggle and extra members
+  const [createFilterModalOpen, setCreateFilterModalOpen] = useState(false);
+  const [updateFilterModalOpen, setUpdateFilterModalOpen] = useState(false);
+  const [selectFilterModalOpen, setSelectFilterModalOpen] = useState(false);
+  const [saveFilterDropdownOpen, setSaveFilterDropdownOpen] = useState(false);
+
+  const toggleSaveFilterDropdown = () => setSaveFilterDropdownOpen(prev => !prev);
+  const toggleCreateFilterModal = () => setCreateFilterModalOpen(prev => !prev);
+  const toggleUpdateFilterModal = () => setUpdateFilterModalOpen(prev => !prev);
+  const toggleSelectFilterModal = () => setSelectFilterModalOpen(prev => !prev);
+  // Filters state
+  const {
+    data: filterChoices = [],
+    isLoading: filtersLoading,
+  } = useGetWeeklySummariesFiltersQuery();
+  const [deleteFilter] = useDeleteWeeklySummariesFilterMutation();
+  const [
+    updateFilterWithIndividualCodesChange,
+  ] = useUpdateFiltersWithIndividualCodesChangeMutation();
+  const [updateFilterWithReplacedTeamCodes] = useUpdateFiltersWithReplacedTeamCodesMutation();
+
+  useEffect(() => {
+    // Update local state whenever allBadgeData prop changes
+    if (props.allBadgeData && props.allBadgeData.length > 0) {
+      setState(prevState => ({
+        ...prevState,
+        badges: props.allBadgeData,
+      }));
+    }
+  }, [props.allBadgeData]);
+
+  // Saved filters functionality
+  const [currentAppliedFilter, setCurrentAppliedFilter] = useState(null);
+
   // Misc functionalities
   /**
    * Sort the summaries in alphabetixal order
@@ -117,6 +239,27 @@ const WeeklySummariesReport = props => {
     return temp.sort((a, b) =>
       `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastname}`),
     );
+  };
+
+  const doesSummaryBelongToWeek = (startDateStr, endDateStr, weekIndex) => {
+    // weekIndex: 0 = This Week, 1 = Last Week, 2 = Week Before Last, 3 = Three Weeks Ago
+    const weekStartLA = moment()
+      .tz('America/Los_Angeles')
+      .startOf('week')
+      .subtract(weekIndex, 'week')
+      .toDate();
+
+    const weekEndLA = moment()
+      .tz('America/Los_Angeles')
+      .endOf('week')
+      .subtract(weekIndex, 'week')
+      .toDate();
+
+    const summaryStart = new Date(startDateStr);
+    const summaryEnd = new Date(endDateStr);
+
+    // keep if it overlaps that week
+    return summaryStart <= weekEndLA && summaryEnd >= weekStartLA;
   };
 
   /**
@@ -171,11 +314,11 @@ const WeeklySummariesReport = props => {
 
   const intialInfoCollections = async summariesCopy => {
     try {
-      await getInfoCollections();
+      const infoCollectionsData = await getInfoCollections();
       const roleInfoNames = getAllRoles(summariesCopy);
       const allRoleInfo = [];
-      if (Array.isArray(infoCollections)) {
-        infoCollections.forEach(info => {
+      if (Array.isArray(infoCollectionsData)) {
+        infoCollectionsData.forEach(info => {
           if (roleInfoNames?.includes(info.infoName)) {
             const visible =
               info.visibility === '0' ||
@@ -198,17 +341,49 @@ const WeeklySummariesReport = props => {
     }
   };
 
+  // const fetchFilters = async () => {
+  //   // Get all filters
+  //   let filterList = [];
+
+  //   try {
+  //     const filterResponse = await axios.get(ENDPOINTS.WEEKLY_SUMMARIES_FILTERS);
+  //     if (filterResponse.status < 200 || filterResponse.status >= 300) {
+  //       toast.error(`API request to get filter list failed with status ${filterResponse.status}`);
+  //     } else {
+  //       filterList = filterResponse.data;
+  //     }
+  //   } catch (e) {
+  //     toast.error(`API request to get filter list failed with error ${e}`);
+  //   }
+  //   const updatedFilterChoices = [];
+
+  //   filterList.forEach(filter => {
+  //     updatedFilterChoices.push({
+  //       label: filter.filterName,
+  //       value: filter._id,
+  //       filterData: {
+  //         filterName: filter.filterName,
+  //         selectedCodes: new Set(filter.selectedCodes),
+  //         selectedColors: new Set(filter.selectedColors),
+  //         selectedExtraMembers: new Set(filter.selectedExtraMembers),
+  //         selectedTrophies: filter.selectedTrophies,
+  //         selectedSpecialColors: filter.selectedSpecialColors,
+  //         selectedBioStatus: filter.selectedBioStatus,
+  //         selectedOverTime: filter.selectedOverTime,
+  //       },
+  //     });
+  //   });
+
+  //   setState(prevState => ({
+  //     ...prevState,
+  //     filterChoices: [...updatedFilterChoices],
+  //   }));
+  // };
+
   // Initial data loading
   const createIntialSummaries = async () => {
     try {
-      const {
-        allBadgeData,
-        getWeeklySummariesReport,
-        fetchAllBadges,
-        hasPermission,
-        auth,
-        setTeamCodes,
-      } = props;
+      const { getWeeklySummariesReport, fetchAllBadges, hasPermission, auth, setTeamCodes } = props;
 
       // Get the active tab from session storage or use default
       const activeTab =
@@ -243,15 +418,20 @@ const WeeklySummariesReport = props => {
           auth.user.role === 'Owner' ||
           auth.user.role === 'Administrator',
         canSeeBioHighlight: hasPermission('highlightEligibleBios'),
+        canManageFilter:
+          hasPermission('manageSummariesFilters') ||
+          auth.user.role === 'Owner' ||
+          auth.user.role === 'Administrator',
+        hasSeeBadgePermission: hasPermission('seeBadges') && badgeStatusCode === 200,
       }));
 
-      // Fetch data for the active tab only
-      const res = await getWeeklySummariesReport(weekIndex);
-      // console.log('API response:', res);
-      // console.log('Response data:', res?.data);
-      // console.log('Data is array:', Array.isArray(res?.data));
-      // console.log('Data length:', res?.data?.length);
-      const summaries = res?.data ?? [];
+      // Fetch data for the active tab only with cache-busting
+      const response = await axios.get(ENDPOINTS.WEEKLY_SUMMARIES_REPORT(), {
+        params: { week: weekIndex, forceRefresh: true, _ts: Date.now() },
+        headers: { 'Cache-Control': 'no-cache', Pragma: 'no-cache' },
+      });
+      // console.log('API response:', response);
+      const summaries = response?.data ?? [];
 
       if (!Array.isArray(summaries) || summaries.length === 0) {
         setState(prevState => ({
@@ -272,13 +452,16 @@ const WeeklySummariesReport = props => {
       // Shallow copy and sort
       let summariesCopy = [...summaries];
       summariesCopy = alphabetize(summariesCopy);
-
+      summariesCopy = summariesCopy.filter(summary => summary?.isActive !== false);
       // Add new key of promised hours by week
       summariesCopy = summariesCopy.map(summary => {
         const promisedHoursByWeek = weekDates.map(weekDate =>
           getPromisedHours(weekDate.toDate, summary.weeklycommittedHoursHistory),
         );
-        return { ...summary, promisedHoursByWeek };
+
+        const filterColor = summary.filterColor || null;
+
+        return { ...summary, promisedHoursByWeek, filterColor };
       });
 
       const colorOptionGroup = new Set();
@@ -306,6 +489,7 @@ const WeeklySummariesReport = props => {
         '#C8A2C8',
       ];
 
+      const memberDict = {};
       // Process team codes and colors
       summariesCopy.forEach(summary => {
         const code = summary.teamCode || 'noCodeLabel';
@@ -314,6 +498,7 @@ const WeeklySummariesReport = props => {
         } else {
           teamCodeGroup[code] = [summary];
         }
+        memberDict[summary._id] = `${summary.firstName} ${summary.lastName}`;
 
         if (summary.weeklySummaryOption) colorOptionGroup.add(summary.weeklySummaryOption);
       });
@@ -358,18 +543,19 @@ const WeeklySummariesReport = props => {
         summariesByTab: {
           [activeTab]: summariesCopy,
         },
-        badges: allBadgeData,
-        hasSeeBadgePermission: badgeStatusCode === 200,
+        badges: props.allBadgeData || [],
         filteredSummaries: summariesCopy,
         tableData: teamCodeGroup,
         chartData,
         COLORS,
         colorOptions,
         teamCodes,
+        teamCodeWarningUsers: summariesCopy.filter(s => s.teamCodeWarning),
         auth,
         tabsLoading: {
           [activeTab]: false,
         },
+        memberDict,
       }));
 
       // Now load info collections
@@ -390,18 +576,51 @@ const WeeklySummariesReport = props => {
     }
   };
 
-  const onSummaryRecepientsPopupClose = () => {
+  const updateMembersFromUnselectedTeam = () => {
+    // Add all selected member in a Set
+    const selectedMemberSet = new Set();
+    state.selectedCodes.forEach(code => {
+      if (code.value === '') return;
+      if (code.value in state.tableData) {
+        const team = state.tableData[code.value];
+        team.forEach(member => {
+          selectedMemberSet.add(member._id);
+        });
+      }
+    });
+
+    // Filter members from unselected set
+    const newMembersFromUnselectedTeam = [];
+    state.summaries.forEach(summary => {
+      if (!selectedMemberSet.has(summary._id)) {
+        newMembersFromUnselectedTeam.push({
+          label: `${summary.firstName} ${summary.lastName}`,
+          value: summary._id,
+          role: summary.role,
+        });
+      }
+    });
     setState(prev => ({
       ...prev,
-      summaryRecepientsPopupOpen: false,
+      membersFromUnselectedTeam: newMembersFromUnselectedTeam,
+      // Remove individuals that is in selected team
+      selectedExtraMembers: prev.selectedExtraMembers.filter(
+        member => !selectedMemberSet.has(member.value),
+      ),
     }));
   };
 
+  // Update members of membersFromUnselectedTeam dropdown
+  useEffect(() => {
+    updateMembersFromUnselectedTeam();
+  }, [state.selectedCodes, state.summaries]);
+
+  const onSummaryRecepientsPopupClose = () => {
+    setField(setState, 'summaryRecepientsPopupOpen', false);
+  };
+
   const setSummaryRecepientsPopup = val => {
-    setState(prev => ({
-      ...prev,
-      summaryRecepientsPopupOpen: val,
-    }));
+    setField(setState, 'summaryRecepientsPopupOpen', val);
   };
 
   const popUpElements = () => {
@@ -417,40 +636,52 @@ const WeeklySummariesReport = props => {
   };
 
   const onpasswordModalClose = () => {
-    setState(prev => ({
-      ...prev,
-      passwordModalOpen: false,
-    }));
+    setField(setState, 'passwordModalOpen', false);
   };
 
   const checkForValidPwd = booleanVal => {
-    setState(prev => ({
-      ...prev,
-      isValidPwd: booleanVal,
-    }));
+    setField(setState, 'isValidPwd', booleanVal);
   };
 
   // Authorization for the weeklySummary Recipients is required once
   const setAuthpassword = authPass => {
-    setState(prev => ({
-      ...prev,
-      weeklyRecipientAuthPass: authPass,
-    }));
+    setField(setState, 'weeklyRecipientAuthPass', authPass);
   };
 
   const onClickRecepients = () => {
     if (state.weeklyRecipientAuthPass) {
-      setState(prev => ({
-        ...prev,
-        summaryRecepientsPopupOpen: true,
-      }));
+      setField(setState, 'summaryRecepientsPopupOpen', true);
     } else {
-      setState(prev => ({
-        ...prev,
-        passwordModalOpen: true,
-      }));
+      setField(setState, 'passwordModalOpen', true);
       checkForValidPwd(true);
     }
+  };
+
+  // const isLastWeekReport = (startDate, endDate) => {
+  //   const today = new Date();
+  //   const oneWeekAgo = new Date(today);
+  //   oneWeekAgo.setDate(today.getDate() - 7);
+  //   return new Date(startDate) <= oneWeekAgo && new Date(endDate) >= oneWeekAgo;
+  // };
+  const isLastWeekReport = (startDateStr, endDateStr) => {
+    // Parse the summary’s start and end dates
+    const summaryStart = new Date(startDateStr);
+    const summaryEnd = new Date(endDateStr);
+
+    // Use the user's timezone: America/Los_Angeles
+    const weekStartLA = moment()
+      .tz('America/Los_Angeles')
+      .startOf('week')
+      .subtract(1, 'week')
+      .toDate();
+    const weekEndLA = moment()
+      .tz('America/Los_Angeles')
+      .endOf('week')
+      .subtract(1, 'week')
+      .toDate();
+
+    // Check if the summary overlaps any portion of last week
+    return summaryStart <= weekEndLA && summaryEnd >= weekStartLA;
   };
 
   const filterWeeklySummaries = () => {
@@ -458,11 +689,15 @@ const WeeklySummariesReport = props => {
       const {
         selectedCodes,
         selectedColors,
+        selectedLoggedHoursRange,
         summaries,
         selectedOverTime,
         selectedBioStatus,
-        tableData,
+        selectedTrophies,
+        // tableData,
         COLORS,
+        selectedSpecialColors,
+        selectedExtraMembers,
       } = state;
 
       // console.log('filterWeeklySummaries state:', {
@@ -476,37 +711,138 @@ const WeeklySummariesReport = props => {
       const structuredTeamTableData = [];
       const selectedCodesArray = selectedCodes ? selectedCodes.map(e => e.value) : [];
       const selectedColorsArray = selectedColors ? selectedColors.map(e => e.value) : [];
-      const temp = summaries.filter(summary => {
-        const { activeTab } = state;
-        const hoursLogged = (summary.totalSeconds[navItems.indexOf(activeTab)] || 0) / 3600;
-        const isMeetCriteria =
-          summary.totalTangibleHrs > 80 &&
-          summary.daysInTeam > 60 &&
-          summary.bioPosted !== 'posted';
-        const isBio = !selectedBioStatus || isMeetCriteria;
-        const isOverHours =
-          !selectedOverTime ||
-          (summary.weeklycommittedHours > 0 &&
-            hoursLogged > 0 &&
-            hoursLogged >= summary.promisedHoursByWeek[navItems.indexOf(activeTab)] * 1.25);
-        return (
-          (selectedCodesArray.length === 0 || selectedCodesArray.includes(summary.teamCode)) &&
-          (selectedColorsArray.length === 0 ||
-            selectedColorsArray.includes(summary.weeklySummaryOption)) &&
-          isOverHours &&
-          isBio
-        );
+      const selectedExtraMembersArray = selectedExtraMembers
+        ? selectedExtraMembers.map(e => e.value)
+        : [];
+      const weekIndex = navItems.indexOf(state.activeTab);
+      const activeFilterColors = Object.entries(selectedSpecialColors || {})
+        .filter(([, isSelected]) => isSelected)
+        .map(([color]) => color);
+
+      const temp = summaries
+        .map(s => ({ ...s }))
+        .filter(summary => {
+          const { activeTab } = state;
+          const hoursLogged = (summary.totalSeconds[navItems.indexOf(activeTab)] || 0) / 3600;
+
+          // 🛑 Add this block at the very top inside the filter
+          // if (summary?.isActive === false) {
+          //   const lastWeekStart = moment()
+          //     .tz('America/Los_Angeles')
+          //     .startOf('week')
+          //     .subtract(1, 'week')
+          //     .toDate();
+          //   const lastWeekEnd = moment()
+          //     .tz('America/Los_Angeles')
+          //     .endOf('week')
+          //     .subtract(1, 'week')
+          //     .toDate();
+          //   const summaryStart = new Date(summary.startDate);
+          //   const summaryEnd = new Date(summary.endDate);
+          //   const isLastWeek = summaryStart <= lastWeekEnd && summaryEnd >= lastWeekStart;
+
+          //   if (!isLastWeek) {
+          //     return false; // Skip inactive members unless their summary is from last week
+          //   }
+          // }
+          if (
+            summary?.isActive === false &&
+            !doesSummaryBelongToWeek(summary.startDate, summary.endDate, weekIndex)
+          ) {
+            return false;
+          }
+          const isMeetCriteria =
+            summary.totalTangibleHrs > 80 &&
+            summary.daysInTeam > 60 &&
+            summary.bioPosted !== 'posted';
+          const isBio = !selectedBioStatus || isMeetCriteria;
+          const isOverHours =
+            !selectedOverTime ||
+            (summary.weeklycommittedHours > 0 &&
+              hoursLogged > 0 &&
+              hoursLogged >= summary.promisedHoursByWeek[navItems.indexOf(activeTab)]);
+
+          // Add trophy filter logic
+          const summarySubmissionDate = moment()
+            .tz('America/Los_Angeles')
+            .endOf('week')
+            .subtract(weekIndex, 'week')
+            .format('YYYY-MM-DD');
+
+          const hasTrophy =
+            !selectedTrophies ||
+            showTrophyIcon(summarySubmissionDate, summary?.startDate?.split('T')[0]);
+
+          // Add special color filter logic
+          const matchesSpecialColor =
+            activeFilterColors.length === 0 || activeFilterColors.includes(summary.filterColor);
+
+          // Filtered by Team Code and Extra Members
+          const isInSelectedCode = selectedCodesArray.includes(summary.teamCode);
+          const isInSelectedExtraMember = selectedExtraMembersArray.includes(summary._id);
+          const noFilterSelected =
+            selectedCodesArray.length === 0 && selectedExtraMembersArray.length === 0;
+
+          let matchesLoggedHoursRange = true;
+          if (selectedLoggedHoursRange && selectedLoggedHoursRange.length > 0) {
+            matchesLoggedHoursRange = selectedLoggedHoursRange.some(range => {
+              switch (range.value) {
+                case '=0':
+                  return hoursLogged === 0;
+                case '0-10':
+                  return hoursLogged > 0 && hoursLogged <= 10;
+                case '10-20':
+                  return hoursLogged > 10 && hoursLogged <= 20;
+                case '20-40':
+                  return hoursLogged > 20 && hoursLogged <= 40;
+                case '>40':
+                  return hoursLogged > 40;
+                default:
+                  return true;
+              }
+            });
+          }
+          return (
+            (noFilterSelected || isInSelectedCode || isInSelectedExtraMember) &&
+            (selectedColorsArray.length === 0 ||
+              selectedColorsArray.includes(summary.weeklySummaryOption)) &&
+            matchesSpecialColor &&
+            isOverHours &&
+            isBio &&
+            hasTrophy &&
+            matchesLoggedHoursRange
+          );
+        });
+
+      // Use Dict and Set for quick access
+      const filteredTeamDict = {};
+      const filteredIdSet = new Set();
+      filteredTeamDict[''] = [];
+
+      temp.forEach(summary => {
+        if (summary.teamCode) {
+          if (!(summary.teamCode in filteredTeamDict)) {
+            filteredTeamDict[summary.teamCode] = [];
+          }
+          filteredTeamDict[summary.teamCode].push(summary);
+        } else {
+          filteredTeamDict[''].push(summary);
+        }
+        filteredIdSet.add(summary._id);
       });
 
+      // Get chartData and structuredTeamTableData
       if (selectedCodes[0]?.value === '' || selectedCodes.length >= 52) {
         if (selectedCodes.length >= 52) {
           selectedCodes.forEach(code => {
             if (code.value === '') return;
             chartData.push({
               name: code.label,
-              value: temp.filter(summary => summary.teamCode === code.value).length,
+              value: code.value in filteredTeamDict ? filteredTeamDict[code.value].length : 0,
+              // value: temp.filter(summary => summary.teamCode === code.value).length,
             });
-            const team = tableData[code.value];
+            const team = filteredTeamDict[code.value];
+            // const team = tableData[code.value];
             const index = selectedCodesArray.indexOf(code.value);
             const color = COLORS[index % COLORS.length];
             const members = [];
@@ -522,9 +858,11 @@ const WeeklySummariesReport = props => {
         } else {
           chartData.push({
             name: 'All With NO Code',
-            value: temp.filter(summary => summary.teamCode === '').length,
+            value: '' in filteredTeamDict ? filteredTeamDict[''].length : 0,
+            // value: temp.filter(summary => summary.teamCode === '').length,
           });
-          const team = tableData.noCodeLabel;
+          // const team = tableData.noCodeLabel;
+          const team = filteredTeamDict[''];
           const index = selectedCodesArray.indexOf('noCodeLabel');
           const color = COLORS[index % COLORS.length];
           const members = [];
@@ -539,14 +877,16 @@ const WeeklySummariesReport = props => {
         }
       } else {
         selectedCodes.forEach(code => {
-          const val = temp.filter(summary => summary.teamCode === code.value).length;
+          const val = code.value in filteredTeamDict ? filteredTeamDict[code.value].length : 0;
+          // const val = temp.filter(summary => summary.teamCode === code.value).length;
           if (val > 0) {
             chartData.push({
               name: code.label,
               value: val,
             });
           }
-          const team = tableData[code.value];
+          // const team = tableData[code.value];
+          const team = filteredTeamDict[code.value];
           const index = selectedCodesArray.indexOf(code.value);
           const color = COLORS[index % COLORS.length];
           const members = [];
@@ -563,9 +903,32 @@ const WeeklySummariesReport = props => {
         });
       }
 
+      // Add Extra Members data to chartData and structuredTeamTableData
+      if (selectedExtraMembersArray.length > 0) {
+        const color = COLORS[selectedCodesArray.length % COLORS.length];
+        const members = [];
+        selectedExtraMembers.forEach(option => {
+          if (filteredIdSet.has(option.value)) {
+            members.push({
+              name: option.label,
+              role: option.role,
+              id: option.value,
+            });
+          }
+        });
+        if (members.length > 0) {
+          chartData.push({
+            name: 'Extra Members',
+            value: members.length,
+          });
+        }
+        structuredTeamTableData.push({ team: 'Extra Members', color, members });
+      }
+
       chartData.sort();
       temptotal = chartData.reduce((acc, entry) => acc + entry.value, 0);
       structuredTeamTableData.sort();
+
       setState(prev => ({
         ...prev,
         total: temptotal,
@@ -587,12 +950,12 @@ const WeeklySummariesReport = props => {
     setState(prev => ({ ...prev, refreshing: true }));
 
     try {
-      // Use the force refresh parameter
+      // Use the force refresh parameter and cache-busting timestamp
       const weekIndex = navItems.indexOf(activeTab);
-      const url = `${ENDPOINTS.WEEKLY_SUMMARIES_REPORT()}?week=${weekIndex}&forceRefresh=true`;
-      // console.log(`Forcing refresh of report section from: ${url}`);
-
-      const response = await axios.get(url);
+      const response = await axios.get(ENDPOINTS.WEEKLY_SUMMARIES_REPORT(), {
+        params: { week: weekIndex, forceRefresh: true, _ts: Date.now() },
+        headers: { 'Cache-Control': 'no-cache', Pragma: 'no-cache' },
+      });
 
       if (response.status === 200) {
         // Process the data
@@ -604,7 +967,10 @@ const WeeklySummariesReport = props => {
           const promisedHoursByWeek = weekDates.map(weekDate =>
             getPromisedHours(weekDate.toDate, summary.weeklycommittedHoursHistory || []),
           );
-          return { ...summary, promisedHoursByWeek };
+
+          const filterColor = summary.filterColor || null;
+
+          return { ...summary, promisedHoursByWeek, filterColor };
         });
 
         // Update state
@@ -613,6 +979,7 @@ const WeeklySummariesReport = props => {
           refreshing: false,
           summaries: summariesCopy,
           filteredSummaries: summariesCopy,
+          badges: props.allBadgeData || prevState.badges,
           summariesByTab: {
             ...prevState.summariesByTab,
             [activeTab]: summariesCopy, // Also update the cached tab data
@@ -647,44 +1014,45 @@ const WeeklySummariesReport = props => {
       // Save in session storage
       sessionStorage.setItem('tabSelection', tab);
 
-      // Check if we already have data for this tab
-      if (state.summariesByTab[tab] && state.summariesByTab[tab].length > 0) {
-        // Use cached data
+      const weekIndex = navItems.indexOf(tab);
+
+      // Always refetch for "Last Week" so late submissions show up
+      const shouldForceFetch = tab === 'Last Week';
+
+      if (!shouldForceFetch && state.summariesByTab[tab] && state.summariesByTab[tab].length > 0) {
+        // use cache
         setState(prevState => ({
           ...prevState,
           summaries: prevState.summariesByTab[tab],
           filteredSummaries: prevState.summariesByTab[tab],
+          badges: props.allBadgeData || prevState.badges,
           tabsLoading: {
             ...prevState.tabsLoading,
             [tab]: false,
           },
         }));
       } else {
-        // Fetch new data
-        const weekIndex = navItems.indexOf(tab);
-
+        // fetch fresh
         props
           .getWeeklySummariesReport(weekIndex)
           .then(res => {
             if (res && res.data) {
-              // Process data
               let summariesCopy = [...res.data];
               summariesCopy = alphabetize(summariesCopy);
-
-              // Add promised hours data
               summariesCopy = summariesCopy.map(summary => {
                 const promisedHoursByWeek = weekDates.map(weekDate =>
                   getPromisedHours(weekDate.toDate, summary.weeklycommittedHoursHistory || []),
                 );
-                return { ...summary, promisedHoursByWeek };
+                const filterColor = summary.filterColor || null;
+                return { ...summary, promisedHoursByWeek, filterColor };
               });
 
-              // Update state
               setState(prevState => ({
                 ...prevState,
                 summaries: summariesCopy,
                 filteredSummaries: summariesCopy,
-                loadedTabs: [...prevState.loadedTabs, tab],
+                badges: props.allBadgeData || prevState.badges,
+                loadedTabs: [...new Set([...prevState.loadedTabs, tab])],
                 summariesByTab: {
                   ...prevState.summariesByTab,
                   [tab]: summariesCopy,
@@ -705,7 +1073,6 @@ const WeeklySummariesReport = props => {
             }
           })
           .catch(() => {
-            // console.error('Error loading tab data:', error);
             setState(prevState => ({
               ...prevState,
               tabsLoading: {
@@ -719,24 +1086,25 @@ const WeeklySummariesReport = props => {
   };
 
   const handleSelectCodeChange = event => {
-    setState(prev => ({
-      ...prev,
-      selectedCodes: event,
-    }));
-  };
+    setState(prev => {
+      const selectedValues = event.map(e => e.value);
+      // Move selected codes to the front of the dropdown list // newly added
+      const reorderedTeamCodes = [
+        ...prev.teamCodes.filter(code => selectedValues.includes(code.value)), // selected first
+        ...prev.teamCodes.filter(code => !selectedValues.includes(code.value)), // then the rest
+      ];
 
-  const handleOverHoursToggleChange = () => {
-    setState(prev => ({
-      ...prev,
-      selectedOverTime: !prev.selectedOverTime,
-    }));
-  };
+      return {
+        ...prev,
+        selectedCodes: event,
+        teamCodes: reorderedTeamCodes,
+      };
+    });
 
-  const handleBioStatusToggleChange = () => {
-    setState(prev => ({
-      ...prev,
-      selectedBioStatus: !prev.selectedBioStatus,
-    }));
+    // Clear current applied filter if selection is cleared
+    if (currentAppliedFilter && event.length === 0) {
+      setCurrentAppliedFilter(null);
+    }
   };
 
   const handleChartStatusToggleChange = () => {
@@ -746,13 +1114,23 @@ const WeeklySummariesReport = props => {
     }));
   };
 
-  const handleTeamCodeChange = (oldTeamCode, newTeamCode, userIdObj) => {
+  const handleTeamCodeChange = async (oldTeamCode, newTeamCode, userIdObj) => {
     try {
       setState(prevState => {
         let { teamCodes, summaries, selectedCodes } = prevState;
+        const { tableData } = prevState;
         // Find and update the user's team code in summaries
         summaries = summaries.map(summary => {
           if (userIdObj[summary._id]) {
+            // Update tableData
+            tableData[summary.teamCode] = tableData[summary.teamCode].filter(
+              member => member._id !== summary._id,
+            );
+            if (newTeamCode in tableData) {
+              tableData[newTeamCode].push(summary);
+            } else {
+              tableData[newTeamCode] = [summary];
+            }
             return { ...summary, teamCode: newTeamCode };
           }
           return summary;
@@ -804,16 +1182,6 @@ const WeeklySummariesReport = props => {
           })
           .filter(Boolean);
 
-        if (!selectedCodes.find(code => code.value === newTeamCode)) {
-          const ids = teamCodeWithUserId[newTeamCode];
-          if (newTeamCode !== undefined && newTeamCode.length > 0) {
-            selectedCodes.push({
-              label: `${newTeamCode} (${teamCodeCounts[newTeamCode]})`,
-              value: newTeamCode,
-              _ids: ids,
-            });
-          }
-        }
         // Sort teamCodes by label
         teamCodes
           .sort((a, b) => a.label.localeCompare(b.label))
@@ -822,73 +1190,48 @@ const WeeklySummariesReport = props => {
             label: `Select All With NO Code (${noTeamCodeCount || 0})`,
             _ids: teamCodeWithUserId[''],
           });
-        return { ...prevState, summaries, teamCodes, selectedCodes };
-      });
-      return null;
-    } catch (error) {
-      return null;
-    }
-  };
 
-  const handleAllTeamCodeReplace = async () => {
-    try {
-      const { replaceCode } = state;
-      setState(prevState => ({
-        ...prevState,
-        replaceCodeLoading: true,
-      }));
-      const boolean = fullCodeRegex.test(replaceCode);
-      if (boolean) {
-        const userIds = state.selectedCodes.flatMap(item => item._ids);
-        const url = ENDPOINTS.USERS_ALLTEAMCODE_CHANGE;
-        const payload = {
-          userIds,
-          replaceCode,
+        return {
+          ...prevState,
+          summaries,
+          teamCodes,
+          selectedCodes,
+          tableData,
         };
+      });
+
+      // Update the filters in the database that contains userId
+      if (oldTeamCode && newTeamCode && oldTeamCode !== newTeamCode) {
         try {
-          const data = await axios.patch(url, payload);
-          const userObjs = userIds.reduce((acc, curr) => {
-            acc[curr] = true;
-            return acc;
-          }, {});
-          if (data?.data?.isUpdated) {
-            handleTeamCodeChange('', replaceCode, userObjs);
-            setState(prev => ({
-              ...prev,
-              replaceCode: '',
-              replaceCodeError: null,
-            }));
-          } else {
-            setState(prev => ({
-              ...prev,
-              replaceCode: '',
-              replaceCodeError: 'Update failed Please try again with another code!',
-            }));
-          }
-        } catch (err) {
-          setState(prev => ({
-            ...prev,
-            replaceCode: '',
-            replaceCodeError: err.toJSON().message,
-          }));
+          const res = await updateFilterWithIndividualCodesChange({
+            oldTeamCode,
+            newTeamCode,
+            userId: Object.keys(userIdObj)[0],
+          }).unwrap(); // unwrap = throw exception if error
+
+          toast.success(`Successfully update all filters with new team code ${newTeamCode}`);
+        } catch (error) {
+          toast.error(
+            `Failed to update filters with the new team code. Error: ${JSON.stringify(error)}`,
+          );
         }
-      } else {
-        setState(prev => ({
-          ...prev,
-          replaceCodeError: 'NOT SAVED! The code must be between 5 and 7 characters long.',
-        }));
       }
+
+      // Update saved filters for team codes only in the database with the new team code
+      // if (oldTeamCode && newTeamCode && oldTeamCode !== newTeamCode) {
+      //   // Get the user ID from the userIdObj
+      //   const userId = Object.keys(userIdObj)[0];
+      //   props.updateSavedFiltersForIndividualTeamCodeChange(oldTeamCode, newTeamCode, userId);
+
+      //   // Refresh saved filters after the update
+      //   setTimeout(() => {
+      //     props.getSavedFilters();
+      //   }, 1000);
+      // }
+
+      return null;
     } catch (error) {
-      setState(prev => ({
-        ...prev,
-        replaceCode: '',
-        replaceCodeError: 'Something went wrong please try again!',
-      }));
-    } finally {
-      setState(prev => ({
-        ...prev,
-        replaceCodeLoading: false,
-      }));
+      return null;
     }
   };
 
@@ -908,6 +1251,46 @@ const WeeklySummariesReport = props => {
       return null;
     }
   };
+
+  const handleSpecialColorDotClick = (userId, color) => {
+    setState(prevState => {
+      const updatedSummaries = prevState.summaries.map(summary => {
+        if (summary._id === userId) {
+          return { ...summary, filterColor: color };
+        }
+        return summary;
+      });
+
+      // Also update the tab-specific cache
+      const updatedSummariesByTab = {
+        ...prevState.summariesByTab,
+        [prevState.activeTab]: updatedSummaries,
+      };
+
+      return {
+        ...prevState,
+        summaries: updatedSummaries,
+        summariesByTab: updatedSummariesByTab,
+      };
+    });
+  };
+
+  const handleDeleteFilter = async filter => {
+    try {
+      const res = await deleteFilter({
+        id: filter.value,
+      }).unwrap(); // unwrap = throw exception if error
+
+      toast.success(`Successfully deleted filter ${filter.label}`);
+      // Clear current applied filter if it was deleted
+      if (currentAppliedFilter && currentAppliedFilter._id === filter.value) {
+        setCurrentAppliedFilter(null);
+      }
+    } catch (error) {
+      toast.error(`Failed to delete filter. Error: ${JSON.stringify(error)}`);
+    }
+  };
+
   const passwordInputModalToggle = () => {
     try {
       return (
@@ -926,15 +1309,209 @@ const WeeklySummariesReport = props => {
     }
   };
 
+  const handleAllTeamCodeReplace = async () => {
+    try {
+      const {
+        replaceCode,
+        selectedCodes,
+        summaries,
+        teamCodes,
+        teamCodeWarningUsers,
+        tableData,
+      } = state;
+
+      setState(prev => ({
+        ...prev,
+        replaceCodeLoading: true,
+      }));
+
+      const isValidCode = fullCodeRegex.test(replaceCode);
+      if (!isValidCode) {
+        setState(prev => ({
+          ...prev,
+          replaceCodeError: 'NOT SAVED! The code must be between 5 and 7 characters long.',
+        }));
+        return;
+      }
+
+      const oldTeamCodes = selectedCodes.map(code => code.value);
+
+      const warningUsersToSend = teamCodeWarningUsers
+        .filter(user => oldTeamCodes.includes(user.teamCode))
+        .map(user => user._id);
+
+      const response = await axios.post(ENDPOINTS.REPLACE_TEAM_CODE, {
+        oldTeamCodes,
+        newTeamCode: replaceCode,
+        warningUsers: warningUsersToSend,
+      });
+
+      if (response.data?.updatedUsers?.length > 0) {
+        const { updatedUsers } = response.data;
+
+        const updatedSummaries = summaries.map(summary => {
+          const updateInfo = updatedUsers.find(user => user.userId === summary._id);
+          if (updateInfo) {
+            return {
+              ...summary,
+              teamCode: replaceCode,
+              teamCodeWarning: updateInfo.teamCodeWarning,
+            };
+          }
+          return summary;
+        });
+
+        const updatedTeamCodes = teamCodes
+          .filter(
+            teamCode => !oldTeamCodes.includes(teamCode.value) && teamCode.value !== replaceCode,
+          )
+          .concat({
+            value: replaceCode,
+            label: `${replaceCode} (${
+              updatedSummaries.filter(s => s.teamCode === replaceCode).length
+            })`,
+            _ids: updatedSummaries.filter(s => s.teamCode === replaceCode).map(s => s._id),
+          });
+
+        const updatedSelectedCodes = selectedCodes
+          .filter(code => !oldTeamCodes.includes(code.value) && code.value !== replaceCode)
+          .concat({
+            value: replaceCode,
+            label: `${replaceCode} (${
+              updatedSummaries.filter(s => s.teamCode === replaceCode).length
+            })`,
+            _ids: updatedSummaries.filter(s => s.teamCode === replaceCode).map(s => s._id),
+          });
+
+        const updatedWarningUsers = [...teamCodeWarningUsers];
+        updatedUsers.forEach(({ userId, teamCodeWarning }) => {
+          const existingIndex = updatedWarningUsers.findIndex(user => user._id === userId);
+
+          if (teamCodeWarning) {
+            if (existingIndex !== -1) {
+              updatedWarningUsers[existingIndex].teamCodeWarning = true;
+            } else {
+              const userProfile = summaries.find(summary => summary._id === userId);
+              if (userProfile) {
+                userProfile.teamCodeWarning = true;
+                updatedWarningUsers.push({ ...userProfile });
+              }
+            }
+          } else if (existingIndex !== -1) {
+            updatedWarningUsers.splice(existingIndex, 1);
+          }
+        });
+
+        const updatedTableData = tableData;
+        updatedTableData[replaceCode] = updatedSummaries.filter(s => s.teamCode === replaceCode);
+        oldTeamCodes.forEach(code => {
+          updatedTableData[code] = updatedSummaries.filter(s => s.teamCode === code);
+        });
+
+        // Update big filters
+        try {
+          const res = await updateFilterWithReplacedTeamCodes({
+            oldTeamCodes,
+            newTeamCode: replaceCode,
+          }).unwrap(); // unwrap = throw exception if error
+
+          toast.success(`Successfully replace codes in all filters`);
+        } catch (error) {
+          toast.error(`Failed to replace codes in filters. Status ${error.status}`);
+        }
+
+        // Update saved filters for team code only in the database with the new team code
+        // await props.updateSavedFiltersForTeamCodeChange(oldTeamCodes, replaceCode);
+
+        setState(prev => ({
+          ...prev,
+          summaries: updatedSummaries,
+          teamCodes: updatedTeamCodes,
+          selectedCodes: updatedSelectedCodes,
+          replaceCode: '',
+          replaceCodeError: null,
+          teamCodeWarningUsers: updatedWarningUsers,
+          tableData: updatedTableData,
+        }));
+
+        filterWeeklySummaries();
+      } else {
+        setState(prev => ({
+          ...prev,
+          replaceCodeError: 'No users found with the selected team codes.',
+        }));
+      }
+    } catch (error) {
+      setState(prev => ({
+        ...prev,
+        replaceCodeError: 'Something went wrong. Please try again!',
+      }));
+    } finally {
+      setState(prev => ({
+        ...prev,
+        replaceCodeLoading: false,
+      }));
+    }
+  };
+
+  const handleSelectExtraMembersChange = event => {
+    setState(prev => ({
+      ...prev,
+      selectedExtraMembers: event,
+    }));
+  };
+
+  const applyFilter = selectedFilter => {
+    const filter = selectedFilter.filterData;
+    const selectedCodesChoice = state.teamCodes.filter(code =>
+      filter.selectedCodes.has(code.value),
+    );
+    const selectedColorsChoice = state.colorOptions.filter(color =>
+      filter.selectedColors.has(color.value),
+    );
+    const selectedExtraMembersChoice = state.summaries
+      .filter(summary => filter.selectedExtraMembers.has(summary._id))
+      .map(summary => ({
+        label: `${summary.firstName} ${summary.lastName}`,
+        value: summary._id,
+        role: summary.role,
+      }));
+
+    setState(prevState => ({
+      ...prevState,
+      selectedCodes: selectedCodesChoice,
+      selectedColors: selectedColorsChoice,
+      selectedExtraMembers: selectedExtraMembersChoice,
+      selectedTrophies: filter.selectedTrophies,
+      selectedSpecialColors: filter.selectedSpecialColors,
+      selectedBioStatus: filter.selectedBioStatus,
+      selectedOverTime: filter.selectedOverTime,
+    }));
+    setCurrentAppliedFilter(selectedFilter);
+  };
+
   // Setup effect hooks for initial data load
   useEffect(() => {
     let isMounted = true;
     window._isMounted = isMounted;
 
-    // console.log('Initial useEffect running');
+    createIntialSummaries().then(() => {
+      if (!window._isMounted) return;
+      refreshCurrentTab();
 
-    // Only load the initial tab, nothing else
-    createIntialSummaries();
+      // const nav =
+      //   performance && performance.getEntriesByType
+      //     ? performance.getEntriesByType('navigation')[0]
+      //     : null;
+
+      // // Only refresh if this navigation was a browser reload
+      // if (nav && nav.type === 'reload') {
+      //   refreshCurrentTab();
+      // } else {
+      //   // If you prefer always refreshing after initial load:
+      //   // refreshCurrentTab();
+      // }
+    });
 
     return () => {
       isMounted = false;
@@ -958,12 +1535,51 @@ const WeeklySummariesReport = props => {
     }
   }, [
     state.selectedOverTime,
+    state.selectedLoggedHoursRange,
     state.selectedCodes,
     state.selectedBioStatus,
     state.selectedColors,
+    state.selectedTrophies,
+    state.selectedSpecialColors,
+    state.selectedExtraMembers,
     state.summaries,
     state.activeTab,
   ]);
+  useEffect(() => {
+    // On mount: fetch all badges before deriving permissions
+    const fetchInitialPermissions = async () => {
+      try {
+        // Fetch all badges first so we can derive up‑to‑date permissions
+        await props.fetchAllBadges();
+        setPermissionState(prev => ({
+          ...prev,
+          bioEditPermission: props.hasPermission('putUserProfileImportantInfo'),
+          // codeEditPermission: props.hasPermission('replaceTeamCodes'),
+          // allow team‑code edits for specific roles or permissions
+          codeEditPermission:
+            props.hasPermission('editTeamCode') ||
+            props.auth?.user?.role === 'Owner' ||
+            props.auth?.user?.role === 'Administrator',
+          // Permit editing of summary hour counts if the user has that badge
+          canEditSummaryCount: props.hasPermission('editSummaryHoursCount'),
+          // Show bio highlights only to users with that permission
+          canSeeBioHighlight: props.hasPermission('highlightEligibleBios'),
+          // Show badges if user has permission and badges loaded successfully
+          hasSeeBadgePermission: props.hasPermission('seeBadges'),
+        }));
+      } catch (error) {
+        // log failure fetching badges or permissions
+        // eslint-disable-next-line no-console
+        console.error('Failed to fetch badges or permissions', error);
+      }
+    };
+
+    fetchInitialPermissions();
+
+    // Load saved filters when component mounts
+    props.getSavedFilters();
+  }, []);
+
   const { role, darkMode } = props;
   const { error } = props;
   const hasPermissionToFilter = role === 'Owner' || role === 'Administrator';
@@ -988,14 +1604,10 @@ const WeeklySummariesReport = props => {
 
   if (state.loading) {
     return (
-      <Container fluid style={{ backgroundColor: darkMode ? '#1B2A41' : '#f3f4f6' }}>
-        <Row className="text-center" data-testid="loading">
-          <SkeletonLoading
-            template="WeeklySummariesReport"
-            className={darkMode ? 'bg-yinmn-blue' : ''}
-          />
-        </Row>
-      </Container>
+      <SkeletonLoading
+        template="WeeklySummariesReport"
+        className={darkMode ? 'bg-yinmn-blue' : ''}
+      />
     );
   }
 
@@ -1008,7 +1620,7 @@ const WeeklySummariesReport = props => {
     >
       {passwordInputModalToggle()}
       {popUpElements()}
-      <Row>
+      <Row className={styles['mx-max-sm-0']}>
         <Col lg={{ size: 10, offset: 1 }}>
           <h3 className="mt-3 mb-5">
             <div className="d-flex align-items-center">
@@ -1026,71 +1638,377 @@ const WeeklySummariesReport = props => {
           </h3>
         </Col>
       </Row>
-      {(authEmailWeeklySummaryRecipient === authorizedUser1 ||
-        authEmailWeeklySummaryRecipient === authorizedUser2) && (
-        <Row className="d-flex justify-content-center mb-3">
-          <Button
-            color="primary"
-            className="permissions-management__button"
-            type="button"
-            onClick={() => onClickRecepients()}
-            style={darkMode ? boxStyleDark : boxStyle}
-          >
-            Weekly Summary Report Recipients
-          </Button>
-        </Row>
-      )}
-      <Row>
-        <Col lg={{ size: 5, offset: 1 }} md={{ size: 6 }} xs={{ size: 6 }}>
-          <div className="filter-container-teamcode">
+      <Row className="mb-2">
+        <Col lg={{ size: 10, offset: 1 }}>
+          <div className="d-flex justify-content-end">
+            {(authEmailWeeklySummaryRecipient === authorizedUser1 ||
+              authEmailWeeklySummaryRecipient === authorizedUser2) && (
+              <Button
+                color="primary"
+                className="permissions-management__button text-nowrap mx-1"
+                type="button"
+                onClick={() => onClickRecepients()}
+                style={darkMode ? boxStyleDark : boxStyle}
+              >
+                Weekly Summary Report Recipients
+              </Button>
+            )}
+
+            <Button
+              color={darkMode ? 'light' : 'primary'}
+              outline
+              className="mx-1"
+              type="button"
+              onClick={() => setSelectFilterModalOpen(true)}
+            >
+              Select Filter
+            </Button>
+            {permissionState.canManageFilter && (
+              <ButtonDropdown
+                className="ml-1"
+                isOpen={saveFilterDropdownOpen}
+                toggle={toggleSaveFilterDropdown}
+              >
+                <DropdownToggle caret color="primary">
+                  Manage Filters
+                </DropdownToggle>
+                <DropdownMenu right className={`${darkMode ? styles['darkMode'] : ''}`}>
+                  <DropdownItem
+                    className={`${darkMode ? styles.filterItemDarkMode : ''}`}
+                    onClick={() => setCreateFilterModalOpen(true)}
+                  >
+                    Create New Filter
+                  </DropdownItem>
+                  <DropdownItem
+                    className={`${darkMode ? styles.filterItemDarkMode : ''}`}
+                    onClick={() => setUpdateFilterModalOpen(true)}
+                  >
+                    Update/Delete Filter
+                  </DropdownItem>
+                </DropdownMenu>
+              </ButtonDropdown>
+            )}
+
+            <SelectFilterModal
+              isOpen={selectFilterModalOpen}
+              toggle={toggleSelectFilterModal}
+              filters={filterChoices}
+              applyFilter={applyFilter}
+              memberDict={state.memberDict}
+              darkMode={darkMode}
+            />
+            {permissionState.canManageFilter && (
+              <UpdateFilterModal
+                isOpen={updateFilterModalOpen}
+                toggle={toggleUpdateFilterModal}
+                filters={filterChoices}
+                darkMode={darkMode}
+                hasPermissionToFilter={hasPermissionToFilter}
+                canSeeBioHighlight={permissionState.canSeeBioHighlight}
+                teamCodes={state.teamCodes}
+                colorOptions={state.colorOptions}
+                tableData={state.tableData}
+                summaries={state.summaries}
+                teamCodeWarningUsers={state.teamCodeWarningUsers}
+                memberDict={state.memberDict}
+                currentAppliedFilter={currentAppliedFilter}
+                applyFilter={applyFilter}
+              />
+            )}
+            {permissionState.canManageFilter && (
+              <CreateFilterModal
+                isOpen={createFilterModalOpen}
+                toggle={toggleCreateFilterModal}
+                initialState={{
+                  filterName: '',
+                  selectedCodes: state.selectedCodes,
+                  selectedColors: state.selectedColors,
+                  selectedExtraMembers: state.selectedExtraMembers,
+                  selectedTrophies: state.selectedTrophies,
+                  selectedSpecialColors: state.selectedSpecialColors,
+                  selectedBioStatus: state.selectedBioStatus,
+                  selectedOverTime: state.selectedOverTime,
+                  selectedCodesInvalid: [],
+                  selectedColorsInvalid: [],
+                  selectedExtraMembersInvalid: [],
+                  membersFromUnselectedTeam: state.membersFromUnselectedTeam,
+                }}
+                darkMode={darkMode}
+                hasPermissionToFilter={hasPermissionToFilter}
+                canSeeBioHighlight={permissionState.canSeeBioHighlight}
+                filters={filterChoices}
+                teamCodes={state.teamCodes}
+                colorOptions={state.colorOptions}
+                tableData={state.tableData}
+                summaries={state.summaries}
+                teamCodeWarningUsers={state.teamCodeWarningUsers}
+                currentAppliedFilter={currentAppliedFilter}
+                applyFilter={applyFilter}
+              />
+            )}
+          </div>
+        </Col>
+      </Row>
+      <Row className={styles['mx-max-sm-0']}>
+        <Col lg={{ size: 5, offset: 1 }} md={{ size: 6 }} xs={{ size: 12 }}>
+          <div className={`${styles.filterContainerTeamcode}`}>
             <div>Select Team Code</div>
-            <div className="filter-style">
+            <div className={`${styles.filterStyle}`}>
               <span>Show Chart</span>
-              <div className="switch-toggle-control">
+              <div className={`${styles.switchToggleControl}`}>
                 <input
                   type="checkbox"
-                  className="switch-toggle"
+                  className={`${styles.switchToggle}`}
                   id="chart-status-toggle"
                   onChange={handleChartStatusToggleChange}
                 />
-                <label className="switch-toggle-label" htmlFor="chart-status-toggle">
-                  <span className="switch-toggle-inner" />
-                  <span className="switch-toggle-switch" />
+                <label className={`${styles.switchToggleLabel}`} htmlFor="chart-status-toggle">
+                  <span className={`${styles.switchToggleInner}`} />
+                  <span className={`${styles.switchToggleSwitch}`} />
                 </label>
               </div>
             </div>
           </div>
+          <div>
+            {/* MultiSelect with Save/Delete Buttons */}
+            <div style={{ position: 'relative' }}>
+              {state.teamCodeWarningUsers.length > 0 && (
+                <>
+                  <i
+                    className="fa fa-info-circle text-danger"
+                    data-tip
+                    data-placement="top"
+                    data-for="teamCodeWarningTooltip"
+                    style={{
+                      position: 'absolute',
+                      left: '-25px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      fontSize: '20px',
+                      cursor: 'pointer',
+                    }}
+                  />
+                  <ReactTooltip id="teamCodeWarningTooltip" place="top" effect="solid">
+                    {state.teamCodeWarningUsers.length} users have mismatched team codes!
+                  </ReactTooltip>
+                </>
+              )}
+              <Select
+                isMulti
+                isSearchable
+                closeMenuOnSelect={false}
+                hideSelectedOptions={false}
+                blurInputOnSelect={false}
+                options={state.teamCodes.map(item => {
+                  const [code, count] = item.label.split(' (');
+                  return {
+                    ...item,
+                    label: `${code.padEnd(10, ' ')} (${count}`,
+                  };
+                })}
+                value={state.selectedCodes}
+                onChange={handleSelectCodeChange}
+                components={{
+                  Option: CheckboxOption,
+                  MenuList: CustomMenuList,
+                }}
+                placeholder="Search and select team codes..."
+                classNamePrefix="custom-select"
+                className={`custom-select-container ${darkMode ? 'dark-mode' : ''} ${
+                  state.teamCodeWarningUsers.length > 0 ? 'warning-border' : ''
+                }`}
+                styles={{
+                  menuList: base => ({
+                    ...base,
+                    maxHeight: '700px',
+                    overflowY: 'auto',
+                  }),
+                  option: (base, state) => ({
+                    ...base,
+                    fontSize: '13px',
+                    backgroundColor: state.isFocused ? '#eee' : 'white',
+                  }),
+                }}
+              />
+
+              {/* Save/Delete Buttons - only visible when codes are selected */}
+              {state.selectedCodes.length > 0 && permissionState.canManageFilter && (
+                <div className={styles['filter-save-buttons']}>
+                  <button
+                    type="button"
+                    className={`${styles['filter-save-btn']} ${styles.save}`}
+                    onClick={() => setCreateFilterModalOpen(true)}
+                    title="Save current filter"
+                    aria-label="Save current filter"
+                  >
+                    <i className="fa fa-save" />
+                  </button>
+                  <button
+                    type="button"
+                    className={`${styles['filter-save-btn']} ${styles.clear}`}
+                    onClick={() => handleSelectCodeChange([])}
+                    title="Clear selection"
+                    aria-label="Clear selection"
+                  >
+                    <i className="fa fa-times" />
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+          {/* Saved Filter Buttons List */}
+          {filterChoices && filterChoices.length > 0 && (
+            <div
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: '5px',
+                alignItems: 'center',
+                maxHeight: '100px',
+                overflowY: 'auto',
+              }}
+              className="my-3"
+            >
+              {filterChoices.map(filter => (
+                <div
+                  key={filter.value}
+                  className={`${styles['saved-filter-button']} ${
+                    darkMode ? styles['dark-mode'] : ''
+                  } ${
+                    currentAppliedFilter && currentAppliedFilter.value === filter.value
+                      ? styles['active-filter']
+                      : ''
+                  }`}
+                >
+                  <button
+                    type="button"
+                    className="btn btn-link p-0 mr-1"
+                    style={{
+                      color: 'inherit',
+                      textDecoration: 'none',
+                      fontSize: '0.875rem',
+                      background: 'none',
+                      border: 'none',
+                      padding: 0,
+                      fontWeight:
+                        currentAppliedFilter && currentAppliedFilter.value === filter.value
+                          ? 'bold'
+                          : 'normal',
+                    }}
+                    onClick={() => applyFilter(filter)}
+                    title={`Apply filter: ${filter.label}`}
+                  >
+                    {filter.label}
+                  </button>
+                  <button
+                    type="button"
+                    className={styles['saved-filter-delete-btn']}
+                    onClick={() => handleDeleteFilter(filter)}
+                    title="Delete filter"
+                    aria-label={`Delete filter ${filter.label}`}
+                  >
+                    <i className="fa fa-times" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </Col>
-        <Col lg={{ size: 6 }} md={{ size: 6 }} xs={{ size: 6 }}>
+        <Col lg={{ size: 5 }} md={{ size: 6 }} xs={{ size: 12 }}>
           <div>Select Color</div>
-        </Col>
-      </Row>
-      <Row>
-        <Col lg={{ size: 5, offset: 1 }} md={{ size: 6 }} xs={{ size: 6 }}>
-          <MultiSelect
-            className="multi-select-filter text-dark"
-            options={state.teamCodes}
-            value={state.selectedCodes}
-            onChange={e => {
-              handleSelectCodeChange(e);
-            }}
-            labelledBy="Select"
-          />
-        </Col>
-        <Col lg={{ size: 5 }} md={{ size: 6, offset: -1 }} xs={{ size: 6, offset: -1 }}>
-          <MultiSelect
-            className="multi-select-filter text-dark"
+          <Select
+            isMulti
+            isSearchable
+            closeMenuOnSelect={false}
+            hideSelectedOptions={false}
+            blurInputOnSelect={false}
             options={state.colorOptions}
             value={state.selectedColors}
-            onChange={e => {
-              handleSelectColorChange(e);
+            onChange={handleSelectColorChange}
+            components={{
+              Option: CheckboxOption,
+              MenuList: CustomMenuList,
             }}
+            placeholder="Select color filters..."
+            classNamePrefix="custom-select"
+            className={`${styles.multiSelectFilter} text-dark ${darkMode ? 'dark-mode' : ''}`}
+            styles={{
+              menuList: base => ({
+                ...base,
+                maxHeight: '700px',
+                overflowY: 'auto',
+              }),
+              option: (base, state) => ({
+                ...base,
+                fontSize: '13px',
+                backgroundColor: state.isFocused ? '#eee' : 'white',
+              }),
+            }}
+          />
+          <WeeklySummariesToggleFilter
+            state={state}
+            setState={setState}
+            hasPermissionToFilter={hasPermissionToFilter}
+            editable={true}
+            formId="report"
+            canSeeBioHighlight={permissionState.canSeeBioHighlight}
           />
         </Col>
       </Row>
+      <Row className={styles['mx-max-sm-0']}>
+        <Col lg={{ size: 5, offset: 1 }} md={{ size: 6 }} xs={{ size: 12 }}>
+          <div>Select Extra Members</div>
+          <MultiSelect
+            className={`${styles['report-multi-select-filter']} ${styles.textDark} 
+              ${darkMode ? 'dark-mode' : ''}`}
+            options={state.membersFromUnselectedTeam}
+            value={state.selectedExtraMembers}
+            onChange={handleSelectExtraMembersChange}
+          />
+        </Col>
+        <Col lg={{ size: 5 }} md={{ size: 6 }} xs={{ size: 12 }}>
+          <div>Logged Hours Range</div>
+          <Select
+            isMulti
+            placeholder="Select range..."
+            components={{
+              Option: CheckboxOption,
+              MenuList: CustomMenuList,
+            }}
+            options={[
+              { value: '0', label: '0' },
+              { value: '0-10', label: '0-10' },
+              { value: '10-20', label: '10-20' },
+              { value: '20-40', label: '20-40' },
+              { value: '>40', label: '>40' },
+            ]}
+            hideSelectedOptions={false}
+            blurInputOnSelect={false}
+            closeMenuOnSelect={false}
+            className={`${styles.multiSelectFilter} text-dark ${darkMode ? 'dark-mode' : ''}`}
+            styles={{
+              menuList: base => ({
+                ...base,
+                maxHeight: '700px',
+                overflowY: 'auto',
+              }),
+              option: (base, state) => ({
+                ...base,
+                fontSize: '13px',
+                backgroundColor: state.isFocused ? '#eee' : 'white',
+              }),
+            }}
+            value={state.selectedLoggedHoursRange}
+            onChange={selectedOption =>
+              setState({ ...state, selectedLoggedHoursRange: selectedOption })
+            }
+          />
+        </Col>
+      </Row>
+
       {state.chartShow && (
-        <Row>
-          <Col lg={{ size: 6, offset: 1 }} md={{ size: 12 }} xs={{ size: 11 }}>
+        <Row className={styles['mx-max-sm-0']}>
+          <Col lg={{ size: 6, offset: 1 }} md={{ size: 12 }} xs={{ size: 12 }}>
             <SelectTeamPieChart
               chartData={state.chartData}
               COLORS={state.COLORS}
@@ -1098,64 +2016,15 @@ const WeeklySummariesReport = props => {
               style={{ width: '100%' }}
             />
           </Col>
-          <Col lg={{ size: 4 }} md={{ size: 12 }} xs={{ size: 11 }} style={{ width: '100%' }}>
+          <Col lg={{ size: 4 }} md={{ size: 12 }} xs={{ size: 12 }} style={{ width: '100%' }}>
             <TeamChart teamData={state.structuredTableData} darkMode={darkMode} />
           </Col>
         </Row>
       )}
-      <Row style={{ marginBottom: '10px' }}>
-        <Col lg={{ size: 10, offset: 1 }} xs={{ size: 8, offset: 4 }}>
-          <div className="filter-container">
-            {(hasPermissionToFilter || props.hasPermission('highlightEligibleBios')) && (
-              <div className="filter-style margin-right">
-                <span>Filter by Bio Status</span>
-                <div className="switch-toggle-control">
-                  <input
-                    type="checkbox"
-                    className="switch-toggle"
-                    id="bio-status-toggle"
-                    onChange={handleBioStatusToggleChange}
-                  />
-                  <label className="switch-toggle-label" htmlFor="bio-status-toggle">
-                    <span className="switch-toggle-inner" />
-                    <span className="switch-toggle-switch" />
-                  </label>
-                </div>
-              </div>
-            )}
-            {hasPermissionToFilter && (
-              <div className="filter-style">
-                <span>Filter by Over Hours {}</span>
-                <div className="switch-toggle-control">
-                  <input
-                    type="checkbox"
-                    className="switch-toggle"
-                    id="over-hours-toggle"
-                    onChange={handleOverHoursToggleChange}
-                  />
-                  <label className="switch-toggle-label" htmlFor="over-hours-toggle">
-                    <span className="switch-toggle-inner" />
-                    <span className="switch-toggle-switch" />
-                  </label>
-                </div>
-                <ReactTooltip
-                  id="filterTooltip"
-                  place="top"
-                  effect="solid"
-                  className="custom-tooltip"
-                >
-                  <span style={{ whiteSpace: 'normal', wordWrap: 'break-word', maxWidth: '200px' }}>
-                    Filter people who contributed more than 25% of their committed hours
-                  </span>
-                </ReactTooltip>
-              </div>
-            )}
-          </div>
-        </Col>
-      </Row>
+
       {permissionState.codeEditPermission && state.selectedCodes && state.selectedCodes.length > 0 && (
-        <Row style={{ marginBottom: '10px' }}>
-          <Col lg={{ size: 5, offset: 1 }} xs={{ size: 5, offset: 1 }}>
+        <Row className={styles['mx-max-sm-0']} style={{ marginBottom: '10px' }}>
+          <Col lg={{ size: 5, offset: 1 }} md={{ size: 6 }} xs={{ size: 12 }}>
             Replace With
             <Input
               type="string"
@@ -1177,15 +2046,15 @@ const WeeklySummariesReport = props => {
               </Button>
             )}
             {state.replaceCodeError && (
-              <Alert className="code-alert" color="danger">
+              <Alert className={`${styles.codeAlert}`} color="danger">
                 {state.replaceCodeError}
               </Alert>
             )}
           </Col>
         </Row>
       )}
-      <Row>
-        <Col lg={{ size: 10, offset: 1 }}>
+      <Row className={styles['mx-max-sm-0']}>
+        <Col lg={{ size: 10, offset: 1 }} xs={{ size: 12 }}>
           <Nav tabs>
             {navItems.map(item => (
               <NavItem key={item}>
@@ -1207,7 +2076,7 @@ const WeeklySummariesReport = props => {
             {navItems.map((item, index) => (
               <WeeklySummariesReportTab tabId={item} key={item} hidden={item !== state.activeTab}>
                 {state.tabsLoading[item] ? (
-                  <Row className="text-center py-4">
+                  <Row className={`text-center py-4 ${styles['mx-max-sm-0']}`}>
                     <Col>
                       <Spinner color="primary" />
                       <p>Loading data...</p>
@@ -1215,11 +2084,15 @@ const WeeklySummariesReport = props => {
                   </Row>
                 ) : (
                   <>
-                    <Row>
+                    <Row className={styles['mx-max-sm-0']}>
                       <Col sm="12" md="6" className="mb-2">
                         From <b>{weekDates[index].fromDate}</b> to <b>{weekDates[index].toDate}</b>
                       </Col>
-                      <Col sm="12" md="6" style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                      <Col
+                        sm="12"
+                        md="6"
+                        style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}
+                      >
                         <GeneratePdfReport
                           summaries={state.filteredSummaries}
                           weekIndex={index}
@@ -1227,22 +2100,27 @@ const WeeklySummariesReport = props => {
                           darkMode={darkMode}
                         />
                         {permissionState.hasSeeBadgePermission && (
-                          <Button
-                            className="btn--dark-sea-green"
-                            style={darkMode ? boxStyleDark : boxStyle}
-                            onClick={() =>
-                              setState(prev => ({ ...prev, loadBadges: !state.loadBadges }))
-                            }
-                          >
-                            {state.loadBadges ? 'Hide Badges' : 'Load Badges'}
-                          </Button>
+                          <>
+                            <Button
+                              className="btn--dark-sea-green mr-2"
+                              style={darkMode ? boxStyleDark : boxStyle}
+                              onClick={() =>
+                                setState(prev => ({ ...prev, loadBadges: !state.loadBadges }))
+                              }
+                            >
+                              {state.loadBadges ? 'Hide Badges' : 'Load Badges'}
+                            </Button>
+                            <Button
+                              className="btn--dark-sea-green"
+                              style={darkMode ? boxStyleDark : boxStyle}
+                              onClick={() =>
+                                setState(prev => ({ ...prev, loadTrophies: !state.loadTrophies }))
+                              }
+                            >
+                              {state.loadTrophies ? 'Hide Trophies' : 'Load Trophies'}
+                            </Button>
+                          </>
                         )}
-                        <Button
-                          className="btn--dark-sea-green"
-                          style={darkMode ? boxStyleDark : boxStyle}
-                        >
-                          Load Trophies
-                        </Button>
                         <Button
                           className="btn--dark-sea-green mr-2"
                           style={darkMode ? boxStyleDark : boxStyle}
@@ -1275,6 +2153,9 @@ const WeeklySummariesReport = props => {
                               canSeeBioHighlight={permissionState.canSeeBioHighlight}
                               darkMode={darkMode}
                               handleTeamCodeChange={handleTeamCodeChange}
+                              loadTrophies={state.loadTrophies}
+                              getWeeklySummariesReport={getWeeklySummariesReport}
+                              handleSpecialColorDotClick={handleSpecialColorDotClick}
                             />
                           </Col>
                         </Row>
@@ -1311,6 +2192,9 @@ const mapStateToProps = state => ({
   allBadgeData: state.badge?.allBadgeData || [],
   infoCollections: state.infoCollections?.infos || [],
   role: state?.auth?.user?.role || '',
+  savedFilters: state.savedFilters?.savedFilters || [],
+  savedFiltersLoading: state.savedFilters?.loading || false,
+  savedFiltersError: state.savedFilters?.error || null,
   auth: state?.auth || {},
   darkMode: state?.theme?.darkMode || false,
   authEmailWeeklySummaryRecipient: state?.auth?.user?.email || '',
@@ -1320,10 +2204,18 @@ const mapDispatchToProps = dispatch => ({
   fetchAllBadges: () => dispatch(fetchAllBadges()),
   getWeeklySummariesReport: weekIndex => dispatch(getWeeklySummariesReport(weekIndex)),
   hasPermission: permission => dispatch(hasPermission(permission)),
-  getInfoCollections: () => getInfoCollections(),
+  getInfoCollections: () => dispatch(getInfoCollections()),
   getAllUserTeams: () => dispatch(getAllUserTeams()),
   getAllTeamCode: () => dispatch(getAllTeamCode()),
   setTeamCodes: teamCodes => dispatch(setTeamCodes(teamCodes)),
+  createSavedFilter: filter => dispatch(createSavedFilter(filter)),
+  deleteSavedFilter: filterId => dispatch(deleteSavedFilter(filterId)),
+  updateSavedFilter: (filterId, filterData) => dispatch(updateSavedFilter(filterId, filterData)),
+  getSavedFilters: () => dispatch(getSavedFilters()),
+  updateSavedFiltersForTeamCodeChange: (oldTeamCodes, newTeamCode) =>
+    dispatch(updateSavedFiltersForTeamCodeChange(oldTeamCodes, newTeamCode)),
+  updateSavedFiltersForIndividualTeamCodeChange: (oldTeamCode, newTeamCode, userId) =>
+    dispatch(updateSavedFiltersForIndividualTeamCodeChange(oldTeamCode, newTeamCode, userId)),
 });
 
 function WeeklySummariesReportTab({ tabId, hidden, children }) {

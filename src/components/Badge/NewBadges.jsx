@@ -6,23 +6,27 @@ import './Badge.css';
 function NewBadges(props) {
   const filterBadges = allBadges => {
     try {
-      const filteredList = allBadges.filter(
-        value => Date.now() - new Date(value.lastModified).getTime() <= WEEK_DIFF,
-      );
-
-      filteredList &&
-        filteredList.sort((a, b) => {
-          if (a?.badge?.ranking === 0) return 1;
-          if (b?.badge?.ranking === 0) return -1;
-          if (a?.badge?.ranking > b?.badge?.ranking) return 1;
-          if (a?.badge?.ranking < b?.badge?.ranking) return -1;
-          if (a?.badge?.badgeName > b?.badge?.badgeName) return 1;
-          if (a?.badge?.badgeName < b?.badge?.badgeName) return -1;
-          return 0;
+      const list = Array.isArray(allBadges) ? allBadges : [];
+      const filteredList = list
+        .filter(b => b && b.lastModified) // drop null/undefined/missing lastModified
+        .filter(b => {
+          const t = new Date(b.lastModified).getTime();
+          return Number.isFinite(t) && Date.now() - t <= WEEK_DIFF;
         });
+
+      filteredList.sort((a, b) => {
+        if (a?.badge?.ranking === 0) return 1;
+        if (b?.badge?.ranking === 0) return -1;
+        if (a?.badge?.ranking > b?.badge?.ranking) return 1;
+        if (a?.badge?.ranking < b?.badge?.ranking) return -1;
+        if (a?.badge?.badgeName > b?.badge?.badgeName) return 1;
+        if (a?.badge?.badgeName < b?.badge?.badgeName) return -1;
+        return 0;
+      });
+
       return filteredList;
     } catch (error) {
-      console.log(error);
+      // Swallow errors from invalid data to keep UI resilient in tests
       return [];
     }
   };
@@ -48,7 +52,10 @@ function NewBadges(props) {
           </CardTitle>
           <div className={`new_badges ${props.darkMode ? 'text-light' : ''}`}>
             {filteredBadges.length === 0 ? (
-              <strong style={{ opacity: 0.7 }} className="responsive-font-size">
+              <strong
+                style={{ opacity: 0.7 }}
+                className={`responsive-font-size ${props.darkMode ? 'text-light' : ''}`}
+              >
                 Get yourself a herd of new badges! New badges are earned at the close of each epic
                 week. Newest badges are placed here at the top for a week after you earn them so
                 everyone can bask in the awesomeness of your achievement(s)!
