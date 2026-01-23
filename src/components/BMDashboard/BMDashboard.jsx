@@ -5,7 +5,7 @@ import { fetchBMProjects } from '../../actions/bmdashboard/projectActions';
 import ProjectsList from './Projects/ProjectsList';
 import ProjectSelectForm from './Projects/ProjectSelectForm';
 import BMError from './shared/BMError';
-import './BMDashboard.module.css';
+import styles from './BMDashboard.module.css';
 
 export function BMDashboard() {
   const [isError, setIsError] = useState(false);
@@ -170,18 +170,13 @@ export function BMDashboard() {
 
   return (
     <Container
-      className={`justify-content-center align-items-center bm-dashboard-container ${
-        darkMode ? 'bm-dashboard-dark' : 'bm-dashboard-light'
+      fluid
+      className={`justify-content-center align-items-center ${
+        darkMode ? styles.darkBmDashboardMain : ''
       }`}
     >
-      <header
-        className={`bm-dashboard__header ${
-          darkMode ? 'bm-dashboard__header-dark' : 'bm-dashboard__header-light'
-        }`}
-      >
-        <h1 className={darkMode ? 'text-light' : 'text-dark'}>
-          Building and Inventory Management Dashboard
-        </h1>
+      <header className={`${darkMode ? styles.darkBmDashboardHeader : styles.bmDashboardHeader}`}>
+        <h1>Building and Inventory Management Dashboard</h1>
       </header>
       <main
         className={`bm-dashboard-main ${
