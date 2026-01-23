@@ -175,10 +175,6 @@ function IssueCharts() {
     dispatch(fetchLongestOpenIssues(dateRange, selectedProjects));
   }, [dispatch, startDate, endDate, selectedProjects]);
 
-  // Log the raw backend response when issues changes
-  useEffect(() => {
-  }, [issues]);
-
   const normalizedIssues = (issues || []).map(issue => {
     if (Array.isArray(issue.projects) && issue.projects.length > 0) {
       return issue;
