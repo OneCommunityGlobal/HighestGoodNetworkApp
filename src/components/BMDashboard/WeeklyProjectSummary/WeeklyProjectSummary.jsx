@@ -11,6 +11,7 @@ import QuantityOfMaterialsUsed from './QuantityOfMaterialsUsed/QuantityOfMateria
 import InjuryCategoryBarChart from './GroupedBarGraphInjurySeverity/InjuryCategoryBarChart';
 import ToolsHorizontalBarChart from './Tools/ToolsHorizontalBarChart';
 import ExpenseBarChart from './Financials/ExpenseBarChart';
+import FinancialStatButtons from './Financials/FinancialStatButtons';
 import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
 import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMaterialCostPerProject';
 import styles from './WeeklyProjectSummary.module.css';
@@ -18,6 +19,7 @@ import OpenIssueCharts from '../Issues/openIssueCharts';
 import SupplierPerformanceGraph from './SupplierPerformanceGraph.jsx';
 import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
 import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
+import MaterialStockOutRiskIndicator from './MaterialStockOutRiskIndicator/MaterialStockOutRiskIndicator';
 import IssueCharts from '../Issues/openIssueCharts';
 
 const projectStatusButtons = [
@@ -250,6 +252,16 @@ function WeeklyProjectSummary() {
         }),
       },
       {
+        title: 'Material Stock-Out Risk Indicator',
+        key: 'Material Stock-Out Risk Indicator',
+        className: 'full',
+        content: (
+          <div className={`${styles.weeklyProjectSummaryCard} ${styles.fullCard}`}>
+            <MaterialStockOutRiskIndicator />
+          </div>
+        ),
+      },
+      {
         title: 'Issue Tracking',
         key: 'Issue Tracking',
         className: 'full',
@@ -285,12 +297,12 @@ function WeeklyProjectSummary() {
         className: 'large',
         content: (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
-            <div className="weekly-project-summary-card financial-small">📊 Card</div>
+            <div className="weekly-project-summary-card">
+              <FinancialStatButtons />
+            </div>
             <div className="weekly-project-summary-card financial-small financial-chart">
               <ExpenseBarChart />
             </div>
-            <div className="weekly-project-summary-card financial-small">📊 Card</div>
-            <div className="weekly-project-summary-card financial-small">📊 Card</div>
             <div className="weekly-project-summary-card financial-big">📊 Big Card</div>
           </div>
         ),
