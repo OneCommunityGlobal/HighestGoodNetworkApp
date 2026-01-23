@@ -18,13 +18,13 @@ describe('ownerMessageReducer', () => {
       payload: {
         message: 'Updated owner message',
         standardMessage: 'This is the standard message',
-        history: [],
       },
     };
 
     const expectedState = {
       message: 'Updated owner message',
       standardMessage: 'This is the standard message',
+      history: [],
     };
 
     expect(ownerMessageReducer(initialState, action)).toEqual(expectedState);
