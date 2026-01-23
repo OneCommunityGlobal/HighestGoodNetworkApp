@@ -751,7 +751,7 @@ function LeaderBoard({
                         <span>{stateOrganizationData.name}</span>
                         <br />
                         {viewZeroHouraMembers(loggedInUser.role) && (
-                          <span className="leaderboard-totals-title">
+                          <span className={styles.leaderboardTotalsTitle}>
                             0 hrs Totals:{' '}
                             {filteredUsers.filter(user => user.weeklycommittedHours === 0).length}{' '}
                             Members
@@ -766,7 +766,7 @@ function LeaderBoard({
                         <span>{stateOrganizationData.name}</span>
                         <br />
                         {viewZeroHouraMembers(loggedInUser.role) && (
-                          <span className="leaderboard-totals-title">
+                          <span className={styles.leaderboardTotalsTitle}>
                             0 hrs Totals:{' '}
                             {filteredUsers.filter(user => user.weeklycommittedHours === 0).length}{' '}
                             Members
@@ -1079,7 +1079,7 @@ function LeaderBoard({
                           title={mouseoverTextValue}
                           id="Total time"
                           className={
-                            item.totalintangibletime_hrs > 0 ? 'leaderboard-totals-title' : null
+                            item.totalintangibletime_hrs > 0 ? styles.leaderboardTotalsTitle : null
                           }
                         >
                           {item.totaltime}
