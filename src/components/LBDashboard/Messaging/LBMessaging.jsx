@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import styles from './LBMessaging.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBell, faLocationArrow, faSearch } from '@fortawesome/free-solid-svg-icons';
+import { faBell, faLocationArrow, faSearch, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserProfileBasicInfo } from '~/actions/userManagement';
 import {
@@ -273,7 +273,7 @@ export default function LBMessaging() {
               message.sender === auth.userid ? styles.sent : styles.received
             }`}
           >
-            <p className={`${styles.messageText}`}>
+            <p className={`${styles.messageText} ${darkMode ? styles.lightBackground : ''}`}>
               {message.content.split('\n').map(line => (
                 <span key={message._id + line}>
                   {line}
@@ -290,12 +290,12 @@ export default function LBMessaging() {
 
   return (
     users.userProfilesBasicInfo.length !== 0 && (
-      <div className={`${darkMode ? styles.darkMode : ''}`}>
+      <div className={`${darkMode ? styles.darkMode : styles.lightMode}`}>
         <div className={`${styles.mainContainer}`}>
           <div className={`${styles.logoContainer}`}>
             <img src={logo} alt="One Community Logo" />
           </div>
-          <div className={`${styles.contentContainer}`}>
+          <div className={`${styles.contentContainer} ${darkMode ? styles.darkMode2 : ''}`}>
             <div className={`${styles.containerTop} ${styles.msg}`}>
               {mobileView && (
                 <div className={`${styles.lbMobileMessagingMenu}`}>
@@ -315,7 +315,9 @@ export default function LBMessaging() {
                               <input
                                 type="text"
                                 placeholder={placeholder}
-                                className={`${styles.lbSearchInput}`}
+                                className={`${styles.lbSearchInput} ${
+                                  darkMode ? styles.lightBackground : ''
+                                }`}
                                 value={searchQuery}
                                 onChange={e => {
                                   const query = e.target.value;
@@ -332,10 +334,11 @@ export default function LBMessaging() {
                                 onClick={() => setShowContacts(prev => !prev)}
                                 className={`${styles.lbMsgIconBtn}`} // you can reuse or define styles here
                               >
-                                <img
-                                  src="https://img.icons8.com/metro/26/multiply.png"
+                                {/* Removed Image and used Font Awesome icon for DarkMode support */}
+                                <FontAwesomeIcon
+                                  icon={faXmark}
                                   alt="Close"
-                                  className={`${styles.lbMsgIcon}`}
+                                  className={`${styles.lbClose}`}
                                 />
                               </button>
                             </div>
@@ -352,7 +355,9 @@ export default function LBMessaging() {
                             </div>
                           )}
                           <div
-                            className={`${styles.lbMessagingContactsBody} ${styles.activeInlbMessagingContactsBody}`}
+                            className={`${styles.lbMessagingContactsBody} ${
+                              styles.activeInlbMessagingContactsBody
+                            } ${darkMode ? styles.darkMode2 : ''}`}
                           >
                             {showContacts
                               ? searchResults.map(user => (
@@ -402,7 +407,9 @@ export default function LBMessaging() {
                       <input
                         type="text"
                         placeholder={placeholder}
-                        className={`${styles.lbSearchInput}`}
+                        className={`${styles.lbSearchInput} ${
+                          darkMode ? styles.lightBackground : ''
+                        }`}
                         value={searchQuery}
                         onChange={e => {
                           const query = e.target.value;
@@ -419,10 +426,11 @@ export default function LBMessaging() {
                         onClick={() => setShowContacts(prev => !prev)}
                         className={`${styles.lbMsgIconBtn}`} // you can reuse or define styles here
                       >
-                        <img
-                          src="https://img.icons8.com/metro/26/multiply.png"
+                        {/* Removed Image and used Font Awesome icon for DarkMode support */}
+                        <FontAwesomeIcon
+                          icon={faXmark}
                           alt="Close"
-                          className={`${styles.lbMsgIcon}`}
+                          className={`${styles.lbClose}`}
                         />
                       </button>
                     </div>
@@ -472,7 +480,7 @@ export default function LBMessaging() {
               {/* Chat Window Section */}
               <div className={`${styles.lbMessagingMessageWindow}`}>
                 <div className={`${styles.lbMessagingMessageWindowHeader}`}>
-                  <div>
+                  <div className={`${styles.displayItems}`}>
                     <img
                       src={selectedUser.profilePic || '/pfp-default-header.png'}
                       onError={e => {
@@ -480,6 +488,7 @@ export default function LBMessaging() {
                         e.target.src = '/pfp-default-header.png';
                       }}
                       alt="Profile"
+                      className={`${styles.profile}`}
                     />
                     {selectedUser.firstName
                       ? `${selectedUser.firstName} ${selectedUser.lastName}`
@@ -498,7 +507,8 @@ export default function LBMessaging() {
                         <div
                           className={`${styles.lgMessagingBellSelectDropdown} ${
                             bellDropdownActive ? styles.activeInlgMessagingBellSelectDropdown : ''
-                          }`}
+                          }
+                          ${darkMode ? styles.darkMode2 : ''}`}
                         >
                           <label>
                             <input
@@ -541,14 +551,18 @@ export default function LBMessaging() {
                     </div>
                   )}
                 </div>
-                <div className={`${styles.lbMessagingMessageWindowBody}`}>
+                <div
+                  className={`${styles.lbMessagingMessageWindowBody} ${
+                    darkMode ? styles.darkMode1 : ''
+                  }`}
+                >
                   {selectedUser.userId ? (
                     renderChatMessages()
                   ) : (
                     <p className={`${styles.startMsg}`}>Select a user to start chatting</p>
                   )}
                 </div>
-                <div className={`${styles.lbMessaingMessageWindowFooter}`}>
+                <div className={`${styles.lbMessaingMessageWindowFooter} `}>
                   <textarea
                     type="text"
                     placeholder="Type a message..."
@@ -560,7 +574,7 @@ export default function LBMessaging() {
                         handleSendMessage();
                       }
                     }}
-                    className={`${styles.lbMessagingTextarea}`}
+                    className={`${styles.lbMessagingTextarea} ${darkMode ? styles.darkMode2 : ''}`}
                     disabled={!selectedUser.userId}
                   />
                   <FontAwesomeIcon

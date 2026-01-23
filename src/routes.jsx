@@ -336,7 +336,7 @@ export default (
     <LBProtectedRoute path="/lbdashboard" component={LBDashboard} />
 
     <LBProtectedRoute path="/lbdashboard/home" component={LBHome} />
-    <LBProtectedRoute path="/lbdashboard/messaging" component={LBMessaging} />
+    {/* <LBProtectedRoute path="/lbdashboard/messaging" component={LBMessaging} /> */}
     <LBProtectedRoute path="/lbdashboard/map/masterplan" component={MasterPlan} />
     <LBProtectedRoute path="/lbdashboard/listingoverview" component={ListOveriew} />
     <LBProtectedRoute path="/lbdashboard/biddingoverview" component={LBBidOverview} />
@@ -811,7 +811,7 @@ export default (
         <LBProtectedRoute path="/lbdashboard/masterplan" exact component={MasterPlan} />
         <Route path="/lbdashboard/login" component={LBLogin} />
         <Route path="/lbdashboard/register" component={LBRegister} />
-        <LBProtectedRoute path="/lbdashboard/messaging" component={LBMessaging} />
+        {/* <LBProtectedRoute path="/lbdashboard/messaging" component={LBMessaging} /> */}
         <Route // Should be LBProtectedRoute
           path="/lbdashboard/listingshome"
           render={() => (
