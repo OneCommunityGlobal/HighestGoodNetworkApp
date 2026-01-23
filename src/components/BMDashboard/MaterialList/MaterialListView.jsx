@@ -14,8 +14,10 @@ function MaterialListView() {
   const transformedMaterials =
     materials?.map(material => ({
       ...material,
-      id: parseInt(material._id?.split('-')[0], 16) || Math.random(), // Convert first part of _id to number or use random fallback
+      'product id': material._id,
+      projectName: material.project?.name || 'N/A',
       name: material.itemType?.name || 'Unnamed Material',
+      unit: material.itemType?.unit || '',
     })) || [];
 
   useEffect(() => {
