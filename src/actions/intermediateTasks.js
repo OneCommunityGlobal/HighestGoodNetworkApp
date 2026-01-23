@@ -253,3 +253,6 @@ export const markStudentTaskAsDone = (taskId) => {
     }
   };
 };
+// Aliases for StudentDashboard compatibility
+export { fetchStudentTasks as fetchIntermediateTasks };
+export { markStudentTaskAsDone as markIntermediateTaskAsDone };
