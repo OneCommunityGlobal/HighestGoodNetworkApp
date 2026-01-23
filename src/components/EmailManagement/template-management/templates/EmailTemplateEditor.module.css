@@ -8,8 +8,7 @@
   margin: 0;
   background: transparent;
   padding: 0;
-  font-family:
-    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
 /* Template Editor Content Layout */
@@ -114,11 +113,17 @@
   transform: none;
 }
 
-/* Compact retry button */
+/* Empty variables state */
+.email-template-editor .empty-variables-state {
+  margin-top: 0.5rem;
+}
+
 .email-template-editor .empty-variables-state .border {
   border-color: #e9ecef !important;
   background-color: #f8f9fa;
   transition: all 0.2s ease-in-out;
+  border-radius: 0.375rem;
+  padding: 1rem;
 }
 
 .email-template-editor .empty-variables-state .border:hover {
@@ -209,11 +214,9 @@
   0% {
     opacity: 1;
   }
-
   50% {
     opacity: 0.6;
   }
-
   100% {
     opacity: 1;
   }
@@ -297,14 +300,25 @@
   font-style: italic;
 }
 
-/* Ensure full width for form fields */
-.email-template-editor .basic-info-section .form-group {
+/* ==========================================================================
+   VARIABLES SECTION
+   ========================================================================== */
+
+.email-template-editor .variables-section {
+  margin-bottom: 1.5rem;
+}
+
 .email-template-editor .variables-header {
   margin-bottom: 0.75rem;
 }
 
 .email-template-editor .variables-header h5 {
   color: #374151;
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
 .email-template-editor .variables-header .btn {
   font-size: 0.75rem;
   padding: 0.25rem 0.5rem;
@@ -319,15 +333,14 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Empty Variables State */
-.email-template-editor .empty-variables-state {
-  margin-top: 0.5rem;
+.email-template-editor .variables-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
 }
 
-.email-template-editor .empty-variables-state .border {
-  border-color: #e5e7eb !important;
-  border-radius: 0.375rem;
-  background: #f9fafb;
+.email-template-editor .variable-chip {
   display: inline-flex;
   align-items: center;
   gap: 0.375rem;
@@ -340,6 +353,10 @@
   white-space: nowrap;
 }
 
+.email-template-editor .variable-chip:hover {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  border-color: #d1d5db;
+}
 
 .email-template-editor .variable-code {
   font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;

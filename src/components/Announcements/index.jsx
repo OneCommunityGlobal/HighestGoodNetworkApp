@@ -1,5 +1,5 @@
 /* Announcements/Announcements.jsx */
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styles from './Announcements.module.css';
 import { useSelector } from 'react-redux';
 import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';

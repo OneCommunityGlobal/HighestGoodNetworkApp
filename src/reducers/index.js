@@ -178,7 +178,6 @@ const localReducers = {
   emailTemplates: emailTemplateReducer,
   emailOutbox: emailOutboxReducer,
 
-
   listOverview: listOverviewReducer,
   listingAvailability: listingAvailabilityReducer,
   listingBooking: listingBookingReducer,

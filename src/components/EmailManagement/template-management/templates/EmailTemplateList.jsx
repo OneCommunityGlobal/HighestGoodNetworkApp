@@ -52,8 +52,6 @@ const EmailTemplateList = ({
   // Constants
   const PAGE_SIZE = 10; // Standard page size for templates
 
-  // Removed shimmer/skeleton in favor of simple spinners
-  // Debounce search term
   // Debounce search term - increased to 500ms to reduce API calls while typing
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -246,7 +244,6 @@ const EmailTemplateList = ({
     }
   }, []);
 
-  // Templates are already sorted and filtered by the API
   // Templates are sorted by API, but add client-side sorting as backup
   const sortedAndFilteredTemplates = useMemo(() => {
     if (!templates || !Array.isArray(templates)) {
@@ -293,57 +290,60 @@ const EmailTemplateList = ({
 
   return (
     <div className="email-template-list">
-      {/* Controls Section - Only show when templates are successfully loaded */}
-      {!loading && !error && (
-        <div className="controls-section">
-          <Row className="align-items-center mb-2 gx-0">
-            <Col lg={8} md={12} className="px-0">
-              <div className="d-flex gap-3 align-items-center">
-                <div className="search-container flex-grow-1">
-                  <FaSearch className="search-icon" />
-                  <Input
-                    type="text"
-                    placeholder="Search templates..."
-                    value={searchTerm}
-                    onChange={handleSearch}
-                    aria-label="Search templates"
-                  />
-                </div>
-                <div className="sort-container" style={{ width: '200px', flexShrink: 0 }}>
-                  <Input
-                    type="select"
-                    value={`${sortBy}-${sortOrder}`}
-                    onChange={e => {
-                      const [field, order] = e.target.value.split('-');
-                      handleSortChange(field, order);
-                    }}
-                    aria-label="Sort templates"
-                  >
-                    <option value="created_at-desc">Newest First</option>
-                    <option value="created_at-asc">Oldest First</option>
-                    <option value="updated_at-desc">Recently Updated</option>
-                    <option value="updated_at-asc">Least Recently Updated</option>
-                    <option value="name-asc">Name A-Z</option>
-                    <option value="name-desc">Name Z-A</option>
-                  </Input>
-                </div>
+      {/* Controls Section - Always visible for better UX during loading */}
+      <div className="controls-section">
+        <Row className="align-items-center mb-2 gx-0">
+          <Col lg={8} md={12} className="px-0">
+            <div className="d-flex gap-3 align-items-center">
+              <div className="search-container flex-grow-1">
+                <FaSearch className="search-icon" />
+                <Input
+                  type="text"
+                  placeholder="Search templates..."
+                  value={searchTerm}
+                  onChange={handleSearch}
+                  aria-label="Search templates"
+                  disabled={loading}
+                />
               </div>
-            </Col>
-            <Col lg={4} md={12} className="px-0">
-              <div className="create-button-container d-flex justify-content-lg-end justify-content-center">
-                <Button
-                  color="primary"
-                  onClick={onCreateTemplate}
-                  style={{ width: 'auto', minWidth: '140px' }}
+              <div className="sort-container" style={{ width: '200px', flexShrink: 0 }}>
+                <Input
+                  type="select"
+                  value={`${sortBy}-${sortOrder}`}
+                  onChange={e => {
+                    const [field, order] = e.target.value.split('-');
+                    handleSortChange(field, order);
+                  }}
+                  aria-label="Sort templates"
+                  disabled={loading}
                 >
-                  <FaPlus className="me-2" />
-                  Create Template
-                </Button>
+                  <option value="created_at-desc">Newest First</option>
+                  <option value="created_at-asc">Oldest First</option>
+                  <option value="updated_at-desc">Recently Updated</option>
+                  <option value="updated_at-asc">Least Recently Updated</option>
+                  <option value="name-asc">Name A-Z</option>
+                  <option value="name-desc">Name Z-A</option>
+                </Input>
               </div>
-            </Col>
-          </Row>
+            </div>
+          </Col>
+          <Col lg={4} md={12} className="px-0">
+            <div className="create-button-container d-flex justify-content-lg-end justify-content-center">
+              <Button
+                color="primary"
+                onClick={onCreateTemplate}
+                style={{ width: 'auto', minWidth: '140px' }}
+                disabled={loading}
+              >
+                <FaPlus className="me-2" />
+                Create Template
+              </Button>
+            </div>
+          </Col>
+        </Row>
 
-          {/* Results summary */}
+        {/* Results summary - only show when not loading */}
+        {!loading && (
           <Row>
             <Col>
               <div className="templates-count">
@@ -353,10 +353,10 @@ const EmailTemplateList = ({
               </div>
             </Col>
           </Row>
-        </div>
-      )}
+        )}
+      </div>
 
-      {/* Loading Spinner */}
+      {/* Loading Spinner - Shows in place of table */}
       {loading && (
         <div className="loading-state">
           <FaSpinner className="fa-spin me-2" />
@@ -540,9 +540,6 @@ const EmailTemplateList = ({
               )}
             </tbody>
           </Table>
-
-          {/* Pagination Controls */}
-          {/* Removed pagination controls (PAGE_SIZE, handlePageChange, and their JSX) */}
         </div>
       )}
 

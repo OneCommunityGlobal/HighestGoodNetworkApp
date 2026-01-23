@@ -94,6 +94,7 @@ const EmailTemplateEditor = ({
   const [previewData, setPreviewData] = useState(null);
   const [previewLoading, setPreviewLoading] = useState(false);
   const [previewError, setPreviewError] = useState(null);
+
   // Helper function to get icon for variable type
   const getVariableTypeIcon = useCallback(type => {
     const iconMap = {
@@ -234,8 +235,12 @@ const EmailTemplateEditor = ({
       const extractedVars = extractVariables();
 
       if (!extractedVars || extractedVars.length === 0) {
-        toast.alert(
+        toast.info(
           'No variables found in the content or subject. Make sure to use {{variableName}} format.',
+          {
+            position: 'top-right',
+            autoClose: 4000,
+          },
         );
         return;
       }
@@ -245,7 +250,10 @@ const EmailTemplateEditor = ({
       const newVariables = extractedVars.filter(v => !existingVariableNames.includes(v.name));
 
       if (newVariables.length === 0) {
-        toast.alert('All variables from the content and subject are already defined.');
+        toast.info('All variables from the content and subject are already defined.', {
+          position: 'top-right',
+          autoClose: 4000,
+        });
         return;
       }
 
@@ -282,10 +290,14 @@ const EmailTemplateEditor = ({
     setShowTypeSelectionModal(false);
     setExtractedVariables([]);
 
-    toast.alert(
+    toast.success(
       `Added ${extractedVariables.length} new variable(s): ${extractedVariables
         .map(v => v.name)
         .join(', ')}`,
+      {
+        position: 'top-right',
+        autoClose: 3000,
+      },
     );
   };
 
@@ -726,8 +738,8 @@ const EmailTemplateEditor = ({
                 >
                   {previewLoading ? (
                     <>
-                      <FaSpinner className="fa-spin me -0 me-sm-1" />
-                      <span className="d none d-sm-inline">Loading...</span>
+                      <FaSpinner className="fa-spin me-0 me-sm-1" />
+                      <span className="d-none d-sm-inline">Loading...</span>
                     </>
                   ) : (
                     <>
@@ -943,7 +955,7 @@ const EmailTemplateEditor = ({
         </div>
       </div>
 
-      {/* Preview Modal - FIXED XSS VULNERABILITY */}
+      {/* Preview Modal - FIXED ISSUE 3: Show variable names with icons, no labels */}
       <Modal isOpen={showPreviewModal} toggle={() => setShowPreviewModal(false)} size="lg" centered>
         <ModalHeader toggle={() => setShowPreviewModal(false)}>Email Preview</ModalHeader>
         <ModalBody>
@@ -965,8 +977,14 @@ const EmailTemplateEditor = ({
                 {formData.variables.length > 0 && (
                   <div className="mt-2">
                     {formData.variables.map((variable, index) => (
-                      <Badge key={index} color="secondary" className="me-1 mb-1">
-                        {variable.name} ({variable.type})
+                      <Badge
+                        key={index}
+                        color="secondary"
+                        className="me-1 mb-1"
+                        title={`Type: ${variable.type}`}
+                      >
+                        {getVariableTypeIcon(variable.type)}
+                        {variable.name}
                       </Badge>
                     ))}
                   </div>
