@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import styles from './ActivityList.module.css';
 // import { useHistory } from 'react-router-dom';
+import { fuzzySearch } from '../../../utils/fuzzySearch';
 
 function ActivityList() {
   const [activities, setActivities] = useState([]);
@@ -132,9 +133,9 @@ function ActivityList() {
 
   const filteredActivities = activities.filter(activity => {
     return (
-      (!filter.type || activity.type.toLowerCase().includes(filter.type.toLowerCase())) &&
+      (!filter.type || fuzzySearch(activity.type, filter.type, 0.5)) &&
       (!filter.date || activity.date === filter.date) &&
-      (!filter.location || activity.location.toLowerCase().includes(filter.location.toLowerCase()))
+      (!filter.location || fuzzySearch(activity.location, filter.location, 0.5))
     );
   });
 
