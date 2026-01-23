@@ -3,15 +3,11 @@ import Select from 'react-select';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import axios from 'axios';
 import { ENDPOINTS } from '../../../../utils/URL';
-import './ToolsHorizontalBarChart.css';
-
-// No mock data - use real backend data only
+import './ToolsHorizontalBarChart.module.css';
 
 // Custom tooltip component
 function CustomTooltip({ active, payload, label }) {
-  if (!active || !payload || !payload.length) {
-    return null;
-  }
+  if (!active || !payload || !payload.length) return null;
 
   const total = payload.reduce((sum, entry) => sum + (entry.value || 0), 0);
 
@@ -32,8 +28,12 @@ function ToolsHorizontalBarChart({ darkMode }) {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
   const [allProjects, setAllProjects] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null);
+
+  // Hover state for preview
+  const [isPreviewHovering, setIsPreviewHovering] = useState(false);
 
   // Date range state for filters
   const currentDate = new Date();
@@ -43,16 +43,12 @@ function ToolsHorizontalBarChart({ darkMode }) {
   const [startDate, setStartDate] = useState(startDate12MonthsAgo.toISOString().split('T')[0]);
   const [endDate, setEndDate] = useState(endOfCurrentMonth.toISOString().split('T')[0]);
 
-  // Date range logging removed for production
-
   // Fetch projects list
   useEffect(() => {
     const fetchProjects = async () => {
       try {
         const projectsResponse = await axios.get(ENDPOINTS.TOOLS_AVAILABILITY_PROJECTS);
         const projects = projectsResponse.data;
-
-        // Projects fetched successfully
 
         if (projects && projects.length > 0) {
           const projectOptions = projects.map(project => ({
@@ -61,11 +57,23 @@ function ToolsHorizontalBarChart({ darkMode }) {
           }));
           setAllProjects(projectOptions);
 
-          // Auto-select first project for initial display
-          setSelectedProject(projectOptions[0]);
+          /**
+           * IMPORTANT FOR TASK:
+           * Do NOT auto-select first project.
+           * This allows the placeholder preview to show until user selects filters.
+           */
+          setSelectedProject(null);
+        } else {
+          setAllProjects([]);
+          setSelectedProject(null);
         }
       } catch (err) {
         setError('Failed to load projects');
+        setAllProjects([]);
+        setSelectedProject(null);
+      } finally {
+        // we are done with initial load of projects
+        setLoading(false);
       }
     };
 
@@ -75,9 +83,10 @@ function ToolsHorizontalBarChart({ darkMode }) {
   // Fetch tools data when project or date range changes
   useEffect(() => {
     const fetchToolsData = async () => {
+      // If no project selected, show placeholder (no chart fetch)
       if (!selectedProject?.value) {
         setData([]);
-        setLoading(false);
+        setError(null);
         return;
       }
 
@@ -86,13 +95,8 @@ function ToolsHorizontalBarChart({ darkMode }) {
         setError(null);
 
         const projectId = selectedProject.value;
-        // Fetching tools data for selected project
 
-        if (!projectId) {
-          throw new Error('No valid project ID found');
-        }
-
-        // First try without date filters to see if there's any data at all
+        // First try without date filters
         const toolsResponseNoFilter = await axios.get(
           ENDPOINTS.TOOLS_AVAILABILITY_BY_PROJECT(projectId),
         );
@@ -101,6 +105,7 @@ function ToolsHorizontalBarChart({ darkMode }) {
         const toolsResponse = await axios.get(
           ENDPOINTS.TOOLS_AVAILABILITY_BY_PROJECT(projectId, startDate, endDate),
         );
+
         const toolsDataFiltered = toolsResponse.data;
         const toolsDataUnfiltered = toolsResponseNoFilter.data;
 
@@ -111,15 +116,12 @@ function ToolsHorizontalBarChart({ darkMode }) {
             : toolsDataUnfiltered;
 
         if (toolsData && toolsData.length > 0) {
-          // Process and format the data using correct backend field names
-          const formattedData = toolsData
-            .slice(0, 5) // Show only top 5 tools
-            .map(item => ({
-              name: item.toolName || 'Unknown Tool',
-              inUse: item.inUse || 0,
-              needsReplacement: item.needsReplacement || 0,
-              yetToReceive: item.yetToReceive || 0,
-            }));
+          const formattedData = toolsData.slice(0, 5).map(item => ({
+            name: item.toolName || 'Unknown Tool',
+            inUse: item.inUse || 0,
+            needsReplacement: item.needsReplacement || 0,
+            yetToReceive: item.yetToReceive || 0,
+          }));
           setData(formattedData);
         } else {
           setData([]);
@@ -149,30 +151,12 @@ function ToolsHorizontalBarChart({ darkMode }) {
   };
 
   const handleClearDates = () => {
-    const currentDate = new Date();
-    const startDate12MonthsAgo = new Date(currentDate.getFullYear() - 1, currentDate.getMonth(), 1);
-    const endOfCurrentMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
-    setStartDate(startDate12MonthsAgo.toISOString().split('T')[0]);
-    setEndDate(endOfCurrentMonth.toISOString().split('T')[0]);
+    const now = new Date();
+    const start = new Date(now.getFullYear() - 1, now.getMonth(), 1);
+    const end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    setStartDate(start.toISOString().split('T')[0]);
+    setEndDate(end.toISOString().split('T')[0]);
   };
-
-  if (loading) {
-    return (
-      <div className="tools-horizontal-bar-chart-card">
-        <h4 className="tools-horizontal-bar-chart-title">Tools by Availability</h4>
-        <div className="tools-horizontal-bar-chart-loading">Loading...</div>
-      </div>
-    );
-  }
-
-  if (error && data.length === 0) {
-    return (
-      <div className="tools-horizontal-bar-chart-card">
-        <h4 className="tools-horizontal-bar-chart-title">Tools by Availability</h4>
-        <div className="tools-horizontal-bar-chart-error">{error}</div>
-      </div>
-    );
-  }
 
   return (
     <div
@@ -290,7 +274,62 @@ function ToolsHorizontalBarChart({ darkMode }) {
         </div>
       </div>
 
-      {data.length > 0 ? (
+      {/* 1) NO PROJECT SELECTED => SHOW PLACEHOLDER + HOVER PREVIEW */}
+      {!selectedProject?.value && (
+        <div
+          className="tools-horizontal-bar-chart-preview-wrapper"
+          onMouseEnter={() => setIsPreviewHovering(true)}
+          onMouseLeave={() => setIsPreviewHovering(false)}
+        >
+          <div
+            className={`tools-horizontal-bar-chart-preview-tooltip ${
+              isPreviewHovering ? 'show' : ''
+            }`}
+          >
+            Hover to preview — apply filters to load data.
+          </div>
+
+          <div
+            className={`tools-horizontal-bar-chart-preview-body ${
+              isPreviewHovering ? 'hover' : ''
+            }`}
+          >
+            <div className="tools-horizontal-bar-chart-preview-inner">
+              <div className="tools-horizontal-bar-chart-preview-title">📊 Chart Preview</div>
+              <div className="tools-horizontal-bar-chart-preview-subtitle">
+                Apply filters to load data
+              </div>
+
+              {/* axes + layout silhouette only */}
+              <div className="tools-horizontal-bar-chart-preview-silhouette">
+                <div className="silhouette-row">
+                  <div className="silhouette-label" />
+                  <div className="silhouette-bar w80" />
+                </div>
+                <div className="silhouette-row">
+                  <div className="silhouette-label" />
+                  <div className="silhouette-bar w55" />
+                </div>
+                <div className="silhouette-row">
+                  <div className="silhouette-label" />
+                  <div className="silhouette-bar w70" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 2) PROJECT SELECTED => SHOW LOADING / ERROR / CHART / EMPTY */}
+      {selectedProject?.value && loading && (
+        <div className="tools-horizontal-bar-chart-loading">Loading...</div>
+      )}
+
+      {selectedProject?.value && !loading && error && data.length === 0 && (
+        <div className="tools-horizontal-bar-chart-error">{error}</div>
+      )}
+
+      {selectedProject?.value && !loading && !error && data.length > 0 && (
         <div className="tools-horizontal-bar-chart-content">
           <ResponsiveContainer width="100%" height={200}>
             <BarChart
@@ -303,10 +342,7 @@ function ToolsHorizontalBarChart({ darkMode }) {
               <YAxis
                 type="category"
                 dataKey="name"
-                tick={{
-                  fill: darkMode ? '#e0e0e0' : '#333',
-                  fontSize: 12,
-                }}
+                tick={{ fill: darkMode ? '#e0e0e0' : '#333', fontSize: 12 }}
                 width={35}
                 axisLine={false}
                 tickLine={false}
@@ -318,7 +354,9 @@ function ToolsHorizontalBarChart({ darkMode }) {
             </BarChart>
           </ResponsiveContainer>
         </div>
-      ) : (
+      )}
+
+      {selectedProject?.value && !loading && !error && data.length === 0 && (
         <div className="tools-horizontal-bar-chart-empty">
           <p>📊 No tools data available</p>
         </div>
