@@ -2,7 +2,7 @@ import styles from './Activitiesstyles.module.css';
 
 function LatestRegistration() {
   return (
-    <div className="latestRegistration">
+    <div className={`${styles.latestRegistration}`}>
       <h2>Latest Registration</h2>
       <ul>
         <li>
