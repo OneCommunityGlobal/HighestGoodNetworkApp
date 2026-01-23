@@ -122,7 +122,7 @@ export default function MaterialUsageChart({ projectId, toggle, darkMode = false
         ]);
         setIncrease(increaseOverLastWeek);
       } catch (err) {
-        console.error('Error fetching materials:', err);
+        
         setError('Failed to fetch chart data. Please try again.');
       } finally {
         setLoading(false);
