@@ -38,7 +38,110 @@ const parseContentForEdit = htmlContent => {
     textContent: htmlContent.replace(/<br\s*\/?>/g, '\n'),
   };
 };
+// --- MODAL COMPONENTS ---
+const DeleteModal = ({ show, onClose, onDelete, theme, buttonStyles }) => {
+  if (!show) return null;
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 10001,
+      }}
+    >
+      <div
+        style={{
+          backgroundColor: theme.modalBg,
+          padding: '24px',
+          borderRadius: '12px',
+          width: '90%',
+          maxWidth: '400px',
+          border: `1px solid ${theme.border}`,
+        }}
+      >
+        <h3 style={{ color: theme.text, marginTop: 0 }}>Delete Scheduled Post</h3>
+        <p style={{ color: theme.subText }}>Are you sure?</p>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+          <button onClick={onClose} style={buttonStyles.secondary}>
+            Cancel
+          </button>
+          <button onClick={onDelete} style={buttonStyles.danger}>
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
+const PostNowModal = ({ show, onClose, onPost, theme, buttonStyles }) => {
+  if (!show) return null;
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 10001,
+      }}
+    >
+      <div
+        style={{
+          backgroundColor: theme.modalBg,
+          padding: '24px',
+          borderRadius: '12px',
+          width: '90%',
+          maxWidth: '400px',
+          border: `1px solid ${theme.border}`,
+        }}
+      >
+        <h3 style={{ color: theme.text, marginTop: 0 }}>Post Now</h3>
+        <p style={{ color: theme.subText }}>Post this immediately?</p>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+          <button onClick={onClose} style={buttonStyles.secondary}>
+            Cancel
+          </button>
+          <button onClick={onPost} style={{ ...buttonStyles.success, padding: '8px 16px' }}>
+            Post Now
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const ToastNotification = ({ show, message, type, theme }) => {
+  if (!show) return null;
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        top: '20px',
+        right: '20px',
+        backgroundColor: type === 'success' ? theme.success : theme.danger,
+        color: 'white',
+        padding: '16px 24px',
+        borderRadius: '8px',
+        zIndex: 10000,
+      }}
+    >
+      {message}
+    </div>
+  );
+};
 export default function SocialMediaComposer({ platform, darkMode = false }) {
   // --- STATE ---
   const [localContentValue, setLocalContentValue] = useState('');
@@ -349,127 +452,44 @@ export default function SocialMediaComposer({ platform, darkMode = false }) {
     <div
       style={{ padding: '1rem', color: theme.text, backgroundColor: theme.bg, minHeight: '100%' }}
     >
-      {toast.show && (
-        <div
-          style={{
-            position: 'fixed',
-            top: '20px',
-            right: '20px',
-            backgroundColor: toast.type === 'success' ? theme.success : theme.danger,
-            color: 'white',
-            padding: '16px 24px',
-            borderRadius: '8px',
-            zIndex: 10000,
-          }}
-        >
-          {toast.message}
-        </div>
-      )}
+      <ToastNotification show={toast.show} message={toast.message} type={toast.type} theme={theme} />
 
-      {showDeleteModal && (
-        <div
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(0,0,0,0.5)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 10001,
-          }}
-        >
-          <div
-            style={{
-              backgroundColor: theme.modalBg,
-              padding: '24px',
-              borderRadius: '12px',
-              width: '90%',
-              maxWidth: '400px',
-              border: `1px solid ${theme.border}`,
-            }}
-          >
-            <h3 style={{ color: theme.text, marginTop: 0 }}>Delete Scheduled Post</h3>
-            <p style={{ color: theme.subText }}>Are you sure?</p>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
-              <button onClick={() => setShowDeleteModal(false)} style={secondaryButton}>
-                Cancel
-              </button>
-              <button
-                onClick={async () => {
-                  try {
-                    await axios.delete(`/api/livejournal/schedule/${selectedPostId}`);
-                    showToast('Deleted!', 'success');
-                    loadScheduledPosts();
-                  } catch {
-                    showToast('Error', 'error');
-                  } finally {
-                    setShowDeleteModal(false);
-                  }
-                }}
-                style={dangerButton}
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <DeleteModal
+        show={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onDelete={async () => {
+          try {
+            await axios.delete(`/api/livejournal/schedule/${selectedPostId}`);
+            showToast('Deleted!', 'success');
+            loadScheduledPosts();
+          } catch {
+            showToast('Error', 'error');
+          } finally {
+            setShowDeleteModal(false);
+          }
+        }}
+        theme={theme}
+        buttonStyles={{ secondary: secondaryButton, danger: dangerButton }}
+      />
 
-      {showPostNowModal && (
-        <div
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(0,0,0,0.5)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 10001,
-          }}
-        >
-          <div
-            style={{
-              backgroundColor: theme.modalBg,
-              padding: '24px',
-              borderRadius: '12px',
-              width: '90%',
-              maxWidth: '400px',
-              border: `1px solid ${theme.border}`,
-            }}
-          >
-            <h3 style={{ color: theme.text, marginTop: 0 }}>Post Now</h3>
-            <p style={{ color: theme.subText }}>Post this immediately?</p>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
-              <button onClick={() => setShowPostNowModal(false)} style={secondaryButton}>
-                Cancel
-              </button>
-              <button
-                onClick={async () => {
-                  try {
-                    await axios.post(`/api/livejournal/post-scheduled/${selectedPostId}`);
-                    showToast('Posted!', 'success');
-                    loadScheduledPosts();
-                    loadPostHistory();
-                  } catch {
-                    showToast('Error', 'error');
-                  } finally {
-                    setShowPostNowModal(false);
-                  }
-                }}
-                style={{ ...successButton, padding: '8px 16px' }}
-              >
-                Post Now
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <PostNowModal
+        show={showPostNowModal}
+        onClose={() => setShowPostNowModal(false)}
+        onPost={async () => {
+          try {
+            await axios.post(`/api/livejournal/post-scheduled/${selectedPostId}`);
+            showToast('Posted!', 'success');
+            loadScheduledPosts();
+            loadPostHistory();
+          } catch {
+            showToast('Error', 'error');
+          } finally {
+            setShowPostNowModal(false);
+          }
+        }}
+        theme={theme}
+        buttonStyles={{ secondary: secondaryButton, success: successButton }}
+      />
 
       {showEditModal && editingPost && (
         <div
