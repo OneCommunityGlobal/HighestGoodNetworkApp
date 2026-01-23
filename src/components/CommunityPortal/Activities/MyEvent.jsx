@@ -80,7 +80,6 @@ function MyEvent() {
         {filteredEvents.map(event => (
           <tr key={event.date}>
             {' '}
-            {/* Use event.date as the key */}
             <td>
               <div className={`${styles.dateBox}`}>
                 <span className={`${styles.day}`}>{event.day}</span>
