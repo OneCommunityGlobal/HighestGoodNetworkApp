@@ -334,14 +334,7 @@ export default (
       )}
     />
 
-    <LBProtectedRoute path="/lbdashboard" component={LBDashboard} />
-
     <LBProtectedRoute path="/lbdashboard/home" component={LBHome} />
-    <LBProtectedRoute path="/lbdashboard/messaging" component={LBMessaging} />
-    <LBProtectedRoute path="/lbdashboard/map/masterplan" component={MasterPlan} />
-    <LBProtectedRoute path="/lbdashboard/listingoverview" component={ListOveriew} />
-    <LBProtectedRoute path="/lbdashboard/biddingoverview" component={LBBidOverview} />
-    <LBProtectedRoute path="/lbdashboard/biddinghomepage" component={BiddingHomepage} />
     {/* ----- LB Dashboard Routing Ends----- */}
 
     <Route path="/EventPopularity" component={EventPopularity} />
@@ -806,29 +799,8 @@ export default (
           fallback
           routePermissions={RoutePermissions.resourceManagement}
         />
-        {/* Listing and Bidding Routes */}
-        <LBProtectedRoute path="/lbdashboard" exact component={LBDashboard} />
+        {/* Listing and Bidding Routes - Additional routes with parameters */}
         <LBProtectedRoute path="/lbdashboard/listOverview/:id" exact component={ListOveriew} />
-        <LBProtectedRoute path="/lbdashboard/masterplan" exact component={MasterPlan} />
-        <Route path="/lbdashboard/login" component={LBLogin} />
-        <Route path="/lbdashboard/register" component={LBRegister} />
-        <LBProtectedRoute path="/lbdashboard/messaging" component={LBMessaging} />
-        <Route // Should be LBProtectedRoute
-          path="/lbdashboard/listingshome"
-          render={() => (
-            <>
-              <AutoUpdate />
-              <LBHome />
-            </>
-          )}
-        />
-        <Route path="/lbdashboard/bidoverview" exact component={LBBidOverview} />
-        <LBProtectedRoute path="/lbdashboard/bidding" exact component={BiddingHomepage} />
-        <CPProtectedRoute
-          path="/communityportal/reports/participation"
-          exact
-          component={EventParticipation}
-        />
         {/* Good Education  Portal Routes */}
         <EPProtectedRoute path="/educationportal" exact component={EPDashboard} />
         <EPProtectedRoute
@@ -852,18 +824,6 @@ export default (
         <EPProtectedRoute path="/educationportal/student/tasks/:id" exact component={TaskDetails} />
         <Redirect exact from="/student/tasks" to="/educationportal/student/tasks" />
         <Redirect exact from="/student/tasks/:id" to="/educationportal/student/tasks/:id" />
-        {/* PR Analytics Dashboard */}
-        <Route path="/pull-request-analytics/reviews-insight" component={ReviewsInsight} />
-        <CPProtectedRoute
-          path="/communityportal/reports/event/personalization"
-          exact
-          component={EventStats}
-        />
-        <CPProtectedRoute
-          path="/communityportal/reports/participation"
-          exact
-          component={EventParticipation}
-        />
         <CPProtectedRoute
           path="/communityportal/reports/resourceusage"
           exact
