@@ -173,6 +173,7 @@
     "@vitejs/plugin-react": "^4.5.0",
     "@vitest/ui": "3.2.2",
     "babel-jest": "^29.7.0",
+    "baseline-browser-mapping": "^2.9.17",
     "cross-env": "^5.2.1",
     "eslint": "^8.57.1",
     "eslint-config-prettier": "^5.1.0",
