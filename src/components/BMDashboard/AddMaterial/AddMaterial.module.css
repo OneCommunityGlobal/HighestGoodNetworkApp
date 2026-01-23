@@ -132,15 +132,15 @@ font-size: .8em;
 }
 
 .dragWrapper :global(label) {
-  background-color: #1a1a1a  !important;
+  background-color: #2a3f5f  !important;
 }
-.phoneDark :global(.react-tel-input .flag-dropdown) {
-  background-color: #1a1a1a !important;
+.phoneDark :global(.react-tel-input .flag-dropdown), .phoneDark :global(.react-tel-input .flag-dropdown.open) {
+  background-color: #2a3f5f !important;
   border-color: #444;  
 } 
 
 .phoneDark :global(.react-tel-input .country-list) {
-  background-color: #1a1a1a;
+  background-color: #2a3f5f;
   border-color: #444;
 }
 .phoneDark :global(.react-tel-input .country:hover) {
@@ -150,11 +150,14 @@ font-size: .8em;
   background-color: #4b3737;
 }
 .phoneDark :global(.react-tel-input .selected-flag) {
-  background-color: #1a1a1a;
+  background-color: #2a3f5f;
 }
 .darkBackground{
   background-color: #e57373;
 }
 .darkBackgroundId{
   background-color: #4fc3f7;
+}
+:global(body.dark-mode .form-control) {
+  background-color: #2a3f5f !important;
 }

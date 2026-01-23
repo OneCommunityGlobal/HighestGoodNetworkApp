@@ -16,7 +16,7 @@ export default function SelectForm({
   }
 
   const handleChange = event => {
-    setSelectedItem('all');
+    // setSelectedItem('all');
     setSelectedCondition('all');
     setSelectedToolStatus('all');
     setSelectedProject(event.target.value);

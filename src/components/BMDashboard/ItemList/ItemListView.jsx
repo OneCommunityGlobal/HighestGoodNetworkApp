@@ -11,6 +11,8 @@ import styles from './ItemListView.module.css';
 import { Form, FormGroup, Label } from 'reactstrap';
 import AddMaterialModal from '../AddMaterial/AddMaterialModal';
 import { fetchMaterialTypes } from '../../../actions/bmdashboard/invTypeActions';
+import EditNameUnitModal from './EditNameUnitModal';
+import ViewUpdateHistoryModal from './ViewUpdateHistoryModal';
 
 export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamicColumns }) {
   const [filteredItems, setFilteredItems] = useState(items);
@@ -24,6 +26,9 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
   const [isAMOpen, setisAMOpen] = useState(false);
   const [selectedCondition, setSelectedCondition] = useState('all');
   const [selectedToolStatus, setSelectedToolStatus] = useState('all');
+  const [isEditOpen, setisEditOpen] = useState(false);
+  const [selectedRow, setSelectedRow] = useState(null);
+  const [viewUpdate, setViewUpdate] = useState(false);
 
   useEffect(() => {
     if (items) setFilteredItems([...items]);
@@ -38,7 +43,7 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
       filterItems = items.filter(item => item.project?.name === selectedProject);
       setFilteredItems([...filterItems]);
     } else if (selectedProject === 'all' && selectedItem !== 'all') {
-      filterItems = items.filter(item => item.itemType?.name === selectedItem);
+      filterItems = items.filter(item => item.name === selectedItem);
       setFilteredItems([...filterItems]);
     } else {
       filterItems = items.filter(
@@ -55,6 +60,7 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
   useEffect(() => {
     if (itemType === 'Materials') dispatch(fetchMaterialTypes());
   }, [dispatch, itemType]);
+
   if (isError) {
     return (
       <main className={`${styles.itemsListContainer} ${darkMode ? styles.darkMode : ''}`}>
@@ -67,11 +73,18 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
     );
   }
 
-  function openAddModal() {
+  const openAddModal = () => {
     if (itemType === 'Materials') {
       setisAMOpen(true);
     }
-  }
+  };
+  const handleEditClick = rowData => {
+    setisEditOpen(true);
+  };
+
+  const handleUpdateHistory = rowData => {
+    setViewUpdate(true);
+  };
   return (
     <main className={`${styles.itemsListContainer} ${darkMode ? styles.darkMode : ''}`}>
       <h3>{itemType}</h3>
@@ -113,7 +126,7 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
                 items={materialTypes}
                 selectedItem={selectedItem}
                 selectedProject={selectedProject}
-                setSelectedProject={setSelectedProject}
+                setSelectedItem={setSelectedItem}
                 label={itemType}
               />
             </div>
@@ -122,10 +135,10 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
             <button type="button" className={`${styles.btnPrimary}`} onClick={openAddModal}>
               Add {itemType}
             </button>
-            <button type="button" className={`${styles.btnPrimary}`}>
+            <button type="button" className={`${styles.btnPrimary}`} onClick={handleEditClick}>
               Edit Name/Measurement
             </button>
-            <button type="button" className={`${styles.btnPrimary}`}>
+            <button type="button" className={`${styles.btnPrimary}`} onClick={handleUpdateHistory}>
               View Update History
             </button>
           </div>
@@ -138,11 +151,27 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
             UpdateItemModal={UpdateItemModal}
             dynamicColumns={dynamicColumns}
             darkMode={darkMode}
+            selectedRowId={selectedRow?._id}
+            onRowSelect={setSelectedRow}
           />
         )}
       </section>
       <section>
         <AddMaterialModal isAMOpen={isAMOpen} toggle={() => setisAMOpen(false)} />
+      </section>
+      <section>
+        <EditNameUnitModal
+          item={selectedRow}
+          isOpen={isEditOpen}
+          toggle={() => setisEditOpen(false)}
+        />
+      </section>
+      <section>
+        <ViewUpdateHistoryModal
+          item={selectedRow}
+          isOpen={viewUpdate}
+          toggle={() => setViewUpdate(false)}
+        />
       </section>
     </main>
   );

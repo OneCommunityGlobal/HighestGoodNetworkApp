@@ -367,11 +367,25 @@ table thead th, table td {
 .lightDatePickerPopper .react-datepicker__triangle {
   display: none;
 }
-.dropdownRow{
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 15px;
+.dropdownRow {
+  display: flex;
   align-items: center;
+  gap: 16px;
+  width: 100%;
+  flex-wrap: wrap;  
+}
+
+.dropdownRow form {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 220px;     
+  min-width: 200px;
+  margin: 0;          
+}
+.dropdownRow .react-datepicker-wrapper,
+.dropdownRow .react-datepicker__input-container,
+.dropdownRow .react-datepicker__input-container input {
+  width: 100%;
 }
 .datePickerGroup{
   margin: -8px auto 10px 10px;
@@ -387,4 +401,21 @@ table thead th, table td {
 :global(html body.dark-mode) .darkBg option {
   background-color: #2a3f5f !important;
   color: #f9fafb !important;
+}
+.selectedrow{
+  background-color: #91b6db !important;
+}
+.fieldRequired{
+  color: red;
+}
+:global(body.dark-mode) .fieldRequired,
+:global(body.bm-dashboard-dark) .fieldRequired {
+  color: #F87171 !important;
+}
+.historyTable{
+  overflow: scroll;
+  height: 75vh;
+  text-align: center;
+  font-size: small;
+  white-space: nowrap;
 }

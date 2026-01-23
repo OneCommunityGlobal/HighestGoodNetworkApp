@@ -14,6 +14,10 @@ import GET_MATERIAL_TYPES, {
   GET_INV_BY_TYPE,
   GET_TOOL_TYPES,
   GET_CONSUMABLE_TYPES,
+  POST_UPDATE_NAME_AND_UNIT_SUCCESS,
+  POST_UPDATE_NAME_AND_UNIT_FAILURE,
+  POST_UPDATE_NAME_AND_UNIT_RESET,
+  GET_ITEM_UPDATE_HISTORY,
 } from '../../constants/bmdashboard/inventoryTypeConstants';
 import {
   POST_TOOLS_LOG,
@@ -23,6 +27,7 @@ import {
 
 const defaultState = {
   list: [],
+  historyList: [],
   invTypeList: {
     All: null,
     Materials: null,
@@ -182,6 +187,45 @@ export const bmInvTypeReducer = (state = defaultState, action) => {
           error: null,
         },
       };
+    case POST_UPDATE_NAME_AND_UNIT_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        postedResult: {
+          result: action.payload,
+          success: true,
+          error: false,
+          message: '',
+        },
+      };
+
+    case POST_UPDATE_NAME_AND_UNIT_FAILURE:
+      return {
+        ...state,
+        loading: false,
+        postedResult: {
+          result: null,
+          success: false,
+          error: true,
+          message: action.payload,
+        },
+      };
+    case POST_UPDATE_NAME_AND_UNIT_RESET:
+      return {
+        ...state,
+        postedResult: {
+          result: null,
+          success: false,
+          error: false,
+          message: '',
+        },
+      };
+    case GET_ITEM_UPDATE_HISTORY:
+      state.historyList = action.payload;
+      return {
+        ...state,
+      };
+
     default: {
       return state;
     }

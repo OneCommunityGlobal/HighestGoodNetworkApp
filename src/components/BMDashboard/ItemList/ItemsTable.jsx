@@ -14,6 +14,8 @@ export default function ItemsTable({
   UpdateItemModal,
   dynamicColumns,
   darkMode = false,
+  selectedRowId,
+  onRowSelect,
 }) {
   const [sortedData, setData] = useState(filteredItems);
   const [modal, setModal] = useState(false);
@@ -154,7 +156,12 @@ export default function ItemsTable({
             {sortedData && sortedData.length > 0 ? (
               sortedData.map(el => {
                 return (
-                  <tr key={el._id}>
+                  <tr
+                    key={el._id}
+                    onClick={() => onRowSelect(el)}
+                    className={el._id === selectedRowId ? styles.selectedrow : ''}
+                    style={{ cursor: 'pointer' }}
+                  >
                     <td>{el.project?.name}</td>
                     <td>{el.itemType?.name}</td>
                     {dynamicColumns.map(({ label, key }) => (
