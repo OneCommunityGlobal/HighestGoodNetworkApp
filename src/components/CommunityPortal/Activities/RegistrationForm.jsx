@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import styles from './Activitiesstyles.module.css';
 
 function RegistrationForm() {
   const [eventType, setEventType] = useState('');
@@ -16,10 +17,10 @@ function RegistrationForm() {
   };
 
   return (
-    <form className="registrationForm" onSubmit={handleSubmit}>
+    <form className={`${styles.registrationForm}`} onSubmit={handleSubmit}>
       <h3>Event Registrations</h3>
 
-      <div className="RegistrationformField">
+      <div className={`${styles.RegistrationformField}`}>
         <label htmlFor="name">Name of Registrant</label>
         <input
           id="name"
@@ -30,7 +31,7 @@ function RegistrationForm() {
         />
       </div>
 
-      <div className="RegistrationformField">
+      <div className={`${styles.RegistrationformField}`}>
         <label htmlFor="eventType">Event Type</label>
         <select id="eventType" value={eventType} onChange={e => setEventType(e.target.value)}>
           <option value="">Select Event Type</option>
@@ -40,7 +41,7 @@ function RegistrationForm() {
         </select>
       </div>
 
-      <div className="RegistrationformField">
+      <div className={`${styles.RegistrationformField}`}>
         <label htmlFor="location">Location</label>
         <select id="location" value={location} onChange={e => setLocation(e.target.value)}>
           <option value="">Select Location</option>
@@ -50,7 +51,7 @@ function RegistrationForm() {
         </select>
       </div>
 
-      <div className="RegistrationformField">
+      <div className={`${styles.RegistrationformField}`}>
         <label htmlFor="eventDate">Event Date</label>
         <input
           id="eventDate"
@@ -61,7 +62,7 @@ function RegistrationForm() {
         />
       </div>
 
-      <button type="submit" className="submitbtn">
+      <button type="submit" className={`${styles.submitbtn}`}>
         Submit
       </button>
     </form>
