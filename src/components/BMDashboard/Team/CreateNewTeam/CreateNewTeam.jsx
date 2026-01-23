@@ -22,7 +22,7 @@ export default function CreateNewTeam() {
   );
   const [selectedMember, setSelectedMember] = useState('');
   const [selectedTask, setSelectedTask] = useState('');
-  const [members, setMembers] = useState([]);
+  const [members, setMembers] = useState(userProfilesBasicInfo || []);
   // const [tasks, setTasks] = useState([]);
   const [tasks] = useState([]);
   const [assignedMembers, setAssignedMembers] = useState([]);
@@ -35,6 +35,8 @@ export default function CreateNewTeam() {
     assignedMembers: false,
     additionalInformation: false,
   });
+
+  const user = useSelector(state => state.auth.user);
 
   useEffect(() => {
     dispatch(getUserProfileBasicInfo());
@@ -138,6 +140,7 @@ export default function CreateNewTeam() {
     setAssignedTasks([]);
     setFormData(initialFormState);
     setErrors({});
+    setErrorMessage('');
     setTouchedFields({
       teamName: false,
       assignedMembers: false,
