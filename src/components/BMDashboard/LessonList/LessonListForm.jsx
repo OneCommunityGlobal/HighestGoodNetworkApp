@@ -109,7 +109,6 @@ function LessonList(props) {
   const isInThisWeek = date => {
     // Convert the date string to a Date object with consistent formatting
     const lessonDate = new Date(date);
-
     const currentDate = new Date();
 
     // Check if the year and week are the same
@@ -121,7 +120,6 @@ function LessonList(props) {
       const dayDifference = Math.abs(currentDate - lessonDate) / (1000 * 60 * 60 * 24);
       return dayDifference < 7;
     }
-
     return false;
   };
 
@@ -157,9 +155,7 @@ function LessonList(props) {
         setShowDeleteDropdown(false);
       }
     };
-
     document.addEventListener('mousedown', handleClickOutside);
-
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
@@ -180,15 +176,6 @@ function LessonList(props) {
     setDeleteInputValue('');
     setShowDeleteDropdown(false);
   };
-
-  /** 
-  const handleInputKeyDown = event => {
-    if (event.key === 'Enter' || event.key === ',') {
-      event.preventDefault();
-      addTag(inputValue.trim());
-    }
-  };
-  */
 
   const handleDeleteKeyDown = event => {
     if (event.key === 'Enter' && deleteValue.trim()) {
@@ -249,9 +236,6 @@ function LessonList(props) {
         default:
           break;
       }
-
-
-
       setFilteredLessons(filtered);
     };
 
