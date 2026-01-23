@@ -18,7 +18,7 @@ function useDebounce(value, delay) {
 
 // --- HTML PARSER ---
 const parseContentForEdit = htmlContent => {
-  const imgTagMatch = htmlContent.match(/<img\s+[^>]*>/i);
+  const imgTagMatch = htmlContent.match(/<img\s[^>]*>/i);
   if (imgTagMatch) {
     const imgTag = imgTagMatch[0];
     const srcMatch = imgTag.match(/src="([^"]+)"/i);
@@ -26,7 +26,7 @@ const parseContentForEdit = htmlContent => {
     const imageSrc = srcMatch ? srcMatch[1] : null;
     const altText = altMatch ? altMatch[1] : '';
     const textContent = htmlContent
-      .replace(/<img\s+[^>]*>/gi, '')
+      .replace(/<img\s[^>]*>/gi, '')
       .replace(/<br\s*\/?>/g, '\n')
       .trim();
     return { hasImage: !!imageSrc, imageSrc, altText, textContent };
