@@ -111,6 +111,13 @@ function OwnerMessage({
     return <span className={styles.message}>{messages}</span>;
   }
 
+  function getHistoryContent(messages) {
+    if (isImage.test(messages)) {
+      return <img src={messages} alt="" className={styles.ownerMessageImg} />;
+    }
+    return <span>{messages}</span>;
+  }
+
   const formatDateTimePST = date =>
     new Intl.DateTimeFormat('en-US', {
       timeZone: 'America/Los_Angeles',
@@ -309,7 +316,7 @@ function OwnerMessage({
         size="xl"
         isOpen={historyModalOpen}
         toggle={() => setHistoryModalOpen(false)}
-        className={fontColor}
+        className={`${fontColor}`}
       >
         <ModalHeader toggle={() => setHistoryModalOpen(false)}>
           Owner Message Edit History
@@ -318,11 +325,24 @@ function OwnerMessage({
           {!ownerMessageHistory || ownerMessageHistory.length === 0 ? (
             <p>No edit history available.</p>
           ) : (
-            <Table>
+            <Table className={styles.ownerHistoryTable}>
               <thead className={`${darkMode ? 'bg-space-cadet' : ''}`}>
                 <tr>
-                  <th className={`${darkMode ? 'bg-space-cadet' : ''}`}>Date</th>
-                  <th className={`${darkMode ? 'bg-space-cadet' : ''}`}>Edited By</th>
+                  <th
+                    className={`${styles.ownerHistorySmallColumn} ${
+                      darkMode ? 'bg-space-cadet' : ''
+                    }`}
+                  >
+                    Date
+                  </th>
+                  <th
+                    className={`${styles.ownerHistorySmallColumn} ${
+                      darkMode ? 'bg-space-cadet' : ''
+                    }`}
+                  >
+                    Edited By
+                  </th>
+                  <th className={`${darkMode ? 'bg-space-cadet' : ''}`}>Action</th>
                   <th className={`${darkMode ? 'bg-space-cadet' : ''}`}>Old Message</th>
                   <th className={`${darkMode ? 'bg-space-cadet' : ''}`}>New Message</th>
                 </tr>
@@ -330,25 +350,36 @@ function OwnerMessage({
               <tbody className={darkMode ? 'bg-yinmn-blue dark-mode' : ''}>
                 {ownerMessageHistory.map((historyItem, index) => (
                   <tr key={index}>
-                    <td>{formatDateTimePST(historyItem.createdAt)} PST</td>
-                    <td>
+                    <td className={styles.ownerHistorySmallColumn}>
+                      <span className={styles.showInTablet}>
+                        <b>Date:</b>
+                      </span>
+                      {formatDateTimePST(historyItem.createdAt)} PST
+                    </td>
+
+                    <td className={styles.ownerHistorySmallColumn}>
+                      <span className={styles.showInTablet}>
+                        <b>Edited By:</b>
+                      </span>
                       {historyItem.requestorName} ({historyItem.requestorEmail})
                     </td>
                     <td>
-                      <p>
-                        <b>Message:</b> {historyItem.oldMessage}
-                      </p>
-                      <p>
-                        <b>Standard Message:</b> {historyItem.oldStandardMessage}
-                      </p>
+                      <span className={styles.showInTablet}>
+                        <b>Action:</b>
+                      </span>
+                      {historyItem.action}
                     </td>
                     <td>
-                      <p>
-                        <b>Message:</b> {historyItem.newMessage}
-                      </p>
-                      <p>
-                        <b>Standard Message:</b> {historyItem.newStandardMessage}
-                      </p>
+                      <span className={styles.showInTablet}>
+                        <b>Old Message:</b>
+                      </span>
+                      {getHistoryContent(historyItem.oldMessage)}
+                    </td>
+                    <td>
+                      <span className={styles.showInTablet}>
+                        <b>New Message:</b>
+                      </span>
+                      {getHistoryContent(historyItem.newMessage)}
                     </td>
                   </tr>
                 ))}
