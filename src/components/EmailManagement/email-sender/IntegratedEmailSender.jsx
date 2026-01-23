@@ -952,6 +952,7 @@ const IntegratedEmailSender = ({
       dispatch({ type: 'SET_VALIDATION_ERRORS', payload: {} });
       dispatch({ type: 'SET_SHOW_PREVIEW_MODAL', payload: false });
       dispatch({ type: 'SET_FULL_TEMPLATE_CONTENT', payload: null });
+      dispatch({ type: 'SET_API_ERROR', payload: null }); // Clear previous errors
 
       if (!template) {
         dispatch({ type: 'SET_SELECTED_TEMPLATE', payload: null });
@@ -963,6 +964,9 @@ const IntegratedEmailSender = ({
         Array.isArray(template.variables) && (template.html_content || template.subject);
 
       if (!hasFullData) {
+        // ISSUE 10 FIX: Show loading state while fetching full template
+        toast.info('Loading template details...', { autoClose: 1000 });
+
         // Fallback: fetch full template data if only basic data was loaded
         try {
           const fullTemplate = await fetchFullTemplateContent(template._id);
@@ -970,11 +974,42 @@ const IntegratedEmailSender = ({
             dispatch({ type: 'SET_SELECTED_TEMPLATE', payload: fullTemplate });
             initializeVariableValues(fullTemplate);
             dispatch({ type: 'SET_FULL_TEMPLATE_CONTENT', payload: fullTemplate });
+
+            // ISSUE 10 FIX: Show success feedback
+            if (fullTemplate.variables && fullTemplate.variables.length > 0) {
+              toast.success(`Template loaded with ${fullTemplate.variables.length} variable(s)`, {
+                autoClose: 2000,
+              });
+            }
           }
         } catch (error) {
-          // Continue with the template we have
-          dispatch({ type: 'SET_SELECTED_TEMPLATE', payload: template });
-          initializeVariableValues(template);
+          // ISSUE 10 FIX: Show clear error message instead of silently failing
+          // eslint-disable-next-line no-console
+          console.error('Failed to load full template:', error);
+
+          const errorMessage =
+            error.response?.data?.message || error.message || 'Failed to load template variables';
+
+          toast.error(
+            `Failed to load template details: ${errorMessage}. Please try selecting the template again or refresh the page.`,
+            {
+              autoClose: 5000,
+            },
+          );
+
+          // Set error state to show in UI
+          dispatch({
+            type: 'UPDATE_VALIDATION_ERROR',
+            payload: {
+              field: 'template',
+              error:
+                'Failed to load template variables. Please try again or select a different template.',
+            },
+          });
+
+          // Don't set the template as selected if loading failed
+          dispatch({ type: 'SET_SELECTED_TEMPLATE', payload: null });
+          return;
         }
       } else {
         // Template already has full data
@@ -1390,23 +1425,22 @@ const IntegratedEmailSender = ({
   }, []);
 
   const handleClearDraft = useCallback(() => {
+    // eslint-disable-next-line no-alert
     if (window.confirm('Are you sure you want to clear the saved draft? This cannot be undone.')) {
       clearDraft(); // Clear from localStorage
 
-      // Reset all form states to clear the UI
-      dispatch({ type: 'SET_SELECTED_TEMPLATE', payload: null });
-      dispatch({ type: 'SET_CUSTOM_CONTENT', payload: '' });
-      dispatch({ type: 'SET_CUSTOM_SUBJECT', payload: '' });
-      dispatch({ type: 'SET_RECIPIENTS', payload: '' });
-      dispatch({ type: 'SET_VARIABLE_VALUES', payload: {} });
-      dispatch({ type: 'SET_EMAIL_DISTRIBUTION', payload: EMAIL_DISTRIBUTION.SPECIFIC });
-      dispatch({ type: 'SET_VALIDATION_ERRORS', payload: {} });
-      dispatch({ type: 'SET_RECIPIENT_LIST', payload: [] });
+      // Use RESET_FORM action for complete state reset
+      dispatch({ type: 'RESET_FORM' });
 
-      toast.info('Draft cleared', { autoClose: 2000 });
+      // Also clear draft notification and related states
+      dispatch({ type: 'SET_SHOW_DRAFT_NOTIFICATION', payload: false });
+      dispatch({ type: 'SET_DRAFT_AGE', payload: null });
+      dispatch({ type: 'SET_BACKEND_PREVIEW_DATA', payload: null });
+      dispatch({ type: 'SET_FULL_TEMPLATE_CONTENT', payload: null });
+
+      toast.success('Draft cleared successfully', { autoClose: 2000 });
     }
   }, []);
-
   // Memoized TinyMCE configuration
   const TINY_MCE_INIT_OPTIONS = useMemo(() => getEmailSenderConfig(darkMode), [darkMode]);
 

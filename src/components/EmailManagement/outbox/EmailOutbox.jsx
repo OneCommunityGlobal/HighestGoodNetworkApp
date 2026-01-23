@@ -200,8 +200,7 @@ const EmailOutbox = ({ isActive = true }) => {
     }, refreshState.refreshInterval);
   }, [fetchData, refreshState.autoRefresh, refreshState.refreshInterval]);
 
-  // Initial load
-  // Fetch data when component becomes active (tab switched)
+  // ISSUE 9 FIX Part 1: Fetch data when component becomes active (tab switched)
   useEffect(() => {
     if (isActive) {
       fetchData(false);
@@ -431,9 +430,20 @@ const EmailOutbox = ({ isActive = true }) => {
     }
   };
 
+  // ISSUE 9 FIX Part 2: Add confirmation modal before retry
   const handleRetryEmail = async emailId => {
     if (!emailId) {
       toast.error('Invalid email ID');
+      return;
+    }
+
+    // Add confirmation dialog
+    // eslint-disable-next-line no-alert
+    const confirmed = window.confirm(
+      'Are you sure you want to retry failed batches for this email? This will attempt to resend to failed recipients.',
+    );
+
+    if (!confirmed) {
       return;
     }
 
@@ -1042,7 +1052,7 @@ const EmailOutbox = ({ isActive = true }) => {
         </>
       )}
 
-      {/* Email Details Modal - FIXED Issue 3 */}
+      {/* Email Details Modal - ISSUE 9 FIX Part 3: Label as Batches */}
       {showEmailDetails && selectedEmail && (
         <Modal
           isOpen={showEmailDetails}
@@ -1139,7 +1149,7 @@ const EmailOutbox = ({ isActive = true }) => {
                         </div>
                       </div>
 
-                      {/* Row 5: Total Batches and Total Recipients - FIXED */}
+                      {/* Row 5: Total Batches and Total Recipients */}
                       <div className="col-md-6">
                         <div>
                           <strong style={{ color: '#007bff', fontWeight: 'bold' }}>
@@ -1157,21 +1167,25 @@ const EmailOutbox = ({ isActive = true }) => {
                         </div>
                       </div>
 
-                      {/* Row 6: Sent Recipients and Failed Recipients - FIXED */}
+                      {/* Row 6: Sent Batches and Failed Batches - ISSUE 9 FIX Part 3 */}
                       <div className="col-md-6">
                         <div>
                           <strong style={{ color: '#28a745', fontWeight: 'bold' }}>
-                            Sent Recipients:
+                            Sent Batches:
                           </strong>
-                          <div className="text-success fw-bold mt-1">{counts.sentRecipients}</div>
+                          <div className="text-success fw-bold mt-1">
+                            {emailBatches.filter(b => b.status === 'SENT').length}
+                          </div>
                         </div>
                       </div>
                       <div className="col-md-6">
                         <div>
                           <strong style={{ color: '#dc3545', fontWeight: 'bold' }}>
-                            Failed Recipients:
+                            Failed Batches:
                           </strong>
-                          <div className="text-danger fw-bold mt-1">{counts.failedRecipients}</div>
+                          <div className="text-danger fw-bold mt-1">
+                            {emailBatches.filter(b => b.status === 'FAILED').length}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -1190,7 +1204,7 @@ const EmailOutbox = ({ isActive = true }) => {
                 {loadingItems ? (
                   <div className="text-center py-4">
                     <Spinner color="primary" />
-                    <p className="mt-2">Loading email items...</p>
+                    <p className="mt-2">Loading email batches...</p>
                   </div>
                 ) : emailBatches.length > 0 ? (
                   <div className="table-responsive">
@@ -1209,9 +1223,7 @@ const EmailOutbox = ({ isActive = true }) => {
                           <tr key={index}>
                             <td className="py-2 px-3">
                               <div>
-                                <strong className="text-primary d-block">
-                                  Email Batch #{index + 1}
-                                </strong>
+                                <strong className="text-primary d-block">Batch #{index + 1}</strong>
                                 <small className="text-muted">
                                   {item.recipients?.length || 0} recipients
                                 </small>
