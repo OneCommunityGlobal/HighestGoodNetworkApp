@@ -452,8 +452,12 @@ export default function SocialMediaComposer({ platform, darkMode = false }) {
     <div
       style={{ padding: '1rem', color: theme.text, backgroundColor: theme.bg, minHeight: '100%' }}
     >
-      <ToastNotification show={toast.show} message={toast.message} type={toast.type} theme={theme} />
-
+      <ToastNotification
+        show={toast.show}
+        message={toast.message}
+        type={toast.type}
+        theme={theme}
+      />
       <DeleteModal
         show={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
