@@ -5,6 +5,7 @@ describe('ownerMessageReducer', () => {
   const initialState = {
     message: '',
     standardMessage: '',
+    history: [],
   };
 
   it('should return the initial state when no action is provided', () => {
@@ -17,6 +18,7 @@ describe('ownerMessageReducer', () => {
       payload: {
         message: 'Updated owner message',
         standardMessage: 'This is the standard message',
+        history: [],
       },
     };
 
