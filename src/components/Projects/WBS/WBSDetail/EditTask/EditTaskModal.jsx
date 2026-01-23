@@ -170,6 +170,8 @@ function EditTaskModal(props) {
     autoresize_bottom_margin: 1,
     skin: darkMode ? 'oxide-dark' : 'oxide',
     content_css: darkMode ? 'dark' : 'default',
+    fixed_toolbar_container: '.modal-body',
+    ui_container: '.modal-content',
   };
   /*
    * -------------------------------- functions --------------------------------

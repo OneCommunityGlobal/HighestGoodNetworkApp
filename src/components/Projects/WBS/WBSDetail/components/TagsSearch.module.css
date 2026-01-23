@@ -6,7 +6,7 @@
   background: #000;
 }
 
-.scrollable-menu {
+.scrollableMenu {
   max-height: 400px;
   overflow-y: auto;
   margin-bottom: 0 !important;
