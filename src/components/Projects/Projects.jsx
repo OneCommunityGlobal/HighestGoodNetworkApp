@@ -24,7 +24,7 @@ import AddProject from './AddProject';
 import ProjectTableHeader from './ProjectTableHeader';
 import Project from './Project';
 import ModalTemplate from './../common/Modal';
-// import { CONFIRM_ARCHIVE, PROJECT_INACTIVE_CONFIRMATION, PROJECT_ACTIVE_CONFIRMATION } from './../../languages/en/messages';
+import { CONFIRM_ARCHIVE, PROJECT_INACTIVE_CONFIRMATION, PROJECT_ACTIVE_CONFIRMATION } from './../../languages/en/messages';
 import styles from './projects.module.css';
 import Loading from '../common/Loading';
 import hasPermission from '../../utils/permissions';
@@ -67,6 +67,7 @@ const Projects = function(props) {
   const [allProjects, setAllProjects] = useState([]); // changed
   const [isChangingStatus, setIsChangingStatus] = useState(false);
   const [isArchiving, setIsArchiving] = useState(false);
+  const [searchMode, setSearchMode] = useState('person'); 
 
   const [suggestions, setSuggestions] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
@@ -911,7 +912,8 @@ const Projects = function(props) {
       });
 
       // Save raw objects for other logic
-      setAllProjects(filtered);
+      // setAllProjects(filtered);
+      // setAllProjects(generateJSXList(filtered)); // store JSX in local state so we don’t have to recalculate on every render
 
       // Build JSX and set list
       setProjectList(generateJSXList(filtered));
@@ -981,32 +983,34 @@ const Projects = function(props) {
   //     });
   //   }
   // }, [categorySelectedForSort, showStatus, sortedByName, props.state.allProjects, props.state.theme.darkMode]);
-  useEffect(() => {
-  // whenever Redux changes (or filters/sort/showArchived change), rebuild list from Redux raw data
-    generateProjectList(allReduxProjects);
-  }, [allReduxProjects, categorySelectedForSort, showStatus, sortedByName, showArchived, props.state.theme.darkMode]);
-  //above is working code
+  
+  // useEffect(() => {
+  // // whenever Redux changes (or filters/sort/showArchived change), rebuild list from Redux raw data
+  //   generateProjectList(allReduxProjects);
+  // }, [allReduxProjects, categorySelectedForSort, showStatus, sortedByName, showArchived, props.state.theme.darkMode]);
+  // //above is working code
 
-  useEffect(() => {
-    const source = allProjects.length ? allProjects : allReduxProjects;
+  // useEffect(() => {
+  //   const source = allProjects.length ? allProjects : allReduxProjects;
 
-    // if (debouncedSearchName) {
-    //   const filtered = source.filter(project =>
-    //     project.name?.toLowerCase().includes(debouncedSearchName.toLowerCase())
-    //   );
-    //   setProjectList(generateJSXList(filtered));
-    // } else {
-    //   setProjectList(generateJSXList(source));
-    // }
-    if (debouncedSearchName) {
-    const filtered = source.filter(project =>
-      (project.projectName || '').toLowerCase().includes(debouncedSearchName.toLowerCase())
-    );
-    setProjectList(generateJSXList(filtered));
-    } else {
-      setProjectList(generateJSXList(source));
-    }
-  }, [debouncedSearchName, allProjects, allReduxProjects]);
+  //   // if (debouncedSearchName) {
+  //   //   const filtered = source.filter(project =>
+  //   //     project.name?.toLowerCase().includes(debouncedSearchName.toLowerCase())
+  //   //   );
+  //   //   setProjectList(generateJSXList(filtered));
+  //   // } else {
+  //   //   setProjectList(generateJSXList(source));
+  //   // }
+  //   if (debouncedSearchName) {
+  //   const filtered = source.filter(project =>
+  //     (project.projectName || '').toLowerCase().includes(debouncedSearchName.toLowerCase())
+  //   );
+  //   setProjectList(generateJSXList(filtered));
+  //   } else {
+  //     setProjectList(generateJSXList(source));
+  //   }
+  // }, [debouncedSearchName, allProjects, allReduxProjects]);
+
   // useEffect(() => { generateProjectList(categorySelectedForSort, showStatus, sortedByName); }, [allReduxProjects, categorySelectedForSort, showStatus, sortedByName]);
   // }, [fetched, categorySelectedForSort, showStatus, sortedByName, props.state.theme.darkMode]);
 
@@ -1127,6 +1131,131 @@ const Projects = function(props) {
 
   //   fetchProjects();
   // }, [debouncedSearchName, allProjects, allReduxProjects]);
+  
+//   useEffect(() => {
+//     const fetchProjects = async () => {
+//       // if (!debouncedSearchName) {
+//       //   setProjectList(allProjects);
+//       //   return;
+//       // }
+//       let source = allReduxProjects;
+//       if (!debouncedSearchName) {
+//         // const mapped = allReduxProjects.map((project, index) => (
+//         //   <Project
+//         //     key={`${project._id}-${project.isActive}`}
+//         //     index={index}
+//         //     projectData={project}
+//         //     onUpdateProject={onUpdateProject}
+//         //     onClickArchiveBtn={onClickArchiveBtn}
+//         //     onClickProjectStatusBtn={onClickProjectStatusBtn}
+//         //     darkMode={darkMode}
+//         //   />
+//         // ));
+//         // const source = showArchived
+//         //   ? allReduxProjects.filter(p => p.isArchived)
+//         //   : allReduxProjects.filter(p => !p.isArchived);
+
+//         const mapped = source.map((project, index) => (
+//           <Project
+//             key={project._id}
+//             index={index}
+//             projectData={project}
+//             onUpdateProject={onUpdateProject}
+//             onClickArchiveBtn={onClickArchiveBtn}
+//             onClickProjectStatusBtn={onClickProjectStatusBtn}
+//             darkMode={darkMode}
+//           />
+//         ));
+
+//         setProjectList(mapped);
+//         return;
+//       }
+//       // Mode 1: Search by user
+//       if (searchMode === 'person') {
+//         const userProjects = await props.getProjectsByUsersName(debouncedSearchName);
+
+//         const filteredProjects = allReduxProjects.filter(p =>
+//           userProjects.includes(p._id)
+//         );
+
+//         const mapped = filteredProjects.map((project, index) => (
+//           <Project
+//             key={`${project._id}-${project.isActive}`}
+//             index={index}
+//             projectData={project}
+//             onUpdateProject={onUpdateProject}
+//             onClickArchiveBtn={onClickArchiveBtn}
+//             onClickProjectStatusBtn={onClickProjectStatusBtn}
+//             darkMode={darkMode}
+//           />
+//         ));
+
+//         setProjectList(mapped);
+//         return;
+//       }
+
+//       // Mode 2: Search by project name
+//       if (searchMode === 'project') {
+//         const filteredProjects = allReduxProjects.filter(p =>
+//           p.projectName?.toLowerCase().includes(debouncedSearchName.toLowerCase())
+//         );
+
+//         const mapped = filteredProjects.map((project, index) => (
+//           <Project
+//             key={`${project._id}-${project.isActive}`}
+//             index={index}
+//             projectData={project}
+//             onUpdateProject={onUpdateProject}
+//             onClickArchiveBtn={onClickArchiveBtn}
+//             onClickProjectStatusBtn={onClickProjectStatusBtn}
+//             darkMode={darkMode}
+//           />
+//         ));
+
+//         setProjectList(mapped);
+//         return;
+//       }
+//     };
+
+//   fetchProjects();
+// }, [debouncedSearchName, searchMode, allProjects, allReduxProjects]);
+
+  useEffect(() => {
+  let source = allReduxProjects;
+
+  source = showArchived
+    ? source.filter(p => p.isArchived)
+    : source.filter(p => !p.isArchived);
+
+  // Search by project name
+  if (debouncedSearchName && searchMode === 'project') {
+    source = source.filter(project =>
+      (project.projectName || '')
+        .toLowerCase()
+        .includes(debouncedSearchName.toLowerCase())
+    );
+  }
+
+  const mapped = source.map((project, index) => (
+    <Project
+      key={project._id}
+      index={index}
+      projectData={project}
+      onUpdateProject={onUpdateProject}
+      onClickArchiveBtn={onClickArchiveBtn}
+      onClickProjectStatusBtn={onClickProjectStatusBtn}
+      darkMode={darkMode}
+    />
+  ));
+
+  setProjectList(mapped);
+}, [
+  allReduxProjects,
+  showArchived,        // ✅ REQUIRED
+  debouncedSearchName,
+  searchMode,
+  darkMode,
+]);
 
   const handleSearchName = searchNameInput => {
     setSearchName(searchNameInput);
@@ -1136,8 +1265,12 @@ const Projects = function(props) {
     <>
       <div className={darkMode ? 'bg-oxford-blue text-light' : ''}>
         <div className={`${styles.container} py-3 border border-secondary rounded`} style={darkMode ? { backgroundColor: '#1B2A41' } : {}}>
+        <div
+          className="container py-3 mb-5 rounded"
+          style={darkMode ? { backgroundColor: '#1B2A41' } : {}}
+        >
           {fetching || !fetched ? <Loading align="center" /> : null}
-          <div className="d-flex justify-content-center align-items-center">
+          <div className="d-flex align-items-center flex-wrap w-100">
             <h3 style={{ display: 'inline-block', marginRight: 10 }}>Projects</h3>
             <EditableInfoModal
               areaName="projectsInfoModal"
@@ -1157,6 +1290,31 @@ const Projects = function(props) {
             onSelectSuggestion={handleSelectSuggestion}
             />
 
+
+          {canPostProject ? <AddProject hasPermission={hasPermission} /> : null}
+        </div>
+        {/* <div className="d-flex" style={{ gap: '10px' }}> */}
+          {/* <SearchProjectByPerson onSearch={handleSearchName} searchMode={searchMode} /> */}
+          <div className="input-group" style={{ maxWidth: '260px', maxHeight: '38px' }}>
+            <div className="input-group-prepend">
+              <span
+              className={`input-group-text ${darkMode ? 'bg-light-grey' : ''}`}
+              >
+                Filter by
+              </span>
+            </div>
+            <select
+              value={searchMode}
+              onChange={e => setSearchMode(e.target.value)}
+              className={`form-control ${darkMode ? 'bg-white' : ''}`}
+              aria-label="Filter by"
+            >
+              <option value="person">User Name</option>
+              <option value="project">Project Name</option>
+            </select>
+          </div>
+        {/* </div> */}
+        <div>
         <table className="table table-bordered table-responsive-sm">
           <thead>
             <ProjectTableHeader
@@ -1171,6 +1329,7 @@ const Projects = function(props) {
           </thead>
           <tbody className={darkMode ? 'bg-yinmn-blue dark-mode' : ''}>{projectList}</tbody>
         </table>
+        </div>
       </div>
 
       <ModalTemplate

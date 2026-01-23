@@ -13,7 +13,7 @@ import {
 } from 'reactstrap';
 import parse from 'html-react-parser';
 import { boxStyle, boxStyleDark } from '~/styles';
-import '../../Header/DarkMode.css';
+import '../../Header/index.css';
 
 // eslint-disable-next-line react/function-component-definition
 const ModalExample = props => {
