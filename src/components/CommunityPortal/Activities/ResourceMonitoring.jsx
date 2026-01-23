@@ -93,38 +93,30 @@ function ResourceMonitoring() {
                 </div>
               </div>
 
-              <div className={`${styles.circleContainer}`}>
-                <svg
-                  className={`${styles.progressCircle}`}
-                  viewBox="0 0 36 36"
-                  style={{
-                    width: '90px',
-                    height: '90px',
-                  }}
-                >
+              <div className={styles.circleContainer}>
+                <svg className={styles.progressCircle} viewBox="0 0 36 36" width="90" height="90">
                   <path
-                    className={`${styles.circleBg}`}
-                    style={{ stroke: 'lightgrey', fill: 'none', strokeWidth: '2' }}
-                    d="M18 2.0845
-                        a 15.9155 15.9155 0 0 1 0 31.831
-                        a 15.9155 15.9155 0 0 1 0 -31.831"
+                    className={styles.circleBg}
+                    d="
+                      M18 2.5
+                      a 15.5 15.5 0 0 1 0 31
+                      a 15.5 15.5 0 0 1 0 -31
+                    "
                   />
+
                   <path
-                    className={`${styles.circleProgress}`}
-                    style={{
-                      stroke: progressColorMap[resource.title] || 'gray',
-                      fill: 'none',
-                      strokeWidth: '2',
-                    }}
+                    className={styles.circleProgress}
+                    stroke={progressColorMap[resource.title] || '#9ca3af'}
                     strokeDasharray={`${progress}, 100`}
-                    d="M18 2.0845
-                        a 15.9155 15.9155 0 0 1 0 31.831
-                        a 15.9155 15.9155 0 0 1 0 -31.831"
+                    d="
+                      M18 2.5
+                      a 15.5 15.5 0 0 1 0 31
+                      a 15.5 15.5 0 0 1 0 -31
+                    "
                   />
                 </svg>
-                <div className={`${styles.circlelabel}`}>
-                  {labelMap[resource.title] || `${resource.value}/${resource.max}`}
-                </div>
+
+                <div className={styles.circleLabel}>{progress}%</div>
               </div>
             </div>
           );
