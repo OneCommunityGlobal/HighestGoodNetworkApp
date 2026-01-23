@@ -86,28 +86,22 @@ const transformTaskToFlatFormat = (task, subjectData, subjectKey) => {
  * @returns {Array} Array of flattened, deduplicated tasks
  */
 const flattenGroupedTasks = (groupedTasks) => {
-  const taskMap = new Map();
-
-  Object.entries(groupedTasks).forEach(([subjectKey, subjectData]) => {
-    Object.values(subjectData.colorLevels).forEach(colorLevel => {
-      Object.values(colorLevel.activityGroups).forEach(activityGroup => {
-        activityGroup.tasks.forEach(task => {
-          if (!taskMap.has(task._id)) {
-            const transformedTask = transformTaskToFlatFormat(task, subjectData, subjectKey);
-            taskMap.set(task._id, transformedTask);
-          }
-        });
-      });
-    });
-  });
-
-  const flattenedTasks = Array.from(taskMap.values());
-
-  const uniqueTasks = flattenedTasks.filter((task, index, self) =>
-    index === self.findIndex(t => t._id === task._id)
+  const allTasks = Object.entries(groupedTasks).flatMap(([subjectKey, subjectData]) =>
+    Object.values(subjectData.colorLevels).flatMap(colorLevel =>
+      Object.values(colorLevel.activityGroups).flatMap(activityGroup =>
+        activityGroup.tasks.map(task => transformTaskToFlatFormat(task, subjectData, subjectKey))
+      )
+    )
   );
 
-  return uniqueTasks;
+  const taskMap = new Map();
+  allTasks.forEach(task => {
+    if (!taskMap.has(task._id)) {
+      taskMap.set(task._id, task);
+    }
+  });
+
+  return Array.from(taskMap.values());
 };
 
 /**
