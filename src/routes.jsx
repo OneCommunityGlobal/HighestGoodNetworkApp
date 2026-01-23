@@ -952,4 +952,4 @@ export default (
       </Switch>
     </>
   </Switch>
-);
+); /* eslint-disable prettier/prettier */
