@@ -1,38 +1,61 @@
-import PropTypes from 'prop-types';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 import UserCard from './UserCard';
-import styles from './style/UserCard.module.css';
+import './style/UserCard.module.css';
 
-function RankedUserList({ users, loading, error, emptyMessage }) {
-  if (loading) {
-    return <p>Loading community members...</p>;
-  }
+function RankedUserList({ selectedSkills = [] }) {
+  const [rankedUsers, setRankedUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  if (error) {
-    return <p className="text-danger">{error}</p>;
-  }
+  useEffect(() => {
+    let canceled = false;
 
-  if (!users.length) {
-    return <p>{emptyMessage}</p>;
-  }
+    const fetchRankedUsers = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const params = {};
+        if (Array.isArray(selectedSkills) && selectedSkills.length > 0) {
+          params.skills = selectedSkills.join(',');
+        }
+
+        const response = await axios.get('http://localhost:4500/api/hgnform/ranked', { params });
+
+        if (!canceled) {
+          const data = response?.data || [];
+          setRankedUsers(Array.isArray(data) ? data : []);
+        }
+      } catch (err) {
+        console.error('Failed to fetch ranked users', err);
+        if (!canceled) {
+          setError(err);
+          setRankedUsers([]);
+        }
+      } finally {
+        if (!canceled) setLoading(false);
+      }
+    };
+
+    fetchRankedUsers();
+
+    return () => {
+      canceled = true;
+    };
+  }, [selectedSkills]);
+
+  if (loading) return <p>Loading ranked users...</p>;
+  if (error) return <p>Failed to load users.</p>;
+  if (!rankedUsers.length) return <p>No members found.</p>;
 
   return (
-    <div className={styles.containerGrid}>
-      {users.map(user => (
-        <UserCard key={user._id || user.email || user.name} user={user} />
+    <div className="user-card-container">
+      {rankedUsers.map(user => (
+        <UserCard key={user._id || user.id || user.uuid} user={user} />
       ))}
     </div>
   );
 }
-
-RankedUserList.propTypes = {
-  users: PropTypes.arrayOf(PropTypes.object).isRequired,
-  loading: PropTypes.bool.isRequired,
-  error: PropTypes.string,
-  emptyMessage: PropTypes.string.isRequired,
-};
-
-RankedUserList.defaultProps = {
-  error: null,
-};
 
 export default RankedUserList;

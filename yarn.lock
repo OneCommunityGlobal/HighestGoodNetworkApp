@@ -2998,17 +2998,17 @@
   resolved "https://registry.npmjs.org/@standard-schema/utils/-/utils-0.3.0.tgz"
   integrity sha512-e7Mew686owMaPJVNNLs55PUvgz371nKgwsc4vxE49zsODpJEnxgxRo2y/OKrqueavXgZNMDVj3DdHFlaSAeU8g==
 
-"@tanstack/query-core@5.90.3":
-  version "5.90.3"
-  resolved "https://registry.npmjs.org/@tanstack/query-core/-/query-core-5.90.3.tgz"
-  integrity sha512-HtPOnCwmx4dd35PfXU8jjkhwYrsHfuqgC8RCJIwWglmhIUIlzPP0ZcEkDAc+UtAWCiLm7T8rxeEfHZlz3hYMCA==
+"@tanstack/query-core@5.90.19":
+  version "5.90.19"
+  resolved "https://registry.npmjs.org/@tanstack/query-core/-/query-core-5.90.19.tgz"
+  integrity sha512-GLW5sjPVIvH491VV1ufddnfldyVB+teCnpPIvweEfkpRx7CfUmUGhoh9cdcUKBh/KwVxk22aNEDxeTsvmyB/WA==
 
-"@tanstack/react-query@^5.90.3":
-  version "5.90.3"
-  resolved "https://registry.npmjs.org/@tanstack/react-query/-/react-query-5.90.3.tgz"
-  integrity sha512-i/LRL6DtuhG6bjGzavIMIVuKKPWx2AnEBIsBfuMm3YoHne0a20nWmsatOCBcVSaT0/8/5YFjNkebHAPLVUSi0Q==
+"@tanstack/react-query@^5.90.16":
+  version "5.90.19"
+  resolved "https://registry.npmjs.org/@tanstack/react-query/-/react-query-5.90.19.tgz"
+  integrity sha512-qTZRZ4QyTzQc+M0IzrbKHxSeISUmRB3RPGmao5bT+sI6ayxSRhn0FXEnT5Hg3as8SBFcRosrXXRFB+yAcxVxJQ==
   dependencies:
-    "@tanstack/query-core" "5.90.3"
+    "@tanstack/query-core" "5.90.19"
 
 "@testing-library/dom@^10.4.0", "@testing-library/dom@>=7.21.4":
   version "10.4.1"
@@ -5633,9 +5633,14 @@ diff-sequences@^29.6.3:
   integrity sha512-EjePK1srD3P08o2j4f0ExnylqRs5B9tJjcp9t1krH2qRi8CCdsYfwe9JgSLurFBWwq4uOlipzfk5fHNvwFKr8Q==
 
 diff@^5.0.0:
-  version "5.2.0"
-  resolved "https://registry.npmjs.org/diff/-/diff-5.2.0.tgz"
-  integrity sha512-uIFDxqpRZGZ6ThOk84hEfqWoHx2devRFvpTZcTHur85vImfaxUbTW9Ryh4CpCuDnToOP1CEtXKIgytHBPVff5A==
+  version "5.2.2"
+  resolved "https://registry.npmjs.org/diff/-/diff-5.2.2.tgz"
+  integrity sha512-vtcDfH3TOjP8UekytvnHH1o1P4FcUdt4eQ1Y+Abap1tk/OB2MWQvcwS2ClCd1zuIhc3JKOx6p3kod8Vfys3E+A==
+
+diff@^8.0.3:
+  version "8.0.3"
+  resolved "https://registry.npmjs.org/diff/-/diff-8.0.3.tgz"
+  integrity sha512-qejHi7bcSD4hQAZE0tNAawRK1ZtafHDmMTMkrrIGgSLl7hTnQHmKCeB45xAcbfTqK2zowkM3j3bHt/4b/ARbYQ==
 
 diffie-hellman@^5.0.3:
   version "5.0.3"
@@ -8214,10 +8219,10 @@ jspdf@^2.5.1:
     dompurify "^2.5.4"
     html2canvas "^1.0.0-rc.5"
 
-jspdf@^3.0.3:
-  version "3.0.4"
-  resolved "https://registry.npmjs.org/jspdf/-/jspdf-3.0.4.tgz"
-  integrity sha512-dc6oQ8y37rRcHn316s4ngz/nOjayLF/FFxBF4V9zamQKRqXxyiH1zagkCdktdWhtoQId5K20xt1lB90XzkB+hQ==
+jspdf@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.npmjs.org/jspdf/-/jspdf-4.0.0.tgz"
+  integrity sha512-w12U97Z6edKd2tXDn3LzTLg7C7QLJlx0BPfM3ecjK2BckUl9/81vZ+r5gK4/3KQdhAcEZhENUxRhtgYBj75MqQ==
   dependencies:
     "@babel/runtime" "^7.28.4"
     fast-png "^6.2.0"

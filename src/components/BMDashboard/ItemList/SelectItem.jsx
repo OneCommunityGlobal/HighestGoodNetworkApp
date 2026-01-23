@@ -76,9 +76,9 @@ export default function SelectItem({
               <option value="all" key="all-option">
                 All
               </option>
-              {itemSet.map(itemName => (
-                <option key={`item-${itemName}`} value={itemName}>
-                  {itemName}
+              {itemSet.map(item => (
+                <option key={`item-${item}`} value={item}>
+                  {item}
                 </option>
               ))}
             </>
