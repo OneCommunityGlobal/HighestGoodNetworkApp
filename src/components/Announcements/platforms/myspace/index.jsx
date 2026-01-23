@@ -117,14 +117,18 @@ const formatLocalTime = date => `${padTimeUnit(date.getHours())}:${padTimeUnit(d
 
 const generateRandomSlug = () => {
   if (typeof window !== 'undefined' && window.crypto?.getRandomValues) {
-    const buffer = new Uint32Array(2);
+    const buffer = new Uint32Array(3);
     window.crypto.getRandomValues(buffer);
     return Array.from(buffer, value => value.toString(36).slice(0, 4)).join('');
   }
-  return Math.random()
-    .toString(36)
-    .slice(2, 10);
+  let fallback = '';
+  for (let i = 0; i < 3; i += 1) {
+    fallback += Date.now().toString(36);
+  }
+  return fallback.slice(0, 12);
 };
+
+const createScheduleId = () => `schedule-${Date.now().toString(36)}-${generateRandomSlug()}`;
 
 const createScheduleId = () => `schedule-${Date.now().toString(36)}-${generateRandomSlug()}`;
 
