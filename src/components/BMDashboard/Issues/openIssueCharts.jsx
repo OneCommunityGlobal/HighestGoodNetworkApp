@@ -177,7 +177,6 @@ function IssueCharts() {
 
   // Log the raw backend response when issues changes
   useEffect(() => {
-    console.log('[Frontend] Longest Open Issues response:', issues);
   }, [issues]);
 
   const normalizedIssues = (issues || []).map(issue => {
