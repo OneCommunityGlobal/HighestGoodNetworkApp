@@ -1,0 +1,299 @@
+:root {
+  /* Colors extracted from your provided global CSS */
+  --color-oxford-blue: #1b2a41;
+  --color-space-cadet: #1c2541;
+  --color-yinmn-blue: #3a506b;
+  --color-yinmn-light: #2f4157;
+  --color-azure: #007bff;
+
+  /* Standard UI Colors */
+  --bg-light: #ffffff;
+  --text-light: #232323;
+  --text-dark: #e5e5e5;
+  --border-light: #d1d5db;
+  --border-dark: #3a506b; /* Using yinmn-blue for borders in dark mode */
+}
+
+/* --- Main Card Container --- */
+.chartCard {
+  width: 100%;
+  max-width: 100%;
+  min-width: 100%;
+  padding: 24px;
+  box-sizing: border-box;
+  /* Light mode defaults */
+  background-color: var(--bg-light);
+  color: var(--text-light);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Dark Mode Overrides */
+.chartCard.darkMode {
+  background-color: var(--color-oxford-blue); /* Matches .bg-oxford-blue */
+  color: var(--text-dark);
+}
+
+/* --- Typography --- */
+.chartTitle {
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  margin: 0 0 24px 0;
+  color: inherit;
+}
+
+.label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: inherit;
+}
+
+.noData {
+  text-align: center;
+  margin-top: 32px;
+  color: #6b7280;
+}
+
+.darkMode .noData {
+  color: #9ca3af;
+}
+
+/* --- Layout & Filters --- */
+.filterContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 16px 0;
+}
+
+.formGroup {
+  width: 100%;
+}
+
+/* --- Inputs & Selects --- */
+.selectInput,
+.inputField,
+.datePickerButton {
+  width: 100%;
+  padding: 8px 16px;
+  border: 1px solid var(--border-light);
+  border-radius: 6px;
+  background-color: var(--bg-light);
+  color: var(--text-light);
+  font-size: 14px;
+  outline: none;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+  min-height: 38px;
+  font-family: inherit;
+  display: block;
+}
+
+/* Dark Mode Inputs */
+.darkMode .selectInput,
+.darkMode .inputField,
+.darkMode .datePickerButton {
+  border-color: var(--border-dark);
+  background-color: var(--color-space-cadet); /* Matches .bg-space-cadet */
+  color: var(--text-dark);
+}
+
+.selectInput:focus,
+.inputField:focus,
+.datePickerButton:focus {
+  border-color: var(--color-azure);
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+/* --- Date Picker Wrapper --- */
+.datePickerWrapper {
+  position: relative;
+}
+
+.datePickerButton {
+  text-align: left;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+}
+
+.datePickerDropdown {
+  position: absolute;
+  z-index: 50;
+  margin-top: 4px;
+  width: 100%;
+  background-color: var(--bg-light);
+  border: 1px solid var(--border-light);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.darkMode .datePickerDropdown {
+  background-color: var(--color-space-cadet); /* Matches .bg-space-cadet */
+  border-color: var(--border-dark);
+  box-shadow: 2px 2px 4px 1px black; /* Matches .box-shadow-dark */
+}
+
+.dateGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.dateInputContainer {
+  width: 100%;
+}
+
+/* Ensures React Datepicker fits container */
+.dateInputContainer :global(.react-datepicker-wrapper),
+.dateInputContainer :global(.react-datepicker__input-container) {
+  width: 100%;
+  display: block;
+}
+
+.applyButtonWrapper {
+  margin-top: 16px;
+  text-align: right;
+}
+
+.applyButton {
+  padding: 8px 16px;
+  background-color: var(--color-azure); /* Matches .bg-azure */
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.applyButton:hover {
+  background-color: #0056b3;
+}
+
+/* --- Chart Area --- */
+.chartContainer {
+  height: 400px;
+  width: 100%;
+  padding: 16px;
+  box-sizing: border-box;
+  background-color: var(--bg-light);
+  border-radius: 8px;
+}
+
+.darkMode .chartContainer {
+  background-color: var(--color-yinmn-light); /* Matches .bg-yinmn-blue-light */
+}
+
+/* -----------------------------------------------------------------
+   REACT DATEPICKER OVERRIDES 
+   ----------------------------------------------------------------- */
+
+/* --- LIGHT MODE CALENDAR --- */
+.lightCalendar {
+  font-family: inherit;
+  border: 1px solid var(--border-light) !important;
+  background-color: #ffffff !important;
+  color: #333 !important;
+}
+
+.lightCalendar :global(.react-datepicker__header) {
+  background-color: #f0f0f0 !important;
+  border-bottom: 1px solid #e0e0e0 !important;
+}
+
+.lightCalendar :global(.react-datepicker__current-month),
+.lightCalendar :global(.react-datepicker__day-name) {
+  color: #333 !important;
+}
+
+/* Normal days */
+.lightCalendar :global(.react-datepicker__day) {
+  color: #333 !important;
+}
+
+/* Hovered days */
+.lightCalendar :global(.react-datepicker__day:hover) {
+  background-color: #e0e0e0 !important;
+}
+
+/* ----- UPDATED SELECTION COLORS FOR LIGHT MODE ----- */
+
+/* Days in the range (between start and end) - Lighter blue with black text */
+.lightCalendar :global(.react-datepicker__day--in-range) {
+  background-color: #d6e9ff !important; /* Very light blue */
+  color: #333 !important; /* Black text */
+}
+
+/* The specific Start and End dates - Stronger blue with white text for emphasis */
+.lightCalendar :global(.react-datepicker__day--range-start),
+.lightCalendar :global(.react-datepicker__day--range-end),
+.lightCalendar :global(.react-datepicker__day--selected) {
+  background-color: var(--color-azure) !important;
+  color: #fff !important;
+}
+
+/* ---------------------------------------------------- */
+
+/* --- DARK MODE CALENDAR (Explicitly Dark) --- */
+.darkCalendar {
+  font-family: inherit;
+  border: 1px solid var(--border-dark) !important;
+  background-color: var(--color-space-cadet) !important; /* Matches Global CSS */
+  color: #fff !important;
+}
+
+.darkCalendar :global(.react-datepicker__header) {
+  background-color: var(--color-oxford-blue) !important; /* Slightly darker header */
+  border-bottom: 1px solid var(--border-dark) !important;
+}
+
+.darkCalendar :global(.react-datepicker__current-month),
+.darkCalendar :global(.react-datepicker__day-name) {
+  color: #fff !important;
+}
+
+.darkCalendar :global(.react-datepicker__day) {
+  color: #e2e8f0 !important;
+}
+
+.darkCalendar :global(.react-datepicker__day:hover) {
+  background-color: var(--color-yinmn-blue) !important; /* Hover state */
+  color: #fff !important;
+}
+
+.darkCalendar :global(.react-datepicker__day--selected),
+.darkCalendar :global(.react-datepicker__day--keyboard-selected),
+.darkCalendar :global(.react-datepicker__day--in-range) {
+  background-color: var(--color-azure) !important;
+  color: #fff !important;
+}
+
+.darkCalendar :global(.react-datepicker__day--disabled) {
+  color: #6c757d !important;
+}
+
+/* Fix for Navigation Buttons disappearing due to Global button { border: none } */
+.lightCalendar :global(.react-datepicker__navigation),
+.darkCalendar :global(.react-datepicker__navigation) {
+  top: 8px !important; /* Adjust position */
+}
+
+/* Ensure Arrows are visible in both modes */
+.lightCalendar :global(.react-datepicker__navigation-icon::before) {
+  border-color: #333 !important;
+}
+
+.darkCalendar :global(.react-datepicker__navigation-icon::before) {
+  border-color: #fff !important;
+}
+
+/* Hide the triangle caret */
+.lightCalendar :global(.react-datepicker__triangle),
+.darkCalendar :global(.react-datepicker__triangle) {
+  display: none !important;
+}

@@ -12,9 +12,15 @@ import {
   ResponsiveContainer,
   LabelList,
 } from 'recharts';
-import { format } from 'date-fns';
+import { format, subYears } from 'date-fns'; // Added subYears for cleaner date math
 import { toast } from 'react-toastify';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import styles from './SimpleToolChart.module.css';
 
+// ---------- Mock Data (Updated to be Dynamic) ----------
+// I updated this to use the *Current Year* so you see data immediately with your new filter.
+const currentYear = new Date().getFullYear();
 const toolsData = [
   {
     project: 'Project A',
@@ -26,7 +32,7 @@ const toolsData = [
       { name: 'Wrench', replacedPercentage: 38 },
       { name: 'Pliers', replacedPercentage: 25 },
     ],
-    date: '2023-01-15',
+    date: `2025-05-15`,
   },
   {
     project: 'Project B',
@@ -38,7 +44,7 @@ const toolsData = [
       { name: 'Wrench', replacedPercentage: 35 },
       { name: 'Screwdriver', replacedPercentage: 20 },
     ],
-    date: '2023-02-20',
+    date: '2026-01-15',
   },
   {
     project: 'Project C',
@@ -50,7 +56,7 @@ const toolsData = [
       { name: 'Screwdriver', replacedPercentage: 32 },
       { name: 'Saw', replacedPercentage: 22 },
     ],
-    date: '2023-03-10',
+    date: '2025-12-20',
   },
 ];
 
@@ -61,7 +67,10 @@ const projects = ['All Projects', ...new Set(toolsData.map(item => item.project)
 function DateRangePicker({ dateRange, setDateRange }) {
   const darkMode = useSelector(state => state.theme.darkMode);
   const [isOpen, setIsOpen] = useState(false);
-  const [tempRange, setTempRange] = useState(dateRange);
+
+  const [tempStart, setTempStart] = useState(dateRange.from);
+  const [tempEnd, setTempEnd] = useState(dateRange.to);
+
   const pickerRef = useRef(null);
 
   useEffect(() => {
@@ -75,94 +84,31 @@ function DateRangePicker({ dateRange, setDateRange }) {
   }, []);
 
   useEffect(() => {
-    if (
-      dateRange.from instanceof Date &&
-      !isNaN(dateRange.from) &&
-      dateRange.to instanceof Date &&
-      !isNaN(dateRange.to)
-    ) {
-      setTempRange({
-        from: format(dateRange.from, 'yyyy-MM-dd'),
-        to: format(dateRange.to, 'yyyy-MM-dd'),
-      });
-    }
+    setTempStart(dateRange.from);
+    setTempEnd(dateRange.to);
   }, [dateRange]);
 
-  const isValidCalendarDate = value => {
-    // Accept valid Date objects
-    if (value instanceof Date && !isNaN(value.getTime())) {
-      return true;
-    }
-
-    // Accept valid YYYY-MM-DD strings
-    if (typeof value !== 'string') return false;
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
-
-    const [y, m, d] = value.split('-').map(Number);
-    const date = new Date(y, m - 1, d);
-
-    return date.getFullYear() === y && date.getMonth() === m - 1 && date.getDate() === d;
-  };
-
-  const handleStartDateChange = e => {
-    const val = e.target.value;
-    setTempRange(prev => ({ ...prev, from: val }));
-  };
-
-  const handleEndDateChange = e => {
-    const val = e.target.value;
-    setTempRange(prev => ({ ...prev, to: val }));
-  };
-
   const applyDateRange = () => {
-    if (!isValidCalendarDate(tempRange.from) || !isValidCalendarDate(tempRange.to)) {
-      toast.error('Enter a valid date');
+    if (!tempStart || !tempEnd) {
+      toast.error('Please select both start and end dates');
       return;
     }
-
-    const fromDate = new Date(`${tempRange.from}T00:00:00`);
-    const toDate = new Date(`${tempRange.to}T23:59:59`);
-
-    if (fromDate > toDate) {
-      toast.error('Enter a valid date');
+    if (tempStart > tempEnd) {
+      toast.error('Start date cannot be after end date');
       return;
     }
-
-    setDateRange({ from: fromDate, to: toDate });
-
-    // sync tempRange so selected dates render in the button label
-    setTempRange({
-      from: format(fromDate, 'yyyy-MM-dd'),
-      to: format(toDate, 'yyyy-MM-dd'),
-    });
-
+    setDateRange({ from: tempStart, to: tempEnd });
     setIsOpen(false);
   };
 
   return (
-    <div style={{ position: 'relative' }} ref={pickerRef}>
-      <button
-        type="button"
-        style={{
-          width: '100%',
-          padding: '8px 16px',
-          textAlign: 'left',
-          border: '1px solid',
-          borderColor: darkMode ? '#444' : '#d1d5db',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          backgroundColor: darkMode ? '#1C2541' : '#fff',
-          cursor: 'pointer',
-          color: darkMode ? '#e5e5e5' : '#111',
-        }}
-        onClick={() => setIsOpen(!isOpen)}
-      >
+    <div
+      className={`${styles.datePickerWrapper} ${darkMode ? styles.darkMode : ''}`}
+      ref={pickerRef}
+    >
+      <button type="button" className={styles.datePickerButton} onClick={() => setIsOpen(!isOpen)}>
         <span>
-          {dateRange.from instanceof Date &&
-          !isNaN(dateRange.from) &&
-          dateRange.to instanceof Date &&
-          !isNaN(dateRange.to)
+          {dateRange.from && dateRange.to
             ? `${format(dateRange.from, 'MMM dd, yyyy')} - ${format(dateRange.to, 'MMM dd, yyyy')}`
             : 'Select date range'}
         </span>
@@ -185,89 +131,53 @@ function DateRangePicker({ dateRange, setDateRange }) {
       </button>
 
       {isOpen && (
-        <div
-          style={{
-            position: 'absolute',
-            zIndex: 10,
-            marginTop: '4px',
-            width: '100%',
-            backgroundColor: darkMode ? '#1C2541' : 'white',
-            border: '1px solid',
-            borderColor: darkMode ? '#444' : '#d1d5db',
-            boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
-            padding: '16px',
-            color: darkMode ? '#e5e5e5' : '#111',
-          }}
-        >
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+        <div className={styles.datePickerDropdown}>
+          <div className={styles.dateGrid}>
             <div>
-              <label htmlFor="startDate" style={{ color: darkMode ? '#e5e5e5' : '#111' }}>
+              <label className={styles.label} htmlFor="start-date-picker">
                 Start Date
+                <div className={styles.dateInputContainer}>
+                  <DatePicker
+                    id="start-date-picker"
+                    selected={tempStart}
+                    onChange={date => setTempStart(date)}
+                    selectsStart
+                    startDate={tempStart}
+                    endDate={tempEnd}
+                    maxDate={tempEnd}
+                    placeholderText="Start Date"
+                    className={styles.inputField}
+                    calendarClassName={darkMode ? styles.darkCalendar : styles.lightCalendar}
+                    dateFormat="yyyy-MM-dd"
+                    autoComplete="off"
+                  />
+                </div>
               </label>
-              <input
-                id="startDate"
-                type="text"
-                placeholder="YYYY-MM-DD"
-                maxLength="10"
-                pattern="\d{4}-\d{2}-\d{2}"
-                value={
-                  typeof tempRange.from === 'string'
-                    ? tempRange.from
-                    : tempRange.from
-                    ? format(tempRange.from, 'yyyy-MM-dd')
-                    : ''
-                }
-                onChange={handleStartDateChange}
-                style={{
-                  width: '100%',
-                  padding: '8px 12px',
-                  border: '1px solid',
-                  borderColor: darkMode ? '#444' : '#d1d5db',
-                  backgroundColor: darkMode ? '#3A506B' : '#fff',
-                  color: darkMode ? '#e5e5e5' : '#111',
-                }}
-              />
             </div>
             <div>
-              <label htmlFor="endDate" style={{ color: darkMode ? '#e5e5e5' : '#111' }}>
+              <label className={styles.label} htmlFor="end-date-picker">
                 End Date
+                <div className={styles.dateInputContainer}>
+                  <DatePicker
+                    id="end-date-picker"
+                    selected={tempEnd}
+                    onChange={date => setTempEnd(date)}
+                    selectsEnd
+                    startDate={tempStart}
+                    endDate={tempEnd}
+                    minDate={tempStart}
+                    placeholderText="End Date"
+                    className={styles.inputField}
+                    calendarClassName={darkMode ? styles.darkCalendar : styles.lightCalendar}
+                    dateFormat="yyyy-MM-dd"
+                    autoComplete="off"
+                  />
+                </div>
               </label>
-              <input
-                id="endDate"
-                type="text"
-                placeholder="YYYY-MM-DD"
-                maxLength="10"
-                pattern="\d{4}-\d{2}-\d{2}"
-                value={
-                  typeof tempRange.to === 'string'
-                    ? tempRange.to
-                    : tempRange.to
-                    ? format(tempRange.to, 'yyyy-MM-dd')
-                    : ''
-                }
-                onChange={handleEndDateChange}
-                style={{
-                  width: '100%',
-                  padding: '8px 12px',
-                  border: '1px solid',
-                  borderColor: darkMode ? '#444' : '#d1d5db',
-                  backgroundColor: darkMode ? '#3A506B' : '#fff',
-                  color: darkMode ? '#e5e5e5' : '#111',
-                }}
-              />
             </div>
           </div>
-          <div style={{ marginTop: '16px', textAlign: 'right' }}>
-            <button
-              onClick={applyDateRange}
-              style={{
-                padding: '8px 16px',
-                backgroundColor: '#3b82f6',
-                color: 'white',
-                border: 'none',
-                cursor: 'pointer',
-              }}
-            >
+          <div className={styles.applyButtonWrapper}>
+            <button onClick={applyDateRange} className={styles.applyButton}>
               Apply
             </button>
           </div>
@@ -281,40 +191,37 @@ function DateRangePicker({ dateRange, setDateRange }) {
 export default function SimpleToolChart() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const [selectedProject, setSelectedProject] = useState('All Projects');
-  const [dateRange, setDateRange] = useState({
-    from: new Date(2023, 0, 1),
-    to: new Date(2023, 11, 31),
+
+  // UPDATED: Default state is now [One Year Ago] to [Today]
+  const [dateRange, setDateRange] = useState(() => {
+    const today = new Date();
+    const oneYearAgo = subYears(today, 1);
+    return {
+      from: oneYearAgo,
+      to: today,
+    };
   });
 
   const filteredData = useMemo(() => {
     let filtered = [...toolsData];
 
-    // Date filtering
     if (dateRange.from && dateRange.to) {
-      const fromDate =
-        typeof dateRange.from === 'string'
-          ? new Date(dateRange.from + 'T00:00:00')
-          : dateRange.from;
-      const toDate =
-        typeof dateRange.to === 'string' ? new Date(dateRange.to + 'T23:59:59') : dateRange.to;
-
       filtered = filtered.filter(item => {
         const itemDate = new Date(item.date);
-        return (
-          !isNaN(fromDate.getTime()) &&
-          !isNaN(toDate.getTime()) &&
-          itemDate >= fromDate &&
-          itemDate <= toDate
-        );
+        // Normalize time portion to ensure inclusive comparison
+        const start = new Date(dateRange.from);
+        start.setHours(0, 0, 0, 0);
+        const end = new Date(dateRange.to);
+        end.setHours(23, 59, 59, 999);
+
+        return itemDate >= start && itemDate <= end;
       });
     }
 
-    // Project filtering
     if (selectedProject !== 'All Projects') {
       filtered = filtered.filter(item => item.project === selectedProject);
     }
 
-    // Combine and average data
     const toolMap = {};
     filtered.forEach(project => {
       project.tools.forEach(tool => {
@@ -335,48 +242,32 @@ export default function SimpleToolChart() {
       .sort((a, b) => b.replacedPercentage - a.replacedPercentage);
   }, [selectedProject, dateRange]);
 
+  // Colors aligned with your global theme
+  const chartColors = {
+    grid: darkMode ? 'rgba(255,255,255,0.1)' : '#e5e5e5',
+    text: darkMode ? '#e5e5e5' : '#333',
+    barFill: darkMode ? '#007bff' : '#3b82f6',
+    barStroke: darkMode ? '#3a506b' : '#1e40af',
+    tooltipBg: darkMode ? '#1c2541' : '#ffffff',
+    tooltipBorder: darkMode ? '#3a506b' : '#ccc',
+    tooltipText: darkMode ? '#ffffff' : '#000000',
+  };
+
   return (
-    <div
-      className={darkMode ? 'dark-mode' : ''}
-      style={{
-        width: '100%',
-        maxWidth: '100%',
-        minWidth: '100%',
-        padding: '24px',
-        backgroundColor: darkMode ? '#1B2A41' : '#ffffff',
-        color: darkMode ? '#e5e5e5' : '#111',
-        boxSizing: 'border-box',
-      }}
-    >
-      <h2
-        style={{
-          fontSize: '24px',
-          fontWeight: 'bold',
-          textAlign: 'center',
-          color: darkMode ? '#e5e5e5' : '#111',
-        }}
-      >
-        Tools Most Susceptible to Breakdown
-      </h2>
+    <div className={`${styles.chartCard} ${darkMode ? styles.darkMode : ''}`}>
+      <h2 className={styles.chartTitle}>Tools Most Susceptible to Breakdown</h2>
 
       {/* Filters */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', margin: '16px 0' }}>
-        <div>
-          <label htmlFor="projectSelect" style={{ color: darkMode ? '#e5e5e5' : '#111' }}>
+      <div className={styles.filterContainer}>
+        <div className={styles.formGroup}>
+          <label htmlFor="projectSelect" className={styles.label}>
             Project
           </label>
           <select
             id="projectSelect"
             value={selectedProject}
             onChange={e => setSelectedProject(e.target.value)}
-            style={{
-              width: '100%',
-              padding: '8px',
-              border: '1px solid',
-              borderColor: darkMode ? '#444' : '#d1d5db',
-              color: darkMode ? '#e5e5e5' : '#111',
-              backgroundColor: darkMode ? '#1C2541' : '#fff',
-            }}
+            className={styles.selectInput}
           >
             {projects.map(project => (
               <option key={project}>{project}</option>
@@ -384,8 +275,8 @@ export default function SimpleToolChart() {
           </select>
         </div>
 
-        <div>
-          <label htmlFor="dateRangePicker" style={{ color: darkMode ? '#e5e5e5' : '#111' }}>
+        <div className={styles.formGroup}>
+          <label htmlFor="dateRangePicker" className={styles.label}>
             Date Range
           </label>
           <div id="dateRangePicker">
@@ -395,57 +286,54 @@ export default function SimpleToolChart() {
       </div>
 
       {/* Chart */}
-      <div
-        style={{
-          height: '400px',
-          width: '100%',
-          backgroundColor: darkMode ? '#3A506B' : '#ffffff',
-          padding: '16px',
-          boxSizing: 'border-box',
-        }}
-      >
+      <div className={styles.chartContainer}>
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             layout="vertical"
             data={filteredData}
             margin={{ top: 20, right: 50, left: 70, bottom: 20 }}
           >
-            <CartesianGrid
-              strokeDasharray="3 3"
-              horizontal={false}
-              stroke={darkMode ? '#333' : '#e5e5e5'}
-            />
+            <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke={chartColors.grid} />
             <XAxis
               type="number"
               domain={[0, 100]}
               unit="%"
-              tick={{ fill: darkMode ? '#e5e5e5' : '#111' }}
-              axisLine={{ stroke: darkMode ? '#555' : '#111' }}
+              tick={{ fill: chartColors.text }}
+              axisLine={{ stroke: chartColors.grid }}
             />
             <YAxis
               type="category"
               dataKey="name"
-              tick={{ fontSize: 14, fill: darkMode ? '#e5e5e5' : '#111' }}
+              tick={{ fontSize: 14, fill: chartColors.text }}
+              width={80}
             />
             <Tooltip
               formatter={value => [`${value}%`, 'Replaced Percentage']}
               contentStyle={{
-                backgroundColor: darkMode ? '#1C2541' : '#ffffff',
-                border: darkMode ? '1px solid #666' : '1px solid #ccc',
-                color: darkMode ? '#f5f5f5' : '#000',
+                backgroundColor: chartColors.tooltipBg,
+                border: `1px solid ${chartColors.tooltipBorder}`,
+                color: chartColors.tooltipText,
+                borderRadius: '4px',
               }}
+              cursor={{ fill: darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }}
             />
             <Bar
               dataKey="replacedPercentage"
-              fill={darkMode ? '#4f9bff' : '#3b82f6'}
-              stroke={darkMode ? '#a8c8ff' : '#1e40af'}
+              fill={chartColors.barFill}
+              stroke={chartColors.barStroke}
               strokeWidth={1.5}
             >
               <LabelList
                 dataKey="replacedPercentage"
                 position="right"
-                content={({ value }) => (
-                  <text fill={darkMode ? '#e5e5e5' : '#374151'} fontWeight="500">
+                content={({ value, x, y, width, height }) => (
+                  <text
+                    x={x + width + 5}
+                    y={y + height / 2 + 5}
+                    fill={chartColors.text}
+                    fontWeight="500"
+                    alignmentBaseline="middle"
+                  >
                     {`${value}%`}
                   </text>
                 )}
@@ -456,9 +344,7 @@ export default function SimpleToolChart() {
       </div>
 
       {filteredData.length === 0 && (
-        <div style={{ textAlign: 'center', marginTop: '32px', color: '#6b7280' }}>
-          No data available for the selected filters
-        </div>
+        <div className={styles.noData}>No data available for the selected filters</div>
       )}
     </div>
   );
