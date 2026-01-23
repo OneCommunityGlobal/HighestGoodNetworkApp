@@ -47,7 +47,6 @@ import {
   clearEmailTemplateError,
   clearCurrentTemplate,
   previewEmailTemplate,
-  validateEmailTemplate,
 } from '../../../../actions/emailTemplateActions';
 import './EmailTemplateEditor.module.css';
 import '../../EmailManagementShared.module.css';
@@ -62,7 +61,6 @@ const EmailTemplateEditor = ({
   clearEmailTemplateError,
   clearCurrentTemplate,
   previewEmailTemplate,
-  validateEmailTemplate,
   onClose,
   onSave,
   templateId = null, // For editing existing templates
@@ -94,6 +92,7 @@ const EmailTemplateEditor = ({
   const [previewData, setPreviewData] = useState(null);
   const [previewLoading, setPreviewLoading] = useState(false);
   const [previewError, setPreviewError] = useState(null);
+  const [createdTemplateId, setCreatedTemplateId] = useState(null); // ISSUE 5 FIX: Track created template ID
 
   // Helper function to get icon for variable type
   const getVariableTypeIcon = useCallback(type => {
@@ -133,6 +132,7 @@ const EmailTemplateEditor = ({
         html_content: '',
         variables: [],
       });
+      setCreatedTemplateId(null); // ISSUE 5 FIX: Reset created template ID
       setInitialLoading(false);
       setApiError(null);
     }
@@ -378,28 +378,12 @@ const EmailTemplateEditor = ({
       return;
     }
 
-    // Validate template structure with backend if template is saved
-    if (templateId) {
-      try {
-        const validation = await validateEmailTemplate(templateId);
-        if (!validation.isValid && validation.errors && validation.errors.length > 0) {
-          toast.warning(`Template validation warnings: ${validation.errors.join(', ')}`, {
-            position: 'top-right',
-            autoClose: 5000,
-          });
-          // Continue with save despite warnings (user can decide)
-        }
-      } catch (error) {
-        // Validation error is not blocking, but log it
-        // eslint-disable-next-line no-console
-        console.warn('Template validation error:', error);
-      }
-    }
-
     setSaving(true);
     try {
-      if (templateId) {
-        await updateEmailTemplate(templateId, formData);
+      // ISSUE 5 FIX: Use templateId OR createdTemplateId for updates
+      if (templateId || createdTemplateId) {
+        const idToUse = templateId || createdTemplateId;
+        await updateEmailTemplate(idToUse, formData);
         toast.success('Template updated successfully!', {
           position: 'top-right',
           autoClose: 3000,
@@ -409,8 +393,12 @@ const EmailTemplateEditor = ({
           draggable: true,
         });
       } else {
-        await createEmailTemplate(formData);
-        toast.success('Template created successfully!', {
+        // ISSUE 5 FIX: Capture the created template ID for future updates
+        const result = await createEmailTemplate(formData);
+        if (result && result.template && result.template._id) {
+          setCreatedTemplateId(result.template._id);
+        }
+        toast.success('Template created successfully! You can continue editing.', {
           position: 'top-right',
           autoClose: 3000,
           hideProgressBar: false,
@@ -438,8 +426,8 @@ const EmailTemplateEditor = ({
   }, [
     validateForm,
     templateId,
+    createdTemplateId,
     formData,
-    validateEmailTemplate,
     updateEmailTemplate,
     createEmailTemplate,
     onSave,
@@ -535,6 +523,7 @@ const EmailTemplateEditor = ({
     setVariableError('');
     setNewVariable({ name: '', type: 'text' });
     setShowTypeSelectionModal(false);
+    setCreatedTemplateId(null); // ISSUE 5 FIX: Reset created template ID on cancel
   }, []);
 
   const clearReduxState = useCallback(() => {
@@ -581,8 +570,11 @@ const EmailTemplateEditor = ({
 
   // Handle preview with backend API if template is saved, otherwise use client-side
   const handlePreview = useCallback(async () => {
+    // ISSUE 5 FIX: Use templateId OR createdTemplateId for preview
+    const idToUse = templateId || createdTemplateId;
+
     // If template is not saved yet, use client-side preview
-    if (!templateId) {
+    if (!idToUse) {
       setPreviewData({
         subject: formData.subject || '',
         htmlContent: getClientSidePreview,
@@ -616,7 +608,7 @@ const EmailTemplateEditor = ({
         });
       }
 
-      const preview = await previewEmailTemplate(templateId, variableValues);
+      const preview = await previewEmailTemplate(idToUse, variableValues);
       setPreviewData(preview);
       setShowPreviewModal(true);
     } catch (error) {
@@ -635,7 +627,7 @@ const EmailTemplateEditor = ({
     } finally {
       setPreviewLoading(false);
     }
-  }, [templateId, formData, previewEmailTemplate, getClientSidePreview]);
+  }, [templateId, createdTemplateId, formData, previewEmailTemplate, getClientSidePreview]);
 
   const tinyMCEConfig = useMemo(() => getTemplateEditorConfig(darkMode, formData), [
     darkMode,
@@ -963,7 +955,9 @@ const EmailTemplateEditor = ({
             <Alert color="warning" className="mb-3">
               <FaExclamationTriangle className="me-2" />
               {previewError}
-              {!templateId && ' (Using client-side preview for unsaved template)'}
+              {!templateId &&
+                !createdTemplateId &&
+                ' (Using client-side preview for unsaved template)'}
             </Alert>
           )}
           {previewData ? (
@@ -1156,7 +1150,6 @@ const mapDispatchToProps = {
   clearEmailTemplateError,
   clearCurrentTemplate,
   previewEmailTemplate,
-  validateEmailTemplate,
 };
 
 // PropTypes for type checking
@@ -1170,7 +1163,6 @@ EmailTemplateEditor.propTypes = {
   clearEmailTemplateError: PropTypes.func.isRequired,
   clearCurrentTemplate: PropTypes.func.isRequired,
   previewEmailTemplate: PropTypes.func,
-  validateEmailTemplate: PropTypes.func,
   onClose: PropTypes.func,
   onSave: PropTypes.func,
   templateId: PropTypes.string,

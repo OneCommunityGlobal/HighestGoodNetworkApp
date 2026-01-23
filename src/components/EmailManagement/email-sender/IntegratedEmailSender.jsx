@@ -175,27 +175,19 @@ const VariableRow = React.memo(
                         onLoad={handleImageLoad}
                       />
                     ) : (
-                      <div
-                        style={{
-                          width: '100%',
-                          maxWidth: '400px',
-                          height: 'auto',
-                          minHeight: '200px',
-                          backgroundColor: '#f8f9fa',
-                          border: '1px solid #dee2e6',
-                          borderRadius: '4px',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontSize: '12px',
-                          color: '#dc3545',
-                          display: 'flex',
-                          flexDirection: 'column',
-                          gap: '4px',
-                        }}
-                      >
-                        <div>❌</div>
-                        <div>Invalid Image</div>
-                      </div>
+                      <Alert color="danger" className="mb-0">
+                        <div className="d-flex align-items-start">
+                          <FaExclamationTriangle className="me-2 mt-1" />
+                          <div>
+                            <strong>Invalid Image/Video URL</strong>
+                            <div className="mt-1" style={{ fontSize: '0.875rem' }}>
+                              {youtubeId
+                                ? `The YouTube video "${youtubeId}" could not be loaded. Please verify the video exists and is publicly accessible.`
+                                : 'The provided URL is not a valid image or YouTube video. Please provide a direct image URL (.jpg, .png, .gif) or a valid YouTube link.'}
+                            </div>
+                          </div>
+                        </div>
+                      </Alert>
                     )}
                     {extractedValue && (
                       <div style={{ flex: 1 }}>
