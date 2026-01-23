@@ -159,7 +159,10 @@ describe("Projects component",()=>{
 
     render(<Provider store={testStore}><Projects /></Provider>)
     // expect(screen.queryByText('Add new project')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /add new project/i })).toBeInTheDocument();
+    // expect(screen.getByRole('button', { name: /add new project/i })).toBeInTheDocument();
+    // for two buttons
+    const addButtons = screen.getAllByRole('button', { name: /add new project/i });
+    expect(addButtons.length).toBeGreaterThan(0);
   })
   // it('check if modal title is set to error when the modal is not open',()=>{
   it('check if components render correctly when no modal is open', () => {
@@ -170,7 +173,10 @@ describe("Projects component",()=>{
     render(<Provider store={store}><Projects /></Provider>)
     // expect(screen.getByText("ERROR")).toBeInTheDocument()
     expect(screen.getByText("Projects")).toBeInTheDocument()
-    expect(screen.getByText("Project Name")).toBeInTheDocument()
+    // expect(screen.getByText("Project Name")).toBeInTheDocument()
+    expect(
+      screen.getByRole("columnheader", { name: "Project Name" })
+    ).toBeInTheDocument()
     expect(screen.getByText("Category")).toBeInTheDocument()
     // Test that no modal is open
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
