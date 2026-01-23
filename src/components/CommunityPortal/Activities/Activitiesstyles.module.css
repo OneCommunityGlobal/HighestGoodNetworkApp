@@ -439,3 +439,170 @@
   border-color: #2563eb;
   box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
 }
+
+.darkMode .activitiesPage {
+  background-color: #0f172a;
+  color: #e5e7eb;
+}
+
+.darkMode .header h1,
+.darkMode .header h2,
+.darkMode .resourceMonitoring h2,
+.darkMode .latestRegistration h2,
+.darkMode .myEvent h2 {
+  color: #f9fafb;
+}
+
+.darkMode .resourceMonitoring,
+.darkMode .latestRegistration,
+.darkMode .myEvent,
+.darkMode .registrationForm {
+  background-color: #020617;
+  border: 1px solid #1e293b;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.02), 0 12px 28px rgba(0, 0, 0, 0.75);
+}
+
+.darkMode .resourceCard {
+  background: #020617;
+  border: 1px solid #1e293b;
+}
+
+.darkMode .resourceTitle {
+  color: #9ca3af;
+}
+
+.darkMode .resourceValue,
+.darkMode .circleLabel {
+  color: #f9fafb;
+}
+
+.darkMode .resourceStats p {
+  color: #9ca3af;
+}
+
+.darkMode .latestRegistration li {
+  border-bottom-color: #1e293b;
+}
+
+.darkMode .registerinfo p {
+  color: #f9fafb;
+}
+
+.darkMode .time {
+  color: #9ca3af;
+}
+
+.darkMode .myEventsTable th {
+  background-color: #020617;
+  color: #e5e7eb;
+}
+
+.darkMode .myEventsTable td {
+  color: #e5e7eb;
+  border-bottom-color: #1e293b;
+}
+
+.darkMode .myEventsTable tr:hover {
+  background-color: #020617;
+}
+
+.darkMode .dateBox .day {
+  color: #fb923c;
+}
+
+.darkMode .dateBox .date {
+  color: #f9fafb;
+}
+
+.darkMode .registrationForm input,
+.darkMode .registrationForm select,
+.darkMode .filterControls select {
+  background-color: #020617;
+  border-color: #1e293b;
+  color: #e5e7eb;
+}
+
+.darkMode .registrationForm input::placeholder {
+  color: #64748b;
+}
+
+.darkMode .registrationForm input:focus,
+.darkMode .registrationForm select:focus,
+.darkMode .filterControls select:focus {
+  border-color: #60a5fa;
+  background-color: #020617;
+}
+
+.darkMode .approveBtn,
+.darkMode .applyFiltersBtn,
+.darkMode .submitbtn {
+  background-color: #2563eb;
+}
+
+.darkMode .createNewBtn {
+  background-color: #16a34a;
+}
+
+.darkMode .approveBtn:hover,
+.darkMode .applyFiltersBtn:hover,
+.darkMode .submitbtn:hover {
+  background-color: #1e40af;
+}
+
+.darkMode .createNewBtn:hover {
+  background-color: #15803d;
+}
+
+.darkMode .viewToggle button {
+  background-color: #020617;
+  color: #9ca3af;
+  border: 1px solid #1e293b;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.darkMode .viewToggle button:hover {
+  background-color: #020617;
+  color: #f9fafb;
+}
+
+.darkMode .viewToggle .activeView {
+  background-color: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
+}
+
+.darkMode .viewToggle .activeView:hover {
+  background-color: #1e40af;
+}
+
+.darkMode .viewToggle .inactiveView {
+  background-color: #020617;
+  color: #9ca3af;
+}
+
+.darkMode .viewToggle .inactiveView:hover {
+  color: #f9fafb;
+}
+
+.darkMode .status,
+.darkMode .resource {
+  color: #e5e7eb;
+}
+
+.darkMode .status.active,
+.darkMode .resource.completed {
+  background-color: rgba(34, 197, 94, 0.25);
+}
+
+.darkMode .status.closed {
+  background-color: rgba(99, 102, 241, 0.25);
+}
+
+.darkMode .status.cancelled,
+.darkMode .resource.cancelled {
+  background-color: rgba(239, 68, 68, 0.25);
+}
+
+.darkMode .resource.pending {
+  background-color: rgba(234, 179, 8, 0.25);
+}
