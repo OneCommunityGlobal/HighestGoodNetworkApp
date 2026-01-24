@@ -36,6 +36,24 @@
   color: #ffffff;
 }
 
+/* Dark mode: style inputs/selects (including date picker) */
+:global(.dark) .filters input,
+:global(.dark-mode) .filters input,
+:global([data-theme='dark']) .filters input,
+:global(.dark) .filters select,
+:global(.dark-mode) .filters select,
+:global([data-theme='dark']) .filters select {
+  background-color: #1f2937;
+  color: #f9fafb;
+  border: 1px solid #374151;
+}
+
+:global(.dark) .filters input[type='date'],
+:global(.dark-mode) .filters input[type='date'],
+:global([data-theme='dark']) .filters input[type='date'] {
+  color-scheme: dark;
+}
+
 .chartWrapper {
   display: flex;
   justify-content: space-between;
