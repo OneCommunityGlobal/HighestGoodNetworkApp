@@ -7,7 +7,7 @@
  *
  * @component
  */
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import DatePicker from 'react-datepicker';
 import Select from 'react-select';
 import axios from 'axios';
@@ -68,17 +68,17 @@ export default function IssuesList() {
   const itemsPerPage = 5;
 
   // Fetch projects from the backend
-  const fetchProjects = async () => {
+  const fetchProjects = useCallback(async () => {
     try {
       const response = await axios.get(ENDPOINTS.BM_GET_ISSUE_PROJECTS);
       setProjects(response.data);
     } catch (err) {
       setError(`Error fetching projects: ${err.message || err}`);
     }
-  };
+  }, []);
 
   // Fetch open issues with applied filters
-  const fetchIssuesWithFilters = async () => {
+  const fetchIssuesWithFilters = useCallback(async () => {
     try {
       setLoading(true);
       setError('');
@@ -96,11 +96,11 @@ export default function IssuesList() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedProjects, startDate, endDate, tagFilter]);
 
   useEffect(() => {
     fetchProjects();
-  }, []);
+  }, [fetchProjects]);
 
   useEffect(() => {
     const fetchAndResetPagination = async () => {
@@ -109,7 +109,7 @@ export default function IssuesList() {
       setPageGroupStart(1);
     };
     fetchAndResetPagination();
-  }, [tagFilter, selectedProjects, startDate, endDate]);
+  }, [fetchIssuesWithFilters]);
 
   // Memoize the mapped issues to avoid unnecessary recalculations
   const mappedIssues = useMemo(() => {
@@ -226,11 +226,7 @@ export default function IssuesList() {
               selectsRange
               startDate={startDate}
               endDate={endDate}
-              onChange={update => {
-                setDateRange(update);
-                const [newStartDate, newEndDate] = update;
-                fetchIssuesWithFilters(selectedProjects, newStartDate, newEndDate, tagFilter);
-              }}
+              onChange={update => setDateRange(update)}
               placeholderText={dateRangeLabel || 'Filter by Date Range'}
               className={`date-picker-input form-control ${darkMode ? 'dark-theme' : ''}`}
               calendarClassName={darkMode ? 'dark-theme-calendar' : ''}
@@ -399,16 +395,19 @@ export default function IssuesList() {
           {
             length: Math.min(5, Math.ceil(mappedIssues.length / itemsPerPage) - pageGroupStart + 1),
           },
-          (_, i) => (
-            <Button
-              key={i}
-              onClick={() => setCurrentPage(pageGroupStart + i)}
-              variant={currentPage === pageGroupStart + i ? 'primary' : 'outline-secondary'}
-              className="mx-1"
-            >
-              {pageGroupStart + i}
-            </Button>
-          ),
+          (_, i) => {
+            const pageNumber = pageGroupStart + i;
+            return (
+              <Button
+                key={`page-${pageNumber}`}
+                onClick={() => setCurrentPage(pageNumber)}
+                variant={currentPage === pageNumber ? 'primary' : 'outline-secondary'}
+                className="mx-1"
+              >
+                {pageNumber}
+              </Button>
+            );
+          },
         )}
 
         <Button
