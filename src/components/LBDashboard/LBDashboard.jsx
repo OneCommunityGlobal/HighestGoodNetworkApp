@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
+import moment from 'moment';
+
 import {
   Container,
   Button,
@@ -10,8 +12,17 @@ import {
   DropdownMenu,
   DropdownItem,
   Card,
+  Row,
+  Col,
 } from 'reactstrap';
+
+import DemandOverTime from './LbAnalytics/DemandOverTime/DemandOverTime';
 import ReviewWordCloud from './ReviewWordCloud/ReviewWordCloud';
+import { CompareBarGraph } from './BarGraphs/CompareGraphs';
+
+import httpService from '../../services/httpService';
+import { ApiEndpoint } from '../../utils/URL';
+
 import styles from './LBDashboard.module.css';
 import DemandOverTime from './LbAnalytics/DemandOverTime/DemandOverTime';
 import ConversionFunnel from './LbAnalytics/ConversionFunnel/ConversionFunnel';
@@ -48,6 +59,18 @@ const DEFAULTS = {
   REVENUE: 'finalPrice',
   VACANCY: 'occupancyRate',
 };
+
+// Dummy data for Property graph (keep until backend is wired)
+const propertiesData = [
+  { property: 'House AB', value: 4.72 },
+  { property: 'Room A', value: 4.5 },
+  { property: 'Room C', value: 4.05 },
+  { property: 'Room A34', value: 3.91 },
+  { property: 'Room 5', value: 3.0 },
+];
+
+const getClassNames = (baseClass, darkClass, darkMode) =>
+  `${baseClass} ${darkMode ? darkClass : ''}`;
 
 function GraphCard({ title, metricLabel, darkMode }) {
   return (
@@ -137,11 +160,6 @@ CategoryControls.propTypes = {
   onToggleDD: PropTypes.func.isRequired,
 };
 
-// Helper function to get class names
-const getClassNames = (baseClass, darkClass, darkMode) =>
-  `${baseClass} ${darkMode ? darkClass : ''}`;
-
-// Extracted header component
 const DashboardHeader = ({ darkMode, onBack }) => (
   <header className={styles.dashboardHeader}>
     <h1 className={getClassNames(styles.title, styles.darkText, darkMode)}>
@@ -162,7 +180,6 @@ DashboardHeader.propTypes = {
   onBack: PropTypes.func.isRequired,
 };
 
-// Extracted filter section component
 const FilterSection = ({
   darkMode,
   activeCategory,
@@ -231,7 +248,6 @@ FilterSection.propTypes = {
   onToggleDD: PropTypes.func.isRequired,
 };
 
-// Extracted analysis section component
 const AnalysisSection = ({ title, darkMode, children }) => (
   <section className={getClassNames(styles.section, styles.darkSection, darkMode)}>
     <details>
@@ -259,6 +275,37 @@ export function LBDashboard() {
   const [openDD, setOpenDD] = useState({ DEMAND: false, REVENUE: false, VACANCY: false });
   const darkMode = useSelector(state => state.theme.darkMode);
 
+  // --- Villages backend data ---
+  const [villagesRaw, setVillagesRaw] = useState([]);
+  const [loadingVillages, setLoadingVillages] = useState(false);
+  const [villagesError, setVillagesError] = useState(null);
+
+  useEffect(() => {
+    let mounted = true;
+
+    (async () => {
+      try {
+        setLoadingVillages(true);
+        setVillagesError(null);
+
+        const res = await httpService.get(`${ApiEndpoint}/villages`);
+        if (!mounted) return;
+
+        setVillagesRaw(Array.isArray(res?.data) ? res.data : []);
+      } catch (e) {
+        if (!mounted) return;
+        setVillagesError('Failed to load villages');
+        setVillagesRaw([]);
+      } finally {
+        if (mounted) setLoadingVillages(false);
+      }
+    })();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   const dateRange = [
     moment()
       .subtract(1, 'year')
@@ -270,6 +317,70 @@ export function LBDashboard() {
     const all = Object.values(METRIC_OPTIONS).flat();
     return (all.find(o => o.key === selectedMetricKey) || {}).label || '';
   };
+
+  // Decide which numeric value to calculate for the bar chart
+  const effectiveMetric = useMemo(() => {
+    switch (selectedMetricKey) {
+      case 'avgBid':
+      case 'finalPrice':
+        return 'avgCurrentBid';
+      case 'pageVisits':
+      case 'numBids':
+      case 'avgRating':
+      case 'occupancyRate':
+      case 'avgStay':
+        return 'totalCurrentBid';
+      default:
+        return 'totalCurrentBid';
+    }
+  }, [selectedMetricKey]);
+
+  const valueFormatter = useMemo(() => {
+    if (selectedMetricKey === 'avgRating') return v => Number(v).toFixed(2);
+    if (selectedMetricKey === 'occupancyRate') return v => `${v}%`;
+    if (selectedMetricKey === 'avgStay') return v => `${v} days`;
+    if (selectedMetricKey === 'avgBid' || selectedMetricKey === 'finalPrice') {
+      return v => `₹${Number(v).toLocaleString()}`;
+    }
+    return v => Number(v);
+  }, [selectedMetricKey]);
+
+  // Derive villagesData from backend
+  const villagesData = useMemo(() => {
+    if (!villagesRaw.length) return [];
+
+    return villagesRaw
+      .map(v => {
+        const props = Array.isArray(v.properties) ? v.properties : [];
+        const bids = props.map(p => Number(p?.currentBid || 0));
+        const sum = bids.reduce((a, b) => a + b, 0);
+        const avg = bids.length ? sum / bids.length : 0;
+
+        const value = effectiveMetric === 'avgCurrentBid' ? avg : sum;
+
+        return {
+          village: v.name || v.regionId || 'Unknown',
+          value,
+        };
+      })
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 20);
+  }, [villagesRaw, effectiveMetric]);
+
+  const stripVillageWord = s => {
+    const str = String(s || '');
+    const suffix = ' village';
+    return str.toLowerCase().endsWith(suffix) ? str.slice(0, str.length - suffix.length) : str;
+  };
+
+  const villagesDataClean = useMemo(
+    () =>
+      villagesData.map(d => ({
+        ...d,
+        village: stripVillageWord(d.village),
+      })),
+    [villagesData],
+  );
 
   const handleCategoryClick = category => {
     setActiveCategory(category);
@@ -306,8 +417,8 @@ export function LBDashboard() {
       />
 
       <AnalysisSection title="By Village" darkMode={darkMode}>
-        <div className={styles.chartRow}>
-          <div className={styles.chartCol}>
+        <Row xs="1" md="3" className="g-3">
+          <Col>
             <DemandOverTime
               compareType="villages"
               metric={mappedMetric}
@@ -315,23 +426,51 @@ export function LBDashboard() {
               darkMode={darkMode}
               dateRange={dateRange}
             />
-          </div>
-          <div className={styles.chartCol}>
-            <Card className={getClassNames(styles.wordcloudCard, styles.darkCard, darkMode)}>
-              another graph
-            </Card>
-          </div>
-          <div className={styles.chartCol}>
-            <Card className={getClassNames(styles.wordcloudCard, styles.darkCard, darkMode)}>
-              another graph
-            </Card>
-          </div>
-        </div>
+          </Col>
+
+          <Col>
+            {loadingVillages && (
+              <div className={getClassNames('', styles.darkText, darkMode)}>Loading villages…</div>
+            )}
+            {villagesError && (
+              <div className={getClassNames('', styles.darkText, darkMode)}>{villagesError}</div>
+            )}
+
+            {!loadingVillages && !villagesError && (
+              <CompareBarGraph
+                title="Demand across Villages"
+                orientation="horizontal"
+                data={villagesDataClean}
+                nameKey="village"
+                valueKey="value"
+                xLabel="Value"
+                yLabel="Village Name"
+                showYAxisTitle={true}
+                yTickFormatter={stripVillageWord}
+                yCategoryWidth={96}
+                margins={{ top: 8, right: 16, bottom: 28, left: 22 }}
+                barSize={18}
+                maxBars={6}
+                valueFormatter={valueFormatter}
+                headerChips={[
+                  { label: 'Dates', value: 'ALL' },
+                  { label: 'Villages', value: 'ALL' },
+                  { label: 'Metric', value: metricLabel || 'ALL' },
+                  { label: 'List/Bid', value: 'ALL' },
+                ]}
+              />
+            )}
+          </Col>
+
+          <Col>
+            <GraphCard title="Comparing Villages" metricLabel={metricLabel} darkMode={darkMode} />
+          </Col>
+        </Row>
       </AnalysisSection>
 
       <AnalysisSection title="By Property" darkMode={darkMode}>
-        <div className={styles.chartRow}>
-          <div className={styles.chartCol}>
+        <Row xs="1" md="2" className="g-3">
+          <Col>
             <DemandOverTime
               compareType="properties"
               metric={mappedMetric}
@@ -339,8 +478,33 @@ export function LBDashboard() {
               darkMode={darkMode}
               dateRange={dateRange}
             />
-          </div>
-        </div>
+          </Col>
+
+          <Col>
+            <CompareBarGraph
+              title="Comparing Ratings of Properties"
+              orientation="vertical"
+              data={propertiesData}
+              nameKey="property"
+              valueKey="value"
+              xLabel="Property Name"
+              yLabel="Average Rating"
+              yDomain={[0, 5]}
+              yTicks={[0, 1, 2, 3, 4, 5]}
+              barSize={40}
+              barColor="#f2b233"
+              height={320}
+              valueFormatter={v => Number(v).toFixed(2)}
+              tooltipLabel="Average Rating"
+              headerChips={[
+                { label: 'List/Bid', value: 'ALL' },
+                { label: 'Dates', value: 'ALL' },
+                { label: 'Metric', value: 'ALL' },
+                { label: 'Properties', value: 'ALL' },
+              ]}
+            />
+          </Col>
+        </Row>
       </AnalysisSection>
 
       <AnalysisSection title="Conversion Funnel" darkMode={darkMode}>

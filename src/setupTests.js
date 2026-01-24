@@ -75,6 +75,29 @@ vi.mock('msw/node', () => ({
   }),
 }));
 
+const createStorageMock = () => {
+  let store = {};
+  return {
+    getItem: key => (key in store ? store[key] : null),
+    setItem: (key, value) => {
+      store[key] = value !== undefined && value !== null ? String(value) : '';
+    },
+    removeItem: key => {
+      delete store[key];
+    },
+    clear: () => {
+      store = {};
+    },
+    key: index => Object.keys(store)[index] || null,
+    get length() {
+      return Object.keys(store).length;
+    },
+  };
+};
+
+globalThis.localStorage = createStorageMock();
+globalThis.sessionStorage = createStorageMock();
+
 // Mock react-toastify
 vi.mock('react-toastify', () => {
   return {

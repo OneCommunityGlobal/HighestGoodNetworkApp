@@ -24,6 +24,7 @@ const StudentDashboard = () => {
   const dispatch = useDispatch();
   const authUser = useSelector(state => state.auth.user);
   const { taskItems: tasks, fetching: loading, error } = useSelector(state => state.studentTasks);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   // Fetch tasks from API
   useEffect(() => {
@@ -150,7 +151,7 @@ const StudentDashboard = () => {
 
   return (
     <div className={styles.dashboard}>
-      <NavigationBar />
+      <NavigationBar darkMode={darkMode} />
 
       <Container className={styles.mainContainer}>
         {/* Header */}
@@ -160,7 +161,7 @@ const StudentDashboard = () => {
         </div>
 
         {/* Summary Cards */}
-        <SummaryCards data={summaryData} />
+        <SummaryCards data={summaryData} darkMode={darkMode} />
 
         {/* Recent Time Logs Section */}
         <div className={styles.timeLogsSection}>
@@ -219,6 +220,7 @@ const StudentDashboard = () => {
               expandedTasks={expandedTasks}
               onToggleIntermediateTasks={toggleIntermediateTasks}
               onMarkIntermediateAsDone={handleMarkIntermediateAsDone}
+              darkMode={darkMode}
             />
           ) : (
             <TaskListView
@@ -228,6 +230,7 @@ const StudentDashboard = () => {
               expandedTasks={expandedTasks}
               onToggleIntermediateTasks={toggleIntermediateTasks}
               onMarkIntermediateAsDone={handleMarkIntermediateAsDone}
+              darkMode={darkMode}
             />
           )}
         </div>
