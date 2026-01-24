@@ -1,26 +1,38 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Alert, Spinner } from 'reactstrap';
 import AddTeamsAutoComplete from './AddTeamsAutoComplete';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import '../../Header/DarkMode.css';
+import '../../Header/index.css';
 import { postNewTeam, getAllUserTeams } from '../../../../src/actions/allTeamsAction';
+// eslint-disable-next-line import/no-named-as-default-member
 import axios from 'axios';
+
 const AddTeamPopup = React.memo(props => {
   const { darkMode, isEdit, teamName, teamId, teamCode, isActive, onUpdateTeam } = props;
-
   const dispatch = useDispatch();
+
+  // ---- Local source of truth for teams (avoids relying on store shape)
+  const [teams, setTeams] = useState(() => props.teamsData?.allTeams ?? []);
+  const [teamsLoading, setTeamsLoading] = useState(false);
 
   const [selectedTeam, onSelectTeam] = useState(undefined);
   const [isValidTeam, onValidation] = useState(true);
   const [isValidNewTeam, onNewTeamValidation] = useState(true);
-  const [searchText, setSearchText] = useState(''); // add searchText state
+  const [searchText, setSearchText] = useState('');
 
-  // states and onrs for the new team form
   const [isDuplicateTeam, setDuplicateTeam] = useState(false);
   const [isNotDisplayAlert, setIsNotDisplayAlert] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Keep local teams in sync if parent props change later
+  useEffect(() => {
+    if (Array.isArray(props.teamsData?.allTeams) && props.teamsData.allTeams.length) {
+      setTeams(props.teamsData.allTeams);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.teamsData?.allTeams]);
 
   const closePopup = () => {
     props.onClose();
@@ -31,17 +43,15 @@ const AddTeamPopup = React.memo(props => {
     setSearchText('');
   };
 
-  // prettier-ignore
-  const format = result => result.toLowerCase().trim().replace(/\s+/g, '');
+  const normalize = (s) =>
+    (s ?? '').toString().toLowerCase().trim().replace(/\s+/g, ' ');
 
-  const FilteredToTeamSpecific = arrayOrObj => {
-    const result = props.teamsData.allTeams.filter(
-      item => format(item.teamName) === format(searchText),
-    );
-    if (result.length > 0) {
-      if (arrayOrObj) return result[0];
-      else return result;
-    } else return undefined;
+  const allTeams = useMemo(() => teams ?? [], [teams]);
+
+  const findCandidates = () => {
+    const q = normalize(searchText);
+    if (!q) return [];
+    return allTeams.filter((t) => normalize(t.teamName).includes(q));
   };
 
   const IfTheUserNotSelectedSuggestionAutoComplete = () => {
@@ -68,18 +78,20 @@ const AddTeamPopup = React.memo(props => {
 
     if ((result || selectedTeam) && some) {
       props.onSelectAssignTeam(result ? result : selectedTeam);
-
       setSearchText('');
-
-      selectedTeam && (onSelectTeam(undefined), onValidation(false));
-      closePopup(); // automatically closes the popup after team assigned
-    } else
+      if (selectedTeam) {
+        onSelectTeam(undefined);
+        onValidation(false);
+      }
+      closePopup();
+    } else {
       toast.error(
-        'Your user has been found in this team. Please select another team to add your user.',
+        'Your user has been found in this team. Please select another team to add your user.'
       );
+    }
   };
 
-  const axiosResponseExceededTimeout = source => {
+  const axiosResponseExceededTimeout = (source) => {
     setIsLoading(false);
     source.cancel();
   };
@@ -102,34 +114,44 @@ const AddTeamPopup = React.memo(props => {
       const source = CancelToken.source();
       const timeout = setTimeout(() => axiosResponseExceededTimeout(source), 20000);
 
-      setIsLoading(true);
-      setDuplicateTeam(false); // Clear duplicate error when attempting to create
-      const response = await dispatch(postNewTeam(trimmedTeamName, true, source));
-      clearTimeout(timeout);
-      if (response.status === 200) {
-        setDuplicateTeam(false);
-        !isNotDisplayAlert && setIsNotDisplayAlert(true);
-        // Get updated teams list and select the new team
-        await dispatch(getAllUserTeams());
-        toast.success('Team created successfully');
-        const newTeam = response.data; // Assuming response contains the new team data
-        setIsLoading(false);
-        onAssignTeam(newTeam);
-      } else {
-        setIsLoading(false);
-        const messageToastError =
-          response.status === 500
-            ? 'No response received from the server'
-            : 'Error occurred while creating team';
-        
-        // Check for duplicate team error (403 or specific error message)
-        if (response.status === 403 || 
-            (response.data && response.data.message && 
-             response.data.message.toLowerCase().includes('already exists'))) {
-          setDuplicateTeam(true);
+      try {
+        setIsLoading(true);
+        setDuplicateTeam(false); // Clear duplicate error when attempting to create
+        const response = await dispatch(postNewTeam(trimmedTeamName, true, source));
+        clearTimeout(timeout);
+
+        if (response?.status === 200) {
+          setDuplicateTeam(false);
+          !isNotDisplayAlert && setIsNotDisplayAlert(true);
+
+          toast.success('Team created successfully');
+          setIsLoading(false);
+          
+          // For new teams, we can pass the team name or object if available
+          // logic to find the new team object would be ideal here similar to development
+           const created = response?.data;
+           onAssignTeam(created);
+
         } else {
-          toast.error(messageToastError);
+          setIsLoading(false);
+          const messageToastError =
+            response?.status === 500
+              ? 'No response received from the server'
+              : 'Error occurred while creating team';
+          
+          // Check for duplicate team error (403 or specific error message)
+          if (response.status === 403 || 
+              (response.data && response.data.message && 
+               response.data.message.toLowerCase().includes('already exists'))) {
+            setDuplicateTeam(true);
+          } else {
+            toast.error(messageToastError);
+          }
         }
+      } catch (e) {
+        clearTimeout(timeout);
+        setIsLoading(false);
+        toast.error('Error occurred while creating team');
       }
     } else {
       onNewTeamValidation(false);
@@ -208,7 +230,6 @@ const AddTeamPopup = React.memo(props => {
     <Modal
       isOpen={props.open}
       toggle={closePopup}
-      autoFocus={false}
       className={darkMode ? 'text-light dark-mode' : ''}
     >
       <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={closePopup}>
@@ -218,6 +239,7 @@ const AddTeamPopup = React.memo(props => {
         <label className={darkMode ? 'text-light' : ''} style={{ textAlign: 'left', fontWeight: 'bold' }}>
           Name of the Team<span className="red-asterisk">* </span>
         </label>
+
         <div className="input-group-prepend" style={{ marginBottom: '10px' }}>
           {isEdit ? (
             <input
@@ -246,9 +268,21 @@ const AddTeamPopup = React.memo(props => {
             {isLoading ? <Spinner color="light" size="sm" /> : 'OK'}
           </Button>
         </div>
+
+        {/* Helpful hint while loading the list the first time */}
+        {teamsLoading && (
+          <div style={{ fontSize: 13, color: darkMode ? '#cbd5e1' : '#6b7280', marginTop: -6 }}>
+            Loading teams…
+          </div>
+        )}
+
         {!isNotDisplayAlert && (
           <>
-            <Alert color="danger">Oops, this team does not exist! Create it if you want it.</Alert>
+            <Alert color="danger">
+              {findCandidates().length > 1
+                ? 'More than one team matches your text. Please refine or pick from the dropdown.'
+                : 'Oops, this team does not exist! Create it if you want it.'}
+            </Alert>
             <div
               style={{
                 marginBottom: '10px',
@@ -269,7 +303,7 @@ const AddTeamPopup = React.memo(props => {
           </>
         )}
 
-        {!isValidTeam && !searchText && (
+        {!isValidTeam && !searchText && !selectedTeam && (
           <Alert color="danger">Hey, You need to pick a team first!</Alert>
         )}
 

@@ -6,7 +6,7 @@ import { Row, Container, Col, Input } from 'reactstrap';
 import { fetchBMProjects } from '../../../actions/bmdashboard/projectActions';
 import BMTimeLogCard from './BMTimeLogCard';
 import BMError from '../shared/BMError';
-import './BMTimeLogger.css';
+import styles from './BMTimeLogger.module.css';
 
 function BMTimeLogger() {
   const [isError, setIsError] = useState(false);
@@ -29,7 +29,7 @@ function BMTimeLogger() {
 
   return (
     <Container className="justify-content-center">
-      <header className="bm-timelogger__header">
+      <header className={`${styles.bmTimelogger_header}`}>
         <Row className="mx-auto">
           <h1>Member Group Check In</h1>
         </Row>

@@ -9,8 +9,8 @@ import ModalDelete from './../../../common/Modal';
 import { deleteWbs } from './../../../../actions/wbs';
 import { getPopupById } from './../../../../actions/popupEditorAction';
 import { WBS_DELETE_POPUP_ID } from './../../../../constants/popupId';
-import hasPermission from 'utils/permissions';
-import { boxStyle } from 'styles';
+import hasPermission from '~/utils/permissions';
+import { boxStyle } from '~/styles';
 import { Link } from 'react-router-dom';
 import { NavItem } from 'reactstrap';
 
@@ -34,7 +34,7 @@ const WBSItem = ({ darkMode, index, name, wbsId, projectId, getPopupById, delete
   return (
     <React.Fragment>
       <tr>
-        <th scope="row" style={{ width: '150px', textAlign: 'center' }}>
+        <th scope="row" style={{ maxWidth: '150px', textAlign: 'center' }}>
           {index}
         </th>
         <td style={{ textAlign: 'left' }}>

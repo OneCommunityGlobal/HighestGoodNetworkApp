@@ -3,12 +3,12 @@ import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Form, FormGroup, FormText, Label, Input, Button } from 'reactstrap';
-import Joi from 'joi';
+import Joi from 'joi-browser';
 
-import { boxStyle } from 'styles';
-import { purchaseTools } from 'actions/bmdashboard/toolActions';
+import { boxStyle } from '~/styles';
+import { purchaseTools } from '~/actions/bmdashboard/toolActions';
 
-import './PurchaseForm.css';
+import styles from './PurchaseForm.module.css';
 
 export default function PurchaseForm() {
   const bmProjects = useSelector(state => state.bmProjects);
@@ -91,7 +91,7 @@ export default function PurchaseForm() {
   };
 
   return (
-    <Form className="purchase-tool-form" onSubmit={handleSubmit}>
+    <Form className={`${styles.purchaseToolForm}`} onSubmit={handleSubmit}>
       <FormGroup>
         <Label for="select-project">Project</Label>
         <Input
@@ -135,10 +135,10 @@ export default function PurchaseForm() {
           ))}
         </Input>
       </FormGroup>
-      <div className="purchase-tool-flex-group">
-        <FormGroup className="flex-group-qty">
+      <div className={`${styles.purchaseToolFlexGroup}`}>
+        <FormGroup className={`${styles.flexGroupQty}`}>
           <Label for="input-quantity">Quantity</Label>
-          <div className="flex-group-qty-container">
+          <div className={`${styles.flexGroupQtyContainer}`}>
             <Input
               id="input-quantity"
               type="number"
@@ -207,8 +207,10 @@ export default function PurchaseForm() {
           }}
         />
       </FormGroup>
-      <div className="purchase-tool-error">{validationError && <p>{validationError}</p>}</div>
-      <div className="purchase-tool-buttons">
+      <div className={`${styles.purchaseToolError}`}>
+        {validationError && <p>{validationError}</p>}
+      </div>
+      <div className={`${styles.purchaseToolButtons}`}>
         <Button
           type="button"
           id="cancel-button"

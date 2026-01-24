@@ -1,4 +1,4 @@
-import './Checkbox.css';
+import styles from './Checkbox.module.css';
 
 // eslint-disable-next-line import/prefer-default-export, react/function-component-definition
 export const Checkbox = ({
@@ -11,16 +11,19 @@ export const Checkbox = ({
   textColorCN,
 }) => {
   return (
-    <div className={`checkbox-wrapper ${wrapperClassname} ${backgroundColorCN}`}>
+    <div
+      data-testid="checkbox-wrapper"
+      className={`${styles.checkboxWrapper} ${wrapperClassname} ${backgroundColorCN}`}
+    >
       <input
-        className="checkbox-input"
+        className={`${styles.checkboxInput}`}
         type="checkbox"
         id={id}
         name={id}
         checked={value}
         onChange={onChange}
       />
-      <label className={`checkbox-label ${textColorCN}`} htmlFor={id}>
+      <label className={`${styles.checkboxLabel} ${textColorCN}`} htmlFor={id}>
         {label}
       </label>
     </div>

@@ -1,0 +1,78 @@
+.utilizationChartContainer {
+  padding: 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+  background-color: var(--bg-color, #ffffff);
+  color: var(--text-color, #333);
+  border-radius: 10px;
+  box-shadow: var(--shadow, 0 2px 10px rgba(0, 0, 0, 0.1));
+  min-height: 100vh;
+}
+
+.chartTitle {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: var(--title-color, #333);
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.select,
+.datepickerWrapper,
+.button {
+  padding: 0.5rem;
+  font-size: 1rem;
+  border-radius: 5px;
+  border: 1px solid var(--border-color, #ccc);
+}
+
+.select,
+.datepickerWrapper {
+  background-color: var(--input-bg, #ffffff);
+  color: var(--text-color, #333);
+}
+
+.select:focus,
+.datepickerWrapper:focus {
+  outline: none;
+  border-color: var(--focus-border-color, #3b82f6);
+}
+
+.button {
+  background-color: var(--button-bg, #a0e7e5);
+  color: var(--button-text, #000);
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-weight: 500;
+}
+
+.button:hover {
+  background-color: var(--button-hover, #72d6d3);
+}
+
+.utilizationChartError {
+  color: var(--error-color, red);
+  text-align: center;
+}
+
+/* ============ DARK MODE ============ */
+.utilizationChartContainer.darkMode {
+  --bg-color: #1b2a41;
+  --text-color: #ffffff;
+  --title-color: #ffffff;
+  --input-bg: #3a506b;
+  --border-color: #4a5a77;
+  --focus-border-color: #e8a71c;
+  --button-bg: #e8a71c;
+  --button-text: #000;
+  --button-hover: #f5b13a;
+  --shadow: 0 2px 10px rgba(255, 255, 255, 0.1);
+  --error-color: #ff6b6b;
+}
