@@ -93,9 +93,10 @@ export const fetchScheduledPosts =
       if (status) params.append('status', status);
       params.append('limit', limit);
       params.append('skip', skip);
-      params.append('requestor', JSON.stringify(requestor));
 
-      const { data } = await axios.get(`${ENDPOINTS.FACEBOOK_SCHEDULED}?${params.toString()}`);
+      const { data } = await axios.get(`${ENDPOINTS.FACEBOOK_SCHEDULED}?${params.toString()}`, {
+        data: { requestor },
+      });
       return data;
     } catch (error) {
       const detail =
@@ -118,9 +119,10 @@ export const fetchPostHistory =
       if (pageId) params.append('pageId', pageId);
       if (status) params.append('status', status);
       if (postMethod) params.append('postMethod', postMethod);
-      params.append('requestor', JSON.stringify(requestor));
 
-      const { data } = await axios.get(`${ENDPOINTS.FACEBOOK_HISTORY}?${params.toString()}`);
+      const { data } = await axios.get(`${ENDPOINTS.FACEBOOK_HISTORY}?${params.toString()}`, {
+        data: { requestor },
+      });
       return data;
     } catch (error) {
       const detail =

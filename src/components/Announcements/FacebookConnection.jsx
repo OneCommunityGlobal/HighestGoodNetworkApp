@@ -279,13 +279,9 @@ export default function FacebookConnection() {
               <strong>Connected:</strong> {formatDate(connectionStatus.connectedAt)} by{' '}
               {connectionStatus.connectedBy}
             </p>
-            {connectionStatus.tokenExpiresAt ? (
+            {connectionStatus.tokenExpiresAt && (
               <p style={{ margin: '4px 0' }}>
                 <strong>Token Expires:</strong> {formatDate(connectionStatus.tokenExpiresAt)}
-              </p>
-            ) : (
-              <p style={{ margin: '4px 0', color: '#28a745' }}>
-                <strong>Token:</strong> Does not expire
               </p>
             )}
             {connectionStatus.lastError && (
