@@ -38,9 +38,6 @@ const calculateTotalExpectedHours = (intermediateTasks) => {
   }, 0);
 };
 
-/**
- * Update parent task's expected hours based on intermediate tasks
- */
 const updateParentTaskExpectedHours = async (dispatch, getState, parentTaskId) => {
   try {
     // Fetch all intermediate tasks for this parent
@@ -60,7 +57,9 @@ const updateParentTaskExpectedHours = async (dispatch, getState, parentTaskId) =
         suggested_total_hours: totalExpectedHours
       }));
     }
-  } 
+  } catch (error) {
+    toast.error('Failed to update parent task hours');
+  }
 };
 
 /**
