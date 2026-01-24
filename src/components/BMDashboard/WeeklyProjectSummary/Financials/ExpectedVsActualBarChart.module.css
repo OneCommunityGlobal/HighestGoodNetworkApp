@@ -1,12 +1,11 @@
 .chartContainer {
   width: 100%;
   height: 350px; /* default height for desktop */
-  max-height: 400px;
-  min-height: 250px;
   padding: 0.5rem;
   border-radius: 8px;
   box-sizing: border-box;
-  overflow: hidden;
+  background: var(--section-bg, transparent);
+  /* overflow: hidden; */
 }
 .cardWrapper {
   width: 100%;
@@ -49,10 +48,7 @@
   flex-direction: column; /* ensures label and input align vertically on mobile */
   font-size: 0.85rem;
 }
-.scrollWrapper {
-  width: 100%;
-  box-sizing: border-box;
-}
+
 /* Responsive tweaks */
 /* Tablet */
 @media (max-width: 1024px) {
@@ -64,13 +60,6 @@
     overflow-x: scroll;          /*  horizontal scroll */
     -webkit-overflow-scrolling: touch;
   }
-  .scrollWrapper {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-  .scrollInner {
-    min-width: 50px;          /*  forces scroll */
-  }
 }
 
 @media (max-width: 768px) {
@@ -78,13 +67,6 @@
     height: 300px;
     padding: 0.3rem;
     overflow-x: scroll;
-  }
-  .scrollWrapper {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-  .scrollInner {
-    min-width: 50px;          /*  forces scroll */
   }
 }
 
@@ -98,12 +80,5 @@
   .chartContainer {
     height: 260px;
     padding: 0.25rem;
-  }
-  .scrollWrapper {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-  .scrollInner {
-    min-width: 50px;          /*  forces scroll */
   }
 }

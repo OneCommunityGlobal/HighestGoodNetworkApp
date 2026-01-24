@@ -209,49 +209,45 @@ export default function ExpenseBarChart() {
             </div>
 
             <div className={styles.chartContainer}>
-              <div className={styles.scrollInner}>
-                <div style={{ minWidth: '600px' }}>
-                  <ResponsiveContainer width="100%" height={350}>
-                    <BarChart
-                      data={data}
-                      margin={{ top: 10, right: 10, left: 35, bottom: 35 }}
-                      style={{ backgroundColor: bgColor }}
-                    >
-                      <XAxis
-                        dataKey="project"
-                        tick={{ fontSize: windowWidth < 480 ? 8 : 15, fill: textColor }} // smaller font on small screens
-                        interval={0}
-                        angle={windowWidth < 480 ? -90 : 0} // rotate more on mobile
-                        textAnchor="end"
-                        label={{
-                          value: 'Project Name',
-                          position: 'insideBottom',
-                          dy: windowWidth < 480 ? 40 : 25,
-                          fontSize: 15,
-                          fill: textColor,
-                        }}
-                        stroke={gridColor}
-                      />
-                      <YAxis
-                        tick={{ fontSize: 15, fill: textColor }}
-                        axisLine={{ stroke: gridColor }}
-                        tickLine={{ stroke: gridColor }}
-                      />
-                      <Legend verticalAlign="top" height={36} />
-                      <Tooltip
-                        labelFormatter={label => `Project: ${label}`}
-                        formatter={(value, name) => [`$${Number(value).toLocaleString()}`, name]}
-                      />
-                      <Bar dataKey="planned" fill="#4285F4" name="Planned">
-                        <LabelList dataKey="planned" position="top" style={{ fontSize: 12 }} />
-                      </Bar>
-                      <Bar dataKey="actual" fill="#EA4335" name="Actual">
-                        <LabelList dataKey="actual" position="top" style={{ fontSize: 12 }} />
-                      </Bar>
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
+              <ResponsiveContainer>
+                <BarChart
+                  data={data}
+                  margin={{ top: 10, right: 10, left: 35, bottom: 35 }}
+                  style={{ backgroundColor: bgColor }}
+                >
+                  <XAxis
+                    dataKey="project"
+                    tick={{ fontSize: windowWidth < 480 ? 8 : 15, fill: textColor }} // smaller font on small screens
+                    interval={0}
+                    // angle={windowWidth < 480 ? -90 : 0} // rotate more on mobile
+                    textAnchor="end"
+                    label={{
+                      value: 'Project Name',
+                      position: 'insideBottom',
+                      dy: windowWidth < 480 ? 40 : 25,
+                      fontSize: 15,
+                      fill: textColor,
+                    }}
+                    stroke={gridColor}
+                  />
+                  <YAxis
+                    tick={{ fontSize: 15, fill: textColor }}
+                    axisLine={{ stroke: gridColor }}
+                    tickLine={{ stroke: gridColor }}
+                  />
+                  <Legend verticalAlign="top" height={36} />
+                  <Tooltip
+                    labelFormatter={label => `Project: ${label}`}
+                    formatter={(value, name) => [`$${Number(value).toLocaleString()}`, name]}
+                  />
+                  <Bar dataKey="planned" fill="#4285F4" name="Planned">
+                    <LabelList dataKey="planned" position="top" style={{ fontSize: 12 }} />
+                  </Bar>
+                  <Bar dataKey="actual" fill="#EA4335" name="Actual">
+                    <LabelList dataKey="actual" position="top" style={{ fontSize: 12 }} />
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
             </div>
           </div>
         </div>
