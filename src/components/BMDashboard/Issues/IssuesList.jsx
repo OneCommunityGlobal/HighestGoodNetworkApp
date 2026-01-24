@@ -79,14 +79,15 @@ export default function IssuesList() {
           );
         })
         .map(issue => {
-          const created = new Date(issue.createdDate);
-          const diffDays = Math.floor((new Date() - created) / (1000 * 60 * 60 * 24));
+          // Use issueDate (when issue occurred) instead of createdDate (when record was created)
+          const issueOpenDate = new Date(issue.issueDate);
+          const diffDays = Math.floor((Date.now() - issueOpenDate) / (1000 * 60 * 60 * 24));
           return {
             id: issue._id,
             name: issue.issueTitle[0],
             tag: issue.tag || '',
             openSince: diffDays,
-            cost: issue.cost,
+            cost: issue.cost || 0,
             person: issue.person,
           };
         })
