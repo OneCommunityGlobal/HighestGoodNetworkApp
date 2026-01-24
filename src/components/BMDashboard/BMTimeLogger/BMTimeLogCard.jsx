@@ -21,9 +21,12 @@ function BMTimeLogCard(props) {
   }, [props.selectedProject, dispatch]);
 
   useEffect(() => {
-    if (projectInfo && projectInfo.members) {
-      setMemberList(Array.isArray(projectInfo.members) ? projectInfo.members : []);
-      setFilteredMembers(Array.isArray(projectInfo.members) ? projectInfo.members : []);
+    // projectInfo.members IS the members array directly
+    const membersArray = projectInfo?.members;
+
+    if (Array.isArray(membersArray)) {
+      setMemberList(membersArray);
+      setFilteredMembers(membersArray);
       setIsMemberFetched(true);
     }
   }, [projectInfo]);
@@ -44,9 +47,12 @@ function BMTimeLogCard(props) {
 
     const query = searchQuery.toLowerCase();
     const filtered = memberList.filter(member => {
-      const firstName = member.user?.firstName?.toLowerCase() || '';
-      const lastName = member.user?.lastName?.toLowerCase() || '';
-      const role = member.user?.role?.toLowerCase() || '';
+      // Skip members without valid user data
+      if (!member?.user) return false;
+
+      const firstName = member.user.firstName?.toLowerCase() || '';
+      const lastName = member.user.lastName?.toLowerCase() || '';
+      const role = member.user.role?.toLowerCase() || '';
       const fullName = `${firstName} ${lastName}`;
 
       // Check if user has teams and search in them too
@@ -56,7 +62,7 @@ function BMTimeLogCard(props) {
               // eslint-disable-next-line no-nested-ternary
               typeof team === 'string'
                 ? team.toLowerCase().includes(query)
-                : team.name
+                : team?.name
                 ? team.name.toLowerCase().includes(query)
                 : false,
             )
@@ -100,23 +106,29 @@ function BMTimeLogCard(props) {
 
           {filteredMembers.length > 0 ? (
             <Row>
-              {filteredMembers.map((value, index) => (
-                <Col md={4} key={value.user._id}>
-                  <BMTimeLogDisplayMember
-                    firstName={value.user.firstName}
-                    lastName={value.user.lastName}
-                    role={value.user.role}
-                    index={index}
-                    memberId={value.user._id}
-                    projectId={props.selectedProject}
-                  />
-                </Col>
-              ))}
+              {filteredMembers
+                .filter(value => value?.user?._id)
+                .map((value, index) => (
+                  <Col md={4} key={value.user._id}>
+                    <BMTimeLogDisplayMember
+                      firstName={value.user.firstName || ''}
+                      lastName={value.user.lastName || ''}
+                      role={value.user.role || ''}
+                      index={index}
+                      memberId={value.user._id}
+                      projectId={props.selectedProject}
+                    />
+                  </Col>
+                ))}
             </Row>
           ) : (
             <Row>
               <Col className="text-center py-4">
-                <h5>No members found matching &quot;{searchQuery}&quot;</h5>
+                {searchQuery.trim() ? (
+                  <h5>No members found matching &quot;{searchQuery}&quot;</h5>
+                ) : (
+                  <h5>No members available for this project</h5>
+                )}
               </Col>
             </Row>
           )}
