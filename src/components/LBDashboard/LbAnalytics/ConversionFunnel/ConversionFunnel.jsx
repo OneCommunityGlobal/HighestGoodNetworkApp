@@ -375,10 +375,19 @@ const ConversionFunnel = ({ darkMode }) => {
     const baseUsers = category === 'village' ? 10000 : 8500;
     const baseMultiplier = dateMultiplier * selectionMultiplier;
 
-    // Add variation to conversion rates (not just fixed percentages)
-    const interestRate = 0.35 + Math.random() * 0.25; // 35-60% show interest
-    const bidRate = 0.35 + Math.random() * 0.25; // 35-60% of interested place bids
-    const conversionRate = 0.3 + Math.random() * 0.25; // 30-55% of bidders convert
+    // Generate deterministic variation based on filter state (no Math.random for security)
+    const filterHash =
+      daysDiff +
+      (category === 'village' ? 100 : 200) +
+      (selectedVillages.length || selectedProperties.length) * 10;
+    const seed1 = ((filterHash * 9301 + 49297) % 233280) / 233280;
+    const seed2 = ((filterHash * 4567 + 1234) % 233280) / 233280;
+    const seed3 = ((filterHash * 7890 + 5678) % 233280) / 233280;
+
+    // Vary conversion rates deterministically
+    const interestRate = 0.35 + seed1 * 0.25; // 35-60% show interest
+    const bidRate = 0.35 + seed2 * 0.25; // 35-60% of interested place bids
+    const conversionRate = 0.3 + seed3 * 0.25; // 30-55% of bidders convert
 
     // Sample conversion funnel data - varies based on filters
     const usersAttracted = Math.round(baseUsers * baseMultiplier);

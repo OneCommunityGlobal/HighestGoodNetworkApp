@@ -24,9 +24,7 @@ import httpService from '../../services/httpService';
 import { ApiEndpoint } from '../../utils/URL';
 
 import styles from './LBDashboard.module.css';
-import DemandOverTime from './LbAnalytics/DemandOverTime/DemandOverTime';
 import ConversionFunnel from './LbAnalytics/ConversionFunnel/ConversionFunnel';
-import moment from 'moment';
 
 const METRIC_OPTIONS = {
   DEMAND: [
