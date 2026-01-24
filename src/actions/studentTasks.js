@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { toast } from 'react-toastify';
 import * as types from '../constants/studentTasks';
 import { ENDPOINTS } from '~/utils/URL';
@@ -56,7 +55,7 @@ export const updateStudentTask = (taskId, updatedTask) => {
  */
 const transformTaskToFlatFormat = (task, subjectData, subjectKey) => {
   return {
-    id: task._id, // Use _id as the primary id for React keys
+    id: task._id,
     course_name: subjectData.subject?.name || subjectKey || 'Unknown Subject',
     subtitle: task.lessonPlan?.title || task.atom?.name || 'No Description',
     task_type: task.type || 'read',
@@ -87,14 +86,12 @@ const transformTaskToFlatFormat = (task, subjectData, subjectKey) => {
  * @returns {Array} Array of flattened, deduplicated tasks
  */
 const flattenGroupedTasks = (groupedTasks) => {
-  const taskMap = new Map(); // Use Map to deduplicate tasks by _id
+  const taskMap = new Map();
 
-  // Flatten the grouped structure to get individual tasks
   Object.entries(groupedTasks).forEach(([subjectKey, subjectData]) => {
     Object.values(subjectData.colorLevels).forEach(colorLevel => {
       Object.values(colorLevel.activityGroups).forEach(activityGroup => {
         activityGroup.tasks.forEach(task => {
-          // Only add task if it hasn't been seen before (deduplication)
           if (!taskMap.has(task._id)) {
             const transformedTask = transformTaskToFlatFormat(task, subjectData, subjectKey);
             taskMap.set(task._id, transformedTask);
@@ -104,10 +101,8 @@ const flattenGroupedTasks = (groupedTasks) => {
     });
   });
 
-  // Convert Map values to array and add final deduplication as safety measure
   const flattenedTasks = Array.from(taskMap.values());
 
-  // Final deduplication by _id as a safety measure
   const uniqueTasks = flattenedTasks.filter((task, index, self) =>
     index === self.findIndex(t => t._id === task._id)
   );
@@ -143,17 +138,14 @@ const handleApiError = async (apiError, dispatch) => {
 
   // Try alternative endpoint if the first one fails
   if (apiError.response?.status === 404) {
-    console.log('Trying alternative endpoint...');
     try {
       const altResponse = await httpService.post(`${ENDPOINTS.APIEndpoint()}/student-tasks`);
-      console.log('Alternative endpoint response:', altResponse.data);
       return altResponse.data.tasks || [];
     } catch (altError) {
-      console.error('Alternative endpoint also failed:', altError);
+      // Alternative endpoint failed
     }
   }
 
-  console.warn('Student tasks API not available, using mock data:', apiError.message);
   toast.info('Using demo data. Student tasks API is not yet available.');
   return mockTasks;
 };
@@ -170,7 +162,6 @@ export const fetchStudentTasks = () => {
       const userId = state.auth.user.userid;
 
       if (!userId) {
-        console.error('No user ID found in auth state');
         dispatch(setStudentTasksError('User not authenticated'));
         return;
       }
@@ -183,7 +174,6 @@ export const fetchStudentTasks = () => {
         dispatch(setStudentTasks(fallbackTasks));
       }
     } catch (err) {
-      console.error('Error fetching student tasks:', err);
       dispatch(setStudentTasksError(err.message || 'Failed to fetch student tasks'));
       toast.error('Failed to fetch student tasks. Please try again later.');
     }
@@ -243,7 +233,6 @@ export const markStudentTaskAsDone = (taskId) => {
         throw new Error('Task not found');
       }
 
-      // Validate task can be marked as done
       const validation = validateTaskCompletion(task);
       if (!validation.valid) {
         if (task.is_completed) {
@@ -255,10 +244,8 @@ export const markStudentTaskAsDone = (taskId) => {
       }
 
       try {
-        // Call the student mark-complete API endpoint
         await callMarkCompleteAPI(taskId, state.auth.user.userid);
 
-        // Only update local state if API call succeeds
         dispatch(updateStudentTask(taskId, {
           ...task,
           is_completed: true,
@@ -267,15 +254,10 @@ export const markStudentTaskAsDone = (taskId) => {
 
         toast.success('Task marked as completed successfully!');
       } catch (apiError) {
-        // Show error toast if API fails
-        console.error('Student task mark complete API error:', apiError);
-        console.error('API Error:', apiError.response?.data || apiError.message);
-
         const errorMessage = apiError.response?.data?.error || apiError.message || 'Failed to mark task as complete';
         toast.error(`Error: ${errorMessage}`);
       }
     } catch (err) {
-      console.error('Error marking task as done:', err);
       toast.error('Failed to mark task as done. Please try again.');
     }
   };

@@ -1,5 +1,4 @@
 import { toast } from 'react-toastify';
-import { ENDPOINTS } from '~/utils/URL';
 import httpService from '../services/httpService';
 import { updateStudentTask } from './studentTasks';
 
@@ -64,12 +63,13 @@ const updateParentTaskExpectedHours = async (dispatch, getState, parentTaskId) =
 
 /**
  * Create a new intermediate task
+ * @param {Object} taskData - The task data to create
  */
 export const createIntermediateTask = (taskData) => {
   return async (dispatch, getState) => {
     try {
-      const response = await httpService.post(ENDPOINTS.INTERMEDIATE_TASKS(), taskData);
-      toast.success('Sub-task created successfully');
+      const state = getState();
+      const userId = state.auth.user.userid;
 
       // Update parent task expected hours
       if (taskData.parentTaskId) {
@@ -85,21 +85,10 @@ export const createIntermediateTask = (taskData) => {
   };
 };
 
-/**
- * Update an intermediate task
- */
-export const updateIntermediateTask = (id, taskData) => {
-  return async (dispatch, getState) => {
-    try {
-      const response = await httpService.put(ENDPOINTS.INTERMEDIATE_TASK_BY_ID(id), taskData);
-      toast.success('Sub-task updated successfully');
-
-      // Update parent task expected hours
-      if (taskData.parentTaskId) {
-        await updateParentTaskExpectedHours(dispatch, getState, taskData.parentTaskId);
+      if (response.data.success) {
+        toast.success('Task created successfully!');
+        return response.data.task;
       }
-
-      return response.data;
     } catch (error) {
       const errorMessage = error.response?.data?.error || error.message || 'Failed to update sub-task';
       toast.error(`Error: ${errorMessage}`);
@@ -110,16 +99,18 @@ export const updateIntermediateTask = (id, taskData) => {
 
 /**
  * Delete an intermediate task
+ * @param {string} taskId - The task ID to delete
  */
-export const deleteIntermediateTask = (id, parentTaskId = null) => {
+export const deleteIntermediateTask = (taskId) => {
   return async (dispatch, getState) => {
     try {
-      await httpService.delete(ENDPOINTS.INTERMEDIATE_TASK_BY_ID(id));
-      toast.success('Sub-task deleted successfully');
+      const response = await httpService.delete(
+        `${ENDPOINTS.APIEndpoint()}/education-tasks/intermediate/${taskId}`
+      );
 
-      // Update parent task expected hours
-      if (parentTaskId) {
-        await updateParentTaskExpectedHours(dispatch, getState, parentTaskId);
+      if (response.data.success) {
+        toast.success('Task deleted successfully!');
+        return true;
       }
 
       return true;
@@ -154,4 +145,3 @@ export const markIntermediateTaskAsDone = (id, parentTaskId) => {
     }
   };
 };
-

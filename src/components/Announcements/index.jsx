@@ -129,19 +129,19 @@ function Announcements({ title, email: initialEmail }) {
           </TabPane>
 
           <TabPane tabId="video">
-            <SocialMediaComposer platform="video" />
+            <SocialMediaComposer platform="video" darkMode={darkMode} />
           </TabPane>
 
           <TabPane tabId="article">
-            <SocialMediaComposer platform="article" />
+            <SocialMediaComposer platform="article" darkMode={darkMode} />
           </TabPane>
 
           <TabPane tabId="photo">
-            <SocialMediaComposer platform="photo" />
+            <SocialMediaComposer platform="photo" darkMode={darkMode} />
           </TabPane>
 
           <TabPane tabId="weeklyreport">
-            <SocialMediaComposer platform="weeklyreport" />
+            <SocialMediaComposer platform="weeklyreport" darkMode={darkMode} />
           </TabPane>
 
           <TabPane tabId="truthsocial">
@@ -171,7 +171,7 @@ function Announcements({ title, email: initialEmail }) {
             'blogger',
           ].map(platform => (
             <TabPane tabId={platform} key={platform}>
-              <SocialMediaComposer platform={platform} />
+              <SocialMediaComposer platform={platform} darkMode={darkMode} />
             </TabPane>
           ))}
         </TabContent>
