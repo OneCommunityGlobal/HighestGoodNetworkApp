@@ -40,7 +40,7 @@ function WishList(props) {
                   {firstImg ? (
                     <img
                       src={firstImg}
-                      alt={`${item.title}, ${item.unit}`} // ✅ no “photo/image”
+                      alt={`${item.title}, ${item.unit}`}
                       className={styles.itemImage}
                       loading="lazy"
                     />
@@ -71,46 +71,46 @@ function WishList(props) {
                         </ol>
                       </div>
                     </div>
-                  </div>
 
-                  <div className={styles.itemPrice}>
-                    <span className={styles.font600}>Basic per night price:</span> {item.price}
-                  </div>
+                    <div className={styles.itemPrice}>
+                      <span className={styles.font600}>Basic per night price:</span> {item.price}
+                    </div>
 
-                  <div>
-                    <NavItem
-                      tag={Link}
-                      to={`/lbdashboard/wishlist/${item.id}`}
-                      onClick={() => dispatch(setCurrentWishListItem(item))}
-                      className={styles.listDetails}
-                    >
-                      Click here to view availabilities
-                    </NavItem>
+                    <div>
+                      <NavItem
+                        tag={Link}
+                        to={`/lbdashboard/wishlist/${item.id}`}
+                        onClick={() => dispatch(setCurrentWishListItem(item))}
+                        className={styles.listDetails}
+                      >
+                        Click here to view availabilities
+                      </NavItem>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div className={styles.itemFooter}>
-                <NavItem
-                  tag={Link}
-                  to={`/lbdashboard/wishlist/${item.id}`}
-                  onClick={() => dispatch(setCurrentWishListItem(item))}
-                  className={styles.listLink}
-                >
-                  Click for list overview
-                </NavItem>
+                <div className={styles.itemFooter}>
+                  <NavItem
+                    tag={Link}
+                    to={`/lbdashboard/wishlist/${item.id}`}
+                    onClick={() => dispatch(setCurrentWishListItem(item))}
+                    className={styles.listLink}
+                  >
+                    Click for list overview
+                  </NavItem>
 
-                <div className={styles.wishlistStartChat}>
-                  <button type="button">
-                    <img
-                      width="24"
-                      height="24"
-                      src="https://img.icons8.com/material-outlined/24/chat.png"
-                      alt=""
-                      aria-hidden="true"
-                    />
-                    Chat with the Host
-                  </button>
+                  <div className={styles.wishlistStartChat}>
+                    <button type="button">
+                      <img
+                        width="24"
+                        height="24"
+                        src="https://img.icons8.com/material-outlined/24/chat.png"
+                        alt=""
+                        aria-hidden="true"
+                      />
+                      Chat with the Host
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
