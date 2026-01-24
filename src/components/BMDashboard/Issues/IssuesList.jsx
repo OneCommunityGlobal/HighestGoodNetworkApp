@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import DatePicker from 'react-datepicker';
 import Select from 'react-select';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 import 'react-datepicker/dist/react-datepicker.css';
 import { Table, Button, Dropdown, Form, Row, Col } from 'react-bootstrap';
 import './IssuesList.css';
@@ -120,7 +121,7 @@ export default function IssuesList() {
 
     // Validate input - prevent empty names
     if (!trimmedName) {
-      setError('Issue name cannot be empty');
+      toast.error('Issue name cannot be empty');
       return;
     }
 
@@ -128,9 +129,12 @@ export default function IssuesList() {
       // Backend expects issueTitle as array format, not dot notation
       await axios.patch(ENDPOINTS.BM_ISSUE_UPDATE(id), { issueTitle: [trimmedName] });
       await fetchIssuesWithFilters();
-      setError(''); // Clear any previous errors
+      toast.success('Issue renamed successfully');
+      setError('');
     } catch (err) {
-      setError(`Error updating issue name: ${err.message || err}`);
+      const errorMsg = err.response?.data?.message || err.message || 'Failed to rename issue';
+      toast.error(errorMsg);
+      setError(`Error updating issue name: ${errorMsg}`);
     }
     setEditingId(null);
     setEditedName('');
@@ -140,9 +144,12 @@ export default function IssuesList() {
   const handleDelete = async id => {
     try {
       await axios.delete(ENDPOINTS.BM_ISSUE_UPDATE(id));
-      fetchIssuesWithFilters();
+      await fetchIssuesWithFilters();
+      toast.success('Issue deleted successfully');
     } catch (err) {
-      setError(`Error deleting issue: ${err}`);
+      const errorMsg = err.response?.data?.message || err.message || 'Failed to delete issue';
+      toast.error(errorMsg);
+      setError(`Error deleting issue: ${errorMsg}`);
     }
     setDropdownOpenId(null);
   };
@@ -151,9 +158,12 @@ export default function IssuesList() {
   const handleCloseIssue = async id => {
     try {
       await axios.patch(ENDPOINTS.BM_ISSUE_UPDATE(id), { status: 'closed' });
-      fetchIssuesWithFilters();
+      await fetchIssuesWithFilters();
+      toast.success('Issue closed successfully');
     } catch (err) {
-      setError(`Error closing issue: ${err}`);
+      const errorMsg = err.response?.data?.message || err.message || 'Failed to close issue';
+      toast.error(errorMsg);
+      setError(`Error closing issue: ${errorMsg}`);
     }
     setDropdownOpenId(null);
   };
