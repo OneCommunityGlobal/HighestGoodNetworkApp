@@ -1,5 +1,7 @@
 /* public/index.css */
-
+#root {
+  background-color: #ffffff;
+}
 /* Global Dark Mode Styles */
 body.dark-mode,
 body.bm-dashboard-dark {

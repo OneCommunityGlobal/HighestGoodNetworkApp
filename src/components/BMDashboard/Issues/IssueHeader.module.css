@@ -1,22 +1,22 @@
-.issue-header-container {
+.issueHeaderContainer {
   display: flex;
   flex-direction: column;
   width: 100%;
   background-color: white;
 }
-.issue-header-container-dark{
-  display:flex;
+.issueHeaderContainerDark {
+  display: flex;
   flex-direction: column;
   width: 100%;
-  background-color: #3D444D;
+  background-color: #3d444d;
 }
 
-.top-row {
+.topRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 12px;
-  border-bottom: 1px solid #E0E0E0;
+  border-bottom: 1px solid #e0e0e0;
   padding: 14px 20px;
 }
 /* .top-row-dark{
@@ -30,35 +30,33 @@
 
 } */
 
-.title-section {
+.titleSection {
   display: flex;
   align-items: center;
-  color: #1C1E1C;
-   font-size: 36px;
+  color: #1c1e1c;
+  font-size: 36px;
   font-weight: 600;
 }
-.title-section-dark {
+.titleSectionDark {
   display: flex;
   align-items: center;
   color: #ffffff;
-    font-size: 36px;
+  font-size: 36px;
   font-weight: 600;
   margin: 0;
 }
 
 .section {
- font-size: 36px;
+  font-size: 36px;
   font-weight: 600;
   margin: 0;
-  color:#000000
-
+  color: #000000;
 }
-.section-dark {
- font-size: 36px;
+.sectionDark {
+  font-size: 36px;
   font-weight: 600;
   margin: 0;
-  color:#E0E0E0
-
+  color: #e0e0e0;
 }
 /* .title-section h1 {
   font-size: 36px;
@@ -67,14 +65,14 @@
  
 } */
 
-.action-section {
+.actionSection {
   display: flex;
   align-items: center;
   gap: 12px;
   margin-right: 50px;
 }
 
-.more-button {
+.moreButton {
   background: none;
   border: none;
   cursor: pointer;
@@ -82,11 +80,11 @@
   padding: 6px;
   display: flex;
   align-items: center;
-  background-color: #EEEEEE;
+  background-color: #eeeeee;
   border-radius: 8px;
 }
 
-.back-button {
+.backButton {
   background-color: #000;
   color: white;
   border: none;
@@ -102,7 +100,7 @@
   display: flex;
   align-items: center;
   cursor: pointer;
-  gap: 10px
+  gap: 10px;
 }
 
 .avatar img {
@@ -111,22 +109,22 @@
   object-fit: cover;
 }
 
-.bottom-row {
+.bottomRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 14px 20px;
 }
 
-.project-tab {
+.projectTab {
   display: inline-flex;
-  background-color: #F3F4F6;  
-  border-radius: 8px;    
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  background-color: #f3f4f6;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   padding: 6px;
 }
 
-.project-tab .tab-item {
+.projectTab .tabItem {
   border: none;
   background: transparent;
   padding: 6px 12px;
@@ -137,18 +135,18 @@
   border-radius: 4px;
 }
 
-.project-tab .tab-item.active {
-  background-color: #FFFFFF; 
+.projectTab .tabItem.active {
+  background-color: #ffffff;
 }
 
-.project-tab .tab-item:not(.active):hover {
-  background-color: #E5E7EB; 
+.projectTab .tabItem:not(.active):hover {
+  background-color: #e5e7eb;
 }
-.search-container {
+.searchContainer {
   position: relative;
 }
 
-.search-icon {
+.searchIcon {
   position: absolute;
   left: 10px;
   top: 50%;
@@ -158,23 +156,23 @@
   align-items: center;
 }
 
-.search-input {
+.searchInput {
   padding: 8px 16px 8px 35px;
-  border: 1px solid #E0E0E0;
+  border: 1px solid #e0e0e0;
   border-radius: 8px;
   font-size: 16px;
   width: 405px;
-  background-color: #FFFFFF;
-  color:#828282;
+  background-color: #ffffff;
+  color: #828282;
 }
 
-.search-input:focus {
+.searchInput:focus {
   outline: none;
   border-color: #b9b9b9;
 }
 
 /* Search results styles - beautiful dropdown */
-.search-results {
+.searchResults {
   position: absolute;
   top: 100%;
   left: 0;
@@ -190,16 +188,22 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-5px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.search-results-list {
+.searchResultsList {
   max-height: 300px;
   overflow-y: auto;
 }
 
-.search-result-item {
+.searchResultItem {
   padding: 12px 16px;
   border-bottom: 1px solid #f0f0f0;
   cursor: pointer;
@@ -208,27 +212,27 @@
   flex-direction: column;
 }
 
-.search-result-item:last-child {
+.searchResultItem:last-child {
   border-bottom: none;
 }
 
-.search-result-item:hover {
+.searchResultItem:hover {
   background-color: #f0f7ff;
 }
 
-.result-name {
+.resultName {
   font-size: 14px;
   font-weight: 500;
   color: #333333;
   margin-bottom: 2px;
 }
 
-.result-category {
+.resultCategory {
   font-size: 12px;
   color: #757575;
 }
 
-.search-no-results {
+.searchNoResults {
   padding: 16px;
   text-align: center;
   color: #757575;
