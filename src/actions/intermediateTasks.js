@@ -23,7 +23,6 @@ export const fetchIntermediateTasks = (taskId) => {
       const response = await httpService.get(ENDPOINTS.INTERMEDIATE_TASKS_BY_PARENT(taskId));
       return response.data;
     } catch (error) {
-      console.error('Error fetching intermediate tasks:', error);
       toast.error('Failed to fetch sub-tasks');
       throw error;
     }
@@ -61,9 +60,7 @@ const updateParentTaskExpectedHours = async (dispatch, getState, parentTaskId) =
         suggested_total_hours: totalExpectedHours
       }));
     }
-  } catch (error) {
-    console.error('Error updating parent task expected hours:', error);
-  }
+  } 
 };
 
 /**
@@ -82,7 +79,6 @@ export const createIntermediateTask = (taskData) => {
 
       return response.data;
     } catch (error) {
-      console.error('Error creating intermediate task:', error);
       const errorMessage = error.response?.data?.error || error.message || 'Failed to create sub-task';
       toast.error(`Error: ${errorMessage}`);
       throw error;
@@ -106,7 +102,6 @@ export const updateIntermediateTask = (id, taskData) => {
 
       return response.data;
     } catch (error) {
-      console.error('Error updating intermediate task:', error);
       const errorMessage = error.response?.data?.error || error.message || 'Failed to update sub-task';
       toast.error(`Error: ${errorMessage}`);
       throw error;
@@ -130,7 +125,6 @@ export const deleteIntermediateTask = (id, parentTaskId = null) => {
 
       return true;
     } catch (error) {
-      console.error('Error deleting intermediate task:', error);
       const errorMessage = error.response?.data?.error || error.message || 'Failed to delete sub-task';
       toast.error(`Error: ${errorMessage}`);
       throw error;
@@ -155,7 +149,6 @@ export const markIntermediateTaskAsDone = (id, parentTaskId) => {
       toast.success('Sub-task marked as done');
       return response.data;
     } catch (error) {
-      console.error('Error marking intermediate task as done:', error);
       const errorMessage = error.response?.data?.error || error.message || 'Failed to mark sub-task as done';
       toast.error(`Error: ${errorMessage}`);
       throw error;
