@@ -11,7 +11,6 @@ import EquipmentListModal from './EquipmentListModal';
 import styles from './Equipments.module.css';
 
 function EquipmentsTable({ equipment, project }) {
-  // Data fetched in the parent component : EquipmentsView
   const dispatch = useDispatch();
 
   const equipments = useSelector(state => state.bmEquipments.equipmentslist);
@@ -116,8 +115,8 @@ function EquipmentsTable({ equipment, project }) {
   };
 
   const handleOpenModal = (row, type) => {
-    setSelectedRow(row); // current row data
-    setRecordType(type); // UpdatesEdit/UpdatesView/PurchasesEdit/PurchasesView
+    setSelectedRow(row);
+    setRecordType(type);
     setModal(true);
   };
 
@@ -129,6 +128,7 @@ function EquipmentsTable({ equipment, project }) {
       setEquipmentsViewData([...equipments]);
     }
   }, [project]);
+
   useEffect(() => {
     let _equipments;
     if (project.value === '0' && equipment.value === '0') {
@@ -149,33 +149,27 @@ function EquipmentsTable({ equipment, project }) {
 
   return (
     <div>
-      <div>
-        <EquipmentListModal
-          modal={modal}
-          setModal={setModal}
-          recordType={recordType}
-          record={selectedRow}
-        />
-        <Table responsive>
-          <thead className={`${styles.BuildingTableHeaderLine}`}>
+      <EquipmentListModal
+        modal={modal}
+        setModal={setModal}
+        recordType={recordType}
+        record={selectedRow}
+      />
+      <div className={styles.tableWrapper}>
+        <Table responsive hover>
+          <thead className={styles.BuildingTableHeaderLine}>
             <tr>
               <th onClick={() => handleSort('project')}>
-                <div
-                  data-tip={`Sort project ${sortOrder.project}`}
-                  className={`d-flex align-self-stretch ${styles.cusorpointer}`}
-                >
+                <div data-tip={`Sort project ${sortOrder.project}`} className={styles.cusorpointer}>
                   <div>Project</div>
-                  <FontAwesomeIcon icon={iconToDisplay.project} size="lg" />
+                  <FontAwesomeIcon icon={iconToDisplay.project} size="sm" />
                 </div>
                 <ReactTooltip />
               </th>
               <th onClick={() => handleSort('itemType')}>
-                <div
-                  data-tip={`Sort name ${sortOrder.itemType}`}
-                  className={`d-flex align-items-stretch ${styles.cusorpointer}`}
-                >
+                <div data-tip={`Sort name ${sortOrder.itemType}`} className={styles.cusorpointer}>
                   <div>Name</div>
-                  <FontAwesomeIcon icon={iconToDisplay.itemType} size="lg" />
+                  <FontAwesomeIcon icon={iconToDisplay.itemType} size="sm" />
                 </div>
                 <ReactTooltip />
               </th>
@@ -184,20 +178,20 @@ function EquipmentsTable({ equipment, project }) {
               <th onClick={() => handleSort('rentedOn')}>
                 <div
                   data-tip={`Sort Rented On ${sortOrder.rentedOn}`}
-                  className={`d-flex align-items-stretch ${styles.cusorpointer}`}
+                  className={styles.cusorpointer}
                 >
                   <div>Rented On</div>
-                  <FontAwesomeIcon icon={iconToDisplay.rentedOn} size="lg" />
+                  <FontAwesomeIcon icon={iconToDisplay.rentedOn} size="sm" />
                 </div>
                 <ReactTooltip />
               </th>
               <th onClick={() => handleSort('rentedDue')}>
                 <div
                   data-tip={`Sort Rental Due ${sortOrder.rentedDue}`}
-                  className={`d-flex align-items-stretch ${styles.cusorpointer}`}
+                  className={styles.cusorpointer}
                 >
                   <div>Rental Due</div>
-                  <FontAwesomeIcon icon={iconToDisplay.rentedDue} size="lg" />
+                  <FontAwesomeIcon icon={iconToDisplay.rentedDue} size="sm" />
                 </div>
                 <ReactTooltip />
               </th>
@@ -229,7 +223,7 @@ function EquipmentsTable({ equipment, project }) {
                       <button
                         type="button"
                         onClick={() => handleOpenModal(rec, 'UpdatesEdit')}
-                        aria-label="button"
+                        aria-label="Edit updates"
                       >
                         <BiPencil />
                       </button>
@@ -257,7 +251,7 @@ function EquipmentsTable({ equipment, project }) {
               })
             ) : (
               <tr>
-                <td colSpan={11} style={{ textAlign: 'center' }}>
+                <td colSpan={8} style={{ textAlign: 'center' }}>
                   No equipments data available
                 </td>
               </tr>

@@ -3,6 +3,7 @@ import React from 'react';
 import { render, fireEvent, screen } from '@testing-library/react';
 import { vi } from 'vitest';
 import { Checkbox } from '../Checkbox';
+import styles from '../Checkbox.module.css';
 
 describe('Checkbox Component', () => {
   test('renders correctly with label', () => {
@@ -31,6 +32,7 @@ describe('Checkbox Component', () => {
     render(<Checkbox label="Test Label" id="test-checkbox" wrapperClassname={wrapperClassName} />);
 
     const wrapper = screen.getByTestId('checkbox-wrapper');
-    expect(wrapper).toHaveClass('checkbox-wrapper', wrapperClassName);
+    expect(wrapper).toHaveClass(styles.checkboxWrapper);
+    expect(wrapper).toHaveClass(wrapperClassName);
   });
 });

@@ -9,7 +9,7 @@ import initAuth from '../utils/authInit';
 import routes from '../routes';
 import logger from '../services/logService';
 import Loading from './common/Loading';
-import '../App.css';
+import '../App.module.css';
 import { initMessagingSocket } from '../utils/messagingSocket';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import ThemeManager from './common/ThemeManager';
@@ -109,6 +109,8 @@ function UpdateDocumentTitle() {
     { pattern: /^\/Logout$/, title: 'Logout' },
     { pattern: /^\/forcePasswordUpdate\/[^/]+$/, title: 'Force Password Update' },
     { pattern: /^\/$/, title: `Dashboard - ${fullName}` },
+    { pattern: /^\/kitchenandinventory\/login$/, title: 'Kitchen and Inventory Login' },
+    { pattern: /^\/kitchenandinventory$/, title: 'Kitchen and Inventory Dashboard' },
     { pattern: /.*/, title: 'HGN APP' }, // Default case
     {
       pattern: /^\/communityportal\/activity\/activityid\/feedback$/,

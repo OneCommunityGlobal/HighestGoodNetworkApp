@@ -3,7 +3,7 @@ import { render, fireEvent, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import ActiveCell from '../ActiveCell'; // Adjust the import path as necessary.
 import userEvent from '@testing-library/user-event';
-import styles from '~/components/Timelog/Timelog.module.css'
+import styles from '../../Timelog/Timelog.module.css'
 
 describe('ActiveCell', () => {
   it('renders with the correct active class', () => {

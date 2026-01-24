@@ -4,6 +4,7 @@ const APIEndpoint =
 export const ENDPOINTS = {
   APIEndpoint: () => APIEndpoint,
   USER_PROFILE: userId => `${APIEndpoint}/userprofile/${userId}`,
+  USER_PROFILE_FIXED: userId => `${APIEndpoint}/userProfile/${userId}`,
   USER_PROFILE_PROPERTY: userId => `${APIEndpoint}/userprofile/${userId}/property`,
   USER_PROFILES: `${APIEndpoint}/userprofile/`,
   UPDATE_USER_FINAL_DAY: userId => `${APIEndpoint}/userprofile/${userId}/updateFinalDay`,
@@ -20,6 +21,7 @@ export const ENDPOINTS = {
   MODIFY_BLUE_SQUARE: (userId, blueSquareId) =>
     `${APIEndpoint}/userprofile/${userId}/infringements/${blueSquareId}`,
 
+
   // Blue Square Email Triggers
   BLUE_SQUARE_RESEND_INFRINGEMENT_EMAILS: () => `${APIEndpoint}/blueSquare/resend-infringement-emails-only`,
   BLUE_SQUARE_RESEND_WEEKLY_SUMMARY_EMAILS: () => `${APIEndpoint}/blueSquare/resend-weekly-summary-emails`,
@@ -30,7 +32,7 @@ export const ENDPOINTS = {
 
   USERS_REMOVE_PROFILE_IMAGE: `${APIEndpoint}/userProfile/profileImage/remove`,
   USERS_UPDATE_PROFILE_FROM_WEBSITE: `${APIEndpoint}/userProfile/profileImage/imagefromwebsite`,
-  USER_PROFILE_BASIC_INFO:source=> `${APIEndpoint}/userProfile/basicInfo/${source}`,
+  USER_PROFILE_BASIC_INFO: source => `${APIEndpoint}/userProfile/basicInfo/${source}`,
   USER_AUTOCOMPLETE: searchText => `${APIEndpoint}/userProfile/autocomplete/${searchText}`,
   SEARCH_USER: `${APIEndpoint}/users/search`,
   TOGGLE_BIO_STATUS: userId => `${APIEndpoint}/userProfile/${userId}/toggleBio`,
@@ -170,8 +172,8 @@ export const ENDPOINTS = {
   },
   POPULARITY_ROLES: `${APIEndpoint}/popularity/roles`,
 
-ENHANCED_POPULARITY: (range, roles, start, end, includeLowVolume) => {
-    let url = `${APIEndpoint}/api/popularity-enhanced/timeline?`;
+  ENHANCED_POPULARITY: (range, roles, start, end, includeLowVolume) => {
+    let url = `${APIEndpoint}/popularity-enhanced/timeline?`;
     if (range) url += `range=${range}&`;
     if (roles && roles.length > 0) {
       url += `roles=${encodeURIComponent(roles.join(','))}&`;
@@ -181,9 +183,9 @@ ENHANCED_POPULARITY: (range, roles, start, end, includeLowVolume) => {
     if (includeLowVolume !== undefined) url += `includeLowVolume=${includeLowVolume}&`;
     return url.slice(0, -1);
   },
-  ENHANCED_POPULARITY_ROLES: `${APIEndpoint}/api/popularity-enhanced/roles-enhanced`,
-  ENHANCED_POPULARITY_PAIRS: (roles) => 
-    `${APIEndpoint}/api/popularity-enhanced/role-pairs?roles=${encodeURIComponent(roles.join(','))}`,
+  ENHANCED_POPULARITY_ROLES: `${APIEndpoint}/popularity-enhanced/roles-enhanced`,
+  ENHANCED_POPULARITY_PAIRS: (roles) =>
+    `${APIEndpoint}/popularity-enhanced/role-pairs?roles=${encodeURIComponent(roles.join(','))}`,
 
   // titles endpoints
   TITLES: () => `${APIEndpoint}/title`,
@@ -311,6 +313,7 @@ ENHANCED_POPULARITY: (range, roles, start, end, includeLowVolume) => {
   BM_UPDATE_MATERIAL: `${APIEndpoint}/bm/updateMaterialRecord`,
   BM_UPDATE_MATERIAL_BULK: `${APIEndpoint}/bm/updateMaterialRecordBulk`,
   BM_UPDATE_MATERIAL_STATUS: `${APIEndpoint}/bm/updateMaterialStatus`,
+  BM_MATERIAL_STOCK_OUT_RISK: `${APIEndpoint}/bm/materials/stock-out-risk`,
   BM_UPDATE_REUSABLE: `${APIEndpoint}/bm/updateReusableRecord`,
   BM_UPDATE_REUSABLE_BULK: `${APIEndpoint}/bm/updateReusableRecordBulk`,
   BM_TOOL_TYPES: `${APIEndpoint}/bm/invtypes/tools`,
@@ -359,6 +362,8 @@ ENHANCED_POPULARITY: (range, roles, start, end, includeLowVolume) => {
   ORG_DETAILS: (projectId) => `${APIEndpoint}/bm/orgLocation/${projectId}`,
   BM_PROJECT_MEMBERS: projectId => `${APIEndpoint}/bm/project/${projectId}/users`,
 
+  PROJECT_GLOBAL_DISTRIBUTION: `${APIEndpoint}/projectglobaldistribution`,
+
   // bm time logger endpoints
   TIME_LOGGER_START: (projectId, memberId) =>
     `${APIEndpoint}/bm/timelogger/${projectId}/${memberId}/start`,
@@ -387,8 +392,8 @@ ENHANCED_POPULARITY: (range, roles, start, end, includeLowVolume) => {
   HGN_FORM_UPDATE_QUESTION: id => `${APIEndpoint}/questions/${id}`,
   HGN_FORM_SUBMIT: `${APIEndpoint}/hgnform`,
   HGN_FORM_UPDATE_USER_SKILLS_FOLLOWUP_SUBMIT: `${APIEndpoint}/skills/profile/updateFollowUp/`,
-
-  HGN_FORM_GET_TEAM_MEMBERS_BY_SKILL: skill => `${APIEndpoint}/userProfile/skills/${skill}`,
+  // HGN Skills Dashboard
+  SKILLS_PROFILE: userId => `${APIEndpoint}/skills/profile/${userId}`,
 
   CREATE_JOB_FORM: `${APIEndpoint}/jobforms`,
   UPDATE_JOB_FORM: `${APIEndpoint}/jobforms`,
@@ -425,6 +430,7 @@ ENHANCED_POPULARITY: (range, roles, start, end, includeLowVolume) => {
   EVENTS: `${APIEndpoint}/events`,
   EVENT_TYPES: `${APIEndpoint}/events/types`,
   EVENT_LOCATIONS: `${APIEndpoint}/events/locations`,
+  EVENT_ATTENDANCE_STATS: `${APIEndpoint}/events/attendance/stats`,
   LB_SEND_MESSAGE: `${APIEndpoint}/lb/messages`,
   LB_READ_MESSAGE: `${APIEndpoint}/lb/messages/conversation`,
   LB_UPDATE_MESSAGE_STATUS: `${APIEndpoint}/lb/messages/statuses`,
@@ -509,11 +515,24 @@ ENHANCED_POPULARITY: (range, roles, start, end, includeLowVolume) => {
   //pull requests analysis
   PR_REVIEWS_INSIGHTS: `${APIEndpoint}/analytics/pr-review-insights`,
 
+  // Education Portal endpoints
+  EDUCATOR_ASSIGN_ATOMS: () => `${APIEndpoint}/educator/assign-atoms`,
+
   LESSON_PLANS: `${APIEndpoint}/education/lesson-plans`,
   SAVE_INTEREST: `${APIEndpoint}/education/student/saved-interests`,
   GET_SAVED: `${APIEndpoint}/education/student/saved-interests`,
   REMOVE_INTEREST: `${APIEndpoint}/education/student/saved-interests`,
   CHECK_IF_SAVED: `${APIEndpoint}/education/student/saved-interests/check`,
+  EDUCATOR_REPORT_EXPORT: (type, format, params = {}) => {
+    const { studentId, classId, startDate, endDate } = params;
+    let url = `${APIEndpoint}/educator/reports/export?type=${type}&format=${format}`;
+    if (studentId) url += `&studentId=${studentId}`;
+    if (classId) url += `&classId=${classId}`;
+    if (startDate) url += `&startDate=${encodeURIComponent(startDate)}`;
+    if (endDate) url += `&endDate=${encodeURIComponent(endDate)}`;
+    return url;
+  },
+
 };
 
 export const ApiEndpoint = APIEndpoint;
