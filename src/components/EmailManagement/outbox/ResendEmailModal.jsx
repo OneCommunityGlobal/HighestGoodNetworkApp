@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { toast } from 'react-toastify';
 import {
   Modal,
   ModalHeader,
@@ -23,7 +24,6 @@ const ResendEmailModal = ({ isOpen, toggle, email, onResend }) => {
     setIsSubmitting(true);
 
     try {
-      // FIXED: Issue 6 - Pass data as an object with correct structure
       const resendData = {
         recipientOption: recipientOption,
         recipients:
@@ -35,16 +35,32 @@ const ResendEmailModal = ({ isOpen, toggle, email, onResend }) => {
             : undefined,
       };
 
-      await onResend(resendData);
+      // ISSUE 11 FIX: Don't wait for completion - call onResend but don't await it fully
+      // Just trigger the resend and close immediately
+      const resendPromise = onResend(resendData);
 
-      // Reset form after successful resend
+      // Close modal immediately after initiating resend
       setRecipientOption('same');
       setSpecificRecipients('');
-      toggle();
-    } catch (error) {
-      console.error('Error resending email:', error);
-    } finally {
       setIsSubmitting(false);
+      toggle();
+
+      // Show feedback that email is being processed
+      toast.info('Email created for resend successfully! Processing will start shortly.', {
+        autoClose: 3000,
+      });
+
+      // Handle the promise in the background (don't block UI)
+      resendPromise.catch(error => {
+        // Error handling is already done in parent component
+        // eslint-disable-next-line no-console
+        console.error('Resend error:', error);
+      });
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Error initiating resend:', error);
+      setIsSubmitting(false);
+      toast.error('Failed to initiate resend. Please try again.');
     }
   };
 
