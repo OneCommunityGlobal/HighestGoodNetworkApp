@@ -775,7 +775,7 @@ const TruthSocialAutoPoster = () => {
                         key={opt.id}
                         htmlFor={`crosspost-${opt.id}`}
                         className={styles.crossPostOption}
-                        >
+                      >
                         
                         <input
                           id={`crosspost-${opt.id}`}
