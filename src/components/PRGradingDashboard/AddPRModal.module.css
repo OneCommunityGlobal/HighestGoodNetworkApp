@@ -299,11 +299,11 @@
 }
 
 :global(.dark-mode) .errorMessage {
-  color: #f87171;
+  color: #f87171 !important;
 }
 
 :global(.dark-mode) .successMessage {
-  color: #4ade80;
+  color: #4ade80 !important;
 }
 
 :global(.dark-mode) .buttonPrimary:disabled {
