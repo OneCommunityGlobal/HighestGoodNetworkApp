@@ -229,40 +229,29 @@ export function CPDashboard() {
               <div className={styles.filterItem}>
                 <label htmlFor="date-tomorrow"> Dates</label>
                 <div className={styles.radioRow}>
-                  <FormGroup check className={styles.radioGroup + ' d-flex align-items-center'}>
-                    <Input
-                      id="date-tomorrow"
-                      type="radio"
-                      name="dates"
-                      checked={dateFilter === 'tomorrow'}
-                      onChange={() => setDateFilter('tomorrow')}
-                      className={styles.radioInput}
-                    />
-                    <Label
-                      htmlFor="date-tomorrow"
-                      check
-                      className={styles.radioLabel + ' ms-2 mb-0'}
-                    >
+                  <div className={styles.radioColumn}>
+                    <label className={styles.radioLabel}>
+                      <input
+                        type="radio"
+                        name="dates"
+                        checked={dateFilter === 'tomorrow'}
+                        onChange={() => setDateFilter('tomorrow')}
+                        className={styles.radioInput}
+                      />
                       Tomorrow
-                    </Label>
-                  </FormGroup>
-                  <FormGroup check className={styles.radioGroup + ' d-flex align-items-center'}>
-                    <Input
-                      id="date-weekend"
-                      type="radio"
-                      name="dates"
-                      checked={dateFilter === 'weekend'}
-                      onChange={() => setDateFilter('weekend')}
-                      className={styles.radioInput}
-                    />
-                    <Label
-                      htmlFor="date-weekend"
-                      check
-                      className={styles.radioLabel + ' ms-2 mb-0'}
-                    >
+                    </label>
+
+                    <label className={styles.radioLabel}>
+                      <input
+                        type="radio"
+                        name="dates"
+                        checked={dateFilter === 'weekend'}
+                        onChange={() => setDateFilter('weekend')}
+                        className={styles.radioInput}
+                      />
                       This Weekend
-                    </Label>
-                  </FormGroup>
+                    </label>
+                  </div>
                 </div>
                 <div className={styles.dashboardActions}>
                   <Button color="primary" onClick={() => setDateFilter('')}>
@@ -273,19 +262,18 @@ export function CPDashboard() {
               </div>
 
               <div className={styles.filterItem}>
-                <label htmlFor="online-only">Online</label>
-                <div>
-                  <Input
+                <label className={styles.checkboxLabel}>
+                  <input
                     type="checkbox"
-                    id="online-only"
                     checked={onlineOnly}
                     onChange={e => {
                       setOnlineOnly(e.target.checked);
                       setPagination(prev => ({ ...prev, currentPage: 1 }));
                     }}
-                  />{' '}
+                    className={styles.checkboxInput}
+                  />
                   Online Only
-                </div>
+                </label>
               </div>
 
               <div className={styles.filterItem}>
