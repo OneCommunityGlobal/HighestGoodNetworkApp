@@ -39,14 +39,15 @@ export default function IssuesList() {
   // Fetch open issues with applied filters
   const fetchIssuesWithFilters = async () => {
     try {
-      const formattedStart = startDate ? new Date(startDate).toISOString() : null;
-      const formattedEnd = endDate ? new Date(endDate).toISOString() : null;
+      // Format dates as YYYY-MM-DD (no timestamp) for backend compatibility
+      const formattedStart = startDate ? startDate.toISOString().split('T')[0] : null;
+      const formattedEnd = endDate ? endDate.toISOString().split('T')[0] : null;
       const projectIds = selectedProjects.length > 0 ? selectedProjects.join(',') : null;
       const url = ENDPOINTS.BM_GET_OPEN_ISSUES(projectIds, formattedStart, formattedEnd, tagFilter);
       const response = await axios.get(url);
       setOpenIssues(response.data);
     } catch (err) {
-      setError(`Error fetching open issues with filters: ${err}`);
+      setError(`Error fetching open issues: ${err.message || err}`);
     }
   };
 
