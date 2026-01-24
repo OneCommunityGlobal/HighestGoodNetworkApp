@@ -13,6 +13,15 @@
   font-size: large;
   font-weight: bold;
   margin-bottom: 8px;
+  color: #2563eb;
+}
+
+/* Keep title blue in dark mode */
+:global(.dark) .title,
+:global(.dark-mode) .title,
+:global(.bm-dashboard-dark) .title,
+:global([data-theme='dark']) .title {
+  color: #2563eb !important;
 }
 
 .filters {

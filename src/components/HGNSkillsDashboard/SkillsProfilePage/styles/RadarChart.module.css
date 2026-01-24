@@ -1,16 +1,214 @@
 .radarChart {
   flex: 1;
   display: flex;
+  flex-direction: column;
   justify-content: center;
+  align-items: center;
+  padding: 20px;
+  background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(62, 160, 203, 0.1);
+  min-height: 500px;
+  position: relative;
 }
 
-.radarChart canvas {
-  max-width: 500px;
-  max-height: 500px;
+.radarChart.compact {
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+  border: none;
+  min-height: auto;
+  align-items: stretch;
 }
 
+.chartTitle {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.chartTitle h4 {
+  color: #3ea0cb;
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.chartTitle p {
+  color: #666;
+  font-size: 14px;
+  margin: 0;
+  font-style: italic;
+}
+
+.chartContainer {
+  width: 100%;
+  max-width: clamp(300px, 42vw, 520px); /* reduced overall footprint */
+  aspect-ratio: 1 / 1;
+  height: auto;
+  position: relative;
+  margin: 0 auto;
+  transition: max-width 0.25s ease;
+}
+
+.chartContainer canvas {
+  width: 100% !important;
+  height: 100% !important;
+  filter: drop-shadow(0 2px 8px rgba(62, 160, 203, 0.15));
+}
+
+.chartLegend {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #555;
+  font-weight: 500;
+}
+
+.legendColor {
+  width: 18px;
+  height: 18px;
+  background: linear-gradient(135deg, rgba(62, 160, 203, 0.8) 0%, rgba(62, 160, 203, 0.6) 100%);
+  border: 2px solid rgba(62, 160, 203, 1);
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Loading state */
+.radarChart.loading {
+  justify-content: center;
+  align-items: center;
+}
+
+.loadingSpinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(62, 160, 203, 0.2);
+  border-left: 4px solid #3ea0cb;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Error state */
+.errorState {
+  text-align: center;
+  color: #dc3545;
+  padding: 40px 20px;
+}
+
+.errorState h4 {
+  color: #dc3545;
+  margin-bottom: 10px;
+}
+
+.errorState p {
+  color: #666;
+  font-size: 14px;
+}
+
+/* Responsive breakpoints */
 @media (max-width: 768px) {
   .radarChart {
-    margin-top: 0px;
+    padding: 15px;
+    min-height: 450px;
   }
+
+  .chartTitle h4 {
+    font-size: 20px;
+  }
+
+  .chartTitle p {
+    font-size: 13px;
+  }
+
+  .chartContainer {
+    max-width: clamp(280px, 58vw, 500px);
+  }
+
+  .legendItem {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .radarChart {
+    padding: 10px;
+    min-height: 400px;
+  }
+
+  .chartTitle h4 {
+    font-size: 18px;
+  }
+
+  .chartTitle p {
+    font-size: 12px;
+  }
+
+  .chartContainer {
+    max-width: clamp(240px, 78vw, 420px);
+  }
+
+  .chartLegend {
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 15px;
+  }
+
+  .legendItem {
+    font-size: 12px;
+  }
+
+  .legendColor {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+/* High DPI displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .chartContainer canvas {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+}
+
+/* Dark theme support (optional) */
+@media (prefers-color-scheme: dark) {
+  .radarChart {
+    background: linear-gradient(145deg, #2d3748 0%, #1a202c 100%);
+    border-color: rgba(62, 160, 203, 0.3);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  }
+
+  .chartTitle h4 {
+    color: #63b3ed;
+  }
+
+  .chartTitle p {
+    color: #a0aec0;
+  }
+
+  .legendItem {
+    color: #e2e8f0;
+  }
+}
+
+:global(.dark-mode) .radarChart canvas {
+  filter: invert(1) hue-rotate(180deg);
 }

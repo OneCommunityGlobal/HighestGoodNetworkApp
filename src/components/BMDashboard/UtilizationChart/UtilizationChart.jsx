@@ -8,6 +8,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import axios from 'axios';
 import styles from './UtilizationChart.module.css';
 import { useSelector } from 'react-redux';
+import { ENDPOINTS } from '../../../utils/URL';
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Title);
 
@@ -18,6 +19,8 @@ function UtilizationChart() {
   const [toolFilter, setToolFilter] = useState('ALL');
   const [projectFilter, setProjectFilter] = useState('ALL');
   const [error, setError] = useState(null);
+  const [toolTypes, setToolTypes] = useState([]);
+  const [projects, setProjects] = useState([]);
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const fetchChartData = async () => {
@@ -39,7 +42,29 @@ function UtilizationChart() {
     }
   };
 
+  const fetchFilterData = async () => {
+    try {
+      const [toolTypesResponse, projectsResponse] = await Promise.all([
+        axios.get(ENDPOINTS.BM_TOOL_TYPES, {
+          headers: {
+            Authorization: localStorage.getItem('token'),
+          },
+        }),
+        axios.get(ENDPOINTS.BM_PROJECTS + 'Names', {
+          headers: {
+            Authorization: localStorage.getItem('token'),
+          },
+        }),
+      ]);
+      setToolTypes(toolTypesResponse.data);
+      setProjects(projectsResponse.data);
+    } catch (err) {
+      setError('Failed to load filter options. Please try refreshing the page.');
+    }
+  };
+
   useEffect(() => {
+    fetchFilterData();
     fetchChartData();
   }, []);
 
@@ -111,8 +136,8 @@ function UtilizationChart() {
   };
 
   return (
-    <div className={styles.utilizationChartContainer + (darkMode ? ` bg-yinmn-blue` : '')}>
-      <h2 className={styles.chartTitle + (darkMode ? ' text-light' : '')}>Utilization Chart</h2>
+    <div className={`${styles.utilizationChartContainer} ${darkMode ? styles.darkMode : ''}`}>
+      <h2 className={styles.chartTitle}>Utilization Chart</h2>
 
       {error ? (
         <div className={styles.utilizationChartError}>{error}</div>
@@ -122,39 +147,44 @@ function UtilizationChart() {
             <select
               value={toolFilter}
               onChange={e => setToolFilter(e.target.value)}
-              className={styles.select + (darkMode ? ' bg-space-cadet text-light' : '')}
+              className={styles.select}
             >
               <option value="ALL">All Tools</option>
-              {/* other options */}
+              {toolTypes.map(toolType => (
+                <option key={toolType._id} value={toolType._id}>
+                  {toolType.name}
+                </option>
+              ))}
             </select>
 
             <select
               value={projectFilter}
               onChange={e => setProjectFilter(e.target.value)}
-              className={styles.select + (darkMode ? ' bg-space-cadet text-light' : '')}
+              className={styles.select}
             >
               <option value="ALL">All Projects</option>
-              {/* other options */}
+              {projects.map(project => (
+                <option key={project.projectId} value={project.projectId}>
+                  {project.projectName}
+                </option>
+              ))}
             </select>
 
             <DatePicker
               selected={startDate}
               onChange={date => setStartDate(date)}
               placeholderText="Start Date"
-              className={styles.datepickerWrapper + (darkMode ? ' bg-space-cadet text-light' : '')}
+              className={styles.datepickerWrapper}
             />
 
             <DatePicker
               selected={endDate}
               onChange={date => setEndDate(date)}
               placeholderText="End Date"
-              className={styles.datepickerWrapper + (darkMode ? ' bg-space-cadet text-light' : '')}
+              className={styles.datepickerWrapper}
             />
 
-            <button
-              onClick={handleApplyClick}
-              className={styles.button + (darkMode ? ' bg-azure text-light' : '')}
-            >
+            <button onClick={handleApplyClick} className={styles.button}>
               Apply
             </button>
           </div>
