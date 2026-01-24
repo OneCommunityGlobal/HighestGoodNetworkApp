@@ -1,7 +1,3 @@
-table thead th, table td {
-  vertical-align: middle !important;
-}
-
 .itemsListContainer {
   width: 100%;
   max-width: 1536px;
@@ -99,6 +95,43 @@ table thead th, table td {
   background-color: #3b82f6;
 }
 
+.bulkActionsContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px;
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  margin-bottom: 15px;
+}
+
+.bulkActionsButton {
+  background-color: #468ef9;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.bulkActionsButton:hover {
+  background-color: #3b82f6;
+}
+
+.selectedCount {
+  font-weight: bold;
+  color: #495057;
+}
+
+.selectedRow {
+  background-color: #e3f2fd !important;
+}
+
+.selectedRow:hover {
+  background-color: #bbdefb !important;
+}
+
 .darkMode {
   color: #e8edf4;
 }
@@ -155,6 +188,24 @@ table thead th, table td {
 
 .darkTable tbody tr:nth-child(even) {
   background-color: #23375b;
+}
+
+.darkBulkActions {
+  background-color: #2f4157;
+  border: 1px solid #3f5269;
+  color: #e8edf4;
+}
+
+.darkBulkActions .selectedCount {
+  color: #e8edf4;
+}
+
+.darkTable .selectedRow {
+  background-color: #3f5269 !important;
+}
+
+.darkTable .selectedRow:hover {
+  background-color: #4a5f7a !important;
 }
 
 .darkDatePickerInput {
