@@ -86,7 +86,7 @@ export default function IssuesList() {
           return {
             id: issue._id,
             name: issue.issueTitle[0],
-            tag: issue.tag || '',
+            tag: issue.tag || null, // Use null instead of empty string for cleaner logic
             openSince: diffDays,
             cost: issue.cost || 0,
             person: issue.person,
@@ -247,13 +247,17 @@ export default function IssuesList() {
                 )}
               </td>
               <td>
-                <Button
-                  variant="outline-primary"
-                  size="sm"
-                  onClick={() => setTagFilter(tagFilter === issue.tag ? null : issue.tag)}
-                >
-                  {issue.tag}
-                </Button>
+                {issue.tag ? (
+                  <Button
+                    variant="outline-primary"
+                    size="sm"
+                    onClick={() => setTagFilter(tagFilter === issue.tag ? null : issue.tag)}
+                  >
+                    {issue.tag}
+                  </Button>
+                ) : (
+                  <span className="text-muted">No tag</span>
+                )}
               </td>
               <td>{issue.openSince}</td>
               <td>{issue.cost}</td>
