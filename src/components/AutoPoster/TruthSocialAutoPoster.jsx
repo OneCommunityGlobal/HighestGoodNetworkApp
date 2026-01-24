@@ -294,7 +294,10 @@ const TruthSocialAutoPoster = () => {
     checkDarkMode();
     const observer = new MutationObserver(checkDarkMode);
     observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme'],
+    });
     return () => observer.disconnect();
   }, []);
 
@@ -588,9 +591,9 @@ const TruthSocialAutoPoster = () => {
 
   // Toggle cross-post
   const toggleCrossPost = id => {
-    setCrossPostPlatforms(prev =>
-      prev.includes(id) ? prev.filter(p => p !== id) : [...prev, id],
-    );
+    setCrossPostPlatforms(prev => (
+      prev.includes(id) ? prev.filter(p => p !== id) : [...prev, id]
+    ));
   };
 
   const darkModeClass = darkMode ? styles.darkMode : '';
@@ -771,7 +774,11 @@ const TruthSocialAutoPoster = () => {
                 {showCrossPost && (
                   <div className={styles.crossPostDropdown}>
                     {crossPostOptions.map(opt => (
-                      <label key={opt.id} htmlFor={`crosspost-${opt.id}`} className={styles.crossPostOption}>
+                      <label
+                        key={opt.id}
+                        htmlFor={`crosspost-${opt.id}`}
+                        className={styles.crossPostOption}
+                      >
                         <input
                           id={`crosspost-${opt.id}`}
                           type="checkbox"
