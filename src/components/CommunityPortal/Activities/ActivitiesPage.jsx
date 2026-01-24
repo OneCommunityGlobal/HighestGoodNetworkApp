@@ -2,24 +2,27 @@ import RegistrationForm from './RegistrationForm';
 import ResourceMonitoring from './ResourceMonitoring';
 import LatestRegistration from './LatestRegistration';
 import MyEvent from './MyEvent';
-import './styles.css';
-
+import styles from './Activitiesstyles.module.css';
+import { useSelector } from 'react-redux';
 function ActivitiesPage() {
+  const darkMode = useSelector(state => state.theme.darkMode);
   return (
-    <div className="activities-page">
-      <header className="header">
-        <h1>Event Registrations</h1>
-      </header>
+    <div className={`${darkMode ? styles.darkMode : ''}`}>
+      <div className={`${styles.activitiesPage}`}>
+        <header className={`${styles.header}`}>
+          <h1>Event Registrations</h1>
+        </header>
 
-      <ResourceMonitoring />
+        <ResourceMonitoring />
 
-      <div className="middle-section">
-        <RegistrationForm />
-      </div>
+        <div className={`${styles.middleSection}`}>
+          <RegistrationForm />
+        </div>
 
-      <div className="main-content">
-        <LatestRegistration />
-        <MyEvent />
+        <div className={`${styles.mainContent}`}>
+          <LatestRegistration />
+          <MyEvent />
+        </div>
       </div>
     </div>
   );

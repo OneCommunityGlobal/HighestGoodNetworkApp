@@ -1,0 +1,608 @@
+.activitiesPage {
+  padding: 24px;
+  font-family: 'Inter', Arial, sans-serif;
+  background-color: #f4f6f8;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.header h2,
+.resourceMonitoring h2,
+.latestRegistration h2,
+.myEvent h2 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.resourceMonitoring,
+.latestRegistration,
+.myEvent {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 20px 22px;
+  margin-bottom: 24px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+}
+
+.resourceGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.resourceCard {
+  background: linear-gradient(180deg, #fafafa, #ffffff);
+  border-radius: 14px;
+  padding: 18px;
+  text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.resourceCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 22px rgba(0, 0, 0, 0.08);
+}
+
+/* Title + Value */
+.resourceTitle {
+  text-align: left;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #6b7280;
+  margin-bottom: 6px;
+}
+
+.resourceValue {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.circleContainer {
+  position: relative;
+  width: 84px;
+  height: 84px;
+  margin: 14px auto;
+}
+
+.progressCircle {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.circleBg {
+  fill: none;
+  stroke: #e5e7eb;
+  stroke-width: 4;
+}
+
+.circleProgress {
+  fill: none;
+  stroke-width: 4;
+  stroke-linecap: round;
+  transition: stroke-dasharray 0.4s ease;
+}
+
+.circleLabel {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.resourceStats {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+}
+
+.resourceStats p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+.resourceStats .arrow {
+  font-size: 1rem;
+}
+
+.arrow.up {
+  color: #16a34a;
+}
+
+.arrow.down {
+  color: #dc2626;
+}
+
+.latestRegistration ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.latestRegistration li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.latestRegistration li:last-child {
+  border-bottom: none;
+}
+
+.registerinfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.registerinfo p {
+  margin: 0;
+  font-weight: 500;
+  color: #111827;
+}
+
+.time {
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.approveBtn,
+.createNewBtn,
+.applyFiltersBtn {
+  border: none;
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.approveBtn {
+  background-color: #2563eb;
+  color: white;
+}
+
+.createNewBtn {
+  background-color: #16a34a;
+  color: white;
+}
+
+.applyFiltersBtn {
+  background-color: #2563eb;
+  color: white;
+}
+
+.approveBtn:hover,
+.applyFiltersBtn:hover {
+  background-color: #1e40af;
+}
+
+.createNewBtn:hover {
+  background-color: #15803d;
+}
+
+.myEvent .eventControls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.myEventsTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.myEventsTable th {
+  background-color: #f9fafb;
+  font-weight: 600;
+  color: #374151;
+}
+
+.myEventsTable th,
+.myEventsTable td {
+  padding: 12px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.myEventsTable tr:hover {
+  background-color: #f9fafb;
+}
+
+.eventTime {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.dateBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.dateBox .day {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #f97316;
+}
+
+.dateBox .date {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.status,
+.resource {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 4px 10px;
+  min-width: 70px;
+
+  font-size: 0.7rem;
+  font-weight: 600;
+
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.status.active {
+  background-color: rgba(34, 197, 94, 0.15);
+  color: #15803d;
+}
+
+.status.closed {
+  background-color: rgba(99, 102, 241, 0.15);
+  color: #4338ca;
+}
+
+.status.cancelled {
+  background-color: rgba(239, 68, 68, 0.15);
+  color: #b91c1c;
+}
+.resource.pending {
+  background-color: rgba(234, 179, 8, 0.18);
+  color: #92400e;
+}
+
+.resource.completed {
+  background-color: rgba(34, 197, 94, 0.15);
+  color: #15803d;
+}
+
+.resource.cancelled {
+  background-color: rgba(239, 68, 68, 0.15);
+  color: #b91c1c;
+}
+
+.registrationForm {
+  background: white;
+  border-radius: 14px;
+  padding: 16px 18px;
+
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 16px;
+  margin-bottom: 24px;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.08);
+}
+
+.registrationForm h3 {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.formFields {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Inputs */
+.registrationForm input,
+.registrationForm select {
+  height: 36px;
+  padding: 0 10px;
+
+  font-size: 0.85rem;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+
+  background-color: #f9fafb;
+  color: #111827;
+}
+
+.registrationForm input:focus,
+.registrationForm select:focus {
+  outline: none;
+  border-color: #2563eb;
+  background-color: white;
+}
+
+.registrationForm input[type='date'] {
+  max-width: 180px;
+}
+.inlineRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.bottomRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.bottomRow input[type='date'] {
+  max-width: 180px;
+}
+
+.submitbtn {
+  height: 36px;
+  padding: 0 22px;
+
+  font-size: 0.8rem;
+  font-weight: 600;
+
+  border-radius: 12px;
+  border: none;
+
+  background-color: #2563eb;
+  color: white;
+
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.submitbtn:hover {
+  background-color: #1e40af;
+}
+
+.viewToggle button {
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  border: 1px solid #e5e7eb;
+  cursor: pointer;
+}
+
+.activeView {
+  background-color: #111827;
+  color: white;
+}
+
+.inactiveView {
+  background-color: #f3f4f6;
+  color: #6b7280;
+}
+
+.filterControls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.filterControls select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  height: 34px;
+  padding: 0 34px 0 12px;
+
+  font-size: 0.8rem;
+  font-weight: 500;
+
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+
+  background-color: #f9fafb;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%236b7280'%3E%3Cpath fill-rule='evenodd' d='M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z' clip-rule='evenodd'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 14px;
+
+  color: #111827;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.filterControls select:hover {
+  background-color: white;
+  border-color: #9ca3af;
+}
+
+.filterControls select:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+.darkMode .activitiesPage {
+  background-color: #0f172a;
+  color: #e5e7eb;
+}
+
+.darkMode .header h1,
+.darkMode .header h2,
+.darkMode .resourceMonitoring h2,
+.darkMode .latestRegistration h2,
+.darkMode .myEvent h2 {
+  color: #f9fafb;
+}
+
+.darkMode .resourceMonitoring,
+.darkMode .latestRegistration,
+.darkMode .myEvent,
+.darkMode .registrationForm {
+  background-color: #020617;
+  border: 1px solid #1e293b;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.02), 0 12px 28px rgba(0, 0, 0, 0.75);
+}
+
+.darkMode .resourceCard {
+  background: #020617;
+  border: 1px solid #1e293b;
+}
+
+.darkMode .resourceTitle {
+  color: #9ca3af;
+}
+
+.darkMode .resourceValue,
+.darkMode .circleLabel {
+  color: #f9fafb;
+}
+
+.darkMode .resourceStats p {
+  color: #9ca3af;
+}
+
+.darkMode .latestRegistration li {
+  border-bottom-color: #1e293b;
+}
+
+.darkMode .registerinfo p {
+  color: #f9fafb;
+}
+
+.darkMode .time {
+  color: #9ca3af;
+}
+
+.darkMode .myEventsTable th {
+  background-color: #020617;
+  color: #e5e7eb;
+}
+
+.darkMode .myEventsTable td {
+  color: #e5e7eb;
+  border-bottom-color: #1e293b;
+}
+
+.darkMode .myEventsTable tr:hover {
+  background-color: #020617;
+}
+
+.darkMode .dateBox .day {
+  color: #fb923c;
+}
+
+.darkMode .dateBox .date {
+  color: #f9fafb;
+}
+
+.darkMode .registrationForm input,
+.darkMode .registrationForm select,
+.darkMode .filterControls select {
+  background-color: #020617;
+  border-color: #1e293b;
+  color: #e5e7eb;
+}
+
+.darkMode .registrationForm input::placeholder {
+  color: #64748b;
+}
+
+.darkMode .registrationForm input:focus,
+.darkMode .registrationForm select:focus,
+.darkMode .filterControls select:focus {
+  border-color: #60a5fa;
+  background-color: #020617;
+}
+
+.darkMode .approveBtn,
+.darkMode .applyFiltersBtn,
+.darkMode .submitbtn {
+  background-color: #2563eb;
+}
+
+.darkMode .createNewBtn {
+  background-color: #16a34a;
+}
+
+.darkMode .approveBtn:hover,
+.darkMode .applyFiltersBtn:hover,
+.darkMode .submitbtn:hover {
+  background-color: #1e40af;
+}
+
+.darkMode .createNewBtn:hover {
+  background-color: #15803d;
+}
+
+.darkMode .viewToggle button {
+  background-color: #020617;
+  color: #9ca3af;
+  border: 1px solid #1e293b;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.darkMode .viewToggle button:hover {
+  background-color: #020617;
+  color: #f9fafb;
+}
+
+.darkMode .viewToggle .activeView {
+  background-color: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
+}
+
+.darkMode .viewToggle .activeView:hover {
+  background-color: #1e40af;
+}
+
+.darkMode .viewToggle .inactiveView {
+  background-color: #020617;
+  color: #9ca3af;
+}
+
+.darkMode .viewToggle .inactiveView:hover {
+  color: #f9fafb;
+}
+
+.darkMode .status,
+.darkMode .resource {
+  color: #e5e7eb;
+}
+
+.darkMode .status.active,
+.darkMode .resource.completed {
+  background-color: rgba(34, 197, 94, 0.25);
+}
+
+.darkMode .status.closed {
+  background-color: rgba(99, 102, 241, 0.25);
+}
+
+.darkMode .status.cancelled,
+.darkMode .resource.cancelled {
+  background-color: rgba(239, 68, 68, 0.25);
+}
+
+.darkMode .resource.pending {
+  background-color: rgba(234, 179, 8, 0.25);
+}
