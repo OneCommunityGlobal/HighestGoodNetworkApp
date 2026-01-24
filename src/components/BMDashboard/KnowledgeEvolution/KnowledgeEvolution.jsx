@@ -2,7 +2,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import { Funnel, Search } from 'lucide-react';
-import styles from './knowledgeEvolution.module.css';
+import styles from './KnowledgeEvolution.module.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchKnowledgeEvolutionData } from '../../../actions/bmdashboard/knowledgeEvolutionActions';
 
