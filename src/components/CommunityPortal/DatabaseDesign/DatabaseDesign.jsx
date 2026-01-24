@@ -27,6 +27,7 @@ function DatabaseDesign() {
   const [filters, setFilters] = useState({
     type: '',
     location: '',
+    sortDate: '',
   });
 
   useEffect(() => {
@@ -71,7 +72,14 @@ function DatabaseDesign() {
       });
 
       if (response.data && response.data.events) {
-        setEvents(response.data.events);
+        let sortedEvents = [...response.data.events];
+
+        if (filters.sortDate === 'earliest') {
+          sortedEvents.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+        } else if (filters.sortDate === 'latest') {
+          sortedEvents.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        }
+        setEvents(sortedEvents);
       } else if (response.status && response.status >= 400) {
         throw new Error(response.message || 'Failed to fetch events');
       }
@@ -99,6 +107,7 @@ function DatabaseDesign() {
     setFilters({
       type: '',
       location: '',
+      sortDate: '',
     });
   };
 
@@ -214,7 +223,21 @@ function DatabaseDesign() {
           </select>
         </div>
 
-        {(filters.type || filters.location) && (
+        <div className={styles.filterGroup}>
+          <label htmlFor="sortDate">Sort by Date</label>
+          <select
+            id="sortDate"
+            value={filters.sortDate}
+            onChange={e => handleFilterChange('sortDate', e.target.value)}
+            className={styles.filterSelect}
+          >
+            <option value="">None</option>
+            <option value="earliest">Earliest to Latest</option>
+            <option value="latest">Latest to Earliest</option>
+          </select>
+        </div>
+
+        {(filters.type || filters.location || filters.sortDate) && (
           <button onClick={handleClearFilters} className={styles.clearFiltersButton}>
             Clear Filters
           </button>
