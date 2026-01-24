@@ -591,9 +591,8 @@ const TruthSocialAutoPoster = () => {
 
   // Toggle cross-post
   const toggleCrossPost = id => {
-    setCrossPostPlatforms(prev => prev.includes(id) ? prev.filter(p => p !== id) : [...prev, id]);
+    setCrossPostPlatforms(prev => (prev.includes(id) ? prev.filter(p => p !== id) : [...prev, id]));
   };
-
   const darkModeClass = darkMode ? styles.darkMode : '';
 
   return (
@@ -775,8 +774,7 @@ const TruthSocialAutoPoster = () => {
                       <label
                         key={opt.id}
                         htmlFor={`crosspost-${opt.id}`}
-                        className={styles.crossPostOption}
-                      >
+                        className={styles.crossPostOption}>
                         <input
                           id={`crosspost-${opt.id}`}
                           type="checkbox"
