@@ -11,11 +11,13 @@ export default defineConfig(({ mode }) => {
       },
     },
     server: {
+      port: 5173,
       proxy: {
         '/api': {
           target: 'http://localhost:4500',
           changeOrigin: true,
           secure: false,
+          rewrite: path => path.replace(/^\/api/, ''),
         },
       },
     },
@@ -29,16 +31,6 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       outDir: 'build',
-    },
-    server: {
-      port: 5173,
-      proxy: {
-        '/api': {
-          target: 'http://localhost:4500',
-          changeOrigin: true,
-          rewrite: path => path.replace(/^\/api/, ''),
-        },
-      },
     },
     plugins: [react()],
   };

@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import PropTypes from 'prop-types';
 import httpService from '../../services/httpService';
 import { PieChart, Pie, Cell, Tooltip, Legend, Label, ResponsiveContainer } from 'recharts';
 import DatePicker from 'react-datepicker';
@@ -9,48 +10,74 @@ import { ENDPOINTS } from '../../utils/URL';
 import config from '../../config.json';
 import styles from './ApplicantSourceDonutChart.module.css';
 
-const CustomTooltip = ({ active, payload, darkMode }) => {
-  if (active && payload && payload.length) {
-    const data = payload[0];
-    const name = data.name || 'Unknown';
-    const value = data.value || 0;
-    const total = payload.reduce((sum, item) => sum + (item.value || 0), 0);
-    const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
+const calculateTotal = payload => {
+  if (!Array.isArray(payload)) return 0;
+  return payload.reduce((sum, item) => sum + (item?.value ?? 0), 0);
+};
 
-    return (
+const calculatePercentage = (value, total) => {
+  if (!total || total <= 0) return '0.0';
+  return ((value / total) * 100).toFixed(1);
+};
+
+const getTooltipStyles = darkMode => ({
+  backgroundColor: darkMode ? '#1e293b' : '#ffffff',
+  border: `1px solid ${darkMode ? '#475569' : '#e5e7eb'}`,
+  borderRadius: '6px',
+  padding: '10px 12px',
+  boxShadow: darkMode
+    ? '0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2)'
+    : '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+  color: darkMode ? '#e2e8f0' : '#1f2937',
+});
+
+const CustomTooltip = ({ active, payload, darkMode }) => {
+  if (!active || !payload?.length) return null;
+
+  const data = payload[0];
+  const name = data?.name ?? 'Unknown';
+  const value = data?.value ?? 0;
+  const total = calculateTotal(payload);
+  const percentage = calculatePercentage(value, total);
+
+  return (
+    <div style={getTooltipStyles(darkMode)}>
       <div
         style={{
-          backgroundColor: darkMode ? '#1e293b' : '#ffffff',
-          border: `1px solid ${darkMode ? '#475569' : '#e5e7eb'}`,
-          borderRadius: '6px',
-          padding: '10px 12px',
-          boxShadow: darkMode
-            ? '0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2)'
-            : '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-          color: darkMode ? '#e2e8f0' : '#1f2937',
+          fontWeight: 600,
+          marginBottom: '4px',
+          color: darkMode ? '#f1f5f9' : '#111827',
+          fontSize: '14px',
         }}
       >
-        <div
-          style={{
-            fontWeight: 600,
-            marginBottom: '4px',
-            color: darkMode ? '#f1f5f9' : '#111827',
-            fontSize: '14px',
-          }}
-        >
-          {name}
-        </div>
-        <div style={{ fontSize: '13px', color: darkMode ? '#cbd5e1' : '#4b5563' }}>
-          Value: <strong style={{ color: darkMode ? '#e2e8f0' : '#1f2937' }}>{value}</strong>
-        </div>
-        <div style={{ fontSize: '13px', color: darkMode ? '#cbd5e1' : '#4b5563' }}>
-          Percentage:{' '}
-          <strong style={{ color: darkMode ? '#e2e8f0' : '#1f2937' }}>{percentage}%</strong>
-        </div>
+        {name}
       </div>
-    );
-  }
-  return null;
+      <div style={{ fontSize: '13px', color: darkMode ? '#cbd5e1' : '#4b5563' }}>
+        Value: <strong style={{ color: darkMode ? '#e2e8f0' : '#1f2937' }}>{value}</strong>
+      </div>
+      <div style={{ fontSize: '13px', color: darkMode ? '#cbd5e1' : '#4b5563' }}>
+        Percentage:{' '}
+        <strong style={{ color: darkMode ? '#e2e8f0' : '#1f2937' }}>{percentage}%</strong>
+      </div>
+    </div>
+  );
+};
+
+CustomTooltip.propTypes = {
+  active: PropTypes.bool,
+  payload: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string,
+      value: PropTypes.number,
+    }),
+  ),
+  darkMode: PropTypes.bool,
+};
+
+CustomTooltip.defaultProps = {
+  active: false,
+  payload: [],
+  darkMode: false,
 };
 
 const COLORS = ['#FF4D4F', '#FFC107', '#1890FF', '#00C49F', '#8884D8'];
@@ -125,6 +152,74 @@ const resetDataState = (setData, setComparisonText) => {
   setComparisonText('');
 };
 
+const validateLocalStorage = () => {
+  return typeof localStorage !== 'undefined' && localStorage !== null;
+};
+
+const getToken = () => {
+  if (!validateLocalStorage()) return null;
+  const token = localStorage.getItem(config?.tokenKey || 'token');
+  return token && typeof token === 'string' ? token : null;
+};
+
+const validateDates = (startDate, endDate) => {
+  if (!startDate || !endDate) return true;
+  if (!(startDate instanceof Date) || !(endDate instanceof Date)) return true;
+  return startDate.getTime() <= endDate.getTime();
+};
+
+const buildRoleParams = filterRoles => {
+  if (!Array.isArray(filterRoles) || filterRoles.length === 0) return null;
+  const roleValues = filterRoles
+    .map(r => {
+      if (typeof r === 'object' && r !== null && r.value !== undefined) {
+        return r.value;
+      }
+      return typeof r === 'string' ? r : '';
+    })
+    .filter(val => val !== '');
+  return roleValues.length > 0 ? roleValues.join(',') : null;
+};
+
+const buildRequestParams = (filterStartDate, filterEndDate, filterRoles, filterComparisonType) => {
+  const params = {};
+  if (filterStartDate) params.startDate = toDateOnlyString(filterStartDate);
+  if (filterEndDate) params.endDate = toDateOnlyString(filterEndDate);
+  const roleParam = buildRoleParams(filterRoles);
+  if (roleParam) params.roles = roleParam;
+  if (filterComparisonType && filterComparisonType !== '') {
+    params.comparisonType = filterComparisonType;
+  }
+  return params;
+};
+
+const formatSourceItem = item => {
+  if (!item || typeof item !== 'object') return null;
+  const value = Number(item.value ?? item.count ?? 0);
+  if (Number.isNaN(value) || !Number.isFinite(value) || value < 0) return null;
+  return {
+    name: item.name || item.source || 'Unknown',
+    value,
+  };
+};
+
+const formatSources = sources => {
+  if (!Array.isArray(sources)) return [];
+  return sources.map(formatSourceItem).filter(item => item !== null);
+};
+
+const calculatePastDate = (today, comparisonType) => {
+  const pastDate = new Date(today);
+  if (comparisonType === 'week') {
+    pastDate.setDate(today.getDate() - 7);
+  } else if (comparisonType === 'month') {
+    pastDate.setMonth(today.getMonth() - 1);
+  } else if (comparisonType === 'year') {
+    pastDate.setFullYear(today.getFullYear() - 1);
+  }
+  return pastDate;
+};
+
 const ApplicantSourceDonutChart = () => {
   const [data, setData] = useState([]);
   const [startDate, setStartDate] = useState(null);
@@ -149,33 +244,26 @@ const ApplicantSourceDonutChart = () => {
       setError('');
 
       try {
-        if (typeof localStorage === 'undefined' || !localStorage) {
+        if (!validateLocalStorage()) {
           setError('LocalStorage is not available. Please log in again.');
           setLoading(false);
           resetDataState(setData, setComparisonText);
           return;
         }
 
-        const token = localStorage.getItem(config?.tokenKey || 'token');
-        if (!token || typeof token !== 'string') {
+        const token = getToken();
+        if (!token) {
           setError('Please log in to view applicant source data.');
           setLoading(false);
           resetDataState(setData, setComparisonText);
           return;
         }
 
-        // Ensure token is set in httpService for global axios defaults
-        if (httpService && typeof httpService.setjwt === 'function') {
+        if (httpService?.setjwt) {
           httpService.setjwt(token);
         }
 
-        if (
-          filterStartDate &&
-          filterEndDate &&
-          filterStartDate instanceof Date &&
-          filterEndDate instanceof Date &&
-          filterStartDate.getTime() > filterEndDate.getTime()
-        ) {
+        if (!validateDates(filterStartDate, filterEndDate)) {
           setError('Start date cannot be greater than end date');
           setLoading(false);
           resetDataState(setData, setComparisonText);
@@ -186,28 +274,15 @@ const ApplicantSourceDonutChart = () => {
         if (!url || typeof url !== 'string') {
           throw new Error('Invalid API endpoint configuration');
         }
-        const params = {};
 
-        if (filterStartDate) params.startDate = toDateOnlyString(filterStartDate);
-        if (filterEndDate) params.endDate = toDateOnlyString(filterEndDate);
-        if (filterRoles?.length > 0) {
-          const roleValues = filterRoles
-            .map(r => {
-              if (typeof r === 'object' && r !== null && r.value !== undefined) {
-                return r.value;
-              }
-              return typeof r === 'string' ? r : '';
-            })
-            .filter(val => val !== '');
-          if (roleValues.length > 0) {
-            params.roles = roleValues.join(',');
-          }
-        }
-        if (filterComparisonType && filterComparisonType !== '') {
-          params.comparisonType = filterComparisonType;
-        }
+        const params = buildRequestParams(
+          filterStartDate,
+          filterEndDate,
+          filterRoles,
+          filterComparisonType,
+        );
 
-        if (!httpService || typeof httpService.get !== 'function') {
+        if (!httpService?.get) {
           throw new Error('HTTP service is not available');
         }
 
@@ -218,28 +293,11 @@ const ApplicantSourceDonutChart = () => {
         }
 
         const result = response.data || {};
-        const formattedSources = Array.isArray(result.sources)
-          ? result.sources
-              .map(item => {
-                if (!item || typeof item !== 'object') {
-                  return null;
-                }
-                const value = Number(item.value ?? item.count ?? 0);
-                if (Number.isNaN(value) || !Number.isFinite(value) || value < 0) {
-                  return null;
-                }
-                return {
-                  name: item.name || item.source || 'Unknown',
-                  value,
-                };
-              })
-              .filter(item => item !== null)
-          : [];
+        const formattedSources = formatSources(result.sources);
 
         setData(formattedSources);
         setComparisonText(typeof result.comparisonText === 'string' ? result.comparisonText : '');
       } catch (err) {
-        // Handle 401 errors gracefully without showing toast notifications
         if (err?.response?.status === 401) {
           setError('Authentication required. Please log in to view applicant source data.');
         } else {
@@ -264,7 +322,7 @@ const ApplicantSourceDonutChart = () => {
 
   useEffect(() => {
     const updateDimensions = () => {
-      if (chartWrapperRef.current && typeof chartWrapperRef.current.offsetWidth === 'number') {
+      if (chartWrapperRef.current?.offsetWidth) {
         const width = chartWrapperRef.current.offsetWidth;
         if (Number.isFinite(width) && width > 0) {
           setChartWidth(width);
@@ -275,32 +333,29 @@ const ApplicantSourceDonutChart = () => {
     updateDimensions();
 
     let observer;
-    if (typeof window !== 'undefined' && window.ResizeObserver && chartWrapperRef.current) {
+    const globalWindow = globalThis.window;
+    if (globalWindow?.ResizeObserver && chartWrapperRef.current) {
       try {
-        observer = new window.ResizeObserver(updateDimensions);
+        observer = new globalWindow.ResizeObserver(updateDimensions);
         observer.observe(chartWrapperRef.current);
-      } catch (err) {
-        // Fallback to window resize if ResizeObserver fails
-        if (typeof window.addEventListener === 'function') {
-          window.addEventListener('resize', updateDimensions);
+      } catch {
+        if (globalWindow.addEventListener) {
+          globalWindow.addEventListener('resize', updateDimensions);
         }
       }
-    } else if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
-      window.addEventListener('resize', updateDimensions);
+    } else if (globalWindow?.addEventListener) {
+      globalWindow.addEventListener('resize', updateDimensions);
     }
 
     return () => {
-      if (observer && typeof observer.disconnect === 'function') {
+      if (observer?.disconnect) {
         try {
           observer.disconnect();
-        } catch (err) {
+        } catch {
           // Ignore cleanup errors
         }
-      } else if (
-        typeof window !== 'undefined' &&
-        typeof window.removeEventListener === 'function'
-      ) {
-        window.removeEventListener('resize', updateDimensions);
+      } else if (globalWindow?.removeEventListener) {
+        globalWindow.removeEventListener('resize', updateDimensions);
       }
     };
   }, []);
@@ -345,46 +400,34 @@ const ApplicantSourceDonutChart = () => {
       option && typeof option === 'object' && option.value !== undefined ? option.value : '';
     setComparisonType(newComparisonType);
 
-    if (newComparisonType !== '') {
-      const today = new Date();
-      if (!(today instanceof Date) || !Number.isFinite(today.getTime())) {
-        setError('Invalid date configuration. Please refresh the page.');
-        return;
-      }
-
-      const pastDate = new Date(today);
-      if (!(pastDate instanceof Date) || !Number.isFinite(pastDate.getTime())) {
-        setError('Invalid date configuration. Please refresh the page.');
-        return;
-      }
-
-      if (newComparisonType === 'week') {
-        pastDate.setDate(today.getDate() - 7);
-      } else if (newComparisonType === 'month') {
-        pastDate.setMonth(today.getMonth() - 1);
-      } else if (newComparisonType === 'year') {
-        pastDate.setFullYear(today.getFullYear() - 1);
-      }
-
-      if (!Number.isFinite(pastDate.getTime())) {
-        setError('Invalid date calculation. Please try again.');
-        return;
-      }
-
-      fetchDataWithFilters({
-        startDate: pastDate,
-        endDate: today,
-        roles: selectedRoles || [],
-        comparisonType: newComparisonType,
-      });
-    } else {
+    if (newComparisonType === '') {
       fetchDataWithFilters({
         startDate: startDate || null,
         endDate: endDate || null,
         roles: selectedRoles || [],
         comparisonType: '',
       });
+      return;
     }
+
+    const today = new Date();
+    if (!(today instanceof Date) || !Number.isFinite(today.getTime())) {
+      setError('Invalid date configuration. Please refresh the page.');
+      return;
+    }
+
+    const pastDate = calculatePastDate(today, newComparisonType);
+    if (!(pastDate instanceof Date) || !Number.isFinite(pastDate.getTime())) {
+      setError('Invalid date calculation. Please try again.');
+      return;
+    }
+
+    fetchDataWithFilters({
+      startDate: pastDate,
+      endDate: today,
+      roles: selectedRoles || [],
+      comparisonType: newComparisonType,
+    });
   };
 
   const total = useMemo(() => {
@@ -573,13 +616,13 @@ const ApplicantSourceDonutChart = () => {
         {/* Chart */}
         <div ref={chartWrapperRef} className={chartWrapperClassName}>
           {loading && <p style={{ textAlign: 'center' }}>Loading data...</p>}
-          {!loading && error && (
+          {error && !loading && (
             <p style={{ textAlign: 'center', color: darkMode ? '#fca5a5' : 'red' }}>{error}</p>
           )}
-          {!loading && !error && data.length === 0 && (
+          {data.length === 0 && !loading && !error && (
             <p style={{ textAlign: 'center' }}>No data available for selected filters.</p>
           )}
-          {!loading && !error && data.length > 0 && (
+          {data.length > 0 && !loading && !error && (
             <ResponsiveContainer width="100%" height={chartHeight}>
               <PieChart margin={{ top: 40, right: 40, left: 40, bottom: 20 }}>
                 <Pie
@@ -600,7 +643,10 @@ const ApplicantSourceDonutChart = () => {
                   labelLine={showSliceLabels}
                 >
                   {data.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    <Cell
+                      key={`cell-${entry.name}-${entry.value}`}
+                      fill={COLORS[index % COLORS.length]}
+                    />
                   ))}
                   {comparisonText && <Label content={renderCenterText} />}
                 </Pie>
