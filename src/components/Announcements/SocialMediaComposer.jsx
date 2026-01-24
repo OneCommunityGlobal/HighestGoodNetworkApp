@@ -470,11 +470,10 @@ export default function SocialMediaComposer({ platform }) {
         {tabOrder.map(({ id, label }) => (
           <button
             key={id}
-            type="button"
             onClick={() => setActiveSubTab(id)}
             className={`tab-button ${activeSubTab === id ? 'active' : ''}`}
           >
-            {label}
+            {id.charAt(0).toUpperCase() + id.slice(1)}
           </button>
         ))}
       </div>
