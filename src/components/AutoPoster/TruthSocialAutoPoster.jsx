@@ -774,7 +774,9 @@ const TruthSocialAutoPoster = () => {
                       <label
                         key={opt.id}
                         htmlFor={`crosspost-${opt.id}`}
-                        className={styles.crossPostOption}>
+                        className={styles.crossPostOption}
+                        >
+                        
                         <input
                           id={`crosspost-${opt.id}`}
                           type="checkbox"
