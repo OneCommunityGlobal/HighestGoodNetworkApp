@@ -515,6 +515,9 @@ export const ENDPOINTS = {
   //pull requests analysis
   PR_REVIEWS_INSIGHTS: `${APIEndpoint}/analytics/pr-review-insights`,
 
+  // Education Portal endpoints
+  EDUCATOR_ASSIGN_ATOMS: () => `${APIEndpoint}/educator/assign-atoms`,
+
   LESSON_PLANS: `${APIEndpoint}/education/lesson-plans`,
   SAVE_INTEREST: `${APIEndpoint}/education/student/saved-interests`,
   GET_SAVED: `${APIEndpoint}/education/student/saved-interests`,
