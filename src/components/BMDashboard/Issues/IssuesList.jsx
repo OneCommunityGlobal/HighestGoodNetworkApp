@@ -24,6 +24,7 @@ export default function IssuesList() {
   const [pageGroupStart, setPageGroupStart] = useState(1);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(null); // Stores issue id to delete
 
   const [startDate, endDate] = dateRange;
   const itemsPerPage = 5;
@@ -140,10 +141,17 @@ export default function IssuesList() {
     setEditedName('');
   };
 
-  // Handle deleting an issue
-  const handleDelete = async id => {
+  // Handle deleting an issue - show confirmation first
+  const handleDeleteClick = id => {
+    setConfirmDelete(id);
+    setDropdownOpenId(null);
+  };
+
+  const confirmDeleteAction = async () => {
+    if (!confirmDelete) return;
+
     try {
-      await axios.delete(ENDPOINTS.BM_ISSUE_UPDATE(id));
+      await axios.delete(ENDPOINTS.BM_ISSUE_UPDATE(confirmDelete));
       await fetchIssuesWithFilters();
       toast.success('Issue deleted successfully');
     } catch (err) {
@@ -151,7 +159,11 @@ export default function IssuesList() {
       toast.error(errorMsg);
       setError(`Error deleting issue: ${errorMsg}`);
     }
-    setDropdownOpenId(null);
+    setConfirmDelete(null);
+  };
+
+  const cancelDelete = () => {
+    setConfirmDelete(null);
   };
 
   // Handle closing an issue
@@ -327,7 +339,7 @@ export default function IssuesList() {
                       </Dropdown.Item>
                       <Dropdown.Item
                         className="dropdown-item-custom"
-                        onClick={() => handleDelete(issue.id)}
+                        onClick={() => handleDeleteClick(issue.id)}
                       >
                         Delete
                       </Dropdown.Item>
@@ -386,6 +398,26 @@ export default function IssuesList() {
           &raquo;
         </Button>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {confirmDelete && (
+        <div className="modal-backdrop-custom">
+          <div className={`modal-dialog-custom ${darkMode ? 'dark-theme' : ''}`}>
+            <div className="modal-content-custom">
+              <h5>Confirm Delete</h5>
+              <p>Are you sure you want to delete this issue? This action cannot be undone.</p>
+              <div className="modal-actions">
+                <Button variant="secondary" onClick={cancelDelete}>
+                  Cancel
+                </Button>
+                <Button variant="danger" onClick={confirmDeleteAction}>
+                  Delete
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

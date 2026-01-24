@@ -335,3 +335,52 @@
   overflow-x: auto;
   display: block;
 }
+
+/* Confirmation modal styles */
+.modal-backdrop-custom {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+}
+
+.modal-dialog-custom {
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.modal-dialog-custom.dark-theme {
+  background: #2b3e59;
+  color: #e0e0e0;
+}
+
+.modal-content-custom h5 {
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.modal-content-custom p {
+  margin-bottom: 0;
+  color: #6c757d;
+}
+
+.modal-dialog-custom.dark-theme .modal-content-custom p {
+  color: #adb5bd;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+}
