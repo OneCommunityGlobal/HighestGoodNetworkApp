@@ -3,7 +3,7 @@ import { toast } from 'react-toastify';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import CharacterCounter from './CharacterCounter';
 import ConfirmationModal from './ConfirmationModal';
-import './SocialMediaComposer.css';
+import './SocialMediaComposer.module.css';
 
 const PREFS_KEY = 'mastodon_composer_prefs';
 
