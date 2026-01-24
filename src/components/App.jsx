@@ -107,6 +107,8 @@ function UpdateDocumentTitle() {
     { pattern: /^\/Logout$/, title: 'Logout' },
     { pattern: /^\/forcePasswordUpdate\/[^/]+$/, title: 'Force Password Update' },
     { pattern: /^\/$/, title: `Dashboard - ${fullName}` },
+    { pattern: /^\/kitchenandinventory\/login$/, title: 'Kitchen and Inventory Login' },
+    { pattern: /^\/kitchenandinventory$/, title: 'Kitchen and Inventory Dashboard' },
     { pattern: /.*/, title: 'HGN APP' }, // Default case
     {
       pattern: /^\/communityportal\/activity\/activityid\/feedback$/,

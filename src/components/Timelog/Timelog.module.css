@@ -366,3 +366,7 @@
   color: #7cfc00 !important;
   padding: 1px;
 }
+
+span.activeUser i.fa-circle { color: lawngreen !important; }
+span.notActiveUser i.fa-circle { color: #dee2e6 !important; }
+span.scheduledUser i.fa-circle { color: orange !important; }

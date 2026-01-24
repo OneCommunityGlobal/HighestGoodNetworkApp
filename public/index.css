@@ -1,8 +1,7 @@
 /* public/index.css */
-
 #root {
-  background-color: #ffffff !important;
-
+  background-color: #ffffff;
+}
 /* Global Dark Mode Styles */
 body.dark-mode,
 body.bm-dashboard-dark {
@@ -22,34 +21,18 @@ body.bm-dashboard-dark * {
   color: #ffffff !important;
 }
 
-body.dark-mode h1,
-body.dark-mode h2,
-body.dark-mode h3,
-body.dark-mode h4,
-body.dark-mode h5,
-body.dark-mode h6,
-body.bm-dashboard-dark h1,
-body.bm-dashboard-dark h2,
-body.bm-dashboard-dark h3,
-body.bm-dashboard-dark h4,
-body.bm-dashboard-dark h5,
-body.bm-dashboard-dark h6 {
+body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, 
+body.dark-mode h4, body.dark-mode h5, body.dark-mode h6,
+body.bm-dashboard-dark h1, body.bm-dashboard-dark h2, body.bm-dashboard-dark h3,
+body.bm-dashboard-dark h4, body.bm-dashboard-dark h5, body.bm-dashboard-dark h6 {
   color: #ffffff !important;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
-body.dark-mode p,
-body.dark-mode span,
-body.dark-mode div,
-body.dark-mode label,
-body.dark-mode a,
-body.dark-mode li,
-body.bm-dashboard-dark p,
-body.bm-dashboard-dark span,
-body.bm-dashboard-dark div,
-body.bm-dashboard-dark label,
-body.bm-dashboard-dark a,
-body.bm-dashboard-dark li {
+body.dark-mode p, body.dark-mode span, body.dark-mode div,
+body.dark-mode label, body.dark-mode a, body.dark-mode li,
+body.bm-dashboard-dark p, body.bm-dashboard-dark span, body.bm-dashboard-dark div,
+body.bm-dashboard-dark label, body.bm-dashboard-dark a, body.bm-dashboard-dark li {
   color: #ffffff !important;
 }
 
@@ -201,7 +184,7 @@ body.bm-dashboard-dark .table td {
   border-color: #3a506b;
 }
 
-body.bm-dashboard-dark .table th {
+body.bm-dashboard-dark .table th{
   background-color: #2e5061 !important;
 }
 
@@ -260,6 +243,7 @@ body.dark-mode .nav-link,
 body.bm-dashboard-dark .nav-link {
   color: #ffffff !important;
 }
+
 
 body.dark-mode .navbar-brand,
 body.bm-dashboard-dark .navbar-brand {
@@ -343,11 +327,33 @@ body.bm-dashboard-dark .page-item.active .page-link {
 }
 
 /* Fix the position of the header at the top */
-.top {
-    position: fixed;
-    right: 10px;
-    bottom: 10px;
-  }
+.back-to-top {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+
+  width: 48px;
+  height: 48px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background-color: #2A1B3D;
+  color: #ffffff;
+
+  border-radius: 50%;
+  font-size: 22px;
+  text-decoration: none;
+
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+  z-index: 1000;
+}
+
+.back-to-top:hover {
+  transform: translateY(-4px);
+  opacity: 0.9;
+}
   
   /* Allow the page content to scroll horizontally */
   .container-fluid {
@@ -362,5 +368,4 @@ body.bm-dashboard-dark .page-item.active .page-link {
   .tab-content {
   background-color: transparent;
   border: none;
-}
 }
