@@ -1,5 +1,5 @@
-// export default TruthSocialAutoPoster;
 import React, { useState, useEffect, useCallback } from 'react';
+import PropTypes from 'prop-types';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import styles from './TruthSocialAutoPoster.module.css';
@@ -11,48 +11,61 @@ const API_BASE = process.env.REACT_APP_APIENDPOINT || 'http://localhost:4500/api
 const TOKEN_KEY = 'truthSocialAccessToken';
 
 // Custom Confirmation Modal Component
-const ConfirmationModal = ({ isOpen, title, message, onConfirm, onCancel, confirmText = 'Confirm', cancelText = 'Cancel', confirmStyle = 'primary' }) => {
+const ConfirmationModal = ({
+  isOpen,
+  title,
+  message,
+  onConfirm,
+  onCancel,
+  confirmText,
+  cancelText,
+  confirmStyle,
+}) => {
   if (!isOpen) return null;
 
   const getConfirmButtonClass = () => {
-    switch (confirmStyle) {
-      case 'danger':
-        return styles.confirmBtnDanger;
-      case 'success':
-        return styles.confirmBtnSuccess;
-      default:
-        return styles.confirmBtnPrimary;
-    }
+    if (confirmStyle === 'danger') return styles.confirmBtnDanger;
+    if (confirmStyle === 'success') return styles.confirmBtnSuccess;
+    return styles.confirmBtnPrimary;
   };
 
   return (
-    <div
-      className={styles.modalOverlay}
-      onClick={onCancel}
-      onKeyDown={e => e.key === 'Escape' && onCancel()}
-      role="button"
-      tabIndex={0}
-    >
-      <div
-        className={styles.modalContent}
-        onClick={e => e.stopPropagation()}
-        onKeyDown={e => e.stopPropagation()}
-        role="dialog"
-        aria-modal="true"
-      >
+    <dialog open className={styles.modalOverlay} onClose={onCancel}>
+      <div className={styles.modalContent}>
         <h3 className={styles.modalTitle}>{title}</h3>
         <p className={styles.modalMessage}>{message}</p>
         <div className={styles.modalActions}>
           <button type="button" className={styles.modalCancelBtn} onClick={onCancel}>
             {cancelText}
           </button>
-          <button type="button" className={`${styles.modalConfirmBtn} ${getConfirmButtonClass()}`} onClick={onConfirm}>
+          <button
+            type="button"
+            className={`${styles.modalConfirmBtn} ${getConfirmButtonClass()}`}
+            onClick={onConfirm}
+          >
             {confirmText}
           </button>
         </div>
       </div>
-    </div>
+    </dialog>
   );
+};
+
+ConfirmationModal.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  title: PropTypes.string.isRequired,
+  message: PropTypes.string.isRequired,
+  onConfirm: PropTypes.func.isRequired,
+  onCancel: PropTypes.func.isRequired,
+  confirmText: PropTypes.string,
+  cancelText: PropTypes.string,
+  confirmStyle: PropTypes.string,
+};
+
+ConfirmationModal.defaultProps = {
+  confirmText: 'Confirm',
+  cancelText: 'Cancel',
+  confirmStyle: 'primary',
 };
 
 // Edit Scheduled Post Modal
@@ -83,14 +96,19 @@ const EditScheduledModal = ({ isOpen, post, onSave, onCancel, darkMode }) => {
     });
   };
 
+  const darkModeClass = darkMode ? styles.darkMode : '';
+
   return (
-    <div className={styles.modalOverlay} onClick={onCancel}>
-      <div className={`${styles.editModalContent} ${darkMode ? styles.darkMode : ''}`} onClick={e => e.stopPropagation()}>
+    <dialog open className={styles.modalOverlay} onClose={onCancel}>
+      <div className={`${styles.editModalContent} ${darkModeClass}`}>
         <h3 className={styles.editModalTitle}>Edit Scheduled Post</h3>
 
         <div className={styles.editFieldGroup}>
-          <label className={styles.editFieldLabel}>Subject</label>
+          <label htmlFor="edit-subject" className={styles.editFieldLabel}>
+            Subject
+          </label>
           <input
+            id="edit-subject"
             type="text"
             value={subject}
             onChange={e => setSubject(e.target.value)}
@@ -100,8 +118,11 @@ const EditScheduledModal = ({ isOpen, post, onSave, onCancel, darkMode }) => {
         </div>
 
         <div className={styles.editFieldGroup}>
-          <label className={styles.editFieldLabel}>Content</label>
+          <label htmlFor="edit-content" className={styles.editFieldLabel}>
+            Content
+          </label>
           <textarea
+            id="edit-content"
             value={content}
             onChange={e => setContent(e.target.value)}
             className={styles.editTextarea}
@@ -111,8 +132,11 @@ const EditScheduledModal = ({ isOpen, post, onSave, onCancel, darkMode }) => {
 
         <div className={styles.editRow}>
           <div className={styles.editFieldGroup}>
-            <label className={styles.editFieldLabel}>Security</label>
+            <label htmlFor="edit-visibility" className={styles.editFieldLabel}>
+              Security
+            </label>
             <select
+              id="edit-visibility"
               value={visibility}
               onChange={e => setVisibility(e.target.value)}
               className={styles.editSelect}
@@ -124,8 +148,11 @@ const EditScheduledModal = ({ isOpen, post, onSave, onCancel, darkMode }) => {
           </div>
 
           <div className={styles.editFieldGroup}>
-            <label className={styles.editFieldLabel}>Tags</label>
+            <label htmlFor="edit-tags" className={styles.editFieldLabel}>
+              Tags
+            </label>
             <input
+              id="edit-tags"
               type="text"
               value={tags}
               onChange={e => setTags(e.target.value)}
@@ -144,8 +171,28 @@ const EditScheduledModal = ({ isOpen, post, onSave, onCancel, darkMode }) => {
           </button>
         </div>
       </div>
-    </div>
+    </dialog>
   );
+};
+
+EditScheduledModal.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  post: PropTypes.shape({
+    subject: PropTypes.string,
+    content: PropTypes.string,
+    visibility: PropTypes.string,
+    tags: PropTypes.string,
+    _id: PropTypes.string,
+    scheduledTime: PropTypes.string,
+  }),
+  onSave: PropTypes.func.isRequired,
+  onCancel: PropTypes.func.isRequired,
+  darkMode: PropTypes.bool,
+};
+
+EditScheduledModal.defaultProps = {
+  post: null,
+  darkMode: false,
 };
 
 const TruthSocialAutoPoster = () => {
@@ -157,7 +204,7 @@ const TruthSocialAutoPoster = () => {
     isOpen: false,
     title: '',
     message: '',
-    onConfirm: () => { },
+    onConfirm: () => {},
     confirmText: 'Confirm',
     confirmStyle: 'primary',
   });
@@ -208,7 +255,13 @@ const TruthSocialAutoPoster = () => {
   ];
 
   // Helper function to show confirmation modal
-  const showConfirmation = (title, message, onConfirm, confirmText = 'Confirm', confirmStyle = 'primary') => {
+  const showConfirmation = (
+    title,
+    message,
+    onConfirm,
+    confirmText = 'Confirm',
+    confirmStyle = 'primary',
+  ) => {
     setConfirmModal({
       isOpen: true,
       title,
@@ -232,9 +285,10 @@ const TruthSocialAutoPoster = () => {
   // Detect dark mode
   useEffect(() => {
     const checkDarkMode = () => {
-      const isDark = document.body.classList.contains('dark-mode') ||
-        document.documentElement.getAttribute('data-theme') === 'dark' ||
-        window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const isDark =
+        document.body.classList.contains('dark-mode') ||
+        document.documentElement.dataset.theme === 'dark' ||
+        globalThis.matchMedia('(prefers-color-scheme: dark)').matches;
       setDarkMode(isDark);
     };
     checkDarkMode();
@@ -276,7 +330,8 @@ const TruthSocialAutoPoster = () => {
         truthSocialPostId: postId,
       });
     } catch (err) {
-      console.error('Failed to save to history:', err);
+      // History save failed - non-critical error, continue silently
+      toast.warn('Could not save to history');
     }
   };
 
@@ -287,7 +342,7 @@ const TruthSocialAutoPoster = () => {
       const response = await axios.get(`${API_BASE}/truthsocial/schedule`);
       setScheduledPosts(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
-      console.error('Error loading scheduled posts:', error);
+      toast.error('Failed to load scheduled posts');
     } finally {
       setIsLoadingScheduled(false);
     }
@@ -300,7 +355,7 @@ const TruthSocialAutoPoster = () => {
       const response = await axios.get(`${API_BASE}/truthsocial/history`);
       setPostHistory(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
-      console.error('Error loading post history:', error);
+      toast.error('Failed to load post history');
     } finally {
       setIsLoadingHistory(false);
     }
@@ -355,7 +410,12 @@ const TruthSocialAutoPoster = () => {
     if (subj) fullContent += `${subj}\n\n`;
     fullContent += cont;
     if (tagStr) {
-      const hashtags = tagStr.split(',').map(t => t.trim()).filter(Boolean).map(t => t.startsWith('#') ? t : `#${t}`).join(' ');
+      const hashtags = tagStr
+        .split(',')
+        .map(t => t.trim())
+        .filter(Boolean)
+        .map(t => (t.startsWith('#') ? t : `#${t}`))
+        .join(' ');
       fullContent += `\n\n${hashtags}`;
     }
     return fullContent;
@@ -387,14 +447,14 @@ const TruthSocialAutoPoster = () => {
           toast.success('Posted to Truth Social!');
           resetForm();
         } catch (err) {
-          console.error('Post error:', err);
-          toast.error(err.response?.data?.error || err.message || 'Failed to post');
+          const errorMessage = err.response?.data?.error || err.message || 'Failed to post';
+          toast.error(errorMessage);
         } finally {
           setIsPosting(false);
         }
       },
       'Post Now',
-      'success'
+      'success',
     );
   };
 
@@ -431,14 +491,15 @@ const TruthSocialAutoPoster = () => {
       resetForm();
       loadScheduledPosts();
     } catch (err) {
-      toast.error(err.response?.data?.error || 'Failed to schedule');
+      const errorMessage = err.response?.data?.error || 'Failed to schedule';
+      toast.error(errorMessage);
     } finally {
       setIsPosting(false);
     }
   };
 
   // Delete scheduled
-  const handleDeleteScheduled = (id) => {
+  const handleDeleteScheduled = id => {
     showConfirmation(
       'Delete Scheduled Post',
       'Are you sure you want to delete this post?',
@@ -448,16 +509,17 @@ const TruthSocialAutoPoster = () => {
           toast.success('Deleted');
           loadScheduledPosts();
         } catch (err) {
-          toast.error('Failed to delete');
+          const errorMessage = err.response?.data?.error || 'Failed to delete';
+          toast.error(errorMessage);
         }
       },
       'Delete',
-      'danger'
+      'danger',
     );
   };
 
   // Post scheduled now
-  const handlePostScheduledNow = (post) => {
+  const handlePostScheduledNow = post => {
     showConfirmation(
       'Post Now',
       'Post this to Truth Social immediately?',
@@ -477,22 +539,23 @@ const TruthSocialAutoPoster = () => {
           toast.success('Posted!');
           loadScheduledPosts();
         } catch (err) {
-          toast.error(err.response?.data?.error || 'Failed to post');
+          const errorMessage = err.response?.data?.error || 'Failed to post';
+          toast.error(errorMessage);
         } finally {
           setIsPosting(false);
         }
       },
       'Post Now',
-      'success'
+      'success',
     );
   };
 
   // Edit scheduled
-  const handleEditScheduled = (post) => {
+  const handleEditScheduled = post => {
     setEditModal({ isOpen: true, post });
   };
 
-  const handleSaveEdit = async (updatedPost) => {
+  const handleSaveEdit = async updatedPost => {
     try {
       await axios.put(`${API_BASE}/truthsocial/schedule/${updatedPost._id}`, {
         subject: updatedPost.subject,
@@ -505,26 +568,35 @@ const TruthSocialAutoPoster = () => {
       setEditModal({ isOpen: false, post: null });
       loadScheduledPosts();
     } catch (err) {
-      toast.error('Failed to update');
+      const errorMessage = err.response?.data?.error || 'Failed to update';
+      toast.error(errorMessage);
     }
   };
 
   // Format date
-  const formatDate = (dateString) => {
+  const formatDate = dateString => {
     const date = new Date(dateString);
     return date.toLocaleString('en-US', {
-      month: 'short', day: 'numeric', year: 'numeric',
-      hour: 'numeric', minute: '2-digit', hour12: true,
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
     });
   };
 
   // Toggle cross-post
-  const toggleCrossPost = (id) => {
-    setCrossPostPlatforms(prev => prev.includes(id) ? prev.filter(p => p !== id) : [...prev, id]);
+  const toggleCrossPost = id => {
+    setCrossPostPlatforms(prev =>
+      prev.includes(id) ? prev.filter(p => p !== id) : [...prev, id],
+    );
   };
 
+  const darkModeClass = darkMode ? styles.darkMode : '';
+
   return (
-    <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
+    <div className={`${styles.container} ${darkModeClass}`}>
       {/* Confirmation Modal */}
       <ConfirmationModal
         isOpen={confirmModal.isOpen}
@@ -572,8 +644,11 @@ const TruthSocialAutoPoster = () => {
           <div className={styles.composeSection}>
             {/* Subject */}
             <div className={styles.fieldGroup}>
-              <label className={styles.fieldLabel}>Subject ({subject.length}/{SUBJECT_LIMIT})</label>
+              <label htmlFor="compose-subject" className={styles.fieldLabel}>
+                Subject ({subject.length}/{SUBJECT_LIMIT})
+              </label>
               <input
+                id="compose-subject"
                 type="text"
                 value={subject}
                 onChange={e => setSubject(e.target.value)}
@@ -585,29 +660,45 @@ const TruthSocialAutoPoster = () => {
 
             {/* Content */}
             <div className={styles.fieldGroup}>
+              <label htmlFor="compose-content" className={styles.visuallyHidden}>
+                Content
+              </label>
               <textarea
+                id="compose-content"
                 className={styles.contentInput}
                 placeholder="What's happening?"
                 value={content}
                 onChange={e => setContent(e.target.value)}
                 rows={6}
               />
-              <div className={styles.charCount}>{content.length} / {CONTENT_LIMIT}</div>
+              <div className={styles.charCount}>
+                {content.length} / {CONTENT_LIMIT}
+              </div>
             </div>
 
             {/* Security & Tags Row */}
             <div className={styles.rowGroup}>
               <div className={styles.fieldGroup}>
-                <label className={styles.fieldLabel}>Security</label>
-                <select value={visibility} onChange={e => setVisibility(e.target.value)} className={styles.selectInput}>
+                <label htmlFor="compose-visibility" className={styles.fieldLabel}>
+                  Security
+                </label>
+                <select
+                  id="compose-visibility"
+                  value={visibility}
+                  onChange={e => setVisibility(e.target.value)}
+                  className={styles.selectInput}
+                >
                   <option value="public">Public</option>
                   <option value="private">Private</option>
                   <option value="unlisted">Unlisted</option>
                 </select>
               </div>
               <div className={styles.fieldGroup}>
-                <label className={styles.fieldLabel}>Tags</label>
+                <label htmlFor="compose-tags" className={styles.fieldLabel}>
+                  Tags
+                </label>
                 <input
+                  id="compose-tags"
                   type="text"
                   value={tags}
                   onChange={e => setTags(e.target.value)}
@@ -619,16 +710,23 @@ const TruthSocialAutoPoster = () => {
 
             {/* Schedule Row */}
             <div className={styles.fieldGroup}>
-              <label className={styles.fieldLabel}>Schedule (optional)</label>
+              <label htmlFor="compose-schedule-date" className={styles.fieldLabel}>
+                Schedule (optional)
+              </label>
               <div className={styles.scheduleRow}>
                 <input
+                  id="compose-schedule-date"
                   type="date"
                   value={scheduleDate}
                   onChange={e => setScheduleDate(e.target.value)}
                   min={getMinDate()}
                   className={styles.dateInput}
                 />
+                <label htmlFor="compose-schedule-time" className={styles.visuallyHidden}>
+                  Schedule Time
+                </label>
                 <input
+                  id="compose-schedule-time"
                   type="time"
                   value={scheduleTime}
                   onChange={e => setScheduleTime(e.target.value)}
@@ -636,9 +734,11 @@ const TruthSocialAutoPoster = () => {
                 />
               </div>
               <p className={styles.scheduleNote}>
-                ⚠️ <strong>Limitations:</strong><br />
-                • Auto-posting is not supported - scheduled posts must be manually posted from the Scheduled tab.<br />
-                • Image uploads are not supported due to Truth Social API restrictions.
+                ⚠️ <strong>Limitations:</strong>
+                <br />
+                • Auto-posting is not supported - scheduled posts must be manually posted from the
+                Scheduled tab.
+                <br />• Image uploads are not supported due to Truth Social API restrictions.
               </p>
             </div>
 
@@ -671,8 +771,9 @@ const TruthSocialAutoPoster = () => {
                 {showCrossPost && (
                   <div className={styles.crossPostDropdown}>
                     {crossPostOptions.map(opt => (
-                      <label key={opt.id} className={styles.crossPostOption}>
+                      <label key={opt.id} htmlFor={`crosspost-${opt.id}`} className={styles.crossPostOption}>
                         <input
+                          id={`crosspost-${opt.id}`}
                           type="checkbox"
                           checked={crossPostPlatforms.includes(opt.id)}
                           onChange={() => toggleCrossPost(opt.id)}
@@ -691,8 +792,8 @@ const TruthSocialAutoPoster = () => {
         {activeTab === 'scheduled' && (
           <div className={styles.scheduledSection}>
             <div className={styles.scheduledNote}>
-              ⚠️ Auto-posting is not available due to Truth Social API restrictions.
-              Please click "Post Now" to manually post when ready.
+              ⚠️ Auto-posting is not available due to Truth Social API restrictions. Please click
+              &quot;Post Now&quot; to manually post when ready.
             </div>
             {isLoadingScheduled ? (
               <div className={styles.loading}>Loading...</div>
@@ -709,16 +810,31 @@ const TruthSocialAutoPoster = () => {
                     <div className={styles.postContent}>{post.content}</div>
                     <div className={styles.postMeta}>
                       <span>📅 {formatDate(post.scheduledTime)}</span>
-                      {post.visibility && <span className={styles.visibilityBadge}>{post.visibility}</span>}
+                      {post.visibility && (
+                        <span className={styles.visibilityBadge}>{post.visibility}</span>
+                      )}
                     </div>
                     <div className={styles.postActions}>
-                      <button type="button" onClick={() => handlePostScheduledNow(post)} className={styles.postNowSmallBtn} disabled={isPosting}>
+                      <button
+                        type="button"
+                        onClick={() => handlePostScheduledNow(post)}
+                        className={styles.postNowSmallBtn}
+                        disabled={isPosting}
+                      >
                         Post Now
                       </button>
-                      <button type="button" onClick={() => handleEditScheduled(post)} className={styles.editBtn}>
+                      <button
+                        type="button"
+                        onClick={() => handleEditScheduled(post)}
+                        className={styles.editBtn}
+                      >
                         Edit
                       </button>
-                      <button type="button" onClick={() => handleDeleteScheduled(post._id)} className={styles.deleteBtn}>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteScheduled(post._id)}
+                        className={styles.deleteBtn}
+                      >
                         Delete
                       </button>
                     </div>
@@ -774,20 +890,34 @@ const TruthSocialAutoPoster = () => {
               ) : (
                 <>
                   <div className={styles.fieldGroup}>
+                    <label htmlFor="settings-token" className={styles.visuallyHidden}>
+                      Access Token
+                    </label>
                     <div className={styles.tokenInputWrapper}>
                       <input
+                        id="settings-token"
                         type={showToken ? 'text' : 'password'}
                         value={accessToken}
                         onChange={e => setAccessToken(e.target.value)}
                         className={styles.textInput}
                         placeholder="Paste token here"
                       />
-                      <button type="button" onClick={() => setShowToken(!showToken)} className={styles.toggleTokenBtn}>
+                      <button
+                        type="button"
+                        onClick={() => setShowToken(!showToken)}
+                        className={styles.toggleTokenBtn}
+                        aria-label={showToken ? 'Hide token' : 'Show token'}
+                      >
                         {showToken ? '🙈' : '👁️'}
                       </button>
                     </div>
                   </div>
-                  <button type="button" onClick={handleSaveToken} disabled={!accessToken.trim()} className={styles.saveBtn}>
+                  <button
+                    type="button"
+                    onClick={handleSaveToken}
+                    disabled={!accessToken.trim()}
+                    className={styles.saveBtn}
+                  >
                     Save Token
                   </button>
                 </>
