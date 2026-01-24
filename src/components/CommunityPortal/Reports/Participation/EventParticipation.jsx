@@ -72,11 +72,11 @@ function EventParticipation() {
         </button>
       </header>
 
-      <MyCases />
+      <MyCases darkMode={darkMode} />
 
       <div className={styles.analyticsSection}>
-        <DropOffTracking />
-        <NoShowInsights />
+        <DropOffTracking darkMode={darkMode} />
+        <NoShowInsights darkMode={darkMode} />
       </div>
 
       {/* Print-only footer note */}

@@ -38,7 +38,7 @@
 }
 
 .myCasesPageDark .headerActions {
-  gap: 20px;     /* more room between dropdowns/buttons */
+  gap: 20px;
 }
 
 .sectionTitle {
@@ -62,10 +62,10 @@
   gap: 15px;
 }
 
-/* ---------- View Switcher ---------- */
+/* ---------- View Switcher & Segmented Controls ---------- */
 .viewSwitcher {
   display: flex;
-  gap: 12px; /* clean space between buttons */
+  gap: 12px;
 }
 
 .viewSwitcher button,
@@ -86,10 +86,33 @@
   border-color: #007bff;
 }
 
+/* Dark Mode Overrides for Drop-off and Insights buttons */
+.myCasesPageDark .no-show-rate-insights .viewSwitcher,
+.myCasesPageDark .drop-off-tracking .viewSwitcher {
+  background-color: #1C2541; 
+  border: 1px solid #5C7089;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.myCasesPageDark .no-show-rate-insights button:not(.active),
+.myCasesPageDark .drop-off-tracking button:not(.active) {
+  background-color: #3A506B !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+.myCasesPageDark .no-show-rate-insights button.active,
+.myCasesPageDark .drop-off-tracking button.active {
+  background-color: #007bff !important;
+  color: #ffffff !important;
+}
+
 .filterWrapper {
   margin: 10px 0;
 }
 
+/* ---------- Dropdown Styles ---------- */
 .filterDropdown {
   padding: 8px;
   font-size: 14px;
@@ -98,11 +121,45 @@
   cursor: pointer;
 }
 
-/* Hover and focus effects for the dropdown */
+.myCasesPageDark .viewSwitcher button,
+.myCasesPageDark .filterDropdown,
+.myCasesPageDark .createNew {
+  background-color: #3A506B !important;
+  color: #ffffff !important;
+  border: 1px solid #555 !important;
+}
+
 .filterDropdown:hover,
 .filterDropdown:focus {
   border-color: #007bff;
   outline: none;
+}
+
+.myCasesPageDark .filterDropdown:hover,
+.myCasesPageDark .filterDropdown:focus,
+.myCasesPageDark .viewSwitcher button:hover {
+  border-color: #007bff;
+  background-color: #4A627D;
+}
+
+/* Custom Arrow and Background for Dark Selects */
+.myCasesPageDark select.filterDropdown {
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23FFFFFF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right .7em top 50%;
+  background-size: .65em auto;
+  appearance: none;
+  padding-right: 30px;
+}
+
+.myCasesPageDark select.filterDropdown option {
+  background-color: #1C2541;
+  color: #ffffff;
+}
+
+.myCasesPageDark .insight-bar-container {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
 }
 
 .createNew {
@@ -176,6 +233,32 @@
   color: #9b59b6;
 }
 
+/* Dark Mode Badge Overrides - High Contrast for titles */
+.myCasesPageDark .eventBadge {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  -webkit-print-color-adjust: exact;
+}
+
+.myCasesPageDark .eventBadge[data-type='Yoga Class'] {
+  background-color: #1b4332 !important;
+  color: #ffffff !important;
+}
+
+.myCasesPageDark .eventBadge[data-type='Cooking Workshop'] {
+  background-color: #641212 !important;
+  color: #ffffff !important;
+}
+
+.myCasesPageDark .eventBadge[data-type='Dance Class'] {
+  background-color: #784a06 !important;
+  color: #ffffff !important;
+}
+
+.myCasesPageDark .eventBadge[data-type='Fitness Bootcamp'] {
+  background-color: #4a1d5a !important;
+  color: #ffffff !important;
+}
+
 .eventTime {
   font-size: 14px;
   color: #555;
@@ -237,6 +320,16 @@
   margin-top: 10px;
   font-size: 14px;
   color: #555;
+}
+
+.myCasesPageDark .rateCard {
+  background-color: #3A506B;
+  color: #ffffff;
+  border: 1px solid #555;
+}
+
+.myCasesPageDark .rateCard .percentage {
+  color: #4ade80;
 }
 
 /* ---------- List View Styles ---------- */
@@ -323,13 +416,12 @@
 /* ---------- Expanded scroll area ---------- */
 .caseCards.expanded,
 .caseList.expanded {
-  max-height: 500px; /* enough space to show ~30 events */
+  max-height: 500px;
   overflow-y: auto;
   padding-right: 8px;
 }
 
-/* Print styles for case cards */
-/* Print styles for case cards */
+/* ---------- Print styles ---------- */
 @media print {
   .myCasesPage {
     overflow: visible !important;

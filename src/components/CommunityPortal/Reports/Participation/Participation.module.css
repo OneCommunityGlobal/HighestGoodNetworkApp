@@ -703,3 +703,23 @@
     color: #ffffff !important;
   }
 }
+
+.filterDropdown {
+  padding: 8px;
+  font-size: 14px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.participationLandingPageDark .filterDropdown {
+  background-color: #3A506B;
+  color: #ffffff;
+  border: 1px solid #555;
+  color-scheme: dark;
+}
+
+.participationLandingPageDark .filterDropdown:hover,
+.participationLandingPageDark .filterDropdown:focus {
+  border-color: #007bff;
+  background-color: #4A627D;
+}
