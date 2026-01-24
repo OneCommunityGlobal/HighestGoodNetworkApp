@@ -65,18 +65,32 @@ export default function IssuesList() {
 
   // Memoize the mapped issues to avoid unnecessary recalculations
   const mappedIssues = useMemo(() => {
-    return openIssues.map(issue => {
-      const created = new Date(issue.createdDate);
-      const diffDays = Math.floor((new Date() - created) / (1000 * 60 * 60 * 24));
-      return {
-        id: issue._id,
-        name: issue.issueTitle?.[0] || 'Untitled',
-        tag: issue.tag || '',
-        openSince: diffDays,
-        cost: issue.cost,
-        person: issue.person,
-      };
-    });
+    return (
+      openIssues
+        // Filter out issues without valid titles to prevent "Untitled" rows
+        .filter(issue => {
+          return (
+            issue.issueTitle &&
+            Array.isArray(issue.issueTitle) &&
+            issue.issueTitle.length > 0 &&
+            issue.issueTitle[0] &&
+            typeof issue.issueTitle[0] === 'string' &&
+            issue.issueTitle[0].trim() !== ''
+          );
+        })
+        .map(issue => {
+          const created = new Date(issue.createdDate);
+          const diffDays = Math.floor((new Date() - created) / (1000 * 60 * 60 * 24));
+          return {
+            id: issue._id,
+            name: issue.issueTitle[0],
+            tag: issue.tag || '',
+            openSince: diffDays,
+            cost: issue.cost,
+            person: issue.person,
+          };
+        })
+    );
   }, [openIssues]);
 
   const projectOptions = useMemo(
