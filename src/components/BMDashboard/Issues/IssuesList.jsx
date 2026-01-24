@@ -22,6 +22,7 @@ export default function IssuesList() {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageGroupStart, setPageGroupStart] = useState(1);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const [startDate, endDate] = dateRange;
   const itemsPerPage = 5;
@@ -32,13 +33,15 @@ export default function IssuesList() {
       const response = await axios.get(ENDPOINTS.BM_GET_ISSUE_PROJECTS);
       setProjects(response.data);
     } catch (err) {
-      setError(`Error fetching projects: ${err}`);
+      setError(`Error fetching projects: ${err.message || err}`);
     }
   };
 
   // Fetch open issues with applied filters
   const fetchIssuesWithFilters = async () => {
     try {
+      setLoading(true);
+      setError(''); // Clear previous errors
       // Format dates as YYYY-MM-DD (no timestamp) for backend compatibility
       const formattedStart = startDate ? startDate.toISOString().split('T')[0] : null;
       const formattedEnd = endDate ? endDate.toISOString().split('T')[0] : null;
@@ -48,6 +51,8 @@ export default function IssuesList() {
       setOpenIssues(response.data);
     } catch (err) {
       setError(`Error fetching open issues: ${err.message || err}`);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -215,6 +220,13 @@ export default function IssuesList() {
         </Col>
       </Row>
       {error && <div className="alert alert-danger">{error}</div>}
+      {loading && (
+        <div className="text-center py-3">
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      )}
       <Table bordered hover responsive className="issue-table">
         <thead>
           <tr>
