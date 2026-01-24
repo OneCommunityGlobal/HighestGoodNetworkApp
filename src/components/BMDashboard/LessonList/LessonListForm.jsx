@@ -112,7 +112,6 @@ function LessonList(props) {
   const isInThisWeek = date => {
     // Convert the date string to a Date object with consistent formatting
     const lessonDate = new Date(date);
-
     const currentDate = new Date();
 
     // Check if the year and week are the same
@@ -124,19 +123,12 @@ function LessonList(props) {
       const dayDifference = Math.abs(currentDate - lessonDate) / (1000 * 60 * 60 * 24);
       return dayDifference < 7;
     }
-
     return false;
   };
 
   const isInThisYear = date => {
     const currentDate = new Date();
     const lessonDate = new Date(date);
-    // console.log('Year comparison:', {
-    //  date,
-    //  currentYear: currentDate.getFullYear(),
-    //  lessonYear: lessonDate.getFullYear(),
-    //  isValid: !isNaN(lessonDate.getTime()),
-    // });
     return currentDate.getFullYear() === lessonDate.getFullYear();
   };
 
@@ -166,9 +158,7 @@ function LessonList(props) {
         setShowDeleteDropdown(false);
       }
     };
-
     document.addEventListener('mousedown', handleClickOutside);
-
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
@@ -190,15 +180,6 @@ function LessonList(props) {
     setShowDeleteDropdown(false);
   };
 
-  /** 
-  const handleInputKeyDown = event => {
-    if (event.key === 'Enter' || event.key === ',') {
-      event.preventDefault();
-      addTag(inputValue.trim());
-    }
-  };
-  */
-
   const handleDeleteKeyDown = event => {
     if (event.key === 'Enter' && deleteValue.trim()) {
       addDeleteTag(deleteValue.trim());
@@ -217,30 +198,21 @@ function LessonList(props) {
 
   useEffect(() => {
     const applyFiltersAndSort = () => {
-      // console.log('Starting filtering with:', {
-      //  lessonsCount: lessons?.length || 0,
-      //  firstLesson: lessons?.[0],
-      // });
       let filtered = [...lessons];
 
       // 1. Apply tag filtering
       if (tags.length > 0) {
         filtered = filtered.filter(lesson => {
-          // console.log('Checking lesson:', lesson.title, 'tags:', lesson.tags);
           const hasAllTags = lesson.tags && tags.every(tag => lesson.tags.includes(tag));
-          // console.log('Has all tags?', hasAllTags);
           return hasAllTags;
         });
       }
 
       // 2. Apply date filtering
-      // console.log('Before date filtering:', filtered.length, 'lessons');
       switch (filterOption) {
         case '2':
-          // console.log('Applying year filter...');
           filtered = filtered.filter(item => {
             const result = isInThisYear(item.date);
-            // console.log(`Lesson ${item._id}: ${result}`);
             return result;
           });
           break;
@@ -253,13 +225,7 @@ function LessonList(props) {
         default:
           break;
       }
-      // console.log('After date filtering:', filtered.length, 'lessons');
 
-      // 3. Apply sorting
-      // console.log(
-      //  'Before sorting:',
-      //  filtered.map(l => ({ title: l.title, date: l.date })),
-      // );
       switch (sortOption) {
         case '1': // Newest
           filtered = filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -273,9 +239,6 @@ function LessonList(props) {
         default:
           break;
       }
-
-      // console.log('Final filtered lessons:', filtered);
-
       setFilteredLessons(filtered);
     };
 
@@ -755,7 +718,6 @@ function LessonList(props) {
 }
 
 const mapStateToProps = state => {
-  // console.log('Current Redux state:', state);
   return {
     lessons: state.lessons.lessons,
     darkMode: state.theme.darkMode,
