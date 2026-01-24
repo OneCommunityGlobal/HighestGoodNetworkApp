@@ -1,4 +1,5 @@
-table thead th, table td {
+table thead th,
+table td {
   vertical-align: middle !important;
 }
 
@@ -28,7 +29,7 @@ table thead th, table td {
   height: 2rem;
 }
 
-.itemsCell td{
+.itemsCell td {
   vertical-align: middle;
 }
 
@@ -253,7 +254,10 @@ table thead th, table td {
 .darkDatePicker :global(.react-datepicker__time-container),
 .darkDatePicker :global(.react-datepicker__time-container .react-datepicker__time),
 .darkDatePicker :global(.react-datepicker__time-container .react-datepicker__time-box),
-.darkDatePicker :global(.react-datepicker__time-container .react-datepicker__time-box ul.react-datepicker__time-list) {
+.darkDatePicker
+  :global(.react-datepicker__time-container
+    .react-datepicker__time-box
+    ul.react-datepicker__time-list) {
   background-color: #2a3f5f !important;
   border-color: #3f5269 !important;
   color: #e8edf4 !important;
@@ -340,7 +344,10 @@ table thead th, table td {
 .lightDatePicker :global(.react-datepicker__time-container),
 .lightDatePicker :global(.react-datepicker__time-container .react-datepicker__time),
 .lightDatePicker :global(.react-datepicker__time-container .react-datepicker__time-box),
-.lightDatePicker :global(.react-datepicker__time-container .react-datepicker__time-box ul.react-datepicker__time-list) {
+.lightDatePicker
+  :global(.react-datepicker__time-container
+    .react-datepicker__time-box
+    ul.react-datepicker__time-list) {
   background-color: #ffffff !important;
   border-color: #d1d5db !important;
   color: #1f2937 !important;

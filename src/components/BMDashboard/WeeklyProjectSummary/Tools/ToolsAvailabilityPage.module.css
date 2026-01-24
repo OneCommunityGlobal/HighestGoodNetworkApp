@@ -162,7 +162,8 @@
 }
 
 /* Loading and error states */
-.select-loading, .select-error {
+.select-loading,
+.select-error {
   padding: 10px 12px;
   border-radius: 6px;
   font-size: 14px;
@@ -200,21 +201,21 @@
     flex-direction: column;
     gap: 24px;
   }
-  
+
   .filter-group {
     min-width: 100%;
   }
-  
+
   .date-picker-group {
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
   }
-  
+
   .date-picker {
     min-width: 100%;
   }
-  
+
   .project-select {
     min-width: 100%;
   }
@@ -224,18 +225,18 @@
   .tools-availability-page {
     padding: 16px;
   }
-  
+
   .tools-availability-content {
     padding: 16px;
   }
-  
+
   .date-picker-group {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .date-picker-group span {
     align-self: center;
     margin: 4px 0;
   }
-} 
+}

@@ -13,7 +13,7 @@ button {
 #root {
   height: 100%;
   overflow-x: auto;
-  overflow: hidden;
+  overflow-y: hidden;
   /* background-color: var(--background-color); */
   background-color: #ffffff;
 }
@@ -47,7 +47,7 @@ button {
 }
 
 .accordion-toggle:after {
-  font-family: 'FontAwesome';
+  font-family: 'FontAwesome',  sans-serif;
   content: '\f054';
   float: right;
 }
@@ -186,10 +186,10 @@ button {
 }
 
 .dark-text-info {
-  color: #6af1ea !important
+  color: #6af1ea !important;
 }
 
-.summary-text-light p{
+.summary-text-light p {
   color: #fff !important;
 }
 

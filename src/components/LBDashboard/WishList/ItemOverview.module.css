@@ -1,21 +1,21 @@
-.item__navbar{
+.item__navbar {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
   background-color: #9dd425 !important;
-  padding: 1.5rem 1.5rem !important; 
+  padding: 1.5rem 1.5rem !important;
   margin: 0 !important;
 }
 
-.item__navbar-left{
+.item__navbar-left {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
 }
 
-.item__selector{
+.item__selector {
   width: 200px;
   background-color: #fff;
   border-radius: 5px;
@@ -24,7 +24,7 @@
   cursor: pointer;
 }
 
-.item__selector select{
+.item__selector select {
   width: 100%;
   border: none;
   outline: none;
@@ -32,7 +32,7 @@
   cursor: pointer;
 }
 
-.item__button{
+.item__button {
   background-color: rgb(190, 190, 190);
   padding: 0.2rem 0.5rem;
   border-radius: 5px;
@@ -40,7 +40,7 @@
   cursor: pointer;
 }
 
-.item__button:hover{
+.item__button:hover {
   background-color: black;
 
   padding: 0.2rem 0.5rem;
@@ -50,7 +50,7 @@
   transition: all 0.3s ease;
 }
 
-.item__button p{
+.item__button p {
   font-family: sans-serif;
   color: #fff;
   font-size: 14px;
@@ -58,7 +58,7 @@
   margin: 0;
 }
 
-.item__navbar-right{
+.item__navbar-right {
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
@@ -66,7 +66,7 @@
   width: 100%;
 }
 
-.item__navbar-right h2{
+.item__navbar-right h2 {
   font-family: sans-serif;
   color: #000000;
   font-size: 14px;
@@ -74,18 +74,18 @@
   margin: 0;
 }
 
-.item__icons{
+.item__icons {
   padding-left: 0.5rem;
   margin: 0;
 }
 
-.item__nav-icon{
+.item__nav-icon {
   margin-left: 1rem;
   font-size: 19px;
   margin-bottom: 0.2rem;
 }
 
-.item__nav-link{
+.item__nav-link {
   color: rgba(0, 0, 0) !important;
 }
 
@@ -147,7 +147,7 @@ p {
   margin-left: -1.3rem;
 }
 
-.err-message{
+.err-message {
   color: red;
   font-size: 12px;
   margin-top: 5px;
@@ -176,7 +176,7 @@ p {
 
 .item__icon {
   color: red;
-  font-size: 1.3rem
+  font-size: 1.3rem;
 }
 
 .item__details-right {
@@ -291,15 +291,15 @@ p {
 }
 
 @media screen and (max-width: 1200px) {
-  .item__navbar{
+  .item__navbar {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
     background-color: green;
-    padding: 1.1rem 1rem  !important;
+    padding: 1.1rem 1rem !important;
   }
-  .item__nav-icon{
+  .item__nav-icon {
     margin-left: 0.5rem;
     font-size: 16px;
     margin-bottom: 0.25rem;
@@ -307,14 +307,14 @@ p {
   .item__navbar-right {
     justify-content: space-between;
   }
-  .item__navbar-right h2{
+  .item__navbar-right h2 {
     font-family: sans-serif;
     color: #000000;
     font-size: 12px;
     padding: 0;
     margin: 0.3rem 0 0;
   }
-  .item__icons{
+  .item__icons {
     padding-left: 0.2rem;
     margin: 0 0 0rem;
   }
@@ -329,13 +329,12 @@ p {
 }
 
 @media screen and (max-width: 800px) {
-
   .item__navbar-right {
     padding: 1rem 0 0;
     justify-content: space-between;
   }
 
-  .item__navbar{
+  .item__navbar {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -344,18 +343,18 @@ p {
     padding: 1rem 2rem !important;
   }
 
-  .item__navbar-right h2{
+  .item__navbar-right h2 {
     font-family: sans-serif;
     color: #000000;
     font-size: 12px;
     padding: 0;
     margin: 0.3rem 0 0;
   }
-  .item__icons{
+  .item__icons {
     padding-left: 0.2rem;
     margin: 0 0 0rem;
   }
-  .item__nav-icon{
+  .item__nav-icon {
     margin-left: 0.8rem;
     font-size: 16px;
     margin-bottom: 0;
@@ -405,7 +404,7 @@ p {
     padding: 0.2rem 0.5rem !important;
   }
 
-  .item__navbar{
+  .item__navbar {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -415,8 +414,8 @@ p {
     position: relative;
   }
 
-  .item__container{
-    overflow: visible ;
+  .item__container {
+    overflow: visible;
   }
 
   .menu-button {
@@ -441,7 +440,7 @@ p {
     padding: 1rem 0 0;
   }
 
-  .item__navbar-right h2{
+  .item__navbar-right h2 {
     font-family: sans-serif;
     color: #000000;
     font-size: 12px;
@@ -449,12 +448,12 @@ p {
     margin: 0.5rem 0 0;
   }
 
-  .item__icons{
+  .item__icons {
     padding-left: 0.2rem;
     margin: 0 0 0rem;
   }
 
-  .item__nav-icon{
+  .item__nav-icon {
     margin-left: 0.5rem;
     margin-top: 0.2rem;
     font-size: 14px;
@@ -475,7 +474,7 @@ p {
     width: 150px;
     flex-direction: column;
   }
-  
+
   .item__form input[type='date'] {
     border: 1px solid #ccc;
     margin-top: 2.5%;
@@ -497,10 +496,9 @@ p {
 
 @media screen and (max-width: 340px) {
   .item__selector {
-    width: 150px
-
+    width: 150px;
   }
-  .navbar-toggler-icon{
+  .navbar-toggler-icon {
     width: 20px !important;
   }
 }

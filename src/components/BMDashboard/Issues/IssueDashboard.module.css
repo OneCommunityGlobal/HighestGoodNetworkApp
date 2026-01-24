@@ -1,14 +1,14 @@
-.issues-table-responsive .text-end {
+.issuesTableResponsive .textEnd {
   font-weight: 500;
   color: #6c757d;
   border-bottom-width: 1px;
 }
 
 /* Improved positioning for the action menu */
-.action-menu {
+.actionMenu {
   position: absolute;
-  top: 0;          /* Position at the top of relative parent */
-  right: 100%;     /* Position to the left of the button */
+  top: 0; /* Position at the top of relative parent */
+  right: 100%; /* Position to the left of the button */
   transform: translateY(-25%); /* Adjust vertical position */
   min-width: 10rem;
   z-index: 1050;
@@ -19,54 +19,54 @@
   white-space: nowrap;
 }
 
-.issue-dashboard-dropdown-item {
+.issueDashboardDropdownItem {
   display: flex;
   align-items: center;
   padding: 0.5rem 1rem;
 }
 
-.badge.bg-info {
+.badge.bgInfo {
   background-color: #cfe2ff !important;
   color: #084298 !important;
   font-weight: 500;
 }
 
-.pagination .page-link {
+.pagination .pageLink {
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0.25rem 0.5rem;
 }
 
-.btn-light {
+.btnLight {
   color: #6c757d;
   border-color: #e9ecef;
 }
 
-.issue-dashboard-dropdown .btn-link {
+.issueDashboardDropdown .btnLink {
   color: #6c757d;
   text-decoration: none;
 }
 
 /* Fixed table responsiveness */
-.issues-table-responsive {
+.issuesTableResponsive {
   overflow-x: visible !important; /* Prevent horizontal scrollbar */
   overflow-y: visible !important; /* Ensure dropdowns aren't clipped */
   position: relative;
 }
 
 /* Improved dropdown positioning */
-.issue-dashboard-dropdown {
-  position: static;  /* Make it relative to the table cell instead */
+.issueDashboardDropdown {
+  position: static; /* Make it relative to the table cell instead */
 }
 
-td.text-end {
+td.textEnd {
   position: relative; /* Create positioning context for dropdown */
   white-space: nowrap;
   width: 1%;
 }
-.issues-table-responsive td,
-.issues-table-responsive th {
+.issuesTableResponsive td,
+.issuesTableResponsive th {
   text-align: left !important;
 }
 
@@ -76,26 +76,26 @@ td.text-end {
 }
 
 /* Ensure table doesn't exceed container width */
-.issues-table-responsive {
+.issuesTableResponsive {
   width: 100%;
   table-layout: fixed;
 }
 
 /* Make sure content doesn't force horizontal scroll */
-.container-fluid {
+.containerFluid {
   max-width: 100%;
   overflow-x: hidden;
 }
 
 /* Fix for the dropdown menu to appear inside table */
-td.text-end .issue-dashboard-dropdown .issue-dashboard-dropdown-menu {
+td.textEnd .issueDashboardDropdown .issueDashboardDropdownMenu {
   position: absolute;
   right: 3rem !important;
   top: 65px !important;
   left: auto !important;
 }
 
-.issues-modal-backdrop {
+.issuesModalBackdrop {
   position: fixed !important;
   top: 0 !important;
   left: 0 !important;
@@ -108,16 +108,15 @@ td.text-end .issue-dashboard-dropdown .issue-dashboard-dropdown-menu {
   justify-content: center !important;
 }
 
-
-.issues-modal-backdrop .modal-dialog {
+.issuesModalBackdrop .modalDialog {
   border-radius: 8px;
   max-width: 400px;
   width: 90%;
 }
 
-.table-dark thead tr:hover {
-  background-color: #3D444D;
+.tableDark thead tr:hover {
+  background-color: #3d444d;
 }
-.table-dark thead tr th {
+.tableDark thead tr th {
   color: #f8f9fa;
 }
