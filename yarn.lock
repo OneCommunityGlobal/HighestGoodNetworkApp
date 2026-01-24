@@ -7799,15 +7799,10 @@ jest-message-util@30.2.0:
   resolved "https://registry.npmjs.org/jest-message-util/-/jest-message-util-30.2.0.tgz"
   integrity sha512-y4DKFLZ2y6DxTWD4cDe07RglV88ZiNEdlRfGtqahfbIjfsw1nMCPx49Uev4IA/hWn3sDKyAnSPwoYSsAEdcimw==
   dependencies:
-    "@babel/code-frame" "^7.27.1"
-    "@jest/types" "30.2.0"
-    "@types/stack-utils" "^2.0.3"
+    "@jest/get-type" "30.1.0"
     chalk "^4.1.2"
-    graceful-fs "^4.2.11"
-    micromatch "^4.0.8"
-    pretty-format "30.2.0"
-    slash "^3.0.0"
-    stack-utils "^2.0.6"
+    jest-diff "30.1.1"
+    pretty-format "30.0.5"
 
 jest-mock@^29.7.0:
   version "29.7.0"
