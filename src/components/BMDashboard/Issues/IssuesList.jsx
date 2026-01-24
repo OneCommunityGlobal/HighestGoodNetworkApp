@@ -1,3 +1,12 @@
+/**
+ * IssuesList Component
+ *
+ * Displays a paginated, filterable list of open issues from the BM Dashboard.
+ * Supports filtering by date range, projects, and tags.
+ * Provides actions to rename, delete, and close issues.
+ *
+ * @component
+ */
 import { useState, useEffect, useMemo } from 'react';
 import DatePicker from 'react-datepicker';
 import Select from 'react-select';
@@ -9,7 +18,12 @@ import './IssuesList.css';
 import { useSelector } from 'react-redux';
 import { ENDPOINTS } from '../../../utils/URL';
 
-// Helper: Validate issue has required fields
+/**
+ * Validates that an issue has all required fields for display.
+ * Filters out issues with empty or invalid issueTitle arrays.
+ * @param {Object} issue - The issue object from the API
+ * @returns {boolean} True if the issue is valid for display
+ */
 const isValidIssue = issue =>
   issue.issueTitle &&
   Array.isArray(issue.issueTitle) &&
@@ -18,10 +32,19 @@ const isValidIssue = issue =>
   typeof issue.issueTitle[0] === 'string' &&
   issue.issueTitle[0].trim() !== '';
 
-// Helper: Format date as YYYY-MM-DD for API calls
+/**
+ * Formats a Date object as YYYY-MM-DD string for API compatibility.
+ * @param {Date|null} date - The date to format
+ * @returns {string|null} Formatted date string or null if no date provided
+ */
 const formatDateForAPI = date => (date ? date.toISOString().split('T')[0] : null);
 
-// Helper: Extract error message from API error response
+/**
+ * Extracts a user-friendly error message from an API error response.
+ * @param {Error} err - The error object from axios
+ * @param {string} fallback - Default message if no specific error is found
+ * @returns {string} The error message to display
+ */
 const getErrorMessage = (err, fallback) => err.response?.data?.message || err.message || fallback;
 
 export default function IssuesList() {
