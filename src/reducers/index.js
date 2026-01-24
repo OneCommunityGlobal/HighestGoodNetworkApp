@@ -1,3 +1,4 @@
+/* eslint-disable import/no-named-as-default */
 import { teamMemberTasksReducer } from '~/components/TeamMemberTasks/reducer';
 import { taskEditSuggestionsReducer } from '~/components/TaskEditSuggestions/reducer';
 import { userProfileByIdReducer, userTaskByIdReducer } from './userProfileByIdReducer';
@@ -73,6 +74,7 @@ import injuriesReducer from './injuries';
 
 import { weeklyProjectSummaryReducer } from './bmdashboard/weeklyProjectSummaryReducer';
 import messageReducer from './listBidDashboard/messagingReducer';
+// eslint-disable import/no-named-as-default
 import userPreferencesReducer from './listBidDashboard/userPreferencesReducer';
 import userSkillsReducer from './userSkillsReducer';
 // community portalgit
@@ -101,6 +103,11 @@ import { studentTasksReducer } from './studentTasksReducer';
 
 // education portal
 import { atomReducer } from './educationPortal/atomReducer';
+import { weeklySummariesFiltersApi } from '../actions/weeklySummariesFilterAction';
+
+//education portal
+
+import browseLessonPlanReducer from './educationPortal/broweLPReducer';
 
 const localReducers = {
   auth: authReducer,
@@ -137,6 +144,7 @@ const localReducers = {
   allUsersTimeEntries: allUsersTimeEntriesReducer,
   allUserProfilesBasicInfo: allUserProfilesBasicInfoReducer,
   projectById: projectByIdReducer,
+  [weeklySummariesFiltersApi.reducerPath]: weeklySummariesFiltersApi.reducer,
 
   // bm dashboard
   materials: materialsReducer,
@@ -187,6 +195,9 @@ const localReducers = {
 
   // education portal
   atom: atomReducer,
+
+  // education portal
+  browseLessonPlan: browseLessonPlanReducer,
 };
 
 const sessionReducers = {
