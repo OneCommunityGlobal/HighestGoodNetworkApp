@@ -591,9 +591,7 @@ const TruthSocialAutoPoster = () => {
 
   // Toggle cross-post
   const toggleCrossPost = id => {
-    setCrossPostPlatforms(prev => (
-      prev.includes(id) ? prev.filter(p => p !== id) : [...prev, id]
-    ));
+    setCrossPostPlatforms(prev => prev.includes(id) ? prev.filter(p => p !== id) : [...prev, id]);
   };
 
   const darkModeClass = darkMode ? styles.darkMode : '';
