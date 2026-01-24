@@ -227,81 +227,100 @@ export default function IssuesList() {
           </tr>
         </thead>
         <tbody>
-          {currentItems.map(issue => (
-            <tr key={issue.id}>
-              <td className={editingId === issue.id ? 'rename-active' : ''}>
-                {editingId === issue.id ? (
-                  <div className="d-flex gap-2">
-                    <Form.Control
-                      type="text"
-                      value={editedName}
-                      onChange={e => setEditedName(e.target.value)}
-                      className="rename-input"
-                    />
-                    <Button size="sm" variant="success" onClick={() => handleNameSubmit(issue.id)}>
-                      Submit
-                    </Button>
-                  </div>
-                ) : (
-                  issue.name
-                )}
-              </td>
-              <td>
-                {issue.tag ? (
-                  <Button
-                    variant="outline-primary"
-                    size="sm"
-                    onClick={() => setTagFilter(tagFilter === issue.tag ? null : issue.tag)}
-                  >
-                    {issue.tag}
-                  </Button>
-                ) : (
-                  <span className="text-muted">No tag</span>
-                )}
-              </td>
-              <td>{issue.openSince}</td>
-              <td>{issue.cost}</td>
-              <td>
-                {issue.person?.name && issue.person?.role
-                  ? `${issue.person.name} - ${issue.person.role}`
-                  : issue.person?.name || <span className="text-muted">Unassigned</span>}
-              </td>
-              <td>
-                <Dropdown
-                  show={dropdownOpenId === issue.id}
-                  onToggle={isOpen => setDropdownOpenId(isOpen ? issue.id : null)}
-                >
-                  <Dropdown.Toggle
-                    variant="outline-secondary"
-                    size="sm"
-                    className="dropdown-toggle-custom"
-                  >
-                    Options
-                  </Dropdown.Toggle>
-                  <Dropdown.Menu className="dropdown-menu-custom">
-                    <Dropdown.Item
-                      className="dropdown-item-custom"
-                      onClick={() => handleRename(issue.id)}
-                    >
-                      Rename
-                    </Dropdown.Item>
-                    <Dropdown.Item
-                      className="dropdown-item-custom"
-                      onClick={() => handleDelete(issue.id)}
-                    >
-                      Delete
-                    </Dropdown.Item>
-                    <Dropdown.Item
-                      className="dropdown-item-custom"
-                      onClick={() => handleCloseIssue(issue.id)}
-                    >
-                      Close
-                    </Dropdown.Item>
-                  </Dropdown.Menu>
-                </Dropdown>
+          {currentItems.length === 0 ? (
+            <tr>
+              <td colSpan="6" className="text-center py-4">
+                <div className="text-muted">
+                  <h5>No Open Issues Found</h5>
+                  <p className="mb-0">
+                    {tagFilter || selectedProjects.length > 0 || startDate || endDate
+                      ? 'There are currently no open issues matching your selected criteria. Try adjusting your filters to see more results.'
+                      : 'There are no open issues at this time.'}
+                  </p>
+                </div>
               </td>
             </tr>
-          ))}
+          ) : (
+            currentItems.map(issue => (
+              <tr key={issue.id}>
+                <td className={editingId === issue.id ? 'rename-active' : ''}>
+                  {editingId === issue.id ? (
+                    <div className="d-flex gap-2">
+                      <Form.Control
+                        type="text"
+                        value={editedName}
+                        onChange={e => setEditedName(e.target.value)}
+                        className="rename-input"
+                      />
+                      <Button
+                        size="sm"
+                        variant="success"
+                        onClick={() => handleNameSubmit(issue.id)}
+                      >
+                        Submit
+                      </Button>
+                    </div>
+                  ) : (
+                    issue.name
+                  )}
+                </td>
+                <td>
+                  {issue.tag ? (
+                    <Button
+                      variant="outline-primary"
+                      size="sm"
+                      onClick={() => setTagFilter(tagFilter === issue.tag ? null : issue.tag)}
+                    >
+                      {issue.tag}
+                    </Button>
+                  ) : (
+                    <span className="text-muted">No tag</span>
+                  )}
+                </td>
+                <td>{issue.openSince}</td>
+                <td>{issue.cost}</td>
+                <td>
+                  {issue.person?.name && issue.person?.role
+                    ? `${issue.person.name} - ${issue.person.role}`
+                    : issue.person?.name || <span className="text-muted">Unassigned</span>}
+                </td>
+                <td>
+                  <Dropdown
+                    show={dropdownOpenId === issue.id}
+                    onToggle={isOpen => setDropdownOpenId(isOpen ? issue.id : null)}
+                  >
+                    <Dropdown.Toggle
+                      variant="outline-secondary"
+                      size="sm"
+                      className="dropdown-toggle-custom"
+                    >
+                      Options
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu className="dropdown-menu-custom">
+                      <Dropdown.Item
+                        className="dropdown-item-custom"
+                        onClick={() => handleRename(issue.id)}
+                      >
+                        Rename
+                      </Dropdown.Item>
+                      <Dropdown.Item
+                        className="dropdown-item-custom"
+                        onClick={() => handleDelete(issue.id)}
+                      >
+                        Delete
+                      </Dropdown.Item>
+                      <Dropdown.Item
+                        className="dropdown-item-custom"
+                        onClick={() => handleCloseIssue(issue.id)}
+                      >
+                        Close
+                      </Dropdown.Item>
+                    </Dropdown.Menu>
+                  </Dropdown>
+                </td>
+              </tr>
+            ))
+          )}
         </tbody>
       </Table>
       <div className="pagination-container">
