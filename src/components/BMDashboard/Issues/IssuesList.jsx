@@ -9,6 +9,21 @@ import './IssuesList.css';
 import { useSelector } from 'react-redux';
 import { ENDPOINTS } from '../../../utils/URL';
 
+// Helper: Validate issue has required fields
+const isValidIssue = issue =>
+  issue.issueTitle &&
+  Array.isArray(issue.issueTitle) &&
+  issue.issueTitle.length > 0 &&
+  issue.issueTitle[0] &&
+  typeof issue.issueTitle[0] === 'string' &&
+  issue.issueTitle[0].trim() !== '';
+
+// Helper: Format date as YYYY-MM-DD for API calls
+const formatDateForAPI = date => (date ? date.toISOString().split('T')[0] : null);
+
+// Helper: Extract error message from API error response
+const getErrorMessage = (err, fallback) => err.response?.data?.message || err.message || fallback;
+
 export default function IssuesList() {
   const darkMode = useSelector(state => state.theme.darkMode);
 
@@ -43,12 +58,14 @@ export default function IssuesList() {
   const fetchIssuesWithFilters = async () => {
     try {
       setLoading(true);
-      setError(''); // Clear previous errors
-      // Format dates as YYYY-MM-DD (no timestamp) for backend compatibility
-      const formattedStart = startDate ? startDate.toISOString().split('T')[0] : null;
-      const formattedEnd = endDate ? endDate.toISOString().split('T')[0] : null;
+      setError('');
       const projectIds = selectedProjects.length > 0 ? selectedProjects.join(',') : null;
-      const url = ENDPOINTS.BM_GET_OPEN_ISSUES(projectIds, formattedStart, formattedEnd, tagFilter);
+      const url = ENDPOINTS.BM_GET_OPEN_ISSUES(
+        projectIds,
+        formatDateForAPI(startDate),
+        formatDateForAPI(endDate),
+        tagFilter,
+      );
       const response = await axios.get(url);
       setOpenIssues(response.data);
     } catch (err) {
@@ -73,33 +90,19 @@ export default function IssuesList() {
 
   // Memoize the mapped issues to avoid unnecessary recalculations
   const mappedIssues = useMemo(() => {
-    return (
-      openIssues
-        // Filter out issues without valid titles to prevent "Untitled" rows
-        .filter(issue => {
-          return (
-            issue.issueTitle &&
-            Array.isArray(issue.issueTitle) &&
-            issue.issueTitle.length > 0 &&
-            issue.issueTitle[0] &&
-            typeof issue.issueTitle[0] === 'string' &&
-            issue.issueTitle[0].trim() !== ''
-          );
-        })
-        .map(issue => {
-          // Use issueDate (when issue occurred) instead of createdDate (when record was created)
-          const issueOpenDate = new Date(issue.issueDate);
-          const diffDays = Math.floor((Date.now() - issueOpenDate) / (1000 * 60 * 60 * 24));
-          return {
-            id: issue._id,
-            name: issue.issueTitle[0],
-            tag: issue.tag || null, // Use null instead of empty string for cleaner logic
-            openSince: diffDays,
-            cost: issue.cost || 0,
-            person: issue.person,
-          };
-        })
-    );
+    return openIssues.filter(isValidIssue).map(issue => {
+      // Use issueDate (when issue occurred) instead of createdDate (when record was created)
+      const issueOpenDate = new Date(issue.issueDate);
+      const diffDays = Math.floor((Date.now() - issueOpenDate) / (1000 * 60 * 60 * 24));
+      return {
+        id: issue._id,
+        name: issue.issueTitle[0],
+        tag: issue.tag || null, // Use null instead of empty string for cleaner logic
+        openSince: diffDays,
+        cost: issue.cost || 0,
+        person: issue.person,
+      };
+    });
   }, [openIssues]);
 
   const projectOptions = useMemo(
@@ -133,7 +136,7 @@ export default function IssuesList() {
       toast.success('Issue renamed successfully');
       setError('');
     } catch (err) {
-      const errorMsg = err.response?.data?.message || err.message || 'Failed to rename issue';
+      const errorMsg = getErrorMessage(err, 'Failed to rename issue');
       toast.error(errorMsg);
       setError(`Error updating issue name: ${errorMsg}`);
     }
@@ -155,7 +158,7 @@ export default function IssuesList() {
       await fetchIssuesWithFilters();
       toast.success('Issue deleted successfully');
     } catch (err) {
-      const errorMsg = err.response?.data?.message || err.message || 'Failed to delete issue';
+      const errorMsg = getErrorMessage(err, 'Failed to delete issue');
       toast.error(errorMsg);
       setError(`Error deleting issue: ${errorMsg}`);
     }
@@ -173,19 +176,17 @@ export default function IssuesList() {
       await fetchIssuesWithFilters();
       toast.success('Issue closed successfully');
     } catch (err) {
-      const errorMsg = err.response?.data?.message || err.message || 'Failed to close issue';
+      const errorMsg = getErrorMessage(err, 'Failed to close issue');
       toast.error(errorMsg);
       setError(`Error closing issue: ${errorMsg}`);
     }
     setDropdownOpenId(null);
   };
 
-  const filtered = useMemo(() => mappedIssues, [mappedIssues]);
-
   const currentItems = useMemo(() => {
     const indexOfLast = currentPage * itemsPerPage;
-    return filtered.slice(indexOfLast - itemsPerPage, indexOfLast);
-  }, [filtered, currentPage]);
+    return mappedIssues.slice(indexOfLast - itemsPerPage, indexOfLast);
+  }, [mappedIssues, currentPage]);
 
   // Format date for display
   const formatDate = date => date?.toISOString().split('T')[0];
@@ -372,7 +373,9 @@ export default function IssuesList() {
         </Button>
 
         {Array.from(
-          { length: Math.min(5, Math.ceil(filtered.length / itemsPerPage) - pageGroupStart + 1) },
+          {
+            length: Math.min(5, Math.ceil(mappedIssues.length / itemsPerPage) - pageGroupStart + 1),
+          },
           (_, i) => (
             <Button
               key={i}
@@ -388,12 +391,12 @@ export default function IssuesList() {
         <Button
           variant="outline-secondary"
           onClick={() => {
-            if (pageGroupStart + 5 <= Math.ceil(filtered.length / itemsPerPage)) {
+            if (pageGroupStart + 5 <= Math.ceil(mappedIssues.length / itemsPerPage)) {
               setPageGroupStart(pageGroupStart + 5);
               setCurrentPage(pageGroupStart + 5);
             }
           }}
-          disabled={pageGroupStart + 5 > Math.ceil(filtered.length / itemsPerPage)}
+          disabled={pageGroupStart + 5 > Math.ceil(mappedIssues.length / itemsPerPage)}
         >
           &raquo;
         </Button>
