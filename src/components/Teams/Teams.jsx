@@ -53,7 +53,7 @@ class Teams extends React.PureComponent {
       sortTeamNameState: 'none', // 'none' | 'ascending' | 'descending'
       sortTeamActiveState: 'none', // 'none' | 'ascending' | 'descending'
       selectedFilter: FILTER_ALL,
-      
+
       // Features from HEAD
       addTeamPopupOpen: false,
       isEdit: false,

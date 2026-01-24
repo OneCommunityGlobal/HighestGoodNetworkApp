@@ -156,7 +156,7 @@ describe('AddTeamPopup component', () => {
       allTeams: store.getState().allTeams,
     };
     renderComponent(true, teamsData, userTeams);
-    expect(screen.queryByText('Name of the Team')).toBeInTheDocument();
+    expect(screen.getByText('Name of the Team')).toBeInTheDocument();
     const modalFadeElement = screen.getByRole('document');
     // eslint-disable-next-line testing-library/no-node-access
     const modalContentElement = modalFadeElement.querySelector('.modal-content');
@@ -169,14 +169,13 @@ describe('AddTeamPopup component', () => {
     await waitFor(() => {});
     // Check that the "Create new team" option appears in dropdown
     expect(screen.getByText('Create new team: team111')).toBeInTheDocument();
-    
-    const nextDivElement = modalBodyElement.querySelector('.input-group-prepend');
-    // eslint-disable-next-line testing-library/no-node-access
-    fireEvent.click(nextDivElement.querySelector('.btn.btn-primary'));
-    
+
+    const okButton = screen.getByRole('button', { name: /^OK$/i });
+    fireEvent.click(okButton);
+
     // The button should be in loading state after clicking
     await waitFor(() => {
-      expect(nextDivElement.querySelector('.btn.btn-primary')).toBeDisabled();
+      expect(okButton).toBeDisabled();
     });
   });
   
@@ -192,7 +191,7 @@ describe('AddTeamPopup component', () => {
       allTeams: store.getState().allTeams,
     };
     renderComponent(true, teamsData, userTeams);
-    expect(screen.queryByText('Name of the Team')).toBeInTheDocument();
+    expect(screen.getByText('Name of the Team')).toBeInTheDocument();
     const modalFadeElement = screen.getByRole('document');
     // eslint-disable-next-line testing-library/no-node-access
     const modalContentElement = modalFadeElement.querySelector('.modal-content');
@@ -222,7 +221,7 @@ describe('AddTeamPopup component', () => {
       allTeams: store.getState().allTeams,
     };
     renderComponent(true, teamsData, userTeams);
-    expect(screen.queryByText('Name of the Team')).toBeInTheDocument();
+    expect(screen.getByText('Name of the Team')).toBeInTheDocument();
     const modalFadeElement = screen.getByRole('document');
     // eslint-disable-next-line testing-library/no-node-access
     const modalContentElement = modalFadeElement.querySelector('.modal-content');
@@ -233,11 +232,9 @@ describe('AddTeamPopup component', () => {
 
     fireEvent.change(searchElement, { target: { value: '' } });
     await waitFor(() => { });
-    // eslint-disable-next-line testing-library/no-node-access
-    const nextDivElement = modalBodyElement.querySelector('.input-group-prepend');
-    // eslint-disable-next-line testing-library/no-node-access
-    fireEvent.click(nextDivElement.querySelector('.btn.btn-primary'));
-    expect(screen.queryByText('Please enter a team name.')).toBeInTheDocument();
+    const okButton = screen.getByRole('button', { name: /^OK$/i });
+    fireEvent.click(okButton);
+    expect(screen.getByText('Please enter a team name.')).toBeInTheDocument();
   });
   it('check if postNewTeam action works as expected', async () => {
     const responseData = { teamName: 'New Team', isActive: true };

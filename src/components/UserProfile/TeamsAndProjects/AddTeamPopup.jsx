@@ -6,9 +6,9 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import '../../Header/index.css';
 import { postNewTeam, getAllUserTeams } from '../../../../src/actions/allTeamsAction';
-// eslint-disable-next-line import/no-named-as-default-member
-import axios from 'axios';
+import axios, { CancelToken } from 'axios';
 
+// eslint-disable-next-line react/display-name
 const AddTeamPopup = React.memo(props => {
   const { darkMode, isEdit, teamName, teamId, teamCode, isActive, onUpdateTeam } = props;
   const dispatch = useDispatch();
@@ -110,7 +110,6 @@ const AddTeamPopup = React.memo(props => {
         return;
       }
 
-      const CancelToken = axios.CancelToken;
       const source = CancelToken.source();
       const timeout = setTimeout(() => axiosResponseExceededTimeout(source), 20000);
 
@@ -236,18 +235,24 @@ const AddTeamPopup = React.memo(props => {
         {isEdit ? 'Update Team Name' : 'Add Team'}
       </ModalHeader>
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''} style={{ textAlign: 'center' }}>
-        <label className={darkMode ? 'text-light' : ''} style={{ textAlign: 'left', fontWeight: 'bold' }}>
+        <label
+          htmlFor="team-name-input"
+          className={darkMode ? 'text-light' : ''}
+          style={{ textAlign: 'left', fontWeight: 'bold' }}
+        >
           Name of the Team<span className="red-asterisk">* </span>
         </label>
 
         <div className="input-group-prepend" style={{ marginBottom: '10px' }}>
           {isEdit ? (
             <input
+              id="team-name-input"
               type="text"
               className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
               value={searchText}
               onChange={e => handleSearchTextChange(e.target.value)}
               placeholder="Enter new team name"
+              // eslint-disable-next-line jsx-a11y/no-autofocus
               autoFocus
             />
           ) : (
