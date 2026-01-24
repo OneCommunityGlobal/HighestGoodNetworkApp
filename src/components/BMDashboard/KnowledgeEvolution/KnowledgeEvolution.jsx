@@ -11,6 +11,7 @@ const KnowledgeEvolution = () => {
   const dispatch = useDispatch();
   const { data, loading } = useSelector(state => state.knowledgeEvolution);
   const user = useSelector(state => state.auth.user);
+  const darkMode = useSelector(state => state.theme.darkMode);
   const userId = user ? user.userid : null;
 
   useEffect(() => {
@@ -182,111 +183,113 @@ const KnowledgeEvolution = () => {
   };
 
   return (
-    <div className={styles.pageContainer}>
-      {/* HEADER */}
-      <div className={styles.headerContainer}>
-        <h5>Knowledge Evolution</h5>
+    <div className={`${darkMode ? styles.pageContainerDarkMode : ''}`}>
+      <div className={`${styles.pageContainer}`}>
+        {/* HEADER */}
+        <div className={`${styles.headerContainer}`}>
+          <h5>Knowledge Evolution</h5>
 
-        {/* SUMMARY */}
-        <div className={styles.summarySection}>
-          <h6 className={styles.summaryHeading}>Overall Progress Across All Subjects</h6>
+          {/* SUMMARY */}
+          <div className={`${styles.summarySection}`}>
+            <h6 className={`${styles.summaryHeading}`}>Overall Progress Across All Subjects</h6>
 
-          <div className={styles.summaryStats}>
-            <div className={styles.statBox}>
-              <h3 className={styles.completedText}>{totalCompleted}</h3>
-              <p>Total Completed</p>
+            <div className={`${styles.summaryStats}`}>
+              <div className={`${styles.statBox}`}>
+                <h3 className={`${styles.completedText}`}>{totalCompleted}</h3>
+                <p>Total Completed</p>
+              </div>
+
+              <div className={`${styles.statBox}`}>
+                <h3 className={`${styles.inProgressText}`}>{totalInProgress}</h3>
+                <p>Total In Progress</p>
+              </div>
+
+              <div className={`${styles.statBox}`}>
+                <h3 className={`${styles.notStartedText}`}>{totalNotStarted}</h3>
+                <p>Total Not Started</p>
+              </div>
+
+              <div className={`${styles.statBox}`}>
+                <h3>{savedInterest}</h3>
+                <p>Saved Interest</p>
+              </div>
+            </div>
+          </div>
+
+          {/* SEARCH + FILTER */}
+          <div className={`${styles.searchFilterContainer}`}>
+            <div className={`${styles.searchWrapper}`}>
+              <Search size={18} className={`${styles.searchIcon}`} />
+              <input
+                type="text"
+                placeholder="Search atoms or subjects"
+                className={`${styles.searchInput}`}
+              />
             </div>
 
-            <div className={styles.statBox}>
-              <h3 className={styles.inProgressText}>{totalInProgress}</h3>
-              <p>Total In Progress</p>
-            </div>
-
-            <div className={styles.statBox}>
-              <h3 className={styles.notStartedText}>{totalNotStarted}</h3>
-              <p>Total Not Started</p>
-            </div>
-
-            <div className={styles.statBox}>
-              <h3>{savedInterest}</h3>
-              <p>Saved Interest</p>
-            </div>
+            <button className={`${styles.filterButton}`}>
+              <Funnel size={18} />
+              <span>Filter by Subject</span>
+            </button>
           </div>
         </div>
 
-        {/* SEARCH + FILTER */}
-        <div className={styles.searchFilterContainer}>
-          <div className={styles.searchWrapper}>
-            <Search size={18} className={styles.searchIcon} />
-            <input
-              type="text"
-              placeholder="Search atoms or subjects"
-              className={styles.searchInput}
-            />
+        {/* SUBJECT TABS */}
+        <div className={`${styles.subjectTabs}`}>
+          {data.knowledgeEvolution.map(s => (
+            <button
+              key={s._id}
+              className={`${styles.tabButton} ${selectedSubject === s._id ? styles.activeTab : ''}`}
+              onClick={() => setSelectedSubject(s._id)}
+            >
+              {s.subjectName}
+            </button>
+          ))}
+        </div>
+        <div ref={tooltipRef} className={`${styles.subjectTooltipTop}`} aria-hidden={!tooltipData}>
+          {tooltipData ? (
+            <>
+              <div className={`${styles.tooltipTitle}`}>{tooltipData.subject} Progress</div>
+              <div className={`${styles.tooltipCounts}`}>
+                <div className={`${styles.tooltipCount}`}>
+                  <span className={`${styles.completedText}`}>{tooltipData.completed}</span>
+                  <div> Completed</div>
+                </div>
+
+                <div className={`${styles.tooltipCount}`}>
+                  <span className={`${styles.inProgressText}`}>{tooltipData.inProgress}</span>
+                  <div> In Progress</div>
+                </div>
+
+                <div className={`${styles.tooltipCount}`}>
+                  <span className={`${styles.notStartedText}`}>{tooltipData.notStarted}</span>
+                  <div> Not Started</div>
+                </div>
+              </div>
+            </>
+          ) : null}
+        </div>
+
+        {/* D3 CHART with subject-level hover */}
+        <div
+          className={`${styles.chartWrapper}`}
+          onMouseEnter={handleChartMouseEnter}
+          onMouseLeave={handleChartMouseLeave}
+        >
+          <svg ref={svgRef} width={700} height={500} />
+        </div>
+
+        {/* Legend placed below chart */}
+        <div className={`${styles.subjectTooltipBottomLegend}`}>
+          <div className={`${styles.legendItem}`}>
+            <span className={`${styles.completedDotSmall}`} /> Completed
           </div>
-
-          <button className={styles.filterButton}>
-            <Funnel size={18} />
-            <span>Filter by Subject</span>
-          </button>
-        </div>
-      </div>
-
-      {/* SUBJECT TABS */}
-      <div className={styles.subjectTabs}>
-        {data.knowledgeEvolution.map(s => (
-          <button
-            key={s._id}
-            className={`${styles.tabButton} ${selectedSubject === s._id ? styles.activeTab : ''}`}
-            onClick={() => setSelectedSubject(s._id)}
-          >
-            {s.subjectName}
-          </button>
-        ))}
-      </div>
-      <div ref={tooltipRef} className={styles.subjectTooltipTop} aria-hidden={!tooltipData}>
-        {tooltipData ? (
-          <>
-            <div className={styles.tooltipTitle}>{tooltipData.subject} Progress</div>
-            <div className={styles.tooltipCounts}>
-              <div className={styles.tooltipCount}>
-                <span className={styles.completedText}>{tooltipData.completed}</span>
-                <div> Completed</div>
-              </div>
-
-              <div className={styles.tooltipCount}>
-                <span className={styles.inProgressText}>{tooltipData.inProgress}</span>
-                <div> In Progress</div>
-              </div>
-
-              <div className={styles.tooltipCount}>
-                <span className={styles.notStartedText}>{tooltipData.notStarted}</span>
-                <div> Not Started</div>
-              </div>
-            </div>
-          </>
-        ) : null}
-      </div>
-
-      {/* D3 CHART with subject-level hover */}
-      <div
-        className={styles.chartWrapper}
-        onMouseEnter={handleChartMouseEnter}
-        onMouseLeave={handleChartMouseLeave}
-      >
-        <svg ref={svgRef} width={700} height={500} />
-      </div>
-
-      {/* Legend placed below chart */}
-      <div className={styles.subjectTooltipBottomLegend}>
-        <div className={styles.legendItem}>
-          <span className={styles.completedDotSmall} /> Completed
-        </div>
-        <div className={styles.legendItem}>
-          <span className={styles.inProgressDotSmall} /> In Progress
-        </div>
-        <div className={styles.legendItem}>
-          <span className={styles.notStartedDotSmall} /> Not Started
+          <div className={`${styles.legendItem}`}>
+            <span className={`${styles.inProgressDotSmall}`} /> In Progress
+          </div>
+          <div className={`${styles.legendItem}`}>
+            <span className={`${styles.notStartedDotSmall}`} /> Not Started
+          </div>
         </div>
       </div>
     </div>

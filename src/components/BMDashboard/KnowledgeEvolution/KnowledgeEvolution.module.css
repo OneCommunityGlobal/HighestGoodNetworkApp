@@ -3,7 +3,10 @@
   font-family: 'Inter', sans-serif;
   position: relative;
 }
-
+.pageContainerDarkMode {
+  background-color: #1b2a41;
+  color: #ffffff;
+}
 .headerContainer {
   margin-bottom: 20px;
   font-weight: 800;
@@ -16,6 +19,11 @@
   border-radius: 10px;
   padding: 15px;
   background: #fff;
+}
+
+.pageContainerDarkMode .summarySection {
+  background-color: #2a3b55;
+  border-color: #444;
 }
 
 .summaryHeading {
@@ -35,6 +43,10 @@
   flex: 1;
 }
 
+.pageContainerDarkMode .statBox {
+  background-color: #3a4b65;
+}
+
 .statBox h3 {
   margin: 0;
   font-size: 20px;
@@ -52,6 +64,12 @@
   align-items: center;
   gap: 12px;
   margin-bottom: 20px;
+}
+
+.pageContainerDarkMode .searchInput {
+  background-color: #3a4b65;
+  border-color: #555;
+  color: #eee;
 }
 
 .searchWrapper {
@@ -88,6 +106,12 @@
   cursor: pointer;
 }
 
+.pageContainerDarkMode .filterButton {
+  background-color: #3a4b65;
+  border-color: #555;
+  color: #eee;
+}
+
 .filterButton:hover {
   background-color: #e6e6e6;
 }
@@ -105,6 +129,10 @@
   margin-bottom: 12px;
 }
 
+.pageContainerDarkMode .chartWrapper {
+  background-color: #2a3b55;
+  border-color: #444;
+}
 .subjectTabs {
   display: flex;
   justify-content: center;
@@ -161,6 +189,13 @@
   z-index: 60;
   text-align: center;
   pointer-events: none;
+}
+
+.pageContainerDarkMode .subjectTooltipTop {
+  background-color: #3a4b65;
+  color: #eee;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+  border: 1.5px solid #555;
 }
 
 
