@@ -427,8 +427,20 @@ const ConfirmationModal = ({ isOpen, title, message, onConfirm, onCancel, confir
   };
 
   return (
-    <div className={styles.modalOverlay} onClick={onCancel}>
-      <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
+    <div
+      className={styles.modalOverlay}
+      onClick={onCancel}
+      onKeyDown={e => e.key === 'Escape' && onCancel()}
+      role="button"
+      tabIndex={0}
+    >
+      <div
+        className={styles.modalContent}
+        onClick={e => e.stopPropagation()}
+        onKeyDown={e => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+      >
         <h3 className={styles.modalTitle}>{title}</h3>
         <p className={styles.modalMessage}>{message}</p>
         <div className={styles.modalActions}>
