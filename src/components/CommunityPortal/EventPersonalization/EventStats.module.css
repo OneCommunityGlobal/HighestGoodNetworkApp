@@ -1,5 +1,4 @@
-.popular-events-container {
-
+.popularEventsContainer {
   max-height: 100%;
   margin: 0 auto;
   padding: 20px;
@@ -7,8 +6,7 @@
   background: white;
 }
 
-.popular-events-container-dark {
-
+.popularEventsContainerDark {
   margin: 0 auto;
   padding: 20px;
   font-family: Arial, sans-serif;
@@ -16,26 +14,26 @@
   min-height: 100%;
 }
 
-.header-container {
+.headerContainer {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.header-container-dark {
+.headerContainerDark {
   display: flex;
   justify-content: space-between;
   align-items: center;
   color: #1C2541;
 }
 
-.popular-events-header {
+.popularEventsHeader {
   font-size: 1.5rem;
   color: #000000;
   margin: 0;
 }
 
-.popular-events-header-dark {
+.popularEventsHeaderDark {
   font-size: 1.5rem;
   color: #ffffff;
   margin: 0;
@@ -47,7 +45,7 @@
   gap: 10px;
 }
 
-.filters-dark {
+.filtersDark {
   display: flex;
   gap: 10px;
   background-color: #1C2541;
@@ -70,7 +68,7 @@
   padding: 30px;
 }
 
-.stats-dark {
+.statsDark {
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -80,34 +78,30 @@
   background-color: #1C2541;
 }
 
-.stat-item {
-  display: flex;
+.statItem {
+  display: grid;
+  grid-template-columns: 140px 1fr auto;
   align-items: center;
-  justify-content: space-between;
+  gap: 15px;
 }
 
-
-
-.stat-label {
-  flex: 1;
+.statLabel {
   font-size: 14px;
   font-weight: bold;
   color: #333;
 }
 
-.stat-label-dark {
-  flex: 1;
+.statLabelDark {
   font-size: 14px;
   font-weight: bold;
   color: #ffffff;
 }
 
-.stat-bar {
-  flex: 3;
+.statBar {
+  width: 100%;
   background: #f0f0f0;
   height: 8px;
   border-radius: 5px;
-  margin: 0 10px;
   position: relative;
   overflow: hidden;
 }
@@ -130,23 +124,25 @@
   background-color: #f44336;
 }
 
-.stat-value {
-  flex: 1;
-  text-align: right;
+.statValue {
   font-size: 14px;
   font-weight: bold;
   color: #333;
+  white-space: nowrap;
+  text-align: right;
+  min-width: 110px;
 }
 
-.stat-value-dark {
-  flex: 1;
-  text-align: right;
+.statValueDark {
   font-size: 14px;
   font-weight: bold;
   color: #ffffff;
+  white-space: nowrap;
+  text-align: right;
+  min-width: 110px;
 }
 
-.event-summary {
+.eventSummary {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 10px;
@@ -157,7 +153,7 @@
   padding-bottom: 20px;
 }
 
-.summary-item {
+.summaryItem {
   background: white;
   padding: 12px;
   border-radius: 8px;
@@ -172,7 +168,7 @@
   text-align: center;
 }
 
-.summary-item-dark {
+.summaryItemDark {
   background: #3A506B;
   padding: 12px;
   border-radius: 8px;
@@ -187,7 +183,7 @@
   text-align: center;
 }
 
-.summary-title {
+.summaryTitle {
   font-size: 14px;
   font-weight: bold;
   text-align: center;
@@ -197,7 +193,7 @@
   color: #777;
 }
 
-.summary-title-dark {
+.summaryTitleDark {
   font-size: 14px;
   font-weight: bold;
   text-align: center;
@@ -207,14 +203,14 @@
   color: #ffffff;
 }
 
-.summary-value {
+.summaryValue {
   font-size: 14px;
   font-weight: bold;
   color: #000;
   margin-top: 4px;
 }
 
-.summary-value-dark {
+.summaryValueDark {
   font-size: 14px;
   font-weight: bold;
   color: #ffffff;
