@@ -79,7 +79,7 @@ function ActivityList() {
 
   const filteredActivities = activities.filter(activity => {
     return (
-      (!filter.type || activity.type.toLowerCase().includes(filter.type.toLowerCase())) &&
+      (!filter.type || activity.type === filter.type) &&
       (!filter.date || activity.date === filter.date) &&
       (!filter.location ||
         activity.location.toLowerCase().startsWith(filter.location.toLowerCase()))
@@ -109,13 +109,13 @@ function ActivityList() {
       <div className={`${styles.filters} ${darkMode ? styles.darkFilters : ''}`}>
         <label>
           Type:
-          <input
-            type="text"
-            name="type"
-            value={filter.type}
-            onChange={handleFilterChange}
-            placeholder="Enter type"
-          />
+          <select name="type" value={filter.type} onChange={handleFilterChange}>
+            <option value="">All</option>
+            <option value="Fitness">Fitness</option>
+            <option value="Social">Social</option>
+            <option value="Educational">Educational</option>
+            <option value="Art">Art</option>
+          </select>
         </label>
 
         <label>
