@@ -98,7 +98,6 @@ import ActivityAgenda from './components/CommunityPortal/Activities/ActivityAgen
 import NoshowViz from './components/CommunityPortal/Attendence/NoshowViz';
 import EventList from './components/CommunityPortal/Event/EventList/EventList';
 import ResourcesUsage from './components/CommunityPortal/Activities/activityId/ResourcesUsage';
-import ResourceManagement from './components/ResourceManagement/ResourceManagement';
 import EventParticipation from './components/CommunityPortal/Reports/Participation/EventParticipation';
 
 import MaterialSummary from './components/MaterialSummary/MaterialSummary';
@@ -132,6 +131,8 @@ import BiddingHomepage from './components/LBDashboard/BiddingHomepage/BiddingHom
 import WishList from './components/LBDashboard/WishList/WishList';
 import WishListItem from './components/LBDashboard/WishList/ItemOverview';
 
+//mostwatedmaterials
+import MostWastedMaterials from './components/MostWastedMaterials/MostWastedMaterials.jsx';
 // BM Dashboard
 import BMProtectedRoute from './components/common/BMDashboard/BMProtectedRoute';
 import BMDashboard from './components/BMDashboard';
@@ -148,7 +149,7 @@ import UtilizationChart from './components/BMDashboard/UtilizationChart/Utilizat
 import RentalChart from './components/BMDashboard/RentalChart/RentalChart';
 import ReturnedLateChart from './components/BMDashboard/RentalChart/ReturnedLateChart';
 import CreateNewTeam from './components/BMDashboard/Team/CreateNewTeam/CreateNewTeam';
-import MostSusceptibleTools from './components/MostSusceptible/toolBreakdownChart';
+// import MostSusceptibleTools from './components/MostSusceptible/toolBreakdownChart';
 import HoursPledgedChart from './components/JobAnalytics/HoursPledgedChart/HoursPledgedChart';
 import InjurySeverityDashboard from './components/BMDashboard/Injuries/InjurySeverityChart';
 
@@ -165,9 +166,15 @@ import FollowUpEmailTemplate from './components/CommunityPortal/Activities/Follo
 import Register from './components/CommunityPortal/Activities/Register/Register';
 import ActivitiesPage from './components/CommunityPortal/Activities/ActivitiesPage';
 import EventStats from './components/CommunityPortal/EventPersonalization/EventStats';
-
 // Community Calendar
 import CommunityCalendar from './components/CommunityPortal/Calendar/CommunityCalendar';
+
+// Kicthen and Inventory Portal
+// import KitchenandInventoryLogin from './components/KitchenandInventory/Login';
+// import KIProtectedRoute from './components/common/KitchenandInventory/KIProtectedRoute';
+// import KIDashboard from './components/KitchenandInventory/KIDashboard/KIDashboard';
+
+// Education Portal
 import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
 import EPLogin from './components/EductionPortal/Login';
 import BrowseLessonPlan from './components/EductionPortal/BrowseLessonPlan/BrowseLP';
@@ -196,13 +203,16 @@ import IntermediateTaskList from './components/EductionPortal/IntermediateTasks/
 import EmbedInteractiveMap from './components/BMDashboard/InteractiveMap/EmbedInteractiveMap';
 import InteractiveMap from './components/BMDashboard/InteractiveMap/InteractiveMap';
 
+import SimpleToolChart from './components/BMDashboard/Tools/SimpleToolChart';
+
 import SupportLogin from './components/SupportPortal/SupportLogin';
 import SupportDashboard from './components/SupportPortal/SupportDashboard';
 import SupportLogViewer from './components/SupportPortal/SupportLogViewer';
+import JobApplicationForm from './components/Collaboration/JobApplicationForm/JobApplicationForm';
 
 // Social Architecture
 
-import JobApplicationForm from './components/Collaboration/JobApplicationForm/JobApplicationForm';
+const ResourceManagement = lazy(() => import('./components/ResourceManagement/ResourceManagement'));
 const RequestResources = lazy(() => import('./components/SocialArchitecture/RequestResources'));
 
 const ReusableListView = lazy(() => import('./components/BMDashboard/ReusableList'));
@@ -270,6 +280,7 @@ const EnhancedPopularityTimelineChart = lazy(() =>
 
 // PR Analytics Dashboard
 import ReviewsInsight from './components/PRAnalyticsDashboard/ReviewsInsight/ReviewsInsight';
+import ProjectsGlobalDistribution from './components/ProjectsGlobalDistribution/ProjectsGlobalDistribution';
 
 const JobAnalyticsPage = lazy(() =>
   import('./components/Reports/HitsAndApplicationRatio/JobAnalyticsPage'),
@@ -336,7 +347,6 @@ export default (
     <Route path="/form" component={FormEditor} />
     <Route path="/formviewer" component={FormViewer} />
     <Route path="/ProfileInitialSetup/:token" component={SetupProfile} />
-    <Route path="/mostsusceptibletoolschart" component={MostSusceptibleTools} />
     <Route path="/hours-pledged-chart" component={HoursPledgedChart} />
     <Route path="/TestEventReg" component={TestEventRegistration} />
     <Route path="/logattendance" component={AttendanceNoShow} />
@@ -626,6 +636,8 @@ export default (
         <Route path="/bmdashboard/login" component={BMLogin} />
         <Route path="/LessonsLearntChart" component={LessonsLearntChart} />
         <Route path="/UtilizationChart" component={UtilizationChart} />
+        <Route path="/mostsusceptibletoolschart" component={SimpleToolChart} />
+        <Route path="/projectglobaldistribution" component={ProjectsGlobalDistribution} />
         <BMProtectedRoute
           path="/bmdashboard/materials/purchase"
           fallback
@@ -721,6 +733,11 @@ export default (
           component={BMTimeLogCard}
         />
         <BMProtectedRoute
+          path="/bmdashboard/mostwastedmaterials"
+          exact
+          component={MostWastedMaterials}
+        />
+        <BMProtectedRoute
           path="/bmdashboard/tools-availability"
           fallback
           exact
@@ -746,6 +763,11 @@ export default (
         <CPProtectedRoute
           path="/communityportal/activities/FollowUpEmailTemplate"
           component={FollowUpEmailTemplate}
+        />
+        <CPProtectedRoute
+          path="/communityportal/reports/participation"
+          exact
+          component={EventParticipation}
         />
         <CPProtectedRoute
           path="/communityportal/reports/participation"
@@ -852,6 +874,10 @@ export default (
         {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
         {/* <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} /> */}
         {/* ----- END BM Dashboard Routing ----- */}
+        {/* ----- Kitchen and Inventory Portal Routes ----- */}
+        {/* <KIProtectedRoute path="/kitchenandinventory" exact component={KIDashboard} /> */}
+        {/* <Route path="/kitchenandinventory/login" exact component={KitchenandInventoryLogin} /> */}
+        {/* ----- End of Kitchen and Inventory Portal Routes ----- */}
         <Route path="/login" component={Login} />
         <Route path="/forgotpassword" component={ForgotPassword} />
         <Route path="/subscribe" component={SubscribePage} />
@@ -883,6 +909,15 @@ export default (
         <ProtectedRoute path="/hgn/profile/skills" exact component={UserSkillsProfile} />
         <ProtectedRoute
           path="/hgn/profile/skills/:userId?"
+          exact
+          fallback
+          component={UserSkillsProfile}
+          allowedRoles={[UserRole.Administrator, UserRole.CoreTeam, UserRole.Owner]}
+          routePermissions={RoutePermissions.accessHgnSkillsDashboard}
+        />
+        {/* Alternative route for HGN Skills Profile */}
+        <ProtectedRoute
+          path="/hgn-skills/profile/:userId?"
           exact
           fallback
           component={UserSkillsProfile}
