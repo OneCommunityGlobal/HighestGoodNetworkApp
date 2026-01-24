@@ -110,11 +110,21 @@ export default function IssuesList() {
   };
 
   const handleNameSubmit = async id => {
+    const trimmedName = editedName.trim();
+
+    // Validate input - prevent empty names
+    if (!trimmedName) {
+      setError('Issue name cannot be empty');
+      return;
+    }
+
     try {
-      await axios.patch(ENDPOINTS.BM_ISSUE_UPDATE(id), { 'issueTitle.0': editedName });
-      fetchIssuesWithFilters();
+      // Backend expects issueTitle as array format, not dot notation
+      await axios.patch(ENDPOINTS.BM_ISSUE_UPDATE(id), { issueTitle: [trimmedName] });
+      await fetchIssuesWithFilters();
+      setError(''); // Clear any previous errors
     } catch (err) {
-      setError(`Error updating issue name: ${err}`);
+      setError(`Error updating issue name: ${err.message || err}`);
     }
     setEditingId(null);
     setEditedName('');
