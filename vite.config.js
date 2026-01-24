@@ -4,7 +4,6 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
-
   return {
     resolve: {
       alias: {
@@ -14,9 +13,9 @@ export default defineConfig(({ mode }) => {
     server: {
       proxy: {
         '/api': {
-          target: 'http://localhost:4500', //  backend port
-          changeOrigin: true, //  ensures proper Host header forwarding
-          secure: false, //  skip HTTPS verification if local
+          target: 'http://localhost:4500',
+          changeOrigin: true,
+          secure: false,
         },
       },
     },
@@ -32,13 +31,5 @@ export default defineConfig(({ mode }) => {
       outDir: 'build',
     },
     plugins: [react()],
-    server: {
-      proxy: {
-        '/api': {
-          target: 'http://localhost:4500',
-          changeOrigin: true,
-        },
-      },
-    },
   };
 });
