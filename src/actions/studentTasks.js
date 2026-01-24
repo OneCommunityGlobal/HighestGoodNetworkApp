@@ -115,9 +115,13 @@ const flattenGroupedTasks = (groupedTasks) => {
  * @returns {Promise<Array>} Array of flattened tasks
  */
 const fetchTasksFromPrimaryEndpoint = async () => {
+
   const response = await httpService.get(ENDPOINTS.STUDENT_TASKS());
+
+  // The API returns grouped tasks, we need to flatten them for our UI
   const groupedTasks = response.data.tasks;
   const uniqueTasks = flattenGroupedTasks(groupedTasks);
+
   return uniqueTasks;
 };
 
@@ -128,6 +132,11 @@ const fetchTasksFromPrimaryEndpoint = async () => {
  * @returns {Promise<Array>} Array of tasks (from fallback or mock data)
  */
 const handleApiError = async (apiError, dispatch) => {
+  console.error('Error response:', apiError.response?.data);
+  console.error('Error status:', apiError.response?.status);
+  console.error('Error config:', apiError.config);
+
+  // Try alternative endpoint if the first one fails
   if (apiError.response?.status === 404) {
     try {
       const altResponse = await httpService.post(`${ENDPOINTS.APIEndpoint()}/student-tasks`);
