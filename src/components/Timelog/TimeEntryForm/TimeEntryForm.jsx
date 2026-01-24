@@ -6,7 +6,7 @@
 /* eslint-disable no-param-reassign */
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { connect , useDispatch } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import {
   Form,
   FormGroup,
@@ -34,8 +34,10 @@ import AboutModal from './AboutModal';
 import TangibleInfoModal from './TangibleInfoModal';
 import ReminderModal from './ReminderModal';
 import TimeLogConfirmationModal from './TimeLogConfirmationModal';
-import { ENDPOINTS } from '~/utils/URL';
+import { ENDPOINTS } from '../../../utils/URL';
 import '../../Header/index.css';
+import styles from '../Timelog.module.css';
+
 import { updateIndividualTaskTime } from '../../TeamMemberTasks/actions';
 
 // Images are not allowed in timelog
@@ -67,7 +69,22 @@ const customImageUploadHandler = () =>
 function TimeEntryForm(props) {
   /* ---------------- variables -------------- */
   // props from parent
- const { from, sendStop, edit, data, toggle, isOpen, tab, darkMode, userProfile, userProjects, timerConnected, maxHoursPerEntry } = props;
+  const {
+    from,
+    sendStop,
+    edit,
+    data,
+    toggle,
+    isOpen,
+    tab,
+    darkMode,
+    userProfile,
+    userProjects,
+    onTimeSubmitted,
+    sessionId,
+    timerConnected,
+    maxHoursPerEntry,
+  } = props;
   // props from store
   const { authUser } = props;
   const dispatch = useDispatch();
@@ -145,7 +162,9 @@ function TimeEntryForm(props) {
   const [timeEntryFormUserProjects, setTimeEntryFormUserProjects] = useState(userProjects || []);
   const [timeEntryFormUserTasks, setTimeEntryFormUserTasks] = useState([]);
   const [projectOrTaskId, setProjectOrTaskId] = useState(timeEntryInitialProjectOrTaskId);
- const [isAsyncDataLoaded, setIsAsyncDataLoaded] = useState(Boolean(userProjects && userProjects.length));
+  const [isAsyncDataLoaded, setIsAsyncDataLoaded] = useState(
+    Boolean(userProjects?.length),
+  );
   const [errors, setErrors] = useState({});
   const [reminder, setReminder] = useState(initialReminder);
   const [isTangibleInfoModalVisible, setTangibleInfoModalVisibility] = useState(false);
@@ -201,12 +220,23 @@ function TimeEntryForm(props) {
     Do you wish to continue?`;
   };
 
-  const handleInputChange = event => {
-    event.persist();
+  const allowOnlyNumbersKeyDown = (e) => {
+    const allowedKeys = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'];
+
+    if (e.ctrlKey || e.metaKey) {
+      if (['a', 'c', 'v', 'x'].includes(e.key.toLowerCase())) return;
+    }
+
+    if (!allowedKeys.includes(e.key) && !/^\d$/.test(e.key)) {
+      e.preventDefault();
+    }
+  };
+
+  const handleInputChange = (event) => {
     const { name, value, checked } = event.target;
 
     const updateFormValues = (key, val) => {
-      setFormValues(fv => ({ ...fv, [key]: val }));
+      setFormValues((prev) => ({ ...prev, [key]: val }));
     };
 
     if (name === 'hours' || name === 'minutes') {
@@ -226,7 +256,7 @@ function TimeEntryForm(props) {
       updateFormValues(name, value);
     }
   };
-
+  
   const handleProjectOrTaskChange = event => {
     const optionValue = event.target.value;
     const ids = optionValue.split('/');
@@ -329,7 +359,7 @@ function TimeEntryForm(props) {
       return;
     }
 
-    const { hours: formHours, minutes: formMinutes, personId, taskId } = formValues;
+    const { hours: formHours, minutes: formMinutes, personId, taskId, isTangible } = formValues;
     const timeEntry = { ...formValues };
     const isTimeModified = edit && (initialHours !== formHours || initialMinutes !== formMinutes);
 
@@ -355,6 +385,16 @@ function TimeEntryForm(props) {
         case 'Timer':
           sendStop();
           clearForm();
+          // Enhanced callback with additional data
+          if (onTimeSubmitted) {
+            onTimeSubmitted({
+              hours: formHours,
+              minutes: formMinutes,
+              sessionId,
+              timestamp: new Date().toISOString(),
+              userProfile: `${userProfile?.firstName || ''} ${userProfile?.lastName || ''}`.trim(),
+            });
+          }
           dispatch(
             updateIndividualTaskTime({
               newTime: { hours: formHours, minutes: formMinutes },
@@ -376,6 +416,16 @@ function TimeEntryForm(props) {
           const offset = today.week() - date.week();
           props.getTimeEntriesForWeek(timeEntryUserId, Math.min(offset, 3));
           clearForm();
+
+          if(isTangible) {
+            dispatch(
+              updateIndividualTaskTime({
+                newTime: { hours: formHours, minutes: formMinutes },
+                taskId,
+                personId,
+              }),
+            );
+          }
           break;
         }
         case 'WeeklyTab':
@@ -590,8 +640,8 @@ function TimeEntryForm(props) {
       if (isAsyncDataLoaded) {
         const options = buildOptions();
       setProjectsAndTasksOptions(options);
-      }
-    }, [isAsyncDataLoaded, timeEntryFormUserProjects, timeEntryFormUserTasks]);
+    }
+  }, [isAsyncDataLoaded, timeEntryFormUserProjects, timeEntryFormUserTasks]);
 
   // grab form data before editing
   useEffect(() => {
@@ -644,7 +694,7 @@ function TimeEntryForm(props) {
             Time Entry
             {viewingUser.userId ? ` for ${viewingUser.firstName} ${viewingUser.lastName} ` : ' '}
             <i
-              className="fa fa-info-circle"
+              className={`fa fa-info-circle ${styles.customStyle}`}
               data-tip
               data-for="registerTip"
               aria-hidden="true"
@@ -709,6 +759,12 @@ function TimeEntryForm(props) {
                     placeholder="Minutes"
                     value={formValues.minutes}
                     onChange={handleInputChange}
+                    onFocus={(e) => {
+                      if (e.target.value === '0') {
+                        setFormValues((prev) => ({ ...prev, minutes: '' }));
+                      }
+                    }}
+                    onKeyDown={allowOnlyNumbersKeyDown}
                     disabled={!canChangeTime}
                     className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                   />
@@ -779,7 +835,7 @@ function TimeEntryForm(props) {
                 />
                 Tangible&nbsp;
                 <i
-                  className="fa fa-info-circle"
+                  className={`fa fa-info-circle ${styles.customStyle}`}
                   data-tip
                   data-for="tangibleTip"
                   aria-hidden="true"
@@ -846,13 +902,26 @@ function TimeEntryForm(props) {
 }
 
 TimeEntryForm.propTypes = {
+  from: PropTypes.string,
+  sendStop: PropTypes.func,
   edit: PropTypes.bool.isRequired,
   toggle: PropTypes.func.isRequired,
   isOpen: PropTypes.bool.isRequired,
   data: PropTypes.any.isRequired,
-  handleStop: PropTypes.func,
+  tab: PropTypes.number,
+  darkMode: PropTypes.bool,
+  userProfile: PropTypes.shape({
+    firstName: PropTypes.string,
+    lastName: PropTypes.string,
+    timeZone: PropTypes.string,
+  }),
+  userProjects: PropTypes.arrayOf(PropTypes.object), // eslint-disable-line react/forbid-prop-types
+  onTimeSubmitted: PropTypes.func,
+  sessionId: PropTypes.string,
+  timerStats: PropTypes.object, // eslint-disable-line react/forbid-prop-types
   timerConnected: PropTypes.bool,
   maxHoursPerEntry: PropTypes.number,
+  handleStop: PropTypes.func,
 };
 
 const mapStateToProps = state => ({

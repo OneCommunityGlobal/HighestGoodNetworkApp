@@ -719,7 +719,11 @@ const TeamMemberTasks = React.memo(props => {
                   <thead className={darkMode ? 'bg-space-cadet' : ''}>
                     <tr>
                       <th className={darkMode ? 'bg-space-cadet' : ''}>Tasks(s)</th>
-                      <th className={`team-task-progress ${darkMode ? 'bg-space-cadet' : ''}`}>
+                      <th
+                        className={`${styles['team-task-progress']} ${
+                          darkMode ? 'bg-space-cadet' : ''
+                        }`}
+                      >
                         Progress
                       </th>
                       {displayUser.role === 'Administrator' ? (
