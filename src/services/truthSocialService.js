@@ -10,7 +10,7 @@ const TOKEN_KEY = 'truthsocial_access_token';
 export const getStoredToken = () => localStorage.getItem(TOKEN_KEY);
 
 // Save token to localStorage
-export const saveToken = (token) => {
+export const saveToken = token => {
   localStorage.setItem(TOKEN_KEY, token);
   return { success: true };
 };
@@ -41,14 +41,20 @@ const uploadMedia = async (base64Data, altText = '') => {
     const byteString = atob(matches[2]);
     const ab = new ArrayBuffer(byteString.length);
     const ia = new Uint8Array(ab);
-    for (let i = 0; i < byteString.length; i++) {
-      ia[i] = byteString.charCodeAt(i);
+    for (let i = 0; i < byteString.length; i += 1) {
+      ia[i] = byteString.codePointAt(i);
     }
     const blob = new Blob([ab], { type: mimeType });
 
     // Create FormData
     const formData = new FormData();
-    const ext = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/gif': 'gif', 'image/webp': 'webp' }[mimeType] || 'jpg';
+    const mimeTypeExtensions = {
+      'image/jpeg': 'jpg',
+      'image/png': 'png',
+      'image/gif': 'gif',
+      'image/webp': 'webp',
+    };
+    const ext = mimeTypeExtensions[mimeType] || 'jpg';
     formData.append('file', blob, `image.${ext}`);
 
     // Upload to Truth Social
@@ -60,20 +66,24 @@ const uploadMedia = async (base64Data, altText = '') => {
 
     // Add alt text if provided
     if (altText && mediaId) {
-      await axios.put(`${TRUTH_SOCIAL_API}/media/${mediaId}`, { description: altText }, {
-        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-      });
+      await axios.put(
+        `${TRUTH_SOCIAL_API}/media/${mediaId}`,
+        { description: altText },
+        {
+          headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        },
+      );
     }
 
     return mediaId;
   } catch (err) {
-    console.error('Media upload error:', err);
+    // Media upload failed - return null to continue without image
     return null;
   }
 };
 
 // Post directly to Truth Social (from browser - bypasses Cloudflare!)
-export const postToTruthSocial = async (postData) => {
+export const postToTruthSocial = async postData => {
   const token = getStoredToken();
   if (!token) throw new Error('No token configured. Please add your token in Settings.');
 
@@ -105,13 +115,12 @@ export const postToTruthSocial = async (postData) => {
 
     return { success: true, postId: response.data.id, url: response.data.url };
   } catch (err) {
-    console.error('Post error:', err.response?.data || err.message);
     throw new Error(err.response?.data?.error || err.message || 'Failed to post');
   }
 };
 
 // Backend endpoints for scheduling (these don't hit Truth Social directly)
-export const schedulePost = async (postData) => {
+export const schedulePost = async postData => {
   const response = await axios.post(`${API_BASE}/truthsocial/schedule`, postData);
   return response.data;
 };
@@ -125,7 +134,7 @@ export const getScheduledPosts = async () => {
   }
 };
 
-export const deleteScheduledPost = async (id) => {
+export const deleteScheduledPost = async id => {
   const response = await axios.delete(`${API_BASE}/truthsocial/schedule/${id}`);
   return response.data;
 };
@@ -136,7 +145,7 @@ export const updateScheduledPost = async (id, postData) => {
 };
 
 // Post scheduled now - needs to go through frontend
-export const postScheduledNow = async (id) => {
+export const postScheduledNow = async id => {
   // Get the scheduled post data first
   const posts = await getScheduledPosts();
   const post = posts.find(p => p._id === id);
