@@ -10,7 +10,6 @@ import {
   faTag,
 } from '@fortawesome/free-solid-svg-icons';
 import { format } from 'date-fns';
-// Phase 5: Import timezone utilities for complete implementation
 import { getUserTimezone, formatDateTimeWithTimezone } from '../../../../utils/timezoneUtils';
 import styles from './EventCard.module.css';
 
@@ -50,7 +49,6 @@ function EventCard(props) {
     return (locationType?.toLowerCase() || '') === 'virtual' ? 'virtual-tag' : 'in-person-tag';
   };
 
-  // Phase 5: Helper function to get display location with placeholder
   const getDisplayLocation = () => {
     if (!location || location.trim() === '') {
       return 'Location TBD';
@@ -58,7 +56,6 @@ function EventCard(props) {
     return location;
   };
 
-  // Phase 5: Complete implementation - format date with error handling
   const formatDate = dateString => {
     if (!dateString) {
       return 'Date not set';
@@ -75,7 +72,6 @@ function EventCard(props) {
     }
   };
 
-  // Phase 5: Complete implementation - format time with timezone conversion
   const formatDateTime = dateString => {
     try {
       if (!dateString) {

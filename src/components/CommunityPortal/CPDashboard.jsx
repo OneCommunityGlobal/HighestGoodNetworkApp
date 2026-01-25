@@ -86,7 +86,6 @@ export function CPDashboard() {
     }
   };
 
-  // Phase 5: Format date with timezone conversion
   const formatDate = dateStr => {
     if (!dateStr) return 'Date TBD';
     try {
@@ -102,7 +101,6 @@ export function CPDashboard() {
     }
   };
 
-  // Phase 5: Format time with timezone conversion and abbreviation
   const formatTime = timeStr => {
     if (!timeStr) return 'Time TBD';
     try {
@@ -114,7 +112,6 @@ export function CPDashboard() {
     }
   };
 
-  // Phase 5: Get display location with placeholder
   const getDisplayLocation = location => {
     if (!location || location.trim() === '') {
       return 'Location TBD';

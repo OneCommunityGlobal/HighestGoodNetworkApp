@@ -1,5 +1,4 @@
 // timezoneUtils.js - Complete timezone conversion utilities
-// Phase 5: Complete implementation - full timezone conversion functionality
 import moment from 'moment-timezone';
 
 /**
@@ -7,7 +6,6 @@ import moment from 'moment-timezone';
  * @returns {string} User's timezone (e.g., 'America/Los_Angeles', 'America/New_York')
  */
 export const getUserTimezone = () => {
-  // Phase 4: Tested and verified - works across all modern browsers
   try {
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     if (!timezone || typeof timezone !== 'string') {
@@ -23,13 +21,11 @@ export const getUserTimezone = () => {
 
 /**
  * Converts a date string to user's local timezone
- * Phase 5: Complete implementation using moment-timezone
  * @param {string} dateString - Date string to convert (ISO format expected)
  * @param {string} userTimezone - User's timezone string
  * @returns {Date} Converted date object in user's timezone
  */
 export const convertToUserTimezone = (dateString, userTimezone) => {
-  // Phase 5: Complete implementation using moment-timezone
   try {
     if (!dateString) {
       console.warn('No dateString provided to convertToUserTimezone');
@@ -62,12 +58,10 @@ export const convertToUserTimezone = (dateString, userTimezone) => {
 
 /**
  * Gets timezone abbreviation (e.g., PST, EST, UTC)
- * Phase 5: Complete implementation using moment-timezone
  * @param {string} timezone - Timezone string (e.g., 'America/Los_Angeles')
  * @returns {string} Timezone abbreviation
  */
 export const getTimezoneAbbreviation = timezone => {
-  // Phase 5: Complete implementation
   // moment-timezone automatically handles DST and returns correct abbreviation
   try {
     if (!timezone || typeof timezone !== 'string') {
@@ -85,13 +79,11 @@ export const getTimezoneAbbreviation = timezone => {
 
 /**
  * Formats date and time with timezone abbreviation
- * Phase 5: Complete implementation
  * @param {string} dateString - Date string to format
  * @param {string} userTimezone - User's timezone
  * @returns {string} Formatted string like "2:00 PM PST"
  */
 export const formatDateTimeWithTimezone = (dateString, userTimezone) => {
-  // Phase 5: Complete implementation
   try {
     if (!dateString) {
       return 'Time not set';
