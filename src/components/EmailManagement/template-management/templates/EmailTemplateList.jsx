@@ -25,6 +25,21 @@ import {
 } from '../../../../actions/emailTemplateActions';
 import './EmailTemplateList.module.css';
 
+// Helper function to get icon for variable type - matches EmailTemplateEditor
+const getVariableTypeIcon = type => {
+  const iconMap = {
+    text: '📄',
+    textarea: '📝',
+    image: '🖼️',
+    number: '#️⃣',
+    email: '📧',
+    url: '🔗',
+    date: '📅',
+    video: '🎥',
+  };
+  return iconMap[type] || '📄';
+};
+
 const EmailTemplateList = ({
   templates,
   loading,
@@ -543,7 +558,7 @@ const EmailTemplateList = ({
         </div>
       )}
 
-      {/* Template Info Modal */}
+      {/* Template Info Modal - FIXED: Use icons like EmailTemplateEditor */}
       <Modal isOpen={showInfoModal} toggle={() => setShowInfoModal(false)} size="lg" centered>
         <ModalHeader toggle={() => setShowInfoModal(false)}>
           Template Details: {templateToShow?.name}
@@ -587,8 +602,14 @@ const EmailTemplateList = ({
                     <strong>Variables:</strong>
                     <div className="mt-2">
                       {templateToShow.variables.map((variable, index) => (
-                        <Badge key={index} color="secondary" className="me-2 mb-1">
-                          {variable.name || 'Unnamed'} ({variable.label || 'No Label'})
+                        <Badge
+                          key={index}
+                          color="secondary"
+                          className="me-2 mb-1"
+                          title={`Type: ${variable.type || 'text'}`}
+                        >
+                          {getVariableTypeIcon(variable.type || 'text')}{' '}
+                          {variable.name || 'Unnamed'}
                         </Badge>
                       ))}
                     </div>

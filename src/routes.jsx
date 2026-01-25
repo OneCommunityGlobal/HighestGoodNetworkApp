@@ -226,9 +226,6 @@ const PurchaseMaterials = lazy(() =>
 const PurchaseReusables = lazy(() =>
   import('./components/BMDashboard/PurchaseRequests/ReusablePurchaseRequest'),
 );
-// const PurchaseEquipment = lazy(() =>
-//   import('./components/BMDashboard/PurchaseRequests/EquipmentPurchaseRequest'),
-// );
 const BMTimeLogCard = lazy(() => import('./components/BMDashboard/BMTimeLogger/BMTimeLogCard'));
 const ProjectDetails = lazy(() =>
   import('./components/BMDashboard/Projects/ProjectDetails/ProjectDetails'),
@@ -539,6 +536,19 @@ export default (
         />
         <ProtectedRoute
           path="/announcements/email"
+          exact
+          component={Announcements}
+          routePermissions={RoutePermissions.announcements}
+        />
+        {/* ISSUE 1 FIX: Add /send and /outbox routes */}
+        <ProtectedRoute
+          path="/announcements/email/send"
+          exact
+          component={Announcements}
+          routePermissions={RoutePermissions.announcements}
+        />
+        <ProtectedRoute
+          path="/announcements/email/outbox"
           exact
           component={Announcements}
           routePermissions={RoutePermissions.announcements}

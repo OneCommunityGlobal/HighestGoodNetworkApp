@@ -1,5 +1,6 @@
 ﻿import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
+import { useHistory, useLocation } from 'react-router-dom';
 import { Button, Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
 import { FaPaperPlane, FaCog, FaInbox } from 'react-icons/fa';
 import {
@@ -12,23 +13,79 @@ import './EmailPanel.module.css';
 
 export default function EmailPanel({ title, initialEmail }) {
   const darkMode = useSelector(state => state.theme.darkMode);
+  const history = useHistory();
+  const location = useLocation();
 
-  // State management - simpler without URL routing
-  const [currentView, setCurrentView] = useState('dashboard');
-  const [activeEmailTab, setActiveEmailTab] = useState('send');
+  const getViewFromPath = useCallback(() => {
+    const path = location.pathname;
 
-  // Handle view change
-  const handleViewChange = useCallback((view, tab = null) => {
+    // Check for templates route
+    if (path.includes('/templates')) {
+      return { view: 'templates', tab: null };
+    }
+
+    // Check for email routes with tabs (more specific routes first!)
+    if (path.includes('/email/send')) {
+      return { view: 'email', tab: 'send' };
+    }
+    if (path.includes('/email/outbox')) {
+      return { view: 'email', tab: 'outbox' };
+    }
+
+    // ISSUE 1 FIX: Exact match for dashboard (/announcements/email)
+    if (path === '/announcements/email') {
+      return { view: 'dashboard', tab: null };
+    }
+
+    // Fallback for any other /email path
+    if (path.includes('/email')) {
+      return { view: 'email', tab: 'send' };
+    }
+
+    // Default to dashboard
+    return { view: 'dashboard', tab: null };
+  }, [location.pathname]);
+
+  const { view: initialView, tab: initialTab } = getViewFromPath();
+  const [currentView, setCurrentView] = useState(initialView);
+  const [activeEmailTab, setActiveEmailTab] = useState(initialTab || 'send');
+
+  // Sync state with URL changes (browser back/forward)
+  useEffect(() => {
+    const { view, tab } = getViewFromPath();
     setCurrentView(view);
-    if (view === 'email' && tab) {
+    if (tab) {
       setActiveEmailTab(tab);
     }
-  }, []);
+  }, [location.pathname, getViewFromPath]);
 
-  // Handle email tab change
-  const handleEmailTabChange = useCallback(tab => {
-    setActiveEmailTab(tab);
-  }, []);
+  // Handle view change - updates both state and URL
+  const handleViewChange = useCallback(
+    (view, tab = null) => {
+      setCurrentView(view);
+
+      // Update URL based on view
+      if (view === 'dashboard') {
+        history.push('/announcements/email');
+      } else if (view === 'templates') {
+        history.push('/announcements/email/templates');
+      } else if (view === 'email') {
+        const emailTab = tab || 'send';
+        setActiveEmailTab(emailTab);
+        history.push(`/announcements/email/${emailTab}`);
+      }
+    },
+    [history],
+  );
+
+  // Handle email tab change - updates both state and URL
+  const handleEmailTabChange = useCallback(
+    tab => {
+      setActiveEmailTab(tab);
+      history.push(`/announcements/email/${tab}`);
+    },
+    [history],
+  );
 
   const renderViewSelector = useMemo(() => {
     // Show dashboard when currentView is 'dashboard'
@@ -129,7 +186,7 @@ export default function EmailPanel({ title, initialEmail }) {
       <div className={`email-update-container ${darkMode ? 'dark-mode' : 'light-mode'}`}>
         <div className="mb-3">
           <button
-            onClick={() => setCurrentView('dashboard')}
+            onClick={() => handleViewChange('dashboard')}
             style={{
               background: 'none',
               border: 'none',
@@ -164,7 +221,7 @@ export default function EmailPanel({ title, initialEmail }) {
       <div className={`email-update-container ${darkMode ? 'dark-mode' : 'light-mode'}`}>
         <div className="mb-3">
           <button
-            onClick={() => setCurrentView('dashboard')}
+            onClick={() => handleViewChange('dashboard')}
             style={{
               background: 'none',
               border: 'none',
@@ -257,7 +314,7 @@ export default function EmailPanel({ title, initialEmail }) {
                 aria-live="polite"
               >
                 <ErrorBoundary>
-                  <EmailOutbox key="outbox" />
+                  <EmailOutbox key="outbox" isActive={activeEmailTab === 'outbox'} />
                 </ErrorBoundary>
               </div>
             </TabPane>
