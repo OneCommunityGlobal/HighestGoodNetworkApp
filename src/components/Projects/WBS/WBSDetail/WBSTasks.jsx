@@ -11,7 +11,7 @@ import { fetchAllMembers } from '../../../../actions/projectMembers.js';
 import Task from './Task';
 import AddTaskModal from './AddTask/AddTaskModal';
 import ImportTask from './ImportTask';
-import './wbs.css';
+import styles from './wbs.module.css';
 
 import { useFetchWbsTasks } from './hook';
 import { FilterBar } from './FilterBar';
@@ -126,6 +126,7 @@ function WBSTasks(props) {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            minWidth: '300px',
           }}
         >
           {' '}
@@ -137,7 +138,7 @@ function WBSTasks(props) {
 
   // Extract button group component to reduce complexity
   const renderButtonGroup = () => (
-    <div className="mb-2 wbs-button-group" style={{}}>
+    <div className={`mb-1 ${styles['wbs-button-group']}`} style={{}}>
       {canPostTask && (
         <AddTaskModal
           copiedTask={copiedTask}
@@ -203,49 +204,49 @@ function WBSTasks(props) {
   const renderTableHeader = () => (
     <thead>
       <tr className={darkMode ? 'bg-space-cadet' : ''}>
-        <th scope="col" className="tasks-detail-header tasks-detail-actions" data-tip="Action" colSpan="2">
+        <th scope="col" className={`${styles['tasks-detail-header']} tasks-detail-actions`} data-tip="Action" colSpan="2">
           Action
         </th>
-        <th scope="col" data-tip="WBS ID" colSpan="1" className='tasks-detail-header'>
+        <th scope="col" data-tip="WBS ID" colSpan="1" className={styles['tasks-detail-header']}>
           #
         </th>
-        <th scope="col" data-tip="Task Name" className="tasks-detail-header tasks-detail-task-name task-name">
+        <th scope="col" data-tip="Task Name" className={`${styles['tasks-detail-header']} tasks-detail-task-name ${styles['task-name']}`}>
           Task
         </th>
-        <th scope="col" data-tip="Priority" className='tasks-detail-header'>
+        <th scope="col" data-tip="Priority" className={styles['tasks-detail-header']}>
           <i className="fa fa-star" aria-hidden="true" />
         </th>
-        <th className="tasks-detail-header desktop-view" scope="col" data-tip="Resources">
+        <th className={styles['tasks-detail-header']} scope="col" data-tip="Resources">
           <i className="fa fa-users" aria-hidden="true" />
         </th>
-        <th scope="col" data-tip="Assigned" className='tasks-detail-header'>
+        <th scope="col" data-tip="Assigned" className={styles['tasks-detail-header']}>
           <i className="fa fa-user-circle-o" aria-hidden="true" />
         </th>
-        <th className="tasks-detail-header desktop-view" scope="col" data-tip="Status">
+        <th className={styles['tasks-detail-header']} scope="col" data-tip="Status">
           <i className="fa fa-tasks" aria-hidden="true" />
         </th>
-        <th className="tasks-detail-header desktop-view" scope="col" data-tip="Hours-Best">
+        <th className={styles['tasks-detail-header']} scope="col" data-tip="Hours-Best">
           <i className="fa fa-hourglass-start" aria-hidden="true" />
         </th>
-        <th className="tasks-detail-header desktop-view" scope="col" data-tip="Hours-Worst">
+        <th className={styles['tasks-detail-header']} scope="col" data-tip="Hours-Worst">
           <i className="fa fa-hourglass" aria-hidden="true" />
         </th>
-        <th className="tasks-detail-header desktop-view" scope="col" data-tip="Hours-Most">
+        <th className={styles['tasks-detail-header']} scope="col" data-tip="Hours-Most">
           <i className="fa fa-hourglass-half" aria-hidden="true" />
         </th>
-        <th className="tasks-detail-header desktop-view" scope="col" data-tip="Estimated Hours">
+        <th className={styles['tasks-detail-header']} scope="col" data-tip="Estimated Hours">
           <i className="fa fa-clock-o" aria-hidden="true" />
         </th>
-        <th className="tasks-detail-header desktop-view" scope="col" data-tip="Start Date">
+        <th className={styles['tasks-detail-header']} scope="col" data-tip="Start Date">
           <i className="fa fa-calendar-check-o" aria-hidden="true" /> Start
         </th>
-        <th className="tasks-detail-header desktop-view" scope="col" data-tip="Due Date">
+        <th className={styles['tasks-detail-header']} scope="col" data-tip="Due Date">
           <i className="fa fa-calendar-times-o" aria-hidden="true" /> End
         </th>
-        <th className="tasks-detail-header desktop-view" scope="col" data-tip="Links">
+        <th className={styles['tasks-detail-header']} scope="col" data-tip="Links">
           <i className="fa fa-link" aria-hidden="true" />
         </th>
-        <th className="tasks-detail-header desktop-view" scope="col" data-tip="Details">
+        <th className={styles['tasks-detail-header']} scope="col" data-tip="Details">
           <i className="fa fa-question" aria-hidden="true" />
         </th>
       </tr>
@@ -255,65 +256,66 @@ function WBSTasks(props) {
   return (
     <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{ minHeight: '100%' }}>
       <ReactTooltip delayShow={300} />
-      <div className="container-tasks m-0 p-2">
+      <div className={`${styles['container-tasks']} m-0 p-4`}>
         {renderBreadcrumb()}
         {renderButtonGroup()}
-
-        <table
-          className={`table table-bordered tasks-table ${darkMode ? 'text-light' : ''}`}
-          ref={myRef}
-        >
-          {renderTableHeader()}
-          <tbody>
-            {filterTasks(
-              tasks.filter(task => task.level === 1),
-              filterState,
-            ).map((task, i) => (
-              <Task
-                copyCurrentTask={setCopiedTask}
-                key={`${task._id}${i}`}
-                taskId={task._id}
-                level={task.level}
-                num={task.num}
-                name={task.taskName}
-                priority={task.priority}
-                resources={task.resources}
-                isAssigned={task.isAssigned}
-                status={task.status}
-                hoursBest={task.hoursBest}
-                hoursMost={task.hoursMost}
-                hoursWorst={task.hoursWorst}
-                estimatedHours={task.estimatedHours}
-                startedDatetime={task.startedDatetime}
-                dueDatetime={task.dueDatetime}
-                links={task.links}
-                projectId={projectId}
-                wbsId={wbsId}
-                parentId1={task.parentId1}
-                parentId2={task.parentId2}
-                parentId3={task.parentId3}
-                mother={task.mother}
-                openAll={openAll}
-                deleteWBSTask={deleteWBSTask}
-                hasChildren={task.hasChildren}
-                siblings={levelOneTasks}
-                whyInfo={task.whyInfo}
-                intentInfo={task.intentInfo}
-                endstateInfo={task.endstateInfo}
-                childrenQty={task.childrenQty}
-                filterTasks={filterTasks}
-                filterState={filterState}
-                controllerId={controllerId}
-                setControllerId={setControllerId}
-                tasks={tasks}
-                load={refresh}
-                pageLoadTime={pageLoadTime}
-                setIsLoading={() => {}}
-                darkMode={darkMode}
-              />
-            ))}
-          </tbody>
-        </table>
+        <div className={`${styles['tasks-table']} mb-5`}>
+          <table
+            className={`${styles['table']} table table-bordered ${darkMode ? 'text-light' : ''}`}
+            ref={myRef}
+          >
+            {renderTableHeader()}
+            <tbody>
+              {filterTasks(
+                tasks.filter(task => task.level === 1),
+                filterState,
+              ).map((task, i) => (
+                <Task
+                  copyCurrentTask={setCopiedTask}
+                  key={`${task._id}${i}`}
+                  taskId={task._id}
+                  level={task.level}
+                  num={task.num}
+                  name={task.taskName}
+                  priority={task.priority}
+                  resources={task.resources}
+                  isAssigned={task.isAssigned}
+                  status={task.status}
+                  hoursBest={task.hoursBest}
+                  hoursMost={task.hoursMost}
+                  hoursWorst={task.hoursWorst}
+                  estimatedHours={task.estimatedHours}
+                  startedDatetime={task.startedDatetime}
+                  dueDatetime={task.dueDatetime}
+                  links={task.links}
+                  projectId={projectId}
+                  wbsId={wbsId}
+                  parentId1={task.parentId1}
+                  parentId2={task.parentId2}
+                  parentId3={task.parentId3}
+                  mother={task.mother}
+                  openAll={openAll}
+                  deleteWBSTask={deleteWBSTask}
+                  hasChildren={task.hasChildren}
+                  siblings={levelOneTasks}
+                  whyInfo={task.whyInfo}
+                  intentInfo={task.intentInfo}
+                  endstateInfo={task.endstateInfo}
+                  childrenQty={task.childrenQty}
+                  filterTasks={filterTasks}
+                  filterState={filterState}
+                  controllerId={controllerId}
+                  setControllerId={setControllerId}
+                  tasks={tasks}
+                  load={refresh}
+                  pageLoadTime={pageLoadTime}
+                  setIsLoading={() => {}}
+                  darkMode={darkMode}
+                />
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
