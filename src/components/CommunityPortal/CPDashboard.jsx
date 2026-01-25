@@ -1,147 +1,373 @@
 import { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, CardBody, Button, Input } from 'reactstrap';
+import { useSelector } from 'react-redux';
+import { Container, Row, Col, Card, CardBody, Button, Input, FormGroup, Label } from 'reactstrap';
+import { FaCalendarAlt, FaMapMarkerAlt, FaUserAlt, FaSearch, FaTimes } from 'react-icons/fa';
 import styles from './CPDashboard.module.css';
-import { FaCalendarAlt, FaMapMarkerAlt, FaUserAlt } from 'react-icons/fa';
+import { ENDPOINTS } from '../../utils/URL';
+import axios from 'axios';
+
+const FixedRatioImage = ({ src, alt, fallback }) => (
+  <div
+    style={{
+      width: '100%',
+      aspectRatio: '4 / 3',
+      overflow: 'hidden',
+      background: '#f2f2f2',
+    }}
+  >
+    <img
+      src={src || fallback}
+      alt={alt}
+      loading="lazy"
+      onError={e => {
+        if (e.currentTarget.src !== fallback) e.currentTarget.src = fallback;
+      }}
+      style={{
+        width: '100%',
+        height: '100%',
+        objectFit: 'cover',
+        display: 'block',
+      }}
+    />
+  </div>
+);
 
 export function CPDashboard() {
   const [events, setEvents] = useState([]);
-  const [search, setSearch] = useState('');
+  const [searchInput, setSearchInput] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [onlineOnly, setOnlineOnly] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [dateFilter, setDateFilter] = useState('');
+  const [error, setError] = useState(null);
+  const darkMode = useSelector(state => state.theme.darkMode);
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalPages: 5,
+    total: 0,
+    limit: 6,
+  });
+
+  const FALLBACK_IMG =
+    'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=600&q=60';
 
   useEffect(() => {
-    const mockEvents = [
-      {
-        id: 1,
-        title: 'PGSA Lunch Talks',
-        date: 'Friday, December 6 at 12:00PM EST',
-        location: 'Disque 919',
-        organizer: 'Physics Graduate Student Association',
-        image: 'https://via.placeholder.com/300',
-      },
-      {
-        id: 2,
-        title: 'Hot Chocolate/Bake Sale',
-        date: 'Friday, December 6 at 12:00PM EST',
-        location: 'G.C LeBow - Lobby Tabling Space 2',
-        organizer: 'Kappa Phi Gamma, Sorority Inc.',
-        image: 'https://via.placeholder.com/300',
-      },
-      {
-        id: 3,
-        title: 'Holiday Lunch',
-        date: 'Friday, December 6 at 12:00PM EST',
-        location: 'Hill Conference Room',
-        organizer: 'Chemical and Biological Engineering Graduate Society',
-        image: 'https://via.placeholder.com/300',
-      },
-    ];
-    setEvents(mockEvents);
+    const fetchEvents = async () => {
+      setIsLoading(true);
+
+      try {
+        const response = await axios.get(ENDPOINTS.EVENTS);
+        setEvents(response.data.events || []);
+        setPagination(prev => ({
+          ...prev,
+          total: response.data.events?.length || 0,
+        }));
+      } catch (err) {
+        setError('Failed to load events');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchEvents();
   }, []);
 
+  const handleSearchClick = () => {
+    const trimmed = searchInput.trim();
+    setSearchQuery(trimmed);
+    setPagination(prev => ({ ...prev, currentPage: 1 }));
+  };
+
+  const handleSearchKeyDown = e => {
+    if (e.key === 'Enter') {
+      const trimmed = searchInput.trim();
+      setSearchQuery(trimmed);
+      setPagination(prev => ({ ...prev, currentPage: 1 }));
+    }
+  };
+
+  const formatDate = dateStr => {
+    if (!dateStr) return 'Date TBD';
+    const date = new Date(dateStr);
+    return date.toLocaleString('en-US', {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+    });
+  };
+
+  function isTomorrow(dateString) {
+    const input = new Date(dateString);
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+
+    return input >= tomorrow && input < new Date(tomorrow.getTime() + 24 * 60 * 60 * 1000);
+  }
+
+  function isComingWeekend(dateString) {
+    const input = new Date(dateString);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const day = today.getDay();
+    const daysUntilSaturday = (6 - day + 7) % 7 || 7;
+    const saturday = new Date(today);
+    saturday.setDate(today.getDate() + daysUntilSaturday);
+    const sunday = new Date(saturday);
+    sunday.setDate(saturday.getDate() + 1);
+    sunday.setHours(23, 59, 59, 999);
+
+    return input >= saturday && input <= sunday;
+  }
+
+  const filteredEvents = events.filter(event => {
+    // Filter by online only if checkbox is checked
+    if (onlineOnly) {
+      const isOnlineEvent = event.location?.toLowerCase() === 'virtual';
+      if (!isOnlineEvent) return false;
+    }
+
+    // Filter by date filter
+    if (dateFilter === 'tomorrow') {
+      return isTomorrow(event.date);
+    } else if (dateFilter === 'weekend') {
+      return isComingWeekend(event.date);
+    }
+
+    // Filter by search query if provided
+    if (!searchQuery) return true;
+    const term = searchQuery.toLowerCase();
+
+    return (
+      event.title?.toLowerCase().includes(term) ||
+      event.location?.toLowerCase().includes(term) ||
+      event.organizer?.toLowerCase().includes(term)
+    );
+  });
+
+  const totalPages = Math.ceil(filteredEvents.length / pagination.limit) || 1;
+
+  const displayedEvents = filteredEvents.slice(
+    (pagination.currentPage - 1) * pagination.limit,
+    pagination.currentPage * pagination.limit,
+  );
+
+  const goToPage = newPage => {
+    if (newPage < 1 || newPage > totalPages) return;
+    setPagination(prev => ({ ...prev, currentPage: newPage }));
+  };
+
+  if (isLoading) {
+    return (
+      <Container className={styles.dashboardContainer}>
+        <p>Loading events...</p>
+      </Container>
+    );
+  }
+
+  if (error) {
+    return (
+      <Container className={styles.dashboardContainer}>
+        <p className={styles.errorText}>{error}</p>
+      </Container>
+    );
+  }
+
   return (
-    <Container fluid className={styles.dashboardContainer}>
-      <header className={styles.dashboardHeader}>
+    <Container className={styles.cp_dashboard_container}>
+      <header className={styles.cp_dashboard_header}>
         <h1>All Events</h1>
-        <div className="dashboard-controls">
-          <div className={styles.dashboardSearchContainer}>
+        <div>
+          <div className={styles.cp_dashboard_search_container}>
             <Input
+              id="search"
               type="search"
               placeholder="Search events..."
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              className="dashboard-search"
+              value={searchInput}
+              onChange={e => setSearchInput(e.target.value)}
+              onKeyDown={handleSearchKeyDown}
+              className={styles.dashboardSearchInput}
             />
+
+            {searchInput && (
+              <button
+                type="button"
+                className={styles.dashboardClearBtn}
+                onClick={() => {
+                  setSearchInput('');
+                  setSearchQuery('');
+                  setPagination(prev => ({ ...prev, currentPage: 1 }));
+                }}
+              >
+                <FaTimes />
+              </button>
+            )}
+
+            <button
+              type="button"
+              className={styles.dashboardSearchIconBtn}
+              onClick={handleSearchClick}
+              aria-label="Search events"
+            >
+              <FaSearch />
+            </button>
           </div>
-          {/* <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown} className="community-dropdown">
-            <DropdownToggle caret color="secondary">
-              Community Portal
-            </DropdownToggle>
-            <DropdownMenu>
-              <DropdownItem onClick={() => handleNavigation('/home')}>Home</DropdownItem>
-              <DropdownItem onClick={() => handleNavigation('/events')}>Events</DropdownItem>
-              <DropdownItem onClick={() => handleNavigation('/about')}>About Us</DropdownItem>
-              <DropdownItem onClick={() => handleNavigation('/contact')}>Contact</DropdownItem>
-            </DropdownMenu>
-          </Dropdown> */}
         </div>
       </header>
 
-      <Row>
-        <Col md={3} className={styles.dashboardSidebar}>
+      <Row className={styles.centeredRow}>
+        <Col md={3} className={`${styles.dashboardSidebar} ${darkMode ? styles.darkSidebar : ''}`}>
           <div className={styles.filterSection}>
             <h4>Search Filters</h4>
-            <div className={styles.filterItem}>
-              <div className={styles.filterLabel}>Dates</div>
-              <div className={styles.filterOptionsHorizontal}>
-                <div>
-                  <Input type="radio" name="dates" id="date-tomorrow" />{' '}
-                  <label htmlFor="date-tomorrow">Tomorrow</label>
+            <div className={styles.filterSectionDivider}>
+              <div className={styles.filterItem}>
+                <label htmlFor="date-tomorrow"> Dates</label>
+                <div className={styles.radioRow}>
+                  <FormGroup check className={styles.radioGroup + ' d-flex align-items-center'}>
+                    <Input
+                      id="date-tomorrow"
+                      type="radio"
+                      name="dates"
+                      checked={dateFilter === 'tomorrow'}
+                      onChange={() => setDateFilter('tomorrow')}
+                      className={styles.radioInput}
+                    />
+                    <Label
+                      htmlFor="date-tomorrow"
+                      check
+                      className={styles.radioLabel + ' ms-2 mb-0'}
+                    >
+                      Tomorrow
+                    </Label>
+                  </FormGroup>
+                  <FormGroup check className={styles.radioGroup + ' d-flex align-items-center'}>
+                    <Input
+                      id="date-weekend"
+                      type="radio"
+                      name="dates"
+                      checked={dateFilter === 'weekend'}
+                      onChange={() => setDateFilter('weekend')}
+                      className={styles.radioInput}
+                    />
+                    <Label
+                      htmlFor="date-weekend"
+                      check
+                      className={styles.radioLabel + ' ms-2 mb-0'}
+                    >
+                      This Weekend
+                    </Label>
+                  </FormGroup>
                 </div>
-                <div>
-                  <Input type="radio" name="dates" id="date-weekend" />{' '}
-                  <label htmlFor="date-weekend">This Weekend</label>
+                <div className={styles.dashboardActions}>
+                  <Button color="primary" onClick={() => setDateFilter('')}>
+                    Clear date filter
+                  </Button>
                 </div>
               </div>
-              <Input type="date" placeholder="Ending After" className={styles.dateFilter} />
-            </div>
-            <div className={styles.filterItem}>
-              <div className={styles.filterLabel}>Online</div>
-              <div className={styles.filterCheckboxContainer}>
+
+              <div className={styles.filterItem}>
+                <label htmlFor="online-only">Online</label>
                 <div>
-                  <Input type="checkbox" id="online-checkbox" />{' '}
-                  <label htmlFor="online-checkbox">Online Only</label>
+                  <Input
+                    type="checkbox"
+                    id="online-only"
+                    checked={onlineOnly}
+                    onChange={e => {
+                      setOnlineOnly(e.target.checked);
+                      setPagination(prev => ({ ...prev, currentPage: 1 }));
+                    }}
+                  />{' '}
+                  Online Only
                 </div>
               </div>
-            </div>
-            <div className={styles.filterItem}>
-              <label htmlFor="branches">Branches</label>
-              <Input type="select">
-                <option>Select branches</option>
-              </Input>
-            </div>
-            <div className={styles.filterItem}>
-              <label htmlFor="themes">Themes</label>
-              <Input type="select">
-                <option>Select themes</option>
-              </Input>
-            </div>
-            <div className={styles.filterItem}>
-              <label htmlFor="categories">Categories</label>
-              <Input type="select">
-                <option>Select categories</option>
-              </Input>
+
+              <div className={styles.filterItem}>
+                <label htmlFor="branches">Branches</label>
+                <Input type="select">
+                  <option>Select branches</option>
+                </Input>
+              </div>
+
+              <div className={styles.filterItem}>
+                <label htmlFor="themes">Themes</label>
+                <Input type="select">
+                  <option>Select themes</option>
+                </Input>
+              </div>
+
+              <div className={styles.filterItem}>
+                <label htmlFor="categories">Categories</label>
+                <Input type="select">
+                  <option>Select categories</option>
+                </Input>
+              </div>
             </div>
           </div>
         </Col>
 
-        <Col md={9} className={styles.dashboardMain}>
+        <Col md={9} className={`${styles.dashboardMain} ${darkMode ? styles.darkMain : ''}`}>
           <h2 className={styles.sectionTitle}>Events</h2>
+
           <Row>
-            {events.length > 0 ? (
-              events.map(event => (
-                <Col md={4} key={event.id} className="event-card-col">
+            {displayedEvents.length > 0 ? (
+              displayedEvents.map(event => (
+                <Col md={4} key={event.id} className={styles.eventCardCol}>
                   <Card className={styles.eventCard}>
                     <div className={styles.eventCardImgContainer}>
-                      <img src={event.image} alt={event.title} className="event-card-img" />
+                      <FixedRatioImage
+                        src={event.image}
+                        alt={event.title}
+                        fallback={FALLBACK_IMG}
+                      />
                     </div>
                     <CardBody>
                       <h5 className={styles.eventTitle}>{event.title}</h5>
                       <p className={styles.eventDate}>
-                        <FaCalendarAlt className="event-icon" /> {event.date}
+                        <FaCalendarAlt /> {formatDate(event.date)}
                       </p>
                       <p className={styles.eventLocation}>
-                        <FaMapMarkerAlt className="event-icon" /> {event.location}
+                        <FaMapMarkerAlt /> {event.location}
                       </p>
                       <p className={styles.eventOrganizer}>
-                        <FaUserAlt className="event-icon" /> {event.organizer}
+                        <FaUserAlt /> {event.organizer}
                       </p>
                     </CardBody>
                   </Card>
                 </Col>
               ))
             ) : (
-              <div className="no-events">No events available</div>
+              <div className={styles.noEvents}>No events available</div>
             )}
           </Row>
+
+          {/* Simple pagination controls if needed */}
+          {totalPages > 1 && (
+            <div className={styles.paginationContainer}>
+              <Button
+                color="secondary"
+                disabled={pagination.currentPage === 1}
+                onClick={() => goToPage(pagination.currentPage - 1)}
+              >
+                Previous
+              </Button>
+              <span className={styles.paginationInfo}>
+                Page {pagination.currentPage} of {totalPages}
+              </span>
+              <Button
+                color="secondary"
+                disabled={pagination.currentPage === totalPages}
+                onClick={() => goToPage(pagination.currentPage + 1)}
+              >
+                Next
+              </Button>
+            </div>
+          )}
+
           <div className={styles.dashboardActions}>
             <Button color="primary">Show Past Events</Button>
           </div>
