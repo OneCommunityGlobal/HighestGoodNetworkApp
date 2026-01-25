@@ -194,24 +194,6 @@ body.bm-dashboard-dark .table-striped > tbody > tr:nth-of-type(odd) {
   color: #ffffff !important;
 }
 
-body.dark-mode .modal-content,
-body.bm-dashboard-dark .modal-content {
-  background-color: #2e5061;
-  color: #ffffff !important;
-}
-
-body.dark-mode .modal-header,
-body.bm-dashboard-dark .modal-header {
-  background-color: #3a506b;
-  border-color: #4a6072;
-  color: #ffffff !important;
-}
-
-body.dark-mode .modal-title,
-body.bm-dashboard-dark .modal-title {
-  color: #ffffff !important;
-}
-
 body.dark-mode .modal-body,
 body.bm-dashboard-dark .modal-body {
   color: #ffffff !important;
@@ -368,4 +350,97 @@ body.bm-dashboard-dark .page-item.active .page-link {
   .tab-content {
   background-color: transparent;
   border: none;
+}
+
+/* Update these sections in your index.css */
+
+/* Explicit targeting for all input types and selects */
+body.dark-mode .form-control,
+body.bm-dashboard-dark .form-control,
+body.dark-mode select,
+body.bm-dashboard-dark select,
+body.dark-mode input[type="text"] {
+    background-color: #1e293b !important; /* Darker navy for input fields */
+    color: #ffffff !important;
+    border: 1px solid #334155 !important;
+}
+
+/* Fix for the Project and Tool dropdown arrows and internal padding */
+body.dark-mode select.form-control,
+body.bm-dashboard-dark select.form-control {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 0.75rem center !important;
+    background-size: 16px 12px !important;
+}
+
+/* Ensure placeholder text is visible but muted */
+body.dark-mode .form-control::placeholder {
+    color: #94a3b8 !important;
+}
+
+/* Styling for the options inside the dropdowns */
+body.dark-mode option,
+body.bm-dashboard-dark option {
+    background-color: #1e293b !important;
+    color: #ffffff !important;
+}
+
+/* GLOBAL OVERRIDE: This will fix all modals in the project at once */
+body.dark-mode .modal-content,
+body.bm-dashboard-dark .modal-content {
+    background-color: #1b2a41 !important;
+    border: 1px solid #2e3d55 !important;
+    color: #ffffff !important;
+}
+
+body.dark-mode .modal-header,
+body.dark-mode .modal-body,
+body.dark-mode .modal-footer,
+body.bm-dashboard-dark .modal-header,
+body.bm-dashboard-dark .modal-body,
+body.bm-dashboard-dark .modal-footer {
+    background-color: #1b2a41 !important;
+    color: #ffffff !important;
+    border-color: #2e3d55 !important;
+}
+
+
+/* Force Project and Tool dropdowns to stay dark */
+body.dark-mode .form-control,
+body.dark-mode select,
+body.dark-mode input {
+    background-color: #1e293b !important;
+    color: #ffffff !important;
+    border: 1px solid #334155 !important;
+}
+
+/* Fixes the white dropdown arrow issues */
+body.dark-mode select.form-control {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e") !important;
+}
+
+/* index.css */
+
+/* Applied to all modals globally to ensure differentiation */
+body.dark-mode .modal-header,
+body.bm-dashboard-dark .modal-header {
+    background-color: #24344d !important; /* Slightly lighter than the body #1b2a41 */
+    border-bottom: 1px solid #334155 !important; /* Prominent separator line */
+    color: #ffffff !important;
+    padding: 1rem 1.5rem;
+}
+
+/* Ensure the title inside stands out */
+body.dark-mode .modal-title,
+body.bm-dashboard-dark .modal-title {
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+body.dark-mode .modal-content .table thead th {
+    background-color: #2d3d5a !important; /* Distinct table header color */
+    color: #ffffff !important;
+    border-bottom: 2px solid #334155 !important;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
 }
