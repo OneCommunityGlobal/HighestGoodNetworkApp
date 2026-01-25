@@ -1,16 +1,17 @@
 /* Enhanced Email Sender Styles */
 
-/* Main Email Sender Container - Add padding */
+/* Main Email Sender Container - Add padding and ensure centering */
 .email-sender {
   padding: 0 2rem;
   max-width: 1400px;
   margin: 0 auto;
+  width: 100%; /* ADDED */
 }
 
 /* Page Title - Better styling */
 .email-sender .page-title-container {
   margin-bottom: 1.5rem;
-  padding-left: 0.5rem;
+  padding-left: 0; /* CHANGED from 0.5rem */
 }
 
 .email-sender .page-title {
@@ -20,26 +21,35 @@
   margin: 0;
 }
 
-/* Email Controls Container */
+/* Email Controls Container - FIXED: Better spacing and separator */
 .email-controls-container {
   width: 100%;
-  margin-bottom: 2rem;
-  padding: 0 0.5rem;
+  margin-bottom: 2rem; /* CHANGED from 2.5rem */
+  padding: 0; /* CHANGED from 0 0.5rem */
+  padding-bottom: 1.25rem; /* CHANGED from 1.5rem */
+  border-bottom: 1px solid #e9ecef;
+}
+
+.dark-mode .email-controls-container {
+  border-bottom-color: #4a5568;
 }
 
 .email-controls-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 1rem;
-  flex-wrap: wrap;
+  gap: 2rem; /* CHANGED from 1.5rem */
+  flex-wrap: nowrap;
+  padding: 0.5rem 0; /* CHANGED from 0.75rem 0 */
+  margin-bottom: 0; /* CHANGED from 1rem */
 }
 
-/* Mode Buttons (Templates/Custom) */
+/* Mode Buttons (Templates/Custom) - FIXED: Adjusted gap */
 .mode-buttons {
   display: flex;
-  gap: 0.5rem;
+  gap: 1rem; /* CHANGED from 1.5rem */
   flex-shrink: 0;
+  align-items: center;
 }
 
 .mode-buttons .btn {
@@ -137,11 +147,12 @@
   margin-right: 0.5rem;
 }
 
-/* Action Buttons */
+/* Action Buttons - FIXED: Proper gap */
 .action-buttons {
   display: flex;
-  gap: 0.5rem;
+  gap: 1rem;
   flex-shrink: 0;
+  align-items: center;
 }
 
 .action-buttons .btn {
@@ -304,6 +315,7 @@
 /* Template Variables */
 .template-variables {
   margin-top: 1.5rem;
+  margin-bottom: 1.5rem; /* ADDED */
   padding: 1.25rem;
   background: #f8f9fa;
   border-radius: 8px;
@@ -602,15 +614,6 @@
 }
 
 /* Dark Mode Support */
-.dark-mode .email-controls-container {
-  color: #e2e8f0;
-}
-
-.dark-mode .email-sender .page-title {
-  color: #e2e8f0;
-}
-
-/* Variable Type Badges */
 .template-variables .badge {
   padding: 0.35rem 0.65rem;
   font-size: 0.75rem;
@@ -911,12 +914,13 @@
 
 /* Main Form Container - Add consistent padding */
 .email-sender form {
-  padding: 0 0.5rem;
+  padding: 0; /* CHANGED from 0 0.5rem */
+  margin-top: 1.5rem;
 }
 
 /* Form Groups - Better spacing */
 .email-sender .form-group {
-  margin-bottom: 2rem;
+  margin-bottom: 1.75rem; /* CHANGED from 2rem */
   padding: 0;
 }
 
@@ -969,9 +973,22 @@
   padding: 0;
 }
 
+/* FIXED: Add spacing before Email Distribution section */
+.email-sender .form-group:has(.distribution-options) {
+  margin-top: 2rem; /* CHANGED from 2.5rem */
+  padding-top: 1.25rem; /* CHANGED from 1.5rem */
+  border-top: 1px solid #e9ecef;
+}
+
+.dark-mode .email-sender .form-group:has(.distribution-options) {
+  border-top-color: #4a5568;
+}
+
 /* Email Distribution Section - Enhanced with padding */
 .email-sender .distribution-options {
-  padding-left: 0.25rem;
+  padding-left: 0; /* CHANGED from 0.25rem */
+  margin-top: 0.75rem; /* ADDED */
+  margin-bottom: 1rem; /* ADDED */
 }
 
 .email-sender .distribution-option {

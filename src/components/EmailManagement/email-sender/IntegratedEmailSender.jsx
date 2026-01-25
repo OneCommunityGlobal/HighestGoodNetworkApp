@@ -107,7 +107,7 @@ const VariableRow = React.memo(
           onImageLoadStatusChange(variable.name, false);
         }
       }
-    }, [youtubeId, qualityIndex, qualities.length]);
+    }, [youtubeId, qualityIndex, qualities.length, onImageLoadStatusChange, variable.name]);
 
     const handleImageLoad = useCallback(() => {
       setImgError(false);
@@ -1236,7 +1236,7 @@ const IntegratedEmailSender = ({
     handlePreview();
   }, [validateForm, handlePreview]);
 
-  // Send email from preview modal
+  // Send email from preview modal - FIXED FOR ISSUE 5
   const handleSendFromPreview = useCallback(async () => {
     dispatch({ type: 'SET_IS_SENDING', payload: true });
 
@@ -1300,6 +1300,8 @@ const IntegratedEmailSender = ({
           autoClose: 3000,
         });
 
+        // FIXED: Reset modal states BEFORE closing
+        dispatch({ type: 'SET_IS_SENDING', payload: false });
         dispatch({ type: 'SET_SHOW_PREVIEW_MODAL', payload: false });
         dispatch({ type: 'SET_BACKEND_PREVIEW_DATA', payload: null });
         dispatch({ type: 'SET_PREVIEW_ERROR', payload: null });
@@ -1340,6 +1342,8 @@ const IntegratedEmailSender = ({
           autoClose: 3000,
         });
 
+        // FIXED: Reset modal states BEFORE closing
+        dispatch({ type: 'SET_IS_SENDING', payload: false });
         dispatch({ type: 'SET_SHOW_PREVIEW_MODAL', payload: false });
         dispatch({ type: 'SET_BACKEND_PREVIEW_DATA', payload: null });
         dispatch({ type: 'SET_PREVIEW_ERROR', payload: null });
@@ -1347,16 +1351,21 @@ const IntegratedEmailSender = ({
         resetAllStates();
       }
     } catch (error) {
+      // FIXED: Ensure isSending is reset on error
+      dispatch({ type: 'SET_IS_SENDING', payload: false });
+
       const errorMessage = error.response?.data?.message || error.message || 'Unknown error';
       toast.error(`Failed to send email: ${errorMessage}`);
+
       dispatch({
         type: 'UPDATE_VALIDATION_ERROR',
         payload: { field: 'general', error: errorMessage },
-        autoClose: 3000,
       });
-    } finally {
-      dispatch({ type: 'SET_IS_SENDING', payload: false });
+
+      // FIXED: Don't close modal on error so user can retry
+      // Modal stays open, but isSending is false so buttons are enabled again
     }
+    // REMOVED finally block - we're handling state reset in try and catch explicitly
   }, [
     useTemplate,
     selectedTemplate,
@@ -1370,6 +1379,7 @@ const IntegratedEmailSender = ({
     resetAllStates,
     currentUser,
   ]);
+
   const handleRestoreDraft = useCallback(async () => {
     const draft = loadDraft();
 
@@ -1441,6 +1451,7 @@ const IntegratedEmailSender = ({
       toast.success('Draft cleared successfully', { autoClose: 2000 });
     }
   }, []);
+
   // Memoized TinyMCE configuration
   const TINY_MCE_INIT_OPTIONS = useMemo(() => getEmailSenderConfig(darkMode), [darkMode]);
 
@@ -1576,15 +1587,6 @@ const IntegratedEmailSender = ({
             >
               ✏️ Custom
             </Button>
-            {/* <Button
-              color={emailMode === EMAIL_MODES.WEEKLY_UPDATE ? 'info' : 'outline-info'}
-              onClick={() => handleModeChange(EMAIL_MODES.WEEKLY_UPDATE)}
-              aria-pressed={emailMode === EMAIL_MODES.WEEKLY_UPDATE}
-              aria-label="Send weekly progress update"
-              title="Send weekly progress update (simplified form)"
-            >
-              📰 Weekly Update
-            </Button> */}
           </div>
           <div className="action-buttons">
             <Button
@@ -2053,9 +2055,6 @@ const IntegratedEmailSender = ({
           </FormGroup>
         </Form>
       )}
-
-      {/* Weekly Update Mode */}
-      {/* {emailMode === EMAIL_MODES.WEEKLY_UPDATE && <WeeklyUpdateComposer onClose={onClose} />} */}
 
       {/* Preview & Send Modal */}
       <Modal

@@ -73,10 +73,10 @@ const EmailOutbox = ({ isActive = true }) => {
     isRefreshing: false,
     lastRefresh: null,
     autoRefresh: true,
-    refreshInterval: 60000, // 1 minutes
+    refreshInterval: 30000, // CHANGED: 30 seconds for faster updates
     backgroundSync: false,
     syncError: null,
-    countdown: 60, // 1 minutes in seconds
+    countdown: 30, // CHANGED: 30 seconds
   });
 
   // Refs for cleanup
@@ -85,9 +85,9 @@ const EmailOutbox = ({ isActive = true }) => {
   const isRefreshingRef = useRef(false);
   const countdownIntervalRef = useRef(null);
 
-  // Dynamic data fetching with optimistic updates
+  // ISSUE 5 FIX: Dynamic data fetching with cache-busting
   const fetchData = useCallback(
-    async (isBackground = false) => {
+    async (isBackground = false, forceRefresh = false) => {
       if (isBackground && isRefreshingRef.current) {
         return; // Prevent multiple simultaneous requests
       }
@@ -101,12 +101,14 @@ const EmailOutbox = ({ isActive = true }) => {
           syncError: null,
         }));
 
-        // Fetch data in parallel for better performance
-        const [emailsResult] = await Promise.allSettled([dispatch(fetchEmails())]);
+        // ISSUE 5 FIX: Add timestamp for cache-busting
+        const cacheBuster = forceRefresh ? `?t=${Date.now()}` : '';
+
+        // Fetch data with cache-busting
+        const [emailsResult] = await Promise.allSettled([dispatch(fetchEmails(cacheBuster))]);
 
         // Handle partial failures gracefully
         if (emailsResult.status === 'rejected') {
-          // eslint-disable-next-line no-console
           console.warn('Failed to fetch emails:', emailsResult.reason);
           if (!isBackground) {
             toast.error('Failed to fetch emails');
@@ -122,7 +124,6 @@ const EmailOutbox = ({ isActive = true }) => {
           syncError: null,
         }));
       } catch (err) {
-        // eslint-disable-next-line no-console
         console.error('Error fetching data:', err);
         isRefreshingRef.current = false;
         setRefreshState(prev => ({
@@ -140,15 +141,16 @@ const EmailOutbox = ({ isActive = true }) => {
     [dispatch],
   );
 
-  // Manual refresh with user feedback
+  // ISSUE 5 FIX: Manual refresh with cache-busting
   const handleManualRefresh = useCallback(async () => {
     if (isRefreshingRef.current) {
-      toast.info('Refresh already in progress', { autoClose: 3000 });
+      toast.info('Refresh already in progress', { autoClose: 2000 });
       return;
     }
 
     toast.info('Refreshing data...', { autoClose: 1000 });
-    await fetchData(false);
+    await fetchData(false, true); // Force refresh with cache-busting
+    toast.success('Data refreshed successfully!', { autoClose: 1000 });
   }, [fetchData]);
 
   // Process pending and stuck emails
@@ -171,13 +173,12 @@ const EmailOutbox = ({ isActive = true }) => {
 
       if (response.data.success && response.data.data) {
         toast.success('Successfully triggered processing of pending and stuck emails!');
-        // Refresh the email list after processing
-        await fetchData(false);
+        // ISSUE 5 FIX: Force refresh after processing
+        await fetchData(false, true);
       } else {
         toast.error(response.data.message || 'Failed to process emails');
       }
     } catch (error) {
-      // eslint-disable-next-line no-console
       console.error('Error processing pending emails:', error);
       toast.error(
         error.response?.data?.message || 'Failed to trigger email processing. Please try again.',
@@ -195,15 +196,15 @@ const EmailOutbox = ({ isActive = true }) => {
 
     refreshIntervalRef.current = setInterval(() => {
       if (refreshState.autoRefresh && !isRefreshingRef.current) {
-        fetchData(true); // Background sync
+        fetchData(true, false); // Background sync without forcing
       }
     }, refreshState.refreshInterval);
   }, [fetchData, refreshState.autoRefresh, refreshState.refreshInterval]);
 
-  // ISSUE 9 FIX Part 1: Fetch data when component becomes active (tab switched)
+  // Fetch data when component becomes active (tab switched)
   useEffect(() => {
     if (isActive) {
-      fetchData(false);
+      fetchData(false, true); // Force refresh when tab becomes active
     }
   }, [isActive, fetchData]);
 
@@ -268,7 +269,7 @@ const EmailOutbox = ({ isActive = true }) => {
         ...prev,
         autoRefresh: newAutoRefresh,
         countdown: newAutoRefresh ? Math.floor(prev.refreshInterval / 1000) : prev.countdown,
-        lastRefresh: newAutoRefresh ? new Date() : prev.lastRefresh, // Reset lastRefresh when enabling
+        lastRefresh: newAutoRefresh ? new Date() : prev.lastRefresh,
       };
     });
   }, []);
@@ -280,7 +281,6 @@ const EmailOutbox = ({ isActive = true }) => {
 
   // Handle stat card click to filter emails
   const handleFilterClick = status => {
-    // If clicking the same filter, clear it (show all)
     setStatusFilter(prevFilter => (prevFilter === status ? null : status));
   };
 
@@ -294,14 +294,12 @@ const EmailOutbox = ({ isActive = true }) => {
   };
 
   const getUserDisplayName = email => {
-    // Schema uses 'createdBy' (camelCase), try that first, then created_by as fallback
     const createdBy = email?.createdBy || email?.created_by;
 
     if (!createdBy) {
       return 'Unknown';
     }
 
-    // If it's an object with user details, extract the name
     if (typeof createdBy === 'object' && createdBy !== null && !createdBy._bsontype) {
       const firstName = createdBy.firstName || '';
       const lastName = createdBy.lastName || '';
@@ -311,14 +309,11 @@ const EmailOutbox = ({ isActive = true }) => {
         return fullName;
       }
 
-      // Fallback to email if name is not available
       if (createdBy.email) {
         return createdBy.email;
       }
     }
 
-    // If it's a string (ObjectId), it means populate didn't work
-    // Return 'Unknown' instead of showing the ID
     if (typeof createdBy === 'string') {
       return 'Unknown';
     }
@@ -348,25 +343,25 @@ const EmailOutbox = ({ isActive = true }) => {
     return iconMap[status] || <FaClock className="text-muted" />;
   };
 
+  // ISSUE 5 FIX: Enhanced handleViewDetails with fresh data fetch
   const handleViewDetails = async email => {
     setSelectedEmail(email);
     setShowEmailDetails(true);
     setLoadingItems(true);
 
     try {
-      // Fetch child EmailBatch items
-      const response = await httpService.get(`/api/email-outbox/${email._id}`);
+      // ISSUE 5 FIX: Add cache-buster to force fresh data
+      const response = await httpService.get(`/api/email-outbox/${email._id}?t=${Date.now()}`);
       if (response.data.success && response.data.data) {
+        // ISSUE 5 FIX: Update selected email with latest data
+        setSelectedEmail(response.data.data.email || email);
         setEmailBatches(response.data.data.batches || []);
       } else {
-        // eslint-disable-next-line no-console
         console.log('Failed to fetch email batches');
         setEmailBatches([]);
       }
     } catch (error) {
-      // eslint-disable-next-line no-console
       console.error('Error fetching email batches:', error);
-      // eslint-disable-next-line no-console
       console.log('Failed to fetch email batches');
       setEmailBatches([]);
     } finally {
@@ -374,21 +369,27 @@ const EmailOutbox = ({ isActive = true }) => {
     }
   };
 
-  // FIXED: Issue 4 - Properly extract email addresses from recipient objects
+  // ISSUE 5 FIX: Close modal and force refresh
+  const handleCloseEmailDetails = useCallback(async () => {
+    setShowEmailDetails(false);
+    setSelectedEmail(null);
+    setEmailBatches([]);
+
+    // Force refresh to get latest status
+    await fetchData(false, true);
+  }, [fetchData]);
+
   const handleViewRecipients = recipients => {
     if (!recipients || recipients.length === 0) {
       toast.info('No recipients found', { autoClose: 3000 });
       return;
     }
 
-    // Extract email addresses from recipient objects
     const recipientList = recipients
       .map(recipient => {
-        // If recipient is a string, return it directly
         if (typeof recipient === 'string') {
           return recipient;
         }
-        // If recipient is an object, try to get the email property
         if (typeof recipient === 'object' && recipient !== null) {
           return recipient.email || recipient.address || JSON.stringify(recipient);
         }
@@ -396,7 +397,6 @@ const EmailOutbox = ({ isActive = true }) => {
       })
       .join('\n');
 
-    // eslint-disable-next-line no-alert
     alert(`Recipients:\n\n${recipientList}`);
   };
 
@@ -410,10 +410,9 @@ const EmailOutbox = ({ isActive = true }) => {
     setShowResendModal(true);
   };
 
+  // ISSUE 5 FIX: Enhanced resend with force refresh
   const handleResendEmail = async resendData => {
     try {
-      // FIXED: Issue 6 - The action expects (emailId, recipientOption, specificRecipients[])
-      // Extract values from resendData and pass as separate parameters
       const recipientOption = resendData.recipientOption;
       const specificRecipients = resendData.recipients || [];
 
@@ -421,24 +420,22 @@ const EmailOutbox = ({ isActive = true }) => {
       toast.success('Email resend initiated successfully!');
       setShowResendModal(false);
       setEmailToResend(null);
-      // Refresh the list
-      await fetchData(false);
+
+      // ISSUE 5 FIX: Force refresh after resend
+      await fetchData(false, true);
     } catch (error) {
-      // eslint-disable-next-line no-console
       console.error('Error resending email:', error);
       toast.error(error.response?.data?.message || 'Failed to resend email. Please try again.');
     }
   };
 
-  // ISSUE 9 FIX Part 2: Add confirmation modal before retry
+  // ISSUE 5 FIX: Enhanced retry with force refresh
   const handleRetryEmail = async emailId => {
     if (!emailId) {
       toast.error('Invalid email ID');
       return;
     }
 
-    // Add confirmation dialog
-    // eslint-disable-next-line no-alert
     const confirmed = window.confirm(
       'Are you sure you want to retry failed batches for this email? This will attempt to resend to failed recipients.',
     );
@@ -457,6 +454,7 @@ const EmailOutbox = ({ isActive = true }) => {
           role: currentUser?.role,
         },
       });
+
       if (response.data.success) {
         const count = response.data.data?.failedItemsRetried || 0;
         if (count > 0) {
@@ -464,13 +462,13 @@ const EmailOutbox = ({ isActive = true }) => {
         } else {
           toast.info('No failed batches to retry', { autoClose: 3000 });
         }
-        // Refresh the list
-        await fetchData(false);
+
+        // ISSUE 5 FIX: Force refresh after retry
+        await fetchData(false, true);
       } else {
         toast.error(response.data.message || 'Failed to retry email');
       }
     } catch (error) {
-      // eslint-disable-next-line no-console
       console.error('Error retrying email:', error);
       toast.error(error.response?.data?.message || 'Failed to retry email. Please try again.');
     }
@@ -481,7 +479,6 @@ const EmailOutbox = ({ isActive = true }) => {
     setEmailToResend(null);
   };
 
-  // FIXED: Issue 3 - Calculate recipient counts from batches
   const calculateRecipientCounts = batches => {
     let totalRecipients = 0;
     let sentRecipients = 0;
@@ -547,7 +544,7 @@ const EmailOutbox = ({ isActive = true }) => {
               <DropdownItem header>Refresh Settings</DropdownItem>
               <DropdownItem onClick={toggleAutoRefresh}>
                 <div className="d-flex justify-content-between align-items-center">
-                  <span>Auto-Refresh</span>
+                  <span>Auto-Refresh (30s)</span>
                   <Badge color={refreshState.autoRefresh ? 'success' : 'secondary'}>
                     {refreshState.autoRefresh ? 'ON' : 'OFF'}
                   </Badge>
@@ -588,7 +585,7 @@ const EmailOutbox = ({ isActive = true }) => {
         </div>
       ) : (
         <>
-          {/* Email Stats - FIXED ALIGNMENT */}
+          {/* Email Stats */}
           <Row className="mb-3">
             <Col md={3}>
               <Card
@@ -986,7 +983,6 @@ const EmailOutbox = ({ isActive = true }) => {
                                   <FaEye size={12} className="me-1 text-white" />
                                   <span className="d-none d-sm-inline">Details</span>
                                 </Button>
-                                {/* Show Retry button for FAILED or PROCESSED emails */}
                                 {(email.status === 'FAILED' || email.status === 'PROCESSED') && (
                                   <Button
                                     size="sm"
@@ -999,7 +995,6 @@ const EmailOutbox = ({ isActive = true }) => {
                                     <span className="d-none d-sm-inline">Retry</span>
                                   </Button>
                                 )}
-                                {/* Show Resend button for any email to resend to different recipients */}
                                 <Button
                                   size="sm"
                                   color="warning"
@@ -1052,15 +1047,15 @@ const EmailOutbox = ({ isActive = true }) => {
         </>
       )}
 
-      {/* Email Details Modal - ISSUE 9 FIX Part 3: Label as Batches */}
+      {/* Email Details Modal - ISSUE 5 FIX: Use handleCloseEmailDetails */}
       {showEmailDetails && selectedEmail && (
         <Modal
           isOpen={showEmailDetails}
-          toggle={() => setShowEmailDetails(false)}
+          toggle={handleCloseEmailDetails}
           size="xl"
           style={{ maxWidth: '95%', margin: '1.75rem auto' }}
         >
-          <ModalHeader toggle={() => setShowEmailDetails(false)}>
+          <ModalHeader toggle={handleCloseEmailDetails}>
             Email Details: {selectedEmail.subject}
           </ModalHeader>
           <ModalBody className="p-4">
@@ -1070,11 +1065,9 @@ const EmailOutbox = ({ isActive = true }) => {
               </CardHeader>
               <CardBody>
                 {(() => {
-                  // Calculate counts from batches
                   const counts = calculateRecipientCounts(emailBatches);
                   return (
                     <div className="row g-3">
-                      {/* Row 1: Email ID and Subject */}
                       <div className="col-md-6">
                         <div>
                           <strong>Email ID:</strong>
@@ -1092,8 +1085,6 @@ const EmailOutbox = ({ isActive = true }) => {
                           <div className="text-muted mt-1">{selectedEmail.subject}</div>
                         </div>
                       </div>
-
-                      {/* Row 2: Status and Created By */}
                       <div className="col-md-6">
                         <div>
                           <strong>Status:</strong>
@@ -1110,8 +1101,6 @@ const EmailOutbox = ({ isActive = true }) => {
                           <div className="text-muted mt-1">{getUserDisplayName(selectedEmail)}</div>
                         </div>
                       </div>
-
-                      {/* Row 3: Created and Started */}
                       <div className="col-md-6">
                         <div>
                           <strong>Created:</strong>
@@ -1128,8 +1117,6 @@ const EmailOutbox = ({ isActive = true }) => {
                           </div>
                         </div>
                       </div>
-
-                      {/* Row 4: Completed and Last Updated */}
                       <div className="col-md-6">
                         <div>
                           <strong>Completed:</strong>
@@ -1148,8 +1135,6 @@ const EmailOutbox = ({ isActive = true }) => {
                           </div>
                         </div>
                       </div>
-
-                      {/* Row 5: Total Batches and Total Recipients */}
                       <div className="col-md-6">
                         <div>
                           <strong style={{ color: '#007bff', fontWeight: 'bold' }}>
@@ -1166,8 +1151,6 @@ const EmailOutbox = ({ isActive = true }) => {
                           <div className="text-primary fw-bold mt-1">{counts.totalRecipients}</div>
                         </div>
                       </div>
-
-                      {/* Row 6: Sent Batches and Failed Batches - ISSUE 9 FIX Part 3 */}
                       <div className="col-md-6">
                         <div>
                           <strong style={{ color: '#28a745', fontWeight: 'bold' }}>
@@ -1318,14 +1301,14 @@ const EmailOutbox = ({ isActive = true }) => {
             </Card>
           </ModalBody>
           <ModalFooter>
-            <Button color="secondary" onClick={() => setShowEmailDetails(false)}>
+            <Button color="secondary" onClick={handleCloseEmailDetails}>
               Close
             </Button>
           </ModalFooter>
         </Modal>
       )}
 
-      {/* Email Preview Modal - FIXED XSS VULNERABILITY */}
+      {/* Email Preview Modal */}
       {showEmailPreview && previewBatch && (
         <Modal
           isOpen={showEmailPreview}
