@@ -10,14 +10,20 @@ export default defineConfig(({ mode }) => {
         '~': resolve('src/'),
       },
     },
-    // https://stackoverflow.com/a/77824845
+    server: {
+      proxy: {
+        '/api': {
+          target: 'http://localhost:4500',
+          changeOrigin: true,
+          secure: false,
+        },
+      },
+    },
     define: {
       ...Object.keys(env).reduce((prev, key) => {
         const sanitizedKey = key.replace(/[^a-zA-Z0-9_]/g, '_');
-
         // eslint-disable-next-line no-param-reassign
         prev[`process.env.${sanitizedKey}`] = JSON.stringify(env[key]);
-
         return prev;
       }, {}),
     },

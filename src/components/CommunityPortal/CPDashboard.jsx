@@ -51,17 +51,6 @@ export function CPDashboard() {
               className={styles.dashboardSearch}
             />
           </div>
-          {/* <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown} className="community-dropdown">
-            <DropdownToggle caret color="secondary">
-              Community Portal
-            </DropdownToggle>
-            <DropdownMenu>
-              <DropdownItem onClick={() => handleNavigation('/home')}>Home</DropdownItem>
-              <DropdownItem onClick={() => handleNavigation('/events')}>Events</DropdownItem>
-              <DropdownItem onClick={() => handleNavigation('/about')}>About Us</DropdownItem>
-              <DropdownItem onClick={() => handleNavigation('/contact')}>Contact</DropdownItem>
-            </DropdownMenu>
-          </Dropdown> */}
         </div>
       </header>
 

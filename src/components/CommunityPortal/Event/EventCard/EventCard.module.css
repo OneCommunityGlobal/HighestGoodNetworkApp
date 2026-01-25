@@ -159,36 +159,36 @@
   .event-card {
     margin: 0 0 1rem 0;
   }
-  
+
   .cover-section {
     height: 12rem;
   }
 }
 
 .bg-space-cadet {
-  background-color: #1B2A41;
+  background-color: #1b2a41;
 }
 
 .event-card.bg-space-cadet .event-details,
 .event-card.bg-space-cadet .attendees-section {
-  background-color: #2C3E58; 
+  background-color: #2c3e58;
   color: white;
 }
 
 .event-card.bg-space-cadet .text-muted {
-  color: #A9B4C4 !important;
+  color: #a9b4c4 !important;
 }
 
 .event-card.bg-space-cadet .event-description p {
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 .event-card.bg-space-cadet .btn-link {
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 .event-dark-mode {
-  background-color: #1B2A41 !important; 
+  background-color: #1b2a41 !important;
 }
 
 .event-dark-mode .form-control,
@@ -199,11 +199,10 @@
 }
 
 .event-dark-mode .event-card {
-  background-color: #1B2A41;
+  background-color: #1b2a41;
 }
-
 
 .event-dark-mode .event-details,
 .event-dark-mode .attendees-section {
-  background-color: #2C3E58;
+  background-color: #2c3e58;
 }
