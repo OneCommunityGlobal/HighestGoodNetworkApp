@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
-import mockEvents from './mockData';
+import mockEvents from './mockData'; // Import mock data
 import styles from './Participation.module.css';
 
 function NoShowInsights() {
@@ -70,8 +70,8 @@ function NoShowInsights() {
         <div className={`${styles.insightsLabel} ${darkMode ? styles.insightsLabelDark : ''}`}>
           {item.label}
         </div>
-        <div className={styles.insightBar}>
-          <div className={styles.insightFill} style={{ width: `${item.percentage}%` }} />
+        <div className={`${styles.insightBar}`}>
+          <div className={`${styles.insightFill}`} style={{ width: `${item.percentage}%` }} />
         </div>
         <div
           className={`${styles.insightsPercentage} ${
@@ -88,7 +88,7 @@ function NoShowInsights() {
     <div className={`${styles.insights} ${darkMode ? styles.insightsDark : ''}`}>
       <div className={`${styles.insightsHeader} ${darkMode ? styles.insightsHeaderDark : ''}`}>
         <h3>No-show rate insights</h3>
-        <div className={styles.insightsFilters}>
+        <div className={`${styles.insightsFilters} ${darkMode ? styles.insightsFiltersDark : ''}`}>
           <select value={dateFilter} onChange={e => setDateFilter(e.target.value)}>
             <option value="All">All Time</option>
             <option value="Today">Today</option>
@@ -98,12 +98,16 @@ function NoShowInsights() {
         </div>
       </div>
 
-      <div className={styles.insightsTabs}>
+      <div className={`${styles.insightsTabs} ${darkMode ? styles.insightsTabsDarkMode : ''}`}>
         {['Event type', 'Time', 'Location'].map(tab => (
           <button
             key={tab}
             type="button"
-            className={`${styles.insightsTab} ${activeTab === tab ? styles.activeTab : ''}`}
+            className={`
+            ${styles.insightsTab} 
+            ${darkMode ? styles.insightsTabDarkMode : ''} 
+            ${activeTab === tab ? (darkMode ? styles.activeTabDarkMode : styles.activeTab) : ''}
+          `}
             onClick={() => setActiveTab(tab)}
           >
             {tab}

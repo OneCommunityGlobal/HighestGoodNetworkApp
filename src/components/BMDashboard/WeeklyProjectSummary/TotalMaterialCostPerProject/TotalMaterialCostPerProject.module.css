@@ -9,18 +9,6 @@
   color: var(--text-color, #ffffff);
 }
 
-.selectValueContainer {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  overflow-x: auto;
-  white-space: nowrap;
-  flex-wrap: nowrap;
-  max-width: 100%;
-  position: relative;
-}
-
-
 .selectValueContainerDark {
   background-color: var(--section-bg);
   border-color: var(--section-title-bg);
@@ -59,5 +47,3 @@
 .selectOptionHoverDark {
   background-color: var(--accent-color, #0d55b3);
 }
-
-

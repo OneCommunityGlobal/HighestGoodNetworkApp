@@ -1,5 +1,5 @@
 import { Search, MoreHorizontal, ChevronDown } from 'lucide-react';
-import './IssueHeader.css';
+import styles from './IssueHeader.module.css';
 import { connect, useDispatch, useSelector } from 'react-redux';
 import { getHeaderData } from '~/actions/authActions';
 import { Link } from 'react-router-dom';
@@ -39,21 +39,21 @@ export function IssueHeader(props) {
 
   return (
     <div className={`${darkMode ? 'issue-header-container-dark' : 'issue-header-container '}`}>
-      <div className="top-row">
+      <div className={`${styles.topRow}`}>
         <div className={`${darkMode ? 'title-section-dark' : 'title-section'}`}>
           <h1 className={`${darkMode ? 'section-dark' : 'section'}`}>Issues</h1>
         </div>
 
-        <div className="action-section">
-          <button className="more-button" type="button" label="More Button">
+        <div className={`${styles.actionSection}`}>
+          <button className={`${styles.moreButton}`} type="button" label="More Button">
             <MoreHorizontal size={20} />
           </button>
           <Link to="/bmdashboard/projects" style={{ textDecoration: 'none' }}>
-            <button className="back-button" type="button">
+            <button className={`${styles.backButton}`} type="button">
               Back to Projects
             </button>
           </Link>
-          <div className="avatar">
+          <div className={`${styles.avatar}`}>
             {profilePic ? (
               <img src={profilePic} alt={`${firstName}'s avatar`} />
             ) : (
@@ -82,38 +82,38 @@ export function IssueHeader(props) {
           </button>
         </div>
 
-        <div className="search-container" ref={searchRef}>
-          <div className="search-icon">
+        <div className={`${styles.searchContainer}`} ref={searchRef}>
+          <div className={`${styles.searchIcon}`}>
             <Search size={20} />
           </div>
           <input
             type="text"
             placeholder="Search..."
-            className="search-input"
+            className={`${styles.searchInput}`}
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
             onFocus={() => setIsSearchFocused(true)}
           />
 
           {searchTerm && isSearchFocused && (
-            <div className="search-results">
+            <div className={`${styles.searchResults}`}>
               {filteredProjects.length > 0 ? (
-                <div className="search-results-list">
+                <div className={`${styles.searchResultsList}`}>
                   {filteredProjects.map(project => (
                     <Link
                       to={`/bmdashboard/projects/${project._id}`}
                       key={project.id}
                       style={{ textDecoration: 'none' }}
                     >
-                      <div className="search-result-item">
-                        <span className="result-name">{project.name}</span>
-                        <span className="result-category">{project.category}</span>
+                      <div className={`${styles.searchResultItem}`}>
+                        <span className={`${styles.resultName}`}>{project.name}</span>
+                        <span className={`${styles.resultCategory}`}>{project.category}</span>
                       </div>
                     </Link>
                   ))}
                 </div>
               ) : (
-                <div className="search-no-results">No matching projects found</div>
+                <div className={`${styles.searchNoResults}`}>No matching projects found</div>
               )}
             </div>
           )}

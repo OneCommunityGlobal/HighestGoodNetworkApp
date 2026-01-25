@@ -7,6 +7,7 @@ import pdfMake from 'pdfmake/build/pdfmake';
 import 'pdfmake/build/vfs_fonts';
 import htmlToPdfmake from 'html-to-pdfmake';
 import tipStyles from './TimeEntryTooltip.module.css';
+import leaderboardStyles from '../LeaderBoard/Leaderboard.module.css';
 import TooltipPortal from "./TooltipPortal";
 import {
   Container,
@@ -602,7 +603,7 @@ const generateAllTimeEntryItems = () => {
   const buildOptions = () => {
     const projectsObject = {};
     const options = [
-      <option className={timeLog['responsive-font-size']} value="all" key="TimeLogDefaultProjectOrTask">
+      <option className={`${timeLog.responsiveFontSize}`} value="all" key="TimeLogDefaultProjectOrTask">
         Select Project/Task (all)
       </option>,
     ];
@@ -644,7 +645,7 @@ const generateAllTimeEntryItems = () => {
 
       // Add project option
       options.push(
-        <option className={timeLog['responsive-font-size']} value={projectId} key={`TimeLog_${projectId}`}>
+        <option className={`${timeLog.responsiveFontSize}`} value={projectId} key={`TimeLog_${projectId}`}>
           {projectName}
         </option>,
       );
@@ -669,7 +670,7 @@ const generateAllTimeEntryItems = () => {
 
           // Add task option
           options.push(
-            <option className={timeLog['responsive-font-size']} value={taskId} key={`TimeLog_${taskId}`}>
+            <option className={`${timeLog.responsiveFontSize}`} value={taskId} key={`TimeLog_${taskId}`}>
               {`\u2003\u2003 ↳ ${taskName}`}
             </option>,
           );
@@ -765,7 +766,7 @@ const generateAllTimeEntryItems = () => {
 
 return (
   <div
-    className={`${timeLog['container-timelog-wrapper']} ${darkMode ? `bg-oxford-blue ${timeLog['bg-oxford-blue']}` : ''}`}
+    className={`mb-5 ${timeLog['container-timelog-wrapper']} ${darkMode ? `bg-oxford-blue ${timeLog['bg-oxford-blue']}` : ''}`}
     style={darkMode ? (!props.isDashboard ? { padding: "0 15px 300px 15px" } : {}) : {}}
   >
 
@@ -780,7 +781,7 @@ return (
           <br />
         </Container>
       ) : (
-        <Container style={{ textAlign: 'right', minWidth: '100%' }}>
+        <Container style={{ textAlign: 'right'}}>
           {props.isDashboard ? null : (
             <EditableInfoModal
               areaName="DashboardTimelog"
@@ -797,7 +798,7 @@ return (
       {timeLogState.isTimeEntriesLoading ? (
         <LoadingSkeleton template="Timelog" />
       ) : (
-        <div className={`${!props.isDashboard ? `${timeLog['timelogPageContainer']}`: `ml-3 ${timeLog['min-width-100']}`}`}>
+        <div className={`${!props.isDashboard ? timeLog.timelogPageContainer : 'ml-3 min-width-100'}`}>
           {timeLogState.summary ? (
             <div className="my-2">
               <div id="weeklySum">
@@ -809,21 +810,21 @@ return (
               </div>
             </div>
           ) : null}
-          <Row className='row' style={{ minWidth: '100%' }}>
+          <Row className={`row ${leaderboardStyles.row}`} style={{ minWidth: '100%' }}> {/* Maybe here */}
             <Col md={12} className="px-0 mx-0">
               <Card className={darkMode ? 'border-0' : ''}>
                 <CardHeader
                   className={
                     darkMode
-                      ? `${timeLog['card-header-shadow-dark']} bg-space-cadet text-light ${timeLog['text-light']}`
-                      : `${timeLog['card-header-shadow']}`
+                    ? `${timeLog.cardHeaderShadowDark} bg-space-cadet text-light`
+                    : timeLog.cardHeaderShadow
                   }
                 >
                   <Row style={{ minWidth: '100%' }} className="px-0 mx-0">
                     <Col style={{ minWidth: '100%' }} className="px-0 mx-0">
                       <CardTitle tag="h4">
                         <div className="d-flex align-items-center">
-                          <span className={`${timeLog['taskboard-header-title']} mb-1 mr-2`}>
+                          <span className={`${timeLog.taskboardHeaderTitle} mb-1 mr-2`}>
                             Tasks and Timelogs
                           </span>
                           <EditableInfoModal
@@ -835,7 +836,7 @@ return (
                             darkMode={darkMode}
                           />
 
-                          <span className="mr-2" style={{ padding: '1px' }}>
+                          <span className="mr-2" style={{ color: '#7cfc00', padding: '1px' }}>
                             <ActiveCell
                               isActive={displayUserProfile.isActive}
                               user={displayUserProfile}
@@ -866,9 +867,11 @@ return (
                     </Col>
                     <Col className="px-0">
                       {isAuthUser ? (
-                        <div className={`${timeLog['tasks-and-timelog-header-add-time-div']} mt-2`}>
+                        <div className={`${timeLog.tasksAndTimelogHeaderAddTimeDiv} mt-2`}
+                        style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}
+                        >
                           <div>
-                            <div className={`${timeLog['followup-tooltip-container']}`}>
+                            <div className={`${timeLog['followupTooltipButton']}`}>
                               
                               <Button
                                 className="btn btn-success"
@@ -943,7 +946,7 @@ return (
                           authUser.role !== 'Owner'
                         ) &&
                         canPutUserProfileImportantInfo && (
-                          <div className={`${timeLog['tasks-and-timelog-header-add-time-div']}`}>
+                          <div className={`${timeLog.tasksAndTimelogHeaderAddTimeDiv}`}>
                             <div>
                               <Button color="warning" onClick={toggle} style={boxStyle}>
                                 Add Time Entry {!isAuthUser && `for ${fullName}`}
@@ -993,15 +996,20 @@ return (
                 </CardHeader>
                 <CardBody
                   className={
-                    darkMode ? `${timeLog['card-header-shadow-dark']} bg-space-cadet` : `${timeLog['card-header-shadow']}`
+                    darkMode ? `${timeLog.cardHeaderShadowDark} bg-space-cadet` : `${timeLog.cardHeaderShadow}`
                   }
                 >
-                  <Nav tabs className={`${timeLog['task-and-timelog-card-nav']} mb-1 ${timeLog['responsive-font-size']}`}>
+                  <Nav tabs className={`${timeLog.taskAndTimelogCardNav} mb-1 ${timeLog.responsiveFontSize}`}>
                     <NavItem>
                       <NavLink
-                        className={`${classnames({ active: timeLogState.activeTab === 0 })} ${
-                          darkMode ? 'dark-mode' : ''
-                        }`}
+                        className={classnames(
+                          timeLog.navLink,
+                          {
+                            [timeLog.darkMode]: darkMode && timeLogState.activeTab !== 0,
+                            [timeLog.activeLightMode]: !darkMode && timeLogState.activeTab === 0,
+                            [timeLog.activeDarkMode]: darkMode && timeLogState.activeTab === 0
+                          }
+                        )}
                         onClick={() => {
                           changeTab(0);
                         }}
@@ -1012,9 +1020,14 @@ return (
                       </NavLink>
                     </NavItem>
                     <NavLink
-                      className={`${classnames({ active: timeLogState.activeTab === 1 })} ${
-                        darkMode ? 'dark-mode' : ''
-                      }`}
+                      className={classnames(
+                        timeLog.navLink,
+                        {
+                          [timeLog.darkMode]: darkMode && timeLogState.activeTab !== 1,
+                          [timeLog.activeLightMode]: !darkMode && timeLogState.activeTab === 1,
+                          [timeLog.activeDarkMode]: darkMode && timeLogState.activeTab === 1
+                        }
+                      )}
                       onClick={() => {
                         changeTab(1);
                       }}
@@ -1026,9 +1039,14 @@ return (
 
                     <NavItem>
                       <NavLink
-                        className={`${classnames({ active: timeLogState.activeTab === 2 })} ${
-                          darkMode ? 'dark-mode' : ''
-                        }`}
+                        className={classnames(
+                          timeLog.navLink,
+                          {
+                            [timeLog.darkMode]: darkMode && timeLogState.activeTab !== 2,
+                            [timeLog.activeLightMode]: !darkMode && timeLogState.activeTab === 2,
+                            [timeLog.activeDarkMode]: darkMode && timeLogState.activeTab === 2
+                          }
+                        )}
                         onClick={() => {
                           changeTab(2);
                         }}
@@ -1040,9 +1058,14 @@ return (
                     </NavItem>
                     <NavItem>
                       <NavLink
-                        className={`${classnames({ active: timeLogState.activeTab === 3 })} ${
-                          darkMode ? 'dark-mode' : ''
-                        }`}
+                        className={classnames(
+                          timeLog.navLink,
+                          {
+                            [timeLog.darkMode]: darkMode && timeLogState.activeTab !== 3,
+                            [timeLog.activeLightMode]: !darkMode && timeLogState.activeTab === 3,
+                            [timeLog.activeDarkMode]: darkMode && timeLogState.activeTab === 3
+                          }
+                        )}
                         onClick={() => {
                           changeTab(3);
                         }}
@@ -1054,9 +1077,14 @@ return (
                     </NavItem>
                     <NavItem>
                       <NavLink
-                        className={`${classnames({ active: timeLogState.activeTab === 4 })} ${
-                          darkMode ? 'dark-mode' : ''
-                        }`}
+                        className={classnames(
+                          timeLog.navLink,
+                          {
+                            [timeLog.darkMode]: darkMode && timeLogState.activeTab !== 4,
+                            [timeLog.activeLightMode]: !darkMode && timeLogState.activeTab === 4,
+                            [timeLog.activeDarkMode]: darkMode && timeLogState.activeTab === 4
+                          }
+                        )}
                         onClick={() => {
                           changeTab(4);
                         }}
@@ -1068,9 +1096,14 @@ return (
                     </NavItem>
                     <NavItem>
                       <NavLink
-                        className={`${classnames({ active: timeLogState.activeTab === 5 })} ${
-                          darkMode ? 'dark-mode' : ''
-                        }`}
+                        className={classnames(
+                          timeLog.navLink,
+                          {
+                            [timeLog.darkMode]: darkMode && timeLogState.activeTab !== 5,
+                            [timeLog.activeLightMode]: !darkMode && timeLogState.activeTab === 5,
+                            [timeLog.activeDarkMode]: darkMode && timeLogState.activeTab === 5
+                          }
+                        )}
                         onClick={() => {
                           changeTab(5);
                         }}
@@ -1082,26 +1115,26 @@ return (
                     </NavItem>
                     <NavItem>
                       <NavLink
-                        className={`${classnames({ active: timeLogState.activeTab === 6 })} ${
-                          darkMode ? 'dark-mode' : ''
-                        }`}
-                        onClick={() => {
-                          changeTab(6);
-                        }}
+                        className={classnames(timeLog.navLink, {
+                          [timeLog.darkMode]: darkMode && timeLogState.activeTab !== 6,
+                          [timeLog.activeLightMode]: !darkMode && timeLogState.activeTab === 6,
+                          [timeLog.activeDarkMode]: darkMode && timeLogState.activeTab === 6
+                        })}
+                        onClick={() => changeTab(6)}
                         href="#"
                         to="#"
                       >
                         Timestamps
                       </NavLink>
                     </NavItem>
+
                     <NavItem>
                       <NavLink
-                        className={`${classnames({ active: timeLogState.activeTab === 7 })} ${
-                          darkMode ? 'dark-mode' : ''
-                        }`}
-                        onClick={() => {
-                          changeTab(7);
-                        }}
+                        className={classnames(timeLog.navLink, {
+                          [timeLog.activeLightMode]: !darkMode && timeLogState.activeTab === 7,
+                          [timeLog.activeDarkMode]: darkMode && timeLogState.activeTab === 7
+                        })}
+                        onClick={() => changeTab(7)}
                         href="#"
                         to="#"
                       >
@@ -1115,12 +1148,14 @@ return (
 
                   <TabContent
                     activeTab={timeLogState.activeTab}
-                    className={darkMode ? 'bg-space-cadet' : ''}
+                    className={
+                      darkMode ? styles.tabContentDark : styles.tabContentLight
+                    }
                   >
                     {renderViewingTimeEntriesFrom()}
                     {timeLogState.activeTab === 4 && (
                       <Form inline className="mb-2">
-                        <FormGroup className={`mr-2 ${timeLog['date-selector-form']}`}>
+                        <FormGroup className={`mr-2 ${timeLog.dateSelectorForm}`}>
                           <Label
                             for="fromDate"
                             className={`${timeLog['responsive-font-size']} mr-2 ml-1 ${
@@ -1165,7 +1200,7 @@ return (
                         <Button
                           color="primary"
                           onClick={handleSearch}
-                          className={`${timeLog['search-time-entries-btn']}`}
+                          className={`${timeLog.searchTimeEntriesBtn}`}
                           style={darkMode ? boxStyleDark : boxStyle}
                         >
                           Search
@@ -1184,9 +1219,8 @@ return (
                     )}
                     {timeLogState.activeTab === 0 ||
                     timeLogState.activeTab === 5 ||
-                    timeLogState.activeTab === 6 ||
-                    timeLogState.activeTab === 7 ? null : (
-                      <Form className={`mb-2 ${timeLog['responsive-font-size']}`}>
+                    timeLogState.activeTab === 6 ? null : (
+                      <Form className={`mb-2 ${timeLog.responsiveFontSize}`}>
                         <FormGroup>
                           <Label
                             htmlFor="projectSelected"
