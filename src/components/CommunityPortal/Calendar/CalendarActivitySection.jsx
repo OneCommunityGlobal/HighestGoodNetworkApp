@@ -26,7 +26,7 @@ function CalendarActivitySection({ selectedDate, events = [], onEventClick }) {
         darkMode ? styles.calendarActivitySectionDarkMode : ''
       }`}
     >
-      <h2 className={`activity-header ${darkMode ? 'activity-header-dark-mode' : ''}`}>
+      <h2 className={`${styles.activityHeader} ${darkMode ? styles.activityHeaderDark : ''}`}>
         {selectedDate ? `Events for ${formatDate(selectedDate)}` : 'Latest News'}
       </h2>
       {selectedDate ? (
@@ -41,24 +41,36 @@ function CalendarActivitySection({ selectedDate, events = [], onEventClick }) {
               >
                 <button
                   type="button"
-                  className={`${styles.clickable} ${styles.eventButton}`}
+                  className={`${styles.eventButton} ${styles.clickable}`}
                   onClick={() => onEventClick && onEventClick(event)}
                   aria-label={`Click to view details for ${event.title}`}
                 >
                   <p
-                    className={`activity-message ${darkMode ? styles.activityMessageDarkMode : ''}`}
+                    className={`${styles.activityMessage} ${
+                      darkMode ? styles.activityMessageDarkMode : ''
+                    }`}
                   >
                     <strong>{event.title}</strong>
                   </p>
                   <p
-                    className={`activity-message ${darkMode ? styles.activityMessageDarkMode : ''}`}
+                    className={`${styles.activityMessage} ${
+                      darkMode ? styles.activityMessageDarkMode : ''
+                    }`}
                   >
                     {event.type} • {event.location}
                   </p>
-                  <small className={`activity-time ${darkMode ? styles.activityTimeDarkMode : ''}`}>
+                  <small
+                    className={`${styles.activityTime} ${
+                      darkMode ? styles.activityTimeDarkMode : ''
+                    }`}
+                  >
                     {event.time}
                   </small>
-                  <small className={`activity-time ${darkMode ? styles.activityTimeDarkMode : ''}`}>
+                  <small
+                    className={`${styles.activityTime} ${
+                      darkMode ? styles.activityTimeDarkMode : ''
+                    }`}
+                  >
                     Status: {event.status}
                   </small>
                 </button>
@@ -66,7 +78,7 @@ function CalendarActivitySection({ selectedDate, events = [], onEventClick }) {
             ))}
           </ul>
         ) : (
-          <div className={styles.noEventsMessage}>
+          <div className={styles.activityNoEventsMessage}>
             <p>No events found for this date.</p>
           </div>
         )
@@ -76,13 +88,19 @@ function CalendarActivitySection({ selectedDate, events = [], onEventClick }) {
             <li
               key={activity.id}
               className={`${styles.calendarActivityItem} ${
-                darkMode ? styles.calendarActivityItemDarkMode : ''
+                darkMode ? styles.calendarActivityItemDark : ''
               }`}
             >
-              <p className={`activity-message ${darkMode ? styles.activityMessageDarkMode : ''}`}>
+              <p
+                className={`${styles.activityMessage} ${
+                  darkMode ? styles.activityMessageDark : ''
+                }`}
+              >
                 <strong>{activity.author}</strong>: {activity.message}
               </p>
-              <small className={`activity-time ${darkMode ? styles.activityTimeDarkMode : ''}`}>
+              <small
+                className={`${styles.activityTime} ${darkMode ? styles.activityTimeDark : ''}`}
+              >
                 {activity.time}
               </small>
             </li>

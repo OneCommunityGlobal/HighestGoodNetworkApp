@@ -2,7 +2,7 @@ import jwtDecode from 'jwt-decode';
 import axios from 'axios';
 import httpService from '../services/httpService';
 import config from '../config.json';
-import { ENDPOINTS } from '~/utils/URL';
+import { ENDPOINTS } from '../utils/URL';
 import { GET_ERRORS } from '../constants/errors';
 import {
   SET_CURRENT_USER,
@@ -31,11 +31,8 @@ export const stopForceLogout = () => (dispatch, getState) => {
   if (auth?.timerId) {
     try {
       clearTimeout(auth.timerId);
-      // eslint-disable-next-line no-console
-      console.log('Cleared existing force logout timer');
     } catch (e) {
-      // eslint-disable-next-line no-console
-      console.warn('Failed to clear force logout timer', e);
+      // Timer already cleared or invalid
     }
   }
   dispatch({ type: STOP_FORCE_LOGOUT });
@@ -138,10 +135,10 @@ export const startForceLogout = (delayMs = 20000) => (dispatch, getState) => {
   const timerId = setTimeout(async () => {
     try {
       const { userProfile } = getState();
-      
+
       if (userProfile && userProfile._id) {
         const { firstName: name, lastName, personalLinks, adminLinks, _id } = userProfile;
-        
+
         await axios.put(ENDPOINTS.USER_PROFILE(_id), {
           firstName: name,
           lastName,
@@ -149,7 +146,7 @@ export const startForceLogout = (delayMs = 20000) => (dispatch, getState) => {
           adminLinks,
           isAcknowledged: true,
         });
-        
+
         // eslint-disable-next-line no-console
         console.log('Permission changes acknowledged during force logout');
       }
@@ -157,6 +154,9 @@ export const startForceLogout = (delayMs = 20000) => (dispatch, getState) => {
       // eslint-disable-next-line no-console
       console.error('Error acknowledging permissions during force logout:', error);
     } finally {
+      // Set flag to indicate user was force logged out due to permission changes
+      // This helps distinguish "force logged out" vs "first login after permission change"
+      sessionStorage.setItem('wasForceLoggedOut', 'true');
       dispatch(logoutUser());
     }
   }, delayMs);
