@@ -76,10 +76,7 @@
   color: #2E5061 !important;
 }
 
-.updateModalContainer {
-  overflow-y: scroll;
-  height: 75vh;
-}
+
 
 
 @media (max-width: 992px) {

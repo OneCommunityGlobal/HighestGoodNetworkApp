@@ -16,7 +16,7 @@
   color: #f1f1f1;
 }
 
-.darkModeBackground{
+.darkModeBackground {
   background-color: #1b2a41;
 }
 
@@ -31,7 +31,6 @@
   display: flex;
   justify-content: space-around;
 }
-
 .riFilterItem {
   display: flex;
   flex-direction: column;
@@ -49,7 +48,7 @@
   box-shadow: 2px 2px 4px 1px black;
 }
 
-.riDurationFilterDarkMode{
+.riDurationFilterDarkMode {
   background-color: #1c2541;
   box-shadow: 2px 2px 4px 1px black;
   border: none;
@@ -128,11 +127,11 @@
   color: #4a4a4a;
 }
 
-.riSliderDarkMode{
+.riSliderDarkMode {
   background: #e6e6e6;
 }
 
-.riSliderDarkMode::before{
+.riSliderDarkMode::before {
   background: #1c2541;
 }
 
@@ -166,13 +165,12 @@
   transition: background-color 0.3s, color 0.3s;
 }
 
-.riChartDarkMode{
+.riChartDarkMode {
   background-color: #1c2541;
   color: #f1f1f1;
   box-shadow: 2px 2px 4px 1px black;
   border: none;
 }
-
 .riActionDoneGraph {
   width: 50%;
   display: flex;
@@ -190,7 +188,7 @@
   transition: background-color 0.3s, color 0.3s;
 }
 
-.riGraphDarkMode{
+.riGraphDarkMode {
   background-color: #1c2541;
   color: #f1f1f1;
   box-shadow: 2px 2px 4px 1px black;
@@ -200,7 +198,6 @@
 .riGraph canvas {
   height: 100% !important;
 }
-
 .riLoading {
   text-align: center;
   font-size: 18px;
@@ -212,7 +209,6 @@
   color: #dc3545;
   font-weight: bold;
 }
-
 
 @media screen and (max-width: 1080px) {
   .riGraphs {

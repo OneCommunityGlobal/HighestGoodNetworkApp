@@ -12,9 +12,10 @@
 }
 
 .formControlDelete {
-  margin-left: 10px;
+  margin-left: 0;
   font-size: small !important;
   max-width: 100%;
+  width: 100%;
 }
 
 .tag .deleteTag {
@@ -70,17 +71,9 @@
   flex: 1;
 }
 
-.formControlDelete {
-  width: 100%;
-  margin-left: 0;
-  font-size: small !important;
-}
 
-.tagsInputContainer {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-}
+
+
 
 .tag {
   display: inline-flex;

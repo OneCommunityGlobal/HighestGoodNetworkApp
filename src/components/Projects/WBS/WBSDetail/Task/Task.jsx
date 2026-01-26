@@ -9,8 +9,8 @@ import {
   deleteChildrenTasks,
 } from '../../../../../actions/task.js';
 import './tagcolor.css';
-import './task.css';
-import '../../../../Header/DarkMode.css'
+import styles from './task.module.css';
+import '../../../../Header/index.css'
 import { Editor } from '@tinymce/tinymce-react';
 import { getPopupById } from './../../../../../actions/popupEditorAction';
 import { boxStyle, boxStyleDark } from '~/styles';
@@ -206,12 +206,12 @@ function Task(props) {
               id={`r_${props.num}_${props.taskId}`}
               // eslint-disable-next-line jsx-a11y/scope
               scope="row"
-              className={`taskNum ${props.hasChildren ? 'has_children' : ''} text-left`}
+              className={`taskNum ${props.hasChildren ? styles.has_children : ''} ${styles.textLeft}`}
               onClick={openChild}
             >
               {props.num.replaceAll('.0', '')}
             </td>
-            <td className="taskName">
+            <td className={`taskName ${styles.textLeft}`}>
               {
                 <div
                   className={`level-space-${props.level}`}
@@ -221,7 +221,7 @@ function Task(props) {
                   <span
                     onClick={openChild}
                     id={`task_name_${props.taskId}`}
-                    className={props.hasChildren ? 'has_children' : ''}
+                    className={props.hasChildren ? styles.has_children : ''}
                   >
                     {props.hasChildren ? (
                       <i className={`fa fa-folder${isOpen ? '-open' : ''}`} aria-hidden="true"></i>
@@ -245,45 +245,56 @@ function Task(props) {
               ) : null}
             </td>
             <td>
-              {props.resources.length
-                ? props.resources
-                  .filter((elm, i) => i < 2 || showMoreResources)
-                  .map((elm, i) => {
-                    const name = elm.name; //Getting initials and formatting them here
-                    const initials = getInitials(name);
-                    //getting background color here
-                    const bg = colors_objs[name].color;
-                    return (
-                      <a
-                        key={`res_${i}`}
-                        data-tip={elm.name}
-                        className="name"
-                        href={`/userprofile/${elm.userID}`}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        {!elm.profilePic || elm.profilePic === '/defaultprofilepic.png' ? (
-                          <span className="dot" style={{ backgroundColor: bg }}>
-                            {initials}{' '}
-                          </span>
-                        ) : (
-                          // eslint-disable-next-line jsx-a11y/alt-text
-                          <img className="img-circle" src={elm.profilePic} />
-                        )}
-                      </a>
-                    );
-                  })
-                : null}
+                {props.resources.length
+                  ? props.resources
+                      .filter((elm, i) => i < 2 || showMoreResources)
+                      .map((elm, i) => {
+                        const name = elm.name;
+                        const initials = getInitials(name);
+                        const bg = colors_objs[name].color;
+                        return (
+                          <a
+                            key={`res_${i}`}
+                            data-tip={elm.name}
+                            className={styles.name}
+                            href={`/userprofile/${elm.userID}`}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            {!elm.profilePic || elm.profilePic === '/defaultprofilepic.png' ? (
+                              <span
+                                className={styles.dot}
+                                style={{ backgroundColor: bg }}
+                              >
+                                {initials}
+                              </span>
+                            ) : (
+                              <img
+                                className={styles.imgCircle}
+                                src={elm.profilePic}
+                                alt={elm.name}
+                              />
+                            )}
+                          </a>
+                        );
+                      })
+                  : null}
+
               {props.resources.length > 2 ? (
-                // eslint-disable-next-line jsx-a11y/anchor-is-valid, jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
-                <a
-                  className="resourceMoreToggle"
+                <button
+                  type="button"
+                  className={styles.resourceMoreToggle}
                   onClick={() => setShowMoreResources(!showMoreResources)}
+                  aria-label={
+                    showMoreResources
+                      ? 'Show fewer assigned resources'
+                      : `Show ${props.resources.length - 2} more assigned resources`
+                  }
                 >
-                  <span className="dot">
+                  <span className={styles.dot}>
                     {showMoreResources ? <BsFillCaretLeftFill /> : `${props.resources.length - 2}+`}
                   </span>
-                </a>
+                </button>
               ) : null}
             </td>
             <td>

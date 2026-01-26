@@ -167,7 +167,7 @@
 }
 
 .profilePicture {
-  //this should fix the image formatting issue
+  /* this should fix the image formatting issue */
   display: flex;
   max-width: 240px;
   max-height: 240px;
@@ -225,14 +225,13 @@
 .profile-functions-tablet {
   display: none;
 }
-// Changed hover, focus and active class for the Stop Scheduler Button
+/* Changed hover, focus and active class for the Stop Scheduler Button */
 #stopSchedulerButton {
   background-color: #ffc107;
   border: #ffc107;
 
   &:hover {
-    // background-color: #fff3cd;
-    // border: #fff3cd ;
+
     background-color: #ffcd39;
     border: #ffcd39;
   }
@@ -364,16 +363,13 @@
     display: block;
   }
 
-  .profile-functions-list {
-    display: flex;
-    flex-direction: column;
-    padding: 0;
-  }
-
-  .profile-functions-list {
-    margin-top: 16px;
-    border-top: 2px solid #0275d8;
-  }
+.profile-functions-list {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  margin-top: 16px;
+  border-top: 2px solid #0275d8;
+}
 
   .list-button {
     display: flex;

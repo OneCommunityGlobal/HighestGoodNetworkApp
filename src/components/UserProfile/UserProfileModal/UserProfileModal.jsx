@@ -495,7 +495,7 @@ const handleCcListUpdate = () => {
               </FormGroup>
               <FormGroup>
                 <Label className={fontColor} for="createdDate">
-                  Created Date:
+                  {`Created Date: `}
                   <span>{blueSquare[0]?.createdDate}</span>
                 </Label>
               </FormGroup>
@@ -530,7 +530,7 @@ const handleCcListUpdate = () => {
               </FormGroup>
               <FormGroup>
                 <Label className={fontColor} for="createdDate">
-                  Created Date:
+                  {`Created Date: `}
                   <span>{blueSquare[0]?.createdDate}</span>
                 </Label>
               </FormGroup>
@@ -678,7 +678,7 @@ const handleCcListUpdate = () => {
                       <Button
                         color="warning"
                         name="both"
-                        disabled={!specialWarnings?.some(warn => warn.warnings.length >= 2)}
+                        // disabled={!specialWarnings?.some(warn => warn.warnings.length >= 2)}
                         onClick={e => {
                           handleToggleLogWarning('both');
                         }}

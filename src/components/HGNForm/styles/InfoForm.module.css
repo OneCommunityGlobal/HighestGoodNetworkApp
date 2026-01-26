@@ -163,7 +163,7 @@
 .errorMessage {
   color: #ff0000;
   font-size: 0.875rem;
-  margin-top: 4px;
+  margin: 20px;
   padding:10px;
   /* margin-left: 10px; */
   display: block;
@@ -202,13 +202,7 @@
   color: #78a5c4;
 }
 
-.errorMessage {
-  color: #ff0000;
-  font-size: 0.875rem;
-  margin: 20px;
-  display: block;
-  width: 50%;
-}
+
 
 @media (max-width: 768px) {
   .errorMessage {

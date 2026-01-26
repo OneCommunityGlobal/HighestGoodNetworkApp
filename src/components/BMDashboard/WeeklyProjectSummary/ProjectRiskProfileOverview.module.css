@@ -159,14 +159,9 @@
   color: #eee;
 }
 
-.darkMode .dropdownButton {
-  color: #ccc;
-}
 
-.darkMode .dropdownMenu {
-  background: #2c2c2c;
-  box-shadow: 0 2px 8px #000;
-}
+
+
 
 .darkMode .heading {
   color: #eee;
