@@ -3,7 +3,7 @@ import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment-timezone';
 import { createEvent } from '../../../../actions/communityPortal/eventActions';
-import '../../../Header/DarkMode.css';
+import '../../../Header/DarkMode.module.css';
 
 function CreateEventModal({ isOpen, toggle }) {
   const dispatch = useDispatch();
