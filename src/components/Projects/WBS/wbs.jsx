@@ -56,7 +56,7 @@ const WBS = props => {
             </NavItem>
           </nav>
           <div className="w-100 text-center font-weight-bold my-3" style={{fontSize: "1.5rem"}}>
-            Proj Name: {projectName}
+            Project Name: {projectName}
           </div>
 
           <AddWBS 
