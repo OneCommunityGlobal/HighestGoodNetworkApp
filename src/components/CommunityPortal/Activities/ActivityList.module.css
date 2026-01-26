@@ -9,7 +9,7 @@
 }
 
 .darkBody {
-  background: #1B2A41;
+  background: #1b2a41;
 }
 
 .h1 {
@@ -83,11 +83,11 @@
   transform: scale(1.05);
 }
 
-.darkFilters button{
+.darkFilters button {
   border: 1px solid #ffffff;
 }
 
-.darkFilters input{
+.darkFilters input {
   background: #0f172a;
   border: 1px solid #ffffff;
 }
@@ -128,7 +128,7 @@
 }
 
 .darkActivityList li {
-  background: #1B2A41;
+  background: #1b2a41;
 }
 
 .activityList li:hover {
