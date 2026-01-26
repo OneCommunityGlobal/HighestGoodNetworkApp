@@ -83,9 +83,9 @@ function MyCases() {
           <span className={`${styles.eventTime} ${darkMode ? styles.eventTimeDark : ''}`}>
             {event.eventTime}
           </span>
-          <span className={`${styles.eventName} ${darkMode ? styles.eventNameDark : ''}`}>
+          <div className={`${styles.eventName} ${darkMode ? styles.eventNameDark : ''}`}>
             {event.eventName}
-          </span>
+          </div>
           <div className={`${styles.attendeesInfo} ${darkMode ? styles.attendeesInfoDark : ''}`}>
             <div className={styles.avatars}>
               <img
