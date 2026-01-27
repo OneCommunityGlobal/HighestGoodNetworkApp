@@ -1,5 +1,3 @@
-/* Announcements.module.css */
-
 :global(h2),
 :global(h3) {
   color: #4285f4;
@@ -346,12 +344,6 @@ button.sendButton:hover {
   background: linear-gradient(to bottom, #2b3b50, #1e2d44);
   border-color: #2b3b50;
   color: #ddd;
-}
-/* Fix */
-.tabGrid.twoRows > .navItem:nth-child(n + 13) {
-  margin-top: -12px;
-  transform: translateY(8px);
-  z-index: 0;
 }
 
 .tabGrid .navLink.tabNavItem:hover {
