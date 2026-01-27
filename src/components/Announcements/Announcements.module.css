@@ -347,7 +347,7 @@ button.sendButton:hover {
   border-color: #2b3b50;
   color: #ddd;
 }
-
+/* Fix */
 .tabGrid.twoRows > .navItem:nth-child(n + 13) {
   margin-top: -12px;
   transform: translateY(8px);
