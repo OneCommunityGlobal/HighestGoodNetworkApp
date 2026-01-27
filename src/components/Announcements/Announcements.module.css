@@ -348,7 +348,7 @@ button.sendButton:hover {
   color: #ddd;
 }
 
-.tabGrid.twoRows > .navItem:nth-child(n + calc(var(--cols, 12) + 1)) {
+.tabGrid.twoRows > .navItem:nth-child(n + 13) {
   margin-top: -12px;
   transform: translateY(8px);
   z-index: 0;
