@@ -28,6 +28,7 @@ import {
 const defaultState = {
   list: [],
   historyList: [],
+  consumablesList: [],
   invTypeList: {
     All: null,
     Materials: null,
@@ -76,7 +77,7 @@ export const bmInvTypeReducer = (state = defaultState, action) => {
         ...state,
       };
     case GET_CONSUMABLE_TYPES:
-      state.list = action.payload;
+      state.consumablesList = action.payload;
       return {
         ...state,
       };
@@ -191,7 +192,7 @@ export const bmInvTypeReducer = (state = defaultState, action) => {
       return {
         ...state,
         loading: false,
-        postedResult: {
+        postedUpdateResult: {
           result: action.payload,
           success: true,
           error: false,
@@ -203,7 +204,7 @@ export const bmInvTypeReducer = (state = defaultState, action) => {
       return {
         ...state,
         loading: false,
-        postedResult: {
+        postedUpdateResult: {
           result: null,
           success: false,
           error: true,
@@ -213,7 +214,7 @@ export const bmInvTypeReducer = (state = defaultState, action) => {
     case POST_UPDATE_NAME_AND_UNIT_RESET:
       return {
         ...state,
-        postedResult: {
+        postedUpdateResult: {
           result: null,
           success: false,
           error: false,

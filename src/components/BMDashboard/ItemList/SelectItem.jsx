@@ -16,7 +16,7 @@ export default function SelectItem({
   let itemSet = [];
   const darkMode = useSelector(state => state.theme.darkMode);
   if (items?.length) {
-    if (label === 'Materials') {
+    if (label === 'Materials' || label === 'Consumables') {
       if (selectedItem === 'all') {
         itemSet = [...new Set(items.filter(m => m?.name).map(m => m.name))];
       } else {

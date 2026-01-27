@@ -25,7 +25,7 @@ function EditNameUnitModal({ item, isOpen, toggle }) {
   const units = useSelector(state => state.bmInvUnits.list);
   const error = !item || item?.itemType === null;
   const [errors, setErrors] = useState({});
-  const updateNameAndUnitResult = useSelector(state => state.bmInvTypes.postedResult);
+  const updateNameAndUnitResult = useSelector(state => state.bmInvTypes.postedUpdateResult);
 
   useEffect(() => {
     dispatch(fetchInvUnits());
@@ -48,7 +48,6 @@ function EditNameUnitModal({ item, isOpen, toggle }) {
       toast.success('Edited successfully');
       dispatch(fetchMaterialTypes());
       dispatch(fetchAllMaterials());
-
       dispatch({ type: POST_UPDATE_NAME_AND_UNIT_RESET });
     }
   }, [updateNameAndUnitResult?.success, updateNameAndUnitResult?.error, dispatch]);

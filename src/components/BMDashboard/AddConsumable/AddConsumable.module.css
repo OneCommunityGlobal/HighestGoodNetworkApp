@@ -60,6 +60,31 @@
   justify-content: flex-start;
 }
 
+.darkBg{
+  background-color: #2E5061;
+}
+
+.lightBg{
+  background-color: #607D8B;
+}
+
+.select :global(.rs__control) {
+ background-color: #2a3f5f !important;
+ border: none;
+}
+.select :global(.rs__menu) {
+  background-color: #2a3f5f !important;
+}
+
+/* Focused */
+.select :global(.rs__control--is-focused) {
+  border-color: #2a3f5f;
+  box-shadow: 0 0 0 1px #2a3f5f;
+}
+
+.select :global(.rs__option--is-focused) {
+  background-color: #99b2e3;
+}
 @media (max-width: 780px) {
 
   #AddConsumableForm {
