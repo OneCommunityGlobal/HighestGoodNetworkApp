@@ -161,3 +161,6 @@ font-size: .8em;
 :global(body.dark-mode .form-control) {
   background-color: #2a3f5f !important;
 }
+:global(body.dark-mode select.form-control), :global(body.bm-dashboard-dark  select.form-control){
+  background-image: none !important;
+}

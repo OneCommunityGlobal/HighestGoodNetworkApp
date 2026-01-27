@@ -4,6 +4,7 @@ const APIEndpoint =
 export const ENDPOINTS = {
   APIEndpoint: () => APIEndpoint,
   USER_PROFILE: userId => `${APIEndpoint}/userprofile/${userId}`,
+  USER_PROFILE_FIXED: userId => `${APIEndpoint}/userProfile/${userId}`,
   USER_PROFILE_PROPERTY: userId => `${APIEndpoint}/userprofile/${userId}/property`,
   USER_PROFILES: `${APIEndpoint}/userprofile/`,
   UPDATE_USER_FINAL_DAY: userId => `${APIEndpoint}/userprofile/${userId}/updateFinalDay`,
@@ -431,6 +432,7 @@ export const ENDPOINTS = {
   EVENTS: `${APIEndpoint}/events`,
   EVENT_TYPES: `${APIEndpoint}/events/types`,
   EVENT_LOCATIONS: `${APIEndpoint}/events/locations`,
+  EVENT_ATTENDANCE_STATS: `${APIEndpoint}/events/attendance/stats`,
   LB_SEND_MESSAGE: `${APIEndpoint}/lb/messages`,
   LB_READ_MESSAGE: `${APIEndpoint}/lb/messages/conversation`,
   LB_UPDATE_MESSAGE_STATUS: `${APIEndpoint}/lb/messages/statuses`,
@@ -514,6 +516,9 @@ export const ENDPOINTS = {
 
   //pull requests analysis
   PR_REVIEWS_INSIGHTS: `${APIEndpoint}/analytics/pr-review-insights`,
+
+  // Education Portal endpoints
+  EDUCATOR_ASSIGN_ATOMS: () => `${APIEndpoint}/educator/assign-atoms`,
 
   LESSON_PLANS: `${APIEndpoint}/education/lesson-plans`,
   SAVE_INTEREST: `${APIEndpoint}/education/student/saved-interests`,

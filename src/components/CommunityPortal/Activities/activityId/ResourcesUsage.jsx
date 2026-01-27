@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import styles from './ResourcesUsage.module.css';
+// import styles from './ResourcesUsage.module.css';
 
 function ResourcesUsage() {
   const darkMode = useSelector(state => state.theme.darkMode);
