@@ -10,7 +10,7 @@ import { ENDPOINTS } from '~/utils/URL';
 import { events as mockEvents } from './mockData';
 import styles from './AttendanceNoShowCharts.module.css';
 
-const attendanceColors = ['#0088FE', '#FF8042'];
+const attendanceColors = ['#0088FE', '#FF8042', '#FFBB28'];
 const noShowColors = ['#00C49F', '#FF0000'];
 
 // Status color mapping
@@ -133,12 +133,13 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, per
     <text
       x={x}
       y={y}
-      fill="black"
-      textAnchor={x > cx ? 'start' : 'end'}
+      fill="white"
+      textAnchor="middle"
       dominantBaseline="central"
       fontSize="12"
+      fontWeight="bold"
     >
-      {`${(percent * 100).toFixed(1)}%`}
+      {percent > 0 ? `${(percent * 100).toFixed(0)}%` : ''}
     </text>
   );
 };
