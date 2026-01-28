@@ -15,7 +15,9 @@ function CommunityCalendar() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showEventModal, setShowEventModal] = useState(false);
+  const [hoveredEventId, setHoveredEventId] = useState(null);
   const [overflowDate, setOverflowDate] = useState(null);
+  const darkMode = useSelector(state => state.theme.darkMode);
   const popupRef = useRef(null);
 
   const currentDate = new Date();
@@ -114,6 +116,16 @@ function CommunityCalendar() {
     setShowEventModal(true);
   }, []);
 
+  const handleEventKeyPress = useCallback(
+    (e, event) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        handleEventClick(event);
+      }
+    },
+    [handleEventClick],
+  );
+
   const closeEventModal = useCallback(() => {
     setShowEventModal(false);
     setSelectedEvent(null);
@@ -182,20 +194,39 @@ function CommunityCalendar() {
 
       return (
         <div className={styles.tileEvents}>
-          {visible.map(e => {
-            const statusKey = statusMap[e.status];
-            return (
-              <button
-                key={e.id}
-                type="button"
-                className={`${styles.eventItem} ${styles[statusKey] || ''}`}
-                onClick={() => handleEventClick(e)}
-                title={e.title}
-              >
-                {e.title}
-              </button>
-            );
-          })}
+          {visible.map(event => (
+            <div
+              key={event.id}
+              className={`${styles.eventItem} ${styles.clickable}`}
+              onClick={() => handleEventClick(event)}
+              onKeyDown={e => handleEventKeyPress(e, event)}
+              onMouseEnter={() => setHoveredEventId(event.id)}
+              onMouseLeave={() => setHoveredEventId(null)}
+              role="button"
+              tabIndex={0}
+              aria-label={`Click to view details for ${event.title}`}
+            >
+              {event.title}
+
+              {hoveredEventId === event.id && (
+                <div
+                  className={`${styles.eventTooltip} ${darkMode ? styles.eventTooltipDark : ''}`}
+                >
+                  <strong>{event.title}</strong>
+                  <span className={styles.tooltipDetail}>
+                    <strong>Time:</strong> {event.time}
+                  </span>
+                  <span className={styles.tooltipDetail}>
+                    <strong>Location:</strong> {event.location}
+                  </span>
+                  <span className={styles.tooltipDetail}>
+                    <strong>Status:</strong> {event.status}
+                  </span>
+                  <small>Click for more details</small>
+                </div>
+              )}
+            </div>
+          ))}
 
           {hiddenCount > 0 && (
             <button
@@ -210,7 +241,7 @@ function CommunityCalendar() {
         </div>
       );
     },
-    [getEventsForDate, handleEventClick],
+    [getEventsForDate, handleEventClick, darkMode, hoveredEventId],
   );
 
   const tileClassName = useCallback(
@@ -238,8 +269,6 @@ function CommunityCalendar() {
     }),
     [mockEvents],
   );
-
-  const darkMode = useSelector(s => s.theme.darkMode);
 
   const calendarClasses = useMemo(
     () => ({

@@ -139,8 +139,9 @@
 
 .reactCalendar :global(.react-calendar__month-view__days__day) {
   height: 80px;
-  border: 1px solid #000000;
-  vertical-align: top;
+  overflow: auto;
+  border: 1px solid #555454;
+  box-sizing: border-box;
   padding: 2px;
 }
 
@@ -151,13 +152,17 @@
 }
 
 .reactCalendar :global(.react-calendar__tile) {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
   height: 90px;
   background: #fff;
   border: 1px solid #dee2e6 !important;
   box-sizing: border-box;
   transition: background 0.3s, border-color 0.3s ease;
-  overflow: hidden;
+  overflow: visible !important;
+  position: relative;
   padding: 4px;
   color: #1a202c;
 }
@@ -217,6 +222,14 @@
   line-height: 1.1;
 }
 
+.reactCalendar :global(.react-calendar__tile) :global(.eventItem) {
+  background-color: #e0f7fa;
+  padding: 5px;
+  border-radius: 4px;
+  margin-bottom: 5px;
+  white-space: nowrap;
+}
+
 /* Ensure tileEvents text is readable on selected date */
 .reactCalendar :global(.react-calendar__tile.selectedDate) .tileEvents {
   color: #1a202c;
@@ -230,25 +243,19 @@
   color: #ffffff;
 }
 
-.reactCalendar .eventItem {
+.reactCalendar :global(.eventItem) {
   display: block;
   position: relative;
   font-size: 0.75rem;
-  font-weight: 500;
-  line-height: 1.2;
   padding: 2px 4px;
   margin-bottom: 2px;
   border-radius: 3px;
+  background-color: #e0f7fa;
+  cursor: pointer;
+
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
-  color: #000;
-  text-align: left;
-  cursor: pointer;
-  border: none;
-  box-shadow: none;
-  transition: background-color 0.2s ease, transform 0.2s ease;
-  max-width: 100%;
 }
 
 /* Ensure event items are readable in dark mode */
@@ -298,8 +305,10 @@
   color: #ffcdd2;
 }
 
-.reactCalendar .eventItem:hover {
-  transform: scale(1.03);
+.reactCalendar .eventItem.clickable:hover {
+  transform: scale(1.05) !important;
+  z-index: 10;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
 
 .moreEvents {
@@ -327,11 +336,6 @@
 
 .reactCalendarDarkMode .moreEvents:hover {
   background-color: #718096;
-}
-
-.react-calendar__tile--active,
-.react-calendar__tile--now {
-  background-color: transparent !important;
 }
 
 /* Ensure today's date is visible in light mode */
@@ -528,6 +532,46 @@
   transition: all 0.2s ease;
 }
 
+.eventTooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 5px;
+  width: 220px;
+  padding: 10px;
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 10;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: #333;
+}
+
+.eventTooltipDark {
+  background-color: #1a202c;
+  color: #f7fafc;
+  border: 1px solid #4a5568;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
+}
+
+.eventTooltipDark strong {
+  color: #ffffff;
+}
+
+.eventTooltipDark small {
+  color: #cbd5e0;
+}
+
+.eventTooltipDark .tooltipDetail {
+  color: #e2e8f0;
+}
+
+/* Event Modal Styles */
 .eventModalOverlay {
   position: fixed;
   top: 0;
@@ -575,11 +619,11 @@
   }
 }
 
-.eventModalDark {
+/* .eventModalDark {
   background: #1a202c;
   color: #e2e8f0;
   border: 1px solid #4a5568;
-}
+} */
 
 .modalHeader {
   display: flex;
