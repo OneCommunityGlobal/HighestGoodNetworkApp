@@ -57,7 +57,7 @@
 }
 
 /**  switch toggle*/
-.switchToggleControl{
+.switchToggleControl {
   position: relative;
   width: 25px;
   display: inline-block;
@@ -66,10 +66,10 @@
   margin-left: 5px;
   margin-right: 5px;
 }
-.switchToggle{
+.switchToggle {
   display: none;
 }
-.switchToggleLabel{
+.switchToggleLabel {
   display: block;
   overflow: hidden;
   cursor: pointer;
@@ -97,15 +97,15 @@
   box-sizing: border-box;
 }
 .switchToggleInner:before {
-  content: "";
+  content: '';
   padding-left: 2px;
   background-color: #2ba6ed;
 }
-.switchToggle:disabled + .switchToggleLabel .switchToggleInner::before{
+.switchToggle:disabled + .switchToggleLabel .switchToggleInner::before {
   background-color: #bbb;
 }
 .switch-toggle-inner:after {
-  content: "";
+  content: '';
   padding-right: 2px;
   text-align: right;
   background-color: white;
@@ -155,18 +155,15 @@
   justify-content: space-between;
 }
 
-
 .filterStyle {
   font-size: 0.7em;
   display: flex;
   align-items: center;
 }
 
-
 .marginRight {
   margin-right: 20px;
 }
-
 
 .containerWsrWrapper {
   min-height: 100%;
@@ -240,7 +237,7 @@
 }
 
 .textWhite {
-  color:white;
+  color: white;
 }
 
 .errorSelect {
@@ -265,24 +262,23 @@
 .darkModal {
   :global(.modal-content) {
     background-color: #2c3e50 !important;
-    color: white !important;           
+    color: white !important;
   }
 
   :global(.close) {
-    color: white !important; 
+    color: white !important;
   }
 }
 
 .darkChip {
   background-color: #1b2a41 !important;
-  color: white !important;   
+  color: white !important;
 }
 
 .redChip {
   background-color: #962929 !important;
-  color: white !important;   
+  color: white !important;
 }
-
 
 /* @media screen and (max-width: 544px) {
   .responsive-font-size {
@@ -298,13 +294,12 @@
 @media screen and (max-width: 576px) {
   .responsiveFontSize {
     font-size: 0.3rem !important;
-  }  
+  }
 
   .px-max-sm-0 {
     padding-left: 0 !important;
     padding-right: 0 !important;
   }
-
 }
 /* @media screen and (max-width: 544px) {
   .responsiveFontSize {
@@ -379,7 +374,6 @@
     max-width: 30px;
     padding: 5px 0;
   }
-
 }
 
 .multiSelectFilter {
@@ -410,7 +404,6 @@
   .dropdownContainer {
     z-index: 2;
   }
-
 }
 
 /* Saved Filter Styles */

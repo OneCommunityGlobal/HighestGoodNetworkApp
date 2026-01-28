@@ -14,7 +14,7 @@
 .participationLandingPageDark {
   max-width: 90%;
   margin: 0 auto;
-  background-color: #1B2A41;
+  background-color: #1b2a41;
   color: #ffffff;
 }
 
@@ -166,7 +166,7 @@
 .insightsDark {
   flex: 1;
   min-width: 48%;
-  background-color: #1C2541;
+  background-color: #1c2541;
   color: #ffffff;
   border-radius: 10px;
   border: 1px solid #ddd;
@@ -217,7 +217,7 @@
 .trackingFilters {
   display: flex;
   flex-wrap: nowrap;
-  gap: 12px;   /* spacing between dropdowns */
+  gap: 12px; /* spacing between dropdowns */
 }
 
 .trackingFilters select {
@@ -226,6 +226,23 @@
   font-size: 0.8rem;
   border: 1px solid #ccc;
   border-radius: 5px;
+}
+
+.trackingFiltersDark {
+  display: flex;
+  gap: 10px;
+  background-color: #1c2541;
+}
+
+.trackingFiltersDark select {
+  background-color: #2d3748;
+  border-color: #4a5568;
+  color: #fff;
+}
+
+.trackingFiltersDark select option {
+  background-color: #2d3748;
+  color: #fff;
 }
 
 /* Summary boxes */
@@ -251,7 +268,7 @@
 
 /* Dark mode */
 .trackingRateDark {
-  background: #3A506B;
+  background: #3a506b;
   border-radius: 10px;
   width: 48%;
   padding: 10px;
@@ -278,14 +295,13 @@
   padding: 10px;
   background: #fff;
 }
-
 .trackingListContainerDark {
   max-height: 600px;
   overflow-y: auto;
   border: 1px solid #ccc;
   border-radius: 10px;
   padding: 10px;
-  background: #3A506B;
+  background: #3a506b;
   color: #ffffff;
 }
 
@@ -303,7 +319,7 @@
 }
 
 .trackingTableDark thead th {
-  background: #1C2541;
+  background: #1c2541;
   color: #ffffff;
 }
 
@@ -329,7 +345,6 @@
   display: flex;
   justify-content: space-between;
 }
-
 .insightsHeaderDark {
   color: #ffffff;
   font-weight: bold;
@@ -343,7 +358,6 @@
   color: #333;
   margin: 0;
 }
-
 .insightsHeaderDark h3 {
   color: #ffffff;
   font-size: 1.3rem;
@@ -358,9 +372,21 @@
   border-radius: 5px;
 }
 
-.insightsFiltersDark select{
-  color: #f8f9fa;
-  background-color: #1C2541;
+.insightsFiltersDark {
+  display: flex;
+  gap: 10px;
+  background-color: #1c2541;
+}
+
+.insightsFiltersDark select {
+  background-color: #2d3748;
+  border-color: #4a5568;
+  color: #fff;
+}
+
+.insightsFiltersDark select option {
+  background-color: #2d3748;
+  color: #fff;
 }
 
 .insightsTabs {
@@ -436,22 +462,18 @@
   justify-content: space-between;
 }
 
-.insightLabel,
-.insightsLabel {
+.insightLabel {
   flex: 1;
   font-size: 0.9rem;
   color: #555;
   margin-right: 10px;
 }
-
-.insightLabelDark,
-.insightsLabelDark {
+.insightLabelDark {
   color: #ffffff;
   font-size: 0.9rem;
   flex: 1;
   margin-right: 10px;
 }
-
 .insightBar {
   flex: 2;
   height: 8px;
@@ -470,8 +492,7 @@
   transition: width 0.3s ease-in-out;
 }
 
-.insightPercentage,
-.insightsPercentage {
+.insightPercentage {
   font-size: 0.9rem;
   font-weight: bold;
   color: #333;
@@ -621,245 +642,29 @@
   -webkit-overflow-scrolling: auto !important;
 }
 
-:global(html[data-exporting="true"]) * {
-  animation: none !important;
-  transition: none !important;
+.insightsTabsDarkMode {
+  border: 1px solid #555;
+  background-color: #1e293b; /* Dark background */
+}
+/* Dark mode tab */
+.insightsTabDarkMode {
+  color: #ddd;
+  background-color: #1e293b;
 }
 
-:global(html[data-exporting="true"]) .participationLandingPageDark {
-  background-color: #1B2A41 !important;
+/* Dark mode divider */
+.insightsTabDarkMode:not(:last-child) {
+  border-right: 1px solid #555;
 }
 
-.printOnly { display: none; }
+/* Active tab dark mode */
+.activeTabDarkMode {
+  background-color: #3b82f6;
+  color: #fff;
+  font-weight: bold;
+}
 
-/* Print styles using global selectors */
-/* Print styles using global selectors */
-@media print {
-  /* Hide everything except the participation component */
-  :global(body > *:not(#root)) { display: none !important; }
-  :global(#root > *:not(.participation-landing-page-global)) { display: none !important; }
-
-  /* Sonar fix: avoid duplicate selector by scoping the print version */
-  :global(#root) .participationLandingPage {
-    max-width: 100% !important;
-    margin: 0 !important;
-    background: white !important;
-    height: auto !important;
-    overflow: visible !important;
-  }
-
-  @page { 
-    size: auto; /* Use auto instead of Letter to allow multiple pages */
-    margin: 0.5in; 
-  }
-
-  @supports (-webkit-print-color-adjust: exact) {
-    * { 
-      -webkit-print-color-adjust: exact; 
-    }
-  }
-  
-  @supports (print-color-adjust: exact) {
-    * { 
-      print-color-adjust: exact; 
-    }
-  }
-
-  /* Critical: Remove all height restrictions for printing */
-  :global(.my-cases-global),
-  :global(.case-cards-global),
-  :global(.case-list-global) {
-    height: auto !important;
-    max-height: none !important;
-    overflow: visible !important;
-    display: block !important;
-  }
-
-  /* Ensure cards display properly in print with page breaks */
-  :global(.case-cards-global) {
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 12px !important;
-    page-break-inside: auto !important;
-  }
-
-  /* Allow cards to break across pages */
-  :global(.case-card-global) {
-    break-inside: avoid-page !important;
-    page-break-inside: avoid !important;
-    height: auto !important;
-  }
-
-  /* Allow list items to break across pages */
-  :global(.case-list-global) {
-    page-break-inside: auto !important;
-  }
-
-  :global(.case-list-item-global) {
-    break-inside: avoid-page !important;
-    page-break-inside: avoid !important;
-  }
-
-  /* Remove scroll containers for print */
-  .trackingListContainer,
-  .trackingListContainerDark {
-    max-height: none !important;
-    overflow: visible !important;
-    height: auto !important;
-  }
-
-  /* Avoid breaking elements */
-  :global(.tracking-table-global) tr {
-    break-inside: avoid; 
-    page-break-inside: avoid; 
-  }
-
-  .insightItem { 
-    break-inside: avoid; 
-    page-break-inside: avoid; 
-  }
-
-  /* Hide non-print elements */
-  :global(.view-switcher-global),
-  :global(.filter-wrapper-global),
-  :global(.create-new-global),
-  :global(.more-btn-global),
-  .noPrint { 
-    display: none !important; 
-  }
-
-  .noPrintGap { margin-bottom: 8px; }
-
-  /* Ensure table headers are visible */
-  :global(.tracking-table-global) thead th { 
-    background: #f4f4f4 !important; 
-    color: #333 !important;
-  }
-
-  :global(.tracking-table-global-dark) thead th {
-    background: #1C2541 !important;
-    color: #ffffff !important;
-  }
-
-  .printOnly { 
-    display: block !important; 
-  }
-
-  /* Force proper backgrounds for all elements */
-  .participationLandingPage,
-  .participationLandingPage * {
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-
-  /* Light mode styles for print */
-  .participationLandingPage {
-    background: white !important;
-  }
-  
-  
-  :global(#root) .case-card-global {
-    background: white !important;
-    color: #333 !important;
-    border: 1px solid #ddd !important;
-  }
-  
-  .trackingContainer {
-    background: white !important;
-    color: #333 !important;
-    border: 1px solid #ddd !important;
-  }
-  
-  .insights {
-    background: white !important;
-    color: #333 !important;
-    border: 1px solid #ddd !important;
-  }
-
-  /* Dark mode styles for print */
-  .participationLandingPageDark {
-    background: #1B2A41 !important;
-    color: #ffffff !important;
-  }
-  
-  .participationLandingPageDark :global(.case-card-global) {
-    background: #3A506B !important;
-    color: #ffffff !important;
-    border: 1px solid #555 !important;
-  }
-  
-  .participationLandingPageDark .trackingContainerDark {
-    background: #1C2541 !important;
-    color: #ffffff !important;
-    border: 1px solid #555 !important;
-  }
-  
-  .participationLandingPageDark .insightsDark {
-    background: #1C2541 !important;
-    color: #ffffff !important;
-    border: 1px solid #555 !important;
-  }
-  
-  .participationLandingPageDark .trackingListContainerDark {
-    background: #3A506B !important;
-    color: #ffffff !important;
-  }
-  
-  .participationLandingPageDark :global(.tracking-table-global-dark) thead th {
-    background: #1C2541 !important;
-    color: #ffffff !important;
-  }
-  
-  .participationLandingPageDark .trackingRateDark {
-    background: #3A506B !important;
-    color: #ffffff !important;
-  }
-
-  /* Event badge colors for print */
-  :global(.event-badge-global)[data-type='Yoga Class'] {
-    background-color: #e9f7ef !important;
-    color: #28a745 !important;
-  }
-
-  :global(.event-badge-global)[data-type='Cooking Workshop'] {
-    background-color: #fdecea !important;
-    color: #e74c3c !important;
-  }
-
-  :global(.event-badge-global)[data-type='Dance Class'] {
-    background-color: #fff5e6 !important;
-    color: #f39c12 !important;
-  }
-
-  :global(.event-badge-global)[data-type='Fitness Bootcamp'] {
-    background-color: #f5e6ff !important;
-    color: #9b59b6 !important;
-  }
-
-  /* Rate colors for print */
-  .trackingRateGreen {
-    color: green !important;
-    font-weight: bold !important;
-  }
-
-  .trackingRateRed {
-    color: red !important;
-    font-weight: bold !important;
-  }
-
-  /* Insight bar colors */
-  .insightFill {
-    background: #007bff !important;
-  }
-
-  /* Text colors for dark mode */
-  .participationLandingPageDark .landingPageHeaderDark,
-  .participationLandingPageDark .sectionTitleDark,
-  .participationLandingPageDark .eventNameDark,
-  .participationLandingPageDark .eventTimeDark,
-  .participationLandingPageDark .attendeesCountDark,
-  .participationLandingPageDark .insightsLabelDark,
-  .participationLandingPageDark .insightsPercentageDark {
-    color: #ffffff !important;
-  }
+/* Hover effect dark mode */
+.insightsTabDarkMode:hover {
+  background-color: #374151;
 }

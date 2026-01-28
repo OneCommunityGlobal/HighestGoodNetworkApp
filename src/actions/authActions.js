@@ -2,7 +2,7 @@ import jwtDecode from 'jwt-decode';
 import axios from 'axios';
 import httpService from '../services/httpService';
 import config from '../config.json';
-import { ENDPOINTS } from '~/utils/URL';
+import { ENDPOINTS } from '../utils/URL';
 import { GET_ERRORS } from '../constants/errors';
 import {
   SET_CURRENT_USER,
