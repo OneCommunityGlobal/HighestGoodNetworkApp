@@ -13,6 +13,32 @@
   min-height: 100vh;
   background-color: var(--bg-color);
   color: var(--text-color);
+
+  --stat-green: #4caf50;
+  --stat-blue: #2196f3;
+  --stat-red: #f44336;
+  --stat-orange: #ff9800;
+  --stat-dark-green: #2e7d32;
+}
+
+.statGreen {
+  color: var(--stat-green);
+}
+
+.statBlue {
+  color: var(--stat-blue);
+}
+
+.statRed {
+  color: var(--stat-red);
+}
+
+.statOrange {
+  color: var(--stat-orange);
+}
+
+.statDarkGreen {
+  color: var(--stat-dark-green);
 }
 
 /* ======================================
@@ -27,6 +53,32 @@
   --border-color: #3b4a66;
   --shadow-color: rgba(255, 255, 255, 0.1);
   --card-shadow: rgba(255, 255, 255, 0.1);
+
+  --stat-green: #4caf50;
+  --stat-blue: #2196f3;
+  --stat-red: #f44336;
+  --stat-orange: #ff9800;
+  --stat-dark-green: #81c784;
+}
+
+.activityAttendanceDarkMode .statBlue {
+  color: var(--stat-blue) !important;
+}
+
+.activityAttendanceDarkMode .statGreen {
+  color: var(--stat-green) !important;
+}
+
+.activityAttendanceDarkMode .statRed {
+  color: var(--stat-red) !important;
+}
+
+.activityAttendanceDarkMode .statOrange {
+  color: var(--stat-orange) !important;
+}
+
+.activityAttendanceDarkMode .statDarkGreen {
+  color: var(--stat-dark-green) !important;
 }
 
 /* Apply shadow on images if you have any .activity-agenda-image */
@@ -142,9 +194,9 @@
 
 .chartContainer {
   position: relative;
-  width: 180px;
-  height: 180px;
-  flex: 0 0 180px; /* never shrink below 180px */
+  width: 190px;
+  height: 190px;
+  flex: 0 0 190px; /* never shrink below 190px */
   margin: 0 auto;
 }
 
@@ -215,7 +267,7 @@
   transition: color 0.2s ease;
 }
 
-.infoIconWrapper:hover, 
+.infoIconWrapper:hover,
 .infoIconWrapper:focus {
   color: var(--heading-color);
   outline: none;
