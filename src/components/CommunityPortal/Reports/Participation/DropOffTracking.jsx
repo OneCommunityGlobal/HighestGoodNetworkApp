@@ -120,8 +120,8 @@ function DropOffTracking() {
             {filteredEvents.map(event => (
               <tr key={event.id}>
                 <td>{event.eventName}</td>
-                <td className={styles.trackingRateGreen}>{event.noShowRate}</td>
-                <td className={styles.trackingRateRed}>{event.dropOffRate}</td>
+                <td className={`${styles.trackingRateGreen}`}>{event.noShowRate}</td>
+                <td className={`${styles.trackingRateRed}`}>{event.dropOffRate}</td>
                 <td>{event.attendees}</td>
               </tr>
             ))}

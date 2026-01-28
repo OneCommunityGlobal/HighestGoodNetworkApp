@@ -101,6 +101,8 @@ function Timer({ authUser, darkMode, isPopout }) {
 
   const [running, setRunning] = useState(false);
   const [confirmationResetModal, setConfirmationResetModal] = useState(false);
+  const [confirmSubmitModalOpen, setConfirmSubmitModalOpen] = useState(false);
+  const [pendingSubmitTime, setPendingSubmitTime] = useState({ hours: 0, minutes: 0 });
   const [logTimeEntryModal, setLogTimeEntryModal] = useState(false);
   const [inacModal, setInacModal] = useState(false);
   const [showTimer, setShowTimer] = useState(false);
@@ -459,23 +461,18 @@ function Timer({ authUser, darkMode, isPopout }) {
   const handleStopButton = useCallback(() => {
     const timeToSubmit = { hours: logHours, minutes: logMinutes };
 
-    if (!validateTimeForSubmission(timeToSubmit)) {
-      return;
-    }
+    if (!validateTimeForSubmission(timeToSubmit)) return;
 
-    // Show confirmation dialog for longer sessions
+    // Show confirmation popup for longer sessions
     if (logHours >= 2) {
-      const confirmed = globalThis.confirm(
-        `Are you sure you want to submit ${logHours} hours and ${logMinutes} minutes? This action cannot be undone.`,
-      );
-      if (!confirmed) {
-        return;
-      }
+      setPendingSubmitTime(timeToSubmit);
+      setConfirmSubmitModalOpen(true);
+      return;
     }
 
     console.log('🛑 Stop button clicked - preparing to log time:', timeToSubmit);
     toggleLogTimeModal();
-  }, [logHours, logMinutes, validateTimeForSubmission]);
+  }, [logHours, logMinutes, validateTimeForSubmission, toggleLogTimeModal]);
 
   const updateRemaining = () => {
     if (!running) return;
@@ -710,6 +707,50 @@ function Timer({ authUser, darkMode, isPopout }) {
     </>
   );
 
+  const renderConfirmSubmitModal = () => (
+    <Modal
+      isOpen={confirmSubmitModalOpen}
+      toggle={() => setConfirmSubmitModalOpen(false)}
+      centered
+      size="md"
+      className={cs(fontColor, darkMode ? 'dark-mode' : '')}
+    >
+      <ModalHeader
+        className={darkMode ? 'bg-space-cadet' : ''}
+        toggle={() => setConfirmSubmitModalOpen(false)}
+      >
+        Confirm submission
+      </ModalHeader>
+
+      <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+        <div style={{ fontSize: '1rem', lineHeight: 1.4 }}>
+          <div style={{ fontWeight: 700, marginBottom: 8 }}>
+            Are you sure you want to submit{' '}
+            {pendingSubmitTime.hours ? `${pendingSubmitTime.hours} hour(s)` : ''}
+            {pendingSubmitTime.minutes ? ` ${pendingSubmitTime.minutes} minute(s)` : ''}?
+          </div>
+          <div style={{ opacity: 0.9 }}>This action cannot be undone.</div>
+        </div>
+      </ModalBody>
+
+      <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+        <Button color="secondary" onClick={() => setConfirmSubmitModalOpen(false)}>
+          Cancel
+        </Button>
+
+        <Button
+          color="primary"
+          onClick={() => {
+            setConfirmSubmitModalOpen(false);
+            toggleLogTimeModal();
+          }}
+        >
+          Yes, submit
+        </Button>
+      </ModalFooter>
+    </Modal>
+  );
+
   const renderConfirmationResetModal = () => (
     <Modal
       isOpen={confirmationResetModal}
@@ -843,6 +884,7 @@ function Timer({ authUser, darkMode, isPopout }) {
         {renderConfirmationResetModal()}
         {renderInactivityModal()}
         {renderTimeCompleteModal()}
+        {renderConfirmSubmitModal()}
       </div>
     );
   }
@@ -1039,6 +1081,7 @@ function Timer({ authUser, darkMode, isPopout }) {
       {renderConfirmationResetModal()}
       {renderInactivityModal()}
       {renderTimeCompleteModal()}
+      {renderConfirmSubmitModal()}
     </div>
   );
 }

@@ -14,7 +14,7 @@ import { UserStatus } from '../../utils/enums';
 import ActiveCell from './ActiveCell';
 import TimeDifference from './TimeDifference';
 import { boxStyle } from '../../styles';
-import { formatDateLocal, formatDateUtcYYYYMMDD } from '../../utils/formatDate';
+import { formatDate, formatDateLocal, formatDateUtcYYYYMMDD } from '../../utils/formatDate';
 import hasPermission, {cantUpdateDevAdminDetails } from '../../utils/permissions';
 import SetUpFinalDayButton from './SetUpFinalDayButton';
 
@@ -41,8 +41,8 @@ const UserTableDataComponent = (props) => {
     jobTitle: props.user.jobTitle,
     email: props.user.email,
     weeklycommittedHours: props.user.weeklycommittedHours,
-    startDate: formatDateUtcYYYYMMDD(props.user.startDate) || '',
-    endDate: formatDateUtcYYYYMMDD(props.user.endDate) || '',
+    startDate: formatDate(props.user.startDate) || '',
+    endDate: formatDate(props.user.endDate) || '',
   });
   const dispatch = useDispatch();
   const history = useHistory();
@@ -97,8 +97,8 @@ const UserTableDataComponent = (props) => {
       jobTitle: props.user.jobTitle,
       email: props.user.email,
       weeklycommittedHours: props.user.weeklycommittedHours,
-      startDate: formatDateUtcYYYYMMDD(props.user.startDate),
-      endDate: formatDateUtcYYYYMMDD(props.user.endDate),
+      startDate: formatDate(props.user.startDate),
+      endDate: formatDate(props.user.endDate),
     });
   }, [props.user]);
 
@@ -138,6 +138,7 @@ const UserTableDataComponent = (props) => {
       <td className="usermanagement__active--input" style={{ position: 'relative' }}>
         <ActiveCell
           isActive={props.isActive}
+          deactivatedAt={props.deactivatedAt}
           canChange={canChangeUserStatus}
           key={`active_cell${props.index}`}
           index={props.index}
@@ -543,13 +544,13 @@ const UserTableDataComponent = (props) => {
       <td className="email_cell">
         {editUser?.endDate ? (
           <div>
-            {props.user.endDate ? formatDateLocal(props.user.endDate) : 'N/A'}
+            {props.user.endDate ? formatDate(props.user.endDate) : 'N/A'}
             <FontAwesomeIcon
               className="copy_icon"
               icon={faCopy}
               onClick={() => {
                 navigator.clipboard.writeText(
-                  props.user.endDate ? formatDateLocal(formData.endDate) : 'N/A',
+                  props.user.endDate ? formatDate(formData.endDate) : 'N/A',
                 );
                 toast.success('End Date Copied!');
               }}

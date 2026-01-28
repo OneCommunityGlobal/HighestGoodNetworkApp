@@ -47,11 +47,6 @@ function EventParticipation() {
       }`}
     >
       {/* Print-only page title header */}
-      <div className={`${styles.printOnly} ${styles.printHeader}`}>
-        <div className={styles.printHeaderTitle}>Social And Recreational Management</div>
-        <div className={styles.printHeaderSubtitle}>Event Participation</div>
-      </div>
-
       <header
         className={`${styles.landingPageHeaderContainer} ${styles.avoidBreak} ${styles.noPrintGap}`}
       >
@@ -72,17 +67,13 @@ function EventParticipation() {
         </button>
       </header>
 
-      <MyCases darkMode={darkMode} />
-
-      <div className={styles.analyticsSection}>
-        <DropOffTracking darkMode={darkMode} />
-        <NoShowInsights darkMode={darkMode} />
+      <MyCases />
+      <div className={`${styles.analyticsSection}`}>
+        <DropOffTracking />
+        <NoShowInsights />
       </div>
 
       {/* Print-only footer note */}
-      <div className={`${styles.printOnly} ${styles.printFooter}`}>
-        Generated from Event Participation
-      </div>
     </div>
   );
 }
