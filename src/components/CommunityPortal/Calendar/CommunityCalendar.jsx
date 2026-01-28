@@ -246,6 +246,7 @@ function CommunityCalendar() {
       container: `${styles.communityCalendar} ${darkMode ? styles.communityCalendarDarkMode : ''}`,
       header: `${styles.calendarHeader} ${darkMode ? styles.calendarHeaderDarkMode : ''}`,
       filters: `${styles.calendarFilters} ${darkMode ? styles.calendarFiltersDarkMode : ''}`,
+      select: `${styles.filterSelect} ${darkMode ? styles.filterSelectDarkMode : ''}`,
       main: styles.calendarMain,
       calendarContainer: `${styles.calendarContainer} ${
         darkMode ? styles.calendarContainerDarkMode : ''
@@ -317,21 +318,33 @@ function CommunityCalendar() {
       <header className={calendarClasses.header}>
         <h1>Community Calendar</h1>
         <div className={calendarClasses.filters}>
-          <select value={filter.type} onChange={handleFilterChange('type')}>
+          <select
+            className={calendarClasses.select}
+            value={filter.type}
+            onChange={handleFilterChange('type')}
+          >
             <option value="all">All Types</option>
             {uniqueFilterValues.types.map(t => (
               <option key={t}>{t}</option>
             ))}
           </select>
 
-          <select value={filter.location} onChange={handleFilterChange('location')}>
+          <select
+            className={calendarClasses.select}
+            value={filter.location}
+            onChange={handleFilterChange('location')}
+          >
             <option value="all">All Locations</option>
             {uniqueFilterValues.locations.map(l => (
               <option key={l}>{l}</option>
             ))}
           </select>
 
-          <select value={filter.status} onChange={handleFilterChange('status')}>
+          <select
+            className={calendarClasses.select}
+            value={filter.status}
+            onChange={handleFilterChange('status')}
+          >
             <option value="all">All Statuses</option>
             {uniqueFilterValues.statuses.map(s => (
               <option key={s}>{s}</option>
