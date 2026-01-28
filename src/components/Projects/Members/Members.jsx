@@ -40,6 +40,8 @@ const Members = props => {
 
   const projectName = useSelector(state => state.projectById?.projectName || '');
 
+  const [filterMode, setFilterMode] = useState("find");
+
   useEffect(() => {
     const fetchMembers = async () => {
       setIsLoading(true);
@@ -125,6 +127,7 @@ const Members = props => {
     }
     props.findProjectMembers(projectId, q);
     setShowFindUserList(true);
+    setFilterMode("find");
   };
 
   return (
@@ -200,7 +203,7 @@ const Members = props => {
               />
               <div className="input-group-append">
                 <button
-                  className="btn btn-primary"
+                  className={`btn ${filterMode === "find"  ? "btn-primary" : "btn-outline-primary"}`}
                   type="button"
                   disabled={!searchText.trim()}   // enabled only when there’s something to find
                   onClick={handleFind}
@@ -208,12 +211,13 @@ const Members = props => {
                   Find
                 </button>
                 <button
-                  className="btn btn-outline-primary"
+                  className={`btn ${filterMode === "all"  ? "btn-primary" : "btn-outline-primary"}`}
                   type="button"
                   onClick={() => {
                     // optional “All users” button
                     props.getAllUserProfiles();
                     setShowFindUserList(true);
+                    setFilterMode("all");
                   }}
                 >
                   All
