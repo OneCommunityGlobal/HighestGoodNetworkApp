@@ -1,11 +1,10 @@
-// Activity List Component
-import { useState, useEffect } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import styles from './ActivityList.module.css';
-// import { useHistory } from 'react-router-dom';
 
 function ActivityList() {
   const [activities, setActivities] = useState([]);
+  const [showPastEvents, setShowPastEvents] = useState(false);
   const darkMode = useSelector(state => state.theme.darkMode);
   const [filter, setFilter] = useState({
     type: '',
@@ -121,16 +120,41 @@ function ActivityList() {
         date: '2024-01-10',
         location: 'Tech Hub',
       },
+      {
+        id: 16,
+        name: 'Robotics Expo',
+        type: 'Educational',
+        date: '2027-01-10',
+        location: 'Tech Hub',
+      },
     ];
     setActivities(fetchedActivities);
   }, []);
+
+  const startOfToday = useMemo(() => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }, []);
+
+  const visibleActivities = useMemo(() => {
+    const parsed = activities.map(a => ({
+      ...a,
+      _dateObj: new Date(`${a.date}T00:00:00`),
+    }));
+
+    const filtered = showPastEvents ? parsed : parsed.filter(a => a._dateObj >= startOfToday);
+    filtered.sort((a, b) => a._dateObj - b._dateObj);
+
+    return filtered;
+  }, [showPastEvents, startOfToday]);
 
   const handleFilterChange = e => {
     const { name, value } = e.target;
     setFilter({ ...filter, [name]: value });
   };
 
-  const filteredActivities = activities.filter(activity => {
+  const filteredActivities = visibleActivities.filter(activity => {
     return (
       (!filter.type || activity.type.toLowerCase().includes(filter.type.toLowerCase())) &&
       (!filter.date || activity.date === filter.date) &&
@@ -177,8 +201,20 @@ function ActivityList() {
             placeholder="Enter location"
           />
         </label>
+        <label className={`${styles.showPastToggle} ${darkMode ? styles.darkShowPastToggle : ''}`}>
+          Show Past Events:
+          <input
+            type="checkbox"
+            name="showPastEvents"
+            checked={showPastEvents}
+            onChange={e => setShowPastEvents(e.target.checked)}
+          />
+        </label>
         <button
           type="button"
+          className={`${styles.clearFiltersButton} ${
+            darkMode ? styles.clearFiltersButtonDark : ''
+          }`}
           onClick={handleClearFilters}
           disabled={!filter.type && !filter.date && !filter.location}
         >
@@ -187,9 +223,9 @@ function ActivityList() {
       </div>
 
       <div className={`${styles.activityList} ${darkMode ? styles.darkActivityList : ''}`}>
-        {filteredActivities.length > 0 ? (
+        {visibleActivities.length > 0 ? (
           <ul>
-            {filteredActivities.map(activity => (
+            {visibleActivities.map(activity => (
               <li key={activity.id}>
                 <strong>{activity.name}</strong> - {activity.type} - {activity.date} -{' '}
                 {activity.location}
