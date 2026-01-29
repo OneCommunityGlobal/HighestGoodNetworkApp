@@ -37,7 +37,6 @@ export const activateUserAction = async (
   userProfile,
   loadUserProfile
 ) => {
-  console.trace('LIFECYCLE ACTION CALLED');
   const action = UserStatusOperations.ACTIVATE;
   const updatedUser = buildUpdatedUserLifecycleDetails(userProfile, { action });
 
@@ -62,15 +61,11 @@ export const deactivateImmediatelyAction = async (
   userProfile,
   loadUserProfile
 ) => {
-  console.trace('LIFECYCLE ACTION CALLED');
-  console.log('User profile for deactivation:', userProfile);
   const action = UserStatusOperations.DEACTIVATE;
   const updatedUser = buildUpdatedUserLifecycleDetails(userProfile, { action });
-  console.log('Deactivating user with details:', updatedUser);
   try {
     if(!userProfile.endDate){
-      //usually required when called from UserManagement table
-      console.log('Setting endDate to now for immediate deactivation');
+      // required when called from UserManagement table
       userProfile.endDate = moment().toISOString();
     }
     await dispatch(
