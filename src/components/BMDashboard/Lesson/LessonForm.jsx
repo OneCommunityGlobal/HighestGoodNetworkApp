@@ -37,6 +37,8 @@ function LessonForm() {
   const [filteredTags, setFilteredTags] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
 
+  const dark = useSelector(state => state.theme.darkMode);
+
   // track user input in the tag input feild
 
   const handleTagInput = e => {
@@ -218,9 +220,12 @@ function LessonForm() {
     }
   };
   return (
-    <div className={`${styles.masterContainer}`}>
-      <div className={`${styles.formContainer}`}>
-        <Form onSubmit={LessonFormSubmit}>
+    <div className={`${styles.masterContainer} ${dark ? styles.wrapperDark : ''}`}>
+      <div
+        className={`${styles.formContainer}`}
+        style={{ backgroundColor: dark ? '#1e2433' : '#ffffff' }}
+      >
+        <Form onSubmit={LessonFormSubmit} className={`${dark ? styles.whiteText : ''}`}>
           <div className="WriteLessonAndTagDiv">
             <Form.Group className="LessonFrom" controlId="exampleForm.ControlTextarea1">
               <Form.Label className={`${styles.lessonLabel}`}>Lesson Title</Form.Label>
@@ -247,7 +252,9 @@ function LessonForm() {
               />
             </Form.Group>
             <Form.Group controlId="exampleForm.ControlInput1">
-              <Form.Label>Add tag (Press enter to add tag)</Form.Label>
+              <Form.Label className={`${dark ? styles.whiteText : ''}`}>
+                Add tag (Press enter to add tag)
+              </Form.Label>
               <div className={`${styles.inputGroup}`}>
                 <input
                   type="text"
@@ -278,10 +285,14 @@ function LessonForm() {
               </div>
               <div className={`${styles.tagsDiv}`}>
                 {LessonFormtags.map(tag => (
-                  <div className={`${styles.tag}`} key={tag}>
+                  <div
+                    className={`${styles.tag}`}
+                    style={{ border: dark ? '1px solid white' : '1px solid black' }}
+                    key={tag}
+                  >
                     <span className={`${styles.tagSpan}`}>{tag}</span>
                     <button
-                      className={`${styles.removeTagBTN}`}
+                      className={`${styles.removeTagBTN} ${dark ? styles.whiteText : ''}`}
                       type="button"
                       onClick={() => removeTag(tag)}
                     >
@@ -295,7 +306,7 @@ function LessonForm() {
           <div className={`${styles.formSelectContainer}`}>
             <div className={`${styles.singleFormSelect}`}>
               <Form.Group controlId="Form.ControlSelect1">
-                <Form.Label>Belongs to</Form.Label>
+                <Form.Label className={`${dark ? styles.whiteText : ''}`}>Belongs to</Form.Label>
                 <FormControl
                   onChange={handleProjectChange}
                   as="select"
@@ -314,7 +325,7 @@ function LessonForm() {
             </div>
             <div className={`${styles.singleFormSelect}`}>
               <Form.Group controlId="Form.ControlSelect2">
-                <Form.Label>View by</Form.Label>
+                <Form.Label className={`${dark ? styles.whiteText : ''}`}>View by</Form.Label>
                 <FormControl
                   as="select"
                   aria-label="Default select example"
@@ -332,7 +343,7 @@ function LessonForm() {
           </div>
           <div className="DragAndDropFormGroup">
             <Form.Group controlId="exampleForm.ControlFile1">
-              <Form.Label>Upload Appendix</Form.Label>
+              <Form.Label className={`${dark ? styles.whiteText : ''}`}>Upload Appendix</Form.Label>
               <input
                 type="file"
                 id="fileInput"
