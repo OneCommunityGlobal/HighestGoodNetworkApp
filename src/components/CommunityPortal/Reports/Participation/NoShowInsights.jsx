@@ -90,7 +90,7 @@ function NoShowInsights() {
 
     return finalStats.map(item => (
       <div key={item.label} className={styles.insightItem}>
-        <div className={`${styles.insightsLabel} ${darkMode ? styles.insightsLabelDark : ''}`}>
+        <div className={`${styles.insightLabel} ${darkMode ? styles.insightLabelDark : ''}`}>
           {item.label}
         </div>
         <div className={`${styles.insightBar}`}>
@@ -268,17 +268,15 @@ function NoShowInsights() {
           </div>
         </div>
       )}
-      <div 
-        ref={insightsRef} 
+      <div
+        ref={insightsRef}
         className={`${styles.insights} ${darkMode ? styles.insightsDark : ''}`}
-        >
-        <div 
-          className={`${styles.insightsHeader} ${darkMode ? styles.insightsHeaderDark : ''}`}
-          >
+      >
+        <div className={`${styles.insightsHeader} ${darkMode ? styles.insightsHeaderDark : ''}`}>
           <h3>No-show rate insights</h3>
-          <div 
+          <div
             className={`${styles.insightsFilters} ${darkMode ? styles.insightsFiltersDark : ''}`}
-            >
+          >
             <select value={dateFilter} onChange={e => setDateFilter(e.target.value)}>
               <option value="All">All Time</option>
               <option value="Today">Today</option>
@@ -289,9 +287,7 @@ function NoShowInsights() {
         </div>
 
         <div className={styles.insightsTabsContainer}>
-          <div 
-            className={`${styles.insightsTabs} ${ darkMode ? styles.insightsTabsDarkMode : '' }`}
-          >
+          <div className={`${styles.insightsTabs} ${darkMode ? styles.insightsTabsDarkMode : ''}`}>
             {['Event type', 'Time', 'Location'].map(tab => (
               <button
                 key={tab}
@@ -299,7 +295,9 @@ function NoShowInsights() {
                 className={`
                 ${styles.insightsTab} 
                 ${darkMode ? styles.insightsTabDarkMode : ''} 
-                ${activeTab === tab ? (darkMode ? styles.activeTabDarkMode : styles.activeTab) : ''}`}
+                ${
+                  activeTab === tab ? (darkMode ? styles.activeTabDarkMode : styles.activeTab) : ''
+                }`}
                 onClick={() => setActiveTab(tab)}
               >
                 {tab}
