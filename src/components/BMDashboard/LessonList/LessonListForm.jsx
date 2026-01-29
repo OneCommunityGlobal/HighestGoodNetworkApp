@@ -8,10 +8,11 @@ import { fetchBMLessons } from '~/actions/bmdashboard/lessonsAction';
 import { ENDPOINTS } from '~/utils/URL';
 import Lessons from './Lessons';
 import ConfirmationModal from './ConfirmationModal';
+import ExportConfirmationModal from './ExportConfirmationModal';
 import styles from './LessonListForm.module.css';
 
 function LessonList(props) {
-  const { lessons, dispatch } = props;
+  const { lessons, darkMode, dispatch } = props;
   const [tags, setTags] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [deleteValue, setDeleteInputValue] = useState('');
@@ -23,6 +24,8 @@ function LessonList(props) {
   const [showDeleteDropdown, setShowDeleteDropdown] = useState(false);
   const [tagsToDelete, setTagsToDelete] = useState([]);
   const [confirmModal, setConfirmModal] = useState(false);
+  const [showExportModal, setShowExportModal] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -109,7 +112,6 @@ function LessonList(props) {
   const isInThisWeek = date => {
     // Convert the date string to a Date object with consistent formatting
     const lessonDate = new Date(date);
-
     const currentDate = new Date();
 
     // Check if the year and week are the same
@@ -121,19 +123,12 @@ function LessonList(props) {
       const dayDifference = Math.abs(currentDate - lessonDate) / (1000 * 60 * 60 * 24);
       return dayDifference < 7;
     }
-
     return false;
   };
 
   const isInThisYear = date => {
     const currentDate = new Date();
     const lessonDate = new Date(date);
-    // console.log('Year comparison:', {
-    //  date,
-    //  currentYear: currentDate.getFullYear(),
-    //  lessonYear: lessonDate.getFullYear(),
-    //  isValid: !isNaN(lessonDate.getTime()),
-    // });
     return currentDate.getFullYear() === lessonDate.getFullYear();
   };
 
@@ -163,9 +158,7 @@ function LessonList(props) {
         setShowDeleteDropdown(false);
       }
     };
-
     document.addEventListener('mousedown', handleClickOutside);
-
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
@@ -187,15 +180,6 @@ function LessonList(props) {
     setShowDeleteDropdown(false);
   };
 
-  /** 
-  const handleInputKeyDown = event => {
-    if (event.key === 'Enter' || event.key === ',') {
-      event.preventDefault();
-      addTag(inputValue.trim());
-    }
-  };
-  */
-
   const handleDeleteKeyDown = event => {
     if (event.key === 'Enter' && deleteValue.trim()) {
       addDeleteTag(deleteValue.trim());
@@ -214,30 +198,21 @@ function LessonList(props) {
 
   useEffect(() => {
     const applyFiltersAndSort = () => {
-      // console.log('Starting filtering with:', {
-      //  lessonsCount: lessons?.length || 0,
-      //  firstLesson: lessons?.[0],
-      // });
       let filtered = [...lessons];
 
       // 1. Apply tag filtering
       if (tags.length > 0) {
         filtered = filtered.filter(lesson => {
-          // console.log('Checking lesson:', lesson.title, 'tags:', lesson.tags);
           const hasAllTags = lesson.tags && tags.every(tag => lesson.tags.includes(tag));
-          // console.log('Has all tags?', hasAllTags);
           return hasAllTags;
         });
       }
 
       // 2. Apply date filtering
-      // console.log('Before date filtering:', filtered.length, 'lessons');
       switch (filterOption) {
         case '2':
-          // console.log('Applying year filter...');
           filtered = filtered.filter(item => {
             const result = isInThisYear(item.date);
-            // console.log(`Lesson ${item._id}: ${result}`);
             return result;
           });
           break;
@@ -250,13 +225,7 @@ function LessonList(props) {
         default:
           break;
       }
-      // console.log('After date filtering:', filtered.length, 'lessons');
 
-      // 3. Apply sorting
-      // console.log(
-      //  'Before sorting:',
-      //  filtered.map(l => ({ title: l.title, date: l.date })),
-      // );
       switch (sortOption) {
         case '1': // Newest
           filtered = filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -270,14 +239,297 @@ function LessonList(props) {
         default:
           break;
       }
-
-      // console.log('Final filtered lessons:', filtered);
-
       setFilteredLessons(filtered);
     };
 
     applyFiltersAndSort();
   }, [lessons, tags, filterOption, sortOption]); // All dependencies that should trigger filtering
+
+  /**
+   * Safely removes HTML tags from a string using DOMParser.
+   * This approach is ReDoS-safe and handles all HTML content consistently.
+   */
+  const stripHtmlTags = htmlString => {
+    if (!htmlString || typeof htmlString !== 'string') {
+      return String(htmlString || '');
+    }
+
+    try {
+      // Use DOMParser to safely parse and extract text content
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(htmlString, 'text/html');
+      return doc.body.textContent || doc.body.innerText || '';
+    } catch (error) {
+      // Fallback: if DOMParser fails, return the original string
+      // This should rarely happen, but provides a safety net
+      console.warn('Error parsing HTML content:', error);
+      return htmlString;
+    }
+  };
+
+  const escapeCSV = value => {
+    // Handle null, undefined, and empty values
+    if (value === null || value === undefined || value === '') {
+      return '';
+    }
+
+    // Convert to string safely
+    let stringValue;
+    try {
+      stringValue = String(value);
+    } catch (error) {
+      console.warn('Error converting value to string:', error);
+      return '';
+    }
+
+    // Remove or replace problematic characters that could break CSV
+    // Replace carriage returns and normalize line breaks
+    stringValue = stringValue
+      .replace(/\r\n/g, ' ')
+      .replace(/\r/g, ' ')
+      .replace(/\n/g, ' ');
+
+    // If value contains comma, quote, or starts/ends with whitespace, wrap in quotes and escape quotes
+    const startsOrEndsWithWhitespace =
+      stringValue.length > 0 &&
+      (stringValue.trimStart() !== stringValue || stringValue.trimEnd() !== stringValue);
+    if (stringValue.includes(',') || stringValue.includes('"') || startsOrEndsWithWhitespace) {
+      return `"${stringValue.replace(/"/g, '""')}"`;
+    }
+
+    return stringValue;
+  };
+
+  const formatDateForCSV = dateString => {
+    if (!dateString) return '';
+    try {
+      const date = new Date(dateString);
+      // Check if date is valid
+      if (isNaN(date.getTime())) {
+        // If invalid date, try to return original string or empty
+        return typeof dateString === 'string' ? dateString.substring(0, 50) : '';
+      }
+      // Format as MM/DD/YYYY for Excel compatibility
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const year = date.getFullYear();
+      return `${month}/${day}/${year}`;
+    } catch (error) {
+      console.warn('Error formatting date:', error, dateString);
+      // Return a safe fallback
+      return typeof dateString === 'string' ? dateString.substring(0, 50) : '';
+    }
+  };
+
+  const getFilterDescription = () => {
+    const filterDescriptions = [];
+
+    // Date filter
+    if (filterOption !== '1') {
+      const filterMap = {
+        '2': 'This Year',
+        '3': 'This Month',
+        '4': 'This Week',
+      };
+      filterDescriptions.push(`Date Filter: ${filterMap[filterOption]}`);
+    }
+
+    // Tag filter
+    if (tags.length > 0) {
+      filterDescriptions.push(`Tags: ${tags.join(', ')}`);
+    }
+
+    // Sort option
+    const sortMap = {
+      '1': 'Newest',
+      '2': 'Date (Oldest)',
+      '3': 'Likes',
+    };
+    filterDescriptions.push(`Sort: ${sortMap[sortOption]}`);
+
+    return filterDescriptions.length > 0 ? filterDescriptions.join(' | ') : 'No filters applied';
+  };
+
+  const handleExportClick = () => {
+    // Validate data before showing modal
+    if (!filteredLessons || !Array.isArray(filteredLessons) || filteredLessons.length === 0) {
+      toast.error('No lesson data available to export. Please adjust your filters.');
+      return;
+    }
+    setShowExportModal(true);
+  };
+
+  const exportLessonData = () => {
+    // Prevent multiple simultaneous exports
+    if (isExporting) {
+      return;
+    }
+
+    setIsExporting(true);
+
+    let blobUrl = null;
+    let downloadLink = null;
+
+    try {
+      // Validate data again before export
+      if (!filteredLessons || !Array.isArray(filteredLessons) || filteredLessons.length === 0) {
+        toast.error('No lesson data available to export');
+        setIsExporting(false);
+        setShowExportModal(false);
+        return;
+      }
+
+      // Create CSV content with UTF-8 BOM for Excel compatibility
+      const BOM = '\uFEFF';
+      let csv = BOM;
+
+      // Add metadata about filters applied
+      const exportDate = new Date();
+      const exportDateString = exportDate.toLocaleString('en-US', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+      });
+
+      csv += `Export Date: ${exportDateString}\n`;
+      csv += `Applied Filters: ${getFilterDescription()}\n`;
+      csv += `Total Lessons: ${filteredLessons.length}\n`;
+      csv += '\n';
+
+      // CSV Headers
+      const headers = [
+        'Lesson Title',
+        'Date',
+        'Tags',
+        'Author',
+        'Related Project',
+        'Total Likes',
+        'Content Summary',
+      ];
+      csv += headers.map(escapeCSV).join(',') + '\n';
+
+      // CSV Data rows with robust error handling
+      filteredLessons.forEach((lesson, index) => {
+        try {
+          // Safely extract lesson data with fallbacks
+          const title = lesson?.title || '';
+          const date = lesson?.date ? formatDateForCSV(lesson.date) : '';
+          const tags =
+            Array.isArray(lesson?.tags) && lesson.tags.length > 0 ? lesson.tags.join('; ') : '';
+          const author = lesson?.author?.name || 'Unknown';
+          const project = lesson?.relatedProject?.name || 'Unknown Project';
+          const likes = typeof lesson?.totalLikes === 'number' ? lesson.totalLikes : 0;
+
+          // Safely handle content - remove HTML tags and normalize newlines
+          let content = '';
+          if (lesson?.content) {
+            // Remove HTML tags using DOMParser (ReDoS-safe and handles all cases)
+            const textContent = stripHtmlTags(lesson.content);
+            // Replace newlines with spaces to keep content on single line in CSV
+            content = textContent
+              .replace(/\n/g, ' ')
+              .replace(/\r/g, ' ')
+              .trim();
+          }
+
+          const row = [title, date, tags, author, project, likes, content];
+          csv += row.map(escapeCSV).join(',') + '\n';
+        } catch (rowError) {
+          // Log error but continue with other rows
+          console.warn(`Error processing lesson at index ${index}:`, rowError);
+          // Add a placeholder row to maintain CSV structure (7 columns matching headers)
+          const errorRow = ['Error processing this lesson', '', '', '', '', '', ''];
+          csv += errorRow.map(escapeCSV).join(',') + '\n';
+        }
+      });
+
+      // Validate CSV content before creating blob
+      const minExpectedLength = 100; // BOM + metadata + headers should be at least this
+      if (!csv || csv.length < minExpectedLength) {
+        throw new Error('Generated CSV content is invalid or too short');
+      }
+
+      // Create blob with UTF-8 encoding
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+
+      if (!blob || blob.size === 0) {
+        throw new Error('Failed to create file blob');
+      }
+
+      blobUrl = URL.createObjectURL(blob);
+
+      if (!blobUrl) {
+        throw new Error('Failed to create download URL');
+      }
+
+      // Create download link
+      downloadLink = document.createElement('a');
+      downloadLink.href = blobUrl;
+
+      // Generate safe filename with date
+      const dateString = exportDate
+        .toISOString()
+        .split('T')[0]
+        .replace(/-/g, '_');
+      downloadLink.download = `lesson_data_${dateString}.csv`;
+
+      // Ensure link is properly configured
+      downloadLink.style.display = 'none';
+      downloadLink.setAttribute('download', downloadLink.download);
+
+      // Append to body, click, and cleanup
+      if (document.body) {
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+
+        // Cleanup with error handling - delay to ensure download starts
+        setTimeout(() => {
+          try {
+            if (document.body && document.body.contains(downloadLink)) {
+              document.body.removeChild(downloadLink);
+            }
+            if (blobUrl) {
+              URL.revokeObjectURL(blobUrl);
+            }
+          } catch (cleanupError) {
+            console.warn('Error during cleanup:', cleanupError);
+          }
+        }, 200);
+      } else {
+        throw new Error('Document body not available');
+      }
+
+      // Close modal and show success only after successful export
+      setShowExportModal(false);
+      toast.success(`Successfully exported ${filteredLessons.length} lesson(s) to CSV`);
+    } catch (error) {
+      console.error('Export error:', error);
+      const errorMessage = error?.message || 'Unknown error occurred';
+      toast.error(`Failed to export lesson data: ${errorMessage}. Please try again.`);
+      // Cleanup on error
+      if (blobUrl) {
+        try {
+          URL.revokeObjectURL(blobUrl);
+        } catch (cleanupError) {
+          console.warn('Error revoking URL on error:', cleanupError);
+        }
+      }
+      if (downloadLink && document.body && document.body.contains(downloadLink)) {
+        try {
+          document.body.removeChild(downloadLink);
+        } catch (cleanupError) {
+          console.warn('Error removing link on error:', cleanupError);
+        }
+      }
+      // Keep modal open on error so user can retry
+      // Modal stays open - user can try again or cancel
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   return (
     <div className={`${styles.mainContainer}`}>
@@ -320,6 +572,20 @@ function LessonList(props) {
                   <option value="2">Date</option>
                   <option value="3">Likes</option>
                 </FormControl>
+              </Form.Group>
+            </div>
+            <div>
+              <Form.Group className={`${styles.singleForm}`} controlId="ExportButton">
+                <Form.Label>&nbsp;</Form.Label>
+                <Button
+                  variant="primary"
+                  onClick={handleExportClick}
+                  disabled={isExporting || !filteredLessons || filteredLessons.length === 0}
+                  style={{ width: '100%', marginTop: '0' }}
+                  aria-label="Export lesson data to CSV"
+                >
+                  {isExporting ? 'Exporting...' : 'Export Data'}
+                </Button>
               </Form.Group>
             </div>
           </div>
@@ -431,6 +697,15 @@ function LessonList(props) {
             </div>
           </Form.Group>
         </Form>
+        <ExportConfirmationModal
+          showExportModal={showExportModal}
+          setShowExportModal={setShowExportModal}
+          onConfirmExport={exportLessonData}
+          filteredLessonsCount={filteredLessons?.length || 0}
+          filterDescription={getFilterDescription()}
+          darkMode={darkMode}
+          isExporting={isExporting}
+        />
         <Lessons
           filteredLessons={filteredLessons}
           setFilteredLessons={setFilteredLessons}
@@ -443,9 +718,9 @@ function LessonList(props) {
 }
 
 const mapStateToProps = state => {
-  // console.log('Current Redux state:', state);
   return {
     lessons: state.lessons.lessons,
+    darkMode: state.theme.darkMode,
   };
 };
 

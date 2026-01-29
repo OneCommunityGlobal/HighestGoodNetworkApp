@@ -1,0 +1,503 @@
+/* ---------- General Styling ---------- */
+.body {
+  font-family: 'Arial', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f5f5f5;
+}
+
+.participationLandingPage {
+  max-width: 90%;
+  margin: 0 auto;
+}
+
+.participationLandingPageDark {
+  max-width: 90%;
+  margin: 0 auto;
+  background-color: #1b2a41;
+  color: #ffffff;
+}
+
+/* ---------- Page Header ---------- */
+.landingPageHeaderContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding: 12px 0;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.landingPageHeader {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #111;
+  letter-spacing: 0.5px;
+}
+
+.landingPageHeaderDark {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.5px;
+}
+
+/* ---------- Save as PDF button ---------- */
+.savePdfBtn {
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.savePdfBtnLight {
+  background: #f5f5f5;
+  color: #333;
+  border: 1px solid #ccc;
+}
+
+.savePdfBtnLight:hover {
+  background: #e8e8e8;
+  transform: translateY(-1px);
+}
+
+.savePdfBtnDark {
+  background: #333;
+  color: #f5f5f5;
+  border: 1px solid #666;
+}
+
+.savePdfBtnDark:hover {
+  background: #444;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 768px) {
+  .landingPageHeaderContainer {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    text-align: center;
+  }
+}
+
+/* ---------- Section Headers ---------- */
+.myCasesHeader h2,
+.trackingHeader h3,
+.insightsHeader h3 {
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.trackingHeaderDark h3,
+.insightsHeaderDark h3 {
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+/* ---------- My Cases Section ---------- */
+.myCases {
+  margin-bottom: 40px;
+}
+
+.myCasesHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.myCasesHeader h2 {
+  font-size: 20px;
+  color: #333;
+}
+
+.myCasesHeader button {
+  padding: 8px 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.myCasesHeader button:hover {
+  background-color: #0056b3;
+}
+
+.myCasesList {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.myCaseItem {
+  padding: 15px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* ---------- Analytics Section ---------- */
+.analyticsSection {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 20px;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-top: 20px;
+}
+
+.trackingContainer,
+.insights {
+  flex: 1;
+  min-width: 48%;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.trackingContainerDark,
+.insightsDark {
+  flex: 1;
+  min-width: 48%;
+  background-color: #1c2541;
+  color: #ffffff;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .analyticsSection {
+    flex-wrap: wrap;
+  }
+
+  .trackingContainer,
+  .insights {
+    width: 100%;
+  }
+}
+
+/* ---------- Tracking Section ---------- */
+.trackingHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.trackingHeaderDark {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  color: #ffffff;
+}
+
+.trackingHeader h3 {
+  font-size: 1.3rem;
+  color: #333;
+  margin: 0;
+}
+
+.trackingHeaderDark h3 {
+  color: #ffffff;
+  font-size: 1.3rem;
+  margin: 0;
+}
+
+.trackingFilters {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 12px; /* spacing between dropdowns */
+}
+
+.trackingFilters select {
+  flex: 0 0 auto;
+  padding: 8px;
+  font-size: 0.8rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.trackingFiltersDark {
+  display: flex;
+  gap: 10px;
+  background-color: #1c2541;
+}
+
+.trackingFiltersDark select {
+  background-color: #2d3748;
+  border-color: #4a5568;
+  color: #fff;
+}
+
+.trackingFiltersDark select option {
+  background-color: #2d3748;
+  color: #fff;
+}
+
+/* Summary boxes */
+.trackingSummary {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+/* Light mode */
+.trackingRate {
+  background: #f8f9fa;
+  border-radius: 10px;
+  width: 48%;
+  padding: 10px;
+  color: #333;
+}
+
+.trackingRate .trackingRateSubheading span,
+.trackingRate .trackingRateValue span {
+  color: #333;
+}
+
+/* Dark mode */
+.trackingRateDark {
+  background: #3a506b;
+  border-radius: 10px;
+  width: 48%;
+  padding: 10px;
+  color: #ffffff;
+}
+
+.trackingRateDark .trackingRateSubheading span,
+.trackingRateDark .trackingRateValue span {
+  color: #ffffff;
+}
+
+.trackingRateValue {
+  font-size: 0.9rem;
+  color: #f44336;
+  display: inline-block;
+}
+
+/* Tables */
+.trackingListContainer {
+  max-height: 600px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 10px;
+  background: #fff;
+}
+.trackingListContainerDark {
+  max-height: 600px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 10px;
+  background: #3a506b;
+  color: #ffffff;
+}
+
+.trackingTable {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  word-wrap: break-word;
+}
+
+.trackingTable thead th {
+  text-align: left;
+  padding: 10px;
+  background: #f4f4f4;
+}
+
+.trackingTableDark thead th {
+  background: #1c2541;
+  color: #ffffff;
+}
+
+.trackingTable tbody td {
+  padding: 5px;
+  border-bottom: 1px solid #eee;
+}
+
+.trackingRateGreen {
+  color: green;
+  font-weight: bold;
+}
+
+.trackingRateRed {
+  color: red;
+}
+
+/* ---------- Insights Section ---------- */
+.insightsHeader {
+  font-weight: bold;
+  color: #444;
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: space-between;
+}
+.insightsHeaderDark {
+  color: #ffffff;
+  font-weight: bold;
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.insightsHeader h3 {
+  font-size: 1.3rem;
+  color: #333;
+  margin: 0;
+}
+.insightsHeaderDark h3 {
+  color: #ffffff;
+  font-size: 1.3rem;
+  margin: 0;
+}
+
+.insightsFilters select {
+  margin-left: 10px;
+  padding: 8px;
+  font-size: 0.8rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.insightsFiltersDark {
+  display: flex;
+  gap: 10px;
+  background-color: #1c2541;
+}
+
+.insightsFiltersDark select {
+  background-color: #2d3748;
+  border-color: #4a5568;
+  color: #fff;
+}
+
+.insightsFiltersDark select option {
+  background-color: #2d3748;
+  color: #fff;
+}
+
+.insightsTabs {
+  display: flex;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  overflow: hidden;
+  max-width: 60%;
+}
+
+.insightsTab {
+  flex: 1;
+  text-align: center;
+  padding: 10px 0;
+  font-size: 0.9rem;
+  color: #555;
+  background-color: #f8f9fa;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.insightsTab:not(:last-child) {
+  border-right: 1px solid #ccc;
+}
+
+.insightsTab.activeTab {
+  border-radius: 4px;
+  background-color: #007bff;
+  color: #fff;
+  font-weight: bold;
+}
+
+.insightsTab:hover {
+  background-color: #e0e0e0;
+}
+
+.insightsContent {
+  display: flex;
+  flex-direction: column;
+  padding-top: 20px;
+  gap: 15px;
+}
+
+.insightItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.insightLabel {
+  flex: 1;
+  font-size: 0.9rem;
+  color: #555;
+  margin-right: 10px;
+}
+.insightLabelDark {
+  color: #ffffff;
+  font-size: 0.9rem;
+  flex: 1;
+  margin-right: 10px;
+}
+.insightBar {
+  flex: 2;
+  height: 8px;
+  background: #e9ecef;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+  margin-right: 10px;
+  margin-left: 10px;
+}
+
+.insightFill {
+  height: 100%;
+  background: #007bff;
+  border-radius: 4px;
+  transition: width 0.3s ease-in-out;
+}
+
+.insightPercentage {
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: #333;
+}
+
+/* Dark mode container */
+.insightsTabsDarkMode {
+  border: 1px solid #555;
+  background-color: #1e293b; /* Dark background */
+}
+
+/* Dark mode tab */
+.insightsTabDarkMode {
+  color: #ddd;
+  background-color: #1e293b;
+}
+
+/* Dark mode divider */
+.insightsTabDarkMode:not(:last-child) {
+  border-right: 1px solid #555;
+}
+
+/* Active tab dark mode */
+.activeTabDarkMode {
+  background-color: #3b82f6;
+  color: #fff;
+  font-weight: bold;
+}
+
+/* Hover effect dark mode */
+.insightsTabDarkMode:hover {
+  background-color: #374151;
+}

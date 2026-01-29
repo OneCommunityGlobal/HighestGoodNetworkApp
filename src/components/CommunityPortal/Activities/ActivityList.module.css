@@ -1,0 +1,233 @@
+/* Enhanced Aesthetic CSS for Activity List */
+
+.body {
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #fff;
+  color: #333;
+}
+
+.darkBody {
+  background: #1b2a41;
+}
+
+.h1 {
+  text-align: center;
+  margin: 20px 0;
+  color: #1e3a8a;
+  font-size: 2.5em;
+  font-weight: 600;
+}
+
+.filters {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin: 30px 0;
+  padding: 10px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.darkFilters {
+  background: #0f172a;
+}
+
+.filters label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 500;
+  color: #1f2937;
+}
+
+.filters input {
+  padding: 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  margin-top: 5px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.filters input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
+}
+
+.filters select {
+  padding: 10px;
+  height: 48px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  margin-top: 5px;
+  font-size: 1rem;
+}
+
+.filters select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
+}
+
+.filters button {
+  margin: 30px 0;
+  border: 1px solid #000000;
+  border-radius: 6px;
+  padding: 10px;
+}
+
+.filters button:hover:not(:disabled) {
+  transform: scale(1.05);
+}
+
+.darkFilters button {
+  border: 1px solid #ffffff;
+}
+
+.darkFilters input {
+  background: #0f172a;
+  border: 1px solid #ffffff;
+}
+
+.darkFilters select{
+  background: #0f172a;
+  border: 1px solid #ffffff;
+}
+
+.activityList {
+  max-width: 900px;
+  margin: 0 auto;
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.darkActivityList {
+  background: #2b3e59;
+}
+
+.activityList ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.activityList li {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 15px;
+  margin-bottom: 15px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background-color: #f9fafb;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.darkActivityList li {
+  background: #1b2a41;
+}
+
+.activityList li:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.activityList li strong {
+  color: #1e3a8a;
+  font-size: 1.2rem;
+}
+
+.activityList li span {
+  color: #4b5563;
+}
+
+.activityList p {
+  text-align: center;
+  color: #6b7280;
+  font-size: 1.1rem;
+  margin: 20px 0;
+}
+
+/* Autocomplete Suggestions Dropdown */
+.suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  margin-top: 4px;
+  max-height: 250px;
+  overflow-y: auto;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.darkSuggestions {
+  background: #1e293b;
+  border-color: #475569;
+}
+
+.suggestionItem {
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  color: #1f2937;
+}
+
+.darkSuggestions .suggestionItem {
+  color: #e2e8f0;
+}
+
+.suggestionItem:hover {
+  background-color: #f3f4f6;
+}
+
+.suggestionItem:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: -2px;
+  background-color: #f3f4f6;
+}
+
+.darkSuggestions .suggestionItem:hover {
+  background-color: #334155;
+}
+
+.darkSuggestions .suggestionItem:focus {
+  outline-color: #60a5fa;
+  background-color: #334155;
+}
+
+.suggestionItem:not(:last-child) {
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.darkSuggestions .suggestionItem:not(:last-child) {
+  border-bottom-color: #475569;
+}
+
+@media (max-width: 768px) {
+  .filters {
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .filters label {
+    width: 100%;
+  }
+
+  .activityList {
+    padding: 20px;
+  }
+
+  .activityList li {
+    flex-direction: column;
+    padding: 10px;
+  }
+}

@@ -34,6 +34,7 @@ const FoundUser = props => {
                   'Assign',
                   props.firstName,
                   props.lastName,
+                  props.isActive,
                 );
                 // Optionally, trigger a refresh or update local state if needed
                 // e.g., props.onAssigned && props.onAssigned(props.uid);

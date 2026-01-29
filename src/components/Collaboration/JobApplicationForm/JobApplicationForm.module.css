@@ -1,0 +1,363 @@
+.container {
+  font-family: Arial, sans-serif;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #d9d9d9;
+  width: 100%;
+}
+
+.logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.headerContent {
+  display: flex;
+  gap: 10px;
+  background-color: #98cb03;
+  width: 75%;
+  padding: 2%;
+  justify-content: space-between;
+}
+
+.headerLeft {
+  display: flex;
+  gap: 10px;
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+}
+
+.jobTitleInput {
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.jobSelect {
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.goButton {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.formContainer {
+  background-color: #f9f9f9;
+  padding: 2%;
+  width: 75%;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.formTitle {
+  text-align: center;
+  font-size: 1.5em;
+  margin-bottom: 10px;
+}
+
+.formSubtitle {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.formSubtitle a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  background-color: #d9d9d9;
+  padding: 2%;
+  border-radius: 1%;
+}
+
+.formContentGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-left: 2%;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.formProfileDetailGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.formProfileDetailGroup input {
+  flex: 1;
+  min-width: 200px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.formGroup h2 {
+  margin-bottom: 5px;
+  font-weight: bold;
+  text-align: left;
+  color: black;
+  font-size: medium;
+}
+
+.formGroup input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.submitButton {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  align-self: center;
+}
+
+.popupOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(30, 41, 65, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s;
+}
+
+.popupContent {
+  position: relative;
+  background: #fff;
+  padding: 2rem 2.5rem 2rem 2rem;
+  border-radius: 16px;
+  max-width: 420px;
+  min-width: 320px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.32);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  animation: scaleIn 0.3s;
+}
+
+.popupCloseBtn {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  color: #333;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.popupCloseBtn:hover {
+  color: #98cb03;
+  background-color: transparent;
+}
+
+.popupContent h2 {
+  margin-top: 0;
+  margin-bottom: 0.5em;
+  font-size: 1.3em;
+  color: #07471e;
+}
+
+.popupContent p {
+  margin: 0;
+  color: #222;
+  font-size: 1em;
+  line-height: 1.5;
+}
+
+.resumeLabel {
+  display: inline-flex;
+  margin-bottom: 0;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: #ffffff;
+  border: 1px solid #cfcfcf;
+  color: #222;
+  font-size: 14px;
+  line-height: 1;
+  user-select: none;
+  transition: background 150ms ease, box-shadow 150ms ease, transform 120ms ease;
+}
+
+.resumeLabel:hover {
+  background: #f6f6f6;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+  transform: translateY(-1px);
+}
+
+.resumeLabel input[type='file'] {
+  display: none;
+}
+
+.resumeLabel .fileName {
+  font-size: 13px;
+  color: #555;
+  background: #f2f6f9;
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid #e6eef6;
+}
+
+.darkMode {
+  background: #1b2a41;
+  color: #e0e0e0;
+  transition: background 0.3s, color 0.3s;
+}
+
+.darkMode .formContainer {
+  background: #1c2541;
+  color: #e0e0e0;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
+  transition: background 0.3s, color 0.3s;
+}
+
+.darkMode .headerContent {
+  background: #1c2541;
+  transition: background 0.3s;
+  z-index: 1;
+}
+
+.darkMode .jobTitleInput,
+.darkMode .jobSelect,
+.darkMode input,
+.darkMode select,
+.darkMode textarea {
+  background: #181a1b;
+  color: #f1f1f1;
+  border: 1px solid #444;
+  transition: background 0.3s, color 0.3s, box-shadow 0.3s;
+}
+
+.darkMode .jobSelect {
+  background-image: url("data:image/svg+xml;utf8,<svg fill='lightgray' height='20' viewBox='0 0 20 20' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 18px 18px;
+  padding-right: 36px;
+}
+
+.darkMode .jobSelect:focus,
+.darkMode .jobSelect:active {
+  background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='20' viewBox='0 0 20 20' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 15l5-5 5 5z'/></svg>");
+}
+
+.darkMode .submitButton,
+.darkMode .goButton,
+.darkMode .btn {
+  background: #225163;
+  color: #f1f1f1;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+  transition: background 0.3s, color 0.3s;
+}
+
+.darkMode .form {
+  background: #23272a;
+  border-radius: 8px;
+  transition: background 0.3s;
+}
+
+.darkMode .formTitle {
+  color: #d9d9d9;
+  transition: color 0.3s;
+}
+
+.darkMode .popupOverlay {
+  background: rgba(30, 41, 65, 0.85);
+}
+
+.darkMode .popupContent {
+  background: #225163;
+  color: #f1f1f1;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7);
+}
+
+.darkMode .popupCloseBtn {
+  color: #f1f1f1;
+  background-color: transparent;
+}
+
+.darkMode .popupCloseBtn:hover {
+  color: #9c0;
+}
+
+.darkMode .popupContent h2 {
+  color: #9c0;
+}
+
+.darkMode .popupContent p {
+  color: #e0e0e0;
+}
+
+.darkMode a {
+  color: #9c0;
+  text-decoration: underline;
+  transition: color 0.3s;
+}
+
+.darkMode label {
+  color: #e0e0e0;
+  transition: color 0.3s;
+}
+
+.darkMode .formGroup h2 {
+  color: #9c0;
+  transition: color 0.3s;
+}
+
+.darkMode .resumeLabel {
+  background: #1c2541;
+  border-color: #2b3f57;
+  color: #e6eef6;
+  box-shadow: none;
+}
+
+.darkMode .resumeLabel:hover {
+  background: #22364e;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+}
+
+.darkMode .resumeLabel .fileName {
+  background: rgba(255, 255, 255, 0.04);
+  color: #cfe7ff;
+  border-color: rgba(255, 255, 255, 0.05);
+}

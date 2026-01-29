@@ -24,6 +24,7 @@ import moment from 'moment';
 import Alert from 'reactstrap/lib/Alert';
 import axios from 'axios';
 import { boxStyle, boxStyleDark } from '~/styles';
+import { v4 as uuidv4 } from 'uuid';
 import hasPermission, {
   cantDeactivateOwner,
   cantUpdateDevAdminDetails,
@@ -33,6 +34,7 @@ import { ENDPOINTS } from '~/utils/URL';
 import SkeletonLoading from '../common/SkeletonLoading';
 import UserProfileModal from './UserProfileModal';
 import './UserProfile.scss';
+import teamStyles from '../TeamMemberTasks/style.module.css';
 import TeamsTab from './TeamsAndProjects/TeamsTab';
 import ProjectsTab from './TeamsAndProjects/ProjectsTab';
 import BasicInformationTab from './BasicInformationTab/BasicInformationTab';
@@ -44,7 +46,7 @@ import BasicToolTips from './ToolTips/BasicTabTips';
 import TeamsTabTips from './ToolTips/TeamsTabTips';
 import ResetPasswordButton from '../UserManagement/ResetPasswordButton';
 import Badges from './Badges';
-import { getAllTeamCode } from '../../actions/allTeamsAction';
+import { getAllTeamCode , getAllUserTeams } from '../../actions/allTeamsAction';
 import TimeEntryEditHistory from './TimeEntryEditHistory';
 import ActiveInactiveConfirmationPopup from '../UserManagement/ActiveInactiveConfirmationPopup';
 import { updateUserStatus, updateRehireableStatus, toggleVisibility } from '../../actions/userManagement';
@@ -56,7 +58,7 @@ import { connect, useDispatch, useSelector } from 'react-redux';
 import { formatDateLocal } from '~/utils/formatDate';
 import EditableInfoModal from './EditableModal/EditableInfoModal';
 import { fetchAllProjects } from '../../actions/projects';
-import { getAllUserTeams } from '../../actions/allTeamsAction';
+
 import { toast } from 'react-toastify';
 import { setCurrentUser } from '../../actions/authActions';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
@@ -75,6 +77,7 @@ import {
 import ConfirmRemoveModal from './UserProfileModal/confirmRemoveModal';
 import { formatDateYYYYMMDD, CREATED_DATE_CRITERIA } from '~/utils/formatDate.js';
 import AccessManagementModal from './UserProfileModal/AccessManagementModal';
+import { postWarningByUserId, getSpecialWarnings } from '../../actions/warnings';
 
 function UserProfile(props) { 
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -109,6 +112,7 @@ function UserProfile(props) {
       setIsLoading(false);
       return stringNoRepeat;
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.log(error);
       setIsLoading(false);
       toast.error(`It was not possible to retrieve the team codes.
@@ -152,6 +156,7 @@ function UserProfile(props) {
   const [showToggleVisibilityModal, setShowToggleVisibilityModal] = useState(false);
   const [pendingRehireableStatus, setPendingRehireableStatus] = useState(null);
   const [isRehireable, setIsRehireable] = useState(null);
+  const [specialWarnings, setSpecialWarnings] = useState([]);
   const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
   const toggleRemoveModal = () => setIsRemoveModalOpen(!isRemoveModalOpen);
   const [loadingSummaries, setLoadingSummaries] = useState(false);
@@ -166,6 +171,7 @@ function UserProfile(props) {
       await loadUserProfile();
       toast.success('Profile Image Removed');
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.log(error);
       toast.error('Failed to remove profile Image.');
     }
@@ -192,7 +198,17 @@ function UserProfile(props) {
   const { userid: requestorId, role: requestorRole } = props.auth.user;
 
   const canEditTeamCode = props.hasPermission('editTeamCode');
-  const [titleOnSet, setTitleOnSet] = useState(false);
+  const [titleOnSet, setTitleOnSet] = useState(false); // added by development
+
+  /* useEffect functions */ // added by luis, the below useEffect
+  useEffect(() => {
+    getCurretLoggedinUserEmail();
+    dispatch(fetchAllProjects());
+    dispatch(getAllUserTeams());
+    dispatch(getAllTimeOffRequests());
+    dispatch(getAllTeamCode());
+    fetchSpecialWarnings();
+  }, []);
 
  
   const updateProjectTouserProfile = () => {
@@ -249,68 +265,61 @@ function UserProfile(props) {
     setIsProjectsEqual(compare);
   };
 
-  const loadSummaryIntroDetails = async (teamId, user) => {
+  const buildSummaryIntroDetails = async (teamId, user) => {
     const currentManager = user;
-
+  
     if (!teamId) {
-      setSummaryIntro(
-        `This week’s summary was managed by ${currentManager.firstName} ${currentManager.lastName} and includes .
-         These people did NOT provide a summary .
-         <Insert the proofread and single-paragraph summary created by ChatGPT>`,
-      );
-      return;
+      return `This week’s summary was managed by ${currentManager.firstName} ${currentManager.lastName} and includes .
+       These people did NOT provide a summary .
+       <Insert the proofread and single-paragraph summary created by ChatGPT>`;
     }
-
+  
     try {
       const res = await axios.get(ENDPOINTS.TEAM_USERS(teamId));
       const { data } = res;
-
+  
       const activeMembers = data.filter(
         member => member._id !== currentManager._id && member.isActive,
       );
-
-      //submitted a summary, maybe didn't complete their hours just yet
+  
       const memberSubmitted = await Promise.all(
         activeMembers
           .filter(member => member.weeklySummaries[0].summary !== '')
           .map(async member => {
             const results = await dispatch(getTimeEntriesForWeek(member._id, 0));
-
             const returnData = calculateTotalTime(results.data, true);
-
+  
             return returnData < member.weeklycommittedHours
               ? `${member.firstName} ${member.lastName} hasn't completed hours`
               : `${member.firstName} ${member.lastName}`;
           }),
       );
-
+  
       const memberNotSubmitted = activeMembers
         .filter(member => member.weeklySummaries[0].summary === '')
-        .map(member => {
-          if (getTimeOffStatus(member._id)) {
-            return `${member.firstName} ${member.lastName} off for the week`;
-          } else {
-            return `${member.firstName} ${member.lastName}`;
-          }
-        });
-
+        .map(member =>
+          getTimeOffStatus(member._id)
+            ? `${member.firstName} ${member.lastName} off for the week`
+            : `${member.firstName} ${member.lastName}`,
+        );
+  
       const memberSubmittedString =
         memberSubmitted.length !== 0
           ? memberSubmitted.join(', ')
           : '<list all team members names included in the summary>';
-
+  
       const memberDidntSubmitString =
         memberNotSubmitted.length !== 0
           ? memberNotSubmitted.join(', ')
           : '<list all team members names NOT included in the summary>';
-
-      const summaryIntroString = `This week's summary was managed by ${currentManager.firstName} ${currentManager.lastName} and includes ${memberSubmittedString}. These people did NOT provide a summary ${memberDidntSubmitString}. <Insert the proofread and single-paragraph summary created by ChatGPT>`;
-
-      setSummaryIntro(summaryIntroString);
+  
+      return `This week's summary was managed by ${currentManager.firstName} ${currentManager.lastName} and includes ${memberSubmittedString}. These people did NOT provide a summary ${memberDidntSubmitString}. <Insert the proofread and single-paragraph summary created by ChatGPT>`;
     } catch (error) {
       console.error('Error fetching team users:', error);
+      return '';
     }
   };
+  
 
   const calculateTotalTime = (data, isTangible) => {
     const filteredData = data.filter(entry => entry.isTangible === isTangible);
@@ -326,6 +335,7 @@ function UserProfile(props) {
         setTasks(res?.data || []);
         setOriginalTasks(res.data);
       })
+      // eslint-disable-next-line no-console
       .catch(err => console.log(err));
   };
 
@@ -353,6 +363,11 @@ function UserProfile(props) {
   };
 
   const fetchCalculatedStartDate = async (userId, userProfileData) => {
+    if (!userProfileData?.endDate) {
+      const createdDate = userProfileData?.createdDate ? userProfileData.createdDate.split('T')[0] : '';
+      setCalculatedStartDate(createdDate);
+      return;
+    }
     try {
       const startDate = await dispatch(
         getTimeStartDateEntriesByPeriod(userId, userProfileData.createdDate, userProfileData.endDate),
@@ -369,6 +384,7 @@ function UserProfile(props) {
         setCalculatedStartDate(createdDate);
       }
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Error fetching calculated start date:', error);
       // Fallback to createdDate on error
       const createdDate = userProfile?.createdDate
@@ -411,6 +427,8 @@ function UserProfile(props) {
       const [response] = await Promise.all([axios.get(ENDPOINTS.USER_PROFILE(userId))]);
 
       const newUserProfile = response.data;
+      // Assuming newUserProfile contains isRehireable attribute
+      setIsRehireable(newUserProfile.isRehireable); // Update isRehireable based on fetched data
       newUserProfile.totalIntangibleHrs = Number(newUserProfile.totalIntangibleHrs.toFixed(2));
 
       // sanitize data first
@@ -470,13 +488,10 @@ function UserProfile(props) {
       setUserProfile(profileWithFormattedDates);
       setOriginalUserProfile(profileWithFormattedDates);
       setIsRehireable(newUserProfile.isRehireable);
+      setUserStartDate(profileWithFormattedDates.startDate || '');
 
       // Fetch calculated start date from first time entry
       await fetchCalculatedStartDate(userId, newUserProfile);
-
-      // run after main profile is loaded
-      const teamId = newUserProfile?.teams[0]?._id;
-      loadSummaryIntroDetails(teamId, newUserProfile);
 
       // Note: Removed automatic getTimeStartDateEntriesByPeriod call to prevent overwriting manual startDate changes
       // Users can now toggle between manual and calculated startDate via button
@@ -485,6 +500,7 @@ function UserProfile(props) {
       setShowLoading(false);
     } catch (err) {
       setShowLoading(false);
+      // eslint-disable-next-line no-console
       console.log(err);
     }
   };
@@ -519,6 +535,7 @@ function UserProfile(props) {
       }));
       setSummaries(allSummaries);
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.log('Could not load leaderBoard data.', err);
     } finally {
       setLoadingSummaries(false);
@@ -529,58 +546,111 @@ function UserProfile(props) {
     setTeams(prevTeams => prevTeams.filter(team => team._id !== deletedTeamId));
   };
 
-  const onDeleteProject = deletedProjectId => {
-    setProjects(prevProject => prevProject.filter(project => project._id !== deletedProjectId));
+  const onDeleteProject = async (deletedProjectId) => {
+
+  const removedProject = projects.find(p => (p._id || p.projectId) === deletedProjectId);
+
+  const updatedProjects = projects.filter(p => {
+    return (p._id || p.projectId) !== deletedProjectId;
+  });
+
+  setProjects(updatedProjects);
+
+  // Prepare backend payload
+  const updatedUserProfile = {
+    ...userProfileRef.current,
+    projects: updatedProjects.map(p => String(p._id || p.projectId)),
   };
+
+  try {
+    await handleSubmit(updatedUserProfile);  // this already toasts success
+    toast.success(`User removed from Project "${removedProject?.projectName || 'Unknown'}"`);
+  } catch (e) {
+    toast.error('Failed to remove project, please try again.');
+    console.error(e);
+  }
+  return updatedProjects;
+};
+
 
   const onAssignTeam = assignedTeam => {
     setTeams(prevState => [...prevState, assignedTeam]);
   };
 
-const onAssignProject = assignedProject => {
-  console.log("Adding project to state:", assignedProject);
-  
-  // Always create a new array to trigger React re-render
-  setProjects(prevProjects => 
-    {
-    // Ensure prevProjects is an array
-    const currentProjects = Array.isArray(prevProjects) ? prevProjects : [];
-    
-    if (currentProjects.some(proj => proj._id === assignedProject._id)) {
-      console.log("Project already exists, not adding duplicate");
-      return currentProjects; 
-    }
-    
-    // Add project and log the new state
-    console.log("Adding new project:", assignedProject.projectName);
-    const newProjects = [...currentProjects, assignedProject];
-    console.log("Updated projects state:", newProjects);
-    return newProjects; // Return the new array with the project added
-  });
-};
-  const onUpdateTask = (taskId, updatedTask) => {
-    const newTask = {
-      updatedTask,
-      taskId,
-    };
+const onAssignProject = async (assignedProject) => {
+  const projectId = assignedProject._id || assignedProject.projectId;
 
-    setTasks(tasks => {
-      const tasksWithoutTheUpdated = [...tasks];
-      const taskIndex = tasks.findIndex(task => task._id === taskId);
-      tasksWithoutTheUpdated[taskIndex] = updatedTask;
-      return tasksWithoutTheUpdated;
-    });
+  // Avoid duplicates
+  const currentProjects = Array.isArray(projects) ? projects : [];
+  if (currentProjects.some(p => (p._id || p.projectId) === projectId)) {
+    toast.info(`Project "${assignedProject.projectName || 'Unknown'}" already assigned to this user`);
+    return;
+  }
 
-    if (updatedTasks.findIndex(task => task.taskId === taskId) !== -1) {
-      const taskIndex = updatedTasks.findIndex(task => task.taskId === taskId);
-      const tasksToUpdate = updatedTasks;
-      tasksToUpdate.splice(taskIndex, 1);
-      tasksToUpdate.splice(taskIndex, 0, newTask);
-      setUpdatedTasks(tasksToUpdate);
-    } else {
-      setUpdatedTasks(tasks => [...tasks, newTask]);
-    }
+  const updatedProjects = [...currentProjects, assignedProject];
+  setProjects(updatedProjects);
+
+  const updatedUserProfile = {
+    ...userProfileRef.current,
+    projects: updatedProjects.map(p => String(p._id || p.projectId)),
   };
+
+  try {
+    await handleSubmit(updatedUserProfile);  // reuses same pipeline
+    toast.success(`User assigned to Project "${assignedProject.projectName || 'Unknown'}"`);
+  } catch (e) {
+    toast.error('Failed to assign project, please try again.');
+    console.error(e);
+  }
+  return updatedProjects;
+};
+
+const onUpdateTask = async (taskId, updatedTask, method) => {
+  
+  let newTasks;
+
+  if (method === 'remove') {
+    try{
+    newTasks = tasks.filter(t => t._id !== taskId);
+    const res = await axios.delete(ENDPOINTS.TASK_DELETE_BY_ID(taskId, userProfile._id));
+    if (res.status === 200) {
+      setTasks(newTasks);
+      toast.success('Task removed successfully');
+    } else {
+      toast.error('Failed to remove task');
+    }
+    return newTasks;
+  } catch (e) {
+    toast.error('Failed to remove task, please try again.');
+    console.error(e);
+    return tasks;
+  }
+  } else {
+    // UPDATE the task normally
+    newTasks = tasks.map(t =>
+      t._id === taskId ? updatedTask : t
+    );
+  }
+  setTasks(newTasks);
+
+  const updatedUserProfile = {
+  ...userProfileRef.current,
+  tasks: newTasks 
+};
+
+setUpdatedTasks(prev => {
+  const others = prev.filter(t => t.taskId !== taskId);
+  return [...others, { taskId, updatedTask }];
+});
+
+  try {
+    await handleSubmit(updatedUserProfile);
+    toast.success("Task updated");
+  } catch (e) {
+    toast.error("Failed to update task");
+    console.error(e);
+  }
+};
 
   const handleImageUpload = async evt => {
     if (evt) evt.preventDefault();
@@ -643,8 +713,10 @@ const onAssignProject = assignedProject => {
   const handleBlueSquare = (status = true, type = 'message', blueSquareID = '') => {
     if (targetIsDevAdminUneditable) {
       if (userProfile?.email === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY) {
+        // eslint-disable-next-line no-alert
         alert(DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY);
       } else {
+        // eslint-disable-next-line no-alert
         alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
       }
       return;
@@ -676,11 +748,15 @@ const onAssignProject = assignedProject => {
       /* peizhou: check that the date of the blue square is not future or empty. */
       if (moment(dateStamp).isAfter(moment().format('YYYY-MM-DD')) || dateStamp === '') {
         if (moment(dateStamp).isAfter(moment().format('YYYY-MM-DD'))) {
+          // eslint-disable-next-line no-console
           console.log('WARNING: Future Blue Square');
+          // eslint-disable-next-line no-alert
           alert('WARNING: Cannot Assign Blue Square with a Future Date');
         }
         if (dateStamp === '') {
+          // eslint-disable-next-line no-console
           console.log('WARNING: Empty Date');
+          // eslint-disable-next-line no-alert
           alert('WARNING: Cannot Assign Blue Square with an Empty Date');
         }
       } else {
@@ -699,25 +775,28 @@ const onAssignProject = assignedProject => {
             blueSquare: newBlueSquare,
           })
           .then(res => {
-            const newBlueSqrs = [
+
+            const updatedInfringements = [
               ...userProfile.infringements,
               {
                 _id: res.data._id,
                 ...newBlueSquare,
-              },
+              }
             ];
-            toast.success('Blue Square Added!');
-            setOriginalUserProfile({
-              ...originalUserProfile,
-              infringements: newBlueSqrs,
-            });
-            setUserProfile({
-              ...userProfile,
-              infringements: newBlueSqrs,
-            });
+
+            setOriginalUserProfile(prev => ({
+              ...prev,
+              infringements: updatedInfringements,
+            }));
+
+            setUserProfile(prev => ({
+              ...prev,
+              infringements: updatedInfringements,
+            }));
           })
           .catch(error => {
-            console.log('error in modifying bluequare', error);
+            // eslint-disable-next-line no-console
+            console.log('error in modifying bluesquare', error);
             toast.error('Failed to add Blue Square!');
           });
       }
@@ -753,34 +832,199 @@ const onAssignProject = assignedProject => {
       }
     }
   };
-
-  const handleSubmit = async updatedUserProfile => {
-    for (let i = 0; i < updatedTasks.length; i += 1) {
-      const updatedTask = updatedTasks[i];
-      const url = ENDPOINTS.TASK_UPDATE(updatedTask.taskId);
-      axios.put(url, updatedTask.updatedTask).catch(err => console.log(err));
-    }
+  const fetchSpecialWarnings = async () => {
+    const userId = props?.match?.params?.userId;
     try {
-       const userProfileToUpdate = {
-        ...(updatedUserProfile || userProfileRef.current),
-        projects, // Ensure projects are included in the payload
-        };
-        console.log('Submitting UserProfile:', userProfileToUpdate); // Debugging log
-      const result = await props.updateUserProfile(userProfileToUpdate);
-      if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
-        await props.refreshToken(userProfile._id);
-      }
-      await loadUserProfile();
-      await loadUserTasks();
-      setSaved(false);
+      dispatch(getSpecialWarnings(userId)).then(res => {
+        if (res.error) {
+          // eslint-disable-next-line no-console
+          console.error('Error fetching special warnings:', res.error);
+          return;
+        }
+        setSpecialWarnings(res);
+      });
     } catch (err) {
-      if (err.response && err.response.data && err.response.data.error) {
-        const errorMessage = err.response.data.error.join('\n');
-        alert(errorMessage);
-      }
-      return err;
+      // eslint-disable-next-line no-console
+      console.error('Error in fetchSpecialWarnings:', err);
     }
   };
+
+  const getWarningMessage = (warningData, noSummary, inCompleteHours) => {
+    const bothWarnings = warningData?.warningsArray;
+    let allBlSq = {};
+    let noneBlSq = {};
+    let inCompleteHoursMixedBlSq = false;
+    const inCompleteHoursMessage = '"completing most of your hours but not all"';
+    const noSummaryMessage = '"not submitting a weekly summary"'
+    if(warningData?.issueBlueSquare) {
+      allBlSq = Object.values(warningData?.issueBlueSquare).every(blueSquare => blueSquare === true);
+      noneBlSq = Object.values(warningData?.issueBlueSquare).every(blueSquare => blueSquare === false);
+      inCompleteHoursMixedBlSq = warningData?.issueBlueSquare['Blu Sq Rmvd - Hrs Close Enoug'] === true;
+    }
+    const inCompleteHoursBlSq = warningData.description === 'Blu Sq Rmvd - Hrs Close Enoug';
+
+    let message = null;
+    if(bothWarnings) {
+      if(allBlSq) {
+        message = `Issued a blue square for an Admin having to remove past blue squares ${inCompleteHours.warnings.length - 1} times for ${inCompleteHoursMessage} and ${noSummary.warnings.length - 1} times for ${noSummaryMessage}.`
+      } else if(noneBlSq) {
+        message = '';
+      } else if(inCompleteHoursMixedBlSq) {
+        message = `Issued a blue square for an Admin having to remove past blue squares ${inCompleteHours.warnings.length - 1} times for ${inCompleteHoursMessage} and received a warning for removing past blue squares ${noSummary.warnings.length - 1} times for ${noSummaryMessage}.`
+      } else {
+        message = `Issued a blue square for an Admin having to remove past blue squares ${noSummary.warnings.length - 1} times for ${noSummaryMessage} and received a warning for removing past blue squares ${inCompleteHours.warnings.length - 1} times for ${inCompleteHoursMessage}.`
+      }
+    } else if(inCompleteHoursBlSq) {
+        message = `Issued a blue square for an Admin having to remove past blue squares ${inCompleteHours.warnings.length - 1} times for ${inCompleteHoursMessage}.`
+    } else {
+      message = `Issued a blue square for an Admin having to remove past blue squares ${noSummary.warnings.length - 1} times for ${noSummaryMessage}.`
+    }
+    return message
+  }
+
+  const handleLogWarning = async newWarningData => {
+    let warningData = {};
+    let warningsArray = null;
+    if (newWarningData.bothTriggered) {
+      warningsArray = Object.entries(newWarningData)
+        .filter(([key]) => key !== 'issueBlueSquare' && key !== 'bothTriggered')
+        .map(([title, color]) => ({
+          userId: props?.match?.params?.userId,
+          iconId: uuidv4(),
+          color: color.color,
+          date: moment().format('MM/DD/YYYY'), // Use a dynamic timestamp or pass it explicitly
+          description: title, // Use the title as the description
+        }));
+    } else {
+      warningData = {
+        description: newWarningData.title,
+        color: newWarningData.colorAssigned,
+        iconId: uuidv4(),
+        date: moment().format('MM/DD/YYYY'),
+      };
+    }
+
+    warningData = {
+      ...warningData,
+      warningsArray,
+      issueBlueSquare: newWarningData.issueBlueSquare,
+      userId: props?.match?.params?.userId,
+      monitorData: {
+        firstName: userProfile.firstName,
+        lastName: userProfile.lastName,
+        email: userProfile.email,
+        userId: props.auth.user.userid,
+      },
+    };
+    let toastMessage = '';
+    dispatch(postWarningByUserId(warningData))
+      .then(response => {
+        if (response.error) {
+          toast.error('Warning failed to log try again');
+          return;
+        } else {
+          const noSummary = response.find(warning => warning.title === 'Blu Sq Rmvd - For No Summary')
+          const inCompleteHours = response.find(warning => warning.title === 'Blu Sq Rmvd - Hrs Close Enoug')
+          setShowModal(false);
+          fetchSpecialWarnings();
+
+          if (warningData.color === 'blue') {
+            toastMessage = 'Successfully logged and tracked';
+          } else if (warningData.color === 'yellow') {
+            toastMessage = 'Warning successfully logged';
+          } else {
+            const blSqMessage = getWarningMessage(warningData, noSummary, inCompleteHours)
+            if(blSqMessage) {
+              modifyBlueSquares('', 
+                moment(warningData.date).format("YYYY-MM-DD"),
+                blSqMessage, 
+                'add')
+                toastMessage = 'Successfully logged and Blue Square issued';
+            } else {
+              toastMessage = 'Warning successfully logged';
+            }
+          }
+        }
+        toast.success(toastMessage);
+      })
+      .catch(err => {
+        // eslint-disable-next-line no-console
+        console.error('Error updating user profile:', err);
+      });
+  };
+
+  // const handleSubmit = async updatedUserProfile => {
+  //   for (let i = 0; i < updatedTasks.length; i += 1) {
+  //     const updatedTask = updatedTasks[i];
+  //     const url = ENDPOINTS.TASK_UPDATE(updatedTask.taskId);
+  //     // eslint-disable-next-line no-console
+  //     axios.put(url, updatedTask.updatedTask).catch(err => console.log(err));
+  //   }
+  //   try {
+  //      const userProfileToUpdate = {
+  //       ...(updatedUserProfile || userProfileRef.current),
+  //       projects, // Ensure projects are included in the payload
+  //       };
+  //       // eslint-disable-next-line no-console
+  //       console.log('Submitting UserProfile:', userProfileToUpdate); // Debugging log
+  //     const result = await props.updateUserProfile(userProfileToUpdate);
+  //     if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
+  //       await props.refreshToken(userProfile._id);
+  //     }
+  //     await loadUserProfile();
+  //     await loadUserTasks();
+  //     setSaved(false);
+  //   } catch (err) {
+  //     if (err.response && err.response.data && err.response.data.error) {
+  //       const errorMessage = err.response.data.error.join('\n');
+  //       // eslint-disable-next-line no-alert
+  //       alert(errorMessage);
+  //     }
+  //     return err;
+  //   }
+  // };
+
+  const handleSubmit = async (updatedUserProfile) => {
+  // 1) Merge with the current ref FIRST
+  const merged = { ...(userProfileRef.current || {}), ...(updatedUserProfile || {}) };
+
+  // 2) Normalize projects from the merged payload (NOT from a separate variable)
+  const projectsIds = (merged.projects || [])
+    .map(p => String(p?._id ?? p?.projectId ?? p))  // supports objects or plain ids
+    .filter(Boolean);
+
+  const userProfileToUpdate = {
+    ...merged,
+    projects: projectsIds,  // single source of truth
+  };
+
+
+  // update tasks (optionally await if you need sequencing)
+  for (let i = 0; i < updatedTasks.length; i += 1) {
+    const updatedTask = updatedTasks[i];
+    const url = ENDPOINTS.TASK_UPDATE(updatedTask.taskId);
+    // consider await here if order matters
+    // eslint-disable-next-line no-console
+    axios.put(url, updatedTask.updatedTask).catch(err => console.error(err));
+  }
+
+  try {
+    const result = await props.updateUserProfile(userProfileToUpdate);
+    if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
+      await props.refreshToken(userProfile._id);
+    }
+    await loadUserProfile();
+    await loadUserTasks();
+    setSaved(false);
+  } catch (err) {
+    if (err?.response?.data?.error) {
+      // eslint-disable-next-line no-alert
+      alert(err.response.data.error.join('\n'));
+    }
+    return err;
+  }
+};
+
 
   // Changing onSubmit for Badges component from handleSubmit to handleBadgeSubmit.
   // AssignBadgePopup already has onSubmit action to call an API to update the user badges.
@@ -789,21 +1033,12 @@ const onAssignProject = assignedProject => {
     try {
       setSaved(false);
     } catch (err) {
+      // eslint-disable-next-line no-alert
       alert('An error occurred while reload user profile after badge udpate.');
     }
   };
 
   const toggle = modalName => setMenuModalTabletScreen(modalName);
-
-  /* useEffect functions */
-  useEffect(() => {
-    getCurretLoggedinUserEmail();
-    dispatch(fetchAllProjects());
-    dispatch(getAllUserTeams());
-    dispatch(getAllTimeOffRequests());
-    dispatch(getAllTeamCode());
-    canEditTeamCode && getAllTeamCode();
-  }, []);
 
   useEffect(() => {
     userProfileRef.current = userProfile;
@@ -886,7 +1121,7 @@ const onAssignProject = assignedProject => {
     const newUserProfile = {
       ...userProfile,
       isActive,
-      endDate: endDate || undefined,
+      ...(isActive ? {endDate: null} : {endDate}),
     };
 
     try {
@@ -897,11 +1132,22 @@ const onAssignProject = assignedProject => {
       );
       setUserProfile(newUserProfile);
       setOriginalUserProfile(newUserProfile);
-      window.location.reload();
+      // window.location.reload();
+      await loadUserProfile();
+      await loadUserTasks();
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Failed to update user status:', error);
     }
     setActiveInactivePopupOpen(false);
+
+    if (!userProfile.deactivatedAt && !isActive) {
+      toast.success('User scheduled for deactivation.');
+    } else if (userProfile.deactivatedAt && isActive) {
+      toast.success('Scheduled deactivation canceled.');
+    } else if (!userProfile.isActive && isActive) {
+      toast.success('User reactivated.');
+    }
   };
 
   const activeInactivePopupClose = () => {
@@ -1034,13 +1280,13 @@ const onAssignProject = assignedProject => {
   const canUpdateSummaryRequirements = props.hasPermission('updateSummaryRequirements');
   const canManageAdminLinks = props.hasPermission('manageAdminLinks');
   const canSeeQSC = props.hasPermission('seeQSC');
+  const canManageHGNAccessSetup = props.hasPermission('manageHGNAccessSetup');
   const canEditVisibility = props.hasPermission('toggleInvisibility');
   const canSeeReports = props.hasPermission('getReports');
   const { role: userRole } = userProfile;
   const canResetPassword =
-    props.hasPermission('resetPassword') && !(userRole === 'Administrator' || userRole === 'Owner'); 
+    props.hasPermission('updatePassword')&& !(userProfile.role === 'Administrator' || userProfile.role === 'Owner');
   const targetIsDevAdminUneditable = cantUpdateDevAdminDetails(userProfile.email, authEmail);
-
   const canEditUserProfile = targetIsDevAdminUneditable
     ? false
     : userProfile.role === 'Owner' || userProfile.role === 'Administrator'
@@ -1086,6 +1332,7 @@ const onAssignProject = assignedProject => {
     <div className={darkMode ? 'bg-oxford-blue' : ''} style={{ minHeight: '100%' }}>
       <ActiveInactiveConfirmationPopup
         isActive={userProfile.isActive}
+        deactivatedAt={userProfile.deactivatedAt}
         fullName={`${userProfile.firstName} ${userProfile.lastName}`}
         open={activeInactivePopupOpen}
         setActiveInactive={setActiveInactive}
@@ -1103,7 +1350,9 @@ const onAssignProject = assignedProject => {
           userProfile={userProfile}
           id={id}
           handleLinkModel={props.handleLinkModel}
-          role={requestorRole}
+          role={requestorRole}      
+          handleLogWarning={handleLogWarning}
+          specialWarnings={specialWarnings}
         />
       )}
       <Modal isOpen={showToggleVisibilityModal} toggle={handleCloseConfirmVisibilityModal}>
@@ -1230,15 +1479,6 @@ const onAssignProject = assignedProject => {
         </div>
 
         <div className="right-column">
-          {/* }
-            {!isProfileEqual ||
-              !isTasksEqual ||
-              !isProjectsEqual ? (
-              <Alert color="warning">
-                Please click on &quot;Save changes&quot; to save the changes you have made.{' '}
-              </Alert>
-            ) : null}
-             */}
           {!codeValid ? (
             <Alert color="danger">
               NOT SAVED! The code must be between 5 and 7 characters long
@@ -1259,11 +1499,13 @@ const onAssignProject = assignedProject => {
             <span className="mr-2">
               <ActiveCell
                 isActive={userProfile.isActive}
+                deactivatedAt={userProfile.deactivatedAt}
                 user={userProfile}
                 canChange={canChangeUserStatus}
                 onClick={() => {
                   if (cantDeactivateOwner(userProfile, requestorRole)) {
                     // Owner user cannot be deactivated by another user that is not an Owner.
+                    // eslint-disable-next-line no-alert
                     alert('You are not authorized to deactivate an owner.');
                     return;
                   }
@@ -1273,41 +1515,45 @@ const onAssignProject = assignedProject => {
             </span>
             {canEdit && (
               <span className="mr-2">
+              <Link
+                to={`/timelog/${targetUserId}#currentWeek`}
+                onClick={(e) => {
+                  if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) {
+                    return; // Let browser handle it — new tab, etc.
+                  }
+            
+                  e.preventDefault(); // SPA navigation
+                  props.history.push(`/timelog/${targetUserId}#currentWeek`);
+                  setActiveInactivePopupOpen(true);
+                }}
+                style={{ textDecoration: 'none' }}
+                title="Click to see user's timelog"
+              >
                 <i
                   data-toggle="tooltip"
                   className="fa fa-clock-o"
                   aria-hidden="true"
-                  style={{ fontSize: 24, cursor: 'pointer', marginTop: '6px' }}
-                  title="Click to see user's timelog"
-                  onClick={e => {
-                    if (e.metaKey || e.ctrlKey) {
-                      window.open(`/timelog/${targetUserId}`, '_blank');
-                    } else {
-                      e.preventDefault();
-                      props.history.push(`/timelog/${targetUserId}`);
-                      setActiveInactivePopupOpen(true);
-                    }
-                  }}
+                  style={{ fontSize: 24, cursor: 'pointer', marginTop: '6px', color: 'black' }}
                 />
-              </span>
+              </Link>
+            </span>
             )}
             {canSeeReports && (
               <span className="mr-2">
                 <Link
-                  className="team-member-tasks-user-report-link"
-                  style={{ fontSize: 24, cursor: 'pointer', marginTop: '6px' }}
+                  className={teamStyles["team-member-tasks-user-report-link"]}
                   to={`/peoplereport/${userProfile._id}`}
                   onClick={event => handleReportClick(event, userProfile._id)}
                 >
                   <img
                     src="/report_icon.png"
                     alt="reportsicon"
-                    className="team-member-tasks-user-report-link-image"
+                    className={teamStyles["team-member-tasks-user-report-link-image"]}
                   />
                 </Link>
               </span>
             )}
-            {(requestorRole === 'Owner' || requestorRole === 'Administrator') && (
+            {(canManageHGNAccessSetup) && (
               <span className="mr-2">
                 <Button
                   color="link"
@@ -1354,11 +1600,18 @@ const onAssignProject = assignedProject => {
             >
               {showSelect ? 'Hide Team Weekly Summaries' : 'Show Team Weekly Summaries'}
             </Button>
-            {(canGetProjectMembers && teams.length !== 0) ||
-            ['Owner', 'Administrator', 'Manager'].includes(requestorRole) ? (
+            {((canGetProjectMembers && teams.length !== 0) ||
+              ['Owner', 'Administrator', 'Manager'].includes(requestorRole)) && (
               <Button
-                onClick={() => {
-                  navigator.clipboard.writeText(summaryIntro);
+                onClick={async () => {
+                  const teamId = userProfile?.teams?.[0]?._id || null;
+                  const intro = await buildSummaryIntroDetails(teamId, userProfile);
+                  if (!intro) {
+                    toast.error('Unable to generate summary intro right now.');
+                    return;
+                  }
+                  setSummaryIntro(intro);
+                  await navigator.clipboard.writeText(intro);
                   toast.success('Summary Intro Copied!');
                 }}
                 color="primary"
@@ -1368,8 +1621,6 @@ const onAssignProject = assignedProject => {
               >
                 Generate Summary Intro
               </Button>
-            ) : (
-              ''
             )}
           </div>
           <h6 className={darkMode ? 'text-light' : 'text-azure'}>{jobTitle}</h6>
@@ -1583,12 +1834,13 @@ const onAssignProject = assignedProject => {
                       userId={props.match.params.userId}
                       updateTask={onUpdateTask}
                       handleSubmit={handleSubmit}
-                      disabled={
-                        !formValid.firstName ||
-                        !formValid.lastName ||
-                        !formValid.email ||
-                        !(isProfileEqual && isTasksEqual && isProjectsEqual)
-                      }
+                      // disabled={
+                      //   !formValid.firstName ||
+                      //   !formValid.lastName ||
+                      //   !formValid.email ||
+                      //   !(isProfileEqual && isTasksEqual && isProjectsEqual)
+                      // }
+                      disabled={false}
                       darkMode={darkMode}
                     />
                   )
@@ -1606,12 +1858,12 @@ const onAssignProject = assignedProject => {
               </TabPane>
             </TabContent>
             <div className="profileEditButtonContainer">
-              {canResetPassword && (
+              {canResetPassword && !isUserSelf &&  (
                 <ResetPasswordButton
                   className="mr-1 btn-bottom"
                   user={userProfile}
                   authEmail={authEmail}
-                  canUpdatePassword
+                  canUpdatePassword={canResetPassword}
                 />
               )}
               {isUserSelf && (activeTab === '1' || canPutUserProfile) && (
@@ -1619,6 +1871,7 @@ const onAssignProject = assignedProject => {
                   to={targetIsDevAdminUneditable ? `#` : `/updatepassword/${userProfile._id}`}
                   onClick={() => {
                     if (targetIsDevAdminUneditable) {
+                      // eslint-disable-next-line no-alert
                       alert(
                         'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD. ' +
                           'You shouldn’t even be using this account except to create your own accounts to use. ' +
@@ -1638,7 +1891,7 @@ const onAssignProject = assignedProject => {
                   </Button>
                 </Link>
               )}
-              {((canEdit && activeTab) || canEditTeamCode) && (
+              {((canEdit && activeTab) || canEditTeamCode) && activeTab !== '4' && (
                 <>
                   <SaveButton
                     className="mr-1 btn-bottom"
@@ -1649,7 +1902,6 @@ const onAssignProject = assignedProject => {
                       !formValid.email ||
                       !codeValid ||
                       (userStartDate > userEndDate && userEndDate !== '') ||
-                      // titleOnSet ||
                       (isProfileEqual && isTasksEqual && isProjectsEqual)
                     }
                     userProfile={userProfile}
@@ -1657,6 +1909,7 @@ const onAssignProject = assignedProject => {
                     darkMode={darkMode}
                   />
                   {activeTab !== '3' && (
+                    // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
                     <span
                       onClick={() => {
                         setUserProfile(originalUserProfile);
@@ -1737,7 +1990,7 @@ const onAssignProject = assignedProject => {
                 <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
                   <Row>
                     <div className="profileEditButtonContainer">
-                      {canResetPassword && (
+                      {canUpdatePassword && canEdit && !isUserSelf && (
                         <ResetPasswordButton
                           className="mr-1 btn-bottom"
                           user={userProfile}
@@ -1752,6 +2005,7 @@ const onAssignProject = assignedProject => {
                           }
                           onClick={() => {
                             if (targetIsDevAdminUneditable) {
+                              // eslint-disable-next-line no-alert
                               alert(
                                 'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD. ' +
                                   'You shouldn’t even be using this account except to create your own accounts to use. ' +
@@ -1788,6 +2042,7 @@ const onAssignProject = assignedProject => {
                             setSaved={() => setSaved(true)}
                             darkMode={darkMode}
                           />
+                          {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
                           <span
                             onClick={() => {
                               setUserProfile(originalUserProfile);
@@ -1867,6 +2122,7 @@ const onAssignProject = assignedProject => {
                             setSaved={() => setSaved(true)}
                             darkMode={darkMode}
                           />
+                          {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
                           <span
                             onClick={() => {
                               setUserProfile(originalUserProfile);
@@ -1963,6 +2219,7 @@ const onAssignProject = assignedProject => {
                             setSaved={() => setSaved(true)}
                             darkMode={darkMode}
                           />
+                          {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
                           <span
                             onClick={() => {
                               setUserProfile(originalUserProfile);
@@ -2020,12 +2277,13 @@ const onAssignProject = assignedProject => {
                     userId={props.match.params.userId}
                     updateTask={onUpdateTask}
                     handleSubmit={handleSubmit}
-                    disabled={
-                      !formValid.firstName ||
-                      !formValid.lastName ||
-                      !formValid.email ||
-                      !(isProfileEqual && isTasksEqual && isProjectsEqual)
-                    }
+                    // disabled={
+                    //   !formValid.firstName ||
+                    //   !formValid.lastName ||
+                    //   !formValid.email ||
+                    //   !(isProfileEqual && isTasksEqual && isProjectsEqual)
+                    // }
+                    disabled={false}
                     darkMode={darkMode}
                   />
                 </ModalBody>
@@ -2049,6 +2307,7 @@ const onAssignProject = assignedProject => {
                             setSaved={() => setSaved(true)}
                             darkMode={darkMode}
                           />
+                          {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
                           <span
                             onClick={() => {
                               setUserProfile(originalUserProfile);
@@ -2122,6 +2381,7 @@ const onAssignProject = assignedProject => {
                             setSaved={() => setSaved(true)}
                             darkMode={darkMode}
                           />
+                          {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
                           <span
                             onClick={() => {
                               setUserProfile(originalUserProfile);

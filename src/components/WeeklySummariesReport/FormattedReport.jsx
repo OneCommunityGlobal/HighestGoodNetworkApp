@@ -60,6 +60,12 @@ const textColors = {
   'Team Amethyst': '#9400D3',
 };
 
+const teamColorMap = {
+  purple: 'Admin Team',
+  green: '20 Hour Team',
+  navy: '10 Hour Team',
+};
+
 const isLastWeekReport = (startDateStr, endDateStr) => {
   if (!startDateStr || !endDateStr) return false;
   const summaryStart = new Date(startDateStr);
@@ -103,14 +109,28 @@ function FormattedReport({
   const isEditCount = dispatch(hasPermission('totalValidWeeklySummaries'));
 
   // Only proceed if summaries is valid
-  if (!summaries || !Array.isArray(summaries) || summaries.length === 0) {
+  // if (!summaries || !Array.isArray(summaries) || summaries.length === 0) {
+  //   return (
+  //     <div className="text-center py-4">
+  //       <p>No data available to display</p>
+  //     </div>
+  //   );
+  // }
+  if (!summaries) {
     return (
       <div className="text-center py-4">
-        <p>No data available to display</p>
+        <p>Loading weekly summaries...</p>
       </div>
     );
   }
 
+  if (Array.isArray(summaries) && summaries.length === 0) {
+    return (
+      <div className="text-center py-4">
+        <p>No data available for this week</p>
+      </div>
+    );
+  }
   const loggedInUserEmail = auth?.user?.email ? auth.user.email : '';
 
   // Determining if it's the final week:
@@ -139,7 +159,11 @@ function FormattedReport({
       <ListGroup flush>
         {summaries.map(summary => {
           // Add safety check for each summary
-          if (!summary || !summary.totalSeconds) {
+          if (
+            !summary ||
+            !Array.isArray(summary.totalSeconds) ||
+            !Array.isArray(summary.promisedHoursByWeek)
+          ) {
             return null;
           }
 
@@ -290,20 +314,26 @@ function ReportDetails({
   getWeeklySummariesReport,
   isFinalWeek, // new prop
 }) {
-  const [filteredBadges, setFilteredBadges] = useState([]);
+  // eslint-disable-next-line no-console
+  // console.log('DEBUG ReportDetails:', {
+  //   summary,
+  //   weekIndex,
+  //   totalSeconds: summary?.totalSeconds,
+  //   promisedHoursByWeek: summary?.promisedHoursByWeek,
+  // });
   const ref = useRef(null);
   const cantEditJaeRelatedRecord = cantUpdateDevAdminDetails(summary.email, loggedInUserEmail);
 
-  const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
+  const totalSecondsArray = summary.totalSeconds || [];
+  const promisedHoursArray = summary.promisedHoursByWeek || [];
+  const hoursLogged = ((totalSecondsArray[weekIndex] || 0) / 3600).toFixed(2);
+  const promisedHours = promisedHoursArray[weekIndex] ?? 0;
+
   const isMeetCriteria =
     canSeeBioHighlight &&
     summary.totalTangibleHrs > 80 &&
     summary.daysInTeam > 60 &&
     summary.bioPosted !== 'posted';
-
-  useEffect(() => {
-    setFilteredBadges(badges.filter(badge => badge.showReport === true));
-  }, []);
 
   return (
     <li className={`list-group-item px-0 ${darkMode ? 'bg-yinmn-blue' : ''}`} ref={ref}>
@@ -319,8 +349,27 @@ function ReportDetails({
             isFinalWeek={isFinalWeek}
           />
         </ListGroupItem>
-        <Row className="flex-nowrap">
-          <Col xs="6" className="flex-grow-0">
+        <ListGroupItem darkMode={darkMode}>
+          <div
+            style={{
+              backgroundColor: isMeetCriteria ? '#ffff66' : 'transparent',
+              width: '100%',
+              padding: '6px 12px 6px 0px',
+            }}
+          >
+            <Bio
+              bioCanEdit={bioCanEdit && !cantEditJaeRelatedRecord}
+              userId={summary._id}
+              bioPosted={summary.bioPosted}
+              summary={summary}
+              getWeeklySummariesReport={getWeeklySummariesReport}
+            />
+          </div>
+        </ListGroupItem>
+
+        {/* TWO-COLUMN CONTENT BELOW */}
+        <Row>
+          <Col md="6" xs="12">
             <ListGroupItem darkMode={darkMode}>
               <TeamCodeRow
                 canEditTeamCode={canEditTeamCode && !cantEditJaeRelatedRecord}
@@ -330,16 +379,6 @@ function ReportDetails({
                 getWeeklySummariesReport={getWeeklySummariesReport}
               />
             </ListGroupItem>
-            <ListGroupItem darkMode={darkMode}>
-              <div style={{ width: '200%', backgroundColor: isMeetCriteria ? 'yellow' : 'none' }}>
-                <Bio
-                  bioCanEdit={bioCanEdit && !cantEditJaeRelatedRecord}
-                  userId={summary._id}
-                  bioPosted={summary.bioPosted}
-                  summary={summary}
-                />
-              </div>
-            </ListGroupItem>
 
             <ListGroupItem darkMode={darkMode}>
               <TotalValidWeeklySummaries
@@ -348,26 +387,37 @@ function ReportDetails({
                 darkMode={darkMode}
               />
             </ListGroupItem>
+
             <ListGroupItem darkMode={darkMode}>
               <p
                 style={{
-                  color: getTextColorForHoursLogged(
-                    hoursLogged,
-                    summary.promisedHoursByWeek[weekIndex],
-                  ),
+                  color: getTextColorForHoursLogged(hoursLogged, promisedHours),
+                  // summary.promisedHoursByWeek[weekIndex],
+                  // ),
                   fontWeight: 'bold',
                 }}
               >
-                Hours logged: {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
+                {/* Hours logged: {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]} */}
+                Hours logged: {hoursLogged} / {promisedHours}
               </p>
             </ListGroupItem>
+
             <ListGroupItem darkMode={darkMode}>
               <WeeklySummaryMessage summary={summary} weekIndex={weekIndex} />
             </ListGroupItem>
           </Col>
-          <Col xs="6">
+
+          <Col
+            xs="6"
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'flex-start',
+              paddingTop: 0,
+            }}
+          >
             {loadBadges && summary.badgeCollection?.length > 0 && (
-              <WeeklyBadge summary={summary} weekIndex={weekIndex} badges={filteredBadges} />
+              <WeeklyBadge summary={summary} weekIndex={weekIndex} badges={badges} />
             )}
           </Col>
         </Row>
@@ -385,7 +435,27 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
     );
   }
 
-  const summaryText = summary?.weeklySummaries[weekIndex]?.summary;
+  const weeklySummaries = summary?.weeklySummaries || [];
+  const currentSummary = weeklySummaries[weekIndex];
+
+  // Keeping this block commented intentionally for future reference —
+  // const summaryText = summary?.weeklySummaries[weekIndex]?.summary;
+  const summaryText = currentSummary?.summary;
+  // Add safety check for weeklySummaries array and weekIndex
+  if (
+    !weeklySummaries ||
+    !Array.isArray(weeklySummaries) ||
+    weekIndex < 0 ||
+    weekIndex >= weeklySummaries.length
+  ) {
+    return (
+      <p>
+        <b>Weekly Summary:</b> <span style={{ color: 'red' }}>Not provided!</span>
+      </p>
+    );
+  }
+  // Keeping this block commented intentionally for future reference —
+  // const summaryText = summary?.weeklySummaries[weekIndex]?.summary;
   let summaryDate = moment()
     .tz('America/Los_Angeles')
     .endOf('week')
@@ -398,11 +468,13 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
         color: textColors[summary?.weeklySummaryOption] || textColors.Default,
       };
 
-      summaryDate = moment(summary.weeklySummaries[weekIndex]?.uploadDate)
-        .tz('America/Los_Angeles')
-        .format('MMM-DD-YY');
-      summaryDateText = `Summary Submitted On (${summaryDate}):`;
-
+      if (currentSummary?.uploadDate) {
+        // summaryDate = moment(summary.weeklySummaries[weekIndex]?.uploadDate)
+        summaryDate = moment(currentSummary.uploadDate)
+          .tz('America/Los_Angeles')
+          .format('MMM-DD-YY');
+        summaryDateText = `Summary Submitted On (${summaryDate}):`;
+      }
       return (
         <div style={style} className={styles.weeklySummaryReportContainer}>
           <div className={styles.weeklySummaryText}>{parse(summaryText)}</div>
@@ -445,6 +517,7 @@ function TeamCodeRow({
   getWeeklySummariesReport,
 }) {
   const [teamCode, setTeamCode] = useState(summary.teamCode);
+  const [savedTeamCode, setSavedTeamCode] = useState(summary.teamCode);
   const [hasError, setHasError] = useState(false);
   const fullCodeRegex = /^.{5,7}$/;
   const dispatch = useDispatch();
@@ -467,16 +540,15 @@ function TeamCodeRow({
 
   const handleCodeChange = e => {
     const { value } = e.target;
-    if (value.length <= 7) {
-      const regexTest = fullCodeRegex.test(value);
-      if (regexTest) {
-        setHasError(false);
-        setTeamCode(value);
-        handleOnChange(summary, value);
-      } else {
-        setTeamCode(value);
-        setHasError(true);
-      }
+    const regexTest = fullCodeRegex.test(value);
+    if (value.length <= 7 && regexTest) {
+      setHasError(false);
+      setTeamCode(value);
+      setSavedTeamCode(value);
+      handleOnChange(summary, value);
+    } else {
+      setTeamCode(savedTeamCode);
+      setHasError(true);
     }
   };
 
@@ -488,17 +560,23 @@ function TeamCodeRow({
     <>
       <div className={styles.teamcodeWrapper}>
         {canEditTeamCode ? (
-          <div style={{ width: '107px', paddingRight: '5px', position: 'relative' }}>
+          <div style={{ paddingRight: '5px', position: 'relative' }}>
             <Input
               id="codeInput"
               value={teamCode}
-              onChange={e => {
-                if (e.target.value !== teamCode) {
-                  handleCodeChange(e);
+              onChange={e => setTeamCode(e.target.value)}
+              onBlur={e => {
+                handleCodeChange(e);
+              }}
+              onKeyDown={e => {
+                if (e.key === 'Enter') {
+                  e.currentTarget.blur(); // triggers onBlur
                 }
               }}
               placeholder="X-XXX"
-              className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
+              className={`${styles.weeklySummariesCodeInput} ${
+                darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+              }`}
             />
           </div>
         ) : (
@@ -506,8 +584,10 @@ function TeamCodeRow({
             {teamCode === '' ? 'No assigned team code!' : teamCode}
           </div>
         )}
-        <b>Media URL:</b>
-        <MediaUrlLink summary={summary} />
+        <div>
+          <b>Media URL:</b>
+          <MediaUrlLink summary={summary} />
+        </div>
       </div>
       {hasError ? (
         <Alert className={styles.codeAlert} color="danger">
@@ -547,7 +627,7 @@ function MediaUrlLink({ summary }) {
       );
     }
   }
-  return <div style={{ paddingLeft: '5px' }}>Not provided!</div>;
+  return <span style={{ paddingLeft: '5px' }}>Not provided!</span>;
 }
 
 function TotalValidWeeklySummaries({ summary, canEditSummaryCount, darkMode }) {
@@ -589,7 +669,7 @@ function TotalValidWeeklySummaries({ summary, canEditSummaryCount, darkMode }) {
         </div>
       )}
       {canEditSummaryCount ? (
-        <div className="pl-2" style={{ width: '150px' }}>
+        <div className={`pl-2 ${styles.weeklySummariesCodeInput}`}>
           <Input
             type="number"
             name="weeklySummaryCount"
@@ -615,16 +695,43 @@ function Bio({ bioCanEdit, ...props }) {
   return bioCanEdit ? <BioSwitch {...props} /> : <BioLabel {...props} />;
 }
 
-function BioSwitch({ userId, bioPosted, summary }) {
+function BioSwitch({ userId, bioPosted, summary, getWeeklySummariesReport }) {
   const [bioStatus, setBioStatus] = useState(bioPosted);
   const dispatch = useDispatch();
   const style = { color: textColors[summary?.weeklySummaryOption] || textColors.Default };
+
+  // Sync local state with props when bioPosted changes from Redux store
+  useEffect(() => {
+    setBioStatus(bioPosted);
+  }, [bioPosted]);
 
   // eslint-disable-next-line no-shadow
   const handleChangeBioPosted = async (userId, bioStatus) => {
     const res = await dispatch(toggleUserBio(userId, bioStatus));
     if (res.status === 200) {
       toast.success('You have changed the bio announcement status of this user.');
+
+      // Force refresh the weekly summaries data to get updated bio status
+      try {
+        const currentTab = sessionStorage.getItem('tabSelection') || 'Last Week';
+        const navItems = ['This Week', 'Last Week', 'Week Before Last', 'Three Weeks Ago'];
+        const weekIndex = navItems.indexOf(currentTab);
+
+        // Force refresh with the current week index using direct API call with forceRefresh
+        if (weekIndex >= 0) {
+          const { ENDPOINTS } = await import('~/utils/URL');
+          const url = `${ENDPOINTS.WEEKLY_SUMMARIES_REPORT()}?week=${weekIndex}&forceRefresh=true`;
+
+          const response = await axios.get(url);
+          if (response.status === 200 && getWeeklySummariesReport) {
+            // Use the existing function to process and update the data
+            await getWeeklySummariesReport(weekIndex);
+          }
+        }
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.warn('Failed to refresh weekly summaries after bio update:', error);
+      }
     }
   };
 
@@ -704,7 +811,15 @@ function WeeklyBadge({ summary, weekIndex, badges }) {
   }
   return (
     badgeThisWeek.length > 0 && (
-      <ListGroupItem className="row">
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          flexWrap: 'wrap',
+          gap: '5px',
+          paddingTop: 0,
+        }}
+      >
         {badgeThisWeek.map((value, index) => (
           // eslint-disable-next-line react/no-array-index-key
           <div className={styles.badgeTd} key={`${weekIndex}_${summary._id}_${index}`}>
@@ -734,7 +849,7 @@ function WeeklyBadge({ summary, weekIndex, badges }) {
             )}
           </div>
         ))}
-      </ListGroupItem>
+      </div>
     )
   );
 }
@@ -755,6 +870,28 @@ function Index({
   const dispatch = useDispatch();
 
   const [modalOpen, setModalOpen] = useState(false);
+  // for testing purpose
+  // const promisedHoursByWeek = Array.isArray(summary?.promisedHoursByWeek)
+  //   ? summary.promisedHoursByWeek
+  //   : [];
+  // const filterColor = Array.isArray(summary?.filterColor) ? summary.filterColor : [];
+  // newly added
+  // const getMergedFilterColor = (summary, bulkSelectedColors) => {
+  //   // eslint-disable-next-line no-nested-ternary
+  //   const individual = Array.isArray(summary.filterColor)
+  //     ? summary.filterColor
+  //     : summary.filterColor
+  //     ? [summary.filterColor]
+  //     : [];
+
+  // Intentionally preserved legacy logic for bulk+individual color selection (kept for reference).
+  // If reactivated, it creates a deduplicated list from individual + bulkSelectedColors.
+  //   const bulk = Object.entries(bulkSelectedColors || {})
+  //     // eslint-disable-next-line no-unused-vars
+  //     .filter(([_, active]) => active)
+  //     .map(([color]) => color);
+  //   return [...new Set([...individual, ...bulk])];
+  // };
 
   const trophyIconToggle = () => {
     if (auth?.user?.role === 'Owner' || auth?.user?.role === 'Administrator') {
@@ -835,7 +972,6 @@ function Index({
       >
         {summary.firstName} {summary.lastName}
       </Link>
-
       <div style={{ display: 'inline-block' }}>
         <div style={{ display: 'flex' }}>
           <GoogleDocIcon link={googleDocLink} />
@@ -849,6 +985,7 @@ function Index({
             <RoleInfoModal
               info={allRoleInfo.find(item => item.infoName === `${summary.role}Info`)}
               auth={auth}
+              roleName={`${summary.role}Info`}
             />
           )}
           {loadTrophies &&
@@ -889,8 +1026,19 @@ function Index({
           </Modal>
         </div>
       </div>
-
       <div style={{ display: 'inline-block', marginLeft: '10px' }}>
+        {/* <p>{summary.filterColor}</p> */}
+        {(() => {
+          // eslint-disable-next-line no-console
+          // console.log(
+          //   'Rendering:',
+          //   summary.name || summary._id,
+          //   '→ filterColor:',
+          //   summary.filterColor,
+          // );
+          return null;
+        })()}
+
         {colors.map(color => (
           <span
             key={color}
@@ -901,14 +1049,56 @@ function Index({
               height: '15px',
               margin: '0 5px',
               borderRadius: '50%',
-              backgroundColor: summary.filterColor === color ? color : 'transparent',
+              // console.log('Rendering summary:', summary._id, summary.filterColor),
+              backgroundColor:
+                Array.isArray(summary.filterColor) && summary.filterColor.includes(color)
+                  ? color
+                  : 'transparent',
               border: `3px solid ${color}`,
               cursor: 'pointer',
             }}
           />
         ))}
       </div>
-
+      {Array.isArray(summary.filterColor) && summary.filterColor.length > 0 && (
+        <span style={{ marginLeft: '8px', fontSize: '0.85rem', color: '#555' }}>
+          (
+          {summary.filterColor
+            .map(color => teamColorMap[color])
+            .filter(Boolean)
+            .join(', ')}
+          )
+        </span>
+      )}
+      {Array.isArray(summary.promisedHoursByWeek) &&
+        summary.promisedHoursByWeek.length > weekIndex &&
+        showStar(hoursLogged, summary.promisedHoursByWeek[weekIndex]) && (
+          <i
+            className="fa fa-star"
+            title={`Weekly Committed: ${summary.promisedHoursByWeek[weekIndex]} hours`}
+            style={{
+              color: assignStarDotColors(hoursLogged, summary.promisedHoursByWeek[weekIndex]),
+              fontSize: '55px',
+              marginLeft: '10px',
+              verticalAlign: 'middle',
+              position: 'relative',
+            }}
+          >
+            <span
+              style={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                color: 'white',
+                fontWeight: 'bold',
+                fontSize: '10px',
+              }}
+            >
+              +{Math.round((hoursLogged / summary.promisedHoursByWeek[weekIndex] - 1) * 100)}%
+            </span>
+          </i>
+        )}
       {/* This conditional message ONLY on last week tab */}
       {/* {isFinalWeek && (
         <p style={{ color: '#8B0000', fontWeight: 'bold', marginTop: '5px' }}>
@@ -924,42 +1114,88 @@ function Index({
           </small>
         </p>
       )}
-
-      {showStar(hoursLogged, summary.promisedHoursByWeek[weekIndex]) && (
-        <i
-          className="fa fa-star"
-          title={`Weekly Committed: ${summary.promisedHoursByWeek[weekIndex]} hours`}
-          style={{
-            color: assignStarDotColors(hoursLogged, summary.promisedHoursByWeek[weekIndex]),
-            fontSize: '55px',
-            marginLeft: '10px',
-            verticalAlign: 'middle',
-            position: 'relative',
-          }}
-        >
-          <span
+      {/* //newly added */}
+      {Array.isArray(summary.promisedHoursByWeek) &&
+        summary.promisedHoursByWeek.length > weekIndex &&
+        weekIndex !== null &&
+        weekIndex !== undefined &&
+        summary.promisedHoursByWeek[weekIndex] !== undefined &&
+        showStar(hoursLogged, summary.promisedHoursByWeek[weekIndex]) && (
+          <i
+            className="fa fa-star"
+            title={`Weekly Committed: ${summary.promisedHoursByWeek[weekIndex]} hours`}
             style={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              color: 'white',
-              fontWeight: 'bold',
-              fontSize: '10px',
+              color: assignStarDotColors(hoursLogged, summary.promisedHoursByWeek[weekIndex]),
+              fontSize: '55px',
+              marginLeft: '10px',
+              verticalAlign: 'middle',
+              position: 'relative',
             }}
           >
-            +{Math.round((hoursLogged / summary.promisedHoursByWeek[weekIndex] - 1) * 100)}%
-          </span>
-        </i>
-      )}
+            <span
+              style={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                color: 'white',
+                fontWeight: 'bold',
+                fontSize: '10px',
+              }}
+            >
+              +{Math.round((hoursLogged / summary.promisedHoursByWeek[weekIndex] - 1) * 100)}%
+              {/* +{Math.round((hoursLogged / promisedHoursByWeek[weekIndex] - 1) * 100)}% */}
+            </span>
+          </i>
+        )}
     </>
   );
 }
 
+// FormattedReport.propTypes = {
+//   // eslint-disable-next-line react/forbid-prop-types
+//   summaries: PropTypes.arrayOf(PropTypes.object).isRequired,
+//   weekIndex: PropTypes.number.isRequired,
+
+//   // Adding these to clarify structure for Sonar:
+//   // summary: PropTypes.shape({
+//   //   _id: PropTypes.string,
+//   //   filterColor: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
+//   //   promisedHoursByWeek: PropTypes.arrayOf(PropTypes.number),
+//   //   weeklySummaries: PropTypes.arrayOf(
+//   //     PropTypes.shape({
+//   //       summary: PropTypes.string,
+//   //     }),
+//   //   ),
+//   // }),
+// };
+
 FormattedReport.propTypes = {
-  // eslint-disable-next-line react/forbid-prop-types
-  summaries: PropTypes.arrayOf(PropTypes.object).isRequired,
+  summaries: PropTypes.arrayOf(
+    PropTypes.shape({
+      _id: PropTypes.string,
+      filterColor: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
+      promisedHoursByWeek: PropTypes.arrayOf(PropTypes.number),
+      totalSeconds: PropTypes.number,
+      weeklySummaries: PropTypes.arrayOf(
+        PropTypes.shape({
+          summary: PropTypes.string,
+        }),
+      ),
+    }),
+  ).isRequired,
   weekIndex: PropTypes.number.isRequired,
+  summary: PropTypes.shape({
+    _id: PropTypes.string,
+    filterColor: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
+    promisedHoursByWeek: PropTypes.arrayOf(PropTypes.number),
+    totalSeconds: PropTypes.number,
+    weeklySummaries: PropTypes.arrayOf(
+      PropTypes.shape({
+        summary: PropTypes.string,
+      }),
+    ),
+  }),
 };
 
 export default FormattedReport;
