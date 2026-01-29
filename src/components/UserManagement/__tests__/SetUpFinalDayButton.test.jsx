@@ -97,7 +97,7 @@ describe('SetUpFinalDayButton', () => {
 
       renderSetUpFinalDayButton(props);
       fireEvent.click(screen.getByText(SET_FINAL_DAY));
-      const setYourFinalDayElement = await screen.findByText('Set Your Final Day');
+      const setYourFinalDayElement = await screen.findByText("Set User's Final Day");
 
       // Clicking SET_FINAL_DAY button causes popup to appear
       await waitFor(() => expect(setYourFinalDayElement).toBeInTheDocument());
@@ -108,7 +108,7 @@ describe('SetUpFinalDayButton', () => {
 
       renderSetUpFinalDayButton(props);
       fireEvent.click(screen.getByText(SET_FINAL_DAY));
-      const setYourFinalDayElement = await screen.findByText('Set Your Final Day');
+      const setYourFinalDayElement = await screen.findByText("Set User's Final Day");
       // Popup is open
       await waitFor(() => expect(setYourFinalDayElement).toBeInTheDocument());
 
@@ -126,7 +126,7 @@ describe('SetUpFinalDayButton', () => {
       renderSetUpFinalDayButton(props);
       fireEvent.click(screen.getByText(SET_FINAL_DAY));
       // Popup is open
-      const setYourFinalDayElement = await screen.findByText('Set Your Final Day');
+      const setYourFinalDayElement = await screen.findByText("Set User's Final Day");
       await waitFor(() => expect(setYourFinalDayElement).toBeInTheDocument());
 
       const dateInput = screen.getByTestId('date-input');

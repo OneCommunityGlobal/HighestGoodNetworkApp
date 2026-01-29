@@ -18,14 +18,10 @@ import {
 } from '../../utils/constants';
 import {
   getAllUserProfile,
-  updateUserStatus,
-  updateUserFinalDayStatusIsSet,
   deleteUser,
   enableEditUserInfo,
   disableEditUserInfo,
 } from '../../actions/userManagement';
-// import Loading from '../common/Loading';
-// import SkeletonLoading from '../common/SkeletonLoading';
 import UserTableHeader from './UserTableHeader';
 import UserTableData from './UserTableData';
 import UserTableSearchHeader from './UserTableSearchHeader';
@@ -36,8 +32,6 @@ import NewUserPopup from './NewUserPopup';
 import ActivationDatePopup from './ActivationDatePopup';
 import { UserStatus, UserDeleteType, FinalDay } from '../../utils/enums';
 import hasPermission, {cantDeactivateOwner, cantUpdateDevAdminDetails } from '../../utils/permissions';
-// Commented out because it's not used
-// import { searchWithAccent } from '../../utils/search';
 import SetupHistoryPopup from './SetupHistoryPopup';
 import DeleteUserPopup from './DeleteUserPopup';
 import ActiveInactiveConfirmationPopup from './ActiveInactiveConfirmationPopup';
@@ -45,6 +39,7 @@ import SetUpFinalDayPopUp from './SetUpFinalDayPopUp';
 import LogTimeOffPopUp from './logTimeOffPopUp';
 import SetupNewUserPopup from './setupNewUserPopup';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
+import { scheduleDeactivationAction, activateUserAction, pauseUserAction, deactivateImmediatelyAction } from '../../actions/userLifecycleActions';
 
 class UserManagement extends React.PureComponent {
   filteredUserDataCount = 0;
@@ -63,7 +58,6 @@ class UserManagement extends React.PureComponent {
       pageSize: props.state.userPagination.pagestats.pageSize,
       allSelected: undefined,
       isActive: undefined,
-      // isSet: undefined,
       activationDateOpen: false,
       deletePopupOpen: false,
       isPaused: false,
@@ -75,10 +69,12 @@ class UserManagement extends React.PureComponent {
       userForTimeOff: '',
       userTableItems: [],
       editable: props.state.userPagination.editable,
-      // updating:props.state.updateUserInfo.updating
       isMobile: window.innerWidth <= 750,
       mobileFontSize: 10,
       mobileWidth: '100px',
+      activeInactivePopupOpen: false,
+      finalDayPopupOpen: false,
+      selectedUser: null,
     };
     this.onPauseResumeClick = this.onPauseResumeClick.bind(this);
     this.onLogTimeOffClick = this.onLogTimeOffClick.bind(this);
@@ -185,6 +181,8 @@ class UserManagement extends React.PureComponent {
         />
         <ActiveInactiveConfirmationPopup
           isActive={this.state.selectedUser ? this.state.selectedUser.isActive : false}
+          endDate={this.state.selectedUser ? this.state.selectedUser.endDate : null}
+          inactiveReason={this.state.selectedUser ? this.state.selectedUser.inactiveReason : null}
           fullName={
             this.state.selectedUser
               ? `${this.state.selectedUser.firstName} ${this.state.selectedUser.lastName}`
@@ -192,12 +190,24 @@ class UserManagement extends React.PureComponent {
           }
           open={this.state.activeInactivePopupOpen}
           onClose={this.activeInactivePopupClose}
-          setActiveInactive={this.setActiveInactive}
+          onDeactivateImmediate={() => deactivateImmediatelyAction(this.props.dispatch, this.state.selectedUser, this.props.getAllUserProfile)}
+          onScheduleFinalDay={() => {
+            this.setState({
+              finalDayPopupOpen: true,
+              activeInactivePopupOpen: false,
+            });
+          }}
+          onCancelScheduledDeactivation={() => activateUserAction(this.props.dispatch, this.state.selectedUser, this.props.getAllUserProfile)}
+          onReactivateUser={() => activateUserAction(this.props.dispatch, this.state.selectedUser, this.props.getAllUserProfile)}
         />
         <SetUpFinalDayPopUp
-          open={this.state.finalDayDateOpen}
-          onClose={this.setUpFinalDayPopupClose}
-          onSave={this.deactiveUser}
+          open={this.state.finalDayPopupOpen}
+          darkMode={this.props.state.theme.darkMode}
+          onClose={() => this.setState({ finalDayPopupOpen: false })}
+          onSave={(finalDayISO) => {
+            scheduleDeactivationAction(this.props.dispatch, this.state.selectedUser, finalDayISO, this.props.getAllUserProfile);
+            this.setState({ finalDayPopupOpen: false });
+          }}
         />
         <SetupNewUserPopup
           open={this.state.setupNewUserPopupOpen}
@@ -311,13 +321,6 @@ class UserManagement extends React.PureComponent {
       const isFirstNameExactMatch = firstNameSearch.endsWith(' ') && trimmedFirstNameSearch.length > 0;
       const isLastNameExactMatch = lastNameSearch.endsWith(' ') && trimmedLastNameSearch.length > 0;
 
-
-      // const firstNameMatches = trimmedFirstNameSearch
-      //  ? (isFirstNameExactMatch
-      //    ? firstName === trimmedFirstNameSearch.toLowerCase()
-      //    : firstName.includes(trimmedFirstNameSearch.toLowerCase()))
-      //  : true;
-
       let firstNameMatches = true;
       if (trimmedFirstNameSearch) {
         if (isFirstNameExactMatch) {
@@ -326,13 +329,6 @@ class UserManagement extends React.PureComponent {
           firstNameMatches = firstName.includes(trimmedFirstNameSearch.toLowerCase());
         }
       }
-
-      // const lastNameMatches = trimmedLastNameSearch
-      //  ? (isLastNameExactMatch
-      //    ? lastName === trimmedLastNameSearch.toLowerCase()
-      //    : lastName.includes(trimmedLastNameSearch.toLowerCase()))
-      //  : true;
-
       let lastNameMatches = true;
       if (trimmedLastNameSearch) {
         if (isLastNameExactMatch) {
@@ -341,19 +337,6 @@ class UserManagement extends React.PureComponent {
           lastNameMatches = lastName.includes(trimmedLastNameSearch.toLowerCase());
         }
       }
-
-      // const wildcardMatches = wildCardSearch
-      //   ? wildCardSearch.includes(" ")
-      //     ? (`${firstName  } ${  lastName}`).startsWith(wildCardSearch.trim()) ||
-      //     (`${firstName  } ${  lastName}`) === wildCardSearch.trim() ||
-      //     email === wildCardSearch.trim()
-      //     : firstName.startsWith(wildCardSearch) ||
-      //     lastName.startsWith(wildCardSearch) ||
-      //    firstName.includes(wildCardSearch) ||
-      //    lastName.includes(wildCardSearch) ||
-      //    email.includes(wildCardSearch)
-      //  : true;
-
       let wildcardMatches = true;
       if (wildCardSearch) {
         const fullName = `${firstName} ${lastName}`;
@@ -408,15 +391,15 @@ class UserManagement extends React.PureComponent {
   /**
    * Call back on Pause or Resume button click to trigger the action to update user status
    */
-  onPauseResumeClick = (user, status) => {
-    if (status === UserStatus.Active) {
-      this.props.updateUserStatus(user, status, Date.now());
-    } else {
-      this.setState({
-        activationDateOpen: true,
-        selectedUser: user,
-      });
-    }
+  onPauseResumeClick = async (user, status) => {
+    this.setState({ selectedUser: user });
+
+      if (status === UserStatus.Inactive) {
+        // Pause → open popup
+        this.setState({ activationDateOpen: true });
+      } else {
+        await activateUserAction(this.props.dispatch, user, this.props.getAllUserProfile);
+      }
   };
 
   onUserUpdate = updatedUser => {
@@ -476,7 +459,7 @@ class UserManagement extends React.PureComponent {
    * Call back on Set Final day or Delete final button click to trigger the action to update user endate
    */
 
-  onFinalDayClick = (user, status) => {
+  onFinalDayClick = async (user, status) => {
     if (cantUpdateDevAdminDetails(user.email, this.authEmail)) {
       if (user?.email === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY) {
         // eslint-disable-next-line no-alert
@@ -488,7 +471,7 @@ class UserManagement extends React.PureComponent {
       return;
     }
     if (status === FinalDay.RemoveFinalDay) {
-      this.props.updateUserFinalDayStatusIsSet(user, 'Active', undefined, FinalDay.RemoveFinalDay);
+      await activateUserAction(this.props.dispatch, user, this.props.getAllUserProfile);
     } else {
       this.setState({
         finalDayDateOpen: true,
@@ -527,26 +510,12 @@ class UserManagement extends React.PureComponent {
   /**
    * Call back on Pause confirmation button click to trigger the action to update user status
    */
-  pauseUser = reActivationDate => {
-    this.props.updateUserStatus(this.state.selectedUser, UserStatus.InActive, reActivationDate);
+  pauseUser = async (reactivationDate) => {
+    console.log('Pausing user with reactivation date:', reactivationDate);
+    await pauseUserAction(this.props.dispatch, this.state.selectedUser, reactivationDate, this.props.getAllUserProfile);
+
     this.setState({
       activationDateOpen: false,
-      selectedUser: undefined,
-    });
-  };
-
-  /**
-   * Call back on Save confirmation button click to trigger the action to update user status
-   */
-  deactiveUser = finalDayDate => {
-    this.props.updateUserFinalDayStatusIsSet(
-      this.state.selectedUser,
-      'Active',
-      finalDayDate,
-      FinalDay.FinalDay,
-    );
-    this.setState({
-      finalDayDateOpen: false,
       selectedUser: undefined,
     });
   };
@@ -567,24 +536,6 @@ class UserManagement extends React.PureComponent {
       activeInactivePopupOpen: true,
       selectedUser: user,
     });
-  };
-
-  /**
-   * Callback to trigger the status change on confirmation ok click.
-   */
-  setActiveInactive = isActive => {    
-    this.setState(
-      {      
-        activeInactivePopupOpen: false,      
-        selectedUser: undefined,      
-      });
-          
-      this.props.updateUserStatus(      
-        this.state.selectedUser, isActive ? UserStatus.Active : UserStatus.InActive, undefined,    
-      )
-      // ).finally(() => {      
-      //  this.setState({ isUpdating: false });    
-      // });
   };
 
   /**
@@ -619,20 +570,14 @@ class UserManagement extends React.PureComponent {
     if (deleteType === UserDeleteType.Inactive) {
       this.props.updateUserStatus(
         this.state.selectedUser,
-        UserStatus.InActive,
+        UserStatus.Inactive,
         undefined
       )
-//      ).finally(() => {
-//        this.setState({ isUpdating: false });
-//      });
     } else {
       this.props.deleteUser(
         this.state.selectedUser,
         deleteType
       )
-//      ).finally(() => {
-//        this.setState({ isUpdating: false });
-//      });
     }
   };
 
@@ -909,21 +854,23 @@ class UserManagement extends React.PureComponent {
   }
 }
 
+
 const mapStateToProps = state => {
   return { state };
 };
-export default connect(mapStateToProps, {
-  getAllUserProfile,
-  updateUserStatus,
-  updateUserFinalDayStatusIsSet,
-  deleteUser,
-  hasPermission,
-  getAllTimeOffRequests,
-  enableEditUserInfo,
-  disableEditUserInfo,
-  getAllRoles,
-})(UserManagement);
+const mapDispatchToProps = dispatch => ({
+  dispatch, // 👈 THIS is the critical line
 
-// exporting without connect
-export { UserManagement as UnconnectedUserManagement };
+  getAllUserProfile: () => dispatch(getAllUserProfile()),
+  deleteUser: (...args) => dispatch(deleteUser(...args)),
+  getAllTimeOffRequests: () => dispatch(getAllTimeOffRequests()),
+  enableEditUserInfo: () => dispatch(enableEditUserInfo()),
+  disableEditUserInfo: () => dispatch(disableEditUserInfo()),
+  getAllRoles: () => dispatch(getAllRoles()),
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(UserManagement);
 
