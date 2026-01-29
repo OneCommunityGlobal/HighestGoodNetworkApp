@@ -131,7 +131,7 @@ describe('User Table Data: Non-Jae related Account', () => {
     });
     it('should render a active/inactive button', () => {
       renderRow(nonJaeAccountMock);
-      expect(screen.getByTitle('Click here to change the user status')).toBeInTheDocument();
+      expect(screen.getByTitle('Click to change user status')).toBeInTheDocument();
     });
 
     it('should render the first name and last name in input fields', () => {
