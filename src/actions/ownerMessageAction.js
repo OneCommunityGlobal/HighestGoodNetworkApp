@@ -65,13 +65,13 @@ export const deleteOwnerMessage = () => {
   };
 };
 
-export const getOwnerMessageHistory = () => {
-  const url = ENDPOINTS.OWNER_MESSAGE_HISTORY();
+export const getOwnerMessageHistory = (page = 1, limit = 10) => {
+  const url = ENDPOINTS.OWNER_MESSAGE_HISTORY(page, limit);
+
   return async dispatch => {
     try {
       const response = await axios.get(url);
       const ownerMessageHistory = response.data;
-      console.log('Owner Message History Data:', ownerMessageHistory);
       dispatch(updateOwnerMessageHistoryAction(ownerMessageHistory));
       return response;
     } catch (error) {

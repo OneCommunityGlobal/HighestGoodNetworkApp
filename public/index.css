@@ -324,6 +324,12 @@ body.bm-dashboard-dark .page-item.active .page-link {
   color: #ffffff !important;
 }
 
+body.dark-mode .page-item.disabled .page-link {
+  background-color: #6c6c6c;
+  border-color: #7c7c7c;
+  color: #ffffff !important;
+}
+
 /* Fix the position of the header at the top */
 .back-to-top {
   position: fixed;

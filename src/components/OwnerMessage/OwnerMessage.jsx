@@ -1,6 +1,17 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Table } from 'reactstrap';
+import {
+  Button,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Input,
+  Table,
+  Pagination,
+  PaginationItem,
+  PaginationLink,
+} from 'reactstrap';
 import { connect, useDispatch } from 'react-redux';
 import hasPermission from '~/utils/permissions';
 import { boxStyle, boxStyleDark } from '../../styles';
@@ -129,10 +140,15 @@ function OwnerMessage({
       hour12: true,
     }).format(new Date(date));
 
+  const page = ownerMessageHistory?.pagination?.page ? ownerMessageHistory.pagination.page : 1;
+  const totalPages = ownerMessageHistory?.pagination?.totalPages
+    ? ownerMessageHistory.pagination.totalPages
+    : 1;
+
   useEffect(() => {
     async function fetchMessages() {
       await getMessage();
-      await getMessageHistory();
+      await getMessageHistory(page, 10);
     }
     fetchMessages();
   }, []);
@@ -322,69 +338,84 @@ function OwnerMessage({
           Owner Message Edit History
         </ModalHeader>
         <ModalBody className={headerBg}>
-          {!ownerMessageHistory || ownerMessageHistory.length === 0 ? (
+          {!ownerMessageHistory?.data?.length ? (
             <p>No edit history available.</p>
           ) : (
-            <Table className={styles.ownerHistoryTable}>
-              <thead className={`${darkMode ? 'bg-space-cadet' : ''}`}>
-                <tr>
-                  <th
-                    className={`${styles.ownerHistorySmallColumn} ${
-                      darkMode ? 'bg-space-cadet' : ''
-                    }`}
-                  >
-                    Date
-                  </th>
-                  <th
-                    className={`${styles.ownerHistorySmallColumn} ${
-                      darkMode ? 'bg-space-cadet' : ''
-                    }`}
-                  >
-                    Edited By
-                  </th>
-                  <th className={`${darkMode ? 'bg-space-cadet' : ''}`}>Action</th>
-                  <th className={`${darkMode ? 'bg-space-cadet' : ''}`}>Old Message</th>
-                  <th className={`${darkMode ? 'bg-space-cadet' : ''}`}>New Message</th>
-                </tr>
-              </thead>
-              <tbody className={darkMode ? 'bg-yinmn-blue dark-mode' : ''}>
-                {ownerMessageHistory.map((historyItem, index) => (
-                  <tr key={index}>
-                    <td className={styles.ownerHistorySmallColumn}>
-                      <span className={styles.showInTablet}>
-                        <b>Date:</b>
-                      </span>
-                      {formatDateTimePST(historyItem.createdAt)} PST
-                    </td>
-
-                    <td className={styles.ownerHistorySmallColumn}>
-                      <span className={styles.showInTablet}>
-                        <b>Edited By:</b>
-                      </span>
-                      {historyItem.requestorName} ({historyItem.requestorEmail})
-                    </td>
-                    <td>
-                      <span className={styles.showInTablet}>
-                        <b>Action:</b>
-                      </span>
-                      {historyItem.action}
-                    </td>
-                    <td>
-                      <span className={styles.showInTablet}>
-                        <b>Old Message:</b>
-                      </span>
-                      {getHistoryContent(historyItem.oldMessage)}
-                    </td>
-                    <td>
-                      <span className={styles.showInTablet}>
-                        <b>New Message:</b>
-                      </span>
-                      {getHistoryContent(historyItem.newMessage)}
-                    </td>
+            <>
+              <Table className={styles.ownerHistoryTable}>
+                <thead className={`${darkMode ? 'bg-space-cadet' : ''}`}>
+                  <tr>
+                    <th
+                      className={`${styles.ownerHistorySmallColumn} ${
+                        darkMode ? 'bg-space-cadet' : ''
+                      }`}
+                    >
+                      Date
+                    </th>
+                    <th
+                      className={`${styles.ownerHistorySmallColumn} ${
+                        darkMode ? 'bg-space-cadet' : ''
+                      }`}
+                    >
+                      Edited By
+                    </th>
+                    <th className={`${darkMode ? 'bg-space-cadet' : ''}`}>Action</th>
+                    <th className={`${darkMode ? 'bg-space-cadet' : ''}`}>Old Message</th>
+                    <th className={`${darkMode ? 'bg-space-cadet' : ''}`}>New Message</th>
                   </tr>
-                ))}
-              </tbody>
-            </Table>
+                </thead>
+                <tbody className={darkMode ? 'bg-yinmn-blue dark-mode' : ''}>
+                  {ownerMessageHistory.data.map((historyItem, index) => (
+                    <tr key={index}>
+                      <td className={styles.ownerHistorySmallColumn}>
+                        <span className={styles.showInTablet}>
+                          <b>Date:</b>
+                        </span>
+                        {formatDateTimePST(historyItem.createdAt)} PST
+                      </td>
+
+                      <td className={styles.ownerHistorySmallColumn}>
+                        <span className={styles.showInTablet}>
+                          <b>Edited By:</b>
+                        </span>
+                        {historyItem.requestorName} ({historyItem.requestorEmail})
+                      </td>
+                      <td>
+                        <span className={styles.showInTablet}>
+                          <b>Action:</b>
+                        </span>
+                        {historyItem.action}
+                      </td>
+                      <td>
+                        <span className={styles.showInTablet}>
+                          <b>Old Message:</b>
+                        </span>
+                        {getHistoryContent(historyItem.oldMessage)}
+                      </td>
+                      <td>
+                        <span className={styles.showInTablet}>
+                          <b>New Message:</b>
+                        </span>
+                        {getHistoryContent(historyItem.newMessage)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+              <Pagination aria-label="Table pagination">
+                <PaginationItem disabled={page === 1}>
+                  <PaginationLink previous onClick={() => getMessageHistory(page - 1, 10)} />
+                </PaginationItem>
+
+                <PaginationItem active>
+                  <PaginationLink>{page}</PaginationLink>
+                </PaginationItem>
+
+                <PaginationItem disabled={page === totalPages}>
+                  <PaginationLink next onClick={() => getMessageHistory(page + 1, 10)} />
+                </PaginationItem>
+              </Pagination>
+            </>
           )}
         </ModalBody>
         <ModalFooter className={bodyBg}>
@@ -409,7 +440,7 @@ const mapDispatchToProps = dispatch => ({
   getMessage: () => dispatch(getOwnerMessage()),
   updateMessage: ownerMessage => dispatch(updateOwnerMessage(ownerMessage)),
   deleteMessage: () => dispatch(deleteOwnerMessage()),
-  getMessageHistory: () => dispatch(getOwnerMessageHistory()),
+  getMessageHistory: (page, limit) => dispatch(getOwnerMessageHistory(page, limit)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(OwnerMessage);
