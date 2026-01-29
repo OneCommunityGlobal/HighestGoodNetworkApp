@@ -108,7 +108,39 @@
   width: 100%;
 }
 
-/* border for all the row data */
+/* Header row */
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.resourceTitle {
+  margin: 0;
+}
+
+/* Export buttons */
+.exportButtons {
+  display: flex;
+  gap: 10px;
+}
+
+.exportButton {
+  background-color: #d3d3d3;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.exportButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Row */
 .resourceRow {
   display: flex;
   justify-content: space-between;
@@ -117,7 +149,7 @@
   border: 2px solid black;
 }
 
-/* Column Styling  for resources*/
+/* Columns */
 .column {
   flex: 1;
   padding: 15px;
@@ -125,22 +157,16 @@
   font-weight: bold;
 }
 
-/* Header Styling */
+/* Header styling */
 .header {
   background-color: #f5f5f5;
-  font-weight: bold;
 }
 
 .headerDark {
   background-color: #2c3e50;
-  font-weight: bold;
 }
 
-.resourceRow .column:last-child {
-  border-right: none;
-}
-
-/* colors for text based on status  */
+/* Status colors */
 .statusgreen {
   color: green !important;
 }
@@ -153,6 +179,34 @@
   color: red !important;
 }
 
+/* 🔹 Due date indicators */
+.rowOverdue {
+  border-left: 6px solid #c0392b;
+  background-color: #fdecea;
+}
+
+.rowDueSoon {
+  border-left: 6px solid #f39c12;
+  background-color: #fff6e5;
+}
+
+.dueDateColumn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.dueIcon {
+  font-size: 16px;
+}
+
+.dueText {
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* Buttons */
 .viewDetailsButtonDark {
   display: block;
   width: 100%;
@@ -162,9 +216,7 @@
   padding: 10px;
   cursor: pointer;
   border: none;
-  text-decoration: none;
   transition: background 0.2s ease-in-out;
-  text-align: center;
 }
 
 .viewDetailsButtonDark:hover {
@@ -180,23 +232,21 @@
   padding: 10px;
   cursor: pointer;
   border: none;
-  text-decoration: none;
   transition: background 0.2s ease-in-out;
-  text-align: center;
 }
 
 .viewDetails:hover {
   background-color: #d1f0d1;
 }
 
-/* Actions Column */
+/* Actions */
 .actionColumn {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-/* Tick Box */
+/* Tick box */
 .tickBox {
   display: flex;
   justify-content: center;
@@ -207,7 +257,6 @@
 .tickLabel {
   display: flex;
   align-items: center;
-  justify-content: center;
   font-weight: bold;
   border: 2px solid black;
   padding: 10px 15px;
