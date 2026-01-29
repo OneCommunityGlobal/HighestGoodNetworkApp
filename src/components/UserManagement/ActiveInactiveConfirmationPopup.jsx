@@ -34,11 +34,11 @@ const ActiveInactiveConfirmationPopup = React.memo((props) => {
 
   const isPaused =
     !isActive &&
-    inactiveReason === InactiveReason.Paused;
+    inactiveReason === InactiveReason.PAUSED;
 
   const isSeparated =
     !isActive &&
-    inactiveReason === InactiveReason.Separated;
+    inactiveReason === InactiveReason.SEPARATED;
 
   const isInactive = !isActive;
 
