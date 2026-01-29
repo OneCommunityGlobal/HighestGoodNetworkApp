@@ -1,4 +1,3 @@
-/* Main container styles */
 .containerMainMsg {
   background-color: #e0e0e0;
   display: flex;
@@ -413,26 +412,7 @@
   padding: 10px;
 }
 
-.lbMessagingContact {
-  display: flex;
-  align-items: center;
-  padding: 8px;
-  border-bottom: 1px solid #eee;
-  cursor: pointer;
-}
-
-.lbMessagingContact img {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  margin-right: 10px;
-}
-
 .lbMessagingContactName {
   font-size: 15px;
   font-weight: 500;
-}
-
-.lbMsgIcon {
-  cursor: pointer;
 }

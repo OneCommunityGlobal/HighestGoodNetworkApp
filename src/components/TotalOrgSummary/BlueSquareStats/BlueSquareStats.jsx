@@ -1,5 +1,4 @@
 import { BLUE_SQUARE_STATS_COLORS } from '~/constants/totalOrgSummary';
-import './BlueSquareStats.css';
 import Loading from '~/components/common/Loading';
 import DonutChart from '../DonutChart/DonutChart';
 

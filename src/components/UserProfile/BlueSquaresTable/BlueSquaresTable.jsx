@@ -1,7 +1,6 @@
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 import BlueSquare from '../BlueSquares/BlueSquare';
 import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
-import './BlueSquaresTable.css';
 
 const BlueSquaresTable = ({ userProfile ,canEdit, isPrivate , handleUserProfile , handleBlueSquare, darkMode}) => {
   return (

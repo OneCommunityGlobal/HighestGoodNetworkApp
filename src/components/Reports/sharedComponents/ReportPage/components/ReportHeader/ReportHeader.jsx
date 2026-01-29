@@ -1,6 +1,5 @@
 import classnames from 'classnames';
 import { ReportBlock } from '../ReportBlock';
-import './ReportHeader.css';
 
 export function ReportHeader({
   children,

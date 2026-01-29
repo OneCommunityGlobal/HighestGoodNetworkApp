@@ -1,5 +1,3 @@
-/* CSS for ActivitiesPage.jsx, LatestRegistration.jsx, MyEvent.jsx, RegisterationForm.jsx, ResourceMonitoring.jsx */
-
 .activitiesPage {
   padding: 20px;
   font-family: Arial, sans-serif;
@@ -20,12 +18,12 @@
 }
 
 .resourceTitle {
-  color: rgb(12, 11, 11); 
+  color: rgb(12, 11, 11);
   font-weight: bold;
   margin-bottom: 10px;
-  width: 100%;            
-  display: block;         
-  text-align: center; 
+  width: 100%;
+  display: block;
+  text-align: center;
 }
 
 .header h2,
@@ -47,7 +45,6 @@
   background-color: white;
   padding: 20px;
   border-radius: 8px;
-
 }
 
 .resourceGrid {
@@ -97,7 +94,6 @@
   font-weight: bold;
 }
 
-/* Resource Monitoring stat css */
 .resourceStats {
   display: flex;
   justify-content: center;
@@ -113,18 +109,11 @@
   color: red;
 }
 
-/* Resource Monitoring Title */
-.resourceTitle {
-  font-weight: bold;
-  color: grey;
-}
-
 .registrationForm,
 .filters {
   margin: 20px 0;
 }
 
-/* Latest Registration css */
 .latestRegistration,
 .myEvent {
   background: #f9f9f9;
@@ -179,9 +168,6 @@
   border: 1px solid #ddd;
   padding: 8px;
   text-align: left;
-}
-.status {
-  font-weight: bold;
 }
 .active {
   color: green;
@@ -264,8 +250,6 @@
   border-radius: 5px;
 }
 
-/* Registration Form  */
-
 .registrationForm {
   background-color: white;
   padding: 20px;
@@ -307,24 +291,10 @@
   background-color: #0056b3;
 }
 
-/* Resource Monitoring */
-
-.resourceTitle {
-  text-align: left;
-  font-size: 1.2rem;
-  margin-bottom: 5px;
-}
-
 .resourceValue {
   font-weight: bold;
   color: black;
   font-size: 1rem;
-}
-
-.resourceStats {
-  display: flex;
-  align-items: center;
-  margin-top: 10px;
 }
 
 .resourceStats .arrow {
@@ -342,7 +312,6 @@
   margin-left: 5px;
 }
 
-/* My Events toggle button */
 .viewToggle button {
   padding: 10px 20px;
   margin-right: 10px;
@@ -364,7 +333,6 @@
   border: 1px solid #ddd;
 }
 
-/* Filter section of my events */
 .filterControls select {
   padding: 8px;
   margin-right: 10px;
@@ -385,15 +353,6 @@
   background-color: #0056b3;
 }
 
-.createNewBtn {
-  padding: 8px 20px;
-  background-color: #28a745;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
 .createNewBtn:hover {
   background-color: #218838;
 }
@@ -412,4 +371,3 @@
   margin-top: 3px;
   font-size: 0.9em;
 }
-

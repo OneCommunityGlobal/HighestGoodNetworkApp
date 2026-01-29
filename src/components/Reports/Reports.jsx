@@ -17,7 +17,6 @@ import ProjectTable from './ProjectTable';
 import { getUserProfileBasicInfo } from '../../actions/userManagement';
 import { fetchAllTasks } from '../../actions/task';
 import 'react-datepicker/dist/react-datepicker.css';
-import './reportsPage.css';
 import projectsImage from './images/Projects.svg';
 import peopleImage from './images/People.svg';
 import teamsImage from './images/Teams.svg';

@@ -4,12 +4,11 @@
   border-bottom-width: 1px;
 }
 
-/* Improved positioning for the action menu */
 .actionMenu {
   position: absolute;
-  top: 0; /* Position at the top of relative parent */
-  right: 100%; /* Position to the left of the button */
-  transform: translateY(-25%); /* Adjust vertical position */
+  top: 0;
+  right: 100%;
+  transform: translateY(-25%);
   min-width: 10rem;
   z-index: 1050;
   padding: 0.5rem 0;
@@ -48,20 +47,20 @@
   text-decoration: none;
 }
 
-/* Fixed table responsiveness */
 .issuesTableResponsive {
-  overflow-x: visible !important; /* Prevent horizontal scrollbar */
-  overflow-y: visible !important; /* Ensure dropdowns aren't clipped */
+  overflow-x: visible !important;
+  overflow-y: visible !important;
   position: relative;
+  width: 100%;
+  table-layout: fixed;
 }
 
-/* Improved dropdown positioning */
 .issueDashboardDropdown {
-  position: static; /* Make it relative to the table cell instead */
+  position: static;
 }
 
 td.textEnd {
-  position: relative; /* Create positioning context for dropdown */
+  position: relative;
   white-space: nowrap;
   width: 1%;
 }
@@ -70,24 +69,15 @@ td.textEnd {
   text-align: left !important;
 }
 
-/* Ensure card doesn't create scrollbars */
 .card {
   overflow: hidden;
 }
 
-/* Ensure table doesn't exceed container width */
-.issuesTableResponsive {
-  width: 100%;
-  table-layout: fixed;
-}
-
-/* Make sure content doesn't force horizontal scroll */
 .containerFluid {
   max-width: 100%;
   overflow-x: hidden;
 }
 
-/* Fix for the dropdown menu to appear inside table */
 td.textEnd .issueDashboardDropdown .issueDashboardDropdownMenu {
   position: absolute;
   right: 3rem !important;

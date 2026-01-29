@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { connect } from 'react-redux';
-import './UserRoleTab.css';
 import { getUserProfile } from '~/actions/userProfile';
 import { useHistory } from 'react-router-dom';
 import { boxStyle, boxStyleDark } from '~/styles';
