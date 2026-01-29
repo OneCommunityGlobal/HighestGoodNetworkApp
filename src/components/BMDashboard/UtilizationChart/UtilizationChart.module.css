@@ -45,8 +45,8 @@
 }
 
 .button {
-  background-color: var(--button-bg, #a0e7e5);
-  color: var(--button-text, #000);
+  background-color: #2563eb;
+  color: #ffffff;
   border: none;
   cursor: pointer;
   transition: background-color 0.3s ease;
@@ -54,7 +54,7 @@
 }
 
 .button:hover {
-  background-color: var(--button-hover, #72d6d3);
+  background-color: #1d4ed8;
 }
 
 .utilizationChartError {
@@ -75,4 +75,18 @@
   --button-hover: #f5b13a;
   --shadow: 0 2px 10px rgba(255, 255, 255, 0.1);
   --error-color: #ff6b6b;
+}
+
+/* Ensure bar value labels are visible in dark mode (SVG text fix) */
+.utilizationChartContainer.darkMode svg text,
+.utilizationChartContainer.darkMode svg tspan {
+  fill: #ffffff !important;
+}
+
+.utilizationChartContainer.darkMode .recharts-text {
+  fill: #ffffff !important;
+}
+
+.utilizationChartContainer.darkMode .recharts-cartesian-axis-tick-value {
+  fill: #ffffff !important;
 }
