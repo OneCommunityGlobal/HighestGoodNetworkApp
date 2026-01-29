@@ -64,7 +64,21 @@ function renderDotTopOrBottom(lineKey, color) {
     return null;
   };
 }
+function CustomTooltip({ active, payload, label }) {
+  if (!active || !payload || payload.length === 0) return null;
 
+  return (
+    <div className={styles.customTooltip}>
+      <div className={styles.customTooltipLabel}>{label}</div>
+      {payload.map(item => (
+        <div key={item.name} className={styles.customTooltipItem}>
+          <span style={{ color: item.color }}>{item.name}:</span> $
+          {Number(item.value).toLocaleString()}
+        </div>
+      ))}
+    </div>
+  );
+}
 function CostPredictionChart({ projectId }) {
   const dispatch = useDispatch();
   const [chartData, setChartData] = useState([]);
@@ -248,6 +262,7 @@ function CostPredictionChart({ projectId }) {
           />
           {/* Tooltip & Legend */}
           <Tooltip
+            content={<CustomTooltip />}
             labelFormatter={label => ` ${label}`}
             formatter={(value, name) => [`$${Number(value).toLocaleString()}`, name]}
           />

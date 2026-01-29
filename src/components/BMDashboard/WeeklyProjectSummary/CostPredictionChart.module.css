@@ -62,3 +62,23 @@
   align-items: center;
   gap: 8px;
 }
+/* === Tooltip styling === */
+.customTooltip {
+  background-color: var(--card-bg);
+  border: 1px solid var(--button-hover);
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 12px; /* smaller font */
+  color: var(--text-color);
+}
+
+.customTooltipLabel {
+  font-size: 11px;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.customTooltipItem {
+  font-size: 11px;
+  line-height: 1.3;
+}
