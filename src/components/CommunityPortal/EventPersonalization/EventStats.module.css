@@ -1,4 +1,4 @@
-.popular-events-container {
+.popularEventsContainer {
 
   max-height: 100%;
   margin: 0 auto;
@@ -7,7 +7,7 @@
   background: white;
 }
 
-.popular-events-container-dark {
+.popularEventsContainerDark {
 
   margin: 0 auto;
   padding: 20px;
@@ -16,30 +16,32 @@
   min-height: 100%;
 }
 
-.header-container {
+.headerContainer {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.header-container-dark {
+.headerContainerDark {
   display: flex;
   justify-content: space-between;
   align-items: center;
   color: #1C2541;
 }
 
-.popular-events-header {
+.popularEventsHeader {
   font-size: 1.5rem;
   color: #000000;
   margin: 0;
+  font-weight: 700;
 }
 
-.popular-events-header-dark {
+.popularEventsHeaderDark {
   font-size: 1.5rem;
   color: #ffffff;
   margin: 0;
   background-color: #1C2541;
+  font-weight: 700;
 }
 
 .filters {
@@ -47,10 +49,21 @@
   gap: 10px;
 }
 
-.filters-dark {
+.filtersDark {
   display: flex;
   gap: 10px;
   background-color: #1C2541;
+}
+
+.filtersDark select {
+  background-color: #2d3748;
+  border-color: #4a5568;
+  color: #fff;
+}
+
+.filtersDark select option {
+  background-color: #2d3748;
+  color: #fff;
 }
 
 .filters select {
@@ -70,7 +83,7 @@
   padding: 30px;
 }
 
-.stats-dark {
+.statsDark {
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -80,7 +93,7 @@
   background-color: #1C2541;
 }
 
-.stat-item {
+.statItem {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -88,21 +101,21 @@
 
 
 
-.stat-label {
+.statLabel {
   flex: 1;
   font-size: 14px;
   font-weight: bold;
   color: #333;
 }
 
-.stat-label-dark {
+.statLabelDark {
   flex: 1;
   font-size: 14px;
   font-weight: bold;
   color: #ffffff;
 }
 
-.stat-bar {
+.statBar {
   flex: 3;
   background: #f0f0f0;
   height: 8px;
@@ -130,7 +143,7 @@
   background-color: #f44336;
 }
 
-.stat-value {
+.statValue {
   flex: 1;
   text-align: right;
   font-size: 14px;
@@ -138,7 +151,7 @@
   color: #333;
 }
 
-.stat-value-dark {
+.statValueDark {
   flex: 1;
   text-align: right;
   font-size: 14px;
@@ -146,7 +159,7 @@
   color: #ffffff;
 }
 
-.event-summary {
+.eventSummary {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 10px;
@@ -157,7 +170,7 @@
   padding-bottom: 20px;
 }
 
-.summary-item {
+.summaryItem {
   background: white;
   padding: 12px;
   border-radius: 8px;
@@ -172,7 +185,7 @@
   text-align: center;
 }
 
-.summary-item-dark {
+.summaryItemDark {
   background: #3A506B;
   padding: 12px;
   border-radius: 8px;
@@ -187,7 +200,7 @@
   text-align: center;
 }
 
-.summary-title {
+.summaryTitle {
   font-size: 14px;
   font-weight: bold;
   text-align: center;
@@ -197,7 +210,7 @@
   color: #777;
 }
 
-.summary-title-dark {
+.summaryTitleDark {
   font-size: 14px;
   font-weight: bold;
   text-align: center;
@@ -207,14 +220,14 @@
   color: #ffffff;
 }
 
-.summary-value {
+.summaryValue {
   font-size: 14px;
   font-weight: bold;
   color: #000;
   margin-top: 4px;
 }
 
-.summary-value-dark {
+.summaryValueDark {
   font-size: 14px;
   font-weight: bold;
   color: #ffffff;

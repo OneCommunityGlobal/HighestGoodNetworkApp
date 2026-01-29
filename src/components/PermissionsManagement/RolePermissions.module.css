@@ -1,33 +1,33 @@
-.dark-mode {
+.darkMode {
   background-color: #1a1a2e;
   color: #ffffff;
 }
 
-.bg-space-cadet {
+.bgSpaceCadet {
   background-color: #16213e;
 }
 
-.bg-yinmn-blue {
+.bgYinmnBlue {
   background-color: #0f3460;
 }
 
-.text-light {
+.textLight {
   color: #ffffff !important;
 }
 
-.dark-mode .modal-content {
+.darkMode .modalContent {
   background-color: #1a1a2e;
   border-color: #16213e;
 }
 
-.dark-mode .close {
+.darkMode .close {
   color: #ffffff;
 }
 
-.dark-mode .modal-body p {
+.darkMode .modalBody p {
   color: #fff !important;
 }
 
-.modal-info-content {
+.modalInfoContent {
   padding-left: 20px;
 }

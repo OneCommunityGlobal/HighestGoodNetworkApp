@@ -7,11 +7,13 @@ import { boxStyle, boxStyleDark } from '~/styles';
 import { connect } from 'react-redux';
 import Switch from './Switch';
 
+import './UserTeamsTable.css';
 
 import { AutoCompleteTeamCode } from './AutoCompleteTeamCode';
 
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 
+import './../../Teams/Team.module.css';
 import { TeamMember } from './TeamMember';
 import axios from 'axios';
 import { ENDPOINTS } from '~/utils/URL.js';

@@ -1,6 +1,4 @@
-/* CSS for ActivitiesPage.jsx, LatestRegistration.jsx, MyEvent.jsx, RegisterationForm.jsx, ResourceMonitoring.jsx */
-
-.activities-page {
+.activitiesPage {
   padding: 20px;
   font-family: Arial, sans-serif;
   background-color: #d3d3d3;
@@ -13,10 +11,25 @@
   margin-bottom: 20px;
 }
 
+.headerTitle {
+  color: black;
+  font-weight: 600;
+  text-align: center;
+}
+
+.resourceTitle {
+  color: rgb(12, 11, 11);
+  font-weight: bold;
+  margin-bottom: 10px;
+  width: 100%;
+  display: block;
+  text-align: center;
+}
+
 .header h2,
 .resourceMonitoring h2,
-.latest-registration h2,
-.my-event h2 {
+.latestRegistration h2,
+.myEvent h2 {
   color: black;
 }
 
@@ -24,9 +37,10 @@
   color: rgb(12, 11, 11);
 }
 
+.header,
 .resourceMonitoring,
-.latest-registration,
-.my-event {
+.latestRegistration,
+.myEvent {
   margin: 20px 0;
   background-color: white;
   padding: 20px;
@@ -46,32 +60,32 @@
   flex: 1;
 }
 
-.circle-container {
+.circleContainer {
   position: relative;
   width: 80px;
   height: 80px;
   margin: 10px auto;
 }
 
-.progress-circle {
+.progressCircle {
   width: 100%;
   height: 100%;
   transform: rotate(-90deg);
 }
 
-.circle-bg {
+.circleBg {
   fill: none;
   stroke-width: 3.8;
 }
 
-.circle-progress {
+.circleProgress {
   fill: none;
   stroke-width: 3.8;
   stroke-linecap: round;
   transition: stroke-dasharray 0.3s ease;
 }
 
-.circle-label {
+.circleLabel {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -80,8 +94,7 @@
   font-weight: bold;
 }
 
-/* Resource Monitoring stat css */
-.resource-stats {
+.resourceStats {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -96,39 +109,32 @@
   color: red;
 }
 
-/* Resource Monitoring Title */
-.resource-title {
-  font-weight: bold;
-  color: grey;
-}
-
 .registrationForm,
 .filters {
   margin: 20px 0;
 }
 
-/* Latest Registration css */
-.latest-registration,
-.my-event {
+.latestRegistration,
+.myEvent {
   background: #f9f9f9;
   border: 1px solid #ddd;
   border-radius: 5px;
   padding: 15px;
 }
 
-.latest-registration ul {
+.latestRegistration ul {
   list-style: none;
   padding: 0;
 }
 
-.latest-registration li {
+.latestRegistration li {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 10px;
 }
 
-.approve-btn {
+.approveBtn {
   background-color: #007bff;
   color: #fff;
   border: none;
@@ -137,13 +143,13 @@
   cursor: pointer;
 }
 
-.my-event .event-controls {
+.myEvent .eventControls {
   display: flex;
   justify-content: space-between;
   margin-bottom: 10px;
 }
 
-.create-new-btn {
+.createNewBtn {
   background-color: #28a745;
   color: #fff;
   border: none;
@@ -163,12 +169,10 @@
   padding: 8px;
   text-align: left;
 }
-
-.status.active {
+.active {
   color: green;
 }
-
-.status.closed {
+.closed {
   color: red;
 }
 
@@ -186,20 +190,20 @@
   margin-top: 4px;
 }
 
-.date-box {
+.dateBox {
   display: flex;
   flex-direction: column;
   align-items: center;
   font-size: 1em;
 }
 
-.date-box .day {
+.dateBox .day {
   color: orange;
   font-weight: bold;
   font-size: 1.2em;
 }
 
-.date-box .date {
+.dateBox .date {
   font-size: 1.5em;
 }
 
@@ -246,8 +250,6 @@
   border-radius: 5px;
 }
 
-/* Registration Form  */
-
 .registrationForm {
   background-color: white;
   padding: 20px;
@@ -260,16 +262,16 @@
   color: black;
 }
 
-.RegistrationformField {
+.registrationformField {
   margin-bottom: 15px;
 }
 
-.RegistrationformField label {
+.registrationformField label {
   font-weight: bold;
 }
 
-.RegistrationformField input,
-.RegistrationformField select {
+.registrationformField input,
+.registrationformField select {
   width: 100%;
   padding: 8px;
   margin-top: 5px;
@@ -289,43 +291,28 @@
   background-color: #0056b3;
 }
 
-/* Resource Monitoring */
-
-.resource-title {
-  text-align: left;
-  font-size: 1.2rem;
-  margin-bottom: 5px;
-}
-
-.resource-value {
+.resourceValue {
   font-weight: bold;
   color: black;
   font-size: 1rem;
 }
 
-.resource-stats {
-  display: flex;
-  align-items: center;
-  margin-top: 10px;
-}
-
-.resource-stats .arrow {
+.resourceStats .arrow {
   font-size: 1rem;
   margin-right: 5px;
 }
 
-.resource-stats p {
+.resourceStats p {
   margin: 0;
 }
 
-.resource-stats p:last-child {
+.resourceStats p:last-child {
   color: grey;
   font-size: 0.7rem;
   margin-left: 5px;
 }
 
-/* My Events toggle button */
-.view-toggle button {
+.viewToggle button {
   padding: 10px 20px;
   margin-right: 10px;
   font-size: 1rem;
@@ -334,27 +321,26 @@
   border-radius: 5px;
 }
 
-.active-view {
+.activeView {
   background-color: white;
   color: black;
   border: 1px solid #ccc;
 }
 
-.inactive-view {
+.inactiveView {
   background-color: #f0f0f0;
   color: gray;
   border: 1px solid #ddd;
 }
 
-/* Filter section of my events */
-.filter-controls select {
+.filterControls select {
   padding: 8px;
   margin-right: 10px;
   border-radius: 5px;
   border: 1px solid #ccc;
 }
 
-.apply-filters-btn {
+.applyFiltersBtn {
   padding: 8px 20px;
   background-color: #007bff;
   color: white;
@@ -363,20 +349,11 @@
   cursor: pointer;
 }
 
-.apply-filters-btn:hover {
+.applyFiltersBtn:hover {
   background-color: #0056b3;
 }
 
-.create-new-btn {
-  padding: 8px 20px;
-  background-color: #28a745;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.create-new-btn:hover {
+.createNewBtn:hover {
   background-color: #218838;
 }
 
