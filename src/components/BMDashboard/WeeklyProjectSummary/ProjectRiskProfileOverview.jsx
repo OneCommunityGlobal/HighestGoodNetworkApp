@@ -78,88 +78,148 @@ export default function ProjectRiskProfileOverview() {
   return (
     <div className={`${styles.wrapper} ${darkMode ? styles.darkMode : ''}`}>
       <div className={`${styles.container}`}>
-        <h2 className={`${styles.heading}`}>Project Risk Profile Overview</h2>
+        <div className={`${styles.headerRow}`}>
+          <h2 className={`${styles.heading}`}>Overall Risk Profile</h2>
 
-        <div className={`${styles.filterRow}`}>
-          {/* Project Dropdown */}
-          <div className={`${styles.dropdownWrapper}`}>
-            <span className={`${styles.dropdownLabel}`}>Project</span>
-            <button
-              ref={allSpanRef}
-              type="button"
-              className={`${styles.dropdownButton}`}
-              onClick={() => setShowProjectDropdown(prev => !prev)}
-              aria-label="Show project dropdown"
-            >
-              {getProjectLabel()}
-            </button>
-            {showProjectDropdown && (
-              <div className={`${styles.dropdownMenu}`}>
-                <Select
-                  isMulti
-                  classNamePrefix="customSelect"
-                  options={allProjects.map(p => ({ label: p, value: p }))}
-                  value={selectedProjects.map(p => ({ label: p, value: p }))}
-                  onChange={opts => setSelectedProjects(opts ? opts.map(o => o.value) : [])}
-                  closeMenuOnSelect={false}
-                  hideSelectedOptions={false}
-                  components={{ IndicatorSeparator: () => null, ClearIndicator: () => null }}
-                />
-              </div>
-            )}
-          </div>
+          <div className={`${styles.filterRow}`}>
+            {/* Project Dropdown */}
+            <div className={`${styles.dropdownWrapper}`}>
+              <span className={`${styles.dropdownLabel}`}>Project</span>
+              <button
+                ref={allSpanRef}
+                type="button"
+                className={`${styles.dropdownButton}`}
+                onClick={() => setShowProjectDropdown(prev => !prev)}
+                aria-label="Show project dropdown"
+              >
+                {getProjectLabel()}
+              </button>
+              {showProjectDropdown && (
+                <div className={`${styles.dropdownMenu}`}>
+                  <Select
+                    isMulti
+                    classNamePrefix="customSelect"
+                    options={allProjects.map(p => ({ label: p, value: p }))}
+                    value={selectedProjects.map(p => ({ label: p, value: p }))}
+                    onChange={opts => setSelectedProjects(opts ? opts.map(o => o.value) : [])}
+                    closeMenuOnSelect={false}
+                    hideSelectedOptions={false}
+                    components={{ IndicatorSeparator: () => null, ClearIndicator: () => null }}
+                  />
+                </div>
+              )}
+            </div>
 
-          {/* Date Dropdown */}
-          <div className={`${styles.dropdownWrapper}`}>
-            <span className={`${styles.dropdownLabel}`}>Dates</span>
-            <button
-              ref={dateSpanRef}
-              type="button"
-              className={`${styles.dropdownButton}`}
-              onClick={() => setShowDateDropdown(prev => !prev)}
-              aria-label="Show date dropdown"
-            >
-              {getDateLabel()}
-            </button>
-            {showDateDropdown && (
-              <div className={`${styles.dropdownMenu}`}>
-                <Select
-                  isMulti
-                  classNamePrefix="customSelect"
-                  options={allDates.map(d => ({ label: d, value: d }))}
-                  value={selectedDates.map(d => ({ label: d, value: d }))}
-                  onChange={opts => setSelectedDates(opts ? opts.map(o => o.value) : [])}
-                  closeMenuOnSelect={false}
-                  hideSelectedOptions={false}
-                  components={{ IndicatorSeparator: () => null, ClearIndicator: () => null }}
-                />
-              </div>
-            )}
+            {/* Date Dropdown */}
+            <div className={`${styles.dropdownWrapper}`}>
+              <span className={`${styles.dropdownLabel}`}>Dates</span>
+              <button
+                ref={dateSpanRef}
+                type="button"
+                className={`${styles.dropdownButton}`}
+                onClick={() => setShowDateDropdown(prev => !prev)}
+                aria-label="Show date dropdown"
+              >
+                {getDateLabel()}
+              </button>
+              {showDateDropdown && (
+                <div className={`${styles.dropdownMenu}`}>
+                  <Select
+                    isMulti
+                    classNamePrefix="customSelect"
+                    options={allDates.map(d => ({ label: d, value: d }))}
+                    value={selectedDates.map(d => ({ label: d, value: d }))}
+                    onChange={opts => setSelectedDates(opts ? opts.map(o => o.value) : [])}
+                    closeMenuOnSelect={false}
+                    hideSelectedOptions={false}
+                    components={{ IndicatorSeparator: () => null, ClearIndicator: () => null }}
+                  />
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
-        <ResponsiveContainer width="100%" height={350}>
-          <BarChart
-            data={filteredData.map(item => ({
-              ...item,
-              predictedCostOverrun:
-                item.predictedCostOverrun != null
-                  ? -1 * item.predictedCostOverrun
-                  : item.predictedCostOverrun,
-            }))}
-            margin={{ top: 20, right: 30, left: 0, bottom: 5 }}
-            barGap={8}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="projectName" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="predictedCostOverrun" name="Predicted Cost Overrun (%)" fill="#4285F4" />
-            <Bar dataKey="totalOpenIssues" name="Issues" fill="#EA4335" />
-            <Bar dataKey="predictedTimeDelay" name="Predicted Time Delay (%)" fill="#FBBC05" />
-          </BarChart>
-        </ResponsiveContainer>
+        <div className={`${styles.chartWrapper}`}>
+          <div className={`${styles.legendWrapper}`}>
+            <div className={`${styles.legendItem}`}>
+              <span
+                className={`${styles.legendSquare}`}
+                style={{ backgroundColor: '#4285F4' }}
+              ></span>
+              <span>Predicted Cost Overrun Percentage</span>
+            </div>
+            <div className={`${styles.legendItem}`}>
+              <span
+                className={`${styles.legendSquare}`}
+                style={{ backgroundColor: '#EA4335' }}
+              ></span>
+              <span>Issues</span>
+            </div>
+            <div className={`${styles.legendItem}`}>
+              <span
+                className={`${styles.legendSquare}`}
+                style={{ backgroundColor: '#FBBC05' }}
+              ></span>
+              <span>Predicted Time Delay Percentage</span>
+            </div>
+          </div>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart
+              data={filteredData}
+              margin={{ top: 20, right: 40, left: 50, bottom: 100 }}
+              barGap="5%"
+              barCategoryGap="28%"
+            >
+              <CartesianGrid
+                strokeDasharray="5 5"
+                stroke={darkMode ? '#3a3a3a' : '#e8e8e8'}
+                horizontal={true}
+                vertical={false}
+              />
+              <XAxis
+                dataKey="projectName"
+                angle={-45}
+                textAnchor="end"
+                height={110}
+                tick={{ fontSize: 13, fill: darkMode ? '#888' : '#666', fontWeight: 500 }}
+                axisLine={{ stroke: darkMode ? '#555' : '#d5d5d5', strokeWidth: 1.5 }}
+                tickLine={{ stroke: darkMode ? '#555' : '#d5d5d5' }}
+              />
+              <YAxis
+                tick={{ fontSize: 12, fill: darkMode ? '#888' : '#666', fontWeight: 500 }}
+                axisLine={{ stroke: darkMode ? '#555' : '#d5d5d5', strokeWidth: 1.5 }}
+                tickLine={{ stroke: darkMode ? '#555' : '#d5d5d5' }}
+              />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: darkMode ? '#333' : '#fff',
+                  border: `2px solid ${darkMode ? '#666' : '#e0e0e0'}`,
+                  borderRadius: '8px',
+                  padding: '14px',
+                  color: darkMode ? '#fff' : '#333',
+                  fontSize: '13px',
+                  fontWeight: 500,
+                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                }}
+                cursor={{ fill: 'rgba(66, 133, 244, 0.08)' }}
+              />
+              <Bar
+                dataKey="predictedCostOverrun"
+                name="Predicted Cost Overrun Percentage"
+                fill="#4285F4"
+                radius={[3, 3, 0, 0]}
+              />
+              <Bar dataKey="totalOpenIssues" name="Issues" fill="#EA4335" radius={[3, 3, 0, 0]} />
+              <Bar
+                dataKey="predictedTimeDelay"
+                name="Predicted Time Delay Percentage"
+                fill="#FBBC05"
+                radius={[3, 3, 0, 0]}
+              />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
       </div>
     </div>
   );
