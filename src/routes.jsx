@@ -795,7 +795,7 @@ export default (
           component={ActivityComments}
         />
         <CPProtectedRoute
-          path="/communityportal/activity/:activityId/resourcesusage"
+          path="/communityportal/activity/:activityId/Resources"
           exact
           component={ResourcesUsage}
         />
