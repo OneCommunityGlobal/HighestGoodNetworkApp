@@ -52,6 +52,9 @@ const nonJaeAccountMock = {
   role: 'Administrator',
   weeklycommittedHours: 10,
   email: 'non_jae@hgn.net',
+  inactiveReason: null,
+  endDate: null,
+  isSet: false
 };
 
 const ownerAccountMock = {
@@ -178,7 +181,7 @@ describe('User Table Data: Non-Jae related Account', () => {
 
     it('should render a `Pause` button', () => {
       renderRow(nonJaeAccountMock);
-      expect(screen.getByRole('button', { name: /pause/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /PAUSE/i })).toBeInTheDocument();
     });
     it('should render a `Delete` button', () => {
       renderRow(nonJaeAccountMock);

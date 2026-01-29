@@ -119,10 +119,11 @@ const UserTableDataComponent = (props) => {
   const isCurrentUser = props.user.email === props.authEmail;
 
   const getButtonText = () => {
+    const isActive = props.user?.isActive ?? props.isActive;
     if (isChanging) {
       return '...';
     }
-    if (props.user.isActive) {
+    if (isActive) {
       return PAUSE;
     }
     return RESUME;
