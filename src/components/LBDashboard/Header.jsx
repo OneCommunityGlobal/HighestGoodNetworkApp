@@ -1,4 +1,4 @@
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import { useState } from 'react';
 
 import Navbar from 'react-bootstrap/Navbar';
@@ -13,14 +13,33 @@ import { IoNotificationsOutline } from 'react-icons/io5';
 function LBDashboardHeader(props) {
   const [selectedVillage, setSelectedVillage] = useState('');
   const { authUser } = props;
+  const darkMode = useSelector(state => state.theme.darkMode);
+
+  const selectorWrapperStyle = darkMode
+    ? {
+        backgroundColor: '#1c2541',
+        border: '1px solid #2f3b59',
+      }
+    : undefined;
+
+  const selectorStyle = darkMode
+    ? {
+        backgroundColor: 'transparent',
+        color: '#ffffff',
+      }
+    : undefined;
 
   return (
     <Navbar expand="lg" className="item__navbar">
       <Container fluid>
         {/* Left Section - Village Selector */}
         <div className="item__navbar-left">
-          <div className="item__selector">
-            <select value={selectedVillage} onChange={e => setSelectedVillage(e.target.value)}>
+          <div className="item__selector" style={selectorWrapperStyle}>
+            <select
+              value={selectedVillage}
+              onChange={e => setSelectedVillage(e.target.value)}
+              style={selectorStyle}
+            >
               <option value="Village 1">Village 1</option>
               <option value="Village 2">Village 2</option>
               <option value="Village 3">Village 3</option>
