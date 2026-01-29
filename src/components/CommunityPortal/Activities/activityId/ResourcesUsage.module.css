@@ -1,13 +1,10 @@
-/* src/components/CommunityPortal/Activities/activityId/Resources.module.css */
 .resourcesUsage {
-  background: white;
   padding: 20px;
   border-radius: 8px;
   font-family: Arial, sans-serif;
   width: 100%;
 }
 
-/* border for all the row data */
 .resourceRow {
   display: flex;
   justify-content: space-between;
@@ -16,7 +13,6 @@
   border: 2px solid black;
 }
 
-/* Column Styling  for resources*/
 .column {
   flex: 1;
   padding: 15px;
@@ -24,17 +20,23 @@
   font-weight: bold;
 }
 
-/* Header Styling */
+.resourceRow .column:last-child {
+  border-right: none;
+}
+
+.resourceTitle {
+  text-align: left;
+  font-size: 1.2rem;
+  margin-bottom: 5px;
+  font-weight: 700;
+  color: grey;
+}
+
 .header {
   background-color: #f5f5f5;
   font-weight: bold;
 }
 
-.resourceRow .column:last-child {
-  border-right: none;
-}
-
-/* colors for text based on status  */
 .statusgreen {
   color: green;
 }
@@ -47,7 +49,7 @@
   color: red;
 }
 
-.viewDetails {
+.viewDetailsButton {
   display: block;
   width: 100%;
   background-color: #e6f9e6;
@@ -58,22 +60,20 @@
   cursor: pointer;
   border: none;
   text-decoration: none;
-  transition: background 0.3s ease-in-out;
   text-align: center;
+  transition: background 0.3s ease-in-out;
 }
 
-.viewDetails:hover {
+.viewDetailsButton:hover {
   background-color: #d1f0d1;
 }
 
-/* Actions Column */
 .actionColumn {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-/* Tick Box */
 .tickBox {
   display: flex;
   justify-content: center;
@@ -93,124 +93,43 @@
   cursor: pointer;
 }
 
-.resourceTitle {
-  text-align: left;
-  font-size: 1.2rem;
-  margin-bottom: 5px;
-  font-weight: 700;
-  color: grey;
+.darkMode .resourcesUsage {
+  background-color: #34495e;
+  color: #ecf0f1;
 }
 
-.resourcesUsage {
-  padding: 20px;
-  border-radius: 8px;
-  font-family: Arial, sans-serif;
-  width: 100%;
+.darkMode .resourceRow {
+  border: 2px solid #7f8c8d;
 }
 
-/* border for all the row data */
-.resourceRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-  border: 2px solid black;
+.darkMode .column {
+  color: #ecf0f1;
 }
 
-/* Column Styling  for resources*/
-.column {
-  flex: 1;
-  padding: 15px;
-  text-align: center;
-  font-weight: bold;
+.darkMode .tickLabel {
+  color: #ecf0f1;
+  border: 2px solid #7f8c8d;
+  background-color: #34495e;
 }
 
-/* Header Styling */
-.header {
-  background-color: #f5f5f5;
-  font-weight: bold;
+.darkMode .viewDetailsButton {
+  background-color: #27ae60;
+  color: #ecf0f1;
 }
 
-.headerDark {
-  background-color: #2c3e50;
-  font-weight: bold;
+.darkMode .viewDetailsButton:hover {
+  background-color: #1e8449;
+  color: #ecf0f1;
 }
 
-.resourceRow .column:last-child {
-  border-right: none;
+.darkMode .statusgreen {
+  color: #27ae60 !important;
 }
 
-/* colors for text based on status  */
-.statusgreen {
-  color: green !important;
+.darkMode .statusyellow {
+  color: #f39c12 !important;
 }
 
-.statusyellow {
-  color: orange !important;
-}
-
-.statusred {
-  color: red !important;
-}
-
-.viewDetailsButtonDark {
-  display: block;
-  width: 100%;
-  color: #146c43;
-  font-weight: bold;
-  border-radius: 5px;
-  padding: 10px;
-  cursor: pointer;
-  border: none;
-  text-decoration: none;
-  transition: background 0.2s ease-in-out;
-  text-align: center;
-}
-
-.viewDetailsButtonDark:hover {
-  background-color: #2c3e50;
-}
-
-.viewDetails {
-  display: block;
-  width: 100%;
-  color: #146c43;
-  font-weight: bold;
-  border-radius: 5px;
-  padding: 10px;
-  cursor: pointer;
-  border: none;
-  text-decoration: none;
-  transition: background 0.2s ease-in-out;
-  text-align: center;
-}
-
-.viewDetails:hover {
-  background-color: #d1f0d1;
-}
-
-/* Actions Column */
-.actionColumn {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-/* Tick Box */
-.tickBox {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 20px;
-}
-
-.tickLabel {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  border: 2px solid black;
-  padding: 10px 15px;
-  border-radius: 8px;
-  cursor: pointer;
+.darkMode .statusred {
+  color: #e74c3c !important;
 }
