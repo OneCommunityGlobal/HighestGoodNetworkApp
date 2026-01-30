@@ -64,6 +64,7 @@ font-size: .8em;
   gap: 0.5rem;
   width: 100%;
   margin-top: 1rem;
+  
 }
 
 .materialFormError {
@@ -124,4 +125,42 @@ font-size: .8em;
 .navigationOptions p {
   margin-bottom: 15px;
   font-size: 0.9rem;
+}
+:global(body.dark-mode) .fieldRequired,
+:global(body.bm-dashboard-dark) .fieldRequired {
+  color: #F87171 !important;
+}
+
+.dragWrapper :global(label) {
+  background-color: #2a3f5f  !important;
+}
+.phoneDark :global(.react-tel-input .flag-dropdown), .phoneDark :global(.react-tel-input .flag-dropdown.open) {
+  background-color: #2a3f5f !important;
+  border-color: #444;  
+} 
+
+.phoneDark :global(.react-tel-input .country-list) {
+  background-color: #2a3f5f;
+  border-color: #444;
+}
+.phoneDark :global(.react-tel-input .country:hover) {
+  background-color: #514141;
+}
+.phoneDark :global(.react-tel-input .country.highlight) {
+  background-color: #4b3737;
+}
+.phoneDark :global(.react-tel-input .selected-flag) {
+  background-color: #2a3f5f;
+}
+.darkBackground{
+  background-color: #e57373;
+}
+.darkBackgroundId{
+  background-color: #4fc3f7;
+}
+:global(body.dark-mode .form-control) {
+  background-color: #2a3f5f !important;
+}
+:global(body.dark-mode select.form-control), :global(body.bm-dashboard-dark  select.form-control){
+  background-image: none !important;
 }

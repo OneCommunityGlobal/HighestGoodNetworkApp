@@ -53,6 +53,8 @@
   overflow-x: visible !important; /* Prevent horizontal scrollbar */
   overflow-y: visible !important; /* Ensure dropdowns aren't clipped */
   position: relative;
+  width: 100%;
+  table-layout: fixed;
 }
 
 /* Improved dropdown positioning */
@@ -76,10 +78,10 @@ td.textEnd {
 }
 
 /* Ensure table doesn't exceed container width */
-.issuesTableResponsive {
+/* .issuesTableResponsive {
   width: 100%;
   table-layout: fixed;
-}
+} */
 
 /* Make sure content doesn't force horizontal scroll */
 .containerFluid {

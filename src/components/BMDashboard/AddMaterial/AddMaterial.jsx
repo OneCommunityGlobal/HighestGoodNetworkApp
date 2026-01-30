@@ -63,6 +63,7 @@ export default function AddMaterialForm() {
   // console.log(materialTypes);
   // console.log(units)
   const createdBy = useSelector(state => state.auth.user.email);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   useEffect(() => {
     dispatch(fetchMaterialTypes());
@@ -439,24 +440,33 @@ export default function AddMaterialForm() {
               />
             </FormGroup>
           </div>
-
-          <PhoneInput
-            country="US"
-            regions={['america', 'europe', 'asia', 'oceania', 'africa']}
-            limitMaxLength="true"
-            value={formData.phoneNumber}
-            onChange={phone => phoneChange('phoneNumber', phone)}
-            inputStyle={{ height: 'auto', width: '40%', fontSize: 'inherit' }}
-          />
-          <FormGroup>
-            <Label for="imageUpload">Upload Material Picture</Label>
-            <DragAndDrop
-              id="imageUpload"
-              name="image"
-              value={formData.images}
-              // onFilesSelected={handleFilesSelected}
-              updateUploadedFiles={setUploadedFiles}
+          <div className={darkMode ? styles.phoneDark : ''}>
+            <PhoneInput
+              country="US"
+              regions={['america', 'europe', 'asia', 'oceania', 'africa']}
+              limitMaxLength="true"
+              value={formData.phoneNumber}
+              onChange={phone => phoneChange('phoneNumber', phone)}
+              inputStyle={{ height: 'auto', width: '40%', fontSize: 'inherit' }}
             />
+          </div>
+          <FormGroup>
+            <Label
+              for="
+            imageUpload"
+            >
+              Upload Material Picture
+            </Label>
+            <div className={darkMode ? styles.dragWrapper : ''}>
+              <DragAndDrop
+                id="imageUpload"
+                name="image"
+                value={formData.images}
+                // onFilesSelected={handleFilesSelected}
+                updateUploadedFiles={setUploadedFiles}
+              />
+            </div>
+
             {uploadedFiles.length > 0 && (
               <div className={`${styles.filePreviewContainer}`}>
                 {uploadedFiles.map((file, index) => (
@@ -501,13 +511,17 @@ export default function AddMaterialForm() {
               </Label>
             )}
           </FormGroup>
-          <div className={`${styles.addMaterialTotalPrice}`}>
+          <div
+            className={`${styles.addMaterialTotalPrice} ${darkMode ? styles.darkBackground : ''}`}
+          >
             <div>Total Price</div>
             <div className={`${styles.totalPriceCalculated}`}>
               {totalPriceWithShipping} {formData.currency}
             </div>
           </div>
-          <div className={`${styles.addMaterialCreatedby}`}>
+          <div
+            className={`${styles.addMaterialCreatedby} ${darkMode ? styles.darkBackgroundId : ''}`}
+          >
             <div>Created By</div>
             <div className={`${styles.createdby}`}>{createdBy}</div>
           </div>

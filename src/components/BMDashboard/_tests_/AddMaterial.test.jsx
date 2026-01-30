@@ -97,6 +97,9 @@ describe('AddMaterial', () => {
         email: 'test@example.com',
       },
     },
+    theme: {
+      darkMode: false,
+    },
   };
 
   beforeEach(() => {

@@ -4,6 +4,7 @@
   --radius: 14px;
   --border: #e8e8e8;
   --muted: #9aa0a6;
+  --danger: #e02424; /* vivid red */
 }
 
 /* Layout */
@@ -390,9 +391,9 @@
   }
 }
 /* brand danger */
-:root {
-  --danger: #e02424; /* vivid red */
-}
+/* :root {
+  --danger: #e02424;
+} */
 
 /* red error block between textarea and link input */
 .fieldErrorGroup {

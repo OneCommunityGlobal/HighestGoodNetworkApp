@@ -19,13 +19,14 @@
   text-align: center;
 }
 
-.resourceTitle {
-  color: rgb(12, 11, 11); 
-  font-weight: bold;
-  margin-bottom: 10px;
+.resourceTitle { 
   width: 100%;            
-  display: block;         
-  text-align: center; 
+  display: block;  
+  font-weight: bold;
+  color: grey;
+  text-align: left;
+  font-size: 1.2rem;
+  margin-bottom: 5px;
 }
 
 .header h2,
@@ -114,10 +115,10 @@
 }
 
 /* Resource Monitoring Title */
-.resourceTitle {
+/* .resourceTitle {
   font-weight: bold;
   color: grey;
-}
+} */
 
 .registrationForm,
 .filters {
@@ -167,6 +168,7 @@
   border-radius: 5px;
   padding: 5px 10px;
   cursor: pointer;
+  padding: 8px 20px;
 }
 
 .myEventsTable {
@@ -180,9 +182,9 @@
   padding: 8px;
   text-align: left;
 }
-.status {
+/* .status {
   font-weight: bold;
-}
+} */
 .active {
   color: green;
 }
@@ -309,11 +311,11 @@
 
 /* Resource Monitoring */
 
-.resourceTitle {
+/* .resourceTitle {
   text-align: left;
   font-size: 1.2rem;
   margin-bottom: 5px;
-}
+} */
 
 .resourceValue {
   font-weight: bold;
@@ -385,14 +387,14 @@
   background-color: #0056b3;
 }
 
-.createNewBtn {
+/* .createNewBtn {
   padding: 8px 20px;
   background-color: #28a745;
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-}
+} */
 
 .createNewBtn:hover {
   background-color: #218838;
