@@ -5,7 +5,7 @@
 }
 
 /* Light mode fallback */
-.activity-agenda-page {
+.activityAgendaPage {
   --bg-color: #ffffff;
   --text-color: #000000;
   --heading-color: navy;
@@ -16,7 +16,7 @@
 }
 
 /* Dark mode variables override */
-.activity-agenda-dark-mode {
+.activityAgendaDarkMode {
   --bg-color: #1b2a41;
   --text-color: #ffffff;
   --heading-color: #e8a71c;
@@ -24,35 +24,35 @@
 }
 
 /* Apply shadow on image in dark mode */
-.activity-agenda-dark-mode .activity-agenda-image img {
+.activityAgendaDarkMode .activityAgendaImage img {
   box-shadow: 0 4px 8px var(--card-shadow);
 }
 
 /* Layout */
-.activity-agenda-container {
+.activityAgendaContainer {
   display: flex;
   justify-content: space-between;
   padding: 20px;
 }
 
-.activity-agenda-image img {
+.activityAgendaImage img {
   max-width: 100%;
   height: auto;
   border-radius: 8px;
 }
 
-.activity-agenda-content {
+.activityAgendaContent {
   flex: 1;
   padding-left: 50px;
 }
 
-.activity-agenda-content h1 {
+.activityAgendaContent h1 {
   font-size: 2rem;
   margin-bottom: 15px;
   color: var(--heading-color);
 }
 
-.activity-agenda-content p {
+.activityAgendaContent p {
   font-size: 1rem;
   line-height: 1.6;
   color: var(--text-color);
@@ -60,26 +60,26 @@
 
 /* Responsive */
 @media (max-width: 768px) {
-  .activity-agenda-container {
+  .activityAgendaContainer {
     flex-direction: column;
   }
 
-  .activity-agenda-content {
+  .activityAgendaContent {
     padding-left: 0px;
     text-align: center;
   }
 
-  .activity-agenda-image img {
+  .activityAgendaImage img {
     margin-bottom: 20px;
   }
 }
 
 @media (max-width: 480px) {
-  .activity-agenda-content h1 {
+  .activityAgendaContent h1 {
     font-size: 1.5rem;
   }
 
-  .activity-agenda-content p {
+  .activityAgendaContent p {
     font-size: 0.9rem;
   }
 }

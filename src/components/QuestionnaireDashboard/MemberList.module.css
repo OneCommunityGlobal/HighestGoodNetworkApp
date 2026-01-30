@@ -7,7 +7,7 @@
   flex-wrap: wrap;
   gap: 16px;
   justify-content: center; /* center horizontally */
-  align-items: center;     /* center vertically */
+  align-items: center; /* center vertically */
 }
 
 .memberCard {
@@ -22,7 +22,7 @@
   text-align: center;
   display: flex;
   flex-direction: column;
-  align-items: center; 
+  align-items: center;
 }
 
 .member-card h3 {

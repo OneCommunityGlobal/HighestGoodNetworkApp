@@ -1,27 +1,27 @@
-.add-tool-form{
+.addToolForm{
   width: 100%;
 }
 
-.add-tool-form Label{
+.addToolForm Label{
 font-size: .8em;
 }
 
-.add-tool-flex-group{
+.addToolFlexGroup{
   display: flex;  
   gap: 2rem;
 }
 
-.add-tool-buttons{
+.addToolButtons{
   display: flex;
   gap: 1rem;
   margin: 1rem auto 2rem;
 }
 
-.add-tool-buttons button{
+.addToolButtons button{
   width: 50%;
 }
 
-.add-tool-total-price{
+.addToolTotalPrice{
   display: flex;  
   border-radius: 10px;
   line-height: 3rem;
@@ -30,16 +30,16 @@ font-size: .8em;
   padding-left: 1em;
 }
 
-.add-tool-total-price div{
+.addToolTotalPrice div{
   width: 50%;
 }
 
-.total-price-calculated{
+.totalPriceCalculated{
   text-align: end;
   padding-right: 1em;
 }
 
-.file-preview-container{
+.filePreviewContainer{
   display: flex;
   flex-direction: row;
   gap: 0.5rem;
@@ -55,16 +55,16 @@ font-size: .8em;
   justify-content: flex-start;
 }
 
-.field-required{
+.fieldRequired{
   color: red;
 }
 
 @media screen and (max-width: 640px) {
-  .add-tool-flex-group {
+  .addToolFlexGroup {
     display: block;
   }
 
-  .file-preview-container{
+  .filePreviewContainer{
     display: block;
   }
 }

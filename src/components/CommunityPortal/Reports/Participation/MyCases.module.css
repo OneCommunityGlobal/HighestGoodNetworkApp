@@ -16,7 +16,7 @@
 
 .myCasesPageDark {
   padding: 16px;
-  background-color: #1C2541;
+  background-color: #1c2541;
   border: 1px solid #ddd;
   border-radius: 6px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -33,12 +33,12 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #1C2541;
+  background-color: #1c2541;
   color: #ffffff;
 }
 
 .myCasesPageDark .headerActions {
-  gap: 20px;     /* more room between dropdowns/buttons */
+  gap: 20px; /* more room between dropdowns/buttons */
 }
 
 .sectionTitle {
@@ -51,7 +51,7 @@
 .sectionTitleDark {
   font-size: 24px;
   font-weight: bold;
-  background-color: #1C2541;
+  background-color: #1c2541;
   color: #ffffff !important;
   margin: 0;
 }
@@ -86,6 +86,30 @@
   border-color: #007bff;
 }
 
+/* Dark mode */
+.viewSwitcherDarkMode {
+  display: flex;
+  gap: 12px;
+}
+
+.viewSwitcherDarkMode button,
+.createNewDarkMode {
+  background-color: #1e293b; /* dark background */
+  border-radius: 6px;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #f1f5f9; /* light text */
+  border: 1px solid #555; /* dark border */
+}
+
+.viewSwitcherDarkMode button.active {
+  background-color: #3b82f6; /* blue for dark mode */
+  color: #fff;
+  border-color: #3b82f6;
+}
+
 .filterWrapper {
   margin: 10px 0;
 }
@@ -105,10 +129,44 @@
   outline: none;
 }
 
+/* Dark mode dropdown */
+.filterDropdownDarkMode {
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #555;
+  border-radius: 4px;
+  cursor: pointer;
+  background-color: #1e293b; /* Dark background */
+  color: #fff; /* Light text */
+}
+
+/* Hover and focus effects for dark mode */
+.filterDropdownDarkMode:hover,
+.filterDropdownDarkMode:focus {
+  border-color: #3b82f6; /* Slightly lighter blue for dark mode */
+  outline: none;
+}
+
+/* Light mode */
 .createNew {
   font-weight: bold;
   border: 1px solid #ccc;
   border-radius: 4px;
+  background-color: #fff;
+  color: #333;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+/* Dark mode */
+.createNewDarkMode {
+  font-weight: bold;
+  border: 1px solid #555;
+  border-radius: 4px;
+  background-color: #1e293b; /* dark background */
+  color: #f1f5f9; /* light text */
+  padding: 8px 16px;
+  cursor: pointer;
 }
 
 .content {
@@ -134,7 +192,7 @@
 }
 
 .caseCardDark {
-  background-color: #3A506B;
+  background-color: #3a506b;
   color: #ffffff;
   border: 1px solid #ddd;
   border-radius: 8px;
@@ -260,7 +318,7 @@
   grid-template-columns: 2fr 3fr 1fr 1fr;
   align-items: center;
   padding: 15px;
-  background-color: #3A506B;
+  background-color: #3a506b;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
@@ -295,7 +353,7 @@
 
 .calendarViewDark {
   padding: 20px;
-  background-color: #3A506B;
+  background-color: #3a506b;
   border: 1px solid #ddd;
   border-radius: 8px;
   text-align: center;
@@ -347,7 +405,7 @@
     overflow: visible !important;
     page-break-inside: auto !important;
   }
-  
+
   .caseCard {
     background: white !important;
     color: #333 !important;
@@ -357,9 +415,9 @@
     break-inside: avoid-page !important;
     page-break-inside: avoid !important;
   }
-  
+
   .caseCardDark {
-    background: #3A506B !important;
+    background: #3a506b !important;
     color: #ffffff !important;
     border: 1px solid #555 !important;
     -webkit-print-color-adjust: exact !important;
@@ -367,29 +425,29 @@
     break-inside: avoid-page !important;
     page-break-inside: avoid !important;
   }
-  
+
   .caseList {
     max-height: none !important;
     height: auto !important;
     overflow: visible !important;
     page-break-inside: auto !important;
   }
-  
+
   .caseListItem {
     break-inside: avoid-page !important;
     page-break-inside: avoid !important;
   }
-  
+
   .caseListItemDark {
     break-inside: avoid-page !important;
     page-break-inside: avoid !important;
   }
-  
+
   .eventBadge {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
-  
+
   .eventBadge[data-type='Yoga Class'] {
     background-color: #e9f7ef !important;
     color: #28a745 !important;

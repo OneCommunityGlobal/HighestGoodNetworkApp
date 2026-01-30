@@ -1,4 +1,4 @@
-.list__location {
+.list_location {
   display: flex;
   padding-right: 8%;
   justify-content: flex-end;
@@ -6,7 +6,7 @@
   margin-bottom: 0 !important;
 }
 
-.list__title{
+.list_title {
   padding-left: 6%;
   text-align: left;
 }
@@ -20,7 +20,7 @@
   width: auto;
   height: auto;
 } */
-.item__body {
+.item_body {
   background-color: #e0e0e0;
   margin: 20px 40px 30px 40px;
   padding: 10px 0px 10px 0px;
@@ -28,19 +28,19 @@
   height: auto;
 }
 
-.item__details-wrapper {
+.item_detailsWrapper {
   display: flex;
   justify-content: space-evenly;
   align-items: center;
 }
 
-.item__footer { 
+.item_footer {
   display: flex;
   justify-content: space-between;
   margin: 0px 40px 10px 30px;
 }
 
-.list__details-left {
+.list_detailsLeft {
   width: 45%;
   height: 100%;
   padding: 2.5%;
@@ -48,57 +48,57 @@
   flex-direction: column;
 }
 
-.list__details-right {
+.list_detailsRight {
   width: 55%;
   height: 100%;
   padding: 2.5% 2.5% 2.5% 0%;
 }
 
-.list__item-title {
+.list_itemTitle {
   font-size: 2.2rem;
   text-transform: uppercase;
   font-weight: 600;
 }
 
-h1.list__item-title--mobile {
+h1.list_itemTitleMobile {
   color: black;
   text-transform: uppercase;
 }
 
-.item-title_wrapper {
+.itemTitleWrapper {
   position: relative;
   height: 2.3rem;
 }
 
-.item-title_wrapper--desktop {
+.itemTitleWrapperDesktop {
   display: block;
 }
 
-.item-title_wrapper--mobile {
+.itemTitleWrapperMobile {
   display: none;
 }
 
-.item-title-right{
+.itemTitleRight {
   position: absolute;
   right: 0;
   bottom: 0;
 }
 
-.font600{
+.font600 {
   font-weight: 600;
 }
 
-.list__link{
+.list_link {
   margin-top: 2%;
   text-decoration: underline;
 }
 
-.list__details{
+.list_details {
   margin-top: 3%;
   text-decoration: underline;
 }
 
-.wishlist__start__chat {
+.wishlist_start_chat {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -106,7 +106,7 @@ h1.list__item-title--mobile {
   align-self: center;
 }
 
-.wishlist__start__chat button {
+.wishlist_start_chat button {
   background: #d1d1d1;
   padding: 2.5%;
   border-radius: 998px;
@@ -122,17 +122,17 @@ h1.list__item-title--mobile {
   height: 3.5rem;
 }
 
-.item__price {
+.item_price {
   padding: 2rem 0rem;
 }
 
 @media screen and (max-width: 500px) {
-  .item__details-wrapper {
+  .item_detailsWrapper {
     padding: 10px;
     margin: 10px;
   }
 
-  .wishlist__start__chat button {
+  .wishlist_start_chat button {
     background: #d1d1d1;
     padding: 2.5%;
     border-radius: 998px;
@@ -145,36 +145,33 @@ h1.list__item-title--mobile {
     height: 3.5vh;
   }
 
-  .item__footer{
+  .item_footer {
     padding: 10px;
     margin: 10px;
   }
 }
 
 @media screen and (max-width: 800px) {
-
-  .item__details-wrapper {
+  .item_detailsWrapper {
     padding: 10px;
     margin: 10px;
-  }
-  
-  .item-title_wrapper--mobile {
-    display: block;
-  }  
-  .item-title_wrapper--desktop {
-    display: none;
-  }
-  .item__details-wrapper {
     flex-direction: column;
     align-items: center;
   }
-  .list__details-left {
+
+  .itemTitleWrapperMobile {
+    display: block;
+  }
+  .itemTitleWrapperDesktop {
+    display: none;
+  }
+  .list_detailsLeft {
     width: 98%;
   }
-  .list__details-right {
+  .list_detailsRight {
     width: 98%;
   }
-  .list__link {
+  .list_link {
     align-self: center;
   }
 }
