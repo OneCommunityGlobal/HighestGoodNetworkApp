@@ -570,9 +570,10 @@
 
   /* Fix AccordianWrapper margins on mobile */
   :global(.Collapsible) {
+    margin-top: 10px !important;
+    margin-bottom: 10px !important;
     margin-left: 0 !important;
     margin-right: 0 !important;
-    margin: 10px 0 !important;
   }
 
   :global(.Collapsible__contentInner) {
@@ -655,9 +656,10 @@
 
   /* Fix AccordianWrapper margins on small mobile */
   :global(.Collapsible) {
+    margin-top: 8px !important;
+    margin-bottom: 8px !important;
     margin-left: 0 !important;
     margin-right: 0 !important;
-    margin: 8px 0 !important;
   }
 
   :global(.Collapsible__contentInner) {
