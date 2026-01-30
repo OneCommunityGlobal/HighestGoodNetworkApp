@@ -43,17 +43,6 @@ function Collaboration() {
 
       const data = await res.json();
       const jobs = data.jobs || [];
-      // let finalJobs = jobs;
-
-      // if (ENABLE_JOB_DUPLICATION && jobs.length > 0) {
-      //   const MULTIPLIER = 15; // 3 × 10 = 30 jobs
-      //   finalJobs = Array.from({ length: MULTIPLIER }).flatMap((_, i) =>
-      //     jobs.map(job => ({
-      //       ...job,
-      //       _id: `${job._id}-dup-${i}`, // ensure unique key
-      //     })),
-      //   );
-      // }
 
       setAllJobs(jobs);
 
@@ -179,12 +168,12 @@ function Collaboration() {
             Select Categories ▼
           </button>
         </nav>
+
         {showCategoryDropdown && (
           <div
             role="menu"
             style={{
               position: 'absolute',
-              // top: '100%',
               marginTop: '7px',
               right: 0,
               background: 'rgba(0, 0, 0, 0.75)',
@@ -239,12 +228,10 @@ function Collaboration() {
         {/* LISTING TEXT + SUMMARY BUTTON */}
         <div className="job-queries">
           <p className="job-query">
-            {searchTerm || categoriesSelected.length > 0
-              ? `Listing results for ${
-                  searchTerm && categoriesSelected.length > 0
-                    ? `'${searchTerm}' + '${categoriesSelected.join(', ')}'`
-                    : `'${searchTerm || categoriesSelected.join(', ')}'`
-                }`
+            {searchTerm
+              ? `Listing results for '${searchTerm}'`
+              : categoriesSelected.length > 0
+              ? 'Listing results for selected categories'
               : 'Listing all job ads.'}
           </p>
 
@@ -252,6 +239,8 @@ function Collaboration() {
             Show Summaries
           </button>
         </div>
+
+        {/* SELECTED CATEGORY CHIPS (NEW – replaces comma-separated text) */}
         {categoriesSelected.length > 0 && (
           <div className={styles.jobQueries}>
             {categoriesSelected.map(cat => (
