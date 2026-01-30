@@ -70,7 +70,7 @@
     "leaflet": "^1.9.4",
     "leaflet.heat": "^0.2.0",
     "leaflet.markercluster": "^1.5.3",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "lucide-react": "^0.484.0",
     "micromatch": "^4.0.8",
     "moment": "^2.30.1",
