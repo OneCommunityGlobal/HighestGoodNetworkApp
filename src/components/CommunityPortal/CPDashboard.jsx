@@ -41,6 +41,7 @@ export function CPDashboard() {
   const [isLoading, setIsLoading] = useState(false);
   const [dateFilter, setDateFilter] = useState('');
   const [error, setError] = useState(null);
+  const [selectedDate, setSelectedDate] = useState('');
   const darkMode = useSelector(state => state.theme.darkMode);
   const [pagination, setPagination] = useState({
     currentPage: 1,
@@ -131,6 +132,15 @@ export function CPDashboard() {
     if (onlineOnly) {
       const isOnlineEvent = event.location?.toLowerCase() === 'virtual';
       if (!isOnlineEvent) return false;
+    }
+
+    // Filter by specific date if one is selected
+    if (selectedDate) {
+      const eventDate = new Date(event.date);
+      const filterDate = new Date(selectedDate);
+      eventDate.setHours(0, 0, 0, 0);
+      filterDate.setHours(0, 0, 0, 0);
+      if (eventDate.getTime() !== filterDate.getTime()) return false;
     }
 
     // Filter by date filter
@@ -265,11 +275,27 @@ export function CPDashboard() {
                   </FormGroup>
                 </div>
                 <div className={styles.dashboardActions}>
-                  <Button color="primary" onClick={() => setDateFilter('')}>
+                  <Button
+                    color="primary"
+                    onClick={() => {
+                      setDateFilter('');
+                      setSelectedDate('');
+                      setPagination(prev => ({ ...prev, currentPage: 1 }));
+                    }}
+                  >
                     Clear date filter
                   </Button>
                 </div>
-                <Input type="date" placeholder="Ending After" className={styles['date-filter']} />
+                <Input
+                  type="date"
+                  placeholder="Ending After"
+                  className={styles['date-filter']}
+                  value={selectedDate}
+                  onChange={e => {
+                    setSelectedDate(e.target.value);
+                    setPagination(prev => ({ ...prev, currentPage: 1 }));
+                  }}
+                />
               </div>
 
               <div className={styles.filterItem}>
