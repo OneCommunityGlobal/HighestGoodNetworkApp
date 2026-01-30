@@ -692,7 +692,7 @@ class UserManagement extends React.PureComponent {
   /**
    * call back for active/inactive search filter
    */
-  onActiveFiter = value => {
+  onActiveFilter = value => {
     let active;
     let paused = false;
     let allSelected = false;
@@ -797,7 +797,7 @@ class UserManagement extends React.PureComponent {
           <UserSearchPanel
             onSearch={this.onWildCardSearch}
             searchText={this.state.wildCardSearchText}
-            onActiveFiter={this.onActiveFiter}
+            onActiveFilter={this.onActiveFilter}
             onNewUserClick={this.onNewUserClick}
             handleNewUserSetupPopup={this.handleNewUserSetupPopup}
             handleSetupHistoryPopup={this.handleSetupHistoryPopup}
