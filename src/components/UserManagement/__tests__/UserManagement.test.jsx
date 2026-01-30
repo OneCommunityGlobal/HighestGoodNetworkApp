@@ -9,7 +9,7 @@ import {
   getAllUserProfile,
   deleteUser,
 } from '../../../actions/userManagement';
-import { scheduleDeactivationAction, activateUserAction, pauseUserAction, deactivateImmediatelyAction } from '../../../actions/userLifecycleActions';
+import { activateUserAction } from '../../../actions/userLifecycleActions';
 
 // Mock the actions
 
@@ -45,10 +45,7 @@ vi.mock('../../../actions/userManagement', () => ({
 
 
 vi.mock('../../../actions/userLifecycleActions', () => ({
-  scheduleDeactivationAction: vi.fn(() => ({ type: 'SCHEDULE_DEACTIVATION' })),
   activateUserAction: vi.fn(() => ({ type: 'ACTIVATE_USER' })),
-  pauseUserAction: vi.fn(() => ({ type: 'PAUSE_USER' })),
-  deactivateImmediatelyAction: vi.fn(() => ({ type: 'DEACTIVATE_IMMEDIATELY' })),
 }));
 
 // Define mock constants here to avoid scope issues
