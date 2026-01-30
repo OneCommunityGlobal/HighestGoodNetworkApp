@@ -211,6 +211,8 @@ import SupportDashboard from './components/SupportPortal/SupportDashboard';
 import SupportLogViewer from './components/SupportPortal/SupportLogViewer';
 import JobApplicationForm from './components/Collaboration/JobApplicationForm/JobApplicationForm';
 
+import ProjectRiskProfileOverview from './components/BMDashboard/WeeklyProjectSummary/ProjectRiskProfileOverview';
+
 // Social Architecture
 
 const ResourceManagement = lazy(() => import('./components/ResourceManagement/ResourceManagement'));
@@ -366,6 +368,11 @@ export default (
         <ProtectedRoute path="/weekly-summary" exact component={WeeklySummaryPage} />
         <ProtectedRoute path="/hgnhelp" exact component={HelpPage} />
         <ProtectedRoute path="/dashboard" exact component={Dashboard} />
+        <ProtectedRoute
+          path="/dashboard/project-risk-profile"
+          exact
+          component={ProjectRiskProfileOverview}
+        />
         <ProtectedRoute path="/dashboard/:userId" exact component={Dashboard} />
         <ProtectedRoute path="/project/members/:projectId" fallback component={Members} />
         <ProtectedRoute path="/timelog/" exact render={() => <Timelog userId={null} />} />
@@ -775,7 +782,6 @@ export default (
           exact
           component={EventParticipation}
         />
-
         <CPProtectedRoute
           path="/communityportal/reports/event/personalization"
           exact
