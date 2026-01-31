@@ -3,6 +3,7 @@
 /* eslint-disable func-names */
 /* eslint-disable prettier/prettier */
 /* eslint-disable react/function-component-definition */
+
 import { useEffect, useState } from 'react';
 import { Pie } from 'react-chartjs-2';
 import { useDispatch, useSelector } from 'react-redux';
@@ -11,7 +12,7 @@ import { Chart as ChartJS } from 'chart.js';
 import { fetchOptStatusBreakdown } from '../../actions/optStatusBreakdownAction';
 import { roleOptions } from './filter';
 import 'chart.js/auto';
-import './OptStatusPieChart.css';
+import styles from './OptStatusPieChart.module.css';
 
 ChartJS.register(ChartDataLabels);
 
@@ -25,8 +26,9 @@ const COLORS = {
 
 const OptStatusPieChart = () => {
   const dispatch = useDispatch();
-  const { optStatusBreakdown } = useSelector(state => state.optStatusBreakdown);
-  // const { optStatusBreakdown = [] } = useSelector(state => state.optStatus);
+  const { optStatusBreakdown = [] } = useSelector(state => state.optStatusBreakdown);
+  const { darkMode } = useSelector(state => state.theme);
+
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [role, setRole] = useState('');
@@ -56,21 +58,19 @@ const OptStatusPieChart = () => {
     plugins: {
       legend: { display: false },
       datalabels: {
-        color: '#000',
+        color: darkMode ? '#ffffff' : '#000000',
         font: { weight: 'bold' },
-        // eslint-disable-next-line no-unused-vars
-        formatter: (value, context) => {
+        formatter: value => {
           const percent = ((value / total) * 100).toFixed(1);
           return `${percent}%\n(${value})`;
         },
       },
       tooltip: {
         callbacks: {
-          label: function(context) {
+          label: context => {
             const count = context.raw;
             const percent = ((count / total) * 100).toFixed(1);
-            const { label } = context;
-            return `${label}: ${percent}% (${count})`;
+            return `${context.label}: ${percent}% (${count})`;
           },
         },
       },
@@ -78,47 +78,47 @@ const OptStatusPieChart = () => {
   };
 
   return (
-    <div className="opt-status-container">
-      <h2 className="opt-status-title">Breakdown by OPT Status</h2>
+    <div
+      className={darkMode ? styles.optStatusContainerDarkMode : styles.optStatusContainerLightMode}
+    >
+      <div className={styles.optStatusContainer}>
+        <h2 className={styles.optStatusTitle}>Breakdown by OPT Status</h2>
 
-      <div className="chart-filter-layout">
-        <div className="pie-chart-wrapper">
-          <Pie data={chartData} options={options} />
-        </div>
+        <div className={styles.chartFilterLayout}>
+          <div className={styles.pieChartWrapper}>
+            <Pie data={chartData} options={options} />
+          </div>
 
-        <div className="filters">
-          <label>
-            <span>
+          <div className={styles.filters}>
+            <label>
               <strong>Dates</strong>
-            </span>
-            <div className="date-inputs">
-              <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} />
-              <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} />
-              <button
-                type="button"
-                className="reset-btn"
-                onClick={() => {
-                  setStartDate('');
-                  setEndDate('');
-                }}
-              >
-                Reset
-              </button>
-            </div>
-          </label>
+              <div className={styles.dateInputs}>
+                <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} />
+                <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} />
+                <button
+                  type="button"
+                  className={styles.resetBtn}
+                  onClick={() => {
+                    setStartDate('');
+                    setEndDate('');
+                  }}
+                >
+                  Reset
+                </button>
+              </div>
+            </label>
 
-          <label>
-            <span>
+            <label>
               <strong>Role</strong>
-            </span>
-            <select value={role} onChange={e => setRole(e.target.value)}>
-              {roleOptions.map(option => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </label>
+              <select value={role} onChange={e => setRole(e.target.value)}>
+                {roleOptions.map(option => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
         </div>
       </div>
     </div>
