@@ -122,15 +122,15 @@ function Collaboration() {
           </a>
         </div>
 
-        <div className={styles.userCollaborationContainer}>
+        <div className={`${styles.userCollaborationContainer} ${darkMode ? styles.dark : ''}`}>
           <h2>Job Summaries</h2>
 
           {summaries.jobs?.length ? (
             summaries.jobs.map(job => (
               <div key={job._id} className="job-summary-item">
-                <h3>
+                <h4>
                   <a href={job.jobDetailsLink}>{job.title}</a>
-                </h3>
+                </h4>
                 <p>{job.description}</p>
               </div>
             ))
