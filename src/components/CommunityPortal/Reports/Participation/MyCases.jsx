@@ -14,11 +14,11 @@ function MyCases() {
   const filterEvents = events => {
     const now = new Date();
 
-    const nowTime = now.getTime();
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
 
     const upcomingEvents = events.filter(event => {
       const eventTime = new Date(event.eventDate).getTime();
-      return eventTime >= nowTime;
+      return eventTime >= startOfToday;
     });
 
     if (filter === 'today') {
@@ -64,6 +64,16 @@ function MyCases() {
 
   const placeholderAvatar = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
 
+  const isEventToday = dateString => {
+    const eventDate = new Date(dateString);
+    const now = new Date();
+    return (
+      eventDate.getDate() === now.getDate() &&
+      eventDate.getMonth() === now.getMonth() &&
+      eventDate.getFullYear() === now.getFullYear()
+    );
+  };
+
   const renderCardView = () => (
     <div
       className={`case-cards-global ${styles.caseCards} ${
@@ -82,6 +92,7 @@ function MyCases() {
             {event.eventTime}
           </span>
           <span className={`${styles.eventName} ${darkMode ? styles.eventNameDark : ''}`}>
+            {isEventToday(event.eventDate) ? "Today's " : ''}
             {event.eventName}
           </span>
           <div className={`${styles.attendeesInfo} ${darkMode ? styles.attendeesInfoDark : ''}`}>

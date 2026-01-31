@@ -64,7 +64,7 @@ for (let t = 0; t < 3; t++) {
     eventType: eventTypes[t % eventTypes.length],
     eventDate: eventDate.toISOString(),
     eventTime: formatDisplayTime(eventDate),
-    eventName: `Today’s Event ${id}`,
+    eventName: `Event ${id}`,
     attendees: secureRandInt(20, 99),
     noShowRate: `${secureRandInt(5, 94)}%`,
     dropOffRate: `${secureRandInt(10, 79)}%`,
