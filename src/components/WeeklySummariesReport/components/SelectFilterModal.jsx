@@ -17,86 +17,41 @@ export default function SelectFilterModal({
 }) {
   const [selectedFilter, setSelectedFilter] = useState(null);
 
-  const darkTheme = theme => ({
-    ...theme,
-    borderRadius: 6,
-    colors: {
-      ...theme.colors,
-
-      // control
-      neutral0: '#0f172a', // background
-      neutral5: '#0f172a',
-      neutral10: '#0f172a',
-      neutral20: '#3a506b', // border
-      neutral30: '#4dabf7',
-
-      // text
-      neutral80: '#ffffff',
-      neutral60: '#94a3b8',
-
-      // menu + options
-      primary: '#334155',
-      primary25: '#243b55',
-      primary50: '#334155',
-
-      // danger
-      danger: '#ef4444',
-      dangerLight: '#7f1d1d',
-    },
-  });
-
   const darkSelectStyles = {
-    control: (base, state) => ({
+    control: base => ({
       ...base,
-      backgroundColor: '#0f172a',
-      borderColor: state.isFocused ? '#4dabf7' : '#3a506b',
+      backgroundColor: '#1b2a41', // Solid background for the bar
+      border: '1px solid #3a506b',
       boxShadow: 'none',
-      color: '#ffffff',
     }),
-
+    // FIX STARTS HERE
+    valueContainer: base => ({
+      ...base,
+      paddingLeft: '12px', // This pushes the 'S' away from the edge
+    }),
+    indicatorsContainer: base => ({
+      ...base,
+      paddingRight: '8px', // This prevents the arrow from touching the edge
+    }),
+    menuPortal: base => ({ ...base, zIndex: 9999 }),
     input: base => ({
       ...base,
-      color: '#ffffff',
-      caretColor: '#ffffff',
+      color: '#ffffff', // Force white text while typing
     }),
-
-    placeholder: base => ({
-      ...base,
-      color: '#94a3b8',
-    }),
-
     singleValue: base => ({
       ...base,
       color: '#ffffff',
     }),
-
-    /** 🔥 MENU CONTAINER */
-    menu: base => ({
-      ...base,
-      backgroundColor: '#0f172a',
-      marginTop: 4,
-    }),
-
-    /** 🔥 THIS WAS MISSING */
-    menuList: base => ({
-      ...base,
-      backgroundColor: '#0f172a',
-      padding: 0,
-    }),
-
     option: (base, state) => ({
       ...base,
       backgroundColor: state.isSelected ? '#334155' : state.isFocused ? '#243b55' : '#0f172a',
       color: '#ffffff',
       cursor: 'pointer',
     }),
-
-    /** REQUIRED FOR MODAL */
-    menuPortal: base => ({
-      ...base,
-      zIndex: 1060,
-    }),
   };
+
+  // Keep lightSelectStyles as is, but ensure backgroundColor is 'transparent'
+  // if you want the CSS variables to take over.
 
   const lightSelectStyles = {
     control: (base, state) => ({
@@ -105,6 +60,14 @@ export default function SelectFilterModal({
       borderColor: state.isFocused ? '#2684ff' : '#ced4da',
       boxShadow: state.isFocused ? '0 0 0 0.2rem rgba(38,132,255,.25)' : 'none',
       color: '#212529',
+    }),
+    valueContainer: base => ({
+      ...base,
+      paddingLeft: '12px',
+    }),
+    indicatorsContainer: base => ({
+      ...base,
+      paddingRight: '8px',
     }),
     input: base => ({
       ...base,
@@ -147,14 +110,7 @@ export default function SelectFilterModal({
   };
 
   return (
-    <Modal
-      isOpen={isOpen}
-      toggle={toggle}
-      style={{
-        backgroundColor: darkMode ? '#1b2a41' : undefined,
-        color: darkMode ? '#ffffff' : undefined,
-      }}
-    >
+    <Modal isOpen={isOpen} toggle={toggle} className={darkMode ? 'wsrDarkModal' : ''}>
       <ModalHeader toggle={toggle}>Select a Filter</ModalHeader>
 
       <ModalBody>
@@ -165,9 +121,8 @@ export default function SelectFilterModal({
             options={filters}
             value={selectedFilter}
             onChange={setSelectedFilter}
-            classNamePrefix="rs"
+            classNamePrefix="rs" // This is the key!
             menuPortalTarget={document.body}
-            menuPosition="fixed"
             styles={darkMode ? darkSelectStyles : lightSelectStyles}
           />
 

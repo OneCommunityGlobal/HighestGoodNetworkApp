@@ -3,12 +3,12 @@
   border: 1px solid #ccc;
   border-radius: 4px;
   padding: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .customTooltip.dark {
   background-color: #1c2541;
-  border: 1px solid rgba(255,255,255,0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .filterSelect .ant-select-selector,
@@ -19,6 +19,7 @@
 
 .filterSelect .ant-select-selector {
   background-color: #ffffff !important;
+  border-color: rgba(0, 0, 0, 0.2) !important;
 }
 
 /* RangePicker placeholder */
@@ -30,17 +31,13 @@
   background-color: #ffffff !important;
 }
 
-.filterSelect .ant-select-selector {
-  border-color: rgba(0, 0, 0, 0.2) !important;
-}
-
-/* Light border for RangePicker */
+/* Light border for RangePicker
 .filterSelect .ant-picker {
   border-color: rgba(0, 0, 0, 0.2) !important;
-}
+} */
 
-.oxideDark{
-  background-color: #1B2A41;
+.oxideDark {
+  background-color: #1b2a41;
 }
 
 /* Only in darkMode: target filterSelect under .oxideDark */

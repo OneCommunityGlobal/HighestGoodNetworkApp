@@ -9,7 +9,7 @@
   margin: 0 auto;
   padding: 1rem;
   border-radius: 12px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .promo-table-header {
@@ -62,7 +62,7 @@
   text-align: left;
   font-weight: bold;
   padding-top: 0.75rem;
-  background-color:antiquewhite;
+  background-color: antiquewhite;
 }
 
 .custom-circular-checkbox-wrapper {

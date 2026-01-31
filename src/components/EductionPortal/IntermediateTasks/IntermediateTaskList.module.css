@@ -1,7 +1,8 @@
 .dashboard {
   min-height: 100vh;
   background-color: #f8f9fa;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
+    'Cantarell', sans-serif;
   padding: 2rem 0;
 }
 
@@ -158,8 +159,12 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .emptySubTasks {
@@ -643,4 +648,3 @@
   background-color: #1a1a1a !important;
   color: #ffffff !important;
 }
-

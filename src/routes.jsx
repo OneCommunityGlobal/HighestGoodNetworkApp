@@ -131,8 +131,9 @@ import BiddingHomepage from './components/LBDashboard/BiddingHomepage/BiddingHom
 import WishList from './components/LBDashboard/WishList/WishList';
 import WishListItem from './components/LBDashboard/WishList/ItemOverview';
 
-//mostwatedmaterials
+// Most Wasted Materials
 import MostWastedMaterials from './components/MostWastedMaterials/MostWastedMaterials.jsx';
+
 // BM Dashboard
 import BMProtectedRoute from './components/common/BMDashboard/BMProtectedRoute';
 import BMDashboard from './components/BMDashboard';
@@ -166,13 +167,20 @@ import FollowUpEmailTemplate from './components/CommunityPortal/Activities/Follo
 import Register from './components/CommunityPortal/Activities/Register/Register';
 import ActivitiesPage from './components/CommunityPortal/Activities/ActivitiesPage';
 import EventStats from './components/CommunityPortal/EventPersonalization/EventStats';
-
 // Community Calendar
 import CommunityCalendar from './components/CommunityPortal/Calendar/CommunityCalendar';
+
+// Kicthen and Inventory Portal
+import KitchenandInventoryLogin from './components/KitchenandInventory/Login';
+import KIProtectedRoute from './components/common/KitchenandInventory/KIProtectedRoute';
+import KIDashboard from './components/KitchenandInventory/KIDashboard/KIDashboard';
+
+// Education Portal
 import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
 import EPLogin from './components/EductionPortal/Login';
 import BrowseLessonPlan from './components/EductionPortal/BrowseLessonPlan/BrowseLP';
 import EPDashboard from './components/EductionPortal';
+import AssignAtoms from './components/EductionPortal/AssignAtoms/AssignAtoms';
 import ReportDownloadButton from './components/EductionPortal/AnalyticsDashboard/ReportDownloadButton';
 import GroupList from './components/EductionPortal/GroupList/GroupList';
 import EvaluationResultsWrapper from './components/EductionPortal/EvaluationResultsWrapper';
@@ -188,6 +196,7 @@ import PRDashboardTopReviewedPRs from './components/HGNPRDashboard/PRDashboardTo
 import PRDashboardDetails from './components/HGNPRDashboard/PRDashboardDetails';
 import PromotionEligibility from './components/HGNPRDashboard/PromotionEligibility';
 import PRPromotionsPage from './components/PRPromotions/PRPromotionsPage';
+import PRGradingDashboard from './components/PRGradingDashboard/PRGradingDashboard';
 
 import ProtectedRoute from './components/common/ProtectedRoute';
 import { UserRole } from './utils/enums';
@@ -344,7 +353,6 @@ export default (
     <Route path="/ProfileInitialSetup/:token" component={SetupProfile} />
     <Route path="/hours-pledged-chart" component={HoursPledgedChart} />
     <Route path="/TestEventReg" component={TestEventRegistration} />
-    <Route path="/logattendance" component={AttendanceNoShow} />
     <>
       {/* Comment out the Header component and its import during phase 2 development. */}
       {/* Uncomment BMHeader and its import during phase 2 development. */}
@@ -361,6 +369,7 @@ export default (
         <ProtectedRoute path="/hgnhelp" exact component={HelpPage} />
         <ProtectedRoute path="/dashboard" exact component={Dashboard} />
         <ProtectedRoute path="/dashboard/:userId" exact component={Dashboard} />
+        <Route path="/logattendance" component={AttendanceNoShow} />
         <ProtectedRoute path="/project/members/:projectId" fallback component={Members} />
         <ProtectedRoute path="/timelog/" exact render={() => <Timelog userId={null} />} />
         <ProtectedRoute
@@ -765,6 +774,11 @@ export default (
           component={EventParticipation}
         />
         <CPProtectedRoute
+          path="/communityportal/reports/participation"
+          exact
+          component={EventParticipation}
+        />
+        <CPProtectedRoute
           path="/communityportal/reports/event/personalization"
           exact
           component={EventStats}
@@ -826,6 +840,7 @@ export default (
         <Route path="/educationportal/login" component={EPLogin} />
         <Route path="/educationportal/InsightWidget" component={InsightWidget} />
         <Route path="/educationportal/lesson-library" exact component={BrowseLessonPlan} />
+        <EPProtectedRoute path="/educationportal/assignAtoms" exact component={AssignAtoms} />
         <EPProtectedRoute path="/educationportal/tasks/upload" exact component={WriteTaskUpload} />
         <Route path="/educationportal/reportButton" component={ReportDownloadButton} />
         <Route path="/educator/groups" exact component={GroupList} />
@@ -865,6 +880,10 @@ export default (
         {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
         {/* <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} /> */}
         {/* ----- END BM Dashboard Routing ----- */}
+        {/* ----- Kitchen and Inventory Portal Routes ----- */}
+        <KIProtectedRoute path="/kitchenandinventory" exact component={KIDashboard} />
+        <Route path="/kitchenandinventory/login" exact component={KitchenandInventoryLogin} />
+        {/* ----- End of Kitchen and Inventory Portal Routes ----- */}
         <Route path="/login" component={Login} />
         <Route path="/forgotpassword" component={ForgotPassword} />
         <Route path="/subscribe" component={SubscribePage} />
@@ -872,6 +891,7 @@ export default (
         <Route path="/collaboration" component={Collaboration} />
         <Route path="/suggestedjobslist" component={SuggestedJobsList} />
         <ProtectedRoute path="/jobformbuilder" fallback component={JobFormBuilder} />
+        <ProtectedRoute path="/materials/mostwastedmaterials" component={MostWastedMaterials} />
         <ProtectedRoute path="/infoCollections" component={EditableInfoModal} />
         <ProtectedRoute path="/userprofile/:userId" fallback component={UserProfile} />
         <ProtectedRoute path="/userprofileedit/:userId" component={UserProfileEdit} />
@@ -937,6 +957,12 @@ export default (
           path="/pr-team-analytics/popular-prs"
           exact
           component={PRReviewTeamAnalytics}
+        />
+        <ProtectedRoute
+          path="/pr-grading-dashboard"
+          exact
+          component={PRGradingDashboard}
+          fallback
         />
         <Route path="*" component={NotFoundPage} />
       </Switch>

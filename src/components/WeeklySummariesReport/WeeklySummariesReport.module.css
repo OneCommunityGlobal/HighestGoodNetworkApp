@@ -57,7 +57,7 @@
 }
 
 /**  switch toggle*/
-.switchToggleControl{
+.switchToggleControl {
   position: relative;
   width: 25px;
   display: inline-block;
@@ -66,10 +66,10 @@
   margin-left: 5px;
   margin-right: 5px;
 }
-.switchToggle{
+.switchToggle {
   display: none;
 }
-.switchToggleLabel{
+.switchToggleLabel {
   display: block;
   overflow: hidden;
   cursor: pointer;
@@ -97,15 +97,15 @@
   box-sizing: border-box;
 }
 .switchToggleInner:before {
-  content: "";
+  content: '';
   padding-left: 2px;
   background-color: #2ba6ed;
 }
-.switchToggle:disabled + .switchToggleLabel .switchToggleInner::before{
+.switchToggle:disabled + .switchToggleLabel .switchToggleInner::before {
   background-color: #bbb;
 }
 .switch-toggle-inner:after {
-  content: "";
+  content: '';
   padding-right: 2px;
   text-align: right;
   background-color: white;
@@ -155,18 +155,15 @@
   justify-content: space-between;
 }
 
-
 .filterStyle {
   font-size: 0.7em;
   display: flex;
   align-items: center;
 }
 
-
 .marginRight {
   margin-right: 20px;
 }
-
 
 .containerWsrWrapper {
   min-height: 100%;
@@ -239,7 +236,7 @@
 }
 
 .textWhite {
-  color:white;
+  color: white;
 }
 
 .errorSelect {
@@ -264,24 +261,23 @@
 .darkModal {
   :global(.modal-content) {
     background-color: #2c3e50 !important;
-    color: white !important;           
+    color: white !important;
   }
 
   :global(.close) {
-    color: white !important; 
+    color: white !important;
   }
 }
 
 .darkChip {
-  background: #1b2a41 !important;
-  color: #ffffff !important; 
+  background-color: #1b2a41 !important;
+  color: white !important;
 }
 
 .redChip {
   background-color: #962929 !important;
-  color: white !important;   
+  color: white !important;
 }
-
 
 /* @media screen and (max-width: 544px) {
   .responsive-font-size {
@@ -297,13 +293,12 @@
 @media screen and (max-width: 576px) {
   .responsiveFontSize {
     font-size: 0.3rem !important;
-  }  
+  }
 
   .px-max-sm-0 {
     padding-left: 0 !important;
     padding-right: 0 !important;
   }
-
 }
 /* @media screen and (max-width: 544px) {
   .responsiveFontSize {
@@ -378,7 +373,6 @@
     max-width: 30px;
     padding: 5px 0;
   }
-
 }
 
 .multiSelectFilter {
@@ -409,7 +403,6 @@
   .dropdownContainer {
     z-index: 2;
   }
-
 }
 
 /* Saved Filter Styles */
@@ -670,7 +663,7 @@ body.dark-mode .modal-content.wsr-dark-modal-content .form-control {
 }
 
 body.dark-mode .modal-content.wsr-dark-modal-content .form-control::placeholder {
-  color: #94a3b8 !important;
+  color: #fff !important;
 }
 
 body.dark-mode .modal-content.wsr-dark-modal-content select.form-control {
@@ -703,63 +696,6 @@ body.dark-mode .modal-content {
 
 .dark-mode .modal-footer {
   background-color: #1b2a41 !important;
-}
-
-.wsrDarkModalContent {
-  background-color: #1b2a41 !important;
-  color: #fff !important;
-  border: 1px solid #3a506b !important;
-}
-
-/* Header / Body / Footer are Bootstrap global classes, so target them using :global */
-.wsrDarkModalContent :global(.modal-header),
-.wsrDarkModalContent :global(.modal-body),
-.wsrDarkModalContent :global(.modal-footer) {
-  background-color: #1b2a41 !important;
-  border-color: #3a506b !important;
-  color: #fff !important;
-}
-
-.wsrDarkModalContent :global(.close) {
-  color: #fff !important;
-  opacity: 0.85;
-}
-
-.wsrDarkModalContent :global(.form-control),
-.wsrDarkModalContent :global(select.form-control) {
-  background-color: #0f172a !important;
-  color: #fff !important;
-  border-color: #3a506b !important;
-}
-
-.wsrDarkModalContent :global(.form-control::placeholder) {
-  color: #94a3b8 !important;
-}
-
-/* =============================== */
-/* FORCE DARK INPUTS IN FILTER MODAL */
-/* =============================== */
-
-.wsrDarkModalContent :global(input),
-.wsrDarkModalContent :global(select),
-.wsrDarkModalContent :global(textarea) {
-  background-color: #0f172a !important;
-  color: #ffffff !important;
-}
-
-/* Placeholder */
-.wsrDarkModalContent :global(input::placeholder) {
-  color: #94a3b8 !important;
-}
-
-/* Focus state */
-.wsrDarkModalContent :global(input:focus),
-.wsrDarkModalContent :global(select:focus),
-.wsrDarkModalContent :global(textarea:focus) {
-  background-color: #0f172a !important;
-  color: #ffffff !important;
-  border-color: #4dabf7 !important;
-  box-shadow: 0 0 0 0.15rem rgba(77, 171, 247, 0.25) !important;
 }
 
 /* ===== react-multi-select-component DARK MODE ===== */
@@ -858,9 +794,6 @@ body.dark-mode .modal-content {
   color: white !important;
 }
 
-.wsr-dark-modal-content .custom-select__placeholder {
-  color: #94a3b8 !important;
-}
 
 .wsr-dark-modal-content .custom-select__input {
   color: white !important;
@@ -894,4 +827,127 @@ body.dark-mode .modal-content {
 :global(.modal-content.wsr-dark-modal-content .modal-footer) {
   background-color: #1b2a41 !important;
   border-color: #3a506b !important;
+}
+
+
+/* Target the inner input of react-select specifically */
+.custom-select__input-container {
+  background-color: transparent !important;
+}
+
+.custom-select__input {
+  color: white !important;
+  background-color: transparent !important;
+}
+
+/* Fix for browser 'Autofill' turning things black or yellow */
+input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 30px #1b2a41 inset !important;
+  -webkit-text-fill-color: white !important;
+}
+
+/* 1. Force Placeholder to be White */
+.wsr-dark-modal-content .custom-select__placeholder {
+  color: #ffffff !important;
+}
+
+/* 2. Fix the Black Background while entering text */
+/* We must target the container AND the input inside it */
+.wsr-dark-modal-content .custom-select__input-container,
+.wsr-dark-modal-content .custom-select__input-container input {
+  background-color: transparent !important;
+  background: transparent !important;
+  color: white !important;
+  box-shadow: none !important;
+}
+
+/* Ensure the value container doesn't have a background */
+.wsr-dark-modal-content .custom-select__value-container {
+  background-color: transparent !important;
+}
+.wsrDarkModalContent :global(input),
+.wsrDarkModalContent :global(textarea) {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+  border-color: #3a506b !important;
+}
+
+.wsrDarkModalContent :global(input::placeholder) {
+  color: #94a3b8 !important;
+}
+body.dark-mode .rs__option--is-focused {
+  background-color: #243b55 !important;
+}
+
+/* 1. Force the dropdown menu background and text color */
+.custom-select__menu {
+  background-color: #1b2a41 !important; /* Matches your modal background */
+  z-index: 9999 !important;
+}
+
+.custom-select__option {
+  color: white !important;
+  background-color: transparent !important;
+}
+
+.custom-select__option--is-focused {
+  background-color: #243b55 !important; /* Color when hovering an option */
+}
+
+/* 2. Fix the typing area (Placeholder & Input) */
+.custom-select__placeholder {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+.custom-select__input-container, 
+.custom-select__input-container input {
+  color: white !important;
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* 3. Fix the display when a value is already selected */
+.custom-select__single-value {
+  color: white !important;
+}
+
+/* 1. Fix the black background while entering text */
+:global(.rs__input-container),
+:global(.rs__input),
+:global(.rs__value-container) {
+  background-color: transparent !important;
+  background: transparent !important;
+  color: white !important;
+}
+
+/* 2. Fix the actual <input> box that gets a background from the global theme */
+:global(.rs__input input) {
+  background-color: transparent !important;
+  color: white !important;
+  box-shadow: none !important;
+}
+
+/* 3. Fix the dropdown menu and hidden options */
+:global(.rs__menu) {
+  background-color: #0f172a !important; /* Dark navy */
+  border: 1px solid #3a506b !important;
+  z-index: 9999 !important;
+}
+
+/* 4. Ensure option text is visible */
+:global(.rs__option) {
+  color: white !important;
+}
+
+:global(.rs__placeholder) {
+  color: #c3c5c8 !important;
+}
+
+.tab-content {
+  display: flex;
+  flex-direction: column;
+  height: auto;           /* Allow it to grow with content */
+  min-height: 100vh;     /* Ensure it covers at least the screen height */
+  overflow: visible;      /* Prevent clipping */
+  background-color: #2b3e50; /* Ensure the dark color is applied to the full height */
 }
