@@ -140,6 +140,22 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
     );
   };
 
+  // for top right positioning of the projects box
+  const projectsBoxPosition =
+    cardSize.height === '300px'
+      ? { top: '28%', right: '10%' }
+      : cardSize.height === '548px'
+      ? { top: '30%', right: '8%' }
+      : { top: '30%', right: '6%' };
+
+  const projectsTextStyle = darkMode
+    ? { color: '#fff', mixBlendMode: 'difference' }
+    : { color: '#222' };
+
+  const projectsMutedTextStyle = darkMode
+    ? { color: '#fff', mixBlendMode: 'difference' }
+    : { color: '#666' };
+
   return (
     <div
       style={{
@@ -155,29 +171,55 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
       <div
         style={{
           position: 'absolute',
-          top: '40%',
-          left: '65%',
+          ...projectsBoxPosition,
+          left: 'auto',
+          //top: '40%',
+          //left: '65%',
           transform: 'translateY(-50%)',
           zIndex: 10,
           background: 'white',
           borderRadius: 4,
-          padding: 8,
+          //padding: 8,
+          padding: 4,
           boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
           border: '1px solid #eee',
-          minWidth: 130,
-          minHeight: 65,
+          //minWidth: 130,
+          minWidth: 105,
+          //minHeight: 65,
+          minHeight: 45,
           display: 'grid',
           justifyItems: 'center',
           gap: 2,
+          isolation: 'isolate',
         }}
       >
-        <div style={{ color: '#444', fontWeight: 'bold', fontSize: 15 }}>Projects</div>
-        <div style={{ color: '#222', fontWeight: 'bold', fontSize: 14 }}>
+        {/*<div style={{ color: '#444', fontWeight: 'bold', fontSize: 15 }}>Projects</div>*/}
+        <div style={{ ...projectsTextStyle, fontWeight: 'bold', fontSize: 15 }}>Projects</div>
+        {/*<div style={{ color: '#222', fontWeight: 'bold', fontSize: 14 }}>
+          {projectBarInfo.amount}
+        </div>*/}
+        <div style={{ ...projectsTextStyle, fontWeight: 'bold', fontSize: 14 }}>
           {projectBarInfo.amount}
         </div>
-        <div style={{ color: '#666', fontSize: 10 }}>({projectBarInfo.percentage})</div>
-        {projectBarInfo.ifcompare && (
+
+        <div style={{ ...projectsMutedTextStyle, fontSize: 10 }}>({projectBarInfo.percentage})</div>
+
+        {/*<div style={{ color: '#666', fontSize: 10 }}>({projectBarInfo.percentage})</div>*/}
+        {/*{projectBarInfo.ifcompare && (
           <div style={{ color: projectBarInfo.fontcolor, fontSize: 10, fontWeight: 'bold' }}>
+            {projectBarInfo.change}
+          </div>
+        )}*/}
+        {projectBarInfo.ifcompare && (
+          <div
+            style={{
+              ...projectsTextStyle,
+              color: darkMode ? 'lightgreen' : 'green',
+
+              fontSize: 10,
+              fontWeight: 'bold',
+            }}
+          >
             {projectBarInfo.change}
           </div>
         )}
