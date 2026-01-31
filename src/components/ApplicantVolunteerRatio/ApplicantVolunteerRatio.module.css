@@ -6,7 +6,7 @@
 }
 
 .dark {
-  background-color: #1B2A41;
+  background-color: #1b2a41;
   color: #e0e0e0;
 }
 
@@ -205,7 +205,7 @@
 :global(.dark-mode-body) body,
 :global(.dark-mode-body) #root,
 :global(.dark-mode-body) .App {
-  background-color: #1B2A41 !important;
+  background-color: #1b2a41 !important;
   color: #e0e0e0 !important;
 }
 
@@ -214,13 +214,13 @@
 :global(.dark-mode-body) .page,
 :global(.dark-mode-body) .container,
 :global(.dark-mode-body) .container-fluid {
-  background-color: #1B2A41 !important;
+  background-color: #1b2a41 !important;
   color: #e0e0e0 !important;
 }
 
 :global(.dark-mode-body) .recharts-wrapper,
 :global(.dark-mode-body) .recharts-surface {
-  background-color: #1B2A41 !important;
+  background-color: #1b2a41 !important;
 }
 
 /* Recharts Tooltip Dark Mode */
