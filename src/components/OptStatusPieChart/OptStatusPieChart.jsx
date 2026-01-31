@@ -9,7 +9,7 @@ import { Pie } from 'react-chartjs-2';
 import { useDispatch, useSelector } from 'react-redux';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { Chart as ChartJS } from 'chart.js';
-import { fetchOptStatusBreakdown } from '../../actions/optStatusBreakdownAction';
+import fetchOptStatusBreakdown from '../../actions/optStatusBreakdownAction';
 import { roleOptions } from './filter';
 import 'chart.js/auto';
 import styles from './OptStatusPieChart.module.css';
@@ -26,19 +26,36 @@ const COLORS = {
 
 const OptStatusPieChart = () => {
   const dispatch = useDispatch();
-  const { optStatusBreakdown = [] } = useSelector(state => state.optStatusBreakdown);
   const { darkMode } = useSelector(state => state.theme);
 
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [role, setRole] = useState('');
 
+  const [localBreakdown, setLocalBreakdown] = useState([]);
+  const [localError, setLocalError] = useState('');
+
+  const fetchData = async () => {
+    const response = await dispatch(fetchOptStatusBreakdown(startDate, endDate, role));
+
+    if (response.message) {
+      setLocalError(response.message);
+      setLocalBreakdown([]);
+    } else if (response.breakDown) {
+      setLocalBreakdown(response.breakDown);
+      setLocalError('');
+    } else {
+      setLocalBreakdown([]);
+      setLocalError('Unexpected response from server');
+    }
+  };
+
   useEffect(() => {
-    dispatch(fetchOptStatusBreakdown(startDate, endDate, role));
+    fetchData();
   }, [startDate, endDate, role, dispatch]);
 
-  const labels = optStatusBreakdown.map(d => d.optStatus);
-  const dataCounts = optStatusBreakdown.map(d => d.count);
+  const labels = localBreakdown.map(d => d.optStatus);
+  const dataCounts = localBreakdown.map(d => d.count);
   const total = dataCounts.reduce((sum, value) => sum + value, 0);
   const backgroundColors = labels.map(label => COLORS[label] || '#ccc');
 
@@ -86,7 +103,11 @@ const OptStatusPieChart = () => {
 
         <div className={styles.chartFilterLayout}>
           <div className={styles.pieChartWrapper}>
-            <Pie data={chartData} options={options} />
+            {localError ? (
+              <div className={styles.errorMessage}>{localError}</div>
+            ) : (
+              <Pie data={chartData} options={options} />
+            )}
           </div>
 
           <div className={styles.filters}>
