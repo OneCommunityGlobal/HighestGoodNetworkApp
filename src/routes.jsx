@@ -213,6 +213,7 @@ import SupportLogin from './components/SupportPortal/SupportLogin';
 import SupportDashboard from './components/SupportPortal/SupportDashboard';
 import SupportLogViewer from './components/SupportPortal/SupportLogViewer';
 import JobApplicationForm from './components/Collaboration/JobApplicationForm/JobApplicationForm';
+import OptStatusPieChart from './components/OptStatusPieChart/OptStatusPieChart';
 
 // Social Architecture
 
@@ -943,6 +944,7 @@ export default (
         <ProtectedRoute path="/ExperienceDonutChart" component={ExperienceDonutChart} fallback />
         <ProtectedRoute path="/prPromotionsPage" component={PRPromotionsPage} fallback />
         <ProtectedRoute path="/" exact component={Dashboard} />
+        <ProtectedRoute path="/analytics/opt-status" exact component={OptStatusPieChart} />
         {/* ----- PR Dashboard  ----- */}
         <ProtectedRoute
           path="/pr-dashboard/promotion-eligibility"
