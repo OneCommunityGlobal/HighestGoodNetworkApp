@@ -49,13 +49,12 @@ import Badges from './Badges';
 import { getAllTeamCode , getAllUserTeams } from '../../actions/allTeamsAction';
 import TimeEntryEditHistory from './TimeEntryEditHistory';
 import ActiveInactiveConfirmationPopup from '../UserManagement/ActiveInactiveConfirmationPopup';
-import { updateUserStatus, updateRehireableStatus, toggleVisibility } from '../../actions/userManagement';
+import { updateRehireableStatus, toggleVisibility } from '../../actions/userManagement';
 import { updateUserProfile } from "../../actions/userProfile";
-import { UserStatus } from '../../utils/enums';
 import BlueSquareLayout from './BlueSquareLayout';
 import TeamWeeklySummaries from './TeamWeeklySummaries/TeamWeeklySummaries';
 import { connect, useDispatch, useSelector } from 'react-redux';
-import { formatDateLocal } from '~/utils/formatDate';
+import { formatDateCompany } from '~/utils/formatDate';
 import EditableInfoModal from './EditableModal/EditableInfoModal';
 import { fetchAllProjects } from '../../actions/projects';
 
@@ -78,6 +77,10 @@ import ConfirmRemoveModal from './UserProfileModal/confirmRemoveModal';
 import { formatDateYYYYMMDD, CREATED_DATE_CRITERIA } from '~/utils/formatDate.js';
 import AccessManagementModal from './UserProfileModal/AccessManagementModal';
 import { postWarningByUserId, getSpecialWarnings } from '../../actions/warnings';
+import SetUpFinalDayPopUp from '../UserManagement/SetUpFinalDayPopUp';
+import { InactiveReason } from '../../utils/enums';
+import { activateUserAction, deactivateImmediatelyAction, scheduleDeactivationAction } from '../../actions/userLifecycleActions';
+
 
 function UserProfile(props) { 
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -145,6 +148,7 @@ function UserProfile(props) {
   const [modalMessage, setModalMessage] = useState('');
   const [shouldRefresh, setShouldRefresh] = useState(false);
   const [activeInactivePopupOpen, setActiveInactivePopupOpen] = useState(false);
+  const [finalDayPopupOpen, setFinalDayPopupOpen] = useState(false);
   const [tasks, setTasks] = useState([]);
   const [updatedTasks, setUpdatedTasks] = useState([]);
   const [summarySelected, setSummarySelected] = useState(null);
@@ -363,6 +367,11 @@ function UserProfile(props) {
   };
 
   const fetchCalculatedStartDate = async (userId, userProfileData) => {
+    if (!userProfileData?.endDate) {
+      const createdDate = userProfileData?.createdDate ? userProfileData.createdDate.split('T')[0] : '';
+      setCalculatedStartDate(createdDate);
+      return;
+    }
     try {
       const startDate = await dispatch(
         getTimeStartDateEntriesByPeriod(userId, userProfileData.createdDate, userProfileData.endDate),
@@ -948,37 +957,6 @@ setUpdatedTasks(prev => {
       });
   };
 
-  // const handleSubmit = async updatedUserProfile => {
-  //   for (let i = 0; i < updatedTasks.length; i += 1) {
-  //     const updatedTask = updatedTasks[i];
-  //     const url = ENDPOINTS.TASK_UPDATE(updatedTask.taskId);
-  //     // eslint-disable-next-line no-console
-  //     axios.put(url, updatedTask.updatedTask).catch(err => console.log(err));
-  //   }
-  //   try {
-  //      const userProfileToUpdate = {
-  //       ...(updatedUserProfile || userProfileRef.current),
-  //       projects, // Ensure projects are included in the payload
-  //       };
-  //       // eslint-disable-next-line no-console
-  //       console.log('Submitting UserProfile:', userProfileToUpdate); // Debugging log
-  //     const result = await props.updateUserProfile(userProfileToUpdate);
-  //     if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
-  //       await props.refreshToken(userProfile._id);
-  //     }
-  //     await loadUserProfile();
-  //     await loadUserTasks();
-  //     setSaved(false);
-  //   } catch (err) {
-  //     if (err.response && err.response.data && err.response.data.error) {
-  //       const errorMessage = err.response.data.error.join('\n');
-  //       // eslint-disable-next-line no-alert
-  //       alert(errorMessage);
-  //     }
-  //     return err;
-  //   }
-  // };
-
   const handleSubmit = async (updatedUserProfile) => {
   // 1) Merge with the current ref FIRST
   const merged = { ...(userProfileRef.current || {}), ...(updatedUserProfile || {}) };
@@ -1097,43 +1075,6 @@ setUpdatedTasks(prev => {
     });
   };
 
-  const setActiveInactive = async isActive => {
-    let endDate;
-
-    if (!isActive) {
-      endDate = await dispatch(
-        getTimeEndDateEntriesByPeriod(
-          userProfile._id,
-          userProfile.createdDate,
-          moment().format('YYYY-MM-DDTHH:mm:ss'),
-        ),
-      );
-      if (endDate == 'N/A') {
-        endDate = userProfile.createdDate;
-      }
-      endDate = moment(endDate).format('YYYY-MM-DDTHH:mm:ss');
-    }
-    const newUserProfile = {
-      ...userProfile,
-      isActive,
-      endDate: endDate || undefined,
-    };
-
-    try {
-      await props.updateUserStatus(
-        newUserProfile,
-        isActive ? UserStatus.Active : UserStatus.InActive,
-        undefined,
-      );
-      setUserProfile(newUserProfile);
-      setOriginalUserProfile(newUserProfile);
-      window.location.reload();
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error('Failed to update user status:', error);
-    }
-    setActiveInactivePopupOpen(false);
-  };
 
   const activeInactivePopupClose = () => {
     setActiveInactivePopupOpen(false);
@@ -1313,15 +1254,36 @@ setUpdatedTasks(prev => {
     setUserEndDate(endDate);
   };
 
+  const hasScheduledFinalDay = userProfile.isActive && userProfile.inactiveReason === InactiveReason.ScheduledSeparation && !!userProfile.endDate;
+
   return (
     <div className={darkMode ? 'bg-oxford-blue' : ''} style={{ minHeight: '100%' }}>
       <ActiveInactiveConfirmationPopup
-        isActive={userProfile.isActive}
-        fullName={`${userProfile.firstName} ${userProfile.lastName}`}
         open={activeInactivePopupOpen}
-        setActiveInactive={setActiveInactive}
         onClose={activeInactivePopupClose}
+        fullName={`${userProfile.firstName} ${userProfile.lastName}`}
+        isActive={userProfile.isActive}
+        endDate={userProfile.endDate}
+        inactiveReason={userProfile.inactiveReason}
+        onDeactivateImmediate={() => deactivateImmediatelyAction(dispatch, userProfile, loadUserProfile)}
+        onScheduleFinalDay={() => {
+          setFinalDayPopupOpen(true);
+          setActiveInactivePopupOpen(false);
+        }}
+        onCancelScheduledDeactivation={() => activateUserAction(dispatch, userProfile, loadUserProfile)}
+        onReactivateUser={() => activateUserAction(dispatch, userProfile, loadUserProfile)}
       />
+
+      <SetUpFinalDayPopUp
+        open={finalDayPopupOpen}
+        darkMode={darkMode}
+        onClose={() => setFinalDayPopupOpen(false)}
+        onSave={(finalDayISO) => {
+          scheduleDeactivationAction(dispatch, userProfile, finalDayISO, loadUserProfile);
+          setFinalDayPopupOpen(false);
+        }}
+      />
+
       {showModal && (
         <UserProfileModal
           isOpen={showModal}
@@ -1483,7 +1445,10 @@ setUpdatedTasks(prev => {
             <span className="mr-2">
               <ActiveCell
                 isActive={userProfile.isActive}
+                deactivatedAt={userProfile.deactivatedAt}
                 user={userProfile}
+                endDate={userProfile.endDate}
+                reactivationDate={userProfile.reactivationDate}
                 canChange={canChangeUserStatus}
                 onClick={() => {
                   if (cantDeactivateOwner(userProfile, requestorRole)) {
@@ -1611,12 +1576,12 @@ setUpdatedTasks(prev => {
             {/* use converted date without tz otherwise the record's will updated with timezoned ts for start date.  */}
             From:{' '}
             <span className={darkMode ? 'text-light' : ''}>
-              {formatDateLocal(userProfile.startDate)}
+              {formatDateCompany(userProfile.startDate)}
             </span>
             {'   '}
             To:{' '}
             <span className={darkMode ? 'text-light' : ''}>
-              {userProfile.endDate ? formatDateLocal(userProfile.endDate) : 'N/A'}
+              {userProfile.endDate ? formatDateCompany(userProfile.endDate) : 'N/A'}
             </span>
           </p>
           {showSelect ? (
@@ -1759,6 +1724,7 @@ setUpdatedTasks(prev => {
                   canEditRole={canEditUserProfile}
                   roles={roles}
                   darkMode={darkMode}
+                  hasFinalDay={hasScheduledFinalDay}
                 />
               </TabPane>
               <TabPane tabId="2">
@@ -2439,6 +2405,6 @@ setUpdatedTasks(prev => {
 
 export default connect(
   mapStateToProps,
-  { hasPermission, updateUserStatus, updateUserProfile, getTimeEntriesForWeek }
+  { hasPermission, updateUserProfile, getTimeEntriesForWeek }
 )(UserProfile);
 
