@@ -2,65 +2,54 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { debounce } from 'lodash';
 import { FaSearch, FaChevronDown, FaChevronUp } from 'react-icons/fa';
+import { getAllFAQs } from '~/components/Faq/api';
 import styles from './ActivityFAQs.module.css';
+
+function normalizeFaqFromApi(faq) {
+  return {
+    id: faq._id,
+    question: faq.question || '',
+    answer: faq.answer || '',
+    category: faq.category || 'General',
+  };
+}
 
 function ActivityFAQs() {
   const { activityid } = useParams();
   const [faqs, setFaqs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
   const [expandedFAQ, setExpandedFAQ] = useState(null);
   const [selectedFilter, setSelectedFilter] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredFAQs, setFilteredFAQs] = useState([]);
 
   useEffect(() => {
-    // Note: Backend API integration for fetching event-specific FAQs will be implemented later.
-    // Currently using mock data for development and testing.
-    const mockFAQs = [
-      {
-        id: 1,
-        question: 'Lorem ipsum odor amet, consectetuer adipiscing elit?',
-        answer:
-          'Tellus ullamcorper nascetur mattis condimentum nisi. Montes luctus luctus erat nunc netus primis ridiculus efficitur.',
-        category: 'General',
-      },
-      {
-        id: 2,
-        question: 'Lorem ipsum odor amet, consectetuer adipiscing elit ?',
-        answer: 'This is a sample answer to the FAQ.',
-        category: 'Registration',
-      },
-      {
-        id: 3,
-        question: 'Lorem ipsum odor amet, consectetuer adipiscing elit ?',
-        answer: 'This is a sample answer to the FAQ.',
-        category: 'General',
-      },
-      {
-        id: 4,
-        question: 'Lorem ipsum odor amet, consectetuer adipiscing elit ?',
-        answer: 'This is a sample answer to the FAQ.',
-        category: 'Registration',
-      },
-      {
-        id: 5,
-        question: 'Lorem ipsum odor amet, consectetuer adipiscing elit ?',
-        answer: 'This is a sample answer to the FAQ.',
-        category: 'General',
-      },
-      {
-        id: 6,
-        question: 'Lorem ipsum odor amet, consectetuer adipiscing elit ?',
-        answer: 'This is a sample answer to the FAQ.',
-        category: 'Registration',
-      },
-    ];
+    let isMounted = true;
 
-    // Simulate API call
-    setTimeout(() => {
-      setFaqs(mockFAQs);
-      setLoading(false);
-    }, 500);
+    const fetchFAQs = async () => {
+      setLoading(true);
+      setFetchError(null);
+      try {
+        const response = await getAllFAQs();
+        const rawFaqs = Array.isArray(response.data) ? response.data : [];
+        if (isMounted) {
+          setFaqs(rawFaqs.map(normalizeFaqFromApi));
+        }
+      } catch (err) {
+        if (isMounted) {
+          setFetchError(err?.response?.data?.message || err?.message || 'Failed to load FAQs.');
+          setFaqs([]);
+        }
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
+
+    fetchFAQs();
+    return () => {
+      isMounted = false;
+    };
   }, [activityid]);
 
   const toggleFAQ = faqId => {
@@ -120,6 +109,19 @@ function ActivityFAQs() {
     return (
       <div className={styles.container}>
         <div className={styles.loading}>Loading FAQs...</div>
+      </div>
+    );
+  }
+
+  if (fetchError) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.header}>
+          <h1 className={styles.title}>Frequently asked questions</h1>
+        </div>
+        <div className={styles.noFaqs} role="alert">
+          {fetchError}
+        </div>
       </div>
     );
   }
