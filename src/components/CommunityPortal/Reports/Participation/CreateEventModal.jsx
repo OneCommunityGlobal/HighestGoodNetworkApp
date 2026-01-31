@@ -210,6 +210,16 @@ function CreateEventModal({ isOpen, toggle }) {
               value={formData.type}
               onChange={handleChange}
               disabled={loading}
+              style={
+                darkMode
+                  ? {
+                      colorScheme: 'dark',
+                      appearance: 'none',
+                      WebkitAppearance: 'none',
+                      MozAppearance: 'none',
+                    }
+                  : {}
+              }
             >
               <option value="Workshop">Workshop</option>
               <option value="Meeting">Meeting</option>
@@ -232,6 +242,16 @@ function CreateEventModal({ isOpen, toggle }) {
               value={formData.location}
               onChange={handleChange}
               disabled={loading}
+              style={
+                darkMode
+                  ? {
+                      colorScheme: 'dark',
+                      appearance: 'none',
+                      WebkitAppearance: 'none',
+                      MozAppearance: 'none',
+                    }
+                  : {}
+              }
             >
               <option value="Virtual">Virtual</option>
               <option value="In person">In person</option>
@@ -253,6 +273,7 @@ function CreateEventModal({ isOpen, toggle }) {
               value={formData.date}
               onChange={handleChange}
               disabled={loading}
+              style={darkMode ? { colorScheme: 'dark' } : {}}
             />
             {errors.date && <div className="text-danger small">{errors.date}</div>}
           </div>
@@ -273,6 +294,7 @@ function CreateEventModal({ isOpen, toggle }) {
                 value={formData.startTime}
                 onChange={handleChange}
                 disabled={loading}
+                style={darkMode ? { colorScheme: 'dark' } : {}}
               />
               {errors.startTime && <div className="text-danger small">{errors.startTime}</div>}
             </div>
@@ -292,6 +314,7 @@ function CreateEventModal({ isOpen, toggle }) {
                 value={formData.endTime}
                 onChange={handleChange}
                 disabled={loading}
+                style={darkMode ? { colorScheme: 'dark' } : {}}
               />
               {errors.endTime && <div className="text-danger small">{errors.endTime}</div>}
             </div>
