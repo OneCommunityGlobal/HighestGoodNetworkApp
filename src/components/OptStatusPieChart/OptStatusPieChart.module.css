@@ -148,3 +148,16 @@
     width: 45%;
   }
 }
+.errorMessage {
+  color: #d32f2f;
+  background: #fdecea;
+  padding: 10px 12px;
+  border-radius: 6px;
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+
+.optStatusContainerDarkMode .errorMessage {
+  color: #ffb4ab;
+  background: #5a2120;
+}
