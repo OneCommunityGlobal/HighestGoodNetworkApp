@@ -856,7 +856,6 @@ input:-webkit-autofill {
 .wsr-dark-modal-content .custom-select__input-container,
 .wsr-dark-modal-content .custom-select__input-container input {
   background-color: transparent !important;
-  background: transparent !important;
   color: white !important;
   box-shadow: none !important;
 }
@@ -916,7 +915,6 @@ body.dark-mode .rs__option--is-focused {
 :global(.rs__input),
 :global(.rs__value-container) {
   background-color: transparent !important;
-  background: transparent !important;
   color: white !important;
 }
 

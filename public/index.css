@@ -645,7 +645,6 @@ body.dark-mode .modal-content textarea::placeholder {
 .custom-select__input,
 .custom-select__value-container {
   background-color: transparent !important;
-  background: transparent !important;
   border: none !important;
 }
 
@@ -666,7 +665,6 @@ body.dark-mode .modal-content textarea::placeholder {
 .custom-select__input-container input,
 .custom-select__value-container {
   background-color: transparent !important;
-  background: transparent !important;
   color: white !important;
 }
 

@@ -345,6 +345,157 @@ const darkSelectStyles = {
   }),
 };
 
+const doesSummaryMatchFilters = ({
+  summary,
+  state,
+  weekIndex,
+  selectedCodesArray,
+  selectedColorsArray,
+  selectedExtraMembersArray,
+  activeFilterColors,
+}) => {
+  const { activeTab } = state;
+  const hoursLogged = (summary.totalSeconds[navItems.indexOf(activeTab)] || 0) / 3600;
+
+  if (
+    summary?.isActive === false &&
+    !doesSummaryBelongToWeek(summary.startDate, summary.endDate, weekIndex)
+  ) {
+    return false;
+  }
+
+  const isMeetCriteria =
+    summary.totalTangibleHrs > 80 && summary.daysInTeam > 60 && summary.bioPosted !== 'posted';
+
+  const isBio = !state.selectedBioStatus || isMeetCriteria;
+
+  const isOverHours =
+    !state.selectedOverTime ||
+    (summary.weeklycommittedHours > 0 &&
+      hoursLogged > 0 &&
+      hoursLogged >= summary.promisedHoursByWeek[weekIndex]);
+
+  const summarySubmissionDate = moment()
+    .tz('America/Los_Angeles')
+    .endOf('week')
+    .subtract(weekIndex, 'week')
+    .format('YYYY-MM-DD');
+
+  const hasTrophy =
+    !state.selectedTrophies ||
+    showTrophyIcon(summarySubmissionDate, summary?.startDate?.split('T')[0]);
+
+  const matchesSpecialColor =
+    activeFilterColors.length === 0 ||
+    activeFilterColors.some(color => summary.filterColor?.includes(color));
+
+  const isInSelectedCode = selectedCodesArray.includes(summary.teamCode);
+  const isInSelectedExtraMember = selectedExtraMembersArray.includes(summary._id);
+  const noFilterSelected =
+    selectedCodesArray.length === 0 && selectedExtraMembersArray.length === 0;
+
+  let matchesLoggedHoursRange = true;
+
+  if (state.selectedLoggedHoursRange?.length) {
+    matchesLoggedHoursRange = state.selectedLoggedHoursRange.some(range => {
+      switch (range.value) {
+        case '=0':
+          return hoursLogged === 0;
+        case '0-10':
+          return hoursLogged > 0 && hoursLogged <= 10;
+        case '10-20':
+          return hoursLogged > 10 && hoursLogged <= 20;
+        case '20-40':
+          return hoursLogged > 20 && hoursLogged <= 40;
+        case '>40':
+          return hoursLogged > 40;
+        default:
+          return true;
+      }
+    });
+  }
+
+  return (
+    (noFilterSelected || isInSelectedCode || isInSelectedExtraMember) &&
+    (selectedColorsArray.length === 0 ||
+      selectedColorsArray.includes(summary.weeklySummaryOption)) &&
+    matchesSpecialColor &&
+    isOverHours &&
+    isBio &&
+    hasTrophy &&
+    matchesLoggedHoursRange
+  );
+};
+
+const normalizeFilterColor = filterColor => {
+  if (Array.isArray(filterColor)) {
+    return filterColor.filter(c => typeof c === 'string').map(c => c.toLowerCase());
+  }
+
+  if (typeof filterColor === 'string') {
+    try {
+      const parsed = JSON.parse(filterColor);
+      if (Array.isArray(parsed)) {
+        return parsed.filter(c => typeof c === 'string').map(c => c.toLowerCase());
+      }
+      if (typeof parsed === 'string') {
+        return [parsed.toLowerCase()];
+      }
+    } catch {
+      return [filterColor.toLowerCase()];
+    }
+  }
+
+  return [];
+};
+
+const updateUserColor = async ({ user, color, props, setState }) => {
+  if (!user?._id) {
+    return { skipped: true };
+  }
+
+  const payload = {
+    filterColor: [color],
+    requestor: {
+      requestorId: props.auth?.user?.userid || null,
+      role: props.auth?.user?.role,
+      permissions: props.auth?.user?.permissions,
+      email: props.auth?.user?.email,
+    },
+    firstName: user.firstName,
+    lastName: user.lastName,
+  };
+
+  const res = await props.updateOneSummaryReport(user._id, payload);
+
+  setState(prev => ({
+    ...prev,
+    summaries: prev.summaries.map(u =>
+      u._id === user._id ? { ...u, filterColor: res.data?.filterColor || [color] } : u,
+    ),
+  }));
+
+  return { success: true };
+};
+
+const doesSummaryBelongToWeek = (startDateStr, endDateStr, weekIndex) => {
+  const weekStartLA = moment()
+    .tz('America/Los_Angeles')
+    .startOf('week')
+    .subtract(weekIndex, 'week')
+    .toDate();
+  const weekEndLA = moment()
+    .tz('America/Los_Angeles')
+    .endOf('week')
+    .subtract(weekIndex, 'week')
+    .toDate();
+
+  const summaryStart = new Date(startDateStr);
+  const summaryEnd = new Date(endDateStr);
+
+  return summaryStart <= weekEndLA && summaryEnd >= weekStartLA;
+};
+
 /* eslint-disable react/function-component-definition */
 const WeeklySummariesReport = props => {
   const { loading, getInfoCollections } = props;
@@ -397,27 +548,6 @@ const WeeklySummariesReport = props => {
     return temp.sort((a, b) =>
       `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`),
     );
-  };
-
-  const doesSummaryBelongToWeek = (startDateStr, endDateStr, weekIndex) => {
-    // weekIndex: 0 = This Week, 1 = Last Week, 2 = Week Before Last, 3 = Three Weeks Ago
-    const weekStartLA = moment()
-      .tz('America/Los_Angeles')
-      .startOf('week')
-      .subtract(weekIndex, 'week')
-      .toDate();
-
-    const weekEndLA = moment()
-      .tz('America/Los_Angeles')
-      .endOf('week')
-      .subtract(weekIndex, 'week')
-      .toDate();
-
-    const summaryStart = new Date(startDateStr);
-    const summaryEnd = new Date(endDateStr);
-
-    // keep if it overlaps that week
-    return summaryStart <= weekEndLA && summaryEnd >= weekStartLA;
   };
 
   /**
@@ -660,43 +790,8 @@ const WeeklySummariesReport = props => {
         const promisedHoursByWeek = weekDates.map(weekDate =>
           getPromisedHours(weekDate.toDate, summary.weeklycommittedHoursHistory),
         );
-        // // Keeping this block commented intentionally for future reference —
-        // let filterColor = [];
-        // // Keeping this block commented intentionally for future reference —
-        // // const filterColor = summary.filterColor || null; // old working code
-        // if (Array.isArray(summary.filterColor)) {
-        //   filterColor = summary.filterColor;
-        // } else if (typeof summary.filterColor === 'string') {
-        //   try {
-        //     const parsed = JSON.parse(summary.filterColor);
-        //     filterColor = Array.isArray(parsed) ? parsed : [summary.filterColor];
-        //   } catch {
-        //     filterColor = [summary.filterColor];
-        //   }
-        // }
-        let filterColor = [];
-        if (Array.isArray(summary.filterColor)) {
-          // 1. Filter out junk data (like 'null')
-          // 2. Convert all strings to lowercase (good practice)
-          filterColor = summary.filterColor
-            .filter(c => typeof c === 'string') // Keep only strings
-            .map(c => c.toLowerCase()); // Ensure lowercase
-        } else if (typeof summary.filterColor === 'string') {
-          // Handles cases where DB stores '["purple"]' or just 'Purple'
-          try {
-            const parsed = JSON.parse(summary.filterColor);
-            if (Array.isArray(parsed)) {
-              // It was a stringified array, clean it
-              filterColor = parsed.filter(c => typeof c === 'string').map(c => c.toLowerCase());
-            } else if (typeof parsed === 'string') {
-              // It was a single string like '"purple"'
-              filterColor = [parsed.toLowerCase()];
-            }
-          } catch {
-            // It was just a plain string like 'Purple'
-            filterColor = [summary.filterColor.toLowerCase()];
-          }
-        }
+
+        const filterColor = normalizeFilterColor(summary.filterColor);
 
         return { ...summary, promisedHoursByWeek, filterColor };
       });
@@ -984,106 +1079,17 @@ const WeeklySummariesReport = props => {
 
       const temp = summaries
         .map(s => ({ ...s }))
-        .filter(summary => {
-          const { activeTab } = state;
-          const hoursLogged = (summary.totalSeconds[navItems.indexOf(activeTab)] || 0) / 3600;
-
-          // 🛑 Adding this block at the very top inside the filter
-          // if (summary?.isActive === false) {
-          //   const lastWeekStart = moment()
-          //     .tz('America/Los_Angeles')
-          //     .startOf('week')
-          //     .subtract(1, 'week')
-          //     .toDate();
-          //   const lastWeekEnd = moment()
-          //     .tz('America/Los_Angeles')
-          //     .endOf('week')
-          //     .subtract(1, 'week')
-          //     .toDate();
-          //   const summaryStart = new Date(summary.startDate);
-          //   const summaryEnd = new Date(summary.endDate);
-          //   const isLastWeek = summaryStart <= lastWeekEnd && summaryEnd >= lastWeekStart;
-
-          //   if (!isLastWeek) {
-          //     return false; // Skip inactive members unless their summary is from last week
-          //   }
-          // }
-          if (
-            summary?.isActive === false &&
-            !doesSummaryBelongToWeek(summary.startDate, summary.endDate, weekIndex)
-          ) {
-            return false;
-          }
-          const isMeetCriteria =
-            summary.totalTangibleHrs > 80 &&
-            summary.daysInTeam > 60 &&
-            summary.bioPosted !== 'posted';
-          const isBio = !selectedBioStatus || isMeetCriteria;
-          const isOverHours =
-            !selectedOverTime ||
-            (summary.weeklycommittedHours > 0 &&
-              hoursLogged > 0 &&
-              hoursLogged >= summary.promisedHoursByWeek[navItems.indexOf(activeTab)]);
-
-          // Add trophy filter logic
-          const summarySubmissionDate = moment()
-            .tz('America/Los_Angeles')
-            .endOf('week')
-            .subtract(weekIndex, 'week')
-            .format('YYYY-MM-DD');
-
-          const hasTrophy =
-            !selectedTrophies ||
-            showTrophyIcon(summarySubmissionDate, summary?.startDate?.split('T')[0]);
-
-          // Add special color filter logic
-          // const matchesSpecialColor =
-          //   activeFilterColors.length === 0 || activeFilterColors.includes(summary.filterColor);
-          // const matchesSpecialColor =
-          //   // activeFilterColors.length === 0 ||
-          //   // activeFilterColors.some(color => summary.filterColor?.includes?.(color));
-          //   activeFilterColors.length === 0 || activeFilterColors.includes(summary.filterColor); // old one
-
-          const matchesSpecialColor =
-            activeFilterColors.length === 0 ||
-            activeFilterColors.some(color => summary.filterColor?.includes(color));
-
-          // Filtered by Team Code and Extra Members
-          const isInSelectedCode = selectedCodesArray.includes(summary.teamCode);
-          const isInSelectedExtraMember = selectedExtraMembersArray.includes(summary._id);
-          const noFilterSelected =
-            selectedCodesArray.length === 0 && selectedExtraMembersArray.length === 0;
-
-          let matchesLoggedHoursRange = true;
-          if (selectedLoggedHoursRange && selectedLoggedHoursRange.length > 0) {
-            matchesLoggedHoursRange = selectedLoggedHoursRange.some(range => {
-              switch (range.value) {
-                case '=0':
-                  return hoursLogged === 0;
-                case '0-10':
-                  return hoursLogged > 0 && hoursLogged <= 10;
-                case '10-20':
-                  return hoursLogged > 10 && hoursLogged <= 20;
-                case '20-40':
-                  return hoursLogged > 20 && hoursLogged <= 40;
-                case '>40':
-                  return hoursLogged > 40;
-                default:
-                  return true;
-              }
-            });
-          }
-          return (
-            (noFilterSelected || isInSelectedCode || isInSelectedExtraMember) &&
-            (selectedColorsArray.length === 0 ||
-              selectedColorsArray.includes(summary.weeklySummaryOption)) &&
-            matchesSpecialColor &&
-            isOverHours &&
-            isBio &&
-            hasTrophy &&
-            matchesLoggedHoursRange
-          );
-        });
+        .filter(summary =>
+          doesSummaryMatchFilters({
+            summary,
+            state,
+            weekIndex,
+            selectedCodesArray,
+            selectedColorsArray,
+            selectedExtraMembersArray,
+            activeFilterColors,
+          }),
+        );
 
       // Use Dict and Set for quick access
       const filteredTeamDict = {};
@@ -1251,17 +1257,8 @@ const WeeklySummariesReport = props => {
           // Keeping this block commented intentionally for future reference —
           // const filterColor = summary.filterColor || null;
           // return { ...summary, promisedHoursByWeek, filterColor }; // both lines old working code
-          let filterColor = [];
-          if (Array.isArray(summary.filterColor)) {
-            filterColor = summary.filterColor;
-          } else if (typeof summary.filterColor === 'string') {
-            filterColor = [summary.filterColor];
-          }
-          return {
-            ...summary,
-            promisedHoursByWeek,
-            filterColor,
-          };
+          const filterColor = normalizeFilterColor(summary.filterColor);
+          return { ...summary, promisedHoursByWeek, filterColor };
         });
 
         // Update state
@@ -1337,17 +1334,8 @@ const WeeklySummariesReport = props => {
                 // Keeping this block commented intentionally for future reference —
                 // const filterColor = summary.filterColor || null;
                 // return { ...summary, promisedHoursByWeek, filterColor }; old working code
-                let filterColor = [];
-                if (Array.isArray(summary.filterColor)) {
-                  filterColor = summary.filterColor;
-                } else if (typeof summary.filterColor === 'string') {
-                  filterColor = [summary.filterColor];
-                }
-                return {
-                  ...summary,
-                  promisedHoursByWeek,
-                  filterColor,
-                };
+                const filterColor = normalizeFilterColor(summary.filterColor);
+                return { ...summary, promisedHoursByWeek, filterColor };
               });
 
               setState(prevState => ({
@@ -2017,78 +2005,20 @@ const WeeklySummariesReport = props => {
       let failCount = 0;
 
       // Convert matchingUsers into update promises (skipping any with missing _id)
-      const updatePromises = matchingUsers.map(user => {
-        if (!user?._id) {
-          failCount++;
-          return Promise.resolve({ status: 'skipped', reason: 'Missing user._id' });
+      const updatePromises = matchingUsers.map(user =>
+        updateUserColor({ user, color, props, setState }),
+      );
+
+      const results = await Promise.allSettled(updatePromises);
+
+      results.forEach(r => {
+        if (r.status === 'fulfilled') {
+          if (r.value?.success) successCount += 1;
+          if (r.value?.skipped); // optional: track skipped
+        } else {
+          failCount += 1;
         }
-
-        const payloadToSend = {
-          filterColor: [color],
-          requestor: {
-            requestorId: props.auth?.user?.userid || props.auth?.user?._id || null,
-            role: props.auth?.user?.role,
-            permissions: props.auth?.user?.permissions,
-            email: props.auth?.user?.email,
-          },
-          firstName: user.firstName,
-          lastName: user.lastName,
-          personalLinks: user.personalLinks || [],
-          adminLinks: user.adminLinks || [],
-        };
-
-        return props
-          .updateOneSummaryReport(user._id, payloadToSend)
-          .then(res => {
-            successCount++;
-            const updatedUserFromServer = res?.data;
-
-            // Update state safely using functional setState
-            setState(prev => {
-              const updatedSummaries = Array.isArray(prev.summaries)
-                ? prev.summaries.map(u =>
-                    u && u._id === user._id
-                      ? { ...u, filterColor: updatedUserFromServer?.filterColor || [color] }
-                      : u,
-                  )
-                : prev.summaries;
-
-              const updatedFilteredSummaries = Array.isArray(prev.filteredSummaries)
-                ? prev.filteredSummaries.map(u =>
-                    u && u._id === user._id
-                      ? { ...u, filterColor: updatedUserFromServer?.filterColor || [color] }
-                      : u,
-                  )
-                : prev.filteredSummaries;
-
-              const updatedSummariesForTab = {
-                ...prev.summariesByTab,
-                [prev.activeTab]: updatedSummaries,
-              };
-
-              return {
-                ...prev,
-                summaries: updatedSummaries,
-                filteredSummaries: updatedFilteredSummaries,
-                summariesByTab: updatedSummariesForTab,
-              };
-            });
-
-            // return fulfilled info for Promise.allSettled
-            return { status: 'fulfilled', value: res };
-          })
-          .catch(err => {
-            failCount++;
-            const status = err?.response?.status;
-            const msg = err?.response?.data?.message || err.message;
-            // eslint-disable-next-line no-console
-            console.warn(`⚠️ Skipped user ${user._id} (${status}): ${msg}`);
-            return { status: 'rejected', reason: err };
-          });
       });
-
-      // Wait for all to finish
-      await Promise.allSettled(updatePromises);
 
       // Final toasts depending on results
       if (failCount > 0) {
@@ -2384,21 +2314,8 @@ const WeeklySummariesReport = props => {
               getPromisedHours(weekDate.toDate, summary.weeklycommittedHoursHistory || []),
             );
 
-            let filterColor = [];
-            if (Array.isArray(summary.filterColor)) {
-              filterColor = summary.filterColor
-                .filter(c => typeof c === 'string')
-                .map(c => c.toLowerCase());
-            } else if (typeof summary.filterColor === 'string') {
-              try {
-                const parsed = JSON.parse(summary.filterColor);
-                filterColor = Array.isArray(parsed)
-                  ? parsed.filter(c => typeof c === 'string').map(c => c.toLowerCase())
-                  : [parsed.toLowerCase()];
-              } catch {
-                filterColor = [summary.filterColor.toLowerCase()];
-              }
-            }
+            const filterColor = normalizeFilterColor(summary.filterColor);
+
             return { ...summary, promisedHoursByWeek, filterColor };
           });
           // 3. Generating Team Codes & Color Options
