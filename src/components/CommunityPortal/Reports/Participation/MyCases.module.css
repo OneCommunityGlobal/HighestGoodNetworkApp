@@ -250,6 +250,32 @@
   color: #9b59b6;
 }
 
+
+.caseCardDark .eventBadge {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #e2e8f0;
+}
+
+.caseCardDark .eventBadge[data-type='Yoga Class'] {
+  background-color: rgba(40, 167, 69, 0.2);
+  color: #8fd19e;
+}
+
+.caseCardDark .eventBadge[data-type='Cooking Workshop'] {
+  background-color: rgba(231, 76, 60, 0.2);
+  color: #f1948a;
+}
+
+.caseCardDark .eventBadge[data-type='Dance Class'] {
+  background-color: rgba(243, 156, 18, 0.2);
+  color: #f7dc6f;
+}
+
+.caseCardDark .eventBadge[data-type='Fitness Bootcamp'] {
+  background-color: rgba(155, 89, 182, 0.2);
+  color: #d2b4de;
+}
+
 .eventTime {
   font-size: 14px;
   color: #555;
