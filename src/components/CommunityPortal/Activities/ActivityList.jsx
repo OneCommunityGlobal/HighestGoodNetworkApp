@@ -10,6 +10,7 @@ function ActivityList() {
     type: '',
     date: '',
     location: '',
+    pastEvents: false,
   });
 
   useEffect(() => {
@@ -145,9 +146,9 @@ function ActivityList() {
 
     const filtered = showPastEvents ? parsed : parsed.filter(a => a._dateObj >= startOfToday);
     filtered.sort((a, b) => a._dateObj - b._dateObj);
-
+    setFilter({ ...filter, pastEvents: showPastEvents });
     return filtered;
-  }, [showPastEvents, startOfToday]);
+  }, [activities, showPastEvents, startOfToday]);
 
   const handleFilterChange = e => {
     const { name, value } = e.target;
@@ -167,7 +168,9 @@ function ActivityList() {
       type: '',
       date: '',
       location: '',
+      pastEvents: false,
     });
+    setShowPastEvents(false);
   };
 
   return (
@@ -216,16 +219,16 @@ function ActivityList() {
             darkMode ? styles.clearFiltersButtonDark : ''
           }`}
           onClick={handleClearFilters}
-          disabled={!filter.type && !filter.date && !filter.location}
+          disabled={!filter.type && !filter.date && !filter.location && !filter.pastEvents}
         >
           Clear All
         </button>
       </div>
 
       <div className={`${styles.activityList} ${darkMode ? styles.darkActivityList : ''}`}>
-        {visibleActivities.length > 0 ? (
+        {filteredActivities.length > 0 ? (
           <ul>
-            {visibleActivities.map(activity => (
+            {filteredActivities.map(activity => (
               <li key={activity.id}>
                 <strong>{activity.name}</strong> - {activity.type} - {activity.date} -{' '}
                 {activity.location}
