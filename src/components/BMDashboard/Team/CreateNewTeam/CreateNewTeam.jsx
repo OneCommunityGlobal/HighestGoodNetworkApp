@@ -22,7 +22,7 @@ export default function CreateNewTeam() {
   );
   const [selectedMember, setSelectedMember] = useState('');
   const [selectedTask, setSelectedTask] = useState('');
-  const [members, setMembers] = useState(userProfilesBasicInfo || []);
+  const [members, setMembers] = useState([]);
   // const [tasks, setTasks] = useState([]);
   const [tasks] = useState([]);
   const [assignedMembers, setAssignedMembers] = useState([]);
@@ -43,8 +43,8 @@ export default function CreateNewTeam() {
   }, [dispatch]);
 
   useEffect(() => {
-    setMembers(userProfilesBasicInfo);
-  }, []);
+    setMembers(userProfilesBasicInfo || []);
+  }, [userProfilesBasicInfo]);
 
   const validationObj = {
     additionalInformation: Joi.string()
@@ -252,13 +252,19 @@ export default function CreateNewTeam() {
               onChange={handleMemberChange}
               className={`${styles.memberDropdown}`}
             >
-              <option value="">Select a Member</option>
-              {members.map((user, index) => (
-                // eslint-disable-next-line react/no-array-index-key
-                <option key={index} value={user.id}>
-                  {user.firstName} {user.lastName}
-                </option>
-              ))}
+              {Array.isArray(members) && members.length > 0 ? (
+                <>
+                  <option value="">Select a Member</option>
+                  {members.map((user, index) => (
+                    // eslint-disable-next-line react/no-array-index-key
+                    <option key={index} value={user.id}>
+                      {user.firstName} {user.lastName}
+                    </option>
+                  ))}
+                </>
+              ) : (
+                <option value="">No members available</option>
+              )}
             </Input>
             <Button
               onClick={handleAddMember}
@@ -309,13 +315,19 @@ export default function CreateNewTeam() {
           <Label for="task-select">Add Main Tasks</Label>
           <div className={`${styles.selectContainer}`}>
             <Input id="tasks-select" type="select" value={selectedTask} onChange={handleTaskChange}>
-              <option value="">Select a Task</option>
-              {tasks.map((task, index) => (
-                // eslint-disable-next-line react/no-array-index-key
-                <option key={index} value={task.id}>
-                  {task}
-                </option>
-              ))}
+              {Array.isArray(tasks) && tasks.length > 0 ? (
+                tasks.map((task, index) => (
+                  // eslint-disable-next-line react/no-array-index-key
+                  <>
+                    <option value="">Select a Task</option>
+                    <option key={index} value={task.id}>
+                      {task}
+                    </option>
+                  </>
+                ))
+              ) : (
+                <option value="">No tasks available</option>
+              )}
             </Input>
             <Button
               onClick={handleAddTask}
@@ -376,10 +388,10 @@ export default function CreateNewTeam() {
           )}
         </FormGroup>
         <div className={`${styles.addTeamButtons}`}>
-          <Button id="cancel-button" outline style={boxStyle} onClick={handleCancelClick}>
+          <Button id="cancel-button" style={boxStyle} onClick={handleCancelClick}>
             Cancel
           </Button>
-          <Button id="submit-button" style={boxStyle}>
+          <Button id="submit-button" style={boxStyle} onClick={handleSubmit}>
             Submit
           </Button>
         </div>
