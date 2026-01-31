@@ -213,8 +213,8 @@ import SupportLogin from './components/SupportPortal/SupportLogin';
 import SupportDashboard from './components/SupportPortal/SupportDashboard';
 import SupportLogViewer from './components/SupportPortal/SupportLogViewer';
 import JobApplicationForm from './components/Collaboration/JobApplicationForm/JobApplicationForm';
-
 import OptStatusPieChart from './components/OptStatusPieChart/OptStatusPieChart';
+
 // Social Architecture
 
 const ResourceManagement = lazy(() => import('./components/ResourceManagement/ResourceManagement'));
@@ -944,6 +944,28 @@ export default (
         <ProtectedRoute path="/ExperienceDonutChart" component={ExperienceDonutChart} fallback />
         <ProtectedRoute path="/prPromotionsPage" component={PRPromotionsPage} fallback />
         <ProtectedRoute path="/" exact component={Dashboard} />
+        <ProtectedRoute path="/analytics/opt-status" exact component={OptStatusPieChart} />
+        {/* ----- PR Dashboard  ----- */}
+        <ProtectedRoute
+          path="/pr-dashboard/promotion-eligibility"
+          exact
+          component={PromotionEligibility}
+        />
+        {/* /*  for support team*/}
+        <Route path="/support/login" component={SupportLogin} />
+        <Route path="/support/dashboard" component={SupportDashboard} />
+        <Route path="/support/log/:studentId" component={SupportLogViewer} />
+        <ProtectedRoute
+          path="/pr-team-analytics/popular-prs"
+          exact
+          component={PRReviewTeamAnalytics}
+        />
+        <ProtectedRoute
+          path="/pr-grading-dashboard"
+          exact
+          component={PRGradingDashboard}
+          fallback
+        />
         <Route path="*" component={NotFoundPage} />
       </Switch>
     </>
