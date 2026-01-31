@@ -1,3 +1,4 @@
+import { GET_ERRORS } from '../constants/errors';
 import { GET_OPT_STATUS_BREAKDOWN } from '../constants/optStatusBreakdownConstants';
 
 const initialState = {
@@ -15,6 +16,14 @@ export const optStatusBreakdownReducer = (state = initialState, action) => {
         loading: false,
         error: null,
       };
+
+    case GET_ERRORS:
+      return {
+        ...state,
+        error: action.payload,
+        loading: false,
+      };
+
     default:
       return state;
   }
