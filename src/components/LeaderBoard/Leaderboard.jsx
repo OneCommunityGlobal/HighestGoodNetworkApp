@@ -700,16 +700,18 @@ function LeaderBoard({
                   </th>
                   <th style={darkModeStyle}>
                     <div className="d-flex align-items-center">
-                      <span>{isAbbreviatedView ? 'Name' : 'Name'}</span>
-                      <EditableInfoModal
-                        areaName="Leaderboard"
-                        areaTitle="Team Members Navigation"
-                        role={loggedInUser.role}
-                        fontSize={18}
-                        isPermissionPage
-                        darkMode={darkMode}
-                        className="p-2"
-                      />
+                      <span className="mr-2">{isAbbreviatedView ? 'Name' : 'Name'}</span>
+                      <span style={{ position: 'relative', top: '2px' }}>
+                        <EditableInfoModal
+                          areaName="Leaderboard"
+                          areaTitle="Team Members Navigation"
+                          role={loggedInUser.role}
+                          fontSize={18}
+                          isPermissionPage
+                          darkMode={darkMode}
+                          className="p-2"
+                        />
+                      </span>
                     </div>
                   </th>
                   <th style={darkModeStyle}>

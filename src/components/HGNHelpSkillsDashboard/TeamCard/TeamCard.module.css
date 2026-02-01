@@ -20,7 +20,7 @@
   display: flex;
   align-items: center; /* This will vertically align the icon and text */
   gap: 8px; /* This adds some space between the icon and the text */
-  color: #6E6E6E;
+  color: #6e6e6e;
   font-family: Inter, sans-serif;
   font-size: 24px;
   font-style: normal;
@@ -33,7 +33,7 @@
   font-weight: 600;
   font-family: Inter, sans-serif;
   line-height: 150%;
-  color: #6E6E6E;
+  color: #6e6e6e;
 }
 
 .teamMemberRow {
@@ -68,7 +68,7 @@
   height: 26px;
   flex-shrink: 0;
   margin: 0 20px;
-  color: #6E6E6E;
+  color: #6e6e6e;
 }
 
 .scoreBase {
@@ -83,7 +83,7 @@
 }
 
 .scoreRed {
-  color: #FF0000;
+  color: #ff0000;
 }
 
 .showMoreLink {
