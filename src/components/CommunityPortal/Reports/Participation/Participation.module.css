@@ -390,6 +390,7 @@
 }
 
 .insightsTabs {
+  flex: 1;
   display: flex;
   border: 1px solid #ccc;
   border-radius: 5px;
@@ -397,16 +398,44 @@
   max-width: 60%;
 }
 
+.insightsTabsContainer{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.icons{
+  cursor: pointer;
+  display: flex;
+  gap: 8px;
+}
+
 .insightsTab {
   flex: 1;
   text-align: center;
   padding: 10px 0;
   font-size: 0.9rem;
-  color: #555;
-  background-color: #f8f9fa;
   border: none;
   cursor: pointer;
   transition: background-color 0.3s, color 0.3s;
+}
+
+.insightsTabLight{
+  color: #555;
+  background-color: #f8f9fa;
+}
+
+.insightsTabDark{
+  color: #f8f9fa;
+  background-color: #1C2541;
+}
+
+.insightsTabDark:hover {
+  background-color: #3A506B;
+}
+
+.insightsTabLight:hover {
+  background-color: #e0e0e0;
 }
 
 .insightsTab:not(:last-child) {
@@ -418,10 +447,6 @@
   background-color: #007bff;
   color: #fff;
   font-weight: bold;
-}
-
-.insightsTab:hover {
-  background-color: #e0e0e0;
 }
 
 .insightsContent {
@@ -473,12 +498,154 @@
   color: #333;
 }
 
-/* Dark mode container */
+.insightsPercentageDark {
+    color: #ffffff;
+  }
+
+.tooltipWrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.tooltip {
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 10px;
+  font-size: 12px;
+  background-color: #111;
+  color: #fff;
+  border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+  z-index: 10;
+}
+
+.tooltipWrapper:hover .tooltip {
+  opacity: 1;
+}
+
+/* ---------- Export PDF modal ---------- */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal {
+  width: 420px;
+  max-width: calc(100vw - 32px);
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.modalDark {
+  background: #1C2541;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modalTitle {
+  margin: 0;
+}
+
+.modalClose {
+  border: none;
+  background: transparent;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.modalBody {
+  margin-top: 12px;
+}
+
+.modalMeta {
+  font-size: 16px;
+  opacity: 0.85;
+  display: grid;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.modalError {
+  margin-bottom: 12px;
+  font-size: 13px;
+  color: #b00020;
+}
+
+.modalActions {
+  display: flex;
+  gap: 10px;
+}
+
+.exportOptionsButtons,
+.exportOptionsButtonsDark {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.exportOptionsButtons{
+  background: transparent;
+  border: 1px solid #ccc;
+  color: #555;
+}
+
+.exportOptionsButtons:hover{
+  color: #555;
+  background-color: #e0e0e0;
+}
+
+.exportOptionsButtonsDark{
+  border: 1px solid #ccc;
+  color: #111;
+}
+
+.exportOptionsButtonsDark:hover {
+  background: #3A506B;
+}
+
+.exportOptionsButtons:disabled,
+.exportOptionsButtonsDark:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+
+
+/* ---------- PDF/Print helpers ---------- */
+.pageBreakBefore { break-before: page; page-break-before: always; }
+.pageBreakAfter  { break-after: page;  page-break-after: always; }
+.avoidBreak       { break-inside: avoid; page-break-inside: avoid; }
+
+/* Use :global for data attributes and print styles */
+:global(html[data-exporting="true"]) .caseCards:global(.expanded),
+:global(html[data-exporting="true"]) .caseList:global(.expanded),
+:global(html[data-exporting="true"]) .trackingListContainer {
+  max-height: none !important;
+  overflow: visible !important;
+  -webkit-overflow-scrolling: auto !important;
+}
+
 .insightsTabsDarkMode {
   border: 1px solid #555;
   background-color: #1e293b; /* Dark background */
 }
-
 /* Dark mode tab */
 .insightsTabDarkMode {
   color: #ddd;

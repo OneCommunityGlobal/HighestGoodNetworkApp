@@ -26,6 +26,7 @@
   width: 100%;            
   display: block;         
   text-align: center; 
+  font-size: 1.2rem;
 }
 
 .header h2,
@@ -103,6 +104,7 @@
   justify-content: center;
   align-items: center;
   gap: 5px;
+  margin-top: 10px;
 }
 
 .arrow.up {
@@ -113,11 +115,6 @@
   color: red;
 }
 
-/* Resource Monitoring Title */
-.resourceTitle {
-  font-weight: bold;
-  color: grey;
-}
 
 .registrationForm,
 .filters {
@@ -165,7 +162,7 @@
   color: #fff;
   border: none;
   border-radius: 5px;
-  padding: 5px 10px;
+  padding: 8px 20px;
   cursor: pointer;
 }
 
@@ -182,6 +179,9 @@
 }
 .status {
   font-weight: bold;
+  padding: 5px;
+  border-radius: 5px;
+  color: white;
 }
 .active {
   color: green;
@@ -219,13 +219,6 @@
 
 .dateBox .date {
   font-size: 1.5em;
-}
-
-.status {
-  padding: 5px;
-  border-radius: 5px;
-  color: white;
-  font-weight: bold;
 }
 
 .status.active {
@@ -309,22 +302,10 @@
 
 /* Resource Monitoring */
 
-.resourceTitle {
-  text-align: left;
-  font-size: 1.2rem;
-  margin-bottom: 5px;
-}
-
 .resourceValue {
   font-weight: bold;
   color: black;
   font-size: 1rem;
-}
-
-.resourceStats {
-  display: flex;
-  align-items: center;
-  margin-top: 10px;
 }
 
 .resourceStats .arrow {
@@ -383,15 +364,6 @@
 
 .applyFiltersBtn:hover {
   background-color: #0056b3;
-}
-
-.createNewBtn {
-  padding: 8px 20px;
-  background-color: #28a745;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
 }
 
 .createNewBtn:hover {
