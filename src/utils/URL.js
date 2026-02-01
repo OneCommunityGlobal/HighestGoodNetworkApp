@@ -372,6 +372,8 @@ export const ENDPOINTS = {
     `${APIEndpoint}/bm/timelogger/${projectId}/${memberId}/stop`,
   TIME_LOGGER_LOGS: (projectId, memberId) =>
     `${APIEndpoint}/bm/timelogger/${projectId}/${memberId}/logs`,
+  TIME_LOGGER_ALL_LOGS: projectId =>
+    `${APIEndpoint}/bm/timelogger/${projectId}/logs`,
 
   GET_TIME_OFF_REQUESTS: () => `${APIEndpoint}/getTimeOffRequests`,
   ADD_TIME_OFF_REQUEST: () => `${APIEndpoint}/setTimeOffRequest`,
@@ -456,6 +458,9 @@ export const ENDPOINTS = {
   SLACK_ADD: `${APIEndpoint}/slack/invite`,
   DROPBOX_CREATE_ADD: `${APIEndpoint}/dropbox/create-folder-and-invite`,
   ACCESS_MANAGEMENT: `${APIEndpoint}/accessManagement`,
+
+  // CP dashboard endpoints
+  CP_NOSHOW: `${APIEndpoint}/communityportal/sendFollowUpEmail`,
 
   // community portal
   CP_NOSHOW_VIZ_LOCATION: `${APIEndpoint}/communityportal/reports/participation/location`,

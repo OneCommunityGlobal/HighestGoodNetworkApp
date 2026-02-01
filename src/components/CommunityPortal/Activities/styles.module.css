@@ -26,6 +26,7 @@
   width: 100%;            
   display: block;         
   text-align: center; 
+  font-size: 1.2rem;
 }
 
 .header h2,
@@ -103,6 +104,22 @@
   justify-content: center;
   align-items: center;
   gap: 5px;
+  margin-top: 10px;
+}
+
+.resourceStats .arrow {
+  font-size: 1rem;
+  margin-right: 5px;
+}
+
+.resourceStats p {
+  margin: 0;
+}
+
+.resourceStats p:last-child {
+  color: grey;
+  font-size: 0.7rem;
+  margin-left: 5px;
 }
 
 .arrow.up {
@@ -164,12 +181,16 @@
 }
 
 .createNewBtn {
+  padding: 8px 20px;
   background-color: #28a745;
-  color: #fff;
+  color: white;
   border: none;
   border-radius: 5px;
-  padding: 5px 10px;
   cursor: pointer;
+}
+
+.createNewBtn:hover {
+  background-color: #218838;
 }
 
 .myEventsTable {
@@ -183,7 +204,11 @@
   padding: 8px;
   text-align: left;
 }
+
 .status {
+  padding: 5px;
+  border-radius: 5px;
+  color: white;
   font-weight: bold;
 }
 .active {
@@ -312,8 +337,6 @@
 
 /* Resource Monitoring */
 
-
-
 .resourceValue {
   font-weight: bold;
   color: black;
@@ -326,20 +349,7 @@
   margin-top: 10px;
 }
 
-.resourceStats .arrow {
-  font-size: 1rem;
-  margin-right: 5px;
-}
 
-.resourceStats p {
-  margin: 0;
-}
-
-.resourceStats p:last-child {
-  color: grey;
-  font-size: 0.7rem;
-  margin-left: 5px;
-}
 
 /* My Events toggle button */
 .viewToggle button {
@@ -393,9 +403,7 @@
   cursor: pointer;
 }
 
-.createNewBtn:hover {
-  background-color: #218838;
-}
+
 
 .registerinfo {
   display: flex;
