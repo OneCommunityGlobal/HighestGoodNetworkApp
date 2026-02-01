@@ -312,3 +312,90 @@
     padding: 6px 6px;
   }
 }
+
+/* Dark mode (body.dark-mode from theme) */
+body.dark-mode .activity-container {
+  background-color: #1b2a41;
+  color: #e0e0e0;
+}
+
+body.dark-mode .activity-event-card {
+  background-color: #2a3a57;
+  border-color: #3b4a66;
+  color: #e0e0e0;
+}
+
+body.dark-mode .activity-event-type,
+body.dark-mode .activity-event-location {
+  color: #b0b0b0;
+}
+
+body.dark-mode .activity-event-title {
+  color: #fff;
+}
+
+body.dark-mode .activity-event-link {
+  color: #64b5f6;
+}
+
+body.dark-mode .activity-event-info,
+body.dark-mode .activity-event-info strong {
+  color: #e0e0e0;
+}
+
+body.dark-mode .activity-event-image {
+  background-color: #3b4a66;
+  color: #b0b0b0;
+}
+
+body.dark-mode .activity-calendar-box {
+  color: #e0e0e0;
+}
+
+body.dark-mode .activity-calendar-header {
+  color: #fff;
+}
+
+body.dark-mode .activity-calendar-table th,
+body.dark-mode .activity-calendar-table td {
+  background-color: #2a3a57;
+  border-color: #3b4a66;
+  color: #e0e0e0;
+}
+
+body.dark-mode .activity-active-date {
+  background-color: #7b1fa2;
+  color: #fff;
+}
+
+body.dark-mode .activity-event-tabs {
+  border-top-color: #3b4a66;
+}
+
+body.dark-mode .activity-tab {
+  color: #e0e0e0;
+  background-color: transparent;
+  border: none;
+}
+
+body.dark-mode .activity-tab.active {
+  color: #64b5f6;
+  border-bottom: 2px solid #64b5f6;
+  background-color: transparent;
+}
+
+body.dark-mode .activity-avatar-more {
+  color: #b0b0b0;
+}
+
+body.dark-mode .feedback-btn,
+body.dark-mode .contact-btn {
+  background-color: #3b4a66;
+  color: #e0e0e0;
+  border-color: #3b4a66;
+}
+
+body.dark-mode .activity-event-description,
+body.dark-mode .activity-participant-name {
+  color: #e0e0e0;
+}

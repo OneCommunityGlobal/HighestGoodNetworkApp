@@ -251,3 +251,100 @@
   }
 }
 
+/* Dark mode (body.dark-mode from theme) */
+:global(body.dark-mode) .container {
+  background-color: #1b2a41;
+  color: #e0e0e0;
+}
+
+:global(body.dark-mode) .title {
+  color: #fff;
+}
+
+:global(body.dark-mode) .subtitle {
+  color: #b0b0b0;
+}
+
+:global(body.dark-mode) .searchInput {
+  background-color: #2a3a57;
+  border-color: #3b4a66;
+  color: #fff;
+}
+
+:global(body.dark-mode) .searchIcon {
+  color: #b0b0b0;
+}
+
+:global(body.dark-mode) .searchInput::placeholder {
+  color: #909090;
+}
+
+:global(body.dark-mode) .filterButton {
+  background-color: #2a3a57;
+  border-color: #3b4a66;
+  color: #e0e0e0;
+}
+
+:global(body.dark-mode) .filterButton:hover {
+  border-color: #64b5f6;
+  color: #64b5f6;
+}
+
+:global(body.dark-mode) .filterButtonActive {
+  background-color: #3b4a66;
+  border-color: #64b5f6;
+  color: #fff;
+}
+
+:global(body.dark-mode) .faqItem {
+  background-color: #2a3a57;
+  border-color: #3b4a66;
+}
+
+:global(body.dark-mode) .faqItem:hover {
+  box-shadow: 0 2px 8px rgba(255, 255, 255, 0.08);
+}
+
+:global(body.dark-mode) .faqQuestionButton:hover {
+  background-color: #3b4a66;
+}
+
+:global(body.dark-mode) .faqQuestion {
+  color: #fff;
+}
+
+:global(body.dark-mode) .faqIcon {
+  color: #b0b0b0;
+}
+
+:global(body.dark-mode) .faqAnswer {
+  color: #b0b0b0;
+}
+
+:global(body.dark-mode) .noFaqs {
+  background-color: #2a3a57;
+  border-color: #3b4a66;
+  color: #b0b0b0;
+}
+
+:global(body.dark-mode) .footer {
+  border-top-color: #3b4a66;
+}
+
+:global(body.dark-mode) .footerText {
+  color: #b0b0b0;
+}
+
+:global(body.dark-mode) .footerLink {
+  color: #64b5f6;
+}
+
+:global(body.dark-mode) .footerLink:hover {
+  color: #90caf9;
+}
+
+:global(body.dark-mode) .loading,
+:global(body.dark-mode) .error {
+  color: #b0b0b0;
+}
+
