@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import CommentSection from './CommentSection/CommentSection';
 import ActivityFAQs from './ActivityFAQs';
 import styles from './Activity.module.css';
@@ -179,18 +180,30 @@ function Activity({ initialTab }) {
                 </tr>
               </thead>
               <tbody>
-                {Array.from({ length: calendarDays.length / 7 }, (_, rowIndex) => (
-                  <tr key={rowIndex}>
-                    {calendarDays.slice(rowIndex * 7, rowIndex * 7 + 7).map((day, colIndex) => {
-                      const isToday = day === todayDate;
-                      return (
-                        <td key={colIndex} className={isToday ? styles.activeDate : undefined}>
-                          {day ?? '\u00A0'}
-                        </td>
-                      );
-                    })}
-                  </tr>
-                ))}
+                {Array.from({ length: calendarDays.length / 7 }, (_, rowIndex) => {
+                  const weekDays = calendarDays.slice(rowIndex * 7, rowIndex * 7 + 7);
+                  const firstDayInRow = weekDays.find(d => d !== null);
+                  const rowKey =
+                    firstDayInRow !== undefined
+                      ? `week-${calendarYear}-${calendarMonth}-${firstDayInRow}`
+                      : `week-pad-${calendarYear}-${calendarMonth}-${rowIndex * 7}`;
+                  return (
+                    <tr key={rowKey}>
+                      {weekDays.map((day, cellOffset) => {
+                        const isToday = day === todayDate;
+                        const cellKey =
+                          day !== null
+                            ? `day-${calendarYear}-${calendarMonth}-${day}`
+                            : `pad-${calendarYear}-${calendarMonth}-${rowIndex * 7 + cellOffset}`;
+                        return (
+                          <td key={cellKey} className={isToday ? styles.activeDate : undefined}>
+                            {day ?? '\u00A0'}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -257,5 +270,9 @@ function Activity({ initialTab }) {
     </div>
   );
 }
+
+Activity.propTypes = {
+  initialTab: PropTypes.string,
+};
 
 export default Activity;
