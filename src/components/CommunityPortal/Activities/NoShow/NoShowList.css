@@ -1,7 +1,0 @@
-.custom-checkbox {
-  width: 20px;
-  height: 20px;
-}
-.custom-checkbox.ms-1 {
-  margin-left: 0.25rem !important; /* Equivalent to Bootstrap's ms-1 */
-}
