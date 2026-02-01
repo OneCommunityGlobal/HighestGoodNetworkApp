@@ -1,68 +1,68 @@
-.tableResponsive {
+.table-responsive {
   overflow-x: auto;
 }
 
-.highlightRow {
-  background-color: #e0f7fa;
-  border-left: 4px solid #00bcd4;
+.highlight-row {
+  background-color: #e0f7fa;           
+  border-left: 4px solid #00bcd4;      
   transition: background 0.2s ease;
 }
 
-.highlightRow:hover {
-  background-color: #b2ebf2;
+.highlight-row:hover {
+  background-color: #b2ebf2;           
 }
 
-.permissionChangeLogTable {
-  border-collapse: 'collapse';
+.permission-change-log-table {
+  border-collapse: collapse;
   width: 100%;
 }
 
 @media (max-width: 1290px) {
-  .permissionChangeLogTable {
+  .permission-change-log-table {
     font-size: 12px;
   }
 }
 
 @media (max-width: 1010px) {
-  .permissionChangeLogTable {
+  .permission-change-log-table {
     font-size: 10px;
   }
 }
 
-.permissionChangeLogTable-Header {
+.permission-change-log-table--header {
   background-color: #e3f0fb;
 }
 
-.permissionChangeLogTable-HeaderDark {
+.permission-change-log-table--header-dark {
   background-color: #1c2541;
   border: 1px solid red;
 }
 
-.permissionChangeLogTable-Header,
-.permissionChangeLogTable-HeaderDark,
-.permissionChangeLogTable-Cell {
+.permission-change-log-table--header,
+.permission-change-log-table--header-dark,
+.permission-change-log-table--cell {
   border: 1px solid #ddd;
   padding: 8px;
 }
 
-.tableRow:hover {
+.table-row:hover {
   background-color: #e3f0fb;
 }
 
-.tableRowDark:hover {
+.table-row-dark:hover {
   background-color: #1c2541;
 }
 
-.permissionChangeLogTable-Button {
+.permission-change-log-table--button {
   padding: 5px 10px;
   margin: 0 5px;
   color: #ffffff;
-  border: 'none';
+  border: none;
   border-radius: 5px;
-  cursor: 'pointer';
+  cursor: pointer;
 }
 
-.paginationContainer {
+.pagination-container {
   display: flex;
   justify-content: center;
   width: 100%;
@@ -104,4 +104,12 @@
 .pagination span {
   display: inline-block;
   padding: 5px 10px;
+}
+
+.permissions-cell {
+  /* Styles for permissions cell */
+}
+
+.toggle-button {
+  /* Styles for toggle button */
 }

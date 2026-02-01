@@ -7,97 +7,115 @@ import { setCurrentWishListItem } from '~/reducers/listBidDashboard/wishListItem
 import Header from '../Header';
 
 function WishList(props) {
-  // const [wishlistId, setWishlistId] = useState('');
   const dispatch = useDispatch();
   const { wishlists } = props;
 
   return (
-    <div className="item">
-      <div className="item__container">
+    <div className={styles.item}>
+      <div className={styles.itemContainer}>
         <Header />
-        <div className={`item__location ${styles.list_location}`}>
-          <FaMapMarkerAlt className="item__icon" />
-          <a href="/">View on Property Map</a>
+
+        <div className={`${styles.itemLocation} ${styles.listLocation}`}>
+          <FaMapMarkerAlt className={styles.itemIcon} />
+          <Link to="/">View on Property Map</Link>
         </div>
-        <h1 className={`${styles.list_title}`}>Wish List</h1>
-        {wishlists?.map(item => (
-          <div className={`${styles.item_body}`} key={item.id}>
-            <div className={`${styles.item_detailsWrapper}`}>
-              <div className={`${styles.list_detailsLeft}`}>
-                <div className={`${styles.itemTitleWrapperMobile}`}>
-                  <h1 className={`${styles.list_itemTitleMobile}`}>{item.title}</h1>
-                  <h2 className={`${styles.list_itemTitleMobile}`}>{item.unit}</h2>
+
+        <h1 className={styles.listTitle}>Wish List</h1>
+
+        {wishlists?.map(item => {
+          const firstImg = item.images?.[0];
+          return (
+            <div className={styles.itemBody} key={item.id}>
+              <div className={styles.itemDetailsWrapper}>
+                <div className={styles.listDetailsLeft}>
+                  <div className={styles.itemTitleWrapperMobile}>
+                    <h1 className={`${styles.listItemTitle} ${styles.listItemTitleMobile}`}>
+                      {item.title}
+                    </h1>
+                    <h2 className={`${styles.listItemTitle} ${styles.listItemTitleMobile}`}>
+                      {item.unit}
+                    </h2>
+                  </div>
+
+                  {firstImg ? (
+                    <img
+                      src={firstImg}
+                      alt={`${item.title}, ${item.unit}`}
+                      className={styles.itemImage}
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className={styles.imagePlaceholder}>No image</div>
+                  )}
                 </div>
-                <img
-                  key={item.images[0]}
-                  className="carousel-image"
-                  src={item.images[0]}
-                  alt="House"
-                />
-              </div>
-              <div className={`${styles.list_detailsRight}`}>
-                <div className={`${styles.itemTitleWrapper} ${styles.itemTitleWrapperDesktop}`}>
-                  <span className={`${styles.list_itemTitle} ${styles.itemTitleRight}`}>
-                    {item.title}
-                  </span>
-                </div>
-                <div className="item__details">
-                  <span className={`${styles.list_itemTitle} ${styles.itemTitleWrapperDesktop}`}>
-                    {item.unit}
-                  </span>
-                  <div className="list_item__amenities">
+
+                <div className={styles.listDetailsRight}>
+                  <div className={`${styles.itemTitleWrapper} ${styles.itemTitleWrapperDesktop}`}>
+                    <span className={`${styles.listItemTitle} ${styles.itemTitleRight}`}>
+                      {item.title}
+                    </span>
+                  </div>
+
+                  <div className={styles.itemDetails}>
+                    <span className={`${styles.listItemTitle} ${styles.itemTitleWrapperDesktop}`}>
+                      {item.unit}
+                    </span>
+
+                    <div className={styles.listItemAmenities}>
+                      <div>
+                        <span className={styles.font600}>Available amenities in this unit:</span>
+                        <ol>
+                          {item.unitAmenities?.map(amenity => (
+                            <li key={amenity}>{amenity}</li>
+                          ))}
+                        </ol>
+                      </div>
+                    </div>
+
+                    <div className={styles.itemPrice}>
+                      <span className={styles.font600}>Basic per night price:</span> {item.price}
+                    </div>
+
                     <div>
-                      <span className={`${styles.font600}`}>Available amenities in this unit:</span>
-                      <ol>
-                        {item.unitAmenities?.map(amenity => (
-                          <li key={amenity}>{amenity}</li>
-                        ))}
-                      </ol>
+                      <NavItem
+                        tag={Link}
+                        to={`/lbdashboard/wishlist/${item.id}`}
+                        onClick={() => dispatch(setCurrentWishListItem(item))}
+                        className={styles.listDetails}
+                      >
+                        Click here to view availabilities
+                      </NavItem>
                     </div>
                   </div>
                 </div>
-                <div className={`${styles.item_price}`}>
-                  <span className={`${styles.font600}`}>Basic per night price:</span> {item.price}
-                </div>
-                <div>
+
+                <div className={styles.itemFooter}>
                   <NavItem
                     tag={Link}
                     to={`/lbdashboard/wishlist/${item.id}`}
-                    onClick={() => {
-                      dispatch(setCurrentWishListItem(item));
-                    }}
-                    className={`${styles.list_details}`}
+                    onClick={() => dispatch(setCurrentWishListItem(item))}
+                    className={styles.listLink}
                   >
-                    Click here to view availabilities
+                    Click for list overview
                   </NavItem>
+
+                  <div className={styles.wishlistStartChat}>
+                    <button type="button">
+                      <img
+                        width="24"
+                        height="24"
+                        src="https://img.icons8.com/material-outlined/24/chat.png"
+                        alt=""
+                        aria-hidden="true"
+                      />
+                      Chat with the Host
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-            <div className={`${styles.item_footer}`}>
-              <NavItem
-                tag={Link}
-                to={`/lbdashboard/wishlist/${item.id}`}
-                onClick={() => {
-                  dispatch(setCurrentWishListItem(item));
-                }}
-                className={`${styles.list_link}`}
-              >
-                Click for list overview
-              </NavItem>
-              <div className={`${styles.wishlist_start_chat}`}>
-                <button type="button">
-                  <img
-                    width="24"
-                    height="24"
-                    src="https://img.icons8.com/material-outlined/24/chat.png"
-                    alt="chat"
-                  />
-                  Chat with the Host
-                </button>
-              </div>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

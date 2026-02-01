@@ -1,4 +1,4 @@
-.list_location {
+.listLocation {
   display: flex;
   padding-right: 8%;
   justify-content: flex-end;
@@ -6,7 +6,7 @@
   margin-bottom: 0 !important;
 }
 
-.list_title {
+.listTitle{
   padding-left: 6%;
   text-align: left;
 }
@@ -20,7 +20,7 @@
   width: auto;
   height: auto;
 } */
-.item_body {
+.itemBody {
   background-color: #e0e0e0;
   margin: 20px 40px 30px 40px;
   padding: 10px 0px 10px 0px;
@@ -28,19 +28,19 @@
   height: auto;
 }
 
-.item_detailsWrapper {
+.itemDetailsWrapper {
   display: flex;
   justify-content: space-evenly;
   align-items: center;
 }
 
-.item_footer {
+.itemFooter { 
   display: flex;
   justify-content: space-between;
   margin: 0px 40px 10px 30px;
 }
 
-.list_detailsLeft {
+.listDetailsLeft {
   width: 45%;
   height: 100%;
   padding: 2.5%;
@@ -48,19 +48,19 @@
   flex-direction: column;
 }
 
-.list_detailsRight {
+.listDetailsRight {
   width: 55%;
   height: 100%;
   padding: 2.5% 2.5% 2.5% 0%;
 }
 
-.list_itemTitle {
+.listItemTitle {
   font-size: 2.2rem;
   text-transform: uppercase;
   font-weight: 600;
 }
 
-h1.list_itemTitleMobile {
+h1.listItemTitleMobile {
   color: black;
   text-transform: uppercase;
 }
@@ -84,21 +84,21 @@ h1.list_itemTitleMobile {
   bottom: 0;
 }
 
-.font600 {
+.font600{
   font-weight: 600;
 }
 
-.list_link {
+.listLink{
   margin-top: 2%;
   text-decoration: underline;
 }
 
-.list_details {
+.listDetails{
   margin-top: 3%;
   text-decoration: underline;
 }
 
-.wishlist_start_chat {
+.wishlistStartChat {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -106,7 +106,7 @@ h1.list_itemTitleMobile {
   align-self: center;
 }
 
-.wishlist_start_chat button {
+.wishlistStartChat button {
   background: #d1d1d1;
   padding: 2.5%;
   border-radius: 998px;
@@ -122,17 +122,17 @@ h1.list_itemTitleMobile {
   height: 3.5rem;
 }
 
-.item_price {
+.itemPrice {
   padding: 2rem 0rem;
 }
 
 @media screen and (max-width: 500px) {
-  .item_detailsWrapper {
+  .itemDetailsWrapper {
     padding: 10px;
     margin: 10px;
   }
 
-  .wishlist_start_chat button {
+  .wishlistStartChat button {
     background: #d1d1d1;
     padding: 2.5%;
     border-radius: 998px;
@@ -145,33 +145,36 @@ h1.list_itemTitleMobile {
     height: 3.5vh;
   }
 
-  .item_footer {
+  .itemFooter{
     padding: 10px;
     margin: 10px;
   }
 }
 
 @media screen and (max-width: 800px) {
-  .item_detailsWrapper {
+
+  .itemDetailsWrapper {
     padding: 10px;
     margin: 10px;
-    flex-direction: column;
-    align-items: center;
   }
-
+  
   .itemTitleWrapperMobile {
     display: block;
-  }
+  }  
   .itemTitleWrapperDesktop {
     display: none;
   }
-  .list_detailsLeft {
+  .itemDetailsWrapper {
+    flex-direction: column;
+    align-items: center;
+  }
+  .listDetailsLeft {
     width: 98%;
   }
-  .list_detailsRight {
+  .listDetailsRight {
     width: 98%;
   }
-  .list_link {
+  .listLink {
     align-self: center;
   }
 }
