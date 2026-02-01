@@ -1,3 +1,16 @@
+/* CSS Variables for consistent spacing and alignment */
+:root {
+  --filter-spacing: 16px;
+  --filter-item-margin: 20px;
+  --filter-label-margin-bottom: 8px;
+  --filter-option-spacing: 12px;
+  --filter-indent: 20px;
+  --filter-label-font-size: 0.95rem;
+  --filter-option-font-size: 0.9rem;
+  --filter-line-height: 1.5;
+  --filter-vertical-spacing: 4px;
+}
+
 :global(body) {
   font-family: 'Poppins', sans-serif;
   background: #fff;
@@ -22,7 +35,30 @@
   color: #fff;
 }
 
+.cp_dashboard_container {
+  padding: 40px 10px;
+  margin: 0 auto;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  font-size: 16px;
+  line-height: 1.6;
+  letter-spacing: 0.2px;
+  width: 100%;
+}
+
 .dashboardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding: 16px 24px;
+  background: linear-gradient(120deg, #ffffff, #f8f9fa);
+  border-radius: 12px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+}
+
+.cp_dashboard_header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -38,6 +74,12 @@
 }
 
 .dashboardHeader h1 {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+.cp_dashboard_header h1 {
   font-size: 2.5rem;
   font-weight: bold;
   color: #2c3e50;
@@ -103,7 +145,23 @@
   background: #ffffff;
 }
 
+.cp_dashboard_search_container {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  overflow: hidden;
+  box-shadow: 0 0 4px rgba(199, 30, 30, 0.1);
+  background: #ffffff;
+}
+
 .dashboardSearchContainer input:focus {
+  border-color: #34495e;
+  box-shadow: 0 0 8px rgba(52, 73, 94, 0.3);
+  outline: none;
+}
+
+.cp_dashboard_search_container input:focus {
   border-color: #34495e;
   box-shadow: 0 0 8px rgba(52, 73, 94, 0.3);
   outline: none;
@@ -130,6 +188,7 @@
   font-size: 1.8rem;
   color: #2c3e50;
   font-weight: 600;
+  margin-bottom: 20px;
 }
 
 .filterSectionDivider {
@@ -137,6 +196,24 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
+}
+
+/* Base styles for filter items */
+.filterItem {
+  margin-bottom: var(--filter-item-margin);
+}
+
+/* Base styles for filter labels */
+.filterItem > label {
+  display: block;
+  font-size: var(--filter-label-font-size);
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: var(--filter-label-margin-bottom);
+  line-height: var(--filter-line-height);
+  letter-spacing: 0.01em;
+  margin-top: 0;
+  padding: 0;
 }
 
 .filterItem input:not([type='checkbox']):not([type='radio']),
@@ -176,8 +253,16 @@
   display: inline-block; /* <– keeps input on same line as text */
   width: auto;
   padding: 0;
-  margin: 5px 0px 0px 120px; /* top margin to line up under "Dates" */
+  margin: 5px 0px 0px 0px;
   vertical-align: middle;
+  cursor: pointer;
+  flex-shrink: 0;
+  accent-color: #2c3e50;
+}
+
+.filterItem input[type='radio']:hover,
+.filterItem input[type='checkbox']:hover {
+  opacity: 0.8;
 }
 
 .filterItem input:focus,
@@ -251,6 +336,11 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  justify-content: center;
+}
+
+.paginationInfo {
+  padding: 0 12px;
 }
 
 .dashboardActions {
@@ -273,6 +363,19 @@
 .dashboardActions button:hover {
   background-color: #34495e;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.noEvents {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+  font-size: 1.2rem;
+}
+
+.errorText {
+  color: #d32f2f;
+  text-align: center;
+  padding: 20px;
 }
 
 /* Hide browser's built-in clear icon for search inputs */

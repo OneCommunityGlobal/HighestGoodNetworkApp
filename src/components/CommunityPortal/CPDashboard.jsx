@@ -5,7 +5,6 @@ import { FaCalendarAlt, FaMapMarkerAlt, FaUserAlt, FaSearch, FaTimes } from 'rea
 import styles from './CPDashboard.module.css';
 import { ENDPOINTS } from '../../utils/URL';
 import axios from 'axios';
-import { el } from 'date-fns/locale';
 
 const FixedRatioImage = ({ src, alt, fallback }) => (
   <div
@@ -269,7 +268,6 @@ export function CPDashboard() {
                     Clear date filter
                   </Button>
                 </div>
-                <Input type="date" placeholder="Ending After" className={styles['date-filter']} />
               </div>
 
               <div className={styles.filterItem}>
