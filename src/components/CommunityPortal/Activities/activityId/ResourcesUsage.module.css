@@ -36,21 +36,20 @@
 
 /* colors for text based on status  */
 .statusgreen {
-  color: green;
+  color: green !important;
 }
 
 .statusyellow {
-  color: orange;
+  color: orange !important;
 }
 
 .statusred {
-  color: red;
+  color: red !important;
 }
 
 .viewDetails {
   display: block;
   width: 100%;
-  background-color: #e6f9e6;
   color: #146c43;
   font-weight: bold;
   border-radius: 5px;
@@ -86,7 +85,6 @@
   align-items: center;
   justify-content: center;
   font-weight: bold;
-  background-color: white;
   border: 2px solid black;
   padding: 10px 15px;
   border-radius: 8px;

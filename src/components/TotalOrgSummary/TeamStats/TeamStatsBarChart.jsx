@@ -11,7 +11,7 @@ import {
   LabelList,
   Label,
 } from 'recharts';
-import './TeamStatsBarChart.module.css';
+import styles from './TeamStatsBarChart.module.css';
 import { useSelector } from 'react-redux';
 import TeamStatsBarLabel from './TeamStatsBarLabel';
 
@@ -37,7 +37,7 @@ function TeamStatsBarChart({ data, yAxisLabel }) {
   };
 
   return (
-    <div className="team-stats-bar-chart">
+    <div className={styles.teamStatsBarChart}>
       <ResponsiveContainer width="100%" height={300}>
         <BarChart
           layout="vertical"
@@ -59,7 +59,7 @@ function TeamStatsBarChart({ data, yAxisLabel }) {
           <YAxis
             type="category"
             dataKey={yAxisLabel}
-            className="team-stats-y-axis"
+            className={styles.teamStatsYAxis}
             tick={{ fill: darkMode ? 'white' : '#666' }}
           />
           <Tooltip content={props => <CustomTooltip {...props} yAxisLabel={yAxisLabel} />} />
