@@ -69,18 +69,24 @@
 }
 
 .lbMessagingContact {
+  display: flex;
+  align-items: center;
+  padding: 8px;
   margin: 2px;
   background-color: white;
   border-radius: 5px;
-   display: flex;
-  align-items: center;
-  padding: 8px;
   border-bottom: 1px solid #eee;
-  cursor: pointer;
 }
 
 .lbMessagingContact:hover {
   background-color: #e9e3e3;
+}
+
+.lbMessagingContact img {
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  margin-right: 10px;
 }
 
 .lbMessagingContactInfo {
@@ -412,18 +418,7 @@
   padding: 10px;
 }
 
-
-
-.lbMessagingContact img {
-  width: 40px;
-  height: 40px;
-  border-radius: 20%;
-  margin-right: 10px;
-}
-
 .lbMessagingContactName {
   font-size: 15px;
   font-weight: 500;
 }
-
-

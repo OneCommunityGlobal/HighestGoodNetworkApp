@@ -19,6 +19,16 @@
   text-align: center;
 }
 
+.resourceTitle {
+  color: rgb(12, 11, 11); 
+  font-weight: bold;
+  margin-bottom: 10px;
+  width: 100%;            
+  display: block;         
+  text-align: center; 
+  font-size: 1.2rem;
+}
+
 .header h2,
 .resourceMonitoring h2,
 .latestRegistration h2,
@@ -88,6 +98,30 @@
   font-weight: bold;
 }
 
+/* Resource Monitoring stat css */
+.resourceStats {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  margin-top: 10px;
+}
+
+.resourceStats .arrow {
+  font-size: 1rem;
+  margin-right: 5px;
+}
+
+.resourceStats p {
+  margin: 0;
+}
+
+.resourceStats p:last-child {
+  color: grey;
+  font-size: 0.7rem;
+  margin-left: 5px;
+}
+
 .arrow.up {
   color: green;
 }
@@ -95,7 +129,6 @@
 .arrow.down {
   color: red;
 }
-
 
 .registrationForm,
 .filters {
@@ -139,12 +172,16 @@
 }
 
 .createNewBtn {
-   padding: 8px 20px;
+  padding: 8px 20px;
   background-color: #28a745;
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
+}
+
+.createNewBtn:hover {
+  background-color: #218838;
 }
 
 .myEventsTable {
@@ -159,6 +196,12 @@
   text-align: left;
 }
 
+.status {
+  padding: 5px;
+  border-radius: 5px;
+  color: white;
+  font-weight: bold;
+}
 .active {
   color: green;
 }
@@ -195,13 +238,6 @@
 
 .dateBox .date {
   font-size: 1.5em;
-}
-
-.status {
-  padding: 5px;
-  border-radius: 5px;
-  color: white;
-  font-weight: bold;
 }
 
 .status.active {
@@ -285,44 +321,10 @@
 
 /* Resource Monitoring */
 
-.resourceTitle {
-  text-align: left;
-  font-size: 1.2rem;
-  margin-bottom: 5px;
-
-   font-weight: bold;
-   color: rgb(12, 11, 11); 
-  width: 100%;            
-  display: block;         
-}
-
 .resourceValue {
   font-weight: bold;
   color: black;
   font-size: 1rem;
-}
-
-.resourceStats {
-  display: flex;
-  align-items: center;
-  margin-top: 10px;
-  justify-content: center;
-  gap: 5px;
-}
-
-.resourceStats .arrow {
-  font-size: 1rem;
-  margin-right: 5px;
-}
-
-.resourceStats p {
-  margin: 0;
-}
-
-.resourceStats p:last-child {
-  color: grey;
-  font-size: 0.7rem;
-  margin-left: 5px;
 }
 
 /* My Events toggle button */
@@ -366,12 +368,6 @@
 
 .applyFiltersBtn:hover {
   background-color: #0056b3;
-}
-
-
-
-.createNewBtn:hover {
-  background-color: #218838;
 }
 
 .registerinfo {

@@ -29,12 +29,8 @@
 
 .filterSelect .ant-picker {
   background-color: #ffffff !important;
-}
-
-/* Light border for RangePicker
-.filterSelect .ant-picker {
   border-color: rgba(0, 0, 0, 0.2) !important;
-} */
+} 
 
 .oxideDark {
   background-color: #1b2a41;
