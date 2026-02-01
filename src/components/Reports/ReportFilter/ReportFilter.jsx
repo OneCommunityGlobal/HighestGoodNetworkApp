@@ -38,7 +38,7 @@ class ReportFilter extends Component {
     return (
       <div>
         <div>
-          <button type="button" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: 'inherit', textDecoration: 'none' }}>
+          <button type="button" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: '#007bff', textDecoration: 'none' }}>
             Select a Filter
           </button>
         </div>
@@ -94,6 +94,8 @@ class ReportFilter extends Component {
             onSearch={this.onWildCardSearch}
             wildCardSearchText={this.props.wildCardSearchText}
             onCreateNewTeamClick={this.props.onCreateNewTeamShow}
+            onScrollToResults={this.props.scrollToResults}
+            onSearchClick={this.props.onSearchClick}
           />
         </div>
       </div>

@@ -1,3 +1,5 @@
+// ...existing code...
+import CustomTooltip from '../../CustomTooltip';
 import {
   BarChart,
   Bar,
@@ -9,7 +11,7 @@ import {
   LabelList,
   Label,
 } from 'recharts';
-import './TeamStatsBarChart.css';
+import './TeamStatsBarChart.module.css';
 import { useSelector } from 'react-redux';
 import TeamStatsBarLabel from './TeamStatsBarLabel';
 
@@ -60,7 +62,7 @@ function TeamStatsBarChart({ data, yAxisLabel }) {
             className="team-stats-y-axis"
             tick={{ fill: darkMode ? 'white' : '#666' }}
           />
-          <Tooltip />
+          <Tooltip content={props => <CustomTooltip {...props} yAxisLabel={yAxisLabel} />} />
           <Bar dataKey="value" fill="#1B6DDF">
             {data.map((_, index) => (
               <Cell key={`cell-${data[index].value}`} fill={data[index].color} />
