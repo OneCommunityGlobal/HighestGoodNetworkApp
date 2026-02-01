@@ -85,6 +85,7 @@ export const Badges = (props) => {
         setSortedBadges([]);
       }
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error("Error sorting badges:", error);
       setSortedBadges([]);
     }
@@ -196,6 +197,7 @@ export const Badges = (props) => {
           <div>
             {badgesEarned ? (
               <div>
+                {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
                 Bravo! {subject} earned <a href="#" onClick={toggleBadge} >{badgesEarned}</a> {object}!
               </div>
             ) : (
