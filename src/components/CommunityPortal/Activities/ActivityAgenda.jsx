@@ -207,7 +207,7 @@ function ActivityAgenda() {
 
   // Render loading state
   const renderLoading = () => (
-    <div className={getPageClassName()}>
+    <div className={pageClassName}>
       <div className={styles.activityAgendaContainer}>
         <div className={styles.activityAgendaContent}>
           <h1>Loading...</h1>
@@ -232,7 +232,7 @@ function ActivityAgenda() {
 
   // Render no data state
   const renderNoData = () => (
-    <div className={getPageClassName()}>
+    <div className={pageClassName}>
       <div className={styles.activityAgendaContainer}>
         <div className={styles.activityAgendaContent}>
           <h1>No Data</h1>
