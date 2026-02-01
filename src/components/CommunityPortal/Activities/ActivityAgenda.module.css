@@ -58,6 +58,61 @@
   color: var(--text-color);
 }
 
+.activityMetadata {
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.activityAgendaDarkMode .activityMetadata {
+  border-bottom-color: rgba(255, 255, 255, 0.2);
+}
+
+.metaRow {
+  margin-bottom: 8px;
+}
+
+.sectionHeading {
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+  color: var(--heading-color);
+}
+
+.descriptionBlock {
+  margin-bottom: 30px;
+}
+
+.descriptionBlock p {
+  line-height: 1.8;
+  white-space: pre-wrap;
+}
+
+.scheduleItem {
+  margin-bottom: 12px;
+  padding: 10px;
+  background-color: #f5f5f5;
+  border-radius: 5px;
+}
+
+.activityAgendaDarkMode .scheduleItem {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.scheduleItemTime {
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.scheduleItemRow {
+  margin-bottom: 5px;
+}
+
+.scheduleItemLocation {
+  margin-bottom: 0;
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .activityAgendaContainer {
