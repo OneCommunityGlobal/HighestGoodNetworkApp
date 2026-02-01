@@ -116,6 +116,10 @@
   text-align: left !important;
 }
 
+.textEnd {
+  text-align: right;
+}
+
 /* Improved dropdown positioning */
 .issueDashboardDropdown {
   position: static;  /* Make it relative to the table cell instead */
@@ -219,4 +223,3 @@
 :global(.table-dark tbody tr:hover) {
   background-color: #2f4157;
 }
-

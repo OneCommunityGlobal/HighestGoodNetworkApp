@@ -1,4 +1,4 @@
-import { Search, MoreHorizontal } from 'lucide-react';
+import { Search, MoreHorizontal, ChevronDown } from 'lucide-react';
 import styles from './IssueHeader.module.css';
 import { connect, useDispatch, useSelector } from 'react-redux';
 import { getHeaderData, logoutUser } from '~/actions/authActions';

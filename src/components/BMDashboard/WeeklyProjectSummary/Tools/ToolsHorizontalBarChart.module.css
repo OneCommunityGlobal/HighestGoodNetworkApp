@@ -111,7 +111,8 @@
   margin-bottom: 12px;
 }
 
-.tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode .tools-horizontal-bar-chart-filters {
+.tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode
+  .tools-horizontal-bar-chart-filters {
   border-bottom-color: rgba(255, 255, 255, 0.2);
 }
 
@@ -131,7 +132,9 @@
   color: var(--label-color);
 }
 
-.tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode .tools-horizontal-bar-chart-filter-group label {
+.tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode
+  .tools-horizontal-bar-chart-filter-group
+  label {
   color: #e0e0e0;
 }
 
@@ -156,7 +159,8 @@
   min-width: 120px;
 }
 
-.tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode .tools-horizontal-bar-chart-date-picker {
+.tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode
+  .tools-horizontal-bar-chart-date-picker {
   background-color: #2c3344;
   border-color: #364156;
   color: #e0e0e0;
@@ -164,7 +168,7 @@
 
 .tools-horizontal-bar-chart-date-picker:focus {
   outline: none;
-  border-color: #2196F3;
+  border-color: #2196f3;
   box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
 }
 
@@ -174,7 +178,9 @@
   white-space: nowrap;
 }
 
-.tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode .tools-horizontal-bar-chart-date-picker-group span {
+.tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode
+  .tools-horizontal-bar-chart-date-picker-group
+  span {
   color: #aaa;
 }
 
@@ -194,13 +200,15 @@
   border-color: #ccc;
 }
 
-.tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode .tools-horizontal-bar-chart-clear-dates-btn {
+.tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode
+  .tools-horizontal-bar-chart-clear-dates-btn {
   background: #364156;
   border-color: #4a5568;
   color: #e0e0e0;
 }
 
-.tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode .tools-horizontal-bar-chart-clear-dates-btn:hover {
+.tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode
+  .tools-horizontal-bar-chart-clear-dates-btn:hover {
   background: #4a5568;
   border-color: #5a6578;
 }
@@ -211,20 +219,20 @@
     padding: 12px;
     min-height: 250px;
   }
-  
+
   .tools-horizontal-bar-chart-title {
     font-size: 14px;
     margin-bottom: 12px;
   }
-  
+
   .tools-horizontal-bar-chart-date-picker-group {
     flex-direction: column;
     align-items: flex-start;
     gap: 6px;
   }
-  
+
   .tools-horizontal-bar-chart-date-picker {
     min-width: 100px;
     width: 100%;
   }
-} 
+}

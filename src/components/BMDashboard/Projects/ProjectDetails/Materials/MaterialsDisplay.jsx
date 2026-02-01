@@ -4,7 +4,7 @@ import styles from '../ProjectDetails.module.css';
 
 function MaterialsDisplay() {
   return (
-    <Card className={styles['cards-container']}>
+    <Card className={`card ${styles['cards-container']}`}>
       <h2 className={styles['cards-container__header']}>
         Materials with quantity less than 20% left
       </h2>

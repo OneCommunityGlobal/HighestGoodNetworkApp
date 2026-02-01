@@ -123,12 +123,12 @@
 /* ---------------- CARDS ---------------- */
 
 .weeklyProjectSummaryCard {
-  background: var(--card-bg);
   padding: 10px;
   border-radius: 6px;
   text-align: center;
   box-shadow: 0 2px 5px var(--card-shadow);
 }
+
 
 .darkMode .weeklyProjectSummaryCard {
   background: var(--card-bg);
@@ -219,6 +219,7 @@
 .weeklyProjectSummaryDashboardCategoryContent {
   padding: 15px;
   display: grid;
+  /* grid-template-columns: repeat(4, 1fr); */
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 20px;
   border-top: 1px solid var(--card-shadow);
@@ -246,6 +247,14 @@
   --section-title-hover: #e0e0e0;
   --button-bg: black;
   --button-hover: #333;
+
+   --pos-color: #15803d;          /* darker green for light bg */
+  --neg-color: #b91c1c;          /* darker red for light bg */
+  --neutral-change: rgba(0, 0, 0, 0.65);
+
+  --card-elev: rgba(0, 0, 0, 0.15);
+  --card-elev-hover: rgba(0, 0, 0, 0.18);
+  --card-border: rgba(0, 0, 0, 0.1);
 }
 
 /* ---------------- DARK MODE STYLES ---------------- */
@@ -261,6 +270,14 @@
   --button-hover: #f5b13a;
   --border-color: #4a5a77;
   --focus-border-color: #e8a71c;
+
+  --pos-color: #22c55e;          /* bright green for dark bg */
+  --neg-color: #ef4444;          /* bright red for dark bg */
+  --neutral-change: rgba(255, 255, 255, 0.75);
+
+  --card-elev: rgba(0, 0, 0, 0.45);
+  --card-elev-hover: rgba(0, 0, 0, 0.6);
+  --card-border: rgba(255, 255, 255, 0.18);
 }
 
 .darkMode .weeklyProjectSummaryDashboardCategoryTitle {
@@ -380,20 +397,46 @@
 
 /* ---------------- STATUS CARD ---------------- */
 .statusCard {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  background: var(--status-card-bg, var(--card-bg));
+  border: 1px solid var(--card-border);
+  box-shadow: 0 4px 10px var(--card-elev);
+  color: var(--text-color);
   border-radius: 25px;
   width: 100%;
   max-width: 284px;
   height: 190px;
-  text-align: center;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   padding: 20px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: box-shadow 160ms ease, filter 160ms ease;
   position: relative;
 }
+
+.weeklyStatusChange {
+  font-weight: 600;
+}
+
+.darkMode .statusCard .weeklyStatusChange,
+.statusCard .weeklyStatusChange {
+  color: var(--wow-color) !important;
+}
+
+/* Hover/focus: no transform => no layout shift */
+.statusCard:hover {
+  box-shadow: 0 8px 18px var(--card-elev-hover, rgba(0, 0, 0, 0.18));
+  filter: brightness(1.03);
+}
+
+.statusCard:focus-visible {
+  outline: 2px solid var(--focus-border-color, #3b82f6);
+  outline-offset: 3px;
+  box-shadow: 0 10px 22px var(--card-elev-hover, rgba(0, 0, 0, 0.18));
+}
+
+
 
 /* ---------------- RESPONSIVE GRID LAYOUT ---------------- */
 .projectStatusGrid {
@@ -406,35 +449,65 @@
   max-width: 1600px;
   margin: auto;
 }
-/* .projectStatusGrid {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  grid-template-rows: repeat(2, auto);
-  gap: 10px;
-} */
+
 
 /* ---------------- OVAL STATUS BUTTON ---------------- */
 .weeklyStatusButton {
-  width: 130px;
-  height: 65px;
-  border-radius: 50px / 32px;
+  color: var(--status-pill-text, var(--text-color));
+  background: var(--status-pill-bg, rgba(255, 255, 255, 0.6));
+
+  /* ✅ allow bigger values */
+  width: fit-content;
+  min-width: 130px;
+  padding: 10px 18px;
+  height: auto;
+
+  border-radius: 999px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
   margin: 12px 0;
+
+  border: 1px solid var(--pill-border, rgba(0, 0, 0, 0.12));
+  box-shadow: 0 2px 6px var(--pill-elev, rgba(0, 0, 0, 0.14));
 }
 
+.weeklyStatusValue {
+  color: inherit;
+  font-weight: 700;
+  white-space: nowrap;
+
+  /* ✅ scales a bit for longer strings like $27.6K / 12.8K */
+  font-size: clamp(28px, 3vw, 40px);
+  line-height: 1;
+}
+
+/* This targets the value text specifically when in Dark Mode */
+:global(body.dark-mode) .weeklyStatusValue,
+:global(body.bm-dashboard-dark) .weeklyStatusValue {
+    /* If you want the pink color back, it needs !important to beat the global rule */
+    color: #090336 !important; 
+    /* OR, if you prefer white text, we should darken the background bubble instead */
+}
+
+/* Title/value should NEVER be hard-coded black */
 .weeklyCardTitle {
-  color: #000;
+  color: var(--card-title, var(--text-color));
   font-size: clamp(14px, 1.4vw, 18px);
   font-weight: 600;
 }
 
-.weeklyStatusValue {
-  color: #000;
-  font-size: 40px;
-  font-weight: 600;
+/* Accent bar */
+.statusCard::before {
+  content: "";
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  right: 14px;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--status-accent, transparent);
+  opacity: 0.95;
 }
 
 /* ---------------- RESPONSIVE BREAKPOINTS ---------------- */

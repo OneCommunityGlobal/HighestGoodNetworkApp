@@ -5,8 +5,9 @@
   background-color: white;
   overflow: visible;
 }
-.issueHeaderContainerDark{
-  display:flex;
+
+.issueHeaderContainerDark {
+  display: flex;
   flex-direction: column;
   width: 100%;
   background-color: #1b2a41;
@@ -18,7 +19,7 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 12px;
-  border-bottom: 1px solid #E0E0E0;
+  border-bottom: 1px solid #e0e0e0;
   padding: 14px 20px;
   background-color: white;
 }
@@ -36,11 +37,12 @@
 .titleSection {
   display: flex;
   align-items: center;
-  color: #1C1E1C;
+  color: #1c1e1c;
   font-size: 36px;
   font-weight: 600;
   margin: 0;
 }
+
 .titleSectionDark {
   display: flex;
   align-items: center;
@@ -51,18 +53,17 @@
 }
 
 .section {
- font-size: 36px;
+  font-size: 36px;
   font-weight: 600;
   margin: 0;
-  color:#000000
-
+  color: #000000;
 }
+
 .sectionDark {
- font-size: 36px;
+  font-size: 36px;
   font-weight: 600;
   margin: 0;
-  color:#E0E0E0
-
+  color: #e0e0e0;
 }
 
 .actionSection {
@@ -80,13 +81,13 @@
   padding: 6px;
   display: flex;
   align-items: center;
-  background-color: #EEEEEE;
+  background-color: #eeeeee;
   border-radius: 8px;
   transition: background-color 0.2s;
 }
 
 .moreButton:hover {
-  background-color: #E0E0E0;
+  background-color: #e0e0e0;
 }
 
 .moreButtonDark {
@@ -129,6 +130,7 @@
   align-items: center;
   cursor: pointer;
   transition: opacity 0.2s;
+  gap: 10px;
 }
 
 .avatar:hover {
@@ -170,9 +172,9 @@
 
 .projectTab {
   display: inline-flex;
-  background-color: #F3F4F6;  
-  border-radius: 8px;    
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  background-color: #f3f4f6;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   padding: 6px;
 }
 
@@ -180,7 +182,7 @@
   display: inline-flex;
   background-color: #1c2541;
   border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   padding: 6px;
 }
 
@@ -193,16 +195,16 @@
   cursor: pointer;
   transition: background 0.2s;
   border-radius: 4px;
-  color: #1C1E1C;
+  color: #1c1e1c;
 }
 
 .projectTab .tabItem:global(.active) {
-  background-color: #FFFFFF; 
-  color: #1C1E1C;
+  background-color: #ffffff;
+  color: #1c1e1c;
 }
 
 .projectTab .tabItem:not(:global(.active)):hover {
-  background-color: #E5E7EB; 
+  background-color: #e5e7eb;
 }
 
 .tabItemDark {
@@ -217,17 +219,17 @@
 .projectTabDark .tabItemDark:not(:global(.active)):hover {
   background-color: #2f4157;
 }
+
 .searchContainer {
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: flex-end; 
-  width: 220px;             
+  justify-content: flex-end;
+  width: 220px;
   margin-left: auto;
   flex-shrink: 0;
   flex-grow: 0;
 }
-
 
 .searchIcon {
   position: absolute;
@@ -257,13 +259,13 @@
 
 .searchInput {
   padding: 8px 12px 8px 32px;
-  border: 1px solid #E0E0E0;
+  border: 1px solid #e0e0e0;
   border-radius: 8px;
   font-size: 16px;
   width: 100%;
   box-sizing: border-box;
-  background-color: #FFFFFF;
-  color: #1C1E1C;
+  background-color: #ffffff;
+  color: #1c1e1c;
   transition: border-color 0.2s;
   outline: none;
   box-shadow: none;
@@ -335,8 +337,14 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-5px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .searchResultsList {
@@ -417,4 +425,3 @@
   font-style: italic;
   font-size: 14px;
 }
-
