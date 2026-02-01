@@ -3,7 +3,6 @@
   width: 100%;
   padding: 0 16px;
   box-sizing: border-box;
-
 }
 
 .reports-table-head {
@@ -34,8 +33,6 @@
   border-bottom: 3px solid #f8f7f8;
   width: 100%;
 }
-/* flex-wrap: wrap;
-flex-direction: row; */
 
 .reports-table-head,
 .people-table-row > div {
@@ -52,7 +49,11 @@ flex-direction: row; */
   background-color: #fafafa;
 }
 
-
+/* ✅ merged hover style */
+.people-table-row-dark:hover {
+  background-color: #1a1a2e !important;
+  color: #fff !important;
+}
 
 .people-table-body-row:hover {
   background-color: #fafafa;
@@ -109,7 +110,6 @@ flex-direction: row; */
   border: none !important;
 }
 
-
 .mobile-table {
   width: 350px;
   border-radius: 16px;
@@ -120,22 +120,18 @@ flex-direction: row; */
   justify-content: center;
   flex-wrap: wrap;
   align-items: center;
-  /* margin: 6em 100px; */
   margin-bottom: 24px;
 }
 
 .mobile-table p {
   font-size: 15px;
-  justify-content: left;
   text-align: left;
   padding: 17px;
   width: 100%;
 }
 
-/* Large screens (less than 1020px) */
+/* Responsive: large screens */
 @media only screen and (max-width: 1024px) {
-
-  /* CSS rules for large screens */
   .people-table {
     display: flex;
     flex-direction: column;
@@ -147,42 +143,6 @@ flex-direction: row; */
     display: none;
   }
 }
-
-
-/* margin-bottom: 24px;
-
-/* .modal > .header {
-  width: 100%;
-  border-bottom: 1px solid gray;
-  font-size: 18px;
-  text-align: center;
-  padding: 5px;
-}
-.modal > .content {
-  width: 100%;
-  padding: 10px 5px;
-}
-.modal > .actions {
-  width: 100%;
-  padding: 10px 5px;
-  margin: auto;
-  text-align: center;
-}
-.modal > .close {
-  cursor: pointer;
-  position: absolute;
-  display: block;
-  padding: 2px 5px;
-  line-height: 20px;
-  right: -10px;
-  top: -10px;
-  font-size: 24px;
-  background: #ffffff;
-  border-radius: 18px;
-  border: 1px solid #cfcece;
-} */
-
-
 
 .task-details {
   padding: 2%;
@@ -197,7 +157,7 @@ flex-direction: row; */
 }
 
 .text-dark {
-  color:black;
+  color: black;
 }
 
 .task-header {
@@ -322,11 +282,6 @@ flex-direction: row; */
 
 .people-table-row-dark > div,
 .bg-space-cadet > div {
-  color: #fff !important;
-}
-
-.people-table-row-dark:hover {
-  background-color: #1a1a2e !important;
   color: #fff !important;
 }
 

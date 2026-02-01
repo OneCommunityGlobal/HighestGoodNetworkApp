@@ -1,47 +1,49 @@
-
-.formContainer{
-  
+.formContainer {
   .formControl {
-   max-width: unset !important;
-   font-size: small !important;
- } 
- .formLabel{
-  margin: 5px 0;
-  font-size: small;
+    max-width: unset !important;
+    font-size: small !important;
+  }
+
+  .formLabel {
+    margin: 5px 0;
+    font-size: small;
   }
 }
 
+/* ✅ merged duplicate .formControlDelete */
 .formControlDelete {
-  margin-left: 0;
+  margin-left: 0;              /* unified margin */
   font-size: small !important;
   max-width: 100%;
   width: 100%;
 }
 
+/* Tag delete button */
 .tag .deleteTag {
   margin-left: 10px;
   background-color: red;
-  
 }
 
-.mainContainer{
- display: flex;
- flex-direction: column;
- height: 100%;
-   padding-left: 10%;
-   padding-right: 10%;
-   padding-top: 5%;
-   padding-bottom: 1%;
+.mainContainer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding-left: 10%;
+  padding-right: 10%;
+  padding-top: 5%;
+  padding-bottom: 1%;
 }
-.lessonLabel{
-   font-size: larger !important;
-   font-weight: bold ;
+
+.lessonLabel {
+  font-size: larger !important;
+  font-weight: bold;
 }
-.formSelectContainer{
-   display: flex;
-   flex-direction: row;
-   justify-content: flex-start;
-   font-size: small;
+
+.formSelectContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  font-size: small;
 }
 
 .singleForm {
@@ -50,12 +52,10 @@
   text-align: center !important;
   margin-right: 40px;
   width: 200px;
-  
- 
 }
-.singleFormSelect {
-  background-color: #F2F2F266 !important;
 
+.singleFormSelect {
+  background-color: #f2f2f266 !important;
 }
 
 .tagContainer {
@@ -71,18 +71,18 @@
   flex: 1;
 }
 
-
-
+/* ✅ merged duplicate .tagsInputContainer */
 .tagsInputContainer {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: 10px;
 }
 
 .tag {
   display: inline-flex;
   align-items: center;
-  background-color: #F2F2F266;
+  background-color: #f2f2f266;
   border-radius: 5px;
   padding: 2px 5px;
   margin: 2px;
@@ -94,22 +94,19 @@
 .tag .close {
   margin-left: 5px;
   cursor: pointer;
-} 
-
-.tag .buttonClose {
-  background-color: #F2F2F266;
-  border-color: #F2F2F266;
-  color: black;
 }
 
-
+.tag .buttonClose {
+  background-color: #f2f2f266;
+  border-color: #f2f2f266;
+  color: black;
+}
 
 .tagsWrapper {
   display: flex;
   flex-wrap: wrap;
   gap: 5px;
 }
-
 
 .tagDropdown {
   position: absolute;
@@ -130,9 +127,8 @@
   background-color: #f0f0f0;
 }
 
-  @media (max-width: 570px) {
-   .formSelectContainer {
-     flex-direction: column;
-   }
+@media (max-width: 570px) {
+  .formSelectContainer {
+    flex-direction: column;
   }
-
+}

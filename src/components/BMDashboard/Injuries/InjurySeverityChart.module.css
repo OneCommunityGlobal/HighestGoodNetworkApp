@@ -22,8 +22,13 @@
   border-color: rgba(0, 0, 0, 0.2) !important;
 }
 
-/* Light border for RangePicker */
+/* RangePicker placeholder */
+.filterSelect .ant-picker-input > input::placeholder {
+  color: #666666 !important;
+}
+
 .filterSelect .ant-picker {
+  background-color: #ffffff !important;
   border-color: rgba(0, 0, 0, 0.2) !important;
   background-color: #ffffff !important;
 }
