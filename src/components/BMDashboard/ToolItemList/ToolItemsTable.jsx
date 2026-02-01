@@ -6,11 +6,12 @@ import { faSortDown, faSort, faSortUp, faCheck, faTimes } from '@fortawesome/fre
 import ToolRecordsModal from './ToolRecordsModal';
 import styles from './ToolItemListView.module.css';
 
+const okColor = '#16a34a';
+const badColor = '#dc2626';
+
 export default function ToolItemsTable({
   selectedProject,
   selectedItem,
-  selectedToolStatus,
-  selectedCondition,
   filteredItems,
   UpdateItemModal,
   dynamicColumns,
@@ -48,7 +49,7 @@ export default function ToolItemsTable({
     setProjectNameCol({ iconsToDisplay: faSort, sortOrder: 'default' });
     setConditionCol({ iconsToDisplay: faSort, sortOrder: 'default' });
     setToolStatusCol({ iconsToDisplay: faSort, sortOrder: 'default' });
-  }, [selectedProject, selectedItem, selectedCondition, selectedToolStatus]);
+  }, [selectedProject, selectedItem]);
 
   const handleEditRecordsClick = (selectedEl, type) => {
     if (type === 'Update') {
@@ -82,12 +83,18 @@ export default function ToolItemsTable({
         inventoryItemTypeCol.sortOrder === 'desc'
       ) {
         newSortedData.sort((a, b) =>
-          (a.itemType?.name || '').localeCompare(b.itemType?.name || ''),
+          (a.itemType?.name || '').localeCompare(
+            b.itemType?.name || '',
+            undefined,
+            { sensitivity: 'base' }, // 👈 case-insensitive
+          ),
         );
         setInventoryItemTypeCol({ iconsToDisplay: faSortUp, sortOrder: 'asc' });
       } else if (inventoryItemTypeCol.sortOrder === 'asc') {
         newSortedData.sort((a, b) =>
-          (b.itemType?.name || '').localeCompare(a.itemType?.name || ''),
+          (b.itemType?.name || '').localeCompare(a.itemType?.name || '', undefined, {
+            sensitivity: 'base',
+          }),
         );
         setInventoryItemTypeCol({ iconsToDisplay: faSortDown, sortOrder: 'desc' });
       }
@@ -177,37 +184,65 @@ export default function ToolItemsTable({
                 return (
                   <tr key={el._id}>
                     <td>{el.project?.name}</td>
-                    <td>{el.itemType?.name}</td>
+                    <td>{el.itemType?.name ?? el.name}</td>
                     <td>{el.purchaseStatus === 'Purchased' ? 'Yes' : 'No'}</td>
                     <td>
-                      {el.itemType?.using?.includes(el._id) ? (
-                        <FontAwesomeIcon icon={faCheck} size="lg" color="green" />
-                      ) : (
-                        <FontAwesomeIcon icon={faTimes} size="lg" color="red" />
-                      )}
+                      <FontAwesomeIcon
+                        icon={el.itemType?.using?.includes(el._id) ? faCheck : faTimes}
+                        size="lg"
+                        className={
+                          el.itemType?.using?.includes(el._id)
+                            ? styles.statusIconOk
+                            : styles.statusIconBad
+                        }
+                      />
                     </td>
+
                     <td>
-                      {el.itemType?.available?.includes(el._id) &&
-                      el.condition !== 'Lost' &&
-                      el.condition !== 'Needs Replacing' ? (
-                        <FontAwesomeIcon icon={faCheck} size="lg" color="green" />
-                      ) : (
-                        <FontAwesomeIcon icon={faTimes} size="lg" color="red" />
-                      )}
+                      <FontAwesomeIcon
+                        icon={
+                          el.itemType?.available?.includes(el._id) &&
+                          el.condition !== 'Lost' &&
+                          el.condition !== 'Needs Replacing'
+                            ? faCheck
+                            : faTimes
+                        }
+                        size="lg"
+                        className={
+                          el.itemType?.available?.includes(el._id) &&
+                          el.condition !== 'Lost' &&
+                          el.condition !== 'Needs Replacing'
+                            ? styles.statusIconOk
+                            : styles.statusIconBad
+                        }
+                      />
                     </td>
-                    <td>
-                      <div className={`${styles.conditionCell}`}>
-                        {el.condition === 'Lost' ||
-                        el.condition === 'Needs Replacing' ||
-                        el.condition === 'Worn' ||
-                        el.condition === 'Needs Repair' ? (
-                          <FontAwesomeIcon icon={faTimes} size="lg" color="red" />
-                        ) : (
-                          <FontAwesomeIcon icon={faCheck} size="lg" color="green" />
-                        )}
+
+                    <td className={styles.conditionTd}>
+                      <div className={styles.conditionCell}>
+                        <FontAwesomeIcon
+                          icon={
+                            el.condition === 'Lost' ||
+                            el.condition === 'Needs Replacing' ||
+                            el.condition === 'Worn' ||
+                            el.condition === 'Needs Repair'
+                              ? faTimes
+                              : faCheck
+                          }
+                          size="lg"
+                          className={
+                            el.condition === 'Lost' ||
+                            el.condition === 'Needs Replacing' ||
+                            el.condition === 'Worn' ||
+                            el.condition === 'Needs Repair'
+                              ? styles.statusIconBad
+                              : styles.statusIconOk
+                          }
+                        />
                         {el.condition}
                       </div>
                     </td>
+
                     <td>{el.code}</td>
                     <td className={`${styles.itemsCell}`}>
                       <button

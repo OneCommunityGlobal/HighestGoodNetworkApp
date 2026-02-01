@@ -35,11 +35,9 @@ function BMTimeLogCard(props) {
       }
     }
 
-    if (members.length >= 0) {
-      setMemberList(members);
-      setFilteredMembers(members);
-      setIsMemberFetched(true);
-    }
+    setMemberList(members);
+    setFilteredMembers(members);
+    setIsMemberFetched(true);
   }, [projectInfo]);
 
   // trigger an error state if there is an errors object
@@ -58,10 +56,10 @@ function BMTimeLogCard(props) {
 
     const query = searchQuery.toLowerCase();
     const filtered = memberList.filter(member => {
-      const firstName = member.user.firstName.toLowerCase();
-      const lastName = member.user.lastName.toLowerCase();
+      const firstName = member.user?.firstName?.toLowerCase() || '';
+      const lastName = member.user?.lastName?.toLowerCase() || '';
+      const role = member.user?.role?.toLowerCase() || '';
       const fullName = `${firstName} ${lastName}`;
-      const role = member.user.role.toLowerCase();
 
       // Check if user has teams and search in them too
       const teamMatch =

@@ -58,7 +58,7 @@
 /* Before: pointer-events:none blocked legend + hid it entirely */
 :global(.leaflet-control-container) {
   pointer-events: auto !important;
-  z-index: 450 !important;  /* prevent covering header */
+  z-index: 450 !important; /* prevent covering header */
 }
 
 /* Leaflet bottom-right container */
@@ -260,7 +260,6 @@
   color: #ffffff;
 }
 
-
 .legendItem {
   display: flex;
   align-items: center;
@@ -296,32 +295,31 @@
 
 .legendBox {
   position: absolute; /* absolute inside the map container */
-  width: 160px;       /* fixed width */
-  height: 180px;      /* fixed height */
+  width: 160px; /* fixed width */
+  height: 180px; /* fixed height */
   cursor: move;
   user-select: none;
   padding: 10px 12px;
   background: var(--legend-bg);
   border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
-  border: 1px solid rgba(0,0,0,0.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(0, 0, 0, 0.15);
   backdrop-filter: blur(4px);
   font-size: 13px;
   z-index: 10000; /* higher than map */
   pointer-events: auto !important;
   opacity: 1 !important;
-  left: auto;    /* initial position handled in JSX */
-  top: auto;     /* initial position handled in JSX */
-  bottom: 20px;  /* fallback bottom-right */
+  left: auto; /* initial position handled in JSX */
+  top: auto; /* initial position handled in JSX */
+  bottom: 20px; /* fallback bottom-right */
   right: 20px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
 }
 
-
 .darkPage .legendBox {
-  border: 1px solid rgba(255,255,255,0.15);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   color: #fff;
 }
 
