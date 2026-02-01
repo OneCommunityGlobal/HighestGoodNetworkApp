@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import CommentSection from './CommentSection/CommentSection';
 import ActivityFAQs from './ActivityFAQs';
-import './Activity.css';
+import styles from './Activity.module.css';
 
 const data = {
   eventName: 'Event Name',
@@ -50,9 +50,28 @@ const data = {
   ],
 };
 
+function getCalendarDays(year, month) {
+  const first = new Date(year, month, 1);
+  const last = new Date(year, month + 1, 0);
+  const daysInMonth = last.getDate();
+  const startOffset = first.getDay();
+  const totalCells = Math.ceil((startOffset + daysInMonth) / 7) * 7;
+  const days = [];
+  for (let i = 0; i < startOffset; i++) days.push(null);
+  for (let d = 1; d <= daysInMonth; d++) days.push(d);
+  while (days.length < totalCells) days.push(null);
+  return days;
+}
+
 function Activity({ initialTab }) {
   const [tab, setTab] = useState(initialTab || 'Description');
   const [event, setEvent] = useState(data);
+  const now = new Date();
+  const calendarYear = now.getFullYear();
+  const calendarMonth = now.getMonth();
+  const todayDate = now.getDate();
+  const monthLabel = now.toLocaleString('default', { month: 'long', year: 'numeric' });
+  const calendarDays = getCalendarDays(calendarYear, calendarMonth);
 
   const handleTabClick = tabName => {
     setTab(tabName);
@@ -67,23 +86,23 @@ function Activity({ initialTab }) {
   }, [initialTab]);
 
   return (
-    <div className="activity-container">
-      <div className="activity-event-card">
-        <div className="activity-event-header">
-          <div className="activity-event-image">Participated</div>
-          <div className="activity-event-details">
-            <p className="activity-event-type">{event.eventType} / In-person or Remote</p>
-            <h2 className="activity-event-title">{event.eventName}</h2>
-            <p className="activity-event-location">
+    <div className={styles.container}>
+      <div className={styles.eventCard}>
+        <div className={styles.eventHeader}>
+          <div className={styles.eventImage}>Participated</div>
+          <div className={styles.eventDetails}>
+            <p className={styles.eventType}>{event.eventType} / In-person or Remote</p>
+            <h2 className={styles.eventTitle}>{event.eventName}</h2>
+            <p className={styles.eventLocation}>
               <strong>Location:</strong> {event.eventLocation}
             </p>
-            <p className="activity-event-link-wrap">
+            <p className={styles.eventLinkWrap}>
               <strong>Link:</strong>{' '}
-              <a href="https://devforum.zoom.us" className="activity-event-link">
+              <a href="https://devforum.zoom.us" className={styles.eventLink}>
                 {event.eventLink}
               </a>
             </p>
-            <div className="activity-event-info">
+            <div className={styles.eventInfo}>
               <div>
                 <strong>Date</strong>
                 <br />
@@ -102,58 +121,52 @@ function Activity({ initialTab }) {
               <div>
                 <strong>Capacity</strong>
                 <br />
-                <span className="activity-capacity">{event.eventCapacity}</span>
+                <span className={styles.capacity}>{event.eventCapacity}</span>
               </div>
               <div>
                 <strong>Overall Rating</strong>
                 <br />
                 {Array.from({ length: event.eventRating }, (_, i) => (
-                  <span key={i} className="activity-star">
-                    ★
-                  </span>
+                  <span key={i}>★</span>
                 ))}
                 {Array.from({ length: 5 - event.eventRating }, (_, i) => (
-                  <span key={i} className="activity-star-empty">
-                    ☆
-                  </span>
+                  <span key={i}>☆</span>
                 ))}
               </div>
               <div>
                 <strong>Status</strong>
                 <br />
-                <span className="activity-status-pill">{event.eventStatus}</span>
+                <span className={styles.statusPill}>{event.eventStatus}</span>
               </div>
             </div>
             {event.eventParticipates && event.eventParticipates.length > 0 && (
-              <div className="activity-participant-avatars">
+              <div className={styles.participantAvatars}>
                 {event.eventParticipates.slice(0, 5).map((p, i) => (
                   <span
                     key={p.id || i}
-                    className={`activity-avatar ${i % 2 === 0 ? 'purple' : 'blue'}`}
+                    className={`${styles.avatar} ${i % 2 === 0 ? styles.purple : styles.blue}`}
                     title={p.name}
                   >
                     {p.name ? p.name[0] : '?'}
                   </span>
                 ))}
                 {event.eventParticipates.length > 5 && (
-                  <span className="activity-avatar-more">
-                    +{event.eventParticipates.length - 5}
-                  </span>
+                  <span className={styles.avatarMore}>+{event.eventParticipates.length - 5}</span>
                 )}
               </div>
             )}
-            <div className="activity-event-buttons">
-              <button type="button" className="activity-feedback-btn">
+            <div className={styles.eventButtons}>
+              <button type="button" className={styles.feedbackBtn}>
                 Feedback
               </button>
-              <button type="button" className="activity-contact-btn">
+              <button type="button" className={styles.contactBtn}>
                 Contact organizer
               </button>
             </div>
           </div>
-          <div className="activity-calendar-box">
-            <div className="activity-calendar-header">September 2024</div>
-            <table className="activity-calendar-table">
+          <div className={styles.calendarBox}>
+            <div className={styles.calendarHeader}>{monthLabel}</div>
+            <table className={styles.calendarTable}>
               <thead>
                 <tr>
                   <th>S</th>
@@ -166,80 +179,47 @@ function Activity({ initialTab }) {
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td>1</td>
-                  <td className="activity-active-date">2</td>
-                  <td>3</td>
-                  <td>4</td>
-                  <td>5</td>
-                  <td>6</td>
-                  <td>7</td>
-                </tr>
-                <tr>
-                  <td>8</td>
-                  <td>9</td>
-                  <td>10</td>
-                  <td>11</td>
-                  <td>12</td>
-                  <td>13</td>
-                  <td>14</td>
-                </tr>
-                <tr>
-                  <td>15</td>
-                  <td>16</td>
-                  <td>17</td>
-                  <td>18</td>
-                  <td>19</td>
-                  <td>20</td>
-                  <td>21</td>
-                </tr>
-                <tr>
-                  <td>22</td>
-                  <td>23</td>
-                  <td>24</td>
-                  <td>25</td>
-                  <td>26</td>
-                  <td>27</td>
-                  <td>28</td>
-                </tr>
-                <tr>
-                  <td>29</td>
-                  <td>30</td>
-                  <td> </td>
-                  <td> </td>
-                  <td> </td>
-                  <td> </td>
-                  <td> </td>
-                </tr>
+                {Array.from({ length: calendarDays.length / 7 }, (_, rowIndex) => (
+                  <tr key={rowIndex}>
+                    {calendarDays.slice(rowIndex * 7, rowIndex * 7 + 7).map((day, colIndex) => {
+                      const isToday = day === todayDate;
+                      return (
+                        <td key={colIndex} className={isToday ? styles.activeDate : undefined}>
+                          {day ?? '\u00A0'}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
         </div>
 
-        <div className="activity-event-tabs">
+        <div className={styles.eventTabs}>
           <button
-            className={`activity-tab ${tab === 'Description' ? 'active' : ''}`}
+            className={`${styles.tab} ${tab === 'Description' ? styles.active : ''}`}
             onClick={() => handleTabClick('Description')}
             type="button"
           >
             Description
           </button>
           <button
-            className={`activity-tab ${tab === 'Participates' ? 'active' : ''}`}
+            className={`${styles.tab} ${tab === 'Participates' ? styles.active : ''}`}
             onClick={() => handleTabClick('Participates')}
             type="button"
           >
             Participates
           </button>
           <button
-            className={`activity-tab ${tab === 'Comments' ? 'active' : ''}`}
+            className={`${styles.tab} ${tab === 'Comments' ? styles.active : ''}`}
             onClick={() => handleTabClick('Comments')}
             type="button"
           >
             Comments
           </button>
           <button
-            className={`activity-tab ${tab === 'FAQs' ? 'active' : ''}`}
+            className={`${styles.tab} ${tab === 'FAQs' ? styles.active : ''}`}
             onClick={() => handleTabClick('FAQs')}
             type="button"
           >
@@ -247,24 +227,28 @@ function Activity({ initialTab }) {
           </button>
         </div>
         {tab === 'Description' && (
-          <div className="activity-event-description">
+          <div className={styles.eventDescription}>
             <p>{event.eventDescription}</p>
           </div>
         )}
         {tab === 'Participates' && (
-          <div className="activity-participates-section">
+          <div className={styles.participatesSection}>
             {event.eventParticipates.map(participant => (
-              <div key={participant.id} className="activity-participant">
-                <span className={`activity-icon ${participant.id % 2 === 0 ? 'purple' : 'blue'}`}>
+              <div key={participant.id} className={styles.participant}>
+                <span
+                  className={`${styles.icon} ${
+                    participant.id % 2 === 0 ? styles.purple : styles.blue
+                  }`}
+                >
                   {participant.name[0]}
                 </span>
-                <div className="activity-participant-name">{participant.name}</div>
+                <div className={styles.participantName}>{participant.name}</div>
               </div>
             ))}
           </div>
         )}
         {tab === 'FAQs' && (
-          <div className="activity-faqs-section">
+          <div className={styles.faqsSection}>
             <ActivityFAQs />
           </div>
         )}
