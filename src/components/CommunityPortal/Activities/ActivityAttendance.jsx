@@ -9,18 +9,35 @@ import profileImg from '../../../assets/images/profile.png';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-function StatsChart({ stats }) {
-  const totalMembers = stats.find(stat => stat.title === 'Total Community Members')?.value || 1;
-  const registered = stats.find(stat => stat.title === 'Registered')?.value || 0;
-  const percentage = ((registered / totalMembers) * 100).toFixed(1);
+function deriveAttendanceMetrics({
+  totalCommunityMembers,
+  registeredMembers,
+  registeredNoShows,
+  communityVisitors,
+}) {
+  const attendingMembers = Math.max(registeredMembers - registeredNoShows, 0);
 
+  const totalAttendees = attendingMembers + communityVisitors;
+
+  const participationPercentage =
+    totalCommunityMembers > 0
+      ? Number(((totalAttendees / totalCommunityMembers) * 100).toFixed(1))
+      : 0;
+
+  return {
+    attendingMembers,
+    totalAttendees,
+    participationPercentage,
+  };
+}
+
+function StatsChart({ attendingMembers, communityVisitors, participationPercentage }) {
   const data = {
-    labels: stats.map(stat => stat.title),
+    labels: ['Attending Members', 'Community Visitors'],
     datasets: [
       {
-        data: stats.map(stat => stat.value),
-        backgroundColor: ['#4CAF50', '#2196F3', '#F44336', '#FF9800'],
-        hoverBackgroundColor: ['#388E3C', '#1976D2', '#D32F2F', '#F57C00'],
+        data: [attendingMembers, communityVisitors],
+        backgroundColor: ['#2196F3', '#FF9800'],
         borderWidth: 1,
       },
     ],
@@ -30,14 +47,23 @@ function StatsChart({ stats }) {
     cutout: '70%',
     plugins: {
       legend: { display: false },
-      tooltip: { enabled: true },
+      tooltip: {
+        callbacks: {
+          label: ctx => {
+            const total = attendingMembers + communityVisitors;
+            const value = ctx.raw;
+            const percent = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+            return `${ctx.label}: ${value} (${percent}%)`;
+          },
+        },
+      },
     },
   };
 
   return (
     <div className={styles.chartContainer}>
       <Doughnut data={data} options={options} />
-      <div className={styles.chartLabel}>{percentage}%</div>
+      <div className={styles.chartLabel}>{participationPercentage}%</div>
     </div>
   );
 }
@@ -57,7 +83,7 @@ const exportToCSV = students => {
   document.body.removeChild(link);
 };
 
-function StatsCard({ title, value, color, definition }) {
+function StatsCard({ title, value, colorClass, definition }) {
   return (
     <div className={styles.statsCard}>
       <div className={styles.statsCardHeader}>
@@ -71,9 +97,7 @@ function StatsCard({ title, value, color, definition }) {
           <FaInfoCircle className={styles.infoIcon} />
         </button>
       </div>
-      <p className={styles.statsValue} style={{ color }}>
-        {value}
-      </p>
+      <p className={`${styles.statsValue} ${styles[colorClass]}`}>{value}</p>
     </div>
   );
 }
@@ -168,34 +192,62 @@ function ActivityAttendance() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
 
+  /* -------- Raw inputs -------- */
+  const totalCommunityMembers = 400;
+  const registeredMembers = 100;
+  const registeredNoShows = 15;
+  const communityVisitors = 19;
+
+  const { attendingMembers, totalAttendees, participationPercentage } = deriveAttendanceMetrics({
+    totalCommunityMembers,
+    registeredMembers,
+    registeredNoShows,
+    communityVisitors,
+  });
+
   const statsData = [
     {
       id: uuidv4(),
       title: 'Total Community Members',
-      value: 400,
-      color: '#4CAF50',
-      definition: 'All members registered in the community, including inactive users and visitors.',
+      value: totalCommunityMembers,
+      colorClass: 'statGreen',
+      definition: 'Total number of people who live in the community.',
     },
     {
       id: uuidv4(),
-      title: 'Registered',
-      value: 100,
-      color: '#2196F3',
-      definition: 'Members registered for the selected event/session only.',
+      title: 'Registered Members',
+      value: registeredMembers,
+      colorClass: 'statBlue',
+      definition: 'Community members who registered for the event/session.',
     },
     {
       id: uuidv4(),
-      title: 'No Show',
-      value: 15,
-      color: '#F44336',
-      definition: 'Registered members who did not check in or attend the event.',
+      title: 'Registered No-Shows',
+      value: registeredNoShows,
+      colorClass: 'statRed',
+      definition: 'Registered community members who did not attend the event.',
     },
     {
       id: uuidv4(),
-      title: 'Community Visitor',
-      value: 19,
-      color: '#FF9800',
-      definition: 'Non-registered participants who attended the event.',
+      title: 'Attending Members',
+      value: attendingMembers,
+      colorClass: 'statBlue',
+      definition: 'Community members who registered and actually attended the event.',
+    },
+    {
+      id: uuidv4(),
+      title: 'Community Visitors',
+      value: communityVisitors,
+      colorClass: 'statOrange',
+      definition: 'Non-community members who attended the event.',
+    },
+    {
+      id: uuidv4(),
+      title: 'Total Attendees',
+      value: totalAttendees,
+      colorClass: 'statDarkGreen',
+      definition:
+        'Total number of people who attended the event. Used for participation and continuation decisions.',
     },
   ];
 
@@ -232,21 +284,25 @@ function ActivityAttendance() {
 
         <div className={styles.dashboardMain}>
           <div className={styles.statsChartContainer}>
-            <StatsChart stats={statsData} />
+            <StatsChart
+              attendingMembers={attendingMembers}
+              communityVisitors={communityVisitors}
+              participationPercentage={participationPercentage}
+            />
+
             <div className={styles.statsGrid}>
               {statsData.map(stat => (
                 <StatsCard
                   key={stat.id}
                   title={stat.title}
                   value={stat.value}
-                  color={stat.color}
+                  colorClass={stat.colorClass}
                   definition={stat.definition}
                 />
               ))}
             </div>
           </div>
 
-          {/* Live Student Updates */}
           <LiveUpdates
             students={students}
             searchTerm={searchTerm}
