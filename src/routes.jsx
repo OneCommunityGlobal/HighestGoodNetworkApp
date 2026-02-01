@@ -104,7 +104,6 @@ import MaterialSummary from './components/MaterialSummary/MaterialSummary';
 
 // Activity Feedback Modal
 import FeedbackRatingEntry from './components/FeedbackActivityModal/FeedbackActivityEntry';
-
 import TeamLocations from './components/TeamLocations';
 import Inventory from './components/Inventory';
 import Collaboration from './components/Collaboration';

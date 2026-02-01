@@ -77,7 +77,6 @@ td.textEnd {
   overflow: hidden;
 }
 
-
 /* Make sure content doesn't force horizontal scroll */
 .containerFluid {
   max-width: 100%;

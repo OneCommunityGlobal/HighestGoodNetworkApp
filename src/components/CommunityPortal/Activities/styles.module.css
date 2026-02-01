@@ -107,6 +107,21 @@
   margin-top: 10px;
 }
 
+.resourceStats .arrow {
+  font-size: 1rem;
+  margin-right: 5px;
+}
+
+.resourceStats p {
+  margin: 0;
+}
+
+.resourceStats p:last-child {
+  color: grey;
+  font-size: 0.7rem;
+  margin-left: 5px;
+}
+
 .arrow.up {
   color: green;
 }
@@ -114,7 +129,6 @@
 .arrow.down {
   color: red;
 }
-
 
 .registrationForm,
 .filters {
@@ -166,6 +180,10 @@
   cursor: pointer;
 }
 
+.createNewBtn:hover {
+  background-color: #218838;
+}
+
 .myEventsTable {
   width: 100%;
   border-collapse: collapse;
@@ -183,6 +201,7 @@
   border-radius: 5px;
   color: white;
 }
+
 .active {
   color: green;
 }
@@ -308,21 +327,6 @@
   font-size: 1rem;
 }
 
-.resourceStats .arrow {
-  font-size: 1rem;
-  margin-right: 5px;
-}
-
-.resourceStats p {
-  margin: 0;
-}
-
-.resourceStats p:last-child {
-  color: grey;
-  font-size: 0.7rem;
-  margin-left: 5px;
-}
-
 /* My Events toggle button */
 .viewToggle button {
   padding: 10px 20px;
@@ -364,10 +368,6 @@
 
 .applyFiltersBtn:hover {
   background-color: #0056b3;
-}
-
-.createNewBtn:hover {
-  background-color: #218838;
 }
 
 .registerinfo {
