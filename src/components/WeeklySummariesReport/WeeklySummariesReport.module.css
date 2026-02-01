@@ -339,6 +339,13 @@
   margin: 10px 0 0 0;
   padding: 8px;
 }
+/* Nuclear option — beats ANY dark-mode global rule */
+:global(.dark-mode)
+  :global(.container-wsr-wrapper)
+  :global(.alert-danger).codeAlert {
+  color: #842029 !important;
+}
+
 
 .report-multi-select-filter {
   .options {
