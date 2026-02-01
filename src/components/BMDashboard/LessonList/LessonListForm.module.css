@@ -1,47 +1,49 @@
-
-.formContainer{
-  
+.formContainer {
   .formControl {
-   max-width: unset !important;
-   font-size: small !important;
- } 
- .formLabel{
-  margin: 5px 0;
-  font-size: small;
+    max-width: unset !important;
+    font-size: small !important;
+  }
+
+  .formLabel {
+    margin: 5px 0;
+    font-size: small;
   }
 }
 
+/* ✅ merged duplicate .formControlDelete */
 .formControlDelete {
-  width: 100%;
   margin-left: 0;
   font-size: small !important;
   max-width: 100%;
+  width: 100%;
 }
 
+/* Tag delete button */
 .tag .deleteTag {
   margin-left: 10px;
   background-color: red;
-  
 }
 
-.mainContainer{
- display: flex;
- flex-direction: column;
- height: 100%;
-   padding-left: 10%;
-   padding-right: 10%;
-   padding-top: 5%;
-   padding-bottom: 1%;
+.mainContainer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding-left: 10%;
+  padding-right: 10%;
+  padding-top: 5%;
+  padding-bottom: 1%;
 }
-.lessonLabel{
-   font-size: larger !important;
-   font-weight: bold ;
+
+.lessonLabel {
+  font-size: larger !important;
+  font-weight: bold;
 }
-.formSelectContainer{
-   display: flex;
-   flex-direction: row;
-   justify-content: flex-start;
-   font-size: small;
+
+.formSelectContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  font-size: small;
 }
 
 .singleForm {
@@ -50,12 +52,10 @@
   text-align: center !important;
   margin-right: 40px;
   width: 200px;
-  
- 
 }
-.singleFormSelect {
-  background-color: #F2F2F266 !important;
 
+.singleFormSelect {
+  background-color: #f2f2f266 !important;
 }
 
 .tagContainer {
@@ -74,6 +74,7 @@
   flex: 1;
 }
 
+/* ✅ merged duplicate .tagsInputContainer */
 .tagsInputContainer {
   display: flex;
   flex-direction: column;
@@ -192,7 +193,6 @@
   gap: 5px;
 }
 
-
 .tagDropdown {
   position: absolute;
   background: white;
@@ -220,9 +220,8 @@
   background-color: #f0f0f0;
 }
 
-  @media (max-width: 570px) {
-   .formSelectContainer {
-     flex-direction: column;
-   }
+@media (max-width: 570px) {
+  .formSelectContainer {
+    flex-direction: column;
   }
-
+}
