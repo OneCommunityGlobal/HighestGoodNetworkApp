@@ -459,6 +459,9 @@ export const ENDPOINTS = {
   DROPBOX_CREATE_ADD: `${APIEndpoint}/dropbox/create-folder-and-invite`,
   ACCESS_MANAGEMENT: `${APIEndpoint}/accessManagement`,
 
+  // CP dashboard endpoints
+  CP_NOSHOW: `${APIEndpoint}/communityportal/sendFollowUpEmail`,
+
   // community portal
   CP_NOSHOW_VIZ_LOCATION: `${APIEndpoint}/communityportal/reports/participation/location`,
   CP_NOSHOW_VIZ_AGEGROUP: `${APIEndpoint}/communityportal/reports/participation/age-group`,

@@ -100,6 +100,7 @@ import NoshowViz from './components/CommunityPortal/Attendence/NoshowViz';
 import EventList from './components/CommunityPortal/Event/EventList/EventList';
 import ResourcesUsage from './components/CommunityPortal/Activities/activityId/ResourcesUsage';
 import EventParticipation from './components/CommunityPortal/Reports/Participation/EventParticipation';
+import NoShowList from './components/CommunityPortal/Activities/NoShow/NoShowList';
 
 import MaterialSummary from './components/MaterialSummary/MaterialSummary';
 
@@ -774,9 +775,9 @@ export default (
           component={FollowUpEmailTemplate}
         />
         <CPProtectedRoute
-          path="/communityportal/reports/participation"
+          path="/communityportal/activity/:activityId/logattendance"
           exact
-          component={EventParticipation}
+          component={NoShowList}
         />
         <CPProtectedRoute
           path="/communityportal/reports/participation"
@@ -830,11 +831,6 @@ export default (
         />
         <Route path="/lbdashboard/bidoverview" exact component={LBBidOverview} />
         <LBProtectedRoute path="/lbdashboard/bidding" exact component={BiddingHomepage} />
-        <CPProtectedRoute
-          path="/communityportal/reports/participation"
-          exact
-          component={EventParticipation}
-        />
         {/* Good Education  Portal Routes */}
         <EPProtectedRoute path="/educationportal" exact component={EPDashboard} />
         <EPProtectedRoute
