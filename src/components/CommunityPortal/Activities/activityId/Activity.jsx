@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import CommentSection from './CommentSection/CommentSection';
-import './Activity.module.css';
+import ActivityFAQs from './ActivityFAQs';
+import './Activity.css';
 
 const data = {
   eventName: 'Event Name',
@@ -16,7 +17,10 @@ const data = {
   eventStatusClass: 'status-active',
   eventDescription:
     'this is activity comments. this is activity comments. this is activity comments. this is activity comments. this is activity comments.',
-  eventParticipates: [{ name: 'Summer' }, { name: 'Jimmy' }],
+  eventParticipates: [
+    { id: 1, name: 'Summer' },
+    { id: 2, name: 'Jimmy' },
+  ],
   eventComments: [
     {
       id: 1,
@@ -46,8 +50,8 @@ const data = {
   ],
 };
 
-function Activity() {
-  const [tab, setTab] = useState('Description');
+function Activity({ initialTab }) {
+  const [tab, setTab] = useState(initialTab || 'Description');
   const [event, setEvent] = useState(data);
 
   const handleTabClick = tabName => {
@@ -58,18 +62,27 @@ function Activity() {
     setEvent(data);
   }, [data]);
 
+  useEffect(() => {
+    if (initialTab) setTab(initialTab);
+  }, [initialTab]);
+
   return (
     <div className="activity-container">
       <div className="activity-event-card">
         <div className="activity-event-header">
           <div className="activity-event-image">Participated</div>
           <div className="activity-event-details">
-            <p className="activity-event-type">{event.eventType}</p>
+            <p className="activity-event-type">{event.eventType} / In-person or Remote</p>
             <h2 className="activity-event-title">{event.eventName}</h2>
-            <p className="activity-event-location">{event.eventLocation}</p>
-            <a href="https://devforum.zoom.us" className="activity-event-link">
-              {event.eventLink}
-            </a>
+            <p className="activity-event-location">
+              <strong>Location:</strong> {event.eventLocation}
+            </p>
+            <p className="activity-event-link-wrap">
+              <strong>Link:</strong>{' '}
+              <a href="https://devforum.zoom.us" className="activity-event-link">
+                {event.eventLink}
+              </a>
+            </p>
             <div className="activity-event-info">
               <div>
                 <strong>Date</strong>
@@ -108,9 +121,27 @@ function Activity() {
               <div>
                 <strong>Status</strong>
                 <br />
-                <span className="activity-status-active">{event.eventStatus}</span>
+                <span className="activity-status-pill">{event.eventStatus}</span>
               </div>
             </div>
+            {event.eventParticipates && event.eventParticipates.length > 0 && (
+              <div className="activity-participant-avatars">
+                {event.eventParticipates.slice(0, 5).map((p, i) => (
+                  <span
+                    key={p.id || i}
+                    className={`activity-avatar ${i % 2 === 0 ? 'purple' : 'blue'}`}
+                    title={p.name}
+                  >
+                    {p.name ? p.name[0] : '?'}
+                  </span>
+                ))}
+                {event.eventParticipates.length > 5 && (
+                  <span className="activity-avatar-more">
+                    +{event.eventParticipates.length - 5}
+                  </span>
+                )}
+              </div>
+            )}
             <div className="activity-event-buttons">
               <button type="button" className="activity-feedback-btn">
                 Feedback
@@ -234,12 +265,7 @@ function Activity() {
         )}
         {tab === 'FAQs' && (
           <div className="activity-faqs-section">
-            {event.eventFAQs.map(faq => (
-              <div key={faq.id} className="activity-faq">
-                <h3>{faq.question}</h3>
-                <p>{faq.answer}</p>
-              </div>
-            ))}
+            <ActivityFAQs />
           </div>
         )}
         {tab === 'Comments' && <CommentSection comments={event.eventComments} />}

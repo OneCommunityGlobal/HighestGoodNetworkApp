@@ -13,6 +13,7 @@
   font-family: Arial, sans-serif;
   background-color: #fff;
   max-width: 1100px;
+  width: 100%;
 }
 
 .activity-event-header {
@@ -72,6 +73,46 @@
   font-weight: bold;
 }
 
+.activity-status-pill {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background-color: #4caf50;
+  color: #fff;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.activity-event-link-wrap {
+  margin: 4px 0;
+}
+
+.activity-participant-avatars {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.activity-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  color: #fff;
+  text-align: center;
+  line-height: 32px;
+  font-weight: bold;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.activity-avatar-more {
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: 500;
+}
+
 .activity-event-buttons {
   margin-top: 10px;
 }
@@ -127,8 +168,9 @@
 }
 
 .activity-tab.active {
-  border-bottom: 2px solid #000;
+  border-bottom: 2px solid #1a73e8;
   font-weight: bold;
+  color: #1a73e8;
 }
 
 .activity-participates-section {
@@ -145,6 +187,12 @@
 
 .activity-faqs-section {
   margin-top: 20px;
+  width: 100%;
+}
+
+.activity-faqs-section > div {
+  min-height: unset;
+  padding-top: 0;
 }
 
 .activity-faq p {

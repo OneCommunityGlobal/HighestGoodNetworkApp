@@ -140,7 +140,7 @@ function ActivityFAQs() {
           <FaSearch className={styles.searchIcon} />
           <input
             type="text"
-            placeholder="Q Search"
+            placeholder="Search"
             className={styles.searchInput}
             value={searchQuery}
             onChange={handleSearchChange}
