@@ -246,6 +246,16 @@
   margin: 8px 0;
 }
 
+.organizerLogo {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  background-color: #f0f0f0;
+  border: 1px solid #e0e0e0;
+}
+
 .paginationContainer {
   margin-top: 20px;
   display: flex;
