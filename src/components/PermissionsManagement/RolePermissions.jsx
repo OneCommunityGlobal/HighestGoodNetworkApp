@@ -15,7 +15,7 @@ import { updateRole, getAllRoles } from '../../actions/role';
 import PermissionList from './PermissionList';
 import permissionLabel from './PermissionsConst';
 import hasPermission from '../../utils/permissions';
-import './RolePermissions.css';
+import styles from './RolePermissions.module.css';
 // import { roleOperationLabels } from './PermissionsConst';
 
 function RolePermissions(props) {
@@ -38,7 +38,7 @@ function RolePermissions(props) {
     let content = '';
     if (description === 'save') {
       content = (
-        <div className="modal-info-content">
+        <div className={`${styles.modalInfoContent}`}>
           <p>Here you can create new presets and save your changes</p>
           <ul>
             <li>
@@ -55,7 +55,7 @@ function RolePermissions(props) {
       );
     } else if (description === 'delete') {
       content = (
-        <div className="modal-info-content">
+        <div className={`${styles.modalInfoContent}`}>
           <p>Here you can load saved presets and delete the current role.</p>
           <ul>
             <li>

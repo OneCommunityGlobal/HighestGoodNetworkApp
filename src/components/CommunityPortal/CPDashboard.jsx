@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { Container, Row, Col, Card, CardBody, Button, Input } from 'reactstrap';
+import { Container, Row, Col, Card, CardBody, Button, Input, FormGroup, Label } from 'reactstrap';
 import { FaCalendarAlt, FaMapMarkerAlt, FaUserAlt, FaSearch, FaTimes } from 'react-icons/fa';
 import styles from './CPDashboard.module.css';
 import { ENDPOINTS } from '../../utils/URL';
 import axios from 'axios';
+import { el } from 'date-fns/locale';
 
 const FixedRatioImage = ({ src, alt, fallback }) => (
   <div
@@ -38,6 +39,7 @@ export function CPDashboard() {
   const [searchQuery, setSearchQuery] = useState('');
   const [onlineOnly, setOnlineOnly] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [dateFilter, setDateFilter] = useState('');
   const [error, setError] = useState(null);
   const darkMode = useSelector(state => state.theme.darkMode);
   const [pagination, setPagination] = useState({
@@ -97,11 +99,45 @@ export function CPDashboard() {
     });
   };
 
+  function isTomorrow(dateString) {
+    const input = new Date(dateString);
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+
+    return input >= tomorrow && input < new Date(tomorrow.getTime() + 24 * 60 * 60 * 1000);
+  }
+
+  function isComingWeekend(dateString) {
+    const input = new Date(dateString);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const day = today.getDay();
+    const daysUntilSaturday = (6 - day + 7) % 7 || 7;
+    const saturday = new Date(today);
+    saturday.setDate(today.getDate() + daysUntilSaturday);
+    const sunday = new Date(saturday);
+    sunday.setDate(saturday.getDate() + 1);
+    sunday.setHours(23, 59, 59, 999);
+
+    return input >= saturday && input <= sunday;
+  }
+
   const filteredEvents = events.filter(event => {
     // Filter by online only if checkbox is checked
     if (onlineOnly) {
       const isOnlineEvent = event.location?.toLowerCase() === 'virtual';
       if (!isOnlineEvent) return false;
+    }
+
+    // Filter by date filter
+    if (dateFilter === 'tomorrow') {
+      return isTomorrow(event.date);
+    } else if (dateFilter === 'weekend') {
+      return isComingWeekend(event.date);
     }
 
     // Filter by search query if provided
@@ -144,12 +180,11 @@ export function CPDashboard() {
   }
 
   return (
-    <Container className={`${styles.dashboardContainer} ${darkMode ? styles.darkContainer : ''}`}>
-      <header className={`${styles.dashboardHeader} ${darkMode ? styles.darkHeader : ''}`}>
+    <Container className={styles.cp_dashboard_container}>
+      <header className={styles.cp_dashboard_header}>
         <h1>All Events</h1>
-
         <div>
-          <div className={styles.dashboardSearchContainer}>
+          <div className={styles.cp_dashboard_search_container}>
             <Input
               id="search"
               type="search"
@@ -193,13 +228,46 @@ export function CPDashboard() {
             <div className={styles.filterSectionDivider}>
               <div className={styles.filterItem}>
                 <label htmlFor="date-tomorrow"> Dates</label>
-                <div>
-                  <div>
-                    <Input type="radio" name="dates" /> Tomorrow
-                  </div>
-                  <div>
-                    <Input type="radio" name="dates" /> This Weekend
-                  </div>
+                <div className={styles.radioRow}>
+                  <FormGroup check className={styles.radioGroup + ' d-flex align-items-center'}>
+                    <Input
+                      id="date-tomorrow"
+                      type="radio"
+                      name="dates"
+                      checked={dateFilter === 'tomorrow'}
+                      onChange={() => setDateFilter('tomorrow')}
+                      className={styles.radioInput}
+                    />
+                    <Label
+                      htmlFor="date-tomorrow"
+                      check
+                      className={styles.radioLabel + ' ms-2 mb-0'}
+                    >
+                      Tomorrow
+                    </Label>
+                  </FormGroup>
+                  <FormGroup check className={styles.radioGroup + ' d-flex align-items-center'}>
+                    <Input
+                      id="date-weekend"
+                      type="radio"
+                      name="dates"
+                      checked={dateFilter === 'weekend'}
+                      onChange={() => setDateFilter('weekend')}
+                      className={styles.radioInput}
+                    />
+                    <Label
+                      htmlFor="date-weekend"
+                      check
+                      className={styles.radioLabel + ' ms-2 mb-0'}
+                    >
+                      This Weekend
+                    </Label>
+                  </FormGroup>
+                </div>
+                <div className={styles.dashboardActions}>
+                  <Button color="primary" onClick={() => setDateFilter('')}>
+                    Clear date filter
+                  </Button>
                 </div>
                 <Input type="date" placeholder="Ending After" className={styles['date-filter']} />
               </div>

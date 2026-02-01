@@ -540,7 +540,7 @@ class ReportsPage extends Component {
                 </div>
               )}
               <div className="d-flex align-items-center">
-                <span className={`mr-2 `}>Reports Page</span>
+                <h2 className="mr-2" style={darkMode ? { color: '#fff' } : undefined}>Reports Page</h2>
                 <EditableInfoModal
                   areaName="ReportsPage"
                   areaTitle="Reports Page"

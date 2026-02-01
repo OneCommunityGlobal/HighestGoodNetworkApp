@@ -1,3 +1,4 @@
+/* eslint-disable import/no-named-as-default */
 import { teamMemberTasksReducer } from '~/components/TeamMemberTasks/reducer';
 import { taskEditSuggestionsReducer } from '~/components/TaskEditSuggestions/reducer';
 import { userProfileByIdReducer, userTaskByIdReducer } from './userProfileByIdReducer';
@@ -100,6 +101,10 @@ import reviewsInsightReducer from './prAnalytics/reviewsInsightReducer';
 import { hoursPledgedReducer } from './jobAnalytics/hoursPledgedReducer';
 import { studentTasksReducer } from './studentTasksReducer';
 
+// education portal
+import { atomReducer } from './educationPortal/atomReducer';
+import { weeklySummariesFiltersApi } from '../actions/weeklySummariesFilterAction';
+
 //education portal
 
 import browseLessonPlanReducer from './educationPortal/broweLPReducer';
@@ -139,6 +144,8 @@ const localReducers = {
   allUsersTimeEntries: allUsersTimeEntriesReducer,
   allUserProfilesBasicInfo: allUserProfilesBasicInfoReducer,
   projectById: projectByIdReducer,
+  [weeklySummariesFiltersApi.reducerPath]: weeklySummariesFiltersApi.reducer,
+
   // bm dashboard
   materials: materialsReducer,
   tools: toolReducer,
@@ -185,6 +192,9 @@ const localReducers = {
   // student tasks
   studentTasks: studentTasksReducer,
   jobApplication: jobApplicationReducer,
+
+  // education portal
+  atom: atomReducer,
 
   // education portal
   browseLessonPlan: browseLessonPlanReducer,

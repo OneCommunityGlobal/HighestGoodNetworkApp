@@ -27,7 +27,7 @@
   align-items: center;
   padding: 20px 0;
   background: #e5e5e5;
-  width: 100%
+  width: 100%;
 }
 
 .logoContainer img {
@@ -146,7 +146,7 @@
   display: none;
 }
 
-.activeInlbMessagingContactsBody  {
+.activeInlbMessagingContactsBody {
   display: block;
 }
 
@@ -238,7 +238,6 @@
   margin-right: 10px;
 }
 
-
 .received {
   justify-content: flex-start !important;
   margin-left: 10px;
@@ -309,7 +308,7 @@
   padding: 5px;
 }
 
-.activeInlgMessagingBellSelectDropdown{
+.activeInlgMessagingBellSelectDropdown {
   display: flex;
 }
 
@@ -414,26 +413,7 @@
   padding: 10px;
 }
 
-.lbMessagingContact {
-  display: flex;
-  align-items: center;
-  padding: 8px;
-  border-bottom: 1px solid #eee;
-  cursor: pointer;
-}
-
-.lbMessagingContact img {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  margin-right: 10px;
-}
-
 .lbMessagingContactName {
   font-size: 15px;
   font-weight: 500;
-}
-
-.lbMsgIcon {
-  cursor: pointer;
 }

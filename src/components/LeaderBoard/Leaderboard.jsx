@@ -700,16 +700,18 @@ function LeaderBoard({
                   </th>
                   <th style={darkModeStyle}>
                     <div className="d-flex align-items-center">
-                      <span>{isAbbreviatedView ? 'Name' : 'Name'}</span>
-                      <EditableInfoModal
-                        areaName="Leaderboard"
-                        areaTitle="Team Members Navigation"
-                        role={loggedInUser.role}
-                        fontSize={18}
-                        isPermissionPage
-                        darkMode={darkMode}
-                        className="p-2"
-                      />
+                      <span className="mr-2">{isAbbreviatedView ? 'Name' : 'Name'}</span>
+                      <span style={{ position: 'relative', top: '2px' }}>
+                        <EditableInfoModal
+                          areaName="Leaderboard"
+                          areaTitle="Team Members Navigation"
+                          role={loggedInUser.role}
+                          fontSize={18}
+                          isPermissionPage
+                          darkMode={darkMode}
+                          className="p-2"
+                        />
+                      </span>
                     </div>
                   </th>
                   <th style={darkModeStyle}>
@@ -751,7 +753,7 @@ function LeaderBoard({
                         <span>{stateOrganizationData.name}</span>
                         <br />
                         {viewZeroHouraMembers(loggedInUser.role) && (
-                          <span className="leaderboard-totals-title">
+                          <span className={styles.leaderboardTotalsTitle}>
                             0 hrs Totals:{' '}
                             {filteredUsers.filter(user => user.weeklycommittedHours === 0).length}{' '}
                             Members
@@ -766,7 +768,7 @@ function LeaderBoard({
                         <span>{stateOrganizationData.name}</span>
                         <br />
                         {viewZeroHouraMembers(loggedInUser.role) && (
-                          <span className="leaderboard-totals-title">
+                          <span className={styles.leaderboardTotalsTitle}>
                             0 hrs Totals:{' '}
                             {filteredUsers.filter(user => user.weeklycommittedHours === 0).length}{' '}
                             Members
@@ -969,8 +971,13 @@ function LeaderBoard({
                             onClick={() => trophyIconToggle(item)}
                             onKeyDown={() => trophyIconToggle(item)}
                           >
-                            <p style={{ fontSize: '10px', marginLeft: '1px' }}>
-                              <strong>{iconContent}</strong>
+                            <p
+                              className={darkMode ? styles.trophyTextWhite : undefined}
+                              style={{ fontSize: '10px', marginLeft: '1px' }}
+                            >
+                              <strong className={darkMode ? styles.trophyTextWhite : undefined}>
+                                {iconContent}
+                              </strong>
                             </p>
                           </i>
                         )}
@@ -1074,7 +1081,7 @@ function LeaderBoard({
                           title={mouseoverTextValue}
                           id="Total time"
                           className={
-                            item.totalintangibletime_hrs > 0 ? 'leaderboard-totals-title' : null
+                            item.totalintangibletime_hrs > 0 ? styles.leaderboardTotalsTitle : null
                           }
                         >
                           {item.totaltime}

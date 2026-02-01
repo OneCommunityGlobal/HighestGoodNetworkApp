@@ -1,4 +1,6 @@
+/* src/components/CommunityPortal/Activities/activityId/Resources.module.css */
 .resourcesUsage {
+  background: white;
   padding: 20px;
   border-radius: 8px;
   font-family: Arial, sans-serif;
@@ -28,50 +30,27 @@
   font-weight: bold;
 }
 
-.headerDark{
-  background-color: #2c3e50;
-  font-weight: bold;
-}
-
 .resourceRow .column:last-child {
   border-right: none;
 }
 
 /* colors for text based on status  */
 .statusgreen {
-  color: green !important;
+  color: green;
 }
 
 .statusyellow {
-  color: orange !important;
+  color: orange;
 }
 
 .statusred {
-  color: red !important;
-}
-
-.viewDetailsButtonDark{
-  display: block;
-  width: 100%;
-  color: #146c43;
-  font-weight: bold;
-  border-radius: 5px;
-  padding: 10px;
-  cursor: pointer;
-  border: none;
-  text-decoration: none;
-  transition: background 0.2s ease-in-out;
-  text-align: center;
-}
-
-.viewDetailsButtonDark:hover {
-  background-color: #2c3e50;
-  
+  color: red;
 }
 
 .viewDetails {
   display: block;
   width: 100%;
+  background-color: #e6f9e6;
   color: #146c43;
   font-weight: bold;
   border-radius: 5px;
@@ -79,7 +58,7 @@
   cursor: pointer;
   border: none;
   text-decoration: none;
-  transition: background 0.2s ease-in-out;
+  transition: background 0.3s ease-in-out;
   text-align: center;
 }
 
@@ -107,8 +86,40 @@
   align-items: center;
   justify-content: center;
   font-weight: bold;
+  background-color: white;
   border: 2px solid black;
   padding: 10px 15px;
   border-radius: 8px;
   cursor: pointer;
+}
+
+.resourceTitle {
+  text-align: left;
+  font-size: 1.2rem;
+  margin-bottom: 5px;
+  font-weight: 700;
+  color: grey;
+}
+
+.headerDark {
+  background-color: #2c3e50;
+  font-weight: bold;
+}
+
+.viewDetailsButtonDark {
+  display: block;
+  width: 100%;
+  color: #146c43;
+  font-weight: bold;
+  border-radius: 5px;
+  padding: 10px;
+  cursor: pointer;
+  border: none;
+  text-decoration: none;
+  transition: background 0.2s ease-in-out;
+  text-align: center;
+}
+
+.viewDetailsButtonDark:hover {
+  background-color: #2c3e50;
 }

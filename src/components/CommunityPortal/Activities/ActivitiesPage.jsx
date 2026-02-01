@@ -2,13 +2,13 @@ import RegistrationForm from './RegistrationForm';
 import ResourceMonitoring from './ResourceMonitoring';
 import LatestRegistration from './LatestRegistration';
 import MyEvent from './MyEvent';
-import './index.css';
+import styles from './styles.module.css';
 
 function ActivitiesPage() {
   return (
-    <div className="activities-page">
-      <header className="header">
-        <h1>Event Registrations</h1>
+    <div className={`${styles.activitiesPage}`}>
+      <header className={`${styles.header}`}>
+        <h1 className={styles.headerTitle}>Event Registrations</h1>
       </header>
 
       <ResourceMonitoring />
