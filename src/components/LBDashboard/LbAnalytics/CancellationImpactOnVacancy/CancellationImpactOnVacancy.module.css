@@ -1,0 +1,177 @@
+.container {
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.darkContainer {
+  background: #1c2541;
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(28, 37, 65, 0.25);
+}
+
+.header {
+  margin-bottom: 20px;
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+  color: #000;
+}
+
+.darkTitle {
+  color: #e1e1e1;
+}
+
+.wipTag {
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.darkContainer .wipTag {
+  color: #9ca3af;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.darkSubtitle {
+  color: #9ca3af;
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: flex-end;
+  margin-bottom: 20px;
+  padding: 16px;
+  background: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.darkFilters {
+  background: #243b5a;
+  border-color: #3a506b;
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.filterLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: #4b5563;
+}
+
+.darkFilterLabel {
+  color: #9ca3af;
+}
+
+.dateRange {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dateSeparator {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.darkFilters .dateSeparator {
+  color: #9ca3af;
+}
+
+.datePicker,
+.datePickerDark {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  font-size: 14px;
+  min-width: 130px;
+}
+
+.datePicker {
+  background: #fff;
+  color: #333;
+}
+
+.datePickerDark {
+  background: #1c2541;
+  border-color: #3a506b;
+  color: #fff;
+}
+
+.select {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  font-size: 14px;
+  background: #fff;
+  color: #333;
+  min-width: 140px;
+}
+
+.selectDark {
+  background: #1c2541;
+  border-color: #3a506b;
+  color: #fff;
+}
+
+.reactSelect {
+  min-width: 180px;
+}
+
+.chartCard {
+  border-radius: 8px;
+  padding: 16px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.darkChartCard {
+  background: #243b5a;
+  border-color: #3a506b;
+  box-shadow: 0 4px 16px rgba(28, 37, 65, 0.25);
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 350px;
+  color: #6b7280;
+}
+
+.darkChartCard .loading {
+  color: #9ca3af;
+}
+
+@media (max-width: 768px) {
+  .filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filterGroup {
+    width: 100%;
+  }
+
+  .dateRange {
+    flex-wrap: wrap;
+  }
+}
