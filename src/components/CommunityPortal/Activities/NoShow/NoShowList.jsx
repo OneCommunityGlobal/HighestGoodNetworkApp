@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import './NoShowList.css';
+import styles from './NoShowList.module.css';
 import {
   Modal,
   ModalHeader,
@@ -133,7 +133,7 @@ function NoShowListModal({ isOpen, toggle, mockData }) {
                   <Col xs="auto" className="d-flex justify-content-center align-items-center">
                     <Input
                       type="checkbox"
-                      className="custom-checkbox ms-1"
+                      className={`${styles.customCheckbox} ms-1`}
                       checked={selectedParticipants.length === mockData.participants.length}
                       onChange={handleSelectAll}
                     />
@@ -147,7 +147,7 @@ function NoShowListModal({ isOpen, toggle, mockData }) {
                     <Col xs="auto" className="d-flex justify-content-center align-items-center">
                       <Input
                         type="checkbox"
-                        className="custom-checkbox ms-1"
+                        className={`${styles.customCheckbox} ms-1`}
                         checked={selectedParticipants.includes(participant.participantID)}
                         onChange={() => handleSelectParticipant(participant.participantID)}
                       />
