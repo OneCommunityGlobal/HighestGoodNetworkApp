@@ -26,6 +26,7 @@
   width: 100%;            
   display: block;         
   text-align: center; 
+  font-size: 1.2rem;
 }
 
 .header h2,
@@ -106,6 +107,21 @@
   margin-top: 10px;
 }
 
+.resourceStats .arrow {
+  font-size: 1rem;
+  margin-right: 5px;
+}
+
+.resourceStats p {
+  margin: 0;
+}
+
+.resourceStats p:last-child {
+  color: grey;
+  font-size: 0.7rem;
+  margin-left: 5px;
+}
+
 .arrow.up {
   color: green;
 }
@@ -168,10 +184,6 @@
   background-color: #218838;
 }
 
-.create-new-btn:hover {
-  background-color: #218838;
-}
-
 .myEventsTable {
   width: 100%;
   border-collapse: collapse;
@@ -189,7 +201,11 @@
   border-radius: 5px;
   color: white;
   font-weight: bold;
+  padding: 5px;
+  border-radius: 5px;
+  color: white;
 }
+
 .active {
   color: green;
 }
@@ -313,21 +329,6 @@
   font-weight: bold;
   color: black;
   font-size: 1rem;
-}
-
-.resourceStats .arrow {
-  font-size: 1rem;
-  margin-right: 5px;
-}
-
-.resourceStats p {
-  margin: 0;
-}
-
-.resourceStats p:last-child {
-  color: grey;
-  font-size: 0.7rem;
-  margin-left: 5px;
 }
 
 /* My Events toggle button */
