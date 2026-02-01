@@ -5,7 +5,8 @@ import { FaMapMarkerAlt } from 'react-icons/fa';
 import { NavItem } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { fetchWishlist } from '../../../actions/lbdashboard/wishlistActions';
-import Header from '../Header';
+import LBDashboardHeader from '../LBDashboardHeader';
+import Header from '../../Header';
 
 function WishList() {
   const dispatch = useDispatch();
@@ -23,8 +24,9 @@ function WishList() {
 
   return (
     <div className={styles.item}>
+      <Header />
       <div className={styles.item__container}>
-        <Header />
+        <LBDashboardHeader />
         <div className={styles.list__location}>
           <FaMapMarkerAlt className={styles.item__icon} />
           <a href="/">View on Property Map</a>

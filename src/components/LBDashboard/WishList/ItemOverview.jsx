@@ -4,12 +4,12 @@ import { FaMapMarkerAlt } from 'react-icons/fa';
 import { BsChat } from 'react-icons/bs';
 import { IoMdHeart, IoMdHeartEmpty } from 'react-icons/io';
 import ImageCarousel from '../Components/ImageCarousel';
-import Header from '../Header';
+import LBDashboardHeader from '../LBDashboardHeader';
 import { useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { addToWishlist, removeFromWishlist } from '../../../actions/lbdashboard/wishlistActions';
 import { toast } from 'react-toastify';
-
+import Header from '../../Header';
 function WishListItem() {
   const dispatch = useDispatch();
   const { id } = useParams();
@@ -53,6 +53,7 @@ function WishListItem() {
   return (
     <div className={styles.item_overview_module}>
       <Header />
+      <LBDashboardHeader />
       <div className={styles.item__overview}>
         {/* LEFT SIDE */}
         <div className={styles['item__details-left']}>
