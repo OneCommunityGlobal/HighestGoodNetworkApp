@@ -5,16 +5,16 @@
   justify-content: center;
   align-items: center;
   padding: 20px;
-  background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+  background: #ffffff;
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  border: 1px solid rgba(62, 160, 203, 0.1);
+  border: 1px solid rgba(62, 160, 203, 0.12);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
   min-height: 500px;
   position: relative;
 }
 
 .radarChart.compact {
-  padding: 0;
+  padding: 8px;
   background: transparent;
   box-shadow: none;
   border: none;
@@ -26,6 +26,7 @@
   text-align: center;
   margin-bottom: 20px;
   color: #333;
+  padding: 12px 16px;
 }
 
 .chartTitle h4 {
@@ -189,26 +190,20 @@
 }
 
 /* Dark theme support (optional) */
-@media (prefers-color-scheme: dark) {
-  .radarChart {
-    background: linear-gradient(145deg, #2d3748 0%, #1a202c 100%);
-    border-color: rgba(62, 160, 203, 0.3);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-  }
-
-  .chartTitle h4 {
-    color: #63b3ed;
-  }
-
-  .chartTitle p {
-    color: #a0aec0;
-  }
-
-  .legendItem {
-    color: #e2e8f0;
-  }
+.dark {
+  background: #1f1f1f;
+  border-color: #2a2a2a;
+  box-shadow: none;
 }
 
-:global(.dark-mode) .radarChart canvas {
-  filter: invert(1) hue-rotate(180deg);
+.dark .chartTitle h4 {
+  color: #e6e6e6;
+}
+
+.dark .chartTitle p {
+  color: #bfbfbf;
+}
+
+.dark .legendItem {
+  color: #e2e8f0;
 }

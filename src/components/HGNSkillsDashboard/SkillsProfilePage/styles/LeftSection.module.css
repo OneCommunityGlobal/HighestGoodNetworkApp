@@ -46,3 +46,13 @@
 :global(.dark-mode) .leftSection h3 {
   color: #ccc;
 }
+
+.container.darkMode {
+  background-color: #181818;
+  border: 1px solid #303030;
+  color: #e6e6e6;
+}
+
+.container.darkMode a {
+  color: #9ecbff;
+}
