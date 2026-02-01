@@ -107,6 +107,21 @@
   margin-top: 10px;
 }
 
+.resourceStats .arrow {
+  font-size: 1rem;
+  margin-right: 5px;
+}
+
+.resourceStats p {
+  margin: 0;
+}
+
+.resourceStats p:last-child {
+  color: grey;
+  font-size: 0.7rem;
+  margin-left: 5px;
+}
+
 .arrow.up {
   color: green;
 }
@@ -114,7 +129,6 @@
 .arrow.down {
   color: red;
 }
-
 
 .registrationForm,
 .filters {
@@ -158,12 +172,16 @@
 }
 
 .createNewBtn {
+  padding: 8px 20px;
   background-color: #28a745;
-  color: #fff;
+  color: white;
   border: none;
   border-radius: 5px;
-  padding: 8px 20px;
   cursor: pointer;
+}
+
+.createNewBtn:hover {
+  background-color: #218838;
 }
 
 .myEventsTable {
@@ -177,11 +195,12 @@
   padding: 8px;
   text-align: left;
 }
+
 .status {
-  font-weight: bold;
   padding: 5px;
   border-radius: 5px;
   color: white;
+  font-weight: bold;
 }
 .active {
   color: green;
@@ -308,21 +327,6 @@
   font-size: 1rem;
 }
 
-.resourceStats .arrow {
-  font-size: 1rem;
-  margin-right: 5px;
-}
-
-.resourceStats p {
-  margin: 0;
-}
-
-.resourceStats p:last-child {
-  color: grey;
-  font-size: 0.7rem;
-  margin-left: 5px;
-}
-
 /* My Events toggle button */
 .viewToggle button {
   padding: 10px 20px;
@@ -364,10 +368,6 @@
 
 .applyFiltersBtn:hover {
   background-color: #0056b3;
-}
-
-.createNewBtn:hover {
-  background-color: #218838;
 }
 
 .registerinfo {

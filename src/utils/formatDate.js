@@ -35,6 +35,13 @@ export const formatDateCompany = (val) => {
   return moment.tz(val, COMPANY_TZ).format('MMM DD, YYYY');
 };
 
+export const formatDateTimeLocal = (val) => {
+  if (!val) return '';
+
+  return moment(val, moment.ISO_8601, true)
+    .local()
+    .format('MMM DD, YYYY, HH:mm');
+};
 
 /**
  *

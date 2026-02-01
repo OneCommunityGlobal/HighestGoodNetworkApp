@@ -419,3 +419,7 @@
   padding: 10px;
 }
 
+.lbMessagingContactName {
+  font-size: 15px;
+  font-weight: 500;
+}
