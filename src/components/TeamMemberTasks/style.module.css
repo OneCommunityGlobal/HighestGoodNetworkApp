@@ -1,5 +1,5 @@
-:global .dark-mode .modal-body p { 
-  color: #fff; 
+:global .dark-mode .modal-body p {
+  color: #fff;
   background-color: transparent; /* no bg by default; apply on hover */
   transition: background-color 120ms ease-in-out;
 }
@@ -12,21 +12,23 @@
 }
 
 .progress-wrapper {
-  display: inline-block;
+  display: inline-grid;
+  width: fit-content;
+  justify-items: start;
 }
 
 .team-task-progress-container {
-  display: flex;
-  flex-direction: row;
+  display: inline-flex;
   align-items: center;
-  flex-wrap: wrap;          
+  gap: 6px;
+  flex-wrap: nowrap;
+  width: fit-content;
 }
 
 .team-task-progress-bar {
   width: 100%;
-  margin-top: 4px;  
+  margin-top: 4px;
 }
-
 
 .team-member-task-review-button {
   margin-top: 0;
@@ -90,7 +92,7 @@
 .team-member-tasks .team-member-tasks-headers {
   justify-content: center;
   margin-left: -10px;
-  vertical-align: middle; 
+  vertical-align: middle;
   text-align: center;
 }
 
@@ -98,19 +100,16 @@
   margin: 0 0 0 0;
   text-align: left;
   vertical-align: middle;
-  justify-content: center; 
+  justify-content: center;
 }
 
-/* .team-task-progress {
-  position: relative;
-  width: 100px;
-  min-width: 120px;
-  max-width: 120px;
-} */
- .team-task-progress {
-  /* border: rgb(0, 213, 255) 1px solid !important; */
-  width: 45%;
-  height: auto !important;
+.team-task-progress {
+  width: 130px;
+  min-width: 130px;
+  max-width: 160px;
+  padding-right: 0 !important;
+  padding-left: 0 !important;
+  text-align: left;
 }
 
 /* .task-break {
@@ -120,9 +119,9 @@
 .task-break {
   /* border: red 1px solid; */
   border-bottom: 1px solid lightgray;
-  height: auto !important; 
+  height: auto !important;
   width: 100%;
-  display: flex; 
+  display: flex;
   margin: 1px 0 1px 0;
 }
 
@@ -140,19 +139,14 @@
   color: black;
 }
 
-/* .task-align {
-  text-align: left;
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  vertical-align: middle; 
-} */
- .task-align {
-  width: 55%;
+.task-align {
+  width: auto;
+  flex: 1 1 auto;
+  min-width: 0;
   height: auto !important;
-  /* border: teal 1px solid !important; */
 }
-.inner-task-align{
+
+.inner-task-align {
   /* border: purple 1px solid !important; */
   padding: 0px 5px 5px 3px;
   text-align: left;
@@ -163,15 +157,25 @@
   flex-wrap: wrap;
   margin: 0px;
 }
-.team-member-task-review-button, .task-align { /* Use the actual parent class from your HTML */
-    overflow: visible !important; 
-    z-index: 10; 
+.team-member-task-review-button,
+.task-align {
+  /* Use the actual parent class from your HTML */
+  overflow: visible !important;
+  z-index: 10;
 }
 .team-member-tasks-user-name {
   width: 50%;
   text-align: center;
-  justify-content: center;
-  vertical-align: middle; 
+
+  vertical-align: top !important;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start !important;
+  align-items: center;
+}
+
+.team-member-tasks td {
+  vertical-align: top !important;
 }
 
 .team-member-tasks-subtable th:first-child {
@@ -193,8 +197,8 @@
 
 .deadlineCount {
   position: absolute;
-  top: -4px;     /* slightly up */
-  right: -17px;  /* shift more to the right, away from the i */
+  top: -4px; /* slightly up */
+  right: -17px; /* shift more to the right, away from the i */
   background: #e74c3c;
   color: #fff;
   border-radius: 50%;
@@ -212,13 +216,11 @@
   z-index: 3;
 }
 
-
-
-.task-followup-icon{
+.task-followup-icon {
   /* border: palevioletred 1px solid; */
   display: flex;
   align-items: center;
-  gap: 6px;               /* space between the two icons only */
+  gap: 6px; /* space between the two icons only */
   /* margin-left: -20px;   */
 }
 
@@ -231,7 +233,7 @@
   display: inline-block;
   text-align: center;
   vertical-align: middle;
-  background: #0000FF;
+  background: #0000ff;
   border-radius: 50%;
   color: #fff;
   height: 22px;
@@ -241,7 +243,7 @@
 }
 
 .dashboard-team-clocks {
-  color: #339CFF !important;
+  color: #339cff !important;
 }
 
 .team-clocks-header {
@@ -348,7 +350,7 @@
   border-radius: 6px;
   height: 42px;
   width: 42px;
-  border: 1px solid #17A2B8;
+  border: 1px solid #17a2b8;
   font-size: 12px;
   font-weight: bold;
   font-family: Arial, Helvetica, sans-serif;
@@ -364,7 +366,7 @@
 }
 
 .show-time-off-btn-selected {
-  background-color: #17A2B8;
+  background-color: #17a2b8;
 }
 
 .show-time-off-calender-svg {
@@ -393,11 +395,11 @@
 }
 
 .show-time-off-icon-selected {
-  background-color: #17A2B8;
+  background-color: #17a2b8;
 }
 
 .show-time-off-icon path {
-  fill: #17A2B8;
+  fill: #17a2b8;
 }
 
 .taking-time-off-content-btn {
@@ -427,14 +429,14 @@
 
 .time-off-detail-modal::-webkit-scrollbar-track {
   border-radius: 4px;
-  background-color: #E7E7E7;
-  border: 1px solid #CACACA;
-  box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
+  background-color: #e7e7e7;
+  border: 1px solid #cacaca;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
 }
 
 .time-off-detail-modal::-webkit-scrollbar-thumb {
   border-radius: 8px;
-  background-color: #007BFF;
+  background-color: #007bff;
   box-shadow: inset 0 0 3px #e7e7e7;
 }
 
@@ -477,14 +479,13 @@
   gap: 6px;
 }
 
-
 .time-off-detail-modal-card-container {
   border: 1px solid #ccc;
   margin-bottom: 10px;
   border-radius: 5px;
 }
 
- .team-member-tasks-icons {
+.team-member-tasks-icons {
   /* border: green 1px solid; */
   display: inline-flex;
   align-items: flex-start;
@@ -493,23 +494,44 @@
   flex-wrap: wrap;
 }
 
- .team-member-tasks-content {
+.team-member-tasks-content {
   /* border: blue 10px solid; */
+  align-items: flex-start !important;
+  justify-content: flex-start !important;
   gap: 5px;
   height: auto !important;
-  max-height: none !important; 
+  max-height: none !important;
   overflow: visible !important;
   text-align: left;
+
+  display: flex;
   /* min-width: 150px; */
 }
 
-.progress-text{
+.team-member-tasks-content-link {
+  display: inline-block;
+  max-width: 100%;
+  min-width: 0;
+
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.team-member-tasks-content span {
+  display: inline;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.progress-text {
   margin: 0;
   /* border: green 1px solid; */
   font-size: 13px;
   padding: 0;
   flex-wrap: wrap;
-  display: inline-block; 
+  display: inline-block;
   font-weight: 400;
   width: 60px;
 }
@@ -518,8 +540,8 @@
 .team-task-progress-time-volunteers {
   display: flex;
   align-items: center;
-  padding: 0;             
-  margin: 0;              
+  padding: 0;
+  margin: 0;
 }
 .followup-tooltip-container {
   grid-column: 3 / span 1;
@@ -574,18 +596,18 @@
 }
 
 .timelog-info {
-  width: 1.0rem;
+  width: 1rem;
   display: flex;
   justify-content: center;
 }
 
 .dark-mode.multi-select-filter .dropdown-container {
-  background-color: #1C1C1C !important;
+  background-color: #1c1c1c !important;
 }
 
 .rmsc.dark-mode .dropdown-content,
 .rmsc.dark-mode .dropdown-content .panel-content {
-  background-color: #1C1C1C !important;
+  background-color: #1c1c1c !important;
   color: #fff !important;
 }
 
@@ -665,7 +687,7 @@
     max-width: none;
   }
 
-  .task_table-container{
+  .task_table-container {
     max-height: 900px;
   }
   .header-box {
@@ -716,8 +738,8 @@
   }
 
   .table-row {
-    border: solid #E9ECEF 2px;
-    background: #FAF7FC;
+    border: solid #e9ecef 2px;
+    background: #faf7fc;
     font-size: 0.75rem !important;
   }
 
@@ -794,14 +816,12 @@
   }
 }
 
-
 /* wrapper around the info icon + tooltip */
 .followup-tooltip-button {
   position: relative;
   display: inline-flex;
   align-items: center;
 }
-
 
 /* HIDE by default (override any earlier display:block !important) */
 .followup-tooltip {
@@ -810,7 +830,7 @@
   right: 0;
   z-index: 3000;
 
-  display: none !important;          /* <- key change */
+  display: none !important; /* <- key change */
   opacity: 0;
   visibility: hidden;
   pointer-events: none;

@@ -1,0 +1,241 @@
+.issueHeaderContainer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  background-color: white;
+}
+.issueHeaderContainerDark {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  background-color: #3d444d;
+}
+
+.topRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 14px 20px;
+}
+/* .top-row-dark{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  border-bottom: 1px solid #E0E0E0;
+  padding: 14px 20px;
+  background-color: ;
+
+} */
+
+.titleSection {
+  display: flex;
+  align-items: center;
+  color: #1c1e1c;
+  font-size: 36px;
+  font-weight: 600;
+}
+.titleSectionDark {
+  display: flex;
+  align-items: center;
+  color: #ffffff;
+  font-size: 36px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.section {
+  font-size: 36px;
+  font-weight: 600;
+  margin: 0;
+  color: #000000;
+}
+.sectionDark {
+  font-size: 36px;
+  font-weight: 600;
+  margin: 0;
+  color: #e0e0e0;
+}
+/* .title-section h1 {
+  font-size: 36px;
+  font-weight: 600;
+  margin: 0;
+ 
+} */
+
+.actionSection {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-right: 50px;
+}
+
+.moreButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: black;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  background-color: #eeeeee;
+  border-radius: 8px;
+}
+
+.backButton {
+  background-color: #000;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.avatar {
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  gap: 10px;
+}
+
+.avatar img {
+  width: 32px;
+  height: 32px;
+  object-fit: cover;
+}
+
+.bottomRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 20px;
+}
+
+.projectTab {
+  display: inline-flex;
+  background-color: #f3f4f6;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 6px;
+}
+
+.projectTab .tabItem {
+  border: none;
+  background: transparent;
+  padding: 6px 12px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+  border-radius: 4px;
+}
+
+.projectTab .tabItem.active {
+  background-color: #ffffff;
+}
+
+.projectTab .tabItem:not(.active):hover {
+  background-color: #e5e7eb;
+}
+.searchContainer {
+  position: relative;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #828282;
+  display: flex;
+  align-items: center;
+}
+
+.searchInput {
+  padding: 8px 16px 8px 35px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 16px;
+  width: 405px;
+  background-color: #ffffff;
+  color: #828282;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: #b9b9b9;
+}
+
+/* Search results styles - beautiful dropdown */
+.searchResults {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 4px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  z-index: 1000;
+  border: 1px solid #eaeaea;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.searchResultsList {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.searchResultItem {
+  padding: 12px 16px;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  display: flex;
+  flex-direction: column;
+}
+
+.searchResultItem:last-child {
+  border-bottom: none;
+}
+
+.searchResultItem:hover {
+  background-color: #f0f7ff;
+}
+
+.resultName {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333333;
+  margin-bottom: 2px;
+}
+
+.resultCategory {
+  font-size: 12px;
+  color: #757575;
+}
+
+.searchNoResults {
+  padding: 16px;
+  text-align: center;
+  color: #757575;
+  font-style: italic;
+  font-size: 14px;
+}
