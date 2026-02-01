@@ -328,20 +328,43 @@ const lightSelectStyles = {
 
 const darkSelectStyles = {
   ...baseSelectStyles,
+
   control: base => ({
     ...base,
     backgroundColor: '#1b2a41',
     color: '#fff',
+    borderColor: '#3a3f45',
   }),
+
   singleValue: base => ({
     ...base,
     color: '#fff',
   }),
+
   menu: base => ({
     ...base,
     backgroundColor: '#1b2a41',
     color: '#fff',
     zIndex: 9999,
+  }),
+
+  option: (base, state) => ({
+    ...base,
+    backgroundColor: state.isSelected
+      ? '#265fa4' // selected (darker ash)
+      : state.isActive
+      ? '' // mouse-down (ash) ✅ FIX
+      : state.isFocused
+      ? '#396cab' // hover (ash)
+      : '#1b2a41',
+
+    color: '#ffffff',
+    cursor: 'pointer',
+
+    // 🔥 THIS LINE STOPS THE FLASH
+    ':active': {
+      backgroundColor: '#265fa4',
+    },
   }),
 };
 
@@ -2194,86 +2217,6 @@ const WeeklySummariesReport = props => {
       colorOptions: allColors,
     }));
   }, []);
-
-  // keeping this block commented for reference
-  // When active tab changes, load from cache or fetch fresh
-  // useEffect(() => {
-  //   if (state.summariesByTab[state.activeTab]) {
-  //     setState(prev => ({
-  //       ...prev,
-  //       summaries: state.summariesByTab[state.activeTab],
-  //     }));
-  //   } else {
-  //     // Fetch new data using axios
-  //     const weekIndex = navItems.indexOf(state.activeTab);
-  //     const url = `${ENDPOINTS.WEEKLY_SUMMARIES_REPORT()}?week=${weekIndex}&forceRefresh=true`;
-
-  //     axios
-  //       .get(url)
-  //       .then(res => {
-  //         const summaries = Array.isArray(res?.data) ? res.data : []; // Getting array
-
-  //         if (summaries.length > 0) {
-  //           // Processing the array
-  //           let summariesCopy = [...summaries];
-  //           summariesCopy = alphabetize(summariesCopy); // Assuming alphabetize is defined
-
-  //           summariesCopy = summariesCopy.map(summary => {
-  //             const promisedHoursByWeek = weekDates.map(
-  //               weekDate =>
-  //                 getPromisedHours(weekDate.toDate, summary.weeklycommittedHoursHistory || []), // Assuming getPromisedHours is defined
-  //             );
-
-  //             // **** Applying the filterColor cleaning logic ****
-  //             let filterColor = [];
-  //             if (Array.isArray(summary.filterColor)) {
-  //               filterColor = summary.filterColor
-  //                 .filter(c => typeof c === 'string') // Filtering out null/non-strings
-  //                 .map(c => c.toLowerCase()); // Ensures it's lowercase
-  //             } else if (typeof summary.filterColor === 'string') {
-  //               // Handles stringified arrays or single strings
-  //               try {
-  //                 const parsed = JSON.parse(summary.filterColor);
-  //                 if (Array.isArray(parsed)) {
-  //                   filterColor = parsed
-  //                     .filter(c => typeof c === 'string')
-  //                     .map(c => c.toLowerCase());
-  //                 } else if (typeof parsed === 'string') {
-  //                   filterColor = [parsed.toLowerCase()];
-  //                 }
-  //               } catch {
-  //                 filterColor = [summary.filterColor.toLowerCase()];
-  //               }
-  //             }
-  //             // ************************************************
-
-  //             return { ...summary, promisedHoursByWeek, filterColor };
-  //           });
-
-  //           // Sets the PROCESSED ARRAY into state
-  //           setState(prev => ({
-  //             ...prev,
-  //             summaries: summariesCopy, // summaries is now an array
-  //             summariesByTab: {
-  //               ...prev.summariesByTab,
-  //               [state.activeTab]: summariesCopy,
-  //             },
-  //           }));
-  //         } else {
-  //           // Handles empty response
-  //           setState(prev => ({
-  //             ...prev,
-  //             summaries: [], // summaries is an empty array
-  //             summariesByTab: {
-  //               ...prev.summariesByTab,
-  //               [state.activeTab]: [],
-  //             },
-  //           }));
-  //         }
-  //       })
-  //       .catch(err => console.error(`❌ Failed to fetch data for ${state.activeTab}`, err));
-  //   }
-  // }, [state.activeTab, state.summariesByTab]); // Dependencies might need adjustment
 
   useEffect(() => {
     let isMounted = true;

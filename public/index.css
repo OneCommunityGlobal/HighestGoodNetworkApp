@@ -727,7 +727,7 @@ body.dark-mode .create-filter-modal input.is-invalid::placeholder {
 
 body:not(.dark-mode) .rs__placeholder,
 body:not(.dark-mode) .custom-select__placeholder {
-  color: #6c757d !important; /* Bootstrap muted grey */
+  color: #6d6f70 !important; /* Bootstrap muted grey */
   opacity: 1 !important;
 }
 
@@ -750,3 +750,4 @@ body:not(.dark-mode) .custom-select__placeholder {
   margin-left: 0px !important;
   padding-left: 0 !important;
 }
+

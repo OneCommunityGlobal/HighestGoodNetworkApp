@@ -949,3 +949,20 @@ body.dark-mode .rs__option--is-focused {
   overflow: visible;      /* Prevent clipping */
   background-color: #2b3e50; /* Ensure the dark color is applied to the full height */
 }
+
+/* Dark mode – react-select option hover */
+body.dark-mode .react-select__option--is-focused {
+  background-color: #3a3f45 !important; /* ash */
+  color: #ffffff !important;
+}
+
+/* Selected option */
+body.dark-mode .react-select__option--is-selected {
+  background-color: #4a4f55 !important; /* darker ash */
+  color: #ffffff !important;
+}
+
+/* Hover should NOT turn blue */
+body.dark-mode .react-select__option:hover {
+  background-color: #3a3f45 !important;
+}
