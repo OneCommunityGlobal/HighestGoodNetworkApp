@@ -184,17 +184,17 @@ function Activity({ initialTab }) {
                   const weekDays = calendarDays.slice(rowIndex * 7, rowIndex * 7 + 7);
                   const firstDayInRow = weekDays.find(d => d !== null);
                   const rowKey =
-                    firstDayInRow !== undefined
-                      ? `week-${calendarYear}-${calendarMonth}-${firstDayInRow}`
-                      : `week-pad-${calendarYear}-${calendarMonth}-${rowIndex * 7}`;
+                    firstDayInRow === undefined
+                      ? `week-pad-${calendarYear}-${calendarMonth}-${rowIndex * 7}`
+                      : `week-${calendarYear}-${calendarMonth}-${firstDayInRow}`;
                   return (
                     <tr key={rowKey}>
                       {weekDays.map((day, cellOffset) => {
                         const isToday = day === todayDate;
                         const cellKey =
-                          day !== null
-                            ? `day-${calendarYear}-${calendarMonth}-${day}`
-                            : `pad-${calendarYear}-${calendarMonth}-${rowIndex * 7 + cellOffset}`;
+                          day === null
+                            ? `pad-${calendarYear}-${calendarMonth}-${rowIndex * 7 + cellOffset}`
+                            : `day-${calendarYear}-${calendarMonth}-${day}`;
                         return (
                           <td key={cellKey} className={isToday ? styles.activeDate : undefined}>
                             {day ?? '\u00A0'}
