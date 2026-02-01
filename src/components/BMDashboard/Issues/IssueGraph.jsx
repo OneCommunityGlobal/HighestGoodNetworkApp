@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import styles from './issueGraph.module.css';
+import styles from './IssueGraph.module.css';
 import {
   BarChart,
   Bar,
