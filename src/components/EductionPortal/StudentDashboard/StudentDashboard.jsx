@@ -8,6 +8,7 @@ import TaskListView from './TaskListView';
 import NavigationBar from './NavigationBar';
 import SummaryCards from './SummaryCards';
 import { fetchStudentTasks, markStudentTaskAsDone } from '~/actions/studentTasks';
+import { fetchIntermediateTasks, markIntermediateTaskAsDone } from '~/actions/intermediateTasks';
 
 const StudentDashboard = () => {
   const [viewMode, setViewMode] = useState('card'); // 'card' or 'list'
@@ -17,15 +18,43 @@ const StudentDashboard = () => {
     activeCourses: 0,
     logEntries: 0,
   });
+  const [intermediateTasks, setIntermediateTasks] = useState({});
+  const [expandedTasks, setExpandedTasks] = useState({});
 
   const dispatch = useDispatch();
   const authUser = useSelector(state => state.auth.user);
   const { taskItems: tasks, fetching: loading, error } = useSelector(state => state.studentTasks);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   // Fetch tasks from API
   useEffect(() => {
     dispatch(fetchStudentTasks());
   }, [dispatch]);
+
+  // Fetch intermediate tasks for all parent tasks
+  useEffect(() => {
+    const fetchAllIntermediateTasks = async () => {
+      if (tasks && tasks.length > 0) {
+        const intermediateTasksData = {};
+
+        // Fetch intermediate tasks for each parent task
+        for (const task of tasks) {
+          try {
+            const subTasks = await dispatch(fetchIntermediateTasks(task.id));
+            if (subTasks && subTasks.length > 0) {
+              intermediateTasksData[task.id] = subTasks;
+            }
+          } catch (error) {
+            console.error(`Error fetching intermediate tasks for task ${task.id}:`, error);
+          }
+        }
+
+        setIntermediateTasks(intermediateTasksData);
+      }
+    };
+
+    fetchAllIntermediateTasks();
+  }, [tasks, dispatch]);
 
   // Calculate summary data when tasks change
   useEffect(() => {
@@ -72,6 +101,29 @@ const StudentDashboard = () => {
     dispatch(markStudentTaskAsDone(taskId));
   };
 
+  // Handle mark intermediate task as done
+  const handleMarkIntermediateAsDone = async (intermediateTaskId, parentTaskId) => {
+    try {
+      await dispatch(markIntermediateTaskAsDone(intermediateTaskId));
+      // Refresh intermediate tasks for this parent
+      const tasks = await dispatch(fetchIntermediateTasks(parentTaskId));
+      setIntermediateTasks(prev => ({ ...prev, [parentTaskId]: tasks || [] }));
+    } catch (error) {
+      // Error is handled in the action
+    }
+  };
+
+  // Toggle expand/collapse intermediate tasks
+  const toggleIntermediateTasks = async taskId => {
+    const isExpanded = expandedTasks[taskId];
+
+    // Just toggle the expanded state (tasks are already loaded)
+    setExpandedTasks(prev => ({
+      ...prev,
+      [taskId]: !isExpanded,
+    }));
+  };
+
   // Toggle view mode
   const toggleViewMode = () => {
     setViewMode(prev => (prev === 'card' ? 'list' : 'card'));
@@ -99,17 +151,21 @@ const StudentDashboard = () => {
 
   return (
     <div className={styles.dashboard}>
-      <NavigationBar />
+      <NavigationBar darkMode={darkMode} />
 
       <Container className={styles.mainContainer}>
         {/* Header */}
         <div className={styles.header}>
-          <h1 className={styles.title}>Student Dashboard</h1>
-          <p className={styles.subtitle}>Track your learning progress and manage your logs</p>
+          <div className={styles.headerContent}>
+            <div className={styles.headerText}>
+              <h1 className={styles.title}>Student Dashboard</h1>
+              <p className={styles.subtitle}>Track your learning progress and manage your logs</p>
+            </div>
+          </div>
         </div>
 
         {/* Summary Cards */}
-        <SummaryCards data={summaryData} />
+        <SummaryCards data={summaryData} darkMode={darkMode} />
 
         {/* Recent Time Logs Section */}
         <div className={styles.timeLogsSection}>
@@ -161,9 +217,25 @@ const StudentDashboard = () => {
 
           {/* Task Views */}
           {viewMode === 'card' ? (
-            <TaskCardView tasks={tasks} onMarkAsDone={handleMarkAsDone} />
+            <TaskCardView
+              tasks={tasks}
+              onMarkAsDone={handleMarkAsDone}
+              intermediateTasks={intermediateTasks}
+              expandedTasks={expandedTasks}
+              onToggleIntermediateTasks={toggleIntermediateTasks}
+              onMarkIntermediateAsDone={handleMarkIntermediateAsDone}
+              darkMode={darkMode}
+            />
           ) : (
-            <TaskListView tasks={tasks} onMarkAsDone={handleMarkAsDone} />
+            <TaskListView
+              tasks={tasks}
+              onMarkAsDone={handleMarkAsDone}
+              intermediateTasks={intermediateTasks}
+              expandedTasks={expandedTasks}
+              onToggleIntermediateTasks={toggleIntermediateTasks}
+              onMarkIntermediateAsDone={handleMarkIntermediateAsDone}
+              darkMode={darkMode}
+            />
           )}
         </div>
       </Container>
