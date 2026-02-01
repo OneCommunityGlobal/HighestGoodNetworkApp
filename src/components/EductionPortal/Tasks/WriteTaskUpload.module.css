@@ -3,6 +3,7 @@
   --row-h: 58px;
   --radius: 14px;
   --border: #e8e8e8;
+  --danger: #e02424; /* vivid red */
   --muted: #9aa0a6;
 }
 
@@ -389,10 +390,7 @@
     gap: 16px;
   }
 }
-/* brand danger */
-:root {
-  --danger: #e02424; /* vivid red */
-}
+/* brand danger - merged into :root above */
 
 /* red error block between textarea and link input */
 .fieldErrorGroup {
