@@ -1,6 +1,6 @@
 /* eslint-disable react/function-component-definition */
 import { useState } from 'react';
-import './DragAndDrop.css';
+import styles from './DragAndDrop.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faImage } from '@fortawesome/free-solid-svg-icons';
 
@@ -50,13 +50,13 @@ const DragAndDrop = ({ updateUploadedFiles }) => {
       <label
         htmlFor="file-upload-input"
         id="file-upload-label"
-        className={dragActive ? 'drag-active' : ''}
+        className={`${styles.fileUploadLabel} ${dragActive ? styles.dragActive : ''}`}
       >
         <div>
-          <FontAwesomeIcon icon={faImage} className="file-upload-icon" />
+          <FontAwesomeIcon icon={faImage} className={styles.fileUploadIcon} />
           <p>Drag and drop your picture here </p>
         </div>
-        <input type="file" id="file-upload-input" className="file-upload-input" />
+        <input type="file" id="file-upload-input" className={styles.fileUploadInput} />
       </label>
       {/* invisible element to cover the entire form when dragActive is true so that dragleave event is not triggeredwhen drag goes over other elements in the form. */}
       {dragActive && (
