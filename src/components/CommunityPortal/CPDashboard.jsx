@@ -11,7 +11,7 @@ const FixedRatioImage = ({ src, alt, fallback }) => (
   <div
     style={{
       width: '100%',
-      aspectRatio: '4 / 3',
+      height: '100%',
       overflow: 'hidden',
       background: '#f2f2f2',
     }}
