@@ -1083,3 +1083,13 @@
   letter-spacing: 0.5px;
   display: block;
 }
+.detailIcon {
+  margin-right: 8px;
+  vertical-align: middle;
+  color: #718096;
+  font-size: 1rem;
+}
+
+.eventModalDark .detailIcon {
+  color: #cbd5e0;
+}
