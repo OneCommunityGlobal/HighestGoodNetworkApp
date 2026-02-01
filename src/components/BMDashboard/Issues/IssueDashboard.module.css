@@ -1,118 +1,122 @@
-.issuesTableResponsive .textEnd {
-  font-weight: 500;
-  color: #6c757d;
-  border-bottom-width: 1px;
-}
+:global {
+  .issues-table-responsive .text-end {
+    font-weight: 500;
+    color: #6c757d;
+    border-bottom-width: 1px;
+  }
 
-/* Improved positioning for the action menu */
-.actionMenu {
-  position: absolute;
-  top: 0; /* Position at the top of relative parent */
-  right: 100%; /* Position to the left of the button */
-  transform: translateY(-25%); /* Adjust vertical position */
-  min-width: 10rem;
-  z-index: 1050;
-  padding: 0.5rem 0;
-  border: 1px solid rgba(0, 0, 0, 0.15);
-  border-radius: 0.25rem;
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-  white-space: nowrap;
-}
+  /* Improved positioning for the action menu */
+  .action-menu {
+    position: absolute;
+    top: 0;
+    right: 100%;
+    transform: translateY(-25%);
+    min-width: 10rem;
+    z-index: 1050;
+    padding: 0.5rem 0;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 0.25rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    white-space: nowrap;
+  }
 
-.issueDashboardDropdownItem {
-  display: flex;
-  align-items: center;
-  padding: 0.5rem 1rem;
-}
+  .issue-dashboard-dropdown-item {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+  }
 
-.badge.bgInfo {
-  background-color: #cfe2ff !important;
-  color: #084298 !important;
-  font-weight: 500;
-}
+  .badge.bg-info {
+    background-color: #cfe2ff !important;
+    color: #084298 !important;
+    font-weight: 500;
+  }
 
-.pagination .pageLink {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.25rem 0.5rem;
-}
+  .pagination .page-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem 0.5rem;
+  }
 
-.btnLight {
-  color: #6c757d;
-  border-color: #e9ecef;
-}
+  .btn-light {
+    color: #6c757d;
+    border-color: #e9ecef;
+  }
 
-.issueDashboardDropdown .btnLink {
-  color: #6c757d;
-  text-decoration: none;
-}
+  .issue-dashboard-dropdown .btn-link {
+    color: #6c757d;
+    text-decoration: none;
+  }
 
-/* Fixed table responsiveness */
-.issuesTableResponsive {
-  overflow-x: visible !important; /* Prevent horizontal scrollbar */
-  overflow-y: visible !important; /* Ensure dropdowns aren't clipped */
-  position: relative;
-  width: 100%;
-  table-layout: fixed;
-}
+  /* ✅ merged duplicate: table responsiveness + layout */
+  .issues-table-responsive {
+    width: 100%;
+    table-layout: fixed;
+    overflow-x: visible !important; /* Prevent horizontal scrollbar */
+    overflow-y: visible !important; /* Ensure dropdowns aren't clipped */
+    position: relative;
+  }
 
-/* Improved dropdown positioning */
-.issueDashboardDropdown {
-  position: static; /* Make it relative to the table cell instead */
-}
+  /* Improved dropdown positioning */
+  .issue-dashboard-dropdown {
+    position: static;
+  }
 
-td.textEnd {
-  position: relative; /* Create positioning context for dropdown */
-  white-space: nowrap;
-  width: 1%;
-}
-.issuesTableResponsive td,
-.issuesTableResponsive th {
-  text-align: left !important;
-}
+  td.text-end {
+    position: relative;
+    white-space: nowrap;
+    width: 1%;
+  }
 
-/* Ensure card doesn't create scrollbars */
-.card {
-  overflow: hidden;
-}
+  .issues-table-responsive td,
+  .issues-table-responsive th {
+    text-align: left !important;
+  }
 
-/* Make sure content doesn't force horizontal scroll */
-.containerFluid {
-  max-width: 100%;
-  overflow-x: hidden;
-}
+  /* Ensure card doesn't create scrollbars */
+  .card {
+    overflow: hidden;
+  }
 
-/* Fix for the dropdown menu to appear inside table */
-td.textEnd .issueDashboardDropdown .issueDashboardDropdownMenu {
-  position: absolute;
-  right: 3rem !important;
-  top: 65px !important;
-  left: auto !important;
-}
+  /* Make sure content doesn't force horizontal scroll */
+  .container-fluid {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
 
-.issuesModalBackdrop {
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  width: 100% !important;
-  height: 100% !important;
-  background-color: rgba(0, 0, 0, 0.3) !important;
-  z-index: 1050 !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-}
+  /* Fix for the dropdown menu to appear inside table */
+  td.text-end .issue-dashboard-dropdown .issue-dashboard-dropdown-menu {
+    position: absolute;
+    right: 3rem !important;
+    top: 65px !important;
+    left: auto !important;
+  }
 
-.issuesModalBackdrop .modalDialog {
-  border-radius: 8px;
-  max-width: 400px;
-  width: 90%;
-}
+  .issues-modal-backdrop {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background-color: rgba(0, 0, 0, 0.3) !important;
+    z-index: 1050 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
 
-.tableDark thead tr:hover {
-  background-color: #3d444d;
-}
-.tableDark thead tr th {
-  color: #f8f9fa;
+  .issues-modal-backdrop .modal-dialog {
+    border-radius: 8px;
+    max-width: 400px;
+    width: 90%;
+  }
+
+  .table-dark thead tr:hover {
+    background-color: #3D444D;
+  }
+
+  .table-dark thead tr th {
+    color: #f8f9fa;
+  }
 }

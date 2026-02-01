@@ -172,11 +172,11 @@
 }
 
 .createNewBtn {
+  padding: 8px 20px;
   background-color: #28a745;
-  color: #fff;
+  color: white;
   border: none;
   border-radius: 5px;
-  padding: 8px 20px;
   cursor: pointer;
 }
 
@@ -195,11 +195,12 @@
   padding: 8px;
   text-align: left;
 }
+
 .status {
-  font-weight: bold;
   padding: 5px;
   border-radius: 5px;
   color: white;
+  font-weight: bold;
 }
 
 .active {
