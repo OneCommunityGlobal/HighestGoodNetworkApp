@@ -74,6 +74,7 @@
   border: 1px solid #444;
 }
 
+
 .calendarHeader {
   display: flex;
   justify-content: space-between;
@@ -995,16 +996,26 @@
 }
 
 .reactCalendarDarkMode :global(.react-calendar__navigation) {
+  background-color: #1b2a41;
+  border-bottom: 1px solid #444;
+}
+
+.reactCalendarDarkMode :global(.react-calendar__navigation button) {
+  color: #ffffff;
+}
+
+.reactCalendarDarkMode :global(.react-calendar__navigation button:enabled:hover),
+.reactCalendarDarkMode :global(.react-calendar__navigation button:enabled:focus) {
   background-color: #2d3748;
-  border-bottom-color: #4a5568;
 }
 
 .reactCalendarDarkMode :global(.react-calendar__month-view__weekdays__weekday) {
-  color: #e2e8f0;
+  color: #fff;
 }
 
 .reactCalendarDarkMode :global(.react-calendar__month-view__weekdays__weekday) abbr {
-  color: #e2e8f0;
+  color: #fff;
+  text-decoration: none;
 }
 
 .selectedDate {
