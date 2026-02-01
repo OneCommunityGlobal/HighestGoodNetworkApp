@@ -1,5 +1,6 @@
 .container {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+    sans-serif;
   background-color: #ffffff;
   border: 1px solid #e1e4e8;
   border-radius: 6px;
@@ -39,13 +40,13 @@
   border: 1px solid transparent;
 }
 
-[data-theme="light"] .btnPrimary {
+[data-theme='light'] .btnPrimary {
   background-color: #22863a;
   color: #ffffff;
   border-color: #22863a;
 }
 
-[data-theme="light"] .btnSecondary {
+[data-theme='light'] .btnSecondary {
   background-color: #0d6efd;
   color: #ffffff;
   border-color: #0d6efd;
@@ -113,79 +114,83 @@
 }
 
 /* Dark Mode Support */
-[data-theme="dark"] {
+[data-theme='dark'] {
   background-color: #1e2329;
   color: #f0f0f0;
   border-color: #383e44;
 }
 
-[data-theme="dark"] .container {
+[data-theme='dark'] .container {
   background-color: #1e2329;
   border-color: #383e44;
   color: #f0f0f0;
 }
 
-[data-theme="dark"] .header {
+[data-theme='dark'] .header {
   background-color: #24292f;
   border-bottom: 1px solid #383e44;
 }
 
-[data-theme="dark"] .header h1 {
+[data-theme='dark'] .header h1 {
   color: #f0f0f0;
 }
 
-[data-theme="dark"] .btnPrimary {
+[data-theme='dark'] .btnPrimary {
   background-color: #22863a;
   color: #ffffff;
   border-color: #22863a;
 }
 
-[data-theme="dark"] .btnSecondary {
+[data-theme='dark'] .btnSecondary {
   background-color: #0d6efd;
   color: #ffffff;
   border-color: #0d6efd;
 }
 
-[data-theme="dark"] .promotionTable {
+[data-theme='dark'] .promotionTable {
   width: 100%;
   background-color: #2d333b;
 }
 
-[data-theme="dark"] .promotionTable thead th {
+[data-theme='dark'] .promotionTable thead th {
   background-color: #24292f;
   border-color: #383e44;
   color: #f0f0f0;
 }
 
-[data-theme="dark"] .promotionTable th,
-[data-theme="dark"] .promotionTable td {
+[data-theme='dark'] .promotionTable th,
+[data-theme='dark'] .promotionTable td {
   border-bottom: 1px solid #383e44;
 }
 
-[data-theme="dark"] .sectionHeader td {
+[data-theme='dark'] .sectionHeader td {
   background-color: #24292f;
   color: #f0f0f0;
 }
 
-[data-theme="dark"] .promotionTable tbody tr.odd-row {
-  background-color: #24292f; 
+[data-theme='dark'] .promotionTable tbody tr.odd-row {
+  background-color: #24292f;
 }
 
-[data-theme="dark"] .promotionTable tbody tr:hover {
+[data-theme='dark'] .promotionTable tbody tr:hover {
   background-color: #363b43;
   cursor: pointer;
 }
 
-[data-theme="dark"] .promotionTable tbody tr:hover td {
-  color: #f0f0f0; 
+[data-theme='dark'] .promotionTable tbody tr:hover td.statusMet {
+  color: #3fb950;
 }
 
-[data-theme="dark"] .statusMet {
-  color: #53d06e;
+[data-theme='dark'] .promotionTable tbody tr:hover td.statusNotMet {
+  color: #f85149;
 }
 
-[data-theme="dark"] .statusNotMet {
-  color: #fa7970;
+[data-theme='dark'] .statusMet {
+  color: #3fb950 !important;
+}
+
+[data-theme='dark'] .statusNotMet {
+  color: #f85149 !important;
 }
 
 @media (max-width: 768px) {

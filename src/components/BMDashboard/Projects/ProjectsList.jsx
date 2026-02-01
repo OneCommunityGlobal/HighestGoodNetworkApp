@@ -3,12 +3,12 @@ import { useSelector } from 'react-redux';
 import { Row, Col } from 'reactstrap';
 import Select from 'react-select';
 import ProjectSummary from './ProjectSummary';
+import styles from '../BMDashboard.module.css';
 
 function ProjectsList() {
   const projects = useSelector(state => state.bmProjects) || [];
   const darkMode = useSelector(state => state.theme?.darkMode || false);
   const [selectedProjects, setSelectedProjects] = useState([]);
-
   const projectOptions = projects.map(project => ({
     value: project._id,
     label: project.name,
@@ -102,9 +102,10 @@ function ProjectsList() {
 
   return (
     <Row
-      className={`justify-content-center text-center mt-5 ${darkMode ? 'projects-list-dark' : ''}`}
+      className="ml-0 text-center mt-5"
+      style={{ width: '100%', display: 'flex', justifyContent: 'center', flexDirection: 'column' }}
     >
-      <Col md="8" lg="6" className="mb-3">
+      <Col md="8" lg="6" className="mb-3" style={{ margin: '0 auto' }}>
         <Select
           isMulti
           options={projectOptions}
@@ -116,9 +117,16 @@ function ProjectsList() {
       </Col>
       <Col xs="12">
         {filteredProjects.length ? (
-          <ul className="projects-list">
+          <ul
+            className={`${styles.projectsList} ${
+              darkMode ? styles.darkProjectsList : styles.lightProjectsList
+            }`}
+          >
             {filteredProjects.map(project => (
-              <li className="project-summary" key={project._id}>
+              <li
+                className={`${darkMode ? styles.darkProjectSummary : styles.projectSummary}`}
+                key={project._id}
+              >
                 <ProjectSummary project={project} />
               </li>
             ))}

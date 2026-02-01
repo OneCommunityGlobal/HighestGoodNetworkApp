@@ -7,7 +7,7 @@ import {
   FiCopy,
   FiEdit,
 } from 'react-icons/fi';
-import './IssueDashboard.css';
+import styles from './IssueDashboard.module.css';
 import { Col, Row, Table } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -110,16 +110,16 @@ export default function IssueDashboard() {
         </Col>
       </Row>
 
-      <div className="issues-table-responsive">
+      <div className={`${styles.issuesTableResponsive}`}>
         <Table hover className={`mb-0 ${darkMode ? 'table-dark' : ''}`}>
           <thead className={darkMode ? 'table-dark' : 'table-light'}>
             <tr>
-              <th className="text-end">Issue Name </th>
-              <th className="text-end">Open since</th>
-              <th className="text-end">Category</th>
-              <th className="text-end">Person dealing</th>
-              <th className="text-end">Cost due to Issue</th>
-              <th className="text-end">Actions</th>
+              <th className={`${styles.textEnd}`}>Issue Name </th>
+              <th className={`${styles.textEnd}`}>Open since</th>
+              <th className={`${styles.textEnd}`}>Category</th>
+              <th className={`${styles.textEnd}`}>Person dealing</th>
+              <th className={`${styles.textEnd}`}>Cost due to Issue</th>
+              <th className={`${styles.textEnd}`}>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -138,16 +138,16 @@ export default function IssueDashboard() {
                   <td className="fw-medium">{issue.name}</td>
                   <td>{openSince}</td>
                   <td>
-                    <span className="badge bg-info text-dark">{category}</span>
+                    <span className={`${styles.badge} ${styles.bgInfo} text-dark`}>{category}</span>
                   </td>
                   <td>{assignedTo}</td>
                   <td>{cost}</td>
-                  <td className="text-end position-relative">
+                  <td className={`${styles.textEnd} position-relative`}>
                     <div className={`issue-dashboard-dropdown  ${darkMode ? 'bg-oxide-blue' : ''}`}>
                       <button
                         type="button"
                         aria-label="Actions menu"
-                        className="btn btn-sm btn-link"
+                        className={`btn btn-sm ${styles.btnLink}`}
                         onClick={() => toggleMenu(issue._id)}
                       >
                         <FiMoreHorizontal size={18} />
@@ -163,7 +163,7 @@ export default function IssueDashboard() {
                         >
                           <button
                             type="button"
-                            className="issue-dashboard-dropdown-item"
+                            className={`${styles.issueDashboardDropdownItem}`}
                             onClick={() => {
                               openRenameModal(issue);
                               setMenuOpen(null);
@@ -174,7 +174,7 @@ export default function IssueDashboard() {
                           </button>
                           <button
                             type="button"
-                            className="issue-dashboard-dropdown-item"
+                            className={`${styles.issueDashboardDropdownItem}`}
                             onClick={() => {
                               openCopyModal(issue);
                               setMenuOpen(null);
@@ -185,7 +185,7 @@ export default function IssueDashboard() {
                           </button>
                           <button
                             type="button"
-                            className="issue-dashboard-dropdown-item text-danger"
+                            className={`${styles.issueDashboardDropdownItem} text-danger`}
                             onClick={() => {
                               openDeleteModal(issue);
                               setMenuOpen(null);
@@ -222,7 +222,7 @@ export default function IssueDashboard() {
           Showing {currentItems.length} of {issues.length} issues
         </div>
         <nav aria-label="Issue pagination">
-          <ul className="pagination pagination-sm mb-0">
+          <ul className={`${styles.pagination} pagination-sm mb-0`}>
             <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
               <button
                 type="button"
@@ -275,7 +275,7 @@ export default function IssueDashboard() {
 
       {/* Rename Modal */}
       {showRenameModal && (
-        <div className="issues-modal-backdrop">
+        <div className={`${styles.issuesModalBackdrop}`}>
           <div className={`modal-dialog `}>
             <div className={`modal-content p-3 ${darkMode ? 'bg-oxford-blue text-light' : ''}`}>
               <h5>Rename Issue</h5>
@@ -310,7 +310,7 @@ export default function IssueDashboard() {
 
       {/* Delete Modal */}
       {showDeleteModal && (
-        <div className="issues-modal-backdrop">
+        <div className={`${styles.issuesModalBackdrop}`}>
           <div className={`modal-dialog ${darkMode ? 'bg-dark text-light' : ''}`}>
             <div className={`modal-content p-3 ${darkMode ? 'bg-oxford-blue text-light' : ''}`}>
               <h5>Confirm Delete</h5>
@@ -342,7 +342,7 @@ export default function IssueDashboard() {
 
       {/* Copy Modal */}
       {showCopyModal && (
-        <div className="issues-modal-backdrop">
+        <div className={`${styles.issuesModalBackdrop}`}>
           <div className={`modal-dialog ${darkMode ? 'bg-dark text-light' : ''}`}>
             <div className={`modal-content p-3 ${darkMode ? 'bg-oxford-blue text-light' : ''}`}>
               <h5>Confirm Copy</h5>

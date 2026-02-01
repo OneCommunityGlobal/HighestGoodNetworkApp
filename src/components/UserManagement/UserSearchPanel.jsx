@@ -22,7 +22,7 @@ function UserSearchPanel({
   onNewUserClick,
   searchText,
   onSearch,
-  onActiveFiter,
+  onActiveFilter,
   darkMode,
 }) {
   const canCreateUsers = hasPermission('postUserProfile');
@@ -101,7 +101,7 @@ function UserSearchPanel({
           id="active-filter-dropdown"
           style={{marginBottom: "0px"}}
           onChange={e => {
-            onActiveFiter(e.target.value);
+            onActiveFilter(e.target.value);
           }}
           className={darkMode ? 'bg-darkmode-liblack text-light' : ''}
         >
