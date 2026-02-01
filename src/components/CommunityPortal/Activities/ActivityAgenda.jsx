@@ -1,4 +1,4 @@
-import './ActivityAgenda.css';
+import styles from './ActivityAgenda.module.css';
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
@@ -190,16 +190,14 @@ function ActivityAgenda() {
     fetchEventData();
   }, [activityid]);
 
-  // Helper function to get page class name
-  const getPageClassName = () => {
-    return `activity-agenda-page ${darkMode ? 'activity-agenda-dark-mode' : ''}`;
-  };
+  const pageClassName = `${styles.activityAgendaPage}${
+    darkMode ? ` ${styles.activityAgendaDarkMode}` : ''
+  }`;
 
-  // Render error state for missing activity ID
   const renderMissingIdError = () => (
-    <div className={getPageClassName()}>
-      <div className="activity-agenda-container">
-        <div className="activity-agenda-content">
+    <div className={pageClassName}>
+      <div className={styles.activityAgendaContainer}>
+        <div className={styles.activityAgendaContent}>
           <h1>Error</h1>
           <p>Activity ID is missing. Please provide a valid activity ID in the URL.</p>
         </div>
@@ -210,8 +208,8 @@ function ActivityAgenda() {
   // Render loading state
   const renderLoading = () => (
     <div className={getPageClassName()}>
-      <div className="activity-agenda-container">
-        <div className="activity-agenda-content">
+      <div className={styles.activityAgendaContainer}>
+        <div className={styles.activityAgendaContent}>
           <h1>Loading...</h1>
           <p>Please wait while we fetch the activity details.</p>
         </div>
@@ -221,9 +219,9 @@ function ActivityAgenda() {
 
   // Render error state
   const renderError = () => (
-    <div className={getPageClassName()}>
-      <div className="activity-agenda-container">
-        <div className="activity-agenda-content">
+    <div className={pageClassName}>
+      <div className={styles.activityAgendaContainer}>
+        <div className={styles.activityAgendaContent}>
           <h1>Error</h1>
           <p>{error}</p>
           <p>Please check the activity ID and try again.</p>
@@ -235,8 +233,8 @@ function ActivityAgenda() {
   // Render no data state
   const renderNoData = () => (
     <div className={getPageClassName()}>
-      <div className="activity-agenda-container">
-        <div className="activity-agenda-content">
+      <div className={styles.activityAgendaContainer}>
+        <div className={styles.activityAgendaContent}>
           <h1>No Data</h1>
           <p>No activity data found for the provided ID.</p>
         </div>
@@ -259,75 +257,60 @@ function ActivityAgenda() {
   }
 
   return (
-    <div className={getPageClassName()}>
-      <div className="activity-agenda-container">
-        <div className="activity-agenda-image">
+    <div className={pageClassName}>
+      <div className={styles.activityAgendaContainer}>
+        <div className={styles.activityAgendaImage}>
           <img
             src={imageError ? ActivityImg : eventData.image}
             alt={eventData.activityName}
             onError={() => setImageError(true)}
           />
         </div>
-        <div className="activity-agenda-content">
+        <div className={styles.activityAgendaContent}>
           <h1>{eventData.activityName}</h1>
 
-          {/* Event Metadata */}
-          <div
-            className="activity-metadata"
-            style={{
-              marginBottom: '20px',
-              paddingBottom: '15px',
-              borderBottom: darkMode ? '1px solid rgba(255, 255, 255, 0.2)' : '1px solid #e0e0e0',
-            }}
-          >
+          <div className={styles.activityMetadata}>
             {eventData.date && eventData.date !== 'TBD' && (
-              <p style={{ marginBottom: '8px' }}>
+              <p className={styles.metaRow}>
                 <strong>Date:</strong> {eventData.date}
               </p>
             )}
-            <p style={{ marginBottom: '8px' }}>
+            <p className={styles.metaRow}>
               <strong>Type:</strong> {eventData.type}
             </p>
-            <p style={{ marginBottom: '8px' }}>
+            <p className={styles.metaRow}>
               <strong>Location:</strong> {eventData.location}
             </p>
-            <p style={{ marginBottom: '8px' }}>
+            <p className={styles.metaRow}>
               <strong>Status:</strong> {eventData.status}
             </p>
             {eventData.maxAttendees > 0 && (
-              <p style={{ marginBottom: '8px' }}>
+              <p className={styles.metaRow}>
                 <strong>Attendance:</strong> {eventData.currentAttendees} / {eventData.maxAttendees}
               </p>
             )}
           </div>
 
-          {/* Description */}
-          <div style={{ marginBottom: '30px' }}>
-            <h2 style={{ fontSize: '1.5rem', marginBottom: '15px' }}>Description</h2>
-            <p style={{ lineHeight: '1.8', whiteSpace: 'pre-wrap' }}>{eventData.description}</p>
+          <div className={styles.descriptionBlock}>
+            <h2 className={styles.sectionHeading}>Description</h2>
+            <p>{eventData.description}</p>
           </div>
 
-          {/* Schedule */}
           <div>
-            <h2 style={{ fontSize: '1.5rem', marginBottom: '15px' }}>Schedule of the day</h2>
+            <h2 className={styles.sectionHeading}>Schedule of the day</h2>
             {eventData.schedule && eventData.schedule.length > 0 ? (
               <div>
                 {eventData.schedule.map((item, index) => (
                   <div
                     key={`${item.time}-${item.activity}-${index}`}
-                    style={{
-                      marginBottom: '12px',
-                      padding: '10px',
-                      backgroundColor: darkMode ? 'rgba(255, 255, 255, 0.05)' : '#f5f5f5',
-                      borderRadius: '5px',
-                    }}
+                    className={styles.scheduleItem}
                   >
-                    <p style={{ marginBottom: '5px', fontWeight: 'bold' }}>{item.time}</p>
-                    <p style={{ marginBottom: '5px' }}>
+                    <p className={styles.scheduleItemTime}>{item.time}</p>
+                    <p className={styles.scheduleItemRow}>
                       <strong>Activity:</strong> {item.activity}
                     </p>
                     {item.resourceLocation && (
-                      <p style={{ marginBottom: '0', fontSize: '0.9rem', opacity: 0.8 }}>
+                      <p className={styles.scheduleItemLocation}>
                         <strong>Location:</strong> {item.resourceLocation}
                       </p>
                     )}
