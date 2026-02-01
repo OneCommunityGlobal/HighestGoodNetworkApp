@@ -52,6 +52,9 @@ export function CPDashboard() {
   const FALLBACK_IMG =
     'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=600&q=60';
 
+  // Get today's date in YYYY-MM-DD format for min date restriction
+  const today = new Date().toISOString().split('T')[0];
+
   useEffect(() => {
     const fetchEvents = async () => {
       setIsLoading(true);
@@ -269,7 +272,12 @@ export function CPDashboard() {
                     Clear date filter
                   </Button>
                 </div>
-                <Input type="date" placeholder="Ending After" className={styles['date-filter']} />
+                <Input
+                  type="date"
+                  placeholder="Ending After"
+                  className={styles['date-filter']}
+                  min={today}
+                />
               </div>
 
               <div className={styles.filterItem}>
