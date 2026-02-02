@@ -3,16 +3,16 @@ import { Button } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import styles from './ProjectDetails.module.css';
-// button styles for each section
+// Button color styles for each section
 const buttonStyles = {
   dailyLogging: 'green',
   newItem: 'blue',
   team: 'indigo',
 };
 
-function LogBar(props) {
-  const { projectId } = props;
+function LogBar({ projectId }) {
   const darkMode = useSelector(state => state.theme?.darkMode || false);
+
   const buttonLabels = {
     dailyLogging: {
       name: ['Time', 'Material', 'Tool/Equipment'],
@@ -34,21 +34,17 @@ function LogBar(props) {
   };
 
   return (
-    <div className={`${darkMode ? styles['log-bar-dark'] : styles['log-bar']}`}>
+    <div className={darkMode ? styles['log-bar-dark'] : styles['log-bar']}>
       {Object.keys(buttonStyles).map(section => (
         <div key={uuidv4()} className={styles['log-bar__section']}>
           <h2 style={{ color: darkMode ? '#ffffff' : '#333333' }}>
-            {(() => {
-              switch (section) {
-                case 'dailyLogging':
-                  return 'Daily Logging:';
-                case 'newItem':
-                  return 'Add a New Item:';
-                default:
-                  return 'Team';
-              }
-            })()}
+            {section === 'dailyLogging'
+              ? 'Daily Logging:'
+              : section === 'newItem'
+              ? 'Add a New Item:'
+              : 'Team'}
           </h2>
+
           <ul className={styles['log-bar__btn-group']}>
             {buttonLabels[section].name.map((label, index) => (
               <li key={uuidv4()}>
