@@ -1,3 +1,4 @@
+/* Main container for drag and drop */
 .dragDropContainer {
   border: 2px dashed #ccc;
   text-align: center;
@@ -5,12 +6,7 @@
   margin-bottom: 20px;
 }
 
-.updateConfirmText {
-  color: red;
-  font-weight: bold;
-  margin-bottom: 10px;
-}
-
+/* Cancel and submit buttons */
 .cancelButton {
   width: 100%;
 }
@@ -19,15 +15,7 @@
   width: 100%;
 }
 
-.squareImage {
-  width: 100%;
-  height: auto;
-  max-width: 250px;
-  max-height: 250px;
-  object-fit: cover;
-  border-radius: 4px;
-}
-
+/* Read-only div styling */
 .readOnlyDiv {
   padding: 10px 12px;
   background-color: #ffffff !important;
@@ -42,8 +30,20 @@
   font-weight: 500;
 }
 
-/* Image */
+/* Image styling - consolidated single declaration */
 .squareImage {
+  width: 100%;
+  height: auto;
+  max-width: 250px;
+  max-height: 250px;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 2px solid #dee2e6 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* For larger square images - using a different class name */
+.largeSquareImage {
   width: 280px;
   height: 280px;
   object-fit: cover;
@@ -52,7 +52,7 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Confirmation text */
+/* Confirmation text - consolidated single declaration */
 .updateConfirmText {
   color: #0d6efd !important;
   font-weight: 600;
@@ -62,6 +62,13 @@
   border: 1px solid #cfe2ff !important;
   border-radius: 6px;
   font-size: 1rem;
+}
+
+/* Dark mode confirmation text - using a different class */
+.updateConfirmTextDark {
+  color: #0dcaf0 !important;
+  background-color: #1a2a3a !important;
+  border-color: #0dcaf0 !important;
 }
 
 /* Additional styling for form labels in light mode */
@@ -82,6 +89,11 @@
   padding-right: 2.5rem !important;
 }
 
+/* Dark mode custom select */
+:global(.dark-mode) .custom-select {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23e9ecef' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e") !important;
+}
+
 /* =========================
    DARK MODE - Only change what's needed
    ========================= */
@@ -92,7 +104,8 @@
     color: #e9ecef !important;
   }
   
-  .squareImage {
+  .squareImage,
+  .largeSquareImage {
     border-color: #444444 !important;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   }
@@ -107,28 +120,28 @@
     color: #e9ecef !important;
   }
   
-  /* Dark mode overrides */
+  /* Dark mode overrides with improved contrast ratios */
   :global(.dark-mode) .form-control {
     background-color: #2d2d2d !important;
-    border-color: #444444 !important;
-    color: #e9ecef !important;
+    border-color: #666666 !important; /* Improved contrast */
+    color: #ffffff !important; /* Improved contrast */
   }
   
   :global(.dark-mode) .form-control:focus {
     background-color: #2d2d2d !important;
     border-color: #0dcaf0 !important;
-    color: #e9ecef !important;
+    color: #ffffff !important;
     box-shadow: 0 0 0 0.25rem rgba(13, 202, 240, 0.25) !important;
   }
   
   :global(.dark-mode) .alert {
     background-color: #1a2a3a !important;
     border-color: #0dcaf0 !important;
-    color: #e9ecef !important;
+    color: #ffffff !important; /* Improved contrast */
   }
   
   :global(.dark-mode) .alert-info {
-    background-color: #0c5460 !important;
+    background-color: #0a3d4f !important; /* Improved contrast */
     border-color: #0dcaf0 !important;
     color: #d1ecf1 !important;
   }
@@ -136,17 +149,17 @@
   :global(.dark-mode) .alert-warning {
     background-color: #664d03 !important;
     border-color: #ffc107 !important;
-    color: #fff3cd !important;
+    color: #fff9e6 !important; /* Improved contrast */
   }
   
   :global(.dark-mode) .alert-danger {
-    background-color: #842029 !important;
+    background-color: #5c1a1a !important; /* Improved contrast */
     border-color: #f5c2c7 !important;
     color: #f8d7da !important;
   }
   
   :global(.dark-mode) .alert-success {
-    background-color: #0f5132 !important;
+    background-color: #0a3a27 !important; /* Improved contrast */
     border-color: #badbcc !important;
     color: #d1e7dd !important;
   }
@@ -154,32 +167,32 @@
   :global(.dark-mode) .btn-primary {
     background-color: #0dcaf0 !important;
     border-color: #0dcaf0 !important;
-    color: #000 !important;
+    color: #000000 !important; /* High contrast */
   }
   
   :global(.dark-mode) .btn-secondary {
-    background-color: #6c757d !important;
-    border-color: #6c757d !important;
-    color: #fff !important;
+    background-color: #555555 !important; /* Improved contrast */
+    border-color: #555555 !important;
+    color: #ffffff !important; /* High contrast */
   }
   
   :global(.dark-mode) .btn-danger {
-    background-color: #dc3545 !important;
-    border-color: #dc3545 !important;
-    color: #fff !important;
+    background-color: #c82333 !important; /* Improved contrast */
+    border-color: #c82333 !important;
+    color: #ffffff !important; /* High contrast */
   }
   
   :global(.dark-mode) .badge {
     background-color: #0dcaf0 !important;
-    color: #000 !important;
+    color: #000000 !important; /* High contrast */
   }
   
   :global(.dark-mode) .text-muted {
-    color: #adb5bd !important;
+    color: #b0b7c0 !important; /* Improved contrast */
   }
   
   :global(.dark-mode) .border {
-    border-color: #444444 !important;
+    border-color: #666666 !important; /* Improved contrast */
   }
   
   :global(.dark-mode) h1,
@@ -188,12 +201,7 @@
   :global(.dark-mode) h4,
   :global(.dark-mode) h5,
   :global(.dark-mode) h6 {
-    color: #e9ecef !important;
-  }
-  
-  /* Fix for select dropdown arrow in dark mode */
-  :global(.dark-mode) .custom-select {
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23e9ecef' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e") !important;
+    color: #ffffff !important; /* High contrast */
   }
   
   /* Remove any extra arrow from reactstrap */
@@ -202,6 +210,30 @@
   }
   
   :global(.dark-mode) .form-select {
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23e9ecef' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e") !important;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e") !important;
   }
+}
+
+/* Additional contrast improvements for accessibility */
+:global(.btn-link) {
+  text-decoration: underline;
+}
+
+/* Ensure form labels have sufficient contrast */
+:global(.form-check-label) {
+  color: #212529;
+}
+
+:global(.dark-mode) .form-check-label {
+  color: #ffffff !important;
+}
+
+/* Improve placeholder contrast */
+:global(.form-control)::placeholder {
+  color: #6c757d;
+  opacity: 1;
+}
+
+:global(.dark-mode) .form-control::placeholder {
+  color: #b0b7c0 !important;
 }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchEquipmentById, updateEquipment } from '~/actions/bmdashboard/equipmentActions';
 import { Button, Form, FormGroup, Label, Container, Row, Col, Input, Alert } from 'reactstrap';
@@ -21,7 +21,6 @@ export default function UpdateEquipment() {
   const [replacementRequired, setReplacementRequired] = useState('');
   const [description, setDescription] = useState('');
   const [sendNote, setSendNote] = useState('');
-  const [updateDate] = useState('');
   const [status, setStatus] = useState('');
   const [notes, setNotes] = useState('');
   const [uploadedFiles, setUploadedFiles] = useState([]);
@@ -29,10 +28,20 @@ export default function UpdateEquipment() {
   const [submitError, setSubmitError] = useState('');
   const [submitSuccess, setSubmitSuccess] = useState('');
   const [uploadedFilesPreview, setUploadedFilesPreview] = useState([]);
-  const [isUpdated, setIsUpdated] = useState(false); // NEW: Track if update was successful
+  const [isUpdated, setIsUpdated] = useState(false);
+
   const equipmentDetails = useSelector(state => state.bmEquipments.singleEquipment);
   const darkMode = useSelector(state => state.theme.darkMode);
   const dispatch = useDispatch();
+
+  // Cleanup blob URLs
+  const cleanupFilePreviews = useCallback(files => {
+    files.forEach(file => {
+      if (file?.preview?.startsWith('blob:')) {
+        URL.revokeObjectURL(file.preview);
+      }
+    });
+  }, []);
 
   useEffect(() => {
     if (equipmentId) {
@@ -40,29 +49,20 @@ export default function UpdateEquipment() {
     }
 
     return () => {
-      uploadedFilesPreview.forEach(file => {
-        if (file.preview && file.preview.startsWith('blob:')) {
-          URL.revokeObjectURL(file.preview);
-        }
-      });
+      cleanupFilePreviews(uploadedFilesPreview);
     };
-  }, [dispatch, equipmentId]);
+  }, [dispatch, equipmentId, uploadedFilesPreview, cleanupFilePreviews]);
 
   useEffect(() => {
     return () => {
-      uploadedFilesPreview.forEach(file => {
-        if (file.preview && file.preview.startsWith('blob:')) {
-          URL.revokeObjectURL(file.preview);
-        }
-      });
+      cleanupFilePreviews(uploadedFilesPreview);
     };
-  }, [uploadedFilesPreview]);
+  }, [uploadedFilesPreview, cleanupFilePreviews]);
 
-  // NEW: Reset form when equipment details are updated
+  // Reset form when equipment details are updated
   useEffect(() => {
     if (equipmentDetails && isUpdated) {
-      // Reset form fields to show updated data
-      const lastUpdate = equipmentDetails.updateRecord?.[equipmentDetails.updateRecord.length - 1];
+      const lastUpdate = equipmentDetails?.updateRecord?.[equipmentDetails.updateRecord.length - 1];
       if (lastUpdate) {
         setStatus(lastUpdate.condition || '');
         setLastUsedBy(lastUpdate.lastUsedBy || '');
@@ -73,7 +73,6 @@ export default function UpdateEquipment() {
         setSendNote(lastUpdate.notes ? 'yes' : 'no');
       }
 
-      // Reset success message after 5 seconds
       const timer = setTimeout(() => {
         setSubmitSuccess('');
         setIsUpdated(false);
@@ -83,9 +82,9 @@ export default function UpdateEquipment() {
     }
   }, [equipmentDetails, isUpdated]);
 
-  const handleCancel = () => history.goBack();
+  const handleCancel = useCallback(() => history.goBack(), [history]);
 
-  const calculateDaysLeft = endDate => {
+  const calculateDaysLeft = useCallback(endDate => {
     if (!endDate) return '';
 
     const today = new Date();
@@ -94,275 +93,427 @@ export default function UpdateEquipment() {
     const daysLeft = Math.ceil(timeDiff / (1000 * 3600 * 24));
 
     return daysLeft >= 0 ? daysLeft : 'Expired';
-  };
+  }, []);
 
-  const validateForm = () => {
-    if (!status) {
-      return 'Status/Condition is required';
-    }
-    if (!lastUsedBy) {
-      return 'Please specify who used the tool/equipment last time';
-    }
-    if (lastUsedBy === 'other' && !lastUsedByOther.trim()) {
-      return 'Please specify the name of who used the tool/equipment';
-    }
-    if (!lastUsedFor) {
-      return 'Please specify what the tool/equipment was used for';
-    }
-    if (lastUsedFor === 'other' && !lastUsedForOther.trim()) {
-      return 'Please specify what the tool/equipment was used for';
-    }
-    if (!replacementRequired) {
-      return 'Please indicate if replacement is required';
-    }
-    if (sendNote === 'yes' && !notes.trim()) {
-      return 'Please add a note if you selected to send one';
-    }
-    return null;
-  };
+  const validateForm = useCallback(() => {
+    const validations = [
+      [!status, 'Status/Condition is required'],
+      [!lastUsedBy, 'Please specify who used the tool/equipment last time'],
+      [
+        lastUsedBy === 'other' && !lastUsedByOther.trim(),
+        'Please specify the name of who used the tool/equipment',
+      ],
+      [!lastUsedFor, 'Please specify what the tool/equipment was used for'],
+      [
+        lastUsedFor === 'other' && !lastUsedForOther.trim(),
+        'Please specify what the tool/equipment was used for',
+      ],
+      [!replacementRequired, 'Please indicate if replacement is required'],
+      [sendNote === 'yes' && !notes.trim(), 'Please add a note if you selected to send one'],
+    ];
 
-  const handleFileUpload = files => {
-    uploadedFilesPreview.forEach(file => {
-      if (file.preview && file.preview.startsWith('blob:')) {
-        URL.revokeObjectURL(file.preview);
+    const failedValidation = validations.find(([condition]) => condition);
+    return failedValidation ? failedValidation[1] : null;
+  }, [
+    status,
+    lastUsedBy,
+    lastUsedByOther,
+    lastUsedFor,
+    lastUsedForOther,
+    replacementRequired,
+    sendNote,
+    notes,
+  ]);
+
+  const handleFileUpload = useCallback(
+    files => {
+      cleanupFilePreviews(uploadedFilesPreview);
+
+      const validFiles = files.filter(file => {
+        const fileType = file.type || '';
+        const fileName = file.name || '';
+        const isValidType = fileType.startsWith('image/');
+        const isValidExtension = fileName.match(/\.(jpg|jpeg|png|gif|webp)$/i);
+        return isValidType || isValidExtension;
+      });
+
+      if (validFiles.length === 0) {
+        console.warn('No valid image files found');
+        return;
       }
-    });
 
-    const validFiles = files.filter(file => {
-      const fileType = file.type || '';
-      const fileName = file.name || '';
-      const isValidType = fileType.startsWith('image/');
-      const isValidExtension = fileName.match(/\.(jpg|jpeg|png|gif|webp)$/i);
-      return isValidType || isValidExtension;
-    });
-
-    if (validFiles.length === 0) {
-      console.warn('No valid image files found');
-      return;
-    }
-
-    const newPreviews = validFiles.map(file => {
-      const previewUrl = URL.createObjectURL(file);
-      return {
+      const newPreviews = validFiles.map(file => ({
         name: file.name || 'Image',
-        preview: previewUrl,
+        preview: URL.createObjectURL(file),
         size: file.size || 0,
         type: file.type || 'image/*',
         file: file,
         status: 'uploaded',
         uploadedAt: new Date().toISOString(),
-      };
-    });
+      }));
 
-    setUploadedFiles(prev => [...prev, ...validFiles]);
-    setUploadedFilesPreview(prev => [...prev, ...newPreviews]);
-  };
+      setUploadedFiles(prev => [...prev, ...validFiles]);
+      setUploadedFilesPreview(prev => [...prev, ...newPreviews]);
+    },
+    [uploadedFilesPreview, cleanupFilePreviews],
+  );
 
-  const formatFileSize = bytes => {
+  const formatFileSize = useCallback(bytes => {
     if (bytes === 0) return '0 Bytes';
     const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  };
+    return `${Number.parseFloat((bytes / k ** i).toFixed(2))} ${sizes[i]}`;
+  }, []);
 
-  const handleSubmit = async e => {
-    e.preventDefault();
+  const handleSubmit = useCallback(
+    async e => {
+      e.preventDefault();
 
-    const validationError = validateForm();
-    if (validationError) {
-      setSubmitError(validationError);
-      return;
-    }
+      const validationError = validateForm();
+      if (validationError) {
+        setSubmitError(validationError);
+        return;
+      }
 
-    setIsSubmitting(true);
-    setSubmitError('');
-    setSubmitSuccess('');
+      setIsSubmitting(true);
+      setSubmitError('');
+      setSubmitSuccess('');
 
-    try {
-      const updateData = {
-        condition: status,
-        lastUsedBy: lastUsedBy === 'other' ? lastUsedByOther : lastUsedBy,
-        lastUsedFor: lastUsedFor === 'other' ? lastUsedForOther : lastUsedFor,
-        replacementRequired,
-        description,
-        notes: sendNote === 'yes' ? notes : '',
-      };
+      try {
+        const updateData = {
+          condition: status,
+          lastUsedBy: lastUsedBy === 'other' ? lastUsedByOther : lastUsedBy,
+          lastUsedFor: lastUsedFor === 'other' ? lastUsedForOther : lastUsedFor,
+          replacementRequired,
+          description,
+          notes: sendNote === 'yes' ? notes : '',
+        };
 
-      // Dispatch the update action
-      await dispatch(updateEquipment(equipmentId, updateData));
+        await dispatch(updateEquipment(equipmentId, updateData));
+        dispatch(fetchEquipmentById(equipmentId));
+        setIsUpdated(true);
 
-      // NEW: Refresh the equipment data to show updated information
-      dispatch(fetchEquipmentById(equipmentId));
+        let successMessage = 'Equipment status updated successfully!';
 
-      // Set success state
-      setIsUpdated(true);
+        if (uploadedFiles.length > 0) {
+          successMessage += ' The form has been updated.';
+          cleanupFilePreviews(uploadedFilesPreview);
+          setUploadedFiles([]);
+          setUploadedFilesPreview([]);
+        }
 
-      let successMessage = 'Equipment status updated successfully!';
+        setSubmitSuccess(successMessage);
 
-      // Clear uploaded files after successful update
-      if (uploadedFiles.length > 0) {
-        successMessage += ' The form has been updated.';
+        if (lastUsedBy === 'other') setLastUsedByOther('');
+        if (lastUsedFor === 'other') setLastUsedForOther('');
+      } catch (error) {
+        console.error('Update failed:', error);
 
-        // Clean up blob URLs
-        uploadedFilesPreview.forEach(file => {
-          if (file.preview && file.preview.startsWith('blob:')) {
-            URL.revokeObjectURL(file.preview);
+        let errorMessage = 'Failed to update equipment. Please try again.';
+
+        if (error.message?.includes('User not authenticated')) {
+          errorMessage = 'Authentication error. Please check if you are logged in.';
+        } else if (error.response?.data?.error?.includes('Invalid user ID format')) {
+          errorMessage = 'User ID format error. Please contact support.';
+        }
+
+        if (uploadedFiles.length > 0) {
+          errorMessage += ' Note: Images were selected and previewed but not saved to database.';
+          setUploadedFilesPreview(prev =>
+            prev.map(file => ({
+              ...file,
+              status: 'not-saved',
+              message: 'Selected but not saved to database',
+            })),
+          );
+        }
+
+        setSubmitError(errorMessage);
+      } finally {
+        setIsSubmitting(false);
+      }
+    },
+    [
+      validateForm,
+      status,
+      lastUsedBy,
+      lastUsedByOther,
+      lastUsedFor,
+      lastUsedForOther,
+      replacementRequired,
+      description,
+      sendNote,
+      notes,
+      dispatch,
+      equipmentId,
+      uploadedFiles,
+      uploadedFilesPreview,
+      cleanupFilePreviews,
+    ],
+  );
+
+  const handleRemoveFile = useCallback(
+    index => {
+      const fileToRemove = uploadedFilesPreview[index];
+      if (fileToRemove?.preview?.startsWith('blob:')) {
+        URL.revokeObjectURL(fileToRemove.preview);
+      }
+
+      setUploadedFilesPreview(prev => prev.filter((_, i) => i !== index));
+      setUploadedFiles(prev => prev.filter((_, i) => i !== index));
+    },
+    [uploadedFilesPreview],
+  );
+
+  // Memoized styles
+  const formLabelStyle = useMemo(
+    () => ({
+      fontWeight: '600',
+      color: darkMode ? '#e9ecef' : '#212529',
+      display: 'block',
+      marginBottom: '0.5rem',
+    }),
+    [darkMode],
+  );
+
+  const selectInputStyle = useMemo(
+    () => ({
+      borderColor: darkMode ? '#444444' : '#ced4da',
+      backgroundColor: darkMode ? '#2d2d2d' : '#ffffff',
+      color: darkMode ? '#e9ecef' : '#212529',
+      appearance: 'none',
+      WebkitAppearance: 'none',
+      MozAppearance: 'none',
+      backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='${
+        darkMode ? '%23e9ecef' : '%23343a40'
+      }' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e")`,
+      backgroundRepeat: 'no-repeat',
+      backgroundPosition: 'right 0.75rem center',
+      backgroundSize: '16px 12px',
+      paddingRight: '2.5rem',
+    }),
+    [darkMode],
+  );
+
+  const textInputStyle = useMemo(
+    () => ({
+      borderColor: darkMode ? '#444444' : '#ced4da',
+      backgroundColor: darkMode ? '#2d2d2d' : '#ffffff',
+      color: darkMode ? '#e9ecef' : '#212529',
+    }),
+    [darkMode],
+  );
+
+  const readonlyStyle = useMemo(
+    () => ({
+      padding: '10px 12px',
+      backgroundColor: darkMode ? '#2d2d2d' : '#ffffff',
+      border: `1px solid ${darkMode ? '#444444' : '#ced4da'}`,
+      borderRadius: '6px',
+      color: darkMode ? '#e9ecef' : '#212529',
+      fontSize: '1rem',
+      minHeight: '48px',
+      display: 'flex',
+      alignItems: 'center',
+      marginBottom: '5px',
+      fontWeight: '500',
+    }),
+    [darkMode],
+  );
+
+  const confirmationTextStyle = useMemo(
+    () => ({
+      color: darkMode ? '#0dcaf0' : '#0d6efd',
+      fontWeight: '600',
+      margin: '20px 0',
+      padding: '12px 16px',
+      backgroundColor: darkMode ? '#1a2a3a' : '#f8f9fa',
+      border: `1px solid ${darkMode ? '#0dcaf0' : '#cfe2ff'}`,
+      borderRadius: '6px',
+      fontSize: '1rem',
+    }),
+    [darkMode],
+  );
+
+  const imagePreviewContainerStyle = useMemo(
+    () => ({
+      maxWidth: '200px',
+      borderColor: darkMode ? '#444444' : '#dee2e6',
+      backgroundColor: darkMode ? '#2d2d2d' : 'transparent',
+    }),
+    [darkMode],
+  );
+
+  const previewFallbackStyle = useMemo(
+    () => ({
+      height: '120px',
+      backgroundColor: darkMode ? '#374151' : '#f8f9fa',
+      borderRadius: '4px',
+    }),
+    [darkMode],
+  );
+
+  const buttonStyle = useMemo(
+    () =>
+      darkMode
+        ? {
+            backgroundColor: '#0dcaf0',
+            borderColor: '#0dcaf0',
+            color: '#000',
           }
-        });
+        : {
+            backgroundColor: '#0d6efd',
+            borderColor: '#0d6efd',
+            color: '#fff',
+          },
+    [darkMode],
+  );
 
-        // Reset file states
-        setUploadedFiles([]);
-        setUploadedFilesPreview([]);
+  const secondaryButtonStyle = useMemo(
+    () =>
+      darkMode
+        ? {
+            backgroundColor: '#6c757d',
+            borderColor: '#6c757d',
+            color: '#fff',
+          }
+        : {
+            backgroundColor: '#6c757d',
+            borderColor: '#6c757d',
+            color: '#fff',
+          },
+    [darkMode],
+  );
+
+  // Derived values
+  const currentStatus = useMemo(
+    () =>
+      equipmentDetails?.updateRecord?.[equipmentDetails.updateRecord.length - 1]?.condition ||
+      'Unknown',
+    [equipmentDetails],
+  );
+
+  const rentalDueDate = useMemo(() => equipmentDetails?.rentalDueDate?.split('T')[0] || 'Unknown', [
+    equipmentDetails,
+  ]);
+
+  const hasUploadedFiles = uploadedFiles.length > 0;
+  const hasFilePreviews = uploadedFilesPreview.length > 0;
+  const hasNotSavedFiles =
+    hasFilePreviews && uploadedFilesPreview.some(f => f.status === 'not-saved');
+
+  // Component for file preview
+  const FilePreview = ({ file, index, darkMode }) => {
+    const handleImageError = e => {
+      console.error('Failed to load preview for:', file.name);
+      e.target.style.display = 'none';
+      const fallback = e.target.parentElement.querySelector('.preview-fallback');
+      if (fallback) {
+        fallback.style.display = 'flex';
       }
+    };
 
-      setSubmitSuccess(successMessage);
+    return (
+      <div className="border rounded p-2 position-relative" style={imagePreviewContainerStyle}>
+        <button
+          type="button"
+          className="btn btn-sm btn-danger position-absolute"
+          style={{ top: '-10px', right: '-10px', zIndex: 1 }}
+          onClick={() => handleRemoveFile(index)}
+          title="Remove image"
+          aria-label={`Remove ${file.name}`}
+        >
+          <span aria-hidden="true">X</span>
+        </button>
 
-      // Clear "other" fields if they were used
-      if (lastUsedBy === 'other') {
-        setLastUsedByOther('');
-      }
-      if (lastUsedFor === 'other') {
-        setLastUsedForOther('');
-      }
-    } catch (error) {
-      console.error('Update failed:', error);
+        {file.preview ? (
+          <>
+            <img
+              src={file.preview}
+              alt={`Preview ${index + 1}`}
+              style={{
+                width: '100%',
+                height: '120px',
+                objectFit: 'cover',
+                borderRadius: '4px',
+              }}
+              className="mb-2"
+              onError={handleImageError}
+            />
+            <div
+              className="preview-fallback text-center mb-2 d-none align-items-center justify-content-center"
+              style={previewFallbackStyle}
+            >
+              <div>
+                <i
+                  className="fas fa-file-image fa-2x"
+                  style={{ color: darkMode ? '#adb5bd' : '#6c757d' }}
+                />
+                <div className="small mt-1" style={{ color: darkMode ? '#adb5bd' : '#6c757d' }}>
+                  Preview unavailable
+                </div>
+              </div>
+            </div>
+          </>
+        ) : (
+          <div
+            className="text-center mb-2 d-flex align-items-center justify-content-center"
+            style={previewFallbackStyle}
+          >
+            <div>
+              <i
+                className="fas fa-file-image fa-2x"
+                style={{ color: darkMode ? '#adb5bd' : '#6c757d' }}
+              />
+              <div className="small mt-1" style={{ color: darkMode ? '#adb5bd' : '#6c757d' }}>
+                No Preview
+              </div>
+            </div>
+          </div>
+        )}
 
-      let errorMessage = 'Failed to update equipment. Please try again.';
-
-      if (error.message && error.message.includes('User not authenticated')) {
-        errorMessage = 'Authentication error. Please check if you are logged in.';
-      } else if (error.response?.data?.error?.includes('Invalid user ID format')) {
-        errorMessage = 'User ID format error. Please contact support.';
-      }
-
-      if (uploadedFiles.length > 0) {
-        errorMessage += ' Note: Images were selected and previewed but not saved to database.';
-        setUploadedFilesPreview(prev =>
-          prev.map(file => ({
-            ...file,
-            status: 'not-saved',
-            message: 'Selected but not saved to database',
-          })),
-        );
-      }
-
-      setSubmitError(errorMessage);
-    } finally {
-      setIsSubmitting(false);
-    }
+        <div
+          className="text-truncate"
+          title={file.name}
+          style={{ color: darkMode ? '#e9ecef' : '#212529' }}
+        >
+          <strong>{file.name}</strong>
+        </div>
+        <div className="small" style={{ color: darkMode ? '#adb5bd' : '#6c757d' }}>
+          {formatFileSize(file.size)} • {file.type.split('/')[1]?.toUpperCase() || 'IMAGE'}
+        </div>
+        <div className="small">
+          {file.status === 'uploaded' && (
+            <span style={{ color: darkMode ? '#75b798' : '#198754' }}>
+              <i className="fas fa-check-circle me-1" />
+              Ready for preview
+            </span>
+          )}
+          {file.status === 'local-only' && (
+            <span style={{ color: darkMode ? '#6ea8fe' : '#0dcaf0' }}>
+              <i className="fas fa-save me-1" />
+              Stored locally
+            </span>
+          )}
+          {file.status === 'not-saved' && (
+            <span style={{ color: darkMode ? '#ffda6a' : '#ffc107' }}>
+              <i className="fas fa-exclamation-triangle me-1" />
+              Preview only
+            </span>
+          )}
+        </div>
+        {file.message && (
+          <div
+            className="small"
+            style={{ color: darkMode ? '#adb5bd' : '#6c757d', marginTop: '4px' }}
+          >
+            {file.message}
+          </div>
+        )}
+      </div>
+    );
   };
-
-  const handleRemoveFile = index => {
-    if (uploadedFilesPreview[index]?.preview) {
-      URL.revokeObjectURL(uploadedFilesPreview[index].preview);
-    }
-
-    const newPreviews = [...uploadedFilesPreview];
-    newPreviews.splice(index, 1);
-    setUploadedFilesPreview(newPreviews);
-
-    const newFiles = [...uploadedFiles];
-    newFiles.splice(index, 1);
-    setUploadedFiles(newFiles);
-  };
-
-  const formLabelStyle = {
-    fontWeight: '600',
-    color: darkMode ? '#e9ecef' : '#212529',
-    display: 'block',
-    marginBottom: '0.5rem',
-  };
-
-  // Fixed select input styling to prevent double arrows
-  const selectInputStyle = {
-    borderColor: darkMode ? '#444444' : '#ced4da',
-    backgroundColor: darkMode ? '#2d2d2d' : '#ffffff',
-    color: darkMode ? '#e9ecef' : '#212529',
-    appearance: 'none', // Remove default browser styling
-    WebkitAppearance: 'none', // Remove default browser styling for Safari
-    MozAppearance: 'none', // Remove default browser styling for Firefox
-    backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='${
-      darkMode ? '%23e9ecef' : '%23343a40'
-    }' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e")`,
-    backgroundRepeat: 'no-repeat',
-    backgroundPosition: 'right 0.75rem center',
-    backgroundSize: '16px 12px',
-    paddingRight: '2.5rem',
-  };
-
-  const textInputStyle = {
-    borderColor: darkMode ? '#444444' : '#ced4da',
-    backgroundColor: darkMode ? '#2d2d2d' : '#ffffff',
-    color: darkMode ? '#e9ecef' : '#212529',
-  };
-
-  const readonlyStyle = {
-    padding: '10px 12px',
-    backgroundColor: darkMode ? '#2d2d2d' : '#ffffff',
-    border: `1px solid ${darkMode ? '#444444' : '#ced4da'}`,
-    borderRadius: '6px',
-    color: darkMode ? '#e9ecef' : '#212529',
-    fontSize: '1rem',
-    minHeight: '48px',
-    display: 'flex',
-    alignItems: 'center',
-    marginBottom: '5px',
-    fontWeight: '500',
-  };
-
-  const confirmationTextStyle = {
-    color: darkMode ? '#0dcaf0' : '#0d6efd',
-    fontWeight: '600',
-    margin: '20px 0',
-    padding: '12px 16px',
-    backgroundColor: darkMode ? '#1a2a3a' : '#f8f9fa',
-    border: `1px solid ${darkMode ? '#0dcaf0' : '#cfe2ff'}`,
-    borderRadius: '6px',
-    fontSize: '1rem',
-  };
-
-  const imagePreviewContainerStyle = {
-    maxWidth: '200px',
-    borderColor: darkMode ? '#444444' : '#dee2e6',
-    backgroundColor: darkMode ? '#2d2d2d' : 'transparent',
-  };
-
-  const previewFallbackStyle = {
-    height: '120px',
-    backgroundColor: darkMode ? '#374151' : '#f8f9fa',
-    borderRadius: '4px',
-  };
-
-  const buttonStyle = darkMode
-    ? {
-        backgroundColor: '#0dcaf0',
-        borderColor: '#0dcaf0',
-        color: '#000',
-      }
-    : {
-        backgroundColor: '#0d6efd',
-        borderColor: '#0d6efd',
-        color: '#fff',
-      };
-
-  const secondaryButtonStyle = darkMode
-    ? {
-        backgroundColor: '#6c757d',
-        borderColor: '#6c757d',
-        color: '#fff',
-      }
-    : {
-        backgroundColor: '#6c757d',
-        borderColor: '#6c757d',
-        color: '#fff',
-      };
-
-  // Get current status from equipment details for display
-  const currentStatus =
-    equipmentDetails?.updateRecord?.length > 0
-      ? equipmentDetails.updateRecord[equipmentDetails.updateRecord.length - 1].condition
-      : 'Unknown';
 
   return (
     <Container className={`${styles1.invFormPageContainer} ${darkMode ? 'dark-mode' : ''}`}>
@@ -374,10 +525,10 @@ export default function UpdateEquipment() {
               Update Tool or Equipment Status
             </h1>
             {isUpdated && (
-              <div className="text-success mt-2" style={{ fontSize: '0.9rem' }}>
-                <i className="fas fa-sync-alt me-2"></i>
+              <output className="text-success mt-2 d-block" style={{ fontSize: '0.9rem' }}>
+                <i className="fas fa-sync-alt me-2" />
                 Showing updated data for Equipment ID: {equipmentId}
-              </div>
+              </output>
             )}
           </header>
         </Col>
@@ -395,7 +546,7 @@ export default function UpdateEquipment() {
                 color: darkMode ? '#f8d7da' : '#842029',
               }}
             >
-              <i className="fas fa-exclamation-circle me-2"></i>
+              <i className="fas fa-exclamation-circle me-2" />
               {submitError}
             </Alert>
           </Col>
@@ -414,7 +565,7 @@ export default function UpdateEquipment() {
                 color: darkMode ? '#d1e7dd' : '#0f5132',
               }}
             >
-              <i className="fas fa-check-circle me-2"></i>
+              <i className="fas fa-check-circle me-2" />
               {submitSuccess}
               <div className="mt-2 small">
                 You can continue editing or{' '}
@@ -448,6 +599,7 @@ export default function UpdateEquipment() {
           </Col>
         </Row>
       )}
+
       <Form className={`${styles1.invForm}`} onSubmit={handleSubmit}>
         <FormGroup className="background-from-db">
           <Row form>
@@ -490,13 +642,11 @@ export default function UpdateEquipment() {
               <div style={readonlyStyle}>{equipmentDetails?.purchaseStatus || 'Unknown'}</div>
             </Col>
           </Row>
-          {equipmentDetails && equipmentDetails.purchaseStatus === 'Rental' && (
+          {equipmentDetails?.purchaseStatus === 'Rental' && (
             <Row form>
               <Col md={4}>
                 <Label style={formLabelStyle}>Rental End Date</Label>
-                <div style={readonlyStyle}>
-                  {equipmentDetails.rentalDueDate?.split('T')[0] || 'Unknown'}
-                </div>
+                <div style={readonlyStyle}>{rentalDueDate}</div>
               </Col>
               <Col md={4}>
                 <Label style={formLabelStyle}>Days Left</Label>
@@ -650,7 +800,7 @@ export default function UpdateEquipment() {
             </small>
           </Label>
 
-          {uploadedFiles.length > 0 && (
+          {hasUploadedFiles && (
             <Alert
               color="info"
               className="mb-3"
@@ -660,7 +810,7 @@ export default function UpdateEquipment() {
                 color: darkMode ? '#d1ecf1' : '#0c5460',
               }}
             >
-              <i className="fas fa-info-circle me-2"></i>
+              <i className="fas fa-info-circle me-2" />
               {uploadedFiles.length} image{uploadedFiles.length > 1 ? 's' : ''} uploaded and ready
               for preview
             </Alert>
@@ -668,137 +818,25 @@ export default function UpdateEquipment() {
 
           <DragAndDrop updateUploadedFiles={handleFileUpload} />
 
-          {uploadedFilesPreview.length > 0 && (
+          {hasFilePreviews && (
             <div className="mt-3">
               <Label style={formLabelStyle}>Uploaded Images Preview:</Label>
               <div className="d-flex flex-wrap gap-3 mt-2">
                 {uploadedFilesPreview.map((file, index) => (
-                  <div
+                  <FilePreview
                     key={`file-${index}-${file.uploadedAt || Date.now()}`}
-                    className="border rounded p-2 position-relative"
-                    style={imagePreviewContainerStyle}
-                  >
-                    <button
-                      type="button"
-                      className="btn btn-sm btn-danger position-absolute"
-                      style={{ top: '-10px', right: '-10px', zIndex: 1 }}
-                      onClick={() => handleRemoveFile(index)}
-                      title="Remove image"
-                    >
-                      X
-                    </button>
-
-                    {file.preview ? (
-                      <>
-                        <img
-                          src={file.preview}
-                          alt={`Preview ${index + 1}`}
-                          style={{
-                            width: '100%',
-                            height: '120px',
-                            objectFit: 'cover',
-                            borderRadius: '4px',
-                          }}
-                          className="mb-2"
-                          onError={e => {
-                            console.error('Failed to load preview for:', file.name);
-                            e.target.style.display = 'none';
-                            const fallback = e.target.parentElement.querySelector(
-                              '.preview-fallback',
-                            );
-                            if (fallback) {
-                              fallback.style.display = 'flex';
-                            }
-                          }}
-                        />
-                        <div
-                          className="preview-fallback text-center mb-2 d-none align-items-center justify-content-center"
-                          style={previewFallbackStyle}
-                        >
-                          <div>
-                            <i
-                              className="fas fa-file-image fa-2x"
-                              style={{ color: darkMode ? '#adb5bd' : '#6c757d' }}
-                            ></i>
-                            <div
-                              className="small mt-1"
-                              style={{ color: darkMode ? '#adb5bd' : '#6c757d' }}
-                            >
-                              Preview unavailable
-                            </div>
-                          </div>
-                        </div>
-                      </>
-                    ) : (
-                      <div
-                        className="text-center mb-2 d-flex align-items-center justify-content-center"
-                        style={previewFallbackStyle}
-                      >
-                        <div>
-                          <i
-                            className="fas fa-file-image fa-2x"
-                            style={{ color: darkMode ? '#adb5bd' : '#6c757d' }}
-                          ></i>
-                          <div
-                            className="small mt-1"
-                            style={{ color: darkMode ? '#adb5bd' : '#6c757d' }}
-                          >
-                            No Preview
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    <div
-                      className="text-truncate"
-                      title={file.name}
-                      style={{ color: darkMode ? '#e9ecef' : '#212529' }}
-                    >
-                      <strong>{file.name}</strong>
-                    </div>
-                    <div className="small" style={{ color: darkMode ? '#adb5bd' : '#6c757d' }}>
-                      {formatFileSize(file.size)} •{' '}
-                      {file.type.split('/')[1]?.toUpperCase() || 'IMAGE'}
-                    </div>
-                    <div className="small">
-                      {file.status === 'uploaded' && (
-                        <span style={{ color: darkMode ? '#75b798' : '#198754' }}>
-                          <i className="fas fa-check-circle me-1"></i>
-                          Ready for preview
-                        </span>
-                      )}
-                      {file.status === 'local-only' && (
-                        <span style={{ color: darkMode ? '#6ea8fe' : '#0dcaf0' }}>
-                          <i className="fas fa-save me-1"></i>
-                          Stored locally
-                        </span>
-                      )}
-                      {file.status === 'not-saved' && (
-                        <span style={{ color: darkMode ? '#ffda6a' : '#ffc107' }}>
-                          <i className="fas fa-exclamation-triangle me-1"></i>
-                          Preview only
-                        </span>
-                      )}
-                    </div>
-                    {file.message && (
-                      <div
-                        className="small"
-                        style={{ color: darkMode ? '#adb5bd' : '#6c757d', marginTop: '4px' }}
-                      >
-                        {file.message}
-                      </div>
-                    )}
-                  </div>
+                    file={file}
+                    index={index}
+                    darkMode={darkMode}
+                  />
                 ))}
               </div>
 
               <div className="mt-3">
                 <Alert
-                  color={
-                    uploadedFilesPreview.some(f => f.status === 'not-saved') ? 'warning' : 'info'
-                  }
+                  color={hasNotSavedFiles ? 'warning' : 'info'}
                   style={
-                    uploadedFilesPreview.some(f => f.status === 'not-saved')
+                    hasNotSavedFiles
                       ? {
                           backgroundColor: darkMode ? '#664d03' : '#fff3cd',
                           borderColor: darkMode ? '#ffc107' : '#ffeaa7',
@@ -812,8 +850,8 @@ export default function UpdateEquipment() {
                   }
                 >
                   <small>
-                    <i className="fas fa-info-circle me-1"></i>
-                    {uploadedFilesPreview.some(f => f.status === 'not-saved')
+                    <i className="fas fa-info-circle me-1" />
+                    {hasNotSavedFiles
                       ? 'Images are shown for preview purposes only and are not saved to the database.'
                       : 'Images are uploaded for preview. Form data will be saved to database.'}
                   </small>
@@ -898,14 +936,14 @@ export default function UpdateEquipment() {
                     className="spinner-border spinner-border-sm me-2"
                     role="status"
                     aria-hidden="true"
-                  ></span>
+                  />
                   Updating...
                 </>
               ) : (
                 <>
-                  <i className="fas fa-save me-2"></i>
+                  <i className="fas fa-save me-2" />
                   Update Status
-                  {uploadedFiles.length > 0 && (
+                  {hasUploadedFiles && (
                     <span
                       className="position-absolute top-0 start-100 translate-middle badge rounded-pill"
                       style={{
@@ -913,7 +951,7 @@ export default function UpdateEquipment() {
                         color: darkMode ? '#000' : '#fff',
                       }}
                     >
-                      <i className="fas fa-image me-1"></i>
+                      <i className="fas fa-image me-1" />
                       {uploadedFiles.length}
                     </span>
                   )}
