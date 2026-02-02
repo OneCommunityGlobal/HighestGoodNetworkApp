@@ -1,11 +1,13 @@
 /* eslint-disable react/function-component-definition */
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import styles from './DragAndDrop.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faImage } from '@fortawesome/free-solid-svg-icons';
 
 const DragAndDrop = ({ updateUploadedFiles }) => {
   const [dragActive, setDragActive] = useState(false);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   const handleDrag = function handleFileDrag(e) {
     e.preventDefault();
@@ -49,23 +51,26 @@ const DragAndDrop = ({ updateUploadedFiles }) => {
         className={styles.fileUploadInput}
         type="file"
         name="file-upload-input"
-        multiple={false}
+        multiple={true}
         accept="image/jpeg, image/jpg, image/png, image/gif, image/webp"
         onChange={handleChange}
       />
       <label
         htmlFor="file-upload-input"
-        className={`${styles.fileUploadLabel} ${dragActive ? styles.dragActive : ''}`}
+        id="file-upload-label"
+        className={`${styles.fileUploadLabel} ${dragActive ? styles.dragActive : ''} ${
+          darkMode ? styles.darkMode : ''
+        }`}
       >
         <div>
           <FontAwesomeIcon icon={faImage} className={styles.fileUploadIcon} />
-          <p>Drag and drop your picture here</p>
-          <p className="text-muted small mt-2">or click to browse</p>
+          <p>Drag and drop your picture here </p>
+          <p className="text-muted small mt-2">Click to browse files</p>
         </div>
       </label>
       {dragActive && (
         <div
-          className={styles.dragFileElement}
+          className={`${styles.dragFileElement} ${darkMode ? styles.dragFileElementDark : ''}`}
           onDragEnter={handleDrag}
           onDragLeave={handleDrag}
           onDragOver={handleDrag}

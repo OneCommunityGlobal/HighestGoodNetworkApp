@@ -114,9 +114,6 @@ export const updateEquipment = (equipmentId, updateData) => async (dispatch, get
     }
 
     if (!currentUserId) {
-      console.error('No user ID found in any storage location');
-      console.error('Auth state:', state.auth);
-
       const errorMsg = 'User not authenticated. Please log in.';
       toast.error(errorMsg);
       throw new Error(errorMsg);

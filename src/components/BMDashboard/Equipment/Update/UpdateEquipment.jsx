@@ -8,6 +8,7 @@ import Radio from '~/components/common/Radio';
 import DragAndDrop from '~/components/common/DragAndDrop/DragAndDrop';
 import Image from '~/components/common/Image/Image';
 import styles from './UpdateEquipment.module.css';
+import styles1 from '../../BMDashboard.module.css';
 
 export default function UpdateEquipment() {
   const history = useHistory();
@@ -20,7 +21,7 @@ export default function UpdateEquipment() {
   const [replacementRequired, setReplacementRequired] = useState('');
   const [description, setDescription] = useState('');
   const [sendNote, setSendNote] = useState('');
-  const [updateDate, setUpdateDate] = useState('');
+  const [updateDate] = useState('');
   const [status, setStatus] = useState('');
   const [notes, setNotes] = useState('');
   const [uploadedFiles, setUploadedFiles] = useState([]);
@@ -28,7 +29,9 @@ export default function UpdateEquipment() {
   const [submitError, setSubmitError] = useState('');
   const [submitSuccess, setSubmitSuccess] = useState('');
   const [uploadedFilesPreview, setUploadedFilesPreview] = useState([]);
+  const [isUpdated, setIsUpdated] = useState(false); // NEW: Track if update was successful
   const equipmentDetails = useSelector(state => state.bmEquipments.singleEquipment);
+  const darkMode = useSelector(state => state.theme.darkMode);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -54,6 +57,31 @@ export default function UpdateEquipment() {
       });
     };
   }, [uploadedFilesPreview]);
+
+  // NEW: Reset form when equipment details are updated
+  useEffect(() => {
+    if (equipmentDetails && isUpdated) {
+      // Reset form fields to show updated data
+      const lastUpdate = equipmentDetails.updateRecord?.[equipmentDetails.updateRecord.length - 1];
+      if (lastUpdate) {
+        setStatus(lastUpdate.condition || '');
+        setLastUsedBy(lastUpdate.lastUsedBy || '');
+        setLastUsedFor(lastUpdate.lastUsedFor || '');
+        setReplacementRequired(lastUpdate.replacementRequired || '');
+        setDescription(lastUpdate.description || '');
+        setNotes(lastUpdate.notes || '');
+        setSendNote(lastUpdate.notes ? 'yes' : 'no');
+      }
+
+      // Reset success message after 5 seconds
+      const timer = setTimeout(() => {
+        setSubmitSuccess('');
+        setIsUpdated(false);
+      }, 5000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [equipmentDetails, isUpdated]);
 
   const handleCancel = () => history.goBack();
 
@@ -161,26 +189,42 @@ export default function UpdateEquipment() {
         notes: sendNote === 'yes' ? notes : '',
       };
 
+      // Dispatch the update action
       await dispatch(updateEquipment(equipmentId, updateData));
+
+      // NEW: Refresh the equipment data to show updated information
+      dispatch(fetchEquipmentById(equipmentId));
+
+      // Set success state
+      setIsUpdated(true);
 
       let successMessage = 'Equipment status updated successfully!';
 
+      // Clear uploaded files after successful update
       if (uploadedFiles.length > 0) {
-        successMessage += ' Note: Images were uploaded and stored locally for preview.';
-        setUploadedFilesPreview(prev =>
-          prev.map(file => ({
-            ...file,
-            status: 'local-only',
-            message: 'Stored locally for preview',
-          })),
-        );
+        successMessage += ' The form has been updated.';
+
+        // Clean up blob URLs
+        uploadedFilesPreview.forEach(file => {
+          if (file.preview && file.preview.startsWith('blob:')) {
+            URL.revokeObjectURL(file.preview);
+          }
+        });
+
+        // Reset file states
+        setUploadedFiles([]);
+        setUploadedFilesPreview([]);
       }
 
       setSubmitSuccess(successMessage);
 
-      setTimeout(() => {
-        history.goBack();
-      }, 2000);
+      // Clear "other" fields if they were used
+      if (lastUsedBy === 'other') {
+        setLastUsedByOther('');
+      }
+      if (lastUsedFor === 'other') {
+        setLastUsedForOther('');
+      }
     } catch (error) {
       console.error('Update failed:', error);
 
@@ -225,23 +269,40 @@ export default function UpdateEquipment() {
 
   const formLabelStyle = {
     fontWeight: '600',
-    color: '#212529',
+    color: darkMode ? '#e9ecef' : '#212529',
     display: 'block',
     marginBottom: '0.5rem',
   };
 
-  const formInputStyle = {
-    borderColor: '#ced4da',
-    backgroundColor: '#ffffff',
-    color: '#212529',
+  // Fixed select input styling to prevent double arrows
+  const selectInputStyle = {
+    borderColor: darkMode ? '#444444' : '#ced4da',
+    backgroundColor: darkMode ? '#2d2d2d' : '#ffffff',
+    color: darkMode ? '#e9ecef' : '#212529',
+    appearance: 'none', // Remove default browser styling
+    WebkitAppearance: 'none', // Remove default browser styling for Safari
+    MozAppearance: 'none', // Remove default browser styling for Firefox
+    backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='${
+      darkMode ? '%23e9ecef' : '%23343a40'
+    }' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e")`,
+    backgroundRepeat: 'no-repeat',
+    backgroundPosition: 'right 0.75rem center',
+    backgroundSize: '16px 12px',
+    paddingRight: '2.5rem',
+  };
+
+  const textInputStyle = {
+    borderColor: darkMode ? '#444444' : '#ced4da',
+    backgroundColor: darkMode ? '#2d2d2d' : '#ffffff',
+    color: darkMode ? '#e9ecef' : '#212529',
   };
 
   const readonlyStyle = {
     padding: '10px 12px',
-    backgroundColor: '#ffffff',
-    border: '1px solid #ced4da',
+    backgroundColor: darkMode ? '#2d2d2d' : '#ffffff',
+    border: `1px solid ${darkMode ? '#444444' : '#ced4da'}`,
     borderRadius: '6px',
-    color: '#212529',
+    color: darkMode ? '#e9ecef' : '#212529',
     fontSize: '1rem',
     minHeight: '48px',
     display: 'flex',
@@ -250,13 +311,74 @@ export default function UpdateEquipment() {
     fontWeight: '500',
   };
 
+  const confirmationTextStyle = {
+    color: darkMode ? '#0dcaf0' : '#0d6efd',
+    fontWeight: '600',
+    margin: '20px 0',
+    padding: '12px 16px',
+    backgroundColor: darkMode ? '#1a2a3a' : '#f8f9fa',
+    border: `1px solid ${darkMode ? '#0dcaf0' : '#cfe2ff'}`,
+    borderRadius: '6px',
+    fontSize: '1rem',
+  };
+
+  const imagePreviewContainerStyle = {
+    maxWidth: '200px',
+    borderColor: darkMode ? '#444444' : '#dee2e6',
+    backgroundColor: darkMode ? '#2d2d2d' : 'transparent',
+  };
+
+  const previewFallbackStyle = {
+    height: '120px',
+    backgroundColor: darkMode ? '#374151' : '#f8f9fa',
+    borderRadius: '4px',
+  };
+
+  const buttonStyle = darkMode
+    ? {
+        backgroundColor: '#0dcaf0',
+        borderColor: '#0dcaf0',
+        color: '#000',
+      }
+    : {
+        backgroundColor: '#0d6efd',
+        borderColor: '#0d6efd',
+        color: '#fff',
+      };
+
+  const secondaryButtonStyle = darkMode
+    ? {
+        backgroundColor: '#6c757d',
+        borderColor: '#6c757d',
+        color: '#fff',
+      }
+    : {
+        backgroundColor: '#6c757d',
+        borderColor: '#6c757d',
+        color: '#fff',
+      };
+
+  // Get current status from equipment details for display
+  const currentStatus =
+    equipmentDetails?.updateRecord?.length > 0
+      ? equipmentDetails.updateRecord[equipmentDetails.updateRecord.length - 1].condition
+      : 'Unknown';
+
   return (
-    <Container className={`${styles['inv-form-page-container']} inv-form-page-container`}>
+    <Container className={`${styles1.invFormPageContainer} ${darkMode ? 'dark-mode' : ''}`}>
       <CheckTypesModal modal={modal} setModal={setModal} type="Equipments" />
       <Row>
         <Col md={12}>
-          <header className="bm-dashboard__header text-center">
-            <h1 style={{ color: '#212529' }}>Update Tool or Equipment Status</h1>
+          <header className={`${styles1.bmDashboardHeader} text-center`}>
+            <h1 style={{ color: darkMode ? '#e9ecef' : '#212529' }}>
+              Update Tool or Equipment Status
+            </h1>
+            {isUpdated && (
+              <div className="text-success mt-2" style={{ fontSize: '0.9rem' }}>
+                <i className="fas fa-sync-alt me-2"></i>
+                Showing updated data for Equipment ID: {equipmentId}
+              </div>
+            )}
           </header>
         </Col>
       </Row>
@@ -264,7 +386,15 @@ export default function UpdateEquipment() {
       {submitError && (
         <Row>
           <Col md={12}>
-            <Alert color="danger" className="mt-3">
+            <Alert
+              color="danger"
+              className="mt-3"
+              style={{
+                backgroundColor: darkMode ? '#842029' : '#f8d7da',
+                borderColor: darkMode ? '#f5c2c7' : '#f1aeb5',
+                color: darkMode ? '#f8d7da' : '#842029',
+              }}
+            >
               <i className="fas fa-exclamation-circle me-2"></i>
               {submitError}
             </Alert>
@@ -275,9 +405,28 @@ export default function UpdateEquipment() {
       {submitSuccess && (
         <Row>
           <Col md={12}>
-            <Alert color="success" className="mt-3">
+            <Alert
+              color="success"
+              className="mt-3"
+              style={{
+                backgroundColor: darkMode ? '#0f5132' : '#d1e7dd',
+                borderColor: darkMode ? '#badbcc' : '#a3cfbb',
+                color: darkMode ? '#d1e7dd' : '#0f5132',
+              }}
+            >
               <i className="fas fa-check-circle me-2"></i>
               {submitSuccess}
+              <div className="mt-2 small">
+                You can continue editing or{' '}
+                <Button
+                  color="link"
+                  className="p-0"
+                  onClick={() => history.push(`/bmdashboard/tools/${equipmentId}`)}
+                  style={{ color: darkMode ? '#0dcaf0' : '#0d6efd' }}
+                >
+                  view the equipment details
+                </Button>
+              </div>
             </Alert>
           </Col>
         </Row>
@@ -291,13 +440,15 @@ export default function UpdateEquipment() {
               src={equipmentDetails.imageUrl || 'https://via.placeholder.com/150'}
               alt="Equipment image"
               className={`${styles.squareImage} mb-3`}
-              style={{ border: '2px solid #dee2e6' }}
+              style={{
+                border: `2px solid ${darkMode ? '#444444' : '#dee2e6'}`,
+                backgroundColor: darkMode ? '#2d2d2d' : '#ffffff',
+              }}
             />
           </Col>
         </Row>
       )}
-
-      <Form onSubmit={handleSubmit} className="inv-form">
+      <Form className={`${styles1.invForm}`} onSubmit={handleSubmit}>
         <FormGroup className="background-from-db">
           <Row form>
             <Col md={4}>
@@ -330,12 +481,7 @@ export default function UpdateEquipment() {
               <Label for="itemStatus" style={formLabelStyle}>
                 Current Status
               </Label>
-              <div style={readonlyStyle}>
-                {equipmentDetails?.updateRecord?.length > 0
-                  ? equipmentDetails.updateRecord[equipmentDetails.updateRecord.length - 1]
-                      .condition
-                  : 'Unknown'}
-              </div>
+              <div style={readonlyStyle}>{currentStatus}</div>
             </Col>
             <Col md={4}>
               <Label for="itemOwnership" style={formLabelStyle}>
@@ -364,18 +510,7 @@ export default function UpdateEquipment() {
 
         <Row form>
           <Col md={12}>
-            <div
-              style={{
-                color: '#0d6efd',
-                fontWeight: '600',
-                margin: '20px 0',
-                padding: '12px 16px',
-                backgroundColor: '#f8f9fa',
-                border: '1px solid #cfe2ff',
-                borderRadius: '6px',
-                fontSize: '1rem',
-              }}
-            >
+            <div style={confirmationTextStyle}>
               Please confirm you are updating the status of the tool or equipment shown above.
             </div>
           </Col>
@@ -394,7 +529,8 @@ export default function UpdateEquipment() {
                 value={status}
                 onChange={e => setStatus(e.target.value)}
                 required
-                style={formInputStyle}
+                style={selectInputStyle}
+                className="custom-select"
               >
                 <option value="">Select status</option>
                 <option value="Working well">Working well</option>
@@ -418,7 +554,8 @@ export default function UpdateEquipment() {
                 value={lastUsedBy}
                 onChange={e => setLastUsedBy(e.target.value)}
                 required
-                style={formInputStyle}
+                style={selectInputStyle}
+                className="custom-select"
               >
                 <option value="">Select user</option>
                 <option value="Jane Doe (Volunteer #1)">Jane Doe (Volunteer #1)</option>
@@ -437,7 +574,7 @@ export default function UpdateEquipment() {
                   onChange={e => setLastUsedByOther(e.target.value)}
                   className="mt-2"
                   required
-                  style={formInputStyle}
+                  style={textInputStyle}
                 />
               )}
             </FormGroup>
@@ -457,7 +594,8 @@ export default function UpdateEquipment() {
                 value={lastUsedFor}
                 onChange={e => setLastUsedFor(e.target.value)}
                 required
-                style={formInputStyle}
+                style={selectInputStyle}
+                className="custom-select"
               >
                 <option value="">Select usage</option>
                 <option value="Kitchen - tiling">Kitchen - tiling</option>
@@ -476,7 +614,7 @@ export default function UpdateEquipment() {
                   onChange={e => setLastUsedForOther(e.target.value)}
                   className="mt-2"
                   required
-                  style={formInputStyle}
+                  style={textInputStyle}
                 />
               )}
             </FormGroup>
@@ -500,17 +638,28 @@ export default function UpdateEquipment() {
             value={replacementRequired}
             onChange={e => setReplacementRequired(e.target.value)}
             required
+            darkMode={darkMode}
           />
         </FormGroup>
 
         <FormGroup>
           <Label for="file-upload-input" style={formLabelStyle}>
             Upload latest picture of this tool or equipment. (optional)
-            <small className="text-muted ms-2">Accepted: PNG, JPG, JPEG, GIF, WEBP</small>
+            <small className="text-muted ms-2" style={{ color: darkMode ? '#adb5bd' : '#6c757d' }}>
+              Accepted: PNG, JPG, JPEG, GIF, WEBP
+            </small>
           </Label>
 
           {uploadedFiles.length > 0 && (
-            <Alert color="info" className="mb-3">
+            <Alert
+              color="info"
+              className="mb-3"
+              style={{
+                backgroundColor: darkMode ? '#0c5460' : '#d1ecf1',
+                borderColor: darkMode ? '#0dcaf0' : '#bee5eb',
+                color: darkMode ? '#d1ecf1' : '#0c5460',
+              }}
+            >
               <i className="fas fa-info-circle me-2"></i>
               {uploadedFiles.length} image{uploadedFiles.length > 1 ? 's' : ''} uploaded and ready
               for preview
@@ -527,7 +676,7 @@ export default function UpdateEquipment() {
                   <div
                     key={`file-${index}-${file.uploadedAt || Date.now()}`}
                     className="border rounded p-2 position-relative"
-                    style={{ maxWidth: '200px', borderColor: '#dee2e6' }}
+                    style={imagePreviewContainerStyle}
                   >
                     <button
                       type="button"
@@ -564,63 +713,78 @@ export default function UpdateEquipment() {
                         />
                         <div
                           className="preview-fallback text-center mb-2 d-none align-items-center justify-content-center"
-                          style={{
-                            height: '120px',
-                            backgroundColor: '#f8f9fa',
-                            borderRadius: '4px',
-                          }}
+                          style={previewFallbackStyle}
                         >
                           <div>
-                            <i className="fas fa-file-image fa-2x text-muted"></i>
-                            <div className="small mt-1">Preview unavailable</div>
+                            <i
+                              className="fas fa-file-image fa-2x"
+                              style={{ color: darkMode ? '#adb5bd' : '#6c757d' }}
+                            ></i>
+                            <div
+                              className="small mt-1"
+                              style={{ color: darkMode ? '#adb5bd' : '#6c757d' }}
+                            >
+                              Preview unavailable
+                            </div>
                           </div>
                         </div>
                       </>
                     ) : (
                       <div
                         className="text-center mb-2 d-flex align-items-center justify-content-center"
-                        style={{
-                          height: '120px',
-                          backgroundColor: '#f8f9fa',
-                          borderRadius: '4px',
-                        }}
+                        style={previewFallbackStyle}
                       >
                         <div>
-                          <i className="fas fa-file-image fa-2x text-muted"></i>
-                          <div className="small mt-1">No Preview</div>
+                          <i
+                            className="fas fa-file-image fa-2x"
+                            style={{ color: darkMode ? '#adb5bd' : '#6c757d' }}
+                          ></i>
+                          <div
+                            className="small mt-1"
+                            style={{ color: darkMode ? '#adb5bd' : '#6c757d' }}
+                          >
+                            No Preview
+                          </div>
                         </div>
                       </div>
                     )}
 
-                    <div className="text-truncate" title={file.name} style={{ color: '#212529' }}>
+                    <div
+                      className="text-truncate"
+                      title={file.name}
+                      style={{ color: darkMode ? '#e9ecef' : '#212529' }}
+                    >
                       <strong>{file.name}</strong>
                     </div>
-                    <div className="small" style={{ color: '#6c757d' }}>
+                    <div className="small" style={{ color: darkMode ? '#adb5bd' : '#6c757d' }}>
                       {formatFileSize(file.size)} •{' '}
                       {file.type.split('/')[1]?.toUpperCase() || 'IMAGE'}
                     </div>
                     <div className="small">
                       {file.status === 'uploaded' && (
-                        <span className="text-success">
+                        <span style={{ color: darkMode ? '#75b798' : '#198754' }}>
                           <i className="fas fa-check-circle me-1"></i>
                           Ready for preview
                         </span>
                       )}
                       {file.status === 'local-only' && (
-                        <span className="text-info">
+                        <span style={{ color: darkMode ? '#6ea8fe' : '#0dcaf0' }}>
                           <i className="fas fa-save me-1"></i>
                           Stored locally
                         </span>
                       )}
                       {file.status === 'not-saved' && (
-                        <span className="text-warning">
+                        <span style={{ color: darkMode ? '#ffda6a' : '#ffc107' }}>
                           <i className="fas fa-exclamation-triangle me-1"></i>
                           Preview only
                         </span>
                       )}
                     </div>
                     {file.message && (
-                      <div className="small" style={{ color: '#6c757d', marginTop: '4px' }}>
+                      <div
+                        className="small"
+                        style={{ color: darkMode ? '#adb5bd' : '#6c757d', marginTop: '4px' }}
+                      >
                         {file.message}
                       </div>
                     )}
@@ -632,6 +796,19 @@ export default function UpdateEquipment() {
                 <Alert
                   color={
                     uploadedFilesPreview.some(f => f.status === 'not-saved') ? 'warning' : 'info'
+                  }
+                  style={
+                    uploadedFilesPreview.some(f => f.status === 'not-saved')
+                      ? {
+                          backgroundColor: darkMode ? '#664d03' : '#fff3cd',
+                          borderColor: darkMode ? '#ffc107' : '#ffeaa7',
+                          color: darkMode ? '#fff3cd' : '#664d03',
+                        }
+                      : {
+                          backgroundColor: darkMode ? '#0c5460' : '#d1ecf1',
+                          borderColor: darkMode ? '#0dcaf0' : '#bee5eb',
+                          color: darkMode ? '#d1ecf1' : '#0c5460',
+                        }
                   }
                 >
                   <small>
@@ -658,7 +835,7 @@ export default function UpdateEquipment() {
             rows="3"
             value={description}
             onChange={e => setDescription(e.target.value)}
-            style={formInputStyle}
+            style={textInputStyle}
           />
         </FormGroup>
 
@@ -674,6 +851,7 @@ export default function UpdateEquipment() {
             ]}
             value={sendNote}
             onChange={e => setSendNote(e.target.value)}
+            darkMode={darkMode}
           />
         </FormGroup>
 
@@ -691,19 +869,19 @@ export default function UpdateEquipment() {
               value={notes}
               onChange={e => setNotes(e.target.value)}
               required={sendNote === 'yes'}
-              style={formInputStyle}
+              style={textInputStyle}
             />
           </FormGroup>
         )}
 
         <FormGroup>
-          <div className="inv-form-btn-group">
+          <div className={`${styles1.invFormBtnGroup}`}>
             <Button
               color="secondary"
-              className="bm-dashboard__button btn btn-secondary"
+              className={`${styles1.bmDashboardButton} btn btn-secondary`}
               onClick={handleCancel}
               disabled={isSubmitting}
-              style={{ backgroundColor: '#6c757d', borderColor: '#6c757d' }}
+              style={secondaryButtonStyle}
             >
               Cancel
             </Button>
@@ -712,7 +890,7 @@ export default function UpdateEquipment() {
               type="submit"
               disabled={isSubmitting}
               className="position-relative"
-              style={{ backgroundColor: '#0d6efd', borderColor: '#0d6efd' }}
+              style={buttonStyle}
             >
               {isSubmitting ? (
                 <>
@@ -728,7 +906,13 @@ export default function UpdateEquipment() {
                   <i className="fas fa-save me-2"></i>
                   Update Status
                   {uploadedFiles.length > 0 && (
-                    <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-info">
+                    <span
+                      className="position-absolute top-0 start-100 translate-middle badge rounded-pill"
+                      style={{
+                        backgroundColor: darkMode ? '#0dcaf0' : '#0d6efd',
+                        color: darkMode ? '#000' : '#fff',
+                      }}
+                    >
                       <i className="fas fa-image me-1"></i>
                       {uploadedFiles.length}
                     </span>

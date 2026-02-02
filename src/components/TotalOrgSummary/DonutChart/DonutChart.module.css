@@ -1,0 +1,101 @@
+.donutContainer {
+  display: grid;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0.6rem;
+  margin-top: 20px;
+  margin-bottom: -35px;
+}
+
+.donutScrollable {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  width: 100%;
+}
+
+.donutChart {
+  position: relative;
+  width: 100%;
+  max-width: 21.25rem;
+  height: 21.25rem;
+  margin-left: auto;
+}
+
+.donutCenter {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  font-size: 0.6em;
+}
+
+.donutCenter > * {
+  margin: 0.2rem;
+}
+
+.donutCenter :global(.donut-heading) {
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+}
+
+.donutCenter :global(.donut-count) {
+  color: var(--text-primary);
+  font-size: 2rem;
+}
+
+.donutComparisonPercent {
+  font-size: 0.7rem;
+}
+
+.donutCenter div {
+  margin: 2px 0;
+}
+
+.donutLabels {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-top: 1.8rem;
+  width: 100%;
+  color: var(--text-primary);
+}
+
+.donutLabel {
+  display: flex;
+  align-items: center;
+  margin-left: 20px;
+}
+
+.donutColor {
+  display: inline-block;
+  min-width: 1rem;
+  min-height: 1rem;
+  margin-right: 1rem;
+}
+
+.donutNoData {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 21.25rem;
+  width: 100%;
+  text-align: center;
+}
+
+.noDataText {
+  color: var(--text-primary);
+  font-size: 24px !important;
+  font-weight: 600;
+  margin-top: 1.5rem;
+  line-height: 1.2;
+}
+
+@media (max-width: 615px) {
+  .donutContainer {
+    overflow-x: scroll;
+    justify-content: start;
+  }
+}
