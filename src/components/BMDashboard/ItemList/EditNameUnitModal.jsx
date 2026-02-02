@@ -11,12 +11,17 @@ import {
   Label,
 } from 'reactstrap';
 import { fetchInvUnits } from '../../../actions/bmdashboard/invUnitActions';
-import { updateNameAndUnit, fetchMaterialTypes } from '../../../actions/bmdashboard/invTypeActions';
+import {
+  updateNameAndUnit,
+  fetchMaterialTypes,
+  fetchConsumableTypes,
+} from '../../../actions/bmdashboard/invTypeActions';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { POST_UPDATE_NAME_AND_UNIT_RESET } from '../../../constants/bmdashboard/inventoryTypeConstants';
 import styles from './ItemListView.module.css';
 import { fetchAllMaterials } from '~/actions/bmdashboard/materialsActions';
+import { fetchAllConsumables } from '~/actions/bmdashboard/consumableActions';
 
 function EditNameUnitModal({ item, isOpen, toggle }) {
   const [itemName, setItemName] = useState('');
@@ -27,6 +32,13 @@ function EditNameUnitModal({ item, isOpen, toggle }) {
   const [errors, setErrors] = useState({});
   const updateNameAndUnitResult = useSelector(state => state.bmInvTypes.postedUpdateResult);
 
+  let itemType = '';
+  if (item?.__t === 'consumable_item') {
+    itemType = 'Consumable';
+  } else if (item?.__t === 'material_item') {
+    itemType = 'Material';
+  }
+
   useEffect(() => {
     dispatch(fetchInvUnits());
   }, [dispatch]);
@@ -35,6 +47,7 @@ function EditNameUnitModal({ item, isOpen, toggle }) {
     if (item || isOpen) {
       setItemName(item?.itemType?.name || '');
       setMeasurement(item?.itemType?.unit || '');
+      setErrors({});
     }
   }, [item, isOpen]);
 
@@ -46,8 +59,13 @@ function EditNameUnitModal({ item, isOpen, toggle }) {
 
     if (updateNameAndUnitResult?.success) {
       toast.success('Edited successfully');
-      dispatch(fetchMaterialTypes());
-      dispatch(fetchAllMaterials());
+      if (itemType === 'Material') {
+        dispatch(fetchMaterialTypes());
+        dispatch(fetchAllMaterials());
+      } else if (itemType === 'Consumable') {
+        dispatch(fetchAllConsumables());
+        dispatch(fetchConsumableTypes());
+      }
       dispatch({ type: POST_UPDATE_NAME_AND_UNIT_RESET });
     }
   }, [updateNameAndUnitResult?.success, updateNameAndUnitResult?.error, dispatch]);
@@ -72,6 +90,7 @@ function EditNameUnitModal({ item, isOpen, toggle }) {
     if (itemName != item?.itemType?.name || measurement != item?.itemType?.unit) {
       dispatch(
         updateNameAndUnit(item?.itemType?._id, {
+          type: itemType,
           name: itemName,
           unit: measurement,
         }),
@@ -83,13 +102,13 @@ function EditNameUnitModal({ item, isOpen, toggle }) {
   return (
     <>
       <Modal isOpen={isOpen} toggle={toggle}>
-        <ModalHeader toggle={toggle}>Edit Material</ModalHeader>
+        <ModalHeader toggle={toggle}>Edit {itemType} </ModalHeader>
         <ModalBody>
-          {error && 'Please select a named material for editing'}
+          {error && `Please select a named ${itemType.toLowerCase()} for editing`}
           {!error && (
             <Form>
               <FormGroup>
-                <Label for="materialName">
+                <Label for="itemName">
                   Name<span className={`${styles.fieldRequired}`}>*</span>
                 </Label>
                 <Input
@@ -106,7 +125,7 @@ function EditNameUnitModal({ item, isOpen, toggle }) {
                   Measurement <span className={`${styles.fieldRequired}`}>*</span>
                 </Label>
                 <Input
-                  id="unit-select"
+                  id="measurement"
                   type="select"
                   value={measurement}
                   onChange={e => setMeasurement(e.target.value)}
