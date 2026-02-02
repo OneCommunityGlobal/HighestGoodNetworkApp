@@ -20,7 +20,12 @@ export function HeaderRenderer(props) {
   }
 
   if (isKitchenInterface) {
-    return <KitchenHeader />;
+    return (
+      <>
+        <Header {...props} />
+        <KitchenHeader />
+      </>
+    );
   }
 
 // eslint-disable-next-line react/jsx-props-no-spreading

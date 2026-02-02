@@ -286,3 +286,138 @@
   color: #666;
   margin-bottom: 8px;
 }
+
+/* Dark Mode Overrides */
+.darkMode {
+  background-color: #1c1c1c; /* bg-darkmode-liblack */
+  color: #fff;
+}
+
+.darkMode .title {
+  color: #fff;
+}
+
+.darkMode .subtitle {
+  color: #aaa;
+}
+
+.darkMode .card {
+  background-color: #1c2541; /* bg-space-cadet */
+  border-color: #2f4157;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.darkMode .card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.7);
+}
+
+.darkMode .cardTitle {
+  color: #b0b0b0;
+}
+
+.darkMode .cardValue {
+  color: #fff;
+}
+
+.darkMode .navbar {
+  border-bottom-color: #444;
+}
+
+.darkMode .navItem {
+  color: #aaa;
+}
+
+.darkMode .navItem:hover {
+  background-color: #333;
+  color: #fff;
+}
+
+.darkMode .activeNavItem {
+  background-color: #ffffff;
+  color: #121212;
+  font-weight: 600;
+}
+
+.darkMode .activeNavItem:hover {
+  background-color: #f0f0f0;
+  color: #000;
+}
+
+.darkMode .methodStatus {
+  background-color: rgba(40, 167, 69, 0.2);
+  color: #4cd964;
+  border: 1px solid #2ea043;
+  box-shadow: none;
+}
+
+.darkMode .sectionBox {
+  background-color: #1c1c1c;
+}
+
+.darkMode .sectionTitle {
+  color: #fff;
+}
+
+.darkMode .sectionSubtitle {
+  color: #aaa;
+}
+
+.darkMode .methodItem {
+  border-color: #444;
+}
+
+.darkMode .methodName {
+  color: #e0e0e0;
+}
+
+.darkMode .methodSub {
+  color: #888;
+}
+
+.darkMode .methodValue {
+  color: #fff;
+}
+
+.darkMode .categoryTitle {
+  color: #fff;
+}
+
+.darkMode .supplyItem {
+  border-bottom-color: #444;
+}
+
+.darkMode .supplyName {
+  color: #ccc;
+}
+
+.darkMode .supplyQuantity {
+  color: #aaa;
+}
+
+.darkMode .addSupplyBtn {
+  background-color: #2c2c2c;
+  border-color: #444;
+  color: #ddd;
+}
+
+.darkMode .addSupplyBtn:hover {
+  background-color: #333;
+  color: #fff;
+}
+
+.darkMode .placeholderContainer {
+  background-color: #2c2c2c;
+  border-color: #444;
+}
+
+.darkMode .placeholderIcon {
+  color: #555;
+}
+
+.darkMode .placeholderContent h2 {
+  color: #ddd;
+}
+
+.darkMode .placeholderContent p {
+  color: #aaa;
+}

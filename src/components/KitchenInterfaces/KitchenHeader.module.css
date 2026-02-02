@@ -165,3 +165,47 @@
   }
 }
 
+
+/* Dark Mode Overrides */
+.darkMode {
+  background-color: #1c2541; /* bg-space-cadet */
+  border-bottom: 1px solid #2f4157;
+  color: #fff;
+}
+
+.darkMode .brandTitle {
+  color: #e6e6e6;
+}
+
+.darkMode .brandSubtitle {
+  color: #b0b0b0;
+}
+
+.darkMode .navItem {
+  color: #b0b0b0;
+}
+
+.darkMode .navItem:hover {
+  background-color: #2f4157;
+  color: #fff;
+}
+
+.darkMode .activeLink {
+  background-color: #2e7d32;
+  color: #fff;
+}
+
+.darkMode .activeLink:hover {
+  background-color: #1b5e20;
+}
+
+.darkMode .menuToggle {
+  color: #fff;
+}
+
+@media (max-width: 900px) {
+  .darkMode .navContainer {
+    background-color: #1c2541;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.5);
+  }
+}

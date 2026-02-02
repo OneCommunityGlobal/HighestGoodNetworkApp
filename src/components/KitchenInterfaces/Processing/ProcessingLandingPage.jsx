@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import styles from './ProcessingLandingPage.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -48,9 +49,10 @@ const SECTIONS = [
 
 const ProcessingLandingPage = () => {
   const [activeTab, setActiveTab] = useState('Processing Overview');
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
       <div className={styles.header}>
         <h1 className={styles.title}>Kitchen & Processing</h1>
         <p className={styles.subtitle}>
