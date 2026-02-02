@@ -14,7 +14,7 @@ import Badge from '../Badge';
 import Timelog from '../Timelog/Timelog';
 import SummaryBar from '../SummaryBar/SummaryBar';
 import styles from './Dashboard.module.css';
-import '../../App.css';
+import '../../App.module.css';
 import TimeOffRequestDetailModal from './TimeOffRequestDetailModal';
 import FeedbackModal from '../FeedbackModal/FeedbackModal';
 import { toast } from 'react-toastify';

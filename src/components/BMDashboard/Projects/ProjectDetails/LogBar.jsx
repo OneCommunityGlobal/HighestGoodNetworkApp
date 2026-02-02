@@ -3,7 +3,6 @@ import { Button } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import styles from './ProjectDetails.module.css';
-
 // button styles for each section
 const buttonStyles = {
   dailyLogging: 'green',
@@ -57,9 +56,7 @@ function LogBar(props) {
                   <Link to={buttonLabels[section].url[index]}>
                     <Button
                       type="button"
-                      className={`${styles.button} ${styles.btn} ${
-                        styles[`button--${buttonStyles[section]}`]
-                      }`}
+                      className={`${styles.button} ${styles[`button--${buttonStyles[section]}`]}`}
                     >
                       {label}
                     </Button>
@@ -68,7 +65,7 @@ function LogBar(props) {
                   <Link to={`/bmdashboard/issues/add/${projectId}`}>
                     <Button
                       type="button"
-                      className={`${styles.button} ${styles.btn} ${styles['button--maroon']}`}
+                      className={`${styles.button} ${styles['button--maroon']}`}
                     >
                       Log Issue
                     </Button>
