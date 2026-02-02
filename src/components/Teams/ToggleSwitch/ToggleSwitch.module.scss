@@ -30,12 +30,10 @@
       transition: all 0.2s cubic-bezier(0.5, 0.1, 0.75, 1.35);
     }
     &:checked {
-      // background: darkslategrey;
       background: dodgerblue;
   
       &:after {
         transform: translatex(15px);
-        // transform: translatex(0);
   
       }
     }
