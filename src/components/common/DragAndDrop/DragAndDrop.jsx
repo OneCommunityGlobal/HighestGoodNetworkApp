@@ -72,23 +72,11 @@ const DragAndDrop = ({ updateUploadedFiles }) => {
     [handleButtonClick],
   );
 
-  const handleDragAreaKeyDown = useCallback(
-    e => {
-      // Allow keyboard navigation within the drag area
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        handleButtonClick();
-      }
-    },
-    [handleButtonClick],
-  );
-
   return (
-    <div
+    <section
       className={styles.fileUploadForm}
       onDragEnter={handleDrag}
       onSubmit={e => e.preventDefault()}
-      role="region"
       aria-label="File upload area"
     >
       <input
@@ -134,9 +122,8 @@ const DragAndDrop = ({ updateUploadedFiles }) => {
           }}
         >
           <div
-            role="button"
             tabIndex={0}
-            onKeyDown={handleDragAreaKeyDown}
+            onKeyDown={handleKeyDown}
             style={{
               display: 'flex',
               flexDirection: 'column',
@@ -151,10 +138,9 @@ const DragAndDrop = ({ updateUploadedFiles }) => {
             <FontAwesomeIcon icon={faImage} className={styles.fileUploadIcon} aria-hidden="true" />
             <p style={{ margin: '8px 0' }}>
               Drag and drop your picture here or{' '}
-              <span
+              <button
+                type="button"
                 className={styles.browseLink}
-                role="button"
-                tabIndex={0}
                 onClick={e => {
                   e.stopPropagation();
                   handleButtonClick();
@@ -166,15 +152,21 @@ const DragAndDrop = ({ updateUploadedFiles }) => {
                     handleButtonClick();
                   }
                 }}
+                tabIndex={0}
                 style={{
                   color: darkMode ? '#0dcaf0' : '#0d6efd',
                   textDecoration: 'underline',
                   cursor: 'pointer',
                   fontWeight: '600',
+                  background: 'none',
+                  border: 'none',
+                  padding: 0,
+                  fontFamily: 'inherit',
+                  fontSize: 'inherit',
                 }}
               >
                 browse files
-              </span>
+              </button>
             </p>
             <p
               className="text-muted small"
@@ -202,13 +194,12 @@ const DragAndDrop = ({ updateUploadedFiles }) => {
       </div>
 
       {dragActive && (
-        <div
+        <section
           className={`${styles.dragFileElement} ${darkMode ? styles.dragFileElementDark : ''}`}
           onDragEnter={handleDrag}
           onDragLeave={handleDrag}
           onDragOver={handleDrag}
           onDrop={handleDrop}
-          role="region"
           aria-label="Active drag and drop area"
           style={{
             position: 'absolute',
@@ -220,7 +211,7 @@ const DragAndDrop = ({ updateUploadedFiles }) => {
           }}
         />
       )}
-    </div>
+    </section>
   );
 };
 

@@ -7,6 +7,7 @@ import { useHistory, useParams } from 'react-router-dom';
 import Radio from '~/components/common/Radio';
 import DragAndDrop from '~/components/common/DragAndDrop/DragAndDrop';
 import Image from '~/components/common/Image/Image';
+import FilePreview from '~/components/common/FilePreview/FilePreview'; // Import the new component
 import styles from './UpdateEquipment.module.css';
 import styles1 from '../../BMDashboard.module.css';
 
@@ -37,7 +38,7 @@ export default function UpdateEquipment() {
   // Cleanup blob URLs
   const cleanupFilePreviews = useCallback(files => {
     files.forEach(file => {
-      if (file?.preview?.startsWith('blob:')) {
+      if (file?.preview?.startsWith?.('blob:')) {
         URL.revokeObjectURL(file.preview);
       }
     });
@@ -85,14 +86,17 @@ export default function UpdateEquipment() {
   const handleCancel = useCallback(() => history.goBack(), [history]);
 
   const calculateDaysLeft = useCallback(endDate => {
-    if (!endDate) return '';
+    if (!endDate) return 'Unknown';
 
     const today = new Date();
     const rentalEnd = new Date(endDate);
     const timeDiff = rentalEnd.getTime() - today.getTime();
     const daysLeft = Math.ceil(timeDiff / (1000 * 3600 * 24));
 
-    return daysLeft >= 0 ? daysLeft : 'Expired';
+    if (daysLeft >= 0) {
+      return daysLeft.toString();
+    }
+    return 'Expired';
   }, []);
 
   const validateForm = useCallback(() => {
@@ -157,14 +161,6 @@ export default function UpdateEquipment() {
     },
     [uploadedFilesPreview, cleanupFilePreviews],
   );
-
-  const formatFileSize = useCallback(bytes => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return `${Number.parseFloat((bytes / k ** i).toFixed(2))} ${sizes[i]}`;
-  }, []);
 
   const handleSubmit = useCallback(
     async e => {
@@ -256,7 +252,7 @@ export default function UpdateEquipment() {
   const handleRemoveFile = useCallback(
     index => {
       const fileToRemove = uploadedFilesPreview[index];
-      if (fileToRemove?.preview?.startsWith('blob:')) {
+      if (fileToRemove?.preview?.startsWith?.('blob:')) {
         URL.revokeObjectURL(fileToRemove.preview);
       }
 
@@ -270,7 +266,7 @@ export default function UpdateEquipment() {
   const formLabelStyle = useMemo(
     () => ({
       fontWeight: '600',
-      color: darkMode ? '#e9ecef' : '#212529',
+      color: darkMode ? '#ffffff' : '#212529', // Fixed contrast
       display: 'block',
       marginBottom: '0.5rem',
     }),
@@ -279,14 +275,14 @@ export default function UpdateEquipment() {
 
   const selectInputStyle = useMemo(
     () => ({
-      borderColor: darkMode ? '#444444' : '#ced4da',
+      borderColor: darkMode ? '#666666' : '#ced4da', // Fixed contrast
       backgroundColor: darkMode ? '#2d2d2d' : '#ffffff',
-      color: darkMode ? '#e9ecef' : '#212529',
+      color: darkMode ? '#ffffff' : '#212529', // Fixed contrast
       appearance: 'none',
       WebkitAppearance: 'none',
       MozAppearance: 'none',
       backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='${
-        darkMode ? '%23e9ecef' : '%23343a40'
+        darkMode ? '%23ffffff' : '%23343a40'
       }' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e")`,
       backgroundRepeat: 'no-repeat',
       backgroundPosition: 'right 0.75rem center',
@@ -298,9 +294,9 @@ export default function UpdateEquipment() {
 
   const textInputStyle = useMemo(
     () => ({
-      borderColor: darkMode ? '#444444' : '#ced4da',
+      borderColor: darkMode ? '#666666' : '#ced4da', // Fixed contrast
       backgroundColor: darkMode ? '#2d2d2d' : '#ffffff',
-      color: darkMode ? '#e9ecef' : '#212529',
+      color: darkMode ? '#ffffff' : '#212529', // Fixed contrast
     }),
     [darkMode],
   );
@@ -309,9 +305,9 @@ export default function UpdateEquipment() {
     () => ({
       padding: '10px 12px',
       backgroundColor: darkMode ? '#2d2d2d' : '#ffffff',
-      border: `1px solid ${darkMode ? '#444444' : '#ced4da'}`,
+      border: `1px solid ${darkMode ? '#666666' : '#ced4da'}`, // Fixed contrast
       borderRadius: '6px',
-      color: darkMode ? '#e9ecef' : '#212529',
+      color: darkMode ? '#ffffff' : '#212529', // Fixed contrast
       fontSize: '1rem',
       minHeight: '48px',
       display: 'flex',
@@ -336,24 +332,6 @@ export default function UpdateEquipment() {
     [darkMode],
   );
 
-  const imagePreviewContainerStyle = useMemo(
-    () => ({
-      maxWidth: '200px',
-      borderColor: darkMode ? '#444444' : '#dee2e6',
-      backgroundColor: darkMode ? '#2d2d2d' : 'transparent',
-    }),
-    [darkMode],
-  );
-
-  const previewFallbackStyle = useMemo(
-    () => ({
-      height: '120px',
-      backgroundColor: darkMode ? '#374151' : '#f8f9fa',
-      borderRadius: '4px',
-    }),
-    [darkMode],
-  );
-
   const buttonStyle = useMemo(
     () =>
       darkMode
@@ -374,8 +352,8 @@ export default function UpdateEquipment() {
     () =>
       darkMode
         ? {
-            backgroundColor: '#6c757d',
-            borderColor: '#6c757d',
+            backgroundColor: '#555555',
+            borderColor: '#555555',
             color: '#fff',
           }
         : {
@@ -403,125 +381,13 @@ export default function UpdateEquipment() {
   const hasNotSavedFiles =
     hasFilePreviews && uploadedFilesPreview.some(f => f.status === 'not-saved');
 
-  // Component for file preview
-  const FilePreview = ({ file, index, darkMode }) => {
-    const handleImageError = e => {
-      console.error('Failed to load preview for:', file.name);
-      e.target.style.display = 'none';
-      const fallback = e.target.parentElement.querySelector('.preview-fallback');
-      if (fallback) {
-        fallback.style.display = 'flex';
-      }
-    };
-
-    return (
-      <div className="border rounded p-2 position-relative" style={imagePreviewContainerStyle}>
-        <button
-          type="button"
-          className="btn btn-sm btn-danger position-absolute"
-          style={{ top: '-10px', right: '-10px', zIndex: 1 }}
-          onClick={() => handleRemoveFile(index)}
-          title="Remove image"
-          aria-label={`Remove ${file.name}`}
-        >
-          <span aria-hidden="true">X</span>
-        </button>
-
-        {file.preview ? (
-          <>
-            <img
-              src={file.preview}
-              alt={`Preview ${index + 1}`}
-              style={{
-                width: '100%',
-                height: '120px',
-                objectFit: 'cover',
-                borderRadius: '4px',
-              }}
-              className="mb-2"
-              onError={handleImageError}
-            />
-            <div
-              className="preview-fallback text-center mb-2 d-none align-items-center justify-content-center"
-              style={previewFallbackStyle}
-            >
-              <div>
-                <i
-                  className="fas fa-file-image fa-2x"
-                  style={{ color: darkMode ? '#adb5bd' : '#6c757d' }}
-                />
-                <div className="small mt-1" style={{ color: darkMode ? '#adb5bd' : '#6c757d' }}>
-                  Preview unavailable
-                </div>
-              </div>
-            </div>
-          </>
-        ) : (
-          <div
-            className="text-center mb-2 d-flex align-items-center justify-content-center"
-            style={previewFallbackStyle}
-          >
-            <div>
-              <i
-                className="fas fa-file-image fa-2x"
-                style={{ color: darkMode ? '#adb5bd' : '#6c757d' }}
-              />
-              <div className="small mt-1" style={{ color: darkMode ? '#adb5bd' : '#6c757d' }}>
-                No Preview
-              </div>
-            </div>
-          </div>
-        )}
-
-        <div
-          className="text-truncate"
-          title={file.name}
-          style={{ color: darkMode ? '#e9ecef' : '#212529' }}
-        >
-          <strong>{file.name}</strong>
-        </div>
-        <div className="small" style={{ color: darkMode ? '#adb5bd' : '#6c757d' }}>
-          {formatFileSize(file.size)} • {file.type.split('/')[1]?.toUpperCase() || 'IMAGE'}
-        </div>
-        <div className="small">
-          {file.status === 'uploaded' && (
-            <span style={{ color: darkMode ? '#75b798' : '#198754' }}>
-              <i className="fas fa-check-circle me-1" />
-              Ready for preview
-            </span>
-          )}
-          {file.status === 'local-only' && (
-            <span style={{ color: darkMode ? '#6ea8fe' : '#0dcaf0' }}>
-              <i className="fas fa-save me-1" />
-              Stored locally
-            </span>
-          )}
-          {file.status === 'not-saved' && (
-            <span style={{ color: darkMode ? '#ffda6a' : '#ffc107' }}>
-              <i className="fas fa-exclamation-triangle me-1" />
-              Preview only
-            </span>
-          )}
-        </div>
-        {file.message && (
-          <div
-            className="small"
-            style={{ color: darkMode ? '#adb5bd' : '#6c757d', marginTop: '4px' }}
-          >
-            {file.message}
-          </div>
-        )}
-      </div>
-    );
-  };
-
   return (
     <Container className={`${styles1.invFormPageContainer} ${darkMode ? 'dark-mode' : ''}`}>
       <CheckTypesModal modal={modal} setModal={setModal} type="Equipments" />
       <Row>
         <Col md={12}>
           <header className={`${styles1.bmDashboardHeader} text-center`}>
-            <h1 style={{ color: darkMode ? '#e9ecef' : '#212529' }}>
+            <h1 style={{ color: darkMode ? '#ffffff' : '#212529' }}>
               Update Tool or Equipment Status
             </h1>
             {isUpdated && (
@@ -541,7 +407,7 @@ export default function UpdateEquipment() {
               color="danger"
               className="mt-3"
               style={{
-                backgroundColor: darkMode ? '#842029' : '#f8d7da',
+                backgroundColor: darkMode ? '#5c1a1a' : '#f8d7da',
                 borderColor: darkMode ? '#f5c2c7' : '#f1aeb5',
                 color: darkMode ? '#f8d7da' : '#842029',
               }}
@@ -560,7 +426,7 @@ export default function UpdateEquipment() {
               color="success"
               className="mt-3"
               style={{
-                backgroundColor: darkMode ? '#0f5132' : '#d1e7dd',
+                backgroundColor: darkMode ? '#0a3a27' : '#d1e7dd',
                 borderColor: darkMode ? '#badbcc' : '#a3cfbb',
                 color: darkMode ? '#d1e7dd' : '#0f5132',
               }}
@@ -590,7 +456,7 @@ export default function UpdateEquipment() {
               name="equipment-image"
               src={equipmentDetails.imageUrl || 'https://via.placeholder.com/150'}
               alt="Equipment image"
-              className={`${styles.squareImage} mb-3`}
+              className={`${styles.largeSquareImage} mb-3`}
               style={{
                 border: `2px solid ${darkMode ? '#444444' : '#dee2e6'}`,
                 backgroundColor: darkMode ? '#2d2d2d' : '#ffffff',
@@ -795,7 +661,7 @@ export default function UpdateEquipment() {
         <FormGroup>
           <Label for="file-upload-input" style={formLabelStyle}>
             Upload latest picture of this tool or equipment. (optional)
-            <small className="text-muted ms-2" style={{ color: darkMode ? '#adb5bd' : '#6c757d' }}>
+            <small className="text-muted ms-2" style={{ color: darkMode ? '#b0b7c0' : '#6c757d' }}>
               Accepted: PNG, JPG, JPEG, GIF, WEBP
             </small>
           </Label>
@@ -805,7 +671,7 @@ export default function UpdateEquipment() {
               color="info"
               className="mb-3"
               style={{
-                backgroundColor: darkMode ? '#0c5460' : '#d1ecf1',
+                backgroundColor: darkMode ? '#0a3d4f' : '#d1ecf1',
                 borderColor: darkMode ? '#0dcaf0' : '#bee5eb',
                 color: darkMode ? '#d1ecf1' : '#0c5460',
               }}
@@ -828,6 +694,7 @@ export default function UpdateEquipment() {
                     file={file}
                     index={index}
                     darkMode={darkMode}
+                    onRemove={handleRemoveFile}
                   />
                 ))}
               </div>
@@ -840,10 +707,10 @@ export default function UpdateEquipment() {
                       ? {
                           backgroundColor: darkMode ? '#664d03' : '#fff3cd',
                           borderColor: darkMode ? '#ffc107' : '#ffeaa7',
-                          color: darkMode ? '#fff3cd' : '#664d03',
+                          color: darkMode ? '#fff9e6' : '#664d03', // Fixed contrast
                         }
                       : {
-                          backgroundColor: darkMode ? '#0c5460' : '#d1ecf1',
+                          backgroundColor: darkMode ? '#0a3d4f' : '#d1ecf1',
                           borderColor: darkMode ? '#0dcaf0' : '#bee5eb',
                           color: darkMode ? '#d1ecf1' : '#0c5460',
                         }
