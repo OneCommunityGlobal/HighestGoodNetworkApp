@@ -98,19 +98,23 @@ function DatabaseDesign() {
   }, [filters]);
 
   const handleFilterChange = (filterType, value) => {
+    setLoading(true);
     setFilters(prev => ({
       ...prev,
       [filterType]: value,
     }));
+    setLoading(false);
   };
 
   const handleClearFilters = () => {
+    setLoading(true);
     setFilters({
       type: '',
       location: '',
       hasCapacity: false,
       sortDate: '',
     });
+    setLoading(false);
   };
 
   const handleRetry = () => {
@@ -236,19 +240,19 @@ function DatabaseDesign() {
             Only show events with available capacity
           </label>
         </div>
-        
+
         <div className={styles.filterGroup}>
           <label htmlFor="sortDate">Sort by Date</label>
-            <select
-              id="sortDate"
-              value={filters.sortDate}
-              onChange={e => handleFilterChange('sortDate', e.target.value)}
-              className={styles.filterSelect}
-            >
-              <option value="">None</option>
-              <option value="earliest">Earliest to Latest</option>
-              <option value="latest">Latest to Earliest</option>
-            </select>
+          <select
+            id="sortDate"
+            value={filters.sortDate}
+            onChange={e => handleFilterChange('sortDate', e.target.value)}
+            className={styles.filterSelect}
+          >
+            <option value="">None</option>
+            <option value="earliest">Earliest to Latest</option>
+            <option value="latest">Latest to Earliest</option>
+          </select>
         </div>
 
         <div className={styles.filtersGroup}>
