@@ -256,17 +256,17 @@
   font-weight: bold;
 }
 
-.status.active {
+.myEvent .status.active {
   background-color: rgb(200, 240, 200);
   color: green;
 }
 
-.status.closed {
+.myEvent .status.closed {
   background-color: rgb(191, 191, 238);
   color: purple;
 }
 
-.status.cancelled {
+.myEvent .status.cancelled {
   background-color: rgb(239, 170, 170);
   color: red;
 }
@@ -336,6 +336,8 @@
 }
 
 /* Resource Monitoring */
+
+
 
 .resourceValue {
   font-weight: bold;
