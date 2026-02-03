@@ -7,8 +7,14 @@ import BMError from '../shared/BMError';
 import SelectForm from './SelectForm';
 import SelectItem from './SelectItem';
 import ItemsTable from './ItemsTable';
+import MaterialSummaryPanel from '../MaterialList/MaterialSummaryPanel';
 import styles from './ItemListView.module.css';
 
+/**
+ * ItemListView Component
+ * Main container for displaying filtered items with summary metrics and data table
+ * Handles filtering, time selection, and layout of material list page
+ */
 export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamicColumns }) {
   const [filteredItems, setFilteredItems] = useState(items);
   const [selectedProject, setSelectedProject] = useState('all');
@@ -105,14 +111,17 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
           </div>
         </span>
         {filteredItems && (
-          <ItemsTable
-            selectedProject={selectedProject}
-            selectedItem={selectedItem}
-            filteredItems={filteredItems}
-            UpdateItemModal={UpdateItemModal}
-            dynamicColumns={dynamicColumns}
-            darkMode={darkMode}
-          />
+          <>
+            <MaterialSummaryPanel materials={filteredItems} darkMode={darkMode} />
+            <ItemsTable
+              selectedProject={selectedProject}
+              selectedItem={selectedItem}
+              filteredItems={filteredItems}
+              UpdateItemModal={UpdateItemModal}
+              dynamicColumns={dynamicColumns}
+              darkMode={darkMode}
+            />
+          </>
         )}
       </section>
     </main>
@@ -135,6 +144,8 @@ ItemListView.propTypes = {
       stockBought: PropTypes.number,
       stockUsed: PropTypes.number,
       stockWasted: PropTypes.number,
+      stockHold: PropTypes.number,
+      productId: PropTypes.string,
     }),
   ).isRequired,
   errors: PropTypes.shape({
