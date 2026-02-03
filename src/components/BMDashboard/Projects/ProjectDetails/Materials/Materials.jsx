@@ -1,8 +1,9 @@
 import MaterialCard from './MaterialCard';
+import styles from '../ProjectDetails.module.css';
 
 function Materials() {
   return (
-    <div className="cards-container__content">
+    <div className={styles['cards-container__content']}>
       <MaterialCard />
       <MaterialCard />
       <MaterialCard />
