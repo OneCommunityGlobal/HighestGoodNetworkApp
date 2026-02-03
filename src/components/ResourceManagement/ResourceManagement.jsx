@@ -1,5 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import styles from './ResourceManagement.module.css';
+import { formatDateTimeLocal } from '../../utils/formatDate';
 
 function SearchBar() {
   return (
@@ -20,91 +22,59 @@ function SearchBar() {
 }
 
 function ResourceManagement() {
+  const darkMode = useSelector(state => state.theme.darkMode);
+
+  // Standard Date Format: '2026-01-30T18:00:00.000Z'
+
   const [resources] = useState([
     {
       id: 1,
       user: 'First Last',
-      timeDuration: '02:32:56',
+      timeDuration: '02:30:00',
       facilities: 'Landing Page',
       materials: 'Meadow Lane Oakland',
-      date: 'Just now',
+      date: '2026-01-30T18:00:00.000Z',
     },
     {
       id: 2,
       user: 'First Last',
-      timeDuration: '02:32:56',
+      timeDuration: '02:20:00',
       facilities: 'CRM Admin pages',
       materials: 'Larry San Francisco',
-      date: 'A minute ago',
+      date: '2026-01-30T17:59:00.000Z',
     },
     {
       id: 3,
       user: 'First Last',
-      timeDuration: '02:32:56',
+      timeDuration: '03:00:00',
       facilities: 'Client Project',
       materials: 'Bagwell Avenue Ocala',
-      date: '1 hour ago',
+      date: '2026-01-30T17:00:00.000Z',
     },
     {
       id: 4,
       user: 'First Last',
-      timeDuration: '02:32:56',
+      timeDuration: '02:45:00',
       facilities: 'Admin Dashboard',
       materials: 'Washburn Baton Rouge',
-      date: 'Yesterday',
+      date: '2026-01-29T17:00:00.000Z',
     },
     {
       id: 5,
       user: 'First Last',
-      timeDuration: '02:32:56',
+      timeDuration: '03:30:00',
       facilities: 'App Landing page',
       materials: 'Nest Lane Olivette',
-      date: 'Feb 2, 2024',
-    },
-    {
-      id: 6,
-      user: 'First Last',
-      timeDuration: '02:32:56',
-      facilities: 'Landing Page',
-      materials: 'Meadow Lane Oakland',
-      date: 'Just now',
-    },
-    {
-      id: 7,
-      user: 'First Last',
-      timeDuration: '02:32:56',
-      facilities: 'CRM Admin Pages',
-      materials: 'Larry San Francisco',
-      date: 'A minute ago',
-    },
-    {
-      id: 8,
-      user: 'First Last',
-      timeDuration: '02:32:56',
-      facilities: 'Client Project',
-      materials: 'Bagwell Avenue Ocala',
-      date: '1 hour ago',
-    },
-    {
-      id: 9,
-      user: 'First Last',
-      timeDuration: '02:32:56',
-      facilities: 'Admin Dashboard',
-      materials: 'Washburn Baton Rouge',
-      date: 'Yesterday',
-    },
-    {
-      id: 10,
-      user: 'First Last',
-      timeDuration: '02:32:56',
-      facilities: 'App Landing Page',
-      materials: 'Nest Lane Olivette',
-      date: 'Feb 2, 2024',
+      date: '2025-02-02T17:00:00.000Z',
     },
   ]);
 
   return (
-    <div className={styles.resourceManagementDashboard}>
+    <div
+      className={`${styles.resourceManagementPage} ${
+        darkMode ? styles.resourceManagementDarkMode : ''
+      }`}
+    >
       <div className={styles.dashboardTitle}>
         <h2>Used Resources</h2>
         <button type="button" className={styles.addLogButton}>
@@ -138,7 +108,7 @@ function ResourceManagement() {
               <div className={styles.resourceItemDetail}>{resource.facilities}</div>
               <div className={styles.resourceItemDetail}>{resource.materials}</div>
               <div className={styles.resourceItemDetail}>
-                <span className={styles.calendarIcon}>📅</span> {resource.date}
+                <span className={styles.calendarIcon}>📅</span> {formatDateTimeLocal(resource.date)}
               </div>
             </div>
             <hr className={styles.lineSperator} />
@@ -146,7 +116,7 @@ function ResourceManagement() {
         ))}
       </div>
 
-      <div className="pagination">
+      <div className={styles.pagination}>
         <button type="button" className={styles.arrowButton}>
           ←
         </button>
