@@ -94,10 +94,11 @@
   position: relative;
   display: inline-flex;
   align-items: center;
-  border-radius: 999px;
+  border-radius: 99px;
   overflow: hidden;
   box-shadow: 0 0 4px rgba(199, 30, 30, 0.1);
   background: #ffffff;
+  width: 350px;
 }
 
 .dashboardSearchContainer input:focus {
