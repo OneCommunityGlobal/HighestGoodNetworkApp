@@ -319,6 +319,7 @@ const WeeklySummariesReport = props => {
   const {
     data: filterChoices = [],
     isLoading: filtersLoading,
+    refetch,
   } = useGetWeeklySummariesFiltersQuery();
   const [deleteFilter] = useDeleteWeeklySummariesFilterMutation();
   const [
@@ -724,7 +725,7 @@ const WeeklySummariesReport = props => {
       const chartData = [];
 
       // Get all filters
-      fetchFilters();
+      // fetchFilters();
       // eslint-disable-next-line no-console
       // 🟢 NEW: Final debug log before setting state
       // eslint-disable-next-line no-console
@@ -2298,6 +2299,7 @@ const WeeklySummariesReport = props => {
   //   }
   // }, [state.activeTab, state.summariesByTab]); // Dependencies might need adjustment
 
+  // working one
   useEffect(() => {
     let isMounted = true;
 
@@ -2345,9 +2347,10 @@ const WeeklySummariesReport = props => {
             } else if (typeof summary.filterColor === 'string') {
               try {
                 const parsed = JSON.parse(summary.filterColor);
-                filterColor = Array.isArray(parsed)
-                  ? parsed.filter(c => typeof c === 'string').map(c => c.toLowerCase())
-                  : [parsed.toLowerCase()];
+                // filterColor = Array.isArray(parsed)
+                //   ? parsed.filter(c => typeof c === 'string').map(c => c.toLowerCase())
+                //   : [parsed.toLowerCase()];
+                filterColor = Array.isArray(parsed) ? parsed : [parsed];
               } catch {
                 filterColor = [summary.filterColor.toLowerCase()];
               }
@@ -2419,6 +2422,124 @@ const WeeklySummariesReport = props => {
       .catch(err => {
         if (!isMounted) return;
         // eslint-disable-next-line no-console
+        console.error(`❌ Failed to fetch data`, err);
+        setState(prev => ({ ...prev, loading: false }));
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [state.activeTab]);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    if (state.summariesByTab[state.activeTab] && state.summariesByTab[state.activeTab].length > 0) {
+      setState(prev => ({
+        ...prev,
+        summaries: state.summariesByTab[state.activeTab],
+      }));
+      return;
+    }
+
+    const weekIndex = navItems.indexOf(state.activeTab);
+    setState(prev => ({ ...prev, loading: true }));
+
+    axios
+      .get(ENDPOINTS.WEEKLY_SUMMARIES_REPORT(), {
+        params: { week: weekIndex, forceRefresh: true, _ts: Date.now() },
+        headers: { 'Cache-Control': 'no-cache', Pragma: 'no-cache' },
+      })
+      .then(res => {
+        if (!isMounted) return;
+        const rawSummaries = Array.isArray(res?.data) ? res.data : [];
+
+        if (rawSummaries.length > 0) {
+          // 1. Process Summaries
+          let summariesCopy = [...rawSummaries];
+          summariesCopy.sort((a, b) =>
+            `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`),
+          );
+
+          summariesCopy = summariesCopy.map(summary => {
+            const promisedHoursByWeek = weekDates.map(weekDate =>
+              getPromisedHours(weekDate.toDate, summary.weeklycommittedHoursHistory || []),
+            );
+            // ... (color processing logic) ...
+            let filterColor = [];
+            if (Array.isArray(summary.filterColor)) {
+              filterColor = summary.filterColor
+                .filter(c => typeof c === 'string')
+                .map(c => c.toLowerCase());
+            } else if (typeof summary.filterColor === 'string') {
+              try {
+                const parsed = JSON.parse(summary.filterColor);
+                filterColor = Array.isArray(parsed) ? parsed : [parsed];
+              } catch {
+                filterColor = [summary.filterColor];
+              }
+            }
+            return { ...summary, promisedHoursByWeek, filterColor };
+          });
+
+          // 2. Generate Team Codes (FIXES EMPTY DROPDOWN)
+          const teamCodeGroup = {};
+          const newTeamCodes = [];
+          const colorOptionGroup = new Set();
+          const newColorOptions = [];
+
+          summariesCopy.forEach(summary => {
+            const code = summary.teamCode || 'noCodeLabel';
+            if (!teamCodeGroup[code]) teamCodeGroup[code] = [];
+            teamCodeGroup[code].push(summary);
+            if (summary.weeklySummaryOption) colorOptionGroup.add(summary.weeklySummaryOption);
+          });
+
+          Object.keys(teamCodeGroup).forEach(code => {
+            if (code !== 'noCodeLabel') {
+              newTeamCodes.push({
+                value: code,
+                label: `${code} (${teamCodeGroup[code].length})`,
+                _ids: teamCodeGroup[code].map(item => item._id),
+              });
+            }
+          });
+
+          newTeamCodes.sort((a, b) => a.label.localeCompare(b.label));
+          newTeamCodes.push({
+            value: '',
+            label: `Select All With NO Code (${teamCodeGroup.noCodeLabel?.length || 0})`,
+            _ids: teamCodeGroup.noCodeLabel?.map(item => item._id) || [],
+          });
+
+          colorOptionGroup.forEach(option => {
+            newColorOptions.push({ value: option, label: option });
+          });
+          newColorOptions.sort((a, b) => a.label.localeCompare(b.label));
+
+          setState(prev => ({
+            ...prev,
+            loading: false,
+            summaries: summariesCopy,
+            teamCodes: newTeamCodes,
+            colorOptions: newColorOptions,
+            tableData: teamCodeGroup,
+            summariesByTab: {
+              ...prev.summariesByTab,
+              [state.activeTab]: summariesCopy,
+            },
+          }));
+        } else {
+          setState(prev => ({
+            ...prev,
+            loading: false,
+            summaries: [],
+            summariesByTab: { ...prev.summariesByTab, [state.activeTab]: [] },
+          }));
+        }
+      })
+      .catch(err => {
+        if (!isMounted) return;
         console.error(`❌ Failed to fetch data`, err);
         setState(prev => ({ ...prev, loading: false }));
       });
@@ -2576,6 +2697,7 @@ const WeeklySummariesReport = props => {
                 isOpen={updateFilterModalOpen}
                 toggle={toggleUpdateFilterModal}
                 filters={filterChoices}
+                refetchFilters={refetch}
                 darkMode={darkMode}
                 hasPermissionToFilter={hasPermissionToFilter}
                 canSeeBioHighlight={permissionState.canSeeBioHighlight}
@@ -2593,6 +2715,7 @@ const WeeklySummariesReport = props => {
               <CreateFilterModal
                 isOpen={createFilterModalOpen}
                 toggle={toggleCreateFilterModal}
+                refetchFilters={refetch}
                 initialState={{
                   filterName: '',
                   selectedCodes: state.selectedCodes,
@@ -2734,7 +2857,7 @@ const WeeklySummariesReport = props => {
 
           {hasPermissionToFilter && (
             <>
-              <div className={`${styles.filterStyle} ${styles.marginRight}`}>
+              {/* <div className={`${styles.filterStyle} ${styles.marginRight}`}>
                 <span>Filter by Special Colors:</span>
                 <div
                   style={{
@@ -2766,7 +2889,7 @@ const WeeklySummariesReport = props => {
                     );
                   })}
                 </div>
-              </div>
+              </div> */}
 
               {/* {state.selectedCodes.length > 0 && (
                 <div className={cn(styles.filterStyle, styles.filterMarginRight)}>
@@ -2857,6 +2980,63 @@ const WeeklySummariesReport = props => {
               ))}
             </div>
           )}
+          {/* Saved Filter Buttons List */}
+          {filterChoices && filterChoices.length > 0 && (
+            <div
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: '5px',
+                alignItems: 'center',
+                maxHeight: '100px',
+                overflowY: 'auto',
+              }}
+              className="my-3"
+            >
+              {filterChoices.map(filter => (
+                <div
+                  key={filter.value}
+                  className={`${styles['saved-filter-button']} ${
+                    darkMode ? styles['dark-mode'] : ''
+                  } ${
+                    currentAppliedFilter && currentAppliedFilter.value === filter.value
+                      ? styles['active-filter']
+                      : ''
+                  }`}
+                >
+                  <button
+                    type="button"
+                    className="btn btn-link p-0 mr-1"
+                    style={{
+                      color: 'inherit',
+                      textDecoration: 'none',
+                      fontSize: '0.875rem',
+                      background: 'none',
+                      border: 'none',
+                      padding: 0,
+                      fontWeight:
+                        currentAppliedFilter && currentAppliedFilter.value === filter.value
+                          ? 'bold'
+                          : 'normal',
+                    }}
+                    onClick={() => applyFilter(filter)}
+                    title={`Apply filter: ${filter.label}`}
+                  >
+                    {filter.label}
+                  </button>
+                  <button
+                    type="button"
+                    className={styles['saved-filter-delete-btn']}
+                    onClick={() => handleDeleteFilter(filter)}
+                    title="Delete filter"
+                    aria-label={`Delete filter ${filter.label}`}
+                  >
+                    <i className="fa fa-times" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </Col>
         <Col lg={{ size: 5 }} md={{ size: 6 }} xs={{ size: 12 }}>
           <div>Select Color</div>
@@ -2889,59 +3069,40 @@ const WeeklySummariesReport = props => {
               }),
             }}
           />
-          {/* <WeeklySummariesToggleFilter
-            state={state}
-            setState={setState}
-            hasPermissionToFilter={hasPermissionToFilter}
-            editable={true}
-            formId="report"
-          /> */}
-
-          {/* This is the new block from my lastWorking file */}
-          <Row style={{ marginBottom: '10px' }}>
-            <Col lg={{ size: 10, offset: 1 }} xs="12">
-              <div className={`${styles.filterContainer}`}>
-                {hasPermissionToFilter && state.selectedCodes.length > 0 && (
-                  <div
-                    className={cn(
-                      styles.filterStyle,
-                      styles.filterMarginRight,
-                      'mt-2',
-                      'mb-2',
-                      'ml-7',
-                    )}
-                  >
-                    <span className={styles.selectAllLabel}>Select All (Visible Users): </span>
-                    <div className={styles.dotSelector}>
-                      {['purple', 'green', 'navy'].map(color => (
-                        <span
-                          key={color}
-                          onClick={e => {
-                            e.preventDefault();
-                            handleBulkDotClick(color);
-                          }}
-                          className={cn(
-                            styles.bulkDot,
-                            state.bulkSelectedColors[color] && styles.active,
-                          )}
-                          style={{
-                            display: 'inline-block',
-                            width: '15px',
-                            height: '15px',
-                            margin: '0 5px',
-                            borderRadius: '50%',
-                            backgroundColor: state.bulkSelectedColors[color]
-                              ? color
-                              : 'transparent',
-                            border: `3px solid ${color}`,
-                            cursor: 'pointer',
-                          }}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                )}
-                {(hasPermissionToFilter || props.hasPermission('highlightEligibleBios')) && (
+          <div className={`${styles.filterContainer}`}>
+            {/* {hasPermissionToFilter && state.selectedCodes.length > 0 && (
+              <div
+                className={cn(styles.filterStyle, styles.filterMarginRight, 'mt-2', 'mb-2', 'ml-7')}
+              >
+                <span className={styles.selectAllLabel}>Select All (Visible Users): </span>
+                <div className={styles.dotSelector}>
+                  {['purple', 'green', 'navy'].map(color => (
+                    <span
+                      key={color}
+                      onClick={e => {
+                        e.preventDefault();
+                        handleBulkDotClick(color);
+                      }}
+                      className={cn(
+                        styles.bulkDot,
+                        state.bulkSelectedColors[color] && styles.active,
+                      )}
+                      style={{
+                        display: 'inline-block',
+                        width: '15px',
+                        height: '15px',
+                        margin: '0 5px',
+                        borderRadius: '50%',
+                        backgroundColor: state.bulkSelectedColors[color] ? color : 'transparent',
+                        border: `3px solid ${color}`,
+                        cursor: 'pointer',
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+            )} */}
+            {/* {(hasPermissionToFilter || props.hasPermission('highlightEligibleBios')) && (
                   <div
                     className={`${styles.filterStyle} ${styles.marginRight}`}
                     style={{ minWidth: 'max-content' }}
@@ -3013,10 +3174,85 @@ const WeeklySummariesReport = props => {
                       </span>
                     </ReactTooltip>
                   </div>
+                )} */}
+            {hasPermissionToFilter && (
+              <>
+                <div className={`${styles.filterStyle} ${styles.marginRight}`}>
+                  <span>Filter by Special Colors:</span>
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      marginTop: '2px',
+                    }}
+                  >
+                    {['purple', 'green', 'navy'].map(color => {
+                      const labelMap = {
+                        purple: 'Admin Team',
+                        green: '20 Hour HGN Team',
+                        navy: '10 Hour HGN Team',
+                      };
+                      return (
+                        <div
+                          key={`${color}-toggle`}
+                          style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+                        >
+                          <span className={styles.filterLabel}>{labelMap[color]}</span>
+                          <SlideToggle
+                            key={`${color}-toggle`}
+                            className={styles.slideToggle}
+                            color={color}
+                            onChange={handleSpecialColorToggleChange}
+                          />
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {state.selectedCodes.length > 0 && (
+                  <div className={cn(styles.filterStyle, styles.filterMarginRight)}>
+                    <span className={styles.selectAllLabel}>Select All (Visible Users): </span>
+                    <div className={styles.dotSelector}>
+                      {['purple', 'green', 'navy'].map(color => (
+                        <span
+                          key={color}
+                          onClick={e => {
+                            e.preventDefault();
+                            handleBulkDotClick(color);
+                          }}
+                          className={cn(
+                            styles.bulkDot,
+                            state.bulkSelectedColors[color] && styles.active,
+                          )}
+                          style={{
+                            display: 'inline-block',
+                            width: '15px',
+                            height: '15px',
+                            margin: '0 5px',
+                            borderRadius: '50%',
+                            backgroundColor: state.bulkSelectedColors[color]
+                              ? color
+                              : 'transparent',
+                            border: `3px solid ${color}`,
+                            cursor: 'pointer',
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </div>
                 )}
-              </div>
-            </Col>
-          </Row>
+              </>
+            )}
+          </div>
+          <WeeklySummariesToggleFilter
+            state={state}
+            setState={setState}
+            hasPermissionToFilter={hasPermissionToFilter}
+            editable={true}
+            formId="report"
+          />
         </Col>
       </Row>
       <Row className={styles['mx-max-sm-0']}>
