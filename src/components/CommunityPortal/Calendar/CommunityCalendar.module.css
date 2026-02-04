@@ -74,6 +74,7 @@
   border: 1px solid #444;
 }
 
+
 .calendarHeader {
   display: flex;
   justify-content: space-between;
@@ -161,6 +162,7 @@
   padding: 4px;
   color: #1a202c;
 }
+
 .reactCalendarDarkMode :global(.react-calendar__tile) {
   background: transparent;
   color: #ffffff;
@@ -579,6 +581,7 @@
   background: #1a202c;
   color: #e2e8f0;
   border: 1px solid #4a5568;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
 }
 
 .modalHeader {
@@ -640,7 +643,7 @@
   padding: 20px 24px;
 }
 .eventModalDark .modalContent {
-  background: #1a202c;
+  background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
 }
 
 .eventStatus {
@@ -778,6 +781,18 @@
   transform: translateY(-1px);
 }
 
+/* Enhanced dark mode modal styling */
+.eventModalDark .modalHeader,
+.eventModalDark .modalActions {
+  background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+}
+
+/* Better dark mode contrast for all text elements */
+.eventModalDark * {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
   .eventModal {
     width: 95%;
@@ -853,6 +868,52 @@
 
 .calendarActivityItemDarkMode small {
   color: #fff;
+}
+
+.eventButton {
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.eventButton:hover {
+  background-color: #f0f0f0;
+}
+
+.calendarActivityItemDarkMode .eventButton:hover {
+  background-color: #4a5568;
+}
+
+.calendarActivityItem.clickable {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.calendarActivityItem.clickable:hover {
+  background-color: #f0f0f0;
+}
+
+.calendarActivityItemDarkMode.clickable:hover {
+  background-color: #4a5568;
+}
+
+.activityNoEventsMessage {
+  padding: 20px;
+  text-align: center;
+  color: #666;
+}
+
+.activityNoEventsMessage p {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.calendarActivitySectionDarkMode .activityNoEventsMessage {
+  color: #cbd5e0;
 }
 
 .activityMessage {
@@ -935,16 +996,26 @@
 }
 
 .reactCalendarDarkMode :global(.react-calendar__navigation) {
+  background-color: #1b2a41;
+  border-bottom: 1px solid #444;
+}
+
+.reactCalendarDarkMode :global(.react-calendar__navigation button) {
+  color: #ffffff;
+}
+
+.reactCalendarDarkMode :global(.react-calendar__navigation button:enabled:hover),
+.reactCalendarDarkMode :global(.react-calendar__navigation button:enabled:focus) {
   background-color: #2d3748;
-  border-bottom-color: #4a5568;
 }
 
 .reactCalendarDarkMode :global(.react-calendar__month-view__weekdays__weekday) {
-  color: #e2e8f0;
+  color: #fff;
 }
 
 .reactCalendarDarkMode :global(.react-calendar__month-view__weekdays__weekday) abbr {
-  color: #e2e8f0;
+  color: #fff;
+  text-decoration: none;
 }
 
 .selectedDate {

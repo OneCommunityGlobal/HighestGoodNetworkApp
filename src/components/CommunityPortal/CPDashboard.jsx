@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { Container, Row, Col, Card, CardBody, Button, Input } from 'reactstrap';
+import { Container, Row, Col, Card, CardBody, Button, Input, FormGroup, Label } from 'reactstrap';
 import { FaCalendarAlt, FaMapMarkerAlt, FaUserAlt, FaSearch, FaTimes } from 'react-icons/fa';
 import styles from './CPDashboard.module.css';
 import { ENDPOINTS } from '../../utils/URL';
 import axios from 'axios';
+import { el } from 'date-fns/locale';
 
 const FixedRatioImage = ({ src, alt, fallback }) => (
   <div
@@ -36,7 +37,10 @@ export function CPDashboard() {
   const [events, setEvents] = useState([]);
   const [searchInput, setSearchInput] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedDate, setSelectedDate] = useState('');
+  const [onlineOnly, setOnlineOnly] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [dateFilter, setDateFilter] = useState('');
   const [error, setError] = useState(null);
   const darkMode = useSelector(state => state.theme.darkMode);
   const [pagination, setPagination] = useState({
@@ -96,7 +100,73 @@ export function CPDashboard() {
     });
   };
 
+  // Helper function to extract date in YYYY-MM-DD format from event date
+  const parseEventDate = dateString => {
+    if (!dateString) return null;
+
+    try {
+      // Try to parse as ISO date string or standard date
+      const parsedDate = new Date(dateString);
+      if (!isNaN(parsedDate.getTime())) {
+        const year = parsedDate.getFullYear();
+        const month = String(parsedDate.getMonth() + 1).padStart(2, '0');
+        const day = String(parsedDate.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      }
+    } catch (error) {
+      console.error('Error parsing date:', error);
+    }
+    return null;
+  };
+
+  function isTomorrow(dateString) {
+    const input = new Date(dateString);
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+
+    return input >= tomorrow && input < new Date(tomorrow.getTime() + 24 * 60 * 60 * 1000);
+  }
+
+  function isComingWeekend(dateString) {
+    const input = new Date(dateString);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const day = today.getDay();
+    const daysUntilSaturday = (6 - day + 7) % 7 || 7;
+    const saturday = new Date(today);
+    saturday.setDate(today.getDate() + daysUntilSaturday);
+    const sunday = new Date(saturday);
+    sunday.setDate(saturday.getDate() + 1);
+    sunday.setHours(23, 59, 59, 999);
+
+    return input >= saturday && input <= sunday;
+  }
+
   const filteredEvents = events.filter(event => {
+    // Filter by online only if checkbox is checked
+    if (onlineOnly) {
+      const isOnlineEvent = event.location?.toLowerCase() === 'virtual';
+      if (!isOnlineEvent) return false;
+    }
+
+    // Filter by date filter (Tomorrow / Weekend)
+    if (dateFilter === 'tomorrow') {
+      if (!isTomorrow(event.date)) return false;
+    } else if (dateFilter === 'weekend') {
+      if (!isComingWeekend(event.date)) return false;
+    }
+
+    // Filter by specific date (if selected)
+    const eventDate = event.date ? parseEventDate(event.date) : null;
+    if (selectedDate && eventDate !== selectedDate) {
+      return false;
+    }
+
+    // Filter by search query if provided
     if (!searchQuery) return true;
     const term = searchQuery.toLowerCase();
 
@@ -106,6 +176,11 @@ export function CPDashboard() {
       event.organizer?.toLowerCase().includes(term)
     );
   });
+
+  // Reset pagination to page 1 when filters change
+  useEffect(() => {
+    setPagination(prev => ({ ...prev, currentPage: 1 }));
+  }, [searchQuery, selectedDate, onlineOnly, dateFilter]);
 
   const totalPages = Math.ceil(filteredEvents.length / pagination.limit) || 1;
 
@@ -136,10 +211,9 @@ export function CPDashboard() {
   }
 
   return (
-    <Container className={`${styles.dashboardContainer} ${darkMode ? styles.darkContainer : ''}`}>
+    <Container className={styles.dashboardContainer}>
       <header className={`${styles.dashboardHeader} ${darkMode ? styles.darkHeader : ''}`}>
         <h1>All Events</h1>
-
         <div>
           <div className={styles.dashboardSearchContainer}>
             <Input
@@ -185,21 +259,76 @@ export function CPDashboard() {
             <div className={styles.filterSectionDivider}>
               <div className={styles.filterItem}>
                 <label htmlFor="date-tomorrow"> Dates</label>
-                <div>
-                  <div>
-                    <Input type="radio" name="dates" /> Tomorrow
-                  </div>
-                  <div>
-                    <Input type="radio" name="dates" /> This Weekend
-                  </div>
+                <div className={styles.radioRow}>
+                  <FormGroup check className={styles.radioGroup + ' d-flex align-items-center'}>
+                    <Input
+                      id="date-tomorrow"
+                      type="radio"
+                      name="dates"
+                      checked={dateFilter === 'tomorrow'}
+                      onChange={() => setDateFilter('tomorrow')}
+                      className={styles.radioInput}
+                    />
+                    <Label
+                      htmlFor="date-tomorrow"
+                      check
+                      className={styles.radioLabel + ' ms-2 mb-0'}
+                    >
+                      Tomorrow
+                    </Label>
+                  </FormGroup>
+                  <FormGroup check className={styles.radioGroup + ' d-flex align-items-center'}>
+                    <Input
+                      id="date-weekend"
+                      type="radio"
+                      name="dates"
+                      checked={dateFilter === 'weekend'}
+                      onChange={() => setDateFilter('weekend')}
+                      className={styles.radioInput}
+                    />
+                    <Label
+                      htmlFor="date-weekend"
+                      check
+                      className={styles.radioLabel + ' ms-2 mb-0'}
+                    >
+                      This Weekend
+                    </Label>
+                  </FormGroup>
                 </div>
-                <Input type="date" placeholder="Ending After" className={styles['date-filter']} />
+                <div className={styles.dashboardActions}>
+                  <Button
+                    color="primary"
+                    onClick={() => {
+                      setDateFilter('');
+                      setSelectedDate('');
+                    }}
+                  >
+                    Clear date filter
+                  </Button>
+                </div>
+                <Input
+                  type="date"
+                  placeholder="Select Date"
+                  className={styles.dateFilter}
+                  value={selectedDate}
+                  onChange={e => setSelectedDate(e.target.value)}
+                  style={{ marginTop: '10px' }}
+                />
               </div>
 
               <div className={styles.filterItem}>
                 <label htmlFor="online-only">Online</label>
                 <div>
-                  <Input type="checkbox" /> Online Only
+                  <Input
+                    type="checkbox"
+                    id="online-only"
+                    checked={onlineOnly}
+                    onChange={e => {
+                      setOnlineOnly(e.target.checked);
+                      setPagination(prev => ({ ...prev, currentPage: 1 }));
+                    }}
+                  />{' '}
+                  Online Only
                 </div>
               </div>
 
@@ -231,7 +360,11 @@ export function CPDashboard() {
           <h2 className={styles.sectionTitle}>Events</h2>
 
           <Row>
-            {displayedEvents.length > 0 ? (
+            {isLoading ? (
+              <div className={styles.noEvents}>Loading events...</div>
+            ) : error ? (
+              <div className={styles.noEvents}>{error}</div>
+            ) : displayedEvents.length > 0 ? (
               displayedEvents.map(event => (
                 <Col md={4} key={event.id} className={styles.eventCardCol}>
                   <Card className={styles.eventCard}>
@@ -245,13 +378,15 @@ export function CPDashboard() {
                     <CardBody>
                       <h5 className={styles.eventTitle}>{event.title}</h5>
                       <p className={styles.eventDate}>
-                        <FaCalendarAlt /> {formatDate(event.date)}
+                        <FaCalendarAlt className={styles.eventIcon} /> {formatDate(event.date)}
                       </p>
                       <p className={styles.eventLocation}>
-                        <FaMapMarkerAlt /> {event.location}
+                        <FaMapMarkerAlt className={styles.eventIcon} />{' '}
+                        {event.location || 'Location TBD'}
                       </p>
                       <p className={styles.eventOrganizer}>
-                        <FaUserAlt /> {event.organizer}
+                        <FaUserAlt className={styles.eventIcon} />{' '}
+                        {event.organizer || 'Organizer TBD'}
                       </p>
                     </CardBody>
                   </Card>
