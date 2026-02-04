@@ -129,11 +129,12 @@
   border: none;
 }
 .darkSearchBar {
-  background-color: #151515;
+  background-color: #1e293b;
   border: none;
 }
 .darkSearchInput {
-  background-color: #151515;
+  background-color: #151515 !important;
+  border: none !important;
 }
 .darkTabContent {
   background-color: #2c3e50;

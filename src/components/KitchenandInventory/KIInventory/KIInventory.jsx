@@ -128,6 +128,7 @@ const KIInventory = () => {
               <FiSearch />
             </span>
             <input
+              name="search"
               className={classnames(styles.searchBarInput, darkMode ? styles.darkSearchInput : '')}
               type="text"
               placeholder={`Search ${activeTab}...`}
