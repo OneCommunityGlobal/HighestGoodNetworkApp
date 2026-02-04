@@ -26,12 +26,34 @@ import {
 /**
  * The header row of the user table.
  */
-const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser, enableEditUserInfo, disableEditUserInfo, isMobile, mobileFontSize }) => {
+const UserTableHeaderComponent = ({ authUser, roleSearchText, darkMode, editUser, enableEditUserInfo, disableEditUserInfo, isMobile, mobileFontSize, roles }) => {
+    const authRole = authUser?.role;
     const dispatch = useDispatch();
     const [editFlag, setEditFlag] = useState(editUser);
     const updatedUserData = useSelector(state => state.userProfileEdit.newUserData);
     const saveUserInformation = async updatedData => {
       try {
+        const permissions = {
+          frontPermissions: [],
+          removedDefaultPermissions: [],
+        };
+        const requestor = authUser;
+        const roleUpdateData = updatedUserData.filter(change => change.item === 'role')
+        for (let i = 0; i < roleUpdateData.length; i+=1) {
+          const roleUpdate = roleUpdateData[i];
+          const permissionURL = `${ENDPOINTS.PERMISSION_MANAGEMENT_UPDATE()}/user/${roleUpdate.user_id}`;
+          const roleIndex = roles?.findIndex(({ roleName }) => roleName === roleUpdate.value);
+          const rolePermissions = roleIndex !== -1 ? roles[roleIndex].permissions : [];
+          permissions.defaultPermissions = rolePermissions
+          const permissionData = {
+            reason: `Role Changed to **${roleUpdate.value}**.`,
+            permissions: permissions,
+            requestor: requestor,
+          }
+
+          axios.patch(permissionURL, permissionData).catch(err => console.error(err))
+        }
+        
         const response = await axios.patch(ENDPOINTS.USER_PROFILE_UPDATE, updatedData);
         if (response.status === 200) {
           const toastId = toast.success(' Saving Data...', { autoClose: false });
@@ -327,6 +349,8 @@ UserTableHeaderComponent.propTypes = {
   disableEditUserInfo: PropTypes.func.isRequired,
   isMobile: PropTypes.bool,
   mobileFontSize: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  roles: PropTypes.object,
+  auth: PropTypes.object,
  
 };
 
