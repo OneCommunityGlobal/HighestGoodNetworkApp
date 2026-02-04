@@ -17,6 +17,7 @@ import { boxStyle } from '../../styles';
 import { formatDate, formatDateLocal, formatDateUtcYYYYMMDD } from '../../utils/formatDate';
 import hasPermission, {cantUpdateDevAdminDetails } from '../../utils/permissions';
 import SetUpFinalDayButton from './SetUpFinalDayButton';
+import styles from './usermanagement.module.css';
 
 /**
  * The body row of the user table
@@ -59,7 +60,6 @@ const UserTableDataComponent = (props) => {
   };
   const canDeleteUsers = props.hasPermission('deleteUserProfile');
   const resetPasswordStatus = props.hasPermission('updatePassword');
-  //const updatePasswordStatus = props.hasPermission('updatePassword');
   const canChangeUserStatus = props.hasPermission('changeUserStatus');
   const canSetFinalDay = props.hasPermission('setFinalDay');
   const canSeeReports = props.hasPermission('getReports');
@@ -86,7 +86,7 @@ const UserTableDataComponent = (props) => {
   useEffect(() => {
     onReset(false);
     dispatch(getAllRoles());
-  }, [props.isActive, props.resetLoading]);
+  }, [props.user.isActive, props.resetLoading]);
 
   useEffect(() => {
     updateFormData({
@@ -120,10 +120,11 @@ const UserTableDataComponent = (props) => {
   const isCurrentUser = props.user.email === props.authEmail;
 
   const getButtonText = () => {
+    const isActive = props.user?.isActive ?? props.isActive;
     if (isChanging) {
       return '...';
     }
-    if (props.isActive) {
+    if (isActive) {
       return PAUSE;
     }
     return RESUME;
@@ -131,13 +132,15 @@ const UserTableDataComponent = (props) => {
 
   return (
     <tr
-      className={`usermanagement__tr ${darkMode ? 'dark-usermanagement-data' : 'light-usermanagement-data'}`}
+      className={`${styles.usermanagementTr} ${darkMode ? styles.darkUsermanagementData : styles.lightUsermanagementData}`}
       id={`tr_user_${props.index}`}
       style={{ fontSize: isMobile ? mobileFontSize : 'initial' }}
     >
-      <td className="usermanagement__active--input" style={{ position: 'relative' }}>
+      <td className={styles.usermanagementActiveInput} style={{ position: 'relative' }}>
         <ActiveCell
-          isActive={props.isActive}
+          isActive={props.user.isActive}
+          endDate={props.user.endDate}
+          reactivationDate={props.user.reactivationDate}
           canChange={canChangeUserStatus}
           key={`active_cell${props.index}`}
           index={props.index}
@@ -426,7 +429,7 @@ const UserTableDataComponent = (props) => {
         )}
         <button
           type="button"
-          className={`btn btn-outline-${props.isActive ? 'warning' : 'success'} btn-sm`}
+          className={`btn btn-outline-${props.user.isActive ? 'warning' : 'success'} btn-sm`}
           onClick={() => {
             if (cantUpdateDevAdminDetails(props.user.email, props.authEmail)) {
               // eslint-disable-next-line no-alert
@@ -438,7 +441,7 @@ const UserTableDataComponent = (props) => {
             onReset(true);
             props.onPauseResumeClick(
               props.user,
-              props.isActive ? UserStatus.InActive : UserStatus.Active,
+              props.user.isActive ? UserStatus.Inactive : UserStatus.Active,
             );
           }}
           style={{
@@ -448,7 +451,6 @@ const UserTableDataComponent = (props) => {
           disabled={!canChangeUserStatus}
           id={`btn-pause-profile-${props.user._id}`}
         >
-          {/* {isChanging ? '...' : props.isActive ? PAUSE : RESUME} */}
           {getButtonText()}
         </button>
       </td>
@@ -569,7 +571,7 @@ const UserTableDataComponent = (props) => {
       </td>
       {checkPermissionsOnOwner() ? null : (
         <td>
-          <span className="usermanagement-actions-cell">
+          <span className={styles.usermanagementActionsCell}>
             {!canDeleteUsers ? (
               <Tooltip
                 placement="bottom"
@@ -598,7 +600,7 @@ const UserTableDataComponent = (props) => {
               {DELETE}
             </button>
           </span>
-          <span className="usermanagement-actions-cell">
+          <span className={styles.usermanagementActionsCell}>
             <ResetPasswordButton
               authEmail={props.authEmail}
               user={props.user}

@@ -1,0 +1,67 @@
+:global(.Collapsible) {
+  background-color: white;
+  border: none;
+  border-radius: 15px;
+  margin: 10px;
+  box-shadow: none;
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
+/* Dark mode styling for accordions */
+:global(.bg-oxford-blue .Collapsible) {
+  background-color: #1b2a41;
+}
+
+:global(.Collapsible__contentInner) {
+  padding: 10px;
+  border-top: 0;
+}
+:global(.Collapsible__contentInner p) {
+  margin-bottom: 10px;
+  font-size: 14px;
+  line-height: 20px;
+}
+:global(.Collapsible__contentInner p:last-child) {
+  margin-bottom: 0;
+}
+
+:global(.Collapsible__trigger) {
+  display: block;
+  font-weight: 600;
+  text-decoration: none;
+  padding-left: 2%;
+  font-size: 30px;
+}
+:global(.Collapsible__trigger:before) {
+  display: inline-block;
+  font-family: 'FontAwesome', sans-serif;
+  content: '\f107';
+  margin-right: 40px;
+  transition: transform 300ms;
+  font-size: 45px;
+  color: #ccc;
+  font-weight: normal;
+}
+:global(.Collapsible__trigger.is-open:before) {
+  transform: rotate(180deg);
+}
+:global(.Collapsible__trigger.is-disabled) {
+  opacity: 0.5;
+  background-color: grey;
+}
+
+:global(.CustomTriggerCSS) {
+  background-color: lightcoral;
+  transition: background-color 200ms ease;
+}
+
+:global(.CustomTriggerCSS--open) {
+  background-color: darkslateblue;
+}
+
+:global(.Collapsible__custom-sibling) {
+  padding: 5px;
+  font-size: 12px;
+  background-color: #cbb700;
+}
