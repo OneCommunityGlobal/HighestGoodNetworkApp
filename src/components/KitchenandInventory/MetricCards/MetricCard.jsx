@@ -10,8 +10,8 @@ function MetricCard(props) {
       <div className={styles.metricCardHeader}>{metricname}</div>
       <div className={styles.metricCardBody}>
         <p>{metricvalue}</p>
-        <div className={styles.metricCardIcon} style={{ color: iconcolor }}>
-          {Icon}
+        <div className={`${styles.metricCardIcon}`} style={{ '--icon-color': iconcolor }}>
+          <span className={`${darkMode ? styles.darkModeIcon : ''}`}>{Icon}</span>
         </div>
       </div>
     </div>

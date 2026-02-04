@@ -56,9 +56,11 @@ const KIInventory = () => {
         <Nav className={classnames(styles.inventoryNavBar, darkMode ? styles.darkNavBar : '')}>
           <NavItem>
             <NavLink
-              className={classnames(styles.inventoryNavBarLink, {
-                activetab: activeTab === tabs[0],
-              })}
+              className={classnames(styles.inventoryNavBarLink)}
+              style={{
+                backgroundColor: `${activeTab === tabs[0] ? '#a1a5d1' : ''}`,
+                borderRadius: `${activeTab === tabs[0] ? '30px' : ''}`,
+              }}
               onClick={() => toggleTab(0)}
             >
               <TbToolsKitchen2 className={styles.inventoryNavBarIcon} />
@@ -67,9 +69,11 @@ const KIInventory = () => {
           </NavItem>
           <NavItem>
             <NavLink
-              className={classnames(styles.inventoryNavBarLink, {
-                activetab: activeTab === tabs[1],
-              })}
+              className={classnames(styles.inventoryNavBarLink)}
+              style={{
+                backgroundColor: `${activeTab === tabs[1] ? '#a1a5d1' : ''}`,
+                borderRadius: `${activeTab === tabs[1] ? '30px' : ''}`,
+              }}
               onClick={() => toggleTab(1)}
             >
               <FiPackage className={styles.inventoryNavBarIcon} />
@@ -78,9 +82,11 @@ const KIInventory = () => {
           </NavItem>
           <NavItem>
             <NavLink
-              className={classnames(styles.inventoryNavBarLink, {
-                activetab: activeTab === tabs[2],
-              })}
+              className={classnames(styles.inventoryNavBarLink)}
+              style={{
+                backgroundColor: `${activeTab === tabs[2] ? '#a1a5d1' : ''}`,
+                borderRadius: `${activeTab === tabs[2] ? '30px' : ''}`,
+              }}
               onClick={() => toggleTab(2)}
             >
               <LiaSeedlingSolid className={styles.inventoryNavBarIcon} />
@@ -89,9 +95,11 @@ const KIInventory = () => {
           </NavItem>
           <NavItem>
             <NavLink
-              className={classnames(styles.inventoryNavBarLink, {
-                activetab: activeTab === tabs[3],
-              })}
+              className={classnames(styles.inventoryNavBarLink)}
+              style={{
+                backgroundColor: `${activeTab === tabs[3] ? '#a1a5d1' : ''}`,
+                borderRadius: `${activeTab === tabs[3] ? '30px' : ''}`,
+              }}
               onClick={() => toggleTab(3)}
             >
               <GiMasonJar className={styles.inventoryNavBarIcon} />
@@ -100,9 +108,11 @@ const KIInventory = () => {
           </NavItem>
           <NavItem style={{ paddingRight: 0, marginRight: 0 }}>
             <NavLink
-              className={classnames(styles.inventoryNavBarLink, {
-                activetab: activeTab === tabs[4],
-              })}
+              className={classnames(styles.inventoryNavBarLink)}
+              style={{
+                backgroundColor: `${activeTab === tabs[4] ? '#a1a5d1' : ''}`,
+                borderRadius: `${activeTab === tabs[4] ? '30px' : ''}`,
+              }}
               onClick={() => toggleTab(4)}
             >
               <FiShoppingCart className={styles.inventoryNavBarIcon} />

@@ -23,10 +23,14 @@
   font-weight: bold;
   margin-bottom: 20px;
   margin-right: 20px;
+  color: var(--icon-color)
 }
 .darkModeCard {
   background-color: #032c50;
   box-shadow: 4px 0px 10px rgba(0, 0, 0, 0.2), -4px 0px 10px rgba(0, 0, 0, 0.2);
+}
+.darkModeIcon svg{
+  fill: var(--icon-color);
 }
 
 @media screen and (max-width:480px) {
