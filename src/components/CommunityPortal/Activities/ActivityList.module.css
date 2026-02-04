@@ -231,3 +231,60 @@
     padding: 10px;
   }
 }
+
+.alactivityIcon {
+  color: #2c3e50;
+  margin-top: 2px;
+  flex-shrink: 0;
+  font-size: 1rem;
+  margin-right: 4px; 
+}
+
+.activityRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.leftInfo {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.rightInfo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.altypeRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.altypeText {
+  font-style: italic;
+  color: #6b7280;
+  margin-top: 4px;
+}
+
+.allocationDateRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.allocation,
+.aldate {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
