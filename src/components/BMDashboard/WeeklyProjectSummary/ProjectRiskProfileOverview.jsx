@@ -174,7 +174,9 @@ export default function ProjectRiskProfileOverview() {
     const fallbackEnd = formatDateISO(new Date());
     const end =
       (timeRange === 'custom' && customEnd) ||
-      (selectedDates && selectedDates.length ? [...selectedDates].sort().slice(-1)[0] : null) ||
+      (selectedDates && selectedDates.length
+        ? [...selectedDates].sort((a, b) => new Date(a) - new Date(b)).slice(-1)[0]
+        : null) ||
       fallbackEnd;
 
     if (timeRange === 'custom') {
@@ -219,9 +221,9 @@ export default function ProjectRiskProfileOverview() {
     });
 
     if (!allDates || allDates.length === 0) {
-      const inferred = Array.from(
-        new Set(withHist.flatMap(p => p.history.map(h => h.date))),
-      ).sort();
+      const inferred = Array.from(new Set(withHist.flatMap(p => p.history.map(h => h.date)))).sort(
+        (a, b) => new Date(a) - new Date(b),
+      );
       return withHist.map(p => ({ ...p, __inferredDates: inferred }));
     }
 
