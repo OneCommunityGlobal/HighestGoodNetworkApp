@@ -1,17 +1,18 @@
-
 .container {
+  background-color: var(--bg-color, white);
   border-radius: 8px;
   padding: 16px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow, 0 1px 3px rgba(0, 0, 0, 0.05));
   width: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  color: var(--text-color, #000);
 }
 
 .title {
   font-size: large;
+  color: var(--title-color, black);
   font-weight: bold;
   margin-bottom: 8px;
 }
@@ -28,6 +29,22 @@
   display: flex;
   flex-direction: column;
   font-size: 0.9rem;
+  color: var(--label-color, #000);
+}
+
+.filters input,
+.filters select {
+  background-color: var(--input-bg, #fff);
+  color: var(--text-color, #000);
+  border: 1px solid var(--border-color, #ccc);
+  border-radius: 4px;
+  padding: 4px 8px;
+}
+
+.filters input:focus,
+.filters select:focus {
+  border-color: var(--focus-border-color, #3b82f6);
+  outline: none;
 }
 
 .chartWrapper {
@@ -49,6 +66,7 @@
   align-items: center;
   margin-bottom: 8px;
   font-size: 0.85rem;
+  color: var(--text-color, #000);
 }
 
 .colorBox {
@@ -59,24 +77,26 @@
 }
 
 .tooltip {
-  border-radius: 6px;
+  background-color: var(--tooltip-bg, white);
+  border: 1px solid var(--border-color, #ccc);
   padding: 8px;
   font-size: 0.85rem;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  border-radius: 4px;
+  color: var(--text-color, #000);
 }
 
 .button {
-  background-color: transparent;
-  color: inherit;
-  border: 1px solid currentColor;
-  border-radius: 6px;
-  padding: 8px 16px;
+  background-color: var(--button-bg, white);
+  border: 1px solid var(--button-border, black);
+  border-radius: 10%;
+  padding: 10px 20px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: background-color 0.3s ease;
+  color: var(--button-text, #000);
 }
 
 .button:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: var(--button-hover-bg, #fff2f0);
 }
 
 .pieChartContainer {
@@ -106,4 +126,21 @@
   .filters label {
     width: 100%;
   }
+}
+
+/* ============ DARK MODE ============ */
+.container.darkMode {
+  --bg-color: #2b3e59;
+  --text-color: #ffffff;
+  --title-color: #ffffff;
+  --label-color: #e0e0e0;
+  --input-bg: #3a506b;
+  --border-color: #4a5a77;
+  --focus-border-color: #e8a71c;
+  --tooltip-bg: #1b2a41;
+  --button-bg: #3a506b;
+  --button-border: #4a5a77;
+  --button-text: #ffffff;
+  --button-hover-bg: #495b7a;
+  --shadow: 0 1px 3px rgba(255, 255, 255, 0.1);
 }

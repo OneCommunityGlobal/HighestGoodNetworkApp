@@ -1,3 +1,4 @@
+/* eslint-disable no-alert */
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
@@ -29,7 +30,6 @@ const CustomTooltip = ({ active, payload, total, darkMode }) => {
 
 export default function DistributionLaborHours() {
   const darkMode = useSelector(state => state.theme.darkMode);
-
   const [originalData, setOriginalData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [dateRange, setDateRange] = useState({ from: '', to: '' });
@@ -65,16 +65,8 @@ export default function DistributionLaborHours() {
   const totalHours = filteredData.reduce((sum, item) => sum + item.value, 0);
 
   return (
-    <div
-      className={styles.container}
-      style={{
-        backgroundColor: darkMode ? '#2E3E5A' : '#fff',
-        color: darkMode ? '#f5f5f5' : '#000',
-      }}
-    >
-      <h3 className={styles.title} style={{ color: darkMode ? '#ffffff' : '#000000' }}>
-        Distribution of Labor Hours
-      </h3>
+    <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
+      <h3 className={styles.title}>Distribution of Labor Hours</h3>
 
       {/* Filters */}
       <div className={styles.filters}>
