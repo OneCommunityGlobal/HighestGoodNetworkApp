@@ -27,7 +27,7 @@
   flex-wrap: wrap;
   gap: 15px;
   font-size: 16px;
-  color: #333;
+  color: #1f2933;
   margin-bottom: 10px;
 }
 
@@ -38,7 +38,7 @@
 
 .teamInfo strong,
 .contactsInfo strong {
-  color: #869aa3;
+  color: #0f2f4a;
 }
 
 .teamInfo .value,
@@ -47,7 +47,7 @@
 }
 
 .value {
-  color: #666;
+  color: #111827;
   display: inline-block;
   font-family: 'Arial', sans-serif;
 }

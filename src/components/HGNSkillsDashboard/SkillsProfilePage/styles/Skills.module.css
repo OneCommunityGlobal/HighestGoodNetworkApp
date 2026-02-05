@@ -33,6 +33,18 @@
   color: #168dc0;
 }
 
+@media (max-width: 1100px) {
+  .skills {
+    width: 100%;
+    align-items: center;
+  }
+
+  .skills button {
+    width: 100%;
+    max-width: 460px;
+  }
+}
+
 @media (max-width: 768px) {
   .skills {
     width: 100%;

@@ -63,9 +63,13 @@ function RadarChart({ profileData }) {
           const source = skill.value(general) ?? skill.value(frontend) ?? skill.value(backend) ?? 0;
           return source;
         }),
-        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-        borderColor: 'rgba(255, 99, 132, 1)',
+        backgroundColor: 'rgba(37, 99, 235, 0.16)',
+        borderColor: '#2563eb',
         borderWidth: 2,
+        pointBackgroundColor: '#1d4ed8',
+        pointBorderColor: '#eff6ff',
+        pointHoverBackgroundColor: '#eff6ff',
+        pointHoverBorderColor: '#1d4ed8',
       },
     ],
   };
@@ -76,13 +80,19 @@ function RadarChart({ profileData }) {
         angleLines: { display: true },
         suggestedMin: 0,
         suggestedMax: 10,
-        ticks: { stepSize: 2 },
+        ticks: {
+          stepSize: 2,
+          display: false,
+        },
       },
     },
     plugins: {
       legend: {
         display: false,
         position: 'bottom',
+      },
+      datalabels: {
+        display: false,
       },
     },
   };

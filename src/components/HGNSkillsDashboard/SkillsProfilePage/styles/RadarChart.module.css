@@ -2,16 +2,43 @@
   flex: 1;
   display: flex;
   justify-content: center;
+  align-items: center;
+  padding: 10px 0;
+  margin: 0 auto;
+  max-width: 720px;
+  width: 100%;
 }
 
 .radarChart canvas {
-  max-width: 500px;
-  max-height: 500px;
+  width: 100% !important;
+  height: auto !important;
+  max-width: 720px;
+  max-height: 640px;
+}
+
+@media (max-width: 1100px) {
+  .radarChart {
+    padding: 12px 0;
+  }
+
+  .radarChart canvas {
+    max-height: 540px;
+  }
 }
 
 @media (max-width: 768px) {
   .radarChart {
-    margin-top: 0px;
+    padding: 10px 0;
+  }
+
+  .radarChart canvas {
+    max-height: 460px;
+  }
+}
+
+@media (max-width: 480px) {
+  .radarChart canvas {
+    max-height: 380px;
   }
 }
 
