@@ -228,6 +228,7 @@ export const ENDPOINTS = {
   PRESETS_BY_ID: roleNameOrPresetId => `${APIEndpoint}/rolePreset/${roleNameOrPresetId}`,
 
   OWNERMESSAGE: () => `${APIEndpoint}/ownerMessage`,
+  OWNER_MESSAGE_HISTORY: (page, limit) => `${APIEndpoint}/ownerMessageLogs?page=${page}&limit=${limit}`,
 
   AI_PROMPT: () => `${APIEndpoint}/dashboard/aiPrompt`,
   COPIED_AI_PROMPT: userId => `${APIEndpoint}/dashboard/aiPrompt/copied/${userId}`,
