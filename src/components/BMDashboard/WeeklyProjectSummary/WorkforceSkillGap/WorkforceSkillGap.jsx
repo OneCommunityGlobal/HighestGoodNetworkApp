@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import axios from 'axios';
 import {
   BarChart,
   Bar,
@@ -11,23 +12,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import styles from './WorkforceSkillGap.module.css';
-
-// Mock Data
-const MOCK_DATA = [
-  { project: 'Project A', department: 'Electricians', required: 450, available: 350 },
-  { project: 'Project A', department: 'Masons', required: 200, available: 180 },
-  { project: 'Project A', department: 'Welders', required: 150, available: 120 },
-  { project: 'Project A', department: 'Plumbers', required: 250, available: 200 },
-  { project: 'Project B', department: 'Electricians', required: 100, available: 120 },
-  { project: 'Project B', department: 'Masons', required: 300, available: 250 },
-  { project: 'Project B', department: 'Welders', required: 200, available: 150 },
-  { project: 'Project B', department: 'Plumbers', required: 150, available: 120 },
-  { project: 'Project C', department: 'Carpenters', required: 400, available: 380 },
-  { project: 'Project C', department: 'Roofers', required: 300, available: 280 },
-];
-
-const DEPARTMENTS = ['Electricians', 'Masons', 'Welders', 'Plumbers', 'Carpenters', 'Roofers'];
-const PROJECTS = ['Project A', 'Project B', 'Project C'];
+import { ENDPOINTS } from '~/utils/URL';
 
 const FilterDropdown = ({ label, options, selected, onChange, align = 'right' }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -129,11 +114,44 @@ const CustomLegend = ({ payload }) => {
 
 const WorkforceSkillGap = () => {
   const darkMode = useSelector(state => state.theme.darkMode);
-  const [selectedProjects, setSelectedProjects] = useState([...PROJECTS]);
-  const [selectedDepartments, setSelectedDepartments] = useState([...DEPARTMENTS]);
+  const [data, setData] = useState([]);
+  const [projectsList, setProjectsList] = useState([]);
+  const [departmentsList, setDepartmentsList] = useState([]);
+  const [selectedProjects, setSelectedProjects] = useState([]);
+  const [selectedDepartments, setSelectedDepartments] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Fetch aggregated data for All projects to initialize
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(ENDPOINTS.BM_WORKFORCE_SKILL_GAP('All'));
+        setData(response.data);
+
+        // Extract unique projects and departments
+        const uniqueProjects = [...new Set(response.data.map(item => item.project))];
+        const uniqueDepartments = [...new Set(response.data.map(item => item.department))];
+
+        setProjectsList(uniqueProjects);
+        setDepartmentsList(uniqueDepartments);
+
+        // Default to select all
+        setSelectedProjects(uniqueProjects);
+        setSelectedDepartments(uniqueDepartments);
+      } catch (error) {
+        console.error('Error fetching workforce skill gap data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const chartData = useMemo(() => {
-    const projectFiltered = MOCK_DATA.filter(item => selectedProjects.includes(item.project));
+    if (!data.length) return [];
+
+    const projectFiltered = data.filter(item => selectedProjects.includes(item.project));
 
     const depFiltered = projectFiltered.filter(item =>
       selectedDepartments.includes(item.department),
@@ -149,28 +167,30 @@ const WorkforceSkillGap = () => {
     }, {});
 
     return Object.values(aggregated).sort((a, b) => a.name.localeCompare(b.name));
-  }, [selectedProjects, selectedDepartments]);
+  }, [data, selectedProjects, selectedDepartments]);
+
+  if (loading) return <div>Loading...</div>;
 
   return (
     <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
       {/* Filters positioned absolute in corners */}
       <FilterDropdown
         label="Department"
-        options={DEPARTMENTS}
+        options={departmentsList}
         selected={selectedDepartments}
         onChange={setSelectedDepartments}
         align="left"
       />
       <FilterDropdown
         label="Project"
-        options={PROJECTS}
+        options={projectsList}
         selected={selectedProjects}
         onChange={setSelectedProjects}
         align="right"
       />
 
       <div className={styles.headerContainer}>
-        <h3 className={styles.title}>Workforce Skill Gap</h3>
+        <h3 className={styles.title}>Workforce Skill-Gap</h3>
       </div>
 
       <div className={styles.chartContainer}>
@@ -188,7 +208,7 @@ const WorkforceSkillGap = () => {
             <XAxis
               dataKey="name"
               label={{
-                value: 'Trade',
+                value: 'Trade / Role',
                 position: 'insideBottom',
                 offset: -10,
                 style: { fontWeight: 'bold' },
@@ -197,7 +217,7 @@ const WorkforceSkillGap = () => {
             />
             <YAxis
               label={{
-                value: 'Skill Hours',
+                value: 'Hours',
                 angle: -90,
                 position: 'insideLeft',
                 style: { fontWeight: 'bold' },
@@ -211,9 +231,9 @@ const WorkforceSkillGap = () => {
                 color: darkMode ? '#fff' : '#000',
               }}
             />
-            <Legend content={<CustomLegend />} verticalAlign="top" wrapperStyle={{ top: -10 }} />
-            <Bar dataKey="required" name="Required" fill="#4285F4" />
-            <Bar dataKey="available" name="Available" fill="#DB4437" />
+            <Legend verticalAlign="top" wrapperStyle={{ top: -10 }} />
+            <Bar dataKey="required" name="Required Skill Hours" fill="#4285F4" />
+            <Bar dataKey="available" name="Available Hours" fill="#DB4437" />
           </BarChart>
         </ResponsiveContainer>
       </div>

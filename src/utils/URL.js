@@ -371,6 +371,8 @@ export const ENDPOINTS = {
     `${APIEndpoint}/bm/timelogger/${projectId}/${memberId}/stop`,
   TIME_LOGGER_LOGS: (projectId, memberId) =>
     `${APIEndpoint}/bm/timelogger/${projectId}/${memberId}/logs`,
+  BM_WORKFORCE_SKILL_GAP: (projectId) =>
+    `${APIEndpoint}/bm/skillGap?projectId=${projectId}`,
 
   GET_TIME_OFF_REQUESTS: () => `${APIEndpoint}/getTimeOffRequests`,
   ADD_TIME_OFF_REQUEST: () => `${APIEndpoint}/setTimeOffRequest`,
