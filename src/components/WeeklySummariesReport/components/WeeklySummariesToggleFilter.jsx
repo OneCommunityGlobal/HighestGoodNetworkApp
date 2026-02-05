@@ -14,6 +14,7 @@ export default function WeeklySummariesToggleFilter({
   formId,
   hasPermission,
   canSeeBioHighlight,
+  darkMode,
 }) {
   // const safeColors = state.selectedSpecialColors || { purple: false, green: false, navy: false };
 
@@ -29,6 +30,7 @@ export default function WeeklySummariesToggleFilter({
     toggleField(setState, 'selectedOverTime');
   };
 
+  const textColorClass = darkMode ? 'text-light' : '';
   // const handleSpecialColorToggleChange = (color, isEnabled) => {
   //   setState(prevState => ({
   //     ...prevState,
@@ -176,7 +178,7 @@ export default function WeeklySummariesToggleFilter({
           className={`${styles.filterStyle} ${styles.marginRight}`}
           style={{ minWidth: 'max-content' }}
         >
-          <span>Filter by Bio Status</span>
+          <span className={textColorClass}>Filter by Bio Status</span>
           <div className={styles.switchToggleControl}>
             <input
               type="checkbox"
@@ -216,7 +218,7 @@ export default function WeeklySummariesToggleFilter({
           className={`${styles.filterStyle} ${styles.marginRight}`}
           style={{ minWidth: 'max-content' }}
         >
-          <span>Filter by Trophies</span>
+          <span className={textColorClass}>Filter by Trophies</span>
           <div className={`${styles.switchToggleControl}`}>
             <input
               type="checkbox"
@@ -257,7 +259,7 @@ export default function WeeklySummariesToggleFilter({
       )} */}
       {hasPermissionToFilter && (
         <div className={`${styles.filterStyle}`} style={{ minWidth: 'max-content' }}>
-          <span>Filter by Over Hours</span>
+          <span className={textColorClass}>Filter by Over Hours</span>
           <div className={`${styles.switchToggleControl}`}>
             <input
               type="checkbox"
@@ -295,4 +297,5 @@ WeeklySummariesToggleFilter.propTypes = {
   formId: PropTypes.string.isRequired,
   hasPermission: PropTypes.func,
   canSeeBioHighlight: PropTypes.bool,
+  darkMode: PropTypes.bool,
 };

@@ -17,6 +17,56 @@ export default function FilterEditForm({
   summaries,
   teamCodeWarningUsers,
 }) {
+  const customStyles = {
+    control: base => ({
+      ...base,
+      backgroundColor: darkMode ? '#2e3440' : '#fff',
+      borderColor: darkMode ? '#4c566a' : '#ccc',
+      color: darkMode ? '#fff' : '#000',
+    }),
+    menu: base => ({
+      ...base,
+      backgroundColor: darkMode ? '#2e3440' : '#fff',
+      zIndex: 9999,
+    }),
+    menuList: base => ({
+      ...base,
+      backgroundColor: darkMode ? '#2e3440' : '#fff',
+    }),
+    option: (base, selectState) => ({
+      ...base,
+      backgroundColor: selectState.isFocused
+        ? darkMode
+          ? '#434c5e'
+          : '#eee'
+        : darkMode
+        ? '#2e3440'
+        : '#fff',
+      color: darkMode ? '#fff' : '#000',
+      cursor: 'pointer',
+    }),
+    singleValue: base => ({
+      ...base,
+      color: darkMode ? '#fff' : '#000',
+    }),
+    multiValue: base => ({
+      ...base,
+      backgroundColor: darkMode ? '#4c566a' : '#e6e6e6',
+    }),
+    multiValueLabel: base => ({
+      ...base,
+      color: darkMode ? '#fff' : '#000',
+    }),
+    input: base => ({
+      ...base,
+      color: darkMode ? '#fff' : '#000',
+    }),
+    placeholder: base => ({
+      ...base,
+      color: darkMode ? '#d8dee9' : '#808080',
+    }),
+  };
+
   // Update members of membersFromUnselectedTeam dropdown
   useEffect(() => {
     // Add all selected member in a Set

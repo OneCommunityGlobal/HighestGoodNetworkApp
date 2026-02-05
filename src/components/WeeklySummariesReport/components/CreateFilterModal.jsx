@@ -69,6 +69,48 @@ function CreateFilterModal({
     setSelectedFilter(currentAppliedFilter);
   }, [currentAppliedFilter]);
 
+  const customStyles = {
+    control: base => ({
+      ...base,
+      backgroundColor: darkMode ? '#2e3440' : '#fff',
+      borderColor: darkMode ? '#4c566a' : '#ccc',
+      color: darkMode ? '#fff' : '#000',
+    }),
+    menu: base => ({
+      ...base,
+      backgroundColor: darkMode ? '#2e3440' : '#fff',
+      zIndex: 9999,
+    }),
+    menuList: base => ({
+      ...base,
+      backgroundColor: darkMode ? '#2e3440' : '#fff',
+    }),
+    option: (base, state) => ({
+      ...base,
+      backgroundColor: state.isFocused
+        ? darkMode
+          ? '#434c5e'
+          : '#eee'
+        : darkMode
+        ? '#2e3440'
+        : '#fff',
+      color: darkMode ? '#fff' : '#000',
+      cursor: 'pointer',
+    }),
+    singleValue: base => ({
+      ...base,
+      color: darkMode ? '#fff' : '#000',
+    }),
+    input: base => ({
+      ...base,
+      color: darkMode ? '#fff' : '#000',
+    }),
+    placeholder: base => ({
+      ...base,
+      color: darkMode ? '#d8dee9' : '#808080',
+    }),
+  };
+
   const handleSubmit = async e => {
     e.preventDefault();
     const validName = state.filterName.trim().length > 0 && state.filterName.trim().length <= 7;
@@ -149,6 +191,7 @@ function CreateFilterModal({
                 options={filters}
                 value={selectedFilter}
                 onChange={setSelectedFilter}
+                styles={customStyles}
                 className={`${mainStyles.textDark} ${
                   !selectedFilter ? `${mainStyles.errorSelect}` : ''
                 }`}

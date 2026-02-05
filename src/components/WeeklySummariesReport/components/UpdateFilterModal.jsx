@@ -79,6 +79,48 @@ export default function UpdateFilterModal({
     }
   }, [isOpen]);
 
+  const customStyles = {
+    control: base => ({
+      ...base,
+      backgroundColor: darkMode ? '#2e3440' : '#fff',
+      borderColor: darkMode ? '#4c566a' : '#ccc',
+      color: darkMode ? '#fff' : '#000',
+    }),
+    menu: base => ({
+      ...base,
+      backgroundColor: darkMode ? '#2e3440' : '#fff',
+      zIndex: 9999,
+    }),
+    menuList: base => ({
+      ...base,
+      backgroundColor: darkMode ? '#2e3440' : '#fff',
+    }),
+    option: (base, state) => ({
+      ...base,
+      backgroundColor: state.isFocused
+        ? darkMode
+          ? '#434c5e'
+          : '#eee'
+        : darkMode
+        ? '#2e3440'
+        : '#fff',
+      color: darkMode ? '#fff' : '#000',
+      cursor: 'pointer',
+    }),
+    singleValue: base => ({
+      ...base,
+      color: darkMode ? '#fff' : '#000',
+    }),
+    input: base => ({
+      ...base,
+      color: darkMode ? '#fff' : '#000',
+    }),
+    placeholder: base => ({
+      ...base,
+      color: darkMode ? '#d8dee9' : '#808080',
+    }),
+  };
+
   const handleFilterNameChange = value => {
     setField(setState, 'filterName', value);
   };
@@ -292,6 +334,7 @@ export default function UpdateFilterModal({
               options={filters}
               value={selectedFilter}
               onChange={e => handleSelectedFilter(e)}
+              styles={customStyles}
               className={`top-select ${mainStyles.textDark} ${
                 !selectedFilter ? `${mainStyles.errorSelect}` : ''
               }`}

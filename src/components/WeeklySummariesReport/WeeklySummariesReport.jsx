@@ -2580,31 +2580,181 @@ const WeeklySummariesReport = props => {
     );
   }
 
-  // const applySpecialColorFilter = user => {
-  //   //   // No filter toggled → show all users
-  //   //   if (selectedSpecialColorList.length === 0) return true;
+  const customStyles = {
+    control: base => ({
+      ...base,
+      backgroundColor: darkMode ? '#2e3440' : '#fff', // Dark blue-grey vs White
+      borderColor: darkMode ? '#4c566a' : '#ccc',
+      color: darkMode ? '#fff' : '#000',
+    }),
+    menu: base => ({
+      ...base,
+      backgroundColor: darkMode ? '#2e3440' : '#fff',
+      zIndex: 9999, // Ensure it sits on top
+    }),
+    menuList: base => ({
+      ...base,
+      backgroundColor: darkMode ? '#2e3440' : '#fff',
+      maxHeight: '700px',
+      overflowY: 'auto',
+    }),
+    option: (base, state) => ({
+      ...base,
+      fontSize: '13px',
+      backgroundColor: state.isFocused
+        ? darkMode
+          ? '#434c5e'
+          : '#eee' // Hover color
+        : darkMode
+        ? '#2e3440'
+        : '#fff', // Default color
+      color: darkMode ? '#fff' : '#000',
+      cursor: 'pointer',
+    }),
+    singleValue: base => ({
+      ...base,
+      color: darkMode ? '#fff' : '#000',
+    }),
+    multiValue: base => ({
+      ...base,
+      backgroundColor: darkMode ? '#4c566a' : '#e6e6e6',
+    }),
+    multiValueLabel: base => ({
+      ...base,
+      color: darkMode ? '#fff' : '#000',
+    }),
+    input: base => ({
+      ...base,
+      color: darkMode ? '#fff' : '#000',
+    }),
+    placeholder: base => ({
+      ...base,
+      color: darkMode ? '#d8dee9' : '#808080',
+    }),
+  };
 
-  //   //   // User has no filterColor → hide
-  //   //   if (!Array.isArray(user.filterColor)) return false;
+  const teamCodeStyles = {
+    control: base => ({
+      ...base,
+      backgroundColor: darkMode ? '#2e3440' : '#fff',
+      borderColor: darkMode ? '#4c566a' : '#ccc',
+      color: darkMode ? '#fff' : '#333',
+    }),
+    menu: base => ({
+      ...base,
+      backgroundColor: darkMode ? '#2e3440' : '#fff',
+      zIndex: 9999,
+    }),
+    menuList: base => ({
+      ...base,
+      backgroundColor: darkMode ? '#2e3440' : '#fff',
+      color: darkMode ? '#fff' : '#333',
+      maxHeight: '700px',
+      overflowY: 'auto',
+    }),
+    option: (base, state) => ({
+      ...base,
+      backgroundColor: state.isFocused
+        ? darkMode
+          ? '#434c5e'
+          : '#eee'
+        : darkMode
+        ? '#2e3440'
+        : '#fff',
+      color: darkMode ? '#fff' : '#333',
+      cursor: 'pointer',
+      fontSize: '13px',
+    }),
+    // 🟢 THESE ARE THE CHIP FIXES FOR TEAM CODE
+    multiValue: base => ({
+      ...base,
+      backgroundColor: darkMode ? '#4c566a' : '#e6e6e6',
+    }),
+    multiValueLabel: base => ({
+      ...base,
+      color: darkMode ? '#ffffff' : '#333', // Forces White Text
+      fontWeight: 'bold',
+    }),
+    multiValueRemove: base => ({
+      ...base,
+      color: darkMode ? '#ffffff' : '#333',
+      ':hover': {
+        backgroundColor: darkMode ? '#bf616a' : '#ffbdad',
+        color: 'white',
+      },
+    }),
+    input: base => ({
+      ...base,
+      color: darkMode ? '#fff' : '#333',
+    }),
+    placeholder: base => ({
+      ...base,
+      color: darkMode ? '#d8dee9' : '#808080',
+    }),
+  };
 
-  //   //   // Match ANY selected color
-  //   //   return user.filterColor.some(color => selectedSpecialColorList.includes(color));
-  //   // };
-  //   const selected = state.selectedSpecialColors;
-
-  //   // no filters enabled → show all users
-  //   if (!selected || Object.values(selected).every(v => !v)) {
-  //     return true;
-  //   }
-
-  //   const userColors = Array.isArray(user.filterColor) ? user.filterColor : [];
-
-  //   return (
-  //     (selected.purple && userColors.includes('purple')) ||
-  //     (selected.green && userColors.includes('green')) ||
-  //     (selected.navy && userColors.includes('navy'))
-  //   );
-  // };
+  const dropdownStyles = {
+    control: base => ({
+      ...base,
+      backgroundColor: darkMode ? '#2e3440' : '#fff',
+      borderColor: darkMode ? '#4c566a' : '#ccc',
+      color: darkMode ? '#fff' : '#333',
+    }),
+    menu: base => ({
+      ...base,
+      backgroundColor: darkMode ? '#2e3440' : '#fff',
+      zIndex: 9999,
+    }),
+    menuList: base => ({
+      ...base,
+      backgroundColor: darkMode ? '#2e3440' : '#fff',
+      color: darkMode ? '#fff' : '#333',
+      maxHeight: '700px', // Kept your specific height rule
+      overflowY: 'auto',
+    }),
+    option: (base, state) => ({
+      ...base,
+      fontSize: '13px', // Kept your specific font size rule
+      backgroundColor: state.isFocused
+        ? darkMode
+          ? '#434c5e'
+          : '#eee'
+        : darkMode
+        ? '#2e3440'
+        : '#fff',
+      color: darkMode ? '#fff' : '#333',
+      cursor: 'pointer',
+    }),
+    singleValue: base => ({
+      ...base,
+      color: darkMode ? '#fff' : '#333',
+    }),
+    multiValue: base => ({
+      ...base,
+      backgroundColor: darkMode ? '#4c566a' : '#e6e6e6',
+    }),
+    multiValueLabel: base => ({
+      ...base,
+      color: darkMode ? '#ffffff' : '#333',
+      fontWeight: 'bold',
+    }),
+    multiValueRemove: base => ({
+      ...base,
+      color: darkMode ? '#ffffff' : '#333',
+      ':hover': {
+        backgroundColor: darkMode ? '#bf616a' : '#ffbdad',
+        color: 'white',
+      },
+    }),
+    input: base => ({
+      ...base,
+      color: darkMode ? '#fff' : '#333',
+    }),
+    placeholder: base => ({
+      ...base,
+      color: darkMode ? '#d8dee9' : '#808080',
+    }),
+  };
 
   return (
     <Container
@@ -2691,6 +2841,7 @@ const WeeklySummariesReport = props => {
               applyFilter={applyFilter}
               memberDict={state.memberDict}
               darkMode={darkMode}
+              styles={customStyles}
             />
             {permissionState.canManageFilter && (
               <UpdateFilterModal
@@ -2815,18 +2966,7 @@ const WeeklySummariesReport = props => {
                 className={`custom-select-container ${darkMode ? 'dark-mode' : ''} ${
                   state.teamCodeWarningUsers.length > 0 ? 'warning-border' : ''
                 }`}
-                styles={{
-                  menuList: base => ({
-                    ...base,
-                    maxHeight: '700px',
-                    overflowY: 'auto',
-                  }),
-                  option: (base, state) => ({
-                    ...base,
-                    fontSize: '13px',
-                    backgroundColor: state.isFocused ? '#eee' : 'white',
-                  }),
-                }}
+                styles={teamCodeStyles}
               />
 
               {/* Save/Delete Buttons - only visible when codes are selected */}
@@ -3056,18 +3196,7 @@ const WeeklySummariesReport = props => {
             placeholder="Select color filters..."
             classNamePrefix="custom-select"
             className={`${styles.multiSelectFilter} text-dark ${darkMode ? 'dark-mode' : ''}`}
-            styles={{
-              menuList: base => ({
-                ...base,
-                maxHeight: '700px',
-                overflowY: 'auto',
-              }),
-              option: (base, state) => ({
-                ...base,
-                fontSize: '13px',
-                backgroundColor: state.isFocused ? '#eee' : 'white',
-              }),
-            }}
+            styles={dropdownStyles}
           />
           <div className={`${styles.filterContainer}`}>
             {/* {hasPermissionToFilter && state.selectedCodes.length > 0 && (
@@ -3178,7 +3307,7 @@ const WeeklySummariesReport = props => {
             {hasPermissionToFilter && (
               <>
                 <div className={`${styles.filterStyle} ${styles.marginRight}`}>
-                  <span>Filter by Special Colors:</span>
+                  <span style={{ marginRight: '5px' }}>Filter by Special Colors: </span>
                   <div
                     style={{
                       display: 'flex',
@@ -3189,9 +3318,9 @@ const WeeklySummariesReport = props => {
                   >
                     {['purple', 'green', 'navy'].map(color => {
                       const labelMap = {
-                        purple: 'Admin Team',
-                        green: '20 Hour HGN Team',
-                        navy: '10 Hour HGN Team',
+                        purple: 'Purple',
+                        green: 'Green',
+                        navy: 'Navy',
                       };
                       return (
                         <div
@@ -3252,6 +3381,7 @@ const WeeklySummariesReport = props => {
             hasPermissionToFilter={hasPermissionToFilter}
             editable={true}
             formId="report"
+            darkMode={darkMode}
           />
         </Col>
       </Row>
@@ -3286,18 +3416,7 @@ const WeeklySummariesReport = props => {
             blurInputOnSelect={false}
             closeMenuOnSelect={false}
             className={`${styles.multiSelectFilter} text-dark ${darkMode ? 'dark-mode' : ''}`}
-            styles={{
-              menuList: base => ({
-                ...base,
-                maxHeight: '700px',
-                overflowY: 'auto',
-              }),
-              option: (base, state) => ({
-                ...base,
-                fontSize: '13px',
-                backgroundColor: state.isFocused ? '#eee' : 'white',
-              }),
-            }}
+            styles={dropdownStyles}
             value={state.selectedLoggedHoursRange}
             onChange={selectedOption =>
               setState({ ...state, selectedLoggedHoursRange: selectedOption })
