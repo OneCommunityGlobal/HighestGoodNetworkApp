@@ -1,0 +1,33 @@
+.darkMode {
+  background-color: #1a1a2e;
+  color: #ffffff;
+}
+
+.bgSpaceCadet {
+  background-color: #16213e;
+}
+
+.bgYinmnBlue {
+  background-color: #0f3460;
+}
+
+.textLight {
+  color: #ffffff !important;
+}
+
+.darkMode .modalContent {
+  background-color: #1a1a2e;
+  border-color: #16213e;
+}
+
+.darkMode .close {
+  color: #ffffff;
+}
+
+.darkMode .modalBody p {
+  color: #fff !important;
+}
+
+.modalInfoContent {
+  padding-left: 20px;
+}

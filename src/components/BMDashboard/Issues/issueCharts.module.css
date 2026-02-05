@@ -172,6 +172,57 @@
   color: #cfd7e3;
 }
 
+/* fixed width for each DatePicker wrapper div from react-datepicker */
+.dateRangePickerStart :global(.react-datepicker-wrapper),
+.dateRangePickerEnd :global(.react-datepicker-wrapper) {
+  display: inline-block;
+  width: 220px; /* tweak width if needed */
+}
+
+/* inner container full width */
+.dateRangePickerStart :global(.react-datepicker__input-container),
+.dateRangePickerEnd :global(.react-datepicker__input-container) {
+  width: 100%;
+}
+
+/* actual input fills wrapper and doesn’t change layout */
+.dateRangePickerStart :global(.react-datepicker__input-container input),
+.dateRangePickerEnd :global(.react-datepicker__input-container input) {
+  width: 100%;
+  box-sizing: border-box;
+  height: 38px;
+}
+
+/* ---------- Select / input base styles ---------- */
+
+.filterSelect,
+.issueChartSelect {
+  height: 60px;
+  padding: 8px 12px;
+  font-size: 15px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e0;
+  background-color: #ffffff;
+  color: #2d3748;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.filterSelectDark,
+.issueChartSelectDark {
+  background-color: #2d3748;
+  border: 1px solid #4a5568;
+  color: #edf2f7;
+}
+
+.filterSelect:focus,
+.issueChartSelect:focus {
+  border-color: #4caf50;
+  outline: none;
+}
+
+/* ---------- Chart container ---------- */
+
 /* ----- Chart Container ----- */
 .chartContainer {
   margin: 0 auto;
