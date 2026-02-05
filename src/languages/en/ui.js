@@ -43,6 +43,7 @@ export const BADGE_MANAGEMENT = 'Badge Management';
 export const VIEW_PROFILE = 'View Profile';
 export const WBS = 'WBS';
 export const WELCOME = 'Welcome';
+export const TASKS = 'Tasks';
 export const NOTICE = 'Notice';
 export const FIRST_NAME = 'First Name';
 export const LAST_NAME = 'Last Name';
