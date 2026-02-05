@@ -55,6 +55,7 @@ import {
   REPORTS,
   SEND_EMAILS,
   SCHEDULE_MEETINGS,
+  TASKS,
   TEAM_LOCATIONS,
   TEAMS,
   TIMELOG,
@@ -152,7 +153,7 @@ export function Header(props) {
   const collapseRef = useRef(null);
   const toggleRef = useRef(null);
   const [isAckLoading, setIsAckLoading] = useState(false);
-  const [ showPromotionsPopup, setShowPromotionsPopup ] = useState(false);
+  const [showPromotionsPopup, setShowPromotionsPopup] = useState(false);
 
   const ALLOWED_ROLES_TO_INTERACT = useMemo(() => ['Owner', 'Administrator'], []);
   const canInteractWithViewingUser = useMemo(
@@ -164,7 +165,7 @@ export function Header(props) {
   // Reports
   const canGetReports = props.hasPermission(
     'getReports',
-    !isAuthUser ,
+    !isAuthUser,
   );
   const canGetWeeklySummaries = props.hasPermission(
     'getWeeklySummaries',
@@ -184,21 +185,21 @@ export function Header(props) {
 
   // Badges
   const canAccessBadgeManagement =
-    props.hasPermission('seeBadges', !isAuthUser ) ||
-    props.hasPermission('createBadges', !isAuthUser ) ||
+    props.hasPermission('seeBadges', !isAuthUser) ||
+    props.hasPermission('createBadges', !isAuthUser) ||
     props.hasPermission('updateBadges', !isAuthUser) ||
-    props.hasPermission('deleteBadges', !isAuthUser );
+    props.hasPermission('deleteBadges', !isAuthUser);
   // Projects
   const canAccessProjects =
-    props.hasPermission('postProject', !isAuthUser ) ||
-    props.hasPermission('deleteProject', !isAuthUser ) ||
-    props.hasPermission('putProject', !isAuthUser ) ||
-    props.hasPermission('getProjectMembers', !isAuthUser ) ||
-    props.hasPermission('assignProjectToUsers', !isAuthUser ) ||
-    props.hasPermission('postWbs', !isAuthUser ) ||
-    props.hasPermission('deleteWbs', !isAuthUser ) ||
-    props.hasPermission('postTask', !isAuthUser ) ||
-    props.hasPermission('updateTask', !isAuthUser ) ||
+    props.hasPermission('postProject', !isAuthUser) ||
+    props.hasPermission('deleteProject', !isAuthUser) ||
+    props.hasPermission('putProject', !isAuthUser) ||
+    props.hasPermission('getProjectMembers', !isAuthUser) ||
+    props.hasPermission('assignProjectToUsers', !isAuthUser) ||
+    props.hasPermission('postWbs', !isAuthUser) ||
+    props.hasPermission('deleteWbs', !isAuthUser) ||
+    props.hasPermission('postTask', !isAuthUser) ||
+    props.hasPermission('updateTask', !isAuthUser) ||
     props.hasPermission('deleteTask', !isAuthUser);
   // Tasks
   const canUpdateTask = props.hasPermission(
@@ -207,22 +208,22 @@ export function Header(props) {
   );
   // Teams
   const canAccessTeams =
-    props.hasPermission('postTeam', !isAuthUser ) ||
+    props.hasPermission('postTeam', !isAuthUser) ||
     props.hasPermission('putTeam', !isAuthUser) ||
-    props.hasPermission('deleteTeam', !isAuthUser ) ||
+    props.hasPermission('deleteTeam', !isAuthUser) ||
     props.hasPermission('assignTeamToUsers', !isAuthUser);
   // Popups
   const canAccessPopups =
     props.hasPermission('createPopup', !isAuthUser) ||
-    props.hasPermission('updatePopup', !isAuthUser );
+    props.hasPermission('updatePopup', !isAuthUser);
   // SendEmails
   const canAccessSendEmails = props.hasPermission('sendEmails', !isAuthUser);
   const canAccessScheduleMeetings = props.hasPermission('scheduleMeetings', !isAuthUser);
   // Permissions
   const canAccessPermissionsManagement =
-    props.hasPermission('postRole', !isAuthUser ) ||
-    props.hasPermission('putRole', !isAuthUser ) ||
-    props.hasPermission('deleteRole', !isAuthUser ) ||
+    props.hasPermission('postRole', !isAuthUser) ||
+    props.hasPermission('putRole', !isAuthUser) ||
+    props.hasPermission('deleteRole', !isAuthUser) ||
     props.hasPermission('putUserProfilePermissions', !isAuthUser);
 
   // Blue Square Email Management
@@ -868,9 +869,8 @@ export function Header(props) {
                     </span>
                   </DropdownToggle>
                   <DropdownMenu
-                    className={`${styles.noMaxHeight} ${
-                      darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown
-                    }`}
+                    className={`${styles.noMaxHeight} ${darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown
+                      }`}
                   >
 
                     <DropdownItem
@@ -939,9 +939,8 @@ export function Header(props) {
                       <span>{PROJECTS}</span>
                     </DropdownToggle>
                     <DropdownMenu
-                      className={`${styles.noMaxHeight} ${
-                        darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown
-                      }`}
+                      className={`${styles.noMaxHeight} ${darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown
+                        }`}
                       disabled={headerDisabled}
                     >
                       <DropdownItem tag={Link} to="/bmdashboard/inventorytypes" className={fontColor}>
@@ -1035,9 +1034,8 @@ export function Header(props) {
                       <span>{REPORTS}</span>
                     </DropdownToggle>
                     <DropdownMenu
-                      className={`${styles.noMaxHeight} ${
-                        darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown
-                      }`}
+                      className={`${styles.noMaxHeight} ${darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown
+                        }`}
                     >
                       {canGetReports && (
                         <DropdownItem
@@ -1173,6 +1171,16 @@ export function Header(props) {
                           {PROJECTS}
                         </DropdownItem>
                       )}
+                      {(canAccessProjects || canUpdateTask) && (
+                        <DropdownItem
+                          tag={Link}
+                          to="/resolvedtasks"
+                          className={fontColor}
+                          disabled={headerDisabled}
+                        >
+                          {TASKS}
+                        </DropdownItem>
+                      )}
                       {canAccessTeams && (
                         <DropdownItem
                           tag={Link}
@@ -1206,26 +1214,25 @@ export function Header(props) {
                       {canAccessPermissionsManagement && (
                         <>
                           <DropdownItem divider className={styles.hideInMobile} />
-                          <DropdownItem
-                            tag={Link}
-                            to="/permissionsmanagement"
-                            className={fontColor}
-                            disabled={headerDisabled}
-                          >
-                            {PERMISSIONS_MANAGEMENT}
-                          </DropdownItem>
-                        </>
-                      )}
-                      {canAccessBlueSquareEmailManagement && (
+                            <DropdownItem
+                              tag={Link}
+                              to="/permissionsmanagement"
+                              className={fontColor}
+                              disabled={headerDisabled}
+                            >
+                              {PERMISSIONS_MANAGEMENT}
+                            </DropdownItem>
+                          </>
+                        )}
+                        <DropdownItem divider className={styles.hideInMobile} />
                         <DropdownItem
                           tag={Link}
-                          to="/bluesquare-email-management"
+                          to="/pr-dashboard/overview"
                           className={fontColor}
                           disabled={headerDisabled}
                         >
-                          {BLUE_SQUARE_EMAIL_MANAGEMENT}
+                          PR Team Analytics
                         </DropdownItem>
-                      )}
                     </DropdownMenu>
                   </UncontrolledDropdown>
                 )}
@@ -1302,8 +1309,6 @@ export function Header(props) {
                   />
                 </NavItem>
 
-
-
                 <NavItem className={styles.hideInMobile}>
                   <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
                     <div
@@ -1328,9 +1333,8 @@ export function Header(props) {
                     </span>
                   </DropdownToggle>
                   <DropdownMenu
-                    className={`${styles.noMaxHeight} ${
-                      darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown
-                    }`}
+                    className={`${styles.noMaxHeight} ${darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown
+                      }`}
                   >
                     <DropdownItem
                       header
