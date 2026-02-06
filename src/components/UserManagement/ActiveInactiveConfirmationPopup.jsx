@@ -1,58 +1,147 @@
 import React from 'react';
+import moment from 'moment';
 import { useSelector } from 'react-redux';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import { USER_STATUS_CHANGE_CONFIRMATION } from '../../languages/en/messages';
+import {
+  Button,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+} from 'reactstrap';
 import '../Header/index.css';
+import { InactiveReason } from '../../utils/enums';
 
-/**
- * Modal popup to show the user profile to confirm activation/deactivtion
- */
-const ActiveInactiveConfirmationPopupComponent = (props) => {
+const ActiveInactiveConfirmationPopup = React.memo((props) => {
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const closePopup = () => {
-    props.onClose();
-  };
-  const setActiveInactive = () => {
-    if (props.deactivatedAt) {
-      // Cancel scheduled deactivation
-      props.setActiveInactive(true);
-    } else {
-      props.setActiveInactive(!props.isActive);
-    }
-  };
-  const getTargetStatus = () => {
-    if (!props.isActive) return 'ACTIVE';
-    if (props.deactivatedAt) return 'CANCEL DEACTIVATION';
-    return 'INACTIVE';
-  };
+  const {
+    open,
+    onClose,
+    fullName,
+    isActive,
+    endDate,
+    inactiveReason,
+    onDeactivateImmediate,
+    onScheduleFinalDay,
+    onCancelScheduledDeactivation,
+    onReactivateUser,
+  } = props;
+
+  const isScheduled =
+    isActive &&
+    !!endDate &&
+    moment(endDate).isAfter(moment());
+
+  const isPaused =
+    !isActive &&
+    inactiveReason === InactiveReason.PAUSED;
+
+  const isSeparated =
+    !isActive &&
+    inactiveReason === InactiveReason.SEPARATED;
+
+  const isInactive = !isActive;
 
   return (
     <Modal
-      isOpen={props.open}
-      toggle={closePopup}
+      isOpen={open}
+      toggle={onClose}
       className={darkMode ? 'text-light dark-mode' : ''}
     >
-      <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={closePopup}>
-        Change the user status
+      <ModalHeader
+        className={darkMode ? 'bg-space-cadet' : ''}
+        toggle={onClose}
+      >
+        Manage user status
       </ModalHeader>
+
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <p>
-          {USER_STATUS_CHANGE_CONFIRMATION(props.fullName, getTargetStatus())}
+          What would you like to do for <strong>{fullName}</strong>?
         </p>
+
+        {isScheduled && (
+          <p className="text-warning">
+            This user has a final day scheduled and will be deactivated automatically.
+          </p>
+        )}
+
+        {isPaused && (
+          <p className="text-info">
+            This user is currently paused.
+          </p>
+        )}
+
+        {isSeparated && (
+          <p className="text-muted">
+            This user is inactive.
+          </p>
+        )}
       </ModalBody>
+
       <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-        <Button color="primary" onClick={setActiveInactive}>
-          Ok
-        </Button>
-        <Button color="secondary" onClick={closePopup}>
+        {/* Cancel scheduled final day */}
+        {isScheduled && (
+          <Button
+            color="success"
+            onClick={() => {
+              onCancelScheduledDeactivation();
+              onClose();
+            }}
+          >
+            Cancel Final Day
+          </Button>
+        )}
+
+        {/* Immediate separation */}
+        {isActive && (
+          <Button
+            color="danger"
+            onClick={() => {
+              onDeactivateImmediate();
+              onClose();
+            }}
+          >
+            Deactivate Immediately
+          </Button>
+        )}
+
+        {/* Schedule separation */}
+        {isActive && !isScheduled && (
+          <Button
+            color="warning"
+            onClick={() => {
+              onScheduleFinalDay();
+              onClose();
+            }}
+          >
+            Set Final Day
+          </Button>
+        )}
+
+        {/* Reactivate (paused only) */}
+        {isInactive && (
+          <Button
+            color="success"
+            onClick={() => {
+              onReactivateUser();
+              onClose();
+            }}
+          >
+            Reactivate User
+          </Button>
+        )}
+
+
+        <Button color="secondary" onClick={onClose}>
           Close
         </Button>
       </ModalFooter>
     </Modal>
   );
-};
+});
 
-const ActiveInactiveConfirmationPopup = React.memo(ActiveInactiveConfirmationPopupComponent);
-ActiveInactiveConfirmationPopup.displayName = "ActiveInactiveConfirmationPopup";
+ActiveInactiveConfirmationPopup.displayName =
+  'ActiveInactiveConfirmationPopup';
+
 export default ActiveInactiveConfirmationPopup;
