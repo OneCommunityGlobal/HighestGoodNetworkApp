@@ -4,6 +4,7 @@ import { Bar } from 'react-chartjs-2';
 import Select from 'react-select';
 import { fetchIssues } from '../../../actions/bmdashboard/issueChartActions';
 import 'chart.js/auto';
+import { Chart as ChartJS } from 'chart.js';
 import styles from './issueChart.module.css';
 
 function IssueChart() {
@@ -12,6 +13,7 @@ function IssueChart() {
   const { loading, issues, error } = useSelector(state => state.bmissuechart);
 
   const [filters, setFilters] = useState({ issueTypes: [], years: [] });
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 640);
 
   useEffect(() => {
     dispatch(fetchIssues());
@@ -30,6 +32,15 @@ function IssueChart() {
       setFilters({ issueTypes: allIssueTypes, years: allYears });
     }
   }, [issues]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 640);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const extractDropdownOptions = () => {
     const issueTypes = [...new Set(Object.keys(issues || {}))].map(issue => ({
@@ -75,6 +86,13 @@ function IssueChart() {
     }
   };
 
+  const handleClearFilters = () => {
+    setFilters({
+      issueTypes: [],
+      years: [],
+    });
+  };
+
   const chartData = useMemo(() => {
     if (!issues || Object.keys(issues).length === 0) return { labels: [], datasets: [] };
     const filteredIssueTypes = filters.issueTypes.length ? filters.issueTypes : Object.keys(issues);
@@ -85,76 +103,132 @@ function IssueChart() {
       label: year.toString(),
       data: labels.map(issueType => issues[issueType]?.[year] || 0),
       backgroundColor: yearColorMap[year],
-      borderWidth: 1,
+      borderColor: darkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.3)',
+      borderWidth: 1.5,
       borderRadius: 6,
     }));
 
     return { labels, datasets };
-  }, [issues, filters, uniqueYears, yearColorMap]);
+  }, [issues, filters, uniqueYears, yearColorMap, darkMode]);
+
+  const xAxisBackgroundPlugin = darkMode => ({
+    id: 'xAxisBackground',
+    beforeDraw: chart => {
+      const { ctx, chartArea, scales } = chart;
+      const xScale = scales.x;
+      if (!xScale) return;
+
+      ctx.save();
+
+      const ticks = xScale.ticks.length;
+
+      xScale.ticks.forEach((_, index) => {
+        // Shade ONLY alternate labels: one shaded, one normal
+        if (index % 2 !== 0) return;
+
+        const center = xScale.getPixelForTick(index);
+
+        const left = index === 0 ? xScale.left : (xScale.getPixelForTick(index - 1) + center) / 2;
+
+        const right =
+          index === ticks - 1 ? xScale.right : (center + xScale.getPixelForTick(index + 1)) / 2;
+
+        ctx.fillStyle = darkMode
+          ? 'rgba(255,255,255,0.05)' // dark mode band
+          : 'rgba(0,0,0,0.08)'; // light mode band (more visible)
+
+        ctx.fillRect(left, chartArea.top, right - left, chartArea.bottom - chartArea.top);
+      });
+
+      ctx.restore();
+    },
+  });
 
   const chartOptions = useMemo(
     () => ({
       responsive: true,
       maintainAspectRatio: false,
+      layout: {
+        padding: {
+          bottom: 56,
+        },
+      },
       plugins: {
         legend: {
           display: true,
           position: 'top',
           labels: {
-            font: { size: 13, weight: '500' },
+            font: { size: 13 },
             usePointStyle: true,
-            color: darkMode ? '#e8f0fe' : '#1a1a1a',
-            padding: 16,
+            color: darkMode ? '#cfd7e3' : '#232323',
           },
         },
         title: {
           display: true,
           text: 'Number of Issues Reported by Type',
-          font: { size: 17, weight: '600' },
-          color: darkMode ? '#e8f0fe' : '#1a1a1a',
-          padding: { bottom: 20 },
+          font: { size: 17 },
+          color: darkMode ? '#cfd7e3' : '#232323',
         },
         tooltip: {
           enabled: true,
           mode: 'index',
           intersect: false,
-          backgroundColor: darkMode ? '#2d3748' : '#ffffff',
-          titleColor: darkMode ? '#f7fafc' : '#1a1a1a',
-          bodyColor: darkMode ? '#f7fafc' : '#1a1a1a',
-          borderColor: darkMode ? '#4a5568' : '#e2e8f0',
-          borderWidth: 1,
-          cornerRadius: 8,
-          titleFont: { size: 14, weight: '600' },
-          bodyFont: { size: 13, weight: '500' },
+          backgroundColor: darkMode ? '#232323' : '#fff',
+          titleColor: darkMode ? '#fff' : '#232323',
+          bodyColor: darkMode ? '#fff' : '#232323',
           callbacks: {
             label: ctx => `${ctx.dataset.label}: ${ctx.formattedValue}`,
           },
-          // Enhanced tooltip styling for better accessibility
-          displayColors: true,
-          titleAlign: 'left',
-          bodyAlign: 'left',
         },
+        datalabels: {
+          display: false,
+        },
+        xAxisBackground: true,
       },
       scales: {
         x: {
+          offset: true,
           title: {
             display: true,
             text: 'Issue Type',
-            font: { size: 14, weight: '600' },
-            color: darkMode ? '#e8f0fe' : '#1a1a1a',
-            padding: { top: 10 },
+            font: { size: 14 },
+            color: darkMode ? '#cfd7e3' : '#232323',
           },
-          grid: {
-            display: false,
-            color: darkMode ? '#4a5568' : '#e2e8f0',
-          },
+          grid: { display: false },
           barPercentage: 0.9,
           categoryPercentage: 0.8,
           ticks: {
-            stepSize: 1,
             color: darkMode ? '#e8f0fe' : '#1a1a1a',
-            font: { size: 12, weight: '500' },
+            stepSize: 1,
             padding: 8,
+            align: 'center',
+            autoSkip: false,
+            maxRotation: isMobile ? 90 : 0,
+            minRotation: isMobile ? 90 : 0,
+            font: { size: 12, weight: '500' },
+            callback: (value, index, ticks) => {
+              const label = chartData?.labels?.[index] ?? ticks?.[index]?.label ?? String(value);
+              if (isMobile) return label;
+
+              const maxCharsPerLine = 12;
+              if (label.length <= maxCharsPerLine) return label;
+
+              const words = label.split(' ');
+              const lines = [];
+              let currentLine = '';
+
+              words.forEach(word => {
+                if ((currentLine + ' ' + word).trim().length <= maxCharsPerLine) {
+                  currentLine = (currentLine + ' ' + word).trim();
+                } else {
+                  lines.push(currentLine);
+                  currentLine = word;
+                }
+              });
+
+              if (currentLine) lines.push(currentLine);
+              return lines;
+            },
           },
           border: {
             color: darkMode ? '#4a5568' : '#e2e8f0',
@@ -165,118 +239,58 @@ function IssueChart() {
           title: {
             display: true,
             text: 'No. of Issues',
-            font: { size: 14, weight: '600' },
-            color: darkMode ? '#e8f0fe' : '#1a1a1a',
-            padding: { bottom: 10 },
+            font: { size: 14 },
+            color: darkMode ? '#cfd7e3' : '#232323',
           },
           beginAtZero: true,
-          ticks: {
-            stepSize: 1,
-            color: darkMode ? '#e8f0fe' : '#1a1a1a',
-            font: { size: 12, weight: '500' },
-            padding: 8,
-          },
-          grid: {
-            color: darkMode ? '#4a5568' : '#e2e8f0',
-            lineWidth: 1,
-          },
-          border: {
-            color: darkMode ? '#4a5568' : '#e2e8f0',
-            width: 1,
-          },
+          ticks: { stepSize: 1, color: darkMode ? '#cfd7e3' : '#232323' },
+          grid: { color: darkMode ? '#353535' : '#efefef' },
         },
       },
-      // Enhanced interaction for better accessibility
-      interaction: {
-        intersect: false,
-        mode: 'index',
-      },
     }),
-    [darkMode],
+    [darkMode, isMobile],
   );
+
+  const chartPlugins = useMemo(() => [xAxisBackgroundPlugin(darkMode)], [darkMode]);
 
   const selectStyles = useMemo(() => {
     if (!darkMode) return {};
     return {
       control: provided => ({
         ...provided,
-        backgroundColor: '#2d3748',
-        borderColor: '#4a5568',
-        color: '#f7fafc',
-        '&:hover': {
-          borderColor: '#718096',
-        },
-        boxShadow: 'none',
-        minHeight: '42px',
+        backgroundColor: '#22272e',
+        borderColor: '#3d444d',
+        color: '#cfd7e3',
       }),
       menu: provided => ({
         ...provided,
-        backgroundColor: '#2d3748',
-        border: '1px solid #4a5568',
-        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.3)',
-        zIndex: 9999,
+        backgroundColor: '#1e1e1e',
+        color: '#cfd7e3',
       }),
       input: provided => ({
         ...provided,
-        color: '#f7fafc',
+        color: '#cfd7e3',
       }),
       singleValue: provided => ({
         ...provided,
-        color: '#f7fafc',
+        color: '#cfd7e3',
       }),
       multiValue: provided => ({
         ...provided,
-        backgroundColor: '#4a5568',
-        borderRadius: '6px',
+        backgroundColor: '#3d444d',
       }),
       multiValueLabel: provided => ({
         ...provided,
-        color: '#f7fafc',
-        fontSize: '14px',
-        fontWeight: '500',
-      }),
-      multiValueRemove: provided => ({
-        ...provided,
-        color: '#cbd5e0',
-        '&:hover': {
-          backgroundColor: '#e53e3e',
-          color: '#ffffff',
-        },
+        color: '#cfd7e3',
       }),
       option: (provided, state) => ({
         ...provided,
-        backgroundColor: state.isFocused ? '#4a5568' : state.isSelected ? '#2b6cb0' : '#2d3748',
-        color: state.isSelected ? '#ffffff' : '#f7fafc',
-        '&:hover': {
-          backgroundColor: '#4a5568',
-          color: '#ffffff',
-        },
-        cursor: 'pointer',
-        fontSize: '14px',
-        fontWeight: '500',
+        backgroundColor: state.isFocused ? '#4caf50' : '#1e1e1e',
+        color: state.isFocused ? '#fff' : '#cfd7e3',
       }),
       placeholder: provided => ({
         ...provided,
-        color: '#a0aec0',
-        fontSize: '14px',
-      }),
-      indicatorSeparator: provided => ({
-        ...provided,
-        backgroundColor: '#4a5568',
-      }),
-      dropdownIndicator: provided => ({
-        ...provided,
-        color: '#a0aec0',
-        '&:hover': {
-          color: '#f7fafc',
-        },
-      }),
-      clearIndicator: provided => ({
-        ...provided,
-        color: '#a0aec0',
-        '&:hover': {
-          color: '#e53e3e',
-        },
+        color: '#aab1bf',
       }),
     };
   }, [darkMode]);
@@ -346,25 +360,47 @@ function IssueChart() {
               placeholder="Select years"
             />
           </div>
+          <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+            <button
+              type="button"
+              onClick={handleClearFilters}
+              style={{
+                padding: '8px 16px',
+                backgroundColor: '#007FFF',
+                color: '#ffffff',
+                border: 'none',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                fontWeight: 500,
+                height: '38px',
+              }}
+              aria-label="Clear all issue chart filters"
+            >
+              Clear Filters
+            </button>
+          </div>
         </div>
 
-        {loading && (
-          <p className={`${styles.loadingText} ${darkMode ? styles.loadingTextDark : ''}`}>
-            Loading chart data...
-          </p>
-        )}
-        {error && (
-          <p className={`${styles.errorText} ${darkMode ? styles.errorTextDark : ''}`}>
-            Error: {error}
-          </p>
-        )}
+        {loading && <p>Loading...</p>}
+        {error && <p>Error: {error}</p>}
 
         {!loading && !error && (
           <div
-            className={`${styles.chartWrapper} ${darkMode ? styles.chartWrapperDark : ''}`}
-            style={{ minHeight: 400 }}
+            className={`${styles.issueChartYearGroup} ${styles.issueTypeGroup} ${
+              darkMode ? styles.issueChartYearGroupDark : ''
+            }`}
           >
-            <Bar data={chartData} options={chartOptions} aria-labelledby="chart-title" />
+            <div
+              className={`${styles.chartWrapper} ${darkMode ? styles.chartWrapperDark : ''}`}
+              style={{ minHeight: 420, paddingBottom: 12 }}
+            >
+              <Bar
+                data={chartData}
+                options={chartOptions}
+                plugins={chartPlugins}
+                aria-labelledby="chart-title"
+              />
+            </div>
           </div>
         )}
       </div>

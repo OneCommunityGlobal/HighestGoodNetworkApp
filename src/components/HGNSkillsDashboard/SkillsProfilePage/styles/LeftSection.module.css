@@ -20,8 +20,11 @@
 @media (max-width: 1100px) {
   .leftSection {
     width: 100%;
-    padding: 20px 0;
+    padding: 16px 0 12px;
+    flex-direction: row;
+    gap: 20px;
   }
+  .leftSection h1, .leftSection h3 { text-align: left; }
 }
 
 :global(.dark-mode) .leftSection h1 {

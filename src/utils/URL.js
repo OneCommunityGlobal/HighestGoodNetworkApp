@@ -4,9 +4,9 @@ const APIEndpoint =
 export const ENDPOINTS = {
   APIEndpoint: () => APIEndpoint,
   USER_PROFILE: userId => `${APIEndpoint}/userprofile/${userId}`,
+  USER_PROFILE_FIXED: userId => `${APIEndpoint}/userProfile/${userId}`,
   USER_PROFILE_PROPERTY: userId => `${APIEndpoint}/userprofile/${userId}/property`,
   USER_PROFILES: `${APIEndpoint}/userprofile/`,
-  UPDATE_USER_FINAL_DAY: userId => `${APIEndpoint}/userprofile/${userId}/updateFinalDay`,
   UPDATE_REHIREABLE_STATUS: userId => `${APIEndpoint}/userprofile/${userId}/rehireable`,
   TOGGLE_VISIBILITY: userId => `${APIEndpoint}/userprofile/${userId}/toggleInvisibility`,
   USER_PROFILE_UPDATE: `${APIEndpoint}/userprofile/update`,
@@ -228,6 +228,7 @@ export const ENDPOINTS = {
   PRESETS_BY_ID: roleNameOrPresetId => `${APIEndpoint}/rolePreset/${roleNameOrPresetId}`,
 
   OWNERMESSAGE: () => `${APIEndpoint}/ownerMessage`,
+  OWNER_MESSAGE_HISTORY: (page, limit) => `${APIEndpoint}/ownerMessageLogs?page=${page}&limit=${limit}`,
 
   AI_PROMPT: () => `${APIEndpoint}/dashboard/aiPrompt`,
   COPIED_AI_PROMPT: userId => `${APIEndpoint}/dashboard/aiPrompt/copied/${userId}`,
@@ -312,6 +313,7 @@ export const ENDPOINTS = {
   BM_UPDATE_MATERIAL: `${APIEndpoint}/bm/updateMaterialRecord`,
   BM_UPDATE_MATERIAL_BULK: `${APIEndpoint}/bm/updateMaterialRecordBulk`,
   BM_UPDATE_MATERIAL_STATUS: `${APIEndpoint}/bm/updateMaterialStatus`,
+  BM_MATERIAL_STOCK_OUT_RISK: `${APIEndpoint}/bm/materials/stock-out-risk`,
   BM_UPDATE_REUSABLE: `${APIEndpoint}/bm/updateReusableRecord`,
   BM_UPDATE_REUSABLE_BULK: `${APIEndpoint}/bm/updateReusableRecordBulk`,
   BM_TOOL_TYPES: `${APIEndpoint}/bm/invtypes/tools`,
@@ -371,6 +373,8 @@ export const ENDPOINTS = {
     `${APIEndpoint}/bm/timelogger/${projectId}/${memberId}/stop`,
   TIME_LOGGER_LOGS: (projectId, memberId) =>
     `${APIEndpoint}/bm/timelogger/${projectId}/${memberId}/logs`,
+  TIME_LOGGER_ALL_LOGS: projectId =>
+    `${APIEndpoint}/bm/timelogger/${projectId}/logs`,
 
   GET_TIME_OFF_REQUESTS: () => `${APIEndpoint}/getTimeOffRequests`,
   ADD_TIME_OFF_REQUEST: () => `${APIEndpoint}/setTimeOffRequest`,
@@ -390,6 +394,7 @@ export const ENDPOINTS = {
   HGN_FORM_UPDATE_QUESTION: id => `${APIEndpoint}/questions/${id}`,
   HGN_FORM_SUBMIT: `${APIEndpoint}/hgnform`,
   HGN_FORM_UPDATE_USER_SKILLS_FOLLOWUP_SUBMIT: `${APIEndpoint}/skills/profile/updateFollowUp/`,
+  // HGN Skills Dashboard
   SKILLS_PROFILE: userId => `${APIEndpoint}/skills/profile/${userId}`,
 
   CREATE_JOB_FORM: `${APIEndpoint}/jobforms`,
@@ -427,6 +432,7 @@ export const ENDPOINTS = {
   EVENTS: `${APIEndpoint}/events`,
   EVENT_TYPES: `${APIEndpoint}/events/types`,
   EVENT_LOCATIONS: `${APIEndpoint}/events/locations`,
+  EVENT_ATTENDANCE_STATS: `${APIEndpoint}/events/attendance/stats`,
   LB_SEND_MESSAGE: `${APIEndpoint}/lb/messages`,
   LB_READ_MESSAGE: `${APIEndpoint}/lb/messages/conversation`,
   LB_UPDATE_MESSAGE_STATUS: `${APIEndpoint}/lb/messages/statuses`,
@@ -453,6 +459,9 @@ export const ENDPOINTS = {
   SLACK_ADD: `${APIEndpoint}/slack/invite`,
   DROPBOX_CREATE_ADD: `${APIEndpoint}/dropbox/create-folder-and-invite`,
   ACCESS_MANAGEMENT: `${APIEndpoint}/accessManagement`,
+
+  // CP dashboard endpoints
+  CP_NOSHOW: `${APIEndpoint}/communityportal/sendFollowUpEmail`,
 
   // community portal
   CP_NOSHOW_VIZ_LOCATION: `${APIEndpoint}/communityportal/reports/participation/location`,
@@ -510,6 +519,9 @@ export const ENDPOINTS = {
 
   //pull requests analysis
   PR_REVIEWS_INSIGHTS: `${APIEndpoint}/analytics/pr-review-insights`,
+
+  // Education Portal endpoints
+  EDUCATOR_ASSIGN_ATOMS: () => `${APIEndpoint}/educator/assign-atoms`,
 
   LESSON_PLANS: `${APIEndpoint}/education/lesson-plans`,
   SAVE_INTEREST: `${APIEndpoint}/education/student/saved-interests`,
