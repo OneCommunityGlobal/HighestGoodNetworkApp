@@ -338,12 +338,14 @@ const WeeklySummariesReport = props => {
    * @param {*} summaries
    * @returns
    */
-  const alphabetize = summaries => {
-    const temp = [...summaries];
-    return temp.sort((a, b) =>
-      `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`),
-    );
-  };
+
+  // Keeping this block commented for future reference
+  // const alphabetize = summaries => {
+  //   const temp = [...summaries];
+  //   return temp.sort((a, b) =>
+  //     `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`),
+  //   );
+  // };
 
   const processRawSummaries = rawSummaries => {
     // 1. Alphabetize
@@ -662,7 +664,7 @@ const WeeklySummariesReport = props => {
 
       const processedData = processRawSummaries(summaries);
 
-      const { summaries: summariesCopy, teamCodes, colorOptions, tableData } = processedData;
+      const { summaries: summariesCopy, teamCodes, colorOptions } = processedData;
 
       setTeamCodes(teamCodes);
       // keeping this block commented for future reference
@@ -1009,7 +1011,6 @@ const WeeklySummariesReport = props => {
           //   const summaryStart = new Date(summary.startDate);
           //   const summaryEnd = new Date(summary.endDate);
           //   const isLastWeek = summaryStart <= lastWeekEnd && summaryEnd >= lastWeekStart;
-
           //   if (!isLastWeek) {
           //     return false; // Skip inactive members unless their summary is from last week
           //   }
@@ -1633,7 +1634,6 @@ const WeeklySummariesReport = props => {
   //     }));
   //     return;
   //   }
-
   //   // If there's a current filter applied, always show modification modal
   //   // regardless of whether the selection has changed or not
   //   setShowModificationModal(true);
@@ -1827,12 +1827,13 @@ const WeeklySummariesReport = props => {
     }
   };
 
-  const handleTrophyToggleChange = () => {
-    setState(prevState => ({
-      ...prevState,
-      selectedTrophies: !prevState.selectedTrophies,
-    }));
-  };
+  // Keeping the block commented for future reference
+  // const handleTrophyToggleChange = () => {
+  //   setState(prevState => ({
+  //     ...prevState,
+  //     selectedTrophies: !prevState.selectedTrophies,
+  //   }));
+  // };
 
   const handleSpecialColorToggleChange = (color, isEnabled) => {
     setState(prevState => ({
@@ -3581,6 +3582,9 @@ WeeklySummariesReport.propTypes = {
   setState: PropTypes.func,
   updateOneSummaryReport: PropTypes.func.isRequired,
   getWeeklySummariesReport: PropTypes.func.isRequired,
+  fetchAllBadges: PropTypes.func.isRequired,
+  hasPermission: PropTypes.func.isRequired,
+  setTeamCodes: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = state => {
