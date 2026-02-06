@@ -98,6 +98,7 @@ import ActivityAttendance from './components/CommunityPortal/Activities/Activity
 import ActivityAgenda from './components/CommunityPortal/Activities/ActivityAgenda';
 import NoshowViz from './components/CommunityPortal/Attendence/NoshowViz';
 import EventList from './components/CommunityPortal/Event/EventList/EventList';
+import ResolvedTasks from './components/ResolvedTasks/ResolvedTasks';
 import ResourcesUsage from './components/CommunityPortal/Activities/activityId/ResourcesUsage';
 import EventParticipation from './components/CommunityPortal/Reports/Participation/EventParticipation';
 import NoShowList from './components/CommunityPortal/Activities/NoShow/NoShowList';
@@ -367,6 +368,7 @@ export default (
       <ToastContainer />
       <Switch>
         <ProtectedRoute path="/weekly-summary" exact component={WeeklySummaryPage} />
+        <ProtectedRoute path="/resolvedtasks" exact component={ResolvedTasks} />
         <ProtectedRoute path="/hgnhelp" exact component={HelpPage} />
         <ProtectedRoute path="/dashboard" exact component={Dashboard} />
         <ProtectedRoute path="/dashboard/:userId" exact component={Dashboard} />
