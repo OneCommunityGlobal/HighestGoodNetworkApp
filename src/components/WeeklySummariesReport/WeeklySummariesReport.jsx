@@ -25,7 +25,6 @@ import {
   DropdownItem,
 } from 'reactstrap';
 import ReactTooltip from 'react-tooltip';
-import { MultiSelect } from 'react-multi-select-component';
 import Select, { components } from 'react-select';
 import moment from 'moment';
 import { boxStyle, boxStyleDark } from '~/styles';
@@ -68,7 +67,7 @@ import CreateFilterModal from './components/CreateFilterModal';
 import UpdateFilterModal from './components/UpdateFilterModal';
 import SelectFilterModal from './components/SelectFilterModal';
 import styles from './WeeklySummariesReport.module.css';
-import { setField, toggleField, removeItemFromField, setChildField } from '~/utils/stateHelper';
+import { setField } from '~/utils/stateHelper';
 import WeeklySummariesToggleFilter from './components/WeeklySummariesToggleFilter';
 // Keeping this block commented intentionally for future reference —
 import { SlideToggle } from './components';
@@ -298,6 +297,228 @@ const CustomMenuList = props => {
 //   };
 // };
 
+const baseSelectStyles = {
+  menu: base => ({
+    ...base,
+    zIndex: 9999,
+  }),
+  menuList: base => ({
+    ...base,
+    maxHeight: '700px',
+    overflowY: 'auto',
+  }),
+};
+
+const lightSelectStyles = {
+  ...baseSelectStyles,
+  control: base => ({
+    ...base,
+    backgroundColor: '#fff',
+    borderColor: '#ced4da',
+  }),
+  valueContainer: base => ({
+    ...base,
+    paddingLeft: '12px', // This stops the "S" clipping
+  }),
+  placeholder: base => ({
+    ...base,
+    marginLeft: '2px', // Extra nudge for text clarity
+  }),
+};
+
+const darkSelectStyles = {
+  ...baseSelectStyles,
+
+  control: base => ({
+    ...base,
+    backgroundColor: '#1b2a41',
+    color: '#fff',
+    borderColor: '#3a3f45',
+  }),
+
+  singleValue: base => ({
+    ...base,
+    color: '#fff',
+  }),
+
+  menu: base => ({
+    ...base,
+    backgroundColor: '#1b2a41',
+    color: '#fff',
+    zIndex: 9999,
+  }),
+
+  option: (base, state) => ({
+    ...base,
+    backgroundColor: state.isSelected
+      ? '#265fa4' // selected (darker ash)
+      : state.isActive
+      ? '' // mouse-down (ash) ✅ FIX
+      : state.isFocused
+      ? '#396cab' // hover (ash)
+      : '#1b2a41',
+
+    color: '#ffffff',
+    cursor: 'pointer',
+
+    // 🔥 THIS LINE STOPS THE FLASH
+    ':active': {
+      backgroundColor: '#265fa4',
+    },
+  }),
+};
+
+const doesSummaryMatchFilters = ({
+  summary,
+  state,
+  weekIndex,
+  selectedCodesArray,
+  selectedColorsArray,
+  selectedExtraMembersArray,
+  activeFilterColors,
+}) => {
+  const { activeTab } = state;
+  const hoursLogged = (summary.totalSeconds[navItems.indexOf(activeTab)] || 0) / 3600;
+
+  if (
+    summary?.isActive === false &&
+    !doesSummaryBelongToWeek(summary.startDate, summary.endDate, weekIndex)
+  ) {
+    return false;
+  }
+
+  const isMeetCriteria =
+    summary.totalTangibleHrs > 80 && summary.daysInTeam > 60 && summary.bioPosted !== 'posted';
+
+  const isBio = !state.selectedBioStatus || isMeetCriteria;
+
+  const isOverHours =
+    !state.selectedOverTime ||
+    (summary.weeklycommittedHours > 0 &&
+      hoursLogged > 0 &&
+      hoursLogged >= summary.promisedHoursByWeek[weekIndex]);
+
+  const summarySubmissionDate = moment()
+    .tz('America/Los_Angeles')
+    .endOf('week')
+    .subtract(weekIndex, 'week')
+    .format('YYYY-MM-DD');
+
+  const hasTrophy =
+    !state.selectedTrophies ||
+    showTrophyIcon(summarySubmissionDate, summary?.startDate?.split('T')[0]);
+
+  const matchesSpecialColor =
+    activeFilterColors.length === 0 ||
+    activeFilterColors.some(color => summary.filterColor?.includes(color));
+
+  const isInSelectedCode = selectedCodesArray.includes(summary.teamCode);
+  const isInSelectedExtraMember = selectedExtraMembersArray.includes(summary._id);
+  const noFilterSelected =
+    selectedCodesArray.length === 0 && selectedExtraMembersArray.length === 0;
+
+  let matchesLoggedHoursRange = true;
+
+  if (state.selectedLoggedHoursRange?.length) {
+    matchesLoggedHoursRange = state.selectedLoggedHoursRange.some(range => {
+      switch (range.value) {
+        case '=0':
+          return hoursLogged === 0;
+        case '0-10':
+          return hoursLogged > 0 && hoursLogged <= 10;
+        case '10-20':
+          return hoursLogged > 10 && hoursLogged <= 20;
+        case '20-40':
+          return hoursLogged > 20 && hoursLogged <= 40;
+        case '>40':
+          return hoursLogged > 40;
+        default:
+          return true;
+      }
+    });
+  }
+
+  return (
+    (noFilterSelected || isInSelectedCode || isInSelectedExtraMember) &&
+    (selectedColorsArray.length === 0 ||
+      selectedColorsArray.includes(summary.weeklySummaryOption)) &&
+    matchesSpecialColor &&
+    isOverHours &&
+    isBio &&
+    hasTrophy &&
+    matchesLoggedHoursRange
+  );
+};
+
+const normalizeFilterColor = filterColor => {
+  if (Array.isArray(filterColor)) {
+    return filterColor.filter(c => typeof c === 'string').map(c => c.toLowerCase());
+  }
+
+  if (typeof filterColor === 'string') {
+    try {
+      const parsed = JSON.parse(filterColor);
+      if (Array.isArray(parsed)) {
+        return parsed.filter(c => typeof c === 'string').map(c => c.toLowerCase());
+      }
+      if (typeof parsed === 'string') {
+        return [parsed.toLowerCase()];
+      }
+    } catch {
+      return [filterColor.toLowerCase()];
+    }
+  }
+
+  return [];
+};
+
+const updateUserColor = async ({ user, color, props, setState }) => {
+  if (!user?._id) {
+    return { skipped: true };
+  }
+
+  const payload = {
+    filterColor: [color],
+    requestor: {
+      requestorId: props.auth?.user?.userid || null,
+      role: props.auth?.user?.role,
+      permissions: props.auth?.user?.permissions,
+      email: props.auth?.user?.email,
+    },
+    firstName: user.firstName,
+    lastName: user.lastName,
+  };
+
+  const res = await props.updateOneSummaryReport(user._id, payload);
+
+  setState(prev => ({
+    ...prev,
+    summaries: prev.summaries.map(u =>
+      u._id === user._id ? { ...u, filterColor: res.data?.filterColor || [color] } : u,
+    ),
+  }));
+
+  return { success: true };
+};
+
+const doesSummaryBelongToWeek = (startDateStr, endDateStr, weekIndex) => {
+  const weekStartLA = moment()
+    .tz('America/Los_Angeles')
+    .startOf('week')
+    .subtract(weekIndex, 'week')
+    .toDate();
+  const weekEndLA = moment()
+    .tz('America/Los_Angeles')
+    .endOf('week')
+    .subtract(weekIndex, 'week')
+    .toDate();
+
+  const summaryStart = new Date(startDateStr);
+  const summaryEnd = new Date(endDateStr);
+
+  return summaryStart <= weekEndLA && summaryEnd >= weekStartLA;
+};
+
 /* eslint-disable react/function-component-definition */
 const WeeklySummariesReport = props => {
   const { loading, getInfoCollections } = props;
@@ -350,27 +571,6 @@ const WeeklySummariesReport = props => {
     return temp.sort((a, b) =>
       `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`),
     );
-  };
-
-  const doesSummaryBelongToWeek = (startDateStr, endDateStr, weekIndex) => {
-    // weekIndex: 0 = This Week, 1 = Last Week, 2 = Week Before Last, 3 = Three Weeks Ago
-    const weekStartLA = moment()
-      .tz('America/Los_Angeles')
-      .startOf('week')
-      .subtract(weekIndex, 'week')
-      .toDate();
-
-    const weekEndLA = moment()
-      .tz('America/Los_Angeles')
-      .endOf('week')
-      .subtract(weekIndex, 'week')
-      .toDate();
-
-    const summaryStart = new Date(startDateStr);
-    const summaryEnd = new Date(endDateStr);
-
-    // keep if it overlaps that week
-    return summaryStart <= weekEndLA && summaryEnd >= weekStartLA;
   };
 
   /**
@@ -613,43 +813,8 @@ const WeeklySummariesReport = props => {
         const promisedHoursByWeek = weekDates.map(weekDate =>
           getPromisedHours(weekDate.toDate, summary.weeklycommittedHoursHistory),
         );
-        // // Keeping this block commented intentionally for future reference —
-        // let filterColor = [];
-        // // Keeping this block commented intentionally for future reference —
-        // // const filterColor = summary.filterColor || null; // old working code
-        // if (Array.isArray(summary.filterColor)) {
-        //   filterColor = summary.filterColor;
-        // } else if (typeof summary.filterColor === 'string') {
-        //   try {
-        //     const parsed = JSON.parse(summary.filterColor);
-        //     filterColor = Array.isArray(parsed) ? parsed : [summary.filterColor];
-        //   } catch {
-        //     filterColor = [summary.filterColor];
-        //   }
-        // }
-        let filterColor = [];
-        if (Array.isArray(summary.filterColor)) {
-          // 1. Filter out junk data (like 'null')
-          // 2. Convert all strings to lowercase (good practice)
-          filterColor = summary.filterColor
-            .filter(c => typeof c === 'string') // Keep only strings
-            .map(c => c.toLowerCase()); // Ensure lowercase
-        } else if (typeof summary.filterColor === 'string') {
-          // Handles cases where DB stores '["purple"]' or just 'Purple'
-          try {
-            const parsed = JSON.parse(summary.filterColor);
-            if (Array.isArray(parsed)) {
-              // It was a stringified array, clean it
-              filterColor = parsed.filter(c => typeof c === 'string').map(c => c.toLowerCase());
-            } else if (typeof parsed === 'string') {
-              // It was a single string like '"purple"'
-              filterColor = [parsed.toLowerCase()];
-            }
-          } catch {
-            // It was just a plain string like 'Purple'
-            filterColor = [summary.filterColor.toLowerCase()];
-          }
-        }
+
+        const filterColor = normalizeFilterColor(summary.filterColor);
 
         return { ...summary, promisedHoursByWeek, filterColor };
       });
@@ -724,7 +889,7 @@ const WeeklySummariesReport = props => {
       const chartData = [];
 
       // Get all filters
-      fetchFilters();
+      //fetchFilters();
       // eslint-disable-next-line no-console
       // 🟢 NEW: Final debug log before setting state
       // eslint-disable-next-line no-console
@@ -937,106 +1102,17 @@ const WeeklySummariesReport = props => {
 
       const temp = summaries
         .map(s => ({ ...s }))
-        .filter(summary => {
-          const { activeTab } = state;
-          const hoursLogged = (summary.totalSeconds[navItems.indexOf(activeTab)] || 0) / 3600;
-
-          // 🛑 Adding this block at the very top inside the filter
-          // if (summary?.isActive === false) {
-          //   const lastWeekStart = moment()
-          //     .tz('America/Los_Angeles')
-          //     .startOf('week')
-          //     .subtract(1, 'week')
-          //     .toDate();
-          //   const lastWeekEnd = moment()
-          //     .tz('America/Los_Angeles')
-          //     .endOf('week')
-          //     .subtract(1, 'week')
-          //     .toDate();
-          //   const summaryStart = new Date(summary.startDate);
-          //   const summaryEnd = new Date(summary.endDate);
-          //   const isLastWeek = summaryStart <= lastWeekEnd && summaryEnd >= lastWeekStart;
-
-          //   if (!isLastWeek) {
-          //     return false; // Skip inactive members unless their summary is from last week
-          //   }
-          // }
-          if (
-            summary?.isActive === false &&
-            !doesSummaryBelongToWeek(summary.startDate, summary.endDate, weekIndex)
-          ) {
-            return false;
-          }
-          const isMeetCriteria =
-            summary.totalTangibleHrs > 80 &&
-            summary.daysInTeam > 60 &&
-            summary.bioPosted !== 'posted';
-          const isBio = !selectedBioStatus || isMeetCriteria;
-          const isOverHours =
-            !selectedOverTime ||
-            (summary.weeklycommittedHours > 0 &&
-              hoursLogged > 0 &&
-              hoursLogged >= summary.promisedHoursByWeek[navItems.indexOf(activeTab)]);
-
-          // Add trophy filter logic
-          const summarySubmissionDate = moment()
-            .tz('America/Los_Angeles')
-            .endOf('week')
-            .subtract(weekIndex, 'week')
-            .format('YYYY-MM-DD');
-
-          const hasTrophy =
-            !selectedTrophies ||
-            showTrophyIcon(summarySubmissionDate, summary?.startDate?.split('T')[0]);
-
-          // Add special color filter logic
-          // const matchesSpecialColor =
-          //   activeFilterColors.length === 0 || activeFilterColors.includes(summary.filterColor);
-          // const matchesSpecialColor =
-          //   // activeFilterColors.length === 0 ||
-          //   // activeFilterColors.some(color => summary.filterColor?.includes?.(color));
-          //   activeFilterColors.length === 0 || activeFilterColors.includes(summary.filterColor); // old one
-
-          const matchesSpecialColor =
-            activeFilterColors.length === 0 ||
-            activeFilterColors.some(color => summary.filterColor?.includes(color));
-
-          // Filtered by Team Code and Extra Members
-          const isInSelectedCode = selectedCodesArray.includes(summary.teamCode);
-          const isInSelectedExtraMember = selectedExtraMembersArray.includes(summary._id);
-          const noFilterSelected =
-            selectedCodesArray.length === 0 && selectedExtraMembersArray.length === 0;
-
-          let matchesLoggedHoursRange = true;
-          if (selectedLoggedHoursRange && selectedLoggedHoursRange.length > 0) {
-            matchesLoggedHoursRange = selectedLoggedHoursRange.some(range => {
-              switch (range.value) {
-                case '=0':
-                  return hoursLogged === 0;
-                case '0-10':
-                  return hoursLogged > 0 && hoursLogged <= 10;
-                case '10-20':
-                  return hoursLogged > 10 && hoursLogged <= 20;
-                case '20-40':
-                  return hoursLogged > 20 && hoursLogged <= 40;
-                case '>40':
-                  return hoursLogged > 40;
-                default:
-                  return true;
-              }
-            });
-          }
-          return (
-            (noFilterSelected || isInSelectedCode || isInSelectedExtraMember) &&
-            (selectedColorsArray.length === 0 ||
-              selectedColorsArray.includes(summary.weeklySummaryOption)) &&
-            matchesSpecialColor &&
-            isOverHours &&
-            isBio &&
-            hasTrophy &&
-            matchesLoggedHoursRange
-          );
-        });
+        .filter(summary =>
+          doesSummaryMatchFilters({
+            summary,
+            state,
+            weekIndex,
+            selectedCodesArray,
+            selectedColorsArray,
+            selectedExtraMembersArray,
+            activeFilterColors,
+          }),
+        );
 
       // Use Dict and Set for quick access
       const filteredTeamDict = {};
@@ -1204,17 +1280,8 @@ const WeeklySummariesReport = props => {
           // Keeping this block commented intentionally for future reference —
           // const filterColor = summary.filterColor || null;
           // return { ...summary, promisedHoursByWeek, filterColor }; // both lines old working code
-          let filterColor = [];
-          if (Array.isArray(summary.filterColor)) {
-            filterColor = summary.filterColor;
-          } else if (typeof summary.filterColor === 'string') {
-            filterColor = [summary.filterColor];
-          }
-          return {
-            ...summary,
-            promisedHoursByWeek,
-            filterColor,
-          };
+          const filterColor = normalizeFilterColor(summary.filterColor);
+          return { ...summary, promisedHoursByWeek, filterColor };
         });
 
         // Update state
@@ -1290,17 +1357,8 @@ const WeeklySummariesReport = props => {
                 // Keeping this block commented intentionally for future reference —
                 // const filterColor = summary.filterColor || null;
                 // return { ...summary, promisedHoursByWeek, filterColor }; old working code
-                let filterColor = [];
-                if (Array.isArray(summary.filterColor)) {
-                  filterColor = summary.filterColor;
-                } else if (typeof summary.filterColor === 'string') {
-                  filterColor = [summary.filterColor];
-                }
-                return {
-                  ...summary,
-                  promisedHoursByWeek,
-                  filterColor,
-                };
+                const filterColor = normalizeFilterColor(summary.filterColor);
+                return { ...summary, promisedHoursByWeek, filterColor };
               });
 
               setState(prevState => ({
@@ -1970,78 +2028,20 @@ const WeeklySummariesReport = props => {
       let failCount = 0;
 
       // Convert matchingUsers into update promises (skipping any with missing _id)
-      const updatePromises = matchingUsers.map(user => {
-        if (!user?._id) {
-          failCount++;
-          return Promise.resolve({ status: 'skipped', reason: 'Missing user._id' });
+      const updatePromises = matchingUsers.map(user =>
+        updateUserColor({ user, color, props, setState }),
+      );
+
+      const results = await Promise.allSettled(updatePromises);
+
+      results.forEach(r => {
+        if (r.status === 'fulfilled') {
+          if (r.value?.success) successCount += 1;
+          if (r.value?.skipped); // optional: track skipped
+        } else {
+          failCount += 1;
         }
-
-        const payloadToSend = {
-          filterColor: [color],
-          requestor: {
-            requestorId: props.auth?.user?.userid || props.auth?.user?._id || null,
-            role: props.auth?.user?.role,
-            permissions: props.auth?.user?.permissions,
-            email: props.auth?.user?.email,
-          },
-          firstName: user.firstName,
-          lastName: user.lastName,
-          personalLinks: user.personalLinks || [],
-          adminLinks: user.adminLinks || [],
-        };
-
-        return props
-          .updateOneSummaryReport(user._id, payloadToSend)
-          .then(res => {
-            successCount++;
-            const updatedUserFromServer = res?.data;
-
-            // Update state safely using functional setState
-            setState(prev => {
-              const updatedSummaries = Array.isArray(prev.summaries)
-                ? prev.summaries.map(u =>
-                    u && u._id === user._id
-                      ? { ...u, filterColor: updatedUserFromServer?.filterColor || [color] }
-                      : u,
-                  )
-                : prev.summaries;
-
-              const updatedFilteredSummaries = Array.isArray(prev.filteredSummaries)
-                ? prev.filteredSummaries.map(u =>
-                    u && u._id === user._id
-                      ? { ...u, filterColor: updatedUserFromServer?.filterColor || [color] }
-                      : u,
-                  )
-                : prev.filteredSummaries;
-
-              const updatedSummariesForTab = {
-                ...prev.summariesByTab,
-                [prev.activeTab]: updatedSummaries,
-              };
-
-              return {
-                ...prev,
-                summaries: updatedSummaries,
-                filteredSummaries: updatedFilteredSummaries,
-                summariesByTab: updatedSummariesForTab,
-              };
-            });
-
-            // return fulfilled info for Promise.allSettled
-            return { status: 'fulfilled', value: res };
-          })
-          .catch(err => {
-            failCount++;
-            const status = err?.response?.status;
-            const msg = err?.response?.data?.message || err.message;
-            // eslint-disable-next-line no-console
-            console.warn(`⚠️ Skipped user ${user._id} (${status}): ${msg}`);
-            return { status: 'rejected', reason: err };
-          });
       });
-
-      // Wait for all to finish
-      await Promise.allSettled(updatePromises);
 
       // Final toasts depending on results
       if (failCount > 0) {
@@ -2078,7 +2078,7 @@ const WeeklySummariesReport = props => {
   const handleSelectExtraMembersChange = event => {
     setState(prev => ({
       ...prev,
-      selectedExtraMembers: event,
+      selectedExtraMembers: event || [],
     }));
   };
 
@@ -2218,86 +2218,6 @@ const WeeklySummariesReport = props => {
     }));
   }, []);
 
-  // keeping this block commented for reference
-  // When active tab changes, load from cache or fetch fresh
-  // useEffect(() => {
-  //   if (state.summariesByTab[state.activeTab]) {
-  //     setState(prev => ({
-  //       ...prev,
-  //       summaries: state.summariesByTab[state.activeTab],
-  //     }));
-  //   } else {
-  //     // Fetch new data using axios
-  //     const weekIndex = navItems.indexOf(state.activeTab);
-  //     const url = `${ENDPOINTS.WEEKLY_SUMMARIES_REPORT()}?week=${weekIndex}&forceRefresh=true`;
-
-  //     axios
-  //       .get(url)
-  //       .then(res => {
-  //         const summaries = Array.isArray(res?.data) ? res.data : []; // Getting array
-
-  //         if (summaries.length > 0) {
-  //           // Processing the array
-  //           let summariesCopy = [...summaries];
-  //           summariesCopy = alphabetize(summariesCopy); // Assuming alphabetize is defined
-
-  //           summariesCopy = summariesCopy.map(summary => {
-  //             const promisedHoursByWeek = weekDates.map(
-  //               weekDate =>
-  //                 getPromisedHours(weekDate.toDate, summary.weeklycommittedHoursHistory || []), // Assuming getPromisedHours is defined
-  //             );
-
-  //             // **** Applying the filterColor cleaning logic ****
-  //             let filterColor = [];
-  //             if (Array.isArray(summary.filterColor)) {
-  //               filterColor = summary.filterColor
-  //                 .filter(c => typeof c === 'string') // Filtering out null/non-strings
-  //                 .map(c => c.toLowerCase()); // Ensures it's lowercase
-  //             } else if (typeof summary.filterColor === 'string') {
-  //               // Handles stringified arrays or single strings
-  //               try {
-  //                 const parsed = JSON.parse(summary.filterColor);
-  //                 if (Array.isArray(parsed)) {
-  //                   filterColor = parsed
-  //                     .filter(c => typeof c === 'string')
-  //                     .map(c => c.toLowerCase());
-  //                 } else if (typeof parsed === 'string') {
-  //                   filterColor = [parsed.toLowerCase()];
-  //                 }
-  //               } catch {
-  //                 filterColor = [summary.filterColor.toLowerCase()];
-  //               }
-  //             }
-  //             // ************************************************
-
-  //             return { ...summary, promisedHoursByWeek, filterColor };
-  //           });
-
-  //           // Sets the PROCESSED ARRAY into state
-  //           setState(prev => ({
-  //             ...prev,
-  //             summaries: summariesCopy, // summaries is now an array
-  //             summariesByTab: {
-  //               ...prev.summariesByTab,
-  //               [state.activeTab]: summariesCopy,
-  //             },
-  //           }));
-  //         } else {
-  //           // Handles empty response
-  //           setState(prev => ({
-  //             ...prev,
-  //             summaries: [], // summaries is an empty array
-  //             summariesByTab: {
-  //               ...prev.summariesByTab,
-  //               [state.activeTab]: [],
-  //             },
-  //           }));
-  //         }
-  //       })
-  //       .catch(err => console.error(`❌ Failed to fetch data for ${state.activeTab}`, err));
-  //   }
-  // }, [state.activeTab, state.summariesByTab]); // Dependencies might need adjustment
-
   useEffect(() => {
     let isMounted = true;
 
@@ -2337,21 +2257,8 @@ const WeeklySummariesReport = props => {
               getPromisedHours(weekDate.toDate, summary.weeklycommittedHoursHistory || []),
             );
 
-            let filterColor = [];
-            if (Array.isArray(summary.filterColor)) {
-              filterColor = summary.filterColor
-                .filter(c => typeof c === 'string')
-                .map(c => c.toLowerCase());
-            } else if (typeof summary.filterColor === 'string') {
-              try {
-                const parsed = JSON.parse(summary.filterColor);
-                filterColor = Array.isArray(parsed)
-                  ? parsed.filter(c => typeof c === 'string').map(c => c.toLowerCase())
-                  : [parsed.toLowerCase()];
-              } catch {
-                filterColor = [summary.filterColor.toLowerCase()];
-              }
-            }
+            const filterColor = normalizeFilterColor(summary.filterColor);
+
             return { ...summary, promisedHoursByWeek, filterColor };
           });
           // 3. Generating Team Codes & Color Options
@@ -2529,7 +2436,6 @@ const WeeklySummariesReport = props => {
             )}
 
             <Button
-              color={darkMode ? 'light' : 'primary'}
               outline
               className="mx-1"
               type="button"
@@ -2569,7 +2475,6 @@ const WeeklySummariesReport = props => {
               filters={filterChoices}
               applyFilter={applyFilter}
               memberDict={state.memberDict}
-              darkMode={darkMode}
             />
             {permissionState.canManageFilter && (
               <UpdateFilterModal
@@ -2692,18 +2597,7 @@ const WeeklySummariesReport = props => {
                 className={`custom-select-container ${darkMode ? 'dark-mode' : ''} ${
                   state.teamCodeWarningUsers.length > 0 ? 'warning-border' : ''
                 }`}
-                styles={{
-                  menuList: base => ({
-                    ...base,
-                    maxHeight: '700px',
-                    overflowY: 'auto',
-                  }),
-                  option: (base, state) => ({
-                    ...base,
-                    fontSize: '13px',
-                    backgroundColor: state.isFocused ? '#eee' : 'white',
-                  }),
-                }}
+                styles={darkMode ? darkSelectStyles : baseSelectStyles}
               />
 
               {/* Save/Delete Buttons - only visible when codes are selected */}
@@ -2875,17 +2769,12 @@ const WeeklySummariesReport = props => {
             }}
             placeholder="Select color filters..."
             classNamePrefix="custom-select"
-            className={`${styles.multiSelectFilter} text-dark ${darkMode ? 'dark-mode' : ''}`}
+            className={`${styles.multiSelectFilter} ${darkMode ? 'dark-mode' : 'text-dark'}`}
             styles={{
-              menuList: base => ({
+              ...(darkMode ? darkSelectStyles : baseSelectStyles),
+              menuPortal: base => ({
                 ...base,
-                maxHeight: '700px',
-                overflowY: 'auto',
-              }),
-              option: (base, state) => ({
-                ...base,
-                fontSize: '13px',
-                backgroundColor: state.isFocused ? '#eee' : 'white',
+                zIndex: 9999,
               }),
             }}
           />
@@ -3019,15 +2908,30 @@ const WeeklySummariesReport = props => {
           </Row>
         </Col>
       </Row>
-      <Row className={styles['mx-max-sm-0']}>
+      <Row className={styles['mx-max-sm-0']} style={{ marginBottom: '10px' }}>
         <Col lg={{ size: 5, offset: 1 }} md={{ size: 6 }} xs={{ size: 12 }}>
           <div>Select Extra Members</div>
-          <MultiSelect
-            className={`${styles['report-multi-select-filter']} ${styles.textDark} 
-              ${darkMode ? 'dark-mode' : ''}`}
+          <Select
+            isMulti
+            isSearchable
+            closeMenuOnSelect={false}
+            hideSelectedOptions={false}
+            blurInputOnSelect={false}
             options={state.membersFromUnselectedTeam}
             value={state.selectedExtraMembers}
             onChange={handleSelectExtraMembersChange}
+            components={{
+              Option: CheckboxOption,
+              MenuList: CustomMenuList,
+            }}
+            placeholder="Select extra members..."
+            classNamePrefix="custom-select"
+            className={`custom-select-container ${darkMode ? 'dark-mode' : ''}`}
+            styles={{
+              ...(darkMode ? darkSelectStyles : baseSelectStyles),
+              menuPortal: base => ({ ...base, zIndex: 9999 }),
+            }}
+            menuPortalTarget={document.body}
           />
         </Col>
         <Col lg={{ size: 5 }} md={{ size: 6 }} xs={{ size: 12 }}>
@@ -3049,17 +2953,13 @@ const WeeklySummariesReport = props => {
             hideSelectedOptions={false}
             blurInputOnSelect={false}
             closeMenuOnSelect={false}
-            className={`${styles.multiSelectFilter} text-dark ${darkMode ? 'dark-mode' : ''}`}
+            classNamePrefix="custom-select"
+            className={`${styles.multiSelectFilter} ${darkMode ? 'dark-mode' : 'text-dark'}`}
             styles={{
-              menuList: base => ({
+              ...(darkMode ? darkSelectStyles : lightSelectStyles),
+              menuPortal: base => ({
                 ...base,
-                maxHeight: '700px',
-                overflowY: 'auto',
-              }),
-              option: (base, state) => ({
-                ...base,
-                fontSize: '13px',
-                backgroundColor: state.isFocused ? '#eee' : 'white',
+                zIndex: 9999,
               }),
             }}
             value={state.selectedLoggedHoursRange}
@@ -3136,6 +3036,10 @@ const WeeklySummariesReport = props => {
           <TabContent
             activeTab={state.activeTab}
             className={`p-4 ${darkMode ? 'bg-yinmn-blue border-0' : ''}`}
+            style={{
+              minHeight: '100%',
+              backgroundColor: darkMode ? '#2e5061' : undefined,
+            }}
           >
             {navItems.map((item, index) => (
               <WeeklySummariesReportTab tabId={item} key={item} hidden={item !== state.activeTab}>
@@ -3227,7 +3131,12 @@ const WeeklySummariesReport = props => {
                     ) : (
                       <Row>
                         <Col>
-                          <Alert color="info">No data available for this tab.</Alert>
+                          <Alert
+                            color="black"
+                            style={{ marginTop: '20px', textAlign: 'center', color: 'black' }}
+                          >
+                            No data available for this tab.
+                          </Alert>
                         </Col>
                       </Row>
                     )}

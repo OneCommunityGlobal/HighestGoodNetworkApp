@@ -46,6 +46,67 @@ const defaultState = {
   selectedExtraMembersInvalid: [],
 };
 
+const modalDarkSelectStyles = {
+  control: (base, state) => ({
+    ...base,
+    backgroundColor: '#0f172a',
+    color: '#ffffff',
+    borderColor: state.isFocused ? '#4dabf7' : '#3a506b',
+    boxShadow: state.isFocused ? '0 0 0 0.15rem rgba(77,171,247,.25)' : 'none',
+    outline: 'none',
+    ':hover': {
+      borderColor: '#4dabf7',
+    },
+  }),
+
+  valueContainer: base => ({
+    ...base,
+    color: '#ffffff',
+  }),
+
+  singleValue: base => ({
+    ...base,
+    color: '#ffffff',
+  }),
+
+  input: base => ({
+    ...base,
+    color: '#ffffff',
+
+    /* 🔥 REAL FIX */
+    border: 'none',
+    boxShadow: 'none',
+    outline: 'none',
+    background: 'transparent',
+
+    /* prevent phantom left line */
+    paddingLeft: 0,
+    marginLeft: 0,
+  }),
+
+  placeholder: base => ({
+    ...base,
+    color: '#94a3b8',
+  }),
+
+  menu: base => ({
+    ...base,
+    backgroundColor: '#0f172a',
+    zIndex: 9999,
+  }),
+
+  menuList: base => ({
+    ...base,
+    backgroundColor: '#0f172a',
+  }),
+
+  option: (base, state) => ({
+    ...base,
+    backgroundColor: state.isSelected ? '#334155' : state.isFocused ? '#243b55' : '#0f172a',
+    color: '#ffffff',
+  }),
+};
+
 export default function UpdateFilterModal({
   isOpen,
   toggle,
@@ -279,7 +340,7 @@ export default function UpdateFilterModal({
         size="lg"
         isOpen={isOpen}
         toggle={toggle}
-        className={`${darkMode ? mainStyles.darkModal : ''}`}
+        contentClassName={darkMode ? mainStyles.wsrDarkModalContent : undefined}
       >
         <ModalHeader toggle={toggle}>Update or Delete Filter</ModalHeader>
         <ModalBody>
@@ -291,11 +352,11 @@ export default function UpdateFilterModal({
               id="filterOverride"
               options={filters}
               value={selectedFilter}
-              onChange={e => handleSelectedFilter(e)}
-              className={`top-select ${mainStyles.textDark} ${
-                !selectedFilter ? `${mainStyles.errorSelect}` : ''
-              }`}
+              onChange={handleSelectedFilter}
+              classNamePrefix="custom-select"
+              styles={darkMode ? modalDarkSelectStyles : undefined}
             />
+
             {selectedFilter && (
               <FormGroup>
                 {update ? (
