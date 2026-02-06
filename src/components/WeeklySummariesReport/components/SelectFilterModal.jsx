@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Form, Label } from 'reactstrap';
 import Select from 'react-select';
 import FilterPreviewForm from './FilterPreviewForm.jsx';
+import { getCustomStyles } from '~/utils/reactSelectStyles'; //  Import Styles
 
 export default function SelectFilterModal({
   state,
@@ -21,51 +22,7 @@ export default function SelectFilterModal({
     }
   }, [isOpen]);
 
-  const customStyles = {
-    control: base => ({
-      ...base,
-      backgroundColor: darkMode ? '#2e3440' : '#fff',
-      borderColor: darkMode ? '#4c566a' : '#ccc',
-      color: darkMode ? '#fff' : '#000',
-    }),
-    menu: base => ({
-      ...base,
-      backgroundColor: darkMode ? '#2e3440' : '#fff',
-      zIndex: 9999,
-    }),
-    menuList: base => ({
-      ...base,
-      backgroundColor: darkMode ? '#2e3440' : '#fff',
-    }),
-    option: (base, selectState) => {
-      // 🟢 Fix: Extracted nested ternary into independent statements
-      let backgroundColor;
-      if (selectState.isFocused) {
-        backgroundColor = darkMode ? '#434c5e' : '#eee';
-      } else {
-        backgroundColor = darkMode ? '#2e3440' : '#fff';
-      }
-
-      return {
-        ...base,
-        backgroundColor,
-        color: darkMode ? '#fff' : '#000',
-        cursor: 'pointer',
-      };
-    },
-    singleValue: base => ({
-      ...base,
-      color: darkMode ? '#fff' : '#000',
-    }),
-    input: base => ({
-      ...base,
-      color: darkMode ? '#fff' : '#000',
-    }),
-    placeholder: base => ({
-      ...base,
-      color: darkMode ? '#d8dee9' : '#808080',
-    }),
-  };
+  const customStyles = getCustomStyles(darkMode);
 
   const handleSelectedFilter = () => {
     applyFilter(selectedFilter);

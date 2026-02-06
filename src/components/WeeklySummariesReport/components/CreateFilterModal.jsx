@@ -24,6 +24,7 @@ import {
 } from '../../../actions/weeklySummariesFilterAction';
 import { normalizeFilter } from '~/utils/weeklySummariesFilterHelper';
 import { da } from 'date-fns/locale';
+import { getCustomStyles } from '~/utils/reactSelectStyles'; //  Import Styles
 
 const defaultState = {
   filterName: '',
@@ -123,51 +124,7 @@ function CreateFilterModal({
     setSelectedFilter(currentAppliedFilter);
   }, [currentAppliedFilter]);
 
-  const customStyles = {
-    control: base => ({
-      ...base,
-      backgroundColor: darkMode ? '#2e3440' : '#fff',
-      borderColor: darkMode ? '#4c566a' : '#ccc',
-      color: darkMode ? '#fff' : '#000',
-    }),
-    menu: base => ({
-      ...base,
-      backgroundColor: darkMode ? '#2e3440' : '#fff',
-      zIndex: 9999,
-    }),
-    menuList: base => ({
-      ...base,
-      backgroundColor: darkMode ? '#2e3440' : '#fff',
-    }),
-    option: (base, selectState) => {
-      // Fixed: Extracted nested ternary into independent statements
-      let backgroundColor;
-      if (selectState.isFocused) {
-        backgroundColor = darkMode ? '#434c5e' : '#eee';
-      } else {
-        backgroundColor = darkMode ? '#2e3440' : '#fff';
-      }
-
-      return {
-        ...base,
-        backgroundColor,
-        color: darkMode ? '#fff' : '#000',
-        cursor: 'pointer',
-      };
-    },
-    singleValue: base => ({
-      ...base,
-      color: darkMode ? '#fff' : '#000',
-    }),
-    input: base => ({
-      ...base,
-      color: darkMode ? '#fff' : '#000',
-    }),
-    placeholder: base => ({
-      ...base,
-      color: darkMode ? '#d8dee9' : '#808080',
-    }),
-  };
+  const customStyles = getCustomStyles(darkMode);
 
   const handleSubmit = async e => {
     e.preventDefault();

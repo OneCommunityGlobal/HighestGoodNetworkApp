@@ -81,6 +81,7 @@ import {
   useUpdateFiltersWithIndividualCodesChangeMutation,
   useUpdateFiltersWithReplacedTeamCodesMutation,
 } from '../../actions/weeklySummariesFilterAction';
+import { getCustomStyles } from '~/utils/reactSelectStyles'; //  Import Styles
 
 const navItems = ['This Week', 'Last Week', 'Week Before Last', 'Three Weeks Ago'];
 const fullCodeRegex = /^.{5,7}$/;
@@ -2565,58 +2566,7 @@ const WeeklySummariesReport = props => {
     );
   }
 
-  const customStyles = {
-    control: base => ({
-      ...base,
-      backgroundColor: darkMode ? '#2e3440' : '#fff', // Dark blue-grey vs White
-      borderColor: darkMode ? '#4c566a' : '#ccc',
-      color: darkMode ? '#fff' : '#000',
-    }),
-    menu: base => ({
-      ...base,
-      backgroundColor: darkMode ? '#2e3440' : '#fff',
-      zIndex: 9999, // Ensure it sits on top
-    }),
-    menuList: base => ({
-      ...base,
-      backgroundColor: darkMode ? '#2e3440' : '#fff',
-      maxHeight: '700px',
-      overflowY: 'auto',
-    }),
-    option: (base, state) => ({
-      ...base,
-      fontSize: '13px',
-      backgroundColor: state.isFocused
-        ? darkMode
-          ? '#434c5e'
-          : '#eee' // Hover color
-        : darkMode
-        ? '#2e3440'
-        : '#fff', // Default color
-      color: darkMode ? '#fff' : '#000',
-      cursor: 'pointer',
-    }),
-    singleValue: base => ({
-      ...base,
-      color: darkMode ? '#fff' : '#000',
-    }),
-    multiValue: base => ({
-      ...base,
-      backgroundColor: darkMode ? '#4c566a' : '#e6e6e6',
-    }),
-    multiValueLabel: base => ({
-      ...base,
-      color: darkMode ? '#fff' : '#000',
-    }),
-    input: base => ({
-      ...base,
-      color: darkMode ? '#fff' : '#000',
-    }),
-    placeholder: base => ({
-      ...base,
-      color: darkMode ? '#d8dee9' : '#808080',
-    }),
-  };
+  const customStyles = getCustomStyles(darkMode);
 
   const teamCodeStyles = {
     control: base => ({
