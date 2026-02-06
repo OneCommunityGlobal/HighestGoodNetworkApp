@@ -2,25 +2,42 @@ import { useSelector } from 'react-redux';
 import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { v4 as uuidv4 } from 'uuid';
-import { FaRegClock, FaIdCard } from 'react-icons/fa';
-import './ActivityAttendance.css';
+import { FaRegClock, FaIdCard, FaInfoCircle } from 'react-icons/fa';
+import styles from './ActivityAttendance.module.css';
 import { useState } from 'react';
 import profileImg from '../../../assets/images/profile.png';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-function StatsChart({ stats }) {
-  const totalMembers = stats.find(stat => stat.title === 'Total Community Members')?.value || 1;
-  const registered = stats.find(stat => stat.title === 'Registered')?.value || 0;
-  const percentage = ((registered / totalMembers) * 100).toFixed(1);
+function deriveAttendanceMetrics({
+  totalCommunityMembers,
+  registeredMembers,
+  registeredNoShows,
+  communityVisitors,
+}) {
+  const attendingMembers = Math.max(registeredMembers - registeredNoShows, 0);
 
+  const totalAttendees = attendingMembers + communityVisitors;
+
+  const participationPercentage =
+    totalCommunityMembers > 0
+      ? Number(((totalAttendees / totalCommunityMembers) * 100).toFixed(1))
+      : 0;
+
+  return {
+    attendingMembers,
+    totalAttendees,
+    participationPercentage,
+  };
+}
+
+function StatsChart({ attendingMembers, communityVisitors, participationPercentage }) {
   const data = {
-    labels: stats.map(stat => stat.title),
+    labels: ['Attending Members', 'Community Visitors'],
     datasets: [
       {
-        data: stats.map(stat => stat.value),
-        backgroundColor: ['#4CAF50', '#2196F3', '#F44336', '#FF9800'],
-        hoverBackgroundColor: ['#388E3C', '#1976D2', '#D32F2F', '#F57C00'],
+        data: [attendingMembers, communityVisitors],
+        backgroundColor: ['#2196F3', '#FF9800'],
         borderWidth: 1,
       },
     ],
@@ -30,14 +47,23 @@ function StatsChart({ stats }) {
     cutout: '70%',
     plugins: {
       legend: { display: false },
-      tooltip: { enabled: true },
+      tooltip: {
+        callbacks: {
+          label: ctx => {
+            const total = attendingMembers + communityVisitors;
+            const value = ctx.raw;
+            const percent = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+            return `${ctx.label}: ${value} (${percent}%)`;
+          },
+        },
+      },
     },
   };
 
   return (
-    <div className="chart-container">
+    <div className={styles.chartContainer}>
       <Doughnut data={data} options={options} />
-      <div className="chart-label">{percentage}%</div>
+      <div className={styles.chartLabel}>{participationPercentage}%</div>
     </div>
   );
 }
@@ -57,52 +83,92 @@ const exportToCSV = students => {
   document.body.removeChild(link);
 };
 
-function StatsCard({ title, value, color }) {
+function StatsCard({ title, value, colorClass, definition }) {
   return (
-    <div className="stats-card">
-      <h3>{title}</h3>
-      <p className="stats-value" style={{ color }}>
-        {value}
-      </p>
+    <div className={styles.statsCard}>
+      <div className={styles.statsCardHeader}>
+        <h3>{title}</h3>
+        <button
+          className={styles.infoIconWrapper}
+          title={definition}
+          aria-label={`Definition of ${title}`}
+          type="button"
+        >
+          <FaInfoCircle className={styles.infoIcon} />
+        </button>
+      </div>
+      <p className={`${styles.statsValue} ${styles[colorClass]}`}>{value}</p>
     </div>
   );
 }
 
 function StudentRow({ img, name, time, id }) {
   return (
-    <div className="student-row">
-      <div className="student-left">
-        <img src={img} alt={name} className="student-img" />
-        <div className="student-name">{name}</div>
+    <div className={styles.studentRow}>
+      <div className={styles.studentLeft}>
+        <img src={img} alt={name} className={styles.studentImg} />
+        <div className={styles.studentName}>{name}</div>
       </div>
-      <div className="student-center">
-        <div className="student-time">
-          <FaRegClock className="student-icon" /> {time}
+      <div className={styles.studentCenter}>
+        <div className={styles.studentTime}>
+          <FaRegClock className={styles.studentIcon} /> {time}
         </div>
       </div>
-      <div className="student-right">
-        <div className="student-id">
-          <FaIdCard className="student-icon" /> {id}
+      <div className={styles.studentRight}>
+        <div className={styles.studentId}>
+          <FaIdCard className={styles.studentIcon} /> {id}
         </div>
       </div>
     </div>
   );
 }
 
-function LiveUpdates({ students, searchTerm }) {
-  const filteredStudents = students.filter(student =>
-    student.name.toLowerCase().includes(searchTerm.toLowerCase()),
-  );
+function LiveUpdates({ students, searchTerm, selectedStatus, onStatusChange }) {
+  const normalizedSearch = searchTerm.trim().toLowerCase();
+
+  const filteredStudents = students.filter(student => {
+    const matchesStatus = selectedStatus === 'All' || student.status === selectedStatus;
+
+    const matchesSearch =
+      !normalizedSearch ||
+      student.name.toLowerCase().includes(normalizedSearch) ||
+      student.id.toLowerCase().includes(normalizedSearch);
+
+    return matchesStatus && matchesSearch;
+  });
+
+  const statuses = ['All', 'In', 'Out', 'Leave'];
 
   return (
-    <div className="live-updates">
-      <div className="updates-header">
-        <h3>Live Student Update</h3>
-        <button className="export-btn" type="button" onClick={() => exportToCSV(filteredStudents)}>
+    <div className={styles.liveUpdates}>
+      <div className={styles.updatesHeader}>
+        <div className={styles.updatesHeaderLeft}>
+          <h3>Live Student Update</h3>
+          <div className={styles.statusFilters}>
+            {statuses.map(status => (
+              <button
+                key={status}
+                type="button"
+                className={`${styles.statusFilterBtn} ${
+                  selectedStatus === status ? styles.statusFilterBtnActive : ''
+                }`}
+                onClick={() => onStatusChange(status)}
+              >
+                {status}
+              </button>
+            ))}
+          </div>
+        </div>
+        <button
+          className={styles.exportBtn}
+          type="button"
+          onClick={() => exportToCSV(filteredStudents)}
+        >
           Export Data
         </button>
       </div>
-      <div className="updates-list">
+
+      <div className={styles.updatesList}>
         {filteredStudents.length > 0 ? (
           filteredStudents.map(student => (
             <StudentRow
@@ -114,7 +180,7 @@ function LiveUpdates({ students, searchTerm }) {
             />
           ))
         ) : (
-          <p className="no-results">No students found.</p>
+          <p className={styles.noResults}>No students found.</p>
         )}
       </div>
     </div>
@@ -124,53 +190,125 @@ function LiveUpdates({ students, searchTerm }) {
 function ActivityAttendance() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('All');
+
+  /* -------- Raw inputs -------- */
+  const totalCommunityMembers = 400;
+  const registeredMembers = 100;
+  const registeredNoShows = 15;
+  const communityVisitors = 19;
+
+  const { attendingMembers, totalAttendees, participationPercentage } = deriveAttendanceMetrics({
+    totalCommunityMembers,
+    registeredMembers,
+    registeredNoShows,
+    communityVisitors,
+  });
 
   const statsData = [
-    { id: uuidv4(), title: 'Total Community Members', value: 400, color: '#4CAF50' },
-    { id: uuidv4(), title: 'Registered', value: 100, color: '#2196F3' },
-    { id: uuidv4(), title: 'No Show', value: 15, color: '#F44336' },
-    { id: uuidv4(), title: 'Community Visitor', value: 19, color: '#FF9800' },
+    {
+      id: uuidv4(),
+      title: 'Total Community Members',
+      value: totalCommunityMembers,
+      colorClass: 'statGreen',
+      definition: 'Total number of people who live in the community.',
+    },
+    {
+      id: uuidv4(),
+      title: 'Registered Members',
+      value: registeredMembers,
+      colorClass: 'statBlue',
+      definition: 'Community members who registered for the event/session.',
+    },
+    {
+      id: uuidv4(),
+      title: 'Registered No-Shows',
+      value: registeredNoShows,
+      colorClass: 'statRed',
+      definition: 'Registered community members who did not attend the event.',
+    },
+    {
+      id: uuidv4(),
+      title: 'Attending Members',
+      value: attendingMembers,
+      colorClass: 'statBlue',
+      definition: 'Community members who registered and actually attended the event.',
+    },
+    {
+      id: uuidv4(),
+      title: 'Community Visitors',
+      value: communityVisitors,
+      colorClass: 'statOrange',
+      definition: 'Non-community members who attended the event.',
+    },
+    {
+      id: uuidv4(),
+      title: 'Total Attendees',
+      value: totalAttendees,
+      colorClass: 'statDarkGreen',
+      definition:
+        'Total number of people who attended the event. Used for participation and continuation decisions.',
+    },
   ];
 
   const students = [
-    { img: profileImg, name: 'Ramakant Sharma', time: '12:30', id: '3CO-JVY' },
-    { img: profileImg, name: 'John Doe', time: '12:45', id: '3CO-JXK' },
-    { img: profileImg, name: 'Jane Smith', time: '01:00', id: '3CO-JYW' },
-    { img: profileImg, name: 'Alice Johnson', time: '01:15', id: '3CO-JZP' },
+    { img: profileImg, name: 'Ramakant Sharma', time: '12:30', id: '3CO-JVY', status: 'In' },
+    { img: profileImg, name: 'John Doe', time: '12:45', id: '3CO-JXK', status: 'Out' },
+    { img: profileImg, name: 'Jane Smith', time: '01:00', id: '3CO-JYW', status: 'Leave' },
+    { img: profileImg, name: 'Alice Johnson', time: '01:15', id: '3CO-JZP', status: 'In' },
   ];
 
   return (
-    <div className={`activity-attendance-page ${darkMode ? 'activity-attendance-dark-mode' : ''}`}>
-      <div className="dashboard-container">
+    <div
+      className={`${styles.activityAttendancePage} ${
+        darkMode ? styles.activityAttendanceDarkMode : ''
+      }`}
+    >
+      <div className={styles.dashboardContainer}>
         {/* Title and Search Bar */}
-        <div className="dashboard-title">
-          <div className="title-text">
+        <div className={styles.dashboardTitle}>
+          <div className={styles.titleText}>
             <h2>Welcome Admin</h2>
             <p>Senior Admin - One Community</p>
           </div>
-          <div className="search-container">
+          <div className={styles.searchContainer}>
             <input
               type="text"
               placeholder="Search Students..."
-              className="search-bar"
+              className={styles.attendanceSearchBar}
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
             />
           </div>
         </div>
 
-        <div className="dashboard-main">
-          <div className="stats-chart-container">
-            <StatsChart stats={statsData} />
-            <div className="stats-grid">
+        <div className={styles.dashboardMain}>
+          <div className={styles.statsChartContainer}>
+            <StatsChart
+              attendingMembers={attendingMembers}
+              communityVisitors={communityVisitors}
+              participationPercentage={participationPercentage}
+            />
+
+            <div className={styles.statsGrid}>
               {statsData.map(stat => (
-                <StatsCard key={stat.id} title={stat.title} value={stat.value} color={stat.color} />
+                <StatsCard
+                  key={stat.id}
+                  title={stat.title}
+                  value={stat.value}
+                  colorClass={stat.colorClass}
+                  definition={stat.definition}
+                />
               ))}
             </div>
           </div>
 
-          {/* Live Student Updates */}
-          <LiveUpdates students={students} searchTerm={searchTerm} />
+          <LiveUpdates
+            students={students}
+            searchTerm={searchTerm}
+            selectedStatus={statusFilter}
+            onStatusChange={setStatusFilter}
+          />
         </div>
       </div>
     </div>
