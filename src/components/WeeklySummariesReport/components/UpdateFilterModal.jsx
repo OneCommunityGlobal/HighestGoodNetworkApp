@@ -156,18 +156,34 @@ export default function UpdateFilterModal({
       ...base,
       backgroundColor: darkMode ? '#2e3440' : '#fff',
     }),
-    option: (base, state) => ({
-      ...base,
-      backgroundColor: state.isFocused
-        ? darkMode
-          ? '#434c5e'
-          : '#eee'
-        : darkMode
-        ? '#2e3440'
-        : '#fff',
-      color: darkMode ? '#fff' : '#000',
-      cursor: 'pointer',
-    }),
+    // option: (base, state) => ({
+    //   ...base,
+    //   backgroundColor: state.isFocused
+    //     ? darkMode
+    //       ? '#434c5e'
+    //       : '#eee'
+    //     : darkMode
+    //     ? '#2e3440'
+    //     : '#fff',
+    //   color: darkMode ? '#fff' : '#000',
+    //   cursor: 'pointer',
+    // }),
+    option: (base, selectState) => {
+      // 🟢 Fix: Extracted nested ternary into independent statements
+      let backgroundColor;
+      if (selectState.isFocused) {
+        backgroundColor = darkMode ? '#434c5e' : '#eee';
+      } else {
+        backgroundColor = darkMode ? '#2e3440' : '#fff';
+      }
+
+      return {
+        ...base,
+        backgroundColor,
+        color: darkMode ? '#fff' : '#000',
+        cursor: 'pointer',
+      };
+    },
     singleValue: base => ({
       ...base,
       color: darkMode ? '#fff' : '#000',

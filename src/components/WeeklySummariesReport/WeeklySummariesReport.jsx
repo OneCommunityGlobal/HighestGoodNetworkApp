@@ -68,7 +68,9 @@ import CreateFilterModal from './components/CreateFilterModal';
 import UpdateFilterModal from './components/UpdateFilterModal';
 import SelectFilterModal from './components/SelectFilterModal';
 import styles from './WeeklySummariesReport.module.css';
-import { setField, toggleField, removeItemFromField, setChildField } from '~/utils/stateHelper';
+// Keeping this block commented intentionally for future reference
+// import { setField, toggleField, removeItemFromField, setChildField } from '~/utils/stateHelper';
+import { setField } from '~/utils/stateHelper';
 import WeeklySummariesToggleFilter from './components/WeeklySummariesToggleFilter';
 // Keeping this block commented intentionally for future reference —
 import { SlideToggle } from './components';
