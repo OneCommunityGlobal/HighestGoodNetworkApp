@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Button } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
+import { v4 as uuidv4 } from 'uuid';
 import styles from './PRGradingScreen.module.css';
 
 const PRGradingScreen = ({ teamData, reviewers }) => {
@@ -89,7 +90,7 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
     if (validation.isValid) {
       const reviewerId = activeInput;
       const newPREntry = {
-        id: `pr_${Date.now()}_${Math.random()
+        id: `pr_${uuidv4()
           .toString(36)
           .substr(2, 9)}`,
         prNumbers: inputValue.trim(),
