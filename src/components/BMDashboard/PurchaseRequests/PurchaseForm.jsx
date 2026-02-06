@@ -76,7 +76,7 @@ function PurchaseForm({
         .required()
         .label('Material'),
       quantity: Joi.number()
-        .positive()
+        .greater(0)
         .required()
         .label('Quantity'),
       priority: Joi.string()
@@ -111,7 +111,7 @@ function PurchaseForm({
         .required()
         .label('Material'),
       quantity: Joi.number()
-        .positive()
+        .greater(0)
         .required()
         .label('Quantity'),
       priority: Joi.string()
@@ -308,7 +308,8 @@ function PurchaseForm({
               <Input
                 id="input-quantity"
                 type="number"
-                min={1}
+                min={0.01}
+                step="any"
                 value={quantity}
                 onChange={e => {
                   setQuantity(e.target.value);
