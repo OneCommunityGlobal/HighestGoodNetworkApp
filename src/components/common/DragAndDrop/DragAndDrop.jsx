@@ -102,14 +102,15 @@ const DragAndDrop = ({ updateUploadedFiles }) => {
           position: 'relative',
         }}
       >
-        {/* Native button inside the container */}
-        <button
-          type="button"
-          className={styles.uploadButton}
+        {/* Replace the outer button with a div that has proper ARIA attributes */}
+        <div
+          className={styles.uploadArea}
           onClick={handleButtonClick}
           onKeyDown={handleKeyDown}
+          role="button"
           tabIndex={0}
           aria-describedby="file-upload-description"
+          aria-label="Upload image files by clicking or dragging"
           style={{
             width: '100%',
             height: '100%',
@@ -122,8 +123,6 @@ const DragAndDrop = ({ updateUploadedFiles }) => {
           }}
         >
           <div
-            tabIndex={0}
-            onKeyDown={handleKeyDown}
             style={{
               display: 'flex',
               flexDirection: 'column',
@@ -138,8 +137,7 @@ const DragAndDrop = ({ updateUploadedFiles }) => {
             <FontAwesomeIcon icon={faImage} className={styles.fileUploadIcon} aria-hidden="true" />
             <p style={{ margin: '8px 0' }}>
               Drag and drop your picture here or{' '}
-              <button
-                type="button"
+              <span
                 className={styles.browseLink}
                 onClick={e => {
                   e.stopPropagation();
@@ -152,7 +150,9 @@ const DragAndDrop = ({ updateUploadedFiles }) => {
                     handleButtonClick();
                   }
                 }}
+                role="button"
                 tabIndex={0}
+                aria-label="Browse files to upload"
                 style={{
                   color: darkMode ? '#0dcaf0' : '#0d6efd',
                   textDecoration: 'underline',
@@ -166,7 +166,7 @@ const DragAndDrop = ({ updateUploadedFiles }) => {
                 }}
               >
                 browse files
-              </button>
+              </span>
             </p>
             <p
               className="text-muted small"
@@ -190,7 +190,7 @@ const DragAndDrop = ({ updateUploadedFiles }) => {
               <span>Click or drag to upload</span>
             </div>
           </div>
-        </button>
+        </div>
       </div>
 
       {dragActive && (
