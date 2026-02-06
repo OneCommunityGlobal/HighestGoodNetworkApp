@@ -23,7 +23,7 @@ import {
   setSearchTerm,
   clearEmailTemplateError,
 } from '../../../../actions/emailTemplateActions';
-import './EmailTemplateList.module.css';
+import './EmailTemplateList.css';
 
 // Helper function to get icon for variable type - matches EmailTemplateEditor
 const getVariableTypeIcon = type => {

@@ -3,10 +3,12 @@
 /* Main container */
 .email-template-management {
   width: 100%;
+  max-width: 1400px;  /* ADD THIS */
+  margin: 0 auto;     /* ADD THIS */
+  padding: 0 2rem;    /* ADD THIS */
   position: relative;
   background: transparent;
 }
-
 /* Light Mode */
 .email-template-management.light-mode {
   background: transparent;
