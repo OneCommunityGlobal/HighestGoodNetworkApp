@@ -2286,23 +2286,19 @@ const WeeklySummariesReport = props => {
   //     // Fetch new data using axios
   //     const weekIndex = navItems.indexOf(state.activeTab);
   //     const url = `${ENDPOINTS.WEEKLY_SUMMARIES_REPORT()}?week=${weekIndex}&forceRefresh=true`;
-
   //     axios
   //       .get(url)
   //       .then(res => {
   //         const summaries = Array.isArray(res?.data) ? res.data : []; // Getting array
-
   //         if (summaries.length > 0) {
   //           // Processing the array
   //           let summariesCopy = [...summaries];
   //           summariesCopy = alphabetize(summariesCopy); // Assuming alphabetize is defined
-
   //           summariesCopy = summariesCopy.map(summary => {
   //             const promisedHoursByWeek = weekDates.map(
   //               weekDate =>
   //                 getPromisedHours(weekDate.toDate, summary.weeklycommittedHoursHistory || []), // Assuming getPromisedHours is defined
   //             );
-
   //             // **** Applying the filterColor cleaning logic ****
   //             let filterColor = [];
   //             if (Array.isArray(summary.filterColor)) {
@@ -2325,10 +2321,8 @@ const WeeklySummariesReport = props => {
   //               }
   //             }
   //             // ************************************************
-
   //             return { ...summary, promisedHoursByWeek, filterColor };
   //           });
-
   //           // Sets the PROCESSED ARRAY into state
   //           setState(prev => ({
   //             ...prev,
@@ -2358,7 +2352,6 @@ const WeeklySummariesReport = props => {
   // keeping this block commented for future reference
   // useEffect(() => {
   //   let isMounted = true;
-
   //   // 1. Checking if data is already cached
   //   if (state.summariesByTab[state.activeTab] && state.summariesByTab[state.activeTab].length > 0) {
   //     setState(prev => ({
@@ -2367,11 +2360,9 @@ const WeeklySummariesReport = props => {
   //     }));
   //     return;
   //   }
-
   //   // 2. Fetch Fresh Data
   //   const weekIndex = navItems.indexOf(state.activeTab);
   //   setState(prev => ({ ...prev, loading: true }));
-
   //   axios
   //     .get(ENDPOINTS.WEEKLY_SUMMARIES_REPORT(), {
   //       params: { week: weekIndex, forceRefresh: true, _ts: Date.now() },
@@ -2379,22 +2370,18 @@ const WeeklySummariesReport = props => {
   //     })
   //     .then(res => {
   //       if (!isMounted) return;
-
   //       const rawSummaries = Array.isArray(res?.data) ? res.data : [];
-
   //       if (rawSummaries.length > 0) {
   //         // 1. Alphabetize
   //         let summariesCopy = [...rawSummaries];
   //         summariesCopy.sort((a, b) =>
   //           `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`),
   //         );
-
   //         // 2. Processing Summaries (Hours & Colors)
   //         summariesCopy = summariesCopy.map(summary => {
   //           const promisedHoursByWeek = weekDates.map(weekDate =>
   //             getPromisedHours(weekDate.toDate, summary.weeklycommittedHoursHistory || []),
   //           );
-
   //           let filterColor = [];
   //           if (Array.isArray(summary.filterColor)) {
   //             filterColor = summary.filterColor
@@ -2418,15 +2405,12 @@ const WeeklySummariesReport = props => {
   //         const newTeamCodes = [];
   //         const colorOptionGroup = new Set();
   //         const newColorOptions = [];
-
   //         summariesCopy.forEach(summary => {
   //           const code = summary.teamCode || 'noCodeLabel';
   //           if (!teamCodeGroup[code]) teamCodeGroup[code] = [];
   //           teamCodeGroup[code].push(summary);
-
   //           if (summary.weeklySummaryOption) colorOptionGroup.add(summary.weeklySummaryOption);
   //         });
-
   //         Object.keys(teamCodeGroup).forEach(code => {
   //           if (code !== 'noCodeLabel') {
   //             newTeamCodes.push({
@@ -2436,7 +2420,6 @@ const WeeklySummariesReport = props => {
   //             });
   //           }
   //         });
-
   //         // Adding the "No Code" option
   //         newTeamCodes.sort((a, b) => a.label.localeCompare(b.label));
   //         const noCodeCount = teamCodeGroup.noCodeLabel?.length || 0;
@@ -2445,13 +2428,11 @@ const WeeklySummariesReport = props => {
   //           label: `Select All With NO Code (${noCodeCount})`,
   //           _ids: teamCodeGroup.noCodeLabel?.map(item => item._id) || [],
   //         });
-
   //         // Generating Colors
   //         colorOptionGroup.forEach(option => {
   //           newColorOptions.push({ value: option, label: option });
   //         });
   //         newColorOptions.sort((a, b) => a.label.localeCompare(b.label));
-
   //         // 4. Updating State with EVERYTHING
   //         setState(prev => ({
   //           ...prev,
@@ -2481,7 +2462,6 @@ const WeeklySummariesReport = props => {
   //       console.error(`❌ Failed to fetch data`, err);
   //       setState(prev => ({ ...prev, loading: false }));
   //     });
-
   //   return () => {
   //     isMounted = false;
   //   };
@@ -2698,129 +2678,6 @@ const WeeklySummariesReport = props => {
   }
 
   const customStyles = getCustomStyles(darkMode);
-
-  // const teamCodeStyles = {
-  //   control: base => ({
-  //     ...base,
-  //     backgroundColor: darkMode ? '#2e3440' : '#fff',
-  //     borderColor: darkMode ? '#4c566a' : '#ccc',
-  //     color: darkMode ? '#fff' : '#333',
-  //   }),
-  //   menu: base => ({
-  //     ...base,
-  //     backgroundColor: darkMode ? '#2e3440' : '#fff',
-  //     zIndex: 9999,
-  //   }),
-  //   menuList: base => ({
-  //     ...base,
-  //     backgroundColor: darkMode ? '#2e3440' : '#fff',
-  //     color: darkMode ? '#fff' : '#333',
-  //     maxHeight: '700px',
-  //     overflowY: 'auto',
-  //   }),
-  //   option: (base, state) => ({
-  //     ...base,
-  //     backgroundColor: state.isFocused
-  //       ? darkMode
-  //         ? '#434c5e'
-  //         : '#eee'
-  //       : darkMode
-  //       ? '#2e3440'
-  //       : '#fff',
-  //     color: darkMode ? '#fff' : '#333',
-  //     cursor: 'pointer',
-  //     fontSize: '13px',
-  //   }),
-  //   // 🟢 THESE ARE THE CHIP FIXES FOR TEAM CODE
-  //   multiValue: base => ({
-  //     ...base,
-  //     backgroundColor: darkMode ? '#4c566a' : '#e6e6e6',
-  //   }),
-  //   multiValueLabel: base => ({
-  //     ...base,
-  //     color: darkMode ? '#ffffff' : '#333', // Forces White Text
-  //     fontWeight: 'bold',
-  //   }),
-  //   multiValueRemove: base => ({
-  //     ...base,
-  //     color: darkMode ? '#ffffff' : '#333',
-  //     ':hover': {
-  //       backgroundColor: darkMode ? '#bf616a' : '#ffbdad',
-  //       color: 'white',
-  //     },
-  //   }),
-  //   input: base => ({
-  //     ...base,
-  //     color: darkMode ? '#fff' : '#333',
-  //   }),
-  //   placeholder: base => ({
-  //     ...base,
-  //     color: darkMode ? '#d8dee9' : '#808080',
-  //   }),
-  // };
-
-  // const dropdownStyles = {
-  //   control: base => ({
-  //     ...base,
-  //     backgroundColor: darkMode ? '#2e3440' : '#fff',
-  //     borderColor: darkMode ? '#4c566a' : '#ccc',
-  //     color: darkMode ? '#fff' : '#333',
-  //   }),
-  //   menu: base => ({
-  //     ...base,
-  //     backgroundColor: darkMode ? '#2e3440' : '#fff',
-  //     zIndex: 9999,
-  //   }),
-  //   menuList: base => ({
-  //     ...base,
-  //     backgroundColor: darkMode ? '#2e3440' : '#fff',
-  //     color: darkMode ? '#fff' : '#333',
-  //     maxHeight: '700px', // Kept your specific height rule
-  //     overflowY: 'auto',
-  //   }),
-  //   option: (base, state) => ({
-  //     ...base,
-  //     fontSize: '13px', // Kept your specific font size rule
-  //     backgroundColor: state.isFocused
-  //       ? darkMode
-  //         ? '#434c5e'
-  //         : '#eee'
-  //       : darkMode
-  //       ? '#2e3440'
-  //       : '#fff',
-  //     color: darkMode ? '#fff' : '#333',
-  //     cursor: 'pointer',
-  //   }),
-  //   singleValue: base => ({
-  //     ...base,
-  //     color: darkMode ? '#fff' : '#333',
-  //   }),
-  //   multiValue: base => ({
-  //     ...base,
-  //     backgroundColor: darkMode ? '#4c566a' : '#e6e6e6',
-  //   }),
-  //   multiValueLabel: base => ({
-  //     ...base,
-  //     color: darkMode ? '#ffffff' : '#333',
-  //     fontWeight: 'bold',
-  //   }),
-  //   multiValueRemove: base => ({
-  //     ...base,
-  //     color: darkMode ? '#ffffff' : '#333',
-  //     ':hover': {
-  //       backgroundColor: darkMode ? '#bf616a' : '#ffbdad',
-  //       color: 'white',
-  //     },
-  //   }),
-  //   input: base => ({
-  //     ...base,
-  //     color: darkMode ? '#fff' : '#333',
-  //   }),
-  //   placeholder: base => ({
-  //     ...base,
-  //     color: darkMode ? '#d8dee9' : '#808080',
-  //   }),
-  // };
 
   return (
     <Container
@@ -3061,76 +2918,10 @@ const WeeklySummariesReport = props => {
             </div>
           </div>
 
-          {hasPermissionToFilter && (
-            <>
-              {/* <div className={`${styles.filterStyle} ${styles.marginRight}`}>
-                <span>Filter by Special Colors:</span>
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    marginTop: '2px',
-                  }}
-                >
-                  {['purple', 'green', 'navy'].map(color => {
-                    const labelMap = {
-                      purple: 'Admin Team',
-                      green: '20 Hour HGN Team',
-                      navy: '10 Hour HGN Team',
-                    };
-                    return (
-                      <div
-                        key={`${color}-toggle`}
-                        style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
-                      >
-                        <span className={styles.filterLabel}>{labelMap[color]}</span>
-                        <SlideToggle
-                          key={`${color}-toggle`}
-                          className={styles.slideToggle}
-                          color={color}
-                          onChange={handleSpecialColorToggleChange}
-                        />
-                      </div>
-                    );
-                  })}
-                </div>
-              </div> */}
-
-              {/* {state.selectedCodes.length > 0 && (
-                <div className={cn(styles.filterStyle, styles.filterMarginRight)}>
-                  <span className={styles.selectAllLabel}>Select All (Visible Users): </span>
-                  <div className={styles.dotSelector}>
-                    {['purple', 'green', 'navy'].map(color => (
-                      <span
-                        key={color}
-                        onClick={e => {
-                          e.preventDefault();
-                          handleBulkDotClick(color);
-                        }}
-                        className={cn(
-                          styles.bulkDot,
-                          state.bulkSelectedColors[color] && styles.active,
-                        )}
-                        style={{
-                          display: 'inline-block',
-                          width: '15px',
-                          height: '15px',
-                          margin: '0 5px',
-                          borderRadius: '50%',
-                          backgroundColor: state.bulkSelectedColors[color] ? color : 'transparent',
-                          border: `3px solid ${color}`,
-                          cursor: 'pointer',
-                        }}
-                      />
-                    ))}
-                  </div>
-                </div>
-              )} */}
-            </>
-          )}
+          {hasPermissionToFilter && <></>}
+          {/* keeping the block of code for future reference */}
           {/* Saved Filter Buttons */}
-          {props.savedFilters && props.savedFilters.length > 0 && (
+          {/* {props.savedFilters && props.savedFilters.length > 0 && (
             <div
               style={{
                 display: 'flex',
@@ -3185,7 +2976,7 @@ const WeeklySummariesReport = props => {
                 </div>
               ))}
             </div>
-          )}
+          )} */}
           {/* Saved Filter Buttons List */}
           {filterChoices && filterChoices.length > 0 && (
             <div
