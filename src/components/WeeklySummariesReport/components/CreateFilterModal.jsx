@@ -139,20 +139,8 @@ function CreateFilterModal({
       ...base,
       backgroundColor: darkMode ? '#2e3440' : '#fff',
     }),
-    // option: (base, state) => ({
-    //   ...base,
-    //   backgroundColor: state.isFocused
-    //     ? darkMode
-    //       ? '#434c5e'
-    //       : '#eee'
-    //     : darkMode
-    //     ? '#2e3440'
-    //     : '#fff',
-    //   color: darkMode ? '#fff' : '#000',
-    //   cursor: 'pointer',
-    // }),
     option: (base, selectState) => {
-      // 🟢 Fix: Extracted nested ternary into independent statements
+      // Fixed: Extracted nested ternary into independent statements
       let backgroundColor;
       if (selectState.isFocused) {
         backgroundColor = darkMode ? '#434c5e' : '#eee';
@@ -260,7 +248,7 @@ function CreateFilterModal({
                 onChange={setSelectedFilter}
                 styles={customStyles}
                 className={`${mainStyles.textDark} ${
-                  !selectedFilter ? `${mainStyles.errorSelect}` : ''
+                  selectedFilter ? '' : `${mainStyles.errorSelect}`
                 }`}
               />
               {!selectedFilter && (

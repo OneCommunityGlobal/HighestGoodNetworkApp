@@ -211,6 +211,7 @@ const CustomMenuList = props => {
   );
 };
 
+// Keeping this block commented for future reference
 // Helper: Process raw summaries into State Data (Team Codes, Colors, Tables)
 // -----------------------------------------------------------------------------
 // const processDashboardData = summaries => {
@@ -218,14 +219,12 @@ const CustomMenuList = props => {
 //   const sortedSummaries = [...summaries].sort((a, b) =>
 //     `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`),
 //   );
-
 //   // 2. Process Filters & Promises
 //   const processedSummaries = sortedSummaries.map(summary => {
 //     // Calculate Promised Hours
 //     const promisedHoursByWeek = getWeekDates().map(weekDate =>
 //       getPromisedHours(weekDate.toDate, summary.weeklycommittedHoursHistory || []),
 //     );
-
 //     // Clean Filter Colors
 //     let filterColor = [];
 //     if (Array.isArray(summary.filterColor)) {
@@ -244,27 +243,21 @@ const CustomMenuList = props => {
 //         filterColor = [summary.filterColor.toLowerCase()];
 //       }
 //     }
-
 //     return { ...summary, promisedHoursByWeek, filterColor };
 //   });
-
 //   // 3. Generate Team Codes & Table Data
 //   const teamCodeGroup = {};
 //   const teamCodes = [];
 //   const colorOptionGroup = new Set();
 //   const colorOptions = [];
-
 //   processedSummaries.forEach(summary => {
 //     const code = summary.teamCode || 'noCodeLabel';
-
 //     // Group by Code
 //     if (!teamCodeGroup[code]) teamCodeGroup[code] = [];
 //     teamCodeGroup[code].push(summary);
-
 //     // Collect Colors
 //     if (summary.weeklySummaryOption) colorOptionGroup.add(summary.weeklySummaryOption);
 //   });
-
 //   // 4. Build Team Code Options
 //   Object.keys(teamCodeGroup).forEach(code => {
 //     if (code !== 'noCodeLabel') {
@@ -275,23 +268,19 @@ const CustomMenuList = props => {
 //       });
 //     }
 //   });
-
 //   // Add "No Code" Option
 //   const noCodeCount = teamCodeGroup.noCodeLabel?.length || 0;
 //   teamCodes.sort((a, b) => a.label.localeCompare(b.label));
-
 //   teamCodes.push({
 //     value: '',
 //     label: `Select All With NO Code (${noCodeCount})`,
 //     _ids: teamCodeGroup.noCodeLabel?.map(item => item._id) || [],
 //   });
-
 //   // 5. Build Color Options
 //   colorOptionGroup.forEach(option => {
 //     colorOptions.push({ value: option, label: option });
 //   });
 //   colorOptions.sort((a, b) => a.label.localeCompare(b.label));
-
 //   return {
 //     summaries: processedSummaries,
 //     teamCodes,
@@ -356,6 +345,7 @@ const WeeklySummariesReport = props => {
   };
 
   const doesSummaryBelongToWeek = (startDateStr, endDateStr, weekIndex) => {
+    // keeping this block commented for future reference
     // weekIndex: 0 = This Week, 1 = Last Week, 2 = Week Before Last, 3 = Three Weeks Ago
     const weekStartLA = moment()
       .tz('America/Los_Angeles')
@@ -459,7 +449,6 @@ const WeeklySummariesReport = props => {
   // const fetchFilters = async () => {
   //   // Get all filters
   //   let filterList = [];
-
   //   try {
   //     const filterResponse = await axios.get(ENDPOINTS.WEEKLY_SUMMARIES_FILTERS);
   //     if (filterResponse.status < 200 || filterResponse.status >= 300) {
@@ -471,7 +460,6 @@ const WeeklySummariesReport = props => {
   //     toast.error(`API request to get filter list failed with error ${e}`);
   //   }
   //   const updatedFilterChoices = [];
-
   //   filterList.forEach(filter => {
   //     updatedFilterChoices.push({
   //       label: filter.filterName,
@@ -488,17 +476,14 @@ const WeeklySummariesReport = props => {
   //       },
   //     });
   //   });
-
   //   setState(prevState => ({
   //     ...prevState,
   //     filterChoices: [...updatedFilterChoices],
   //   }));
   // };
-
   // const fetchFilters = async () => {
   //   // Get all filters
   //   let filterList = [];
-
   //   try {
   //     const filterResponse = await axios.get(ENDPOINTS.WEEKLY_SUMMARIES_FILTERS);
   //     if (filterResponse.status < 200 || filterResponse.status >= 300) {
@@ -510,7 +495,6 @@ const WeeklySummariesReport = props => {
   //     toast.error(`API request to get filter list failed with error ${e}`);
   //   }
   //   const updatedFilterChoices = [];
-
   //   filterList.forEach(filter => {
   //     updatedFilterChoices.push({
   //       label: filter.filterName,
@@ -527,7 +511,6 @@ const WeeklySummariesReport = props => {
   //       },
   //     });
   //   });
-
   //   setState(prevState => ({
   //     ...prevState,
   //     filterChoices: [...updatedFilterChoices],

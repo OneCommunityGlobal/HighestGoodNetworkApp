@@ -37,18 +37,6 @@ export default function SelectFilterModal({
       ...base,
       backgroundColor: darkMode ? '#2e3440' : '#fff',
     }),
-    // option: (base, state) => ({
-    //   ...base,
-    //   backgroundColor: state.isFocused
-    //     ? darkMode
-    //       ? '#434c5e'
-    //       : '#eee'
-    //     : darkMode
-    //     ? '#2e3440'
-    //     : '#fff',
-    //   color: darkMode ? '#fff' : '#000',
-    //   cursor: 'pointer',
-    // }),
     option: (base, selectState) => {
       // 🟢 Fix: Extracted nested ternary into independent statements
       let backgroundColor;
