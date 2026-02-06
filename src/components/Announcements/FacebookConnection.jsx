@@ -279,9 +279,14 @@ export default function FacebookConnection() {
               <strong>Connected:</strong> {formatDate(connectionStatus.connectedAt)} by{' '}
               {connectionStatus.connectedBy}
             </p>
-            {connectionStatus.tokenExpiresAt && (
+            {connectionStatus.tokenStatus === 'expired' && (
+              <p style={{ margin: '4px 0', color: '#dc3545' }}>
+                <strong>⚠️ Token Issue:</strong> Please reconnect to restore posting capability.
+              </p>
+            )}
+            {connectionStatus.lastVerifiedAt && (
               <p style={{ margin: '4px 0' }}>
-                <strong>Token Expires:</strong> {formatDate(connectionStatus.tokenExpiresAt)}
+                <strong>Last Verified:</strong> {formatDate(connectionStatus.lastVerifiedAt)}
               </p>
             )}
             {connectionStatus.lastError && (
