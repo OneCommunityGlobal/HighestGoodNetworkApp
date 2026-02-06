@@ -23,6 +23,7 @@ import {
   useUpdateWeeklySummariesFilterMutation,
 } from '../../../actions/weeklySummariesFilterAction';
 import { normalizeFilter } from '~/utils/weeklySummariesFilterHelper';
+import { da } from 'date-fns/locale';
 
 const defaultState = {
   filterName: '',
@@ -37,6 +38,59 @@ const defaultState = {
   },
   selectedBioStatus: false,
   selectedOverTime: false,
+};
+
+const baseSelectStyles = {
+  menu: base => ({
+    ...base,
+    zIndex: 9999,
+  }),
+  menuList: base => ({
+    ...base,
+    maxHeight: '700px',
+    overflowY: 'auto',
+  }),
+};
+
+const darkSelectStyles = {
+  ...baseSelectStyles,
+  control: base => ({
+    ...base,
+    backgroundColor: '#1b2a41', // This stays for the main box background
+    color: '#fff',
+    borderColor: '#3a506b',
+  }),
+  valueContainer: base => ({
+    ...base,
+    paddingLeft: '12px', // FIX: Prevents "S" clipping
+  }),
+  singleValue: base => ({
+    ...base,
+    color: '#fff',
+  }),
+  menu: base => ({
+    ...base,
+    backgroundColor: '#1b2a41',
+    zIndex: 9999,
+  }),
+  option: (base, state) => ({
+    ...base,
+    backgroundColor: state.isFocused ? '#243b55' : '#1b2a41',
+    color: '#fff',
+  }),
+};
+
+const lightSelectStyles = {
+  ...baseSelectStyles,
+  control: base => ({
+    ...base,
+    backgroundColor: '#fff',
+    borderColor: '#ced4da',
+  }),
+  valueContainer: base => ({
+    ...base,
+    paddingLeft: '12px', // FIX: Prevents "S" clipping
+  }),
 };
 
 function CreateFilterModal({
@@ -122,22 +176,19 @@ function CreateFilterModal({
       size="lg"
       isOpen={isOpen}
       toggle={toggle}
-      className={`${darkMode ? mainStyles.darkModal : ''}`}
+      className={darkMode ? 'create-filter-modal' : ''}
     >
       <ModalHeader toggle={toggle}>Create A New Filter or Override Existing Filter</ModalHeader>
       <ModalBody>
         <Form>
-          <Input
-            type="select"
-            id="mode"
-            className="mb-3"
-            value={mode}
-            onChange={e => setMode(e.target.value)}
-            required
-          >
-            <option value="create">Create New</option>
-            <option value="update">Override Existing Filter</option>
-          </Input>
+          <Select
+            options={[
+              { label: 'Create New', value: 'new' },
+              { label: 'Override Existing Filter', value: 'override' },
+            ]}
+            classNamePrefix="custom-select" // Critical: This maps to the CSS above
+            styles={darkMode ? darkSelectStyles : ''}
+          />
           {mode === 'update' && (
             <FormGroup>
               <Label for="filterOverride" className={`${darkMode ? mainStyles.textWhite : ''}`}>
@@ -145,13 +196,12 @@ function CreateFilterModal({
               </Label>
 
               <Select
-                id="filterOverride"
-                options={filters}
-                value={selectedFilter}
-                onChange={setSelectedFilter}
-                className={`${mainStyles.textDark} ${
-                  !selectedFilter ? `${mainStyles.errorSelect}` : ''
-                }`}
+                menuPortalTarget={document.body}
+                classNamePrefix="rs"
+                styles={{
+                  ...darkSelectStyles,
+                  menuPortal: base => ({ ...base, zIndex: 9999 }),
+                }}
               />
               {!selectedFilter && (
                 <div className={`${darkMode ? mainStyles.errorTextDark : mainStyles.errorText}`}>
@@ -174,6 +224,17 @@ function CreateFilterModal({
                 required={mode === 'create'}
                 invalid={state.filterName.trim().length === 0}
                 maxLength={7}
+                className={darkMode ? 'bg-dark text-white border-secondary' : ''}
+                style={
+                  darkMode
+                    ? {
+                        backgroundColor: '#1b2a41',
+                        color: '#fff',
+                        // This prevents the black background on click/focus
+                        boxShadow: 'none',
+                      }
+                    : {}
+                }
               />
               {state.filterName.trim().length === 0 && (
                 <div className={`${darkMode ? mainStyles.errorTextDark : mainStyles.errorText}`}>

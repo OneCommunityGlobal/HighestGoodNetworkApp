@@ -15,11 +15,23 @@ body.bm-dashboard-dark #root {
   color: #ffffff !important;
 }
 
-/* Enhanced text visibility for dark mode */
-body.dark-mode *,
-body.bm-dashboard-dark * {
-  color: #ffffff !important;
+
+
+/* ✅ SAFE */
+body.dark-mode {
+  color: #ffffff;
 }
+
+body.dark-mode p,
+body.dark-mode span,
+body.dark-mode label,
+body.dark-mode div:not(.rs__option),
+body.dark-mode h1,
+body.dark-mode h2,
+body.dark-mode h3 {
+  color: #ffffff;
+}
+
 
 body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, 
 body.dark-mode h4, body.dark-mode h5, body.dark-mode h6,
@@ -308,6 +320,12 @@ body.bm-dashboard-dark .page-item.active .page-link {
   color: #ffffff !important;
 }
 
+body.dark-mode .page-item.disabled .page-link {
+  background-color: #6c6c6c;
+  border-color: #7c7c7c;
+  color: #ffffff !important;
+}
+
 /* Fix the position of the header at the top */
 .back-to-top {
   position: fixed;
@@ -352,95 +370,390 @@ body.bm-dashboard-dark .page-item.active .page-link {
   border: none;
 }
 
-/* Update these sections in your index.css */
 
-/* Explicit targeting for all input types and selects */
-body.dark-mode .form-control,
-body.bm-dashboard-dark .form-control,
-body.dark-mode select,
-body.bm-dashboard-dark select,
-body.dark-mode input[type="text"] {
-    background-color: #1e293b !important; /* Darker navy for input fields */
-    color: #ffffff !important;
-    border: 1px solid #334155 !important;
-}
 
-/* Fix for the Project and Tool dropdown arrows and internal padding */
-body.dark-mode select.form-control,
-body.bm-dashboard-dark select.form-control {
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e") !important;
-    background-repeat: no-repeat !important;
-    background-position: right 0.75rem center !important;
-    background-size: 16px 12px !important;
-}
-
-/* Ensure placeholder text is visible but muted */
-body.dark-mode .form-control::placeholder {
-    color: #94a3b8 !important;
-}
-
-/* Styling for the options inside the dropdowns */
-body.dark-mode option,
-body.bm-dashboard-dark option {
-    background-color: #1e293b !important;
-    color: #ffffff !important;
-}
-
-/* GLOBAL OVERRIDE: This will fix all modals in the project at once */
-body.dark-mode .modal-content,
-body.bm-dashboard-dark .modal-content {
-    background-color: #1b2a41 !important;
-    border: 1px solid #2e3d55 !important;
-    color: #ffffff !important;
+/* ===== HARD FORCE DARK MODAL (PORTAL SAFE) ===== */
+body.dark-mode .modal-content {
+  background-color: #1b2a41 !important;
+  color: #ffffff !important;
 }
 
 body.dark-mode .modal-header,
 body.dark-mode .modal-body,
-body.dark-mode .modal-footer,
-body.bm-dashboard-dark .modal-header,
-body.bm-dashboard-dark .modal-body,
-body.bm-dashboard-dark .modal-footer {
-    background-color: #1b2a41 !important;
-    color: #ffffff !important;
-    border-color: #2e3d55 !important;
+body.dark-mode .modal-footer {
+  background-color: #1b2a41 !important;
+  border-color: #3a506b !important;
+  color: #ffffff !important;
 }
 
 
-/* Force Project and Tool dropdowns to stay dark */
-body.dark-mode .form-control,
-body.dark-mode select,
-body.dark-mode input {
-    background-color: #1e293b !important;
-    color: #ffffff !important;
-    border: 1px solid #334155 !important;
+/* 1. Target the background of the selected bubbles (Multi-Value) */
+body.dark-mode .react-select__multi-value,
+body.dark-mode div[class*="-multiValue"] {
+  background-color: #4a6072 !important; /* This is the grey color you requested */
+  border-radius: 4px;
 }
 
-/* Fixes the white dropdown arrow issues */
-body.dark-mode select.form-control {
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e") !important;
+/* 2. Target the text inside those bubbles to ensure it stays white */
+body.dark-mode .react-select__multi-value__label,
+body.dark-mode div[class*="-multiValue__label"] {
+  color: #ffffff !important;
 }
 
-/* index.css */
-
-/* Applied to all modals globally to ensure differentiation */
-body.dark-mode .modal-header,
-body.bm-dashboard-dark .modal-header {
-    background-color: #24344d !important; /* Slightly lighter than the body #1b2a41 */
-    border-bottom: 1px solid #334155 !important; /* Prominent separator line */
-    color: #ffffff !important;
-    padding: 1rem 1.5rem;
+/* 3. Target the 'X' (remove) button inside the grey bubble */
+body.dark-mode .react-select__multi-value__remove,
+body.dark-mode div[class*="-multiValue__remove"] {
+  color: #ffffff !important;
+  cursor: pointer;
 }
 
-/* Ensure the title inside stands out */
-body.dark-mode .modal-title,
-body.bm-dashboard-dark .modal-title {
-    font-weight: 600;
-    letter-spacing: 0.5px;
+/* 4. Ensure the 'X' button turns red or darker when hovered */
+body.dark-mode .react-select__multi-value__remove:hover,
+body.dark-mode div[class*="-multiValue__remove"]:hover {
+  background-color: #ff6666 !important;
+  color: white !important;
 }
-body.dark-mode .modal-content .table thead th {
-    background-color: #2d3d5a !important; /* Distinct table header color */
-    color: #ffffff !important;
-    border-bottom: 2px solid #334155 !important;
-    font-size: 0.85rem;
-    letter-spacing: 1px;
+
+/* ===== REACT-SELECT DARK MODE ONLY ===== */
+body.dark-mode .react-select__menu,
+body.dark-mode .css-1nmdiq5-menu {
+  background-color: #0f172a !important;
 }
+
+body.dark-mode .react-select__menu-list,
+body.dark-mode .css-1nmdiq5-menu-list {
+  background-color: #0f172a !important;
+}
+
+body.dark-mode .react-select__option,
+body.dark-mode .css-10wo9uf-option {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode .react-select__option--is-focused,
+body.dark-mode .css-10wo9uf-option--is-focused {
+  background-color: #243b55 !important;
+}
+
+body.dark-mode .react-select__option--is-selected,
+body.dark-mode .css-10wo9uf-option--is-selected {
+  background-color: #334155 !important;
+}
+
+/* ===== REACT-SELECT LIGHT MODE (FORCE RESET) ===== */
+body:not(.dark-mode) .react-select__menu,
+body:not(.dark-mode) .css-1nmdiq5-menu {
+  background-color: #ffffff !important;
+}
+
+body:not(.dark-mode) .react-select__menu-list,
+body:not(.dark-mode) .css-1nmdiq5-menu-list {
+  background-color: #ffffff !important;
+}
+
+body:not(.dark-mode) .react-select__option,
+body:not(.dark-mode) .css-10wo9uf-option {
+  background-color: #ffffff !important;
+  color: #212529 !important;
+}
+
+body:not(.dark-mode) .react-select__option--is-focused,
+body:not(.dark-mode) .css-10wo9uf-option--is-focused {
+  background-color: #e9ecef !important;
+}
+
+body:not(.dark-mode) .react-select__option--is-selected,
+body:not(.dark-mode) .css-10wo9uf-option--is-selected {
+  background-color: #dee2e6 !important;
+}
+
+/* ===== React-Select menu container (LIGHT MODE) ===== */
+body:not(.dark-mode) .react-select__menu,
+body:not(.dark-mode) .react-select__menu-list {
+  background-color: #ffffff !important;
+}
+
+/* ===== React-Select menu container (DARK MODE) ===== */
+body.dark-mode .react-select__menu,
+body.dark-mode .react-select__menu-list {
+  background-color: #0f172a !important;
+}
+
+
+/* ============================= */
+/* REACT-SELECT — LIGHT MODE */
+/* ============================= */
+body:not(.dark-mode) .rs__menu,
+body:not(.dark-mode) .rs__menu-list {
+  background-color: #ffffff !important;
+}
+
+body:not(.dark-mode) .rs__option {
+  background-color: #ffffff !important;
+  color: #212529 !important;
+}
+
+body:not(.dark-mode) .rs__option--is-focused {
+  background-color: #f8f9fa !important;
+}
+
+body:not(.dark-mode) .rs__option--is-selected {
+  background-color: #e9ecef !important;
+}
+
+
+/* ============================= */
+/* REACT-SELECT — DARK MODE */
+/* ============================= */
+
+body.dark-mode .rs__menu,
+body.dark-mode .rs__menu-list {
+  background-color: #0f172a !important;
+}
+
+body.dark-mode .rs__option {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode .rs__option--is-focused {
+  background-color: #0f172a !important;
+}
+
+body.dark-mode .rs__option--is-selected {
+  background-color: #0f172a !important;
+}
+
+/* ============================= */
+/* react-select INPUT THEME FIX */
+/* ============================= */
+
+/* LIGHT MODE → WHITE */
+body.dark-mode .rs__single-value,
+body.dark-mode .rs__placeholder,
+body.dark-mode .rs__input {
+  color: #ffffff !important;
+}
+
+/* ============================= */
+/* react-select INPUT THEME FIX */
+/* ============================= */
+
+/* LIGHT MODE → WHITE */
+body:not(.dark-mode) .rs__control {
+  background-color: #ffffff !important;
+  border-color: #ced4da !important;
+}
+
+body:not(.dark-mode) .rs__single-value,
+body:not(.dark-mode) .rs__placeholder,
+body:not(.dark-mode) .rs__input {
+  color: #212529 !important;
+}
+
+/* DARK MODE → DARK NAVY */
+body.dark-mode .rs__control {
+  background-color: #0f172a !important; /* dark navy */
+  border-color: #3a506b !important;
+}
+
+
+/* ========================================= */
+/* HARD RESET INPUTS — LIGHT MODE ONLY */
+/* ========================================= */
+
+body:not(.dark-mode) input,
+body:not(.dark-mode) textarea {
+  background-color: #ffffff !important;
+  color: #212529 !important;
+  border-color: #ced4da !important;
+}
+
+/* placeholder reset */
+body:not(.dark-mode) input::placeholder,
+body:not(.dark-mode) textarea::placeholder {
+  color: #6c757d !important;
+}
+
+/* =============================== */
+/* DARK MODE — FORCE INPUT NAVY */
+/* =============================== */
+
+body.dark-mode .modal-content input.form-control,
+body.dark-mode .modal-content textarea.form-control {
+  background-color: #0f172a !important; /* NAVY */
+  color: #ffffff !important;
+  border-color: #3a506b !important;
+}
+
+body.dark-mode .modal-content
+input.form-control::placeholder,
+body.dark-mode .modal-content
+textarea.form-control::placeholder {
+  color: #1f4579 !important;
+}
+/* ========================================= */
+/* DARK MODE — FORCE NAVY FOR ALL MODAL INPUTS */
+/* ========================================= */
+
+body.dark-mode .modal-content input,
+body.dark-mode .modal-content textarea,
+body.dark-mode .modal-content select {
+  background-color: #0f172a !important; /* NAVY */
+  color: #ffffff !important;
+  border-color: #3a506b !important;
+}
+
+/* Placeholder */
+body.dark-mode .modal-content input::placeholder,
+body.dark-mode .modal-content textarea::placeholder {
+  color: #0f3b79 !important;
+}
+
+
+/* ===================================== */
+/* REACT-SELECT — UNIFIED OPTION STYLING */
+/* ===================================== */
+
+/* Default option */
+.rs__option {
+  background-color: transparent;
+  color: inherit;
+}
+
+/* Hover */
+.rs__option:hover {
+  background-color: #e9ecef !important;   /* light grey */
+  color: #212529 !important;
+}
+
+/* Focused (keyboard / initial open) */
+.rs__option--is-focused {
+  background-color: #e9ecef !important;   /* SAME as hover */
+  color: #212529 !important;
+}
+
+/* Selected */
+.rs__option--is-selected {
+  background-color: #dee2e6 !important;
+  color: #212529 !important;
+}
+/* 1. Fix the Placeholder color in Dark Mode */
+.wsr-dark-modal-content input::placeholder {
+  color: #ffffff !important;
+  opacity: 1 !important; /* Browsers like Firefox need this */
+}
+
+/* 2. Fix the Black Background while typing */
+/* We target the react-select container specifically to force transparency */
+.custom-select__input-container,
+.custom-select__input,
+.custom-select__value-container {
+  background-color: transparent !important;
+  border: none !important;
+}
+
+/* This stops the browser from adding a background when you click the input */
+.custom-select__input input {
+  background: transparent !important;
+  color: white !important;
+  box-shadow: none !important;
+}
+/* Fix the placeholder color */
+.custom-select__placeholder {
+  color: white !important;
+}
+
+/* Fix the black background while entering text */
+/* This targets the specific div and input react-select creates */
+.custom-select__input-container,
+.custom-select__input-container input,
+.custom-select__value-container {
+  background-color: transparent !important;
+  color: white !important;
+}
+
+/* Override the global rule that is making your inputs black */
+body.dark-mode .modal-content.wsr-dark-modal-content .custom-select__input {
+  background-color: transparent !important;
+  color: white !important;
+}
+
+/* ============================= */
+/* CREATE FILTER MODAL — DARK MODE */
+/* ============================= */
+
+/* ONLY inputs inside Create Filter Modal */
+body.dark-mode .create-filter-modal input,
+body.dark-mode .create-filter-modal textarea {
+  background-color: #1b2a41 !important;
+  color: #ffffff !important;
+  border-color: #3a506b !important;
+}
+
+/* Placeholder color */
+body.dark-mode .create-filter-modal input::placeholder {
+  color: #94a3b8 !important;
+  opacity: 1;
+}
+
+/* react-select typing field (black background fix) */
+body.dark-mode .create-filter-modal
+.custom-select__input-container,
+body.dark-mode .create-filter-modal
+.custom-select__input-container input {
+  background: transparent !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
+}
+/* ===================================== */
+/* CREATE FILTER MODAL — INVALID INPUT FIX */
+/* ===================================== */
+
+/* Fix invalid input background */
+body.dark-mode .create-filter-modal input.is-invalid {
+  background-color: #1b2a41 !important;
+  color: #ffffff !important;
+  border-color: #ff6666 !important;
+  box-shadow: none !important;
+  background-image: none !important;
+}
+
+/* Fix placeholder color in invalid state */
+body.dark-mode .create-filter-modal input.is-invalid::placeholder {
+  color: #94a3b8 !important; /* readable grey */
+  opacity: 1 !important;
+}
+
+
+/* ===================================== */
+/* REACT-SELECT PLACEHOLDER — LIGHT MODE */
+/* ===================================== */
+
+body:not(.dark-mode) .rs__placeholder,
+body:not(.dark-mode) .custom-select__placeholder {
+  color: #6d6f70 !important; /* Bootstrap muted grey */
+  opacity: 1 !important;
+}
+
+/* Specifically target the placeholder to prevent the "S" clipping */
+.custom-select__placeholder,
+.rs__placeholder {
+  margin-left: 4px !important;
+  padding-left: 2px !important;
+}
+
+/* Ensure the container for the text has enough room */
+.custom-select__value-container,
+.rs__value-container {
+  padding-left: 10px !important;
+}
+
+/* Force the input field (where you type) to not hide the first letter */
+.custom-select__input-container,
+.rs__input-container {
+  margin-left: 0px !important;
+  padding-left: 0 !important;
+}
+
