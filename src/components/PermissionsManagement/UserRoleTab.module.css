@@ -1,4 +1,4 @@
-.userRoleTab__container {
+.userRoleTabContainer {
   padding: 0.5rem 1rem;
   width: 60%;
   min-width: 400px;
@@ -6,12 +6,12 @@
 }
 
 @media only screen and (max-width: 1065px) {
-  .userRoleTab__container {
+  .userRoleTabContainer {
     width: 100%;
   }
 }
 
-.userRoleTab__backBtn {
+.userRoleTabBackBtn {
   -webkit-appearance: button;
   -moz-appearance: button;
   appearance: button;
@@ -22,62 +22,62 @@
   border-radius: 0.5rem;
 }
 
-.user-role-tab__permissionList {
+.userRoleTabPermissionList {
   display: flex;
   flex-direction: column;
   padding-left: 0;
 }
 
-.user-role-tab__name-container {
+.userRoleTabNameContainer {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.name-container__role-name {
+.nameContainerRoleName {
   display: grid;
   align-items: center;
 }
 
-.name-container__btn_columns {
+.nameContainerBtnColumns {
   display: flex;
   flex-direction: row;
   column-gap: 0.5rem;
 }
 
-.name-container__editable {
+.nameContainerEditable {
   display: flex;
   row-gap: 1rem;
 }
 
-.name-container__btns {
+.nameContainerBtns {
   display: flex;
   flex-direction: column;
   row-gap: 1rem;
 }
 
-.name-container__btns > button {
+.nameContainerBtns > button {
   min-width: 80px;
   border-radius: 4px;
 }
 
-.user-role-tab__alert {
+.userRoleTabAlert {
   margin: 1rem 0;
 }
 
-.user-role-tab__h1 {
+.userRoleTabH1 {
   font-size: 1.8rem;
   margin-right: 5px;
   margin-bottom: 0;
 }
 
-.user-role-tab__h2 {
+.userRoleTabH2 {
   font-size: 1.5rem;
   text-align: center;
   margin-top: 2rem;
 }
 
-.user-role-tab__permissions {
+.userRoleTabPermissions {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -85,27 +85,27 @@
   border-bottom: 1px solid lightgrey;
 }
 
-.user-role-tab__permissions > button {
+.userRoleTabPermissions > button {
   padding: 0 0.5rem;
   min-width: 80px;
 }
 
-.user-role-tab__permissions > p {
+.userRoleTabPermissions > p {
   margin: 0;
 }
 
-.user-role-tab__icon {
+.userRoleTabIcon {
   padding-top: 5px;
   color: grey;
   cursor: pointer;
 }
 
-.warning-icon {
+.warningIcon {
   color: red;
   margin-right: 0.6rem;
 }
 
-.icon-button-container {
+.iconButtonContainer {
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -114,13 +114,13 @@
   cursor: pointer;
 }
 
-.icon-button-container i {
+.iconButtonContainer i {
   display: flex;
   align-items: center; /* This ensures vertical alignment with the button */
   margin-right: 10px; /* Optional: Adds some spacing between the icon and the button */
 }
 
-.icon-button {
+.iconButton {
   /* This is the new class */
   height: 40px; /* You can adjust this value */
   width: 80px;
@@ -128,41 +128,41 @@
   padding: 0px 10px; /* Optional: Adds some padding inside the button */
 }
 
-.icon-button:disabled {
+.iconButton:disabled {
   opacity: 0.5;
   cursor: not-allowed;
   background-color: #f5f5f5;
   color: #999;
 }
 
-.icon-button:disabled:hover {
+.iconButton:disabled:hover {
   background-color: #f5f5f5;
   color: #999;
 }
 
-.infos-name-container {
+.infosNameContainer {
   display: flex;
   margin-left: auto;
   text-align: center;
   align-items: center;
 }
 
-.info-button {
+.infoButton {
   height: 40px;
   width: 80px;
   padding: 0px;
 }
 
-.btn_preset {
+.btnPreset {
   height: 4rem;
   width: 8rem;
 }
 
-.btn_save_delete {
+.btnSaveDelete {
   height: 4rem;
 }
 
-.icon-button-role {
+.iconButtonRole {
   display: block;
   align-items: center;
   justify-content: flex-start;
@@ -171,35 +171,34 @@
   cursor: pointer;
 }
 
-.icon-button-role-container i {
+.iconButtonRoleContainer i {
   display: block;
   align-items: center; /* This ensures vertical alignment with the button */
   margin-right: 10px; /* Optional: Adds some spacing between the icon and the button */
 }
-.btn_save {
+.btnSave {
   height: 60px;
   width: 150px;
 }
 
-.permission-change-log-table--cell {
+.permissionChangeLogTableCell {
   vertical-align: top;
-  width: 150px; /* Ensures columns in table besides Permission Added and Removed have a decent width  */
 }
 
-.permission-change-log-table--cell.permissions {
+.permissionChangeLogTableCell.permissions {
   width: 400px;
 }
 
-.permission-change-log-table--cell.expanded {
+.permissionChangeLogTableCell.expanded {
   white-space: normal;
 }
 
-.permissions-cell {
+.permissionsCell {
   display: flex;
   align-items: center;
 }
 
-.toggle-button {
+.toggleButton {
   background: none;
   border: none;
   cursor: pointer;
@@ -207,103 +206,115 @@
   color: inherit;
 }
 
-.changed-permission {
+.changedPermission {
   margin-right: -23.33px;
   font-size: 1.75rem;
   padding: 0px;
 }
 
-.changed-permission.white {
+.changedPermission.white {
   color: white;
 }
 
-.changed-permission.green {
-  color: green;
+.changedPermission.green {
+  color: green !important;
 }
 
-.changed-permission.red {
-  color: red;
+.changedPermission.red {
+  color: red !important;
 }
 
-.changed-permission.light-background {
+.changedPermission.lightBackground {
   background-color: white;
 }
 
-.changed-permission.light {
+.changedPermission.light {
   color: white;
 }
 
-.changed-permission.dark-background {
-  background-color: #2f4157;
+.changedPermission.darkBackground {
+  background-color: #1b2a41;
 }
 
-.changed-permission.dark {
-  color: #2f4157;
+.changedPermission.dark {
+  color: #1b2a41 !important;
 }
 
-.permission-tooltip-wrapper {
+.permissionTooltipWrapper {
   position: absolute;
   display: inline-block;
   left: 94%;
-  width: 100%;
+  width: 25%;
 }
 
-.permission-tooltip-text {
-  visibility: hidden;
-  background-color: rgba(211, 211, 211, 0.75);
+.permissionTooltipText {
+  visibility: hidden; 
+  opacity: 0;
+  background-color: rgba(211, 211, 211, 0.75) !important;
   position: absolute;
   text-align: center;
   padding: 3px;
-  width: 20%;
+  width: 50%;
   font-size: medium;
   bottom: 40%;
-  right: 90%;
+  right: 70%;
 }
 
-.permission-tooltip-wrapper.show-tooltip:hover .permission-tooltip-text {
+.permissionTooltipText.dark {
+  background-color: rgba(241, 241, 241, 0.75) !important;
+  color: black !important;
+}
+
+.permissionTooltipWrapper.showTooltip:hover .permissionTooltipText {
   visibility: visible;
   opacity: 1;
 }
-
+.permissionLabel {
+  /* Add styles if needed */
+  word-break: break-word;
+  white-space: normal;
+  max-width: calc(100% - 60px);
+  margin-right: 10px; 
+}
 @media only screen and (max-width: 683px) {
-  .responsive-font-size {
+  .responsiveFontSize {
     font-size: 0.75rem !important;
   }
-  .user-role-tab__h1 {
+  .userRoleTabH1 {
     font-size: 1.65rem !important;
     width: 70%;
   }
-  .name-container__role-name {
+  .nameContainerRoleName {
     width: 40%;
   }
-  .btn_save {
+  .btnSave {
     height: 70px;
     width: 80px;
     padding: 10px 0;
   }
-  .user-role-tab__name-container {
+  .userRoleTabNameContainer {
     justify-content: center;
   }
-  .permission-label {
+  .permissionLabel {
     font-size: 0.75rem;
   }
-  .icon-button {
+  .iconButton {
     font-size: 0.75rem;
     padding: 0px 4px;
   }
 }
 
 @media only screen and (max-width: 400px) {
-  .icon-button-container {
+  .iconButtonContainer {
     font-size: 0.75rem;
   }
-  .user-role-tab__permissions {
+  .userRoleTabPermissions {
     padding-right: 15px;
   }
 }
 
 @media only screen and (max-width: 455px) {
-  .user-role-tab__h1 {
+  .userRoleTabH1 {
     font-size: 1.25rem !important;
     width: 70%;
   }

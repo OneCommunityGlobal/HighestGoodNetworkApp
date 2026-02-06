@@ -8,6 +8,7 @@ import { ModalContext } from '~/context/ModalContext';
 import PermissionList from './PermissionList';
 import hasPermission from '../../utils/permissions';
 import styles from './UserRoleTab.module.css';
+import clsx from 'clsx';
 
 function PermissionListItem(props) {
   const {
@@ -198,11 +199,7 @@ function PermissionListItem(props) {
 
   return (
     <>
-      <li
-        className={styles['user-role-tab__permissions']}
-        key={permission}
-        data-testid={permission}
-      >
+      <li className={styles.userRoleTabPermissions} key={permission} data-testid={permission}>
         <p
           style={{
             color: isCategory
@@ -219,11 +216,11 @@ function PermissionListItem(props) {
             fontSize: isCategory && '20px',
             textIndent: `${50 * depth}px`,
           }}
-          className={styles['permission-label']}
+          className={styles.permissionLabel}
         >
           {label}
         </p>
-        <div className={styles['icon-button-container']}>
+        <div className={styles.iconButtonContainer}>
           <div className="infos">
             <i
               data-toggle="tooltip"
@@ -241,7 +238,7 @@ function PermissionListItem(props) {
             <></>
           ) : isCategory ? (
             <Button
-              className={styles['icon-button']}
+              className={styles.iconButton}
               color={
                 howManySubpermsInRole === 'All'
                   ? 'danger'
@@ -264,7 +261,7 @@ function PermissionListItem(props) {
           ) : (
             <>
               <Button
-                className={styles['icon-button']}
+                className={styles.iconButton}
                 color={hasThisPermission ? 'danger' : 'success'}
                 onClick={() => {
                   togglePermission(permission);
@@ -286,24 +283,23 @@ function PermissionListItem(props) {
                 {hasThisPermission ? 'Delete' : 'Add'}
               </Button>
               <div
-                className={`${styles['permission-tooltip-wrapper']} ${
-                  changedPermission(permission) ? `${styles['show-tooltip']}` : ''
+                className={`${styles.permissionTooltipWrapper} ${
+                  changedPermission(permission) ? `${styles.showTooltip}` : ''
                 }`}
               >
                 {immutablePermissions.length > 0 && (
                   <button
-                    className={`${styles['changed-permission']} ${
-                      darkMode ? `${styles['dark-background']}` : `${styles['light-background']}`
-                    } ${
+                    className={clsx(
+                      styles.changedPermission,
+                      darkMode ? styles.darkBackground : styles.lightBackground,
                       changedPermission(permission)
                         ? checkChangePermission(permission)
                           ? styles.green
                           : styles.red
                         : darkMode
                         ? styles.dark
-                        : styles.light
-                    }
-                    `}
+                        : styles.light,
+                    )}
                     aria-label={changedPermission(permission) ? 'Modified Permission' : ''}
                     disabled
                     type="button"
@@ -312,7 +308,7 @@ function PermissionListItem(props) {
                     ★{' '}
                   </button>
                 )}
-                <p className={`${styles['permission-tooltip-text']}`}>
+                <p className={clsx(styles.permissionTooltipText, darkMode ? styles.dark : '')}>
                   Permission {checkChangePermission(permission) ? 'added' : 'removed'}
                 </p>
               </div>
@@ -322,7 +318,7 @@ function PermissionListItem(props) {
       </li>
       {isCategory ? (
         <li
-          className={`${styles['user-role-tab__permissionList']}`}
+          className={styles.userRoleTabPermissionList}
           style={{
             display: 'flex',
             flexDirection: 'column',
