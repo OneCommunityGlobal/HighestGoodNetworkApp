@@ -151,6 +151,7 @@ const localReducers = {
   tools: toolReducer,
   toolAvailability: toolAvailabilityReducer,
   bmProjects: bmProjectReducer,
+  bmIssues: issueReducer,
   bmInjuries: bmInjuryReducer,
   bmInvTypes: bmInvTypeReducer,
   timeOffRequests: timeOffRequestsReducer,
