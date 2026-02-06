@@ -1,8 +1,8 @@
 import axios from 'axios';
-import { 
-  FETCH_INJURIES_REQUEST, 
-  FETCH_INJURIES_SUCCESS, 
-  FETCH_INJURIES_FAILURE 
+import {
+  FETCH_INJURIES_REQUEST,
+  FETCH_INJURIES_SUCCESS,
+  FETCH_INJURIES_FAILURE
 } from './types';
 import { ENDPOINTS } from '../../utils/URL';
 
@@ -30,6 +30,7 @@ const cleanParams = (obj = {}) => {
   }
   return out;
 };
+
 const paramsSerializer = params => {
   const usp = new URLSearchParams();
   for (const [k, v] of Object.entries(params)) {
@@ -37,6 +38,7 @@ const paramsSerializer = params => {
   }
   return usp.toString();
 };
+
 const safeData = res => (Array.isArray(res?.data) ? res.data : res?.data?.data ?? []);
 
 // Action creators
@@ -64,7 +66,10 @@ export const fetchInjuryData = (filters) => async dispatch => {
   dispatch(setInjuryDataLoading());
   try {
     const params = cleanParams(filters);
-    const res = await axios.get(ENDPOINTS.BM_INJURY_CATEGORY_BREAKDOWN, { params, paramsSerializer });
+    const res = await axios.get(ENDPOINTS.BM_INJURY_PROJECTS, {
+      params,
+      paramsSerializer,
+    });
     dispatch(setInjuryDataSuccess(safeData(res)));
   } catch (error) {
     const msg = error?.response?.data?.error || error?.message || 'Failed to fetch injury data';
@@ -93,7 +98,10 @@ export const fetchInjuryTypes = () => async dispatch => {
 export const fetchInjuryProjects = (filters) => async dispatch => {
   try {
     const params = cleanParams(filters);
-    const res = await axios.get(ENDPOINTS.BM_INJURY_PROJECTS, { params, paramsSerializer });
+    const res = await axios.get(ENDPOINTS.BM_INJURY_PROJECTS, {
+      params,
+      paramsSerializer,
+    });
     dispatch(setInjuryProjects(Array.isArray(res.data) ? res.data : []));
   } catch {
     dispatch(setInjuryProjects([]));
@@ -128,7 +136,7 @@ export const fetchInjurySeverity = (filters = {}) => {
   };
 };
 
-// Action creator for fetching injury data
+// Action creator for fetching injury data (simple list-style; not used by chart)
 export const fetchInjuries = (projectId, startDate, endDate) => async dispatch => {
   dispatch({ type: FETCH_INJURIES_REQUEST });
 
@@ -136,17 +144,20 @@ export const fetchInjuries = (projectId, startDate, endDate) => async dispatch =
     // Build query parameters
     const params = {};
     if (projectId && projectId !== 'all') {
-      params.projectId = projectId;
+      params.projectIds = projectId; // plural
     }
     if (startDate) params.startDate = startDate;
     if (endDate) params.endDate = endDate;
 
     // API call
-    const response = await axios.get(ENDPOINTS.INJURIES, { params });
+    const response = await axios.get(ENDPOINTS.BM_INJURY_PROJECTS, {
+      params,
+      paramsSerializer,
+    });
 
     dispatch({
       type: FETCH_INJURIES_SUCCESS,
-      payload: response.data
+      payload: response.data,
     });
 
     return response;
@@ -155,8 +166,8 @@ export const fetchInjuries = (projectId, startDate, endDate) => async dispatch =
       type: FETCH_INJURIES_FAILURE,
       payload: {
         message: error.response?.data?.message || 'Failed to fetch injury data',
-        status: error.response?.status
-      }
+        status: error.response?.status,
+      },
     });
 
     throw error;
@@ -168,13 +179,13 @@ export const getInjuryData = async (projectId, startDate, endDate) => {
   // Build query parameters
   const params = {};
   if (projectId && projectId !== 'all') {
-    params.projectId = projectId;
+    params.projectIds = projectId; // plural
   }
   if (startDate) params.startDate = startDate;
   if (endDate) params.endDate = endDate;
 
   // API call
-  const response = await axios.get(ENDPOINTS.INJURIES, { params });
+  const response = await axios.get(ENDPOINTS.BM_INJURY_PROJECTS, { params, paramsSerializer });
 
   // Return the data directly
   return response.data;
