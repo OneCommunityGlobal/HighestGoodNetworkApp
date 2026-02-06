@@ -68,15 +68,6 @@
   background: #f0f0f0;
 }
 
-.darkMode .dropdownButton {
-  color: #eee;
-  background: #2b2b2b;
-  border: 1px solid #555;
-}
-
-.darkMode .dropdownButton:hover {
-  background: #3a3a3a;
-}
 
 .dropdownMenu {
   position: absolute;
@@ -90,12 +81,7 @@
   background: #fff;
   padding: 4px 0;
 }
-
-.darkMode .dropdownMenu {
-  background: #2c2c2c;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-}
-
+ 
 /* React-select overrides */
 .customSelect__control {
   font-size: 14px;
@@ -160,14 +146,164 @@
 }
 
 .darkMode .dropdownButton {
-  color: #ccc;
+  color: #eee;
+  background: #2b2b2b;
+  border: 1px solid #555;
+}
+.darkMode .dropdownButton:hover {
+  background: #3a3a3a;
 }
 
 .darkMode .dropdownMenu {
   background: #2c2c2c;
-  box-shadow: 0 2px 8px #000;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
 }
 
 .darkMode .heading {
   color: #eee;
 }
+
+/* ===================== TREND / TIMELINE STYLES ===================== */
+.chartWrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 450px;
+}
+
+.legendWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 40px;
+  padding-bottom: 16px;
+  margin-bottom: 12px;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #444;
+}
+
+.legendSquare {
+  width: 14px;
+  height: 14px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.trendSection {
+  margin-top: 28px;
+  padding: 18px;
+  background: #fafafa;
+  border-radius: 8px;
+  border: 1px solid #e8e8e8;
+}
+
+.darkMode .trendSection {
+  background: #252525;
+  border-color: #404040;
+}
+
+.trendTitle {
+  margin: 0 0 12px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.darkMode .trendTitle {
+  color: #ddd;
+}
+
+.trendGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.trendCard {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 12px;
+}
+
+.darkMode .trendCard {
+  background: #333;
+  border-color: #555;
+}
+
+.projectName {
+  font-weight: 600;
+  font-size: 14px;
+  color: #1a1a1a;
+  margin-bottom: 8px;
+}
+
+.darkMode .projectName {
+  color: #eee;
+}
+
+.trendRow { 
+  display: flex; 
+  align-items: center; 
+  gap: 8px; 
+  font-size: 13px; 
+  margin-bottom: 8px;
+}
+
+.trendRow span:first-child { flex: 1; color: #666; font-weight: 500; }
+.darkMode .trendRow span:first-child { color: #aaa; }
+.trendRow span:last-child { font-weight: 600; color: #1a1a1a; min-width: 50px; text-align: right; }
+.darkMode .trendRow span:last-child { color: #ddd; }
+
+.trendIndicator { font-size: 16px; font-weight: 700; display: inline-block; width: 24px; text-align: center; }
+
+.attributeRow {
+  display: flex;
+  gap: 8px;
+  font-size: 12px;
+  margin-bottom: 6px;
+  padding-top: 6px;
+  border-top: 1px solid #e8e8e8;
+}
+
+.darkMode .attributeRow {
+  border-top-color: #404040;
+}
+
+.attributeRow:first-of-type {
+  border-top: none;
+  margin-top: 8px;
+  padding-top: 0;
+}
+
+.attributeRow .label {
+  flex: 1;
+  color: #666;
+  font-weight: 500;
+}
+
+.darkMode .attributeRow .label {
+  color: #aaa;
+}
+
+.attributeRow .value {
+  font-weight: 600;
+  color: #1a1a1a;
+  min-width: 60px;
+  text-align: right;
+}
+
+.darkMode .attributeRow .value {
+  color: #ddd;
+}
+
+.timelineSection { margin-top: 28px; padding: 18px; background: #fafafa; border-radius: 8px; border: 1px solid #e8e8e8; }
+.darkMode .timelineSection { background: #252525; border-color: #404040; }
+
