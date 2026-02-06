@@ -187,10 +187,15 @@
 }
 
 .dark-theme .date-picker-input {
-  background-color: #2b3e59 !important;
-  color: #fff !important;
+  background-color: #1c2541 !important;
+  color: #e0e0e0 !important;
   border: 1px solid #666 !important;
   font-size: 10px !important;
+}
+
+.dark-theme .date-picker-input::placeholder {
+  color: #e0e0e0 !important;
+  opacity: 1 !important;
 }
 
 /* Dark theme calendar container */
@@ -224,21 +229,37 @@
 
 /* Dark mode for multi select*/
 .dark-theme .custom-select__control, .dark-theme .custom-select__menu {
-  background-color: #2b3e59!important;
+  background-color: #1c2541!important;
   border-color: #666!important;
-  color: #fff!important;
+  color: #e0e0e0!important;
+}
+
+.dark-theme .custom-select__placeholder {
+  color: #e0e0e0!important;
+}
+
+.dark-theme .custom-select__single-value {
+  color: #e0e0e0!important;
+}
+
+.dark-theme .custom-select__input-container {
+  color: #e0e0e0!important;
+}
+
+.dark-theme .custom-select__input {
+  color: #e0e0e0!important;
 }
 
 .dark-theme .custom-select__multi-value {
-  background-color: #1c2541!important;
+  background-color: #2b3e59!important;
 }
 
 .dark-theme .custom-select__multi-value__label {
-  color: #fff!important;
+  color: #e0e0e0!important;
 }
 
 .dark-theme .custom-select__multi-value__remove {
-  color: #fff!important;
+  color: #e0e0e0!important;
 }
 
 .dark-theme .custom-select__multi-value__remove:hover {
@@ -247,12 +268,12 @@
 }
 
 .dark-theme .custom-select__option {
-  background-color: #2b3e59!important;
-  color: #fff!important;
+  background-color: #1c2541!important;
+  color: #e0e0e0!important;
 }
 
 .dark-theme .custom-select__option--is-focused {
-  background-color: #6c757d!important;
+  background-color: #2b3e59!important;
 }
 
 .dark-theme .custom-select__option--is-selected {
@@ -319,6 +340,32 @@
     padding: 4px 8px;
     font-size: 12px;
   }
+}
+
+/* Pagination dark mode styles */
+.dark-theme .pagination-container .btn-outline-secondary {
+  background-color: #1c2541 !important;
+  color: #e0e0e0 !important;
+  border-color: #666 !important;
+}
+
+.dark-theme .pagination-container .btn-outline-secondary:hover:not(:disabled) {
+  background-color: #2b3e59 !important;
+  color: #fff !important;
+  border-color: #888 !important;
+}
+
+.dark-theme .pagination-container .btn-outline-secondary:disabled {
+  background-color: #1c2541 !important;
+  color: #9ca3af !important;
+  border-color: #444 !important;
+  opacity: 0.6;
+}
+
+.dark-theme .pagination-container .btn-primary {
+  background-color: #007bff !important;
+  color: #fff !important;
+  border-color: #007bff !important;
 }
 
 /* Make dropdown menu fill screen width on very small devices */
