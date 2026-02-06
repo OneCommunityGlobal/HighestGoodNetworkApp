@@ -1,0 +1,88 @@
+.fu-trigger {
+  display: inline-block;
+}
+
+.followup-info-modal-button {
+  background: transparent !important;
+  border: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+
+  box-shadow: none !important;
+  outline: none !important;
+
+  -webkit-appearance: none;
+  appearance: none;
+
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 18px;
+  height: 18px;
+
+  cursor: pointer;
+}
+
+.followup-info-modal-button:focus,
+.followup-info-modal-button:active {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.followup-info-modal-button:focus-visible {
+  outline: 2px solid rgba(0, 123, 255, 0.4);
+  outline-offset: 2px;
+}
+
+.fu-btn-icon {
+  font-size: 16px;
+  pointer-events: none;
+  position: relative;
+  top: 1px;
+}
+
+.fu-tooltip {
+  position: fixed;
+  z-index: 3000;
+
+  width: 440px;    
+  max-width: 440px;
+
+  padding: 15px;
+  border-radius: 6px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+
+  max-height: 70vh;
+  overflow: auto;
+
+  white-space: normal;
+  text-align: left;
+}
+
+.fu--dark {
+  background: #2d3748;
+  color: #fff;
+}
+
+.fu--light {
+  background: #fff;
+  color: #111;
+}
+
+.fu-tooltip :global(.mb-3) {
+  margin-bottom: 12px;
+}
+
+.fu-tooltip :global(.mb-3:last-child) {
+  margin-bottom: 0;
+}
+
+@media (max-width: 768px) {
+  .fu-tooltip {
+    width: 90vw;
+    max-width: 90vw;
+    max-height: 50vh;
+  }
+}

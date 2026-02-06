@@ -1,9 +1,9 @@
-import './WishList.css';
+import styles from './WishList.module.css';
 import { connect, useDispatch } from 'react-redux';
 import { FaMapMarkerAlt } from 'react-icons/fa';
 import { NavItem } from 'reactstrap';
 import { Link } from 'react-router-dom';
-import { setCurrentWishListItem } from '~/reducers/lbdashboard/wishListItemReducer';
+import { setCurrentWishListItem } from '~/reducers/listBidDashboard/wishListItemReducer';
 import Header from '../Header';
 
 function WishList(props) {
@@ -15,18 +15,18 @@ function WishList(props) {
     <div className="item">
       <div className="item__container">
         <Header />
-        <div className="item__location list__location">
+        <div className={`item__location ${styles.list_location}`}>
           <FaMapMarkerAlt className="item__icon" />
           <a href="/">View on Property Map</a>
         </div>
-        <h1 className="list__title">Wish List</h1>
+        <h1 className={`${styles.list_title}`}>Wish List</h1>
         {wishlists?.map(item => (
-          <div className="item__body" key={item.id}>
-            <div className="item__details-wrapper">
-              <div className="list__details-left">
-                <div className="item-title_wrapper--mobile">
-                  <h1 className="list__item-title--mobile">{item.title}</h1>
-                  <h2 className="list__item-title--mobile">{item.unit}</h2>
+          <div className={`${styles.item_body}`} key={item.id}>
+            <div className={`${styles.item_detailsWrapper}`}>
+              <div className={`${styles.list_detailsLeft}`}>
+                <div className={`${styles.itemTitleWrapperMobile}`}>
+                  <h1 className={`${styles.list_itemTitleMobile}`}>{item.title}</h1>
+                  <h2 className={`${styles.list_itemTitleMobile}`}>{item.unit}</h2>
                 </div>
                 <img
                   key={item.images[0]}
@@ -35,15 +35,19 @@ function WishList(props) {
                   alt="House"
                 />
               </div>
-              <div className="list__details-right">
-                <div className="item-title_wrapper item-title_wrapper--desktop">
-                  <span className="list__item-title item-title-right">{item.title}</span>
+              <div className={`${styles.list_detailsRight}`}>
+                <div className={`${styles.itemTitleWrapper} ${styles.itemTitleWrapperDesktop}`}>
+                  <span className={`${styles.list_itemTitle} ${styles.itemTitleRight}`}>
+                    {item.title}
+                  </span>
                 </div>
                 <div className="item__details">
-                  <span className="list__item-title item-title_wrapper--desktop">{item.unit}</span>
+                  <span className={`${styles.list_itemTitle} ${styles.itemTitleWrapperDesktop}`}>
+                    {item.unit}
+                  </span>
                   <div className="list_item__amenities">
                     <div>
-                      <span className="font600">Available amenities in this unit:</span>
+                      <span className={`${styles.font600}`}>Available amenities in this unit:</span>
                       <ol>
                         {item.unitAmenities?.map(amenity => (
                           <li key={amenity}>{amenity}</li>
@@ -52,8 +56,8 @@ function WishList(props) {
                     </div>
                   </div>
                 </div>
-                <div className="item__price">
-                  <span className="font600">Basic per night price:</span> {item.price}
+                <div className={`${styles.item_price}`}>
+                  <span className={`${styles.font600}`}>Basic per night price:</span> {item.price}
                 </div>
                 <div>
                   <NavItem
@@ -62,25 +66,25 @@ function WishList(props) {
                     onClick={() => {
                       dispatch(setCurrentWishListItem(item));
                     }}
-                    className="list__details"
+                    className={`${styles.list_details}`}
                   >
                     Click here to view availabilities
                   </NavItem>
                 </div>
               </div>
             </div>
-            <div className="item__footer">
+            <div className={`${styles.item_footer}`}>
               <NavItem
                 tag={Link}
                 to={`/lbdashboard/wishlist/${item.id}`}
                 onClick={() => {
                   dispatch(setCurrentWishListItem(item));
                 }}
-                className="list__link"
+                className={`${styles.list_link}`}
               >
                 Click for list overview
               </NavItem>
-              <div className="wishlist__start__chat">
+              <div className={`${styles.wishlist_start_chat}`}>
                 <button type="button">
                   <img
                     width="24"
