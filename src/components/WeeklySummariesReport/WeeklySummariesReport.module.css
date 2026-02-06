@@ -12,6 +12,13 @@
   border-color: #fff #dee2e6 #dee2e6;
 }
 
+.bioHighlight {
+  width: calc(100%, 24px);
+  margin-left: -12px;
+  margin-right: -12px;
+  padding: 8px 12px;
+}
+
 .reportWrapper {
   padding: 20px 0;
   margin-top: 5px;
@@ -48,12 +55,9 @@
   display: flex;
   flex-direction: row;
 }
-/* .text-right{
-  margin
-} */
 
 /**  switch toggle*/
-.switchToggleControl{
+.switchToggleControl {
   position: relative;
   width: 25px;
   display: inline-block;
@@ -62,16 +66,17 @@
   margin-left: 5px;
   margin-right: 5px;
 }
-.switchToggle{
+.switchToggle {
   display: none;
 }
-.switchToggleLabel{
+.switchToggleLabel {
   display: block;
   overflow: hidden;
   cursor: pointer;
   border-radius: 10px;
   border: 1px solid #bbb;
   margin-bottom: 0.5rem;
+  width: 25px;
 }
 
 .switchToggleInner {
@@ -92,12 +97,15 @@
   box-sizing: border-box;
 }
 .switchToggleInner:before {
-  content: "";
+  content: '';
   padding-left: 2px;
   background-color: #2ba6ed;
 }
-.switchToggleInner:after {
-  content: "";
+.switchToggle:disabled + .switchToggleLabel .switchToggleInner::before {
+  background-color: #bbb;
+}
+.switch-toggle-inner:after {
+  content: '';
   padding-right: 2px;
   text-align: right;
   background-color: white;
@@ -140,12 +148,12 @@
 .filterContainer {
   display: flex;
   justify-content: flex-end;
+  flex-wrap: wrap;
 }
 .filterContainerTeamcode {
   display: flex;
   justify-content: space-between;
 }
-
 
 .filterStyle {
   font-size: 0.7em;
@@ -153,11 +161,9 @@
   align-items: center;
 }
 
-
 .marginRight {
   margin-right: 20px;
 }
-
 
 .containerWsrWrapper {
   min-height: 100%;
@@ -167,7 +173,134 @@
   color: red;
 }
 
-@media screen and (max-width: 544px) {
+.top-select {
+  z-index: 30 !important;
+  position: relative !important;
+}
+
+.second-select {
+  z-index: 29 !important;
+  position: relative !important;
+}
+
+.third-select {
+  z-index: 28 !important;
+  position: relative !important;
+}
+
+.smScrollable {
+  height: 100px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-start;
+}
+
+.chip {
+  display: flex;
+  align-items: center;
+  border-radius: 20px;
+  padding: 4px 10px;
+  height: fit-content;
+}
+
+.invalidChip {
+  display: flex;
+  align-items: center;
+  background: #ffd6d6;
+  border-radius: 20px;
+  padding: 4px 10px;
+  height: fit-content;
+}
+
+.minSzButton {
+  max-width: min-content;
+}
+
+.errorText {
+  color: red;
+  font-size: 12px;
+}
+
+.errorTextDark {
+  color: rgb(255, 168, 168);
+  font-size: 12px;
+}
+
+.textDark {
+  color: #333; /* Default dark text for light mode */
+}
+
+.textWhite {
+  color: white;
+}
+
+.errorSelect {
+  :global(.css-13cymwt-control) {
+    border-color: red !important;
+  }
+}
+
+.darkMode {
+  background-color: #3a506b !important;
+  color: white !important;
+}
+
+.darkMode .filterItemDarkMode {
+  color: white !important;
+}
+
+.darkMode .filterItemDarkMode:hover {
+  background-color: #2c3e50 !important;
+}
+
+.darkModal {
+  :global(.modal-content) {
+    background-color: #2c3e50 !important;
+    color: white !important;
+  }
+
+  :global(.close) {
+    color: white !important;
+  }
+}
+
+.darkChip {
+  background-color: #1b2a41 !important;
+  color: white !important;
+}
+
+.redChip {
+  background-color: #962929 !important;
+  color: white !important;
+}
+
+/* @media screen and (max-width: 544px) {
+  .responsive-font-size {
+    font-size: 0.75rem !important;
+  }
+} */
+
+.mx-max-sm-0 {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+@media screen and (max-width: 576px) {
+  .responsiveFontSize {
+    font-size: 0.3rem !important;
+  }
+
+  .px-max-sm-0 {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+}
+/* @media screen and (max-width: 544px) {
   .responsiveFontSize {
     font-size: 0.75rem !important;
   }
@@ -192,7 +325,7 @@
   .switchToggleControl{
     width: 40px;
   }
-}
+} */
 
 @media (min-width: 482px) {
   .teamcodeWrapper {
@@ -205,6 +338,48 @@
 .codeAlert {
   margin: 10px 0 0 0;
   padding: 8px;
+}
+/* Nuclear option — beats ANY dark-mode global rule */
+:global(.dark-mode)
+  :global(.container-wsr-wrapper)
+  :global(.alert-danger).codeAlert {
+  color: #842029 !important;
+}
+
+
+.report-multi-select-filter {
+  .options {
+    max-height: 570px;
+    overflow-y: auto;
+    font-family: 'Courier New', Courier, monospace;
+  }
+
+  .options::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  .options::-webkit-scrollbar-track {
+    background: rgb(0, 0, 0, 0);
+  }
+
+  .options::-webkit-scrollbar-thumb {
+    background: rgb(206, 212, 218);
+    border-radius: 8px;
+  }
+
+  .select-item {
+    padding: 5px 10px;
+    margin-bottom: 0.25rem;
+  }
+
+  .dropdown-container {
+    z-index: 2;
+  }
+
+  .clear-selected-button {
+    max-width: 30px;
+    padding: 5px 0;
+  }
 }
 
 .multiSelectFilter {
@@ -235,7 +410,6 @@
   .dropdownContainer {
     z-index: 2;
   }
-
 }
 
 /* Saved Filter Styles */
@@ -339,4 +513,463 @@
 
 .saved-filter-button.active-filter .saved-filter-delete-btn:hover {
   color: #ffc107 !important;
+}
+
+.dark-mode .dropdown-heading {
+  color: white !important;
+}
+
+.dark-mode .dropdown-content {
+  background-color: #1b2a41 !important;
+  color: white !important;
+}
+
+.dark-mode .select-item {
+  color: white !important;
+}
+
+.dark-mode .select-item:hover {
+  background-color: #243b55 !important;
+}
+
+.dark-mode .chip {
+  background-color: #243b55 !important;
+  color: white !important;
+}
+
+.dark-mode ::-webkit-scrollbar {
+  width: 6px;
+}
+
+.dark-mode ::-webkit-scrollbar-thumb {
+  background-color: #4dabf7;
+  border-radius: 4px;
+}
+
+.dark-mode input {
+  background-color: #1b2a41 !important;
+  color: white !important;
+  border-color: #3a506b !important;
+}
+
+
+/* Dropdown list */
+:global(.ms-dark) :global(.dropdown-content) {
+  background-color: #1b2a41 !important;
+}
+
+
+/* react-select scrollbar — PORTAL SAFE */
+:global(.custom-select__menu-list::-webkit-scrollbar) {
+  width: 6px;
+}
+
+:global(.custom-select__menu-list::-webkit-scrollbar-track) {
+  background: #1b2a41;
+}
+
+:global(.custom-select__menu-list::-webkit-scrollbar-thumb) {
+  background-color: #4dabf7;
+  border-radius: 4px;
+}
+
+/* ===== DARK MODE FIX: react-multi-select-component ===== */
+
+.dark-mode .extra-members-multiselect .dropdown-container {
+  background-color: #1e293b !important;
+  border: 1px solid #475569 !important;
+}
+
+.dark-mode .extra-members-multiselect .dropdown-heading {
+  background-color: #1e293b !important;
+  color: #ffffff !important;
+}
+
+.dark-mode .extra-members-multiselect .dropdown-heading-value {
+  color: #ffffff !important;
+}
+
+.dark-mode .extra-members-multiselect svg {
+  stroke: #ffffff !important;
+}
+
+.dark-mode .extra-members-multiselect .options {
+  background-color: #0f172a !important;
+}
+
+.dark-mode .extra-members-multiselect .select-item {
+  color: #ffffff !important;
+}
+
+.dark-mode .extra-members-multiselect .select-item:hover {
+  background-color: #334155 !important;
+}
+
+
+/* ===== Weekly Summary Filter Modal (Dark) ===== */
+
+.wsr-dark-modal-content {
+  background-color: #1b2a41 !important;
+  color: #ffffff;
+}
+
+.wsr-dark-modal-content .modal-header,
+.wsr-dark-modal-content .modal-body,
+.wsr-dark-modal-content .modal-footer {
+  background-color: #1b2a41;
+  border-color: #3a506b;
+}
+
+/* Close button */
+.wsr-dark-modal-content .close {
+  color: #ffffff;
+  opacity: 0.8;
+}
+
+/* Inputs */
+.wsr-dark-modal-content .form-control {
+  background-color: #0f172a;
+  color: #ffffff;
+  border-color: #3a506b;
+}
+
+.wsr-dark-modal-content .form-control::placeholder {
+  color: #94a3b8;
+}
+
+/* Native select */
+.wsr-dark-modal-content select.form-control {
+  background-color: #0f172a;
+  color: #ffffff;
+}
+
+/* === FORCE OVERRIDE EXISTING DARK MODE MODAL === */
+
+body.dark-mode .modal-content.wsr-dark-modal-content {
+  background-color: #1b2a41 !important;
+  color: #ffffff !important;
+  border: 1px solid #3a506b;
+}
+
+body.dark-mode .modal-content.wsr-dark-modal-content .modal-header,
+body.dark-mode .modal-content.wsr-dark-modal-content .modal-body,
+body.dark-mode .modal-content.wsr-dark-modal-content .modal-footer {
+  background-color: #1b2a41 !important;
+  border-color: #3a506b !important;
+}
+
+/* Close button */
+body.dark-mode .modal-content.wsr-dark-modal-content .close {
+  color: #ffffff !important;
+}
+
+body.dark-mode .modal-content.wsr-dark-modal-content .form-control {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+  border-color: #3a506b !important;
+}
+
+body.dark-mode .modal-content.wsr-dark-modal-content .form-control::placeholder {
+  color: #fff !important;
+}
+
+body.dark-mode .modal-content.wsr-dark-modal-content select.form-control {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode .modal-content.wsr-dark-modal-content .custom-select__control {
+  background-color: #0f172a !important;
+  border-color: #3a506b !important;
+}
+
+body.dark-mode .modal-content.wsr-dark-modal-content .custom-select__menu {
+  background-color: #0f172a !important;
+}
+
+body.dark-mode .modal-content.wsr-dark-modal-content .custom-select__option {
+  color: #ffffff !important;
+}
+
+body.dark-mode .modal-content.wsr-dark-modal-content
+.custom-select__option--is-focused {
+  background-color: #243b55 !important;
+}
+
+body.dark-mode .modal-content {
+  background-color: #2e5061;
+  color: #ffffff !important;
+}
+
+.dark-mode .modal-footer {
+  background-color: #1b2a41 !important;
+}
+
+/* ===== react-multi-select-component DARK MODE ===== */
+
+:global(.ms-dark) :global(.dropdown-container) {
+  background-color: #0f172a !important;
+  border-color: #3a506b !important;
+}
+
+:global(.ms-dark) :global(.dropdown-heading) {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+}
+
+:global(.ms-dark) :global(.dropdown-heading-value) {
+  color: #ffffff !important;
+}
+
+:global(.ms-dark) :global(.dropdown-heading-dropdown-arrow) {
+  stroke: #ffffff !important;
+}
+
+/* Dropdown list */
+:global(.ms-dark) :global(.dropdown-content),
+:global(.ms-dark) :global(.options) {
+  background-color: #0f172a !important;
+}
+
+/* Search box */
+:global(.ms-dark) :global(input) {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+}
+
+/* 🔥 Missing wrapper */
+:global(.ms-dark) :global(.panel-content) {
+  background-color: #0f172a !important;
+}
+
+/* Search box wrapper */
+:global(.ms-dark) :global(.search) {
+  background-color: #0f172a !important;
+  border-bottom: 1px solid #3a506b;
+}
+
+/* Search input */
+:global(.ms-dark) :global(.search input) {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+}
+
+/* Options list */
+:global(.ms-dark) :global(.options) {
+  background-color: #0f172a !important;
+}
+
+/* Each option row (INCLUDING Select All) */
+:global(.ms-dark) :global(.select-item) {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+}
+
+/* Hover */
+:global(.ms-dark) :global(.select-item:hover) {
+  background-color: #243b55 !important;
+}
+
+/* Checkbox */
+:global(.ms-dark) :global(.select-item input[type='checkbox']) {
+  accent-color: #4dabf7;
+}
+
+/* Scrollbar */
+:global(.ms-dark) :global(.options::-webkit-scrollbar) {
+  width: 6px;
+}
+
+:global(.ms-dark) :global(.options::-webkit-scrollbar-thumb) {
+  background-color: #4dabf7;
+  border-radius: 4px;
+}
+
+:global(.ms-dark) :global(.options::-webkit-scrollbar-track) {
+  background-color: #0f172a;
+}
+
+/* ===== react-select DARK MODE ===== */
+
+.wsr-dark-modal-content .custom-select__control {
+  background-color: #0f172a !important;
+  border-color: #3a506b !important;
+  color: white !important;
+}
+
+.wsr-dark-modal-content .custom-select__single-value {
+  color: white !important;
+}
+
+
+.wsr-dark-modal-content .custom-select__input {
+  color: white !important;
+}
+
+.wsr-dark-modal-content .custom-select__menu {
+  background-color: #0f172a !important;
+}
+
+.wsr-dark-modal-content .custom-select__option {
+  background-color: #0f172a !important;
+  color: white !important;
+}
+
+.wsr-dark-modal-content .custom-select__option--is-focused {
+  background-color: #243b55 !important;
+}
+
+.wsr-dark-modal-content .custom-select__option--is-selected {
+  background-color: #334155 !important;
+}
+
+/* FINAL, WORKING DARK MODAL FIX */
+:global(.modal-content.wsr-dark-modal-content) {
+  background-color: #1b2a41 !important;
+  color: #ffffff !important;
+}
+
+:global(.modal-content.wsr-dark-modal-content .modal-header),
+:global(.modal-content.wsr-dark-modal-content .modal-body),
+:global(.modal-content.wsr-dark-modal-content .modal-footer) {
+  background-color: #1b2a41 !important;
+  border-color: #3a506b !important;
+}
+
+
+/* Target the inner input of react-select specifically */
+.custom-select__input-container {
+  background-color: transparent !important;
+}
+
+.custom-select__input {
+  color: white !important;
+  background-color: transparent !important;
+}
+
+/* Fix for browser 'Autofill' turning things black or yellow */
+input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 30px #1b2a41 inset !important;
+  -webkit-text-fill-color: white !important;
+}
+
+/* 1. Force Placeholder to be White */
+.wsr-dark-modal-content .custom-select__placeholder {
+  color: #ffffff !important;
+}
+
+/* 2. Fix the Black Background while entering text */
+/* We must target the container AND the input inside it */
+.wsr-dark-modal-content .custom-select__input-container,
+.wsr-dark-modal-content .custom-select__input-container input {
+  background-color: transparent !important;
+  color: white !important;
+  box-shadow: none !important;
+}
+
+/* Ensure the value container doesn't have a background */
+.wsr-dark-modal-content .custom-select__value-container {
+  background-color: transparent !important;
+}
+.wsrDarkModalContent :global(input),
+.wsrDarkModalContent :global(textarea) {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+  border-color: #3a506b !important;
+}
+
+.wsrDarkModalContent :global(input::placeholder) {
+  color: #94a3b8 !important;
+}
+body.dark-mode .rs__option--is-focused {
+  background-color: #243b55 !important;
+}
+
+/* 1. Force the dropdown menu background and text color */
+.custom-select__menu {
+  background-color: #1b2a41 !important; /* Matches your modal background */
+  z-index: 9999 !important;
+}
+
+.custom-select__option {
+  color: white !important;
+  background-color: transparent !important;
+}
+
+.custom-select__option--is-focused {
+  background-color: #243b55 !important; /* Color when hovering an option */
+}
+
+/* 2. Fix the typing area (Placeholder & Input) */
+.custom-select__placeholder {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+.custom-select__input-container, 
+.custom-select__input-container input {
+  color: white !important;
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* 3. Fix the display when a value is already selected */
+.custom-select__single-value {
+  color: white !important;
+}
+
+/* 1. Fix the black background while entering text */
+:global(.rs__input-container),
+:global(.rs__input),
+:global(.rs__value-container) {
+  background-color: transparent !important;
+  color: white !important;
+}
+
+/* 2. Fix the actual <input> box that gets a background from the global theme */
+:global(.rs__input input) {
+  background-color: transparent !important;
+  color: white !important;
+  box-shadow: none !important;
+}
+
+/* 3. Fix the dropdown menu and hidden options */
+:global(.rs__menu) {
+  background-color: #0f172a !important; /* Dark navy */
+  border: 1px solid #3a506b !important;
+  z-index: 9999 !important;
+}
+
+/* 4. Ensure option text is visible */
+:global(.rs__option) {
+  color: white !important;
+}
+
+:global(.rs__placeholder) {
+  color: #c3c5c8 !important;
+}
+
+.tab-content {
+  display: flex;
+  flex-direction: column;
+  height: auto;           /* Allow it to grow with content */
+  min-height: 100vh;     /* Ensure it covers at least the screen height */
+  overflow: visible;      /* Prevent clipping */
+  background-color: #2b3e50; /* Ensure the dark color is applied to the full height */
+}
+
+/* Dark mode – react-select option hover */
+body.dark-mode .react-select__option--is-focused {
+  background-color: #3a3f45 !important; /* ash */
+  color: #ffffff !important;
+}
+
+/* Selected option */
+body.dark-mode .react-select__option--is-selected {
+  background-color: #4a4f55 !important; /* darker ash */
+  color: #ffffff !important;
+}
+
+/* Hover should NOT turn blue */
+body.dark-mode .react-select__option:hover {
+  background-color: #3a3f45 !important;
 }

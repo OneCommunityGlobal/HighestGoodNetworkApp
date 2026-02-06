@@ -1,0 +1,224 @@
+.page-wrapper {
+  min-height: 100vh;
+  background-color: inherit;
+}
+
+.promo-table-container {
+  max-width: 70vw;
+  background-color: rgb(241, 241, 241);
+  margin: 0 auto;
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.promo-table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 2.5rem;
+  padding: 0.75rem 1rem;
+  font-weight: 500;
+  margin-bottom: 10pt;
+}
+
+.review-btn,
+.process-promo-btn {
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  margin-left: 0.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1.25rem;
+}
+
+.review-btn:hover,
+.process-promo-btn:hover {
+  background-color: #1d4ed8;
+}
+
+.promo-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+  font-size: 0.95rem;
+}
+
+.promo-table th,
+.promo-table td {
+  padding: 0.5rem;
+  text-align: center;
+  border: none;
+}
+
+.promo-table th {
+  background-color: rgb(224, 237, 250);
+  font-weight: 400;
+}
+
+.section-row td {
+  text-align: left;
+  font-weight: bold;
+  padding-top: 0.75rem;
+  background-color: antiquewhite;
+}
+
+.custom-circular-checkbox-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.custom-circular-checkbox {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid black;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  transition: background-color 0.2s ease;
+}
+
+.custom-circular-checkbox.checked {
+  background-color: black;
+}
+
+.check-icon {
+  color: white;
+  font-size: 12px;
+}
+
+/* dark mode */
+.page-wrapper.dark {
+  background-color: #121212;
+}
+
+.promo-table-container.dark .promo-table tr:hover {
+  background-color: #555555;
+}
+
+.promo-table-container.dark {
+  background-color: #1f1f1f;
+  color: #f5f5f5;
+  box-shadow: 0 2px 5px rgba(255, 255, 255, 0.1);
+}
+
+.promo-table-container.dark .promo-table {
+  background-color: #2a2a2a;
+}
+
+.promo-table-container.dark .promo-table th {
+  background-color: #3b3b3b;
+  color: #ddd;
+}
+
+.promo-table-container.dark .promo-table td {
+  color: #eaeaea;
+}
+
+.promo-table-container.dark .section-row td {
+  background-color: #333;
+  color: #f0f0f0;
+}
+
+.promo-table-container.dark .review-btn,
+.promo-table-container.dark .process-promo-btn {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.promo-table-container.dark .review-btn:hover,
+.promo-table-container.dark .process-promo-btn:hover {
+  background-color: #2563eb;
+}
+
+.promo-table-container.dark .custom-circular-checkbox {
+  border: 2px solid #ccc;
+  background-color: #1a1a1a;
+}
+
+.promo-table-container.dark .custom-circular-checkbox.checked {
+  background-color: #00cc66;
+}
+
+.promo-table-container.dark .check-icon {
+  color: white;
+}
+
+/* mobile */
+
+@media screen and (max-width: 768px) {
+  .promo-table,
+  .promo-table thead,
+  .promo-table tbody,
+  .promo-table th,
+  .promo-table td,
+  .promo-table tr {
+    display: block;
+    width: 100%;
+  }
+
+  .promo-table tr {
+    margin-bottom: 1rem;
+    background-color: #fff;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    padding: 0.75rem;
+  }
+
+  .promo-table td {
+    text-align: left;
+    border: none;
+    padding: 0.5rem 0;
+    position: relative;
+  }
+
+  .promo-table td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: #374151;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .section-row td {
+    font-size: 1rem;
+    padding: 0.5rem 0;
+    border: none;
+    background-color: transparent;
+  }
+
+  .custom-circular-checkbox-wrapper {
+    justify-content: flex-start;
+  }
+
+  .promo-table-container {
+    max-width: 100%;
+    padding: 1rem;
+  }
+
+  /* mobile dark mode */
+  .promo-table-container.dark .promo-table tr {
+    background-color: #2a2a2a;
+    border-color: #444;
+  }
+
+  .promo-table-container.dark .promo-table td::before {
+    color: #ccc;
+  }
+
+  .promo-table-container.dark .promo-table td {
+    color: #eaeaea;
+  }
+
+  .promo-table-container.dark .section-row td {
+    background-color: transparent;
+    color: #f0f0f0;
+  }
+}
