@@ -155,21 +155,39 @@ export default function EquipmentUpdateForm() {
             onChange={handleChange}
             disabled={!formData.toolOrEquipment}
           >
-            <option value="">Select Name</option>
             {formData.toolOrEquipment === 'Tool' &&
-              uniqueToolList.map(item => (
-                <option key={item.id} value={item.name}>
-                  {item.name}
-                </option>
+              (uniqueToolList.length > 0 ? (
+                <>
+                  <option value="">Select Name</option>
+                  {uniqueToolList.map(item => (
+                    <option key={item.id} value={item.name}>
+                      {item.name}
+                    </option>
+                  ))}
+                </>
+              ) : (
+                <option value="">No names available</option>
               ))}
             {formData.toolOrEquipment === 'Equipment' &&
-              uniqueEquipmentList.map(item => (
-                <option key={item.id} value={item.name}>
-                  {item.name}
-                </option>
+              (uniqueEquipmentList.length > 0 ? (
+                <>
+                  <option value="">Select Name</option>
+                  {uniqueEquipmentList.map(item => (
+                    <option key={item.id} value={item.name}>
+                      {item.name}
+                    </option>
+                  ))}
+                </>
+              ) : (
+                <option value="">No names available</option>
               ))}
           </Input>
-          {!formData.name && <div className="toolFormError">Please select a name</div>}
+          {!formData.name &&
+            (!formData.toolOrEquipment || !formData.project ? (
+              <div className="toolFormError">Please select Project and Tool/Equipment first</div>
+            ) : (
+              <div className="toolFormError">Please select a name</div>
+            ))}
         </FormGroup>
 
         <FormGroup>
