@@ -279,8 +279,6 @@ export const ENDPOINTS = {
     if (params.length > 0) url += `?${params.join('&')}`;
     return url;
   },
-  BM_INJURY_ISSUE: `${APIEndpoint}/bm/issues`,
-  BM_RENTAL_CHART: `${APIEndpoint}/bm/rentalChart`,
 
   // BM_ISSUE_CHART: `${APIEndpoint}/bm/issues`,
 
