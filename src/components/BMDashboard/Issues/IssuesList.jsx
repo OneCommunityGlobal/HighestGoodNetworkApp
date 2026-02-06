@@ -14,7 +14,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import 'react-datepicker/dist/react-datepicker.css';
 import { Table, Button, Dropdown, Form, Row, Col } from 'react-bootstrap';
-import './IssuesList.css';
+import styles from './IssuesList.module.css';
 import { useSelector } from 'react-redux';
 import { ENDPOINTS } from '../../../utils/URL';
 
@@ -221,15 +221,15 @@ export default function IssuesList() {
       <h4 className="mb-4">A List of Issues</h4>
       <Row className="mb-3 align-items-center">
         <Col xs={12} md={6}>
-          <div className="datepicker-wrapper">
+          <div className={styles.datepickerWrapper}>
             <DatePicker
               selectsRange
               startDate={startDate}
               endDate={endDate}
               onChange={update => setDateRange(update)}
               placeholderText={dateRangeLabel || 'Filter by Date Range'}
-              className={`date-picker-input form-control ${darkMode ? 'dark-theme' : ''}`}
-              calendarClassName={darkMode ? 'dark-theme-calendar' : ''}
+              className={`${styles.datePickerInput} form-control ${darkMode ? 'dark-theme' : ''}`}
+              calendarClassName={darkMode ? styles.darkThemeCalendar : ''}
             />
             <Button variant="outline-danger" size="sm" onClick={() => setDateRange([null, null])}>
               ✕
@@ -269,7 +269,7 @@ export default function IssuesList() {
           </div>
         </div>
       )}
-      <Table bordered hover responsive className="issue-table">
+      <Table bordered hover responsive className={styles.issueTable}>
         <thead>
           <tr>
             <th>Issue Name</th>
@@ -297,14 +297,14 @@ export default function IssuesList() {
           ) : (
             currentItems.map(issue => (
               <tr key={issue.id}>
-                <td className={editingId === issue.id ? 'rename-active' : ''}>
+                <td className={editingId === issue.id ? styles.renameActive : ''}>
                   {editingId === issue.id ? (
                     <div className="d-flex gap-2">
                       <Form.Control
                         type="text"
                         value={editedName}
                         onChange={e => setEditedName(e.target.value)}
-                        className="rename-input"
+                        className={styles.renameInput}
                       />
                       <Button
                         size="sm"
@@ -346,25 +346,25 @@ export default function IssuesList() {
                     <Dropdown.Toggle
                       variant="outline-secondary"
                       size="sm"
-                      className="dropdown-toggle-custom"
+                      className={styles.dropdownToggleCustom}
                     >
                       Options
                     </Dropdown.Toggle>
-                    <Dropdown.Menu className="dropdown-menu-custom">
+                    <Dropdown.Menu className={styles.dropdownMenuCustom}>
                       <Dropdown.Item
-                        className="dropdown-item-custom"
+                        className={styles.dropdownItemCustom}
                         onClick={() => handleRename(issue.id)}
                       >
                         Rename
                       </Dropdown.Item>
                       <Dropdown.Item
-                        className="dropdown-item-custom"
+                        className={styles.dropdownItemCustom}
                         onClick={() => handleDeleteClick(issue.id)}
                       >
                         Delete
                       </Dropdown.Item>
                       <Dropdown.Item
-                        className="dropdown-item-custom"
+                        className={styles.dropdownItemCustom}
                         onClick={() => handleCloseIssue(issue.id)}
                       >
                         Close
@@ -377,7 +377,7 @@ export default function IssuesList() {
           )}
         </tbody>
       </Table>
-      <div className="pagination-container">
+      <div className={styles.paginationContainer}>
         <Button
           variant="outline-secondary"
           onClick={() => {
@@ -426,12 +426,12 @@ export default function IssuesList() {
 
       {/* Delete Confirmation Modal */}
       {confirmDelete && (
-        <div className="modal-backdrop-custom">
-          <div className={`modal-dialog-custom ${darkMode ? 'dark-theme' : ''}`}>
-            <div className="modal-content-custom">
+        <div className={styles.modalBackdropCustom}>
+          <div className={`${styles.modalDialogCustom} ${darkMode ? 'dark-theme' : ''}`}>
+            <div className={styles.modalContentCustom}>
               <h5>Confirm Delete</h5>
               <p>Are you sure you want to delete this issue? This action cannot be undone.</p>
-              <div className="modal-actions">
+              <div className={styles.modalActions}>
                 <Button variant="secondary" onClick={cancelDelete}>
                   Cancel
                 </Button>
