@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
 import styles from './KIInventory.module.css';
@@ -15,8 +15,11 @@ import {
   FiAlertCircle,
   FiAlertTriangle,
   FiShoppingCart,
+  FiArchive,
 } from 'react-icons/fi';
 import { RiLeafLine } from 'react-icons/ri';
+import KIItemCard from './KIItemCard';
+import { items, preservedItems } from './KIInventorySampleItems.js';
 
 const KIInventory = () => {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -32,6 +35,16 @@ const KIInventory = () => {
   const toggleTab = tab => {
     if (activeTab !== tabs[tab]) setActiveTab(tabs[tab]);
   };
+  useEffect(() => {
+    // This is where you would fetch real data from an API or database
+    // For this example, we're using static sample data from KIInventorySampleItems.js
+  }, []);
+  let preservedDesc = [];
+  if (preservedItems.length > 0) {
+    preservedDesc = preservedItems.map(
+      item => `${item.presentQuantity} ${item.unit} of ${item.name}`,
+    );
+  }
   return (
     <div className={classnames(styles.inventoryContainer, darkMode ? styles.darkContainer : '')}>
       <header className={classnames(styles.inventoryPageHeader, darkMode ? styles.darkHeader : '')}>
@@ -156,7 +169,43 @@ const KIInventory = () => {
         className={`${styles.inventoryTabContent} ${darkMode ? styles.darkTabContent : ''}`}
       >
         <TabPane tabId={tabs[0]}>
-          <div>Ingredients Content</div>
+          <div className={styles.tabContainer}>
+            {preservedItems.length > 0 && (
+              <div
+                className={`${styles.notificationContainer} ${
+                  darkMode ? styles.darkModeNotification : ''
+                }`}
+              >
+                <div className={styles.notificationHeader}>
+                  <p style={{ margin: 0, padding: 0 }}>
+                    <FiArchive style={{ marginRight: '10px' }} />
+                    Preserved Stock Available
+                  </p>
+                  <p style={{ margin: 0, padding: 0, fontSize: 'small' }}>
+                    Extended shelf life items for year-round use
+                  </p>
+                </div>
+                <div className={styles.notificationBody}>
+                  <p style={{ color: 'rgb(175, 124, 62)' }}>{preservedDesc.join(', ')}</p>
+                  <div>
+                    <button
+                      className={styles.viewAllButton}
+                      style={darkMode ? { backgroundColor: 'rgb(245, 162, 61)' } : {}}
+                    >
+                      View All
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+            <div className={styles.ingredientsContainer}>
+              {items.map(item => (
+                <div key={item._id}>
+                  <KIItemCard item={item} />
+                </div>
+              ))}
+            </div>
+          </div>
         </TabPane>
         <TabPane tabId={tabs[1]}>
           <div>Equipment & Supplies Content</div>
