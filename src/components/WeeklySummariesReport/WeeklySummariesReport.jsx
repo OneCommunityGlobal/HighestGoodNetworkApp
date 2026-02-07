@@ -2466,8 +2466,7 @@ const WeeklySummariesReport = props => {
   const { error } = props;
   const hasPermissionToFilter = role === 'Owner' || role === 'Administrator';
   const { authEmailWeeklySummaryRecipient } = props;
-  const authorizedUser1 = 'jae@onecommunityglobal.org';
-  const authorizedUser2 = 'sucheta_mu@test.com';
+
   if (error) {
     return (
       <Container className={`container-wsr-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}>
@@ -2525,13 +2524,12 @@ const WeeklySummariesReport = props => {
       <Row className="mb-2">
         <Col lg={{ size: 10, offset: 1 }}>
           <div className="d-flex justify-content-end">
-            {(authEmailWeeklySummaryRecipient === authorizedUser1 ||
-              authEmailWeeklySummaryRecipient === authorizedUser2) && (
+            {authEmailWeeklySummaryRecipient === 'jae@onecommunityglobal.org' && (
               <Button
                 color="primary"
                 className="permissions-management__button text-nowrap mx-1"
                 type="button"
-                onClick={() => onClickRecepients()}
+                onClick={onClickRecepients}
                 style={darkMode ? boxStyleDark : boxStyle}
               >
                 Weekly Summary Report Recipients
