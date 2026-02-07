@@ -51,6 +51,7 @@ import UpdateEquipment from './components/BMDashboard/Equipment/Update/UpdateEqu
 import EDailyActivityLog from './components/BMDashboard/Equipment/DailyActivityLog/EDailyActivityLog';
 import LogTools from './components/BMDashboard/LogTools/LogTools';
 import Toolslist from './components/BMDashboard/Tools/ToolsList';
+import OrdersPage from './components/KitchenInventory/Orders/OrdersPage';
 import AddTool from './components/BMDashboard/Tools/AddTool';
 import ToolDetailPage from './components/BMDashboard/Tools/ToolDetailPage';
 import EquipmentUpdate from './components/BMDashboard/Tools/EquipmentUpdate';
@@ -808,8 +809,9 @@ export default (
         <Route path="/subscribe" component={SubscribePage} />
         <Route path="/unsubscribe" component={UnsubscribePage} />
         <Route path="/collaboration" component={Collaboration} />
-        <Route path="/suggestedjobslist" component={SuggestedJobsList} />
+        <Route path="/kitchenandinventory/orders" component={OrdersPage} />
         <ProtectedRoute path="/jobformbuilder" fallback component={JobFormBuilder} />
+        <Route path="/suggestedjobslist" component={SuggestedJobsList} />
         <ProtectedRoute path="/infoCollections" component={EditableInfoModal} />
         <ProtectedRoute path="/infoCollections" component={RoleInfoCollections} />
         <ProtectedRoute path="/userprofile/:userId" fallback component={UserProfile} />
