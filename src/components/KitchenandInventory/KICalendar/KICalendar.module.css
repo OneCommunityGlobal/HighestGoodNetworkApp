@@ -1,0 +1,24 @@
+.grayBorder {
+  border: 1px solid #ddd !important;
+}
+
+.calendar {
+  width: 100%;
+  height: auto;
+  font-size: 1.2rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #fff;
+  padding: 2px;
+}
+
+.calendarDay {
+  display: flex;
+  flex-direction: column;
+  height: 100px;
+  box-shadow: inset 0 0 0 1px #ddd;
+  border: 1px solid #ffffff !important;
+  border-radius: 10px;
+  text-align: left !important;
+}
