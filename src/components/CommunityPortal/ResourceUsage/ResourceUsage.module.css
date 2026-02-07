@@ -4,10 +4,18 @@
   background-color: #fff;
 }
 
+.darkContainer {
+  background: #1b2a41;
+}
+
 .chartSection {
   flex: 1;
   padding: 1.5rem;
   background: #fff;
+}
+
+.darkChartSection {
+  background: #2b3e59;
 }
 
 .headerSection {
@@ -42,7 +50,7 @@
 
 .customDropdown:hover,
 .customDropdown:focus {
-  background-color: #f9fafb !important;
+  background-color: #b7b7b8 !important;
   border-color: #e5e7eb !important;
 }
 
@@ -60,6 +68,10 @@
   background-color: #f9fafb;
   border-left: 1px solid #e5e7eb;
   padding: 1.5rem;
+}
+
+.darkInsightsSection {
+  background: #1b2a41;
 }
 
 .insightsHeader {
@@ -89,6 +101,10 @@
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
+.darkInsightCard {
+  background: #2b3e59;
+}
+
 .insightTitle {
   color: #6b7280;
   font-size: 0.875rem;
@@ -109,6 +125,10 @@
   padding: 0.75rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   border: 1px solid #e5e7eb;
+}
+
+.darkTooltip {
+  background: #1b2a41;
 }
 
 /* Responsive Design */

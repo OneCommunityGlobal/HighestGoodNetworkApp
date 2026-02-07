@@ -1,13 +1,23 @@
 .rightSection {
-  width: 70%;
-  padding: 0px 20px;
+  padding: 0 4px;
   display: flex;
   flex-direction: column;
+  min-width: 0; /* allow children to shrink */
 }
 
 .skillsAndChart {
   display: flex;
-  gap: 10px;
+  gap: 18px;
+  align-items: stretch;
+}
+
+.skillsAndChart > *:first-child { /* Skills buttons */
+  flex: 0 0 180px;
+}
+
+.skillsAndChart > *:last-child { /* Chart / content */
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 h3 {
@@ -17,10 +27,13 @@ h3 {
 }
 
 @media (max-width: 768px) {
-  .rightSection {
-    width: 100%;
-  }
   .skillsAndChart {
     flex-direction: column;
+    gap: 24px;
   }
+  .skillsAndChart > *:first-child { flex: 0 0 auto; }
+}
+
+:global(.dark-mode) h3 {
+  color: #fff;
 }

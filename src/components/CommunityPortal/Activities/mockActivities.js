@@ -1,4 +1,11 @@
-// Mock data for Activities List component
+/**
+ * Mock activities data for development and fallback purposes
+ * This data is used when:
+ * - API is unavailable or fails
+ * - Development/testing environment
+ * - Demo purposes
+ */
+
 export const mockActivities = [
   {
     id: 1,

@@ -1,13 +1,12 @@
-body {
+:global(body) {
   font-family: 'Poppins', sans-serif;
   background: #fff;
   margin: 0;
   padding: 0;
 }
 
-.dashboard-container {
-  padding: 20px 15px;
-  max-width: 1400px;
+.dashboardContainer {
+  padding: 40px 10px;
   margin: 0 auto;
   background: #ffffff;
   border-radius: 16px;
@@ -15,146 +14,306 @@ body {
   font-size: 16px;
   line-height: 1.6;
   letter-spacing: 0.2px;
-  width: min(95%, 1400px);
+  width: 100%;
 }
 
-.dashboard-header {
+.darkContainer {
+  background: #2b3e59 !important;
+  color: #fff;
+}
+
+.dashboardHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 30px;
-  padding: 20px;
+  padding: 16px 24px;
   background: linear-gradient(120deg, #ffffff, #f8f9fa);
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
 }
 
-.dashboard-header h1 {
+.darkHeader {
+  background: #1b2a41;
+}
+
+.dashboardHeader h1 {
   font-size: 2.5rem;
   font-weight: bold;
   color: #2c3e50;
+  margin: 0;
 }
 
-.dashboard-search-container input {
-  border: 2px solid #2c3e50;
-  border-radius: 25px;
-  padding: 12px 20px;
-  font-size: 1rem;
-  width: 100%;
-  max-width: 600px;
-  transition: all 0.3s ease;
+.dashboardControls {
+  display: flex;
+  align-items: center;
+  gap: 15px;
 }
 
-.dashboard-search-container input:focus {
+/* pill input */
+.dashboardSearchInput {
+  padding: 8px 90px 8px 16px; /* extra right padding for icons */
+  border-radius: 999px;
+  border: 2px solid #1b3c55;
+  min-width: 260px;
+  outline: none;
+}
+
+/* clear X button */
+.dashboardClearBtn {
+  position: absolute;
+  right: 35px;
+  top: 45%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #1b3c55;
+}
+
+/* blue circular search button inside the bar */
+.dashboardSearchIconBtn {
+  position: absolute;
+  right: 1%;
+  top: 48%;
+  transform: translateY(-50%);
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  cursor: pointer;
+  background: transparent; /* 🔹 icon background now white */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1b3c55; /* blue magnifying-glass icon */
+  font-size: 0.9rem;
+}
+
+.dashboardSearchContainer {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  overflow: hidden;
+  box-shadow: 0 0 4px rgba(199, 30, 30, 0.1);
+  background: #ffffff;
+}
+
+.dashboardSearchContainer input:focus {
   border-color: #34495e;
   box-shadow: 0 0 8px rgba(52, 73, 94, 0.3);
   outline: none;
 }
 
-.dashboard-sidebar {
+.centeredRow {
   padding: 30px;
-  background: #f9f9f9;
+}
+
+.dashboardSidebar {
+  padding: 20px;
+  display: flex;
+  justify-content: flex-start;
+  background: #ffffff;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.filter-section h4 {
+.darkSidebar {
+  background: #1b2a41;
+}
+
+.filterSection h4 {
   font-size: 1.8rem;
   color: #2c3e50;
-  /* margin-bottom: 20px; */
   font-weight: 600;
 }
 
-.filter-section-divider {
-  height: fit-content;
-  margin: 10px 10px;;
-  border-radius: 1px;
+.filterSectionDivider {
+  margin-top: 20px;
   display: flex;
   flex-direction: column;
+  gap: 20px;
 }
 
-.filter-item{
-  padding: 8px 15px;
+.filterItem input:not([type='checkbox']):not([type='radio']),
+.radioRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
   margin-top: 10px;
-  /* border: 1px solid #ddd; */
+}
+
+.darkSidebar .filterItem input:not([type='checkbox']):not([type='radio']),
+.darkSidebar .filterItem select {
+  background-color: #34495e;
+  color: #fff;
+  border: 1px solid #4a6572;
+}
+
+.darkSidebar .filterItem label {
+  color: #ecf0f1;
+}
+
+.darkSidebar input[type="date"] {
+  color-scheme: dark;
+}
+
+.radioGroup {
+  margin-right: 8px;
+}
+
+.radioInput {
+  margin-right: 6px;
+}
+
+.radioLabel {
+  margin-bottom: 0;
+  vertical-align: middle;
+}
+
+.filterItem input:not([type="checkbox"]):not([type="radio"]),
+.filterItem select {
+  padding: 12px 15px;
+  margin-top: 10px;
   border-radius: 8px;
   width: 100%;
+  height: auto;
   font-size: 1rem;
-  /* background: #ffffff; */
   transition: all 0.3s ease;
+  margin-bottom: 20px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1em;
 }
 
-.filter-item input:focus,
-.filter-item select:focus {
+.filterItem label {
+  display: block;
+  font-weight: 600;
+  color: #34495e;
+  margin-bottom: 8px;
+}
+
+.filterItem input[type='radio'],
+.filterItem input[type='checkbox'] {
+  display: inline-block; /* <– keeps input on same line as text */
+  width: auto;
+  padding: 0;
+  margin: 5px 0px 0px 120px; /* top margin to line up under "Dates" */
+  vertical-align: middle;
+}
+
+.filterItem input:focus,
+.filterItem select:focus {
   border-color: #2c3e50;
   box-shadow: 0 0 5px rgba(44, 62, 80, 0.4);
   outline: none;
 }
 
-.dashboard-main {
-  margin-top: 25px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  background-color: #e5e5e5;
+.dashboardMain {
+  width: 65%;
   padding: 30px;
   border-radius: 12px;
-  box-shadow: 0 4px 12px #0000001a;
 }
 
+.darkMain {
+  background: #2b3e59;
+}
 
-.section-title {
+.sectionTitle {
   font-size: 2.2rem;
   color: #2c3e50;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
   font-weight: bold;
   text-align: center;
 }
 
-.event-card {
-  margin-bottom: 20px;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+.eventCardCol {
+  display: flex;
 }
 
-.event-card:hover {
+.eventCard:hover {
   transform: scale(1.05);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
-.event-card-img-container img {
+.eventCardImgContainer img {
   width: 100%;
   height: auto;
-  border-bottom: 3px solid #34495e;
 }
 
-.event-title {
+.eventCard {
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  border: none;
+  background: #ffffff;
+}
+
+.eventCardImgContainer {
+  width: 100%;
+  height: 220px;
+  overflow: hidden;
+  background-color: #f0f0f0;
+  position: relative;
+}
+
+.eventCardBody {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  padding: 20px;
+  min-height: 180px;
+}
+
+.eventTitle {
   text-align: center;
   color: #2c3e50;
-  margin: 10px 0;
+  margin: 0 0 15px 0;
   font-weight: bold;
-  font-size: 1.5rem;
+  font-size: 1.3rem;
+  line-height: 1.4;
 }
 
-.event-date,
-.event-location,
-.event-organizer {
+.eventDate,
+.eventLocation,
+.eventOrganizer {
   font-size: 1rem;
   color: #555;
   display: flex;
   align-items: center;
   gap: 8px;
-  margin: 5px 0;
+  margin: 8px 0;
 }
 
-.dashboard-actions {
+.eventIcon {
+  color: #2c3e50;
+  margin-top: 2px;
+  flex-shrink: 0;
+  font-size: 1rem;
+}
+
+.noEvents {
   text-align: center;
-  margin-top: 20px;
+  padding: 40px;
+  color: #888;
+  font-size: 1.2rem;
 }
 
-.dashboard-actions button {
+.dashboardActions {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.dashboardActions button {
   background-color: #2c3e50;
   color: #ffffff;
   border: none;
@@ -166,11 +325,23 @@ body {
   font-weight: bold;
 }
 
-.dashboard-actions button:hover {
+.dashboardActions button:hover {
   background-color: #34495e;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-.date-filter {
-  margin-top: 15px;
+.paginationContainer {
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Hide browser's built-in clear icon for search inputs */
+.dashboardSearchInput::-webkit-search-cancel-button,
+.dashboardSearchInput::-webkit-search-decoration,
+.dashboardSearchInput::-webkit-search-results-button,
+.dashboardSearchInput::-webkit-search-results-decoration {
+  -webkit-appearance: none;
+  appearance: none;
 }

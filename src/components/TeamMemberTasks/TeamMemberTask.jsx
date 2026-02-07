@@ -292,11 +292,24 @@ const TeamMemberTask = React.memo(
                                 style={{
                                   fontSize: 24,
                                   cursor: 'pointer',
+                                  marginLeft: 6,
                                   color: darkMode ? 'lightgray' : 'black',
                                 }}
                                 title="Click to see user's timelog"
                               />
                             </Link>
+                            <p
+                              style={{
+                                fontSize: 16,
+                                cursor: 'pointer',
+                                color: darkMode ? 'lightgray' : 'black',
+                                marginLeft: 6,
+                                paddingTop: 15,
+                              }}
+                              title="Number of weeks this person has completed, based on the total weekly summaries they’ve submitted."
+                            >
+                              {user.weeklySummariesCount}
+                            </p>
                           </div>
                           {user.role !== 'Volunteer' && (
                             <div
@@ -595,7 +608,7 @@ const TeamMemberTask = React.memo(
                                         darkMode ? 'bg-yinmn-blue text-light' : ''
                                       }`}
                                     >
-                                      <>
+                                      <div className={styles['progress-wrapper']}>
                                         <div className={styles['team-task-progress-container']}>
                                           <div
                                             data-testid={`times-${task.taskName}`}
@@ -661,7 +674,7 @@ const TeamMemberTask = React.memo(
                                           )}
                                           className={styles['team-task-progress-bar']}
                                         />
-                                      </>
+                                      </div>
                                     </td>
                                   )}
                                 </tr>
