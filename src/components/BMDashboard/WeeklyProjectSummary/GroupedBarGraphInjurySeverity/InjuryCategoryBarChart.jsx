@@ -8,7 +8,6 @@ import {
   Legend,
   LabelList,
   ResponsiveContainer,
-  CartesianGrid,
 } from 'recharts';
 import Select from 'react-select';
 import DatePicker from 'react-datepicker';
@@ -142,39 +141,38 @@ function InjuryCategoryBarChart() {
     '#38BDF8', // cyan
   ];
 
-  const selectStyles = darkMode
-    ? {
-        control: base => ({
-          ...base,
-          backgroundColor: '#2b3e59',
-          color: 'white',
-        }),
-        menu: base => ({
-          ...base,
-          backgroundColor: '#2b3e59',
-          color: 'white',
-        }),
-        option: (base, state) => ({
-          ...base,
-          color: 'white',
-          backgroundColor: state.isSelected
-            ? 'rgba(255, 255, 255, 0.15)'
-            : state.isFocused
-            ? 'rgba(255, 255, 255, 0.1)'
-            : 'transparent',
-          '&:active': {
-            backgroundColor: 'rgba(255, 255, 255, 0.2)',
-          },
-        }),
-        singleValue: base => ({
-          ...base,
-          color: 'white',
-        }),
-      }
-    : {};
+  const selectStyles = darkMode && {
+    control: base => ({
+      ...base,
+      backgroundColor: '#2b3e59',
+      color: 'white',
+    }),
+    menu: base => ({
+      ...base,
+      backgroundColor: '#2b3e59',
+      color: 'white',
+    }),
+    option: (base, state) => ({
+      ...base,
+      color: 'white',
+      backgroundColor: state.isSelected
+        ? 'rgba(255, 255, 255, 0.15)'
+        : state.isFocused
+        ? 'rgba(255, 255, 255, 0.1)'
+        : 'transparent',
+      '&:active': {
+        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+      },
+    }),
+    singleValue: base => ({
+      ...base,
+      color: 'white',
+    }),
+  };
+  // : {};
 
   return (
-    <div className={`injury-chart-container ${darkMode ? 'darkMode' : ''}`}>
+    <div className={`injury-chart-container ${darkMode && 'darkMode'}`}>
       <div className="injury-chart-header">
         <h3 className="injury-chart-title">Injury Severity by Category of Worker Injured</h3>
 
@@ -266,68 +264,80 @@ function InjuryCategoryBarChart() {
       {loading && <p>Loading…</p>}
       {!loading && error && <p className="error">Error: {String(error)}</p>}
 
-      {!loading && !error && (
-        <div style={{ width: '100%', overflowX: 'auto' }}>
-          <ResponsiveContainer width="100%" height={420}>
-            <BarChart data={chartData} margin={{ top: 16, right: 24, bottom: 8, left: 8 }}>
-              <XAxis
-                dataKey="workerCategory"
-                interval={0}
-                angle={-45}
-                dy={12}
-                textAnchor="end"
-                height={90}
-                tick={{
-                  className: darkMode ? 'injury-xaxis-tick-dark' : 'injury-xaxis-tick-light',
-                }}
-              />
-              <YAxis
-                allowDecimals={false}
-                tick={{
-                  className: darkMode ? 'injury-yaxis-tick-dark' : 'injury-yaxis-tick-light',
-                }}
-              />
-              <CartesianGrid stroke={darkMode ? '#4a5568' : '#cccccc'} strokeDasharray="3 3" />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: darkMode ? '#1e1e1e' : '#ffffff',
-                  border: `1px solid ${darkMode ? '#4a5568' : '#cccccc'}`,
-                  color: darkMode ? '#ffffff' : '#000000',
-                  borderRadius: '6px',
-                }}
-                itemStyle={{
-                  color: darkMode ? '#ffffff' : '#000000',
-                }}
-                formatter={(value, name) => [
-                  value,
-                  projectNameById.get(String(name)) || 'Unknown Project',
-                ]}
-              />
-              <Legend
-                wrapperStyle={{ maxHeight: 72, overflowY: 'auto' }}
-                payload={seriesProjectIds.map((pid, index) => ({
-                  id: pid,
-                  type: 'square',
-                  color: COLOR_PALETTE[index % COLOR_PALETTE.length],
-                  value: projectNameById.get(pid) || 'Unknown Project',
-                }))}
-              />
-              {seriesProjectIds.map((pid, index) => (
-                <Bar
-                  key={pid}
-                  dataKey={pid}
-                  fill={COLOR_PALETTE[index % COLOR_PALETTE.length]}
-                  stroke={darkMode ? '#E5E7EB' : '#ffffff'}
-                  strokeWidth={1}
-                >
-                  {showLabels && (
-                    <LabelList dataKey={pid} position="top" formatter={v => (v > 0 ? v : '')} />
-                  )}
-                </Bar>
-              ))}
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
+      {!loading && !error && chartData.length > 0 && (
+        <ResponsiveContainer width="100%" height={420}>
+          <BarChart
+            data={chartData}
+            margin={{ top: 16, right: 24, bottom: 8, left: 8 }}
+            style={{
+              backgroundColor: darkMode ? '#1e2a3a' : '#fff',
+              borderRadius: '8px',
+              padding: '8px',
+            }}
+          >
+            <XAxis
+              dataKey="workerCategory"
+              interval={0}
+              angle={-45}
+              textAnchor="end"
+              height={80}
+              tick={{ fill: darkMode ? '#fff' : '#000' }}
+              axisLine={{ stroke: darkMode ? '#888' : '#000' }}
+              tickLine={{ stroke: darkMode ? '#888' : '#000' }}
+            />
+            <YAxis
+              allowDecimals={false}
+              tick={{ fill: darkMode ? '#fff' : '#000' }}
+              axisLine={{ stroke: darkMode ? '#888' : '#000' }}
+              tickLine={{ stroke: darkMode ? '#888' : '#000' }}
+            />
+            <Tooltip
+              contentStyle={{
+                backgroundColor: darkMode ? '#2b3e59' : '#fff',
+                border: `1px solid ${darkMode ? '#4a5568' : '#cccccc'}`,
+                color: darkMode ? '#fff' : '#000',
+              }}
+              labelStyle={{
+                color: darkMode ? '#fff' : '#000',
+              }}
+              formatter={(value, name) => [
+                value,
+                projectNameById.get(String(name)) || 'Unknown Project',
+              ]}
+            />
+            <Legend
+              wrapperStyle={{
+                maxHeight: 72,
+                overflowY: 'auto',
+                color: darkMode ? '#fff' : '#000',
+              }}
+              payload={seriesProjectIds.map((pid, index) => ({
+                id: pid,
+                type: 'square',
+                color: COLOR_PALETTE[index % COLOR_PALETTE.length],
+                value: projectNameById.get(pid) || 'Unknown Project',
+              }))}
+            />
+            {seriesProjectIds.map((pid, index) => (
+              <Bar
+                key={pid}
+                dataKey={pid}
+                fill={COLOR_PALETTE[index % COLOR_PALETTE.length]}
+                stroke={darkMode ? '#E5E7EB' : '#ffffff'}
+                strokeWidth={1}
+              >
+                {showLabels && (
+                  <LabelList
+                    dataKey={pid}
+                    position="top"
+                    formatter={v => (v > 0 ? v : '')}
+                    // fill={darkMode ? '#fff' : '#000'}
+                  />
+                )}
+              </Bar>
+            ))}
+          </BarChart>
+        </ResponsiveContainer>
       )}
 
       {!loading && !error && chartData.length === 0 && (
