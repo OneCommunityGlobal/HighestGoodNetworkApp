@@ -100,6 +100,12 @@ const getWeekDates = () => {
       .format('MMM-DD-YY'),
   }));
 };
+
+const updateUserInList = (list, userId, newColors) => {
+  if (!Array.isArray(list)) return list;
+  return list.map(u => (u && u._id === userId ? { ...u, filterColor: newColors } : u));
+};
+
 const initialState = {
   tableData: [],
   structuredTableData: [],
@@ -1955,168 +1961,9 @@ const WeeklySummariesReport = props => {
     }
   };
 
-  // Keeping this block commented for future use
-  // const handleBulkDotClick = async color => {
-  //   try {
-  //     // 1) Guard: ensure we have selected codes in state
-  //     if (
-  //       !state?.selectedCodes ||
-  //       (Array.isArray(state.selectedCodes) && state.selectedCodes.length === 0)
-  //     ) {
-  //       toast.warning('Please, select team codes first');
-  //       return;
-  //     }
-
-  //     // 2) Normalize selectedCodes -> always an array of { value } or string
-  //     const safeSelectedCodes = Array.isArray(state.selectedCodes)
-  //       ? state.selectedCodes
-  //       : state.selectedCodes
-  //       ? [state.selectedCodes]
-  //       : [];
-
-  //     // 3) Extract team code strings and filter out falsy values
-  //     const selectedTeamCodes = safeSelectedCodes
-  //       .map(e => (e && e.value ? e.value : typeof e === 'string' ? e : null))
-  //       .filter(Boolean);
-
-  //     // 4) Use a Set for membership checks (robust & fast)
-  //     const selectedTeamCodesSet = new Set(selectedTeamCodes);
-
-  //     // Debug logging
-  //     // eslint-disable-next-line no-console
-  //     console.log('✅ handleBulkDotClick - selectedTeamCodes:', selectedTeamCodes);
-
-  //     // 5) Find matching users from current state.summaries
-  //     const matchingUsers = Array.isArray(state.summaries)
-  //       ? state.summaries.filter(user => user && selectedTeamCodesSet.has(user.teamCode))
-  //       : [];
-
-  //     if (matchingUsers.length === 0) {
-  //       // eslint-disable-next-line no-console
-  //       console.warn('No matching users found for selected team codes!');
-  //       toast.warn('No users match the selected team codes.');
-  //       return;
-  //     }
-
-  //     // Warn + skip any users missing _id
-  //     const usersMissingId = matchingUsers.filter(u => !u?._id);
-  //     if (usersMissingId.length > 0) {
-  //       // eslint-disable-next-line no-console
-  //       console.warn(
-  //         `⚠️ BULK UPDATE PRE-CHECK: ${usersMissingId.length} users are missing an _id and will be skipped!`,
-  //         usersMissingId,
-  //       );
-  //       toast.warn(
-  //         `Warning: ${usersMissingId.length} users have incomplete data and will be skipped.`,
-  //       );
-  //     }
-
-  //     // Immediate UI feedback
-  //     setState(prev => ({
-  //       ...prev,
-  //       bulkSelectedColors: {
-  //         purple: color === 'purple',
-  //         green: color === 'green',
-  //         navy: color === 'navy',
-  //       },
-  //     }));
-  //     toast.success(`Applying bulk "${color}"...`);
-
-  //     // Track counts
-  //     let successCount = 0;
-  //     let failCount = 0;
-
-  //     // Convert matchingUsers into update promises (skipping any with missing _id)
-  //     const updatePromises = matchingUsers.map(user => {
-  //       if (!user?._id) {
-  //         failCount++;
-  //         return Promise.resolve({ status: 'skipped', reason: 'Missing user._id' });
-  //       }
-
-  //       const payloadToSend = {
-  //         filterColor: [color],
-  //         requestor: {
-  //           requestorId: props.auth?.user?.userid || props.auth?.user?._id || null,
-  //           role: props.auth?.user?.role,
-  //           permissions: props.auth?.user?.permissions,
-  //           email: props.auth?.user?.email,
-  //         },
-  //         firstName: user.firstName,
-  //         lastName: user.lastName,
-  //         personalLinks: user.personalLinks || [],
-  //         adminLinks: user.adminLinks || [],
-  //       };
-
-  //       return props
-  //         .updateOneSummaryReport(user._id, payloadToSend)
-  //         .then(res => {
-  //           successCount++;
-  //           const updatedUserFromServer = res?.data;
-
-  //           // Update state safely using functional setState
-  //           setState(prev => {
-  //             const updatedSummaries = Array.isArray(prev.summaries)
-  //               ? prev.summaries.map(u =>
-  //                   u && u._id === user._id
-  //                     ? { ...u, filterColor: updatedUserFromServer?.filterColor || [color] }
-  //                     : u,
-  //                 )
-  //               : prev.summaries;
-
-  //             const updatedFilteredSummaries = Array.isArray(prev.filteredSummaries)
-  //               ? prev.filteredSummaries.map(u =>
-  //                   u && u._id === user._id
-  //                     ? { ...u, filterColor: updatedUserFromServer?.filterColor || [color] }
-  //                     : u,
-  //                 )
-  //               : prev.filteredSummaries;
-
-  //             const updatedSummariesForTab = {
-  //               ...prev.summariesByTab,
-  //               [prev.activeTab]: updatedSummaries,
-  //             };
-
-  //             return {
-  //               ...prev,
-  //               summaries: updatedSummaries,
-  //               filteredSummaries: updatedFilteredSummaries,
-  //               summariesByTab: updatedSummariesForTab,
-  //             };
-  //           });
-
-  //           // return fulfilled info for Promise.allSettled
-  //           return { status: 'fulfilled', value: res };
-  //         })
-  //         .catch(err => {
-  //           failCount++;
-  //           const status = err?.response?.status;
-  //           const msg = err?.response?.data?.message || err.message;
-  //           // eslint-disable-next-line no-console
-  //           console.warn(`⚠️ Skipped user ${user._id} (${status}): ${msg}`);
-  //           return { status: 'rejected', reason: err };
-  //         });
-  //     });
-
-  //     // Wait for all to finish
-  //     await Promise.allSettled(updatePromises);
-
-  //     // Final toasts depending on results
-  //     if (failCount > 0) {
-  //       toast.error(`Bulk update finished. ${successCount} succeeded, ${failCount} failed.`);
-  //     } else {
-  //       toast.success(`Bulk "${color}" applied successfully to ${successCount} users!`);
-  //     }
-  //   } catch (err) {
-  //     // Final safety catch
-  //     // eslint-disable-next-line no-console
-  //     console.error('❌ handleBulkDotClick failed:', err);
-  //     toast.error('Bulk update failed unexpectedly. See console for details.');
-  //   }
-  // };
-
   const handleBulkDotClick = async color => {
     try {
-      // 1. Validation & Setup
+      // 1. Validation
       if (
         !state?.selectedCodes ||
         (Array.isArray(state.selectedCodes) && state.selectedCodes.length === 0)
@@ -2137,6 +1984,7 @@ const WeeklySummariesReport = props => {
 
       const selectedTeamCodesSet = new Set(selectedTeamCodes);
 
+      // 2. Find Users
       const matchingUsers = Array.isArray(state.summaries)
         ? state.summaries.filter(user => user && selectedTeamCodesSet.has(user.teamCode))
         : [];
@@ -2146,7 +1994,7 @@ const WeeklySummariesReport = props => {
         return;
       }
 
-      // 2. Set UI State
+      // 3. UI Update
       setState(prev => ({
         ...prev,
         bulkSelectedColors: {
@@ -2160,34 +2008,8 @@ const WeeklySummariesReport = props => {
       let successCount = 0;
       let failCount = 0;
 
-      // --- HELPER 1: Handle State Update (Removes nesting from .then) ---
-      const updateLocalState = (userId, serverData) => {
-        setState(prev => {
-          const newColors = serverData?.filterColor || [color];
-
-          // Reusable list updater
-          const updateList = list =>
-            Array.isArray(list)
-              ? list.map(u => (u && u._id === userId ? { ...u, filterColor: newColors } : u))
-              : list;
-
-          const updatedSummaries = updateList(prev.summaries);
-          const updatedFilteredSummaries = updateList(prev.filteredSummaries);
-
-          return {
-            ...prev,
-            summaries: updatedSummaries,
-            filteredSummaries: updatedFilteredSummaries,
-            summariesByTab: {
-              ...prev.summariesByTab,
-              [prev.activeTab]: updatedSummaries,
-            },
-          };
-        });
-      };
-
-      // --- HELPER 2: Handle Single User Update (Removes nesting from map) ---
-      const processUserUpdate = user => {
+      // 4. Process Updates
+      const updatePromises = matchingUsers.map(user => {
         if (!user?._id) {
           failCount++;
           return Promise.resolve({ status: 'skipped', reason: 'Missing user._id' });
@@ -2211,20 +2033,28 @@ const WeeklySummariesReport = props => {
           .updateOneSummaryReport(user._id, payloadToSend)
           .then(res => {
             successCount++;
-            updateLocalState(user._id, res?.data); // Call helper instead of inline logic
+            const newColors = res?.data?.filterColor || [color];
+
+            // 🟢 Refactored: Uses external helper to avoid deep nesting
+            setState(prev => ({
+              ...prev,
+              summaries: updateUserInList(prev.summaries, user._id, newColors),
+              filteredSummaries: updateUserInList(prev.filteredSummaries, user._id, newColors),
+              summariesByTab: {
+                ...prev.summariesByTab,
+                [prev.activeTab]: updateUserInList(prev.summaries, user._id, newColors),
+              },
+            }));
+
             return { status: 'fulfilled', value: res };
           })
           .catch(err => {
             failCount++;
-            const status = err?.response?.status;
             const msg = err?.response?.data?.message || err.message;
-            console.warn(`⚠️ Skipped user ${user._id} (${status}): ${msg}`);
+            console.warn(`⚠️ Skipped user ${user._id}: ${msg}`);
             return { status: 'rejected', reason: err };
           });
-      };
-
-      // 3. Execute Updates
-      const updatePromises = matchingUsers.map(processUserUpdate);
+      });
 
       await Promise.allSettled(updatePromises);
 
@@ -2235,7 +2065,7 @@ const WeeklySummariesReport = props => {
       }
     } catch (err) {
       console.error('❌ handleBulkDotClick failed:', err);
-      toast.error('Bulk update failed unexpectedly. See console for details.');
+      toast.error('Bulk update failed unexpectedly.');
     }
   };
 
@@ -2733,64 +2563,6 @@ const WeeklySummariesReport = props => {
           </div>
 
           {hasPermissionToFilter && <></>}
-          {/* keeping the block of code for future reference */}
-          {/* Saved Filter Buttons */}
-          {/* {props.savedFilters && props.savedFilters.length > 0 && (
-            <div
-              style={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                gap: '5px',
-                alignItems: 'center',
-                maxHeight: '100px',
-                overflowY: 'auto',
-              }}
-              className="my-3"
-            >
-              {filterChoices.map(filter => (
-                <div
-                  key={filter.value}
-                  className={`${styles['saved-filter-button']} ${
-                    darkMode ? styles['dark-mode'] : ''
-                  } ${
-                    currentAppliedFilter && currentAppliedFilter.value === filter.value
-                      ? styles['active-filter']
-                      : ''
-                  }`}
-                >
-                  <button
-                    type="button"
-                    className="btn btn-link p-0 mr-1"
-                    style={{
-                      color: 'inherit',
-                      textDecoration: 'none',
-                      fontSize: '0.875rem',
-                      background: 'none',
-                      border: 'none',
-                      padding: 0,
-                      fontWeight:
-                        currentAppliedFilter && currentAppliedFilter.value === filter.value
-                          ? 'bold'
-                          : 'normal',
-                    }}
-                    onClick={() => applyFilter(filter)}
-                    title={`Apply filter: ${filter.label}`}
-                  >
-                    {filter.label}
-                  </button>
-                  <button
-                    type="button"
-                    className={styles['saved-filter-delete-btn']}
-                    onClick={() => handleDeleteFilter(filter)}
-                    title="Delete filter"
-                    aria-label={`Delete filter ${filter.label}`}
-                  >
-                    <i className="fa fa-times" />
-                  </button>
-                </div>
-              ))}
-            </div>
-          )} */}
           {/* Saved Filter Buttons List */}
           {filterChoices && filterChoices.length > 0 && (
             <div

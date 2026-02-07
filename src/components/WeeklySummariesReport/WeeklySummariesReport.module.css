@@ -348,8 +348,7 @@
 }
 
 :global(.dark-mode) .tabContent {
-  background-color: #2e5061 !important; /* Matches your JSX background */
-  border-color: transparent !important; /* Removes the white border */
+  background-color: #2e5061 !important;
   border: none !important;
 }
 
