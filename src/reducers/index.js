@@ -100,6 +100,7 @@ import reviewsInsightReducer from './prAnalytics/reviewsInsightReducer';
 import { hoursPledgedReducer } from './jobAnalytics/hoursPledgedReducer';
 import { studentTasksReducer } from './studentTasksReducer';
 import { weeklySummariesFiltersApi } from '../actions/weeklySummariesFilterAction';
+import facebookReducer from './facebookReducer';
 
 //education portal
 
@@ -191,6 +192,7 @@ const localReducers = {
 
   // education portal
   browseLessonPlan: browseLessonPlanReducer,
+  facebook: facebookReducer,
 };
 
 const sessionReducers = {

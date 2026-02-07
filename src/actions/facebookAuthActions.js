@@ -1,21 +1,19 @@
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { ENDPOINTS } from '~/utils/URL';
+import { SET_FB_CONNECTION_STATUS, SET_FB_CONNECTION_LOADING } from '~/reducers/facebookReducer';
 
 /**
  * Loads the Facebook SDK dynamically
  */
 export const loadFacebookSDK = () => {
   return new Promise((resolve, reject) => {
-    // Check if already loaded AND initialized
     if (window.FB && window.fbSDKInitialized) {
       resolve(window.FB);
       return;
     }
 
-    // Check if script is already being loaded
     if (document.getElementById('facebook-jssdk')) {
-      // Wait for it to initialize
       const checkFB = setInterval(() => {
         if (window.FB && window.fbSDKInitialized) {
           clearInterval(checkFB);
@@ -23,7 +21,6 @@ export const loadFacebookSDK = () => {
         }
       }, 100);
 
-      // Timeout after 10 seconds
       setTimeout(() => {
         clearInterval(checkFB);
         reject(new Error('Facebook SDK initialization timeout'));
@@ -31,7 +28,6 @@ export const loadFacebookSDK = () => {
       return;
     }
 
-    // Set up the async init callback BEFORE loading script
     window.fbAsyncInit = function () {
       window.FB.init({
         appId: process.env.REACT_APP_FACEBOOK_APP_ID,
@@ -44,7 +40,6 @@ export const loadFacebookSDK = () => {
       resolve(window.FB);
     };
 
-    // Load the SDK
     const script = document.createElement('script');
     script.id = 'facebook-jssdk';
     script.src = 'https://connect.facebook.net/en_US/sdk.js';
@@ -52,7 +47,6 @@ export const loadFacebookSDK = () => {
     script.defer = true;
     script.onerror = () => reject(new Error('Failed to load Facebook SDK'));
 
-    // Insert before first script tag (Facebook's recommended approach)
     const firstScript = document.getElementsByTagName('script')[0];
     if (firstScript && firstScript.parentNode) {
       firstScript.parentNode.insertBefore(script, firstScript);
@@ -62,16 +56,24 @@ export const loadFacebookSDK = () => {
   });
 };
 
-export const getFacebookConnectionStatus = () => async () => {
+export const getFacebookConnectionStatus = () => async (dispatch) => {
+  dispatch({ type: SET_FB_CONNECTION_LOADING, payload: true });
   try {
     const { data } = await axios.get(ENDPOINTS.FACEBOOK_AUTH_STATUS);
+    dispatch({ type: SET_FB_CONNECTION_STATUS, payload: data });
     return data;
   } catch (error) {
     console.error('[FacebookAuth] Failed to get connection status:', error.message);
-    return { connected: false, error: error.message };
+    const fallback = { connected: false, error: error.message };
+    dispatch({ type: SET_FB_CONNECTION_STATUS, payload: fallback });
+    return fallback;
   }
 };
 
+/**
+ * Initiates Facebook OAuth login.
+ * Returns page metadata + selectionNonce (NO tokens).
+ */
 export const initiateFacebookLogin =
   ({ requestor }) =>
   async () => {
@@ -84,6 +86,9 @@ export const initiateFacebookLogin =
             if (response.authResponse) {
               const { accessToken, userID, grantedScopes } = response.authResponse;
 
+              // Send short-lived token to backend for exchange.
+              // Backend will store long-lived tokens server-side and
+              // return only page metadata + selectionNonce.
               axios
                 .post(ENDPOINTS.FACEBOOK_AUTH_CALLBACK, {
                   accessToken,
@@ -95,9 +100,8 @@ export const initiateFacebookLogin =
                   if (data.success && data.pages?.length > 0) {
                     resolve({
                       success: true,
-                      pages: data.pages,
-                      userToken: data.userToken,
-                      grantedScopes: data.grantedScopes,
+                      pages: data.pages, // No tokens in here
+                      selectionNonce: data.selectionNonce, // Nonce to claim tokens later
                     });
                   } else if (data.pages?.length === 0) {
                     toast.error(
@@ -133,21 +137,24 @@ export const initiateFacebookLogin =
     }
   };
 
+/**
+ * Connects a selected Facebook Page using server-held tokens.
+ * Only sends pageId + selectionNonce (no raw tokens).
+ */
 export const connectFacebookPage =
-  ({ pageId, pageName, pageAccessToken, userToken, grantedScopes, requestor }) =>
-  async () => {
+  ({ pageId, pageName, selectionNonce, requestor }) =>
+  async (dispatch) => {
     try {
       const { data } = await axios.post(ENDPOINTS.FACEBOOK_AUTH_CONNECT, {
         pageId,
         pageName,
-        pageAccessToken,
-        userToken,
-        grantedScopes,
+        selectionNonce,
         requestor,
       });
 
       if (data.success) {
         toast.success(`Connected to ${pageName || 'Facebook Page'}`);
+        dispatch(getFacebookConnectionStatus());
         return data;
       }
       throw new Error(data.error || 'Failed to connect page');
@@ -161,12 +168,13 @@ export const connectFacebookPage =
 
 export const disconnectFacebookPage =
   ({ requestor }) =>
-  async () => {
+  async (dispatch) => {
     try {
       const { data } = await axios.post(ENDPOINTS.FACEBOOK_AUTH_DISCONNECT, { requestor });
 
       if (data.success) {
         toast.success('Facebook Page disconnected');
+        dispatch(getFacebookConnectionStatus());
         return data;
       }
       throw new Error(data.error || 'Failed to disconnect');

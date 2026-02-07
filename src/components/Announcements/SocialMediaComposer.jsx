@@ -38,8 +38,8 @@ export default function SocialMediaComposer({ platform }) {
     authUser?.permissions,
   ]);
 
-  // Connection status for showing warnings
-  const [isConnected, setIsConnected] = useState(null);
+  const fbConnectionStatus = useSelector(state => state.facebook?.connectionStatus);
+  const isConnected = fbConnectionStatus?.connected ?? null;
 
   // Composer state
   const [postContent, setPostContent] = useState('');
@@ -117,14 +117,11 @@ export default function SocialMediaComposer({ platform }) {
     outline: 'none',
   });
 
-  // Check connection status on mount
   useEffect(() => {
-    if (platform === 'facebook') {
-      dispatch(getFacebookConnectionStatus()).then(status => {
-        setIsConnected(status?.connected || false);
-      });
+    if (platform === 'facebook' && fbConnectionStatus === null) {
+      dispatch(getFacebookConnectionStatus());
     }
-  }, [dispatch, platform]);
+  }, [dispatch, platform, fbConnectionStatus]);
 
   // Fetch scheduled posts
   const loadScheduledPosts = useCallback(async () => {

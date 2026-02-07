@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import moment from 'moment-timezone';
@@ -32,15 +32,14 @@ export default function FacebookConnection() {
     authUser?.permissions,
   ]);
 
-  const [connectionStatus, setConnectionStatus] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const connectionStatus = useSelector(state => state.facebook?.connectionStatus);
+  const loading = useSelector(state => state.facebook?.loading);
   const [connecting, setConnecting] = useState(false);
   const [disconnecting, setDisconnecting] = useState(false);
 
   // Page selection modal state
   const [availablePages, setAvailablePages] = useState([]);
-  const [userToken, setUserToken] = useState(null);
-  const [grantedScopes, setGrantedScopes] = useState([]);
+  const [selectionNonce, setSelectionNonce] = useState(null);
   const [showPageSelector, setShowPageSelector] = useState(false);
 
   const canManageConnection = useMemo(() => {
@@ -48,21 +47,11 @@ export default function FacebookConnection() {
     return role === 'Owner' || role === 'Administrator';
   }, [authUser?.role]);
 
-  const loadConnectionStatus = useCallback(async () => {
-    setLoading(true);
-    try {
-      const status = await dispatch(getFacebookConnectionStatus());
-      setConnectionStatus(status);
-    } catch {
-      setConnectionStatus({ connected: false });
-    } finally {
-      setLoading(false);
-    }
-  }, [dispatch]);
-
   useEffect(() => {
-    loadConnectionStatus();
-  }, [loadConnectionStatus]);
+    if (connectionStatus === null) {
+      dispatch(getFacebookConnectionStatus());
+    }
+  }, [dispatch, connectionStatus]);
 
   const handleConnect = async () => {
     if (!requestor) {
@@ -75,8 +64,7 @@ export default function FacebookConnection() {
       const result = await dispatch(initiateFacebookLogin({ requestor }));
       if (result.success && result.pages?.length > 0) {
         setAvailablePages(result.pages);
-        setUserToken(result.userToken);
-        setGrantedScopes(result.grantedScopes);
+        setSelectionNonce(result.selectionNonce);
         setShowPageSelector(true);
       }
     } catch {
@@ -93,15 +81,13 @@ export default function FacebookConnection() {
         connectFacebookPage({
           pageId: page.pageId,
           pageName: page.pageName,
-          pageAccessToken: page.accessToken,
-          userToken,
-          grantedScopes,
+          selectionNonce,
           requestor,
         }),
       );
       setShowPageSelector(false);
       setAvailablePages([]);
-      loadConnectionStatus();
+      setSelectionNonce(null);
     } catch {
       // Error already shown via toast
     } finally {
@@ -121,7 +107,6 @@ export default function FacebookConnection() {
     setDisconnecting(true);
     try {
       await dispatch(disconnectFacebookPage({ requestor }));
-      loadConnectionStatus();
     } catch {
       // Error already shown via toast
     } finally {
@@ -385,6 +370,7 @@ export default function FacebookConnection() {
               onClick={() => {
                 setShowPageSelector(false);
                 setAvailablePages([]);
+                setSelectionNonce(null);
               }}
               style={{ ...btnDanger, backgroundColor: '#6c757d', marginTop: '12px', width: '100%' }}
             >
