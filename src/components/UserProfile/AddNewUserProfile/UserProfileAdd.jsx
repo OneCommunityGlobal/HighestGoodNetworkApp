@@ -114,27 +114,28 @@ class UserProfileAdd extends Component {
   normalizeName = s => (s || '').toLowerCase().replace(/[^a-z]/g, '');
 
   productionNameIsIncluded = () => {
+    console.log('NODE_ENV =', process.env.NODE_ENV);
+  // ✅ DO NOT enforce name rules in production
+    if (process.env.NODE_ENV === 'production') {
+      return true;
+    }
+
     const prodFirstRaw = this.props?.auth?.user?.firstName || '';
     const prodLastRaw  = this.props?.auth?.user?.lastName || '';
-  
+
     const prodFirst  = this.normalizeName(prodFirstRaw);
     const prodLast   = this.normalizeName(prodLastRaw);
     const inputFirst = this.normalizeName(this.state.userProfile.firstName);
     const inputLast  = this.normalizeName(this.state.userProfile.lastName);
-  
+
+    // If we don't know the prod user name, don't block
     if (!prodFirst || !prodLast) return true;
-  
+
     const combined = `${inputFirst}${inputLast}`;
     const hasFirst = combined.includes(prodFirst);
     const hasLast  = combined.includes(prodLast);
-  
+
     if (!hasFirst || !hasLast) {
-      const examples = [
-        `${prodFirstRaw} ${prodLastRaw} Admin`,
-        `${prodFirstRaw}${prodLastRaw} Test`,
-        `${prodFirstRaw} ${prodLastRaw}A`,
-      ];
-  
       toast.error(
         (
           <div style={{ lineHeight: 1.5 }}>
@@ -143,7 +144,7 @@ class UserProfileAdd extends Component {
               <b>&quot;{prodFirstRaw}&quot;</b> and last name&nbsp;
               <b>&quot;{prodLastRaw}&quot;</b>.
             </div>
-      
+
             <div style={{ marginTop: 8, fontWeight: 600 }}>Allowed examples:</div>
             <ul style={{ margin: '6px 0', paddingLeft: '1.5rem' }}>
               <li>{`${prodFirstRaw} ${prodLastRaw} Admin`}</li>
@@ -188,6 +189,14 @@ class UserProfileAdd extends Component {
       this.setState({ isLoading: true })
 
       const response = await axios.get(url);
+      
+      // Check if response.data exists and is an array
+      if (!response.data || !Array.isArray(response.data)) {
+        console.warn('Invalid response format from weekly summaries endpoint:', response.data);
+        this.setState({ inputAutoComplete: [], isLoading: false });
+        return;
+      }
+
       const stringWithValue = response.data.map(item => item.teamCode).filter(Boolean);
       const stringNoRepeat = stringWithValue
         .map(item => item)

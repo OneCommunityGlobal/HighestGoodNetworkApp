@@ -49,6 +49,29 @@
 .filterContainer {
   display: flex;
   justify-content: flex-end;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.selectAllDotsWrapper {
+  display: flex;
+  align-items: center;
+  font-size: 0.9em;
+  font-weight: bold;
+  gap: 6px;
+}
+
+.selectAllLabel {
+  font-size: 0.9em;
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+.dotSelector {
+  display: flex;
+  align-items: center;
 }
 
 .filterContainerTeamcode {
@@ -60,10 +83,22 @@
   font-size: 0.7em;
   display: flex;
   align-items: center;
+  font-weight: bold;
+  gap: 8px;
 }
 
 .filterMarginRight {
   margin-right: 20px;
+}
+
+.filterColumn {
+  display: flex;
+  flex-direction: column;
+  margin-right: 20px;
+}
+
+.filterMarginBottom {
+  margin-bottom: 10px;
 }
 
 .containerWsrWrapper {
