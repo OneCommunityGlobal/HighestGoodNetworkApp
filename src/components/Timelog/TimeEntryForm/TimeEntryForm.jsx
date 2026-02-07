@@ -289,7 +289,7 @@ function TimeEntryForm(props) {
 
   const validateForm = isTimeModified => {
     const errorObj = {};
-    const remindObj = { ...initialReminder };
+    const remindObj = { ...reminder, remind: '' };
     const date = moment(formValues.dateOfWork);
     const isDateValid = date.isValid();
 

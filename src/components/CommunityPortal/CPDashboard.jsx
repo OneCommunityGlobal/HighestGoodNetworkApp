@@ -40,8 +40,8 @@ export function CPDashboard() {
   const [events, setEvents] = useState([]);
   const [searchInput, setSearchInput] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
-  const [onlineOnly, setOnlineOnly] = useState(false);
   const [selectedDate, setSelectedDate] = useState('');
+  const [onlineOnly, setOnlineOnly] = useState(false);
   const [dateError, setDateError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [dateFilter, setDateFilter] = useState('');
@@ -117,6 +117,25 @@ export function CPDashboard() {
     });
   };
 
+  // Helper function to extract date in YYYY-MM-DD format from event date
+  const parseEventDate = dateString => {
+    if (!dateString) return null;
+
+    try {
+      // Try to parse as ISO date string or standard date
+      const parsedDate = new Date(dateString);
+      if (!isNaN(parsedDate.getTime())) {
+        const year = parsedDate.getFullYear();
+        const month = String(parsedDate.getMonth() + 1).padStart(2, '0');
+        const day = String(parsedDate.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      }
+    } catch (error) {
+      console.error('Error parsing date:', error);
+    }
+    return null;
+  };
+
   function isTomorrow(dateString) {
     const input = new Date(dateString);
 
@@ -151,11 +170,17 @@ export function CPDashboard() {
       if (!isOnlineEvent) return false;
     }
 
-    // Filter by date filter
+    // Filter by date filter (Tomorrow / Weekend)
     if (dateFilter === 'tomorrow') {
-      return isTomorrow(event.date);
+      if (!isTomorrow(event.date)) return false;
     } else if (dateFilter === 'weekend') {
-      return isComingWeekend(event.date);
+      if (!isComingWeekend(event.date)) return false;
+    }
+
+    // Filter by specific date (if selected)
+    const eventDate = event.date ? parseEventDate(event.date) : null;
+    if (selectedDate && eventDate !== selectedDate) {
+      return false;
     }
 
     // Filter by search query if provided
@@ -168,6 +193,11 @@ export function CPDashboard() {
       event.organizer?.toLowerCase().includes(term)
     );
   });
+
+  // Reset pagination to page 1 when filters change
+  useEffect(() => {
+    setPagination(prev => ({ ...prev, currentPage: 1 }));
+  }, [searchQuery, selectedDate, onlineOnly, dateFilter]);
 
   const totalPages = Math.ceil(filteredEvents.length / pagination.limit) || 1;
 
@@ -198,11 +228,11 @@ export function CPDashboard() {
   }
 
   return (
-    <Container className={styles.cp_dashboard_container}>
-      <header className={styles.cp_dashboard_header}>
+    <Container className={styles.dashboardContainer}>
+      <header className={`${styles.dashboardHeader} ${darkMode ? styles.darkHeader : ''}`}>
         <h1>All Events</h1>
         <div>
-          <div className={styles.cp_dashboard_search_container}>
+          <div className={styles.dashboardSearchContainer}>
             <Input
               id="search"
               type="search"
@@ -283,17 +313,27 @@ export function CPDashboard() {
                   </FormGroup>
                 </div>
                 <div className={styles.dashboardActions}>
-                  <Button color="primary" onClick={() => setDateFilter('')}>
+                  <Button
+                    color="primary"
+                    onClick={() => {
+                      setDateFilter('');
+                      setSelectedDate('');
+                    }}
+                  >
                     Clear date filter
                   </Button>
                 </div>
+
                 <div className={styles.dateFilterContainer}>
                   <DatePicker
-                    selected={selectedDate}
-                    onChange={date => handleDateChange(date)}
+                    selected={selectedDate ? new Date(selectedDate) : null}
+                    onChange={handleDateChange}
                     placeholderText="Ending After"
                     id="ending-after"
                     className={styles.dateFilter}
+                    dateFormat="yyyy-MM-dd"
+                    minDate={new Date()}
+                    isClearable
                   />
                   {dateError && <p className={styles.dateErrorMessage}>{dateError}</p>}
                 </div>
@@ -343,7 +383,11 @@ export function CPDashboard() {
           <h2 className={styles.sectionTitle}>Events</h2>
 
           <Row>
-            {displayedEvents.length > 0 ? (
+            {isLoading ? (
+              <div className={styles.noEvents}>Loading events...</div>
+            ) : error ? (
+              <div className={styles.noEvents}>{error}</div>
+            ) : displayedEvents.length > 0 ? (
               displayedEvents.map(event => (
                 <Col md={4} key={event.id} className={styles.eventCardCol}>
                   <Card className={styles.eventCard}>
@@ -357,13 +401,15 @@ export function CPDashboard() {
                     <CardBody>
                       <h5 className={styles.eventTitle}>{event.title}</h5>
                       <p className={styles.eventDate}>
-                        <FaCalendarAlt /> {formatDate(event.date)}
+                        <FaCalendarAlt className={styles.eventIcon} /> {formatDate(event.date)}
                       </p>
                       <p className={styles.eventLocation}>
-                        <FaMapMarkerAlt /> {event.location}
+                        <FaMapMarkerAlt className={styles.eventIcon} />{' '}
+                        {event.location || 'Location TBD'}
                       </p>
                       <p className={styles.eventOrganizer}>
-                        <FaUserAlt /> {event.organizer}
+                        <FaUserAlt className={styles.eventIcon} />{' '}
+                        {event.organizer || 'Organizer TBD'}
                       </p>
                     </CardBody>
                   </Card>
