@@ -32,17 +32,21 @@ export default function EquipmentUpdateForm() {
   const toolList = useMemo(
     () =>
       tools
-        .filter(tool => tool.itemType && tool.itemType.name)
+        .filter(
+          tool => tool.project._id === formData.project && tool.itemType && tool.itemType.name,
+        )
         .map(tool => ({ id: tool.itemType._id, name: tool.itemType.name })),
-    [tools],
+    [tools, formData.project],
   );
 
   const equipmentList = useMemo(
     () =>
       equipments
-        .filter(equip => equip.itemType && equip.itemType.name)
+        .filter(
+          equip => equip.project._id === formData.project && equip.itemType && equip.itemType.name,
+        )
         .map(equip => ({ id: equip.itemType._id, name: equip.itemType.name })),
-    [equipments],
+    [equipments, formData.project],
   );
   const uniqueToolList = useMemo(
     () => [...new Map(toolList.map(item => [item.id, item])).values()],
@@ -72,7 +76,7 @@ export default function EquipmentUpdateForm() {
     setFormData(prev => ({
       ...prev,
       [name]: value,
-      ...(name === 'toolOrEquipment' ? { name: '', number: '' } : {}), // Reset name and number on change
+      ...(name === 'project' || name === 'toolOrEquipment' ? { name: '', number: '' } : {}), // Reset name and number on change
     }));
   };
 
