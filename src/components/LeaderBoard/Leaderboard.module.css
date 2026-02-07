@@ -1,13 +1,21 @@
-.leaderboard {
+:global(.leaderboard) {
   font-size: 1rem;
 } /*1rem = 16px*/
 
-.my-custom-scrollbar {
+:global(.my-custom-scrollbar) {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
   overflow-y: auto;
-  margin-bottom: 1rem;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x pan-y;
+  padding-left: 12px;
+  padding-right: 12px;
+  box-sizing: border-box;
+  position: relative;
 }
 
-.leaderboard thead th {
+:global(.leaderboard) thead th {
   top: 0;
   border-top: 10px solid #dee2e6;
   border-top-width: 1px;
@@ -15,52 +23,93 @@
   border-top-color: rgb(222, 226, 230);
 }
 
-.leaderboard tbody tr td, 
-.leaderboard thead tr th {
+:global(.leaderboard) tbody tr td, 
+:global(.leaderboard) thead tr th {
   text-align: left !important;
 }
 
-.dark-leaderboard-row {
+:global(.dark-leaderboard-row) {
   background-color: #3a506b;
   color: white;
 }
 
-.dark-leaderboard-row th {
+:global(.dark-leaderboard-row) th {
   background-color: #3a506b;
   color: white;
 }
-.dark-leaderboard-row:hover {
+:global(.dark-leaderboard-row):hover {
   background-color: #111831;
 }
 
-.light-leaderboard-row {
+:global(.light-leaderboard-row) {
   background-color: white;
   color: black;
   display: table-row;
 }
-.light-leaderboard-row th {
+:global(.light-leaderboard-row) th {
   background-color: white;
   color: black;
 }
 
-.light-leaderboard-row:hover {
+:global(.light-leaderboard-row):hover {
   background-color: #f0f8ff;
 }
 
 
 /* Small devices (landscape phones, 544px and up) */
 @media (max-width: 544px) {
-  .leaderboard {
-    font-size: 0.7rem;
+  :global(.leaderboard) {
+    width: max-content !important;
+    min-width: 800px !important;
+    table-layout: auto;
+    display: table !important;
   } /*1rem = 16px*/
 
-  .my-custom-scrollbar {
+  :global(.leaderboard) th:last-child,
+  :global(.leaderboard) td:last-child {
+    padding-right: 16px;
+  }
+  :global(.leaderboard) th:first-child,
+  :global(.leaderboard) td:first-child {
+    padding-left: 16px;
+  }
+  :global(.my-custom-scrollbar) {
     max-height: 500px;
-    overflow: scroll;
+    overflow-x: auto !important;
+    overflow-y: auto;
     margin-bottom: 1rem;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-x pan-y;
+    width: 100%;
+    position: relative;
+    min-width: 0;
+  }
+  
+  /* Ensure search container doesn't expand beyond viewport */
+  :global(.my-custom-scrollbar) .search-container {
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  /* Allow table to expand beyond container width - this is critical for horizontal scrolling */
+  :global(.my-custom-scrollbar) table.leaderboard {
+    min-width: 800px !important;
+    width: max-content !important;
+    display: table !important;
   }
 
-  .leaderboard thead th {
+  :global(.leaderboard.table-fixed) td,
+  :global(.leaderboard.table-fixed) th {
+    white-space: nowrap !important;
+    word-break: normal !important;
+  }
+
+  :global(.leaderboard.table-fixed) {
+    word-break: normal !important;
+  }
+
+  :global(.leaderboard) thead th {
     top: 0;
     border-top: 10px solid #dee2e6;
     border-top-width: 1px;
@@ -72,16 +121,7 @@
   width: 97%;
 }
 
-.table-fixed tbody td {
-  white-space: normal; /* Allow text wrapping within cells */
-}
-
-.table-fixed {
-  font-size: 0.93rem;
-  word-break: break-word;
-}
-
-.animation {
+:global(.animation) {
   animation: l-animation 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
 }
 @keyframes l-animation {
@@ -98,28 +138,67 @@
   font-weight: bold;
 }
 
-.leaderboard-totals-container {
+:global(.leaderboard-totals-container) {
   display: flex;
   flex-direction: column;
 }
 
 @media screen and (max-width: 544px) {
-  .responsive-font-size {
+  :global(.responsive-font-size) {
     font-size: 0.75rem !important;
   }
 }
 
 
-.leaderboard.abbreviated-mode thead th {
+:global(.leaderboard.abbreviated-mode) thead th {
   font-size: 0.75rem;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 120px;
+  overflow: visible;
+  text-overflow: clip;
+  max-width: none;
   min-width: 70px;
   padding: 0.5rem 0.3rem;
   vertical-align: middle;
 }
 .trophyTextWhite {
   color: #fff;
+}
+
+/* Ensure parent Col components don't prevent horizontal scrolling on mobile */
+@media (max-width: 544px) {
+  :global(.col),
+  :global([class*="col-"]) {
+    min-width: 0;
+    overflow: visible;
+  }
+  
+  /* Ensure the leaderboard container can scroll and doesn't clip content */
+  :global(#leaderboard) {
+    overflow-x: auto !important;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-x pan-y;
+    width: 100%;
+    max-width: 100vw;
+  }
+  
+  /* Ensure table maintains its width and all columns are visible */
+  :global(#leaderboard) table.leaderboard {
+    min-width: 800px !important;
+    width: max-content !important;
+    table-layout: auto !important;
+  }
+  
+  /* On mobile, ensure abbreviated mode doesn't clip columns */
+  :global(.leaderboard.abbreviated-mode) thead th {
+    overflow: visible !important;
+    text-overflow: clip !important;
+    max-width: none !important;
+  }
+  
+  :global(.leaderboard.abbreviated-mode) tbody td {
+    overflow: visible !important;
+    text-overflow: clip !important;
+    max-width: none !important;
+  }
 }
