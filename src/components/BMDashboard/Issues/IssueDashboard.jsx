@@ -256,11 +256,7 @@ export default function IssueDashboard() {
         </Col>
         <Col className="d-flex justify-content-end">
           <UncontrolledDropdown>
-            <DropdownToggle
-              tag="button"
-              className={`btn btn-sm ${darkMode ? 'btn-primary' : 'btn-primary'}`}
-              type="button"
-            >
+            <DropdownToggle tag="button" className="btn btn-sm btn-primary" type="button">
               <FiDownload className="me-2" />
               Export
             </DropdownToggle>
