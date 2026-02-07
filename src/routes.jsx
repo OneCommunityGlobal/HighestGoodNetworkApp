@@ -20,7 +20,7 @@ import Timelog from './components/Timelog';
 import UserProfileEdit from './components/UserProfile/UserProfileEdit';
 import EditableInfoModal from './components/UserProfile/EditableModal/EditableInfoModal';
 import RoleInfoCollections from './components/UserProfile/EditableModal/RoleInfoModal';
-import PRDashboard from './components/PRDashboard';
+import PRDashboard from './components/PRDashboard/PRDashboard';
 import ApplicationTimeChartPage from './components/ApplicationTimeChart';
 import ApplicantsChart from './components/ApplicantsChart';
 import ApplicationAnalyticsContainer from './components/ApplicationAnalytics';
@@ -45,6 +45,7 @@ import LessonForm from './components/BMDashboard/Lesson/LessonForm';
 import LessonList from './components/BMDashboard/LessonList/LessonListForm';
 import AddEquipmentType from './components/BMDashboard/Equipment/Add/AddEquipmentType';
 import EDailyActivityLog from './components/BMDashboard/Equipment/DailyActivityLog/EDailyActivityLog';
+import EquipmentUpdateLog from './components/BMDashboard/Equipment/EHistory';
 import LogTools from './components/BMDashboard/LogTools/LogTools';
 import Toolslist from './components/BMDashboard/Tools/ToolsList';
 import AddTool from './components/BMDashboard/Tools/AddTool';
@@ -99,12 +100,12 @@ import NoshowViz from './components/CommunityPortal/Attendence/NoshowViz';
 import EventList from './components/CommunityPortal/Event/EventList/EventList';
 import ResourcesUsage from './components/CommunityPortal/Activities/activityId/ResourcesUsage';
 import EventParticipation from './components/CommunityPortal/Reports/Participation/EventParticipation';
+import NoShowList from './components/CommunityPortal/Activities/NoShow/NoShowList';
 
 import MaterialSummary from './components/MaterialSummary/MaterialSummary';
 
 // Activity Feedback Modal
 import FeedbackRatingEntry from './components/FeedbackActivityModal/FeedbackActivityEntry';
-
 import TeamLocations from './components/TeamLocations';
 import Inventory from './components/Inventory';
 import Collaboration from './components/Collaboration';
@@ -180,6 +181,7 @@ import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
 import EPLogin from './components/EductionPortal/Login';
 import BrowseLessonPlan from './components/EductionPortal/BrowseLessonPlan/BrowseLP';
 import EPDashboard from './components/EductionPortal';
+import AssignAtoms from './components/EductionPortal/AssignAtoms/AssignAtoms';
 import ReportDownloadButton from './components/EductionPortal/AnalyticsDashboard/ReportDownloadButton';
 import GroupList from './components/EductionPortal/GroupList/GroupList';
 import EvaluationResultsWrapper from './components/EductionPortal/EvaluationResultsWrapper';
@@ -195,6 +197,7 @@ import PRDashboardTopReviewedPRs from './components/HGNPRDashboard/PRDashboardTo
 import PRDashboardDetails from './components/HGNPRDashboard/PRDashboardDetails';
 import PromotionEligibility from './components/HGNPRDashboard/PromotionEligibility';
 import PRPromotionsPage from './components/PRPromotions/PRPromotionsPage';
+import PRGradingDashboard from './components/PRGradingDashboard/PRGradingDashboard';
 
 import ProtectedRoute from './components/common/ProtectedRoute';
 import { UserRole } from './utils/enums';
@@ -676,6 +679,11 @@ export default (
         <BMProtectedRoute path="/bmdashboard/equipment/add" component={AddEquipmentType} />
         <BMProtectedRoute path="/bmdashboard/T/EDailyActivityLog" component={EDailyActivityLog} />
         <BMProtectedRoute
+          path="/bmdashboard/equipment-history"
+          exact
+          component={EquipmentUpdateLog}
+        />
+        <BMProtectedRoute
           path="/bmdashboard/consumables/purchase"
           fallback
           component={PurchaseConsumable}
@@ -767,9 +775,9 @@ export default (
           component={FollowUpEmailTemplate}
         />
         <CPProtectedRoute
-          path="/communityportal/reports/participation"
+          path="/communityportal/activity/:activityId/logattendance"
           exact
-          component={EventParticipation}
+          component={NoShowList}
         />
         <CPProtectedRoute
           path="/communityportal/reports/participation"
@@ -823,11 +831,6 @@ export default (
         />
         <Route path="/lbdashboard/bidoverview" exact component={LBBidOverview} />
         <LBProtectedRoute path="/lbdashboard/bidding" exact component={BiddingHomepage} />
-        <CPProtectedRoute
-          path="/communityportal/reports/participation"
-          exact
-          component={EventParticipation}
-        />
         {/* Good Education  Portal Routes */}
         <EPProtectedRoute path="/educationportal" exact component={EPDashboard} />
         <EPProtectedRoute
@@ -838,6 +841,7 @@ export default (
         <Route path="/educationportal/login" component={EPLogin} />
         <Route path="/educationportal/InsightWidget" component={InsightWidget} />
         <Route path="/educationportal/lesson-library" exact component={BrowseLessonPlan} />
+        <EPProtectedRoute path="/educationportal/assignAtoms" exact component={AssignAtoms} />
         <EPProtectedRoute path="/educationportal/tasks/upload" exact component={WriteTaskUpload} />
         <Route path="/educationportal/reportButton" component={ReportDownloadButton} />
         <Route path="/educator/groups" exact component={GroupList} />
@@ -954,6 +958,12 @@ export default (
           path="/pr-team-analytics/popular-prs"
           exact
           component={PRReviewTeamAnalytics}
+        />
+        <ProtectedRoute
+          path="/pr-grading-dashboard"
+          exact
+          component={PRGradingDashboard}
+          fallback
         />
         <Route path="*" component={NotFoundPage} />
       </Switch>
