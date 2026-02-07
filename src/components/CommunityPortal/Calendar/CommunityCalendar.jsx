@@ -4,6 +4,8 @@ import ReactCalendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import CalendarActivitySection from './CalendarActivitySection';
 import styles from './CommunityCalendar.module.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faClock, faLocationDot, faTag, faCircleCheck } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import { ENDPOINTS } from '../../../utils/URL';
 
@@ -421,10 +423,33 @@ export default function CommunityCalendar() {
                             <div>
                               <h3>{event.title}</h3>
                               <div className={styles.selectedEventMeta}>
-                                <span>{event.time}</span>
-                                <span>{event.location}</span>
-                                <span>{event.type}</span>
-                                <span>{event.status}</span>
+                                <ul className={styles.selectedEventMeta}>
+                                  <li className={styles.metaItem}>
+                                    <FontAwesomeIcon icon={faClock} className={styles.metaIcon} />
+                                    <span>{event.time}</span>
+                                  </li>
+
+                                  <li className={styles.metaItem}>
+                                    <FontAwesomeIcon
+                                      icon={faLocationDot}
+                                      className={styles.metaIcon}
+                                    />
+                                    <span>{event.location}</span>
+                                  </li>
+
+                                  <li className={styles.metaItem}>
+                                    <FontAwesomeIcon icon={faTag} className={styles.metaIcon} />
+                                    <span>{event.type}</span>
+                                  </li>
+
+                                  <li className={styles.metaItem}>
+                                    <FontAwesomeIcon
+                                      icon={faCircleCheck}
+                                      className={styles.metaIcon}
+                                    />
+                                    <span>{event.status}</span>
+                                  </li>
+                                </ul>
                               </div>
                             </div>
                             <button
