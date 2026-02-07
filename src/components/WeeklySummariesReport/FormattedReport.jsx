@@ -352,7 +352,7 @@ function ReportDetails({
         <ListGroupItem darkMode={darkMode}>
           <div
             style={{
-              backgroundColor: isMeetCriteria ? '#ffff66' : 'transparent',
+              backgroundColor: isMeetCriteria ? '#989845' : 'transparent',
               width: '100%',
               padding: '6px 12px 6px 0px',
             }}
@@ -665,7 +665,7 @@ function TotalValidWeeklySummaries({ summary, canEditSummaryCount, darkMode }) {
         </div>
       ) : (
         <div className="total-valid-text">
-          <b style={style}>Total Valid Weekly Summaries:</b>
+          <b>Total Valid Weekly Summaries:</b>
         </div>
       )}
       {canEditSummaryCount ? (
@@ -738,7 +738,7 @@ function BioSwitch({ userId, bioPosted, summary, getWeeklySummariesReport }) {
   return (
     <div>
       <div className={styles.bioToggle}>
-        <b style={style}>Bio announcement:</b>
+        <b>Bio announcement:</b>
       </div>
       <div className={styles.bioToggle}>
         <ToggleSwitch
@@ -769,7 +769,7 @@ function BioLabel({ bioPosted, summary }) {
   }
   return (
     <div>
-      <b style={style}>Bio announcement: </b>
+      <b>Bio announcement: </b>
       {text}
     </div>
   );

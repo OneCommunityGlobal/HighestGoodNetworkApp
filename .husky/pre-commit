@@ -1,3 +1,14 @@
+#!/bin/sh
+# Load nvm if available
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+# Use Node 20 if available (or install if needed)
+if [ -f .nvmrc ]; then
+  nvm use 20 2>/dev/null || nvm install 20 && nvm use 20
+fi
+
+. "$(dirname "$0")/_/husky.sh"
+
 echo ""
 echo "🛡️  Husky pre-commit hook triggered"
 
@@ -32,5 +43,3 @@ if git diff --cached --name-only | grep -qE '\.(js|jsx|ts|tsx|css)$'; then
 else
   echo "ℹ️  No JS/TS/CSS files to lint. Skipping lint-staged."
 fi
-#!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
