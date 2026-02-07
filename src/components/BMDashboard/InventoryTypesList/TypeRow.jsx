@@ -1,6 +1,7 @@
 import { Button, Modal, Form } from 'react-bootstrap';
 import styles from './TypesList.module.css';
 import React from 'react';
+import { toast } from 'react-toastify';
 import { useDispatch } from 'react-redux';
 import { deleteInvTypeById } from '~/actions/bmdashboard/invTypeActions';
 
@@ -9,6 +10,7 @@ export default function TypeRow(props) {
   const [popupShow, setPopupShow] = React.useState(false);
   const [editShow, setEditShow] = React.useState(false);
   const dispatch = useDispatch();
+  const { _id } = itemType || {};
 
   const handleEdit = () => {
     setEditShow(true);
@@ -19,8 +21,14 @@ export default function TypeRow(props) {
   };
 
   const handleConfirmDelete = () => {
-    dispatch(deleteInvTypeById(category, id));
-    setPopupShow(false);
+    try {
+      dispatch(deleteInvTypeById(category, _id));
+      toast.success('Item deleted successfully');
+    } catch (error) {
+      toast.error('Failed to delete item');
+    } finally {
+      setPopupShow(false);
+    }
   };
 
   return (

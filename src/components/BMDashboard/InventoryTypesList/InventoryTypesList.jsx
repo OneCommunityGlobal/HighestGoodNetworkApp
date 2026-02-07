@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 
-import { fetchInvTypeByType, deleteInvTypeById } from '~/actions/bmdashboard/invTypeActions';
+import { fetchInvTypeByType } from '~/actions/bmdashboard/invTypeActions';
 import { fetchInvUnits } from '~/actions/bmdashboard/invUnitActions';
 import { Accordion, Card } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';

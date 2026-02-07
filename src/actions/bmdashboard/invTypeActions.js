@@ -133,7 +133,6 @@ export const setPostErrorBuildingInventoryTypeResult = payload => {
 };
 
 export const deleteInvTypeById = (type, id) => {
-  console.log(`deleteInvTypeById called with type: ${type}, id: ${id}`);
   return async dispatch => {
     try {
       switch (type) {
@@ -241,7 +240,7 @@ export const deleteMaterialInvType = materialId => {
       await axios.delete(
         ENDPOINTS.BM_DELETE_INVTYPE_MATERIAL(materialId)
       );
-      dispatch(fetchMaterialTypes());
+      dispatch(fetchInvTypeByType('Materials'));
     } catch (err) {
       dispatch(setErrors(err.response?.data || err));
     }
@@ -253,7 +252,7 @@ export const deleteConsumableInvType = consumableId => {
       await axios.delete(
         ENDPOINTS.BM_DELETE_INVTYPE_CONSUMABLE(consumableId)
       );
-      dispatch(fetchConsumableTypes());
+      dispatch(fetchInvTypeByType('Consumables'));
     } catch (err) {
       dispatch(setErrors(err.response?.data || err));
     }
@@ -265,7 +264,7 @@ export const deleteReusableInvType = reusableId => {
       await axios.delete(
         ENDPOINTS.BM_DELETE_INVTYPE_REUSABLE(reusableId)
       );
-      dispatch(fetchReusableTypes());
+      dispatch(fetchInvTypeByType('Reusables'));
     } catch (err) {
       dispatch(setErrors(err.response?.data || err));
     }
@@ -277,7 +276,7 @@ export const deleteEquipmentInvType = equipmentId => {
       await axios.delete(
         ENDPOINTS.BM_DELETE_INVTYPE_EQUIPMENT(equipmentId)
       );
-      dispatch(fetchEquipmentTypes());
+      dispatch(fetchInvTypeByType('Equipments'));
     } catch (err) {
       dispatch(setErrors(err.response?.data || err));
     }
@@ -289,7 +288,7 @@ export const deleteToolInvType = toolId => {
       await axios.delete(
         ENDPOINTS.BM_DELETE_INVTYPE_TOOL(toolId)
       );
-      dispatch(fetchToolTypes());
+      dispatch(fetchInvTypeByType('Tools'));
     } catch (err) {
       dispatch(setErrors(err.response?.data || err));
     }
