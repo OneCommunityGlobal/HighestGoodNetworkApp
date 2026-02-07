@@ -379,7 +379,9 @@ function LessonForm() {
                 className={`${styles.lessonTitleInput} ${
                   darkMode ? styles.lessonTitleInputDark : ''
                 } 
-                  ${darkMode ? styles.lessonPlaceholderTextDark : ''}`}
+                  ${darkMode ? styles.lessonPlaceholderTextDark : ''} ${
+                  darkMode ? styles.formControlDark : ''
+                }`}
                 type="text"
                 placeholder="Enter title here"
                 onChange={handleLessonTitleInput}
@@ -388,19 +390,16 @@ function LessonForm() {
                 onMouseDown={allowFocusOnUserAction}
                 onTouchStart={allowFocusOnUserAction}
                 onKeyDown={allowFocusOnUserAction}
-                onSelect={preventTextSelection}
-                onMouseUp={clearSelectionOnInput}
-                onKeyUp={clearSelectionOnInput}
                 tabIndex={suppressInitialFocus ? -1 : 0}
                 maxLength={40}
+                autoComplete="new-password"
+                name="lessonTitle"
                 style={
                   darkMode
                     ? {
                         backgroundColor: '#1C2541',
                         color: '#ffffff',
                         borderColor: '#404040',
-                        userSelect: 'none',
-                        WebkitUserSelect: 'none',
                       }
                     : undefined
                 }
@@ -428,9 +427,6 @@ function LessonForm() {
                 onMouseDown={allowFocusOnUserAction}
                 onTouchStart={allowFocusOnUserAction}
                 onKeyDown={allowFocusOnUserAction}
-                onSelect={preventTextSelection}
-                onMouseUp={clearSelectionOnInput}
-                onKeyUp={clearSelectionOnInput}
                 tabIndex={suppressInitialFocus ? -1 : 0}
                 style={
                   darkMode
@@ -438,8 +434,6 @@ function LessonForm() {
                         backgroundColor: '#1C2541',
                         color: '#ffffff',
                         borderColor: '#404040',
-                        userSelect: 'none',
-                        WebkitUserSelect: 'none',
                       }
                     : undefined
                 }
@@ -455,7 +449,10 @@ function LessonForm() {
                   placeholder="Input tag for the lesson"
                   value={tagInput}
                   onChange={handleTagInput}
+                  onMouseDown={allowFocusOnUserAction}
+                  onTouchStart={allowFocusOnUserAction}
                   onKeyDown={e => {
+                    allowFocusOnUserAction();
                     if (e.key === 'Enter') {
                       addTag(e);
                     }

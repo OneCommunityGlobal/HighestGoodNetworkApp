@@ -270,8 +270,6 @@
   color-scheme: dark;
   -webkit-text-fill-color: #ffffff;
   box-shadow: none !important;
-  user-select: none;
-  -webkit-user-select: none;
 }
 
 .lessonTitleInput {
@@ -285,8 +283,6 @@
   -webkit-appearance: none;
   -webkit-text-fill-color: #ffffff;
   box-shadow: none !important;
-  user-select: none;
-  -webkit-user-select: none;
 }
 
 .lessonTitleInputDark:focus,
@@ -518,9 +514,28 @@
 .formControlDark:-webkit-autofill:hover,
 .formControlDark:-webkit-autofill:focus,
 .formControlDark:-webkit-autofill:active {
-  -webkit-box-shadow: 0 0 0 1000px #1e1e1e inset !important;
+  -webkit-box-shadow: 0 0 0 1000px #1C2541 inset !important;
   -webkit-text-fill-color: #ffffff !important;
   transition: background-color 9999s ease-in-out 0s;
+}
+
+/* Force dark background for browser-autofill on Lesson Title */
+.lessonTitleInputDark:-webkit-autofill,
+.lessonTitleInputDark:-webkit-autofill:hover,
+.lessonTitleInputDark:-webkit-autofill:focus,
+.lessonTitleInputDark:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #1C2541 inset !important;
+  -webkit-text-fill-color: #ffffff !important;
+  caret-color: #ffffff !important;
+}
+
+:global(body.dark-mode) .formContainerDark :global(input.form-control:-webkit-autofill),
+:global(body.bm-dashboard-dark) .formContainerDark :global(input.form-control:-webkit-autofill),
+:global(body.dark-mode) .formContainerDark :global(input[type='text']:-webkit-autofill),
+:global(body.bm-dashboard-dark) .formContainerDark :global(input[type='text']:-webkit-autofill) {
+  -webkit-box-shadow: 0 0 0 1000px #1C2541 inset !important;
+  -webkit-text-fill-color: #ffffff !important;
+  caret-color: #ffffff !important;
 }
 
 
