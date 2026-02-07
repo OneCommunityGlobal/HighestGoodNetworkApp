@@ -309,6 +309,12 @@ export const ENDPOINTS = {
   BM_PROJECT_EXPENSE_BY_ID: projectId => `${APIEndpoint}/bm/project/${projectId}/expenses`,
   BM_PROJECT_BY_ID: projectId => `${APIEndpoint}/bm/project/${projectId}`,
 
+  BM_DELETE_INVTYPE_MATERIAL: materialId => `${APIEndpoint}/bm/invtypes/material/${materialId}`,
+  BM_DELETE_INVTYPE_CONSUMABLE: consumableId => `${APIEndpoint}/bm/invtypes/consumable/${consumableId}`,
+  BM_DELETE_INVTYPE_REUSABLE: reusableId => `${APIEndpoint}/bm/invtypes/reusable/${reusableId}`,
+  BM_DELETE_INVTYPE_EQUIPMENT: equipmentId => `${APIEndpoint}/bm/invtypes/equipment/${equipmentId}`,
+  BM_DELETE_INVTYPE_TOOL: toolId => `${APIEndpoint}/bm/invtypes/tool/${toolId}`,
+
   BM_PROJECT_MATERIALS_COST: `${APIEndpoint}/material-costs`,
   BM_UPDATE_MATERIAL: `${APIEndpoint}/bm/updateMaterialRecord`,
   BM_UPDATE_MATERIAL_BULK: `${APIEndpoint}/bm/updateMaterialRecordBulk`,

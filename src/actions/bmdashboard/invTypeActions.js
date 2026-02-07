@@ -132,6 +132,41 @@ export const setPostErrorBuildingInventoryTypeResult = payload => {
   };
 };
 
+export const deleteInvTypeById = (type, id) => {
+  console.log(`deleteInvTypeById called with type: ${type}, id: ${id}`);
+  return async dispatch => {
+    try {
+      switch (type) {
+        case 'Materials':
+          await dispatch(deleteMaterialInvType(id));
+          break;
+
+        case 'Consumables':
+          await dispatch(deleteConsumableInvType(id));
+          break;
+
+        case 'Equipments':
+          await dispatch(deleteEquipmentInvType(id));
+          break;
+
+        case 'Reusables':
+          await dispatch(deleteReusableInvType(id));
+          break;
+
+        case 'Tools':
+          await dispatch(deleteToolInvType(id));
+          break;
+
+        default:
+          throw new Error(`Unsupported inventory type: ${type}`);
+      }
+    } catch (err) {
+      dispatch(setErrors(err.response?.data || err));
+    }
+  };
+};
+ 
+
 export const fetchMaterialTypes = () => {
   return async dispatch => {
     axios
@@ -199,6 +234,67 @@ export const fetchInvTypeByType = type => {
       });
   };
 };
+
+export const deleteMaterialInvType = materialId => {
+  return async dispatch => {
+    try {
+      await axios.delete(
+        ENDPOINTS.BM_DELETE_INVTYPE_MATERIAL(materialId)
+      );
+      dispatch(fetchMaterialTypes());
+    } catch (err) {
+      dispatch(setErrors(err.response?.data || err));
+    }
+  };
+};
+export const deleteConsumableInvType = consumableId => {
+  return async dispatch => {
+    try {
+      await axios.delete(
+        ENDPOINTS.BM_DELETE_INVTYPE_CONSUMABLE(consumableId)
+      );
+      dispatch(fetchConsumableTypes());
+    } catch (err) {
+      dispatch(setErrors(err.response?.data || err));
+    }
+  };
+}
+export const deleteReusableInvType = reusableId => {
+  return async dispatch => {
+    try {
+      await axios.delete(
+        ENDPOINTS.BM_DELETE_INVTYPE_REUSABLE(reusableId)
+      );
+      dispatch(fetchReusableTypes());
+    } catch (err) {
+      dispatch(setErrors(err.response?.data || err));
+    }
+  };
+}
+export const deleteEquipmentInvType = equipmentId => {
+  return async dispatch => {
+    try {
+      await axios.delete(
+        ENDPOINTS.BM_DELETE_INVTYPE_EQUIPMENT(equipmentId)
+      );
+      dispatch(fetchEquipmentTypes());
+    } catch (err) {
+      dispatch(setErrors(err.response?.data || err));
+    }
+  };
+}
+export const deleteToolInvType = toolId => {
+  return async dispatch => {
+    try {
+      await axios.delete(
+        ENDPOINTS.BM_DELETE_INVTYPE_TOOL(toolId)
+      );
+      dispatch(fetchToolTypes());
+    } catch (err) {
+      dispatch(setErrors(err.response?.data || err));
+    }
+  };
+}
 
 export const postBuildingConsumableType = payload => {
   return async dispatch => {

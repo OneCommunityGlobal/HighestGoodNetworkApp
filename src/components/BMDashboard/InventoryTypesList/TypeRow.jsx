@@ -1,11 +1,14 @@
 import { Button, Modal, Form } from 'react-bootstrap';
 import styles from './TypesList.module.css';
 import React from 'react';
+import { useDispatch } from 'react-redux';
+import { deleteInvTypeById } from '~/actions/bmdashboard/invTypeActions';
 
 export default function TypeRow(props) {
-  const { itemType, id } = props;
+  const { itemType, id, category } = props;
   const [popupShow, setPopupShow] = React.useState(false);
   const [editShow, setEditShow] = React.useState(false);
+  const dispatch = useDispatch();
 
   const handleEdit = () => {
     setEditShow(true);
@@ -13,6 +16,11 @@ export default function TypeRow(props) {
 
   const handleDelete = () => {
     setPopupShow(true);
+  };
+
+  const handleConfirmDelete = () => {
+    dispatch(deleteInvTypeById(category, id));
+    setPopupShow(false);
   };
 
   return (
@@ -44,13 +52,7 @@ export default function TypeRow(props) {
           <Button variant="secondary" onClick={() => setPopupShow(false)}>
             Cancel
           </Button>
-          <Button
-            variant="danger"
-            onClick={() => {
-              //call to backend
-              setPopupShow(false);
-            }}
-          >
+          <Button variant="danger" onClick={handleConfirmDelete}>
             Delete
           </Button>
         </Modal.Footer>
