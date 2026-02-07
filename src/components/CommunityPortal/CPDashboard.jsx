@@ -1,6 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
-import { Container, Row, Col, Card, CardBody, Button, Input, FormGroup, Label } from 'reactstrap';
+import {
+  Container,
+  Row,
+  Alert,
+  Col,
+  Card,
+  CardBody,
+  Button,
+  Input,
+  FormGroup,
+  Label,
+} from 'reactstrap';
 import { FaCalendarAlt, FaMapMarkerAlt, FaUserAlt, FaSearch, FaTimes } from 'react-icons/fa';
 import styles from './CPDashboard.module.css';
 import { ENDPOINTS } from '../../utils/URL';
@@ -115,8 +126,23 @@ export function CPDashboard() {
     setPagination(prev => ({ ...prev, currentPage: 1 }));
   };
 
+  // keep this near your refs/functions
+  const BASE_HEIGHT = 36;
+
+  const autoGrow = el => {
+    if (!el) return;
+    el.style.height = `${BASE_HEIGHT}px`; // reset to base
+    el.style.height = `${Math.min(el.scrollHeight, 120)}px`;
+  };
+
+  const searchRef = useRef(null);
+  useEffect(() => {
+    autoGrow(searchRef.current); // ✅ runs even when you clear via button
+  }, [searchInput]);
+
   const handleSearchKeyDown = e => {
     if (e.key === 'Enter') {
+      e.preventDefault(); // ✅ stops newline
       const trimmed = searchInput.trim();
       setSearchQuery(trimmed);
       setPagination(prev => ({ ...prev, currentPage: 1 }));
@@ -255,40 +281,52 @@ export function CPDashboard() {
       <header className={`${styles.dashboardHeader} ${darkMode ? styles.darkHeader : ''}`}>
         <h1>All Events</h1>
         <div>
-          <div className={styles.dashboardSearchContainer}>
-            <Input
-              id="search"
-              type="search"
+          <div
+            className={`${styles.dashboardSearchContainer} ${
+              darkMode ? styles.darkSearchContainer : ''
+            }`}
+          >
+            <textarea
+              ref={searchRef}
+              rows={1}
+              maxLength={100}
               placeholder="Search events..."
               value={searchInput}
               onChange={e => setSearchInput(e.target.value)}
               onKeyDown={handleSearchKeyDown}
-              className={styles.dashboardSearchInput}
+              className={`${styles.dashboardSearchTextarea} ${
+                darkMode ? styles.darkSearchTextarea : ''
+              }`}
             />
 
-            {searchInput && (
+            <div className={styles.dashboardSearchButtons}>
+              {searchInput && (
+                <button
+                  type="button"
+                  className={styles.dashboardClearBtn}
+                  onClick={() => {
+                    setSearchInput('');
+                    setSearchQuery('');
+                    setPagination(prev => ({ ...prev, currentPage: 1 }));
+                  }}
+                >
+                  <FaTimes />
+                </button>
+              )}
+
               <button
                 type="button"
-                className={styles.dashboardClearBtn}
-                onClick={() => {
-                  setSearchInput('');
-                  setSearchQuery('');
-                  setPagination(prev => ({ ...prev, currentPage: 1 }));
-                }}
+                className={styles.dashboardSearchIconBtn}
+                onClick={handleSearchClick}
+                aria-label="Search events"
               >
-                <FaTimes />
+                <FaSearch />
               </button>
-            )}
-
-            <button
-              type="button"
-              className={styles.dashboardSearchIconBtn}
-              onClick={handleSearchClick}
-              aria-label="Search events"
-            >
-              <FaSearch />
-            </button>
+            </div>
           </div>
+          {searchInput.length >= 100 && (
+            <Alert className={styles.charCountWarning}>Max 100 characters</Alert>
+          )}
         </div>
       </header>
 
