@@ -307,26 +307,26 @@ function WeeklyProjectSummary() {
         title: 'Material Consumption',
         key: 'Material Consumption',
         className: 'large',
-        content: [1, 2, 3].map((_, index) => {
-          let content;
-          if (index === 1) {
-            content = <QuantityOfMaterialsUsed data={quantityOfMaterialsUsedData} />;
-          } else if (index === 2) {
-            content = <TotalMaterialCostPerProject />;
-          } else {
-            content = <p>📊 Card</p>;
-          }
-          const uniqueId = uuidv4();
-          return (
-            <div
-              key={uniqueId}
-              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
-            >
-              {content}
-            </div>
-          );
-        }),
+        content: [
+          {
+            key: 'quantity',
+            component: <QuantityOfMaterialsUsed data={quantityOfMaterialsUsedData} />,
+          },
+          {
+            key: 'issue-chart',
+            component: <OpenIssueCharts />,
+          },
+          {
+            key: 'total-cost',
+            component: <TotalMaterialCostPerProject />,
+          },
+        ].map(({ key, component }) => (
+          <div key={key} className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+            {component}
+          </div>
+        )),
       },
+      ,
       {
         title: 'Material Stock-Out Risk Indicator',
         key: 'Material Stock-Out Risk Indicator',
