@@ -24,6 +24,7 @@ import {
 } from '../../../actions/weeklySummariesFilterAction';
 import { normalizeFilter } from '~/utils/weeklySummariesFilterHelper';
 import { da } from 'date-fns/locale';
+import { getCustomStyles } from '~/utils/reactSelectStyles'; //  Import Styles
 
 const defaultState = {
   filterName: '',
@@ -123,6 +124,8 @@ function CreateFilterModal({
     setSelectedFilter(currentAppliedFilter);
   }, [currentAppliedFilter]);
 
+  const customStyles = getCustomStyles(darkMode);
+
   const handleSubmit = async e => {
     e.preventDefault();
     const validName = state.filterName.trim().length > 0 && state.filterName.trim().length <= 7;
@@ -196,12 +199,14 @@ function CreateFilterModal({
               </Label>
 
               <Select
-                menuPortalTarget={document.body}
-                classNamePrefix="rs"
-                styles={{
-                  ...darkSelectStyles,
-                  menuPortal: base => ({ ...base, zIndex: 9999 }),
-                }}
+                id="filterOverride"
+                options={filters}
+                value={selectedFilter}
+                onChange={setSelectedFilter}
+                styles={customStyles}
+                className={`${mainStyles.textDark} ${
+                  selectedFilter ? '' : `${mainStyles.errorSelect}`
+                }`}
               />
               {!selectedFilter && (
                 <div className={`${darkMode ? mainStyles.errorTextDark : mainStyles.errorText}`}>
