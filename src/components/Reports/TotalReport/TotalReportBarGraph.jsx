@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import * as d3 from 'd3';
-import './TotalReportBarGraph.css';
+import styles from './TotalReportBarGraph.module.css';
 import { useSelector } from 'react-redux';
 
 function TotalReportBarGraph({ barData, range }) {
@@ -102,8 +102,8 @@ function TotalReportBarGraph({ barData, range }) {
   }, [barData, darkMode]);
 
   return (
-    <div ref={containerRef} className="svg-container">
-      <svg id={svgId} className="svg-chart" />
+    <div ref={containerRef} className={styles.svgContainer}>
+      <svg id={svgId} className={styles.svgChart} />
     </div>
   );
 }

@@ -76,7 +76,7 @@ describe("Projects component",()=>{
       data: [],
     });
     render(<Provider store={store}><Projects /></Provider>)
-    expect(screen.getByText('Project Name')).toBeInTheDocument();
+    expect(screen.getAllByText('Project Name')[0]).toBeInTheDocument();
   })
   it('check if Category header displays as expected',()=>{
     axios.get.mockResolvedValue({

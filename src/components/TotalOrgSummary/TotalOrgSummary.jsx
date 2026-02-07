@@ -25,9 +25,9 @@ import { jsPDF } from 'jspdf';
 import hasPermission from '~/utils/permissions';
 
 // actions
-import { getTotalOrgSummary } from '~/actions/totalOrgSummary';
+import { getTotalOrgSummary, getTaskAndProjectStats } from '~/actions/totalOrgSummary';
 
-import '../Header/DarkMode.css';
+import '../Header/index.css';
 import styles from './TotalOrgSummary.module.css';
 import { clsx } from 'clsx';
 import VolunteerHoursDistribution from './VolunteerHoursDistribution/VolunteerHoursDistribution';
@@ -142,7 +142,17 @@ function TotalOrgSummary(props) {
           comparisonStartDate,
           comparisonEndDate,
         );
-        setVolunteerStats(volunteerStatsResponse.data);
+
+        // Fetch task and project stats separately
+        const taskAndProjectStatsResponse = await props.getTaskAndProjectStats(
+          currentFromDate,
+          currentToDate,
+        );
+
+        setVolunteerStats({
+          ...volunteerStatsResponse.data,
+          taskAndProjectStats: taskAndProjectStatsResponse,
+        });
         await props.hasPermission('');
         setIsLoading(false);
       } catch (catchFetchError) {
@@ -177,7 +187,9 @@ function TotalOrgSummary(props) {
       await new Promise(resolve => setTimeout(resolve, 5000));
 
       // 3. Replace Chart.js canvas elements with images in the live DOM.
-      const chartCanvases = document.querySelectorAll('.volunteer-status-chart canvas');
+      const chartCanvases = document.querySelectorAll(
+        '[data-chart="volunteer-status"] canvas, [data-chart="mentor-status"] canvas',
+      );
       const originalCanvases = [];
       chartCanvases.forEach(canvasElem => {
         try {
@@ -673,7 +685,11 @@ ${
             </Col>
             <Col lg={{ size: 6 }}>
               <div
-                className={clsx(styles.componentContainer, styles.componentBorder)}
+                className={clsx(
+                  styles.componentContainer,
+                  styles.componentBorder,
+                  styles.componentBorderLoose,
+                )}
                 data-pdf-block
               >
                 <div
@@ -688,6 +704,7 @@ ${
                 <VolunteerStatusChart
                   isLoading={isLoading}
                   volunteerNumberStats={volunteerStats?.volunteerNumberStats}
+                  mentorNumberStats={volunteerStats?.mentorNumberStats}
                   comparisonType={selectedComparison}
                 />
               </div>
@@ -935,6 +952,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   getTotalOrgSummary: (startDate, endDate, comparisonStartDate, comparisonEndDate) =>
     dispatch(getTotalOrgSummary(startDate, endDate, comparisonStartDate, comparisonEndDate)),
+  getTaskAndProjectStats: (startDate, endDate) =>
+    dispatch(getTaskAndProjectStats(startDate, endDate)),
   hasPermission: permission => dispatch(hasPermission(permission)),
 });
 

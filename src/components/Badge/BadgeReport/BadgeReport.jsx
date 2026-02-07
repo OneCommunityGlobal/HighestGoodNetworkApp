@@ -26,7 +26,7 @@ import { connect } from 'react-redux';
 import { toast } from 'react-toastify';
 import { boxStyle, boxStyleDark } from '~/styles';
 import { formatDate } from '~/utils/formatDate';
-import hasPermission from '../../../utils/permissions';
+import hasPermission from '~/utils/permissions';
 import { changeBadgesByUserID } from '../../../actions/badgeManagement';
 import '../../../styles/badges.module.css';
 import { getUserProfile } from '../../../actions/userProfile';

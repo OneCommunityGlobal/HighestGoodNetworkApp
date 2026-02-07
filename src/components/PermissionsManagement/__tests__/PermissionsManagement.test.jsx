@@ -178,7 +178,8 @@ describe('PermissionsManagement', () => {
 
       buttons.forEach(button => {
         if (button.className.includes('role-btn')) {
-          expect(button).toHaveClass('text-light');
+          // Check if className contains 'text-light' pattern (CSS modules hash it)
+          expect(button.className).toMatch(/text-light/);
         }
       });
     });

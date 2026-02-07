@@ -13,9 +13,17 @@ function MyCases() {
 
   const filterEvents = events => {
     const now = new Date();
+
+    const nowTime = now.getTime();
+
+    const upcomingEvents = events.filter(event => {
+      const eventTime = new Date(event.eventDate).getTime();
+      return eventTime >= nowTime;
+    });
+
     if (filter === 'today') {
-      return events.filter(event => {
-        const eventDate = new Date(event.eventTime);
+      return upcomingEvents.filter(event => {
+        const eventDate = new Date(event.eventDate);
         return (
           eventDate.getDate() === now.getDate() &&
           eventDate.getMonth() === now.getMonth() &&
@@ -27,7 +35,7 @@ function MyCases() {
       const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
       const endOfWeek = new Date(startOfWeek);
       endOfWeek.setDate(endOfWeek.getDate() + 6);
-      return events.filter(event => {
+      return upcomingEvents.filter(event => {
         const eventDate = new Date(event.eventTime);
         return eventDate >= startOfWeek && eventDate <= endOfWeek;
       });
@@ -35,16 +43,18 @@ function MyCases() {
     if (filter === 'thisMonth') {
       const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
       const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-      return events.filter(event => {
+      return upcomingEvents.filter(event => {
         const eventDate = new Date(event.eventTime);
         return eventDate >= startOfMonth && eventDate <= endOfMonth;
       });
     }
-    return events;
+    return upcomingEvents;
   };
 
   const darkMode = useSelector(state => state.theme.darkMode);
   const filteredEvents = filterEvents(mockEvents);
+
+  filteredEvents.sort((a, b) => new Date(a.eventDate).getTime() - new Date(b.eventDate).getTime());
 
   // Sonar: extract nested ternary into independent statement
   let visibleEvents = filteredEvents;
@@ -131,7 +141,7 @@ function MyCases() {
           Upcoming Events
         </h2>
         <div className={styles.headerActions}>
-          <div className={`view-switcher-global ${styles.viewSwitcher}`}>
+          <div className={`${styles.viewSwitcher} ${darkMode ? styles.viewSwitcherDarkMode : ''}`}>
             <button
               type="button"
               className={view === 'calendar' ? styles.active : ''}
@@ -154,9 +164,12 @@ function MyCases() {
               List
             </button>
           </div>
+
           <div className={`filter-wrapper-global ${styles.filterWrapper}`}>
             <select
-              className={styles.filterDropdown}
+              className={`${styles.filterDropdown} ${
+                darkMode ? styles.filterDropdownDarkMode : ''
+              }`}
               value={filter}
               onChange={e => setFilter(e.target.value)}
             >
@@ -166,7 +179,10 @@ function MyCases() {
               <option value="thisMonth">This Month</option>
             </select>
           </div>
-          <button type="button" className={`create-new-global ${styles.createNew}`}>
+          <button
+            type="button"
+            className={`${styles.createNew} ${darkMode ? styles.createNewDarkMode : ''}`}
+          >
             + Create New
           </button>
           {filteredEvents.length > 10 && !isExporting && (
@@ -180,7 +196,7 @@ function MyCases() {
           )}
         </div>
       </header>
-      <main className={styles.content}>
+      <main className={`${styles.content}`}>
         {view === 'card' && renderCardView()}
         {view === 'list' && renderListView()}
         {view === 'calendar' && renderCalendarView()}
