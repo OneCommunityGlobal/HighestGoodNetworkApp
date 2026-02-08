@@ -1,7 +1,6 @@
 import axios from 'axios';
 import httpService from '../services/httpService';
-import { ApiEndpoint } from '../utils/URL';
-import { ENDPOINTS } from '../utils/URL';
+import { ApiEndpoint, ENDPOINTS } from '~/utils/URL';
 
 const APIEndpoint = ApiEndpoint;
 
@@ -142,6 +141,7 @@ export function getProjectById(projectId) {
     });
   };
 }
+
 
 export function getProjectsByUser(userId) {
   const request = httpService.get(`${APIEndpoint}/projects/user/${userId}`);

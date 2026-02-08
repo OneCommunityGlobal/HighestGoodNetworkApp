@@ -3,8 +3,8 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { BsInfoCircle } from 'react-icons/bs';
 
-import { fetchBMProjects } from 'actions/bmdashboard/projectActions';
-import { fetchEquipmentTypes } from 'actions/bmdashboard/invTypeActions';
+import { fetchBMProjects } from '~/actions/bmdashboard/projectActions';
+import { fetchEquipmentTypes } from '~/actions/bmdashboard/invTypeActions';
 import BMError from '../shared/BMError';
 import PurchaseForm from './PurchaseForm';
 import stylesPurchaseEquipment from './PurchaseEquipment.module.css';

@@ -1,0 +1,164 @@
+.wrapper {
+  width: 87vw;
+  display: block;
+  box-sizing: border-box;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+.container {
+  width: 100%;
+  max-width: 1300px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px #eee;
+  padding: 24px;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.heading {
+  margin-bottom: 24px;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.filterRow {
+  display: flex;
+  gap: 32px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+  align-items: flex-end;
+}
+
+.dropdownWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 140px;
+  position: relative;
+}
+
+.dropdownLabel {
+  font-weight: 600;
+  font-size: 15px;
+  margin-bottom: 6px;
+  color: #222;
+}
+
+.darkMode .dropdownLabel {
+  color: #ddd;
+}
+
+.dropdownButton {
+  font-size: 14px;
+  font-weight: 500;
+  color: #444;
+  min-width: 100px;
+  text-align: center;
+  cursor: pointer;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 6px 10px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.dropdownButton:hover {
+  background: #f0f0f0;
+}
+
+.darkMode .dropdownButton {
+  color: #ccc;
+  background: #2b2b2b;
+  border: 1px solid #555;
+}
+
+.darkMode .dropdownButton:hover {
+  background: #3a3a3a;
+}
+
+.dropdownMenu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  z-index: 2000;
+  margin-top: 4px;
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  background: #fff;
+  padding: 4px 0;
+}
+
+.darkMode .dropdownMenu {
+  background: #2c2c2c;
+  box-shadow: 0 2px 8px #000;
+}
+
+/* React-select overrides */
+.customSelect__control {
+  font-size: 14px;
+  min-height: 34px;
+  background: none;
+  border: none;
+  box-shadow: none;
+}
+
+.darkMode .customSelect__control {
+  color: #eee;
+  background: #2c2c2c;
+}
+
+.customSelect__multi-value {
+  background: #e6f7ff;
+  font-size: 12px;
+  margin: 2px;
+}
+
+.darkMode .customSelect__multi-value {
+  background: #444;
+  color: #eee;
+}
+
+.customSelect__option {
+  color: #000;
+  background-color: #fff;
+}
+
+.customSelect__option:hover {
+  background-color: #f0f0f0;
+}
+
+.darkMode .customSelect__option {
+  color: #eee;
+  background-color: #2c2c2c;
+}
+
+.darkMode .customSelect__option:hover {
+  background-color: #3a3a3a;
+}
+
+.customSelect__menu {
+  z-index: 9999;
+}
+
+.error {
+  color: red;
+}
+
+.loading {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+/* ===================== DARK MODE ===================== */
+.darkMode .container {
+  background: #1e1e1e;
+  box-shadow: 0 2px 8px #111;
+  color: #eee;
+}
+
+.darkMode .heading {
+  color: #eee;
+}

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -14,6 +15,7 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
   const [selectedItem, setSelectedItem] = useState('all');
   const [isError, setIsError] = useState(false);
   const [selectedTime, setSelectedTime] = useState(new Date());
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   useEffect(() => {
     if (items) setFilteredItems([...items]);
@@ -44,21 +46,24 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
 
   if (isError) {
     return (
-      <main className={`${styles.itemsListContainer}`}>
-        <h2>{itemType} List</h2>
+      <main className={`${styles.itemsListContainer} ${darkMode ? styles.darkMode : ''}`}>
+        <h2>
+          {itemType}
+          {' List'}
+        </h2>
         <BMError errors={errors} />
       </main>
     );
   }
 
   return (
-    <main className={`${styles.itemsListContainer}`}>
+    <main className={`${styles.itemsListContainer} ${darkMode ? styles.darkMode : ''}`}>
       <h3>{itemType}</h3>
       <section>
         <span>
           {items && (
             <div className={`${styles.selectInput}`}>
-              <label>Time:</label>
+              <label htmlFor="itemListTime">Time:</label>
               <DatePicker
                 selected={selectedTime}
                 onChange={date => setSelectedTime(date)}
@@ -67,6 +72,12 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
                 timeIntervals={15}
                 dateFormat="yyyy-MM-dd HH:mm:ss"
                 placeholderText="Select date and time"
+                inputId="itemListTime" // This is the key line
+                className={darkMode ? styles.darkDatePickerInput : styles.lightDatePickerInput}
+                calendarClassName={darkMode ? styles.darkDatePicker : styles.lightDatePicker}
+                popperClassName={
+                  darkMode ? styles.darkDatePickerPopper : styles.lightDatePickerPopper
+                }
               />
               <SelectForm
                 items={items}
@@ -100,6 +111,7 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
             filteredItems={filteredItems}
             UpdateItemModal={UpdateItemModal}
             dynamicColumns={dynamicColumns}
+            darkMode={darkMode}
           />
         )}
       </section>
@@ -136,10 +148,6 @@ ItemListView.propTypes = {
       key: PropTypes.string.isRequired,
     }),
   ).isRequired,
-};
-
-ItemListView.defaultProps = {
-  errors: {},
 };
 
 ItemListView.defaultProps = {

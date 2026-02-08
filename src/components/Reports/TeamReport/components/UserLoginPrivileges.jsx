@@ -1,6 +1,5 @@
-// eslint-disable-next-line no-unused-vars
 import React, { useEffect, useState } from 'react';
-import { ReportPage } from 'components/Reports/sharedComponents/ReportPage';
+import { ReportPage } from '~/components/Reports/sharedComponents/ReportPage';
 import TeamReportLogs from './TeamReportLogs';
 import TeamsReportLogs from './TeamsReportLogs';
 import TeamReportCharts from './TeamReportCharts';
@@ -8,7 +7,6 @@ import TeamsReportCharts from './TeamsReportCharts';
 import './ReportCharts.css';
 
 function UserLoginPrivileges({
-  // eslint-disable-next-line no-unused-vars
   role,
   teamName,
   teamMembers,
@@ -139,7 +137,7 @@ function UserLoginPrivileges({
       >
         <ReportPage.ReportBlock className="team-chart-container" darkMode={darkMode}>
           <TeamsReportCharts
-            title="Weekly Commited Hours"
+            title="Weekly Committed Hours"
             pieChartId="chart2"
             selectedTeamsData={selectedTeamsData}
             darkMode={darkMode}

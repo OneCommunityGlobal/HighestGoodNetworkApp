@@ -1,9 +1,20 @@
 import { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { Redirect, useHistory, useLocation } from 'react-router-dom';
-import { Form, FormGroup, Input, Label, Button, FormFeedback } from 'reactstrap';
-import Joi from 'joi';
-import { loginBMUser } from 'actions/authActions';
+// import { Form, FormGroup, Input, Label, Button, FormFeedback } from 'reactstrap';
+
+import {
+  Form,
+  FormGroup,
+  Input,
+  Label,
+  Button,
+  FormFeedback,
+  InputGroup,
+  InputGroupText,
+} from 'reactstrap';
+import Joi from 'joi-browser';
+import { loginBMUser } from '~/actions/authActions';
 import styles from './Login.module.css';
 import logo from '../../../assets/images/logo2.png';
 
@@ -13,10 +24,12 @@ function LBLogin(props) {
   const location = useLocation();
   const [enteredEmail, setEnteredEmail] = useState('');
   const [enterPassword, setEnteredPassword] = useState('');
+
+  const [showPassword, setShowPassword] = useState(false);
   const [validationError, setValidationError] = useState(null);
   const [hasAccess, setHasAccess] = useState(false);
 
-  const prevLocation = location.state?.from || { pathname: '/lbdashboard' };
+  const prevLocation = location?.state?.from || { pathname: '/lbdashboard' };
 
   useEffect(() => {
     if (auth.user.access && auth.user.access.canAccessCPPortal) {
@@ -101,7 +114,7 @@ function LBLogin(props) {
                   <FormFeedback>{validationError.message}</FormFeedback>
                 )}
               </FormGroup>
-              <FormGroup>
+              {/* <FormGroup>
                 <Label for="password">Password</Label>
                 <Input
                   id="password"
@@ -114,7 +127,42 @@ function LBLogin(props) {
                 {validationError && validationError.label === 'password' && (
                   <FormFeedback>{validationError.message}</FormFeedback>
                 )}
+              </FormGroup> */}
+
+              <FormGroup>
+                <Label for="password">Password</Label>
+
+                <InputGroup className={styles.passwordGroup}>
+                  <Input
+                    id="password"
+                    name="password"
+                    type={showPassword ? 'text' : 'password'}
+                    invalid={validationError && validationError.label === 'password'}
+                    onChange={handleChange}
+                    value={enterPassword}
+                    autoComplete="current-password"
+                    className={styles.passwordInput}
+                  />
+
+                  <InputGroupText
+                    className={styles.eyeIcon}
+                    onClick={() => setShowPassword(prev => !prev)}
+                    title={showPassword ? 'Hide password' : 'Show password'}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter' || e.key === ' ') setShowPassword(prev => !prev);
+                    }}
+                  >
+                    <i className={showPassword ? 'fa fa-eye-slash' : 'fa fa-eye'} />
+                  </InputGroupText>
+                </InputGroup>
+
+                {validationError && validationError.label === 'password' && (
+                  <FormFeedback className="d-block">{validationError.message}</FormFeedback>
+                )}
               </FormGroup>
+
               <Button disabled={!enteredEmail || !enterPassword}>Login</Button>
             </Form>
           </div>

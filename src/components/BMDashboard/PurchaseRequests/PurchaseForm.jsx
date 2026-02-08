@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import Joi from 'joi';
+import Joi from 'joi-browser';
 import { Form, FormGroup, Label, Input, Button } from 'reactstrap';
-import { boxStyle } from 'styles';
+import { boxStyle } from '~/styles';
 import BMError from '../shared/BMError';
 import styles from './PurchaseForm.module.css';
 

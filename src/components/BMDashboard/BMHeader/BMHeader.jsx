@@ -14,7 +14,7 @@ import {
   DropdownMenu,
   DropdownItem,
 } from 'reactstrap';
-import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
+import { fetchTaskEditSuggestions } from '~/components/TaskEditSuggestions/thunks';
 import { getHeaderData } from '../../../actions/authActions';
 import { getAllRoles } from '../../../actions/role';
 import Timer from '../../Timer/Timer';

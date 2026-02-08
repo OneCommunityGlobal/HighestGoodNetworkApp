@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
-import './Leaderboard.css';
+import styles from './Leaderboard.module.css';
 import { isEqual, debounce } from 'lodash';
 import { Link } from 'react-router-dom';
 import {
@@ -16,6 +16,7 @@ import {
   DropdownItem,
   Spinner,
   Input,
+  Tooltip,
 } from 'reactstrap';
 import ReactTooltip from 'react-tooltip';
 import Alert from 'reactstrap/lib/Alert';
@@ -24,22 +25,21 @@ import {
   assignStarDotColors,
   showStar,
   viewZeroHouraMembers,
-} from 'utils/leaderboardPermissions';
-import { calculateDurationBetweenDates, showTrophyIcon } from 'utils/anniversaryPermissions';
-import hasPermission from 'utils/permissions';
-// import MouseoverTextTotalTimeEditButton from 'components/mouseoverText/MouseoverTextTotalTimeEditButton';
+} from '~/utils/leaderboardPermissions';
+import { calculateDurationBetweenDates, showTrophyIcon } from '~/utils/anniversaryPermissions';
+import hasPermission from '~/utils/permissions';
+// import MouseoverTextTotalTimeEditButton from '~/components/mouseoverText/MouseoverTextTotalTimeEditButton';
 import { toast } from 'react-toastify';
-import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
+import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
 import moment from 'moment-timezone';
-import { boxStyle } from 'styles';
+import { boxStyle } from '~/styles';
 import axios from 'axios';
-import { getUserProfile } from 'actions/userProfile';
-import { useDispatch } from 'react-redux';
+import { getUserProfile } from '~/actions/userProfile';
+import { useDispatch, useSelector } from 'react-redux';
 import { boxStyleDark } from '../../styles';
-import '../Header/DarkMode.css';
+import '../Header/index.css';
 import '../UserProfile/TeamsAndProjects/autoComplete.css';
-import { ENDPOINTS } from '../../utils/URL';
-import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
+import { ENDPOINTS } from '~/utils/URL';
 
 function useDeepEffect(effectFunc, deps) {
   const isFirst = useRef(true);
@@ -59,14 +59,16 @@ function useDeepEffect(effectFunc, deps) {
 }
 
 function displayDaysLeft(lastDay) {
-  if (lastDay) {
-    const today = new Date();
-    const endDate = new Date(lastDay);
-    const differenceInTime = endDate.getTime() - today.getTime();
-    const differenceInDays = Math.ceil(differenceInTime / (1000 * 3600 * 24));
-    return -differenceInDays;
-  }
-  return null; // or any other appropriate default value
+  if (!lastDay) return null;
+  const ORG_TZ = 'America/Los_Angeles';
+  const today = moment()
+    .tz(ORG_TZ)
+    .startOf('day');
+  const endDate = moment(lastDay)
+    .tz(ORG_TZ)
+    .startOf('day');
+  const differenceInDays = endDate.diff(today, 'days');
+  return -differenceInDays;
 }
 
 function LeaderBoard({
@@ -86,6 +88,8 @@ function LeaderBoard({
   darkMode,
   getWeeklySummaries,
   setFilteredUserTeamIds,
+  userOnTimeOff,
+  usersOnFutureTimeOff,
 }) {
   const userId = displayUserId;
   const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); // ??? this permission doesn't exist?
@@ -105,7 +109,11 @@ function LeaderBoard({
     }
   }, []);
 
-  // const isOwner = ['Owner'].includes(loggedInUser.role);
+  const isOwner = ['Owner'].includes(loggedInUser.role);
+  const allowedRoles = ['Administrator', 'Manager', 'Mentor', 'Core Team', 'Assistant Manager'];
+  const isAllowedOtherThanOwner = allowedRoles.includes(loggedInUser.role);
+  const [currentTimeOfftooltipOpen, setCurrentTimeOfftooltipOpen] = useState({});
+  const [futureTimeOfftooltipOpen, setFutureTimeOfftooltipOpen] = useState({});
 
   const [mouseoverTextValue, setMouseoverTextValue] = useState(totalTimeMouseoverText);
   const dispatch = useDispatch();
@@ -309,6 +317,37 @@ function LeaderBoard({
     showTimeOffRequestModal(request);
   };
 
+  const manager = 'Manager';
+  const adm = 'Administrator';
+  const owner = 'Owner';
+
+  const handleDashboardAccess = item => {
+    // check the logged in user is manager and if the dashboard is admin and owner
+    if (loggedInUser.role === manager && [adm, owner].includes(item.role)) {
+      // check the logged in user is admin and if dashboard is owner
+      toast.error("Oops! You don't have the permission to access this user's dashboard!");
+    } else if (loggedInUser.role === adm && [owner].includes(item.role)) {
+      toast.error("Oops! You don't have the permission to access this user's dashboard!");
+    }
+    // check the logged in user isn't manager, administrator or owner and if they can access the dashboard
+    else if (
+      loggedInUser.role !== manager &&
+      loggedInUser.role !== adm &&
+      loggedInUser.role !== owner
+    ) {
+      if ([manager, adm, owner].includes(item.role)) {
+        // prevent access
+        toast.error("Oops! You don't have the permission to access this user's dashboard!");
+      } else {
+        // allow access to the painel
+        dashboardToggle(item);
+      }
+    } else {
+      // allow access to the painel
+      dashboardToggle(item);
+    }
+  };
+
   // For Monthly and yearly anniversaries
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -368,6 +407,67 @@ function LeaderBoard({
       additionalWeeks = moment(mostRecentRequest.startingDate).diff(moment(), 'weeks') + 1;
     }
     return { hasTimeOff, isCurrentlyOff, additionalWeeks };
+  };
+
+  const currentTimeOfftoggle = personId => {
+    setCurrentTimeOfftooltipOpen(prevState => ({
+      ...prevState,
+      [personId]: !prevState[personId],
+    }));
+  };
+
+  const futureTimeOfftoggle = personId => {
+    setFutureTimeOfftooltipOpen(prevState => ({
+      ...prevState,
+      [personId]: !prevState[personId],
+    }));
+  };
+
+  const timeOffIndicator = personId => {
+    if (userOnTimeOff[personId]?.isInTimeOff === true) {
+      if (userOnTimeOff[personId]?.weeks > 0) {
+        return (
+          <>
+            <sup style={{ color: 'rgba(128, 128, 128, 0.5)' }} id={`currentTimeOff-${personId}`}>
+              {' '}
+              +{userOnTimeOff[personId].weeks}
+            </sup>
+            <Tooltip
+              placement="top"
+              isOpen={currentTimeOfftooltipOpen[personId]}
+              target={`currentTimeOff-${personId}`}
+              toggle={() => currentTimeOfftoggle(personId)}
+            >
+              Number with + indicates additional weeks the user will be on a time off excluding the
+              current week.
+            </Tooltip>
+          </>
+        );
+      }
+
+      return null;
+    }
+
+    if (usersOnFutureTimeOff[personId]?.weeks > 0) {
+      return (
+        <>
+          <sup style={{ color: '#007bff' }} id={`futureTimeOff-${personId}`}>
+            {' '}
+            {usersOnFutureTimeOff[personId].weeks}
+          </sup>
+          <Tooltip
+            placement="top"
+            isOpen={futureTimeOfftooltipOpen[personId]}
+            target={`futureTimeOff-${personId}`}
+            toggle={() => futureTimeOfftoggle(personId)}
+          >
+            This number indicates number of weeks from now user has scheduled a time off.
+          </Tooltip>
+        </>
+      );
+    }
+
+    return null;
   };
 
   const teamName = (name, maxLength) =>
@@ -483,7 +583,6 @@ function LeaderBoard({
                       onChange={e => handleInputSearchTeams(e)}
                       style={{ width: '90%', marginBottom: '1rem', backgroundColor: darkMode? '#e0e0e0' : 'white' }}
                       placeholder="Search teams"
-                      autoFocus
                       value={refInput.current}
                     />
                   </div>
@@ -575,7 +674,7 @@ function LeaderBoard({
               </div>
             </Alert>
           )}
-          <div id="leaderboard" className="my-custom-scrollbar table-wrapper-scroll-y">
+          <div id="leaderboard" className="my-custom-scrollbar table-wrapper-scroll-y mb-5">
             <div className="search-container mx-1">
               <input
                 className={`form-control col-12 mb-2 ${
@@ -588,9 +687,11 @@ function LeaderBoard({
               />
             </div>
             <Table
+              data-testid="dark-mode-table"
               className={`leaderboard table-fixed ${
                 darkMode ? 'text-light dark-mode bg-yinmn-blue' : ''
               } ${isAbbreviatedView ? 'abbreviated-mode' : ''}`}
+              style={{ minWidth: '500px' }}
             >
               <thead className="responsive-font-size">
                 <tr className={darkMode ? 'bg-space-cadet' : ''} style={darkModeStyle}>
@@ -599,16 +700,18 @@ function LeaderBoard({
                   </th>
                   <th style={darkModeStyle}>
                     <div className="d-flex align-items-center">
-                      <span>{isAbbreviatedView ? 'Name' : 'Name'}</span>
-                      <EditableInfoModal
-                        areaName="Leaderboard"
-                        areaTitle="Team Members Navigation"
-                        role={loggedInUser.role}
-                        fontSize={18}
-                        isPermissionPage
-                        darkMode={darkMode}
-                        className="p-2"
-                      />
+                      <span className="mr-2">{isAbbreviatedView ? 'Name' : 'Name'}</span>
+                      <span style={{ position: 'relative', top: '2px' }}>
+                        <EditableInfoModal
+                          areaName="Leaderboard"
+                          areaTitle="Team Members Navigation"
+                          role={loggedInUser.role}
+                          fontSize={18}
+                          isPermissionPage
+                          darkMode={darkMode}
+                          className="p-2"
+                        />
+                      </span>
                     </div>
                   </th>
                   <th style={darkModeStyle}>
@@ -648,8 +751,9 @@ function LeaderBoard({
                     <td colSpan={2}>
                       <div className="leaderboard-totals-container text-center">
                         <span>{stateOrganizationData.name}</span>
+                        <br />
                         {viewZeroHouraMembers(loggedInUser.role) && (
-                          <span className="leaderboard-totals-title">
+                          <span className={styles.leaderboardTotalsTitle}>
                             0 hrs Totals:{' '}
                             {filteredUsers.filter(user => user.weeklycommittedHours === 0).length}{' '}
                             Members
@@ -662,8 +766,9 @@ function LeaderBoard({
                       <td aria-label="Placeholder" />
                       <td className="leaderboard-totals-container">
                         <span>{stateOrganizationData.name}</span>
+                        <br />
                         {viewZeroHouraMembers(loggedInUser.role) && (
-                          <span className="leaderboard-totals-title">
+                          <span className={styles.leaderboardTotalsTitle}>
                             0 hrs Totals:{' '}
                             {filteredUsers.filter(user => user.weeklycommittedHours === 0).length}{' '}
                             Members
@@ -703,7 +808,9 @@ function LeaderBoard({
                         .reduce((total, user) => total + parseFloat(user.totaltime), 0)
                         .toFixed(2)}{' '}
                       of{' '}
-                      {filteredUsers.reduce((total, user) => total + user.weeklycommittedHours, 0)}
+                      {filteredUsers
+                        .reduce((total, user) => total + (user.weeklycommittedHours || 0), 0)
+                        .toFixed(2)}
                     </span>
                   </td>
                   <td aria-label="Placeholder" />
@@ -738,14 +845,14 @@ function LeaderBoard({
                             </ModalHeader>
                             <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
                               <p className={darkMode ? 'text-light' : ''}>
-                                Are you sure you wish to view this {item.name} dashboard?
+                                Are you sure you wish to view the dashboard for {item.name}?
                               </p>
                             </ModalBody>
                             <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-                              <Button variant="primary" onClick={() => showDashboard(item)}>
+                              <Button color="primary" onClick={() => showDashboard(item)}>
                                 Ok
-                              </Button>{' '}
-                              <Button variant="secondary" onClick={dashboardToggle}>
+                              </Button>
+                              <Button color="danger" onClick={dashboardToggle}>
                                 Cancel
                               </Button>
                             </ModalFooter>
@@ -765,11 +872,11 @@ function LeaderBoard({
                             role="button"
                             tabIndex={0}
                             onClick={() => {
-                              dashboardToggle(item);
+                              handleDashboardAccess(item);
                             }}
                             onKeyDown={e => {
                               if (e.key === 'Enter') {
-                                dashboardToggle(item);
+                                handleDashboardAccess(item);
                               }
                             }}
                           >
@@ -834,13 +941,19 @@ function LeaderBoard({
                           to={`/userprofile/${item.personId}`}
                           title="View Profile"
                           style={{
-                            color: isCurrentlyOff
-                              ? `${darkMode ? '#9499a4' : 'rgba(128, 128, 128, 0.5)'}` // Gray out the name if on time off
-                              : '#007BFF', // Default color
+                            color:
+                              isCurrentlyOff ||
+                              ((isAllowedOtherThanOwner || isOwner || item.personId === userId) &&
+                                userOnTimeOff[item.personId]?.isInTimeOff === true)
+                                ? `${darkMode ? '#9499a4' : 'rgba(128, 128, 128, 0.5)'}` // Gray out the name if on time off
+                                : '#007BFF', // Default color
                           }}
                         >
                           {item.name}
                         </Link>
+                        {isAllowedOtherThanOwner || isOwner || item.personId === userId
+                          ? timeOffIndicator(item.personId)
+                          : null}
                         &nbsp;&nbsp;&nbsp;
                         {hasVisibilityIconPermission && !item.isVisible && (
                           <i className="fa fa-eye-slash" title="User is invisible" />
@@ -858,8 +971,13 @@ function LeaderBoard({
                             onClick={() => trophyIconToggle(item)}
                             onKeyDown={() => trophyIconToggle(item)}
                           >
-                            <p style={{ fontSize: '10px', marginLeft: '1px' }}>
-                              <strong>{iconContent}</strong>
+                            <p
+                              className={darkMode ? styles.trophyTextWhite : undefined}
+                              style={{ fontSize: '10px', marginLeft: '1px' }}
+                            >
+                              <strong className={darkMode ? styles.trophyTextWhite : undefined}>
+                                {iconContent}
+                              </strong>
                             </p>
                           </i>
                         )}
@@ -952,7 +1070,7 @@ function LeaderBoard({
                       </td>
                       <td className="align-middle" aria-label="Description or purpose of the cell">
                         <Link
-                          to={`/timelog/${item.personId}`}
+                          to={`/timelog/${item.personId}#currentWeek`}
                           title={`TangibleEffort: ${item.tangibletime} hours`}
                         >
                           <Progress value={item.barprogress} color={item.barcolor} />
@@ -963,7 +1081,7 @@ function LeaderBoard({
                           title={mouseoverTextValue}
                           id="Total time"
                           className={
-                            item.totalintangibletime_hrs > 0 ? 'leaderboard-totals-title' : null
+                            item.totalintangibletime_hrs > 0 ? styles.leaderboardTotalsTitle : null
                           }
                         >
                           {item.totaltime}
