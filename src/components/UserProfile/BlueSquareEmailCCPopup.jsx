@@ -92,7 +92,7 @@ const BlueSquareEmailCCPopup = React.memo(props => {
     if (result) {
 
       // ✅ Notify parent immediately with latest count
-      onCcListUpdate?.(result.ccCount);
+      onCcListUpdate?.();
 
       // Optional: refresh profiles for global state consistency
       await dispatch(getAllUserProfile());
@@ -131,7 +131,7 @@ const handleRemoveCC = async (email) => {
     if (result) {
 
       // ✅ Notify parent immediately
-      onCcListUpdate?.(result.ccCount);
+      onCcListUpdate?.();
 
       // Optional: refresh profiles for global state
       await dispatch(getAllUserProfile());

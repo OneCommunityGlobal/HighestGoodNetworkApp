@@ -1,3 +1,4 @@
+/* eslint-disable import/no-named-as-default */
 import { teamMemberTasksReducer } from '~/components/TeamMemberTasks/reducer';
 import { taskEditSuggestionsReducer } from '~/components/TaskEditSuggestions/reducer';
 import { userProfileByIdReducer, userTaskByIdReducer } from './userProfileByIdReducer';
@@ -19,6 +20,7 @@ import { allUserTeamsReducer } from './allTeamsReducer';
 import { teamByIdReducer } from './teamByIdReducer';
 import { errorsReducer } from './errorsReducer';
 import { timeEntriesReducer } from './timeEntriesReducer';
+import timelogTrackingReducer from './timelogTrackingReducer';
 import wbsReducer from './wbsReducer';
 import { taskReducer } from './allTasksReducer';
 import { managingTeamsReducer } from './managingTeamsReducer';
@@ -72,11 +74,14 @@ import injuriesReducer from './injuries';
 
 import { weeklyProjectSummaryReducer } from './bmdashboard/weeklyProjectSummaryReducer';
 import messageReducer from './listBidDashboard/messagingReducer';
+// eslint-disable import/no-named-as-default
 import userPreferencesReducer from './listBidDashboard/userPreferencesReducer';
 import userSkillsReducer from './userSkillsReducer';
 // community portalgit
 import { noShowVizReducer } from './communityPortal/noShowVizReducer';
 import { eventFeedbackReducer } from './communityPortal/eventFeedback';
+
+import { jobApplicationReducer } from './jobApplication/jobApplicationReducer';
 
 // lbdashboard
 import wishListReducer from './listBidDashboard/wishListItemReducer';
@@ -94,6 +99,15 @@ import reviewsInsightReducer from './prAnalytics/reviewsInsightReducer';
 
 // job analytics
 import { hoursPledgedReducer } from './jobAnalytics/hoursPledgedReducer';
+import { studentTasksReducer } from './studentTasksReducer';
+
+// education portal
+import { atomReducer } from './educationPortal/atomReducer';
+import { weeklySummariesFiltersApi } from '../actions/weeklySummariesFilterAction';
+
+//education portal
+
+import browseLessonPlanReducer from './educationPortal/broweLPReducer';
 
 const localReducers = {
   auth: authReducer,
@@ -130,19 +144,20 @@ const localReducers = {
   allUsersTimeEntries: allUsersTimeEntriesReducer,
   allUserProfilesBasicInfo: allUserProfilesBasicInfoReducer,
   projectById: projectByIdReducer,
+  [weeklySummariesFiltersApi.reducerPath]: weeklySummariesFiltersApi.reducer,
 
   // bm dashboard
   materials: materialsReducer,
   tools: toolReducer,
   toolAvailability: toolAvailabilityReducer,
   bmProjects: bmProjectReducer,
+  bmInjuries: bmInjuryReducer,
   bmInvTypes: bmInvTypeReducer,
   timeOffRequests: timeOffRequestsReducer,
   lessons: lessonsReducer,
   project: bmProjectByIdReducer,
   bmTools: toolReducer,
   bmEquipments: equipmentReducer,
-  bmIssues: issueReducer,
   bmInvUnits: bmInvUnitReducer,
   bmConsumables: consumablesReducer,
   bmReusables: reusablesReducer,
@@ -173,6 +188,16 @@ const localReducers = {
 
   // job analytics
   hoursPledged: hoursPledgedReducer,
+
+  // student tasks
+  studentTasks: studentTasksReducer,
+  jobApplication: jobApplicationReducer,
+
+  // education portal
+  atom: atomReducer,
+
+  // education portal
+  browseLessonPlan: browseLessonPlanReducer,
 };
 
 const sessionReducers = {
@@ -187,6 +212,7 @@ const sessionReducers = {
   userProjects: userProjectsReducer,
   teamsTeamMembers: teamUsersReducer,
   timeEntries: timeEntriesReducer,
+  timelogTracking: timelogTrackingReducer,
   teamMemberTasks: teamMemberTasksReducer,
   warning: warningsByUserIdReducer,
 };
