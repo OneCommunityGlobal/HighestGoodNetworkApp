@@ -124,16 +124,18 @@ function CustomTooltip({ active, payload, label, darkMode }) {
   if (!active || !payload?.length) return null;
 
   return (
-    <div className={`${styles.customTooltip} ${darkMode ? styles.darkTooltip : ''}`}>
-      <p className={`${styles.tooltipTitle}`}>{label}</p>
-      {payload.map(entry => (
-        <div key={entry.name} className={`${styles.tooltipEntry}`}>
-          <span className={`${styles.tooltipLabel}`} style={{ color: entry.color }}>
-            {entry.name}:
-          </span>
-          <span>{entry.value}</span>
-        </div>
-      ))}
+    <div className={`${darkMode ? styles.darkMode : ''}`}>
+      <div className={`${styles.customTooltip}`}>
+        <p className={`${styles.tooltipTitle}`}>{label}</p>
+        {payload.map(entry => (
+          <div key={entry.name} className={`${styles.tooltipEntry}`}>
+            <span className={`${styles.tooltipLabel}`} style={{ color: entry.color }}>
+              {entry.name}:
+            </span>
+            <span>{entry.value}</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -285,7 +287,7 @@ SortFilter.propTypes = {
 function DurationFilter({ durationFilter, setDurationFilter }) {
   const durationOptions = [
     { label: 'Last Week', value: 'Last Week' },
-    { label: 'Last 3 weeks', value: 'Last 2 weeks' },
+    { label: 'Last 2 weeks', value: 'Last 2 weeks' },
     { label: 'Last Month', value: 'Last Month' },
     { label: 'All Time', value: 'All Time' },
   ];
@@ -376,25 +378,31 @@ ErrorState.propTypes = {
   error: PropTypes.string.isRequired,
 };
 
-function EmptyState() {
+function EmptyState({ darkMode }) {
   return (
-    <div className={`${styles.reviewerDataEmpty}`}>
-      <div className={`${styles.emptyIcon}`}>📊</div>
-      <p>No PR data available</p>
+    <div className={`${darkMode ? styles.darkMode : ''}`}>
+      <div className={`${styles.reviewerDataEmpty}`}>
+        <div className={`${styles.emptyIcon}`}>📊</div>
+        <p>No PR data available</p>
+      </div>
     </div>
   );
 }
 
+EmptyState.propTypes = {
+  darkMode: PropTypes.bool.isRequired,
+};
+
 function ChartDisplay({ transformedData, darkMode, domain, ticks }) {
   return (
     <div className={`${styles.reviewersScrollContainer}`}>
-      <ResponsiveContainer width="101%" height={Math.max(400, transformedData.length * 28)}>
-        <CartesianGrid vertical horizontal={false} className={`${styles.chartGrid}`} />
+      <ResponsiveContainer width="100%" height={Math.max(400, transformedData.length * 28)}>
         <BarChart
           layout="vertical"
           data={transformedData}
           margin={{ top: 21, right: 30, left: 200, bottom: 20 }}
         >
+          <CartesianGrid vertical horizontal={false} className={`${styles.chartGrid}`} />
           <XAxis
             type="number"
             domain={domain}
@@ -458,7 +466,7 @@ function ChartContent({ loading, error, transformedData, darkMode, domain, ticks
   }
 
   if (transformedData.length === 0) {
-    return <EmptyState />;
+    return <EmptyState darkMode={darkMode} />;
   }
 
   return (
@@ -557,25 +565,27 @@ function ReviewersStackedBarChart() {
   }, [teamFilter, durationFilter, sortFilter]);
 
   return (
-    <div className={`${styles.reviewersChartContainer} ${darkMode ? styles.darkMode : ''}`}>
-      <h4 className={darkMode ? styles.darkMode : ''}>PR Quality by Reviewers</h4>
-      <FilterBar
-        teams={teams}
-        teamFilter={teamFilter}
-        setTeamFilter={setTeamFilter}
-        sortFilter={sortFilter}
-        setSortFilter={setSortFilter}
-        durationFilter={durationFilter}
-        setDurationFilter={setDurationFilter}
-      />
-      <ChartContent
-        loading={loading}
-        error={error}
-        transformedData={transformedData}
-        darkMode={darkMode}
-        domain={domain}
-        ticks={ticks}
-      />
+    <div className={`${darkMode ? styles.darkMode : ''}`}>
+      <div className={`${styles.reviewersChartContainer}`}>
+        <h4>PR Quality by Reviewers</h4>
+        <FilterBar
+          teams={teams}
+          teamFilter={teamFilter}
+          setTeamFilter={setTeamFilter}
+          sortFilter={sortFilter}
+          setSortFilter={setSortFilter}
+          durationFilter={durationFilter}
+          setDurationFilter={setDurationFilter}
+        />
+        <ChartContent
+          loading={loading}
+          error={error}
+          transformedData={transformedData}
+          darkMode={darkMode}
+          domain={domain}
+          ticks={ticks}
+        />
+      </div>
     </div>
   );
 }
