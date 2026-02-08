@@ -800,7 +800,7 @@ export default (
           component={ResourcesUsage}
         />
         <CPProtectedRoute
-          path="/communityportal/activity/:activityId/resources"
+          path="/communityportal/activity/:activityId/ResourceManagement"
           exact
           component={ResourceManagement}
           fallback
