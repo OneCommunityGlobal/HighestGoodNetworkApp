@@ -4,13 +4,18 @@ import ReactCalendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import CalendarActivitySection from './CalendarActivitySection';
 import styles from './CommunityCalendar.module.css';
+import axios from 'axios';
+import { ENDPOINTS } from '../../../utils/URL';
 
 const STATUSES = ['New', 'Needs Attendees', 'Filling Fast', 'Full Event'];
-const EVENT_TYPES = ['Workshop', 'Webinar', 'Meeting', 'Social Gathering'];
-const LOCATIONS = ['Virtual', 'In person'];
-const TIMES = ['10:00 AM', '1:00 PM', '3:00 PM', '5:00 PM'];
+const EVENT_TYPES = ['Workshop', 'Meetup', 'Lecture', 'Social'];
+const LOCATIONS = ['Community Hall', 'Online', 'Park', 'Library'];
+const TIMES = ['10:00 AM', '2:00 PM', '6:00 PM', '8:00 PM'];
 
-function CommunityCalendar() {
+export default function CommunityCalendar() {
+  const [events, setEvents] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [filter, setFilter] = useState({ type: 'all', location: 'all', status: 'all' });
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedEvent, setSelectedEvent] = useState(null);
@@ -22,34 +27,49 @@ function CommunityCalendar() {
   const currentMonth = currentDate.getMonth();
   const currentYear = currentDate.getFullYear();
 
-  const mockEvents = useMemo(() => {
-    const events = [];
-    for (let i = 0; i < 6; i++) {
-      STATUSES.forEach((status, idx) => {
-        events.push({
-          id: i * 10 + idx + 1,
-          title: `Event ${idx + 1}`,
-          type: EVENT_TYPES[idx % 4],
-          location: LOCATIONS[idx % 2],
-          time: TIMES[idx % 4],
-          date: new Date(currentYear, currentMonth + i, 5 + idx * 5),
-          status,
-          description: `Details about ${status.toLowerCase()} - ${i + 1}`,
-        });
-      });
-    }
-    return events;
-  }, [currentMonth, currentYear]);
+  useEffect(() => {
+    const fetchEvents = async () => {
+      setIsLoading(true);
+      try {
+        const response = await axios.get(ENDPOINTS.EVENTS);
+        setEvents(response.data.events || []);
+      } catch (err) {
+        setError('Failed to load events');
+        console.error('Error fetching calendar events:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchEvents();
+  }, []);
+
+  const mappedEvents = useMemo(() => {
+    return events.map(event => {
+      const eventDate = new Date(event.date);
+      const timeString = eventDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      return {
+        ...event,
+        date: eventDate,
+        type: event.type || 'General',
+        status: event.status || 'New',
+        time: event.time || timeString,
+        description: event.description || `Join us for ${event.title}`,
+        // Ensure location is present or default
+        location: event.location || 'Online',
+      };
+    });
+  }, [events]);
 
   const filteredEvents = useMemo(
     () =>
-      mockEvents.filter(
+      mappedEvents.filter(
         e =>
           (filter.type === 'all' || e.type === filter.type) &&
           (filter.location === 'all' || e.location === filter.location) &&
           (filter.status === 'all' || e.status === filter.status),
       ),
-    [mockEvents, filter],
+    [mappedEvents, filter],
   );
 
   const eventCache = useMemo(() => {
@@ -112,6 +132,8 @@ function CommunityCalendar() {
   const handleEventClick = useCallback(event => {
     setSelectedEvent(event);
     setShowEventModal(true);
+    // Also select the date of the event so the sidebar shows events for that date
+    setSelectedDate(event.date);
   }, []);
 
   const closeEventModal = useCallback(() => {
@@ -227,16 +249,22 @@ function CommunityCalendar() {
     [eventCountByDate, selectedDate],
   );
 
+  // Get events for the selected date
+  const eventsForSelectedDate = useMemo(() => {
+    if (!selectedDate) return [];
+    return getEventsForDate(selectedDate);
+  }, [selectedDate, getEventsForDate]);
+
   const handleFilterChange = field => e =>
     setFilter(prev => ({ ...prev, [field]: e.target.value }));
 
   const uniqueFilterValues = useMemo(
     () => ({
-      types: [...new Set(mockEvents.map(e => e.type))],
-      locations: [...new Set(mockEvents.map(e => e.location))],
-      statuses: [...new Set(mockEvents.map(e => e.status))],
+      types: [...new Set(mappedEvents.map(e => e.type))],
+      locations: [...new Set(mappedEvents.map(e => e.location))],
+      statuses: [...new Set(mappedEvents.map(e => e.status))],
     }),
-    [mockEvents],
+    [mappedEvents],
   );
 
   const darkMode = useSelector(s => s.theme.darkMode);
@@ -343,7 +371,11 @@ function CommunityCalendar() {
       <main className={calendarClasses.main}>
         <div className={calendarClasses.calendarContainer}>
           <div className={calendarClasses.activitySection}>
-            <CalendarActivitySection />
+            <CalendarActivitySection
+              selectedDate={selectedDate}
+              events={eventsForSelectedDate}
+              onEventClick={handleEventClick}
+            />
           </div>
           <div className={calendarClasses.calendarSection}>
             <ReactCalendar
@@ -510,5 +542,3 @@ function CommunityCalendar() {
     </div>
   );
 }
-
-export default CommunityCalendar;
