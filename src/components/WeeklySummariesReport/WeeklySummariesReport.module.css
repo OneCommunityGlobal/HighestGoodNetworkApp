@@ -147,8 +147,9 @@
 
 .filterContainer {
   display: flex;
-  justify-content: flex-end;
+  justify-content: flex-start;
   flex-wrap: wrap;
+  gap: 15px;
 }
 .filterContainerTeamcode {
   display: flex;
@@ -203,7 +204,6 @@
 .chip {
   display: flex;
   align-items: center;
-  background: #e0e0e0;
   border-radius: 20px;
   padding: 4px 10px;
   height: fit-content;
@@ -339,6 +339,24 @@
 .codeAlert {
   margin: 10px 0 0 0;
   padding: 8px;
+}
+/* Nuclear option — beats ANY dark-mode global rule */
+:global(.dark-mode)
+  :global(.container-wsr-wrapper)
+  :global(.alert-danger).codeAlert {
+  color: #842029 !important;
+}
+
+:global(.dark-mode) .tabContent {
+  background-color: #2e5061 !important;
+  border: none !important;
+}
+
+/* Ensure the Bootstrap tab-content container is also dark */
+:global(.dark-mode) :global(.tab-content) {
+  background-color: #2e5061 !important;
+  color: white !important;
+  border: none !important;
 }
 
 .report-multi-select-filter {
@@ -507,4 +525,47 @@
 
 .saved-filter-button.active-filter .saved-filter-delete-btn:hover {
   color: #ffc107 !important;
+}
+
+:global(.dark-mode) :global(.dropdown-container) {
+  background-color: #2e3440 !important; /* Dark Blue-Grey Background */
+  border: 1px solid #4c566a !important; /* Dark Border */
+  color: #fff !important;               /* White Text */
+}
+
+/* The header area where selected items appear */
+:global(.dark-mode) :global(.dropdown-heading) {
+  color: #fff !important;
+}
+
+/* The dropdown menu list */
+:global(.dark-mode) :global(.dropdown-content) {
+  background-color: #2e3440 !important;
+  border: 1px solid #4c566a !important;
+  z-index: 10000 !important; /* Ensure it stays on top of modals */
+}
+
+/* Individual options in the list */
+:global(.dark-mode) :global(.select-item) {
+  background-color: #2e3440 !important;
+  color: #fff !important;
+}
+
+/* Hover state for options */
+:global(.dark-mode) :global(.select-item:hover) {
+  background-color: #434c5e !important; /* Slightly lighter for hover */
+  color: #fff !important;
+}
+
+/* The search input field inside the dropdown */
+:global(.dark-mode) :global(.dropdown-search) {
+  background-color: #3b4252 !important;
+  color: #fff !important;
+  border: 1px solid #4c566a !important;
+}
+
+/* The "Select All" label */
+:global(.dark-mode) :global(.select-item.selected) {
+  background-color: #4c566a !important;
+  font-weight: bold;
 }

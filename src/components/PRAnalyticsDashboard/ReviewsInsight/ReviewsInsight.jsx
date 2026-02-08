@@ -20,7 +20,7 @@ function ReviewsInsight() {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   useEffect(() => {
-    dispatch(getAllTeamCode());
+    dispatch(getAllTeamCode(true));
   }, [dispatch]);
 
   useEffect(() => {
