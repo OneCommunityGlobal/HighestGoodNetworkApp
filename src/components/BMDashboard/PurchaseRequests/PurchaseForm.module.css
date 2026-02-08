@@ -111,5 +111,11 @@
   }
 }
 
+:global(body.dark-mode) .purchaseRequestContainer select,
+:global(body.bm-dashboard-dark) .purchaseRequestContainer select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
 
 
