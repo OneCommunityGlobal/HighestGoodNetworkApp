@@ -14,6 +14,20 @@ function IssueChart() {
 
   const [filters, setFilters] = useState({ issueTypes: [], years: [] });
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 640);
+  const stripNumericSuffix = value => {
+    const str = String(value);
+    let end = str.length;
+    while (end > 0) {
+      const code = str.charCodeAt(end - 1);
+      if (code >= 48 && code <= 57) {
+        end -= 1;
+      } else {
+        break;
+      }
+    }
+    const base = str.slice(0, end).trim();
+    return base || str;
+  };
 
   useEffect(() => {
     dispatch(fetchIssues());
@@ -45,7 +59,7 @@ function IssueChart() {
   const extractDropdownOptions = () => {
     const rawIssueTypes = [...new Set(Object.keys(issues || {}))];
     const issueTypeGroups = rawIssueTypes.reduce((acc, name) => {
-      const base = name.replace(/[0-9]+$/, '').trim() || name;
+      const base = stripNumericSuffix(name);
       if (!acc[base]) acc[base] = [];
       acc[base].push(name);
       return acc;
@@ -133,7 +147,7 @@ function IssueChart() {
   const chartData = useMemo(() => {
     if (!issues || Object.keys(issues).length === 0) return { labels: [], datasets: [] };
 
-    const getBase = name => name.replace(/\d+$/u, '').trim() || name;
+    const getBase = name => stripNumericSuffix(name);
     const issueTypeKeys = Object.keys(issues || {}).sort((a, b) => {
       const aLower = String(a).toLowerCase();
       const bLower = String(b).toLowerCase();
@@ -263,7 +277,7 @@ function IssueChart() {
             label: ctx => {
               const base = chartData?.labels?.[ctx.dataIndex] ?? ctx.label;
               const year = parseInt(ctx.dataset.label, 10);
-              const getBase = name => name.replace(/\d+$/u, '').trim() || name;
+              const getBase = name => stripNumericSuffix(name);
               const selectedTypes = filters.issueTypes.length
                 ? filters.issueTypes
                 : Object.keys(issues || {});
