@@ -45,7 +45,7 @@ function IssueChart() {
   const extractDropdownOptions = () => {
     const rawIssueTypes = [...new Set(Object.keys(issues || {}))];
     const issueTypeGroups = rawIssueTypes.reduce((acc, name) => {
-      const base = name.replace(/\d+$/u, '').trim() || name;
+      const base = name.replace(/[0-9]+$/, '').trim() || name;
       if (!acc[base]) acc[base] = [];
       acc[base].push(name);
       return acc;
@@ -65,7 +65,7 @@ function IssueChart() {
         : options[0];
     });
 
-    const issueTypes = groupedIssueTypes.flatMap(group => (group.options ? [group] : [group]));
+    const issueTypes = groupedIssueTypes;
 
     const years = [
       ...new Set(
@@ -393,20 +393,6 @@ function IssueChart() {
         flexWrap: 'wrap',
         gap: 8,
       }),
-      multiValue: provided => ({
-        ...provided,
-        margin: '4px 8px 4px 0',
-      }),
-      placeholder: provided => ({
-        ...provided,
-        color: darkMode ? '#aab1bf' : '#6b7280',
-        fontWeight: 500,
-        lineHeight: '1.2',
-        margin: 0,
-        alignSelf: 'center',
-        paddingTop: 2,
-        paddingBottom: 2,
-      }),
       input: provided => ({
         ...provided,
         margin: 0,
@@ -443,6 +429,7 @@ function IssueChart() {
       }),
       multiValue: provided => ({
         ...provided,
+        margin: '4px 8px 4px 0',
         backgroundColor: darkMode ? '#3d444d' : '#e2e8f0',
       }),
       multiValueLabel: provided => ({
@@ -461,6 +448,10 @@ function IssueChart() {
         color: darkMode ? '#aab1bf' : '#6b7280',
         fontWeight: 500,
         lineHeight: 1.4,
+        margin: 0,
+        alignSelf: 'center',
+        paddingTop: 2,
+        paddingBottom: 2,
       }),
       indicatorsSeparator: provided => ({
         ...provided,
