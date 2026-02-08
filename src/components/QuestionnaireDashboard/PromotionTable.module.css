@@ -38,6 +38,12 @@
   appearance: none;
   -webkit-appearance: none;
   border: 1px solid transparent;
+  transition: opacity 0.2s, background-color 0.2s;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 [data-theme='light'] .btnPrimary {
@@ -141,10 +147,18 @@
   border-color: #22863a;
 }
 
+[data-theme='dark'] .btnPrimary:disabled {
+  opacity: 0.6;
+}
+
 [data-theme='dark'] .btnSecondary {
   background-color: #0d6efd;
   color: #ffffff;
   border-color: #0d6efd;
+}
+
+[data-theme='dark'] .btnSecondary:disabled {
+  opacity: 0.6;
 }
 
 [data-theme='dark'] .promotionTable {
