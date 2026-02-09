@@ -32,17 +32,21 @@ export default function EquipmentUpdateForm() {
   const toolList = useMemo(
     () =>
       tools
-        .filter(tool => tool.itemType && tool.itemType.name)
+        .filter(
+          tool => tool.project._id === formData.project && tool.itemType && tool.itemType.name,
+        )
         .map(tool => ({ id: tool.itemType._id, name: tool.itemType.name })),
-    [tools],
+    [tools, formData.project],
   );
 
   const equipmentList = useMemo(
     () =>
       equipments
-        .filter(equip => equip.itemType && equip.itemType.name)
+        .filter(
+          equip => equip.project._id === formData.project && equip.itemType && equip.itemType.name,
+        )
         .map(equip => ({ id: equip.itemType._id, name: equip.itemType.name })),
-    [equipments],
+    [equipments, formData.project],
   );
   const uniqueToolList = useMemo(
     () => [...new Map(toolList.map(item => [item.id, item])).values()],
@@ -72,7 +76,7 @@ export default function EquipmentUpdateForm() {
     setFormData(prev => ({
       ...prev,
       [name]: value,
-      ...(name === 'toolOrEquipment' ? { name: '', number: '' } : {}), // Reset name and number on change
+      ...(name === 'project' || name === 'toolOrEquipment' ? { name: '', number: '' } : {}), // Reset name and number on change
     }));
   };
 
@@ -155,21 +159,39 @@ export default function EquipmentUpdateForm() {
             onChange={handleChange}
             disabled={!formData.toolOrEquipment}
           >
-            <option value="">Select Name</option>
             {formData.toolOrEquipment === 'Tool' &&
-              uniqueToolList.map(item => (
-                <option key={item.id} value={item.name}>
-                  {item.name}
-                </option>
+              (uniqueToolList.length > 0 ? (
+                <>
+                  <option value="">Select Name</option>
+                  {uniqueToolList.map(item => (
+                    <option key={item.id} value={item.name}>
+                      {item.name}
+                    </option>
+                  ))}
+                </>
+              ) : (
+                <option value="">No names available</option>
               ))}
             {formData.toolOrEquipment === 'Equipment' &&
-              uniqueEquipmentList.map(item => (
-                <option key={item.id} value={item.name}>
-                  {item.name}
-                </option>
+              (uniqueEquipmentList.length > 0 ? (
+                <>
+                  <option value="">Select Name</option>
+                  {uniqueEquipmentList.map(item => (
+                    <option key={item.id} value={item.name}>
+                      {item.name}
+                    </option>
+                  ))}
+                </>
+              ) : (
+                <option value="">No names available</option>
               ))}
           </Input>
-          {!formData.name && <div className="toolFormError">Please select a name</div>}
+          {!formData.name &&
+            (!formData.toolOrEquipment || !formData.project ? (
+              <div className="toolFormError">Please select Project and Tool/Equipment first</div>
+            ) : (
+              <div className="toolFormError">Please select a name</div>
+            ))}
         </FormGroup>
 
         <FormGroup>
