@@ -1,15 +1,35 @@
+import { useState } from 'react';
 import { Table, Button } from 'react-bootstrap';
+import { connect } from 'react-redux';
+import {
+  deleteInvUnit,
+  postBuildingInventoryUnit,
+} from '../../../actions/bmdashboard/invUnitActions';
 import styles from './TypesList.module.css';
 
-export default function UnitsTable(props) {
-  const { invUnits } = props;
+function UnitsTable(props) {
+  const { invUnits, dispatch } = props;
+  const [newUnit, setNewUnit] = useState('');
 
-  const handleDelete = () => {
-    // TODO:
+  const handleDelete = unit => {
+    dispatch(deleteInvUnit(unit.unit));
   };
 
   const handleAdd = () => {
-    // TODO:
+    if (newUnit.trim()) {
+      dispatch(postBuildingInventoryUnit({ unit: newUnit.trim() }));
+      setNewUnit('');
+    }
+  };
+
+  const handleInputChange = e => {
+    setNewUnit(e.target.value);
+  };
+
+  const handleKeyPress = e => {
+    if (e.key === 'Enter') {
+      handleAdd();
+    }
   };
 
   return (
@@ -26,7 +46,11 @@ export default function UnitsTable(props) {
             <tr key={`invUnit-${unit.unit}`}>
               <td>{unit.unit}</td>
               <td>
-                <Button size="sm" className={`${styles.btnTypes}`} onClick={handleDelete}>
+                <Button
+                  size="sm"
+                  className={`${styles.btnTypes}`}
+                  onClick={() => handleDelete(unit)}
+                >
                   Delete
                 </Button>
               </td>
@@ -35,7 +59,14 @@ export default function UnitsTable(props) {
         </tbody>
       </Table>
       <div>
-        <input id="input-measurement" type="text" placeholder="Enter a new measurement" />
+        <input
+          id="input-measurement"
+          type="text"
+          placeholder="Enter a new measurement"
+          value={newUnit}
+          onChange={handleInputChange}
+          onKeyPress={handleKeyPress}
+        />
         <Button size="sm" className={`${styles.btnTypes}`} onClick={handleAdd}>
           Add
         </Button>
@@ -43,3 +74,9 @@ export default function UnitsTable(props) {
     </div>
   );
 }
+
+const mapStateToProps = state => ({
+  invUnits: state.bmInvUnits.list,
+});
+
+export default connect(mapStateToProps)(UnitsTable);
