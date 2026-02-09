@@ -99,7 +99,11 @@ function NoShowListModal({ isOpen, toggle, mockData }) {
       });
 
       if (response.status === 200) {
-        toast.success(response.data.message, {
+        const msg =
+          typeof response.data?.message === 'string'
+            ? response.data.message
+            : response.data?.message?.message || 'Success';
+        toast.success(msg, {
           position: 'top-right',
           autoClose: 3000,
         });
