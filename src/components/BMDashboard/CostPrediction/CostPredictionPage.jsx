@@ -663,6 +663,7 @@ function CostPredictionPage({ projectId }) {
                           name={`${category} Cost`}
                           stroke={costColors[category]}
                           strokeWidth={2}
+                          connectNulls={true}
                           dot={{
                             r: 3,
                             fill: costColors[category],
@@ -686,6 +687,7 @@ function CostPredictionPage({ projectId }) {
                           stroke={costColors[category]}
                           strokeWidth={2}
                           strokeDasharray="8 4"
+                          connectNulls={true}
                           dot={getDotRenderer(category)}
                           activeDot={{ r: 4 }}
                           isAnimationActive={false}

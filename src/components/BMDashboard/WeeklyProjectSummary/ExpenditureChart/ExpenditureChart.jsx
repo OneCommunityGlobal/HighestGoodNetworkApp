@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
-import httpService from '../../../../services/httpService';
+// import httpService from '../../../../services/httpService';
+import { getProjectExpenditure } from './mockExpenditureData';
 import styles from './ExpenditureChart.module.css';
 
 const COLORS = ['#6777EF', '#A0CD61', '#F5CD4B'];
@@ -46,11 +47,16 @@ function ExpenditureChart({ projectId }) {
       setLoading(true);
       setError(null);
       try {
-        const res = await httpService.get(
-          `${process.env.REACT_APP_APIENDPOINT}/bm/expenditure/${projectId}/pie`,
-        );
-        setActual(res.data.actual);
-        setPlanned(res.data.planned);
+        // Using mock data instead of API call
+        const data = getProjectExpenditure(projectId);
+        setActual(data.actual);
+        setPlanned(data.planned);
+        // Original API call (commented out for mock data)
+        // const res = await httpService.get(
+        //   `${process.env.REACT_APP_APIENDPOINT}/bm/expenditure/${projectId}/pie`,
+        // );
+        // setActual(res.data.actual);
+        // setPlanned(res.data.planned);
       } catch (err) {
         setError('Failed to load expenditure data');
       } finally {
