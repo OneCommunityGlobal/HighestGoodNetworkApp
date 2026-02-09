@@ -153,7 +153,7 @@ function LeaderBoard({
         setTeams(response.data.teams);
         setUserRole(response.data.role);
       } catch (error) {
-        toast.error(error);
+        toast.error(error?.message || String(error));
       }
     };
 
