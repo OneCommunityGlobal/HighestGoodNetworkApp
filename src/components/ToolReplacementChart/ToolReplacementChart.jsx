@@ -43,6 +43,7 @@ export const ToolReplacementChart = () => {
   }, [loading, error, data]);
 
   const CustomYAxisNames = ({ x, y, payload }) => {
+    console.log('CustomYAxisNames payload:', payload);
     const text = payload.value;
     const truncated = text.split(' ').slice(0, 2);
 
@@ -189,7 +190,7 @@ export const ToolReplacementChart = () => {
                 />
                 <YAxis
                   type="category"
-                  dataKey="ToolName"
+                  dataKey="toolName"
                   label={{
                     value: 'Tools',
                     position: 'top',
