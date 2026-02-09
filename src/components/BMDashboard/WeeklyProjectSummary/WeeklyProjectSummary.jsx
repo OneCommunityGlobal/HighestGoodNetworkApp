@@ -409,7 +409,7 @@ function WeeklyProjectSummary() {
       {
         title: 'Labor and Time Tracking',
         key: 'Labor and Time Tracking',
-        className: 'half',
+        className: 'full',
         content: [1, 2].map((_, index) => {
           const uniqueId = uuidv4();
           return (
@@ -417,7 +417,7 @@ function WeeklyProjectSummary() {
               key={uniqueId}
               className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
             >
-              {index === 1 ? <PaidLaborCost /> : '📊 Card'}
+              {index === 1 ? <PaidLaborCost /> : <DistributionLaborHours />}
             </div>
           );
         }),
