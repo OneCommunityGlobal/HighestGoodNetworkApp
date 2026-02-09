@@ -46,3 +46,20 @@
     font-size: 14x;
   }
 }
+
+:global(.dark-mode) .skills h3 {
+  color: #fff;
+}
+
+:global(.dark-mode) .skills button {
+  background-color: #333;
+  color: #fff;
+}
+
+:global(.dark-mode) .skills button:hover {
+  background-color: #444;
+}
+
+:global(.dark-mode) .skills button.selected {
+  color: #8ab4f8;
+}

@@ -7,7 +7,7 @@ import { boxStyle, boxStyleDark } from '~/styles';
 import { ModalContext } from '~/context/ModalContext';
 import PermissionList from './PermissionList';
 import hasPermission from '../../utils/permissions';
-import './UserRoleTab.css';
+import styles from './UserRoleTab.module.css';
 
 function PermissionListItem(props) {
   const {
@@ -35,14 +35,19 @@ function PermissionListItem(props) {
   const currentUserPermissions = useSelector(
     state => state.auth?.user?.permissions?.frontPermissions || [],
   );
+  const currentUserRole = useSelector(state => state.auth?.user?.role || '');
 
   // Only restrict the specific Blue Square Email Management permissio
   const isRestrictedPermission = permission === 'resendBlueSquareAndSummaryEmails';
   const userHasRestrictedPermission = currentUserPermissions.includes(
     'resendBlueSquareAndSummaryEmails',
   );
+  const userHasRoleWithRestrictedPermission = currentUserRole === 'Owner';
   const shouldDisableForRestriction =
-    editable && isRestrictedPermission && !userHasRestrictedPermission;
+    editable &&
+    isRestrictedPermission &&
+    !userHasRestrictedPermission &&
+    !userHasRoleWithRestrictedPermission;
 
   const { updateModalStatus } = useContext(ModalContext);
 
@@ -172,7 +177,7 @@ function PermissionListItem(props) {
 
   return (
     <>
-      <li className="user-role-tab__permissions" key={permission} data-testid={permission}>
+      <li className={styles.userRoleTabPermissions} key={permission} data-testid={permission}>
         <p
           style={{
             color: isCategory
@@ -189,11 +194,11 @@ function PermissionListItem(props) {
             fontSize: isCategory && '20px',
             textIndent: `${50 * depth}px`,
           }}
-          className="permission-label"
+          className={styles.permissionLabel}
         >
           {label}
         </p>
-        <div className="icon-button-container">
+        <div className={styles.iconButtonContainer}>
           <div className="infos">
             <i
               data-toggle="tooltip"
@@ -211,7 +216,7 @@ function PermissionListItem(props) {
             <></>
           ) : isCategory ? (
             <Button
-              className="icon-button"
+              className={styles.iconButton}
               color={
                 howManySubpermsInRole === 'All'
                   ? 'danger'
@@ -233,7 +238,7 @@ function PermissionListItem(props) {
             </Button>
           ) : (
             <Button
-              className="icon-button"
+              className={styles.iconButton}
               color={hasThisPermission ? 'danger' : 'success'}
               onClick={() => {
                 togglePermission(permission);
@@ -259,7 +264,7 @@ function PermissionListItem(props) {
       </li>
       {isCategory ? (
         <li
-          className="user-role-tab__permissionList"
+          className={styles.userRoleTabPermissionList}
           style={{
             display: 'flex',
             flexDirection: 'column',

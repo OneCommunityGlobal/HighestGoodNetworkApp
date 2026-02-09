@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import Select from 'react-select';
-import './ReviewsInsight.css';
+import styles from './ReviewsInsight.module.css';
 import ActionDoneGraph from './ActionDoneGraph';
 import PRQualityGraph from './PRQualityGraph';
 import { fetchReviewsInsights } from '../../../actions/prAnalytics/reviewsInsightsAction';
@@ -9,9 +9,10 @@ import { getAllTeamCode } from '../../../actions/allTeamsAction';
 
 function ReviewsInsight() {
   const [duration, setDuration] = useState('Last Week');
-  const [selectedTeams, setSelectedTeams] = useState([]);
+  const [selectedTeams, setSelectedTeams] = useState([{ value: 'All', label: 'All Teams' }]);
   const [teamData, setTeamData] = useState({});
   const [qualityData, setQualityData] = useState({});
+  const [dataViewActive, setDataViewActive] = useState(false);
   const dispatch = useDispatch();
 
   const { loading, data, error } = useSelector(state => state.reviewsInsights);
@@ -19,7 +20,7 @@ function ReviewsInsight() {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   useEffect(() => {
-    dispatch(getAllTeamCode());
+    dispatch(getAllTeamCode(true));
   }, [dispatch]);
 
   useEffect(() => {
@@ -72,6 +73,7 @@ function ReviewsInsight() {
             qualityDistribution.find(quality => quality.qualityLevel === 'Sufficient')?.count || 0,
           Exceptional:
             qualityDistribution.find(quality => quality.qualityLevel === 'Exceptional')?.count || 0,
+          memberCount: team.memberCount,
         };
       });
       setTeamData(formattedTeamData);
@@ -93,13 +95,29 @@ function ReviewsInsight() {
   ];
 
   return (
-    <div className={`reviews-insight-container ${darkMode ? 'dark-mode' : ''}`}>
-      <h1>PR Reviews Insights</h1>
+    <div
+      className={`${styles.reviewsInsightContainer} ${darkMode ? styles.darkModeForeground : ''} ${
+        darkMode ? styles.darkModeBackground : ''
+      }`}
+    >
+      <h1 className={darkMode ? styles.darkModeForeground : styles.heading}>PR Reviews Insights</h1>
 
-      <div className="ri-filters">
-        <div className="ri-filter-item">
-          <label htmlFor="ri-duration-filter">Duration:</label>
-          <select id="ri-duration-filter" value={duration} onChange={handleDurationChange}>
+      <div className={`${styles.riFilters} ${darkMode ? styles.darkModeForeground : ''}`}>
+        <div className={`${styles.riFilterItem} ${darkMode ? styles.darkModeForeground : ''}`}>
+          <label
+            htmlFor="ri-duration-filter"
+            className={`${styles.riFilterItemLabel} ${darkMode ? styles.darkModeForeground : ''}`}
+          >
+            Duration:
+          </label>
+          <select
+            id="ri-duration-filter"
+            value={duration}
+            onChange={handleDurationChange}
+            className={`${styles.riDurationFilter} ${
+              darkMode ? styles.riDurationFilterDarkMode : ''
+            }`}
+          >
             <option value="Last Week">Last Week</option>
             <option value="Last 2 weeks">Last 2 weeks</option>
             <option value="Last Month">Last Month</option>
@@ -107,8 +125,13 @@ function ReviewsInsight() {
           </select>
         </div>
 
-        <div className="ri-filter-item">
-          <label htmlFor="team-filter">Team Code:</label>
+        <div className={`${styles.riFilterItem} ${darkMode ? styles.darkModeForeground : ''}`}>
+          <label
+            htmlFor="team-filter"
+            className={`${styles.riFilterItemLabel} ${darkMode ? styles.darkModeForeground : ''}`}
+          >
+            Team Code:
+          </label>
           <Select
             id="team-filter"
             isMulti
@@ -173,24 +196,58 @@ function ReviewsInsight() {
             }}
           />
         </div>
+
+        <div className={`${styles.riFilterItem} ${darkMode ? styles.darkModeForeground : ''}`}>
+          <span className={styles.riDataviewTitle}>Data View</span>
+          <div className={styles.riToggleWrap}>
+            <label className={styles.riSwitch}>
+              <input
+                type="checkbox"
+                checked={dataViewActive}
+                onChange={() => setDataViewActive(v => !v)}
+                aria-label="Toggle data view: Percent vs Number"
+                className={styles.riSwitchInput}
+              />
+              <span className={`${styles.riSlider} ${darkMode ? styles.riSliderDarkMode : ''}`} />
+            </label>
+
+            <span className={`${styles.modeLabel} ${darkMode ? styles.darkModeForeground : ''}`}>
+              {dataViewActive ? 'PERCENT' : 'NUMBER'}
+            </span>
+          </div>
+        </div>
       </div>
 
-      <div className="ri-selected-teams">
+      <div>
         {selectedTeams.length === 0 ? (
-          <p>No teams selected</p>
+          <p className={`${styles.riSelectedTeams} ${darkMode ? styles.darkModeForeground : ''}`}>
+            No teams selected
+          </p>
         ) : selectedTeams.some(team => team.value === 'All') ? (
-          <p>Selected Teams: All Teams</p>
+          <p className={`${styles.riSelectedTeams} ${darkMode ? styles.darkModeForeground : ''}`}>
+            Selected Teams: All Teams
+          </p>
         ) : (
-          <p>Selected Teams: {selectedTeams.map(team => team.label).join(', ')}</p>
+          <p className={`${styles.riSelectedTeams} ${darkMode ? styles.darkModeForeground : ''}`}>
+            Selected Teams: {selectedTeams.map(team => team.label).join(', ')}
+          </p>
         )}
       </div>
 
-      {loading && <div className="ri-loading">Loading...</div>}
-      {error && <div className="ri-error">{error}</div>}
+      {loading && (
+        <div className={`${styles.riLoading} ${darkMode ? styles.darkModeForeground : ''}`}>
+          Loading...
+        </div>
+      )}
+      {error && <div className={`${styles.riError}`}>{error}</div>}
       {!loading && !error && (
-        <div className="ri-graphs">
+        <div className={`${styles.riGraphs} ${darkMode ? styles.darkModeForeground : ''}`}>
           <ActionDoneGraph selectedTeams={selectedTeams} teamData={teamData} />
-          <PRQualityGraph selectedTeams={selectedTeams} qualityData={qualityData} />
+          <PRQualityGraph
+            selectedTeams={selectedTeams}
+            qualityData={qualityData}
+            isDataViewActive={dataViewActive}
+          />
         </div>
       )}
     </div>
