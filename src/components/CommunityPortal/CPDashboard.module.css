@@ -289,9 +289,39 @@
   font-size: 1rem;
   color: #555;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 8px;
   margin: 8px 0;
+  line-height: 1.5;
+}
+
+.eventDate > svg,
+.eventLocation > svg,
+.eventOrganizer > svg {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  margin-top: 3px;
+  align-self: flex-start;
+}
+
+.eventDate > div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.eventDate > div > div:first-child {
+  line-height: 1.4;
+}
+
+.eventTime {
+  font-size: 0.9rem;
+  color: #777;
+  font-weight: 500;
+  line-height: 1.4;
 }
 
 .eventIcon {

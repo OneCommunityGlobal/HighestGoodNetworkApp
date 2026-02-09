@@ -10,6 +10,7 @@ import {
   faTag,
 } from '@fortawesome/free-solid-svg-icons';
 import { format } from 'date-fns';
+import { getUserTimezone, formatDateTimeWithTimezone } from '../../../../utils/timezoneUtils';
 import styles from './EventCard.module.css';
 
 function EventCard(props) {
@@ -48,10 +49,42 @@ function EventCard(props) {
     return (locationType?.toLowerCase() || '') === 'virtual' ? 'virtual-tag' : 'in-person-tag';
   };
 
+  const getDisplayLocation = () => {
+    if (!location || location.trim() === '') {
+      return 'Location TBD';
+    }
+    return location;
+  };
+
+  const formatDate = dateString => {
+    if (!dateString) {
+      return 'Date not set';
+    }
+    try {
+      const date = new Date(dateString);
+      if (Number.isNaN(date.getTime())) {
+        return 'Invalid date';
+      }
+      return format(date, 'MMM dd, yyyy');
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return 'Date not set';
+    }
+  };
+
   const formatDateTime = dateString => {
     try {
-      return format(new Date(dateString), 'h:mm a');
+      if (!dateString) {
+        return 'Time not set';
+      }
+
+      // Get user's timezone
+      const userTimezone = getUserTimezone();
+
+      // Format with timezone conversion and abbreviation
+      return formatDateTimeWithTimezone(dateString, userTimezone);
     } catch (error) {
+      console.error('Error formatting date time:', error);
       return 'Time not set';
     }
   };
@@ -97,8 +130,12 @@ function EventCard(props) {
           <div className="d-flex align-items-center mb-2">
             <FontAwesomeIcon icon={faMapMarkerAlt} className="me-2 text-muted" />
             <span className="text-muted">Location:</span>
-            <span className={`ms-2 ${styles['attendee-tag']} ${styles[getLocationTag(location)]}`}>
-              {location}
+            <span
+              className={`ms-2 ${styles['attendee-tag']} ${
+                styles[getLocationTag(getDisplayLocation())]
+              }`}
+            >
+              {getDisplayLocation()}
             </span>
           </div>
           <div className={`${styles['event-description']} mb-2`}>
@@ -111,7 +148,7 @@ function EventCard(props) {
         <div className="mb-4">
           <div className="d-flex align-items-center mb-2">
             <FontAwesomeIcon icon={faCalendar} className="me-2" />
-            <span>{format(new Date(date), 'MMM dd, yyyy')}</span>
+            <span>{formatDate(date)}</span>
           </div>
           <div className="d-flex align-items-center mb-2">
             <FontAwesomeIcon icon={faClock} className="me-2" />

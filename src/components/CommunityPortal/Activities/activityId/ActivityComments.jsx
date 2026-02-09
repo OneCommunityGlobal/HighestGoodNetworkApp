@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import styles from './ActivityComments.module.css';
 
 // Utility function to calculate relative time
@@ -244,6 +245,8 @@ const mockFeedbacks = [
 ];
 
 function ActivityComments() {
+  const darkMode = useSelector(state => state.theme?.darkMode || false);
+
   // Utility function to restore Date objects from localStorage
   const restoreDates = items => {
     return items.map(item => ({
@@ -632,20 +635,44 @@ function ActivityComments() {
     );
   };
 
+  /**
+   * Filter and sort feedbacks based on search, filter, and sort criteria
+   *
+   * Search Parameters:
+   * - Reviewer name (feedback.name): Searches in the reviewer's name
+   * - Feedback text (feedback.text): Searches in the feedback comment/description
+   *
+   * The search uses case-insensitive partial matching (contains) for both fields.
+   */
   const filteredFeedbacks = feedbacks
     .filter(feedback => {
-      const matchesSearch =
-        feedback.text.toLowerCase().includes(feedbackSearch.toLowerCase()) ||
-        feedback.name.toLowerCase().includes(feedbackSearch.toLowerCase());
+      // Search logic: check if search term matches reviewer name or feedback text
+      const searchTerm = feedbackSearch.trim().toLowerCase();
+      let matchesSearch = true;
+
+      if (searchTerm) {
+        const reviewerName = (feedback.name || '').toLowerCase();
+        const feedbackText = (feedback.text || '').toLowerCase();
+
+        // Explicit search matching: check both fields with OR logic
+        matchesSearch = reviewerName.includes(searchTerm) || feedbackText.includes(searchTerm);
+      }
+
+      // Rating filter logic
       const matchesFilter =
         feedbackFilter === 'All' || feedback.rating.toString() === feedbackFilter;
+
       return matchesSearch && matchesFilter;
     })
     .sort((a, b) => {
-      if (feedbackSort === 'Oldest') return new Date(a.timestamp) - new Date(b.timestamp);
+      // Sort by creation date with null safety
+      const dateA = a.createdAt ? new Date(a.createdAt) : new Date(0);
+      const dateB = b.createdAt ? new Date(b.createdAt) : new Date(0);
+
+      if (feedbackSort === 'Oldest') return dateA - dateB;
       if (feedbackSort === 'Highest Rated') return b.rating - a.rating;
       if (feedbackSort === 'Lowest Rated') return a.rating - b.rating;
-      return new Date(b.timestamp) - new Date(a.timestamp); // Newest
+      return dateB - dateA; // Newest (default)
     });
 
   return (
@@ -1117,16 +1144,18 @@ function ActivityComments() {
               >
                 <input
                   type="text"
-                  placeholder="Search feedback..."
+                  placeholder="Search by reviewer name or feedback text..."
                   value={feedbackSearch}
                   onChange={e => setFeedbackSearch(e.target.value)}
                   style={{
                     flex: 1,
                     minWidth: '200px',
                     padding: '8px 12px',
-                    border: '1px solid #ddd',
+                    border: darkMode ? '1px solid #4a5a77' : '1px solid #ddd',
                     borderRadius: '6px',
                     fontSize: '0.9rem',
+                    backgroundColor: darkMode ? '#3a506b' : '#fff',
+                    color: darkMode ? '#ffffff' : '#222',
                   }}
                 />
                 <select
