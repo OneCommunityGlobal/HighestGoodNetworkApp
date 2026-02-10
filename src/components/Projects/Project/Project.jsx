@@ -18,6 +18,21 @@ const Project = props => {
   const [projectData, setProjectData] = useState(props.projectData);
   const { projectName = '', isActive = false, _id: projectId } = projectData || {};
   const [displayName, setDisplayName] = useState(projectName);
+  const initialModalData = {
+    showModal: false,
+    modalMessage: "",
+    modalTitle: "",
+    hasConfirmBtn: false,
+    hasInactiveBtn: false,
+  };
+
+  const [modalData, setModalData] = useState(initialModalData);
+
+  const onCloseModal = () => {
+    setModalData(initialModalData);
+    props.clearError();
+  };
+  
   const [category, setCategory] = useState(
     props.projectData?.category || props.category || 'Unspecified',
   );
@@ -78,6 +93,10 @@ const Project = props => {
     // Trigger the modal from Projects component via props
     props.onClickProjectStatusBtn(projectData); // This will open the modal
   };
+
+  const onUpdateProjectActive = () => {
+    updateProject('isActive', !props.projectData.isActive);
+  }
 
   const onUpdateProjectCategory = e => {
     const newCategory = e.target.value;
