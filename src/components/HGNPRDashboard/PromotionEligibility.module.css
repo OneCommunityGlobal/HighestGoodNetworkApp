@@ -151,6 +151,26 @@
   color: white;
 }
 
+/* Status colors for Weekly Requirements */
+.promo-table td.status-met {
+  color: #22863a;
+  font-weight: 500;
+}
+
+.promo-table td.status-not-met {
+  color: #cb2431;
+  font-weight: 500;
+}
+
+/* Dark mode status colors - higher specificity to override td color */
+.promo-table-container.dark .promo-table td.status-met {
+  color: #53d06e !important;
+}
+
+.promo-table-container.dark .promo-table td.status-not-met {
+  color: #fa7970 !important;
+}
+
 /* mobile */
 
 @media screen and (max-width: 768px) {
@@ -220,5 +240,14 @@
   .promo-table-container.dark .section-row td {
     background-color: transparent;
     color: #f0f0f0;
+  }
+
+  /* Mobile dark mode status colors */
+  .promo-table-container.dark .promo-table td.status-met {
+    color: #53d06e !important;
+  }
+
+  .promo-table-container.dark .promo-table td.status-not-met {
+    color: #fa7970 !important;
   }
 }
