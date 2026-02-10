@@ -105,15 +105,9 @@ function PermissionChangeLogTable({ changeLogs, darkMode, roleNamesToHighlight =
   };
   const renderRoleChange = text => {
     if (text?.includes('**')) {
-      return text.split('**').map((part, i) =>
-        i % 2 === 1 ? (
-          <strong style={{ fontSize: '0.8rem' }} key={i}>
-            {part}
-          </strong>
-        ) : (
-          part
-        ),
-      );
+      return text
+        .split('**')
+        .map((part, i) => (i % 2 === 1 ? <strong key={i}>{part}</strong> : part));
     }
     return text;
   };
