@@ -1,27 +1,22 @@
-import React from 'react';
 import styles from './style/UserCard.module.css';
 import avatar from './style/avatar.png';
 import emailIcon from './style/email_icon.png';
 import slackIcon from './style/slack_icon.png';
-
 import { useSelector } from 'react-redux';
 
 function UserCard({ user }) {
-  const darkMode = useSelector(state => state.theme?.darkMode);
   const { name, email, slack, score, topSkills } = user;
-
+  const darkMode = useSelector(state => state.theme.darkMode);
   const getScoreColor = userScore => {
     if (userScore >= 5) return '#00754A';
     return '#D93D3D';
   };
 
   return (
-    <div className={`${styles.userCard} ${darkMode ? styles.dark : ''}`}>
+    <div className={`${styles.userCard} ${darkMode ? styles.darkMode : ''}`}>
       <img src={avatar} alt="Avatar" className={`${styles.avatar}`} />
       <div className={`${styles.info}`}>
-        <div className={`${styles.userName}`} title={name}>
-          {name}
-        </div>
+        <div className={`${styles.userName}`}>{name}</div>
         {email && (
           <div className={`${styles.contactLine}`}>
             <img src={emailIcon} alt="Email" className={`${styles.contactIcon}`} />
@@ -47,9 +42,7 @@ function UserCard({ user }) {
 
         <div className={`${styles.skillsSection}`}>
           <div className={`${styles.skillsLabel}`}>Top Skills:</div>
-          <div className={`${styles.skillsText}`}>
-            {Array.isArray(topSkills) ? topSkills.join(', ') : topSkills || ''}
-          </div>
+          <div className={`${styles.skillsText}`}>{topSkills.join(', ')}</div>
         </div>
       </div>
     </div>

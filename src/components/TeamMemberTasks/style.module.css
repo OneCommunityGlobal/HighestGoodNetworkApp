@@ -605,11 +605,15 @@
 .dark-mode.multi-select-filter .dropdown-container {
   background-color: #1c1c1c !important;
 }
+.dropdown-content {
+  z-index: 11 !important;
+}
 
 .rmsc.dark-mode .dropdown-content,
 .rmsc.dark-mode .dropdown-content .panel-content {
   background-color: #1c1c1c !important;
   color: #fff !important;
+  z-index: 11 !important;
 }
 
 .rmsc.dark-mode .select-item,
@@ -776,6 +780,7 @@
 
   .multi-select-filter {
     width: 50%;
+    z-index: 20;
   }
 }
 
