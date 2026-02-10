@@ -315,7 +315,12 @@
   color: #9ca3af;
 }
 
-/* ===================== Dark Mode: Date Picker Icon ===================== */
+/* ===================== Dark Mode: Native Widget Colors ===================== */
+.wrapperDark .filterSelect,
+.wrapperDark .filterInput {
+  color-scheme: dark;
+}
+
 .wrapperDark .filterInput[type='date']::-webkit-calendar-picker-indicator {
   filter: invert(1) opacity(0.8);
 }
