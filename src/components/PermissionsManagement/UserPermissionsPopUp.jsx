@@ -226,10 +226,7 @@ function UserPermissionsPopUp({
               onClick={e => {
                 setToDefault();
               }}
-              disabled={
-                !actualUserProfile ||
-                (userPermissions?.length == 0 && userRemovedDefaultPermissions?.length == 0)
-              }
+              disabled={!actualUserProfile}
               style={boxStyle}
             >
               Reset to Default
