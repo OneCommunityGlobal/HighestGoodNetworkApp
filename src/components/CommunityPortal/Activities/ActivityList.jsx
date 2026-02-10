@@ -1,19 +1,19 @@
-// Activity List Component
-import { useState, useEffect } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import styles from './ActivityList.module.css';
 import { mockActivities } from './mockActivities';
-// import { useHistory } from 'react-router-dom';
 
 function ActivityList() {
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showPastEvents, setShowPastEvents] = useState(false);
   const darkMode = useSelector(state => state.theme.darkMode);
   const [filter, setFilter] = useState({
     type: '',
     date: '',
     location: '',
+    pastEvents: false,
   });
   const [locationSuggestions, setLocationSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -48,6 +48,24 @@ function ActivityList() {
     fetchActivities();
   }, []);
 
+  const startOfToday = useMemo(() => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }, []);
+
+  const visibleActivities = useMemo(() => {
+    const parsed = activities.map(a => ({
+      ...a,
+      _dateObj: new Date(`${a.date}T00:00:00`),
+    }));
+
+    const filtered = showPastEvents ? parsed : parsed.filter(a => a._dateObj >= startOfToday);
+    filtered.sort((a, b) => a._dateObj - b._dateObj);
+    setFilter({ ...filter, pastEvents: showPastEvents });
+    return filtered;
+  }, [activities, showPastEvents, startOfToday]);
+
   // Get location suggestions with STRICT prefix-based matching only
   const getLocationSuggestions = input => {
     if (!input.trim()) {
@@ -77,7 +95,7 @@ function ActivityList() {
     }
   };
 
-  const filteredActivities = activities.filter(activity => {
+  const filteredActivities = visibleActivities.filter(activity => {
     return (
       (!filter.type || activity.type === filter.type) &&
       (!filter.date || activity.date === filter.date) &&
@@ -97,7 +115,9 @@ function ActivityList() {
       type: '',
       date: '',
       location: '',
+      pastEvents: false,
     });
+    setShowPastEvents(false);
     setLocationSuggestions([]);
     setShowSuggestions(false);
   };
@@ -176,11 +196,22 @@ function ActivityList() {
             )}
           </div>
         </label>
+        <label className={`${styles.showPastToggle} ${darkMode ? styles.darkShowPastToggle : ''}`}>
+          Show Past Events:
+          <input
+            type="checkbox"
+            name="showPastEvents"
+            checked={showPastEvents}
+            onChange={e => setShowPastEvents(e.target.checked)}
+          />
+        </label>
         <button
           type="button"
+          className={`${styles.clearFiltersButton} ${
+            darkMode ? styles.clearFiltersButtonDark : ''
+          }`}
           onClick={handleClearFilters}
-          disabled={!filter.type && !filter.date && !filter.location}
-          className={styles.clearButton}
+          disabled={!filter.type && !filter.date && !filter.location && !filter.pastEvents}
         >
           Clear All
         </button>
