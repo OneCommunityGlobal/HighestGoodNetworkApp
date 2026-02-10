@@ -16,6 +16,61 @@ const CATEGORY_CONFIG = {
 };
 
 const DEBOUNCE_MS = 500;
+const CHAR_WIDTH_RATIO = 0.55;
+const MAX_LABEL_LINES = 2;
+
+function fitLabelInDonut(text, availableWidth, maxFontSize, minFontSize) {
+  const words = text.split(/\s+/);
+
+  for (let size = maxFontSize; size >= minFontSize; size -= 0.5) {
+    const charsPerLine = Math.floor(availableWidth / (size * CHAR_WIDTH_RATIO));
+    if (charsPerLine < 1) continue;
+
+    const lines = [];
+    let currentLine = '';
+    for (let w = 0; w < words.length; w += 1) {
+      const testLine = currentLine ? `${currentLine} ${words[w]}` : words[w];
+      if (testLine.length <= charsPerLine) {
+        currentLine = testLine;
+      } else if (!currentLine) {
+        currentLine = words[w];
+      } else {
+        lines.push(currentLine);
+        currentLine = words[w];
+      }
+    }
+    if (currentLine) lines.push(currentLine);
+
+    if (lines.length <= MAX_LABEL_LINES) {
+      return { fontSize: size, lines };
+    }
+  }
+
+  // At min size, wrap and truncate to MAX_LABEL_LINES
+  const charsPerLine = Math.max(1, Math.floor(availableWidth / (minFontSize * CHAR_WIDTH_RATIO)));
+  const lines = [];
+  let currentLine = '';
+  for (let w = 0; w < words.length; w += 1) {
+    const testLine = currentLine ? `${currentLine} ${words[w]}` : words[w];
+    if (testLine.length <= charsPerLine) {
+      currentLine = testLine;
+    } else if (!currentLine) {
+      currentLine = words[w];
+    } else {
+      lines.push(currentLine);
+      currentLine = words[w];
+    }
+  }
+  if (currentLine) lines.push(currentLine);
+
+  const truncated = lines.slice(0, MAX_LABEL_LINES);
+  if (lines.length > MAX_LABEL_LINES) {
+    const last = truncated[MAX_LABEL_LINES - 1];
+    truncated[MAX_LABEL_LINES - 1] =
+      last.length > charsPerLine - 1 ? `${last.slice(0, charsPerLine - 1)}\u2026` : `${last}\u2026`;
+  }
+  return { fontSize: minFontSize, lines: truncated };
+}
 
 function formatCurrency(amount) {
   if (amount === null || amount === undefined || Number.isNaN(Number(amount))) return '$0';
@@ -138,6 +193,12 @@ export default function CostBreakDown() {
     outerRadius = 110;
     chartHeight = 320;
   }
+
+  const { fontSize: labelFontSize, lines: labelLines } = useMemo(() => {
+    const maxSize = isXS ? 12 : 14;
+    const availableWidth = innerRadius * 2 * 0.75;
+    return fitLabelInDonut(projectLabel, availableWidth, maxSize, 7);
+  }, [projectLabel, innerRadius, isXS]);
 
   const handleSliceClick = useCallback(
     entry => {
@@ -301,20 +362,24 @@ export default function CostBreakDown() {
                 {/* Center label: project name */}
                 <text
                   x="50%"
-                  y="46%"
+                  y={labelLines.length > 1 ? '40%' : '46%'}
                   textAnchor="middle"
                   dominantBaseline="middle"
                   fill={darkMode ? '#f8fafc' : '#0f172a'}
-                  fontSize={isXS ? 12 : 14}
+                  fontSize={labelFontSize}
                   fontWeight="600"
                 >
-                  {projectLabel}
+                  {labelLines.map((line, idx) => (
+                    <tspan key={line} x="50%" dy={idx === 0 ? 0 : labelFontSize * 1.3}>
+                      {line}
+                    </tspan>
+                  ))}
                 </text>
 
                 {/* Center label: total cost */}
                 <text
                   x="50%"
-                  y="55%"
+                  y={labelLines.length > 1 ? '57%' : '55%'}
                   textAnchor="middle"
                   dominantBaseline="middle"
                   fill={darkMode ? '#f8fafc' : '#0f172a'}
