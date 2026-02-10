@@ -3,19 +3,16 @@
   padding-top: 20px;
   padding-left: 3%;
   padding-right: 3%;
-  /* margin-top: 40px;
-  margin-bottom: 20px; */
   font-weight: bold;
 }
+
 .project-details-dark {
   text-align: center;
   padding-top: 20px;
   padding-left: 3%;
   padding-right: 3%;
-/*   margin-top: 40px;
-  margin-bottom: 20px;
- */  font-weight: bold;
-  background-color: #1C1E1C;
+  font-weight: bold;
+  background-color: #1c1e1c;
 }
 
 .project-details-title {
@@ -27,26 +24,27 @@
   color: white;
 }
 
-/* styling for the logBar component - i.e. dashboard with buttons */
+/* =============================
+   LogBar Component
+============================= */
 
-.log-bar {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  margin: 2em;
-  padding: 1em 2em;
-  width: 100%;
-  background-color: white;
-  color: #333333;
-}
-
+.log-bar,
 .log-bar-dark {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  margin: 2em;
+  align-items: center;
+  margin: 2em auto;
   padding: 1em 2em;
-  width: 100%;
+  width: 95%;
+  color: #333333;
+}
+
+.log-bar {
+  background-color: white;
+}
+
+.log-bar-dark {
   background-color: #1b2a41;
   color: #ffffff;
 }
@@ -56,12 +54,13 @@
   margin-top: 1em;
 }
 
-.log-bar__section h2,
-.card.cards-container h2,
-.project-log h2 {
+.log-bar__section :global(h2),
+.cards-container :global(h2),
+.project-log :global(h2) {
   font-size: 1em;
   font-weight: bold;
   color: #333333;
+  text-align: center;
 }
 
 .log-bar-dark .log-bar__section h2,
@@ -71,50 +70,75 @@
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
-.log-bar__section ul {
-  list-style-type: none;
+/* Button Group Layout */
+.log-bar__btn-group {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5em;
+  padding: 0;
+  margin: 0;
+  list-style: none !important;
 }
 
-.button.btn {
+.button {
   border: 0;
   border-radius: 10px;
   margin: 0.1em;
-  width: 100%;
+  width: auto;
   color: #ffffff !important;
   font-weight: 500;
 }
 
-.button.btn:hover {
+.button:hover {
   outline: auto;
   filter: brightness(130%);
   color: #ffffff !important;
 }
 
-/* buttons custom colors */
-.button.btn.button--green {
+/* Button Colors */
+.button--green {
   background-color: #015d4a;
-  color: #ffffff !important;
 }
 
-.button.btn.button--blue {
+.button--blue {
   background-color: #0f6386;
-  color: #ffffff !important;
 }
 
-.button.btn.button--indigo {
+.button--indigo {
   background-color: #203844;
-  color: #ffffff !important;
 }
 
-.button.btn.button--maroon {
+.button--maroon {
   background-color: #980101;
-  margin-top: 2em;
-  color: #ffffff !important;
 }
 
+/* Dark mode button colors - brighter/more vibrant for visibility */
+.log-bar-dark .button--green {
+  background-color: #0d8b6f !important;
+  border: 1px solid #0fb894;
+}
+
+.log-bar-dark .button--blue {
+  background-color: #1a8bb8 !important;
+  border: 1px solid #2ba3d1;
+}
+
+.log-bar-dark .button--indigo {
+  background-color: #3a5a6b !important;
+  border: 1px solid #4d7a94;
+}
+
+.log-bar-dark .button--maroon {
+  background-color: #c41e1e !important;
+  border: 1px solid #e63939;
+}
+
+/* Responsive Alignment */
 @media (min-width: 550px) {
-  .log-bar {
-    display: flex;
+  .log-bar,
+  .log-bar-dark {
     flex-direction: column;
   }
 
@@ -124,17 +148,26 @@
     justify-content: center;
   }
 
-  .button.btn.btn-secondary {
+  .button {
     width: auto;
   }
 
-  .button.btn.btn-secondary.button--maroon {
+  .button.button--maroon {
     margin-top: auto;
   }
 }
 
 @media (min-width: 880px) {
-  .log-bar {
+  .log-bar,
+  .log-bar-dark {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+    margin: 2em;
+  }
+
+  .log-bar-dark {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -145,25 +178,36 @@
   .log-bar__section {
     width: 50%;
     flex: auto;
+    text-align: center;
   }
 
-  .button.btn.btn-secondary {
+  .button {
     width: auto;
   }
 
-  .button.btn.btn-secondary.button--maroon {
+  .button.button--maroon {
     margin-left: 2em;
   }
 }
 
-/* styling for containers with cards */
-.card.cards-container {
+/* =============================
+   Card Containers
+============================= */
+
+.cards-container {
   align-items: center;
   margin: 1em 2em;
   padding: 1em;
   width: auto;
   max-width: 100%;
   overflow: hidden;
+}
+
+.cards-container__header {
+  font-size: 1em;
+  font-weight: bold;
+  color: #333333;
+  margin-bottom: 1em;
 }
 
 .cards-container__content {
@@ -174,7 +218,7 @@
   gap: 10px;
 }
 
-/* styling for single card element */
+/* Single Card */
 .single-card {
   border: 1px solid #eaeeef;
   border-radius: 5px;
@@ -216,12 +260,11 @@
   padding: 0.5em;
 }
 
-.single-card__body h3 {
+.single-card__body :global(h3) {
   font-size: 1em;
   margin-bottom: -0.2em;
 }
 
-/* button on a card */
 .single-card__info {
   font-size: 0.5rem;
   padding: 1em;
@@ -230,12 +273,7 @@
   background-color: #f2c897;
 }
 
-/* TO DO: dynamic value to be added */
-/* .single-card__info .warning{
-  color: white;
-  background-color: #980101;
-} */
-
+/* Card Sizing */
 @media (min-width: 992px) {
   .single-card {
     width: calc(33.333% - 20px);
@@ -251,6 +289,7 @@
     margin-bottom: 15px;
   }
 }
+
 @media (max-width: 575px) {
   .single-card {
     width: 90%;
@@ -259,7 +298,10 @@
   }
 }
 
-/* styling for project log - i.e.table at the bottom */
+/* =============================
+   Project Log Table
+============================= */
+
 .project-log {
   margin: 2em;
   padding: 1em 2em;
@@ -268,17 +310,20 @@
   white-space: nowrap;
 }
 
-.project-log thead {
+.project-log :global(thead) {
   background-color: transparent;
 }
 
 @media (max-width: 768px) {
-  .project-log td,
-  .project-log th {
+  .project-log :global(td),
+  .project-log :global(th) {
     font-size: 0.6em;
   }
 }
 
-ul.log-bar__btn-group {
-  padding: 0px;
+.log-bar__section ul,
+.log-bar-dark ul {
+  list-style: none !important;
+  padding: 0;
+  margin: 0;
 }
