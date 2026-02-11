@@ -19,7 +19,13 @@ import {
 } from 'react-icons/fi';
 import { RiLeafLine } from 'react-icons/ri';
 import KIItemCard from './KIItemCard';
-import { items, preservedItems } from './KIInventorySampleItems.js';
+import {
+  items,
+  preservedItems,
+  lowStock,
+  criticalStock,
+  onsiteGrown,
+} from './KIInventorySampleItems.js';
 
 const KIInventory = () => {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -53,16 +59,20 @@ const KIInventory = () => {
           <p>Track ingredients, equipment, and supplies across all kitchen operations</p>
         </div>
         <div className={styles.inventoryMetricCards}>
-          <MetricCard metricname={'Total Items'} metricvalue={'18'} iconcolor={'#023f80'}>
+          <MetricCard metricname={'Total Items'} metricvalue={items.length} iconcolor={'#023f80'}>
             <FiPackage />
           </MetricCard>
-          <MetricCard metricname={'Critical Stock'} metricvalue={'1'} iconcolor={'#ef2d2dff'}>
+          <MetricCard
+            metricname={'Critical Stock'}
+            metricvalue={criticalStock}
+            iconcolor={'#ef2d2dff'}
+          >
             <FiAlertCircle />
           </MetricCard>
-          <MetricCard metricname={'Low Stock'} metricvalue={'2'} iconcolor={'#dea208ff'}>
+          <MetricCard metricname={'Low Stock'} metricvalue={lowStock} iconcolor={'#dea208ff'}>
             <FiAlertTriangle />
           </MetricCard>
-          <MetricCard metricname={'Onsite Grown'} metricvalue={'15'} iconcolor={'#12ad36ff'}>
+          <MetricCard metricname={'Onsite Grown'} metricvalue={onsiteGrown} iconcolor={'#12ad36ff'}>
             <RiLeafLine />
           </MetricCard>
         </div>

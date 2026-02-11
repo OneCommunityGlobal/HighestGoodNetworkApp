@@ -119,4 +119,10 @@ const preservedItems = [
   },
 ];
 
-export { items, preservedItems };
+const lowStock = items.filter(
+  item => item.presentQuantity <= item.reorderAt && item.presentQuantity >= item.reorderAt * 0.75,
+).length;
+const criticalStock = items.filter(item => item.presentQuantity < item.reorderAt * 0.75).length;
+const onsiteGrown = items.filter(item => item.onsite).length;
+
+export { items, preservedItems, lowStock, criticalStock, onsiteGrown };
