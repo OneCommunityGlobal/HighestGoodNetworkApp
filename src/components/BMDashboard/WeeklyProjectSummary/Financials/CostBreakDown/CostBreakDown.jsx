@@ -223,6 +223,16 @@ export default function CostBreakDown() {
     [dispatch],
   );
 
+  const hasActiveFilters = projectId || startDate || endDate;
+
+  const handleClearFilters = useCallback(() => {
+    setProjectId('');
+    setStartDate('');
+    setEndDate('');
+    setSelectedCategory(null);
+    dispatch(clearCostDetail());
+  }, [dispatch]);
+
   const renderProjectBreakdown = () => {
     const categoryData = detailData?.breakdown?.find(b => b.category === selectedCategory);
     if (!categoryData?.projectBreakdown?.length) {
@@ -293,6 +303,17 @@ export default function CostBreakDown() {
             className={styles.filterInput}
           />
         </div>
+
+        {hasActiveFilters && (
+          <button
+            type="button"
+            className={styles.clearFiltersButton}
+            onClick={handleClearFilters}
+            aria-label="Clear all filters"
+          >
+            Clear Filters
+          </button>
+        )}
       </div>
 
       {/* Loading */}

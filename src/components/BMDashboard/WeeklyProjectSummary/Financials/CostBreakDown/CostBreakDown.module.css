@@ -81,6 +81,29 @@
   border-color: #9ca3af;
 }
 
+.clearFiltersButton {
+  align-self: flex-end;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  border: 1px solid var(--cb-input-border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--cb-text-color);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.clearFiltersButton:hover {
+  background: rgba(0, 0, 0, 0.05);
+  border-color: #9ca3af;
+}
+
+.wrapperDark .clearFiltersButton:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
 /* ===================== Chart Container ===================== */
 .chartContainer {
   flex: 1;
@@ -378,6 +401,7 @@
   .legendItem,
   .filterSelect,
   .filterInput,
+  .clearFiltersButton,
   .detailClose,
   .retryButton {
     transition: none;
