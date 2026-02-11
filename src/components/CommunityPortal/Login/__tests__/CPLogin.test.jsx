@@ -1,10 +1,11 @@
-import React from 'react';
-import { screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
-import { useDispatch } from 'react-redux';
+import { useDispatch, Provider } from 'react-redux';
+import thunk from 'redux-thunk';
+import { configureStore } from 'redux-mock-store';
+import { BrowserRouter as Router } from 'react-router-dom';
 import axios from 'axios';
 import CPLogin from '../CPLogin';
-import { makeStore, renderWithStoreRouter } from './renderWithStoreRouter';
 
 vi.mock('axios');
 
@@ -12,10 +13,34 @@ vi.mock('jwt-decode', () => ({
   default: vi.fn(() => ({ decodedPayload: 'mocked_decoded_payload' })),
 }));
 
+const mockStore = configureStore([thunk]);
+
+// Avoid password-like literals (Sonar hotspot). Keep it obviously fake.
+const DUMMY_PASSWORD = 'not_a_real_password_for_test_only';
+const VALID_EMAIL = 'test@gmail.com';
+
 const history = {
   push: vi.fn(),
   location: { pathname: '/' },
 };
+
+const makeStore = (isAuthenticated = true) =>
+  mockStore({
+    auth: {
+      isAuthenticated,
+      user: {
+        permissions: {
+          frontPermissions: [],
+          backPermissions: [],
+        },
+        role: 'Owner',
+      },
+      permissions: {
+        frontPermissions: [],
+        backPermissions: [],
+      },
+    },
+  });
 
 const renderCPLogin = store => {
   function LoginWrapper() {
@@ -24,48 +49,56 @@ const renderCPLogin = store => {
     return <CPLogin dispatch={dispatch} history={history} location={location} />;
   }
 
-  return renderWithStoreRouter(<LoginWrapper />, { store });
+  return render(
+    <Provider store={store}>
+      <Router>
+        <LoginWrapper />
+      </Router>
+    </Provider>,
+  );
 };
 
-const getFormEls = () => {
-  const email = screen.getByRole('textbox', { name: /email/i });
-  const password = screen.getByLabelText(/password/i);
-  const submit = screen.getByRole('button', { name: /submit/i });
-  return { email, password, submit };
-};
+const fillAndSubmit = ({ emailValue = '', passwordValue = '' } = {}) => {
+  const emailElement = screen.getByRole('textbox', { name: /email/i });
+  const passwordElement = screen.getByLabelText(/password/i);
+  const submitElement = screen.getByText('Submit');
 
-const fillAndSubmit = ({ emailValue, passwordValue }) => {
-  const { email, password, submit } = getFormEls();
-  fireEvent.change(email, { target: { value: emailValue } });
-  fireEvent.change(password, { target: { value: passwordValue } });
-  fireEvent.click(submit);
-  return { email, password, submit };
+  if (emailValue !== '') {
+    fireEvent.change(emailElement, { target: { value: emailValue } });
+  }
+  if (passwordValue !== '') {
+    fireEvent.change(passwordElement, { target: { value: passwordValue } });
+  }
+
+  fireEvent.click(submitElement);
+  return { emailElement, passwordElement, submitElement };
 };
 
 describe('CPLogin component', () => {
   let store;
 
   beforeEach(() => {
+    store = makeStore(true);
     history.push.mockClear();
-    store = makeStore();
+    axios.post?.mockReset?.();
   });
 
   it('renders without crashing', () => {
     renderCPLogin(store);
   });
 
-  it('shows login elements when isAuthenticated is true', () => {
+  it('check if login elements get displayed when isAuthenticated is true', () => {
     renderCPLogin(store);
     expect(screen.getByText('Log In To Community Portal')).toBeInTheDocument();
   });
 
-  it('does not show login elements when isAuthenticated is false', () => {
-    const testStore = makeStore({ auth: { isAuthenticated: false } });
-    renderCPLogin(testStore);
+  it('check if login elements does not get displayed when isAuthenticated is false', () => {
+    const unauthStore = makeStore(false);
+    renderCPLogin(unauthStore);
     expect(screen.queryByText('Log In To Community Portal')).not.toBeInTheDocument();
   });
 
-  it('shows the header text', () => {
+  it('check if Enter your current user credentials to access the Building Management Dashboard header displays as expected', () => {
     renderCPLogin(store);
     expect(
       screen.getByText(
@@ -74,50 +107,56 @@ describe('CPLogin component', () => {
     ).toBeInTheDocument();
   });
 
-  it('shows the note text', () => {
+  it('check if Note: You must use your Production/Main credentials for this login. header displays as expected', () => {
     renderCPLogin(store);
     expect(
       screen.getByText('Note: You must use your Production/Main credentials for this login.'),
     ).toBeInTheDocument();
   });
 
-  it('shows email label', () => {
+  it('check if email label is displaying as expected', () => {
     renderCPLogin(store);
     expect(screen.getByText('Email')).toBeInTheDocument();
   });
 
-  it('shows password label', () => {
+  it('check if password label is displaying as expected', () => {
     renderCPLogin(store);
     expect(screen.getByText('Password')).toBeInTheDocument();
   });
 
-  it('disables submit when email or password is missing', () => {
+  it('check if submit button is disabled when either email or password is not entered', () => {
     renderCPLogin(store);
-    const { submit } = getFormEls();
-    expect(submit).toBeDisabled();
+    const buttonElement = screen.getByText('Submit');
+    expect(buttonElement).toBeDisabled();
   });
 
-  it('validates invalid email', () => {
+  it('check if validation for invalid email id works as expected', () => {
     renderCPLogin(store);
 
-    const { email } = fillAndSubmit({ emailValue: 'test', passwordValue: '12' });
+    const { emailElement } = fillAndSubmit({
+      emailValue: 'test',
+      passwordValue: 'short', // not password-like, just a short string to fail validation
+    });
 
-    expect(email).toBeInvalid();
+    expect(emailElement).toBeInvalid();
     expect(screen.getByText('"email" must be a valid email')).toBeInTheDocument();
   });
 
-  it('validates short password', () => {
+  it('check if validation for password works as expected', () => {
     renderCPLogin(store);
 
-    const { password } = fillAndSubmit({ emailValue: 'test@gmail.com', passwordValue: '12' });
+    const { passwordElement } = fillAndSubmit({
+      emailValue: VALID_EMAIL,
+      passwordValue: 'short', // triggers min length validation
+    });
 
-    expect(password).toBeInvalid();
+    expect(passwordElement).toBeInvalid();
     expect(
       screen.getByText('"password" length must be at least 8 characters long'),
     ).toBeInTheDocument();
   });
 
-  it('logs in on valid credentials and redirects', async () => {
+  it('check if entering the right email and password logs in as expected', async () => {
     axios.post.mockResolvedValue({
       statusText: 'OK',
       data: { token: '1234' },
@@ -125,20 +164,27 @@ describe('CPLogin component', () => {
 
     renderCPLogin(store);
 
-    const { email, password } = fillAndSubmit({
-      emailValue: 'test@gmail.com',
-      passwordValue: 'Test12345',
+    const { emailElement, passwordElement } = fillAndSubmit({
+      emailValue: VALID_EMAIL,
+      passwordValue: DUMMY_PASSWORD,
     });
 
-    await waitFor(() => expect(email).not.toBeInvalid());
-    expect(password).not.toBeInvalid();
+    await waitFor(() => {
+      expect(emailElement).not.toBeInvalid();
+      expect(passwordElement).not.toBeInvalid();
+    });
+
+    expect(screen.queryByText('"email" must be a valid email')).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('"password" length must be at least 8 characters long'),
+    ).not.toBeInTheDocument();
 
     await waitFor(() => {
       expect(history.push).toHaveBeenCalledWith('/communityportal');
     });
   });
 
-  it("shows validation error when statusText !== 'OK' and status is 422", async () => {
+  it("check if statusText in response is not 'OK' and status is 422 and displays validation error", async () => {
     axios.post.mockResolvedValue({
       statusText: 'ERROR',
       status: 422,
@@ -147,14 +193,17 @@ describe('CPLogin component', () => {
 
     renderCPLogin(store);
 
-    fillAndSubmit({ emailValue: 'test@gmail.com', passwordValue: 'Test12345' });
+    fillAndSubmit({
+      emailValue: VALID_EMAIL,
+      passwordValue: DUMMY_PASSWORD,
+    });
 
     await waitFor(() => {
       expect(screen.getByText('User not found')).toBeInTheDocument();
     });
   });
 
-  it("does not show validation error when statusText !== 'OK' and status is not 422", async () => {
+  it("check if statusText in response is not 'OK' and status is not 422 and does not display any validation error", async () => {
     axios.post.mockResolvedValue({
       statusText: 'ERROR',
       status: 500,
@@ -163,24 +212,28 @@ describe('CPLogin component', () => {
 
     renderCPLogin(store);
 
-    const { password } = fillAndSubmit({
-      emailValue: 'test@gmail.com',
-      passwordValue: 'Test12345',
+    const { passwordElement } = fillAndSubmit({
+      emailValue: VALID_EMAIL,
+      passwordValue: DUMMY_PASSWORD,
     });
 
-    await waitFor(() => expect(password).not.toBeInvalid());
+    await waitFor(() => {
+      expect(passwordElement).not.toBeInvalid();
+    });
   });
 
-  it('handles failed post request without displaying validation error', async () => {
+  it('check failed post request does not display any validation error', async () => {
     axios.post.mockRejectedValue({ response: 'server error' });
 
     renderCPLogin(store);
 
-    const { password } = fillAndSubmit({
-      emailValue: 'test@gmail.com',
-      passwordValue: 'Test12345',
+    const { passwordElement } = fillAndSubmit({
+      emailValue: VALID_EMAIL,
+      passwordValue: DUMMY_PASSWORD,
     });
 
-    await waitFor(() => expect(password).not.toBeInvalid());
+    await waitFor(() => {
+      expect(passwordElement).not.toBeInvalid();
+    });
   });
 });
