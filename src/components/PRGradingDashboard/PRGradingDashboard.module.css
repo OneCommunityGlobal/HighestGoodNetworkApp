@@ -87,16 +87,14 @@
   margin-bottom: 1rem;
 }
 
-.footer {
-  background-color: white;
-  border-radius: 0.5rem;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-  padding: 1.5rem;
-}
-
 .footerContent {
   display: flex;
   justify-content: flex-end;
+  position: fixed;
+  bottom: 0;
+  right: 2.5rem;
+  padding: 2rem;
+  padding-bottom: 0.5rem;
 }
 
 .saveButton {
