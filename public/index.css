@@ -1,342 +1,280 @@
 /* public/index.css */
 
-/* Global Dark Mode Styles */
-body.dark-mode,
-body.bm-dashboard-dark {
+.tab-content {
+  background-color: transparent !important;
+  border: none;
+}
+
+#root {
+  background-color: #ffffff;
+}
+
+body.dark-mode:not(.no-global-theme),
+body.bm-dashboard-dark:not(.no-global-theme) {
   background-color: #1b2a41 !important;
   color: #ffffff !important;
 }
 
-body.dark-mode #root,
-body.bm-dashboard-dark #root {
+body.dark-mode:not(.no-global-theme) #root,
+body.bm-dashboard-dark:not(.no-global-theme) #root {
   background-color: #1b2a41 !important;
   color: #ffffff !important;
 }
 
-/* Enhanced text visibility for dark mode */
-body.dark-mode *,
-body.bm-dashboard-dark * {
+/* SAFE BASE */
+body.dark-mode:not(.no-global-theme) {
+  color: #ffffff;
+}
+
+/* Text elements */
+body.dark-mode:not(.no-global-theme) p,
+body.dark-mode:not(.no-global-theme) span,
+body.dark-mode:not(.no-global-theme) label,
+body.dark-mode:not(.no-global-theme) div:not(.rs__option),
+body.dark-mode:not(.no-global-theme) h1,
+body.dark-mode:not(.no-global-theme) h2,
+body.dark-mode:not(.no-global-theme) h3,
+body.bm-dashboard-dark:not(.no-global-theme) p,
+body.bm-dashboard-dark:not(.no-global-theme) span,
+body.bm-dashboard-dark:not(.no-global-theme) label,
+body.bm-dashboard-dark:not(.no-global-theme) div:not(.rs__option),
+body.bm-dashboard-dark:not(.no-global-theme) h1,
+body.bm-dashboard-dark:not(.no-global-theme) h2,
+body.bm-dashboard-dark:not(.no-global-theme) h3 {
   color: #ffffff !important;
 }
 
-body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, 
-body.dark-mode h4, body.dark-mode h5, body.dark-mode h6,
-body.bm-dashboard-dark h1, body.bm-dashboard-dark h2, body.bm-dashboard-dark h3,
-body.bm-dashboard-dark h4, body.bm-dashboard-dark h5, body.bm-dashboard-dark h6 {
+/* Headings */
+body.dark-mode:not(.no-global-theme) h1,
+body.dark-mode:not(.no-global-theme) h2,
+body.dark-mode:not(.no-global-theme) h3,
+body.dark-mode:not(.no-global-theme) h4,
+body.dark-mode:not(.no-global-theme) h5,
+body.dark-mode:not(.no-global-theme) h6,
+body.bm-dashboard-dark:not(.no-global-theme) h1,
+body.bm-dashboard-dark:not(.no-global-theme) h2,
+body.bm-dashboard-dark:not(.no-global-theme) h3,
+body.bm-dashboard-dark:not(.no-global-theme) h4,
+body.bm-dashboard-dark:not(.no-global-theme) h5,
+body.bm-dashboard-dark:not(.no-global-theme) h6 {
   color: #ffffff !important;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
-body.dark-mode p, body.dark-mode span, body.dark-mode div,
-body.dark-mode label, body.dark-mode a, body.dark-mode li,
-body.bm-dashboard-dark p, body.bm-dashboard-dark span, body.bm-dashboard-dark div,
-body.bm-dashboard-dark label, body.bm-dashboard-dark a, body.bm-dashboard-dark li {
-  color: #ffffff !important;
-}
-
-body.dark-mode .text-muted,
-body.bm-dashboard-dark .text-muted {
+/* Muted text */
+body.dark-mode:not(.no-global-theme) .text-muted,
+body.bm-dashboard-dark:not(.no-global-theme) .text-muted {
   color: #b8c5d1 !important;
 }
 
-body.dark-mode .text-secondary,
-body.bm-dashboard-dark .text-secondary {
-  color: #d1d8e0 !important;
-}
-
-body.dark-mode .text-primary,
-body.bm-dashboard-dark .text-primary {
-  color: #66b3ff !important;
-}
-
-body.dark-mode .text-success,
-body.bm-dashboard-dark .text-success {
-  color: #66ff99 !important;
-}
-
-body.dark-mode .text-warning,
-body.bm-dashboard-dark .text-warning {
-  color: #ffcc66 !important;
-}
-
-body.dark-mode .text-danger,
-body.bm-dashboard-dark .text-danger {
-  color: #ff6666 !important;
-}
-
-body.dark-mode .text-info,
-body.bm-dashboard-dark .text-info {
-  color: #66ffff !important;
-}
-
-/* Dark mode for common elements */
-body.dark-mode .container,
-body.dark-mode .container-fluid,
-body.bm-dashboard-dark .container,
-body.bm-dashboard-dark .container-fluid {
+/* Containers */
+body.dark-mode:not(.no-global-theme) .container,
+body.dark-mode:not(.no-global-theme) .container-fluid,
+body.bm-dashboard-dark:not(.no-global-theme) .container,
+body.bm-dashboard-dark:not(.no-global-theme) .container-fluid {
   background-color: #1b2a41;
   color: #ffffff;
 }
 
-body.dark-mode .card,
-body.bm-dashboard-dark .card {
+/* Cards */
+body.dark-mode:not(.no-global-theme) .card,
+body.bm-dashboard-dark:not(.no-global-theme) .card {
   background-color: #2e5061;
   border-color: #3a506b;
   color: #ffffff;
 }
 
-body.dark-mode .card-body,
-body.bm-dashboard-dark .card-body {
-  color: #ffffff;
-}
-
-body.dark-mode .card-title,
-body.bm-dashboard-dark .card-title {
+/* Tables */
+body.dark-mode:not(.no-global-theme) .table,
+body.bm-dashboard-dark:not(.no-global-theme) .table {
   color: #ffffff !important;
 }
 
-body.dark-mode .card-text,
-body.bm-dashboard-dark .card-text {
-  color: #ffffff !important;
-}
-
-body.dark-mode .card-header,
-body.bm-dashboard-dark .card-header {
-  background-color: #3a506b;
-  border-color: #4a6072;
-  color: #ffffff !important;
-}
-
-body.dark-mode .form-control,
-body.bm-dashboard-dark .form-control {
-  background-color: #2e5061;
-  border-color: #3a506b;
-  color: #ffffff !important;
-}
-
-body.dark-mode .form-control::placeholder,
-body.bm-dashboard-dark .form-control::placeholder {
-  color: #b8c5d1 !important;
-}
-
-body.dark-mode .form-control:focus,
-body.bm-dashboard-dark .form-control:focus {
-  background-color: #2e5061;
-  border-color: #4a6072;
-  color: #ffffff !important;
-  box-shadow: 0 0 0 0.2rem rgba(74, 96, 114, 0.25);
-}
-
-body.dark-mode .form-label,
-body.bm-dashboard-dark .form-label {
-  color: #ffffff !important;
-}
-
-body.dark-mode .btn-primary,
-body.bm-dashboard-dark .btn-primary {
-  background-color: #3a506b;
-  border-color: #3a506b;
-  color: #ffffff !important;
-}
-
-body.dark-mode .btn-primary:hover,
-body.bm-dashboard-dark .btn-primary:hover {
-  background-color: #4a6072;
-  border-color: #4a6072;
-  color: #ffffff !important;
-}
-
-body.dark-mode .btn-secondary,
-body.bm-dashboard-dark .btn-secondary {
-  background-color: #2e5061;
-  border-color: #2e5061;
-  color: #ffffff !important;
-}
-
-body.dark-mode .btn-secondary:hover,
-body.bm-dashboard-dark .btn-secondary:hover {
-  background-color: #3a506b;
-  border-color: #3a506b;
-  color: #ffffff !important;
-}
-
-body.dark-mode .btn,
-body.bm-dashboard-dark .btn {
-  color: #ffffff !important;
-}
-
-body.dark-mode .table,
-body.bm-dashboard-dark .table {
-  color: #ffffff !important;
-}
-
-body.dark-mode .table th,
-body.dark-mode .table td {
+body.dark-mode:not(.no-global-theme) .table th,
+body.dark-mode:not(.no-global-theme) .table td,
+body.bm-dashboard-dark:not(.no-global-theme) .table th,
+body.bm-dashboard-dark:not(.no-global-theme) .table td {
   color: #ffffff !important;
   border-color: #3a506b;
 }
 
-body.bm-dashboard-dark .table th,
-body.bm-dashboard-dark .table td {
-  color: #ffffff !important;
-  border-color: #3a506b;
-}
-
-body.bm-dashboard-dark .table th{
+body.bm-dashboard-dark:not(.no-global-theme) .table th {
   background-color: #2e5061 !important;
 }
 
-body.dark-mode .table-striped > tbody > tr:nth-of-type(odd),
-body.bm-dashboard-dark .table-striped > tbody > tr:nth-of-type(odd) {
-  background-color: rgba(46, 80, 97, 0.5);
+/* Buttons */
+body.dark-mode:not(.no-global-theme) .btn,
+body.bm-dashboard-dark:not(.no-global-theme) .btn {
   color: #ffffff !important;
 }
 
-body.dark-mode .modal-content,
-body.bm-dashboard-dark .modal-content {
-  background-color: #2e5061;
-  color: #ffffff !important;
-}
-
-body.dark-mode .modal-header,
-body.bm-dashboard-dark .modal-header {
+body.dark-mode:not(.no-global-theme) .btn-primary,
+body.bm-dashboard-dark:not(.no-global-theme) .btn-primary {
   background-color: #3a506b;
-  border-color: #4a6072;
-  color: #ffffff !important;
+  border-color: #3a506b;
 }
 
-body.dark-mode .modal-title,
-body.bm-dashboard-dark .modal-title {
-  color: #ffffff !important;
-}
-
-body.dark-mode .modal-body,
-body.bm-dashboard-dark .modal-body {
-  color: #ffffff !important;
-}
-
-body.dark-mode .modal-footer,
-body.bm-dashboard-dark .modal-footer {
-  background-color: #3a506b;
-  border-color: #4a6072;
-  color: #ffffff !important;
-}
-
-body.dark-mode .nav-tabs .nav-link,
-body.bm-dashboard-dark .nav-tabs .nav-link {
+/* Inputs */
+body.dark-mode:not(.no-global-theme) .form-control,
+body.bm-dashboard-dark:not(.no-global-theme) .form-control {
   background-color: #2e5061;
   border-color: #3a506b;
   color: #ffffff !important;
 }
 
-body.dark-mode .nav-tabs .nav-link.active,
-body.bm-dashboard-dark .nav-tabs .nav-link.active {
-  background-color: #3a506b;
-  border-color: #4a6072;
+/* Modals */
+body.dark-mode:not(.no-global-theme) .modal-content {
+  background-color: #1b2a41 !important;
   color: #ffffff !important;
 }
 
-/* Navigation and menu items */
-body.dark-mode .nav-link,
-body.bm-dashboard-dark .nav-link {
-  color: #ffffff !important;
-}
-
-
-body.dark-mode .navbar-brand,
-body.bm-dashboard-dark .navbar-brand {
-  color: #ffffff !important;
-}
-
-body.dark-mode .dropdown-menu,
-body.bm-dashboard-dark .dropdown-menu {
+/* Dropdowns */
+body.dark-mode:not(.no-global-theme) .dropdown-menu,
+body.bm-dashboard-dark:not(.no-global-theme) .dropdown-menu {
   background-color: #2e5061;
   border-color: #3a506b;
-}
-
-body.dark-mode .dropdown-item,
-body.bm-dashboard-dark .dropdown-item {
-  color: #ffffff !important;
-}
-
-body.dark-mode .dropdown-item:hover,
-body.bm-dashboard-dark .dropdown-item:hover {
-  background-color: #3a506b;
-  color: #ffffff !important;
-}
-
-/* Alert components */
-body.dark-mode .alert,
-body.bm-dashboard-dark .alert {
-  color: #ffffff !important;
-}
-
-body.dark-mode .alert-primary,
-body.bm-dashboard-dark .alert-primary {
-  background-color: #3a506b;
-  border-color: #4a6072;
-  color: #ffffff !important;
-}
-
-body.dark-mode .alert-secondary,
-body.bm-dashboard-dark .alert-secondary {
-  background-color: #2e5061;
-  border-color: #3a506b;
-  color: #ffffff !important;
-}
-
-/* List groups */
-body.dark-mode .list-group-item,
-body.bm-dashboard-dark .list-group-item {
-  background-color: #2e5061;
-  border-color: #3a506b;
-  color: #ffffff !important;
-}
-
-/* Breadcrumbs */
-body.dark-mode .breadcrumb,
-body.bm-dashboard-dark .breadcrumb {
-  background-color: #2e5061;
-}
-
-body.dark-mode .breadcrumb-item,
-body.bm-dashboard-dark .breadcrumb-item {
-  color: #ffffff !important;
-}
-
-body.dark-mode .breadcrumb-item.active,
-body.bm-dashboard-dark .breadcrumb-item.active {
-  color: #b8c5d1 !important;
 }
 
 /* Pagination */
-body.dark-mode .page-link,
-body.bm-dashboard-dark .page-link {
+body.dark-mode:not(.no-global-theme) .page-link,
+body.bm-dashboard-dark:not(.no-global-theme) .page-link {
   background-color: #2e5061;
   border-color: #3a506b;
   color: #ffffff !important;
 }
 
-body.dark-mode .page-item.active .page-link,
-body.bm-dashboard-dark .page-item.active .page-link {
-  background-color: #3a506b;
-  border-color: #4a6072;
-  color: #ffffff !important;
+/* ============================= */
+/* LIGHT MODE RULES (UNCHANGED) */
+/* ============================= */
+
+body:not(.dark-mode) input,
+body:not(.dark-mode) textarea {
+  background-color: #ffffff !important;
+  color: #212529 !important;
+  border-color: #ced4da !important;
 }
 
-/* Fix the position of the header at the top */
-.top {
-    position: fixed;
-    right: 10px;
-    bottom: 10px;
-  }
-  
+/* container scrolling */
+.container-fluid {
+  overflow-x: auto;
+}
+
+.container-fluid::-webkit-scrollbar {
+  display: none;
+}
+
+/* back-to-top button */
+.back-to-top {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #2A1B3D;
+  color: #ffffff;
+  border-radius: 50%;
+  font-size: 22px;
+  text-decoration: none;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+  z-index: 1000;
+}
+
+.back-to-top:hover {
+  transform: translateY(-4px);
+  opacity: 0.9;
+}
+
   /* Allow the page content to scroll horizontally */
   .container-fluid {
     overflow-x: auto;
   }
-  
+
   /* Hide the horizontal scrollbar */
   .container-fluid::-webkit-scrollbar {
     display: none;
+  }
+
+  /* Explicit targeting for all input types and selects */
+  body.dark-mode .form-control,
+  body.bm-dashboard-dark .form-control,
+  body.dark-mode select,
+  body.bm-dashboard-dark select,
+  body.dark-mode input[type="text"] {
+    background-color: #1e293b !important;
+    color: #ffffff !important;
+    border: 1px solid #334155 !important;
+  }
+
+  /* Fix for the Project and Tool dropdown arrows and internal padding */
+  body.dark-mode select.form-control,
+  body.bm-dashboard-dark select.form-control {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 0.75rem center !important;
+    background-size: 16px 12px !important;
+  }
+
+  body.dark-mode .form-control::placeholder {
+    color: #94a3b8 !important;
+  }
+
+  body.dark-mode option,
+  body.bm-dashboard-dark option {
+    background-color: #1e293b !important;
+    color: #ffffff !important;
+  }
+
+  body.dark-mode .modal-content,
+  body.bm-dashboard-dark .modal-content {
+    background-color: #1b2a41 !important;
+    border: 1px solid #2e3d55 !important;
+    color: #ffffff !important;
+  }
+
+  body.dark-mode .modal-header,
+  body.dark-mode .modal-body,
+  body.dark-mode .modal-footer,
+  body.bm-dashboard-dark .modal-header,
+  body.bm-dashboard-dark .modal-body,
+  body.bm-dashboard-dark .modal-footer {
+    background-color: #1b2a41 !important;
+    color: #ffffff !important;
+    border-color: #2e3d55 !important;
+  }
+
+  body.dark-mode .form-control,
+  body.dark-mode select,
+  body.dark-mode input {
+    background-color: #1e293b !important;
+    color: #ffffff !important;
+    border: 1px solid #334155 !important;
+  }
+
+  body.dark-mode select.form-control {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e") !important;
+  }
+
+  body.dark-mode .modal-header,
+  body.bm-dashboard-dark .modal-header {
+    background-color: #24344d !important;
+    border-bottom: 1px solid #334155 !important;
+    color: #ffffff !important;
+    padding: 1rem 1.5rem;
+  }
+
+  body.dark-mode .modal-title,
+  body.bm-dashboard-dark .modal-title {
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+
+  body.dark-mode .modal-content .table thead th {
+    background-color: #2d3d5a !important;
+    color: #ffffff !important;
+    border-bottom: 2px solid #334155 !important;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
   }
