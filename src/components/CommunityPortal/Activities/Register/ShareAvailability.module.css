@@ -1,0 +1,594 @@
+/* Share Button */
+.shareButton {
+  background:  #0029e2;
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  margin-top: 10px;
+}
+
+.shareButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+}
+
+.shareButton:active {
+  transform: translateY(0);
+}
+
+.shareButtonDark {
+  background: #0029e2;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+}
+
+.shareIcon {
+  font-size: 16px;
+}
+
+/* Modal Overlay */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modalOverlayDark {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+/* Share Modal */
+.shareModal {
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+.shareModalDark {
+  background-color: #1e293b;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Modal Header */
+.modalHeader {
+  padding: 24px;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modalHeaderDark {
+  border-bottom-color: #475569;
+}
+
+.modalTitle {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.modalTitleDark {
+  color: #f1f5f9;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #6b7280;
+  transition: color 0.2s ease;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.closeButton:hover {
+  color: #1f2937;
+}
+
+.closeButtonDark {
+  color: #94a3b8;
+}
+
+.closeButtonDark:hover {
+  color: #f1f5f9;
+}
+
+/* Event Preview */
+.eventPreview {
+  padding: 20px 24px;
+  background-color: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.eventPreviewDark {
+  background-color: #0f172a;
+  border-bottom-color: #475569;
+}
+
+.previewTitle {
+  margin: 0 0 12px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.previewTitleDark {
+  color: #f1f5f9;
+}
+
+.previewDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.previewDetails p {
+  margin: 0;
+  font-size: 14px;
+  color: #475569;
+}
+
+.eventPreviewDark .previewDetails p {
+  color: #cbd5e1;
+}
+
+.spotsBadge {
+  display: inline-block;
+  background-color: #dbeafe;
+  color: #0c4a6e;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.eventPreviewDark .spotsBadge {
+  background-color: #1e3a8a;
+  color: #93c5fd;
+}
+
+/* Share Content */
+.shareContent {
+  padding: 24px;
+}
+
+.shareContentDark {
+  border-top: 1px solid #475569;
+}
+
+.contentLabel {
+  margin: 0 0 16px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.contentLabelDark {
+  color: #f1f5f9;
+}
+
+/* Share Options */
+.shareOptions {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.shareOption {
+  padding: 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  background-color: #ffffff;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  color: #475569;
+  font-weight: 500;
+  font-size: 13px;
+}
+
+.shareOption:hover {
+  border-color: #667eea;
+  background-color: #f8f4ff;
+  color: #667eea;
+}
+
+.shareOptionActive {
+  border-color: #667eea;
+  background-color: #f3f0ff;
+  color: #667eea;
+}
+
+.shareOptionDark {
+  background-color: #0f172a;
+  border-color: #475569;
+  color: #cbd5e1;
+}
+
+.shareOptionDark:hover {
+  border-color: #667eea;
+  background-color: #1e293b;
+  color: #a78bfa;
+}
+
+.optionIcon {
+  font-size: 24px;
+}
+
+.optionText {
+  text-align: center;
+}
+
+/* Action Panel */
+.actionPanel {
+  background-color: #f8fafc;
+  padding: 16px;
+  border-radius: 10px;
+  margin-bottom: 16px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.actionPanelDark {
+  background-color: #0f172a;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.actionDescription {
+  margin: 0 0 12px 0;
+  font-size: 13px;
+  color: #475569;
+  font-weight: 500;
+}
+
+.actionDescriptionDark {
+  color: #cbd5e1;
+}
+
+/* URL Container */
+.urlContainer {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.urlInput {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 12px;
+  font-family: 'Courier New', monospace;
+  color: #475569;
+  background-color: #ffffff;
+  cursor: text;
+}
+
+.urlInputDark {
+  background-color: #1e293b;
+  border-color: #475569;
+  color: #cbd5e1;
+}
+
+/* Text Area */
+.textArea {
+  width: 100%;
+  min-height: 120px;
+  padding: 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  color: #475569;
+  resize: vertical;
+  margin-bottom: 12px;
+  background-color: #ffffff;
+}
+
+.textAreaDark {
+  background-color: #1e293b;
+  border-color: #475569;
+  color: #cbd5e1;
+}
+
+/* Email Input */
+.emailInput {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #1f2937;
+  margin-bottom: 12px;
+  background-color: #ffffff;
+  transition: border-color 0.2s ease;
+}
+
+.emailInput:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.emailInputDark {
+  background-color: #1e293b;
+  border-color: #475569;
+  color: #f1f5f9;
+}
+
+.emailInputDark:focus {
+  border-color: #667eea;
+}
+
+/* Copy Button */
+.copyButton {
+  width: 100%;
+  padding: 10px 16px;
+  background-color: #667eea;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+  transition: all 0.2s ease;
+}
+
+.copyButton:hover {
+  background-color: #5568d3;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.copyButton:active {
+  transform: translateY(0);
+}
+
+.copyButtonDark {
+  background-color: #667eea;
+}
+
+.copyButtonDark:hover {
+  background-color: #5568d3;
+}
+
+/* Social Buttons */
+.socialButtons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.socialButton {
+  padding: 12px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+  color: white;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.socialButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.socialButton.twitter {
+  background-color: #1da1f2;
+}
+
+.socialButton.twitter:hover {
+  background-color: #1a8cd8;
+}
+
+.socialButton.facebook {
+  background-color: #1877f2;
+}
+
+.socialButton.facebook:hover {
+  background-color: #0a66c2;
+}
+
+.socialButton.linkedin {
+  background-color: #0a66c2;
+}
+
+.socialButton.linkedin:hover {
+  background-color: #084594;
+}
+
+.socialButton.whatsapp {
+  background-color: #25d366;
+}
+
+.socialButton.whatsapp:hover {
+  background-color: #1fa851;
+}
+
+.socialButtonDark {
+  /* Maintains social brand colors */
+}
+
+/* Share Messages */
+.shareMessage {
+  padding: 12px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 16px;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.shareMessageSuccess {
+  background-color: #d1fae5;
+  color: #065f46;
+  border-left: 4px solid #10b981;
+}
+
+.shareMessageSuccessDark {
+  background-color: #0f766e;
+  color: #a7f3d0;
+}
+
+.shareMessageError {
+  background-color: #fee2e2;
+  color: #7f1d1d;
+  border-left: 4px solid #ef4444;
+}
+
+.shareMessageErrorDark {
+  background-color: #7f1d1d;
+  color: #fecaca;
+}
+
+/* Modal Footer */
+.modalFooter {
+  padding: 16px 24px;
+  border-top: 1px solid #e2e8f0;
+  background-color: #f8fafc;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.modalFooterDark {
+  background-color: #0f172a;
+  border-top-color: #475569;
+}
+
+.disclaimer {
+  margin: 0;
+  font-size: 12px;
+  color: #6b7280;
+  flex: 1;
+}
+
+.disclaimerDark {
+  color: #94a3b8;
+}
+
+.closeModalButton {
+  padding: 10px 20px;
+  background-color: #e5e7eb;
+  color: #1f2937;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.closeModalButton:hover {
+  background-color: #d1d5db;
+}
+
+.closeModalButtonDark {
+  background-color: #475569;
+  color: #f1f5f9;
+}
+
+.closeModalButtonDark:hover {
+  background-color: #64748b;
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+  .shareModal {
+    border-radius: 12px;
+    max-width: 100%;
+  }
+
+  .shareOptions {
+    grid-template-columns: 1fr;
+  }
+
+  .socialButtons {
+    grid-template-columns: 1fr;
+  }
+
+  .modalFooter {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .disclaimer {
+    order: 2;
+  }
+
+  .closeModalButton {
+    order: 1;
+    width: 100%;
+  }
+}
