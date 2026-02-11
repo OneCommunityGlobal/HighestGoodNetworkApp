@@ -1,5 +1,5 @@
 const APIEndpoint =
-  process.env.REACT_APP_APIENDPOINT || 'https://hgn-rest-beta.azurewebsites.net/api';
+  process.env.REACT_APP_APIENDPOINT || 'http://localhost:4500/api';
 
 export const ENDPOINTS = {
   APIEndpoint: () => APIEndpoint,
@@ -228,6 +228,7 @@ export const ENDPOINTS = {
   PRESETS_BY_ID: roleNameOrPresetId => `${APIEndpoint}/rolePreset/${roleNameOrPresetId}`,
 
   OWNERMESSAGE: () => `${APIEndpoint}/ownerMessage`,
+  OWNER_MESSAGE_HISTORY: (page, limit) => `${APIEndpoint}/ownerMessageLogs?page=${page}&limit=${limit}`,
 
   AI_PROMPT: () => `${APIEndpoint}/dashboard/aiPrompt`,
   COPIED_AI_PROMPT: userId => `${APIEndpoint}/dashboard/aiPrompt/copied/${userId}`,
@@ -477,6 +478,7 @@ export const ENDPOINTS = {
   LB_LISTING_AVAILABILITY: `${APIEndpoint}/lb/listing/availability`,
   LB_LISTING_BOOK: `${APIEndpoint}/lb/listing/availability/booking`,
   HELP_CATEGORIES: `${APIEndpoint}/help-categories`,
+  APPLICANT_SOURCES: `${APIEndpoint}/applicant-analytics/applicant-sources`,
 
   // job analytics
   HOURS_PLEDGED: `${APIEndpoint}/analytics/hours-pledged`,
@@ -536,7 +538,6 @@ export const ENDPOINTS = {
     if (endDate) url += `&endDate=${encodeURIComponent(endDate)}`;
     return url;
   },
-
 };
 
 export const ApiEndpoint = APIEndpoint;

@@ -1,13 +1,5 @@
 /* src/components/CommunityPortal/Activities/activityId/Resources.module.css */
 
-/* border for all the row data */
-.resourceRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-  border: 2px solid black;
-}
 
 /* Column Styling  for resources*/
 .column {
@@ -17,15 +9,7 @@
   font-weight: bold;
 }
 
-/* Header Styling */
-.header {
-  background-color: #f5f5f5;
-  font-weight: bold;
-}
 
-.resourceRow .column:last-child {
-  border-right: none;
-}
 
 /* colors for text based on status  */
 .statusgreen {
