@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
+import { useSelector } from 'react-redux';
 import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
 // import httpService from '../../../../services/httpService';
 import { getProjectExpenditure } from './mockExpenditureData';
@@ -36,6 +38,7 @@ const renderCustomLabel = ({ cx, cy, midAngle, outerRadius, percent, name }) => 
 };
 
 function ExpenditureChart({ projectId }) {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [actual, setActual] = useState([]);
   const [planned, setPlanned] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -85,8 +88,26 @@ function ExpenditureChart({ projectId }) {
             <Cell key={entry.category || index} fill={COLORS[index % COLORS.length]} />
           ))}
         </Pie>
-        <Tooltip />
-        <Legend layout="horizontal" verticalAlign="bottom" align="center" height={20} />
+        <Tooltip
+          contentStyle={{
+            backgroundColor: darkMode ? '#2c3344' : '#fff',
+            border: `1px solid ${darkMode ? '#364156' : '#ccc'}`,
+            color: darkMode ? '#e0e0e0' : '#333',
+          }}
+          itemStyle={{
+            color: darkMode ? '#e0e0e0' : '#333',
+          }}
+        />
+        <Legend
+          layout="horizontal"
+          verticalAlign="bottom"
+          align="center"
+          height={20}
+          wrapperStyle={{
+            color: darkMode ? '#e0e0e0' : '#333',
+          }}
+          iconSize={10}
+        />
       </PieChart>
     </div>
   );
@@ -102,5 +123,9 @@ function ExpenditureChart({ projectId }) {
     </div>
   );
 }
+
+ExpenditureChart.propTypes = {
+  projectId: PropTypes.string.isRequired,
+};
 
 export default ExpenditureChart;

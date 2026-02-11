@@ -1,4 +1,5 @@
 import { useState, useEffect, Fragment } from 'react';
+import PropTypes from 'prop-types';
 import {
   LineChart,
   Line,
@@ -26,12 +27,12 @@ const costOptions = [
   { value: 'Total', label: 'Total Cost' },
 ];
 
-// Custom dot component for predicted values - extracted to avoid nested component definition
-function PredictedDot({ cx, cy, payload, category, costColors }) {
+// Custom dot component for predicted values - consolidated to reduce duplication
+function PredictedDot({ cx, cy, payload, category, costColors, size = 4 }) {
   if (!payload || !payload[`${category}Predicted`]) return null;
   return (
     <path
-      d={`M${cx},${cy - 3} L${cx + 3},${cy} L${cx},${cy + 3} L${cx - 3},${cy} Z`}
+      d={`M${cx},${cy - size} L${cx + size},${cy} L${cx},${cy + size} L${cx - size},${cy} Z`}
       fill={costColors[category]}
       stroke={costColors[category]}
       strokeWidth={0}
@@ -39,18 +40,14 @@ function PredictedDot({ cx, cy, payload, category, costColors }) {
   );
 }
 
-// Custom dot component for full page predicted values - extracted to avoid nested component definition
-function FullPagePredictedDot({ cx, cy, payload, category, costColors }) {
-  if (!payload || !payload[`${category}Predicted`]) return null;
-  return (
-    <path
-      d={`M${cx},${cy - 4} L${cx + 4},${cy} L${cx},${cy + 4} L${cx - 4},${cy} Z`}
-      fill={costColors[category]}
-      stroke={costColors[category]}
-      strokeWidth={0}
-    />
-  );
-}
+PredictedDot.propTypes = {
+  cx: PropTypes.number,
+  cy: PropTypes.number,
+  payload: PropTypes.object,
+  category: PropTypes.string.isRequired,
+  costColors: PropTypes.object.isRequired,
+  size: PropTypes.number,
+};
 
 // Define line colors
 const costColors = {
@@ -62,17 +59,24 @@ const costColors = {
 
 // Create specific dot components for common categories
 function createDotComponent(category) {
-  return function DotComponent(props) {
+  function DotComponent(props) {
     return (
-      <FullPagePredictedDot
+      <PredictedDot
         cx={props.cx}
         cy={props.cy}
         payload={props.payload}
         category={category}
         costColors={costColors}
+        size={4}
       />
     );
+  }
+  DotComponent.propTypes = {
+    cx: PropTypes.number,
+    cy: PropTypes.number,
+    payload: PropTypes.object,
   };
+  return DotComponent;
 }
 
 // Pre-defined dot components for different categories
@@ -184,7 +188,7 @@ const processDataForChart = costData => {
 };
 
 // Custom tooltip component
-function CustomTooltip({ active, payload, label, currency }) {
+function CustomTooltip({ active, payload, label, currency, darkMode }) {
   if (!active || !payload || !payload.length) {
     return null;
   }
@@ -204,24 +208,33 @@ function CustomTooltip({ active, payload, label, currency }) {
     <div
       className="cost-chart-tooltip"
       style={{
-        backgroundColor: 'var(--card-bg)',
-        border: '1px solid var(--button-hover)',
+        backgroundColor: darkMode ? '#2c3344' : '#fff',
+        border: `1px solid ${darkMode ? '#364156' : '#ccc'}`,
         borderRadius: '4px',
         padding: '8px',
         boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
-        color: 'var(--text-color)',
+        color: darkMode ? '#e0e0e0' : '#333',
         fontSize: '12px',
       }}
     >
       <p
         className="tooltip-date"
-        style={{ margin: '0 0 4px 0', fontWeight: 'bold', color: 'var(--text-color)' }}
+        style={{
+          margin: '0 0 4px 0',
+          fontWeight: 'bold',
+          color: darkMode ? '#e0e0e0' : '#333',
+        }}
       >
         {label}
       </p>
       <p
         className="tooltip-type"
-        style={{ margin: '0 0 4px 0', fontSize: '10px', color: 'var(--text-color)', opacity: 0.8 }}
+        style={{
+          margin: '0 0 4px 0',
+          fontSize: '10px',
+          color: darkMode ? '#e0e0e0' : '#333',
+          opacity: 0.8,
+        }}
       >
         {displayType}
       </p>
@@ -244,7 +257,7 @@ function CustomTooltip({ active, payload, label, currency }) {
               alignItems: 'center',
               gap: '4px',
               margin: '2px 0',
-              color: 'var(--text-color)',
+              color: darkMode ? '#e0e0e0' : '#333',
             }}
           >
             {isPredicted ? (
@@ -272,12 +285,12 @@ function CustomTooltip({ active, payload, label, currency }) {
                 }}
               />
             )}
-            <span className="tooltip-label" style={{ color: 'var(--text-color)' }}>
+            <span className="tooltip-label" style={{ color: darkMode ? '#e0e0e0' : '#333' }}>
               {costLabel}:
             </span>
             <span
               className="tooltip-value"
-              style={{ fontWeight: 'bold', color: 'var(--text-color)' }}
+              style={{ fontWeight: 'bold', color: darkMode ? '#e0e0e0' : '#333' }}
             >
               {`${currency}${entry.value.toLocaleString()}`}
             </span>
@@ -287,6 +300,14 @@ function CustomTooltip({ active, payload, label, currency }) {
     </div>
   );
 }
+
+CustomTooltip.propTypes = {
+  active: PropTypes.bool,
+  payload: PropTypes.array,
+  label: PropTypes.string,
+  currency: PropTypes.string.isRequired,
+  darkMode: PropTypes.bool,
+};
 
 function CostPredictionPage({ projectId }) {
   const [data, setData] = useState([]);
@@ -380,6 +401,9 @@ function CostPredictionPage({ projectId }) {
         }
         .dark-mode-body .recharts-default-legend {
           background-color: #1e2736 !important;
+        }
+        .dark-mode-body .recharts-legend-item-text {
+          color: #e0e0e0 !important;
         }
         .dark-mode-body .recharts-tooltip-wrapper {
           background-color: transparent !important;
@@ -554,7 +578,7 @@ function CostPredictionPage({ projectId }) {
                     dataKey="date"
                     tick={{
                       fill: darkMode ? '#e0e0e0' : '#333',
-                      fontSize: 10,
+                      fontSize: 12,
                     }}
                     tickMargin={5}
                     height={25}
@@ -562,18 +586,18 @@ function CostPredictionPage({ projectId }) {
                   <YAxis
                     tick={{
                       fill: darkMode ? '#e0e0e0' : '#333',
-                      fontSize: 10,
+                      fontSize: 12,
                     }}
                     tickFormatter={value => `${currency}${value}`}
                     width={50}
                   />
-                  <Tooltip content={<CustomTooltip currency={currency} />} />
+                  <Tooltip content={<CustomTooltip currency={currency} darkMode={darkMode} />} />
                   <Legend
                     verticalAlign="bottom"
                     height={15}
                     iconSize={8}
                     wrapperStyle={{
-                      fontSize: 9,
+                      fontSize: 11,
                       padding: 0,
                       margin: '0 auto',
                       width: '100%',
@@ -591,7 +615,7 @@ function CostPredictionPage({ projectId }) {
                             justifyContent: 'center',
                             gap: '15px',
                             flexWrap: 'wrap',
-                            fontSize: '9px',
+                            fontSize: '11px',
                             color: darkMode ? '#e0e0e0' : '#333',
                           }}
                         >
@@ -627,7 +651,9 @@ function CostPredictionPage({ projectId }) {
                                     }}
                                   />
                                 )}
-                                <span>{entry.value}</span>
+                                <span style={{ color: darkMode ? '#e0e0e0' : '#333' }}>
+                                  {entry.value}
+                                </span>
                               </div>
                             );
                           })}
@@ -720,5 +746,9 @@ function CostPredictionPage({ projectId }) {
     </div>
   );
 }
+
+CostPredictionPage.propTypes = {
+  projectId: PropTypes.string,
+};
 
 export default CostPredictionPage;
