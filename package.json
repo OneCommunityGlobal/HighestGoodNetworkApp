@@ -65,7 +65,7 @@
     "html2canvas": "^1.4.1",
     "jest": "^30.2.0",
     "jquery": "^3.7.1",
-    "jspdf": "^4.0.0",
+    "jspdf": "^4.1.0",
     "jwt-decode": "^2.2.0",
     "leaflet": "^1.9.4",
     "leaflet.heat": "^0.2.0",
@@ -124,7 +124,7 @@
     "tinymce": "^7.2.0",
     "util": "^0.12.5",
     "uuid": "^9.0.1",
-    "webpack": "^5.102.1"
+    "webpack": "^5.104.1"
   },
   "resolutions": {
     "react": "18.3.1",
@@ -173,6 +173,7 @@
     "@vitejs/plugin-react": "^4.5.0",
     "@vitest/ui": "3.2.2",
     "babel-jest": "^29.7.0",
+    "baseline-browser-mapping": "^2.9.17",
     "cross-env": "^5.2.1",
     "eslint": "^8.57.1",
     "eslint-config-prettier": "^5.1.0",
@@ -189,6 +190,7 @@
     "joi-browser": "^13.4.0",
     "jsdom": "^26.1.0",
     "lint-staged": "^16.1.5",
+    "mdn-data": "^2.26.0",
     "msw": "^2.10.4",
     "prettier": "^1.19.1",
     "redux-mock-store": "^1.5.4",
