@@ -8,13 +8,13 @@
 }
 
 .popup {
-  background-color: rgb(187, 185, 185);
+  /* background-color: rgb(187, 185, 185); */
   padding: 24px;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); */
   max-width: 800px;
   width: 100%;
-  border: 6px solid black;
+  /* border: 6px solid black; */
 }
 
 .popup-heading {
@@ -53,7 +53,7 @@
   border: none;
   cursor: pointer;
   background-color: #f0f0f0;
-  color: #000;
+  color: white;
 }
 
 .promoteButton {
@@ -68,6 +68,11 @@
 
 .button-row .button:last-child:not(:disabled):hover {
   background-color: #2563eb;
+  color: white;
+}
+
+.button-row .button:first-child:hover {
+  background-color: #fc2d2d;
   color: white;
 }
 
