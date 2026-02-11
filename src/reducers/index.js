@@ -110,6 +110,9 @@ import { weeklySummariesFiltersApi } from '../actions/weeklySummariesFilterActio
 
 import browseLessonPlanReducer from './educationPortal/broweLPReducer';
 
+// Members list in community portal
+import { MembersListReducer } from './communityPortal/activities/activityId/MembersListReducer';
+
 const localReducers = {
   auth: authReducer,
   allUserProfiles: allUserProfilesReducer,
@@ -199,6 +202,9 @@ const localReducers = {
 
   // education portal
   browseLessonPlan: browseLessonPlanReducer,
+
+  // Members list in community portal
+  membersList: MembersListReducer,
 };
 
 const sessionReducers = {
