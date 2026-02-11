@@ -23,6 +23,7 @@ import { boxStyle, boxStyleDark } from '~/styles';
 import ToggleSwitch from '~/components/UserProfile/UserProfileEdit/ToggleSwitch';
 import Loading from '~/components/common/Loading';
 import { getProjectDetail } from '~/actions/project';
+import { toast } from 'react-toastify';
 
 const Members = props => {
   const darkMode = props.state.theme.darkMode;
@@ -37,6 +38,8 @@ const Members = props => {
 
   const canAssignProjectToUsers = props.hasPermission('assignProjectToUsers');
   const canUnassignUserInProject = props.hasPermission('unassignUserInProject');
+  const [allMembersProject, setAllProjectMembers] = useState([]);
+  const [isValid, setIsValid] = useState(true);
 
   const projectName = useSelector(state => state.projectById?.projectName || '');
 
@@ -103,6 +106,10 @@ const Members = props => {
     setQuery(currentValue);
     setSearchText(currentValue);
 
+    if(allMembersProject.filter(user => user.firstName.includes(currentValue)).length === 0) {
+      toast.error('No matching users found.');
+    };
+
     if (lastTimeoutId !== null) clearTimeout(lastTimeoutId);
 
     const timeoutId = setTimeout(() => {
@@ -126,6 +133,15 @@ const Members = props => {
     props.findProjectMembers(projectId, q);
     setShowFindUserList(true);
   };
+  
+  useEffect(() => {
+    if(isValid && props.state.projectMembers.foundUsers.length > 0)  {
+      setAllProjectMembers(props.state.projectMembers.foundUsers);
+      setIsValid(false);
+    } 
+    
+  }, [props.state.projectMembers.foundUsers, isValid]);
+  
 
   return (
     <React.Fragment>
