@@ -1,0 +1,542 @@
+.page {
+  padding: 24px;
+  min-height: 100vh;
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.darkMode {
+  background: #0f172a;
+  color: #e2e8f0;
+}
+
+.header {
+  margin-bottom: 32px;
+}
+
+.header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #0f172a;
+}
+
+.darkMode .header h1 {
+  color: #e2e8f0;
+}
+
+.subtitle {
+  font-size: 1rem;
+  color: #64748b;
+}
+
+.darkMode .subtitle {
+  color: #94a3b8;
+}
+
+.filtersSection {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 200px;
+}
+
+.filterGroup label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #475569;
+}
+
+.darkMode .filterGroup label {
+  color: #cbd5e1;
+}
+
+.filterSelect {
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e5;
+  background: #ffffff;
+  color: #0f172a;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.darkMode .filterSelect {
+  background: #1e293b;
+  border-color: #334155;
+  color: #e2e8f0;
+}
+
+.eventsSection {
+  margin-top: 32px;
+}
+
+.eventsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+.eventCard {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.eventCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.darkMode .eventCard {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+.darkMode .eventCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.virtualEvent {
+  border-left: 4px solid #3b82f6;
+}
+
+.inPersonEvent {
+  border-left: 4px solid #10b981;
+}
+
+.eventHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+  gap: 12px;
+}
+
+.eventHeader h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
+  flex: 1;
+  color: #0f172a;
+}
+
+.darkMode .eventHeader h3 {
+  color: #e2e8f0;
+}
+
+.statusBadge {
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.statusNew {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.darkMode .statusNew {
+  background: #1e3a8a;
+  color: #bfdbfe;
+}
+
+.statusNeedattendees {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.darkMode .statusNeedattendees {
+  background: #78350f;
+  color: #fde68a;
+}
+
+.statusFillingFast {
+  background: #fce7f3;
+  color: #9f1239;
+}
+
+.darkMode .statusFillingFast {
+  background: #831843;
+  color: #fbcfe8;
+}
+
+.statusFull {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.darkMode .statusFull {
+  background: #7f1d1d;
+  color: #fecaca;
+}
+
+.eventFormatIndicator {
+  margin-bottom: 12px;
+}
+
+.formatBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.virtualEvent .formatBadge {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.darkMode .virtualEvent .formatBadge {
+  background: #1e3a8a;
+  color: #bfdbfe;
+}
+
+.inPersonEvent .formatBadge {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.darkMode .inPersonEvent .formatBadge {
+  background: #064e3b;
+  color: #a7f3d0;
+}
+
+.formatIcon {
+  font-size: 0.9rem;
+}
+
+.eventDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding: 12px;
+  background: #f8fafc;
+  border-radius: 8px;
+}
+
+.darkMode .eventDetails {
+  background: #0f172a;
+}
+
+.eventDetailRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.9rem;
+  color: #475569;
+}
+
+.darkMode .eventDetailRow {
+  color: #cbd5e1;
+}
+
+.detailIcon {
+  color: #64748b;
+  font-size: 0.9rem;
+  min-width: 16px;
+}
+
+.darkMode .detailIcon {
+  color: #94a3b8;
+}
+
+.eventMeta {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.eventType,
+.eventLocation {
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.eventType {
+  background: #e0e7ff;
+  color: #3730a3;
+}
+
+.darkMode .eventType {
+  background: #312e81;
+  color: #c7d2fe;
+}
+
+.eventLocation {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.darkMode .eventLocation {
+  background: #064e3b;
+  color: #a7f3d0;
+}
+
+.organizer {
+  font-size: 0.85rem;
+  color: #64748b;
+  font-style: italic;
+}
+
+.darkMode .organizer {
+  color: #94a3b8;
+}
+
+.eventDescription {
+  font-size: 0.9rem;
+  color: #64748b;
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+.darkMode .eventDescription {
+  color: #94a3b8;
+}
+
+.eventActions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.actionButton {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: none;
+  background: #3b82f6;
+  color: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, opacity 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.actionButton:hover:not(:disabled) {
+  background: #2563eb;
+}
+
+.actionButton:active:not(:disabled) {
+  background: #1d4ed8;
+}
+
+.actionButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.darkMode .actionButton {
+  background: #1e40af;
+}
+
+.darkMode .actionButton:hover:not(:disabled) {
+  background: #1e3a8a;
+}
+
+.buttonSpinner {
+  font-size: 0.85rem;
+  animation: spin 1s linear infinite;
+}
+
+.loadingContainer,
+.errorContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 16px;
+}
+
+.spinner {
+  font-size: 2rem;
+  color: #3b82f6;
+  animation: spin 1s linear infinite;
+}
+
+.darkMode .spinner {
+  color: #60a5fa;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.errorMessage {
+  font-size: 1.1rem;
+  color: #dc2626;
+  margin-bottom: 16px;
+}
+
+.darkMode .errorMessage {
+  color: #f87171;
+}
+
+.retryButton {
+  padding: 10px 20px;
+  border-radius: 6px;
+  border: none;
+  background: #3b82f6;
+  color: #ffffff;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.retryButton:hover {
+  background: #2563eb;
+}
+
+.darkMode .retryButton {
+  background: #1e40af;
+}
+
+.darkMode .retryButton:hover {
+  background: #1e3a8a;
+}
+
+.errorBanner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  margin-bottom: 24px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  color: #991b1b;
+}
+
+.darkMode .errorBanner {
+  background: #7f1d1d;
+  border-color: #991b1b;
+  color: #fecaca;
+}
+
+.retryButtonSmall {
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: none;
+  background: #dc2626;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.retryButtonSmall:hover {
+  background: #b91c1c;
+}
+
+.darkMode .retryButtonSmall {
+  background: #991b1b;
+}
+
+.darkMode .retryButtonSmall:hover {
+  background: #7f1d1d;
+}
+
+.clearFiltersButton {
+  padding: 10px 16px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e5;
+  background: #ffffff;
+  color: #475569;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  align-self: flex-end;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.clearFiltersButton:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+}
+
+.darkMode .clearFiltersButton {
+  background: #1e293b;
+  border-color: #334155;
+  color: #cbd5e1;
+}
+
+.darkMode .clearFiltersButton:hover {
+  background: #0f172a;
+  border-color: #475569;
+}
+
+.resultsCount {
+  margin-bottom: 20px;
+  padding: 12px 0;
+  font-size: 0.95rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.darkMode .resultsCount {
+  color: #94a3b8;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 48px;
+  color: #64748b;
+}
+
+.darkMode .emptyState {
+  color: #94a3b8;
+}
+
+@media (max-width: 768px) {
+  .page {
+    padding: 16px;
+  }
+
+  .filtersSection {
+    flex-direction: column;
+  }
+
+  .filterGroup {
+    min-width: 100%;
+  }
+
+  .eventsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .eventActions {
+    flex-direction: column;
+  }
+
+  .actionButton {
+    width: 100%;
+  }
+}
