@@ -150,9 +150,23 @@ function HoursPledgedChart() {
                 ...base,
                 color: darkMode ? '#ffffff' : base.color,
               }),
+              multiValue: base => ({
+                ...base,
+                backgroundColor: darkMode ? '#47526d' : base.backgroundColor,
+              }),
+
               multiValueLabel: base => ({
                 ...base,
-                color: darkMode ? '#000000ff' : base.color,
+                color: darkMode ? '#ffffff' : base.color,
+              }),
+
+              multiValueRemove: base => ({
+                ...base,
+                color: darkMode ? '#ffffff' : base.color,
+                ':hover': {
+                  backgroundColor: darkMode ? '#5a6a85' : base[':hover']?.backgroundColor,
+                  color: '#ffffff',
+                },
               }),
             }}
           />
