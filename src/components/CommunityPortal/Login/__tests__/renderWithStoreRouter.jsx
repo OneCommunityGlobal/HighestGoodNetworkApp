@@ -1,6 +1,6 @@
 import React from 'react';
 import { Provider } from 'react-redux';
-import { BrowserRouter as Router } from 'react-router-dom';
+import { MemoryRouter } from 'react-router-dom';
 import thunk from 'redux-thunk';
 import { configureStore } from 'redux-mock-store';
 import { render } from '@testing-library/react';
@@ -20,13 +20,13 @@ export const makeStore = (overrides = {}) =>
     ...overrides,
   });
 
-export const renderWithStoreRouter = (ui, { store } = {}) => {
-  const testStore = store || makeStore();
+export const renderWithStoreRouter = (ui, { initialState, store, route = '/' } = {}) => {
+  const testStore = store || makeStore(initialState || {});
   return {
     store: testStore,
     ...render(
       <Provider store={testStore}>
-        <Router>{ui}</Router>
+        <MemoryRouter initialEntries={[route]}>{ui}</MemoryRouter>
       </Provider>,
     ),
   };

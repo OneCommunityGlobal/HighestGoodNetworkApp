@@ -35,9 +35,9 @@ const genString = (len = 12) =>
 const getValidPasswordValue = () => genString(12);
 const getTooShortPasswordValue = () => genString(5);
 
-const renderCPLogin = (stateOverrides = {}) =>
+const renderCPLogin = initialState =>
   renderWithStoreRouter(<CPLogin history={history} location={{}} />, {
-    initialState: { ...makeAuthState(true), ...stateOverrides },
+    initialState,
   });
 
 const fillAndSubmit = ({ emailValue, passwordValue } = {}) => {
@@ -63,11 +63,11 @@ describe('CPLogin component', () => {
   });
 
   it('renders without crashing', () => {
-    renderCPLogin();
+    renderCPLogin(makeAuthState(true));
   });
 
   it('check if login elements get displayed when isAuthenticated is true', () => {
-    renderCPLogin();
+    renderCPLogin(makeAuthState(true));
     expect(screen.getByText('Log In To Community Portal')).toBeInTheDocument();
   });
 
@@ -77,7 +77,7 @@ describe('CPLogin component', () => {
   });
 
   it('check if Enter your current user credentials... header displays as expected', () => {
-    renderCPLogin();
+    renderCPLogin(makeAuthState(true));
     expect(
       screen.getByText(
         'Enter your current user credentials to access the Community Portal Dashboard',
@@ -86,29 +86,29 @@ describe('CPLogin component', () => {
   });
 
   it('check if Note: You must use your Production/Main credentials... displays as expected', () => {
-    renderCPLogin();
+    renderCPLogin(makeAuthState(true));
     expect(
       screen.getByText('Note: You must use your Production/Main credentials for this login.'),
     ).toBeInTheDocument();
   });
 
   it('check if email label is displaying as expected', () => {
-    renderCPLogin();
+    renderCPLogin(makeAuthState(true));
     expect(screen.getByText('Email')).toBeInTheDocument();
   });
 
   it('check if password label is displaying as expected', () => {
-    renderCPLogin();
+    renderCPLogin(makeAuthState(true));
     expect(screen.getByText('Password')).toBeInTheDocument();
   });
 
   it('check if submit button is disabled when either email or password is not entered', () => {
-    renderCPLogin();
+    renderCPLogin(makeAuthState(true));
     expect(screen.getByText('Submit')).toBeDisabled();
   });
 
   it('check if validation for invalid email id works as expected', () => {
-    renderCPLogin();
+    renderCPLogin(makeAuthState(true));
 
     const { emailElement } = fillAndSubmit({
       emailValue: genString(4), // invalid email, generated
@@ -120,7 +120,7 @@ describe('CPLogin component', () => {
   });
 
   it('check if validation for password works as expected', () => {
-    renderCPLogin();
+    renderCPLogin(makeAuthState(true));
 
     const { passwordElement } = fillAndSubmit({
       emailValue: VALID_EMAIL,
@@ -139,7 +139,7 @@ describe('CPLogin component', () => {
       data: { token: '1234' },
     });
 
-    renderCPLogin();
+    renderCPLogin(makeAuthState(true));
 
     const { emailElement, passwordElement } = fillAndSubmit({
       emailValue: VALID_EMAIL,
@@ -163,7 +163,7 @@ describe('CPLogin component', () => {
       data: { token: '1234', label: 'email', message: 'User not found' },
     });
 
-    renderCPLogin();
+    renderCPLogin(makeAuthState(true));
 
     fillAndSubmit({
       emailValue: VALID_EMAIL,
@@ -182,7 +182,7 @@ describe('CPLogin component', () => {
       data: { token: '1234' },
     });
 
-    renderCPLogin();
+    renderCPLogin(makeAuthState(true));
 
     const { passwordElement } = fillAndSubmit({
       emailValue: VALID_EMAIL,
@@ -197,7 +197,7 @@ describe('CPLogin component', () => {
   it('check failed post request does not display validation error', async () => {
     axios.post.mockRejectedValue({ response: 'server error' });
 
-    renderCPLogin();
+    renderCPLogin(makeAuthState(true));
 
     const { passwordElement } = fillAndSubmit({
       emailValue: VALID_EMAIL,
