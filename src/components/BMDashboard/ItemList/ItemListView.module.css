@@ -1,3 +1,8 @@
+table thead th,
+table td {
+  vertical-align: middle !important;
+}
+
 .itemsListContainer {
   width: 100%;
   max-width: 1536px;
@@ -22,6 +27,10 @@
 
 .itemsListContainer th {
   height: 2rem;
+}
+
+.itemsCell td {
+  vertical-align: middle;
 }
 
 .itemsCell button {
@@ -52,8 +61,7 @@
 
 .selectInput label {
   font-weight: bold;
-  text-align: right;
-  min-width: 100px;
+  text-align: center;
   white-space: nowrap;
   margin-bottom: 8px;
 }
@@ -62,7 +70,7 @@
 .selectInput select {
   height: 38px;
   width: 100%;
-  min-width: 220px;
+  min-width: 180px;
   max-width: 240px;
   padding: 5px;
   border: 1px solid #ccc;
@@ -104,11 +112,12 @@
   color: #e8edf4;
 }
 
-.darkMode .selectInput input,
-.darkMode .selectInput select {
-  background-color: #2a3f5f;
-  color: #e8edf4;
-  border: 1px solid #3f5269;
+
+/* RESET selects per theme — REQUIRED */
+.lightTheme .selectInput select {
+  background-color: #ffffff;
+  color: #111827;
+  border-color: #d1d5db;
 }
 
 .darkMode .selectInput input::placeholder {
@@ -246,7 +255,10 @@
 .darkDatePicker :global(.react-datepicker__time-container),
 .darkDatePicker :global(.react-datepicker__time-container .react-datepicker__time),
 .darkDatePicker :global(.react-datepicker__time-container .react-datepicker__time-box),
-.darkDatePicker :global(.react-datepicker__time-container .react-datepicker__time-box ul.react-datepicker__time-list) {
+.darkDatePicker
+  :global(.react-datepicker__time-container
+    .react-datepicker__time-box
+    ul.react-datepicker__time-list) {
   background-color: #2a3f5f !important;
   border-color: #3f5269 !important;
   color: #e8edf4 !important;
@@ -333,7 +345,10 @@
 .lightDatePicker :global(.react-datepicker__time-container),
 .lightDatePicker :global(.react-datepicker__time-container .react-datepicker__time),
 .lightDatePicker :global(.react-datepicker__time-container .react-datepicker__time-box),
-.lightDatePicker :global(.react-datepicker__time-container .react-datepicker__time-box ul.react-datepicker__time-list) {
+.lightDatePicker
+  :global(.react-datepicker__time-container
+    .react-datepicker__time-box
+    ul.react-datepicker__time-list) {
   background-color: #ffffff !important;
   border-color: #d1d5db !important;
   color: #1f2937 !important;
@@ -357,4 +372,89 @@
 
 .lightDatePickerPopper .react-datepicker__triangle {
   display: none;
+}
+
+.filterSelect {
+  height: 40px;
+  padding: 0 0.75rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  border: 1px solid transparent;
+  appearance: none;
+}
+
+.darkTheme .filterSelect {
+  background-color: #1e293b;
+  color: #e5e7eb;
+  border-color: #334155;
+}
+.darkTheme .filterSelect option {
+  background-color: #1e293b;
+  color: #e5e7eb;
+}
+
+.lightTheme .filterSelect option {
+  background-color: #ffffff;
+  color: #111827;
+}
+.lightTheme .filterSelect:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.25);
+}
+
+.darkTheme .filterSelect:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.3);
+}
+
+.lightTheme .selectInput select option {
+  background-color: #ffffff;
+  color: #111827;
+}
+
+.darkTheme .selectInput select option {
+  background-color: #1e293b;
+  color: #e5e7eb;
+}
+
+
+/* Dark theme selects */
+.itemsListContainer.darkTheme select {
+  background-color: #1e293b;
+  color: #e5e7eb;
+  border-color: #334155;
+}
+
+/* Light theme selects */
+.itemsListContainer.lightTheme select {
+  background-color: #ffffff;
+  color: #111827;
+  border-color: #d1d5db;
+}
+/* ===========================
+   SELECT FOCUS (AUTHORITATIVE)
+   =========================== */
+
+/* Base select reset */
+.selectInput select {
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+/* LIGHT MODE focus */
+.itemsListContainer.lightTheme .selectInput select:focus {
+  border-color: #2563eb !important; /* blue-600 */
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.35) !important;
+  background-color: #ffffff !important;
+  color: #111827 !important;
+}
+
+/* DARK MODE focus */
+.itemsListContainer.darkTheme .selectInput select:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.25);
+  background-color: #1e293b !important;
+  color: #e5e7eb !important;
 }

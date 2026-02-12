@@ -20,7 +20,7 @@
 }
 
 .inactiveCard {
-  background: linear-gradient(to bottom, #cbbc14, #bfb116, #d3d61b);
+  background: linear-gradient(to bottom, #cbbc14, #bfb116, #d3d61b) !important;
   margin: 10px;
 }
 
@@ -35,6 +35,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-top: 5px;
 }
 
 .cardTextIcon {
@@ -42,8 +43,7 @@
 }
 
 .selectedFilter {
-  border: 2px solid #007bff;
-  background-color: #e6f0ff;
+  border: #e6f0ff;
 }
 
 .faCircleIsActive {

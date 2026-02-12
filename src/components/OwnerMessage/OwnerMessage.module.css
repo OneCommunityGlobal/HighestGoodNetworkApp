@@ -1,0 +1,161 @@
+.message-container {
+  /* display: flex; */
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-width: 0;
+  z-index: 10;
+  gap: 8px;
+}
+
+.inputs:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.ownerMessageImg {
+  max-width: 100%;
+  width: auto;
+  height: 50px;
+  object-fit: contain;
+  border-radius: 4px;
+  flex-shrink: 1;
+  min-width: 0;
+}
+
+.message {
+  font-style: italic;
+  color: white;
+  margin: 0;
+  text-align: center;
+  max-width: 100%;
+  min-width: 0;
+  white-space: normal;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.iconWrapper {
+  flex: 0 0 auto;
+  /* display: flex; */
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 0rem;
+  border-radius: 4px;
+  margin-left: 0rem;
+}
+
+.ownerMessageButton {
+  border: none;
+  background: none;
+}
+
+.buttonImg {
+  width: 18px;
+  height: 18px;
+}
+
+.buttonImg:hover {
+  cursor: pointer;
+  opacity: 0.6;
+}
+
+.modalBody {
+  display: flex;
+  flex-direction: column;
+}
+
+.ownerHistorySmallColumn {
+  max-width: 150px;
+  word-wrap: break-word;
+}
+
+.ownerHistoryTable {
+  border-collapse: collapse;
+}
+
+.ownerHistoryTable th, .ownerHistoryTable td {
+  border-bottom: 1px solid #858585 !important;
+}
+
+.showInTablet {
+  display: none;
+}
+
+@media (max-width: 990px) {
+  .ownerHistorySmallColumn {
+    max-width: 100%;
+    word-wrap: break-word;
+  }
+  .ownerHistoryTable thead {
+    display: none;
+  }
+  .ownerHistoryTable .table,
+  .ownerHistoryTable tbody,
+  .ownerHistoryTable tr,
+  .ownerHistoryTable td {
+    display: block;
+    width: 100%;
+    text-align: left !important;
+  }
+  .ownerHistoryTable th, .ownerHistoryTable td {
+    border-bottom: none !important;
+  }
+  .ownerHistoryTable tr {
+    border-bottom: 1px solid #858585 !important;
+  }
+  .showInTablet {
+    display: block;
+  }
+}
+
+@media (max-width: 768px) {
+  .ownerMessageImg {
+    height: 36px;
+  }
+}
+
+@media (max-width: 480px) {
+  .ownerMessageImg {
+    height: 28px;
+  }
+}
+
+@media (max-width: 1400px) {
+  .messageContainer {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+}
+
+@media print {
+  .ownerMessageButton {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: auto !important;
+    height: auto !important;
+    min-width: max-content !important;
+    min-height: max-content !important;
+    transform: none !important;
+    transform-origin: 0 0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .ownerMessageButton img {
+    width: 24px !important;
+    height: 24px !important;
+    min-width: 24px !important;
+    min-height: 24px !important;
+    display: block !important;
+    position: relative !important;
+    transform: none !important;
+    transform-origin: 0 0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    object-fit: contain !important;
+  }
+}

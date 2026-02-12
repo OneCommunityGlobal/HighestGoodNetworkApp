@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/media-has-caption */
 import moment from 'moment';
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
+import PropTypes from 'prop-types';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Progress } from 'reactstrap';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 import { BsAlarmFill } from 'react-icons/bs';
@@ -40,8 +41,8 @@ function Timer({ authUser, darkMode, isPopout }) {
     protocols: localStorage.getItem(config.tokenKey),
     onOpen: () => setCustomReadyState(ReadyState.OPEN),
     onClose: () => setCustomReadyState(ReadyState.CLOSED),
-    onError: error => {
-      throw new Error('WebSocket Error:', error);
+    onError: () => {
+      setCustomReadyState(ReadyState.CLOSED);
     },
   };
 
@@ -100,12 +101,18 @@ function Timer({ authUser, darkMode, isPopout }) {
 
   const [running, setRunning] = useState(false);
   const [confirmationResetModal, setConfirmationResetModal] = useState(false);
+  const [confirmSubmitModalOpen, setConfirmSubmitModalOpen] = useState(false);
+  const [pendingSubmitTime, setPendingSubmitTime] = useState({ hours: 0, minutes: 0 });
   const [logTimeEntryModal, setLogTimeEntryModal] = useState(false);
   const [inacModal, setInacModal] = useState(false);
   const [showTimer, setShowTimer] = useState(false);
   const [timeIsOverModalOpen, setTimeIsOverModalIsOpen] = useState(false);
   const [remaining, setRemaining] = useState(time);
   const [logTimer, setLogTimer] = useState({ hours: 0, minutes: 0 });
+  const [lastSubmittedTime, setLastSubmittedTime] = useState(null); // Add this state to track submitted time
+  const [submissionHistory, setSubmissionHistory] = useState([]); // Track submission history for debugging
+  const [timerState, setTimerState] = useState('idle'); // Track timer state: 'idle', 'running', 'paused', 'completed'
+  const [sessionId, setSessionId] = useState(null); // Unique session identifier
   const [viewingUserId, setViewingUserId] = useState(null);
   const [weekEndModal, setWeekEndModal] = useState(false);
   const isWSOpenRef = useRef(0);
@@ -117,6 +124,143 @@ function Timer({ authUser, darkMode, isPopout }) {
   const logMinutes = timeToLog.minutes();
 
   const sendJsonMessageNoQueue = useCallback(msg => sendJsonMessage(msg, false), [sendMessage]);
+
+  // Enhanced function to clear submitted time with better logging
+  const clearSubmittedTime = useCallback(() => {
+    console.log(' Clearing submitted time - Timer reset or user change detected');
+    setLastSubmittedTime(null);
+    setLogTimer({ hours: 0, minutes: 0 });
+    setTimerState('idle');
+  }, []);
+
+  // Enhanced function to track time submission with detailed logging
+  const trackTimeSubmission = useCallback(
+    submittedTime => {
+      const timeKey = `${submittedTime.hours}_${submittedTime.minutes}_${goal}_${remaining}`;
+      const submissionRecord = {
+        id: Date.now(),
+        time: submittedTime,
+        timestamp: new Date().toISOString(),
+        sessionId,
+        userId: viewingUserId || authUser?.userid,
+        goal,
+        remaining,
+      };
+
+      console.log('✅ Time submitted successfully:', submissionRecord);
+
+      setLastSubmittedTime(timeKey);
+      setSubmissionHistory(prev => [...prev, submissionRecord]);
+      setLogTimer({ hours: 0, minutes: 0 });
+      setTimerState('completed');
+
+      // Store in localStorage for debugging (optional)
+      try {
+        const existingHistory = JSON.parse(localStorage.getItem('timerSubmissionHistory') || '[]');
+        const updatedHistory = [...existingHistory, submissionRecord].slice(-10); // Keep last 10 entries
+        localStorage.setItem('timerSubmissionHistory', JSON.stringify(updatedHistory));
+      } catch (error) {
+        console.warn('Could not save submission history to localStorage:', error);
+      }
+    },
+    [goal, remaining, sessionId, viewingUserId, authUser?.userid],
+  );
+
+  // Enhanced function to validate time before submission
+  const validateTimeForSubmission = useCallback(
+    timeToSubmit => {
+      const { hours, minutes } = timeToSubmit;
+      const totalMinutes = hours * 60 + minutes;
+
+      // Check minimum time requirement
+      if (totalMinutes < 1) {
+        toast.error('❌ You need at least 1 minute to log time!');
+        return false;
+      }
+
+      // Check maximum time limit (5 hours)
+      if (totalMinutes > 300) {
+        toast.error('❌ Maximum time limit is 5 hours per session!');
+        return false;
+      }
+
+      // Check if this exact time was already submitted
+      const timeKey = `${hours}_${minutes}_${goal}_${remaining}`;
+      if (lastSubmittedTime === timeKey) {
+        toast.info('ℹ️ This time has already been submitted in this session.');
+        return false;
+      }
+
+      return true;
+    },
+    [goal, remaining, lastSubmittedTime],
+  );
+
+  // Enhanced function to get timer statistics
+  const getTimerStats = useCallback(() => {
+    const today = new Date().toDateString();
+    const todaySubmissions = submissionHistory.filter(
+      record => new Date(record.timestamp).toDateString() === today,
+    );
+
+    const totalTimeToday = todaySubmissions.reduce((total, record) => {
+      return total + (record.time.hours * 60 + record.time.minutes);
+    }, 0);
+
+    return {
+      totalSubmissions: submissionHistory.length,
+      todaySubmissions: todaySubmissions.length,
+      totalTimeToday: {
+        hours: Math.floor(totalTimeToday / 60),
+        minutes: totalTimeToday % 60,
+      },
+      lastSubmission: submissionHistory[submissionHistory.length - 1],
+    };
+  }, [submissionHistory]);
+
+  // Enhanced function to handle timer state changes
+  const updateTimerState = useCallback(
+    newState => {
+      console.log(`🔄 Timer state changed: ${timerState} → ${newState}`);
+      setTimerState(newState);
+    },
+    [timerState],
+  );
+
+  // Initialize session ID on component mount
+  useEffect(() => {
+    // Use cryptographically secure random values for session ID generation
+    // This is safe for client-side session tracking (not used for authentication)
+    let randomPart = '';
+    if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+      const randomBytes = new Uint8Array(9);
+      crypto.getRandomValues(randomBytes);
+      randomPart = Array.from(randomBytes)
+        .map(b => b.toString(36))
+        .join('')
+        .substring(0, 9);
+    } else {
+      // Fallback for environments without crypto API (should not occur in modern browsers)
+      // Use timestamp as fallback (not cryptographically secure but acceptable for non-security use)
+      randomPart = Date.now()
+        .toString(36)
+        .substring(2, 11);
+    }
+    const newSessionId = `session_${Date.now()}_${randomPart}`;
+    setSessionId(newSessionId);
+    console.log('🚀 Timer session initialized:', newSessionId);
+  }, []);
+
+  // Enhanced useEffect for timer state management
+  useEffect(() => {
+    if (running && !paused) {
+      updateTimerState('running');
+    } else if (paused && started) {
+      updateTimerState('paused');
+    } else if (!started) {
+      updateTimerState('idle');
+    }
+  }, [running, paused, started, updateTimerState]);
 
   useEffect(() => {
     const handleStorageEvent = () => {
@@ -148,13 +292,18 @@ function Timer({ authUser, darkMode, isPopout }) {
   // control whether to send GET_TIMER message to avoid message overriding
   const isInitialJsonMessageReceived = useMemo(() => !!lastJsonMessage, [lastJsonMessage]);
 
+  // Modify the sendStop function to track submitted time
   const wsJsonMessageHandler = useMemo(() => {
     if (viewingUserId == null) {
       return {
         sendStart: () => sendJsonMessageNoQueue({ action: action.START_TIMER }),
         sendPause: () => sendJsonMessageNoQueue({ action: action.PAUSE_TIMER }),
         sendClear: () => sendJsonMessageNoQueue({ action: action.CLEAR_TIMER }),
-        sendStop: () => sendJsonMessageNoQueue({ action: action.STOP_TIMER }),
+        sendStop: () => {
+          sendJsonMessageNoQueue({ action: action.STOP_TIMER });
+          // Clear the submitted time when stopping
+          clearSubmittedTime();
+        },
         sendAckForced: () => sendJsonMessageNoQueue({ action: action.ACK_FORCED }),
         sendGetTimer: () => sendJsonMessageNoQueue({ action: action.GET_TIMER }),
         sendStartChime: state =>
@@ -175,7 +324,11 @@ function Timer({ authUser, darkMode, isPopout }) {
         sendJsonMessageNoQueue({ action: action.PAUSE_TIMER, userId: viewingUserId }),
       sendClear: () =>
         sendJsonMessageNoQueue({ action: action.CLEAR_TIMER, userId: viewingUserId }),
-      sendStop: () => sendJsonMessageNoQueue({ action: action.STOP_TIMER, userId: viewingUserId }),
+      sendStop: () => {
+        sendJsonMessageNoQueue({ action: action.STOP_TIMER, userId: viewingUserId });
+        // Clear the submitted time when stopping
+        clearSubmittedTime();
+      },
       sendAckForced: () =>
         sendJsonMessageNoQueue({ action: action.ACK_FORCED, userId: viewingUserId }),
       sendGetTimer: () =>
@@ -199,7 +352,7 @@ function Timer({ authUser, darkMode, isPopout }) {
       sendHeartbeat: () =>
         sendJsonMessageNoQueue({ action: action.HEARTBEAT, userId: viewingUserId }),
     };
-  }, [sendJsonMessageNoQueue, viewingUserId]);
+  }, [sendJsonMessageNoQueue, viewingUserId, clearSubmittedTime]);
 
   const {
     sendStart,
@@ -217,6 +370,17 @@ function Timer({ authUser, darkMode, isPopout }) {
   const toggleLogTimeModal = () => {
     setLogTimeEntryModal(modal => !modal);
   };
+
+  // Enhanced TimeEntryForm callback
+  const handleTimeSubmitted = useCallback(
+    submittedTime => {
+      trackTimeSubmission(submittedTime);
+
+      // Show success message
+      toast.success(`✅ Time logged successfully!`);
+    },
+    [trackTimeSubmission],
+  );
 
   const toggleTimer = () => setShowTimer(timer => !timer);
 
@@ -293,13 +457,22 @@ function Timer({ authUser, darkMode, isPopout }) {
     [remaining],
   );
 
+  // Enhanced handleStopButton with better validation and user feedback
   const handleStopButton = useCallback(() => {
-    if (goal - remaining < 60000) {
-      toast.error(`You need at least 1 minute to log time!`);
-    } else {
-      toggleLogTimeModal();
+    const timeToSubmit = { hours: logHours, minutes: logMinutes };
+
+    if (!validateTimeForSubmission(timeToSubmit)) return;
+
+    // Show confirmation popup for longer sessions
+    if (logHours >= 2) {
+      setPendingSubmitTime(timeToSubmit);
+      setConfirmSubmitModalOpen(true);
+      return;
     }
-  }, [remaining]);
+
+    console.log('🛑 Stop button clicked - preparing to log time:', timeToSubmit);
+    toggleLogTimeModal();
+  }, [logHours, logMinutes, validateTimeForSubmission, toggleLogTimeModal]);
 
   const updateRemaining = () => {
     if (!running) return;
@@ -348,9 +521,7 @@ function Timer({ authUser, darkMode, isPopout }) {
     }
     // Handle explicit week close pause action messages
     if (lastJsonMessage && lastJsonMessage.action === 'WEEK_CLOSE_PAUSE') {
-      if (running) {
-        handleWeekEndPause();
-      }
+      handleWeekEndPause();
       return; // Exit early to prevent other modal logic
     }
 
@@ -368,7 +539,7 @@ function Timer({ authUser, darkMode, isPopout }) {
     // Show inactivity or time-over modals based on message state
     setInacModal(forcedPauseLJM);
     setTimeIsOverModalIsOpen(chimingLJM && (customReadyState === ReadyState.OPEN || !weekEndModal));
-  }, [lastJsonMessage, customReadyState, running, message, weekEndModal]);
+  }, [lastJsonMessage, customReadyState, weekEndModal]);
 
   // This useEffect is to make sure that the WS connection is maintained by sending a heartbeat every 60 seconds
   useEffect(() => {
@@ -407,13 +578,33 @@ function Timer({ authUser, darkMode, isPopout }) {
       setRemaining(time);
       clearInterval(interval);
     }
+
     return () => clearInterval(interval);
   }, [running, message]);
 
+  // Enhanced useEffect that updates logTimer with better validation
   useEffect(() => {
     checkRemainingTime();
-    setLogTimer({ hours: logHours, minutes: logMinutes });
-  }, [remaining]);
+
+    const currentTimeToLog = { hours: logHours, minutes: logMinutes };
+    const timeKey = `${logHours}_${logMinutes}_${goal}_${remaining}`;
+
+    // Only update logTimer if we haven't submitted this time yet and it's valid
+    if (lastSubmittedTime !== timeKey && (logHours > 0 || logMinutes > 0)) {
+      if (validateTimeForSubmission(currentTimeToLog)) {
+        setLogTimer(currentTimeToLog);
+        console.log('⏱️ Time to log updated:', currentTimeToLog);
+      }
+    }
+  }, [remaining, logHours, logMinutes, goal, lastSubmittedTime, validateTimeForSubmission]);
+
+  // Enhanced useEffect for timer state changes
+  useEffect(() => {
+    if (!started || goal !== lastSubmittedTime?.goal) {
+      clearSubmittedTime();
+      console.log('🔄 Timer reset detected - clearing submitted time');
+    }
+  }, [started, goal, clearSubmittedTime]);
 
   useEffect(() => {
     if (timeIsOverModalOpen) {
@@ -461,6 +652,20 @@ function Timer({ authUser, darkMode, isPopout }) {
     sendGetTimer();
   }, [isInitialJsonMessageReceived, viewingUserId]);
 
+  // Enhanced cleanup when viewing user changes
+  useEffect(() => {
+    clearSubmittedTime();
+    console.log('👤 User changed - clearing timer state');
+  }, [viewingUserId, clearSubmittedTime]);
+
+  // Enhanced cleanup on component unmount
+  useEffect(() => {
+    return () => {
+      clearSubmittedTime();
+      console.log('🔚 Timer component unmounting - cleanup complete');
+    };
+  }, [clearSubmittedTime]);
+
   const fontColor = darkMode ? 'text-light' : '';
   const headerBg = darkMode ? 'bg-space-cadet' : '';
   const bodyBg = darkMode ? 'bg-yinmn-blue' : '';
@@ -475,6 +680,9 @@ function Timer({ authUser, darkMode, isPopout }) {
         data={logTimer}
         sendStop={sendStop}
         timerConnected={customReadyState === ReadyState.OPEN}
+        onTimeSubmitted={handleTimeSubmitted}
+        sessionId={sessionId}
+        timerStats={getTimerStats()}
       />
     );
 
@@ -495,6 +703,50 @@ function Timer({ authUser, darkMode, isPopout }) {
         src="https://bigsoundbank.com/UPLOAD/mp3/1102.mp3"
       />
     </>
+  );
+
+  const renderConfirmSubmitModal = () => (
+    <Modal
+      isOpen={confirmSubmitModalOpen}
+      toggle={() => setConfirmSubmitModalOpen(false)}
+      centered
+      size="md"
+      className={cs(fontColor, darkMode ? 'dark-mode' : '')}
+    >
+      <ModalHeader
+        className={darkMode ? 'bg-space-cadet' : ''}
+        toggle={() => setConfirmSubmitModalOpen(false)}
+      >
+        Confirm submission
+      </ModalHeader>
+
+      <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+        <div style={{ fontSize: '1rem', lineHeight: 1.4 }}>
+          <div style={{ fontWeight: 700, marginBottom: 8 }}>
+            Are you sure you want to submit{' '}
+            {pendingSubmitTime.hours ? `${pendingSubmitTime.hours} hour(s)` : ''}
+            {pendingSubmitTime.minutes ? ` ${pendingSubmitTime.minutes} minute(s)` : ''}?
+          </div>
+          <div style={{ opacity: 0.9 }}>This action cannot be undone.</div>
+        </div>
+      </ModalBody>
+
+      <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+        <Button color="secondary" onClick={() => setConfirmSubmitModalOpen(false)}>
+          Cancel
+        </Button>
+
+        <Button
+          color="primary"
+          onClick={() => {
+            setConfirmSubmitModalOpen(false);
+            toggleLogTimeModal();
+          }}
+        >
+          Yes, submit
+        </Button>
+      </ModalFooter>
+    </Modal>
   );
 
   const renderConfirmationResetModal = () => (
@@ -630,6 +882,7 @@ function Timer({ authUser, darkMode, isPopout }) {
         {renderConfirmationResetModal()}
         {renderInactivityModal()}
         {renderTimeCompleteModal()}
+        {renderConfirmSubmitModal()}
       </div>
     );
   }
@@ -826,9 +1079,19 @@ function Timer({ authUser, darkMode, isPopout }) {
       {renderConfirmationResetModal()}
       {renderInactivityModal()}
       {renderTimeCompleteModal()}
+      {renderConfirmSubmitModal()}
     </div>
   );
 }
+
+Timer.propTypes = {
+  authUser: PropTypes.shape({
+    userid: PropTypes.string,
+    role: PropTypes.string,
+  }),
+  darkMode: PropTypes.bool,
+  isPopout: PropTypes.bool,
+};
 
 const mapStateToProps = state => ({
   authUser: state.auth.user,
