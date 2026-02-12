@@ -203,7 +203,7 @@ function PermissionChangeLogTable({ changeLogs, darkMode, roleNamesToHighlight =
                     className={styles.permissionChangeLogTableCell}
                     style={{
                       fontWeight: log?.reason?.includes('Role') ? 'normal' : 'bold',
-                      color: log?.individualName ? 'black' : '#D30000',
+                      color: log?.individualName ? '' : '#D30000',
                     }}
                   >
                     {log?.individualName ? formatName(log.individualName) : log.roleName}
@@ -212,7 +212,7 @@ function PermissionChangeLogTable({ changeLogs, darkMode, roleNamesToHighlight =
                   <td
                     className={styles.permissionChangeLogTableCell}
                     style={{
-                      color: log?.reason?.includes('Role') ? 'blue' : 'black',
+                      color: log?.reason?.includes('Role') ? (darkMode ? 'cyan' : 'blue') : '',
                     }}
                   >
                     {log?.reason ? renderRoleChange(log.reason) : 'Permissions changed.'}

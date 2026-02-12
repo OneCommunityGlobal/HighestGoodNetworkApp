@@ -261,8 +261,7 @@
 }
 
 .permissionTooltipText.dark {
-  background-color: rgba(241, 241, 241, 0.75) !important;
-  color: black !important;
+  background-color: rgba(53, 53, 53, 0.75) !important;
 }
 
 .permissionTooltipWrapper.showTooltip:hover .permissionTooltipText {
