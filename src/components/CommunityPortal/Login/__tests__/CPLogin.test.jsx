@@ -27,13 +27,10 @@ const makeAuthState = (isAuthenticated = true) => ({
   },
 });
 
-const genString = (len = 12) =>
-  Array.from({ length: len }, () => String.fromCharCode(97 + Math.floor(Math.random() * 26))).join(
-    '',
-  );
+const repeatChar = (ch, len) => ch.repeat(len);
 
-const getValidPasswordValue = () => genString(12);
-const getTooShortPasswordValue = () => genString(5);
+const getValidSecretValue = () => repeatChar('x', 12);
+const getTooShortSecretValue = () => repeatChar('x', 5);
 
 const renderCPLogin = initialState =>
   renderWithStoreRouter(<CPLogin history={history} location={{}} />, {
@@ -111,8 +108,8 @@ describe('CPLogin component', () => {
     renderCPLogin(makeAuthState(true));
 
     const { emailElement } = fillAndSubmit({
-      emailValue: genString(4), // invalid email, generated
-      passwordValue: getTooShortPasswordValue(), // generated, not a literal
+      emailValue: 'abcd',
+      passwordValue: getTooShortSecretValue(),
     });
 
     expect(emailElement).toBeInvalid();
@@ -124,7 +121,7 @@ describe('CPLogin component', () => {
 
     const { passwordElement } = fillAndSubmit({
       emailValue: VALID_EMAIL,
-      passwordValue: getTooShortPasswordValue(), // generated
+      passwordValue: getTooShortSecretValue(),
     });
 
     expect(passwordElement).toBeInvalid();
@@ -143,7 +140,7 @@ describe('CPLogin component', () => {
 
     const { emailElement, passwordElement } = fillAndSubmit({
       emailValue: VALID_EMAIL,
-      passwordValue: getValidPasswordValue(), // generated
+      passwordValue: getValidSecretValue(),
     });
 
     await waitFor(() => {
@@ -167,7 +164,7 @@ describe('CPLogin component', () => {
 
     fillAndSubmit({
       emailValue: VALID_EMAIL,
-      passwordValue: getValidPasswordValue(), // generated
+      passwordValue: getValidSecretValue(),
     });
 
     await waitFor(() => {
@@ -186,7 +183,7 @@ describe('CPLogin component', () => {
 
     const { passwordElement } = fillAndSubmit({
       emailValue: VALID_EMAIL,
-      passwordValue: getValidPasswordValue(), // generated
+      passwordValue: getValidSecretValue(),
     });
 
     await waitFor(() => {
@@ -201,7 +198,7 @@ describe('CPLogin component', () => {
 
     const { passwordElement } = fillAndSubmit({
       emailValue: VALID_EMAIL,
-      passwordValue: getValidPasswordValue(), // generated
+      passwordValue: getValidSecretValue(),
     });
 
     await waitFor(() => {
