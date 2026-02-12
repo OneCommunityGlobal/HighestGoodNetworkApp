@@ -277,9 +277,17 @@
   vertical-align: middle;
 }
 
-.filterItem input:not([type="checkbox"]):not([type="radio"]),
-.filterItem select {
-  padding: 12px 15px;
+.filter-section-divider {
+  height: fit-content;
+  margin: 10px 10px;
+  border-radius: 1px;
+  display: flex;
+  flex-direction: column;
+}
+
+.filter-item input:not([type='checkbox']):not([type='radio']),
+.filter-item select {
+  padding: 4px 15px;
   margin-top: 10px;
   border-radius: 8px;
   width: 100%;
@@ -433,6 +441,39 @@
 .dashboardActions button:hover {
   background-color: #34495e;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.dateFilter {
+  padding-left: 10px;
+  margin-top: 15px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+}
+
+.dateFilterContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 6px 10px 20px;
+}
+.dateFilterContainer :global(.react-datepicker-wrapper) input {
+  border: 2px solid #1b3c55; 
+  border-radius: 8px;
+  padding: 8px 12px;
+  width: 100%;
+  outline: none;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.dateFilterContainer :global(.react-datepicker-wrapper) input:focus {
+  border-color: #34495e;
+  box-shadow: 0 0 5px rgba(44, 62, 80, 0.4);
+}
+
+.dateErrorMessage {
+  color: red;
+  margin-top: 5px;
 }
 
 .paginationContainer {
