@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import * as actions from '../constants/weeklySummariesReport';
-import { ENDPOINTS } from '../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 
 /**
  * Action to set the 'loading' flag to true.
@@ -44,21 +44,31 @@ export const updateSummaryReport = ({ _id, updatedField }) => ({
  * Gets all active users' summaries + a few other selected fields from the userProfile that
  * might be useful for the weekly summary report.
  */
-export const getWeeklySummariesReport = (weekIndex = null) => {
+export const getWeeklySummariesReport = (weekIndex = null, options = {}) => {
   return async dispatch => {
     dispatch(fetchWeeklySummariesReportBegin());
     try {
       // Use the APIEndpoint from ENDPOINTS
       let url = ENDPOINTS.WEEKLY_SUMMARIES_REPORT();
-      
+
+      const timestamp = options.forceRefresh ? `ts=${Date.now()}` : '';
       // Add the week parameter if provided
       if (weekIndex !== null) {
         // Check if the URL already has parameters
         const separator = url.includes('?') ? '&' : '?';
-        url = `${url}${separator}week=${weekIndex}`;
+        url = `${url}${separator}week=${weekIndex}${timestamp ? '&' + timestamp : ''}`;
+      } else if (timestamp) {
+        const separator = url.includes('?') ? '&' : '?';
+        url = `${url}${separator}${timestamp}`;
       }
-      
-      const response = await axios.get(url);
+
+      const response = await axios.get(url, {
+        headers: {
+          'Cache-Control': 'no-cache',
+          Pragma: 'no-cache',
+          Expires: '0',
+        },
+      });
       dispatch(fetchWeeklySummariesReportSuccess(response.data));
       return { status: response.status, data: response.data };
     } catch (error) {

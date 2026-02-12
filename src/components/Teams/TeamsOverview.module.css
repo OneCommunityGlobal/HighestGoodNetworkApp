@@ -1,0 +1,71 @@
+.card {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  border-radius: 8px;
+  height: 40px;
+  width: 300px;
+  padding: 10px;
+}
+
+.totalCard {
+  background: linear-gradient(to bottom, #87ceeb, #1e90ff, #4169e1);
+  margin-top: 10px;
+}
+
+.activeCard {
+  background: linear-gradient(to bottom, #ffd700, #ffa500, #ff8c00);
+  margin: 10px;
+}
+
+.inactiveCard {
+  background: linear-gradient(to bottom, #cbbc14, #bfb116, #d3d61b) !important;
+  margin: 10px;
+}
+
+.cardBody {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.cardText {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 5px;
+}
+
+.cardTextIcon {
+  margin-right: 5px;
+}
+
+.selectedFilter {
+  border: #e6f0ff;
+}
+
+.faCircleIsActive {
+  color: lawngreen;
+}
+
+.faCircleIsInActive {
+  color: #dee2e6;
+}
+
+/* If you still use this class elsewhere, we can keep it here too */
+.teamNameCol {
+  width: 40%;
+  max-width: 40%;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.overviewTop {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin: 10px 0;
+}

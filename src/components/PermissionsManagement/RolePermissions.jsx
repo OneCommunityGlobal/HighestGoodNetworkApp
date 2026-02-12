@@ -1,22 +1,21 @@
 import { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, connect } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-regular-svg-icons';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
-import { connect } from 'react-redux';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
-import { boxStyle, boxStyleDark } from 'styles';
-import { getPresetsByRole, createNewPreset } from 'actions/rolePermissionPresets';
+import { boxStyle, boxStyleDark } from '~/styles';
+import { getPresetsByRole, createNewPreset } from '~/actions/rolePermissionPresets';
 import PermissionsPresetsModal from './PermissionsPresetsModal';
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import { updateRole, getAllRoles } from '../../actions/role';
 import PermissionList from './PermissionList';
 import permissionLabel from './PermissionsConst';
 import hasPermission from '../../utils/permissions';
-import './RolePermissions.css';
+import styles from './RolePermissions.module.css';
 // import { roleOperationLabels } from './PermissionsConst';
 
 function RolePermissions(props) {
@@ -39,7 +38,7 @@ function RolePermissions(props) {
     let content = '';
     if (description === 'save') {
       content = (
-        <div>
+        <div className={`${styles.modalInfoContent}`}>
           <p>Here you can create new presets and save your changes</p>
           <ul>
             <li>
@@ -56,7 +55,7 @@ function RolePermissions(props) {
       );
     } else if (description === 'delete') {
       content = (
-        <div>
+        <div className={`${styles.modalInfoContent}`}>
           <p>Here you can load saved presets and delete the current role.</p>
           <ul>
             <li>
@@ -188,12 +187,16 @@ function RolePermissions(props) {
       <header>
         <div className="user-role-tab__name-container">
           <div className="name-container__role-name">
-            <h1 className="user-role-tab__h1">Role Name: {roleName}</h1>
+            <h1 className="user-role-tab__h1" style={darkMode ? { color: '#fff' } : {}}>
+              {' '}
+              Role Name: {roleName}
+            </h1>
             {canEditRole && (
               <FontAwesomeIcon
                 icon={faEdit}
                 size="lg"
                 className={`user-role-tab__icon edit-icon ${darkMode ? 'text-light' : ''}`}
+                data-testid="edit-role-icon"
                 onClick={toggleEditRoleNameModal}
               />
             )}

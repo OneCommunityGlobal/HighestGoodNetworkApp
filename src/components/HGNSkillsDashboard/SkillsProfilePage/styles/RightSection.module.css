@@ -1,0 +1,39 @@
+.rightSection {
+  padding: 0 4px;
+  display: flex;
+  flex-direction: column;
+  min-width: 0; /* allow children to shrink */
+}
+
+.skillsAndChart {
+  display: flex;
+  gap: 18px;
+  align-items: stretch;
+}
+
+.skillsAndChart > *:first-child { /* Skills buttons */
+  flex: 0 0 180px;
+}
+
+.skillsAndChart > *:last-child { /* Chart / content */
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+h3 {
+  color: #3ea0cb;
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+@media (max-width: 768px) {
+  .skillsAndChart {
+    flex-direction: column;
+    gap: 24px;
+  }
+  .skillsAndChart > *:first-child { flex: 0 0 auto; }
+}
+
+:global(.dark-mode) h3 {
+  color: #fff;
+}
