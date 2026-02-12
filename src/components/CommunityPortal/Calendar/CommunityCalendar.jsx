@@ -289,6 +289,16 @@ export default function CommunityCalendar() {
     [darkMode],
   );
 
+  const handleRegister = useCallback(() => {
+    // eslint-disable-next-line no-alert
+    alert(`You are registered for ${selectedEvent.title}`);
+  }, [selectedEvent]);
+
+  const handleAddToCalendar = useCallback(() => {
+    // eslint-disable-next-line no-alert
+    alert(`Event "${selectedEvent.title}" added to calendar`);
+  }, [selectedEvent]);
+
   return (
     <div className={calendarClasses.container}>
       {/* Inline styles to ensure selected date number is visible in dark mode - force dark background */}
@@ -522,9 +532,13 @@ export default function CommunityCalendar() {
                 ))}
               </div>
 
-              <div className={styles.eventDescription}>
-                <span className={styles.detailLabel}>Description:</span>
-                <p>{selectedEvent.description}</p>
+              <div className={styles.modalActions}>
+                <button className={styles.btnPrimary} onClick={handleRegister}>
+                  Register for Event
+                </button>
+                <button className={styles.btnSecondary} onClick={handleAddToCalendar}>
+                  Add to Calendar
+                </button>
               </div>
             </div>
 
