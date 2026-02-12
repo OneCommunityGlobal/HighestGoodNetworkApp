@@ -28,7 +28,7 @@ import { boxStyle, boxStyleDark } from '~/styles';
 import { formatDate } from '~/utils/formatDate';
 import hasPermission from '~/utils/permissions';
 import { changeBadgesByUserID } from '../../../actions/badgeManagement';
-import '../../../styles/badges.module.css';
+import './../Badge.module.css';
 import { getUserProfile } from '../../../actions/userProfile';
 import { PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE } from '~/utils/constants';
 import BadgeImage from '../BadgeImage';
