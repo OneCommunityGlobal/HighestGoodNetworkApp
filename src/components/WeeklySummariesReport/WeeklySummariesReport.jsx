@@ -1366,7 +1366,7 @@ const WeeklySummariesReport = props => {
               //     filterColor,
               //   };
               // });
-              const processedData = processRawSummaries(response.data);
+              const processedData = processRawSummaries(res.data);
               const { summaries: summariesCopy } = processedData;
 
               setState(prevState => ({
@@ -1592,7 +1592,7 @@ const WeeklySummariesReport = props => {
           newTeamCode,
           userId: Object.keys(userIdObj)[0],
         });
-        await fetchFilters();
+        await refetch();
       }
 
       // Update saved filters for team codes only in the database with the new team code
