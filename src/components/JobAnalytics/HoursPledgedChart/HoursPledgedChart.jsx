@@ -187,7 +187,7 @@ function HoursPledgedChart() {
             height={400}
             data={chartData}
             layout="vertical"
-            margin={{ top: 20, right: 30, left: 100, bottom: 60 }}
+            margin={{ top: 20, right: 80, left: 100, bottom: 60 }}
           >
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis type="number" dataKey="avgHours" width={120} tickMargin={15}>
