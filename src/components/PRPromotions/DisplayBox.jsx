@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import styles from './DisplayBox.module.css';
 
 export default function DisplayBox({ onClose }) {
@@ -44,9 +44,21 @@ export default function DisplayBox({ onClose }) {
     setCheckedItems(new Array(mockPromotionData.length).fill(!allChecked));
   };
 
+  const modalRef = useRef(null);
+  const overlayRef = useRef(null);
+
+  useEffect(() => {
+    const overlayClickHandler = e => {
+      if (e.target.id === 'overlay') onClose();
+    };
+
+    document.addEventListener('click', overlayClickHandler);
+    return () => document.removeEventListener('click', overlayClickHandler);
+  }, []);
+
   return (
-    <div className={styles.overlay}>
-      <div className={styles.popup}>
+    <div className={styles.overlay} ref={overlayRef} id="overlay">
+      <div className={styles.popup} ref={modalRef} id="modal">
         <h2 className={styles['popup-heading']}>
           Are you sure you want to promote these PR reviewers?
         </h2>
