@@ -1,7 +1,7 @@
 import { screen, fireEvent, waitFor } from '@testing-library/react';
 import axios from 'axios';
 import CPLogin from '../CPLogin';
-import renderWithStoreRouter from './renderWithStoreRouter';
+import { renderWithStoreRouter } from './renderWithStoreRouter';
 
 vi.mock('axios');
 
