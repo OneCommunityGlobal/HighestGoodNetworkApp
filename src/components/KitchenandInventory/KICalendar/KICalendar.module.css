@@ -65,6 +65,13 @@
   min-width: 0;
 }
 
+.eventTag {
+  padding: 2px 10px;
+  border-radius: 5px;
+  margin-bottom: 1px;
+  width: fit-content;
+}
+
 .weeklyEventTitle {
   padding: 1px 2px;
   border-radius: 5px;
@@ -100,6 +107,11 @@
   color:#7820a6;
 }
 .linkText {
+  cursor: pointer;
+  color: #007bff;
+}
+
+.blueText {
   cursor: pointer;
   color: #007bff;
 }
