@@ -89,6 +89,11 @@
   border-radius: 10px;           /* Rounded corners */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);  /* Soft shadow */
   background-color: #fff;        /* Optional: white background */
+  border: 1px solid #ccc; /* Light gray border */
+  padding: 20px;
+  border-radius: 10px; /* Rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow */
+  background-color: #fff; /* Optional: white background */
   width: 90%;
   max-width: 700px;
   margin: auto;
@@ -100,6 +105,8 @@
 }
 
 .table th, .table td {
+.table th,
+.table td {
   padding: 12px 20px; /* Adjust as needed for vertical & horizontal spacing */
   text-align: left;
 }
@@ -113,6 +120,8 @@
 }
 
 .table td a, .table td span {
+.table td a,
+.table td span {
   display: inline-flex;
   align-items: center;
   gap: 5px; /* gap between icon and text if needed */
@@ -172,6 +181,8 @@
 }
 
 .tableDark th, .tableDark td {
+.tableDark th,
+.tableDark td {
   padding: 12px 20px;
   text-align: left;
   border: 1px solid #4a5a77;
@@ -195,6 +206,8 @@
 }
 
 .tableDark td a, .tableDark td span {
+.tableDark td a,
+.tableDark td span {
   display: inline-flex;
   align-items: center;
   gap: 5px;
@@ -221,4 +234,5 @@
 .underlineLinkDark:hover {
   text-decoration: none;
   color: #f5b13a;
+}
 }

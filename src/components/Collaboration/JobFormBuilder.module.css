@@ -210,8 +210,8 @@
   padding: 10px;
   text-align: center;
   margin-top: 20px;
-  margin-left:auto;
-  margin-right:auto;
+  margin-left: auto;
+  margin-right: auto;
   background-color: #4caf50;
   color: white;
   border: none;
@@ -227,32 +227,32 @@
 
 /* Dark mode styles following your collaboration component pattern */
 .darkMode {
-  background-color: #1B2A41;
+  background-color: #1b2a41;
   color: #f1f1f1;
 }
 
 .darkMode .formBuilderContainer {
-  background-color: #1B2A41;
+  background-color: #1b2a41;
   margin-top: 0;
 }
 
 .darkMode .jobformNavbar {
-  background-color: #1C2541;
+  background-color: #1c2541;
   box-shadow: 2px 2px 4px 1px black;
 }
 
 .darkMode .customForm {
-  background-color: #1B2A41;
+  background-color: #1b2a41;
 }
 
 .darkMode .newFieldSection {
-  background-color: #1B2A41;
+  background-color: #1b2a41;
 }
 
 .darkMode .jobformInput,
 .darkMode .jobformTextarea,
 .darkMode .jobformSelect {
-  background-color: #1C1C1C;
+  background-color: #1c1c1c;
   color: #f1f1f1;
   border: 1px solid #444;
 }

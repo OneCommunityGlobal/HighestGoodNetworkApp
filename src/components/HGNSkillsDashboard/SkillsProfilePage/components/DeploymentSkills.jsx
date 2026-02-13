@@ -1,6 +1,9 @@
+import { useSelector } from 'react-redux';
 import styles from '../styles/SkillsSection.module.css';
+import { getColorClass } from '../utils/skillUtils';
 
 function DeploymentSkills({ profileData }) {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const safeProfileData = profileData || {};
   const skillInfo = safeProfileData.skillInfo || {};
   const backend = skillInfo.backend || {};
@@ -11,16 +14,8 @@ function DeploymentSkills({ profileData }) {
     { value: backend.EnvironmentSetup, label: 'Environment Setup (Windows / Linux)' },
   ];
 
-  // Function to determine color based on value
-  const getColorClass = value => {
-    const numValue = Number(value) || 0; // Convert to number, default to 0 if undefined
-    if (numValue <= 4) return `${styles.skillValue} ${styles.red}`;
-    if (numValue <= 7) return `${styles.skillValue} ${styles.orange}`;
-    return `${styles.skillValue} ${styles.green}`; // 9-10
-  };
-
   return (
-    <div className={`${styles.skillSection}`}>
+    <div className={`${styles.skillSection} ${darkMode ? 'dark-mode' : ''}`}>
       <div className={`${styles.skillsRow}`}>
         {skills.map(skill => (
           <div key={skill.label} className={`${styles.skillItem}`}>

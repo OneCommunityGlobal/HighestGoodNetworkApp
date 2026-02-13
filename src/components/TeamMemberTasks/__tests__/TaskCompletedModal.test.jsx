@@ -9,6 +9,12 @@ vi.mock('react-toastify', () => ({
   },
 }));
 
+// Mock window.scrollTo
+Object.defineProperty(window, 'scrollTo', {
+  value: vi.fn(),
+  writable: true,
+});
+
 describe('TaskCompletedModal Component', () => {
   const mockCloseFunction = vi.fn();
   const mockUpdateTask = vi.fn();
@@ -22,6 +28,10 @@ describe('TaskCompletedModal Component', () => {
     userId: 'user123',
     taskModalOption: 'Checkmark', // or 'Remove'
   };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
 
   it('renders without crashing', () => {
     render(
