@@ -80,3 +80,23 @@
     flex: 1;
   }
 }
+
+:global(.dark-mode) .skillValue {
+  color: #fff;
+}
+
+:global(.dark-mode) .skillLabel {
+  color: #d0d0d0;
+}
+
+:global(.dark-mode) .red {
+  color: #ff6b6b;
+}
+
+:global(.dark-mode) .orange {
+  color: #ffb74d;
+}
+
+:global(.dark-mode) .green {
+  color: #69f0ae;
+}

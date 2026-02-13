@@ -1,0 +1,545 @@
+/* ===========================
+   PAGE LAYOUT
+=========================== */
+.pageLayout {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  min-height: calc(100vh - 72px);
+  background-color: #f9fafb;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.content {
+  flex: 1;
+  margin: 0 !important;
+  padding: 2rem 2.5rem;
+  min-height: calc(100vh - 72px);
+  height: auto;
+  overflow: visible;
+  background-color: #f9fafb;
+  padding-bottom: 24px;
+}
+
+/* ===========================
+   HEADINGS
+=========================== */
+.heading {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 0.25rem;
+}
+
+/* thin divider under "To Do" */
+.todoDivider {
+  border: none;
+  border-top: 1px solid #e5e7eb;
+  margin: 0 0 1rem 0;
+}
+
+/* ===========================
+   FILTER + GROUP BAR
+=========================== */
+.filterBar,
+.groupBar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.filterBtn,
+.groupBtn {
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 0.4rem 0.9rem;
+  font-size: 0.875rem;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filterBtn:hover,
+.groupBtn:hover {
+  border-color: #2563eb;
+  color: #2563eb;
+}
+
+.activeFilter,
+.activeGroup {
+  background-color: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
+}
+
+/* ===========================
+   TASK CARD LIST
+=========================== */
+.taskList {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  padding-bottom: 56px;
+}
+.subjectGroup {
+  margin-bottom: 1.5rem;
+}
+
+.subjectHeader {
+  background: #f3f4f6;
+  border: none;
+  border-radius: 6px;
+  padding: 0.7rem 1rem;
+  font-weight: 500;
+  font-size: 0.95rem;
+  color: #111827;
+  cursor: pointer;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.subjectHeader:hover {
+  background: #e5e7eb;
+}
+
+.subjectTasks {
+  margin-top: 0.75rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.9rem;
+}
+
+/* ===========================
+   TASK CARD
+=========================== */
+.taskCard {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 1.25rem;
+  transition: box-shadow 0.2s ease;
+  overflow: hidden; /* keeps focus ring tidy and blocks any inner overflow */
+}
+.taskCard:hover {
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+}
+
+/* Clickable body as a button (a11y-compliant) – neutralize native styles */
+.cardMainButton {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  background: transparent;
+  border: 0;
+  padding: 0;
+  margin: 0;
+
+  display: block;
+  width: 100%;
+  cursor: pointer;
+  text-align: inherit;
+  color: inherit;
+
+  outline: none; /* we’ll show a custom focus ring below */
+}
+
+/* Prevent blue/gray fills on hover/active from user-agent styles */
+.cardMainButton:hover,
+.cardMainButton:active {
+  background: transparent;
+}
+
+/* Accessible custom focus ring */
+.cardMainButton:focus-visible {
+  outline: 2px solid #93c5fd;
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+.taskHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.6rem;
+}
+.taskTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1e40af;
+  margin: 0;
+  text-decoration: underline;
+}
+.taskTitle:hover {
+  color: #2563eb;
+}
+.dueDate {
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+.dueLabel {
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: #4b5563;
+}
+
+.metaRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.25rem 0 0.6rem 0;
+}
+.chip {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.72rem;
+  color: #374151;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 9999px;
+  white-space: nowrap;
+}
+
+.taskDescription {
+  font-size: 0.9rem;
+  color: #374151;
+  margin-bottom: 0.8rem;
+}
+
+.statusSection {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.8rem;
+}
+.statusTag {
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 4px;
+  padding: 0.3rem 0.6rem;
+  text-transform: uppercase;
+}
+.incomplete {
+  background: #fee2e2;
+  color: #991b1b;
+}
+.submitted {
+  background: #dbeafe;
+  color: #1e3a8a;
+}
+.graded {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.progressContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 60%;
+}
+.progressBar {
+  flex: 1;
+  height: 6px;
+  background: #e5e7eb;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.progressFill {
+  height: 100%;
+  background: #22c55e;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+.progressText {
+  font-size: 0.75rem;
+  color: #4b5563;
+}
+
+.rubricButton {
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #fff;
+  background: #2563eb;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.rubricButton:hover {
+  background: #1e40af;
+}
+
+/* ===========================
+   RESPONSIVENESS
+=========================== */
+@media (max-width: 1024px) {
+  .content {
+    padding: 1.5rem 1.5rem;
+  }
+}
+@media (max-width: 768px) {
+  .pageLayout {
+    padding-left: 55px;
+  }
+  .taskCard {
+    padding: 1rem;
+  }
+  .taskTitle {
+    font-size: 0.95rem;
+  }
+}
+
+/* ===========================
+   RUBRIC MODAL STYLING
+=========================== */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+.modal {
+  background: #fff;
+  border-radius: 12px;
+  padding: 2rem 2.5rem;
+  width: 90%;
+  max-width: 600px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  position: relative;
+  animation: fadeIn 0.2s ease-in-out;
+}
+.closeBtn {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  color: #555;
+  cursor: pointer;
+}
+.closeBtn:hover {
+  color: #111;
+}
+.rubricTitle {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 0.5rem;
+}
+.rubricSubtitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #2563eb;
+  margin-bottom: 1rem;
+}
+.rubricList {
+  list-style: disc;
+  padding-left: 1.25rem;
+  color: #374151;
+  font-size: 0.95rem;
+}
+.rubricItem {
+  margin-bottom: 0.5rem;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 640px) {
+  .modal {
+    width: 95%;
+    padding: 1.5rem;
+    border-radius: 10px;
+  }
+  .rubricTitle {
+    font-size: 1.1rem;
+  }
+  .rubricSubtitle {
+    font-size: 1rem;
+  }
+  .rubricList {
+    font-size: 0.9rem;
+  }
+}
+
+/* ===========================
+   DARK MODE
+=========================== */
+.pageLayoutDark {
+  background-color: #0b1220;
+  position: relative;
+}
+.contentDark {
+  background-color: #0b1220;
+  color: #e5e7eb;
+}
+.pageLayoutDark .heading,
+.contentDark .heading {
+  color: #e5e7eb;
+}
+.pageLayoutDark .todoDivider,
+.contentDark .todoDivider {
+  border-top-color: #1f2937;
+}
+
+.pageLayoutDark .filterBtn,
+.pageLayoutDark .groupBtn,
+.pageLayoutDark .subjectHeader,
+.pageLayoutDark .taskCard,
+.contentDark .filterBtn,
+.contentDark .groupBtn,
+.contentDark .subjectHeader,
+.contentDark .taskCard {
+  background-color: #0f172a;
+  border: 1px solid #1f2937;
+  color: #e5e7eb;
+}
+.pageLayoutDark .filterBtn:hover,
+.pageLayoutDark .groupBtn:hover,
+.contentDark .filterBtn:hover,
+.contentDark .groupBtn:hover {
+  border-color: #2563eb;
+  color: #93c5fd;
+}
+
+.pageLayoutDark .activeFilter,
+.pageLayoutDark .activeGroup,
+.contentDark .activeFilter,
+.contentDark .activeGroup {
+  background-color: #2563eb;
+  color: #fff;
+  border-color: #2563eb;
+}
+
+.pageLayoutDark .subjectHeader:hover,
+.contentDark .subjectHeader:hover {
+  background-color: #16223a;
+}
+.pageLayoutDark .taskTitle,
+.contentDark .taskTitle {
+  color: #93c5fd;
+}
+.pageLayoutDark .taskTitle:hover,
+.contentDark .taskTitle:hover {
+  color: #60a5fa;
+}
+.pageLayoutDark .taskDescription,
+.contentDark .taskDescription {
+  color: #cbd5e1;
+}
+.pageLayoutDark .dueDate,
+.pageLayoutDark .dueLabel,
+.contentDark .dueDate,
+.contentDark .dueLabel {
+  color: #cbd5e1;
+}
+
+.pageLayoutDark .chip,
+.contentDark .chip {
+  background-color: #111827;
+  border-color: #1f2937;
+  color: #cbd5e1;
+}
+.pageLayoutDark .incomplete,
+.contentDark .incomplete {
+  background-color: #7f1d1d;
+  color: #fee2e2;
+}
+.pageLayoutDark .submitted,
+.contentDark .submitted {
+  background-color: #1e3a8a;
+  color: #dbeafe;
+}
+.pageLayoutDark .graded,
+.contentDark .graded {
+  background-color: #14532d;
+  color: #dcfce7;
+}
+.pageLayoutDark .progressBar,
+.contentDark .progressBar {
+  background-color: #1f2937;
+}
+.pageLayoutDark .progressFill,
+.contentDark .progressFill {
+  background-color: #22c55e;
+}
+.pageLayoutDark .progressText,
+.contentDark .progressText {
+  color: #cbd5e1;
+}
+.pageLayoutDark .rubricButton,
+.contentDark .rubricButton {
+  background-color: #1d4ed8;
+  color: #fff;
+  border-color: #1e40af;
+}
+.pageLayoutDark .rubricButton:hover,
+.contentDark .rubricButton:hover {
+  background-color: #1e40af;
+}
+
+.pageLayoutDark .modal,
+.contentDark .modal {
+  background-color: #0f172a;
+  color: #e5e7eb;
+  border: 1px solid #1f2937;
+}
+.pageLayoutDark .rubricSubtitle,
+.contentDark .rubricSubtitle {
+  color: #93c5fd;
+}
+.pageLayoutDark .closeBtn,
+.contentDark .closeBtn {
+  color: #cbd5e1;
+}
+.pageLayoutDark .closeBtn:hover,
+.contentDark .closeBtn:hover {
+  color: #e5e7eb;
+}
+.pageLayoutDark .rubricList,
+.pageLayoutDark .rubricItem,
+.contentDark .rubricList,
+.contentDark .rubricItem {
+  color: #cbd5e1;
+}
+.pageLayoutDark .rubricList li::marker,
+.contentDark .rubricList li::marker {
+  color: #8ab4f8;
+}
+
+/* ===========================
+   DARK BACKDROP
+=========================== */
+.darkBackdrop {
+  position: fixed;
+  inset: 0;
+  background: #0b1220;
+  z-index: 0;
+  pointer-events: none;
+}
+.pageLayout,
+.content {
+  position: relative;
+  z-index: 1;
+}
