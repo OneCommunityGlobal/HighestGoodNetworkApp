@@ -30,7 +30,7 @@ export default function WeeklySummariesToggleFilter({
 
   return (
     <div className={`${styles.filterContainer}`}>
-      {(hasPermissionToFilter || props.hasPermission('highlightEligibleBios')) && (
+      {(hasPermissionToFilter || hasPermission?.('highlightEligibleBios')) && (
         <div
           className={`${styles.filterStyle} ${styles.marginRight}`}
           style={{ minWidth: 'max-content' }}
