@@ -1,19 +1,140 @@
 .memberListContainer {
   padding: 20px;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
-.cards {
+/* Filter Bar Styles */
+.filterBar {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 30px;
+}
+
+.filterSection {
+  margin-bottom: 20px;
+}
+
+.filterSection:last-child {
+  margin-bottom: 0;
+}
+
+.filterLabel {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: #333;
+}
+
+.skillTags {
   display: flex;
   flex-wrap: wrap;
+  gap: 8px;
+}
+
+.skillTag {
+  padding: 6px 12px;
+  border: 1px solid #007bff;
+  border-radius: 16px;
+  background: #fff;
+  color: #007bff;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s;
+}
+
+.skillTag:hover {
+  background: #e7f3ff;
+}
+
+.skillTagActive {
+  background: #007bff;
+  color: #fff;
+}
+
+.scoreRange {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.scoreInput {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.scoreInput label {
+  font-size: 14px;
+  color: #666;
+}
+
+.scoreField {
+  width: 60px;
+  padding: 6px 8px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.scoreSeparator {
+  color: #666;
+  font-size: 14px;
+}
+
+.filterActions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.clearButton {
+  padding: 8px 16px;
+  background: #6c757d;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.clearButton:hover {
+  background: #5a6268;
+}
+
+.resultCount {
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
+.noResults {
+  width: 100%;
+  text-align: center;
+  padding: 40px;
+  color: #666;
+  font-size: 16px;
+}
+
+/* Member Cards */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(245px, 1fr));
   gap: 16px;
-  justify-content: center; /* center horizontally */
-  align-items: center; /* center vertically */
+  justify-items: center;
+  width: 100%;
 }
 
 .memberCard {
   border: 1px solid #ccc;
   padding: 16px;
   width: 245px;
+  max-width: 100%;
   border-radius: 8px;
   background: #fdfdfd;
   word-wrap: break-word;
@@ -25,16 +146,42 @@
   align-items: center;
 }
 
-.member-card h3 {
+.memberCard h3 {
   margin: 0 0 8px 0;
   font-size: 1.1rem;
   line-height: 1.3;
   word-wrap: break-word;
   overflow-wrap: break-word;
-  hyphens: auto; /* optional: allows hyphenation for very long names */
-  text-align: center; /* explicitly center the name */
+  hyphens: auto;
+  text-align: center;
+  color: #333;
 }
 
+.memberCard p {
+  color: #333;
+  margin: 4px 0;
+}
+
+.memberAvatar {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+.scoreGreen {
+  color: #28a745;
+  font-weight: 600;
+}
+
+.scoreRed {
+  color: #dc3545;
+  font-weight: 600;
+}
+
+/* Pagination */
 .paginationControls {
   margin-top: 20px;
   display: flex;
@@ -56,17 +203,82 @@
   opacity: 0.5;
 }
 
-.active {
+.pageButton.active {
   background-color: #007bff;
   color: #fff;
   font-weight: bold;
 }
 
-.memberAvatar {
-  width: 100px;
-  height: 100px;
-  object-fit: cover;
-  border-radius: 50%;
-  margin-top: 8px;
-  margin-bottom: 8px;
+/* Dark Mode - Maximum Specificity */
+body.dark-mode:not(.no-global-theme) .filterBar {
+  background: #1a1a1a !important;
+  border-color: #444 !important;
+}
+
+body.dark-mode:not(.no-global-theme) .filterLabel,
+body.dark-mode:not(.no-global-theme) .scoreInput label,
+body.dark-mode:not(.no-global-theme) .scoreSeparator,
+body.dark-mode:not(.no-global-theme) .resultCount {
+  color: #fff !important;
+}
+
+body.dark-mode:not(.no-global-theme) .skillTag {
+  background: #2d2d2d;
+  border-color: #007bff;
+  color: #007bff;
+}
+
+body.dark-mode:not(.no-global-theme) .skillTag:hover {
+  background: #003d7a;
+}
+
+body.dark-mode:not(.no-global-theme) .skillTagActive {
+  background: #007bff;
+  color: #fff;
+}
+
+body.dark-mode:not(.no-global-theme) .scoreField {
+  background: #2d2d2d !important;
+  color: #fff !important;
+  border-color: #444 !important;
+}
+
+body.dark-mode:not(.no-global-theme) .memberCard {
+  background: #2d2d2d !important;
+  border-color: #444 !important;
+}
+
+body.dark-mode:not(.no-global-theme) .memberCard h3 {
+  color: #000 !important;
+}
+
+body.dark-mode:not(.no-global-theme) .memberCard p {
+  color: #000 !important;
+}
+
+body.dark-mode:not(.no-global-theme) .scoreGreen {
+  color: #5cb85c !important;
+}
+
+body.dark-mode:not(.no-global-theme) .scoreRed {
+  color: #ff6b6b !important;
+}
+
+body.dark-mode:not(.no-global-theme) .noResults {
+  color: #ccc !important;
+}
+
+body.dark-mode:not(.no-global-theme) .pageButton {
+  background: #2d2d2d;
+  color: #fff;
+  border-color: #444;
+}
+
+body.dark-mode:not(.no-global-theme) .pageButton:disabled {
+  opacity: 0.5;
+}
+
+body.dark-mode:not(.no-global-theme) .pageButton.active {
+  background: #007bff;
+  color: #fff;
 }
