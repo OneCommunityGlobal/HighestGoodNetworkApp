@@ -126,6 +126,20 @@
     background: #1B2A41;
 }
 
+.darkSidebar .filterItem label {
+  color: #aaa;
+}
+
+.darkSidebar .filterItem select {
+  color: #fff;
+  background-color: #2b3e59;
+}
+
+.darkSidebar .filterItem select option {
+  color: #fff;
+  background-color: #2b3e59;
+}
+
 .filterSection h4 {
   font-size: 1.8rem;
   color: #2c3e50;
@@ -152,6 +166,11 @@
 
 .radioInput {
   margin-right: 6px;
+  margin-left: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+  position: relative;
+  z-index: 1;
 }
 
 .radioLabel {
@@ -179,11 +198,38 @@
   vertical-align: middle;
 }
 
+/* Radio buttons in radioRow should not have the left margin */
+.radioRow input[type="radio"],
+.radioRow .radioInput {
+  margin: 0 !important;
+  position: relative;
+  z-index: 1;
+  display: inline-block;
+  visibility: visible;
+}
+
 .filterItem input:focus,
 .filterItem select:focus {
   border-color: #2c3e50;
   box-shadow: 0 0 5px rgba(44, 62, 80, 0.4);
   outline: none;
+}
+
+/* Filter labels (headings) - lighter color */
+.filterItem label {
+  color: #888;
+  font-weight: 400;
+}
+
+/* Select inputs and options - darker/more prominent */
+.filterItem select {
+  color: #2c3e50;
+  font-weight: 500;
+}
+
+.filterItem select option {
+  color: #2c3e50;
+  font-weight: 500;
 }
 
 .dashboardMain {
