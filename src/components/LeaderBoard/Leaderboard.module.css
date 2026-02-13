@@ -1,10 +1,46 @@
+/* Allow column to shrink so table can overflow and show horizontal scroll */
+.leaderboardRoot {
+  min-width: 0;
+  width: 100%;
+}
+
 .leaderboard {
   font-size: 1rem;
 } /*1rem = 16px*/
 
 .my-custom-scrollbar {
   overflow-y: auto;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   margin-bottom: 1rem;
+  box-sizing: border-box;
+}
+
+/* Outer wrap: constrains width so inner scroll can overflow */
+.leaderboardTableScrollWrap {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* Dedicated horizontal scroll wrapper for the table only */
+.leaderboardTableScroll {
+  overflow-x: auto !important;
+  overflow-y: visible;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin; /* Firefox: visible scrollbar */
+}
+
+/* Force table to not shrink so columns stay visible when scrolling */
+.leaderboardTableScroll .leaderboard {
+  min-width: 700px !important;
 }
 
 .leaderboard thead th {
@@ -48,16 +84,47 @@
 }
 
 
-/* Small devices (landscape phones, 544px and up) */
+/* Small screens: cap height so it fits viewport */
+@media (max-width: 768px) {
+  .my-custom-scrollbar {
+    max-height: min(500px, 65vh);
+  }
+
+  /* Clamp scroll area to viewport so table must overflow */
+  .leaderboardTableScrollWrap {
+    max-width: 100vw;
+  }
+
+  /* Keep table wide enough to overflow so horizontal scroll works */
+  .leaderboardTableScroll {
+    overflow-x: scroll !important;
+  }
+
+  /* Visible scrollbar so users know they can scroll right */
+  .leaderboardTableScroll::-webkit-scrollbar {
+    height: 8px;
+  }
+  .leaderboardTableScroll::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+  }
+  .leaderboardTableScroll::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+  }
+  .leaderboardTableScroll::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+  }
+}
+
+/* Small devices (landscape phones, 544px and down) */
 @media (max-width: 544px) {
   .leaderboard {
     font-size: 0.7rem;
-  } /*1rem = 16px*/
+  }
 
   .my-custom-scrollbar {
-    max-height: 500px;
-    overflow: scroll;
-    margin-bottom: 1rem;
+    max-height: min(500px, 60vh);
   }
 
   .leaderboard thead th {

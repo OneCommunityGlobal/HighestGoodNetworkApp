@@ -106,7 +106,7 @@ export function Dashboard(props) {
         </Col>
       </Row>
       <Row className="w-100 ml-1">
-        <Col lg={5} className="order-lg-2 order-2">
+        <Col lg={5} className={`order-lg-2 order-2 ${styles.leaderboardCol}`}>
           <Leaderboard
             displayUserId={displayUserId}
             isNotAllowedToEdit={isNotAllowedToEdit}
