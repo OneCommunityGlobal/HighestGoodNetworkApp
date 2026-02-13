@@ -1,0 +1,44 @@
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  width: 100%;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.userWrapper {
+  flex: 1 1 300px;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 15px;
+  background-color: white;
+  transition: transform 0.2s, background 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+
+.userWrapper:hover {
+  transform: scale(1.03);
+}
+
+/* Dark mode for container and cards */
+.darkMode {
+  background-color: #1b2a41;
+  color: #f0f0f0;
+}
+
+.darkMode .userWrapper {
+  background-color: #1b2a41;
+}
+
+/* Messages */
+.message {
+  color: #666;
+  font-size: 1rem;
+}
+
+.darkMode .message {
+  color: #ccc;
+}
