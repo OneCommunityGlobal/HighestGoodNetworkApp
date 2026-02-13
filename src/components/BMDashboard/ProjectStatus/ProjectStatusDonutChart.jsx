@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
+import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer, Label } from 'recharts';
 import axios from 'axios';
 import styles from './ProjectStatusDonutChart.module.css';
 
@@ -32,13 +32,13 @@ export default function ProjectStatusDonutChart() {
       });
 
       // TEMPORARY MOCK DATA - for testing purposes
-      /*setStatusData({
+      setStatusData({
         totalProjects: 50,
         activeProjects: 20,
         completedProjects: 20,
         delayedProjects: 10,
       });
-      return;*/
+      return;
 
       setStatusData(res.data);
     } catch (err) {
@@ -88,8 +88,19 @@ export default function ProjectStatusDonutChart() {
       <h2 className={styles.title}>PROJECT STATUS</h2>
 
       <div className={styles.filterRow}>
-        <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} />
-        <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} />
+        <input
+          type="date"
+          value={startDate}
+          max={endDate || undefined}
+          onChange={e => setStartDate(e.target.value)}
+        />
+
+        <input
+          type="date"
+          value={endDate}
+          min={startDate || undefined}
+          onChange={e => setEndDate(e.target.value)}
+        />
 
         <button type="button" onClick={fetchStatus} className={styles.applyBtn}>
           Apply
@@ -99,29 +110,43 @@ export default function ProjectStatusDonutChart() {
       <div className={styles.chartWrapper}>
         {/* Only draw the ring if at least one status has data */}
         {!allZero && (
-          <PieChart width={400} height={400}>
-            <Pie
-              data={pieData}
-              cx={200}
-              cy={200}
-              innerRadius={90}
-              outerRadius={140}
-              paddingAngle={3}
-              dataKey="value"
-            >
-              {pieData.map((entry, index) => (
-                <Cell key={entry.name} fill={COLORS[index % COLORS.length]} />
-              ))}
-            </Pie>
-            <Tooltip />
-            <Legend />
-          </PieChart>
-        )}
+          <ResponsiveContainer width="100%" aspect={1}>
+            <PieChart margin={{ top: 10, right: 10, bottom: 40, left: 10 }}>
+              <Pie
+                data={pieData}
+                cx="50%"
+                cy="50%"
+                innerRadius="60%"
+                outerRadius="85%"
+                paddingAngle={3}
+                dataKey="value"
+              >
+                {pieData.map((entry, index) => (
+                  <Cell key={entry.name} fill={COLORS[index % COLORS.length]} />
+                ))}
+                <Label
+                  position="center"
+                  content={({ viewBox }) => {
+                    const { cx, cy } = viewBox;
+                    return (
+                      <text x={cx} y={cy} textAnchor="middle" dominantBaseline="central">
+                        <tspan x={cx} dy="-10" className={styles.centerLabel}>
+                          Total Projects
+                        </tspan>
+                        <tspan x={cx} dy="24" className={styles.centerValue}>
+                          {statusData.totalProjects}
+                        </tspan>
+                      </text>
+                    );
+                  }}
+                />
+              </Pie>
 
-        <div className={styles.centerText}>
-          <div>Total Projects</div>
-          <strong>{statusData.totalProjects}</strong>
-        </div>
+              <Tooltip />
+              <Legend verticalAlign="bottom" align="center" />
+            </PieChart>
+          </ResponsiveContainer>
+        )}
 
         <div className={styles.summaryBox}>
           <h3>{today}</h3>
