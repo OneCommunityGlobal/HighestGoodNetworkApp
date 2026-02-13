@@ -81,7 +81,6 @@
   font-size: 14px;
 }
 
-
 .loginForm :global(.form-group) {
   margin-bottom: 15px;
 }
@@ -131,7 +130,6 @@
   padding: 0 14px !important;
 }
 
-
 .eyeIcon * {
-  pointer-events: none; 
+  pointer-events: none;
 }
