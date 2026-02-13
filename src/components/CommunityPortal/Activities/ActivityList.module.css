@@ -36,6 +36,7 @@
 .filters {
   display: flex;
   justify-content: center;
+  align-items: flex-end;
   gap: 30px;
   margin: 30px 0;
   padding: 10px;
@@ -75,6 +76,13 @@
   background-color: #1e2a3a !important;
   color: #ffffff !important;
   border: 1px solid #3a4a5c !important;
+  color-scheme: dark;
+}
+
+/* Dark mode date input - style the calendar icon */
+.darkModeInput[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  cursor: pointer;
 }
 
 .filters input:focus {
@@ -92,6 +100,30 @@
 /* Dark mode input placeholder */
 .darkModeInput::placeholder {
   color: #a0a0a0;
+}
+
+/* Clear All button */
+.clearButton {
+  padding: 10px 20px;
+  background-color: #ef4444;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.clearButton:hover:not(:disabled) {
+  background-color: #dc2626;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
+}
+
+.clearButton:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 .activityList {
