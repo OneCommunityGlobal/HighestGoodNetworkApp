@@ -286,65 +286,83 @@ export default function SimpleToolChart() {
       </div>
 
       {/* Chart */}
-      <div className={styles.chartContainer}>
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart
-            layout="vertical"
-            data={filteredData}
-            margin={{ top: 20, right: 50, left: 70, bottom: 20 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke={chartColors.grid} />
-            <XAxis
-              type="number"
-              domain={[0, 100]}
-              unit="%"
-              tick={{ fill: chartColors.text }}
-              axisLine={{ stroke: chartColors.grid }}
-            />
-            <YAxis
-              type="category"
-              dataKey="name"
-              tick={{ fontSize: 14, fill: chartColors.text }}
-              width={80}
-            />
-            <Tooltip
-              formatter={value => [`${value}%`, 'Replaced Percentage']}
-              contentStyle={{
-                backgroundColor: chartColors.tooltipBg,
-                border: `1px solid ${chartColors.tooltipBorder}`,
-                color: chartColors.tooltipText,
-                borderRadius: '4px',
-              }}
-              cursor={{ fill: darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }}
-            />
-            <Bar
-              dataKey="replacedPercentage"
-              fill={chartColors.barFill}
-              stroke={chartColors.barStroke}
-              strokeWidth={1.5}
-            >
-              <LabelList
-                dataKey="replacedPercentage"
-                position="right"
-                content={({ value, x, y, width, height }) => (
-                  <text
-                    x={x + width + 5}
-                    y={y + height / 2 + 5}
-                    fill={chartColors.text}
-                    fontWeight="500"
-                    alignmentBaseline="middle"
-                  >
-                    {`${value}%`}
-                  </text>
-                )}
-              />
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
 
-      {filteredData.length === 0 && (
+      {filteredData.length === 0 ? (
         <div className={styles.noData}>No data available for the selected filters</div>
+      ) : (
+        <>
+          <div className={styles.chartContainer}>
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                layout="vertical"
+                data={filteredData}
+                margin={{ top: 20, right: 50, left: 70, bottom: 20 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke={chartColors.grid} />
+                <XAxis
+                  type="number"
+                  domain={[0, 100]}
+                  unit="%"
+                  tick={{ fill: chartColors.text }}
+                  axisLine={{ stroke: chartColors.grid }}
+                  label={{
+                    value: 'Replacement Percentage',
+                    position: 'insideBottom',
+                    offset: -10,
+                    fill: chartColors.text,
+                    fontWeight: 'Bold',
+                  }}
+                />
+                <YAxis
+                  type="category"
+                  dataKey="name"
+                  tick={{ fontSize: 14, fill: chartColors.text }}
+                  width={100}
+                  label={{
+                    value: 'Tools',
+                    angle: -90,
+                    position: 'insideLeft',
+                    fill: chartColors.text,
+                    style: { textAnchor: 'middle' },
+                    fontWeight: 'Bold',
+                  }}
+                />
+                <Tooltip
+                  formatter={value => [`${value}%`, 'Replaced Percentage']}
+                  contentStyle={{
+                    backgroundColor: chartColors.tooltipBg,
+                    border: `1px solid ${chartColors.tooltipBorder}`,
+                    color: chartColors.tooltipText,
+                    borderRadius: '4px',
+                  }}
+                  cursor={{ fill: darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }}
+                />
+                <Bar
+                  dataKey="replacedPercentage"
+                  fill={chartColors.barFill}
+                  stroke={chartColors.barStroke}
+                  strokeWidth={1.5}
+                >
+                  <LabelList
+                    dataKey="replacedPercentage"
+                    position="right"
+                    content={({ value, x, y, width, height }) => (
+                      <text
+                        x={x + width + 5}
+                        y={y + height / 2 + 5}
+                        fill={chartColors.text}
+                        fontWeight="500"
+                        alignmentBaseline="middle"
+                      >
+                        {`${value}%`}
+                      </text>
+                    )}
+                  />
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </>
       )}
     </div>
   );
