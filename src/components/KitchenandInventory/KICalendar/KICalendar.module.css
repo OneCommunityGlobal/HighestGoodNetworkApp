@@ -16,9 +16,109 @@
 .calendarDay {
   display: flex;
   flex-direction: column;
-  height: 100px;
+  height: 120px;
+  text-align: left !important;
+}
+
+.calendar :global(.react-calendar__tile) {
   box-shadow: inset 0 0 0 1px #ddd;
   border: 1px solid #ffffff !important;
   border-radius: 10px;
-  text-align: left !important;
+}
+
+.calendar :global(.react-calendar__tile--now) {
+  background-color: #f0f8ff !important;
+  /* box-shadow: inset 0 0 0 1px #007bff !important; */
+  color: #007bff !important
+}
+
+.calendar :global(.react-calendar__tile--active) {
+  background-color: #f0f8ff !important;
+  box-shadow: inset 0 0 0 1px #007bff !important;
+  color: black !important
+}
+
+.calendar :global(.react-calendar__tile--hasActive) {
+  background-color: #f0f8ff !important;
+  box-shadow: inset 0 0 0 1px #007bff !important;
+  color: black !important
+}
+
+/* .calendar :global(.react-calendar__month-view__days__day--neighboringMonth), 
+.calendar :global(.react-calendar__decade-view__years__year--neighboringDecade), 
+.calendar :global(.react-calendar__century-view__decades__decade--neighboringCentury) {
+  background-color: #e5e5e5;
+  box-shadow: inset 0 0 0 1px #ffffff !important;
+} */
+
+.smallText {
+  font-size: 0.7rem;
+}
+
+.eventTitle {
+  padding: 1px 2px;
+  border-radius: 5px;
+  margin-bottom: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.weeklyEventTitle {
+  padding: 1px 2px;
+  border-radius: 5px;
+  margin-bottom: 5px;
+}
+
+.garden {
+  background-color: #caffdb;
+  color: #1d7e3a;
+}
+.animals {
+  background-color: #ffe0cb;
+  color: #935425;
+}
+.kitchen {
+  background-color: #dde4ff;
+  color: #1a3bc0;
+}
+.orchard {
+  background-color: #efd2ff;
+  color:#7820a6;
+}
+.gardenText {
+  color: #1d7e3a;
+}
+.animalsText {
+  color: #935425;
+}
+.kitchenText {
+  color: #1a3bc0;
+}
+.orchardText {
+  color:#7820a6;
+}
+.linkText {
+  cursor: pointer;
+  color: #007bff;
+}
+
+.weekDay {
+  background-color: #f5f5f5;
+  border-radius: 10px;
+  margin: 2px;
+  padding: 5px;
+  width: 14% !important;
+  cursor: pointer;
+  min-height: 140px;
+  padding: 5px !important;
+}
+
+.selectedWeekDay {
+  background-color: #f0f8ff;
+  border: 1px solid #007bff;
+}
+.currentWeekDay {
+  background-color: #f0f8ff !important;
 }

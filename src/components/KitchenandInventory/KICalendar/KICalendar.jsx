@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Calendar } from 'react-calendar';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   Container,
   Row,
@@ -23,6 +24,7 @@ import {
   subMonths,
   isSameDay,
 } from 'date-fns';
+import { faCow, faUtensils, faSeedling, faAppleWhole } from '@fortawesome/free-solid-svg-icons';
 import styles from './KICalendar.module.css';
 
 /* ------------------ Sample Events ------------------ */
@@ -30,49 +32,49 @@ import styles from './KICalendar.module.css';
 const EVENTS = [
   {
     id: 1,
-    title: 'Team Meeting',
+    title: 'Garden Team Meeting',
     date: '2026-02-03',
-    type: 'Meeting',
+    type: 'Garden',
     start: new Date(2026, 1, 3, 10, 0), // Feb 3, 10:00
     end: new Date(2026, 1, 3, 11, 0),
   },
   {
     id: 2,
-    title: 'Sprint Review',
+    title: 'Orchard Review',
     date: '2026-02-05',
-    type: 'Meeting',
+    type: 'Orchard',
     start: new Date(2026, 1, 5, 14, 0),
     end: new Date(2026, 1, 5, 15, 30),
   },
   {
     id: 3,
-    title: 'Deadline',
+    title: 'Chicken Coop Cleaning',
     date: '2026-02-07',
-    type: 'Task',
+    type: 'Animals',
     start: new Date(2026, 2, 9, 14, 0),
     end: new Date(2026, 2, 9, 15, 30),
   },
   {
     id: 4,
-    title: 'Holiday',
+    title: 'Buying Supplies',
     date: '2026-02-09',
-    type: 'Holiday',
+    type: 'Kitchen',
     start: new Date(2026, 2, 5, 14, 0),
     end: new Date(2026, 2, 5, 15, 30),
   },
   {
     id: 5,
-    title: 'Holiday 2',
+    title: 'Chicken Feeding',
     date: '2026-02-09',
-    type: 'Holiday',
+    type: 'Animals',
     start: new Date(2026, 2, 5, 14, 0),
     end: new Date(2026, 2, 5, 15, 30),
   },
   {
     id: 6,
-    title: 'Holiday 3',
+    title: 'Tomato Planting',
     date: '2026-02-09',
-    type: 'Holiday',
+    type: 'Garden',
     start: new Date(2026, 2, 5, 14, 0),
     end: new Date(2026, 2, 5, 15, 30),
   },
@@ -84,9 +86,16 @@ export default function KICalendar() {
   const [view, setView] = useState('month');
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [eventFilter, setEventFilter] = useState('All');
+  const [eventFilter, setEventFilter] = useState('All Modules');
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const MAX_EVENTS = 2;
+  const moduleIcons = {
+    'All Modules': null,
+    Garden: faSeedling,
+    Orchard: faAppleWhole,
+    Animals: faCow,
+    Kitchen: faUtensils,
+  };
 
   /* ------------------ Navigation ------------------ */
 
@@ -102,7 +111,9 @@ export default function KICalendar() {
 
   const eventsForDate = date =>
     EVENTS.filter(
-      e => isSameDay(new Date(e.date), date) && (eventFilter === 'All' || e.type === eventFilter),
+      e =>
+        isSameDay(new Date(e.date), date) &&
+        (eventFilter === 'All Modules' || e.type === eventFilter),
     );
 
   const selectedDateEvents = eventsForDate(selectedDate);
@@ -110,9 +121,9 @@ export default function KICalendar() {
   /* ------------------ Week Data ------------------ */
 
   const weekDays = useMemo(() => {
-    const start = startOfWeek(currentDate, { weekStartsOn: 1 }); // Monday
+    const start = startOfWeek(selectedDate, { weekStartsOn: 1 }); // Monday
     return Array.from({ length: 7 }, (_, i) => addDays(start, i));
-  }, [currentDate]);
+  }, [selectedDate]);
 
   /* ------------------ Render ------------------ */
 
@@ -166,11 +177,18 @@ export default function KICalendar() {
                 className="d-inline-block ms-2"
               >
                 <DropdownToggle caret color="light" className={styles.grayBorder}>
-                  Events: {eventFilter}
+                  {eventFilter}
                 </DropdownToggle>
                 <DropdownMenu>
-                  {['All', 'Meeting', 'Task', 'Holiday'].map(type => (
+                  {['All Modules', 'Garden', 'Orchard', 'Animals', 'Kitchen'].map(type => (
                     <DropdownItem key={type} onClick={() => setEventFilter(type)}>
+                      {moduleIcons[type] && (
+                        <FontAwesomeIcon
+                          icon={moduleIcons[type]}
+                          className={`me-2 ${styles[`${type?.toLowerCase()}Text`]}`}
+                        />
+                      )}
+                      {'  '}
                       {type}
                     </DropdownItem>
                   ))}
@@ -206,17 +224,26 @@ export default function KICalendar() {
               tileClassName={styles.calendarDay}
               tileContent={({ date }) => {
                 const dateEvents = eventsForDate(date);
-                const count = dateEvents.length;
                 return dateEvents.length > 0 ? (
                   <div className="small text-primary">
                     {dateEvents.slice(0, MAX_EVENTS).map(event => (
-                      <div key={event.id}>{event.title}</div>
+                      <div
+                        key={event.id}
+                        className={`${styles.eventTitle} ${styles[event.type?.toLowerCase()]} ${
+                          styles.smallText
+                        }`}
+                      >
+                        {moduleIcons[event.type] && (
+                          <FontAwesomeIcon icon={moduleIcons[event.type]} className="me-2" />
+                        )}{' '}
+                        {event.title}
+                      </div>
                     ))}
 
                     {dateEvents.length > MAX_EVENTS && (
                       <button
-                        style={{ cursor: 'pointer' }}
                         onClick={() => handleSeeMore(dateEvents)}
+                        className={`${styles.smallText} ${styles.linkText}`}
                       >
                         +{dateEvents.length - MAX_EVENTS} more
                       </button>
@@ -229,27 +256,36 @@ export default function KICalendar() {
 
           {/* ---------- Week View ---------- */}
           {view === 'week' && (
-            <Row className="border text-center">
+            <Row className="w-100 text-center">
               {weekDays.map(day => {
-                const dayEvents = eventsForDate(day);
+                const dateEvents = eventsForDate(day);
                 const isSelected = isSameDay(day, selectedDate);
 
                 return (
                   <Col
                     key={day.toISOString()}
-                    xs="12"
-                    sm="6"
-                    md
-                    className={`border p-2 ${isSelected ? 'bg-primary bg-opacity-25' : ''}`}
-                    style={{ cursor: 'pointer', minHeight: 140 }}
+                    className={`${styles.weekDay} ${isSelected ? styles.selectedWeekDay : ''} ${
+                      isSameDay(currentDate, day) ? styles.currentWeekDay : ''
+                    }`}
                     onClick={() => setSelectedDate(day)}
                   >
-                    <div className="fw-bold">{format(day, 'EEE')}</div>
-                    <div className="text-muted small mb-1">{format(day, 'MMM d')}</div>
-
-                    {dayEvents.map(e => (
-                      <div key={e.id} className="small text-truncate">
-                        • {e.title}
+                    <div className="mb-3">
+                      <div>
+                        <b>{format(day, 'EEE')}</b>
+                      </div>
+                      <div>{format(day, 'MMM d')}</div>
+                    </div>
+                    {dateEvents.map(event => (
+                      <div
+                        key={event.id}
+                        className={`${styles.weeklyEventTitle} ${
+                          styles[event.type?.toLowerCase()]
+                        } ${styles.smallText}`}
+                      >
+                        {moduleIcons[event.type] && (
+                          <FontAwesomeIcon icon={moduleIcons[event.type]} className="me-2" />
+                        )}{' '}
+                        {event.title}
                       </div>
                     ))}
                   </Col>
