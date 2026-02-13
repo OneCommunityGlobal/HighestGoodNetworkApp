@@ -32,13 +32,13 @@ export default function ProjectStatusDonutChart() {
       });
 
       // TEMPORARY MOCK DATA - for testing purposes
-      setStatusData({
+      /*setStatusData({
         totalProjects: 50,
         activeProjects: 20,
         completedProjects: 20,
         delayedProjects: 10,
       });
-      return;
+      return;*/
 
       setStatusData(res.data);
     } catch (err) {
