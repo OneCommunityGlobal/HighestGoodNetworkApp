@@ -14,6 +14,7 @@ import {
 } from 'recharts';
 import styles from './CostPredictionChart.module.css';
 import projectCostService from '../../../services/projectCostService';
+import { getTooltipStyles } from '../../../utils/bmChartStyles';
 
 // Custom dot renderer (unchanged)
 function renderDotTopOrBottom(lineKey, color) {
@@ -168,13 +169,7 @@ function CostPredictionChart({ projectId }) {
           />
           {/* Tooltip & Legend */}
           <Tooltip
-            contentStyle={{
-              backgroundColor: darkMode ? '#2c3344' : '#fff',
-              border: `1px solid ${darkMode ? '#364156' : '#ccc'}`,
-              color: darkMode ? '#e0e0e0' : '#333',
-            }}
-            labelStyle={{ color: darkMode ? '#e0e0e0' : '#333' }}
-            itemStyle={{ color: darkMode ? '#e0e0e0' : '#333' }}
+            {...getTooltipStyles(darkMode)}
             cursor={{ stroke: darkMode ? '#e0e0e0' : '#999' }}
           />
           <Legend

@@ -18,6 +18,14 @@ import { useSelector } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
 import { Info } from 'lucide-react';
 import styles from './CostPredictionPage.module.css';
+import {
+  DARK,
+  LIGHT,
+  getSingleSelectStyles,
+  getMultiSelectStyles,
+  getAxisTickFill,
+  getGridStroke,
+} from '../../../utils/bmChartStyles';
 
 // Cost category options
 const costOptions = [
@@ -187,11 +195,53 @@ const processDataForChart = costData => {
   return processedData;
 };
 
+// Shared marker component for legend and tooltip (diamond for predicted, circle for actual)
+function ChartMarker({ color, isPredicted }) {
+  return isPredicted ? (
+    <span
+      className="tooltip-marker"
+      style={{
+        backgroundColor: color,
+        width: '6px',
+        height: '6px',
+        transform: 'rotate(45deg)',
+        display: 'inline-block',
+      }}
+    />
+  ) : (
+    <span
+      className="tooltip-marker"
+      style={{
+        backgroundColor: color,
+        width: '8px',
+        height: '8px',
+        borderRadius: '50%',
+        display: 'inline-block',
+      }}
+    />
+  );
+}
+
+ChartMarker.propTypes = {
+  color: PropTypes.string.isRequired,
+  isPredicted: PropTypes.bool.isRequired,
+};
+
+// Map dataKey base names to display labels
+const COST_LABELS = {
+  Labor: 'Labor Cost',
+  Materials: 'Materials Cost',
+  Equipment: 'Equipment Cost',
+  Total: 'Total Cost',
+};
+
 // Custom tooltip component
 function CustomTooltip({ active, payload, label, currency, darkMode }) {
   if (!active || !payload || !payload.length) {
     return null;
   }
+
+  const textColor = darkMode ? DARK.text : LIGHT.text;
 
   // Check if any payload entry is predicted data
   const hasActualData = payload.some(entry => !entry.dataKey.includes('Predicted'));
@@ -208,45 +258,31 @@ function CustomTooltip({ active, payload, label, currency, darkMode }) {
     <div
       className="cost-chart-tooltip"
       style={{
-        backgroundColor: darkMode ? '#2c3344' : '#fff',
-        border: `1px solid ${darkMode ? '#364156' : '#ccc'}`,
+        backgroundColor: darkMode ? DARK.cardBg : LIGHT.bg,
+        border: `1px solid ${darkMode ? DARK.border : LIGHT.border}`,
         borderRadius: '4px',
         padding: '8px',
         boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
-        color: darkMode ? '#e0e0e0' : '#333',
+        color: textColor,
         fontSize: '12px',
       }}
     >
       <p
         className="tooltip-date"
-        style={{
-          margin: '0 0 4px 0',
-          fontWeight: 'bold',
-          color: darkMode ? '#e0e0e0' : '#333',
-        }}
+        style={{ margin: '0 0 4px 0', fontWeight: 'bold', color: textColor }}
       >
         {label}
       </p>
       <p
         className="tooltip-type"
-        style={{
-          margin: '0 0 4px 0',
-          fontSize: '10px',
-          color: darkMode ? '#e0e0e0' : '#333',
-          opacity: 0.8,
-        }}
+        style={{ margin: '0 0 4px 0', fontSize: '10px', color: textColor, opacity: 0.8 }}
       >
         {displayType}
       </p>
       {filteredPayload.map(entry => {
         const isPredicted = entry.dataKey.includes('Predicted');
-        let costLabel = '';
         const baseDataKey = entry.dataKey.replace('Predicted', '');
-
-        if (baseDataKey === 'Labor') costLabel = 'Labor Cost';
-        else if (baseDataKey === 'Materials') costLabel = 'Materials Cost';
-        else if (baseDataKey === 'Equipment') costLabel = 'Equipment Cost';
-        else if (baseDataKey === 'Total') costLabel = 'Total Cost';
+        const costLabel = COST_LABELS[baseDataKey] || baseDataKey;
 
         return (
           <div
@@ -257,41 +293,14 @@ function CustomTooltip({ active, payload, label, currency, darkMode }) {
               alignItems: 'center',
               gap: '4px',
               margin: '2px 0',
-              color: darkMode ? '#e0e0e0' : '#333',
+              color: textColor,
             }}
           >
-            {isPredicted ? (
-              // Solid diamond shape for predicted data
-              <span
-                className="tooltip-marker"
-                style={{
-                  backgroundColor: entry.color,
-                  width: '6px',
-                  height: '6px',
-                  transform: 'rotate(45deg)',
-                  display: 'inline-block',
-                }}
-              />
-            ) : (
-              // Solid circle for actual data
-              <span
-                className="tooltip-marker"
-                style={{
-                  backgroundColor: entry.color,
-                  width: '8px',
-                  height: '8px',
-                  borderRadius: '50%',
-                  display: 'inline-block',
-                }}
-              />
-            )}
-            <span className="tooltip-label" style={{ color: darkMode ? '#e0e0e0' : '#333' }}>
+            <ChartMarker color={entry.color} isPredicted={isPredicted} />
+            <span className="tooltip-label" style={{ color: textColor }}>
               {costLabel}:
             </span>
-            <span
-              className="tooltip-value"
-              style={{ fontWeight: 'bold', color: darkMode ? '#e0e0e0' : '#333' }}
-            >
+            <span className="tooltip-value" style={{ fontWeight: 'bold', color: textColor }}>
               {`${currency}${entry.value.toLocaleString()}`}
             </span>
           </div>
@@ -375,51 +384,10 @@ function CostPredictionPage({ projectId }) {
     }
   };
 
-  // Apply dark mode styles to document body when in dark mode
+  // Toggle dark-mode body class for global Recharts overrides in the CSS module
   useEffect(() => {
-    if (darkMode) {
-      document.body.classList.add('dark-mode-body');
-    } else {
-      document.body.classList.remove('dark-mode-body');
-    }
-
-    // Add dark mode CSS for chart
-    if (!document.getElementById('dark-mode-styles-cost-prediction')) {
-      const styleElement = document.createElement('style');
-      styleElement.id = 'dark-mode-styles-cost-prediction';
-      styleElement.innerHTML = `
-        .dark-mode-body .recharts-wrapper,
-        .dark-mode-body .recharts-surface {
-          background-color: #1e2736 !important;
-        }
-        .dark-mode-body .recharts-cartesian-grid-horizontal line,
-        .dark-mode-body .recharts-cartesian-grid-vertical line {
-          stroke: #364156 !important;
-        }
-        .dark-mode-body .recharts-text {
-          fill: #e0e0e0 !important;
-        }
-        .dark-mode-body .recharts-default-legend {
-          background-color: #1e2736 !important;
-        }
-        .dark-mode-body .recharts-legend-item-text {
-          color: #e0e0e0 !important;
-        }
-        .dark-mode-body .recharts-tooltip-wrapper {
-          background-color: transparent !important;
-        }
-        .dark-mode-body .cost-prediction-page {
-          background-color: #1e2736 !important;
-          color: #e0e0e0 !important;
-        }
-      `;
-      document.head.appendChild(styleElement);
-    }
-
-    return () => {
-      // Cleanup
-      document.body.classList.remove('dark-mode-body');
-    };
+    document.body.classList.toggle('dark-mode-body', darkMode);
+    return () => document.body.classList.remove('dark-mode-body');
   }, [darkMode]);
 
   return (
@@ -491,30 +459,7 @@ function CostPredictionPage({ projectId }) {
             placeholder="Select Project"
             classNamePrefix="custom-select"
             className={styles.dropdownItem}
-            styles={
-              darkMode
-                ? {
-                    control: baseStyles => ({
-                      ...baseStyles,
-                      backgroundColor: '#2c3344',
-                      borderColor: '#364156',
-                    }),
-                    menu: baseStyles => ({
-                      ...baseStyles,
-                      backgroundColor: '#2c3344',
-                    }),
-                    option: (baseStyles, state) => ({
-                      ...baseStyles,
-                      backgroundColor: state.isFocused ? '#364156' : '#2c3344',
-                      color: '#e0e0e0',
-                    }),
-                    singleValue: baseStyles => ({
-                      ...baseStyles,
-                      color: '#e0e0e0',
-                    }),
-                  }
-                : {}
-            }
+            styles={getSingleSelectStyles(darkMode)}
           />
 
           <Select
@@ -529,39 +474,7 @@ function CostPredictionPage({ projectId }) {
             menuPosition="fixed"
             closeMenuOnSelect={false}
             hideSelectedOptions={false}
-            styles={
-              darkMode
-                ? {
-                    control: baseStyles => ({
-                      ...baseStyles,
-                      backgroundColor: '#2c3344',
-                      borderColor: '#364156',
-                    }),
-                    menu: baseStyles => ({
-                      ...baseStyles,
-                      backgroundColor: '#2c3344',
-                    }),
-                    option: (baseStyles, state) => ({
-                      ...baseStyles,
-                      backgroundColor: state.isFocused ? '#364156' : '#2c3344',
-                      color: '#e0e0e0',
-                    }),
-                    multiValue: baseStyles => ({
-                      ...baseStyles,
-                      backgroundColor: '#364156',
-                    }),
-                    multiValueLabel: baseStyles => ({
-                      ...baseStyles,
-                      color: '#e0e0e0',
-                    }),
-                    multiValueRemove: baseStyles => ({
-                      ...baseStyles,
-                      color: '#e0e0e0',
-                      ':hover': { backgroundColor: '#ff4d4f', color: '#fff' },
-                    }),
-                  }
-                : {}
-            }
+            styles={getMultiSelectStyles(darkMode)}
           />
         </div>
 
@@ -573,21 +486,15 @@ function CostPredictionPage({ projectId }) {
             <div style={{ height: 'calc(100% - 20px)', width: '100%', position: 'relative' }}>
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={data} margin={{ top: 25, right: 10, left: 45, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? '#364156' : '#ccc'} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={getGridStroke(darkMode)} />
                   <XAxis
                     dataKey="date"
-                    tick={{
-                      fill: darkMode ? '#e0e0e0' : '#333',
-                      fontSize: 12,
-                    }}
+                    tick={{ fill: getAxisTickFill(darkMode), fontSize: 12 }}
                     tickMargin={5}
                     height={25}
                   />
                   <YAxis
-                    tick={{
-                      fill: darkMode ? '#e0e0e0' : '#333',
-                      fontSize: 12,
-                    }}
+                    tick={{ fill: getAxisTickFill(darkMode), fontSize: 12 }}
                     tickFormatter={value => `${currency}${value}`}
                     width={50}
                   />
@@ -603,11 +510,11 @@ function CostPredictionPage({ projectId }) {
                       width: '100%',
                       textAlign: 'center',
                       lineHeight: '1.2',
-                      color: darkMode ? '#e0e0e0' : '#333',
+                      color: getAxisTickFill(darkMode),
                     }}
                     align="center"
                     content={props => {
-                      const { payload } = props;
+                      const legendTextColor = getAxisTickFill(darkMode);
                       return (
                         <div
                           style={{
@@ -616,10 +523,10 @@ function CostPredictionPage({ projectId }) {
                             gap: '15px',
                             flexWrap: 'wrap',
                             fontSize: '11px',
-                            color: darkMode ? '#e0e0e0' : '#333',
+                            color: legendTextColor,
                           }}
                         >
-                          {payload.map((entry, index) => {
+                          {props.payload.map((entry, index) => {
                             const isPredicted = entry.value.includes('Predicted');
                             return (
                               <div
@@ -630,30 +537,8 @@ function CostPredictionPage({ projectId }) {
                                   gap: '4px',
                                 }}
                               >
-                                {isPredicted ? (
-                                  // Solid diamond shape for predicted
-                                  <div
-                                    style={{
-                                      width: '6px',
-                                      height: '6px',
-                                      backgroundColor: entry.color,
-                                      transform: 'rotate(45deg)',
-                                    }}
-                                  />
-                                ) : (
-                                  // Solid circle for actual
-                                  <div
-                                    style={{
-                                      width: '8px',
-                                      height: '8px',
-                                      backgroundColor: entry.color,
-                                      borderRadius: '50%',
-                                    }}
-                                  />
-                                )}
-                                <span style={{ color: darkMode ? '#e0e0e0' : '#333' }}>
-                                  {entry.value}
-                                </span>
+                                <ChartMarker color={entry.color} isPredicted={isPredicted} />
+                                <span style={{ color: legendTextColor }}>{entry.value}</span>
                               </div>
                             );
                           })}
@@ -729,7 +614,7 @@ function CostPredictionPage({ projectId }) {
           {!loading && !error && data.length === 0 && (
             <div
               className={styles.costChartEmpty}
-              style={{ color: darkMode ? '#e0e0e0' : 'inherit' }}
+              style={{ color: darkMode ? DARK.text : 'inherit' }}
             >
               <p>No data available</p>
             </div>

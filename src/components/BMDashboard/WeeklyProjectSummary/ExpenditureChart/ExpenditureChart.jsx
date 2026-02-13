@@ -5,6 +5,7 @@ import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
 // import httpService from '../../../../services/httpService';
 import { getProjectExpenditure } from './mockExpenditureData';
 import styles from './ExpenditureChart.module.css';
+import { getTooltipStyles } from '../../../../utils/bmChartStyles';
 
 const COLORS = ['#6777EF', '#A0CD61', '#F5CD4B'];
 const CATEGORIES = ['Labor', 'Equipment', 'Materials'];
@@ -89,14 +90,8 @@ function ExpenditureChart({ projectId }) {
           ))}
         </Pie>
         <Tooltip
-          contentStyle={{
-            backgroundColor: darkMode ? '#2c3344' : '#fff',
-            border: `1px solid ${darkMode ? '#364156' : '#ccc'}`,
-            color: darkMode ? '#e0e0e0' : '#333',
-          }}
-          itemStyle={{
-            color: darkMode ? '#e0e0e0' : '#333',
-          }}
+          {...getTooltipStyles(darkMode)}
+          itemStyle={{ color: darkMode ? '#e0e0e0' : '#333' }}
         />
         <Legend
           layout="horizontal"
