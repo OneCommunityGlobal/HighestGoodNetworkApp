@@ -47,6 +47,7 @@ import {
   PERMISSIONS_MANAGEMENT,
   SEND_EMAILS,
   TOTAL_ORG_SUMMARY,
+  TOTAL_ORG_SUMMARY_EMAIL,
   TOTAL_CONSTRUCTION_SUMMARY,
   PR_PROMOTIONS,
   BLUE_SQUARE_EMAIL_MANAGEMENT,
@@ -617,6 +618,11 @@ export function Header(props) {
                           disabled={headerDisabled}
                         >
                           {TOTAL_ORG_SUMMARY}
+                        </DropdownItem>
+                      )}
+                      {canGetWeeklyVolunteerSummary && (
+                        <DropdownItem tag={Link} to="/TotalorgSummaryEmail" className={fontColor}>
+                          {TOTAL_ORG_SUMMARY_EMAIL}
                         </DropdownItem>
                       )}
                       {canGetJobAnalytics && (
