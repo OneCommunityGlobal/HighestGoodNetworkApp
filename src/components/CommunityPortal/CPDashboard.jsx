@@ -387,7 +387,9 @@ export function CPDashboard() {
                 <Input
                   type="date"
                   placeholder="Select Date"
-                  className={styles.dateFilter}
+                  className={[styles.dateFilter, styles.rectangularDropdown]
+                    .filter(Boolean)
+                    .join(' ')}
                   value={selectedDate}
                   onChange={e => setSelectedDate(e.target.value)}
                   style={{ marginTop: '10px' }}
@@ -412,21 +414,21 @@ export function CPDashboard() {
 
               <div className={styles.filterItem}>
                 <label htmlFor="branches">Branches</label>
-                <Input type="select">
+                <Input type="select" className={styles.rectangularDropdown}>
                   <option>Select branches</option>
                 </Input>
               </div>
 
               <div className={styles.filterItem}>
                 <label htmlFor="themes">Themes</label>
-                <Input type="select">
+                <Input type="select" className={styles.rectangularDropdown}>
                   <option>Select themes</option>
                 </Input>
               </div>
 
               <div className={styles.filterItem}>
                 <label htmlFor="categories">Categories</label>
-                <Input type="select">
+                <Input type="select" className={styles.rectangularDropdown}>
                   <option>Select categories</option>
                 </Input>
               </div>

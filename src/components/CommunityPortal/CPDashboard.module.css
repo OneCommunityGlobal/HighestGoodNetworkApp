@@ -296,6 +296,10 @@
   background-size: 1em;
 }
 
+.rectangularDropdown {
+  border-radius: 0 !important;
+}
+
 .filterItem label {
   display: block;
   font-weight: 600;
