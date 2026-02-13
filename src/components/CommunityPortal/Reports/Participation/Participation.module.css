@@ -12,9 +12,9 @@
 }
 
 .participationLandingPageDark {
-  max-width: 100%;
+  max-width: 90%;
   margin: 0 auto;
-  background-color: #1B2A41;
+  background-color: #1b2a41;
   color: #ffffff;
 }
 
@@ -38,7 +38,7 @@
 .landingPageHeaderDark {
   font-size: 2.2rem;
   font-weight: 700;
-  color: #ffffff;
+  color: #ffffff !important;
   letter-spacing: 0.5px;
 }
 
@@ -166,7 +166,7 @@
 .insightsDark {
   flex: 1;
   min-width: 48%;
-  background-color: #1C2541;
+  background-color: #1c2541;
   color: #ffffff;
   border-radius: 10px;
   border: 1px solid #ddd;
@@ -217,7 +217,7 @@
 .trackingFilters {
   display: flex;
   flex-wrap: nowrap;
-  gap: 12px;   /* spacing between dropdowns */
+  gap: 12px; /* spacing between dropdowns */
 }
 
 .trackingFilters select {
@@ -226,6 +226,23 @@
   font-size: 0.8rem;
   border: 1px solid #ccc;
   border-radius: 5px;
+}
+
+.trackingFiltersDark {
+  display: flex;
+  gap: 10px;
+  background-color: #1c2541;
+}
+
+.trackingFiltersDark select {
+  background-color: #2d3748;
+  border-color: #4a5568;
+  color: #fff;
+}
+
+.trackingFiltersDark select option {
+  background-color: #2d3748;
+  color: #fff;
 }
 
 /* Summary boxes */
@@ -251,7 +268,7 @@
 
 /* Dark mode */
 .trackingRateDark {
-  background: #3A506B;
+  background: #3a506b;
   border-radius: 10px;
   width: 48%;
   padding: 10px;
@@ -278,14 +295,13 @@
   padding: 10px;
   background: #fff;
 }
-
 .trackingListContainerDark {
   max-height: 600px;
   overflow-y: auto;
   border: 1px solid #ccc;
   border-radius: 10px;
   padding: 10px;
-  background: #3A506B;
+  background: #3a506b;
   color: #ffffff;
 }
 
@@ -303,7 +319,7 @@
 }
 
 .trackingTableDark thead th {
-  background: #1C2541;
+  background: #1c2541;
   color: #ffffff;
 }
 
@@ -329,7 +345,6 @@
   display: flex;
   justify-content: space-between;
 }
-
 .insightsHeaderDark {
   color: #ffffff;
   font-weight: bold;
@@ -343,7 +358,6 @@
   color: #333;
   margin: 0;
 }
-
 .insightsHeaderDark h3 {
   color: #ffffff;
   font-size: 1.3rem;
@@ -358,7 +372,25 @@
   border-radius: 5px;
 }
 
+.insightsFiltersDark {
+  display: flex;
+  gap: 10px;
+  background-color: #1c2541;
+}
+
+.insightsFiltersDark select {
+  background-color: #2d3748;
+  border-color: #4a5568;
+  color: #fff;
+}
+
+.insightsFiltersDark select option {
+  background-color: #2d3748;
+  color: #fff;
+}
+
 .insightsTabs {
+  flex: 1;
   display: flex;
   border: 1px solid #ccc;
   border-radius: 5px;
@@ -366,16 +398,44 @@
   max-width: 60%;
 }
 
+.insightsTabsContainer{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.icons{
+  cursor: pointer;
+  display: flex;
+  gap: 8px;
+}
+
 .insightsTab {
   flex: 1;
   text-align: center;
   padding: 10px 0;
   font-size: 0.9rem;
-  color: #555;
-  background-color: #f8f9fa;
   border: none;
   cursor: pointer;
   transition: background-color 0.3s, color 0.3s;
+}
+
+.insightsTabLight{
+  color: #555;
+  background-color: #f8f9fa;
+}
+
+.insightsTabDark{
+  color: #f8f9fa;
+  background-color: #1C2541;
+}
+
+.insightsTabDark:hover {
+  background-color: #3A506B;
+}
+
+.insightsTabLight:hover {
+  background-color: #e0e0e0;
 }
 
 .insightsTab:not(:last-child) {
@@ -393,6 +453,21 @@
   background-color: #e0e0e0;
 }
 
+.insightsDark .insightsTab {
+  background-color: #3A506B;
+  color: #ffffff;
+  border-right: 1px solid #555;
+}
+
+.insightsDark .insightsTab:hover {
+  background-color: #4A607B;
+}
+
+.insightsDark .insightsTab.activeTab {
+  background-color: #007bff;
+  color: #fff;
+}
+
 .insightsContent {
   display: flex;
   flex-direction: column;
@@ -406,22 +481,18 @@
   justify-content: space-between;
 }
 
-.insightLabel,
-.insightsLabel {
+.insightLabel {
   flex: 1;
   font-size: 0.9rem;
   color: #555;
   margin-right: 10px;
 }
-
-.insightLabelDark,
-.insightsLabelDark {
+.insightLabelDark {
   color: #ffffff;
   font-size: 0.9rem;
   flex: 1;
   margin-right: 10px;
 }
-
 .insightBar {
   flex: 2;
   height: 8px;
@@ -440,12 +511,141 @@
   transition: width 0.3s ease-in-out;
 }
 
-.insightPercentage,
-.insightsPercentage {
+.insightPercentage {
   font-size: 0.9rem;
   font-weight: bold;
   color: #333;
 }
+
+.insightsPercentageDark {
+    color: #ffffff;
+  }
+
+.tooltipWrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.tooltip {
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 10px;
+  font-size: 12px;
+  background-color: #111;
+  color: #fff;
+  border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+  z-index: 10;
+}
+
+.tooltipWrapper:hover .tooltip {
+  opacity: 1;
+}
+
+/* ---------- Export PDF modal ---------- */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal {
+  width: 420px;
+  max-width: calc(100vw - 32px);
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.modalDark {
+  background: #1C2541;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modalTitle {
+  margin: 0;
+}
+
+.modalClose {
+  border: none;
+  background: transparent;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.modalBody {
+  margin-top: 12px;
+}
+
+.modalMeta {
+  font-size: 16px;
+  opacity: 0.85;
+  display: grid;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.modalError {
+  margin-bottom: 12px;
+  font-size: 13px;
+  color: #b00020;
+}
+
+.modalActions {
+  display: flex;
+  gap: 10px;
+}
+
+.exportOptionsButtons,
+.exportOptionsButtonsDark {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.exportOptionsButtons{
+  background: transparent;
+  border: 1px solid #ccc;
+  color: #555;
+}
+
+.exportOptionsButtons:hover{
+  color: #555;
+  background-color: #e0e0e0;
+}
+
+.exportOptionsButtonsDark{
+  border: 1px solid #ccc;
+  color: #111;
+}
+
+.exportOptionsButtonsDark:hover {
+  background: #3A506B;
+}
+
+.exportOptionsButtons:disabled,
+.exportOptionsButtonsDark:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+
 
 /* ---------- PDF/Print helpers ---------- */
 .pageBreakBefore { break-before: page; page-break-before: always; }
@@ -461,23 +661,38 @@
   -webkit-overflow-scrolling: auto !important;
 }
 
-:global(html[data-exporting="true"]) * {
-  animation: none !important;
-  transition: none !important;
+/* Dark mode container */
+.insightsTabsDarkMode {
+  border: 1px solid #555;
+  background-color: #1e293b; /* Dark background */
+}
+/* Dark mode tab */
+.insightsTabDarkMode {
+  color: #ddd;
+  background-color: #1e293b;
 }
 
-:global(html[data-exporting="true"]) .participationLandingPageDark {
-  background-color: #1B2A41 !important;
+/* Dark mode divider */
+.insightsTabDarkMode:not(:last-child) {
+  border-right: 1px solid #555;
 }
 
-.printOnly { display: none; }
+.printOnly {
+  display: none;
+}
 
 /* Print styles using global selectors */
 /* Print styles using global selectors */
 @media print {
+
   /* Hide everything except the participation component */
-  :global(body > *:not(#root)) { display: none !important; }
-  :global(#root > *:not(.participation-landing-page-global)) { display: none !important; }
+  :global(body > *:not(#root)) {
+    display: none !important;
+  }
+
+  :global(#root > *:not(.participation-landing-page-global)) {
+    display: none !important;
+  }
 
   /* Sonar fix: avoid duplicate selector by scoping the print version */
   :global(#root) .participationLandingPage {
@@ -488,20 +703,21 @@
     overflow: visible !important;
   }
 
-  @page { 
-    size: auto; /* Use auto instead of Letter to allow multiple pages */
-    margin: 0.5in; 
+  @page {
+    size: auto;
+    /* Use auto instead of Letter to allow multiple pages */
+    margin: 0.5in;
   }
 
   @supports (-webkit-print-color-adjust: exact) {
-    * { 
-      -webkit-print-color-adjust: exact; 
+    * {
+      -webkit-print-color-adjust: exact;
     }
   }
-  
+
   @supports (print-color-adjust: exact) {
-    * { 
-      print-color-adjust: exact; 
+    * {
+      print-color-adjust: exact;
     }
   }
 
@@ -550,13 +766,13 @@
 
   /* Avoid breaking elements */
   :global(.tracking-table-global) tr {
-    break-inside: avoid; 
-    page-break-inside: avoid; 
+    break-inside: avoid;
+    page-break-inside: avoid;
   }
 
-  .insightItem { 
-    break-inside: avoid; 
-    page-break-inside: avoid; 
+  .insightItem {
+    break-inside: avoid;
+    page-break-inside: avoid;
   }
 
   /* Hide non-print elements */
@@ -564,15 +780,17 @@
   :global(.filter-wrapper-global),
   :global(.create-new-global),
   :global(.more-btn-global),
-  .noPrint { 
-    display: none !important; 
+  .noPrint {
+    display: none !important;
   }
 
-  .noPrintGap { margin-bottom: 8px; }
+  .noPrintGap {
+    margin-bottom: 8px;
+  }
 
   /* Ensure table headers are visible */
-  :global(.tracking-table-global) thead th { 
-    background: #f4f4f4 !important; 
+  :global(.tracking-table-global) thead th {
+    background: #f4f4f4 !important;
     color: #333 !important;
   }
 
@@ -581,8 +799,8 @@
     color: #ffffff !important;
   }
 
-  .printOnly { 
-    display: block !important; 
+  .printOnly {
+    display: block !important;
   }
 
   /* Force proper backgrounds for all elements */
@@ -596,20 +814,20 @@
   .participationLandingPage {
     background: white !important;
   }
-  
-  
+
+
   :global(#root) .case-card-global {
     background: white !important;
     color: #333 !important;
     border: 1px solid #ddd !important;
   }
-  
+
   .trackingContainer {
     background: white !important;
     color: #333 !important;
     border: 1px solid #ddd !important;
   }
-  
+
   .insights {
     background: white !important;
     color: #333 !important;
@@ -621,35 +839,35 @@
     background: #1B2A41 !important;
     color: #ffffff !important;
   }
-  
+
   .participationLandingPageDark :global(.case-card-global) {
     background: #3A506B !important;
     color: #ffffff !important;
     border: 1px solid #555 !important;
   }
-  
+
   .participationLandingPageDark .trackingContainerDark {
     background: #1C2541 !important;
     color: #ffffff !important;
     border: 1px solid #555 !important;
   }
-  
+
   .participationLandingPageDark .insightsDark {
     background: #1C2541 !important;
     color: #ffffff !important;
     border: 1px solid #555 !important;
   }
-  
+
   .participationLandingPageDark .trackingListContainerDark {
     background: #3A506B !important;
     color: #ffffff !important;
   }
-  
+
   .participationLandingPageDark :global(.tracking-table-global-dark) thead th {
     background: #1C2541 !important;
     color: #ffffff !important;
   }
-  
+
   .participationLandingPageDark .trackingRateDark {
     background: #3A506B !important;
     color: #ffffff !important;
@@ -702,4 +920,15 @@
   .participationLandingPageDark .insightsPercentageDark {
     color: #ffffff !important;
   }
+}
+/* Active tab dark mode */
+.activeTabDarkMode {
+  background-color: #3b82f6;
+  color: #fff;
+  font-weight: bold;
+}
+
+/* Hover effect dark mode */
+.insightsTabDarkMode:hover {
+  background-color: #374151;
 }

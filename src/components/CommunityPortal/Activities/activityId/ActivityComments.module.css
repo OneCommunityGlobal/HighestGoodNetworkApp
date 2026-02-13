@@ -4,7 +4,7 @@
   display: flex;
   background: #fff;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   padding: 32px;
   margin-bottom: 24px;
   gap: 32px;
@@ -56,14 +56,14 @@
   height: 32px;
   border-radius: 50%;
   border: 2px solid #fff;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
 }
 .calendar {
   min-width: 220px;
   background: #fafafa;
   border-radius: 8px;
   padding: 16px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
 }
 .tabs {
   display: flex;
@@ -171,7 +171,7 @@
   background: #fafafa;
   border-radius: 8px;
   padding: 16px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
 }
 .commentTopRow {
   display: flex;
@@ -202,7 +202,9 @@
   display: flex;
   gap: 8px;
 }
-.upvoteBtn, .downvoteBtn, .replyBtn {
+.upvoteBtn,
+.downvoteBtn,
+.replyBtn {
   background: none;
   border: none;
   color: #444;
@@ -212,7 +214,9 @@
   border-radius: 6px;
   transition: background 0.2s;
 }
-.upvoteBtn:hover, .downvoteBtn:hover, .replyBtn:hover {
+.upvoteBtn:hover,
+.downvoteBtn:hover,
+.replyBtn:hover {
   background: #e3eafc;
 }
 .loadMoreBtn {

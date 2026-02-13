@@ -27,7 +27,7 @@
   align-items: center;
   padding: 20px 0;
   background: #e5e5e5;
-  width: 100%
+  width: 100%;
 }
 
 .logoContainer img {
@@ -70,11 +70,12 @@
 
 .lbMessagingContact {
   display: flex;
-  padding: 2px;
+  align-items: center;
+  padding: 8px;
   margin: 2px;
-  cursor: pointer;
   background-color: white;
   border-radius: 5px;
+  border-bottom: 1px solid #eee;
 }
 
 .lbMessagingContact:hover {
@@ -82,7 +83,10 @@
 }
 
 .lbMessagingContact img {
-  border-radius: 20%;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  margin-right: 10px;
 }
 
 .lbMessagingContactInfo {
@@ -146,7 +150,7 @@
   display: none;
 }
 
-.activeInlbMessagingContactsBody  {
+.activeInlbMessagingContactsBody {
   display: block;
 }
 
@@ -238,7 +242,6 @@
   margin-right: 10px;
 }
 
-
 .received {
   justify-content: flex-start !important;
   margin-left: 10px;
@@ -291,6 +294,7 @@
 .lbMsgIcon {
   height: 100%;
   width: 75% !important;
+  cursor: pointer;
 }
 
 .lgMessagingBellSelectDropdown {
@@ -309,7 +313,7 @@
   padding: 5px;
 }
 
-.activeInlgMessagingBellSelectDropdown{
+.activeInlgMessagingBellSelectDropdown {
   display: flex;
 }
 
@@ -414,7 +418,7 @@
   padding: 10px;
 }
 
-.lbMessagingContact {
+.lbMobileContactsPanel .lbMessagingContact {
   display: flex;
   align-items: center;
   padding: 8px;
@@ -422,7 +426,7 @@
   cursor: pointer;
 }
 
-.lbMessagingContact img {
+.lbMobileContactsPanel .lbMessagingContact img {
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -432,8 +436,4 @@
 .lbMessagingContactName {
   font-size: 15px;
   font-weight: 500;
-}
-
-.lbMsgIcon {
-  cursor: pointer;
 }
