@@ -127,6 +127,11 @@
   border-radius: 6px;
   text-align: center;
   box-shadow: 0 2px 5px var(--card-shadow);
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  overflow-y: visible;
 }
 
 
@@ -182,7 +187,9 @@
 
 .normalCard {
   width: 100%;
+  max-width: 100%;
   min-height: 250px;
+  box-sizing: border-box;
 }
 
 .mapCard {
@@ -225,6 +232,9 @@
   border-top: 1px solid var(--card-shadow);
   animation: fadeIn 0.3s ease-in-out;
   background: var(--section-bg);
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 /* Adjust grid columns based on section size */
@@ -234,6 +244,13 @@
 
 .weeklyProjectSummaryDashboardSection.small .weeklyProjectSummaryDashboardCategoryContent {
   grid-template-columns: 1fr;
+}
+
+/* Stack cards vertically on tablet and mobile screens */
+@media (max-width: 1024px) {
+  .weeklyProjectSummaryDashboardSection.half .weeklyProjectSummaryDashboardCategoryContent {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* ---------------- DARK MODE VARIABLES ---------------- */
