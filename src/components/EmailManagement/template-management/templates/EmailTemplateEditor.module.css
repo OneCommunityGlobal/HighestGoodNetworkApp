@@ -1,5 +1,5 @@
 /* ==========================================================================
-   EMAIL TEMPLATE EDITOR - COMPACT & RESPONSIVE CSS
+   EMAIL TEMPLATE EDITOR - ENHANCED STYLING WITH HORIZONTAL BUTTONS
    ========================================================================== */
 
 /* Base Container */
@@ -20,42 +20,113 @@
 }
 
 /* ==========================================================================
-   COMPACT HEADER
+   COMPACT HEADER WITH HORIZONTAL BUTTONS
    ========================================================================== */
 
 .email-template-editor .editor-header {
   background: transparent;
   padding: 1rem 0;
-  margin-bottom: 0.5rem;
+  margin-bottom: 1.5rem;
   border-bottom: 1px solid #e5e7eb;
 }
 
 .email-template-editor .header-container {
   display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.email-template-editor .template-name-field {
-  width: 100%;
-}
-
-.email-template-editor .action-buttons-container {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1.5rem;
   flex-wrap: wrap;
 }
 
+.email-template-editor .template-name-field {
+  flex: 1;
+  min-width: 300px;
+}
+
+.email-template-editor .template-name-field input {
+  font-size: 1.1rem;
+  font-weight: 600;
+  padding: 0.75rem 1rem;
+  border: 2px solid #dee2e6;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  background: white;
+  color: #495057;
+  width: 100%;
+}
+
+.email-template-editor .template-name-field input:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.15);
+  outline: none;
+}
+
+.email-template-editor .template-name-field input::placeholder {
+  color: #9ca3af;
+  font-style: italic;
+}
+
+/* Action Buttons Container - HORIZONTAL LAYOUT */
+.email-template-editor .action-buttons-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-shrink: 0;
+  flex-wrap: nowrap;
+}
+
+/* Unsaved Changes Indicator */
+.email-template-editor .unsaved-changes-indicator {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.email-template-editor .unsaved-changes-indicator small {
+  font-weight: 500;
+  color: #856404;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+/* Action Buttons - SIDE BY SIDE */
 .email-template-editor .action-buttons {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  flex-wrap: wrap;
+  flex-shrink: 0;
+  flex-wrap: nowrap;
 }
 
-.email-template-editor .unsaved-changes-indicator {
-  margin-right: 0.75rem;
+.email-template-editor .action-buttons .btn {
+  font-weight: 500;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  min-width: auto;
+}
+
+.email-template-editor .action-buttons .btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.email-template-editor .action-buttons .btn:active {
+  transform: translateY(0);
 }
 
 /* Loading state styling */
@@ -113,148 +184,6 @@
   transform: none;
 }
 
-/* Empty variables state */
-.email-template-editor .empty-variables-state {
-  margin-top: 0.5rem;
-}
-
-.email-template-editor .empty-variables-state .border {
-  border-color: #e9ecef !important;
-  background-color: #f8f9fa;
-  transition: all 0.2s ease-in-out;
-  border-radius: 0.375rem;
-  padding: 1rem;
-}
-
-.email-template-editor .empty-variables-state .border:hover {
-  border-color: #dee2e6 !important;
-  background-color: #f1f3f4;
-}
-
-.email-template-editor .empty-variables-state h6 {
-  font-size: 0.95rem;
-  letter-spacing: 0.025em;
-}
-
-.email-template-editor .empty-variables-state p {
-  line-height: 1.5;
-  max-width: 400px;
-  margin: 0 auto;
-}
-
-.email-template-editor .empty-variables-state strong {
-  color: #495057;
-  font-weight: 600;
-}
-
-/* Dark mode support for empty variables state */
-.email-template-editor.dark-mode .empty-variables-state .border {
-  border-color: #495057 !important;
-  background-color: #2d3748;
-}
-
-.email-template-editor.dark-mode .empty-variables-state .border:hover {
-  border-color: #4a5568 !important;
-  background-color: #374151;
-}
-
-.email-template-editor.dark-mode .empty-variables-state h6 {
-  color: #a0aec0;
-}
-
-.email-template-editor.dark-mode .empty-variables-state p {
-  color: #718096;
-}
-
-.email-template-editor.dark-mode .empty-variables-state strong {
-  color: #e2e8f0;
-}
-
-/* Auto Extract button responsive styling */
-.email-template-editor .btn-auto-extract {
-  white-space: nowrap;
-  min-width: auto;
-  transition: all 0.2s ease-in-out;
-}
-
-.email-template-editor .btn-auto-extract:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-/* Responsive text for Auto Extract button */
-@media (max-width: 576px) {
-  .email-template-editor .btn-auto-extract {
-    padding: 0.375rem 0.75rem;
-    font-size: 0.8rem;
-  }
-
-  .email-template-editor .btn-auto-extract .me-1 {
-    margin-right: 0.25rem !important;
-  }
-}
-
-@media (max-width: 400px) {
-  .email-template-editor .btn-auto-extract {
-    padding: 0.25rem 0.5rem;
-    font-size: 0.75rem;
-  }
-
-  .email-template-editor .btn-auto-extract .me-1 {
-    margin-right: 0.125rem !important;
-  }
-}
-
-.email-template-editor .unsaved-changes-indicator small {
-  font-weight: 500;
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.6;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
-.email-template-editor .template-name-field .form-control-sm {
-  font-size: 0.8125rem;
-  padding: 0.375rem 0.5rem;
-  border-radius: 0.25rem;
-  border: 1px solid #d1d5db;
-  transition: all 0.15s ease-in-out;
-  background-color: #ffffff;
-  width: 100%;
-}
-
-.email-template-editor .template-name-field .form-control-sm:focus {
-  border-color: #3b82f6;
-  outline: 0;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
-  background-color: #ffffff;
-}
-
-.email-template-editor .back-button {
-  font-weight: 500;
-  border-radius: 0.375rem;
-  transition: all 0.15s ease-in-out;
-}
-
-.email-template-editor .back-button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.email-template-editor .auto-save-status {
-  margin-left: auto;
-  margin-right: 0.5rem;
-}
-
 /* ==========================================================================
    BASIC INFORMATION SECTION
    ========================================================================== */
@@ -306,6 +235,10 @@
 
 .email-template-editor .variables-section {
   margin-bottom: 1.5rem;
+  padding: 1.25rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
 }
 
 .email-template-editor .variables-header {
@@ -317,6 +250,8 @@
   font-size: 1rem;
   font-weight: 600;
   margin: 0;
+  display: flex;
+  align-items: center;
 }
 
 .email-template-editor .variables-header .btn {
@@ -333,83 +268,13 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.email-template-editor .variables-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-top: 0.75rem;
-}
-
-.email-template-editor .variable-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 1rem;
-  padding: 0.375rem 0.75rem;
-  transition: all 0.15s ease-in-out;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
-  white-space: nowrap;
-}
-
-.email-template-editor .variable-chip:hover {
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-  border-color: #d1d5db;
-}
-
-.email-template-editor .variable-code {
-  font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
-  background: #f3f4f6;
-  padding: 0.125rem 0.375rem;
-  border-radius: 0.375rem;
-  font-size: 0.6875rem;
-  color: #6b7280;
-  border: 1px solid #e5e7eb;
-  white-space: nowrap;
-}
-
-.email-template-editor .variable-type-badge,
-.email-template-editor .required-badge {
-  font-size: 0.625rem;
-  font-weight: 500;
-  padding: 0.125rem 0.375rem;
-  border-radius: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.025em;
-  white-space: nowrap;
-}
-
-.email-template-editor .variable-type-badge {
-  background-color: #f3f4f6;
-  color: #6b7280;
-  border: 1px solid #e5e7eb;
-}
-
-.email-template-editor .required-badge {
-  background-color: #fef3c7;
-  color: #92400e;
-  border: 1px solid #fde68a;
-}
-
-.email-template-editor .chip-action-btn {
-  padding: 0.125rem;
-  border-radius: 1rem;
-  font-size: 0.6875rem;
-  width: 20px;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 20px;
-}
-
-/* Template variable count badge styling */
+/* Template Variable Count Badge */
 .email-template-editor .template-variable-count {
   font-weight: 600;
   border-radius: 0.5rem;
   padding: 0.25rem 0.5rem;
   transition: all 0.2s ease-in-out;
+  font-size: 0.75rem !important;
 }
 
 .email-template-editor .template-variable-count.light-mode {
@@ -427,6 +292,134 @@
 .email-template-editor .template-variable-count:hover {
   transform: translateY(-1px);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Auto Extract Button */
+.email-template-editor .btn-auto-extract {
+  white-space: nowrap;
+  min-width: auto;
+  transition: all 0.2s ease-in-out;
+  font-weight: 500;
+  border-radius: 6px;
+}
+
+.email-template-editor .btn-auto-extract:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.email-template-editor .btn-auto-extract:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Variables Chips - Enhanced with Type Badges */
+.email-template-editor .variables-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+  padding: 0.5rem;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.email-template-editor .variable-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  border: 1.5px solid #dee2e6;
+  border-radius: 20px;
+  padding: 8px 12px;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  white-space: nowrap;
+}
+
+.email-template-editor .variable-chip:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  border-color: #007bff;
+  transform: translateY(-2px);
+  background: #f8f9fa;
+}
+
+.email-template-editor .variable-code {
+  font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+  background: #e9ecef;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  color: #495057;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.email-template-editor .variable-type-badge {
+  font-size: 0.7rem !important;
+  font-weight: 600;
+  padding: 4px 8px !important;
+  border-radius: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  background: #6c757d !important;
+  color: white !important;
+}
+
+.email-template-editor .chip-action-btn {
+  padding: 0.25rem 0.4rem !important;
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  border: none !important;
+  line-height: 1;
+}
+
+.email-template-editor .chip-action-btn:hover {
+  transform: scale(1.1);
+}
+
+/* Empty variables state */
+.email-template-editor .empty-variables-state {
+  margin-top: 0.5rem;
+  padding: 1rem;
+}
+
+.email-template-editor .empty-variables-state .border {
+  border-color: #e9ecef !important;
+  background-color: white;
+  transition: all 0.2s ease-in-out;
+  border-radius: 0.375rem;
+  padding: 1rem;
+}
+
+.email-template-editor .empty-variables-state .border:hover {
+  border-color: #dee2e6 !important;
+  background-color: #f8f9fa;
+}
+
+.email-template-editor .empty-variables-state h6 {
+  font-size: 0.95rem;
+  letter-spacing: 0.025em;
+}
+
+.email-template-editor .empty-variables-state p {
+  line-height: 1.5;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.email-template-editor .empty-variables-state strong {
+  color: #495057;
+  font-weight: 600;
 }
 
 /* ==========================================================================
@@ -454,65 +447,134 @@
    DARK MODE SUPPORT
    ========================================================================== */
 
-/* Light Mode */
-.email-template-management.light-mode .email-template-editor .editor-header {
-  border-bottom-color: #e5e7eb;
-}
-
-.email-template-management.light-mode .email-template-editor .form-label,
-.email-template-management.light-mode .email-template-editor .variables-header h5,
-.email-template-management.light-mode .email-template-editor .template-name-field .form-label-sm {
-  color: #374151;
-}
-
-.email-template-management.light-mode .email-template-editor .variable-chip {
-  background: #ffffff;
-  border-color: #e5e7eb;
-}
-
-.email-template-management.light-mode .email-template-editor .variable-code {
-  background: #f3f4f6;
-  color: #6b7280;
-  border-color: #e5e7eb;
-}
-
-.email-template-management.light-mode .email-template-editor .empty-variables-state .border {
-  border-color: #e5e7eb !important;
-  background: #f9fafb;
-}
-
-/* Dark Mode */
+/* Dark Mode - Editor Header */
 .email-template-management.dark-mode .email-template-editor .editor-header {
   border-bottom-color: #374151;
 }
 
+/* Dark Mode - Template Name Field */
+.email-template-management.dark-mode .email-template-editor .template-name-field input {
+  background: #2d3748;
+  border-color: #4a5568;
+  color: #e2e8f0;
+}
+
+.email-template-management.dark-mode .email-template-editor .template-name-field input:focus {
+  border-color: #63b3ed;
+  box-shadow: 0 0 0 0.25rem rgba(99, 179, 237, 0.15);
+}
+
+.email-template-management.dark-mode .email-template-editor .template-name-field input::placeholder {
+  color: #6b7280;
+}
+
+/* Dark Mode - Unsaved Changes Indicator */
+.email-template-management.dark-mode .email-template-editor .unsaved-changes-indicator {
+  background: rgba(255, 193, 7, 0.2);
+  border-color: #ffc107;
+}
+
+.email-template-management.dark-mode .email-template-editor .unsaved-changes-indicator small {
+  color: #ffc107;
+}
+
+/* Dark Mode - Action Buttons */
+.email-template-management.dark-mode .email-template-editor .action-buttons .btn-outline-secondary {
+  background: #2d3748;
+  color: #e2e8f0;
+  border-color: #4a5568;
+}
+
+.email-template-management.dark-mode .email-template-editor .action-buttons .btn-outline-secondary:hover {
+  background: #4a5568;
+  color: #e2e8f0;
+}
+
+.email-template-management.dark-mode .email-template-editor .action-buttons .btn-primary {
+  background: #3182ce;
+  border-color: #3182ce;
+}
+
+.email-template-management.dark-mode .email-template-editor .action-buttons .btn-primary:hover {
+  background: #2c5aa0;
+  border-color: #2c5aa0;
+}
+
+.email-template-management.dark-mode .email-template-editor .action-buttons .btn-secondary {
+  background: #4a5568;
+  border-color: #718096;
+  color: #e2e8f0;
+}
+
+.email-template-management.dark-mode .email-template-editor .action-buttons .btn-secondary:hover {
+  background: #718096;
+  color: #e2e8f0;
+}
+
+/* Dark Mode - Form Labels */
 .email-template-management.dark-mode .email-template-editor .form-label,
-.email-template-management.dark-mode .email-template-editor .variables-header h5,
-.email-template-management.dark-mode .email-template-editor .template-name-field .form-label-sm {
+.email-template-management.dark-mode .email-template-editor .variables-header h5 {
   color: #e5e7eb;
 }
 
+/* Dark Mode - Variables Section */
+.email-template-management.dark-mode .email-template-editor .variables-section {
+  background: #1a202c;
+  border-color: #2d3748;
+}
+
+/* Dark Mode - Variable Chips */
 .email-template-management.dark-mode .email-template-editor .variable-chip {
-  background: #1f2937;
-  border-color: #374151;
+  background: #2d3748;
+  border-color: #4a5568;
+  color: #e2e8f0;
+}
+
+.email-template-management.dark-mode .email-template-editor .variable-chip:hover {
+  background: #374151;
+  border-color: #63b3ed;
 }
 
 .email-template-management.dark-mode .email-template-editor .variable-code {
-  background: #111827;
-  color: #9ca3af;
-  border-color: #374151;
+  background: #4a5568;
+  color: #f8f9fa;
+  border-color: #718096;
 }
 
-/* Dark mode loading state */
+.email-template-management.dark-mode .email-template-editor .variable-type-badge {
+  background: #4a5568 !important;
+  color: #e2e8f0 !important;
+}
+
+/* Dark Mode - Empty Variables State */
+.email-template-management.dark-mode .email-template-editor .empty-variables-state .border {
+  border-color: #4a5568 !important;
+  background: #2d3748;
+}
+
+.email-template-management.dark-mode .email-template-editor .empty-variables-state .border:hover {
+  border-color: #4a5568 !important;
+  background: #374151;
+}
+
+.email-template-management.dark-mode .email-template-editor .empty-variables-state h6 {
+  color: #a0aec0;
+}
+
+.email-template-management.dark-mode .email-template-editor .empty-variables-state p {
+  color: #718096;
+}
+
+.email-template-management.dark-mode .email-template-editor .empty-variables-state strong {
+  color: #e2e8f0;
+}
+
+/* Dark Mode - Loading State */
 .email-template-management.dark-mode .email-template-editor .loading-state {
   color: #9ca3af;
 }
 
-.email-template-management.dark-mode .email-template-editor .empty-variables-state .border {
-  border-color: #374151 !important;
-  background: #1f2937;
-}
-
+/* Dark Mode - Form Controls */
 .email-template-management.dark-mode .email-template-editor .form-control,
 .email-template-management.dark-mode .email-template-editor .form-select {
   background-color: #1f2937;
@@ -531,18 +593,6 @@
   color: #6b7280;
 }
 
-.email-template-management.dark-mode .email-template-editor .variable-type-badge {
-  background-color: #374151;
-  color: #9ca3af;
-  border-color: #4b5563;
-}
-
-.email-template-management.dark-mode .email-template-editor .required-badge {
-  background-color: #451a03;
-  color: #fbbf24;
-  border-color: #92400e;
-}
-
 /* ==========================================================================
    RESPONSIVE DESIGN - MOBILE FIRST
    ========================================================================== */
@@ -554,7 +604,7 @@
     margin-bottom: 0.5rem;
   }
 
-  .email-template-editor .editor-header .d-flex {
+  .email-template-editor .header-container {
     flex-direction: column;
     align-items: stretch;
     gap: 0.75rem;
@@ -565,10 +615,25 @@
     min-width: auto;
   }
 
-  .email-template-editor .auto-save-status {
-    margin-left: 0;
-    margin-right: 0;
+  .email-template-editor .action-buttons-container {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .email-template-editor .unsaved-changes-indicator {
     order: -1;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .email-template-editor .action-buttons {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .email-template-editor .action-buttons .btn {
+    flex: 1;
+    min-width: calc(50% - 0.25rem);
   }
 
   .email-template-editor .basic-info-section {
@@ -616,6 +681,11 @@
     padding: 0.5rem;
     font-size: 0.8125rem;
   }
+
+  .email-template-editor .btn-auto-extract {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.8rem;
+  }
 }
 
 /* Small Devices (landscape phones, 576px and up) */
@@ -637,10 +707,6 @@
   .email-template-editor .action-buttons {
     flex-wrap: wrap;
     gap: 0.5rem;
-  }
-
-  .email-template-editor .variable-item .d-flex {
-    flex-wrap: wrap;
   }
 }
 
@@ -669,7 +735,7 @@
 /* Large Devices (desktops, 992px and up) */
 @media (min-width: 992px) {
   .email-template-editor .template-editor-content {
-    padding: 0 0rem;
+    padding: 0;
   }
 
   .email-template-editor .header-container {
@@ -686,6 +752,11 @@
 
   .email-template-editor .action-buttons-container {
     flex-shrink: 0;
+    flex-direction: row;
+  }
+
+  .email-template-editor .action-buttons {
+    flex-wrap: nowrap;
   }
 }
 
@@ -722,12 +793,6 @@
 
 /* Fix for Safari flexbox bugs */
 .email-template-editor .d-flex {
-  -webkit-box-align: center;
-  -webkit-align-items: center;
-  align-items: center;
-}
-
-.email-template-editor .variable-item .d-flex {
   -webkit-box-align: center;
   -webkit-align-items: center;
   align-items: center;

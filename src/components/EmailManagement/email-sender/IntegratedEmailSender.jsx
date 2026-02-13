@@ -8,7 +8,6 @@ import React, {
   lazy,
   useReducer,
 } from 'react';
-// import WeeklyUpdateComposer from './WeeklyUpdateComposer';
 import { connect, useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -64,12 +63,10 @@ import {
   YOUTUBE_THUMBNAIL_QUALITIES,
 } from './constants/emailConstants';
 
-// Lazy load heavy components
 const LazyEditor = lazy(() =>
   import('@tinymce/tinymce-react').then(module => ({ default: module.Editor })),
 );
 
-// Memoized VariableRow component for better performance
 const VariableRow = React.memo(
   ({
     variable,
@@ -225,7 +222,7 @@ const VariableRow = React.memo(
 );
 
 VariableRow.displayName = 'VariableRow';
-// Initial state for email sender
+
 const initialEmailState = {
   selectedTemplate: null,
   customContent: '',
@@ -250,31 +247,24 @@ const initialEmailState = {
   previewError: null,
   backendPreviewData: null,
   componentError: null,
-  // NEW PROPERTIES FOR DRAFT PERSISTENCE
   showDraftNotification: false,
   draftAge: null,
   isOnline: typeof navigator !== 'undefined' ? navigator.onLine : true,
   showOfflineWarning: false,
 };
 
-// Reducer function
 const emailReducer = (state, action) => {
   switch (action.type) {
     case 'SET_SELECTED_TEMPLATE':
       return { ...state, selectedTemplate: action.payload };
-
     case 'SET_CUSTOM_CONTENT':
       return { ...state, customContent: action.payload };
-
     case 'SET_CUSTOM_SUBJECT':
       return { ...state, customSubject: action.payload };
-
     case 'SET_RECIPIENTS':
       return { ...state, recipients: action.payload };
-
     case 'SET_VARIABLE_VALUES':
       return { ...state, variableValues: action.payload };
-
     case 'UPDATE_VARIABLE_VALUE':
       return {
         ...state,
@@ -283,16 +273,12 @@ const emailReducer = (state, action) => {
           [action.payload.name]: action.payload.value,
         },
       };
-
     case 'SET_EMAIL_DISTRIBUTION':
       return { ...state, emailDistribution: action.payload };
-
     case 'SET_SHOW_PREVIEW_MODAL':
       return { ...state, showPreviewModal: action.payload };
-
     case 'SET_VALIDATION_ERRORS':
       return { ...state, validationErrors: action.payload };
-
     case 'UPDATE_VALIDATION_ERROR':
       return {
         ...state,
@@ -301,63 +287,44 @@ const emailReducer = (state, action) => {
           [action.payload.field]: action.payload.error,
         },
       };
-
     case 'SET_RECIPIENT_LIST':
       return { ...state, recipientList: action.payload };
-
     case 'SET_IS_SENDING':
       return { ...state, isSending: action.payload };
-
     case 'SET_API_ERROR':
       return { ...state, apiError: action.payload };
-
     case 'SET_RETRY_COUNT':
       return { ...state, retryCount: action.payload };
-
     case 'INCREMENT_RETRY_COUNT':
       return { ...state, retryCount: state.retryCount + 1 };
-
     case 'SET_IS_RETRYING':
       return { ...state, isRetrying: action.payload };
-
     case 'SET_LOADING_PROGRESS':
       return { ...state, loadingProgress: action.payload };
-
     case 'SET_EDITOR_LOADED':
       return { ...state, isEditorLoaded: action.payload };
-
     case 'SET_EDITOR_ERROR':
       return { ...state, editorError: action.payload };
-
     case 'SET_SHOW_RETRY_OPTIONS':
       return { ...state, showRetryOptions: action.payload };
-
     case 'SET_LAST_SUCCESSFUL_LOAD':
       return { ...state, lastSuccessfulLoad: action.payload };
-
     case 'SET_FULL_TEMPLATE_CONTENT':
       return { ...state, fullTemplateContent: action.payload };
-
     case 'SET_PREVIEW_LOADING':
       return { ...state, previewLoading: action.payload };
-
     case 'SET_PREVIEW_ERROR':
       return { ...state, previewError: action.payload };
-
     case 'SET_BACKEND_PREVIEW_DATA':
       return { ...state, backendPreviewData: action.payload };
-
     case 'SET_COMPONENT_ERROR':
       return { ...state, componentError: action.payload };
-
     case 'RESET_FORM':
       return {
         ...initialEmailState,
-        // Keep some state that shouldn't reset
         apiError: state.apiError,
         lastSuccessfulLoad: state.lastSuccessfulLoad,
       };
-
     case 'RESET_ERRORS':
       return {
         ...state,
@@ -367,30 +334,25 @@ const emailReducer = (state, action) => {
         previewError: null,
         componentError: null,
       };
-
     case 'SET_SHOW_DRAFT_NOTIFICATION':
       return { ...state, showDraftNotification: action.payload };
-
     case 'SET_DRAFT_AGE':
       return { ...state, draftAge: action.payload };
-
     case 'SET_IS_ONLINE':
       return { ...state, isOnline: action.payload };
-
     case 'SET_SHOW_OFFLINE_WARNING':
       return { ...state, showOfflineWarning: action.payload };
-
     case 'RESTORE_DRAFT':
       return {
         ...state,
         ...action.payload,
         showDraftNotification: false,
       };
-
     default:
       return state;
   }
 };
+
 const IntegratedEmailSender = ({
   templates,
   loading,
@@ -409,13 +371,12 @@ const IntegratedEmailSender = ({
   const darkMode = useSelector(state => state.theme.darkMode);
   const currentUser = useSelector(state => state.auth?.user);
 
-  // Get current mode from URL query params, default to 'template'
   const getCurrentModeFromURL = useCallback(() => {
     const urlParams = new URLSearchParams(location.search);
     const mode = urlParams.get('mode');
     if (mode === EMAIL_MODES.CUSTOM) return EMAIL_MODES.CUSTOM;
     if (mode === EMAIL_MODES.WEEKLY_UPDATE) return EMAIL_MODES.WEEKLY_UPDATE;
-    return EMAIL_MODES.TEMPLATES; // Default to template mode
+    return EMAIL_MODES.TEMPLATES;
   }, [location.search]);
 
   const [emailMode, setEmailMode] = useState(() => {
@@ -423,13 +384,11 @@ const IntegratedEmailSender = ({
     const mode = urlParams.get('mode');
     if (mode === EMAIL_MODES.CUSTOM) return EMAIL_MODES.CUSTOM;
     if (mode === EMAIL_MODES.WEEKLY_UPDATE) return EMAIL_MODES.WEEKLY_UPDATE;
-    return EMAIL_MODES.TEMPLATES; // Default to template mode
+    return EMAIL_MODES.TEMPLATES;
   });
 
-  // Use reducer for email sender state
   const [state, dispatch] = useReducer(emailReducer, initialEmailState);
 
-  // Destructure state
   const {
     selectedTemplate,
     customContent,
@@ -460,13 +419,11 @@ const IntegratedEmailSender = ({
     showOfflineWarning,
   } = state;
 
-  // Refs for performance optimization
   const abortControllerRef = useRef(null);
   const timeoutRefs = useRef([]);
   const progressIntervalRef = useRef(null);
   const editorLoadTimeoutRef = useRef(null);
 
-  // Enhanced loading component with progress bar
   const EnhancedLoader = useMemo(() => {
     const LoaderComponent = ({ message = 'Loading...', progress = 0, showProgress = true }) => (
       <div className="enhanced-loader">
@@ -482,7 +439,6 @@ const IntegratedEmailSender = ({
     return LoaderComponent;
   }, []);
 
-  // Fallback component for failed operations
   const FallbackComponent = useMemo(() => {
     const FallbackComponentInner = ({
       title,
@@ -519,7 +475,6 @@ const IntegratedEmailSender = ({
     return FallbackComponentInner;
   }, []);
 
-  // Simple template loading indicator
   const TemplateSelectLoader = useMemo(() => {
     const TemplateLoaderComponent = () => (
       <div className="template-loading-simple d-flex align-items-center" style={{ gap: '8px' }}>
@@ -531,19 +486,16 @@ const IntegratedEmailSender = ({
     return TemplateLoaderComponent;
   }, []);
 
-  // Memoized URL update function
   const updateModeURL = useCallback(
     mode => {
       const urlParams = new URLSearchParams(location.search);
-
-      // Clear template management parameters when switching email sender modes
       urlParams.delete('view');
       urlParams.delete('templateId');
 
       if (mode === EMAIL_MODES.TEMPLATES) {
-        urlParams.delete('mode'); // Remove mode param for template (default)
+        urlParams.delete('mode');
       } else {
-        urlParams.set('mode', mode); // Set mode param ('custom' or 'weekly')
+        urlParams.set('mode', mode);
       }
 
       const newSearch = urlParams.toString();
@@ -553,19 +505,15 @@ const IntegratedEmailSender = ({
     [location.search, location.pathname, history],
   );
 
-  // Handle mode change with cleanup
   const handleModeChange = useCallback(
     mode => {
-      // Cancel any pending requests
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
       }
 
-      // Clear all timeouts
       timeoutRefs.current.forEach(timeout => clearTimeout(timeout));
       timeoutRefs.current = [];
 
-      // Reset all states when changing modes
       dispatch({ type: 'SET_SELECTED_TEMPLATE', payload: null });
       dispatch({ type: 'SET_FULL_TEMPLATE_CONTENT', payload: null });
       dispatch({ type: 'SET_CUSTOM_CONTENT', payload: '' });
@@ -586,14 +534,11 @@ const IntegratedEmailSender = ({
     [updateModeURL],
   );
 
-  // Complete state reset function with cleanup
   const resetAllStates = useCallback(() => {
-    // Cancel any pending requests
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
     }
 
-    // Clear all timeouts
     timeoutRefs.current.forEach(timeout => clearTimeout(timeout));
     timeoutRefs.current = [];
 
@@ -612,19 +557,15 @@ const IntegratedEmailSender = ({
     dispatch({ type: 'SET_IS_RETRYING', payload: false });
   }, []);
 
-  // Update useTemplate when URL changes (e.g., browser back/forward)
   useEffect(() => {
     const newMode = getCurrentModeFromURL();
     if (newMode !== emailMode) {
-      // Always reset all states when switching modes
       resetAllStates();
       setEmailMode(newMode);
     }
   }, [location.search, emailMode, resetAllStates, getCurrentModeFromURL]);
 
-  // Enhanced template fetching with progress tracking
   useEffect(() => {
-    // Create abort controller for this request
     abortControllerRef.current = new AbortController();
 
     const fetchTemplatesWithProgress = async () => {
@@ -633,7 +574,6 @@ const IntegratedEmailSender = ({
         dispatch({ type: 'SET_API_ERROR', payload: null });
         dispatch({ type: 'SET_SHOW_RETRY_OPTIONS', payload: false });
 
-        // Simulate progress for better UX
         const progressInterval = setInterval(() => {
           dispatch({
             type: 'SET_LOADING_PROGRESS',
@@ -648,7 +588,6 @@ const IntegratedEmailSender = ({
 
         await fetchEmailTemplates({
           search: '',
-          // no pagination for dropdown; fetch all
           sortBy: 'updated_at',
           sortOrder: 'desc',
           includeEmailContent: false,
@@ -658,7 +597,6 @@ const IntegratedEmailSender = ({
         dispatch({ type: 'SET_LAST_SUCCESSFUL_LOAD', payload: new Date() });
         clearInterval(progressInterval);
 
-        // Reset progress after success
         setTimeout(() => dispatch({ type: 'SET_LOADING_PROGRESS', payload: 0 }), 1000);
       } catch (error) {
         if (error.name !== 'AbortError') {
@@ -674,7 +612,6 @@ const IntegratedEmailSender = ({
 
     fetchTemplatesWithProgress();
 
-    // Cleanup function
     return () => {
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
@@ -685,11 +622,9 @@ const IntegratedEmailSender = ({
     };
   }, [fetchEmailTemplates]);
 
-  // Handle preSelectedTemplate
   useEffect(() => {
     if (preSelectedTemplate && templates && templates.length > 0) {
       dispatch({ type: 'SET_SELECTED_TEMPLATE', payload: preSelectedTemplate });
-      // Initialize variable values directly to avoid dependency issues
       const initialValues = {};
       if (
         preSelectedTemplate &&
@@ -706,24 +641,17 @@ const IntegratedEmailSender = ({
     }
   }, [preSelectedTemplate, templates]);
 
-  // Cleanup effect to reset states when component unmounts
   useEffect(() => {
     return () => {
-      // Cancel any pending requests
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
       }
-
-      // Clear all timeouts
       timeoutRefs.current.forEach(timeout => clearTimeout(timeout));
       timeoutRefs.current = [];
-
-      // Clear everything when exiting email sender
       resetAllStates();
     };
   }, [resetAllStates]);
 
-  // Check for existing draft on component mount
   useEffect(() => {
     if (hasDraft()) {
       const age = getDraftAge();
@@ -732,31 +660,22 @@ const IntegratedEmailSender = ({
     }
   }, []);
 
-  // Network status monitoring
   useEffect(() => {
-    let offlineToastId = null; // Track the offline toast
+    let offlineToastId = null;
 
     const handleOnline = () => {
-      // Dismiss the offline toast if it exists
       if (offlineToastId !== null) {
         toast.dismiss(offlineToastId);
         offlineToastId = null;
       }
-
-      // Force state updates with explicit boolean values
       dispatch({ type: 'SET_IS_ONLINE', payload: true });
       dispatch({ type: 'SET_SHOW_OFFLINE_WARNING', payload: false });
-
-      // Show success toast
       toast.success('Connection restored!', { autoClose: 2000 });
     };
 
     const handleOffline = () => {
-      // Force state updates with explicit boolean values
       dispatch({ type: 'SET_IS_ONLINE', payload: false });
       dispatch({ type: 'SET_SHOW_OFFLINE_WARNING', payload: true });
-
-      // Store the toast ID so we can dismiss it later
       offlineToastId = toast.warning('You are offline. Your work will be saved locally.', {
         autoClose: false,
         closeButton: true,
@@ -769,17 +688,13 @@ const IntegratedEmailSender = ({
     return () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
-
-      // Clean up: dismiss offline toast if component unmounts
       if (offlineToastId !== null) {
         toast.dismiss(offlineToastId);
       }
     };
   }, []);
 
-  // Auto-save form data to localStorage
   useEffect(() => {
-    // Don't save if form is completely empty
     if (
       !selectedTemplate &&
       !customContent.trim() &&
@@ -790,7 +705,6 @@ const IntegratedEmailSender = ({
       return;
     }
 
-    // Debounce save operation
     const timeoutId = setTimeout(() => {
       const formState = {
         selectedTemplate,
@@ -801,9 +715,8 @@ const IntegratedEmailSender = ({
         emailDistribution,
         emailMode,
       };
-
       saveDraft(formState);
-    }, 1000); // Save after 1 second of inactivity
+    }, 1000);
 
     return () => clearTimeout(timeoutId);
   }, [
@@ -816,9 +729,8 @@ const IntegratedEmailSender = ({
     emailMode,
   ]);
 
-  // Enhanced retry mechanism with exponential backoff
   const handleRetry = useCallback(async () => {
-    if (isRetrying) return; // Prevent multiple simultaneous retries
+    if (isRetrying) return;
 
     dispatch({ type: 'SET_IS_RETRYING', payload: true });
     dispatch({ type: 'INCREMENT_RETRY_COUNT' });
@@ -831,15 +743,12 @@ const IntegratedEmailSender = ({
     });
 
     try {
-      // Cancel previous request if any
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
       }
 
-      // Create new abort controller
       abortControllerRef.current = new AbortController();
 
-      // Progress tracking for retry
       const progressInterval = setInterval(() => {
         dispatch({
           type: 'SET_LOADING_PROGRESS',
@@ -854,7 +763,6 @@ const IntegratedEmailSender = ({
 
       await fetchEmailTemplates({
         search: '',
-        // no pagination for dropdown; fetch all
         sortBy: 'created_at',
         sortOrder: 'desc',
         includeVariables: true,
@@ -871,18 +779,13 @@ const IntegratedEmailSender = ({
         autoClose: 1000,
       });
 
-      // Reset retry count on success
       dispatch({ type: 'SET_RETRY_COUNT', payload: 0 });
     } catch (err) {
       if (err.name !== 'AbortError') {
         const errorMessage = `Retry failed: ${err.message || 'Unknown error'}`;
-
         dispatch({ type: 'SET_API_ERROR', payload: errorMessage });
         dispatch({ type: 'SET_SHOW_RETRY_OPTIONS', payload: true });
-
-        toast.error(errorMessage, {
-          autoClose: 5000,
-        });
+        toast.error(errorMessage, { autoClose: 5000 });
       }
     } finally {
       dispatch({ type: 'SET_IS_RETRYING', payload: false });
@@ -893,18 +796,15 @@ const IntegratedEmailSender = ({
   }, [fetchEmailTemplates, clearEmailTemplateError, isRetrying, retryCount]);
 
   const clearError = useCallback(() => {
-    // Cancel any pending requests
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
     }
-
     dispatch({ type: 'SET_API_ERROR', payload: null });
     dispatch({ type: 'SET_RETRY_COUNT', payload: 0 });
     dispatch({ type: 'SET_IS_RETRYING', payload: false });
     clearEmailTemplateError();
   }, [clearEmailTemplateError]);
 
-  // Show toast notifications for errors from Redux
   useEffect(() => {
     if (error) {
       toast.error(`Error: ${error}`, {
@@ -928,7 +828,6 @@ const IntegratedEmailSender = ({
     dispatch({ type: 'SET_VARIABLE_VALUES', payload: initialValues });
   }, []);
 
-  // Function to fetch full template content
   const fetchFullTemplateContent = useCallback(async templateId => {
     try {
       const response = await axios.get(ENDPOINTS.EMAIL_TEMPLATE_BY_ID(templateId));
@@ -947,27 +846,23 @@ const IntegratedEmailSender = ({
 
   const handleTemplateSelect = useCallback(
     async template => {
-      // Clear all previous state first
       dispatch({ type: 'SET_VARIABLE_VALUES', payload: {} });
       dispatch({ type: 'SET_VALIDATION_ERRORS', payload: {} });
       dispatch({ type: 'SET_SHOW_PREVIEW_MODAL', payload: false });
       dispatch({ type: 'SET_FULL_TEMPLATE_CONTENT', payload: null });
-      dispatch({ type: 'SET_API_ERROR', payload: null }); // Clear previous errors
+      dispatch({ type: 'SET_API_ERROR', payload: null });
 
       if (!template) {
         dispatch({ type: 'SET_SELECTED_TEMPLATE', payload: null });
         return;
       }
 
-      // Check if template has full data
       const hasFullData =
         Array.isArray(template.variables) && (template.html_content || template.subject);
 
       if (!hasFullData) {
-        // ISSUE 10 FIX: Show loading state while fetching full template
         toast.info('Loading template details...', { autoClose: 1000 });
 
-        // Fallback: fetch full template data if only basic data was loaded
         try {
           const fullTemplate = await fetchFullTemplateContent(template._id);
           if (fullTemplate) {
@@ -975,7 +870,6 @@ const IntegratedEmailSender = ({
             initializeVariableValues(fullTemplate);
             dispatch({ type: 'SET_FULL_TEMPLATE_CONTENT', payload: fullTemplate });
 
-            // ISSUE 10 FIX: Show success feedback
             if (fullTemplate.variables && fullTemplate.variables.length > 0) {
               toast.success(`Template loaded with ${fullTemplate.variables.length} variable(s)`, {
                 autoClose: 2000,
@@ -983,8 +877,6 @@ const IntegratedEmailSender = ({
             }
           }
         } catch (error) {
-          // ISSUE 10 FIX: Show clear error message instead of silently failing
-          // eslint-disable-next-line no-console
           console.error('Failed to load full template:', error);
 
           const errorMessage =
@@ -992,12 +884,9 @@ const IntegratedEmailSender = ({
 
           toast.error(
             `Failed to load template details: ${errorMessage}. Please try selecting the template again or refresh the page.`,
-            {
-              autoClose: 5000,
-            },
+            { autoClose: 5000 },
           );
 
-          // Set error state to show in UI
           dispatch({
             type: 'UPDATE_VALIDATION_ERROR',
             payload: {
@@ -1007,12 +896,10 @@ const IntegratedEmailSender = ({
             },
           });
 
-          // Don't set the template as selected if loading failed
           dispatch({ type: 'SET_SELECTED_TEMPLATE', payload: null });
           return;
         }
       } else {
-        // Template already has full data
         dispatch({ type: 'SET_SELECTED_TEMPLATE', payload: template });
         initializeVariableValues(template);
         dispatch({ type: 'SET_FULL_TEMPLATE_CONTENT', payload: template });
@@ -1026,7 +913,6 @@ const IntegratedEmailSender = ({
       const nextValues = { ...variableValues, [variableName]: value };
       dispatch({ type: 'SET_VARIABLE_VALUES', payload: nextValues });
 
-      // Live validate only the changed variable when a template is selected
       if (selectedTemplate) {
         const variableMeta = selectedTemplate.variables?.find(v => v?.name === variableName);
         if (variableMeta) {
@@ -1042,11 +928,8 @@ const IntegratedEmailSender = ({
   );
 
   const parseRecipients = useCallback(recipientText => parseRecipientsUtil(recipientText), []);
-
-  // Memoized function to extract image from various sources
   const extractImageFromSource = useCallback(Validators.extractImageFromSource, []);
 
-  // Memoized handle image source change with automatic extraction
   const handleImageSourceChange = useCallback(
     (variableName, source) => {
       const extractedImage = extractImageFromSource(source);
@@ -1073,7 +956,6 @@ const IntegratedEmailSender = ({
   );
 
   const validateEmail = useCallback(email => validateEmailUtil(email), []);
-
   const useTemplate = emailMode === EMAIL_MODES.TEMPLATES;
 
   const validateForm = useCallback(() => {
@@ -1110,7 +992,6 @@ const IntegratedEmailSender = ({
       dispatch({ type: 'SET_RECIPIENT_LIST', payload: [] });
     }
 
-    // Validate template variables
     if (useTemplate && selectedTemplate) {
       const varErrors = validateTemplateVariables(selectedTemplate, variableValues);
       Object.assign(errors, varErrors);
@@ -1130,7 +1011,6 @@ const IntegratedEmailSender = ({
     variableValues,
   ]);
 
-  // Separate validation for preview (doesn't require recipients)
   const validateForPreview = useCallback(() => {
     const errors = {};
 
@@ -1146,7 +1026,6 @@ const IntegratedEmailSender = ({
       errors.customSubject = 'Please enter email subject';
     }
 
-    // Validate variables as in submit (recipients are skipped for preview)
     if (useTemplate && selectedTemplate) {
       const varErrors = validateTemplateVariables(selectedTemplate, variableValues);
       Object.assign(errors, varErrors);
@@ -1156,14 +1035,11 @@ const IntegratedEmailSender = ({
     return Object.keys(errors).length === 0;
   }, [useTemplate, selectedTemplate, customContent, customSubject, variableValues]);
 
-  // Get preview content
   const getPreviewContent = useCallback(() => {
-    // For custom emails, use client-side content
     if (!useTemplate || !selectedTemplate) {
       return { subject: customSubject, content: customContent };
     }
 
-    // If backend preview data is available, use it
     if (backendPreviewData) {
       return {
         subject: backendPreviewData.subject || customSubject,
@@ -1171,7 +1047,6 @@ const IntegratedEmailSender = ({
       };
     }
 
-    // Fallback to client-side rendering
     const templateData = fullTemplateContent || selectedTemplate;
     return buildRenderedEmailFromTemplate(templateData, variableValues);
   }, [
@@ -1184,7 +1059,6 @@ const IntegratedEmailSender = ({
     backendPreviewData,
   ]);
 
-  // Handle preview with backend API for templates
   const handlePreview = useCallback(async () => {
     if (!validateForPreview()) {
       toast.warning('Please fix validation errors before previewing', {
@@ -1193,13 +1067,11 @@ const IntegratedEmailSender = ({
       return;
     }
 
-    // For custom emails, just show preview modal
     if (!useTemplate || !selectedTemplate) {
       dispatch({ type: 'SET_SHOW_PREVIEW_MODAL', payload: true });
       return;
     }
 
-    // For templates, try to use backend API
     if (selectedTemplate._id) {
       dispatch({ type: 'SET_PREVIEW_LOADING', payload: true });
       dispatch({ type: 'SET_PREVIEW_ERROR', payload: null });
@@ -1228,7 +1100,6 @@ const IntegratedEmailSender = ({
     }
   }, [useTemplate, selectedTemplate, variableValues, validateForPreview, previewEmailTemplate]);
 
-  // Handle send email - opens preview modal
   const handleSendEmail = useCallback(() => {
     if (!validateForm()) {
       return;
@@ -1236,7 +1107,6 @@ const IntegratedEmailSender = ({
     handlePreview();
   }, [validateForm, handlePreview]);
 
-  // Send email from preview modal - FIXED FOR ISSUE 5
   const handleSendFromPreview = useCallback(async () => {
     dispatch({ type: 'SET_IS_SENDING', payload: true });
 
@@ -1244,7 +1114,6 @@ const IntegratedEmailSender = ({
       if (useTemplate && selectedTemplate) {
         const templateData = fullTemplateContent || selectedTemplate;
 
-        // Replace image variables with extracted images if available
         const processedVariableValues = { ...variableValues };
         if (templateData.variables && Array.isArray(templateData.variables)) {
           templateData.variables.forEach(variable => {
@@ -1300,15 +1169,13 @@ const IntegratedEmailSender = ({
           autoClose: 3000,
         });
 
-        // FIXED: Reset modal states BEFORE closing
         dispatch({ type: 'SET_IS_SENDING', payload: false });
         dispatch({ type: 'SET_SHOW_PREVIEW_MODAL', payload: false });
         dispatch({ type: 'SET_BACKEND_PREVIEW_DATA', payload: null });
         dispatch({ type: 'SET_PREVIEW_ERROR', payload: null });
-        clearDraft(); // Clear saved draft after successful send
+        clearDraft();
         resetAllStates();
       } else {
-        // Send custom email
         if (!currentUser || !currentUser.userid) {
           throw new Error('User authentication required to send emails');
         }
@@ -1342,16 +1209,14 @@ const IntegratedEmailSender = ({
           autoClose: 3000,
         });
 
-        // FIXED: Reset modal states BEFORE closing
         dispatch({ type: 'SET_IS_SENDING', payload: false });
         dispatch({ type: 'SET_SHOW_PREVIEW_MODAL', payload: false });
         dispatch({ type: 'SET_BACKEND_PREVIEW_DATA', payload: null });
         dispatch({ type: 'SET_PREVIEW_ERROR', payload: null });
-        clearDraft(); // Clear saved draft after successful send
+        clearDraft();
         resetAllStates();
       }
     } catch (error) {
-      // FIXED: Ensure isSending is reset on error
       dispatch({ type: 'SET_IS_SENDING', payload: false });
 
       const errorMessage = error.response?.data?.message || error.message || 'Unknown error';
@@ -1361,11 +1226,7 @@ const IntegratedEmailSender = ({
         type: 'UPDATE_VALIDATION_ERROR',
         payload: { field: 'general', error: errorMessage },
       });
-
-      // FIXED: Don't close modal on error so user can retry
-      // Modal stays open, but isSending is false so buttons are enabled again
     }
-    // REMOVED finally block - we're handling state reset in try and catch explicitly
   }, [
     useTemplate,
     selectedTemplate,
@@ -1390,13 +1251,11 @@ const IntegratedEmailSender = ({
     }
 
     try {
-      // Restore email mode first
       if (draft.emailMode && draft.emailMode !== emailMode) {
         setEmailMode(draft.emailMode);
         updateModeURL(draft.emailMode);
       }
 
-      // Restore template if in template mode
       if (draft.emailMode === EMAIL_MODES.TEMPLATES && draft.selectedTemplateId && templates) {
         const template = templates.find(t => t._id === draft.selectedTemplateId);
         if (template) {
@@ -1404,7 +1263,6 @@ const IntegratedEmailSender = ({
         }
       }
 
-      // Restore other form fields
       dispatch({
         type: 'RESTORE_DRAFT',
         payload: {
@@ -1435,36 +1293,26 @@ const IntegratedEmailSender = ({
   }, []);
 
   const handleClearDraft = useCallback(() => {
-    // eslint-disable-next-line no-alert
     if (window.confirm('Are you sure you want to clear the saved draft? This cannot be undone.')) {
-      clearDraft(); // Clear from localStorage
-
-      // Use RESET_FORM action for complete state reset
+      clearDraft();
       dispatch({ type: 'RESET_FORM' });
-
-      // Also clear draft notification and related states
       dispatch({ type: 'SET_SHOW_DRAFT_NOTIFICATION', payload: false });
       dispatch({ type: 'SET_DRAFT_AGE', payload: null });
       dispatch({ type: 'SET_BACKEND_PREVIEW_DATA', payload: null });
       dispatch({ type: 'SET_FULL_TEMPLATE_CONTENT', payload: null });
-
       toast.success('Draft cleared successfully', { autoClose: 2000 });
     }
   }, []);
 
-  // Memoized TinyMCE configuration
   const TINY_MCE_INIT_OPTIONS = useMemo(() => getEmailSenderConfig(darkMode), [darkMode]);
 
-  // Clear backend preview data when variables or template change
   useEffect(() => {
     dispatch({ type: 'SET_BACKEND_PREVIEW_DATA', payload: null });
     dispatch({ type: 'SET_PREVIEW_ERROR', payload: null });
   }, [variableValues, selectedTemplate?._id]);
 
-  // Memoized preview content
   const previewContent = useMemo(() => getPreviewContent(), [getPreviewContent]);
 
-  // Error boundary effect
   useEffect(() => {
     const handleError = error => {
       dispatch({ type: 'SET_COMPONENT_ERROR', payload: error.message });
@@ -1474,14 +1322,12 @@ const IntegratedEmailSender = ({
     return () => window.removeEventListener('error', handleError);
   }, []);
 
-  // Reset component error when switching modes
   useEffect(() => {
     if (componentError) {
       dispatch({ type: 'SET_COMPONENT_ERROR', payload: null });
     }
   }, [useTemplate, componentError]);
 
-  // Show error boundary if component error occurs
   if (componentError) {
     return (
       <div className={`email-sender ${darkMode ? 'dark-mode' : 'light-mode'}`}>
@@ -1515,11 +1361,22 @@ const IntegratedEmailSender = ({
 
   return (
     <div className={`email-sender ${darkMode ? 'dark-mode' : 'light-mode'}`}>
-      {/* Page Title */}
+      {/* Page Title - DARK MODE FIXED */}
       <div className="page-title-container mb-3">
-        <h2 className="page-title">Send Email</h2>
+        <h2
+          className="page-title"
+          style={{
+            fontSize: '1.75rem',
+            fontWeight: 600,
+            color: darkMode ? '#f8f9fa' : '#343a40',
+            margin: 0,
+          }}
+        >
+          Send Email
+        </h2>
       </div>
-      {/* Draft Notification - Restore saved work */}
+
+      {/* Draft Notification */}
       {showDraftNotification && (
         <Alert
           color="info"
@@ -1563,17 +1420,45 @@ const IntegratedEmailSender = ({
         </Alert>
       )}
 
-      <div className="email-controls-container mb-3">
-        <div className="email-controls-row">
+      {/* EMAIL CONTROLS ROW */}
+      <div
+        className="email-controls-container mb-3"
+        style={{
+          width: '100%',
+          marginBottom: '2rem',
+          paddingBottom: '1.25rem',
+          borderBottom: darkMode ? '1px solid #4a5568' : '1px solid #e9ecef',
+        }}
+      >
+        <div
+          className="email-controls-row"
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            gap: '2rem',
+            flexWrap: 'wrap',
+            padding: '0.5rem 0',
+          }}
+        >
           {/* Email Mode Selector */}
-          <div className="mode-buttons" role="group" aria-label="Email composition mode">
+          <div
+            className="mode-buttons"
+            role="group"
+            aria-label="Email composition mode"
+            style={{
+              display: 'flex',
+              gap: '0.75rem',
+              flexShrink: 0,
+              alignItems: 'center',
+              flexWrap: 'wrap',
+            }}
+          >
             <Button
               color={emailMode === EMAIL_MODES.TEMPLATES ? 'primary' : 'outline-primary'}
               size="sm"
               onClick={() => handleModeChange(EMAIL_MODES.TEMPLATES)}
               aria-pressed={emailMode === EMAIL_MODES.TEMPLATES}
-              aria-label="Use email templates"
-              title="Create email using pre-made templates"
             >
               📧 Templates
             </Button>
@@ -1582,13 +1467,29 @@ const IntegratedEmailSender = ({
               size="sm"
               onClick={() => handleModeChange(EMAIL_MODES.CUSTOM)}
               aria-pressed={emailMode === EMAIL_MODES.CUSTOM}
-              aria-label="Create custom email"
-              title="Create email with custom content"
             >
               ✏️ Custom
             </Button>
+            <Button
+              color={emailMode === EMAIL_MODES.WEEKLY_UPDATE ? 'info' : 'outline-info'}
+              size="sm"
+              onClick={() => handleModeChange(EMAIL_MODES.WEEKLY_UPDATE)}
+              aria-pressed={emailMode === EMAIL_MODES.WEEKLY_UPDATE}
+            >
+              📰 Weekly Update
+            </Button>
           </div>
-          <div className="action-buttons">
+
+          {/* Action Buttons */}
+          <div
+            className="action-buttons"
+            style={{
+              display: 'flex',
+              gap: '0.75rem',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+            }}
+          >
             <Button
               color="primary"
               size="sm"
@@ -1607,8 +1508,6 @@ const IntegratedEmailSender = ({
                 (!useTemplate && !customContent) ||
                 (useTemplate && !selectedTemplate)
               }
-              aria-label="Preview and send email"
-              title="Preview and send email"
             >
               {previewLoading ? (
                 <>
@@ -1643,7 +1542,7 @@ const IntegratedEmailSender = ({
         </div>
       </div>
 
-      {/* General Validation Error Alert */}
+      {/* General Validation Error */}
       {validationErrors.general && (
         <Alert
           color="danger"
@@ -1664,22 +1563,41 @@ const IntegratedEmailSender = ({
         </Alert>
       )}
 
-      {/* Show Form only for Template and Custom modes */}
+      {/* Form */}
       {emailMode !== EMAIL_MODES.WEEKLY_UPDATE && (
-        <Form>
-          {/* Template Selection (if using template) */}
+        <Form style={{ padding: 0, marginTop: '1.5rem' }}>
+          {/* Template Selection - DARK MODE FIXED */}
           {useTemplate && (
-            <FormGroup>
-              <Label>Select Template *</Label>
+            <FormGroup style={{ marginBottom: '1.75rem' }}>
+              <Label
+                style={{
+                  fontWeight: 600,
+                  color: darkMode ? '#f8f9fa' : '#343a40',
+                  fontSize: '1rem',
+                  marginBottom: '0.75rem',
+                  display: 'block',
+                }}
+              >
+                Select Template *
+              </Label>
               {loading ? (
                 <TemplateSelectLoader />
               ) : error || apiError || (templates && templates.length === 0) ? (
                 <div className="template-selection-container">
-                  <Input type="select" value="" disabled className="template-select-disabled">
+                  <Input
+                    type="select"
+                    value=""
+                    disabled
+                    style={{
+                      background: darkMode ? '#2d3748' : '#e9ecef',
+                      borderColor: darkMode ? '#4a5568' : '#ced4da',
+                      color: darkMode ? '#a0aec0' : '#6c757d',
+                      opacity: 0.6,
+                    }}
+                  >
                     <option>Please select a template</option>
                   </Input>
 
-                  {/* Simple Error Message */}
                   <div className="template-error-message">
                     <FaExclamationTriangle className="error-icon" />
                     <span className="error-text">
@@ -1689,7 +1607,6 @@ const IntegratedEmailSender = ({
                     </span>
                   </div>
 
-                  {/* Simple Retry Option */}
                   {(error || apiError) && (
                     <div className="template-retry-simple">
                       <Button
@@ -1697,7 +1614,6 @@ const IntegratedEmailSender = ({
                         size="sm"
                         onClick={handleRetry}
                         disabled={isRetrying}
-                        className="retry-btn-simple"
                       >
                         {isRetrying ? (
                           <>
@@ -1724,7 +1640,14 @@ const IntegratedEmailSender = ({
                       handleTemplateSelect(template);
                     }}
                     invalid={!!validationErrors.template}
-                    className="template-select"
+                    style={{
+                      background: darkMode ? '#2d3748' : 'white',
+                      borderColor: darkMode ? '#4a5568' : '#ced4da',
+                      color: darkMode ? '#e2e8f0' : '#495057',
+                      padding: '0.5rem 0.75rem',
+                      fontSize: '0.9rem',
+                      borderRadius: '6px',
+                    }}
                   >
                     <option value="">Choose a template...</option>
                     {templates && templates.length > 0 ? (
@@ -1737,7 +1660,6 @@ const IntegratedEmailSender = ({
                               ? `${template.created_by.firstName} ${template.created_by.lastName}`
                               : 'Unknown'
                           })`}
-                          style={{ padding: '8px', whiteSpace: 'normal' }}
                         >
                           {template.name}
                         </option>
@@ -1749,14 +1671,19 @@ const IntegratedEmailSender = ({
 
                   {templates && templates.length > 0 && (
                     <div className="template-info mt-2 ml-1">
-                      <small className="text-muted">
+                      <small
+                        style={{
+                          fontSize: '0.8rem',
+                          color: darkMode ? '#a0aec0' : '#6c757d',
+                          display: 'block',
+                        }}
+                      >
                         {templates.length} template{templates.length !== 1 ? 's' : ''} available
                         {lastSuccessfulLoad && (
                           <span className="ms-2 text-success">
                             • Last updated: {lastSuccessfulLoad.toLocaleTimeString()}
                           </span>
                         )}
-                        {isRetrying && <span className="ms-2 text-warning">• Retrying...</span>}
                       </small>
                     </div>
                   )}
@@ -1769,30 +1696,63 @@ const IntegratedEmailSender = ({
             </FormGroup>
           )}
 
-          {/* Custom Email Fields */}
+          {/* Custom Email Fields - DARK MODE FIXED */}
           {!useTemplate && (
             <>
-              <FormGroup>
-                <Label>Subject *</Label>
+              <FormGroup style={{ marginBottom: '1.75rem' }}>
+                <Label
+                  style={{
+                    fontWeight: 600,
+                    color: darkMode ? '#f8f9fa' : '#343a40',
+                    fontSize: '1rem',
+                    marginBottom: '0.75rem',
+                    display: 'block',
+                  }}
+                >
+                  Subject *
+                </Label>
                 <Input
                   type="text"
                   value={customSubject}
                   onChange={e => dispatch({ type: 'SET_CUSTOM_SUBJECT', payload: e.target.value })}
                   invalid={!!validationErrors.customSubject}
                   placeholder="Enter email subject"
+                  style={{
+                    background: darkMode ? '#2d3748' : 'white',
+                    borderColor: darkMode ? '#4a5568' : '#ced4da',
+                    color: darkMode ? '#e2e8f0' : '#495057',
+                    padding: '0.75rem',
+                    fontSize: '0.9rem',
+                    borderRadius: '6px',
+                  }}
                 />
                 {validationErrors.customSubject && (
                   <div className="invalid-feedback d-block">{validationErrors.customSubject}</div>
                 )}
               </FormGroup>
 
-              <FormGroup>
-                <Label>Content *</Label>
+              <FormGroup style={{ marginBottom: '1.75rem' }}>
+                <Label
+                  style={{
+                    fontWeight: 600,
+                    color: darkMode ? '#f8f9fa' : '#343a40',
+                    fontSize: '1rem',
+                    marginBottom: '0.75rem',
+                    display: 'block',
+                  }}
+                >
+                  Content *
+                </Label>
                 <div className="editor-container">
                   {!isEditorLoaded && !editorError && (
                     <div
-                      className="editor-loading d-flex align-items-center justify-content-center py-3"
-                      style={{ gap: '8px' }}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        padding: '2rem',
+                        gap: '8px',
+                      }}
                     >
                       <Spinner size="sm" />
                       <span>Loading editor...</span>
@@ -1802,11 +1762,10 @@ const IntegratedEmailSender = ({
                   {editorError && (
                     <FallbackComponent
                       title="Editor Failed to Load"
-                      message="The rich text editor couldn't load. You can still use the basic text area below."
+                      message="The rich text editor couldn't load."
                       onRetry={() => {
                         dispatch({ type: 'SET_EDITOR_ERROR', payload: null });
                         dispatch({ type: 'SET_EDITOR_LOADED', payload: false });
-                        dispatch({ type: 'SET_LOADING_PROGRESS', payload: 0 });
                       }}
                       onDismiss={() => dispatch({ type: 'SET_EDITOR_ERROR', payload: null })}
                       retryCount={retryCount}
@@ -1817,8 +1776,13 @@ const IntegratedEmailSender = ({
                   <Suspense
                     fallback={
                       <div
-                        className="editor-suspense d-flex align-items-center justify-content-center py-3"
-                        style={{ gap: '8px' }}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          padding: '2rem',
+                          gap: '8px',
+                        }}
                       >
                         <Spinner size="sm" />
                         <span>Loading editor...</span>
@@ -1833,60 +1797,10 @@ const IntegratedEmailSender = ({
                         onEditorChange={content =>
                           dispatch({ type: 'SET_CUSTOM_CONTENT', payload: content })
                         }
-                        init={{
-                          ...TINY_MCE_INIT_OPTIONS,
-                          setup: editor => {
-                            editor.on('init', () => {
-                              dispatch({ type: 'SET_EDITOR_LOADED', payload: true });
-                              dispatch({ type: 'SET_LOADING_PROGRESS', payload: 100 });
-                            });
-
-                            editor.on('error', e => {
-                              dispatch({
-                                type: 'SET_EDITOR_ERROR',
-                                payload: 'Editor encountered an error',
-                              });
-                              dispatch({ type: 'SET_EDITOR_LOADED', payload: false });
-                            });
-
-                            editorLoadTimeoutRef.current = setTimeout(() => {
-                              if (!isEditorLoaded) {
-                                dispatch({
-                                  type: 'SET_EDITOR_ERROR',
-                                  payload: 'Editor is taking too long to load',
-                                });
-                                dispatch({ type: 'SET_EDITOR_LOADED', payload: false });
-                              }
-                            }, 10000);
-                          },
-                        }}
-                        onLoadContent={() => {
-                          clearTimeout(editorLoadTimeoutRef.current);
-                          dispatch({ type: 'SET_EDITOR_LOADED', payload: true });
-                        }}
+                        init={TINY_MCE_INIT_OPTIONS}
                       />
                     )}
                   </Suspense>
-
-                  {/* Fallback textarea if editor fails */}
-                  {editorError && (
-                    <div className="editor-fallback mt-3">
-                      <Label className="text-warning">
-                        <FaInfoCircle className="me-1" />
-                        Using basic text editor (rich editor unavailable)
-                      </Label>
-                      <Input
-                        type="textarea"
-                        rows={10}
-                        value={customContent}
-                        onChange={e =>
-                          dispatch({ type: 'SET_CUSTOM_CONTENT', payload: e.target.value })
-                        }
-                        placeholder="Enter your email content here..."
-                        className="mt-2"
-                      />
-                    </div>
-                  )}
                 </div>
 
                 {validationErrors.customContent && (
@@ -1896,22 +1810,44 @@ const IntegratedEmailSender = ({
             </>
           )}
 
-          {/* Variable Values */}
-          {useTemplate && selectedTemplate && (
-            <div className="template-variables">
-              <div className="variables-header">
-                <h6 className="mb-1">
-                  Template Variables
-                  <Badge color="info" className="ml-2 ms-2">
-                    {selectedTemplate.variables ? selectedTemplate.variables.length : 0} variable
-                    {selectedTemplate.variables && selectedTemplate.variables.length !== 1
-                      ? 's'
-                      : ''}
-                  </Badge>
-                </h6>
-              </div>
+          {/* Template Variables */}
+          {useTemplate &&
+            selectedTemplate &&
+            selectedTemplate.variables &&
+            selectedTemplate.variables.length > 0 && (
+              <div
+                style={{
+                  marginTop: '1.5rem',
+                  marginBottom: '1.5rem',
+                  padding: '1.25rem',
+                  background: darkMode ? '#1a202c' : '#f8f9fa',
+                  borderRadius: '8px',
+                  border: darkMode ? '1px solid #2d3748' : '1px solid #e9ecef',
+                }}
+              >
+                <div
+                  style={{
+                    marginBottom: '1.25rem',
+                    paddingBottom: '0.75rem',
+                    borderBottom: darkMode ? '2px solid #4a5568' : '2px solid #dee2e6',
+                  }}
+                >
+                  <h6
+                    style={{
+                      fontSize: '1.1rem',
+                      fontWeight: 600,
+                      color: darkMode ? '#e2e8f0' : '#343a40',
+                      margin: 0,
+                    }}
+                  >
+                    Template Variables
+                    <Badge color="info" className="ms-2">
+                      {selectedTemplate.variables.length} variable
+                      {selectedTemplate.variables.length !== 1 ? 's' : ''}
+                    </Badge>
+                  </h6>
+                </div>
 
-              {selectedTemplate.variables && selectedTemplate.variables.length > 0 ? (
                 <div className="table-responsive">
                   <Table responsive striped hover>
                     <thead>
@@ -1936,9 +1872,7 @@ const IntegratedEmailSender = ({
                               type: 'UPDATE_VALIDATION_ERROR',
                               payload: {
                                 field: name,
-                                error: ok
-                                  ? null
-                                  : `${name} is required (valid image URL or YouTube link)`,
+                                error: ok ? null : `${name} is required`,
                               },
                             });
                           }}
@@ -1947,28 +1881,65 @@ const IntegratedEmailSender = ({
                     </tbody>
                   </Table>
                 </div>
-              ) : (
-                <div className="empty-variables-state text-center py-4">
-                  <div className="text-muted">
-                    <i className="fas fa-info-circle me-2"></i>
-                    No variables defined for this template.
-                  </div>
-                  <small className="text-muted d-block mt-2">
-                    This template doesn&apos;t require any variable inputs.
-                  </small>
-                </div>
-              )}
-            </div>
-          )}
+              </div>
+            )}
 
-          {/* Email Distribution Selection */}
-          <FormGroup className="mt-3">
-            <Label className="form-label">Email Distribution *</Label>
-            <div className="distribution-options">
+          {/* Email Distribution - DARK MODE FIXED */}
+          <FormGroup
+            style={{
+              marginTop: '2rem',
+              paddingTop: '1.25rem',
+              borderTop: darkMode ? '1px solid #4a5568' : '1px solid #e9ecef',
+              marginBottom: '1.75rem',
+            }}
+          >
+            <Label
+              style={{
+                fontWeight: 600,
+                color: darkMode ? '#f8f9fa' : '#343a40',
+                fontSize: '1rem',
+                marginBottom: '0.75rem',
+                display: 'block',
+              }}
+            >
+              Email Distribution *
+            </Label>
+            <div style={{ display: 'flex', gap: '1.5rem', marginTop: '0.75rem', flexWrap: 'wrap' }}>
               <label
-                className={`distribution-option ${
-                  emailDistribution === EMAIL_DISTRIBUTION.SPECIFIC ? 'selected' : ''
-                }`}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  padding: '0.85rem 1.5rem',
+                  border:
+                    emailDistribution === EMAIL_DISTRIBUTION.SPECIFIC
+                      ? darkMode
+                        ? '2px solid #63b3ed'
+                        : '2px solid #007bff'
+                      : darkMode
+                      ? '2px solid #4a5568'
+                      : '2px solid #dee2e6',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  background:
+                    emailDistribution === EMAIL_DISTRIBUTION.SPECIFIC
+                      ? darkMode
+                        ? '#2b6cb0'
+                        : '#e7f3ff'
+                      : darkMode
+                      ? '#2d3748'
+                      : 'white',
+                  color:
+                    emailDistribution === EMAIL_DISTRIBUTION.SPECIFIC
+                      ? darkMode
+                        ? '#e2e8f0'
+                        : '#007bff'
+                      : darkMode
+                      ? '#e2e8f0'
+                      : '#343a40',
+                  fontSize: '0.95rem',
+                  fontWeight: 500,
+                  transition: 'all 0.2s ease',
+                }}
               >
                 <input
                   type="radio"
@@ -1981,14 +1952,47 @@ const IntegratedEmailSender = ({
                       payload: EMAIL_DISTRIBUTION.SPECIFIC,
                     })
                   }
+                  style={{ marginRight: '0.5rem', width: '18px', height: '18px' }}
                 />
-                <span className="option-icon mx-2">✏️</span>
+                <span style={{ fontSize: '1.2rem', margin: '0 0.5rem' }}>✏️</span>
                 Specific Recipients
               </label>
+
               <label
-                className={`distribution-option ${
-                  emailDistribution === EMAIL_DISTRIBUTION.BROADCAST ? 'selected' : ''
-                }`}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  padding: '0.85rem 1.5rem',
+                  border:
+                    emailDistribution === EMAIL_DISTRIBUTION.BROADCAST
+                      ? darkMode
+                        ? '2px solid #63b3ed'
+                        : '2px solid #007bff'
+                      : darkMode
+                      ? '2px solid #4a5568'
+                      : '2px solid #dee2e6',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  background:
+                    emailDistribution === EMAIL_DISTRIBUTION.BROADCAST
+                      ? darkMode
+                        ? '#2b6cb0'
+                        : '#e7f3ff'
+                      : darkMode
+                      ? '#2d3748'
+                      : 'white',
+                  color:
+                    emailDistribution === EMAIL_DISTRIBUTION.BROADCAST
+                      ? darkMode
+                        ? '#e2e8f0'
+                        : '#007bff'
+                      : darkMode
+                      ? '#e2e8f0'
+                      : '#343a40',
+                  fontSize: '0.95rem',
+                  fontWeight: 500,
+                  transition: 'all 0.2s ease',
+                }}
               >
                 <input
                   type="radio"
@@ -2006,16 +2010,27 @@ const IntegratedEmailSender = ({
                     });
                     dispatch({ type: 'SET_RECIPIENT_LIST', payload: [] });
                   }}
+                  style={{ marginRight: '0.5rem', width: '18px', height: '18px' }}
                 />
-                <span className="option-icon mx-2">🚀</span>
+                <span style={{ fontSize: '1.2rem', margin: '0 0.5rem' }}>🚀</span>
                 Broadcast to All Subscribers
               </label>
             </div>
 
-            {/* Expanded content for specific recipients */}
+            {/* Recipients - DARK MODE FIXED */}
             {emailDistribution === EMAIL_DISTRIBUTION.SPECIFIC && (
-              <FormGroup className="mt-3">
-                <Label>Recipients *</Label>
+              <div style={{ marginTop: '1rem' }}>
+                <Label
+                  style={{
+                    fontWeight: 600,
+                    color: darkMode ? '#f8f9fa' : '#343a40',
+                    fontSize: '1rem',
+                    marginBottom: '0.75rem',
+                    display: 'block',
+                  }}
+                >
+                  Recipients *
+                </Label>
                 <Input
                   type="textarea"
                   rows={4}
@@ -2046,17 +2061,27 @@ const IntegratedEmailSender = ({
                   }}
                   invalid={!!validationErrors.recipients}
                   placeholder="Enter email addresses separated by commas&#10;Example: john@example.com, jane@example.com, team@company.com"
+                  style={{
+                    background: darkMode ? '#2d3748' : 'white',
+                    borderColor: darkMode ? '#4a5568' : '#ced4da',
+                    color: darkMode ? '#e2e8f0' : '#495057',
+                    padding: '0.75rem',
+                    fontSize: '0.9rem',
+                    borderRadius: '6px',
+                    minHeight: '120px',
+                    lineHeight: '1.6',
+                  }}
                 />
                 {validationErrors.recipients && (
                   <div className="invalid-feedback d-block">{validationErrors.recipients}</div>
                 )}
-              </FormGroup>
+              </div>
             )}
           </FormGroup>
         </Form>
       )}
 
-      {/* Preview & Send Modal */}
+      {/* Preview Modal */}
       <Modal
         isOpen={showPreviewModal}
         toggle={() => {
@@ -2068,15 +2093,11 @@ const IntegratedEmailSender = ({
         }}
         size="lg"
         centered
-        backdrop={isSending ? 'static' : true}
-        keyboard={!isSending}
       >
         <ModalHeader
           toggle={() => {
             if (!isSending) {
               dispatch({ type: 'SET_SHOW_PREVIEW_MODAL', payload: false });
-              dispatch({ type: 'SET_BACKEND_PREVIEW_DATA', payload: null });
-              dispatch({ type: 'SET_PREVIEW_ERROR', payload: null });
             }
           }}
         >
@@ -2106,10 +2127,6 @@ const IntegratedEmailSender = ({
                 <Alert color="warning" className="mb-3">
                   <FaExclamationTriangle className="me-2" />
                   {previewError}
-                  {useTemplate &&
-                    selectedTemplate &&
-                    !selectedTemplate._id &&
-                    ' (Using client-side preview)'}
                 </Alert>
               )}
 
@@ -2132,40 +2149,16 @@ const IntegratedEmailSender = ({
                       Specific
                     </Badge>
                     {parseRecipients(recipients).length} recipient(s)
-                    {parseRecipients(recipients).length > 0 &&
-                      parseRecipients(recipients).length <= 5 && (
-                        <div className="mt-2">
-                          <small className="text-muted d-block">Recipients:</small>
-                          <small className="text-break">
-                            {parseRecipients(recipients).join(', ')}
-                          </small>
-                        </div>
-                      )}
                   </>
                 )}
               </div>
-
-              {useTemplate && selectedTemplate && backendPreviewData && (
-                <div className="mb-3">
-                  <Badge color="success" className="d-inline-flex align-items-center">
-                    <FaCheckCircle className="me-1" />
-                    Server-rendered preview
-                  </Badge>
-                  <small className="text-muted ms-2">
-                    This preview matches exactly what will be sent
-                  </small>
-                </div>
-              )}
 
               {previewContent.content ? (
                 <div className="mb-3">
                   <strong>Content Preview:</strong>
                   <div
-                    className="mt-2 p-3 border rounded email-preview-content"
-                    style={{
-                      maxHeight: '400px',
-                      overflow: 'auto',
-                    }}
+                    className="mt-2 p-3 border rounded"
+                    style={{ maxHeight: '400px', overflow: 'auto' }}
                     dangerouslySetInnerHTML={{ __html: previewContent.content }}
                   />
                 </div>
@@ -2175,17 +2168,13 @@ const IntegratedEmailSender = ({
                   <div className="mt-2 p-3 border rounded text-center text-muted">
                     <FaInfoCircle className="me-2" />
                     No content available for preview.
-                    {useTemplate
-                      ? ' Please fill in all template variables.'
-                      : ' Please add some content to your email.'}
                   </div>
                 </div>
               )}
 
               <Alert color="warning" className="mb-0">
                 <FaExclamationTriangle className="me-2" />
-                <strong>Please review your email carefully.</strong> Once sent, this action cannot
-                be undone. The email will be processed immediately.
+                <strong>Please review carefully.</strong> Once sent, this cannot be undone.
               </Alert>
             </>
           )}
@@ -2196,8 +2185,6 @@ const IntegratedEmailSender = ({
             size="sm"
             onClick={() => {
               dispatch({ type: 'SET_SHOW_PREVIEW_MODAL', payload: false });
-              dispatch({ type: 'SET_BACKEND_PREVIEW_DATA', payload: null });
-              dispatch({ type: 'SET_PREVIEW_ERROR', payload: null });
             }}
             disabled={isSending || previewLoading}
           >
@@ -2227,25 +2214,8 @@ const IntegratedEmailSender = ({
   );
 };
 
-// PropTypes
 IntegratedEmailSender.propTypes = {
-  templates: PropTypes.arrayOf(
-    PropTypes.shape({
-      _id: PropTypes.string.isRequired,
-      name: PropTypes.string.isRequired,
-      subject: PropTypes.string.isRequired,
-      html_content: PropTypes.string.isRequired,
-      variables: PropTypes.arrayOf(
-        PropTypes.shape({
-          name: PropTypes.string.isRequired,
-          label: PropTypes.string.isRequired,
-          type: PropTypes.string.isRequired,
-          required: PropTypes.bool,
-        }),
-      ),
-      is_active: PropTypes.bool,
-    }),
-  ),
+  templates: PropTypes.array,
   loading: PropTypes.bool,
   error: PropTypes.string,
   fetchEmailTemplates: PropTypes.func.isRequired,

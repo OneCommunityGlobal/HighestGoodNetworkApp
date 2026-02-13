@@ -6,7 +6,7 @@ import { Alert, Button } from 'reactstrap';
 import { FaSpinner } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import { EmailTemplateList, EmailTemplateEditor } from './templates';
-import '../EmailManagement.module.css';
+import '../EmailManagement.css';
 
 const EmailTemplateManager = () => {
   const darkMode = useSelector(state => state.theme.darkMode);
