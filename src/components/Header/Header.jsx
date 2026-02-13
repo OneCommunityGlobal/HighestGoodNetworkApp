@@ -751,6 +751,14 @@ export function Header(props) {
                       >
                         PR Team Analytics
                       </DropdownItem>
+                      <DropdownItem
+                        tag={Link}
+                        to="/pr-dashboard/analytics"
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
+                        PR Analytics
+                      </DropdownItem>
                       {canAccessBlueSquareEmailManagement && (
                         <DropdownItem
                           tag={Link}
