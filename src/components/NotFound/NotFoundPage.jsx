@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable prettier/prettier */
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import cn from 'classnames';
 import styles from './NotFoundPage.module.css';
@@ -10,6 +10,9 @@ import NotFoundDarkImage from '../../assets/images/404ImageDarkMode1.png';
 
 function NotFoundPage() {
   const darkMode = useSelector(state => state.theme.darkMode);
+  const location = useLocation();
+
+  const isPrAnalytics = location.pathname.startsWith('/pr-dashboard');
 
   return (
     <div
@@ -21,14 +24,30 @@ function NotFoundPage() {
         alt="Page Not Found"
       />
       <div className={styles.notFoundText}>
-        <h1>PAGE NOT FOUND</h1>
-        <p>The rabbits have been nibbling the cables again...</p>
-        <p>
-          Maybe this will help{' '}
-          <Link to="/" className={styles.backHomeLink}>
-            Home
-          </Link>
-        </p>
+        {isPrAnalytics ? (
+          <>
+            <h1>PR ANALYTICS UNAVAILABLE</h1>
+            <p>PR Analytics is temporarily unavailable.</p>
+            <p>Please try again later or contact an administrator.</p>
+
+            <p>
+              <Link to="/reports" className={styles.backHomeLink}>
+                Go to Reports Dashboard
+              </Link>
+            </p>
+          </>
+        ) : (
+          <>
+            <h1>PAGE NOT FOUND</h1>
+            <p>The rabbits have been nibbling the cables again...</p>
+            <p>
+              Maybe this will help{' '}
+              <Link to="/" className={styles.backHomeLink}>
+                Home
+              </Link>
+            </p>
+          </>
+        )}
       </div>
     </div>
   );
