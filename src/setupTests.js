@@ -77,8 +77,8 @@ const createStorageMock = () => {
   };
 };
 
-globalThis.localStorage = createStorageMock();
-globalThis.sessionStorage = createStorageMock();
+vi.stubGlobal('localStorage', createStorageMock());
+vi.stubGlobal('sessionStorage', createStorageMock());
 
 // Mock react-toastify
 vi.mock('react-toastify', () => {
