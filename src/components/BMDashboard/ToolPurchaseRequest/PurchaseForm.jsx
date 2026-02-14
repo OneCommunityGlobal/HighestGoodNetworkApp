@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -39,6 +39,7 @@ export default function PurchaseForm() {
       .label('Quantity'),
     priority: Joi.string().required(),
     estTime: Joi.string()
+      .min(2)
       .required()
       .label('Estimated Time of Use'),
     desc: Joi.string()
@@ -48,24 +49,42 @@ export default function PurchaseForm() {
     makeModel: Joi.string().allow(''),
   });
 
-  const handleSubmit = async e => {
-    e.preventDefault();
+  const validateField = (name, value) => {
+    const fieldSchema = Joi.object({ [name]: schema.extract(name) });
+    const { error } = fieldSchema.validate({ [name]: value });
+    return error ? error.details[0].message : null;
+  };
 
-    const { error } = schema.validate(
-      { projectId, toolId, quantity, priority, estTime, desc, makeModel },
-      { abortEarly: false },
-    );
+  useEffect(() => {
+    const formData = {
+      projectId,
+      toolId,
+      quantity,
+      priority,
+      estTime,
+      desc,
+      makeModel,
+    };
 
-    if (error) {
+    const { error } = schema.validate(formData, { abortEarly: false });
+
+    if (!error) {
+      setErrors({});
+    } else {
       const fieldErrors = {};
       error.details.forEach(d => {
         fieldErrors[d.path[0]] = d.message;
       });
       setErrors(fieldErrors);
-      return;
     }
+  }, [projectId, toolId, quantity, priority, estTime, desc, makeModel]);
 
-    setErrors({});
+  const isFormValid =
+    projectId && toolId && quantity && estTime && desc && Object.values(errors).every(e => !e);
+
+  const handleSubmit = async e => {
+    e.preventDefault();
+    if (!isFormValid) return;
 
     const response = await purchaseTools({
       projectId,
@@ -102,10 +121,7 @@ export default function PurchaseForm() {
           type="select"
           value={projectId}
           invalid={!!errors.projectId}
-          onChange={e => {
-            setProjectId(e.target.value);
-            setErrors(prev => ({ ...prev, projectId: undefined }));
-          }}
+          onChange={e => setProjectId(e.target.value)}
           disabled={!bmProjects.length}
         >
           <option hidden value="" />
@@ -126,10 +142,7 @@ export default function PurchaseForm() {
           type="select"
           value={toolId}
           invalid={!!errors.toolId}
-          onChange={e => {
-            setToolId(e.target.value);
-            setErrors(prev => ({ ...prev, toolId: undefined }));
-          }}
+          onChange={e => setToolId(e.target.value)}
         >
           <option hidden value="" />
           {tools.map(({ _id, name }) => (
@@ -151,13 +164,12 @@ export default function PurchaseForm() {
             id="input-quantity"
             type="number"
             min={1}
+            placeholder="Ex: 3 units"
             value={quantity}
             invalid={!!errors.quantity}
-            onChange={e => {
-              setQty(e.target.value);
-              setErrors(prev => ({ ...prev, quantity: undefined }));
-            }}
+            onChange={e => setQty(e.target.value)}
           />
+          <FormText>Admins use this to calculate total cost and inventory impact.</FormText>
           {errors.quantity && <FormText color="danger">{errors.quantity}</FormText>}
         </FormGroup>
 
@@ -188,35 +200,42 @@ export default function PurchaseForm() {
           placeholder="Ex: 2 weeks"
           value={estTime}
           invalid={!!errors.estTime}
-          onChange={e => {
-            setEstTime(e.target.value);
-            setErrors(prev => ({ ...prev, estTime: undefined }));
-          }}
+          onChange={e => setEstTime(e.target.value)}
         />
+        <FormText>Helps admins plan scheduling and avoid overlapping allocations.</FormText>
         {errors.estTime && <FormText color="danger">{errors.estTime}</FormText>}
       </FormGroup>
 
       {/* Description */}
       <FormGroup>
-        <Label for="input-usage-description">Usage Description</Label>
+        <Label for="input-usage-description">
+          Usage Description <span className="text-danger">*</span>
+        </Label>
         <Input
           id="input-usage-description"
           type="textarea"
+          maxLength={150}
+          placeholder="Briefly describe how this tool will be used..."
           value={desc}
           invalid={!!errors.desc}
-          onChange={e => {
-            setDesc(e.target.value);
-            setErrors(prev => ({ ...prev, desc: undefined }));
-          }}
+          onChange={e => setDesc(e.target.value)}
         />
-        <FormText>Max 150 characters</FormText>
+        <FormText className="d-flex justify-content-between">
+          <span>Admins review this to justify and approve purchases.</span>
+          <span>{desc.length}/150</span>
+        </FormText>
         {errors.desc && <FormText color="danger">{errors.desc}</FormText>}
       </FormGroup>
 
       {/* Make / Model */}
       <FormGroup>
         <Label>Preferred Make &amp; Model (optional)</Label>
-        <Input type="text" value={makeModel} onChange={e => setMakeModel(e.target.value)} />
+        <Input
+          type="text"
+          placeholder="Ex: DeWalt XR Series"
+          value={makeModel}
+          onChange={e => setMakeModel(e.target.value)}
+        />
       </FormGroup>
 
       {/* Buttons */}
@@ -224,19 +243,7 @@ export default function PurchaseForm() {
         <Button type="button" color="secondary" onClick={handleCancel} style={boxStyle}>
           Cancel
         </Button>
-        <Button
-          type="submit"
-          color="primary"
-          style={boxStyle}
-          disabled={
-            !projectId ||
-            !toolId ||
-            !quantity ||
-            !estTime ||
-            !desc ||
-            Object.keys(errors).length > 0
-          }
-        >
+        <Button type="submit" color="primary" style={boxStyle} disabled={!isFormValid}>
           Submit
         </Button>
       </div>
