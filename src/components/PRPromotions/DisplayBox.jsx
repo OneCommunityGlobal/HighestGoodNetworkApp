@@ -50,7 +50,9 @@ export default function DisplayBox({ onClose, darkMode = false }) {
   return (
     <div className={styles.overlay}>
       <div className={popupClass}>
-        <h2 className={`${styles['popup-heading']} ${darkMode ? styles['popup-heading-dark'] : ''}`}>
+        <h2
+          className={`${styles['popup-heading']} ${darkMode ? styles['popup-heading-dark'] : ''}`}
+        >
           Are you sure you want to promote these PR reviewers?
         </h2>
         <table className={`${styles['popup-table']} ${darkMode ? styles['popup-table-dark'] : ''}`}>
