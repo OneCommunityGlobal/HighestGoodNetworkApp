@@ -132,6 +132,18 @@ export const setPostErrorBuildingInventoryTypeResult = payload => {
   };
 };
 
+export const deleteInvTypeById = (id, category) => {
+  return async dispatch => {
+    try {
+      await axios.delete(ENDPOINTS.BM_DELETE_INVENTORTY_TYPE_BY_ID(id));
+      dispatch(fetchInvTypeByType(category));
+    } catch (err) {
+      dispatch(setErrors(err.response?.data || err));
+    }
+  };
+};
+ 
+
 export const fetchMaterialTypes = () => {
   return async dispatch => {
     axios
@@ -197,6 +209,21 @@ export const fetchInvTypeByType = type => {
       .catch(err => {
         dispatch(setErrors(err));
       });
+  };
+};
+
+export const updateInvTypeById = (id, payload, category) => {
+  return async dispatch => {
+    try {
+      await axios.put(
+        ENDPOINTS.BM_UPDATE_INVENTORY_TYPE_BY_ID(id),
+        payload
+      );
+
+      dispatch(fetchInvTypeByType(category));
+    } catch (err) {
+      dispatch(setErrors(err.response?.data || err));
+    }
   };
 };
 
