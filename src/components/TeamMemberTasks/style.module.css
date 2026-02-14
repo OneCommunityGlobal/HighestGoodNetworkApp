@@ -12,6 +12,10 @@
   overflow: hidden;
 }
 
+.team-member-tasks.darkContainer {
+  background-color: #1b263b;
+}
+
 .progress-wrapper {
   display: inline-grid;
   width: fit-content;
@@ -745,6 +749,11 @@
     border: solid #e9ecef 2px;
     background: #faf7fc;
     font-size: 0.75rem !important;
+  }
+
+  .darkContainer .table-row {
+    background: #223b5a;
+    border-color: rgba(255, 255, 255, 0.2);
   }
 
   .table-row td {

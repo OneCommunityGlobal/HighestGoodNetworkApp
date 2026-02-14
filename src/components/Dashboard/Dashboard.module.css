@@ -2,6 +2,11 @@
   overflow-y: auto;
 }
 
+/* Let Leaderboard column shrink so table can show horizontal scroll */
+.leaderboardCol {
+  min-width: 0;
+}
+
 @media screen and (max-width: 800px) {
   .tabPane {
     max-height: 1500px;
