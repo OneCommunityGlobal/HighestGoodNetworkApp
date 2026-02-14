@@ -163,7 +163,6 @@ const EnhancedPopularityTimelineChart = () => {
         roleMetrics: metrics.sort((a, b) => (b.popularityScore || 0) - (a.popularityScore || 0)),
       };
     } catch (error) {
-      console.error('Error processing chart data:', error);
       return { chartData: [], roleMetrics: [] };
     }
   }, [popularityData]);

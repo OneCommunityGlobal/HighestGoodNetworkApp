@@ -114,6 +114,7 @@ function MaterialStockOutRiskIndicator() {
       cancelTokenSourceRef.current.cancel('New request initiated');
     }
 
+    // eslint-disable-next-line import/no-named-as-default-member
     const CancelToken = axios.CancelToken;
     cancelTokenSourceRef.current = CancelToken.source();
     isRequestInProgressRef.current = true;
@@ -145,6 +146,7 @@ function MaterialStockOutRiskIndicator() {
         setChartData([]);
       }
     } catch (err) {
+      // eslint-disable-next-line import/no-named-as-default-member
       if (axios.isCancel(err)) {
         isRequestInProgressRef.current = false;
         return;

@@ -59,13 +59,20 @@
 .cardTagAndFile {
   font-size: small;
   color: #78bdda;
+
 }
 
+.lessonCardTag .tagItem,
 .cardTagAndFile .tagItem {
+  color: black !important;  /* Set all tags to black */
+  font-size: small;
+  white-space: nowrap;
   display: inline-block;
   margin-right: 5px;
 }
-
+.darkTag {
+  color: black !important;
+}
 .lessonCardHeader:first-child {
   border-radius: 0 !important;
 }
@@ -137,6 +144,7 @@
 }
 
 .tagItem {
+  color: black !important;
   font-size: small;
   white-space: nowrap;
 }
@@ -209,6 +217,12 @@
   .lessonCardFooterItems {
     justify-content: flex-start;
   }
+}
+validation-error {
+  color: red;
+  font-size: small;
+  display: block;
+  margin-bottom: 10px;
 }
 
 @media (max-width: 570px) {
