@@ -1,7 +1,7 @@
 .title {
   margin: 0 0 8px 0;
   text-align: center;
-  font-size: 24px;
+  font-size: 20px;
   font-weight: normal;
   color: var(--text-color);
 }
@@ -10,6 +10,31 @@
   width: 100%;
   height: 100%;
   padding: 20px;
+}
+/* === selectors layout === */
+.selectorGroup {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.selectorGroup label {
+  font-size: small;
+  margin-bottom: 3px;
+  color: var(--text-color);
+}
+
+.selectorGroup select {
+  font-size: small;
+  width: 100%;
+  max-height: 200px;
+  overflow-y: auto;
+  background-color: var(--card-bg);
+  color: var(--text-color);
+  border: 1px solid var(--button-hover);
+  border-radius: 4px;
+  padding: 4px 8px;
+  box-sizing: border-box;
 }
 
 .legendList {
@@ -33,4 +58,25 @@
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+/* === Tooltip styling === */
+.customTooltip {
+  background-color: var(--card-bg);
+  border: 1px solid var(--button-hover);
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 12px; /* smaller font */
+  color: var(--text-color);
+}
+
+.customTooltipLabel {
+  font-size: 11px;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.customTooltipItem {
+  font-size: 11px;
+  line-height: 1.3;
 }
