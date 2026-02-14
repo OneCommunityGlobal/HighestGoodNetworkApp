@@ -74,7 +74,29 @@ function PRReviewTeamAnalytics({ state }) {
     setError(null);
     setTimeout(() => {
       try {
-        const sorted = [...PRData].sort((a, b) => b.reviewCount - a.reviewCount);
+        // Calculate date range based on duration
+        const today = new Date();
+        let cutoffDate;
+
+        switch (duration) {
+          case 'last_week':
+            cutoffDate = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+            break;
+          case 'last_2_weeks':
+            cutoffDate = new Date(today.getTime() - 14 * 24 * 60 * 60 * 1000);
+            break;
+          case 'last_month':
+            cutoffDate = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+            break;
+          case 'all_time':
+          default:
+            cutoffDate = new Date(0); // Beginning of time
+            break;
+        }
+
+        // Filter PRs by date and sort by review count
+        const filtered = PRData.filter(pr => pr.createdDate >= cutoffDate);
+        const sorted = [...filtered].sort((a, b) => b.reviewCount - a.reviewCount);
         setData(sorted.slice(0, 20)); // Get Top 20 PRs based on review count
         setLoading(false);
       } catch (err) {
@@ -89,15 +111,21 @@ function PRReviewTeamAnalytics({ state }) {
 
   const { domain, ticks } = getXTicksAndDomain(data);
 
+  // Calculate insights metrics
+  const totalPRs = data.length;
+  const totalReviews = data.reduce((sum, pr) => sum + pr.reviewCount, 0);
+  const avgReviews = totalPRs > 0 ? (totalReviews / totalPRs).toFixed(1) : 0;
+  const mostReviewedPR = data.length > 0 ? data[0] : null;
+
   // Theme-based color scheme using global dark mode
-  const chartBg = darkMode ? '#1b2a42' : '#f8fafc';
+  const chartBg = darkMode ? '#1e2936' : '#f8fafc';
   const labelColor = darkMode ? '#f8fafc' : '#052C65';
   const barColor = darkMode ? '#4a9eff' : '#052C65';
   const axisLineColor = darkMode ? '#4a5568' : '#bfc7d1';
   const tickColor = darkMode ? '#f8fafc' : '#052C65';
   const tooltipBg = darkMode ? '#2d3748' : 'rgba(255,255,255,0.95)';
   const tooltipText = darkMode ? '#f8fafc' : '#052C65';
-  const containerBg = darkMode ? '#1b2a42' : '#e0e3ea';
+  const containerBg = darkMode ? '#2d3e55' : '#e0e3ea';
   const boxStyling = darkMode ? boxStyleDark : boxStyle;
 
   let content;
@@ -248,6 +276,49 @@ function PRReviewTeamAnalytics({ state }) {
           />
         </div>
       </div>
+      {!loading && !error && data.length > 0 && (
+        <div
+          className={styles['pr-insights-panel']}
+          style={{
+            background: darkMode ? '#2d3748' : '#ffffff',
+            borderColor: darkMode ? '#4a5568' : '#cbd5e0',
+          }}
+        >
+          <div className={styles['pr-insights-item']}>
+            <div className={styles['pr-insights-label']} style={{ color: labelColor }}>
+              Total PRs
+            </div>
+            <div className={styles['pr-insights-value']} style={{ color: barColor }}>
+              {totalPRs}
+            </div>
+          </div>
+          <div className={styles['pr-insights-item']}>
+            <div className={styles['pr-insights-label']} style={{ color: labelColor }}>
+              Avg Reviews/PR
+            </div>
+            <div className={styles['pr-insights-value']} style={{ color: barColor }}>
+              {avgReviews}
+            </div>
+          </div>
+          <div
+            className={`${styles['pr-insights-item']} ${styles['pr-insights-item-highlight']}`}
+            style={{
+              background: darkMode ? '#1a365d' : '#e6f2ff',
+              borderColor: barColor,
+            }}
+          >
+            <div className={styles['pr-insights-label']} style={{ color: labelColor }}>
+              Most Reviewed PR
+            </div>
+            <div className={styles['pr-insights-value-highlight']} style={{ color: barColor }}>
+              {mostReviewedPR?.prNumber}
+            </div>
+            <div className={styles['pr-insights-subtext']} style={{ color: labelColor }}>
+              {mostReviewedPR?.reviewCount} reviews
+            </div>
+          </div>
+        </div>
+      )}
       <div className={styles['pr-review-analytics-chart-wrapper']}>{content}</div>
     </div>
   );
