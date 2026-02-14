@@ -239,8 +239,8 @@ describe('AddTeamPopup component', () => {
     // eslint-disable-next-line testing-library/no-node-access
     fireEvent.click(nextDivElement.querySelector('.btn.btn-primary'));
     // The component shows different messages based on context
-    // When empty and not in edit mode, it shows "Hey, You need to pick a team first!"
-    expect(screen.getByText('Hey, You need to pick a team first!')).toBeInTheDocument();
+    // When empty and not in edit mode, it shows "Team name cannot be empty."
+    expect(screen.getByText('Team name cannot be empty.')).toBeInTheDocument();
   });
   it('check if postNewTeam action works as expected', async () => {
     const responseData = { teamName: 'New Team', isActive: true };
