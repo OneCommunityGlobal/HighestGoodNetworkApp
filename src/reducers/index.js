@@ -63,6 +63,7 @@ import { equipmentReducer } from './bmdashboard/equipmentReducer';
 import { bmProjectMemberReducer } from './bmdashboard/projectMemberReducer';
 import { bmTimeLoggerReducer } from './bmdashboard/timeLoggerReducer';
 import bmInjuryReducer from './bmdashboard/injuryReducer';
+import { costBreakdownReducer } from './bmdashboard/costBreakdownReducer';
 
 import dashboardReducer from './dashboardReducer';
 import { timeOffRequestsReducer } from './timeOffRequestReducer';
@@ -165,6 +166,7 @@ const localReducers = {
   dashboard: dashboardReducer,
   injuries: injuriesReducer,
   weeklyProjectSummary: weeklyProjectSummaryReducer,
+  costBreakdown: costBreakdownReducer,
 
   // lbdashboard
   wishlistItem: wishListReducer,

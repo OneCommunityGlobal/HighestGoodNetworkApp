@@ -12,6 +12,7 @@ import InjuryCategoryBarChart from './GroupedBarGraphInjurySeverity/InjuryCatego
 import ToolsHorizontalBarChart from './Tools/ToolsHorizontalBarChart';
 import ExpenseBarChart from './Financials/ExpenseBarChart';
 import FinancialStatButtons from './Financials/FinancialStatButtons';
+import CostBreakDown from './Financials/CostBreakDown/CostBreakDown';
 import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
 import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMaterialCostPerProject';
 import styles from './WeeklyProjectSummary.module.css';
@@ -379,7 +380,9 @@ function WeeklyProjectSummary() {
             <div className="weekly-project-summary-card financial-small financial-chart">
               <ExpenseBarChart />
             </div>
-            <div className="weekly-project-summary-card financial-big">📊 Big Card</div>
+            <div className="weekly-project-summary-card financial-big">
+              <CostBreakDown />
+            </div>
           </div>
         ),
       },
