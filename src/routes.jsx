@@ -813,8 +813,6 @@ export default (
         <EPProtectedRoute path="/student/profile" exact component={StudentProfilePage} />
         {/* PR Analytics Dashboard */}
         <Route path="/pull-request-analytics/reviews-insight" component={ReviewsInsight} />
-        <CPProtectedRoute
-          path="/communityportal/reports/event/personalization"
         <EPProtectedRoute
           path="/educationportal/evaluation-results"
           exact
