@@ -4,7 +4,7 @@ import AddTeamsAutoComplete from './AddTeamsAutoComplete';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import '../../Header/DarkMode.css';
+import darkModeStyles from '../../Header/DarkMode.module.css';
 import { postNewTeam, getAllUserTeams } from '../../../../src/actions/allTeamsAction';
 // eslint-disable-next-line import/no-named-as-default-member
 import axios from 'axios';
@@ -338,7 +338,7 @@ const AddTeamPopup = React.memo((props) => {
     <Modal
       isOpen={props.open}
       toggle={closePopup}
-      className={darkMode ? 'text-light dark-mode' : ''}
+      className={darkMode ? `text-light ${darkModeStyles['dark-mode']}` : ''}
     >
       <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={closePopup}>
         {isEdit ? 'Update Team Name' : 'Add Team'}
