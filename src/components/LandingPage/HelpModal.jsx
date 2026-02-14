@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import PropTypes from 'prop-types';
-import { Modal, Button } from 'react-bootstrap';
-import { connect, useSelector } from 'react-redux';
 import axios from 'axios';
+import PropTypes from 'prop-types';
+import { useEffect, useMemo, useState } from 'react';
+import { Button, Modal } from 'react-bootstrap';
+import { connect, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 import { ENDPOINTS } from '~/utils/URL';
 import styles from './HelpModal.module.css';
 
@@ -13,6 +14,7 @@ function HelpModal({ show, onHide, auth }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [teams, setTeams] = useState([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const darkMode = useSelector(state => state.theme.darkMode);
 
@@ -41,7 +43,6 @@ function HelpModal({ show, onHide, auth }) {
         const profileResponse = await axios.get(ENDPOINTS.USER_PROFILE(userId));
         setTeams(profileResponse.data?.teams || []);
       } catch (err) {
-        console.error('Failed to fetch user profile', err);
         setTeams([]);
       }
     };
@@ -54,10 +55,29 @@ function HelpModal({ show, onHide, auth }) {
     setIsOpen(false);
   };
 
-  const handleSubmit = () => {
-    if (selectedOption) {
-      onHide();
+  const handleSubmit = async () => {
+    if (!selectedOption) {
+      toast.error('Please select a help category');
+      return;
     }
+
+    setIsSubmitting(true);
+
+    // Simulate API call with delay
+    setTimeout(() => {
+      try {
+        // TODO: Replace with actual API call when backend PR #2045 is merged
+        // await axios.post('/api/helprequest/create', { userId, topic: selectedOption, description: `Help request for: ${selectedOption}` });
+
+        toast.success('Help request submitted successfully!');
+        setSelectedOption('');
+        onHide();
+      } catch (err) {
+        toast.error('Failed to submit help request. Please try again.');
+      } finally {
+        setIsSubmitting(false);
+      }
+    }, 500);
   };
 
   const handleSuggestionsClick = () => {
@@ -171,9 +191,9 @@ function HelpModal({ show, onHide, auth }) {
         <Button
           variant="primary"
           onClick={handleSubmit}
-          disabled={!selectedOption || !isSoftwareDevMember}
+          disabled={!selectedOption || !isSoftwareDevMember || isSubmitting}
         >
-          Submit
+          {isSubmitting ? 'Submitting...' : 'Submit'}
         </Button>
       </Modal.Footer>
     </Modal>
