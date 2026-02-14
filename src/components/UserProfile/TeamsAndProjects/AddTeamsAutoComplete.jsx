@@ -1,7 +1,9 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Dropdown, Input } from 'reactstrap';
 import './TeamsAndProjects.css';
 import { useSelector } from 'react-redux';
+
 const TEAM_NAME_MAX_LENGTH = 100;
 
 // eslint-disable-next-line react/display-name
@@ -30,7 +32,7 @@ const AddTeamsAutoComplete = React.memo((props) => {
     setIsOpen(false);
   };
 
-  const trimmedSearchText = searchText.trim();
+  const trimmedSearchText = (searchText ?? '').toString().trim();
   const showCreateNew =
     trimmedSearchText.length > 0 &&
     !allTeams.some((t) => normalize(t.teamName) === normalize(trimmedSearchText));
@@ -112,5 +114,22 @@ const AddTeamsAutoComplete = React.memo((props) => {
     </Dropdown>
   );
 });
+
+AddTeamsAutoComplete.propTypes = {
+  teamsData: PropTypes.oneOfType([
+    PropTypes.shape({ allTeams: PropTypes.array }),
+    PropTypes.array,
+  ]),
+  searchText: PropTypes.string,
+  setSearchText: PropTypes.func.isRequired,
+  setInputs: PropTypes.func.isRequired,
+  onCreateNewTeam: PropTypes.func,
+};
+
+AddTeamsAutoComplete.defaultProps = {
+  teamsData: {},
+  searchText: '',
+  onCreateNewTeam: undefined,
+};
 
 export default AddTeamsAutoComplete;

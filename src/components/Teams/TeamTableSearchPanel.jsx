@@ -1,5 +1,6 @@
 /* eslint-disable react/destructuring-assignment */
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 import { useEffect, useRef } from 'react';
 import { boxStyle, boxStyleDark } from '~/styles';
 import hasPermission from '~/utils/permissions';
@@ -53,4 +54,18 @@ export function TeamTableSearchPanelBase(props) {
     </div>
   );
 }
+
+TeamTableSearchPanelBase.propTypes = {
+  darkMode: PropTypes.bool,
+  hasPermission: PropTypes.func.isRequired,
+  searchText: PropTypes.string,
+  onSearch: PropTypes.func.isRequired,
+  onCreateNewTeamClick: PropTypes.func.isRequired,
+};
+
+TeamTableSearchPanelBase.defaultProps = {
+  darkMode: false,
+  searchText: '',
+};
+
 export default connect(null, { hasPermission })(TeamTableSearchPanelBase);

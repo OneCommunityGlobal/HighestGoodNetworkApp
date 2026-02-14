@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import PropTypes from 'prop-types';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Alert, Spinner } from 'reactstrap';
 import AddTeamsAutoComplete from './AddTeamsAutoComplete';
 import { useDispatch } from 'react-redux';
@@ -102,17 +103,13 @@ const AddTeamPopup = React.memo((props) => {
     source.cancel();
   };
 
-  // Safely extract teams from various thunk/response shapes
   const extractTeams = (payload) => {
     if (!payload) return [];
-    // common shapes: array, {data: [...]}, {allTeams: [...]}, {data: {allTeams: [...]}}
     if (Array.isArray(payload)) return payload;
     if (Array.isArray(payload.data)) return payload.data;
     if (Array.isArray(payload.allTeams)) return payload.allTeams;
-    if (payload.data && Array.isArray(payload.data.allTeams)) return payload.data.allTeams;
-    // some thunks return {status, data}
+    if (Array.isArray(payload.data?.allTeams)) return payload.data.allTeams;
     if (payload.status && Array.isArray(payload.data)) return payload.data;
-    if (payload.status && payload.data && Array.isArray(payload.data.allTeams)) return payload.data.allTeams;
     return [];
   };
 
@@ -127,71 +124,59 @@ const AddTeamPopup = React.memo((props) => {
     }
   };
 
+  const applyCreateResponse = async (response) => {
+    if (response?.status === 200) {
+      setDuplicateTeam(false);
+      !isNotDisplayAlert && setIsNotDisplayAlert(true);
+      await refreshTeams();
+      toast.success('Team created successfully');
+      const created =
+        allTeams.find((t) => normalize(t.teamName) === normalize(searchText)) ||
+        extractTeams(response)?.[0] ||
+        response?.data;
+      setIsLoading(false);
+      props.onSelectAssignTeam ? onAssignTeam(created) : closePopup();
+      return;
+    }
+    setIsLoading(false);
+    const isDuplicate =
+      response?.status === 403 ||
+      response?.data?.message?.toLowerCase().includes('already exists');
+    if (isDuplicate) {
+      setDuplicateTeam(true);
+    } else {
+      const msg =
+        response?.status === 500
+          ? 'No response received from the server'
+          : 'Error occurred while creating team';
+      toast.error(msg);
+    }
+  };
+
   const onCreateTeam = async () => {
-    if (!searchText || searchText.trim() === '') {
+    const trimmedTeamName = searchText?.trim();
+    if (!trimmedTeamName) {
       onNewTeamValidation(false);
       return;
     }
-
-    // Client-side duplicate check
-    const trimmedTeamName = searchText.trim();
     const existingTeam = allTeams.find(
-      team => normalize(team.teamName) === normalize(trimmedTeamName)
+      (team) => normalize(team.teamName) === normalize(trimmedTeamName)
     );
-    
     if (existingTeam) {
       setDuplicateTeam(true);
       setIsLoading(false);
       return;
     }
-
     // eslint-disable-next-line import/no-named-as-default-member
     const CancelToken = axios.CancelToken;
     const source = CancelToken.source();
     const timeout = setTimeout(() => axiosResponseExceededTimeout(source), 20000);
-
     try {
       setIsLoading(true);
-      setDuplicateTeam(false); // Clear duplicate error when attempting to create
+      setDuplicateTeam(false);
       const response = await dispatch(postNewTeam(trimmedTeamName, true, source));
       clearTimeout(timeout);
-
-      if (response?.status === 200) {
-        setDuplicateTeam(false);
-        !isNotDisplayAlert && setIsNotDisplayAlert(true);
-
-        // refresh list, then assign
-        await refreshTeams();
-
-        toast.success('Team created successfully');
-        // find newly created team by exact name match
-        const created =
-          allTeams.find((t) => normalize(t.teamName) === normalize(searchText)) ||
-          extractTeams(response)?.[0] ||
-          response?.data;
-
-        setIsLoading(false);
-        if (props.onSelectAssignTeam) {
-          onAssignTeam(created);
-        } else {
-          closePopup();
-        }
-      } else {
-        setIsLoading(false);
-        const messageToastError =
-          response?.status === 500
-            ? 'No response received from the server'
-            : 'Error occurred while creating team';
-        
-        // Check for duplicate team error (403 or specific error message)
-        if (response?.status === 403 || 
-            (response?.data && response.data.message && 
-             response.data.message.toLowerCase().includes('already exists'))) {
-          setDuplicateTeam(true);
-        } else {
-          toast.error(messageToastError);
-        }
-      }
+      await applyCreateResponse(response);
     } catch (e) {
       clearTimeout(timeout);
       setIsLoading(false);
@@ -254,75 +239,70 @@ const AddTeamPopup = React.memo((props) => {
     setIsNotDisplayAlert(true);
   }, [props.open, isEdit, teamName]);
 
-  const generateValidTeamCode = (teamName) => {
-    if (!teamName || teamName.trim() === '') {
-      return 'TEAM-1';
-    }
-    
-    // Take first letter and create a format like A-AAAA
-    const firstLetter = teamName.charAt(0).toUpperCase();
-    const remainingLetters = teamName.slice(1, 5).toUpperCase().padEnd(4, 'A');
+  const generateValidTeamCode = (name) => {
+    if (!name?.trim()) return 'TEAM-1';
+    const firstLetter = name.charAt(0).toUpperCase();
+    const remainingLetters = name.slice(1, 5).toUpperCase().padEnd(4, 'A');
     return `${firstLetter}-${remainingLetters}`;
   };
 
-  const onEditTeam = async () => {
-    if (searchText !== '' && searchText.trim() !== '') {
-      // Client-side duplicate check (ignore current team name)
-      const trimmedTeamName = searchText.trim();
-      const existingTeam = allTeams.find(
-        team => normalize(team.teamName) === normalize(trimmedTeamName) && team._id !== teamId
-      );
-      if (existingTeam) {
-        setDuplicateTeam(true);
-        setIsLoading(false);
-        return;
-      }
-      
-      // Use existing teamCode or generate a new one if it's missing
-      const validTeamCode = teamCode && teamCode.trim() !== '' ? teamCode : generateValidTeamCode(trimmedTeamName);
-      
-      setIsLoading(true);
+  const applyEditResult = (result) => {
+    if (result?.status === 200) {
+      toast.success('Team updated successfully');
+      setSearchText('');
       setDuplicateTeam(false);
-      
-      try {
-        // Call the action creator directly (it's already connected via mapDispatchToProps)
-        const result = await onUpdateTeam(trimmedTeamName, teamId, isActive, validTeamCode);
-        setIsLoading(false);
-        
-        // Check if the action was successful
-        if (result && result.status === 200) {
-          toast.success('Team updated successfully');
-          // Reset state and close popup
-          setSearchText('');
-          setDuplicateTeam(false);
-          setIsLoading(false);
-          closePopup();
-        } else if (result && result.status === 403) {
-          setDuplicateTeam(true);
-          toast.error('A team with this name already exists');
-        } else if (result && result.status === 400) {
-          // Handle validation errors
-          if (result.data && result.data.errors && result.data.errors.teamCode) {
-            toast.error(result.data.errors.teamCode.message);
-          } else {
-            toast.error(result.data?.message || 'Invalid team data');
-          }
-        } else if (result && typeof result === 'string') {
-          // Handle error response from the action creator
-          toast.error(result);
-        } else if (result) {
-          toast.error(result.message || 'Error updating team');
-        } else {
-          toast.error('Failed to update team. Please try again.');
-        }
-      } catch (error) {
-        setIsLoading(false);
-        // eslint-disable-next-line no-console
-        console.error('Error updating team:', error);
-        toast.error('An unexpected error occurred while updating the team');
-      }
-    } else {
+      setIsLoading(false);
+      closePopup();
+      return;
+    }
+    if (result?.status === 403) {
+      setDuplicateTeam(true);
+      toast.error('A team with this name already exists');
+      return;
+    }
+    if (result?.status === 400) {
+      const msg = result.data?.errors?.teamCode?.message ?? result.data?.message ?? 'Invalid team data';
+      toast.error(msg);
+      return;
+    }
+    if (typeof result === 'string') {
+      toast.error(result);
+      return;
+    }
+    if (result?.message) {
+      toast.error(result.message);
+      return;
+    }
+    toast.error('Failed to update team. Please try again.');
+  };
+
+  const onEditTeam = async () => {
+    const trimmedTeamName = searchText?.trim();
+    if (!trimmedTeamName) {
       onNewTeamValidation(false);
+      return;
+    }
+    const existingTeam = allTeams.find(
+      (team) => normalize(team.teamName) === normalize(trimmedTeamName) && team._id !== teamId
+    );
+    if (existingTeam) {
+      setDuplicateTeam(true);
+      setIsLoading(false);
+      return;
+    }
+    const validTeamCode = teamCode?.trim() ? teamCode : generateValidTeamCode(trimmedTeamName);
+    setIsLoading(true);
+    setDuplicateTeam(false);
+    try {
+      const result = await onUpdateTeam(trimmedTeamName, teamId, isActive, validTeamCode);
+      setIsLoading(false);
+      applyEditResult(result);
+    } catch (error) {
+      setIsLoading(false);
+      if (process.env.NODE_ENV !== 'production') {
+        console.error('Error updating team:', error);
+      }
+      toast.error('An unexpected error occurred while updating the team');
     }
   };
 
@@ -434,9 +414,7 @@ const AddTeamPopup = React.memo((props) => {
         )}
 
         {!isValidTeam && !searchText && !selectedTeam && (
-          <Alert color="danger">
-            {isEdit ? 'Team name cannot be empty.' : 'Team name cannot be empty.'}
-          </Alert>
+          <Alert color="danger">Team name cannot be empty.</Alert>
         )}
 
         {!isValidNewTeam && !isDuplicateTeam ? (
@@ -458,5 +436,41 @@ const AddTeamPopup = React.memo((props) => {
     </Modal>
   );
 });
+
+AddTeamPopup.propTypes = {
+  open: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  teamsData: PropTypes.shape({
+    allTeams: PropTypes.arrayOf(PropTypes.object),
+  }),
+  userTeamsById: PropTypes.arrayOf(PropTypes.object),
+  onSelectAssignTeam: PropTypes.func,
+  handleSubmit: PropTypes.func,
+  userProfile: PropTypes.object,
+  darkMode: PropTypes.bool,
+  isTeamManagement: PropTypes.bool,
+  isEdit: PropTypes.bool,
+  teamName: PropTypes.string,
+  teamId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  teamCode: PropTypes.string,
+  isActive: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
+  onUpdateTeam: PropTypes.func,
+};
+
+AddTeamPopup.defaultProps = {
+  teamsData: {},
+  userTeamsById: [],
+  onSelectAssignTeam: undefined,
+  handleSubmit: () => {},
+  userProfile: {},
+  darkMode: false,
+  isTeamManagement: false,
+  isEdit: false,
+  teamName: '',
+  teamId: undefined,
+  teamCode: '',
+  isActive: '',
+  onUpdateTeam: undefined,
+};
 
 export default AddTeamPopup;

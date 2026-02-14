@@ -10,7 +10,6 @@ import isEqual from 'lodash/isEqual';
 import { searchWithAccent } from '../../utils/search';
 import {
   getAllUserTeams,
-  postNewTeam,
   deleteTeam,
   updateTeam,
   getTeamMembers,
@@ -337,6 +336,9 @@ class Teams extends React.PureComponent {
               await this.props.getAllUserProfile();
             } catch (error) {
               toast.error('Error updating team list. Please refresh the page.');
+              if (process.env.NODE_ENV !== 'production') {
+                console.error('AddTeamPopup onSelectAssignTeam error:', error);
+              }
             }
           }}
           handleSubmit={() => {}}
@@ -532,7 +534,6 @@ Teams.propTypes = {
   // actions (all required by usage)
   getAllUserTeams: PropTypes.func.isRequired,
   getAllUserProfile: PropTypes.func.isRequired,
-  postNewTeam: PropTypes.func.isRequired,
   deleteTeam: PropTypes.func.isRequired,
   updateTeam: PropTypes.func.isRequired,
   getTeamMembers: PropTypes.func.isRequired,
@@ -546,7 +547,6 @@ const mapStateToProps = state => ({ state });
 export default connect(mapStateToProps, {
   getAllUserProfile,
   getAllUserTeams,
-  postNewTeam,
   deleteTeam,
   updateTeam,
   getTeamMembers,
