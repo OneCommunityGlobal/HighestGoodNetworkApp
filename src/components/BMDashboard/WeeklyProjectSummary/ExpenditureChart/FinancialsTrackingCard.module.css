@@ -1,0 +1,100 @@
+.financialsTrackingCard {
+  width: 100%;
+  padding: 20px;
+  background: var(--section-bg);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px var(--card-shadow);
+}
+
+.projectDropdown {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding: 16px;
+  background: var(--card-bg);
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.projectDropdown label {
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--text-color);
+  white-space: nowrap;
+}
+
+.projectDropdown select {
+  flex: 1;
+  max-width: 300px;
+  padding: 10px 14px;
+  border: 1px solid var(--border-color, #ccc);
+  border-radius: 6px;
+  font-size: 14px;
+  background: var(--section-bg);
+  color: var(--text-color);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.projectDropdown select option {
+  background: var(--section-bg, #fff);
+  color: var(--text-color, #000);
+  padding: 8px;
+}
+
+.projectDropdown select:hover {
+  border-color: var(--primary-color, #6777ef);
+  background-color: var(--hover-bg, rgba(103, 119, 239, 0.05));
+}
+
+.projectDropdown select:focus {
+  outline: none;
+  border-color: var(--primary-color, #6777ef);
+  box-shadow: 0 0 0 3px rgba(103, 119, 239, 0.1);
+}
+
+/* Dark mode support */
+.dark-mode .financialsTrackingCard {
+  background: var(--section-bg);
+  box-shadow: 0 2px 5px rgba(255, 255, 255, 0.05);
+}
+
+.dark-mode .projectDropdown {
+  background: var(--card-bg);
+  box-shadow: 0 1px 3px rgba(255, 255, 255, 0.08);
+}
+
+.dark-mode .projectDropdown select {
+  border-color: var(--border-color, #444);
+  background: var(--section-bg);
+  color: var(--text-color);
+}
+
+.dark-mode .projectDropdown select option {
+  background: #2d3748;
+  color: #fff;
+}
+
+.dark-mode .projectDropdown select:hover {
+  border-color: var(--primary-color, #6777ef);
+  background-color: rgba(103, 119, 239, 0.15);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .financialsTrackingCard {
+    padding: 12px;
+  }
+
+  .projectDropdown {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .projectDropdown select {
+    max-width: 100%;
+    width: 100%;
+  }
+}

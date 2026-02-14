@@ -1,4 +1,4 @@
-.expenditure-chart-wrapper {
+.expenditureChartWrapper {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
@@ -8,11 +8,11 @@
   margin: 0;
 }
 
-.expenditure-chart-card {
+.expenditureChartCard {
   flex: 1 1 220px;
-  max-width: 260px;
+  max-width: 280px;
   padding: 12px 10px;
-  min-height: 300px;
+  min-height: 350px;
   background: var(--card-bg);
   box-shadow: 0 2px 4px var(--card-shadow);
   border-radius: 8px;
@@ -22,20 +22,23 @@
   justify-content: flex-start;
 }
 
-.expenditure-chart-title {
+.expenditureChartTitle {
   font-size: 1.1rem;
   font-weight: bold;
   text-align: center;
   margin-bottom: 6px;
+  color: var(--text-color);
 }
 
 .recharts-legend-wrapper {
   margin-top: -10px !important;
+  padding: 0 10px;
 }
 
 .recharts-legend-item-text {
-  font-size: 12px !important;
+  font-size: 11px !important;
   white-space: nowrap;
+  color: var(--text-color) !important;
 }
 
 .recharts-pie-label-text {
@@ -47,12 +50,12 @@
   white-space: nowrap;
 }
 
-.dark-mode .expenditure-chart-card {
+.dark-mode .expenditureChartCard {
   background: var(--card-bg);
   box-shadow: 0 2px 5px rgba(255, 255, 255, 0.08);
 }
 
-.dark-mode .expenditure-chart-title {
+.dark-mode .expenditureChartTitle {
   color: var(--text-color);
 }
 
@@ -60,4 +63,44 @@
   background-color: #333 !important;
   color: #fff !important;
   border: 1px solid #555 !important;
+}
+
+.expenditureChartLoading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  color: var(--text-color);
+}
+
+.expenditureChartError {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  color: var(--error-color, #ff4d4f);
+}
+
+/* Responsive design for tablets and smaller screens */
+@media (max-width: 768px) {
+  .expenditureChartCard {
+    max-width: 100%;
+    flex: 1 1 100%;
+  }
+
+  .expenditureChartWrapper {
+    gap: 12px;
+  }
+}
+
+/* Responsive design for mobile */
+@media (max-width: 480px) {
+  .expenditureChartCard {
+    padding: 8px;
+    min-height: 260px;
+  }
+
+  .expenditureChartTitle {
+    font-size: 1rem;
+  }
 }

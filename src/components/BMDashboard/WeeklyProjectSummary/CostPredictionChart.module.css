@@ -19,6 +19,7 @@
   list-style: none;
   margin: 0;
   padding: 0;
+  font-size: 12px;
 }
 
 .legendItem {
@@ -26,7 +27,6 @@
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: var(--text-color);
 }
 
 .legendListItem {
