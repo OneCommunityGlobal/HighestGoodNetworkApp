@@ -16,6 +16,7 @@ export const ADD_EQUIPMENT_TOOL = 'Add Equipment/Tool';
 export const LOG_EQUIPMENT_TOOL = 'Log Equipment/Tool';
 export const UPDATE_EQUIPMENT_TOOL = 'Update Equipment/Tool';
 export const EQUIPMENT_TOOL_LIST = 'Equipment/Tool List';
+export const CONSUMABLE_LIST = 'Consumable List';
 export const ISSUE = 'Issue';
 export const LESSON = 'Lesson';
 export const DASHBOARD = 'Dashboard';
