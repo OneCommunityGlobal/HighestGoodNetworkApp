@@ -116,6 +116,11 @@
   font-size: 1.2rem;
   font-weight: 500;
 }
+
+.commentCountNumber {
+  color: #888;
+  font-weight: 400;
+}
 .sortBtn {
   background: none;
   border: none;
@@ -232,4 +237,647 @@
 }
 .loadMoreBtn:hover {
   background: #ddd;
+}
+
+/* ============================================
+   DARK MODE STYLES - Comment Cards, Backgrounds, and Borders
+   ============================================ */
+
+/* Comment Item - Dark Mode */
+:global(body.dark-mode) .commentItem,
+:global(body.bm-dashboard-dark) .commentItem {
+  background: #2e5061 !important;
+  border: 1px solid #3a506b;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .commentItem .commentName,
+:global(body.bm-dashboard-dark) .commentItem .commentName {
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .commentItem .commentText,
+:global(body.bm-dashboard-dark) .commentItem .commentText {
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .commentItem .commentTimestamp,
+:global(body.bm-dashboard-dark) .commentItem .commentTimestamp {
+  color: #b8c5d1 !important;
+}
+
+/* Comment Box - Dark Mode */
+:global(body.dark-mode) .commentBox,
+:global(body.bm-dashboard-dark) .commentBox {
+  background: transparent;
+}
+
+/* Comments List - Dark Mode */
+:global(body.dark-mode) .commentsList,
+:global(body.bm-dashboard-dark) .commentsList {
+  background: transparent;
+}
+
+/* Reply Form Container */
+.replyFormContainer {
+  margin-top: 12px;
+  margin-left: 40px;
+  padding: 12px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.replyFormInner {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.replyProfilePic {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.replyTextarea {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  resize: vertical;
+  min-height: 60px;
+}
+
+.replySubmitBtn {
+  padding: 8px 16px;
+  background-color: #1976d2;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.replyCancelBtn {
+  padding: 8px 12px;
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+/* Reply Card */
+.replyCard {
+  padding: 12px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.replyCardHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.replyCardProfilePic {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.replyCardName {
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.replyCardTimestamp {
+  color: #666;
+  font-size: 0.8rem;
+}
+
+.replyCardText {
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.repliesContainer {
+  margin-top: 12px;
+  margin-left: 40px;
+}
+
+/* Comment Input - Dark Mode */
+:global(body.dark-mode) .commentInput,
+:global(body.bm-dashboard-dark) .commentInput {
+  background-color: #2e5061 !important;
+  border: 1px solid #3a506b !important;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .commentInput::placeholder,
+:global(body.bm-dashboard-dark) .commentInput::placeholder {
+  color: #b8c5d1 !important;
+}
+
+/* Reply Form Background - Dark Mode */
+:global(body.dark-mode) .replyFormContainer,
+:global(body.bm-dashboard-dark) .replyFormContainer {
+  background-color: #2e5061 !important;
+  border: 1px solid #3a506b !important;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .replyTextarea,
+:global(body.bm-dashboard-dark) .replyTextarea {
+  background-color: #2e5061 !important;
+  border: 1px solid #3a506b !important;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .replyTextarea::placeholder,
+:global(body.bm-dashboard-dark) .replyTextarea::placeholder {
+  color: #b8c5d1 !important;
+}
+
+/* Reply Card Background - Dark Mode */
+:global(body.dark-mode) .replyCard,
+:global(body.bm-dashboard-dark) .replyCard {
+  background-color: #2e5061 !important;
+  border: 1px solid #3a506b !important;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .replyCardName,
+:global(body.bm-dashboard-dark) .replyCardName {
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .replyCardTimestamp,
+:global(body.bm-dashboard-dark) .replyCardTimestamp {
+  color: #b8c5d1 !important;
+}
+
+:global(body.dark-mode) .replyCardText,
+:global(body.bm-dashboard-dark) .replyCardText {
+  color: #ffffff !important;
+}
+
+/* ============================================
+   Feedback Controls - Inputs & Selects
+   ============================================ */
+
+.feedbackSearchInput {
+  flex: 1;
+  min-width: 200px;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.feedbackSelect {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+/* Feedback Controls - Dark Mode */
+:global(body.dark-mode) .feedbackSearchInput,
+:global(body.bm-dashboard-dark) .feedbackSearchInput,
+:global(body.dark-mode) .feedbackSelect,
+:global(body.bm-dashboard-dark) .feedbackSelect {
+  background-color: #2e5061 !important;
+  border: 1px solid #3a506b !important;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .feedbackSearchInput::placeholder,
+:global(body.bm-dashboard-dark) .feedbackSearchInput::placeholder {
+  color: #b8c5d1 !important;
+}
+
+/* ============================================
+   Tabs, Buttons, and Interactive Elements - Dark Mode
+   ============================================ */
+
+/* Main Tabs - Dark Mode */
+:global(body.dark-mode) .tabs,
+:global(body.bm-dashboard-dark) .tabs {
+  border-bottom: 2px solid #3a506b !important;
+}
+
+:global(body.dark-mode) .tab,
+:global(body.bm-dashboard-dark) .tab {
+  color: #b8c5d1 !important;
+}
+
+:global(body.dark-mode) .tabActive,
+:global(body.bm-dashboard-dark) .tabActive {
+  border-bottom: 2px solid #66b3ff !important;
+  color: #66b3ff !important;
+}
+
+/* Comment Tabs - Dark Mode */
+:global(body.dark-mode) .commentTabBtn,
+:global(body.bm-dashboard-dark) .commentTabBtn {
+  color: #b8c5d1 !important;
+}
+
+:global(body.dark-mode) .commentTabBtnActive,
+:global(body.bm-dashboard-dark) .commentTabBtnActive {
+  border-bottom: 2px solid #66b3ff !important;
+  color: #66b3ff !important;
+}
+
+/* Sort Button - Dark Mode */
+:global(body.dark-mode) .sortBtn,
+:global(body.bm-dashboard-dark) .sortBtn {
+  color: #b8c5d1 !important;
+}
+
+:global(body.dark-mode) .sortBtn:hover,
+:global(body.bm-dashboard-dark) .sortBtn:hover {
+  color: #ffffff !important;
+  background-color: rgba(58, 80, 107, 0.3) !important;
+}
+
+/* Post Button - Dark Mode */
+:global(body.dark-mode) .postBtn,
+:global(body.bm-dashboard-dark) .postBtn {
+  background: #3a506b !important;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .postBtn:hover,
+:global(body.bm-dashboard-dark) .postBtn:hover {
+  background: #4a6072 !important;
+}
+
+/* Action Buttons (Upvote, Downvote, Reply) - Dark Mode */
+:global(body.dark-mode) .upvoteBtn,
+:global(body.dark-mode) .downvoteBtn,
+:global(body.dark-mode) .replyBtn,
+:global(body.bm-dashboard-dark) .upvoteBtn,
+:global(body.bm-dashboard-dark) .downvoteBtn,
+:global(body.bm-dashboard-dark) .replyBtn {
+  color: #b8c5d1 !important;
+}
+
+:global(body.dark-mode) .upvoteBtn:hover,
+:global(body.dark-mode) .downvoteBtn:hover,
+:global(body.dark-mode) .replyBtn:hover,
+:global(body.bm-dashboard-dark) .upvoteBtn:hover,
+:global(body.bm-dashboard-dark) .downvoteBtn:hover,
+:global(body.bm-dashboard-dark) .replyBtn:hover {
+  background: rgba(58, 80, 107, 0.5) !important;
+  color: #ffffff !important;
+}
+
+/* Load More Button - Dark Mode */
+:global(body.dark-mode) .loadMoreBtn,
+:global(body.bm-dashboard-dark) .loadMoreBtn {
+  background: #3a506b !important;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .loadMoreBtn:hover,
+:global(body.bm-dashboard-dark) .loadMoreBtn:hover {
+  background: #4a6072 !important;
+}
+
+:global(body.dark-mode) .loadMoreBtn:disabled,
+:global(body.bm-dashboard-dark) .loadMoreBtn:disabled {
+  background: #2e5061 !important;
+  color: #b8c5d1 !important;
+  cursor: not-allowed;
+}
+
+/* Reply Submit Button - Dark Mode */
+:global(body.dark-mode) .replySubmitBtn,
+:global(body.bm-dashboard-dark) .replySubmitBtn {
+  background-color: #3a506b !important;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .replySubmitBtn:hover,
+:global(body.bm-dashboard-dark) .replySubmitBtn:hover {
+  background-color: #4a6072 !important;
+}
+
+/* Reply Cancel Button - Dark Mode */
+:global(body.dark-mode) .replyCancelBtn,
+:global(body.bm-dashboard-dark) .replyCancelBtn {
+  background-color: #2e5061 !important;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .replyCancelBtn:hover,
+:global(body.bm-dashboard-dark) .replyCancelBtn:hover {
+  background-color: #3a506b !important;
+}
+
+/* Comment Count - Dark Mode */
+:global(body.dark-mode) .commentCount,
+:global(body.bm-dashboard-dark) .commentCount {
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .commentCountNumber,
+:global(body.bm-dashboard-dark) .commentCountNumber {
+  color: #b8c5d1 !important;
+}
+
+/* Comment Visibility - Dark Mode */
+:global(body.dark-mode) .commentVisibility,
+:global(body.bm-dashboard-dark) .commentVisibility {
+  color: #66b3ff !important;
+}
+
+/* ============================================
+   Event Card, Calendar, and Feedback Section - Dark Mode
+   ============================================ */
+
+/* Event Card - Dark Mode */
+:global(body.dark-mode) .eventCard,
+:global(body.bm-dashboard-dark) .eventCard {
+  background: #2e5061 !important;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .eventImage,
+:global(body.bm-dashboard-dark) .eventImage {
+  background: #3a506b !important;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .eventTitle,
+:global(body.bm-dashboard-dark) .eventTitle {
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .eventMeta,
+:global(body.bm-dashboard-dark) .eventMeta {
+  color: #b8c5d1 !important;
+}
+
+:global(body.dark-mode) .eventMetaItem,
+:global(body.bm-dashboard-dark) .eventMetaItem {
+  color: #b8c5d1 !important;
+}
+
+:global(body.dark-mode) .eventMetaItem a,
+:global(body.bm-dashboard-dark) .eventMetaItem a {
+  color: #66b3ff !important;
+}
+
+:global(body.dark-mode) .eventAvatars span,
+:global(body.bm-dashboard-dark) .eventAvatars span {
+  color: #b8c5d1 !important;
+}
+
+/* Calendar - Dark Mode */
+:global(body.dark-mode) .calendar,
+:global(body.bm-dashboard-dark) .calendar {
+  background: #2e5061 !important;
+  color: #ffffff !important;
+}
+
+.calendarHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.calendarNavBtn {
+  background: none;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.calendarMonth {
+  font-weight: 500;
+}
+
+.calendarTable {
+  width: 100%;
+  font-size: 0.95rem;
+}
+
+.calendarWeekday {
+  padding: 4px;
+  text-align: center;
+  color: #888;
+}
+
+.calendarDayBtn {
+  cursor: pointer;
+  padding: 6px;
+  text-align: center;
+  border: none;
+  background: none;
+  width: 100%;
+  border-radius: 4px;
+  position: relative;
+}
+
+.calendarDayEmpty {
+  padding: 6px;
+}
+
+.calendarDayDot {
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  background-color: white;
+  border-radius: 50%;
+}
+
+/* Calendar - Dark Mode */
+:global(body.dark-mode) .calendarNavBtn,
+:global(body.bm-dashboard-dark) .calendarNavBtn {
+  border: 1px solid #3a506b !important;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .calendarNavBtn:hover,
+:global(body.bm-dashboard-dark) .calendarNavBtn:hover {
+  background: #3a506b !important;
+  border-color: #4a6072 !important;
+}
+
+:global(body.dark-mode) .calendarMonth,
+:global(body.bm-dashboard-dark) .calendarMonth {
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .calendarWeekday,
+:global(body.bm-dashboard-dark) .calendarWeekday {
+  color: #b8c5d1 !important;
+}
+
+:global(body.dark-mode) .calendarDayBtn,
+:global(body.bm-dashboard-dark) .calendarDayBtn {
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .calendarDayBtn:hover,
+:global(body.bm-dashboard-dark) .calendarDayBtn:hover {
+  background: rgba(58, 80, 107, 0.3) !important;
+}
+
+:global(body.dark-mode) .calendarDayDot,
+:global(body.bm-dashboard-dark) .calendarDayDot {
+  background-color: #ffffff !important;
+}
+
+/* Feedback Stats Section */
+.feedbackStats {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.feedbackStatsLeft {
+  display: flex;
+  flex-direction: column;
+}
+
+.feedbackStatsRating {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #1976d2;
+}
+
+.feedbackStatsStars {
+  color: #666;
+}
+
+.feedbackStatsReviews {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.feedbackStatsRight {
+  text-align: right;
+}
+
+.feedbackStatsCount {
+  font-size: 1.2rem;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.feedbackFormWrapper {
+  flex: 1;
+}
+
+.feedbackRatingLabel {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 5px;
+}
+
+.feedbackControlsContainer {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.feedbackList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.feedbackRatingContainer {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.feedbackRatingText {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.feedbackEmpty {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+}
+
+/* Feedback Stats - Dark Mode */
+:global(body.dark-mode) .feedbackStats,
+:global(body.bm-dashboard-dark) .feedbackStats {
+  background: #2e5061 !important;
+  color: #ffffff !important;
+  border: 1px solid #3a506b !important;
+}
+
+:global(body.dark-mode) .feedbackStatsRating,
+:global(body.bm-dashboard-dark) .feedbackStatsRating {
+  color: #66b3ff !important;
+}
+
+:global(body.dark-mode) .feedbackStatsStars,
+:global(body.bm-dashboard-dark) .feedbackStatsStars {
+  color: #b8c5d1 !important;
+}
+
+:global(body.dark-mode) .feedbackStatsReviews,
+:global(body.bm-dashboard-dark) .feedbackStatsReviews {
+  color: #b8c5d1 !important;
+}
+
+:global(body.dark-mode) .feedbackStatsCount,
+:global(body.bm-dashboard-dark) .feedbackStatsCount {
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .feedbackRatingLabel,
+:global(body.bm-dashboard-dark) .feedbackRatingLabel {
+  color: #b8c5d1 !important;
+}
+
+:global(body.dark-mode) .feedbackRatingText,
+:global(body.bm-dashboard-dark) .feedbackRatingText {
+  color: #b8c5d1 !important;
+}
+
+:global(body.dark-mode) .feedbackEmpty,
+:global(body.bm-dashboard-dark) .feedbackEmpty {
+  color: #b8c5d1 !important;
+}
+
+:global(body.dark-mode) .feedbackEmpty h3,
+:global(body.bm-dashboard-dark) .feedbackEmpty h3 {
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .feedbackEmpty p,
+:global(body.bm-dashboard-dark) .feedbackEmpty p {
+  color: #b8c5d1 !important;
 }
