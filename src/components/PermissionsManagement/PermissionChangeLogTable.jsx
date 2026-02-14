@@ -79,7 +79,7 @@ function PermissionChangeLogTable({ changeLogs, darkMode, roleNamesToHighlight =
     }));
   };
 
-  const renderPermissions = (permissions, rowId) => {
+  const renderPermissions = (permissions, rowId, reason) => {
     // Filter out empty or falsy values before joining the permissions
     const filteredPermissions = permissions
       .map(permission => permissionLabelKeyMappingObj?.[permission])
@@ -89,8 +89,12 @@ function PermissionChangeLogTable({ changeLogs, darkMode, roleNamesToHighlight =
       <div className="permissions-cell">
         {expandedRows[rowId]
           ? filteredPermissions.join(', ') // Show all filtered permissions if expanded
-          : filteredPermissions.slice(0, 5).join(', ') +
-            (filteredPermissions.length > 5 ? ', ...' : '')}
+          : filteredPermissions.length > 0
+          ? filteredPermissions.slice(0, 5).join(', ') +
+            (filteredPermissions.length > 5 ? ', ...' : '')
+          : reason?.includes('**')
+          ? `See default ${reason.split('**')[1]} role permissions`
+          : ''}
         {filteredPermissions.length > 5 && (
           <button className="toggle-button" onClick={() => toggleExpandRow(rowId)} type="button">
             {expandedRows[rowId] ? <FiChevronUp /> : <FiChevronDown />}
@@ -99,6 +103,15 @@ function PermissionChangeLogTable({ changeLogs, darkMode, roleNamesToHighlight =
       </div>
     );
   };
+  const renderRoleChange = text => {
+    if (text?.includes('**')) {
+      return text
+        .split('**')
+        .map((part, i) => (i % 2 === 1 ? <strong key={i}>{part}</strong> : part));
+    }
+    return text;
+  };
+
   return (
     <>
       <div className={styles.tableResponsive}>
@@ -133,7 +146,7 @@ function PermissionChangeLogTable({ changeLogs, darkMode, roleNamesToHighlight =
                     : styles.permissionChangeLogTableHeader
                 }
               >
-                Permissions
+                Reason
               </th>
               <th
                 className={
@@ -189,22 +202,28 @@ function PermissionChangeLogTable({ changeLogs, darkMode, roleNamesToHighlight =
                   <td
                     className={styles.permissionChangeLogTableCell}
                     style={{
-                      fontWeight: log?.individualName ? 'bold' : 'normal',
+                      fontWeight: log?.reason?.includes('Role') ? 'normal' : 'bold',
+                      color: log?.individualName ? '' : '#D30000',
                     }}
                   >
                     {log?.individualName ? formatName(log.individualName) : log.roleName}
                   </td>
 
-                  <td className={styles.permissionChangeLogTableCell}>
-                    {renderPermissions(log.permissions, log._id)}
+                  <td
+                    className={styles.permissionChangeLogTableCell}
+                    style={{
+                      color: log?.reason?.includes('Role') ? (darkMode ? 'cyan' : 'blue') : '',
+                    }}
+                  >
+                    {log?.reason ? renderRoleChange(log.reason) : 'Permissions changed.'}
                   </td>
 
                   <td className={styles.permissionChangeLogTableCell}>
-                    {renderPermissions(log.permissionsAdded, `${log._id}_added`)}
+                    {renderPermissions(log.permissionsAdded, `${log._id}_added`, log.reason)}
                   </td>
 
                   <td className={styles.permissionChangeLogTableCell}>
-                    {renderPermissions(log.permissionsRemoved, `${log._id}_removed`)}
+                    {renderPermissions(log.permissionsRemoved, `${log._id}_removed`, log.reason)}
                   </td>
 
                   <td className={styles.permissionChangeLogTableCell}>{log.requestorRole}</td>

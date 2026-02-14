@@ -1,5 +1,14 @@
 import { useEffect, useState, useRef } from 'react';
-import { Button, Dropdown, Form, Input } from 'reactstrap';
+import {
+  Button,
+  Dropdown,
+  Form,
+  Input,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+} from 'reactstrap';
 import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
 import { getAllUserProfile } from '~/actions/userManagement';
@@ -18,6 +27,7 @@ import PermissionList from './PermissionList';
 import { addNewRole, getAllRoles } from '../../actions/role';
 
 import ReminderModal from './ReminderModal';
+import { permissionLabelKeyMappingObj, getAllPermissionKeys } from './PermissionsConst';
 
 function UserPermissionsPopUp({
   allUserProfiles,
@@ -41,6 +51,8 @@ function UserPermissionsPopUp({
   const [actualUserRolePermission, setActualUserRolePermission] = useState();
   const [selectedAccount, setSelectedAccount] = useState('');
   const [toastShown, setToastShown] = useState(false);
+  const [infoRoleModal, setinfoRoleModal] = useState(false);
+  const [modalContent, setContent] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const setToDefault = () => {
@@ -90,9 +102,11 @@ function UserPermissionsPopUp({
 
     const url = `${ENDPOINTS.PERMISSION_MANAGEMENT_UPDATE()}/user/${userId}`;
     const permissionData = {
+      reason: `User's permissions modified.`,
       permissions: {
         frontPermissions: userPermissions,
         removedDefaultPermissions: userRemovedDefaultPermissions,
+        defaultPermissions: actualUserRolePermission,
       },
       requestor: authUser, // Fixed: use authUser instead of req.body.requestor
     };
@@ -125,6 +139,34 @@ function UserPermissionsPopUp({
         setIsSubmitting(false);
       });
   };
+
+  const handleModalOpen = () => {
+    if (userPermissions?.length > 0 || userRemovedDefaultPermissions?.length > 0) {
+      const matchingPermissions = [
+        ...new Set(
+          getAllPermissionKeys().filter(
+            key => userPermissions.includes(key) || userRemovedDefaultPermissions.includes(key),
+          ),
+        ),
+      ];
+
+      const permissionNames = matchingPermissions.map(key => permissionLabelKeyMappingObj[key]);
+
+      const description = `Clicking reset to default will return the user to the default permissions of this role: ${
+        actualUserProfile?.role
+      }.\n
+      The following permissions that had been changed (also indicated by a Star icon below) are: ${permissionNames.join(
+        ', ',
+      )}`;
+      setContent(description);
+      setinfoRoleModal(true);
+    }
+  };
+
+  const toggleInfoRoleModal = () => {
+    setinfoRoleModal(!infoRoleModal);
+  };
+
   useEffect(() => {
     refInput.current.focus();
   }, []);
@@ -159,18 +201,37 @@ function UserPermissionsPopUp({
           <h4 className={styles['user-permissions-pop-up__title']}>
             User name<span className="red-asterisk">* </span>:
           </h4>
-          <Button
-            type="button"
-            color="success"
-            // eslint-disable-next-line no-unused-vars
-            onClick={e => {
-              setToDefault();
-            }}
-            disabled={!actualUserProfile}
-            style={boxStyle}
-          >
-            Reset to Default
-          </Button>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <div className="infos">
+              <i
+                data-toggle="tooltip"
+                data-placement="center"
+                title="Click for more information"
+                aria-hidden="true"
+                className="fa fa-info-circle"
+                onClick={() => {
+                  handleModalOpen();
+                }}
+                style={{
+                  color: darkMode ? 'white' : 'black',
+                  fontSize: '25px',
+                  marginRight: '10px',
+                }}
+              />
+            </div>
+            <Button
+              type="button"
+              color="success"
+              // eslint-disable-next-line no-unused-vars
+              onClick={e => {
+                setToDefault();
+              }}
+              disabled={!actualUserProfile}
+              style={boxStyle}
+            >
+              Reset to Default
+            </Button>
+          </div>
         </div>
         <Dropdown
           isOpen={isOpen}
@@ -282,6 +343,25 @@ function UserPermissionsPopUp({
           Submit
         </Button>
       </Form>
+      <Modal
+        isOpen={infoRoleModal}
+        toggle={toggleInfoRoleModal}
+        id="#modal2-body_new-role--padding"
+        className={darkMode ? 'text-light dark-mode' : ''}
+      >
+        <ModalHeader toggle={toggleInfoRoleModal} className={darkMode ? 'bg-space-cadet' : ''}>
+          Reset to Default Info
+        </ModalHeader>
+        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+          <p style={{ whiteSpace: 'pre-line' }}>{modalContent}</p>
+        </ModalBody>
+        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+          <Button onClick={toggleInfoRoleModal} color="secondary" className="float-left">
+            {' '}
+            Ok{' '}
+          </Button>
+        </ModalFooter>
+      </Modal>
     </>
   );
 }

@@ -15,6 +15,7 @@ import { updateRole, getAllRoles } from '../../actions/role';
 import PermissionList from './PermissionList';
 import permissionLabel from './PermissionsConst';
 import hasPermission from '../../utils/permissions';
+import userStyles from './UserRoleTab.module.css';
 import styles from './RolePermissions.module.css';
 // import { roleOperationLabels } from './PermissionsConst';
 
@@ -180,14 +181,14 @@ function RolePermissions(props) {
   return (
     <>
       {changed ? (
-        <Alert color="warning" className="user-role-tab__alert ">
+        <Alert color="warning" className={`${userStyles.userRoleTabAlert}`}>
           You have unsaved changes! Please click <strong>Save</strong> button to save changes!
         </Alert>
       ) : null}
       <header>
-        <div className="user-role-tab__name-container">
-          <div className="name-container__role-name">
-            <h1 className="user-role-tab__h1" style={darkMode ? { color: '#fff' } : {}}>
+        <div className={`${userStyles.userRoleTabNameContainer}`}>
+          <div className={`${userStyles.nameContainerRoleName}`}>
+            <h1 className={`${userStyles.userRoleTabH1}`} style={darkMode ? { color: '#fff' } : {}}>
               {' '}
               Role Name: {roleName}
             </h1>
@@ -195,7 +196,9 @@ function RolePermissions(props) {
               <FontAwesomeIcon
                 icon={faEdit}
                 size="lg"
-                className={`user-role-tab__icon edit-icon ${darkMode ? 'text-light' : ''}`}
+                className={`${userStyles.userRoleTabIcon} edit-icon ${
+                  darkMode ? 'text-light' : ''
+                }`}
                 data-testid="edit-role-icon"
                 onClick={toggleEditRoleNameModal}
               />
@@ -203,10 +206,10 @@ function RolePermissions(props) {
           </div>
           {canEditRole && (
             <div style={{ flexDirection: 'row', display: 'flex' }}>
-              <div className="name-container__btn_columns">
-                <div className="name-container__btns">
+              <div className={`${userStyles.nameContainerBtnColumns}`}>
+                <div className={`${userStyles.nameContainerBtns}`}>
                   <Button
-                    className="btn_save responsive-font-size"
+                    className={`${userStyles.btnSave} ${userStyles.responsiveFontSize}`}
                     color="success"
                     onClick={handleSaveNewPreset}
                     style={boxStyling}
@@ -214,7 +217,7 @@ function RolePermissions(props) {
                     Create New Preset
                   </Button>
                   <Button
-                    className="responsive-font-size btn_save"
+                    className={`${userStyles.responsiveFontSize} ${userStyles.btnSave}`}
                     color="primary"
                     onClick={() => {
                       setShowPresetModal(!showPresetModal);
@@ -224,10 +227,10 @@ function RolePermissions(props) {
                     Load Presets
                   </Button>
                 </div>
-                <div className="name-container__btns">
+                <div className={`${userStyles.nameContainerBtns}`}>
                   <div>
                     <Button
-                      className="btn_save responsive-font-size mr-2"
+                      className={`${userStyles.btnSave} ${userStyles.responsiveFontSize} mr-2`}
                       color="success"
                       onClick={() => updateInfo()}
                       style={boxStyling}
@@ -248,7 +251,7 @@ function RolePermissions(props) {
                   </div>
                   <div>
                     <Button
-                      className="responsive-font-size btn_save mr-2"
+                      className={`${userStyles.responsiveFontSize} ${userStyles.btnSave} mr-2`}
                       color="danger"
                       onClick={toggleDeleteRoleModal}
                       style={boxStyling}
@@ -308,9 +311,9 @@ function RolePermissions(props) {
             </ModalFooter>
           </Modal>
         </div>
-        <h2 className="user-role-tab__h2">Permission List</h2>
+        <h2 className={`${userStyles.userRoleTabH2}`}>Permission List</h2>
       </header>
-      <ul className="user-role-tab__permissionList">
+      <ul className={`${userStyles.userRoleTabPermissionList}`}>
         <PermissionList
           rolePermissions={permissions}
           permissionsList={permissionLabel}
@@ -332,7 +335,7 @@ function RolePermissions(props) {
           <FontAwesomeIcon
             icon={faExclamationTriangle}
             size="lg"
-            className="user-role-tab__icon warning-icon"
+            className={`${userStyles.userRoleTabIcon} ${userStyles.warningIcon}`}
           />
           Delete {roleName} Role
         </ModalHeader>

@@ -8,6 +8,7 @@ import { ModalContext } from '~/context/ModalContext';
 import PermissionList from './PermissionList';
 import hasPermission from '../../utils/permissions';
 import styles from './UserRoleTab.module.css';
+import clsx from 'clsx';
 
 function PermissionListItem(props) {
   const {
@@ -98,8 +99,14 @@ function PermissionListItem(props) {
   const setSubpermissions = (recursiveSubperms, adding) => {
     recursiveSubperms.forEach(subperm => {
       if (subperm.subperms) {
+        // checks if section has a subsection
         setSubpermissions(subperm.subperms, adding);
-      } else if (adding !== rolePermissions.includes(subperm.key)) {
+      } else if (
+        adding !==
+        (rolePermissions.includes(subperm.key) ||
+          (immutablePermissions.includes(subperm.key) &&
+            !removedDefaultPermissions?.includes(subperm.key)))
+      ) {
         togglePermission(subperm.key);
       }
     });
@@ -120,7 +127,12 @@ function PermissionListItem(props) {
       const perm = list.pop();
       if (perm.subperms) {
         list = list.concat(perm.subperms);
-      } else if (rolePermissions.includes(perm.key) || immutablePermissions.includes(perm.key)) {
+
+        // Updated below so category add/delete button is properly updated based off of all their subpermissions
+      } else if (
+        rolePermissions.includes(perm.key) ||
+        (immutablePermissions.includes(perm.key) && !removedDefaultPermissions.includes(perm.key))
+      ) {
         none = false;
       } else {
         all = false;
@@ -138,7 +150,6 @@ function PermissionListItem(props) {
     // eslint-disable-next-line consistent-return
     return 'Some';
   };
-
   const howManySubpermsInRole = checkSubperms(subperms);
 
   let color;
@@ -173,6 +184,17 @@ function PermissionListItem(props) {
       return 'secondary';
     }
     return 'success';
+  };
+
+  const changedPermission = currentPermission => {
+    return (
+      rolePermissions.includes(currentPermission) ||
+      removedDefaultPermissions.includes(currentPermission)
+    );
+  };
+
+  const checkChangePermission = currentPermission => {
+    return rolePermissions.includes(currentPermission);
   };
 
   return (
@@ -237,28 +259,60 @@ function PermissionListItem(props) {
               {howManySubpermsInRole === 'All' ? 'Delete' : 'Add'}
             </Button>
           ) : (
-            <Button
-              className={styles.iconButton}
-              color={hasThisPermission ? 'danger' : 'success'}
-              onClick={() => {
-                togglePermission(permission);
-                updateModalStatus(true);
-              }}
-              disabled={
-                !props.hasPermission('putRole') ||
-                (immutablePermissions.includes(permission) &&
-                  !props.hasPermission('putUserProfilePermissions')) ||
-                shouldDisableForRestriction
-              }
-              style={darkMode ? boxStyleDark : boxStyle}
-              title={
-                shouldDisableForRestriction
-                  ? 'You must have the Blue Square Email Management permission to assign it to others'
-                  : ''
-              }
-            >
-              {hasThisPermission ? 'Delete' : 'Add'}
-            </Button>
+            <>
+              <Button
+                className={styles.iconButton}
+                color={hasThisPermission ? 'danger' : 'success'}
+                onClick={() => {
+                  togglePermission(permission);
+                  updateModalStatus(true);
+                }}
+                disabled={
+                  !props.hasPermission('putRole') ||
+                  (immutablePermissions.includes(permission) &&
+                    !props.hasPermission('putUserProfilePermissions')) ||
+                  shouldDisableForRestriction
+                }
+                style={darkMode ? boxStyleDark : boxStyle}
+                title={
+                  shouldDisableForRestriction
+                    ? 'You must have the Blue Square Email Management permission to assign it to others'
+                    : ''
+                }
+              >
+                {hasThisPermission ? 'Delete' : 'Add'}
+              </Button>
+              <div
+                className={`${styles.permissionTooltipWrapper} ${
+                  changedPermission(permission) ? `${styles.showTooltip}` : ''
+                }`}
+              >
+                {immutablePermissions.length > 0 && (
+                  <button
+                    className={clsx(
+                      styles.changedPermission,
+                      darkMode ? styles.darkBackground : styles.lightBackground,
+                      changedPermission(permission)
+                        ? checkChangePermission(permission)
+                          ? styles.green
+                          : styles.red
+                        : darkMode
+                        ? styles.dark
+                        : styles.light,
+                    )}
+                    aria-label={changedPermission(permission) ? 'Modified Permission' : ''}
+                    disabled
+                    type="button"
+                  >
+                    {' '}
+                    ★{' '}
+                  </button>
+                )}
+                <p className={clsx(styles.permissionTooltipText, darkMode ? styles.dark : '')}>
+                  Permission {checkChangePermission(permission) ? 'added' : 'removed'}
+                </p>
+              </div>
+            </>
           )}
         </div>
       </li>

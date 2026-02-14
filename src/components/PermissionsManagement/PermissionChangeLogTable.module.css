@@ -29,18 +29,18 @@
   }
 }
 
-.permissionChangeLogTable-Header {
+.permissionChangeLogTableHeader {
   background-color: #e3f0fb;
 }
 
-.permissionChangeLogTable-HeaderDark {
+.permissionChangeLogTableHeaderDark {
   background-color: #1c2541;
   border: 1px solid red;
 }
 
-.permissionChangeLogTable-Header,
-.permissionChangeLogTable-HeaderDark,
-.permissionChangeLogTable-Cell {
+.permissionChangeLogTableHeader,
+.permissionChangeLogTableHeaderDark,
+.permissionChangeLogTableCell {
   border: 1px solid #ddd;
   padding: 8px;
 }

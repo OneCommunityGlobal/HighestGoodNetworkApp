@@ -727,7 +727,7 @@ class UserManagement extends React.PureComponent {
             >
               <thead>
                 <UserTableHeader
-                  authRole={this.props.state.auth.user.role}
+                  authUser={this.props.state.auth.user}
                   roleSearchText={this.state.roleSearchText}
                   darkMode={darkMode}
                   editUser={this.props.state.userProfileEdit.editable}
@@ -736,6 +736,7 @@ class UserManagement extends React.PureComponent {
                   isMobile={this.state.isMobile}
                   mobileFontSize={this.state.mobileFontSize}
                   mobileWidth={this.state.mobileWidth}
+                  roles={this.props.state.role.roles}
                 />
                 <UserTableSearchHeader
                   onFirstNameSearch={this.onFirstNameSearch}

@@ -980,9 +980,27 @@ setUpdatedTasks(prev => {
     // eslint-disable-next-line no-console
     axios.put(url, updatedTask.updatedTask).catch(err => console.error(err));
   }
-
+  const userId = userProfileToUpdate._id;
+  const permissionURL = `${ENDPOINTS.PERMISSION_MANAGEMENT_UPDATE()}/user/${userId}`;
+  const frontPermissions = userProfileToUpdate.permissions.frontPermissions;
+  const removedDefaultPermissions = userProfileToUpdate.permissions.removedDefaultPermissions;
+  const defaultPermissions = userProfileToUpdate.permissions.defaultPermissions;
+  const permissions = {
+      frontPermissions: frontPermissions,
+      removedDefaultPermissions: removedDefaultPermissions,
+      defaultPermissions: defaultPermissions,
+  };
+  const requestor = props.auth.user;
+  // Ensures a change log with reason and user's modified permissions when their role is changed
+  const permissionData = {
+    reason: `Role Changed to **${userProfileToUpdate.role}**.`,
+    permissions: permissions,
+    requestor: requestor,
+  };
   try {
     const result = await props.updateUserProfile(userProfileToUpdate);
+
+    const permissionResult = await axios.patch(permissionURL, permissionData)
     if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
       await props.refreshToken(userProfile._id);
     }

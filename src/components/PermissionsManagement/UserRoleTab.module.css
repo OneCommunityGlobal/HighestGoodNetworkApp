@@ -206,10 +206,75 @@
   color: inherit;
 }
 
-.permissionLabel {
-  /* Add styles if needed */
+.changedPermission {
+  margin-right: -23.33px;
+  font-size: 1.75rem;
+  padding: 0px;
 }
 
+.changedPermission.white {
+  color: white;
+}
+
+.changedPermission.green {
+  color: green !important;
+}
+
+.changedPermission.red {
+  color: red !important;
+}
+
+.changedPermission.lightBackground {
+  background-color: white;
+}
+
+.changedPermission.light {
+  color: white;
+}
+
+.changedPermission.darkBackground {
+  background-color: #1b2a41;
+}
+
+.changedPermission.dark {
+  color: #1b2a41 !important;
+}
+
+.permissionTooltipWrapper {
+  position: absolute;
+  display: inline-block;
+  left: 94%;
+  width: 25%;
+}
+
+.permissionTooltipText {
+  visibility: hidden; 
+  opacity: 0;
+  background-color: rgba(211, 211, 211, 0.75) !important;
+  position: absolute;
+  text-align: center;
+  padding: 3px;
+  width: 50%;
+  font-size: medium;
+  bottom: 40%;
+  right: 70%;
+}
+
+.permissionTooltipText.dark {
+  background-color: rgba(53, 53, 53, 0.75) !important;
+}
+
+.permissionTooltipWrapper.showTooltip:hover .permissionTooltipText {
+  visibility: visible;
+  opacity: 1;
+}
+.permissionLabel {
+  /* Add styles if needed */
+  word-break: break-word;
+  white-space: normal;
+  max-width: calc(100% - 60px);
+  margin-right: 10px; 
+}
 @media only screen and (max-width: 683px) {
   .responsiveFontSize {
     font-size: 0.75rem !important;

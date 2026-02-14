@@ -735,7 +735,7 @@ const BasicInformationTab = props => {
                 setUserProfile({
                   ...userProfile,
                   role: newRole,
-                  permissions: { ...userProfile.permissions, frontPermissions: [] },
+                  permissions: { ...userProfile.permissions, frontPermissions: [], removedDefaultPermissions: [], defaultPermissions: roles.filter((role) => role.roleName === newRole)[0].permissions },
                 });
               }}
             >
