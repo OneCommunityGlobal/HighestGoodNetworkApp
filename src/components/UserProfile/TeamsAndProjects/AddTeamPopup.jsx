@@ -84,6 +84,19 @@ const AddTeamPopup = React.memo((props) => {
     }
   };
 
+  const handleSearchTextChange = (value) => {
+    setSearchText(value);
+    if (selectedTeam) {
+      onSelectTeam(undefined);
+    }
+    if (isDuplicateTeam) {
+      setDuplicateTeam(false);
+    }
+    if (!value.trim()) {
+      onNewTeamValidation(true);
+    }
+  };
+
   const axiosResponseExceededTimeout = (source) => {
     setIsLoading(false);
     source.cancel();
@@ -197,16 +210,16 @@ const AddTeamPopup = React.memo((props) => {
 
     if (selectedTeam) {
       onValidation(true);
-      !isNotDisplayAlert && setIsNotDisplayAlert(true);
-      onAssignTeam(selectedTeam);
+      setDuplicateTeam(true);
+      setIsNotDisplayAlert(true);
       return;
     }
 
     const exact = findExact();
     if (exact) {
       onValidation(true);
-      !isNotDisplayAlert && setIsNotDisplayAlert(true);
-      onAssignTeam(exact);
+      setDuplicateTeam(true);
+      setIsNotDisplayAlert(true);
       return;
     }
 
@@ -348,8 +361,15 @@ const AddTeamPopup = React.memo((props) => {
               className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
               value={searchText}
               onChange={e => {
-                setSearchText(e.target.value);
-                const trimmedTeamName = e.target.value.trim();
+                const nextValue = e.target.value;
+                const trimmedTeamName = nextValue.trim();
+                setSearchText(nextValue);
+                if (!trimmedTeamName) {
+                  setDuplicateTeam(false);
+                  onNewTeamValidation(false);
+                  return;
+                }
+                onNewTeamValidation(true);
                 const existingTeam = allTeams.find(
                   team => normalize(team.teamName) === normalize(trimmedTeamName) && team._id !== teamId
                 );
@@ -365,7 +385,7 @@ const AddTeamPopup = React.memo((props) => {
               onCreateNewTeam={onCreateTeam}
               searchText={searchText}
               setInputs={onSelectTeam}
-              setSearchText={setSearchText}
+              setSearchText={handleSearchTextChange}
             />
           )}
           <Button
@@ -405,8 +425,7 @@ const AddTeamPopup = React.memo((props) => {
                 <b>Create Team</b>
               </Button>
               <Button color="danger" onClick={() => {
-                setIsNotDisplayAlert(true);
-                setDuplicateTeam(false);
+                closePopup();
               }}>
                 <b>Cancel team creation </b>
               </Button>
@@ -415,11 +434,15 @@ const AddTeamPopup = React.memo((props) => {
         )}
 
         {!isValidTeam && !searchText && !selectedTeam && (
-          <Alert color="danger">Hey, You need to pick a team first!</Alert>
+          <Alert color="danger">
+            {isEdit ? 'Team name cannot be empty.' : 'Team name cannot be empty.'}
+          </Alert>
         )}
 
-        {!isValidNewTeam && !isDuplicateTeam && searchText.trim().length > 0 ? (
-          <Alert color="danger">Please enter a team name.</Alert>
+        {!isValidNewTeam && !isDuplicateTeam ? (
+          <Alert color="danger">
+            {isEdit ? 'Team name cannot be empty.' : 'Please enter a team name.'}
+          </Alert>
         ) : null}
         {isDuplicateTeam && (
           <Alert color="warning">
