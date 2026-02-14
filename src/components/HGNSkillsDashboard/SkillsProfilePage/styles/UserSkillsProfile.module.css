@@ -88,3 +88,17 @@
 .skillsLoader:global(.dark-mode) p {
   color: #fff;
 }
+
+.darkMode {
+  background-color: #121212;
+  color: #e6e6e6;
+}
+
+.page.darkMode {
+  background-color: #121212;
+}
+
+.top.darkMode, .sections.darkMode {
+  background-color: #1a1a1a;
+  border-color: #2a2a2a;
+}

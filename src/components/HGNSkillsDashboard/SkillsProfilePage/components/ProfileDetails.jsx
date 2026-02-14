@@ -7,7 +7,7 @@ function ProfileDetails() {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   return (
-    <div className={`${styles.profileDetails} ${darkMode ? 'dark-mode' : ''}`}>
+    <div className={`${styles.details} ${darkMode ? styles.darkMode : ''}`}>
       <h3>User Profile</h3>
       <hr className={`${styles.horizontalSeparator}`} />
       <div className={`${styles.teamInfo}`}>

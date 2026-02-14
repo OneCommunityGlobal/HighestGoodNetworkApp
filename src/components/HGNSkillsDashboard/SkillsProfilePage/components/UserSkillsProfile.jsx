@@ -11,7 +11,7 @@ import styles from '../styles/UserSkillsProfile.module.css';
 import jwtDecode from 'jwt-decode';
 import config from '~/config.json';
 
-function UserSkillsProfile() {
+export default function UserSkillsProfile() {
   const { userId: routeUserId } = useParams();
   const dispatch = useDispatch();
   const [profileData, setProfileData] = useState(null);
@@ -19,7 +19,7 @@ function UserSkillsProfile() {
   const [error, setError] = useState(null);
   const history = useHistory();
   const location = useLocation();
-  const darkMode = useSelector(state => state.theme.darkMode);
+  const darkMode = useSelector(state => state?.theme?.darkMode);
 
   // Fetch data from backend on component mount
   useEffect(() => {
@@ -135,14 +135,17 @@ function UserSkillsProfile() {
   }
 
   return (
-    <div className={`${styles.userProfileHome} ${darkMode ? 'dark-mode' : ''}`}>
-      <div className={`${styles.dashboardContainer}`}>
-        <LeftSection />
-        <div className={`${styles.verticalSeparator}`} />
-        <RightSection />
-      </div>
+    <div className={`${styles.page} ${darkMode ? styles.darkMode : ''}`}>
+      <section className={`${styles.top} ${darkMode ? styles.darkMode : ''}`}>
+        {/* ...existing content... */}
+      </section>
+      <section className={`${styles.sections} ${darkMode ? styles.darkMode : ''}`}>
+        <div className={`${styles.dashboardContainer}`}>
+          <LeftSection />
+          <div className={`${styles.verticalSeparator}`} />
+          <RightSection />
+        </div>
+      </section>
     </div>
   );
 }
-
-export default UserSkillsProfile;

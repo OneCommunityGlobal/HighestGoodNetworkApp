@@ -1,9 +1,9 @@
 import { useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import Banner from '../questionpages/Banner';
-import QuestionnaireHeader from '../questionpages/QuestionnaireHeader';
-import FrontendQuestions from '../questionpages/FrontendQuestions';
 import Progress from '../questionpages/Progress';
+import QuestionnaireInfo from '../questionpages/QuestionnaireInfo';
+import FrontendQuestions from '../questionpages/FrontendQuestions';
 import containerStyles from '../styles/hgnform.module.css';
 
 function Page3() {
@@ -23,9 +23,9 @@ function Page3() {
       }`}
     >
       <Banner />
-      <QuestionnaireHeader ref={headerRef} />
-      <FrontendQuestions />
+      <QuestionnaireInfo ref={headerRef} />
       <Progress progressValue={16.67 * 3} />
+      <FrontendQuestions />
     </div>
   );
 }

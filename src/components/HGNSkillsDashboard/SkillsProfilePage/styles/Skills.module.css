@@ -63,3 +63,14 @@
 :global(.dark-mode) .skills button.selected {
   color: #8ab4f8;
 }
+
+.skills.darkMode {
+  background-color: #181818;
+  color: #e6e6e6;
+}
+
+.skillChip.darkMode {
+  background-color: #2a2a2a;
+  color: #e6e6e6;
+  border: 1px solid #3a3a3a;
+}

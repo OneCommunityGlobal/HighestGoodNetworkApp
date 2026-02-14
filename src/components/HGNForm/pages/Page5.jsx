@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import Banner from '../questionpages/Banner';
-import QuestionnaireHeader from '../questionpages/QuestionnaireHeader';
+
 import FollowupQuestions from '../questionpages/FollowupQuestions';
 import Progress from '../questionpages/Progress';
 import containerStyles from '../styles/hgnform.module.css';
@@ -23,7 +23,6 @@ function Page5() {
       }`}
     >
       <Banner />
-      <QuestionnaireHeader ref={headerRef} />
       <FollowupQuestions />
       <Progress progressValue={16.67 * 5} />
     </div>
