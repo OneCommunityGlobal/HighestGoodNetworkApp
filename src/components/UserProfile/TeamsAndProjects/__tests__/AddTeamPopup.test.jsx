@@ -165,10 +165,11 @@ describe('AddTeamPopup component', () => {
     // eslint-disable-next-line testing-library/no-node-access
     const searchElement = modalBodyElement.querySelector('.form-control');
 
+    fireEvent.focus(searchElement);
     fireEvent.change(searchElement, { target: { value: 'team111' } });
-    await waitFor(() => { });
-    // Check that the "Create new team" option appears in dropdown
-    expect(screen.getByText('Create new team: team111')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('Create new team: team111')).toBeInTheDocument();
+    });
     // eslint-disable-next-line testing-library/no-node-access
     const nextDivElement = modalBodyElement.querySelector('.input-group-prepend');
     // eslint-disable-next-line testing-library/no-node-access
