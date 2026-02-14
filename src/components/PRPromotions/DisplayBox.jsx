@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import PropTypes from 'prop-types';
 import styles from './DisplayBox.module.css';
 
 export default function DisplayBox({ onClose, darkMode = false }) {
@@ -109,3 +110,12 @@ export default function DisplayBox({ onClose, darkMode = false }) {
     </div>
   );
 }
+
+DisplayBox.propTypes = {
+  onClose: PropTypes.func.isRequired,
+  darkMode: PropTypes.bool,
+};
+
+DisplayBox.defaultProps = {
+  darkMode: false,
+};

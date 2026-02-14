@@ -120,8 +120,8 @@
 }
 
 .color-5 {
-  background-color: #FF7F00; /* Orange - medium, use black text for better contrast */
-  color: black;
+  background-color: #C45C00; /* Orange - darker shade for WCAG contrast with white text */
+  color: white;
 }
 
 .color-6 {
@@ -204,8 +204,8 @@
 }
 :global(body.dark-mode) .popup-table-dark .pr-count-badge.color-5,
 :global(body.bm-dashboard-dark) .popup-table-dark .pr-count-badge.color-5 {
-  color: #000 !important;
-  background-color: #FF7F00 !important;
+  color: #fff !important;
+  background-color: #C45C00 !important;
 }
 :global(body.dark-mode) .popup-table-dark .pr-count-badge.color-6,
 :global(body.bm-dashboard-dark) .popup-table-dark .pr-count-badge.color-6 {

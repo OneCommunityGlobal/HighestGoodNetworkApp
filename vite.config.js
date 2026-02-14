@@ -10,17 +10,6 @@ export default defineConfig(({ mode }) => {
         '~': resolve('src/'),
       },
     },
-    server: {
-      port: 5173,
-      proxy: {
-        '/api': {
-          target: 'http://localhost:4500',
-          changeOrigin: true,
-          secure: false,
-          rewrite: path => path.replace(/^\/api/, ''),
-        },
-      },
-    },
     define: {
       ...Object.keys(env).reduce((prev, key) => {
         const sanitizedKey = key.replace(/[^a-zA-Z0-9_]/g, '_');
@@ -35,6 +24,14 @@ export default defineConfig(({ mode }) => {
     plugins: [react()],
     server: {
       port: 5173,
+      proxy: {
+        '/api': {
+          target: 'http://localhost:4500',
+          changeOrigin: true,
+          secure: false,
+          rewrite: path => path.replace(/^\/api/, ''),
+        },
+      },
     },
   };
 });
