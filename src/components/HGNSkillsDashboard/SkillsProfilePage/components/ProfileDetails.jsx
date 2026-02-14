@@ -4,8 +4,10 @@ import styles from '../styles/ProfileDetails.module.css';
 // function ProfileDetails({ profileData }) {
 function ProfileDetails() {
   const profileData = useSelector(state => state.userSkills.profileData);
+  const darkMode = useSelector(state => state.theme.darkMode);
+
   return (
-    <div className={`${styles.profileDetails}`}>
+    <div className={`${styles.profileDetails} ${darkMode ? 'dark-mode' : ''}`}>
       <h3>User Profile</h3>
       <hr className={`${styles.horizontalSeparator}`} />
       <div className={`${styles.teamInfo}`}>
@@ -53,7 +55,8 @@ function ProfileDetails() {
                 rel="noopener noreferrer"
                 className={`${styles.githubLink}`}
               >
-                {profileData.socialHandles.github.includes('http')
+                {/* eslint-disable-next-line indent */
+                profileData.socialHandles.github.includes('http')
                   ? profileData.socialHandles.github.split('/').pop()
                   : profileData.socialHandles.github}
               </a>

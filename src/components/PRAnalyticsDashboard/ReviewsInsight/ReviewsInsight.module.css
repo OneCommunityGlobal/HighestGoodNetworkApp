@@ -1,5 +1,5 @@
-.reviews-insight-container {
-  padding: 20px;
+.reviewsInsightContainer {
+  padding: 20px 20px 60px;
   font-family: Arial, sans-serif;
   background-color: #ffffff;
   color: #000000;
@@ -7,118 +7,154 @@
   transition: background-color 0.3s, color 0.3s;
 }
 
-.reviews-insight-container h1 {
+.heading {
   color: #000000;
+  text-align: center;
 }
-.dark-mode h1 {
+
+.darkModeForeground {
   color: #f1f1f1;
 }
 
-.reviews-insight-container.dark-mode {
+.darkModeBackground{
   background-color: #1b2a41;
-  color: #f1f1f1;
 }
 
-@media screen and (max-width: 1080px) {
-  .ri-graphs {
-    flex-direction: column;
-    gap: 5px;
-  }
-
-  .ri-action-done-graph {
-    width: 100% !important;
-    height: 500px;
-  }
-
-  .ri-quality-graph {
-    width: 100% !important;
-  }
-
-  .ri-graph {
-    min-height: 300px;
-  }
-}
-
-.ri-filters {
+.riFilters {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 20px;
-}
-
-.dark-mode .ri-filters {
-  background-color: #1c2541;
-  color: #f1f1f1;
-  box-shadow: 2px 2px 4px 1px black;
+  margin-bottom: 15px;
   padding: 10px;
-  border-radius: 8px;
 }
 
-.ri-filter-item {
+.riGraphs {
+  display: flex;
+  justify-content: space-around;
+}
+.riFilterItem {
   display: flex;
   flex-direction: column;
-  margin-right: 20px;
+  padding: 10px 25px;
+  min-width: 23ch;
 }
 
-.dark-mode #ri-duration-filter {
+.riDurationFilter {
+  min-height: 40px;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  padding: 2px 8px;
+  box-sizing: border-box;
+  box-shadow: 2px 2px 4px 1px black;
+}
+
+.riDurationFilterDarkMode{
   background-color: #1c2541;
   box-shadow: 2px 2px 4px 1px black;
   border: none;
   color: #f1f1f1;
 }
 
-.ri-filter-item label {
+.riFilterItemLabel {
   margin-bottom: 5px;
   font-weight: bold;
 }
 
-.dark-mode .ri-filter-item label {
-  color: #f1f1f1;
-}
-
-.ri-selected-teams p {
-  margin-bottom: 20px;
+.riSelectedTeams {
+  margin: 20px 0 40px;
   font-style: italic;
   text-align: center;
   font-size: 24px;
 }
 
-.no-data-ri {
+.riToggleWrap {
+  display: inline-flex;
+  gap: 13px;
+  white-space: nowrap;
+}
+
+.riDataviewTitle {
+  font-weight: 600;
+  font-size: 16px;
+  margin-right: 4px;
+}
+
+.riSwitch {
+  display: inline-flex;
+  position: relative;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  width: 42px;
+  height: 24px;
+}
+
+.riSwitchInput {
+  opacity: 1;
+  width: 0;
+  height: 0;
+}
+
+.riSwitch input:checked + .riSlider::before {
+  transform: translateX(18px);
+}
+
+.riSlider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background: #1c1c1c;
+  border-radius: 999px;
+  transition: background 0.2s ease;
+}
+
+.riSlider::before {
+  content: '';
+  position: absolute;
+  height: 20px;
+  width: 20px;
+  left: 2px;
+  top: 2px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.2s ease;
+}
+
+.riModeLabel {
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: #4a4a4a;
+}
+
+.riSliderDarkMode{
+  background: #e6e6e6;
+}
+
+.riSliderDarkMode::before{
+  background: #1c2541;
+}
+
+.noData {
   text-align: center;
   font-size: 18px;
   margin-top: 20px;
 }
 
-.dark-mode .ri-selected-teams p {
-  color: #f1f1f1;
-}
-
-.ri-graphs {
-  display: flex;
-  justify-content: space-around;
-}
-
-.ri-quality-graph {
+.riQualityGraph {
   width: 50%;
   display: flex;
   flex-direction: column;
 }
 
-.ri-quality-graph h2 {
-  color: #000000;
-}
-
-.dark-mode .ri-quality-graph h2 {
-  color: #f1f1f1;
-}
-
-.ri-charts {
+.riCharts {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
   justify-content: space-evenly;
 }
 
-.ri-chart {
+.riChart {
   width: 250px;
   text-align: center;
   border: 1px solid #ccc;
@@ -129,65 +165,19 @@
   transition: background-color 0.3s, color 0.3s;
 }
 
-.dark-mode .ri-chart {
+.riChartDarkMode{
   background-color: #1c2541;
   color: #f1f1f1;
   box-shadow: 2px 2px 4px 1px black;
   border: none;
 }
-
-.ri-chart h3 {
-  color: #000000;
-}
-
-.dark-mode .ri-chart h3 {
-  color: #f1f1f1;
-}
-
-.ri-chart-header {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px; /* Space between name and circle */
-  margin-bottom: 10px; /* Space above the pie chart */
-}
-
-.ri-chart-header h3 {
-  margin: 0; /* Remove default margin */
-}
-
-.ri-team-member-count {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background-color: #e0e0e0;
-  color: #333;
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.dark-mode .ri-team-member-count {
-  background-color: #34495e;
-  color: #f1f1f1;
-}
-
-.ri-action-done-graph {
+.riActionDoneGraph {
   width: 50%;
   display: flex;
   flex-direction: column;
 }
 
-.ri-action-done-graph h2 {
-  color: #000000;
-}
-.dark-mode .ri-action-done-graph h2 {
-  color: #f1f1f1;
-}
-
-.ri-graph {
+.riGraph {
   border: 1px solid #ccc;
   padding: 10px;
   height: 100%;
@@ -198,50 +188,45 @@
   transition: background-color 0.3s, color 0.3s;
 }
 
-.dark-mode .ri-graph {
+.riGraphDarkMode{
   background-color: #1c2541;
   color: #f1f1f1;
   box-shadow: 2px 2px 4px 1px black;
   border: none;
 }
 
-.ri-graph canvas {
-  height: auto !important;
+.riGraph canvas {
+  height: 100% !important;
 }
-
-.ri-graph-placeholder {
-  height: 300px;
-  background-color: #f0f0f0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #666;
-  font-size: 14px;
-}
-
-.dark-mode .ri-graph-placeholder {
-  background-color: #1c1c1c;
-  color: #f1f1f1;
-}
-
-.ri-team-name {
-  font-weight: bold;
-  margin-bottom: 10px;
-  text-align: center;
-}
-
-.dark-mode .ri-team-name {
-  color: #f1f1f1;
-}
-
-.ri-loading {
+.riLoading {
   text-align: center;
   font-size: 18px;
   color: #888;
 }
 
-.ri-error {
+.riError {
   text-align: center;
   color: #dc3545;
   font-weight: bold;
+}
+
+
+@media screen and (max-width: 1080px) {
+  .riGraphs {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .riActionDoneGraph {
+    width: 100% !important;
+    height: 500px;
+  }
+
+  .riQualityGraph {
+    width: 100% !important;
+  }
+
+  .riGraph {
+    min-height: 300px;
+  }
 }

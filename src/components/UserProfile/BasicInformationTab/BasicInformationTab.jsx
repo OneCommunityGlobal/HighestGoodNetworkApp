@@ -334,14 +334,16 @@ export const formatPhoneNumber = str => {
 };
 
 export const Phone = props => {
-  const { userProfile, setUserProfile, handleUserProfile, canEdit, desktopDisplay ,darkMode} = props;
+  const { userProfile, setUserProfile, handleUserProfile, canEdit, desktopDisplay, darkMode } = props;
   const { phoneNumber, privacySettings } = userProfile;
   const phoneInputWrapperRef = useRef(null);
+
   if (canEdit) {
     return (
       <>
         <Col md={desktopDisplay ? '6' : ''}>
           <FormGroup>
+            {/* one toggle, same as Email */}
             <ToggleSwitch
               switchType="phone"
               id="phone"
@@ -349,49 +351,54 @@ export const Phone = props => {
               handleUserProfile={handleUserProfile}
               darkMode={darkMode}
             />
-            <PhoneInput
-              buttonClass={`${darkMode ? 'bg-darkmode-liblack' : ''}`}
-              inputClass={`phone-input-style ${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
-              country={'us'}
-              data-testid="ph-input-style"
-              id="ph-input-style"
-              value={phoneNumber}
-              onChange={phoneNumber => {
-                setUserProfile({ ...userProfile, phoneNumber: phoneNumber.trim() });
-              }}
-            />
-            <FontAwesomeIcon
-              icon={faCopy}
-              onClick={() => {
-                const input = phoneInputWrapperRef.current?.querySelector('input');
-                if (input) {
-                  navigator.clipboard.writeText(input.value);
-                  toast.success('Phone number copied!');
-                }
-              }}
-              title="Copy phone number"
-              style={{
-                position: 'absolute',
-                right: '12px',
-                top: '50%',
-                transform: 'translateY(-50%)',
-                cursor: 'pointer',
-                fontSize: '1rem',
-                color: darkMode ? '#fff' : '#000',
-                zIndex: 2,
-              }}
-            />
-            <ToggleSwitch
-              switchType="phone"
-              state={privacySettings?.phoneNumber}
-              handleUserProfile={handleUserProfile}
-              darkMode={darkMode}
-            />
+
+            {/* wrapper to position the copy icon correctly */}
+            <div
+              ref={phoneInputWrapperRef}
+              style={{ position: 'relative', width: '100%' }}
+            >
+              <PhoneInput
+                buttonClass={`${darkMode ? 'bg-darkmode-liblack' : ''}`}
+                inputClass={`phone-input-style ${
+                  darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''
+                }`}
+                country="us"
+                data-testid="ph-input-style"
+                id="ph-input-style"
+                value={phoneNumber}
+                onChange={value => {
+                  setUserProfile({ ...userProfile, phoneNumber: value.trim() });
+                }}
+              />
+
+              <FontAwesomeIcon
+                icon={faCopy}
+                title="Copy phone number"
+                onClick={() => {
+                  const input = phoneInputWrapperRef.current?.querySelector('input');
+                  if (input) {
+                    navigator.clipboard.writeText(input.value);
+                    toast.success('Phone number copied!');
+                  }
+                }}
+                style={{
+                  position: 'absolute',
+                  cursor: 'pointer',
+                  fontSize: '1rem',
+                  color: darkMode ? '#fff' : '#000',
+                  top: '50%',
+                  right: '10px',
+                  transform: 'translateY(-50%)',
+                  zIndex: 2,
+                }}
+              />
+            </div>
           </FormGroup>
         </Col>
       </>
     );
   }
+
   return (
     <>
       {privacySettings?.phoneNumber && (
@@ -492,7 +499,7 @@ const BasicInformationTab = props => {
   rolesAllowedToEditStatusFinalDay.includes(role) || dispatch(hasPermission('pauseUserActivity'));
 
   const canEditEndDate =
-  rolesAllowedToEditStatusFinalDay.includes(role) || dispatch(hasPermission('setUserFinalDay'));
+  rolesAllowedToEditStatusFinalDay.includes(role) || dispatch(hasPermission('setFinalDay'));
 
 
   let topMargin = '6px';
