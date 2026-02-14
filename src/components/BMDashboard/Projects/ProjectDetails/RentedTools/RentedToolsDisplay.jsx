@@ -1,10 +1,11 @@
 import { Card } from 'reactstrap';
 import ToolCards from './ToolCards';
+import styles from '../ProjectDetails.module.css';
 
 function RentedToolsDisplay() {
   return (
-    <Card className="cards-container">
-      <h2 className="cards-container__header">
+    <Card className={`card ${styles['cards-container']}`}>
+      <h2 className={styles['cards-container__header']}>
         Rented Tools or equipment to be returned in 3 days.
       </h2>
       <ToolCards />
