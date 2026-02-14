@@ -187,8 +187,11 @@ const AddTeamPopup = React.memo((props) => {
   };
 
   const onConfirm = () => {
-    if (!searchText && !selectedTeam) {
+    const trimmedSearchText = searchText.trim();
+    if (!trimmedSearchText && !selectedTeam) {
       onValidation(false);
+      onNewTeamValidation(true);
+      setIsNotDisplayAlert(true);
       return;
     }
 
@@ -415,7 +418,7 @@ const AddTeamPopup = React.memo((props) => {
           <Alert color="danger">Hey, You need to pick a team first!</Alert>
         )}
 
-        {!isValidNewTeam && !isDuplicateTeam ? (
+        {!isValidNewTeam && !isDuplicateTeam && searchText.trim().length > 0 ? (
           <Alert color="danger">Please enter a team name.</Alert>
         ) : null}
         {isDuplicateTeam && (

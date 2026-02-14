@@ -29,13 +29,14 @@ const AddTeamsAutoComplete = React.memo((props) => {
     setIsOpen(false);
   };
 
+  const trimmedSearchText = searchText.trim();
   const showCreateNew =
-    !!searchText &&
-    !allTeams.some((t) => normalize(t.teamName) === normalize(searchText));
+    trimmedSearchText.length > 0 &&
+    !allTeams.some((t) => normalize(t.teamName) === normalize(trimmedSearchText));
 
   // NEW: don’t show “No teams found” when input is empty
   const shouldShowNoTeams =
-    searchText.trim().length > 0 && suggestions.length === 0;
+    trimmedSearchText.length > 0 && suggestions.length === 0;
 
   return (
     <Dropdown
@@ -92,10 +93,10 @@ const AddTeamsAutoComplete = React.memo((props) => {
               onMouseDown={(e) => e.preventDefault()}
               onClick={() => {
                 setIsOpen(false);
-                onCreateNewTeam?.(searchText);
+                onCreateNewTeam?.(trimmedSearchText);
               }}
             >
-              Create new team: {searchText}
+              Create new team: {trimmedSearchText}
             </div>
           )}
         </div>
