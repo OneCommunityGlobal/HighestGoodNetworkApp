@@ -102,7 +102,6 @@ import reviewsInsightReducer from './prAnalytics/reviewsInsightReducer';
 import { hoursPledgedReducer } from './jobAnalytics/hoursPledgedReducer';
 import { studentTasksReducer } from './studentTasksReducer';
 
-
 // Education Dashboard Reducers
 import { studentReducer } from './studentProfileReducer';
 import { atomReducer } from './educationPortal/atomReducer';
