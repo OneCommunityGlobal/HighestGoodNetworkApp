@@ -84,6 +84,11 @@
 }
 
 .componentBox {
+  border: 1px solid #ccc;        /* Light gray border */
+  padding: 20px;
+  border-radius: 10px;           /* Rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);  /* Soft shadow */
+  background-color: #fff;        /* Optional: white background */
   border: 1px solid #ccc; /* Light gray border */
   padding: 20px;
   border-radius: 10px; /* Rounded corners */
@@ -99,6 +104,7 @@
   width: 100%;
 }
 
+.table th, .table td {
 .table th,
 .table td {
   padding: 12px 20px; /* Adjust as needed for vertical & horizontal spacing */
@@ -113,6 +119,7 @@
   background-color: #f9f9f9;
 }
 
+.table td a, .table td span {
 .table td a,
 .table td span {
   display: inline-flex;
@@ -173,6 +180,7 @@
   color: #ffffff;
 }
 
+.tableDark th, .tableDark td {
 .tableDark th,
 .tableDark td {
   padding: 12px 20px;
@@ -197,6 +205,7 @@
   background-color: #2f4157;
 }
 
+.tableDark td a, .tableDark td span {
 .tableDark td a,
 .tableDark td span {
   display: inline-flex;
@@ -225,4 +234,5 @@
 .underlineLinkDark:hover {
   text-decoration: none;
   color: #f5b13a;
+}
 }
