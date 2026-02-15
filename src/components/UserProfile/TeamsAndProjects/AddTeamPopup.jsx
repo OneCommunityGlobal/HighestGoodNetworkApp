@@ -10,6 +10,64 @@ import { postNewTeam, getAllUserTeams } from '../../../../src/actions/allTeamsAc
 // eslint-disable-next-line import/no-named-as-default-member
 import axios from 'axios';
 
+function runConfirmStrategy(trimmedSearchText, selectedTeam, exactMatch, matches, callbacks) {
+  const {
+    onValidation,
+    onNewTeamValidation,
+    setIsNotDisplayAlert,
+    setDuplicateTeam,
+    onAssignTeam,
+  } = callbacks;
+  if (!trimmedSearchText && !selectedTeam) {
+    onValidation(false);
+    onNewTeamValidation(true);
+    setIsNotDisplayAlert(true);
+    return;
+  }
+  if (selectedTeam) {
+    onValidation(true);
+    setDuplicateTeam(true);
+    setIsNotDisplayAlert(true);
+    return;
+  }
+  if (exactMatch) {
+    onValidation(true);
+    setDuplicateTeam(true);
+    setIsNotDisplayAlert(true);
+    return;
+  }
+  if (matches.length === 1) {
+    onValidation(true);
+    setIsNotDisplayAlert(true);
+    onAssignTeam(matches[0]);
+    return;
+  }
+  setIsNotDisplayAlert(false);
+}
+
+function generateValidTeamCode(name) {
+  if (!name?.trim()) return 'TEAM-1';
+  const firstLetter = name.charAt(0).toUpperCase();
+  const remainingLetters = name.slice(1, 5).toUpperCase().padEnd(4, 'A');
+  return `${firstLetter}-${remainingLetters}`;
+}
+
+function handleEditInputChange(nextValue, ctx) {
+  const { setSearchText, setDuplicateTeam, onNewTeamValidation, allTeams, normalize, teamId } = ctx;
+  const trimmedTeamName = nextValue.trim();
+  setSearchText(nextValue);
+  if (!trimmedTeamName) {
+    setDuplicateTeam(false);
+    onNewTeamValidation(false);
+    return;
+  }
+  onNewTeamValidation(true);
+  const existingTeam = allTeams.find(
+    (team) => normalize(team.teamName) === normalize(trimmedTeamName) && team._id !== teamId
+  );
+  setDuplicateTeam(!!existingTeam);
+}
+
 // eslint-disable-next-line react/display-name
 const AddTeamPopup = React.memo((props) => {
   const { darkMode, isEdit, teamName, teamId, teamCode, isActive, onUpdateTeam } = props;
@@ -186,37 +244,15 @@ const AddTeamPopup = React.memo((props) => {
 
   const onConfirm = () => {
     const trimmedSearchText = searchText.trim();
-    if (!trimmedSearchText && !selectedTeam) {
-      onValidation(false);
-      onNewTeamValidation(true);
-      setIsNotDisplayAlert(true);
-      return;
-    }
-
-    if (selectedTeam) {
-      onValidation(true);
-      setDuplicateTeam(true);
-      setIsNotDisplayAlert(true);
-      return;
-    }
-
     const exact = findExact();
-    if (exact) {
-      onValidation(true);
-      setDuplicateTeam(true);
-      setIsNotDisplayAlert(true);
-      return;
-    }
-
     const matches = findCandidates();
-    if (matches.length === 1) {
-      onValidation(true);
-      !isNotDisplayAlert && setIsNotDisplayAlert(true);
-      onAssignTeam(matches[0]);
-      return;
-    }
-
-    setIsNotDisplayAlert(false);
+    runConfirmStrategy(trimmedSearchText, selectedTeam, exact, matches, {
+      onValidation,
+      onNewTeamValidation,
+      setIsNotDisplayAlert,
+      setDuplicateTeam,
+      onAssignTeam,
+    });
   };
 
   // Fetch/refresh teams whenever the modal opens
@@ -238,13 +274,6 @@ const AddTeamPopup = React.memo((props) => {
     setDuplicateTeam(false);
     setIsNotDisplayAlert(true);
   }, [props.open, isEdit, teamName]);
-
-  const generateValidTeamCode = (name) => {
-    if (!name?.trim()) return 'TEAM-1';
-    const firstLetter = name.charAt(0).toUpperCase();
-    const remainingLetters = name.slice(1, 5).toUpperCase().padEnd(4, 'A');
-    return `${firstLetter}-${remainingLetters}`;
-  };
 
   const applyEditResult = (result) => {
     if (result?.status === 200) {
@@ -340,21 +369,16 @@ const AddTeamPopup = React.memo((props) => {
               type="text"
               className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
               value={searchText}
-              onChange={e => {
-                const nextValue = e.target.value;
-                const trimmedTeamName = nextValue.trim();
-                setSearchText(nextValue);
-                if (!trimmedTeamName) {
-                  setDuplicateTeam(false);
-                  onNewTeamValidation(false);
-                  return;
-                }
-                onNewTeamValidation(true);
-                const existingTeam = allTeams.find(
-                  team => normalize(team.teamName) === normalize(trimmedTeamName) && team._id !== teamId
-                );
-                setDuplicateTeam(!!existingTeam);
-              }}
+              onChange={(e) =>
+                handleEditInputChange(e.target.value, {
+                  setSearchText,
+                  setDuplicateTeam,
+                  onNewTeamValidation,
+                  allTeams,
+                  normalize,
+                  teamId,
+                })
+              }
               placeholder="Enter new team name"
               // eslint-disable-next-line jsx-a11y/no-autofocus
               autoFocus
@@ -445,10 +469,7 @@ AddTeamPopup.propTypes = {
   }),
   userTeamsById: PropTypes.arrayOf(PropTypes.object),
   onSelectAssignTeam: PropTypes.func,
-  handleSubmit: PropTypes.func,
-  userProfile: PropTypes.object,
   darkMode: PropTypes.bool,
-  isTeamManagement: PropTypes.bool,
   isEdit: PropTypes.bool,
   teamName: PropTypes.string,
   teamId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
@@ -461,10 +482,7 @@ AddTeamPopup.defaultProps = {
   teamsData: {},
   userTeamsById: [],
   onSelectAssignTeam: undefined,
-  handleSubmit: () => {},
-  userProfile: {},
   darkMode: false,
-  isTeamManagement: false,
   isEdit: false,
   teamName: '',
   teamId: undefined,
