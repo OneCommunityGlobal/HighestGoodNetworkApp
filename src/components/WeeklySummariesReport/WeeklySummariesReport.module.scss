@@ -12,9 +12,9 @@
 
 .totalValidWrapper {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   flex-direction: row;
-  white-space: nowrap;
 }
 
 .badgeTr {
@@ -49,6 +49,29 @@
 .filterContainer {
   display: flex;
   justify-content: flex-end;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.selectAllDotsWrapper {
+  display: flex;
+  align-items: center;
+  font-size: 0.9em;
+  font-weight: bold;
+  gap: 6px;
+}
+
+.selectAllLabel {
+  font-size: 0.9em;
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+.dotSelector {
+  display: flex;
+  align-items: center;
 }
 
 .filterContainerTeamcode {
@@ -60,10 +83,22 @@
   font-size: 0.7em;
   display: flex;
   align-items: center;
+  font-weight: bold;
+  gap: 8px;
 }
 
 .filterMarginRight {
   margin-right: 20px;
+}
+
+.filterColumn {
+  display: flex;
+  flex-direction: column;
+  margin-right: 20px;
+}
+
+.filterMarginBottom {
+  margin-bottom: 10px;
 }
 
 .containerWsrWrapper {
@@ -77,12 +112,28 @@
   margin-top: 0.5rem;
 }
 
+.weeklySummariesCodeInput {
+  width: 150px !important;
+}
+
+.teamcodeWrapper {
+    display: flex;
+    white-space: wrap;
+    flex-direction: column;
+}
+
 @media screen and (max-width: 544px) {
   .responsiveFontSize {
     font-size: 0.75rem !important;
   }
   .slideToggle {
     margin-left: -6px;
+  }
+  .totalValidText {
+    width: 100%;
+  }
+  .weeklySummariesCodeInput {
+    width: 100% !important;
   }
 }
 
@@ -104,13 +155,6 @@
   }
 }
 
-@media (min-width: 482px) {
-  .teamcodeWrapper {
-    display: flex;
-    white-space: nowrap;
-    align-items: center;
-  }
-}
 
 .codeAlert {
   margin: 10px 0 0 0;

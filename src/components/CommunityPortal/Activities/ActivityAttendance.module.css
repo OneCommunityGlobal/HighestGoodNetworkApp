@@ -1,0 +1,510 @@
+/* ======================================
+   1) Light mode fallback
+   ====================================== */
+.activityAttendancePage {
+  --bg-color: #ffffff;
+  --text-color: #000000;
+  --heading-color: navy;
+  --card-bg: #ffffff;
+  --panel-bg: #ffffff;
+  --border-color: #e0e0e0;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+
+  min-height: 100vh;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+
+  --stat-green: #4caf50;
+  --stat-blue: #2196f3;
+  --stat-red: #f44336;
+  --stat-orange: #ff9800;
+  --stat-dark-green: #2e7d32;
+}
+
+.statGreen {
+  color: var(--stat-green);
+}
+
+.statBlue {
+  color: var(--stat-blue);
+}
+
+.statRed {
+  color: var(--stat-red);
+}
+
+.statOrange {
+  color: var(--stat-orange);
+}
+
+.statDarkGreen {
+  color: var(--stat-dark-green);
+}
+
+/* ======================================
+   2) Dark mode overrides
+   ====================================== */
+.activityAttendanceDarkMode {
+  --bg-color: #1b2a41;
+  --text-color: #ffffff;
+  --heading-color: #e8a71c;
+  --card-bg: #2a3a57;
+  --panel-bg: #22304a;
+  --border-color: #3b4a66;
+  --shadow-color: rgba(255, 255, 255, 0.1);
+  --card-shadow: rgba(255, 255, 255, 0.1);
+
+  --stat-green: #4caf50;
+  --stat-blue: #2196f3;
+  --stat-red: #f44336;
+  --stat-orange: #ff9800;
+  --stat-dark-green: #81c784;
+}
+
+.activityAttendanceDarkMode .statBlue {
+  color: var(--stat-blue) !important;
+}
+
+.activityAttendanceDarkMode .statGreen {
+  color: var(--stat-green) !important;
+}
+
+.activityAttendanceDarkMode .statRed {
+  color: var(--stat-red) !important;
+}
+
+.activityAttendanceDarkMode .statOrange {
+  color: var(--stat-orange) !important;
+}
+
+.activityAttendanceDarkMode .statDarkGreen {
+  color: var(--stat-dark-green) !important;
+}
+
+/* Apply shadow on images if you have any .activity-agenda-image */
+.activityAgendaDarkMode .activityAgendaImage img {
+  box-shadow: 0 4px 8px var(--card-shadow);
+}
+
+/* ======================================
+   3) CONTAINER
+   ====================================== */
+.dashboardContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: var(--panel-bg);
+  color: var(--text-color);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+}
+
+/* ======================================
+   4) TITLE & SEARCH BAR
+   ====================================== */
+.dashboardTitle {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--card-bg);
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px var(--shadow-color);
+  border: 1px solid var(--border-color);
+  flex: 0 0 auto; /* do not shrink below content */
+}
+
+.titleText h2 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--heading-color);
+}
+
+.titleText p {
+  margin-top: 4px;
+  font-size: 0.95rem;
+  color: var(--text-color);
+}
+
+.searchContainer {
+  flex: 1 1 260px; /* grow/shrink but start at 260px */
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 15px;
+}
+
+@media (min-width: 600px) {
+  .searchContainer {
+    margin-top: 0;
+  }
+}
+
+.attendanceSearchBar {
+  width: 100%;
+  max-width: 260px;
+  padding: 10px 14px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  font-size: 0.95rem;
+  background-color: var(--card-bg);
+  color: var(--text-color);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.attendanceSearchBar:focus {
+  border-color: var(--heading-color);
+  box-shadow: 0 0 4px var(--heading-color);
+  outline: none;
+}
+
+.activityAttendanceDarkMode .attendanceSearchBar::placeholder {
+  color: #cbd5e1;
+}
+
+/* ======================================
+   5) MAIN DASHBOARD LAYOUT
+   ====================================== */
+.dashboardMain {
+  margin-top: 25px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  background-color: var(--bg-color);
+}
+
+/* ======================================
+   6) STATS + CHART PANEL
+   ====================================== */
+.statsChartContainer {
+  flex: 1 1 380px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  background-color: var(--card-bg);
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px var(--shadow-color);
+  border: 1px solid var(--border-color);
+  gap: 20px;
+  min-height: 260px;
+}
+
+.chartContainer {
+  position: relative;
+  width: 190px;
+  height: 190px;
+  flex: 0 0 190px; /* never shrink below 190px */
+  margin: 0 auto;
+}
+
+.chartLabel {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--heading-color);
+}
+
+.statsGrid {
+  flex: 1 1 200px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 20px;
+  align-content: start;
+}
+
+/* ======================================
+   7) STATS CARD
+   ====================================== */
+.statsCard {
+  background-color: var(--panel-bg);
+  padding: 18px;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px var(--shadow-color);
+  border: 1px solid var(--border-color);
+  text-align: center;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  cursor: default;
+  flex: 1 1 auto;
+  min-height: 80px;
+}
+
+.statsCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px var(--shadow-color);
+}
+
+.statsValue {
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.statsCardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.statsCardHeader h3 {
+  margin-bottom: 0;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-color);
+}
+
+.infoIconWrapper {
+  display: flex;
+  align-items: center;
+  cursor: help;
+  color: var(--border-color);
+  transition: color 0.2s ease;
+}
+
+.infoIconWrapper:hover,
+.infoIconWrapper:focus {
+  color: var(--heading-color);
+  outline: none;
+}
+
+.infoIcon {
+  font-size: 0.85rem;
+}
+
+/* ======================================
+   8) LIVE UPDATES PANEL
+   ====================================== */
+.liveUpdates {
+  flex: 1 1 400px;
+  background-color: var(--card-bg);
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px var(--shadow-color);
+  border: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  min-height: 260px;
+}
+
+/* Header (Title + Export Button) */
+.updatesHeader {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  flex: 0 0 auto;
+}
+
+.updatesHeader h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.updatesHeaderLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.statusFilters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.statusFilterBtn {
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border-color);
+  background-color: transparent;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  margin-top: 10px;
+}
+
+.statusFilterBtnActive {
+  background-color: var(--heading-color);
+  color: var(--card-bg);
+  border-color: var(--heading-color);
+}
+
+@media (min-width: 500px) {
+  .statusFilterBtn {
+    margin-top: 0;
+  }
+}
+
+.exportBtn {
+  background-color: var(--heading-color);
+  color: var(--card-bg);
+  padding: 10px 18px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  margin-top: 10px;
+}
+
+.exportBtn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+/* ======================================
+   9) STUDENT LIST WRAPPER
+   ====================================== */
+.updatesList {
+  margin-top: 20px;
+  flex: 1 1 auto;
+  overflow-y: auto;
+}
+
+/* “No Results” Message */
+.noResults {
+  text-align: center;
+  font-size: 0.95rem;
+  color: var(--text-color);
+  font-style: italic;
+  margin-top: 15px;
+}
+
+/* ======================================
+   10) STUDENT ROW
+   ====================================== */
+.studentRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 12px;
+  border-bottom: 1px solid var(--border-color);
+  transition: background-color 0.15s ease;
+}
+
+.studentRow:nth-child(even) {
+  background-color: var(--panel-bg);
+}
+
+.studentRow:hover {
+  background-color: var(--card-bg);
+}
+
+.studentLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 0 0 35%; /* Takes 35% of row width */
+}
+
+.studentImg {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--border-color);
+}
+
+.studentName {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.studentCenter {
+  flex: 0 0 30%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.studentTime {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.95rem;
+  color: var(--text-color);
+}
+
+.studentIcon {
+  font-size: 1rem;
+  color: var(--border-color);
+}
+
+.studentRight {
+  flex: 0 0 25%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.studentId {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-color);
+}
+
+/* ======================================
+   11) MEDIA QUERIES
+   ====================================== */
+@media (min-width: 600px) {
+  .searchContainer {
+    margin-top: 0;
+  }
+}
+
+@media (min-width: 500px) {
+  .exportBtn {
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 750px) {
+  .statsChartContainer {
+    flex-direction: column;
+    align-items: center;
+  }
+  .chartContainer {
+    margin-bottom: 20px;
+  }
+  /* Make stats cards full width */
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Stack student-row sections vertically */
+  .studentRow {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 12px 8px;
+  }
+
+  .studentLeft,
+  .studentCenter,
+  .studentRight {
+    flex: 1 1 100%;
+    margin-top: 8px;
+    justify-content: flex-start;
+  }
+
+  /* Ensure search + export buttons fill width */
+  .searchContainer {
+    width: 100%;
+  }
+  .exportBtn {
+    width: 100%;
+    text-align: center;
+  }
+}

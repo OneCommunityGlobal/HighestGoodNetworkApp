@@ -1,223 +1,178 @@
-.header a {
-  display: block;
-  padding: 0;
-  margin: 0 auto;
-  width: fit-content;
-}
+/* ======================================================
+   BASE LAYOUT
+   ====================================================== */
 
-.responsiveImg {
-  width: 60%;
-  max-width: 500px;
-  height: auto;
-  display: block;
-  margin: 0 auto;
-}
-
-/* --- Page wrappers --- */
 .jobLanding {
-  min-height: 100vh;
+  width: 100%;
+  min-height: 100%;
 }
 
-.collabContainer {
+.userCollaborationContainer {
   width: 90%;
   margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background-color: #fff;
-  min-height: 100vh;
-  border-radius: 6px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  padding-bottom: 24px;
 }
 
-/* --- Navbar --- */
+/* ======================================================
+   HEADER
+   ====================================================== */
+
+.jobHeader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px 0;
+}
+
+.jobHeader img {
+  width: clamp(160px, 30vw, 600px);
+  height: auto;
+}
+
+/* ======================================================
+   NAVBAR
+   ====================================================== */
+
 .navbar {
-  width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
   background-color: #9c0;
-  padding: 20px;
-  flex-flow: row nowrap;
-  box-sizing: border-box;
-  flex-wrap: wrap;
-  z-index: 0;
-  border-radius: 6px;
-}
-
-.navbarLeft input,
-.navbarLeft select {
-  display: flex;
-  padding: 8px;
-  margin-right: 10px;
-  align-items: center;
-}
-
-.navbarLeft,
-.navbarRight,
-.searchForm {
-  display: flex;
-  align-items: center;
-  padding: 4px;
+  padding: 12px;
   gap: 12px;
 }
 
-.searchForm input {
-  margin-right: 10px;
-  height: 38px;
-  padding: 0 12px;
-  line-height: 38px;
-  box-sizing: border-box;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  min-width: 240px;
+.navbarLeft,
+.jobNavbarRight {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-@media (max-width: 380px) {
-  .searchForm input {
-    width: 100%;
-    max-width: 100%;
-    min-width: 0;
-    margin: 0;
-    box-sizing: border-box;
-    flex: 1 1 auto;
+.searchForm {
+  display: flex;
+  gap: 8px;
+}
+
+/* ======================================================
+   CATEGORY SELECT (LIGHT MODE)
+   ====================================================== */
+
+.jobSelect {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  /* border-radius: 8px;
+  padding: 6px 0; */
+  z-index: 999;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  animation: fadeInDropdown 0.12s ease-in-out;
+}
+
+@keyframes fadeInDropdown {
+  from {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-.searchButton,
-.resetButton,
-.showSummaries {
-  display: inline-flex;
+.dropdownItem {
+  display: flex;
   align-items: center;
-  justify-content: center;
-  height: 38px;
-  padding: 0 16px;
-  background-color: #1778f2;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
+  gap: 10px;
+  padding: 8px 12px;
   cursor: pointer;
-  font-size: 16px;
-  font-weight: 600;
-  white-space: nowrap;
-  line-height: normal;
-  vertical-align: middle;
-  transition: filter .15s ease, transform .02s ease;
+  font-size: 14px;
+  color: #333;
+  border-radius: 4px;
+  transition: background-color 0.15s ease;
 }
 
-.searchButton:hover,
-.resetButton:hover,
-.showSummaries:hover {
-  filter: brightness(0.95);
+.dropdownItem:hover {
+  background-color: #f0f0f0;
 }
 
-.searchButton:active,
-.resetButton:active,
-.showSummaries:active {
-  transform: translateY(1px);
+.dropdownItem input[type='checkbox'] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  background-color: #ffffff;
+  color: #333333;
+  font-size: 14px;
 }
 
-.showSummaries {
-  padding: 0 22px;
+/* ======================================================
+   CATEGORY SELECT (DARK MODE – FIXED)
+   ====================================================== */
+
+.jobSelectDark {
+  background-color: #1c1c1c;
+  color: #f1f1f1;
+  border: 1px solid #444;
 }
 
-.navbarRight select {
-  padding: 10px 14px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  background: #fff;
+/* dropdown options */
+.jobSelectDark option {
+  background-color: #1c1c1c;
+  color: #f1f1f1;
 }
 
-/* --- Headings --- */
+/* selected option visibility (Chrome / Safari fix) */
+.jobSelectDark option:checked {
+  background-color: #2a2a2a;
+  color: #ffffff;
+}
+
+/* focus */
+.jobSelectDark:focus {
+  outline: none;
+  border-color: #9c0;
+}
+
+/* ======================================================
+   HEADINGS
+   ====================================================== */
+
 .headings {
-  margin-bottom: 10px;
   text-align: center;
+  margin: 20px 0;
 }
 
-.headings h1,
-.headings p {
-  color: #111827;
+.jobHead {
+  color: #07471e;
+  font-weight: 800;
 }
 
-/* --- Jobs grid --- */
+/* ======================================================
+   JOB GRID (6 × 3 GUARANTEED)
+   ====================================================== */
+
 .jobList {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(6, 1fr);
   gap: 20px;
   width: 100%;
-  margin-top: 20px;
+  margin: 0 auto;
   justify-content: center;
-  align-items: stretch;
+  justify-items: center;
+  align-items: start;
+  margin-top: 20px;
+  padding: 20px;
 }
 
-@media (min-width: 480px) {
-  .jobList {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (min-width: 768px) {
-  .jobList {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-
-@media (min-width: 1017px) {
-  .jobList {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-}
-
-@media (min-width: 1300px) {
-  .jobList {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-  }
-}
-
-@media (min-width: 1600px) {
-  .jobList {
-    grid-template-columns: repeat(6, minmax(0, 1fr));
-  }
-}
-
-.jobList:has(.noJobads) {
-  grid-template-columns: 1fr;
-  place-items: center;
-}
-
-/* --- Job card --- */
 .jobAd {
+  background: #ffffff;
+  border-radius: 12px;
   border: 1px solid #ddd;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  overflow: hidden;
-  background: linear-gradient(135deg, #fff, #f9f9f9);
-  transition: transform .3s, box-shadow .3s;
-  padding-bottom: 8px;
-}
-
-.jobAd img {
-  max-width: 100%;
-  height: auto;
-  border-bottom: 1px solid #ddd;
-  display: block;
-}
-
-.jobAd h3 {
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #333;
-  margin: 10px 12px 0;
-  transition: color .3s;
-}
-
-.jobAd a {
-  text-decoration: none;
-  color: inherit;
-}
-
-.jobAd a:hover h3 {
-  color: #007acc;
+  padding: 14px;
+  text-align: center;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .jobAd:hover {
@@ -225,356 +180,232 @@
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
-/* --- Summaries view --- */
-.summariesList {
-  margin-top: 20px;
-  max-width: 960px;
-  margin-left: auto;
-  margin-right: auto;
-  text-align: center;
+.jobAd img {
+  width: 100%;
+  border-bottom: 1px solid #ddd;
 }
 
-.summariesItem {
-  background: none !important;
-  border: 0 !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
-  padding: 0 !important;
-  margin: 0 0 28px !important;
-}
-
-.summariesItem h3,
-.summariesItem h3 a {
-  position: static !important;
-  transform: none !important;
-  margin: 0 0 8px !important;
-  display: block;
-  text-align: left;
+.jobAd h3 {
+  margin-top: 10px;
+  font-size: 1.05rem;
   font-weight: 700;
-  color: #2b6ee8;
-  text-decoration: none;
-  line-height: 1.25;
-  font-size: 1.85rem;
+  color: #183a9b;
 }
 
-.summariesItem h3 a:hover {
-  text-decoration: underline;
-}
+/* ======================================================
+   PAGINATION
+   ====================================================== */
 
-.summariesItem p {
-  margin: 0 0 10px;
-  color: #1f2937;
-  font-size: 1rem;
-  line-height: 1.6;
-  text-align: left;
-}
-
-.date {
-  margin-top: 6px;
-  color: #6b7280;
-  font-size: 0.95rem;
-}
-
-@media (max-width: 640px) {
-  .summariesList {
-    padding: 0 12px;
-  }
-
-  .summariesItem {
-    margin-bottom: 22px !important;
-  }
-
-  .summariesItem h3,
-  .summariesItem h3 a {
-    font-size: 1.4rem;
-    line-height: 1.3;
-  }
-
-  .summariesItem p {
-    font-size: 0.98rem;
-    line-height: 1.5;
-  }
-}
-
-/* --- Pagination --- */
 .pagination {
-  margin: 20px 0;
   display: flex;
   justify-content: center;
   gap: 8px;
-  flex-wrap: wrap;
+  margin: 20px 0;
 }
 
-.pagination button {
-  margin: 0 5px;
-  padding: 6px 10px;
-  cursor: pointer;
-  border-radius: 8px;
-  border: 1px solid #ddd;
-  background: #fff;
-}
+/* ======================================================
+   DARK MODE ROOT
+   ====================================================== */
 
-.pagination button:hover {
-  background-color: #4a99ee;
-  color: #fff;
-}
-
-.pagination button:disabled {
-  background-color: #ccc;
-  color: #333;
-  cursor: default;
-}
-
-/* --- Empty state --- */
-.noJobads {
+.jobsSummariesList {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
+  flex-direction: column;
+  gap: 10px;
+}
 
-  font-size: 1.1em;
-  margin: 20px auto;
-  max-width: 400px;
-  padding: 16px 20px;
+.jobsSummariesList h3 {
+  font-size: 1.5rem;
+  color: #07471e;
+  text-decoration: underline;
+}
 
+.jobSummaryItem {
   border: 1px solid #ddd;
-  border-radius: 8px;
-  background-color: #f9f9f9;
+  background: linear-gradient(135deg, #fff, #f9f9f9);
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* ======================================================
+   RESPONSIVE BREAKPOINTS
+   ====================================================== */
+
+@media (max-width: 1080px) {
+  .jobAd {
+    width: 31%;
+  }
 }
 
 @media (max-width: 800px) {
-  .navbar {
+  .jobNavbar {
+    flex-direction: column;
+  }
+
+  .jobNavbarLeft,
+  .jobNavbarRight {
+    width: 100%;
     flex-direction: column;
     align-items: center;
   }
 
-  .navbarLeft,
-  .navbarRight {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .searchForm {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 10px;
-  }
-
-  .searchForm input,
-  .searchForm button {
+  .jobSearchForm input,
+  .jobSearchForm button {
     width: 90%;
-    max-width: 360px;
-    margin: 0 auto;
+    max-width: 300px;
   }
 
-  .navbarRight select {
-    margin-top: -5px;
-    width: 90%;
-    max-width: 360px;
+  .jobAd {
+    width: 45%;
   }
 
-  .summariesList {
-    padding: 0 12px;
-  }
-}
-
-@media (max-width: 350px) {
-  .navbarRight {
-    width: 100%;
-  }
-
-  .navbarRight select {
-    width: 100%;
-    max-width: 100%;
-    min-width: 0;
-    box-sizing: border-box;
-    margin: 0;
-    font-size: 0.9rem;
+  .jobTooltip {
+    width: 40%;
+    margin-top: 50px;
   }
 }
 
 @media (max-width: 480px) {
-  .navbar {
-    padding: 5px;
-    text-align: center;
+  .jobAd {
+    width: 90%;
   }
 
-  .pagination button {
+  .jobNavbar {
+    padding: 5px;
+  }
+
+  .jobSearchForm input {
+    width: 90%;
+  }
+
+  .jobSearchForm button {
+    width: 90%;
     padding: 8px;
-    width: auto;
+  }
+
+  .jobPagination button {
+    padding: 8px;
   }
 }
 
-.jobLandingDark {
+/* ======================================================
+   DARK MODE
+   ====================================================== */
+
+.darkMode {
+.dark {
+  background-color: #1b2a41;
+  color: #f1f1f1;
+}
+
+.dark .userCollaborationContainer {
+  background-color: #1b2a41;
+}
+
+.dark .navbar {
   background-color: #1c2541;
 }
 
-.jobLandingDark .header {
-  background: #1c2541;
-  padding: 8px 0;
+.dark .jobAd {
+  background: linear-gradient(135deg, #23272a, #181a1b);
+  border-color: #333;
 }
 
-.jobLandingDark .collabContainer {
-  background-color: #2e3b55;
+.dark .jobAd h3 {
+  color: #e0e0e0;
+}
+}
+/* ======================================================
+   RESPONSIVE
+   ====================================================== */
+
+@media (max-width: 1200px) {
+  .jobList {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .jobList {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .jobList {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .navbar {
+    flex-direction: column;
+  }
+}
+/* ======================================================
+   DARK MODE – SEARCH INPUT FIX
+   ====================================================== */
+
+.dark .searchForm input {
+  background-color: #1c1c1c;
   color: #f1f1f1;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
-  border-radius: 6px;
-  padding: 0;
-}
-
-.jobLandingDark .navbar {
-  background-color: #1c2541 !important;
-  color: #fff;
   border: 1px solid #444;
-  border-radius: 6px;
-  padding: 1rem;
 }
 
-.jobLandingDark .navbar input,
-.jobLandingDark .navbar select {
-  background-color: #3f4a58 !important;
-  color: #fff !important;
-  border: none !important;
+/* Placeholder text */
+.dark .searchForm input::placeholder {
+  color: #b0b0b0;
 }
 
-.jobLandingDark .searchButton,
-.jobLandingDark .resetButton,
-.jobLandingDark .showSummaries,
-.jobLandingDark .pagination button {
-  background-color: #1778f2 !important;
-  color: #fff !important;
-  border: none !important;
-  border-radius: 8px;
+/* Focus state */
+.dark .searchForm input:focus {
+  outline: none;
+  border-color: #9c0;
+}
+/* =========================
+   PAGINATION BUTTONS
+   ========================= */
+
+.paginationButton {
   padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background-color: #ffffff;
+  color: #333333;
+  cursor: pointer;
   font-weight: 600;
 }
 
-.jobLandingDark .pagination button:hover {
-  background-color: #4a99ee !important;
-  color: #fff !important;
+.paginationButton:hover {
+  background-color: #f0f0f0;
 }
 
-.jobLandingDark .jobAd {
-  background: none !important;
-  background-color: #1c2541 !important;
-  color: #fff !important;
+/* ACTIVE PAGE (LIGHT MODE) */
+.paginationButtonActive {
+  padding: 6px 12px;
   border-radius: 6px;
-  box-shadow: 0 2px 6px rgba(255, 255, 255, 0.05);
+  border: 1px solid #9c0;
+  background-color: #9c0;
+  color: #000000;
+  font-weight: 700;
+}
+
+/* =========================
+   DARK MODE PAGINATION
+   ========================= */
+
+.dark .paginationButton {
+  background-color: #1c1c1c;
   border: 1px solid #444;
-  padding: 1rem;
-  transition: background-color .3s ease;
+  color: #dddddd;
 }
 
-.jobLandingDark .jobAd:hover {
-  background-color: #3f4a58;
+.dark .paginationButton:hover {
+  background-color: #2a2a2a;
 }
 
-.jobLandingDark .jobAd h3 {
-  color: #f1f1f1 !important;
-}
-
-.jobLandingDark .headings h1 {
-  color: #ffffff;
-}
-
-.jobLandingDark .headings p {
-  color: #e5e7eb;
-}
-
-.jobLandingDark a {
-  color: #7db4ff;
-}
-
-.jobLandingDark a:hover {
-  color: #a6ceff;
-  text-decoration: underline;
-}
-
-.jobLandingDark .summariesList h1 {
-  color: #ffffff;
-}
-
-.jobLandingDark .summariesItem {
-  border-bottom: 1px solid rgba(255, 255, 255, .12);
-}
-
-.jobLandingDark .summariesItem h3 a {
-  color: #f8fafc;
-}
-
-.jobLandingDark .summariesItem h3 a:hover {
-  color: #ffffff;
-}
-
-.jobLandingDark .summariesItem p {
-  color: #e5e7eb;
-}
-
-.jobLandingDark .date {
-  color: #cbd5e1;
-}
-
-.jobLandingDark .noJobads {
-  background-color: #1c2541;
-  border: 1px solid #555;
-  color: #fff;
-}
-
-.summariesList {
-  width: min(1100px, 100%);
-  margin: 24px auto;
-  padding-inline: clamp(12px, 4vw, 32px);
-  text-align: center;
-  background: transparent;
-}
-
-.summariesList h1 {
-  margin: 0 0 24px;
-}
-
-.summariesItem {
-  margin: 0;
-  padding: 16px 0;
-  text-align: left;
-  border-bottom: 1px solid rgba(0, 0, 0, .08);
-}
-
-.summariesItem:last-child {
-  border-bottom: 0;
-}
-
-.summariesItem h3,
-.summariesItem h3 a {
-  margin: 0 0 8px !important;
-  line-height: 1.3;
-  word-break: break-word;
-}
-
-.summariesItem p {
-  margin: 0 0 10px;
-}
-
-.jobLandingDark .summariesList {
-  width: min(1100px, 100%);
-  margin: 24px auto;
-  padding-inline: clamp(12px, 4vw, 32px);
-  background: transparent;
-}
-
-.jobLandingDark .summariesItem {
-  border-bottom: 1px solid rgba(255, 255, 255, .12);
-}
-
-.jobLandingDark .pagination button:disabled {
-  background-color: #ffffff !important;
-  color: black !important;
-  border: none !important;
-  box-shadow: 0 0 0 2px rgba(14, 94, 215, 0.35) inset; 
-  cursor: default;
-  opacity: 1; 
+/* ACTIVE PAGE (DARK MODE) */
+.dark .paginationButtonActive {
+  background-color: #9c0;
+  border: 1px solid #9c0;
+  color: #000000;
+  font-weight: 700;
 }

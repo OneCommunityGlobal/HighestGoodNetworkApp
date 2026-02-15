@@ -87,6 +87,8 @@ export default function ProjectRiskProfileOverview() {
         boxShadow: '0 2px 8px #eee',
         padding: 24,
         marginBottom: 24,
+        width: '100%',
+        gridColumn: '1 / -1',
       }}
     >
       <h2 style={{ marginBottom: 24 }}>Project Risk Profile Overview</h2>
@@ -316,28 +318,76 @@ export default function ProjectRiskProfileOverview() {
           </button>
         </div>
       </div>
-      <ResponsiveContainer width="100%" height={350}>
-        <BarChart
-          data={filteredData.map(item => ({
-            ...item,
-            predictedCostOverrun:
-              item.predictedCostOverrun != null
-                ? -1 * item.predictedCostOverrun
-                : item.predictedCostOverrun,
-          }))}
-          margin={{ top: 20, right: 30, left: 0, bottom: 5 }}
-          barGap={8}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="projectName" />
-          <YAxis />
-          <Tooltip />
-          <Legend />
-          <Bar dataKey="predictedCostOverrun" name="Predicted Cost Overrun (%)" fill="#4285F4" />
-          <Bar dataKey="totalOpenIssues" name="Issues" fill="#EA4335" />
-          <Bar dataKey="predictedTimeDelay" name="Predicted Time Delay (%)" fill="#FBBC05" />
-        </BarChart>
-      </ResponsiveContainer>
+
+      {/* Chart Section */}
+      <div style={{ width: '100%', margin: '0 -24px', padding: '0 24px' }}>
+        <ResponsiveContainer width="100%" height={400}>
+          <BarChart
+            data={filteredData.map(item => {
+              console.log('Before transform:', item.predictedCostOverrun);
+              return {
+                ...item,
+                predictedCostOverrun: item.predictedCostOverrun,
+              };
+            })}
+            margin={{ top: 20, right: 40, left: 60, bottom: 80 }}
+            barCategoryGap="20%"
+            barGap={4}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis
+              dataKey="projectName"
+              tick={{ fontSize: 12, fill: '#666' }}
+              angle={-45}
+              textAnchor="end"
+              height={80}
+            />
+            <YAxis
+              label={{
+                value: 'Percentage (%)',
+                angle: -90,
+                position: 'insideLeft',
+                offset: 15,
+                style: {
+                  textAnchor: 'middle',
+                  fontSize: 14,
+                  fill: '#333',
+                  fontWeight: '500',
+                },
+              }}
+              tickFormatter={value => (Number.isInteger(value) ? value : value.toFixed(0))}
+              tick={{ fontSize: 12, fill: '#666' }}
+            />
+            <Tooltip
+              formatter={(value, name) => {
+                if (typeof value === 'number') {
+                  // Format Time Delay specifically to 2 decimal places
+                  if (name === 'Predicted Time Delay (%)') {
+                    return value.toFixed(2);
+                  }
+                  // For other values, use 2 decimal places if not integer
+                  return Number.isInteger(value) ? value.toString() : value.toFixed(2);
+                }
+                return value;
+              }}
+            />
+            <Legend wrapperStyle={{ marginTop: 20 }} />
+            <Bar
+              dataKey="predictedCostOverrun"
+              name="Predicted Cost Overrun (%)"
+              fill="#4285F4"
+              barSize={35}
+            />
+            <Bar dataKey="totalOpenIssues" name="Issues" fill="#EA4335" barSize={35} />
+            <Bar
+              dataKey="predictedTimeDelay"
+              name="Predicted Time Delay (%)"
+              fill="#FBBC05"
+              barSize={35}
+            />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 }
