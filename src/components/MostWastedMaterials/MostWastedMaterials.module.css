@@ -119,3 +119,15 @@
 .darkMode .chartGrid {
   stroke: #374151;
 }
+
+.darkMode :global(.recharts-bar-rectangle) {
+  fill: #3b82f6;
+}
+
+.darkMode :global(.recharts-bar-rectangle:hover) {
+  fill: #93c5fd !important;
+}
+
+.darkMode :global(.recharts-label-list) text {
+  fill: #ffffff;
+}
