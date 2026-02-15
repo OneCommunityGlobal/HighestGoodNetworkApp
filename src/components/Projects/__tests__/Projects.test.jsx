@@ -4,7 +4,7 @@ import '@testing-library/jest-dom/extend-expect';
 import Projects from '..';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
-import configureStore from 'redux-mock-store';
+import { configureStore } from 'redux-mock-store';
 import { rolesMock } from '__tests__/mockStates';
 
 import axios from 'axios';
@@ -51,7 +51,7 @@ beforeEach(() => {
   });
 });
 
-jest.mock('axios');
+vi.mock('axios');
 
 describe("Projects component",()=>{
 
@@ -76,7 +76,7 @@ describe("Projects component",()=>{
       data: [],
     });
     render(<Provider store={store}><Projects /></Provider>)
-    expect(screen.getByText('Project Name')).toBeInTheDocument();
+    expect(screen.getAllByText('Project Name')[0]).toBeInTheDocument();
   })
   it('check if Category header displays as expected',()=>{
     axios.get.mockResolvedValue({
@@ -195,8 +195,13 @@ describe("Projects component",()=>{
       role: {roles: rolesMock.role.roles}
     })
 
-    render(<MemoryRouter><Provider store={testStore}><Projects /></Provider></MemoryRouter>)
+    const { container } = render(<MemoryRouter><Provider store={testStore}><Projects /></Provider></MemoryRouter>)
     expect(screen.getByText("ERROR")).toBeInTheDocument()
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+    const ascendingButton = container.querySelector('[id="Ascending"]')
+    if (ascendingButton) {
+      fireEvent.click(ascendingButton)
+    }
 
     // Code related to "Archive" functionality is refactored into Project component and will be tested in Project.test.js 
   //   const archiveButton=screen.getAllByText('Archive')[1]

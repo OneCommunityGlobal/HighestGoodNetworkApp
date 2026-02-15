@@ -1,9 +1,10 @@
-/* eslint-disable no-restricted-globals */
+/* eslint-disable testing-library/no-node-access */
 import { useEffect, useState, useMemo } from 'react';
-import * as d3 from 'd3/dist/d3.min';
+import * as d3 from 'd3';
+
 import { CHART_RADIUS, CHART_SIZE } from './constants';
 import { generateArrayOfUniqColors } from './colorsGenerator';
-import './UserProjectPieChart.css';
+import styles from './PieChart.module.css';
 
 export function PieChart({
   tasksData = [], // New array format: [{ projectId: "123", projectName: "Project A", totalTime: 10.5 }, ...]
@@ -13,7 +14,13 @@ export function PieChart({
 }) {
   const [totalHours, setTotalHours] = useState(0);
   const colors = useMemo(() => generateArrayOfUniqColors(tasksData?.length), [tasksData]);
-  const color = useMemo(() => d3.scaleOrdinal().range(colors), [colors]);
+  const color = useMemo(() => {
+    const domain = tasksData?.map(project => project.projectId) || [];
+    return d3
+      .scaleOrdinal()
+      .domain(domain)
+      .range(colors);
+  }, [colors, tasksData]);
 
   const [togglePercentage, setTogglePercentage] = useState(false);
   const [selectedProjects, setSelectedProjects] = useState(
@@ -60,12 +67,7 @@ export function PieChart({
       .attr('transform', `translate(${CHART_SIZE / 2}, ${CHART_SIZE / 2})`);
 
     const displayValue = togglePercentage
-      ? // ? (selectedProjects.reduce((sum, projectId) => {
-        //     const project = tasksData.find(p => p.projectId === projectId);
-        //     return sum + (project ? project.totalTime : 0);
-        //   }, 0) / totalValue) * 100
-        // : totalValue;
-        (totalValue / calculateTotalHours(projectsData, tasksData)) * 100
+      ? (totalValue / calculateTotalHours(projectsData, tasksData)) * 100
       : totalValue;
 
     svg
@@ -77,7 +79,7 @@ export function PieChart({
           ? `${displayValue.toFixed(2)}% of ${calculateTotalHours(projectsData, tasksData).toFixed(
               2,
             )}`
-          : totalValue.toFixed(2),
+          : `${totalValue.toFixed(2)} Hrs`,
       );
 
     svg
@@ -121,16 +123,16 @@ export function PieChart({
 
     const dataReady = pie(tasksData);
 
-    let div = d3.select('.tooltip-donut');
-    if (div.empty()) {
-      div = d3
-        .select('body')
-        .append('div')
-        .attr('class', 'tooltip-donut')
-        .style('opacity', 0)
-        .style('position', 'absolute')
-        .style('pointer-events', 'none');
-    }
+    // let div = d3.select('.tooltip-donut');
+    // if (div.empty()) {
+    //   div = d3
+    //     .select('body')
+    //     .append('div')
+    //     .attr('class', 'tooltip-donut')
+    //     .style('opacity', 0)
+    //     .style('position', 'absolute')
+    //     .style('pointer-events', 'none');
+    // }
 
     const svg = getCreateSvgPie(totalValue);
     if (!svg) return undefined; // Early return if no svg created
@@ -148,117 +150,83 @@ export function PieChart({
       )
       .attr('fill', d => color(d.data.projectId))
       .style('opacity', d => (selectedProjects.includes(d.data.projectId) ? 1 : 0.1))
-      .on('click', (event, d) => handleProjectClick(d.data.projectId))
-      .on('mouseover', (event, d) => {
-        d3.select(event.currentTarget)
-          .transition()
-          .duration(50)
-          .attr('opacity', 0.5);
-        const percentage = ((d.data.totalTime / totalValue) * 100).toFixed(2);
-        const legendInfo = togglePercentage
-          ? `${d.data.projectName}: ${percentage}% of ${totalValue.toFixed(2)}`
-          : `${d.data.projectName}: ${d.data.totalTime.toFixed(2)} Hours`;
+      .on('click', (event, d) => handleProjectClick(d.data.projectId));
+    // .on('mouseover', (event, d) => {
+    //   d3.select(event.currentTarget)
+    //     .transition()
+    //     .duration(50)
+    //     .attr('opacity', 0.5);
+    //   const percentage = ((d.data.totalTime / totalValue) * 100).toFixed(2);
+    //   const legendInfo = togglePercentage
+    //     ? `${d.data.projectName}: ${percentage}% of ${totalValue.toFixed(2)}`
+    //     : `${d.data.projectName}: ${d.data.totalTime.toFixed(2)} Hours`;
 
-        div
-          .html(legendInfo)
-          .style('max-width', '150px')
-          .style('white-space', 'normal')
-          .style('opacity', 1)
-          .style('visibility', 'visible')
-          .style('left', `${event.pageX + 10}px`)
-          .style('top', `${event.pageY - 15}px`);
-      })
-      .on('mouseout', function handleMouseOut() {
-        d3.select(this)
-          .transition()
-          .duration(50)
-          .attr('opacity', 1);
-        div
-          .transition()
-          .duration(50)
-          .style('opacity', 0)
-          .on('end', function hideToolTip() {
-            d3.select(this).style('visibility', 'hidden');
-          });
-      });
+    //   div
+    //     .html(legendInfo)
+    //     .style('max-width', '150px')
+    //     .style('white-space', 'normal')
+    //     .style('opacity', 1)
+    //     .style('visibility', 'visible')
+    //     .style('left', `${event.pageX + 10}px`)
+    //     .style('top', `${event.pageY - 15}px`);
+    // })
+    // .on('mouseout', function handleMouseOut() {
+    //   d3.select(this)
+    //     .transition()
+    //     .duration(50)
+    //     .attr('opacity', 1);
+    //   div
+    //     .transition()
+    //     .duration(50)
+    //     .style('opacity', 0)
+    //     .on('end', function hideToolTip() {
+    //       d3.select(this).style('visibility', 'hidden');
+    //     });
+    // });
 
     return () => {
       d3.select(`#pie-chart-${pieChartId}`).remove();
+      d3.select('.tooltip-donut').remove(); // remove any leftover tooltip div
     };
   }, [tasksData, togglePercentage, selectedProjects]);
 
   return !tasksData || tasksData?.length === 0 ? (
     <div>Loading</div>
   ) : (
-    <div className={`pie-chart-wrapper ${darkMode ? 'text-light' : ''}`}>
-      <div id={`pie-chart-container-${pieChartId}`} className="pie-chart" />
-      <div className="pie-chart-legend-container">
-        <div className="pie-chart-legend-table-wrapper">
-          {tasksData.length > 10 ? (
-            <div style={{ display: 'flex', gap: '24px' }}>
-              {[0, 1].map(col => (
-                <table
-                  key={col}
-                  className={darkMode ? 'pie-chart-legend-table-dark' : 'pie-chart-legend-table'}
-                  style={{ width: 'auto' }}
-                >
-                  <thead>
-                    <tr>
-                      <th>Color</th>
-                      <th>Task Name</th>
-                      <th>Hours</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {tasksData
-                      .slice(
-                        col === 0 ? 0 : Math.ceil(tasksData.length / 2),
-                        col === 0 ? Math.ceil(tasksData.length / 2) : tasksData.length,
-                      )
-                      .map(task => (
-                        <tr key={task.taskId || task.projectId}>
-                          <td>
-                            <div
-                              id="project-chart-legend"
-                              style={{ backgroundColor: `${color(task.taskId || task.projectId)}` }}
-                            />
-                          </td>
-                          <td>{task.taskName || task.projectName}</td>
-                          <td>{task.totalTime.toFixed(2)}</td>
-                        </tr>
-                      ))}
-                  </tbody>
-                </table>
-              ))}
-            </div>
-          ) : (
-            <table className={darkMode ? 'pie-chart-legend-table-dark' : 'pie-chart-legend-table'}>
-              <thead>
-                <tr>
-                  <th>Color</th>
-                  <th>Task Name</th>
-                  <th>Hours</th>
+    <div className={`${styles['pie-chart-wrapper']} ${darkMode ? styles['text-light'] : ''}`}>
+      <div id={`pie-chart-container-${pieChartId}`} className={styles['pie-chart']} />
+      <div className={styles['pie-chart-legend-container']}>
+        <div className={styles['pie-chart-legend-table-wrapper']}>
+          <table
+            className={
+              darkMode ? styles['pie-chart-legend-table-dark'] : styles['pie-chart-legend-table']
+            }
+          >
+            <thead>
+              <tr>
+                <th>Color</th>
+                <th>Task Name</th>
+                <th>Hours</th>
+              </tr>
+            </thead>
+            <tbody>
+              {tasksData?.map(project => (
+                <tr key={project.projectId}>
+                  <td>
+                    <div
+                      className={styles['project-chart-legend']}
+                      style={{ backgroundColor: `${color(project.projectId)}` }}
+                    />
+                  </td>
+                  <td>{project.projectName}</td>
+                  <td>{project.totalTime.toFixed(2)}</td>
                 </tr>
-              </thead>
-              <tbody>
-                {tasksData?.map(task => (
-                  <tr key={task.taskId || task.projectId}>
-                    <td>
-                      <div
-                        id="project-chart-legend"
-                        style={{ backgroundColor: `${color(task.taskId || task.projectId)}` }}
-                      />
-                    </td>
-                    <td>{task.taskName || task.projectName}</td>
-                    <td>{task.totalTime.toFixed(2)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
+              ))}
+            </tbody>
+          </table>
         </div>
-        <div className="data-total-value">
-          <strong>Total Hours:</strong> {totalHours.toFixed(2)}
+        <div className={styles['data-total-value']} style={{ marginTop: 8 }}>
+          <strong className={styles['strong-text']}>Total Hours:</strong> {totalHours.toFixed(2)}
         </div>
       </div>
     </div>

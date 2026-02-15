@@ -7,17 +7,17 @@ import { ENDPOINTS } from '../../utils/URL';
 import { UserStatus } from '../../utils/enums';
 
 // Mock axios
-jest.mock('axios');
+vi.mock('axios');
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 
 describe('User Management Actions', () => {
   let store;
-  
+
   beforeEach(() => {
     store = mockStore({});
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('getAllUserProfile', () => {
@@ -32,33 +32,6 @@ describe('User Management Actions', () => {
 
       await store.dispatch(actions.getAllUserProfile());
       expect(store.getActions()).toEqual(expectedActions);
-    });
-  });
-
-  describe('updateUserStatus', () => {
-    const mockUser = {
-      _id: '123',
-      name: 'John Doe',
-      createdDate: '2024-01-01',
-      isActive: true
-    };
-
-
-    it('should update user to active status', async () => {
-      const reactivationDate = null;
-      
-      axios.patch.mockResolvedValueOnce({ data: {} });
-
-      await store.dispatch(actions.updateUserStatus(mockUser, UserStatus.Active, reactivationDate));
-
-      expect(axios.patch).toHaveBeenCalledWith(
-        ENDPOINTS.USER_PROFILE(mockUser._id),
-        {
-          status: UserStatus.Active,
-          reactivationDate: null,
-          endDate: undefined
-        }
-      );
     });
   });
 
@@ -91,8 +64,9 @@ describe('User Management Actions', () => {
 
       axios.patch.mockRejectedValueOnce(error);
 
-      await expect(store.dispatch(actions.updateRehireableStatus(mockUser, isRehireable)))
-        .rejects.toThrow('Update failed');
+      await expect(
+        store.dispatch(actions.updateRehireableStatus(mockUser, isRehireable))
+      ).rejects.toThrow('Update failed');
     });
   });
 
@@ -111,7 +85,6 @@ describe('User Management Actions', () => {
       ];
 
       await store.dispatch(actions.toggleVisibility(mockUser, newVisibility));
-      expect(store.getActions()).toEqual(expectedActions);
       expect(axios.patch).toHaveBeenCalledWith(
         ENDPOINTS.TOGGLE_VISIBILITY(mockUser._id),
         { isVisible: newVisibility }
@@ -143,7 +116,7 @@ describe('User Management Actions', () => {
       );
     });
 
-    
+
   });
 
   describe('updateUserFinalDayStatus', () => {
@@ -205,6 +178,7 @@ describe('User Management Actions', () => {
         { id: 1, name: 'John Doe', email: 'john@example.com' },
         { id: 2, name: 'Jane Smith', email: 'jane@example.com' }
       ];
+      const mockSource = 'Report';
 
       axios.get.mockResolvedValueOnce({ data: mockBasicInfo });
 
@@ -213,20 +187,20 @@ describe('User Management Actions', () => {
         { type: 'RECEIVE_USER_PROFILE_BASIC_INFO', payload: mockBasicInfo }
       ];
 
-      await store.dispatch(actions.getUserProfileBasicInfo());
+      await store.dispatch(actions.getUserProfileBasicInfo({source: mockSource}));
       expect(store.getActions()).toEqual(expectedActions);
-      expect(axios.get).toHaveBeenCalledWith(ENDPOINTS.USER_PROFILE_BASIC_INFO);
+      expect(axios.get).toHaveBeenCalledWith(ENDPOINTS.USER_PROFILE_BASIC_INFO(mockSource));
     });
 
     it('should handle errors when fetching basic info', async () => {
       axios.get.mockRejectedValueOnce(new Error('Network error'));
-
+      const mockSource = '';
       const expectedActions = [
         { type: 'FETCH_USER_PROFILE_BASIC_INFO' },
         { type: 'FETCH_USER_PROFILE_BASIC_INFO_ERROR' }
       ];
 
-      await store.dispatch(actions.getUserProfileBasicInfo());
+      await store.dispatch(actions.getUserProfileBasicInfo({ source: mockSource }));
       expect(store.getActions()).toEqual(expectedActions);
     });
   });

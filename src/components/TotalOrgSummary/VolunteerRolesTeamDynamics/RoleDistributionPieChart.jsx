@@ -1,5 +1,5 @@
-import Loading from 'components/common/Loading';
 import { ResponsiveContainer, PieChart, Pie, Cell, Legend, Tooltip } from 'recharts';
+import Loading from '~/components/common/Loading';
 
 const COLORS = [
   '#F285BB',
@@ -18,30 +18,9 @@ const COLORS = [
   '#46d130',
 ];
 
-function CustomTooltip({ active, payload }) {
-  if (active && payload && payload.length) {
-    return (
-      <div
-        style={{
-          backgroundColor: 'white',
-          border: '1px solid #ccc',
-          padding: '10px',
-          borderRadius: '4px',
-        }}
-      >
-        {payload.map(entry => (
-          <p key={entry} style={{ color: 'black' }}>
-            {`${entry.name} : ${entry.value}`}
-          </p>
-        ))}
-      </div>
-    );
-  }
+import CustomTooltip from '../../CustomTooltip';
 
-  return null;
-}
-
-export default function RoleDistributionPieChart({ isLoading, roleDistributionStats, darkMode }) {
+const RoleDistributionPieChart = ({ roleDistributionStats = [], isLoading, darkMode }) => {
   if (isLoading) {
     return (
       <div className="d-flex justify-content-center align-items-center">
@@ -153,36 +132,40 @@ export default function RoleDistributionPieChart({ isLoading, roleDistributionSt
   };
 
   return (
-    <div style={{ margin: '15px 10px 10px 10px' }}>
-      <ResponsiveContainer width="100%" height="100%" minWidth={400} minHeight={430}>
-        <PieChart className="test2">
-          <Pie
-            data={data}
-            cx="50%"
-            cy="50%"
-            innerRadius="50%"
-            outerRadius="100%"
-            legendType="square"
-            labelLine={false}
-            label={renderCustomizedLabel}
-            startAngle={-270}
-            endAngle={90}
-            stroke="none"
-            dataKey="value"
-          >
-            {data.map(entry => (
-              <Cell key={`cell-${entry.name}`} fill={entry.color} />
-            ))}
-          </Pie>
-          <Legend
-            layout="vertical"
-            verticalAlign="middle"
-            align="right"
-            content={renderCustomLegend}
-          />
-          <Tooltip content={<CustomTooltip />} />
-        </PieChart>
-      </ResponsiveContainer>
+    <div style={{ margin: '15px 10px 10px 10px', overflowX: 'auto' }}>
+      <div style={{ minWidth: 500 }}>
+        <ResponsiveContainer width="100%" height="100%" minWidth={400} minHeight={430}>
+          <PieChart>
+            <Pie
+              data={data}
+              cx="50%"
+              cy="50%"
+              innerRadius="50%"
+              outerRadius="100%"
+              legendType="square"
+              labelLine={false}
+              label={renderCustomizedLabel}
+              startAngle={-270}
+              endAngle={90}
+              stroke="none"
+              dataKey="value"
+            >
+              {data.map(entry => (
+                <Cell key={`cell-${entry.name}`} fill={entry.color} />
+              ))}
+            </Pie>
+            <Legend
+              layout="vertical"
+              verticalAlign="middle"
+              align="right"
+              content={renderCustomLegend}
+            />
+            <Tooltip content={<CustomTooltip darkMode={darkMode} />} />
+          </PieChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
-}
+};
+
+export default RoleDistributionPieChart;

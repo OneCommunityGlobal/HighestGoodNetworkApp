@@ -1,7 +1,12 @@
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { ENDPOINTS } from '../../utils/URL';
-import { GET_BM_LESSONS, UPDATE_LESSON, DELETE_LESSON, SET_LESSON } from '../../constants/bmdashboard/lessonConstants';
+import { ENDPOINTS } from '~/utils/URL';
+import {
+  GET_BM_LESSONS,
+  UPDATE_LESSON,
+  DELETE_LESSON,
+  SET_LESSON,
+} from '../../constants/bmdashboard/lessonConstants';
 import { getUserProfile } from '../userProfile';
 import { fetchProjectById } from './projectByIdAction';
 import { GET_ERRORS } from '../../constants/errors';
@@ -135,15 +140,15 @@ export const fetchSingleBMLesson = lessonId => {
         ...lesson,
         author: userProfile
           ? {
-              id: userProfile._id,
-              name: `${userProfile.firstName} ${userProfile.lastName}`,
-            }
+            id: userProfile._id,
+            name: `${userProfile.firstName} ${userProfile.lastName}`,
+          }
           : lesson.author,
         relatedProject: projectDetails
           ? {
-              id: projectDetails._id,
-              name: projectDetails.projectName,
-            }
+            id: projectDetails._id,
+            name: projectDetails.projectName,
+          }
           : lesson.relatedProject,
       };
       dispatch(setLesson(updatedLesson));

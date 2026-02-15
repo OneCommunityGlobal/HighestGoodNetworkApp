@@ -1,40 +1,71 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Pie } from 'react-chartjs-2';
-import 'chart.js/auto';
-import ChartDataLabels from 'chartjs-plugin-datalabels';
-import './ExperienceDonutChart.css';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
+import styles from './ExperienceDonutChart.module.css';
 
-function LoadingSpinner() {
-  return <div className="spinner">Loading...</div>;
+const SEGMENT_COLORS = [
+  '#FF6384',
+  '#36A2EB',
+  '#FFCE56',
+  '#4BC0C0',
+  '#FF9F40',
+  '#8B5CF6',
+  '#10B981',
+];
+
+const EXPERIENCE_LABELS = ['0-1 years', '1-3 years', '3-5 years', '5+ years'];
+
+// ✅ Crypto-based RNG (safer than Math.random)
+function secureRandomInt(min, max) {
+  const array = new Uint32Array(1);
+  crypto.getRandomValues(array);
+  return min + (array[0] % (max - min + 1));
 }
 
-function ExperienceDonutChart() {
+function Spinner() {
+  return (
+    <div className={styles['spinner-container']} role="status" aria-live="polite" aria-busy="true">
+      <div className={styles.spinner} />
+      <p>Loading…</p>
+    </div>
+  );
+}
+
+export default function ExperienceDonutChart() {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [selectedRoles, setSelectedRoles] = useState([]);
 
+  const [appliedFilters, setAppliedFilters] = useState({ startDate: '', endDate: '', roles: [] });
+
   const [chartData, setChartData] = useState(null);
+  const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const segmentColors = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'];
-  const experienceLabels = ['0-1 years', '1-3 years', '3-5 years', '5+ years'];
+  const [activeIndex, setActiveIndex] = useState(null);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
-  // Helper to fetch data with given filters
-  const fetchDataWithFilters = async ({
-    startDate: filterStartDate,
-    endDate: filterEndDate,
-    roles: filterRoles,
-  }) => {
+  const hasFilters = useMemo(
+    () =>
+      Boolean(
+        appliedFilters.startDate ||
+          appliedFilters.endDate ||
+          (appliedFilters.roles?.length ?? 0) > 0,
+      ),
+    [appliedFilters],
+  );
+
+  const fetchData = async () => {
     setLoading(true);
     setError(null);
+    setActiveIndex(null);
 
     try {
       const token = localStorage.getItem('token');
       if (!token) throw new Error('No token found. Please log in.');
 
-      const url = 'http://localhost:4500/api/experience-breakdown';
+      const url = `${process.env.REACT_APP_APIENDPOINT}/experience-breakdown`;
       const params = {};
 
       if (filterStartDate && filterEndDate) {
@@ -44,6 +75,7 @@ function ExperienceDonutChart() {
         params.roles = filterRoles.join(',');
       }
 
+      // const response = await axios.get(url, { params });
       const response = await axios.get(url, {
         headers: { Authorization: token },
         params,
@@ -79,151 +111,210 @@ function ExperienceDonutChart() {
     } catch (err) {
       setError(err.response?.data?.message || err.message || 'Error fetching data.');
       setChartData(null);
+      setTotal(0);
     } finally {
       setLoading(false);
     }
   };
 
-  // Fetch initial data with no filters
   useEffect(() => {
-    fetchDataWithFilters({ startDate: '', endDate: '', roles: [] });
-  }, []);
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [appliedFilters]);
 
-  // Handle Roles change: clear dates, fetch by roles
-  const handleRoleChange = e => {
-    const newRoles = Array.from(e.target.selectedOptions, option => option.value);
-    setSelectedRoles(newRoles);
-
-    // Clear dates
-    if (startDate !== '' || endDate !== '') {
-      setStartDate('');
-      setEndDate('');
-    }
-
-    fetchDataWithFilters({ roles: newRoles, startDate: '', endDate: '' });
+  const onRolesChange = e => {
+    setSelectedRoles(Array.from(e.target.selectedOptions, o => o.value));
   };
 
-  // Handle Start Date change: clear roles, fetch if endDate present
-  const handleStartDateChange = e => {
-    const newStart = e.target.value;
-    setStartDate(newStart);
-
-    if (selectedRoles.length > 0) {
-      setSelectedRoles([]);
+  const applyFilters = () => {
+    if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
+      setError(null);
+      setChartData(null);
+      setTotal(0);
+      setLoading(false);
+      return;
     }
-
-    if (newStart && endDate) {
-      fetchDataWithFilters({ startDate: newStart, endDate, roles: [] });
-    }
+    setAppliedFilters({ startDate, endDate, roles: selectedRoles });
   };
 
-  // Handle End Date change: clear roles, fetch if startDate present
-  const handleEndDateChange = e => {
-    const newEnd = e.target.value;
-    setEndDate(newEnd);
-
-    if (selectedRoles.length > 0) {
-      setSelectedRoles([]);
-    }
-
-    if (startDate && newEnd) {
-      fetchDataWithFilters({ startDate, endDate: newEnd, roles: [] });
-    }
+  const resetFilters = () => {
+    setStartDate('');
+    setEndDate('');
+    setSelectedRoles([]);
+    setAppliedFilters({ startDate: '', endDate: '', roles: [] });
   };
 
-  // Optionally, you can keep the apply button for manual fetch or remove it since we fetch on change now
+  const DetailsPanel = () => {
+    if (!chartData || total === 0) return null;
 
-  const options = chartData
-    ? {
-        cutout: '70%',
-        plugins: {
-          tooltip: {
-            enabled: true,
-            callbacks: {
-              label: context => {
-                const count = context.parsed || 0;
-                const total = chartData.totalCount || 1;
-                const percentage = ((count / total) * 100).toFixed(1);
-                return `${context.label}: ${percentage}% (${count})`;
-              },
-            },
-          },
-          datalabels: {
-            color: '#fff',
-            font: {
-              weight: 'bold',
-              size: 14,
-            },
-            formatter: value => {
-              const count = value;
-              const total = chartData.totalCount || 1;
-              const percentage = ((count / total) * 100).toFixed(1);
-              return `${percentage}%\n(${count})`;
-            },
-          },
-          legend: {
-            display: false,
-          },
-        },
-        responsive: true,
-        maintainAspectRatio: false,
-      }
-    : {};
+    return (
+      <div className={styles['chart-details']}>
+        {chartData.map((d, idx) => {
+          const pct = ((d.value / total) * 100).toFixed(1);
+          return (
+            <div
+              key={d.name}
+              className={`${styles['detail-item']} ${activeIndex === idx ? styles.active : ''}`}
+              onMouseEnter={() => setActiveIndex(idx)}
+              onMouseLeave={() => setActiveIndex(null)}
+            >
+              <span className={styles['detail-dot']} style={{ backgroundColor: d.color }} />
+              <span className={styles['detail-name']}>{d.name}</span>
+              <span className={styles['detail-count']}>{d.value.toLocaleString()}</span>
+              <span className={styles['detail-pct']}>{pct}%</span>
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
+  const CustomTooltip = ({ active, payload }) => {
+    if (!active || !payload?.length) return null;
+    const d = payload[0]?.payload;
+    const pct = ((d.value / total) * 100).toFixed(1);
+
+    return (
+      <div className={styles['custom-tooltip']}>
+        <strong>{d.name}</strong>
+        <br />
+        Count: {d.value}
+        <br />
+        {pct}% of applicants
+      </div>
+    );
+  };
 
   return (
-    <div className="chart-container">
-      <h2>Breakdown of Applicants by Experience</h2>
-
-      <div className="filter-section">
-        <div className="filter-group">
-          <label htmlFor="startDate">Start Date</label>
-          <input
-            id="startDate"
-            type="date"
-            value={startDate}
-            onChange={handleStartDateChange}
-            max={endDate || ''}
-          />
+    <div
+      className={`${styles['experience-donut-chart']} ${darkMode &&
+        styles['experience-donut-chart-dark-mode']}`}
+    >
+      <div className={styles['experience-chart-container']}>
+        <div className={styles['chart-header']}>
+          <h2 className={styles['chart-title']}>Applicants by Experience</h2>
         </div>
 
-        <div className="filter-group">
-          <label htmlFor="endDate">End Date</label>
-          <input
-            id="endDate"
-            type="date"
-            value={endDate}
-            onChange={handleEndDateChange}
-            min={startDate || ''}
-          />
-        </div>
+        <section className={styles['filter-section']}>
+          <div className={styles['filter-row']}>
+            <div className={styles['filter-group']}>
+              <label className={styles['filter-label']} htmlFor="startDate">
+                Start Date
+              </label>
+              <input
+                id="startDate"
+                type="date"
+                className={styles['filter-input']}
+                value={startDate}
+                onChange={e => setStartDate(e.target.value)}
+              />
+            </div>
 
-        <div className="filter-group">
-          <label htmlFor="roles">Roles</label>
-          <select id="roles" multiple value={selectedRoles} onChange={handleRoleChange}>
-            <option value="Frontend Developer">Frontend Developer</option>
-            <option value="DevOps Engineer">DevOps Engineer</option>
-            <option value="Project Manager">Project Manager</option>
-            <option value="Junior Developer">Junior Developer</option>
-            <option value="Full Stack Developer">Full Stack Developer</option>
-          </select>
-        </div>
+            <div className={styles['filter-group']}>
+              <label className={styles['filter-label']} htmlFor="endDate">
+                End Date
+              </label>
+              <input
+                id="endDate"
+                type="date"
+                className={styles['filter-input']}
+                value={endDate}
+                onChange={e => setEndDate(e.target.value)}
+              />
+            </div>
 
-        {/* Optional: Remove if not needed */}
-        {/* <button type="button" onClick={() => fetchDataWithFilters({ startDate, endDate, roles: selectedRoles })}>
-          Apply Filters
-        </button> */}
-      </div>
+            <div className={styles['filter-group']}>
+              <label className={styles['filter-label']} htmlFor="roles">
+                Roles
+              </label>
+              <select
+                id="roles"
+                className={styles['filter-select']}
+                multiple
+                value={selectedRoles}
+                onChange={onRolesChange}
+              >
+                <option value="Frontend Developer">Frontend Developer</option>
+                <option value="DevOps Engineer">DevOps Engineer</option>
+                <option value="Project Manager">Project Manager</option>
+                <option value="Junior Developer">Junior Developer</option>
+                <option value="Full Stack Developer">Full Stack Developer</option>
+              </select>
+            </div>
+          </div>
 
-      <div className="chart-area" style={{ minHeight: '320px', position: 'relative' }}>
-        {loading && <LoadingSpinner />}
-        {!loading && error && <p className="error-message">{error}</p>}
-        {!loading && !error && !chartData && <p>No Data Available</p>}
-        {!loading && chartData && (
-          <Pie data={chartData.chart} options={options} plugins={[ChartDataLabels]} />
-        )}
+          <div className={styles['filter-actions']}>
+            <button className={`${styles.btn} ${styles.primary}`} onClick={applyFilters}>
+              Apply
+            </button>
+            <button
+              className={`${styles.btn} ${styles.ghost}`}
+              onClick={resetFilters}
+              disabled={!hasFilters}
+            >
+              Reset
+            </button>
+          </div>
+        </section>
+
+        <section className={styles['chart-section']}>
+          <div className={styles['chart-area']}>
+            {loading && <Spinner />}
+
+            {!loading && !error && chartData && total > 0 && (
+              <>
+                <div className={styles['chart-canvas']}>
+                  <ResponsiveContainer width="100%" aspect={1}>
+                    <PieChart>
+                      <Pie
+                        data={chartData}
+                        cx="50%"
+                        cy="50%"
+                        dataKey="value"
+                        innerRadius="55%"
+                        outerRadius="82%"
+                        stroke={darkMode ? '#1c2441' : '#fff'}
+                        strokeWidth={3}
+                        onMouseEnter={(_, i) => setActiveIndex(i)}
+                        onMouseLeave={() => setActiveIndex(null)}
+                      >
+                        {chartData.map((d, i) => (
+                          <Cell
+                            key={d.name}
+                            fill={d.color}
+                            className={styles['pie-cell']}
+                            opacity={activeIndex == null || activeIndex === i ? 1 : 0.45}
+                          />
+                        ))}
+                      </Pie>
+                      <Tooltip content={<CustomTooltip />} />
+                      <text
+                        x="50%"
+                        y="50%"
+                        dominantBaseline="middle"
+                        textAnchor="middle"
+                        style={{
+                          fontWeight: 800,
+                          fontSize: '1rem',
+                          fill: darkMode ? '#f8fafc' : '#0f172a',
+                        }}
+                      >
+                        {total.toLocaleString()}
+                      </text>
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+
+                <DetailsPanel />
+              </>
+            )}
+
+            {!loading && !error && (!chartData || total === 0) && <p>No Data Available 😢</p>}
+
+            {!loading && error && <p className={styles['error-message']}>{error}</p>}
+          </div>
+        </section>
       </div>
     </div>
   );
 }
-
-export default ExperienceDonutChart;

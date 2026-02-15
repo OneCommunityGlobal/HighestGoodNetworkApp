@@ -4,7 +4,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import httpService from '../services/httpService';
 import { FETCH_TEAMS_START, RECEIVE_TEAMS, FETCH_TEAMS_ERROR } from '../constants/teams';
-import { ENDPOINTS } from '../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import { GET_TEAM_BY_ID } from '../constants/team';
 
 const setTeamsStart = () => ({
@@ -106,7 +106,7 @@ export const fetchAllManagingTeams = (userId, managingTeams) => async dispatch =
     await dispatch(setTeamsStart());
     dispatch(setTeams(allManagingTeams));
   } catch (err) {
-    toast.error(err);
+    toast.error(err?.message || String(err));
     dispatch(setTeamsError(err));
   }
 };

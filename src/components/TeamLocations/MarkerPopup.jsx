@@ -2,7 +2,7 @@ import 'leaflet/dist/leaflet.css';
 import { useEffect, useRef } from 'react';
 import { CircleMarker, Popup } from 'react-leaflet';
 import { Button } from 'reactstrap';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 import './TeamLocations.css';
 
 function MarkerPopup({
@@ -31,18 +31,17 @@ function MarkerPopup({
       center={[profile.location.coords.lat, profile.location.coords.lng]}
       key={profile._id}
       color={profile.isActive ? 'green' : 'gray'}
-      // eventHandlers={{
-      //   mouseover: e => {
-      //     e.target.openPopup();
-      //   },
-
-      // }}
       ref={popupRef}
     >
       <Popup autoClose={false}>
         <div>
           {profile.title && profile.title}
-          {userName && <div>Name: {userName}</div>}
+          {userName && (
+            <div>
+              Name:
+              {userName}
+            </div>
+          )}
           {profile.jobTitle && <div>{`Title: ${profile.jobTitle}`}</div>}
           <div>{`Location: ${profile.location.city || profile.location.userProvided}`}</div>
           {isAbleToEdit ? (

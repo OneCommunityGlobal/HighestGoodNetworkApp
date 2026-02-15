@@ -1,6 +1,6 @@
 import moment from 'moment-timezone';
 
-const LA_TIME_ZONE = 'America/Los_Angeles';
+export const COMPANY_TZ = 'America/Los_Angeles';
 /**
  *
  * @param {*} date
@@ -16,10 +16,32 @@ export const formatDateAndTime = date => moment(date).format('MMM-DD-YY, h:mm:ss
  */
 export const formatDate = date =>
   moment(date)
-    .tz(LA_TIME_ZONE)
+    .tz(COMPANY_TZ)
     .startOf('day')
     .format('MMM-DD-YY');
-export const formatDateLocal = date => moment.utc(date).format('MMM-DD-YY');
+export const formatDateLocal = (val) => {
+  if (!val) return '';
+  // Strict ISO parse to avoid fallback warnings
+  return moment(val, moment.ISO_8601, true).local().format('MMM DD, YYYY');
+};
+export const formatDateUtcYYYYMMDD = (val) => {
+  if (!val) return '';
+  // Always return YYYY-MM-DD for <input type="date">
+  return moment(val, moment.ISO_8601, true).utc().format('YYYY-MM-DD');
+};
+
+export const formatDateCompany = (val) => {
+  if (!val) return '';
+  return moment.tz(val, COMPANY_TZ).format('MMM DD, YYYY');
+};
+
+export const formatDateTimeLocal = (val) => {
+  if (!val) return '';
+
+  return moment(val, moment.ISO_8601, true)
+    .local()
+    .format('MMM DD, YYYY, HH:mm');
+};
 
 /**
  *
@@ -28,7 +50,7 @@ export const formatDateLocal = date => moment.utc(date).format('MMM-DD-YY');
  */
 export const formatDateYYYYMMDD = date =>
   moment(date)
-    .tz(LA_TIME_ZONE)
+    .tz(COMPANY_TZ)
     .format('YYYY-MM-DD');
 /**
  *
@@ -37,7 +59,7 @@ export const formatDateYYYYMMDD = date =>
  */
 export const formatDateMMDDYYYY = date =>
   moment(date)
-    .tz(LA_TIME_ZONE)
+    .tz(COMPANY_TZ)
     .format('MM/DD/YYYY');
 // converts time to AM/PM format. E.g., '2023-09-21T07:08:09-07:00' becomes '7:08:09 AM'.
 export const formattedAmPmTime = date => moment(date).format('h:mm:ss A');

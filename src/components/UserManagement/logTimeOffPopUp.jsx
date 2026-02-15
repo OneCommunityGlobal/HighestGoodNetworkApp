@@ -21,7 +21,7 @@ import {
 } from 'reactstrap';
 import DatePicker from 'react-datepicker';
 import { boxStyle, boxStyleDark } from '../../styles';
-import '../Header/DarkMode.css';
+import '../Header/index.css';
 import 'react-datepicker/dist/react-datepicker.css';
 import {
   addTimeOffRequestThunk,
@@ -29,7 +29,7 @@ import {
   deleteTimeOffRequestThunk,
 } from '../../actions/timeOffRequestAction';
 
-const LogTimeOffPopUp = React.memo(props => {
+const LogTimeOffPopUpComponent = (props) => {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const dispatch = useDispatch();
@@ -577,5 +577,8 @@ const LogTimeOffPopUp = React.memo(props => {
       </ModalFooter>
     </Modal>
   );
-});
+};
+
+const LogTimeOffPopUp = React.memo(LogTimeOffPopUpComponent);
+LogTimeOffPopUp.displayName = 'LogTimeOffPopUp';
 export default LogTimeOffPopUp;
