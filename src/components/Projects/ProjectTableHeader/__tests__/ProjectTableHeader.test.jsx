@@ -59,9 +59,9 @@ describe('ProjectTableHeader Component', () => {
     },
     selectedValue: '',
     showStatus: '',
-    onChange: jest.fn(),
-    selectStatus: jest.fn(),
-    handleSort: jest.fn(),
+    onChange: vi.fn(),
+    selectStatus: vi.fn(),
+    handleSort: vi.fn(),
     darkMode: false
   };
   const hasPermission = vi.fn((a) => true)
