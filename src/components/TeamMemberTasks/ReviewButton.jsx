@@ -491,6 +491,7 @@ function ReviewButton({ user, task, updateTask }) {
             </DropdownToggle>
 
             <DropdownMenu
+              container="body"
               className={`${style['review-button-dropdown']} ${darkMode ? 'bg-space-cadet' : ''}`}
             >
               {task.relatedWorkLinks &&
@@ -532,6 +533,7 @@ function ReviewButton({ user, task, updateTask }) {
               Ready for Review
             </DropdownToggle>
             <DropdownMenu
+              container="body"
               className={`${style['review-button-dropdown']} ${darkMode ? 'bg-space-cadet' : ''}`}
             >
               {task.relatedWorkLinks &&
