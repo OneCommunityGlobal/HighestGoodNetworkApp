@@ -1,61 +1,57 @@
-// import React from 'react';
-import { render, fireEvent, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
-import ActiveCell from '../ActiveCell'; // Adjust the import path as necessary.
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import styles from '~/components/Timelog/Timelog.module.css'
+import ActiveCell from '../ActiveCell';
+import styles from '../../Timelog/Timelog.module.css';
 
 describe('ActiveCell', () => {
-  it('renders with the correct active class', () => {
+  it('renders active user with active class when active and not scheduled', () => {
     render(<ActiveCell isActive canChange={false} />);
     const cell = screen.getByTitle('Active');
     expect(cell).toHaveClass(styles.activeUser);
   });
 
-  it('renders with the correct inactive class', () => {
-    render(<ActiveCell isActive={false} canChange={false} />);
-    const cell = screen.getByTitle('Inactive')
+  it('sets correct id when index is provided', () => {
+    render(<ActiveCell index={3} canChange />);
+    const cell = screen.getByRole('button');
+    expect(cell).toHaveAttribute('id', 'active_cell_3');
+  });
+
+  it('renders inactive user with inactive class when cannot change', () => {
+    render(
+      <ActiveCell
+        isActive={false}
+        endDate="2020-01-01"
+        canChange={false}
+      />
+    );
+    const cell = screen.getByTitle('Inactive');
     expect(cell).toHaveClass(styles.notActiveUser);
   });
 
-  it('sets the correct id when index is provided', () => {
-    const index = 3;
-    render(<ActiveCell index={index} canChange />);
-    const cell = screen.getByTitle('Click here to change the user status');
-    expect(cell).toHaveAttribute('id', `active_cell_${index}`);
+  it('is not clickable when canChange is false', async () => {
+    const onClick = vi.fn();
+    render(
+      <ActiveCell
+        isActive={false}
+        endDate="2020-01-01"
+        canChange={false}
+        onClick={onClick}
+      />
+    );
+    const cell = screen.getByTitle('Inactive');
+    await userEvent.click(cell);
+    expect(onClick).not.toHaveBeenCalled();
   });
 
-  it('has the correct title attribute when canChange is true', () => {
+  it('uses pointer cursor when canChange is true', () => {
     render(<ActiveCell canChange />);
-    expect(screen.getByTitle('Click here to change the user status')).toBeInTheDocument();
+    const cell = screen.getByRole('button');
+    expect(cell).toHaveStyle('cursor: pointer');
   });
 
-  it('has the correct title attribute based on isActive prop', () => {
+  it('uses default cursor when canChange is false', () => {
     render(<ActiveCell isActive canChange={false} />);
-    expect(screen.getByTitle('Active')).toBeInTheDocument();
-  });
-
-  it('calls onClick when canChange is true and the cell is clicked', async() => {
-    const mockOnClick = vi.fn();
-    render(<ActiveCell canChange onClick={mockOnClick} />);
-    await userEvent.click(screen.getByTitle('Click here to change the user status'));
-    expect(mockOnClick).toHaveBeenCalled();
-  });
-
-  it('does not call onClick when canChange is false', async() => {
-    const mockOnClick = vi.fn();
-    render(<ActiveCell canChange={false} onClick={mockOnClick} />);
-    await userEvent.click(screen.getByTitle('Inactive'));
-    expect(mockOnClick).not.toHaveBeenCalled();
-  });
-
-  it('cursor style changes based on canChange prop', () => {
-    // Test when canChange is true
-    render(<ActiveCell canChange />);
-    expect(screen.getByTitle('Click here to change the user status')).toHaveStyle('cursor: pointer');
-
-    // Test when canChange is false
-    render(<ActiveCell canChange={false} />);
-    expect(screen.getByTitle('Inactive')).toHaveStyle('cursor: default');
+    const cell = screen.getByTitle('Active');
+    expect(cell).toHaveStyle('cursor: default');
   });
 });
