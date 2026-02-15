@@ -19,7 +19,7 @@ function ActionDoneGraph({ selectedTeams, teamData }) {
   const teamsToDisplay = isAllTeams ? Object.keys(teamData) : selectedTeams.map(team => team.value);
 
   const data = {
-    labels: teamsToDisplay,
+    labels: teamsToDisplay.map(teamKey => `${teamKey} (${teamData[teamKey]?.memberCount ?? 0})`),
     datasets: [
       {
         label: 'Approved',

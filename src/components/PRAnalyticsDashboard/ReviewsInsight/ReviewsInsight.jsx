@@ -55,6 +55,7 @@ function ReviewsInsight() {
           : [];
 
         formattedTeamData[team._id] = {
+          memberCount: team.memberCount,
           actionSummary: {
             Approved: actionSummary.find(action => action.actionTaken === 'Approved')?.count || 0,
             'Changes Requested':
