@@ -124,17 +124,17 @@ export default function MostWastedMaterialsDashboard() {
                   height={80}
                   fontSize={12}
                   interval={0}
-                  tick={{ fill: '#374151' }}
+                  tick={{ fill: darkMode ? '#d1d5db' : '#374151' }}
                 />
                 <YAxis
                   label={{
                     value: 'Percentage of Material Wasted (%)',
                     angle: -90,
                     position: 'insideLeft',
-                    style: { textAnchor: 'middle', fill: '#374151' },
+                    style: { textAnchor: 'middle', fill: darkMode ? '#d1d5db' : '#374151' },
                   }}
                   fontSize={12}
-                  tick={{ fill: '#374151' }}
+                  tick={{ fill: darkMode ? '#d1d5db' : '#374151' }}
                 />
                 <Tooltip content={<CustomTooltip />} />
                 <Bar
