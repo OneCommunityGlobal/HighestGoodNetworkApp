@@ -162,6 +162,8 @@ export const ENDPOINTS = {
   BADGE_ASSIGN_MULTIPLE: `${APIEndpoint}/badge/assign`,
   BADGE_ASSIGN: userId => `${APIEndpoint}/badge/assign/${userId}`,
   BADGE_BY_ID: badgeId => `${APIEndpoint}/badge/${badgeId}`,
+  ADMIN_LIST: () => `${APIEndpoint}/reports/getAdminList`,
+  SEND_EMAIL_REPORT: () => `${APIEndpoint}/reports/sendEmailReport`,
 
   TEAM_MEMBER_TASKS: userId => `${ENDPOINTS.APIEndpoint()}/user/${userId}/teams/tasks`,
   CREATE_OR_UPDATE_TASK_NOTIFICATION: taskId =>
