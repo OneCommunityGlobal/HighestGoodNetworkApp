@@ -63,7 +63,7 @@ export default function DisplayBox({ onClose }) {
               </th>
               <th>PR Reviewer</th>
               <th>Team Code</th>
-              <th>Team Reviewer Name</th>
+              <th>Team Leader Name</th>
               <th>Weekly PR Counts</th>
             </tr>
           </thead>
