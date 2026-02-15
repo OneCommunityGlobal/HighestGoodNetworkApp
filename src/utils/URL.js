@@ -407,6 +407,8 @@ export const ENDPOINTS = {
   // HGN Skills Dashboard
   SKILLS_PROFILE: userId => `${APIEndpoint}/skills/profile/${userId}`,
 
+  HGN_FORM_GET_TEAM_MEMBERS_BY_SKILL: skill => `${APIEndpoint}/userProfile/skills/${skill}`,
+
   CREATE_JOB_FORM: `${APIEndpoint}/jobforms`,
   UPDATE_JOB_FORM: `${APIEndpoint}/jobforms`,
   GET_JOB_FORM: formId => `${APIEndpoint}/jobforms/${formId}`,
