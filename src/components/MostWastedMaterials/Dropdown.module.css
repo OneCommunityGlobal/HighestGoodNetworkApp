@@ -58,3 +58,35 @@
   background-color: #3b82f6;
   color: #ffffff;
 }
+
+/* Dark Mode Styles */
+.darkMode .dropdownButton {
+  background-color: #1f2937;
+  border-color: #4b5563;
+  color: #f3f4f6;
+}
+
+.darkMode .arrow,
+.darkMode .arrowOpen {
+  color: #d1d5db;
+}
+
+.darkMode .dropdownMenu {
+  background-color: #1f2937;
+  border-color: #4b5563;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+}
+
+.darkMode .dropdownButton:hover {
+  background-color: #2563eb;
+  color: #ffffff;
+}
+
+.darkMode .dropdownItem {
+  color: #f3f4f6;
+}
+
+.darkMode .dropdownItem:hover {
+  background-color: #2563eb;
+  color: #ffffff;
+}

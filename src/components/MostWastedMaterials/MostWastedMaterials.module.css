@@ -80,3 +80,42 @@
 .chartGrid {
   stroke: #e5e7eb;
 }
+
+/* Dark Mode Styles */
+.darkMode .mostWastedMaterialsContainer {
+  background-color: #1b2a41;
+}
+
+.darkMode .headerTitle {
+  color: #f9fafb;
+}
+
+.darkMode .mostWastedMaterialsCard {
+  background-color: #1f2937;
+  border-color: #374151;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.darkMode .filterLabel {
+  color: #d1d5db;
+}
+
+.darkMode .dateLabel {
+  color: #9ca3af;
+}
+
+.darkMode .dateInput {
+  background-color: #374151;
+  border-color: #4b5563;
+  color: #f3f4f6;
+}
+
+.darkMode .chartWrapper {
+  background-color: #1f2937;
+  border-color: #374151;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.darkMode .chartGrid {
+  stroke: #374151;
+}
