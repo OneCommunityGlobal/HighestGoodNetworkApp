@@ -940,6 +940,7 @@ export default (
           fallback
         />
         <ProtectedRoute path="/pr-dashboard/overview" exact component={PRDashboardOverview} />
+        <ProtectedRoute path="/pr-dashboard/analytics" exact component={PRReviewTeamAnalytics} />
         <ProtectedRoute
           path="/pr-dashboard/promotion-eligibility"
           exact
