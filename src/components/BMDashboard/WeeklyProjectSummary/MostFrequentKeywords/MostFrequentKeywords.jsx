@@ -148,8 +148,9 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
           headers: { Authorization: token },
         });
 
-        if (response?.data?.data?.length > 0) {
-          const dataWithDates = response.data.data.slice(0, 8).map((item, index) => {
+        const responseData = response?.data?.data;
+        if (responseData && responseData.length > 0) {
+          const dataWithDates = responseData.slice(0, 8).map((item, index) => {
             const years = [2023, 2024, 2025, 2026];
             const year = years[index % 4];
             const month = ((index * 3) % 12) + 1;
@@ -239,7 +240,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
 
   const getLatestData = useCallback(
     data => {
-      if (!data?.length) return [];
+      if (!data || data.length === 0) return [];
 
       const sorted = [...data].sort((a, b) => new Date(b.date) - new Date(a.date));
       const maxItems = isMobile ? 6 : 8;
@@ -269,7 +270,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
 
   const filterTagsByDate = useCallback(
     tagsToFilter => {
-      if (!tagsToFilter?.length) return [];
+      if (!tagsToFilter || tagsToFilter.length === 0) return [];
 
       if (!startDate && !endDate) {
         return getLatestData(tagsToFilter);
@@ -311,7 +312,12 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
       const maxItems = isMobile ? 6 : 8;
       const result = sorted.slice(0, maxItems);
 
-      setError(result.length === 0 ? 'No data for selected range' : '');
+      if (result.length === 0) {
+        setError('No data for selected range');
+      } else {
+        setError('');
+      }
+
       return result;
     },
     [startDate, endDate, getLatestData, selectedOption, isMobile],
@@ -522,7 +528,81 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
     }));
   };
 
-  // Function to render bubbles - simplified parameters
+  // Helper function to create hit area for bubble
+  const createHitArea = (nodeGroup, fullTag, count, r) => {
+    return nodeGroup
+      .append('ellipse')
+      .attr('rx', r + 5)
+      .attr('ry', r * 0.6 + 5)
+      .attr('fill', 'transparent')
+      .attr('stroke', 'none')
+      .style('cursor', 'pointer')
+      .style('pointer-events', 'all');
+  };
+
+  // Helper function to create visible bubble
+  const createVisibleBubble = (nodeGroup, colors, r, darkMode) => {
+    return nodeGroup
+      .append('ellipse')
+      .attr('class', 'bubble-fill')
+      .attr('rx', r)
+      .attr('ry', r * 0.6)
+      .attr('fill', colors.fill)
+      .attr('stroke', colors.stroke)
+      .attr('stroke-width', 1.5)
+      .style(
+        'filter',
+        darkMode
+          ? 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))'
+          : 'drop-shadow(0 1px 2px rgba(0,0,0,0.1))',
+      )
+      .style('pointer-events', 'none');
+  };
+
+  // Helper function to create text elements
+  const createTextElements = (svg, x, y, tag, count, r, sizes, colors) => {
+    const textGroup = svg
+      .append('g')
+      .attr('transform', `translate(${x}, ${y})`)
+      .style('pointer-events', 'none');
+
+    let tagFontSize;
+    if (sizes.isMobile) {
+      tagFontSize = Math.min(sizes.maxFontSize, Math.max(9, r * 0.22));
+    } else {
+      tagFontSize = Math.min(sizes.maxFontSize, Math.max(10, r * 0.22));
+    }
+
+    const countFontSize = sizes.countFontSize;
+
+    // Tag text - positioned in upper half of bubble
+    const maxTagLength = Math.floor(r / (sizes.isMobile ? 4 : 3.8));
+    const displayTag = getDisplayText(tag, maxTagLength);
+
+    textGroup
+      .append('text')
+      .attr('x', 0)
+      .attr('y', -tagFontSize * 0.3)
+      .attr('text-anchor', 'middle')
+      .attr('font-size', tagFontSize)
+      .attr('font-weight', '600')
+      .attr('fill', colors.text)
+      .text(displayTag);
+
+    // Count - positioned clearly at bottom of bubble
+    textGroup
+      .append('text')
+      .attr('x', 0)
+      .attr('y', r * 0.4)
+      .attr('text-anchor', 'middle')
+      .attr('font-size', countFontSize)
+      .attr('font-weight', '500')
+      .attr('fill', colors.text)
+      .style('opacity', 0.9)
+      .text(count);
+  };
+
+  // Function to render bubbles - simplified with helper functions
   const renderBubbles = useCallback(
     (svg, positions, sizes) => {
       positions.forEach((pos, i) => {
@@ -534,15 +614,11 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
           .attr('transform', `translate(${x}, ${y})`)
           .attr('class', 'bubble-group');
 
-        // Hit area
-        nodeGroup
-          .append('ellipse')
-          .attr('rx', r + 5)
-          .attr('ry', r * 0.6 + 5)
-          .attr('fill', 'transparent')
-          .attr('stroke', 'none')
-          .style('cursor', 'pointer')
-          .style('pointer-events', 'all')
+        // Create hit area
+        const hitArea = createHitArea(nodeGroup, fullTag, count, r);
+
+        // Add event handlers to hit area
+        hitArea
           .on('mouseenter', event => {
             handleMouseEnter(event, fullTag, count);
             d3.select(event.currentTarget.parentNode)
@@ -568,61 +644,11 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
           .on('touchend', handleTouchEnd)
           .on('touchcancel', handleTouchEnd);
 
-        // Visible bubble
-        nodeGroup
-          .append('ellipse')
-          .attr('class', 'bubble-fill')
-          .attr('rx', r)
-          .attr('ry', r * 0.6)
-          .attr('fill', colors.fill)
-          .attr('stroke', colors.stroke)
-          .attr('stroke-width', 1.5)
-          .style(
-            'filter',
-            darkMode
-              ? 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))'
-              : 'drop-shadow(0 1px 2px rgba(0,0,0,0.1))',
-          )
-          .style('pointer-events', 'none');
+        // Create visible bubble
+        createVisibleBubble(nodeGroup, colors, r, darkMode);
 
-        const textGroup = svg
-          .append('g')
-          .attr('transform', `translate(${x}, ${y})`)
-          .style('pointer-events', 'none');
-
-        let tagFontSize;
-        if (sizes.isMobile) {
-          tagFontSize = Math.min(sizes.maxFontSize, Math.max(9, r * 0.22));
-        } else {
-          tagFontSize = Math.min(sizes.maxFontSize, Math.max(10, r * 0.22));
-        }
-        const countFontSize = sizes.countFontSize;
-
-        // Tag text - positioned in upper half of bubble
-        const maxTagLength = Math.floor(r / (sizes.isMobile ? 4 : 3.8));
-        const displayTag = getDisplayText(tag, maxTagLength);
-
-        textGroup
-          .append('text')
-          .attr('x', 0)
-          .attr('y', -tagFontSize * 0.3)
-          .attr('text-anchor', 'middle')
-          .attr('font-size', tagFontSize)
-          .attr('font-weight', '600')
-          .attr('fill', colors.text)
-          .text(displayTag);
-
-        // Count - positioned clearly at bottom of bubble
-        textGroup
-          .append('text')
-          .attr('x', 0)
-          .attr('y', r * 0.4)
-          .attr('text-anchor', 'middle')
-          .attr('font-size', countFontSize)
-          .attr('font-weight', '500')
-          .attr('fill', colors.text)
-          .style('opacity', 0.9)
-          .text(count);
+        // Create text elements
+        createTextElements(svg, x, y, tag, count, r, sizes, colors);
       });
     },
     [
@@ -822,7 +848,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
     options.push({
       label: '📊 TEST DATASETS',
       options: Object.entries(testDatasets).map(([key, dataset]) => {
-        const cleanLabel = isMobile ? dataset.label : dataset.label;
+        const cleanLabel = dataset.label;
         return {
           label: cleanLabel,
           value: key,
@@ -843,7 +869,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
     }
 
     return options;
-  }, [projects, isMobile]);
+  }, [projects]);
 
   const handleStartDateChange = date => {
     setStartDate(date);
@@ -941,7 +967,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
             selected={startDate}
             onChange={handleStartDateChange}
             className={styles.mfkDatepicker}
-            placeholderText={isMobile ? 'Start' : 'Start'}
+            placeholderText="Start"
             dateFormat={isMobile ? 'MM/dd' : 'MM/dd/yy'}
             isClearable
             maxDate={endDate || today}
@@ -957,7 +983,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
             selected={endDate}
             onChange={handleEndDateChange}
             className={styles.mfkDatepicker}
-            placeholderText={isMobile ? 'End' : 'End'}
+            placeholderText="End"
             dateFormat={isMobile ? 'MM/dd' : 'MM/dd/yy'}
             isClearable
             minDate={startDate || new Date('2023-01-01')}
