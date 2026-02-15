@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Bar, BarChart, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip } from 'recharts';
 import { mockProjects, mockData } from './mockData';
 import CustomDropdown from './DropDown';
@@ -9,16 +9,46 @@ import styles from './MostWastedMaterials.module.css';
 export default function MostWastedMaterialsDashboard() {
   const [selectedProject, setSelectedProject] = useState(mockProjects[0]);
   const [dateRange, setDateRange] = useState({
-    from: '2024-01-01',
-    to: new Date().toISOString().split('T')[0],
+    from: '',
+    to: '',
   });
   const [chartData, setChartData] = useState([]);
 
+  const dateBounds = useMemo(() => {
+    const data = mockData[selectedProject.id] || mockData.all;
+    const dates = data
+      .map(item => item.date)
+      .filter(Boolean)
+      .sort();
+    if (dates.length === 0) {
+      return { min: '0000-01-01', max: '9999-12-31' };
+    }
+    return { min: dates[0], max: dates[dates.length - 1] };
+  }, [selectedProject]);
+
+  useEffect(() => {
+    setDateRange(prev => ({
+      from:
+        prev.from && prev.from >= dateBounds.min && prev.from <= dateBounds.max
+          ? prev.from
+          : dateBounds.min,
+      to:
+        prev.to && prev.to >= dateBounds.min && prev.to <= dateBounds.max
+          ? prev.to
+          : dateBounds.max,
+    }));
+  }, [dateBounds]);
+
   useEffect(() => {
     const data = mockData[selectedProject.id] || mockData.all;
-    const sortedData = [...data].sort((a, b) => b.wastePercentage - a.wastePercentage);
+    const fromDate = dateRange.from || dateBounds.min;
+    const toDate = dateRange.to || dateBounds.max;
+    const minDate = fromDate <= toDate ? fromDate : toDate;
+    const maxDate = fromDate <= toDate ? toDate : fromDate;
+    const filteredData = data.filter(item => item.date >= minDate && item.date <= maxDate);
+    const sortedData = [...filteredData].sort((a, b) => b.wastePercentage - a.wastePercentage);
     setChartData(sortedData);
-  }, [selectedProject, dateRange]);
+  }, [selectedProject, dateRange, dateBounds]);
 
   return (
     <div className={`${styles.mostWastedMaterialsContainer}`}>
@@ -53,6 +83,8 @@ export default function MostWastedMaterialsDashboard() {
                 <input
                   id="date-from"
                   type="date"
+                  min={dateBounds.min}
+                  max={dateBounds.max}
                   value={dateRange.from}
                   onChange={e => setDateRange(prev => ({ ...prev, from: e.target.value }))}
                   className={`${styles.dateInput}`}
@@ -65,6 +97,8 @@ export default function MostWastedMaterialsDashboard() {
                 <input
                   id="date-to"
                   type="date"
+                  min={dateBounds.min}
+                  max={dateBounds.max}
                   value={dateRange.to}
                   onChange={e => setDateRange(prev => ({ ...prev, to: e.target.value }))}
                   className={`${styles.dateInput}`}
