@@ -110,14 +110,6 @@
 }
 
 /* ---------------- DASHBOARD ---------------- */
-.weeklyProjectSummaryDashboardContainer {
-  width: 95%;
-  margin: auto;
-  padding: 20px;
-  background: var(--bg-color);
-  color: var(--text-color);
-  transition: all 0.3s ease;
-}
 
 .weeklyProjectSummaryDashboardGrid {
   display: grid;

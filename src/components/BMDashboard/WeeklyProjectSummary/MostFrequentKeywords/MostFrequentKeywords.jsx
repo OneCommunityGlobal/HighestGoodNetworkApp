@@ -6,6 +6,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import * as d3 from 'd3';
 import styles from './MostFrequentKeywords.module.css';
 import Select from 'react-select';
+import PropTypes from 'prop-types';
 
 function MostFrequentKeywords({ darkMode: propDarkMode }) {
   const svgRef = useRef();
@@ -166,11 +167,13 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
           const generatedData = generateProjectSpecificData(projectName);
           setAllTags(generatedData);
         }
-      } catch (apiErr) {
+      } catch {
+        // Use generated data when API fails
         const generatedData = generateProjectSpecificData(projectName);
         setAllTags(generatedData);
       }
-    } catch (err) {
+    } catch {
+      // Fallback to generated data on any error
       const generatedData = generateProjectSpecificData(projectName);
       setAllTags(generatedData);
     } finally {
@@ -226,18 +229,17 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
         radiusFactor: 0.24,
         isMobile: true,
       };
-    } else {
-      return {
-        centerSize: Math.min(50, smallestDim * 0.1),
-        minBubbleSize: 35,
-        maxBubbleSize: 58,
-        maxFontSize: 14,
-        countFontSize: 11,
-        padding: 15,
-        radiusFactor: 0.22,
-        isMobile: false,
-      };
     }
+    return {
+      centerSize: Math.min(50, smallestDim * 0.1),
+      minBubbleSize: 35,
+      maxBubbleSize: 58,
+      maxFontSize: 14,
+      countFontSize: 11,
+      padding: 15,
+      radiusFactor: 0.22,
+      isMobile: false,
+    };
   }, [dimensions, isMobile]);
 
   const getLatestData = useCallback(
@@ -261,7 +263,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
         }
 
         const datasetLabel = selectedOption?.label || 'Data';
-        setDateRangeInfo(`${datasetLabel}`);
+        setDateRangeInfo(datasetLabel);
         return latestItems;
       }
 
@@ -289,11 +291,13 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
           const end = new Date(endDate);
           end.setHours(23, 59, 59, 999);
           return itemDate >= start && itemDate <= end;
-        } else if (startDate) {
+        }
+        if (startDate) {
           const start = new Date(startDate);
           start.setHours(0, 0, 0, 0);
           return itemDate >= start;
-        } else if (endDate) {
+        }
+        if (endDate) {
           const end = new Date(endDate);
           end.setHours(23, 59, 59, 999);
           return itemDate <= end;
@@ -353,6 +357,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
     fetchProjects();
   }, []);
 
+  // SIMPLE: Bubble size based ONLY on frequency, not text length
   const getBubbleSize = useCallback(
     (count, allCounts) => {
       const sizes = getResponsiveSizes();
@@ -369,11 +374,18 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
     [getResponsiveSizes],
   );
 
+  // SIMPLE: Text display - just truncate if too long
   const getDisplayText = useCallback((tag, maxLength) => {
     if (tag.length <= maxLength) return tag;
-    return tag.substring(0, maxLength - 2) + '…';
+    return `${tag.substring(0, maxLength - 2)}…`;
   }, []);
 
+  // Helper function to calculate distance
+  const calculateDistance = (x1, y1, x2, y2) => {
+    return Math.hypot(x1 - x2, y1 - y2);
+  };
+
+  // Simple, reliable position calculation
   const getPositions = useCallback(
     (tags, width, height, centerX, centerY) => {
       if (!tags.length) return [];
@@ -398,7 +410,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
         let y = centerY + radius * Math.sin(angle);
 
         // Ensure minimum distance from center
-        const distFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+        const distFromCenter = calculateDistance(x, y, centerX, centerY);
         const minCenterDist = centerSize + r + (isMobile ? 8 : 12);
 
         if (distFromCenter < minCenterDist) {
@@ -435,13 +447,12 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
         stroke: `hsl(${hue}, 85%, 65%)`,
         text: '#FFFFFF',
       };
-    } else {
-      return {
-        fill: `hsl(${hue}, 70%, 90%)`,
-        stroke: `hsl(${hue}, 80%, 45%)`,
-        text: `hsl(${hue}, 80%, 20%)`,
-      };
     }
+    return {
+      fill: `hsl(${hue}, 70%, 90%)`,
+      stroke: `hsl(${hue}, 80%, 45%)`,
+      text: `hsl(${hue}, 80%, 20%)`,
+    };
   };
 
   // Tooltip handlers
@@ -476,7 +487,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
     setTooltip({ visible: false, text: '', x: 0, y: 0 });
   };
 
-  // Touch handlers for mobile
+  // Touch handlers - improved for mobile
   const handleTouchStart = (event, fullTag, count) => {
     event.preventDefault();
     const svgRect = svgRef.current.getBoundingClientRect();
@@ -488,14 +499,14 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
       visible: true,
       text: `${fullTag} (${count})`,
       x: mouseX,
-      y: mouseY - 60, // Higher position to avoid finger
+      y: mouseY - 60,
     });
 
     // Clear after 3 seconds
-    if (window.tooltipTimeout) {
-      clearTimeout(window.tooltipTimeout);
+    if (globalThis.tooltipTimeout) {
+      clearTimeout(globalThis.tooltipTimeout);
     }
-    window.tooltipTimeout = setTimeout(() => {
+    globalThis.tooltipTimeout = setTimeout(() => {
       setTooltip({ visible: false, text: '', x: 0, y: 0 });
     }, 3000);
   };
@@ -520,6 +531,179 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
       x: mouseX,
       y: mouseY - 60,
     }));
+  };
+
+  // Function to render bubbles
+  const renderBubbles = (
+    svg,
+    positions,
+    sizes,
+    getNodeColor,
+    handleMouseEnter,
+    handleMouseMove,
+    handleMouseLeave,
+    handleTouchStart,
+    handleTouchEnd,
+    handleTouchMove,
+    darkMode,
+    getDisplayText,
+  ) => {
+    positions.forEach((pos, i) => {
+      const { x, y, r, tag, count, fullTag } = pos;
+      const colors = getNodeColor(i);
+
+      const nodeGroup = svg
+        .append('g')
+        .attr('transform', `translate(${x}, ${y})`)
+        .attr('class', 'bubble-group');
+
+      // Hit area
+      nodeGroup
+        .append('ellipse')
+        .attr('rx', r + 5)
+        .attr('ry', r * 0.6 + 5)
+        .attr('fill', 'transparent')
+        .attr('stroke', 'none')
+        .style('cursor', 'pointer')
+        .style('pointer-events', 'all')
+        .on('mouseenter', event => {
+          handleMouseEnter(event, fullTag, count);
+          d3.select(event.currentTarget.parentNode)
+            .select('ellipse.bubble-fill')
+            .attr('stroke-width', 2.5)
+            .attr('stroke', darkMode ? '#ffffff' : '#000000');
+        })
+        .on('mousemove', handleMouseMove)
+        .on('mouseleave', () => {
+          handleMouseLeave();
+          d3.selectAll('.bubble-fill')
+            .attr('stroke-width', 1.5)
+            .attr('stroke', (d, j) => getNodeColor(j).stroke);
+        })
+        .on('touchstart', event => {
+          handleTouchStart(event, fullTag, count);
+          d3.select(event.currentTarget.parentNode)
+            .select('ellipse.bubble-fill')
+            .attr('stroke-width', 2.5)
+            .attr('stroke', darkMode ? '#ffffff' : '#000000');
+        })
+        .on('touchmove', handleTouchMove)
+        .on('touchend', handleTouchEnd)
+        .on('touchcancel', handleTouchEnd);
+
+      // Visible bubble
+      nodeGroup
+        .append('ellipse')
+        .attr('class', 'bubble-fill')
+        .attr('rx', r)
+        .attr('ry', r * 0.6)
+        .attr('fill', colors.fill)
+        .attr('stroke', colors.stroke)
+        .attr('stroke-width', 1.5)
+        .style(
+          'filter',
+          darkMode
+            ? 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))'
+            : 'drop-shadow(0 1px 2px rgba(0,0,0,0.1))',
+        )
+        .style('pointer-events', 'none');
+
+      const textGroup = svg
+        .append('g')
+        .attr('transform', `translate(${x}, ${y})`)
+        .style('pointer-events', 'none');
+
+      const tagFontSize = Math.min(sizes.maxFontSize, Math.max(sizes.isMobile ? 9 : 10, r * 0.22));
+      const countFontSize = sizes.countFontSize;
+
+      // Tag text - positioned in upper half of bubble
+      const maxTagLength = Math.floor(r / (sizes.isMobile ? 4 : 3.8));
+      const displayTag = getDisplayText(tag, maxTagLength);
+
+      textGroup
+        .append('text')
+        .attr('x', 0)
+        .attr('y', -tagFontSize * 0.3)
+        .attr('text-anchor', 'middle')
+        .attr('font-size', tagFontSize)
+        .attr('font-weight', '600')
+        .attr('fill', colors.text)
+        .text(displayTag);
+
+      // Count - positioned clearly at bottom of bubble
+      textGroup
+        .append('text')
+        .attr('x', 0)
+        .attr('y', r * 0.4)
+        .attr('text-anchor', 'middle')
+        .attr('font-size', countFontSize)
+        .attr('font-weight', '500')
+        .attr('fill', colors.text)
+        .style('opacity', 0.9)
+        .text(count);
+    });
+  };
+
+  // Function to render tooltip
+  const renderTooltip = (svg, tooltip, sizes, darkMode, width, height) => {
+    if (!tooltip.visible) return;
+
+    const tooltipGroup = svg
+      .append('g')
+      .attr('class', 'tooltip-group')
+      .attr('transform', `translate(${tooltip.x}, ${tooltip.y})`);
+
+    // Make sure tooltip stays within viewport bounds
+    const tooltipX = Math.max(20, Math.min(width - 20, tooltip.x));
+    const tooltipY = Math.max(40, Math.min(height - 40, tooltip.y));
+
+    tooltipGroup.attr('transform', `translate(${tooltipX}, ${tooltipY})`);
+
+    const bubbleWidth = tooltip.text.length * (sizes.isMobile ? 5 : 6) + 20;
+    const bubbleHeight = sizes.isMobile ? 32 : 34;
+    const bubbleX = -bubbleWidth / 2;
+    const bubbleY = -bubbleHeight - 10;
+
+    // Add white background
+    tooltipGroup
+      .append('rect')
+      .attr('x', bubbleX)
+      .attr('y', bubbleY)
+      .attr('width', bubbleWidth)
+      .attr('height', bubbleHeight)
+      .attr('rx', 16)
+      .attr('ry', 16)
+      .attr('fill', darkMode ? '#1e293b' : '#ffffff')
+      .attr('stroke', darkMode ? '#60A5FA' : '#3B82F6')
+      .attr('stroke-width', '1.5')
+      .style('filter', 'drop-shadow(0 4px 6px rgba(0,0,0,0.15))')
+      .style('pointer-events', 'none');
+
+    // Triangle pointer
+    tooltipGroup
+      .append('path')
+      .attr(
+        'd',
+        `M ${-8} ${bubbleY + bubbleHeight} L 0 ${bubbleY + bubbleHeight + 10} L 8 ${bubbleY +
+          bubbleHeight} Z`,
+      )
+      .attr('fill', darkMode ? '#1e293b' : '#ffffff')
+      .attr('stroke', darkMode ? '#60A5FA' : '#3B82F6')
+      .attr('stroke-width', '1')
+      .style('pointer-events', 'none');
+
+    // Tooltip text
+    tooltipGroup
+      .append('text')
+      .attr('x', 0)
+      .attr('y', bubbleY + bubbleHeight / 2 + (sizes.isMobile ? 3 : 4))
+      .attr('text-anchor', 'middle')
+      .attr('dominant-baseline', 'middle')
+      .attr('fill', darkMode ? '#f1f5f9' : '#1e293b')
+      .attr('font-size', sizes.isMobile ? '11px' : '12px')
+      .attr('font-weight', '500')
+      .style('pointer-events', 'none')
+      .text(tooltip.text);
   };
 
   useEffect(() => {
@@ -579,7 +763,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
       // Get positions
       const positions = getPositions(tags, width, height, centerX, centerY);
 
-      // Draw connection lines
+      // Draw connection lines - clean and simple
       positions.forEach((pos, i) => {
         const angle = pos.angle;
         const startX = centerX + centerSize * Math.cos(angle);
@@ -602,165 +786,24 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
           .attr('stroke-linecap', 'round');
       });
 
-      // Draw bubbles
-      positions.forEach((pos, i) => {
-        const { x, y, r, tag, count, fullTag } = pos;
-        const colors = getNodeColor(i);
+      // Draw bubbles using extracted function
+      renderBubbles(
+        svg,
+        positions,
+        sizes,
+        getNodeColor,
+        handleMouseEnter,
+        handleMouseMove,
+        handleMouseLeave,
+        handleTouchStart,
+        handleTouchEnd,
+        handleTouchMove,
+        darkMode,
+        getDisplayText,
+      );
 
-        const nodeGroup = svg
-          .append('g')
-          .attr('transform', `translate(${x}, ${y})`)
-          .attr('class', 'bubble-group');
-
-        // Hit area
-        nodeGroup
-          .append('ellipse')
-          .attr('rx', r + 5)
-          .attr('ry', r * 0.6 + 5)
-          .attr('fill', 'transparent')
-          .attr('stroke', 'none')
-          .style('cursor', 'pointer')
-          .style('pointer-events', 'all')
-          .on('mouseenter', event => {
-            handleMouseEnter(event, fullTag, count);
-            d3.select(event.currentTarget.parentNode)
-              .select('ellipse.bubble-fill')
-              .attr('stroke-width', 2.5)
-              .attr('stroke', darkMode ? '#ffffff' : '#000000');
-          })
-          .on('mousemove', handleMouseMove)
-          .on('mouseleave', () => {
-            handleMouseLeave();
-            d3.selectAll('.bubble-fill')
-              .attr('stroke-width', 1.5)
-              .attr('stroke', (d, j) => getNodeColor(j).stroke);
-          })
-          .on('touchstart', event => {
-            handleTouchStart(event, fullTag, count);
-            d3.select(event.currentTarget.parentNode)
-              .select('ellipse.bubble-fill')
-              .attr('stroke-width', 2.5)
-              .attr('stroke', darkMode ? '#ffffff' : '#000000');
-          })
-          .on('touchmove', handleTouchMove)
-          .on('touchend', handleTouchEnd)
-          .on('touchcancel', handleTouchEnd);
-
-        // Visible bubble
-        nodeGroup
-          .append('ellipse')
-          .attr('class', 'bubble-fill')
-          .attr('rx', r)
-          .attr('ry', r * 0.6)
-          .attr('fill', colors.fill)
-          .attr('stroke', colors.stroke)
-          .attr('stroke-width', 1.5)
-          .style(
-            'filter',
-            darkMode
-              ? 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))'
-              : 'drop-shadow(0 1px 2px rgba(0,0,0,0.1))',
-          )
-          .style('pointer-events', 'none');
-
-        const textGroup = svg
-          .append('g')
-          .attr('transform', `translate(${x}, ${y})`)
-          .style('pointer-events', 'none');
-
-        // Text positioning - tag above, count below with clear separation
-        const tagFontSize = Math.min(
-          sizes.maxFontSize,
-          Math.max(sizes.isMobile ? 9 : 10, r * 0.22),
-        );
-        const countFontSize = sizes.countFontSize;
-
-        // Tag text - positioned in upper half of bubble
-        const maxTagLength = Math.floor(r / (sizes.isMobile ? 4 : 3.8));
-        const displayTag = getDisplayText(tag, maxTagLength);
-
-        textGroup
-          .append('text')
-          .attr('x', 0)
-          .attr('y', -tagFontSize * 0.3)
-          .attr('text-anchor', 'middle')
-          .attr('font-size', tagFontSize)
-          .attr('font-weight', '600')
-          .attr('fill', colors.text)
-          .text(displayTag);
-
-        // Count - positioned clearly at bottom of bubble
-        textGroup
-          .append('text')
-          .attr('x', 0)
-          .attr('y', r * 0.4)
-          .attr('text-anchor', 'middle')
-          .attr('font-size', countFontSize)
-          .attr('font-weight', '500')
-          .attr('fill', colors.text)
-          .style('opacity', 0.9)
-          .text(count);
-      });
-
-      // Draw tooltip - with guaranteed visibility
-      if (tooltip.visible) {
-        const tooltipGroup = svg
-          .append('g')
-          .attr('class', 'tooltip-group')
-          .attr('transform', `translate(${tooltip.x}, ${tooltip.y})`);
-
-        // Make sure tooltip stays within viewport bounds
-        const tooltipX = Math.max(20, Math.min(width - 20, tooltip.x));
-        const tooltipY = Math.max(40, Math.min(height - 40, tooltip.y));
-
-        tooltipGroup.attr('transform', `translate(${tooltipX}, ${tooltipY})`);
-
-        const bubbleWidth = tooltip.text.length * (sizes.isMobile ? 5 : 6) + 20;
-        const bubbleHeight = sizes.isMobile ? 32 : 34;
-        const bubbleX = -bubbleWidth / 2;
-        const bubbleY = -bubbleHeight - 10;
-
-        // Add white background
-        tooltipGroup
-          .append('rect')
-          .attr('x', bubbleX)
-          .attr('y', bubbleY)
-          .attr('width', bubbleWidth)
-          .attr('height', bubbleHeight)
-          .attr('rx', 16)
-          .attr('ry', 16)
-          .attr('fill', darkMode ? '#1e293b' : '#ffffff')
-          .attr('stroke', darkMode ? '#60A5FA' : '#3B82F6')
-          .attr('stroke-width', '1.5')
-          .style('filter', 'drop-shadow(0 4px 6px rgba(0,0,0,0.15))')
-          .style('pointer-events', 'none');
-
-        // Triangle pointer
-        tooltipGroup
-          .append('path')
-          .attr(
-            'd',
-            `M ${-8} ${bubbleY + bubbleHeight} L 0 ${bubbleY + bubbleHeight + 10} L 8 ${bubbleY +
-              bubbleHeight} Z`,
-          )
-          .attr('fill', darkMode ? '#1e293b' : '#ffffff')
-          .attr('stroke', darkMode ? '#60A5FA' : '#3B82F6')
-          .attr('stroke-width', '1')
-          .style('pointer-events', 'none');
-
-        // Tooltip text
-        tooltipGroup
-          .append('text')
-          .attr('x', 0)
-          .attr('y', bubbleY + bubbleHeight / 2 + (sizes.isMobile ? 3 : 4))
-          .attr('text-anchor', 'middle')
-          .attr('dominant-baseline', 'middle')
-          .attr('fill', darkMode ? '#f1f5f9' : '#1e293b')
-          .attr('font-size', sizes.isMobile ? '11px' : '12px')
-          .attr('font-weight', '500')
-          .style('pointer-events', 'none')
-          .text(tooltip.text);
-      }
+      // Draw tooltip using extracted function
+      renderTooltip(svg, tooltip, sizes, darkMode, width, height);
 
       // Date range info
       if (dateRangeInfo && width > 200) {
@@ -787,6 +830,8 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
     getDisplayText,
     isMobile,
     tooltip,
+    renderBubbles,
+    renderTooltip,
   ]);
 
   const getDropdownOptions = useCallback(() => {
@@ -794,11 +839,14 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
 
     options.push({
       label: '📊 TEST DATASETS',
-      options: Object.entries(testDatasets).map(([key, dataset]) => ({
-        label: isMobile ? dataset.label.replace(/[🌱🏗️⚡🧱]/g, '') : dataset.label,
-        value: key,
-        type: 'test',
-      })),
+      options: Object.entries(testDatasets).map(([key, dataset]) => {
+        const cleanLabel = isMobile ? dataset.label.replace(/[🌱🏗️⚡🧱]/gu, '') : dataset.label;
+        return {
+          label: cleanLabel,
+          value: key,
+          type: 'test',
+        };
+      }),
     });
 
     if (projects.length > 0) {
@@ -854,7 +902,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
             onChange={handleOptionChange}
             placeholder={isMobile ? 'Select' : 'Choose'}
             isClearable
-            isSearchable={true}
+            isSearchable
             styles={{
               control: base => ({
                 ...base,
@@ -942,5 +990,13 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
     </div>
   );
 }
+
+MostFrequentKeywords.propTypes = {
+  darkMode: PropTypes.bool,
+};
+
+MostFrequentKeywords.defaultProps = {
+  darkMode: false,
+};
 
 export default MostFrequentKeywords;

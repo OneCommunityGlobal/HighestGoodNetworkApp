@@ -1366,7 +1366,7 @@ const WeeklySummariesReport = props => {
               //     filterColor,
               //   };
               // });
-              const processedData = processRawSummaries(response.data);
+              const processedData = processRawSummaries(res.data);
               const { summaries: summariesCopy } = processedData;
 
               setState(prevState => ({
@@ -1592,7 +1592,7 @@ const WeeklySummariesReport = props => {
           newTeamCode,
           userId: Object.keys(userIdObj)[0],
         });
-        await fetchFilters();
+        await refetch();
       }
 
       // Update saved filters for team codes only in the database with the new team code
@@ -2334,6 +2334,13 @@ const WeeklySummariesReport = props => {
       {passwordInputModalToggle()}
       {popUpElements()}
       <Row className={styles['mx-max-sm-0']}>
+        <style>
+          {`
+        .custom-select__input-container {
+          grid-template-columns: auto !important;
+        }
+      `}
+        </style>
         <Col lg={{ size: 10, offset: 1 }}>
           <h3 className="mt-3 mb-5">
             <div className="d-flex align-items-center">
@@ -2738,6 +2745,7 @@ const WeeklySummariesReport = props => {
           <div>Logged Hours Range</div>
           <Select
             isMulti
+            classNamePrefix="custom-select"
             placeholder="Select range..."
             components={{
               Option: CheckboxOption,
