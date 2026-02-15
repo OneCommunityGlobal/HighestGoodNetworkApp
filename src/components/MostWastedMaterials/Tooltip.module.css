@@ -8,12 +8,28 @@
 
 .tooltipLabel {
   font-weight: 500;
-  color: #2563eb;
   margin: 0 0 4px 0;
+}
+
+.tooltipLabel.labelBlue {
+  color: #3b82f6 !important;
+}
+
+.darkMode .tooltipLabel.labelBlue {
+  color: #60a5fa !important;
 }
 
 .tooltipValue {
   font-size: 14px;
   color: #6b7280;
   margin: 0;
+}
+
+.darkMode .tooltipWrapper {
+  background-color: #1f2937; /* dark gray */
+  border: 1px solid #374151;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+}
+.darkMode .tooltipValue {
+  color: #d1d5db;
 }
