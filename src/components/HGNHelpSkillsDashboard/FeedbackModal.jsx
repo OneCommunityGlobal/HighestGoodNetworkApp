@@ -142,6 +142,16 @@ function FeedbackModal({ authUser }) {
   };
 
   const selectActiveMember = (index, user) => {
+    // FIX ISSUE #2: Check for duplicates
+    const isDuplicate = activeMembers.some(
+      (member, idx) => idx !== index && member.selectedUser?._id === user._id,
+    );
+
+    if (isDuplicate) {
+      toast.warning(`${user.name} is already added!`);
+      return;
+    }
+
     const updated = [...activeMembers];
     updated[index].name = user.name;
     updated[index].selectedUser = user;
@@ -152,6 +162,16 @@ function FeedbackModal({ authUser }) {
   };
 
   const selectInactiveMember = (index, user) => {
+    // FIX ISSUE #2: Check for duplicates
+    const isDuplicate = inactiveMembers.some(
+      (member, idx) => idx !== index && member.selectedUser?._id === user._id,
+    );
+
+    if (isDuplicate) {
+      toast.warning(`${user.name} is already added!`);
+      return;
+    }
+
     const updated = [...inactiveMembers];
     updated[index].name = user.name;
     updated[index].selectedUser = user;
@@ -173,11 +193,15 @@ function FeedbackModal({ authUser }) {
     setInactiveMembers(updated);
   };
 
-  const getFilteredMembers = searchTerm => {
+  const getFilteredMembers = (searchTerm, isActive = true) => {
     if (!searchTerm || searchTerm.length < 2) return [];
 
     return allTeamMembers
-      .filter(member => member.name?.toLowerCase().includes(searchTerm.toLowerCase()))
+      .filter(member => {
+        const matchesSearch = member.name?.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesStatus = member.isActive === isActive; // FIX ISSUE #8: Filter by active status
+        return matchesSearch && matchesStatus;
+      })
       .slice(0, 10);
   };
 
@@ -208,7 +232,7 @@ function FeedbackModal({ authUser }) {
   const renderMemberInput = (member, index, isActive = true) => {
     const searchTerm = isActive ? activeSearchTerm[index] || '' : inactiveSearchTerm[index] || '';
     const showDropdown = isActive ? showActiveDropdown[index] : showInactiveDropdown[index];
-    const filteredMembers = getFilteredMembers(searchTerm);
+    const filteredMembers = getFilteredMembers(searchTerm, isActive);
 
     const handleSearch = value => {
       if (isActive) {
@@ -249,7 +273,7 @@ function FeedbackModal({ authUser }) {
                 } else {
                   setShowInactiveDropdown({ ...showInactiveDropdown, [index]: false });
                 }
-              }, 200);
+              }, 300); // INCREASED FROM 200ms TO 300ms
             }}
             onFocus={() => {
               if (searchTerm.length > 0) {
@@ -269,7 +293,7 @@ function FeedbackModal({ authUser }) {
                 <div
                   key={user._id}
                   className={styles['autocomplete-item']}
-                  onClick={() => selectMember(user)}
+                  onMouseDown={() => selectMember(user)} // CHANGED FROM onClick
                   onKeyPress={e => {
                     if (e.key === 'Enter' || e.key === ' ') {
                       selectMember(user);
@@ -362,7 +386,11 @@ function FeedbackModal({ authUser }) {
             value={comments}
             onChange={e => setComments(e.target.value)}
             rows={4}
+            maxLength={1000}
           />
+          <p style={{ fontSize: '12px', color: '#666', marginTop: '4px', marginBottom: '8px' }}>
+            {comments.length}/1000 characters
+          </p>
           <p className={styles['suggestion-link']}>
             If you have any suggestions please click{' '}
             <a href="/suggestions" target="_blank" rel="noopener noreferrer">
