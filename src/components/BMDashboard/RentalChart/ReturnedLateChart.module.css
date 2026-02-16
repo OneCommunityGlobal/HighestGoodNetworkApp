@@ -113,3 +113,68 @@
   cursor: pointer;
   color: inherit;
 }
+:global(html.dark-mode) .returned-late-chart h1,
+:global(body.dark-mode) .returned-late-chart h1 {
+  color: #ffffff;
+}
+
+:global(html.dark-mode) .returned-late-filter-label,
+:global(body.dark-mode) .returned-late-filter-label {
+  color: #ffffff;
+}
+
+:global(html.dark-mode) .returned-late-project-select,
+:global(body.dark-mode) .returned-late-project-select {
+  background-color: #1e293b;
+  color: #ffffff;
+  border: 1px solid #475569;
+}
+
+:global(html.dark-mode) .returned-late-project-select option,
+:global(body.dark-mode) .returned-late-project-select option {
+  background-color: #1e293b;
+  color: #ffffff;
+}
+
+:global(html.dark-mode) .returned-late-date-picker,
+:global(body.dark-mode) .returned-late-date-picker {
+  background-color: #1e293b;
+  color: #ffffff;
+  border: 1px solid #475569;
+}
+
+:global(html.dark-mode) .returned-late-tools-select :global(.dropdown-container),
+:global(body.dark-mode) .returned-late-tools-select :global(.dropdown-container) {
+  background-color: #1e293b;
+  color: #ffffff;
+  border: 1px solid #475569;
+}
+
+:global(html.dark-mode) .returned-late-tools-select :global(.dropdown-heading),
+:global(body.dark-mode) .returned-late-tools-select :global(.dropdown-heading) {
+  color: #ffffff;
+}
+
+:global(html.dark-mode) .returned-late-tools-select :global(.select-panel),
+:global(body.dark-mode) .returned-late-tools-select :global(.select-panel) {
+  background-color: #1e293b;
+  color: #ffffff;
+  border: 1px solid #475569;
+}
+
+:global(html.dark-mode) .returned-late-tools-select :global(.select-panel) :global(input),
+:global(body.dark-mode) .returned-late-tools-select :global(.select-panel) :global(input) {
+  background-color: #0f172a;
+  color: #ffffff;
+  border: 1px solid #475569;
+}
+
+:global(html.dark-mode) .returned-late-tools-select :global(.select-item),
+:global(body.dark-mode) .returned-late-tools-select :global(.select-item) {
+  color: #ffffff;
+}
+
+:global(html.dark-mode) .returned-late-tools-select :global(.select-item:hover),
+:global(body.dark-mode) .returned-late-tools-select :global(.select-item:hover) {
+  background-color: #243b64;
+}
