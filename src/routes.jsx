@@ -164,13 +164,6 @@ import BrowseLessonPlan from './components/EductionPortal/BrowseLessonPlan/Brows
 import EPDashboard from './components/EductionPortal';
 
 import MostSusceptibleTools from './components/MostSusceptible/toolBreakdownChart';
-
-import HelpPage from './components/LandingPage/HelpPage';
-
-import LandingPage from './components/HGNHelpSkillsDashboard/LandingPage';
-import SkillsOverviewPage from './components/HGNHelpSkillsDashboard/SkillsOverviewPage';
-import CommunityMembersPage from './components/HGNHelpSkillsDashboard/CommunityMembersPage';
-import UserProfilePage from './components/HGNHelpSkillsDashboard/UserProfilePage';
 import FeedbackModal from './components/HGNHelpSkillsDashboard/FeedbackModal';
 import PopularPRChart from './components/Analytics/PopularPRChart';
 
