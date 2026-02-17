@@ -261,15 +261,40 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
       </Row>
 
       {showGradingModal && (
-        <div className={styles['pr-grading-screen-modal-overlay']}>
-          <div className={styles['pr-grading-screen-modal']}>
-            <div className={styles['pr-grading-screen-modal-header']}>
+        <div
+          className={`${styles['pr-grading-screen-modal-overlay']} ${
+            darkMode ? styles['dark-mode'] : ''
+          }`}
+        >
+          <div
+            className={`${styles['pr-grading-screen-modal']} ${
+              darkMode ? styles['dark-mode'] : ''
+            }`}
+          >
+            <div
+              className={`${styles['pr-grading-screen-modal-header']} ${
+                darkMode ? styles['dark-mode'] : ''
+              }`}
+            >
               <h4>Grade PR</h4>
-              <button onClick={handleCloseGradingModal}>×</button>
+              <button
+                className={styles['pr-grading-screen-modal-close']}
+                onClick={handleCloseGradingModal}
+              >
+                ×
+              </button>
             </div>
 
-            <div className={styles['pr-grading-screen-modal-body']}>
-              <table className={styles['pr-grading-screen-grading-table']}>
+            <div
+              className={`${styles['pr-grading-screen-modal-body']} ${
+                darkMode ? styles['dark-mode'] : ''
+              }`}
+            >
+              <table
+                className={`${styles['pr-grading-screen-grading-table']} ${
+                  darkMode ? styles['dark-mode'] : ''
+                }`}
+              >
                 <thead>
                   <tr>
                     <th>PR Number</th>
@@ -329,7 +354,11 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                 </tbody>
               </table>
 
-              <div className={styles['pr-grading-screen-modal-footer']}>
+              <div
+                className={`${styles['pr-grading-screen-modal-footer']} ${
+                  darkMode ? styles['dark-mode'] : ''
+                }`}
+              >
                 <Button variant="primary" onClick={handleCloseGradingModal}>
                   Done
                 </Button>
