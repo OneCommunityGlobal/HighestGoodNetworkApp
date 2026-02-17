@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Bar } from 'react-chartjs-2';
-import Select from 'react-select';
+import Select, { components } from 'react-select';
 import { fetchIssues } from '../../../actions/bmdashboard/issueChartActions';
 import 'chart.js/auto';
 import { Chart as ChartJS } from 'chart.js';
@@ -14,6 +14,20 @@ function IssueChart() {
 
   const [filters, setFilters] = useState({ issueTypes: [], years: [] });
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 640);
+  const stripNumericSuffix = value => {
+    const str = String(value);
+    let end = str.length;
+    while (end > 0) {
+      const code = str.charCodeAt(end - 1);
+      if (code >= 48 && code <= 57) {
+        end -= 1;
+      } else {
+        break;
+      }
+    }
+    const base = str.slice(0, end).trim();
+    return base || str;
+  };
 
   useEffect(() => {
     dispatch(fetchIssues());
@@ -43,10 +57,30 @@ function IssueChart() {
   }, []);
 
   const extractDropdownOptions = () => {
-    const issueTypes = [...new Set(Object.keys(issues || {}))].map(issue => ({
-      label: issue,
-      value: issue,
-    }));
+    const rawIssueTypes = [...new Set(Object.keys(issues || {}))];
+    const issueTypeGroups = rawIssueTypes.reduce((acc, name) => {
+      const base = stripNumericSuffix(name);
+      if (!acc[base]) acc[base] = [];
+      acc[base].push(name);
+      return acc;
+    }, {});
+
+    const groupedIssueTypes = Object.entries(issueTypeGroups).map(([base, names]) => {
+      const options = names
+        .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
+        .map(issue => ({ label: issue, value: issue }));
+      return names.length > 1
+        ? {
+            label: `${base} (e.g., ${names.slice(0, 3).join(', ')}${
+              names.length > 3 ? ', …' : ''
+            })`,
+            options,
+          }
+        : options[0];
+    });
+
+    const issueTypes = groupedIssueTypes;
+
     const years = [
       ...new Set(
         Object.values(issues || {})
@@ -56,14 +90,17 @@ function IssueChart() {
     ]
       .sort((a, b) => a - b)
       .map(year => ({ label: year.toString(), value: year }));
-    const addAll = opts => [{ label: 'All', value: 'All' }, ...opts];
+
     return {
-      issueTypes: addAll(issueTypes),
-      years: addAll(years),
+      issueTypes,
+      years,
     };
   };
 
   const { issueTypes, years } = extractDropdownOptions();
+  const flattenOptions = options =>
+    options.flatMap(option => (option.options ? option.options : option));
+  const flatIssueTypeOptions = flattenOptions(issueTypes);
   const uniqueYears = years.filter(y => y.value !== 'All').map(y => y.value);
 
   const generateColor = idx => `hsl(${(idx * 60) % 360}, 70%, 50%)`;
@@ -73,17 +110,31 @@ function IssueChart() {
   }, {});
 
   const handleFilterChange = (selected, field) => {
-    if (selected.some(option => option.value === 'All')) {
-      setFilters({
-        ...filters,
-        [field]: field === 'issueTypes' ? Object.keys(issues) : uniqueYears,
+    const cleaned = selected
+      .filter(option => option?.value != null)
+      .map(option => option.value)
+      .filter(value => {
+        const lower = String(value).toLowerCase();
+        return lower !== '__all__' && lower !== 'select all' && lower !== 'all';
       });
-    } else {
-      setFilters({
-        ...filters,
-        [field]: selected.map(option => option.value),
-      });
-    }
+    setFilters({
+      ...filters,
+      [field]: cleaned,
+    });
+  };
+
+  const handleSelectAll = field => {
+    setFilters({
+      ...filters,
+      [field]: field === 'issueTypes' ? Object.keys(issues || {}) : uniqueYears,
+    });
+  };
+
+  const handleClearField = field => {
+    setFilters({
+      ...filters,
+      [field]: [],
+    });
   };
 
   const handleClearFilters = () => {
@@ -95,13 +146,45 @@ function IssueChart() {
 
   const chartData = useMemo(() => {
     if (!issues || Object.keys(issues).length === 0) return { labels: [], datasets: [] };
-    const filteredIssueTypes = filters.issueTypes.length ? filters.issueTypes : Object.keys(issues);
-    const filteredYears = filters.years.length ? filters.years : uniqueYears;
-    const labels = filteredIssueTypes;
 
+    const getBase = name => stripNumericSuffix(name);
+    const issueTypeKeys = Object.keys(issues || {}).sort((a, b) => {
+      const aLower = String(a).toLowerCase();
+      const bLower = String(b).toLowerCase();
+      const aIsNull = aLower === 'null';
+      const bIsNull = bLower === 'null';
+      if (aIsNull && !bIsNull) return 1;
+      if (!aIsNull && bIsNull) return -1;
+      return aLower.localeCompare(bLower, undefined, { numeric: true });
+    });
+    const groupMap = issueTypeKeys.reduce((acc, type) => {
+      const base = getBase(type);
+      if (!acc[base]) acc[base] = [];
+      acc[base].push(type);
+      return acc;
+    }, {});
+
+    const selectedTypes = filters.issueTypes.length ? filters.issueTypes : issueTypeKeys;
+    const selectedTypeSet = new Set(selectedTypes.map(t => String(t).toLowerCase()));
+    const selectedBases = [...new Set(selectedTypes.map(getBase))].sort((a, b) => {
+      const aLower = String(a).toLowerCase();
+      const bLower = String(b).toLowerCase();
+      const aIsNull = aLower === 'null';
+      const bIsNull = bLower === 'null';
+      if (aIsNull && !bIsNull) return 1;
+      if (!aIsNull && bIsNull) return -1;
+      return aLower.localeCompare(bLower, undefined, { numeric: true });
+    });
+    const filteredYears = filters.years.length ? filters.years : uniqueYears;
+
+    const labels = selectedBases;
     const datasets = filteredYears.map(year => ({
       label: year.toString(),
-      data: labels.map(issueType => issues[issueType]?.[year] || 0),
+      data: labels.map(base =>
+        (groupMap[base] || [])
+          .filter(type => selectedTypeSet.has(String(type).toLowerCase()))
+          .reduce((sum, type) => sum + (issues[type]?.[year] || 0), 0),
+      ),
       backgroundColor: yearColorMap[year],
       borderColor: darkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.3)',
       borderWidth: 1.5,
@@ -110,6 +193,16 @@ function IssueChart() {
 
     return { labels, datasets };
   }, [issues, filters, uniqueYears, yearColorMap, darkMode]);
+
+  useEffect(() => {
+    if (!issues || Object.keys(issues).length === 0) return;
+    const issueCounts = Object.entries(issues).map(([type, data]) => ({
+      type: type ?? 'null',
+      total: Object.values(data || {}).reduce((sum, value) => sum + (Number(value) || 0), 0),
+    }));
+    // eslint-disable-next-line no-console
+    console.log('Issue type totals:', issueCounts);
+  }, [issues]);
 
   const xAxisBackgroundPlugin = darkMode => ({
     id: 'xAxisBackground',
@@ -177,7 +270,37 @@ function IssueChart() {
           titleColor: darkMode ? '#fff' : '#232323',
           bodyColor: darkMode ? '#fff' : '#232323',
           callbacks: {
-            label: ctx => `${ctx.dataset.label}: ${ctx.formattedValue}`,
+            title: items => {
+              const index = items?.[0]?.dataIndex ?? 0;
+              return chartData?.labels?.[index] ?? '';
+            },
+            label: ctx => {
+              const base = chartData?.labels?.[ctx.dataIndex] ?? ctx.label;
+              const year = parseInt(ctx.dataset.label, 10);
+              const getBase = name => stripNumericSuffix(name);
+              const selectedTypes = filters.issueTypes.length
+                ? filters.issueTypes
+                : Object.keys(issues || {});
+              const selectedTypeSet = new Set(selectedTypes.map(t => String(t).toLowerCase()));
+              const groupTypes = Object.keys(issues || {}).filter(
+                t => getBase(t) === base && selectedTypeSet.has(String(t).toLowerCase()),
+              );
+              const breakdown = groupTypes
+                .map(type => ({
+                  type,
+                  value: issues?.[type]?.[year] || 0,
+                }))
+                .filter(item => item.value > 0);
+
+              if (breakdown.length === 0) {
+                return `${ctx.dataset.label}: ${ctx.formattedValue}`;
+              }
+
+              return [
+                `${ctx.dataset.label}: ${ctx.formattedValue}`,
+                ...breakdown.map(item => `  ${item.type}: ${item.value}`),
+              ];
+            },
           },
         },
         datalabels: {
@@ -248,52 +371,145 @@ function IssueChart() {
         },
       },
     }),
-    [darkMode, isMobile],
+    [darkMode, isMobile, chartData],
   );
 
-  const chartPlugins = useMemo(() => [xAxisBackgroundPlugin(darkMode)], [darkMode]);
+  const chartPlugins = useMemo(() => [xAxisBackgroundPlugin(darkMode)], [
+    darkMode,
+    chartData.labels,
+  ]);
 
-  const selectStyles = useMemo(() => {
-    if (!darkMode) return {};
-    return {
+  const selectStyles = useMemo(
+    () => ({
       control: provided => ({
         ...provided,
-        backgroundColor: '#22272e',
-        borderColor: '#3d444d',
-        color: '#cfd7e3',
+        backgroundColor: darkMode ? '#22272e' : '#ffffff',
+        borderColor: darkMode ? '#3d444d' : '#ccc',
+        color: darkMode ? '#cfd7e3' : '#333',
+        minHeight: 48,
+        height: 'auto',
+        alignItems: 'center',
+        paddingTop: 2,
+        paddingBottom: 2,
+        boxShadow: 'none',
+        '&:hover': {
+          borderColor: darkMode ? '#3d444d' : '#bbb',
+        },
       }),
-      menu: provided => ({
+      valueContainer: provided => ({
         ...provided,
-        backgroundColor: '#1e1e1e',
-        color: '#cfd7e3',
+        display: 'flex',
+        paddingTop: 0,
+        paddingBottom: 0,
+        paddingLeft: 10,
+        paddingRight: 10,
+        alignItems: 'center',
+        flexWrap: 'wrap',
+        gap: 8,
       }),
       input: provided => ({
         ...provided,
-        color: '#cfd7e3',
+        margin: 0,
+        padding: 0,
+        lineHeight: 'normal',
+        color: darkMode ? '#cfd7e3' : '#333',
+      }),
+      menu: provided => ({
+        ...provided,
+        backgroundColor: darkMode ? '#1e1e1e' : '#ffffff',
+        color: darkMode ? '#cfd7e3' : '#333',
+      }),
+      menuList: provided => ({
+        ...provided,
+        maxHeight: 220,
+        paddingTop: 6,
+        paddingBottom: 6,
+        overflowY: 'auto',
+      }),
+      groupHeading: provided => ({
+        ...provided,
+        fontSize: 12,
+        fontWeight: 600,
+        color: darkMode ? '#cfd7e3' : '#4a5568',
+      }),
+      indicatorsContainer: provided => ({
+        ...provided,
+        alignItems: 'center',
+        paddingRight: 6,
       }),
       singleValue: provided => ({
         ...provided,
-        color: '#cfd7e3',
+        color: darkMode ? '#cfd7e3' : '#333',
       }),
       multiValue: provided => ({
         ...provided,
-        backgroundColor: '#3d444d',
+        margin: '4px 8px 4px 0',
+        backgroundColor: darkMode ? '#3d444d' : '#e2e8f0',
       }),
       multiValueLabel: provided => ({
         ...provided,
-        color: '#cfd7e3',
+        color: darkMode ? '#cfd7e3' : '#333',
       }),
       option: (provided, state) => ({
         ...provided,
-        backgroundColor: state.isFocused ? '#4caf50' : '#1e1e1e',
-        color: state.isFocused ? '#fff' : '#cfd7e3',
+        backgroundColor: state.isFocused ? (darkMode ? '#4caf50' : '#e2e8f0') : 'transparent',
+        color: state.isFocused ? (darkMode ? '#fff' : '#1a202c') : darkMode ? '#cfd7e3' : '#333',
+        paddingTop: 8,
+        paddingBottom: 8,
       }),
       placeholder: provided => ({
         ...provided,
-        color: '#aab1bf',
+        color: darkMode ? '#aab1bf' : '#6b7280',
+        fontWeight: 500,
+        lineHeight: 1.4,
+        margin: 0,
+        alignSelf: 'center',
+        paddingTop: 2,
+        paddingBottom: 2,
       }),
-    };
-  }, [darkMode]);
+      indicatorsSeparator: provided => ({
+        ...provided,
+        backgroundColor: darkMode ? '#3d444d' : '#e5e7eb',
+        marginTop: 6,
+        marginBottom: 6,
+      }),
+    }),
+    [darkMode],
+  );
+
+  const FilterMenuList = props => {
+    const field = props.selectProps ? props.selectProps.filterField : undefined;
+    const onMenuClose =
+      props.selectProps && typeof props.selectProps.onMenuClose === 'function'
+        ? props.selectProps.onMenuClose
+        : undefined;
+    return (
+      <components.MenuList {...props}>
+        <div className={styles.filterMenuActions}>
+          <button
+            type="button"
+            className={styles.filterMenuButton}
+            onClick={() => {
+              if (field) handleSelectAll(field);
+              if (onMenuClose) onMenuClose();
+            }}
+          >
+            Select All
+          </button>
+        </div>
+        {props.children}
+      </components.MenuList>
+    );
+  };
+  FilterMenuList.displayName = 'IssueChartFilterMenuList';
+
+  const activeFilterSummary = useMemo(() => {
+    const issueTypeCount = filters.issueTypes.length || Object.keys(issues || {}).length;
+    const yearList = filters.years.length ? filters.years : uniqueYears;
+    const range =
+      yearList.length > 0 ? `${Math.min(...yearList)}–${Math.max(...yearList)}` : 'No years';
+    return `${issueTypeCount} Issue Types | ${range}`;
+  }, [filters.issueTypes, filters.years, issues, uniqueYears]);
 
   return (
     <div
@@ -322,6 +538,7 @@ function IssueChart() {
             <label
               htmlFor="issue-type-select"
               className={`${styles.issueChartLabel} ${darkMode ? styles.issueChartLabelDark : ''}`}
+              title="Issue types with similar names are grouped (e.g., Technical, Technical1, Technical2)"
             >
               Issue Type:
             </label>
@@ -333,10 +550,14 @@ function IssueChart() {
               isMulti
               options={issueTypes}
               onChange={selected => handleFilterChange(selected, 'issueTypes')}
-              value={issueTypes.filter(option => filters.issueTypes.includes(option.value))}
+              value={flatIssueTypeOptions.filter(option =>
+                filters.issueTypes.includes(option.value),
+              )}
               styles={selectStyles}
               aria-label="Filter issues by type"
               placeholder="Select issue types"
+              components={{ MenuList: FilterMenuList }}
+              filterField="issueTypes"
             />
           </div>
           <div style={{ minWidth: 200 }}>
@@ -358,6 +579,8 @@ function IssueChart() {
               styles={selectStyles}
               aria-label="Filter issues by year"
               placeholder="Select years"
+              components={{ MenuList: FilterMenuList }}
+              filterField="years"
             />
           </div>
           <div style={{ display: 'flex', alignItems: 'flex-end' }}>
@@ -389,7 +612,9 @@ function IssueChart() {
             className={`${styles.issueChartYearGroup} ${styles.issueTypeGroup} ${
               darkMode ? styles.issueChartYearGroupDark : ''
             }`}
+            style={{ marginTop: 24 }}
           >
+            <div className={styles.activeFilterSummary}>{activeFilterSummary}</div>
             <div
               className={`${styles.chartWrapper} ${darkMode ? styles.chartWrapperDark : ''}`}
               style={{ minHeight: 420, paddingBottom: 12 }}
