@@ -163,7 +163,7 @@ import EPLogin from './components/EductionPortal/Login';
 import BrowseLessonPlan from './components/EductionPortal/BrowseLessonPlan/BrowseLP';
 import EPDashboard from './components/EductionPortal';
 
-import MostSusceptibleTools from './components/MostSusceptible/toolBreakdownChart';
+// import MostSusceptibleTools from './components/MostSusceptible/toolBreakdownChart';
 import PopularPRChart from './components/Analytics/PopularPRChart';
 
 // import AddActivities from './components/CommunityPortal/Activities/AddActivities';
