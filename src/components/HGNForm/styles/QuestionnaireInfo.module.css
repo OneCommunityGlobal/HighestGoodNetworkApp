@@ -88,7 +88,17 @@
   margin: 30px;
 }
 
+.darkMode {
+  background-color: #121212;
+  color: #e6e6e6;
+  border-color: #2a2a2a;
+}
 
+.intro.darkMode {
+  background-color: #1a1a1a;
+  color: #e6e6e6;
+  border-color: #2a2a2a;
+}
 
 @media (max-width: 768px) {
   .questionnaireInfo {

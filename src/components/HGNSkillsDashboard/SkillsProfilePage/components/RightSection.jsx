@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
+import styles from '../styles/RightSection.module.css';
 import ProfileDetails from './ProfileDetails';
 import Skills from './Skills';
 import RadarChart from './RadarChart';
@@ -8,12 +9,11 @@ import BackendSkills from './BackendSkills';
 import DeploymentSkills from './DeploymentSkills';
 import SoftwarePractices from './SoftwarePractices';
 import AdditionalInfo from './AdditionalInfo';
-import styles from '../styles/RightSection.module.css';
 
 /* function RightSection({ profileData }) { */
-function RightSection() {
+export default function RightSection() {
   const profileData = useSelector(state => state.userSkills.profileData);
-  const darkMode = useSelector(state => state.theme.darkMode);
+  const darkMode = useSelector(s => s?.theme?.darkMode);
 
   const [selectedSkill, setSelectedSkill] = useState('Dashboard');
 
@@ -40,17 +40,15 @@ function RightSection() {
   };
 
   return (
-    <div className={`${styles.rightSection} ${darkMode ? styles['dark-mode'] : ''}`}>
+    <section className={`${styles.rightSection} ${darkMode ? styles.rightSectionDark : ''}`}>
       <ProfileDetails profileData={profileData} />
-      <div className={`${styles.skillsAndChart}`}>
+      <div className={`${styles.skillsAndChart} ${darkMode ? styles.skillsAndChartDark : ''}`}>
         <Skills selectedSkill={selectedSkill} onSkillClick={handleSkillClick} />
         {renderContent()}
       </div>
       <div className="workExperience-and-additionalInfo">
         <AdditionalInfo profileData={profileData} />
       </div>
-    </div>
+    </section>
   );
 }
-
-export default RightSection;
