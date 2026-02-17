@@ -1,33 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { Tooltip } from 'reactstrap';
-import { connect, useSelector } from 'react-redux';
-import { useDispatch } from 'react-redux';
+import { Tooltip, UncontrolledTooltip } from 'reactstrap';
+import { connect, useSelector, useDispatch} from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCopy } from '@fortawesome/free-solid-svg-icons';
 import { toast } from 'react-toastify';
-// import { Link, useHistory } from 'react-router-dom';
-import { useHistory } from 'react-router-dom';
-import { faUser, faUsers, faShieldAlt, faBriefcase, faUserTie, faCrown, faChalkboardTeacher, faBug, faGlobe, faStar } from '@fortawesome/free-solid-svg-icons';
-import { UncontrolledTooltip } from 'reactstrap';
+import PropTypes from 'prop-types';
+import { useHistory, Link } from 'react-router-dom';
+import { faUser, faUsers, faShieldAlt, faBriefcase, faUserTie, faCrown, faChalkboardTeacher, faBug, faGlobe, faStar, faCopy } from '@fortawesome/free-solid-svg-icons';
 import { updateUserInfomation } from '../../actions/userManagement';
 import { getAllRoles } from '../../actions/role';
 import ResetPasswordButton from './ResetPasswordButton';
-// import { DELETE, PAUSE, RESUME, SET_FINAL_DAY, CANCEL } from '../../languages/en/ui';
 import { DELETE, PAUSE, RESUME } from '../../languages/en/ui';
-// import { UserStatus, FinalDay } from '../../utils/enums';
 import { UserStatus } from '../../utils/enums';
 import ActiveCell from './ActiveCell';
 import TimeDifference from './TimeDifference';
-import hasPermission from '../../utils/permissions';
 import { boxStyle } from '../../styles';
-import { formatDateLocal } from '../../utils/formatDate';
-import { cantUpdateDevAdminDetails } from '../../utils/permissions';
-import { formatDateUtcYYYYMMDD } from '../../utils/formatDate';
+import { formatDate, formatDateLocal, formatDateUtcYYYYMMDD } from '../../utils/formatDate';
+import hasPermission, {cantUpdateDevAdminDetails } from '../../utils/permissions';
 import SetUpFinalDayButton from './SetUpFinalDayButton';
+import styles from './usermanagement.module.css';
+
 /**
  * The body row of the user table
  */
-const UserTableData = React.memo(props => {
+const UserTableDataComponent = (props) => {
   const { darkMode } = props;
   const editUser = useSelector(state => state.userProfileEdit?.editable);
   const [tooltipDeleteOpen, setTooltipDelete] = useState(false);
@@ -47,18 +42,13 @@ const UserTableData = React.memo(props => {
     jobTitle: props.user.jobTitle,
     email: props.user.email,
     weeklycommittedHours: props.user.weeklycommittedHours,
-    startDate: formatDateLocal(props.user.startDate),
-    endDate: formatDateLocal(props.user.endDate),
+    startDate: formatDate(props.user.startDate) || '',
+    endDate: formatDate(props.user.endDate) || '',
   });
   const dispatch = useDispatch();
   const history = useHistory();
   const { roles } = useSelector(state => state.role);
-  const joinTimeStamp = date => {
-    const now = new Date();
-    let formattedTimestamp = now.toISOString();
-    formattedTimestamp = `${date.toString()}T${formattedTimestamp.split('T')[1]}`;
-    return formattedTimestamp;
-  };
+  const joinTimeStamp = (date) => `${String(date).slice(0,10)}T12:00:00.000Z`;
   const addUserInformation = (item, value, id) => {
     dispatch(
       updateUserInfomation({
@@ -69,9 +59,9 @@ const UserTableData = React.memo(props => {
     );
   };
   const canDeleteUsers = props.hasPermission('deleteUserProfile');
-  const resetPasswordStatus = props.hasPermission('resetPassword');
-  const updatePasswordStatus = props.hasPermission('updatePassword');
+  const resetPasswordStatus = props.hasPermission('updatePassword');
   const canChangeUserStatus = props.hasPermission('changeUserStatus');
+  const canSetFinalDay = props.hasPermission('setFinalDay');
   const canSeeReports = props.hasPermission('getReports');
   const toggleDeleteTooltip = () => setTooltipDelete(!tooltipDeleteOpen);
   const togglePauseTooltip = () => setTooltipPause(!tooltipPauseOpen);
@@ -96,7 +86,7 @@ const UserTableData = React.memo(props => {
   useEffect(() => {
     onReset(false);
     dispatch(getAllRoles());
-  }, [props.isActive, props.resetLoading]);
+  }, [props.user.isActive, props.resetLoading]);
 
   useEffect(() => {
     updateFormData({
@@ -107,8 +97,8 @@ const UserTableData = React.memo(props => {
       jobTitle: props.user.jobTitle,
       email: props.user.email,
       weeklycommittedHours: props.user.weeklycommittedHours,
-      startDate: formatDateUtcYYYYMMDD(props.user.startDate),
-      endDate: formatDateUtcYYYYMMDD(props.user.endDate),
+      startDate: formatDate(props.user.startDate),
+      endDate: formatDate(props.user.endDate),
     });
   }, [props.user]);
 
@@ -130,10 +120,11 @@ const UserTableData = React.memo(props => {
   const isCurrentUser = props.user.email === props.authEmail;
 
   const getButtonText = () => {
+    const isActive = props.user?.isActive ?? props.isActive;
     if (isChanging) {
       return '...';
     }
-    if (props.isActive) {
+    if (isActive) {
       return PAUSE;
     }
     return RESUME;
@@ -141,13 +132,15 @@ const UserTableData = React.memo(props => {
 
   return (
     <tr
-      className={`usermanagement__tr ${darkMode ? 'dark-usermanagement-data' : 'light-usermanagement-data'}`}
+      className={`${styles.usermanagementTr} ${darkMode ? styles.darkUsermanagementData : styles.lightUsermanagementData}`}
       id={`tr_user_${props.index}`}
       style={{ fontSize: isMobile ? mobileFontSize : 'initial' }}
     >
-      <td className="usermanagement__active--input" style={{ position: 'relative' }}>
+      <td className={styles.usermanagementActiveInput} style={{ position: 'relative' }}>
         <ActiveCell
-          isActive={props.isActive}
+          isActive={props.user.isActive}
+          endDate={props.user.endDate}
+          reactivationDate={props.user.reactivationDate}
           canChange={canChangeUserStatus}
           key={`active_cell${props.index}`}
           index={props.index}
@@ -181,65 +174,69 @@ const UserTableData = React.memo(props => {
           ''
         )}
         <span style={{ position: 'absolute', top: 0, right: 0 }}>
-          <button
-            type="button"
-            className="team-member-tasks-user-report-link"
+          <Link
+          to={`/peoplereport/${props.user._id}`}
+          onClick={(event) => {
+            if (!canSeeReports) {
+              event.preventDefault();
+              return;
+            }
+
+            if (
+              event.metaKey || event.ctrlKey ||
+              event.shiftKey || event.altKey ||
+              event.button !== 0
+            ) {
+              return;
+            }
+
+            event.preventDefault(); 
+            history.push(`/peoplereport/${props.user._id}`);
+          }}
+          style={{
+            textDecoration: 'none',
+            opacity: canSeeReports ? 1 : 0.7,
+            cursor: canSeeReports ? 'pointer' : 'not-allowed',
+            display: 'inline-block',               
+            lineHeight: 0,                        
+            padding: 0,                           
+          }}
+          title="Click to view user report"
+        >
+          <img
+            src="/report_icon.png"
+            alt="reportsicon"
+            className="team-member-tasks-user-report-link-image"
+            id={`report-icon-${props.user._id}`}
             style={{
-              fontSize: 18,
-              opacity: canSeeReports ? 1 : 0.7,
-              background: 'none',
-              border: 'none',
-              padding: 0,
-            }}
-            onClick={(event) => {
-              if (!canSeeReports) {
-                event.preventDefault();
-                return;
-              }
-
-              if (event.metaKey || event.ctrlKey || event.button === 1) {
-                window.open(`/peoplereport/${props.user._id}`, '_blank');
-                return;
-              }
-
-              event.preventDefault(); // prevent full reload
-              history.push(`/peoplereport/${props.user._id}`);
-            }}
-          >
-            <img
-              src="/report_icon.png"
-              alt="reportsicon"
-              className="team-member-tasks-user-report-link-image"
-              id={`report-icon-${props.user._id}`}
-              style={{
-                cursor: canSeeReports ? 'pointer' : 'not-allowed', // Change cursor style to indicate the disabled state
-              }}
-            />
-          </button>
-        </span>
-
-        <span style={{ position: 'absolute', bottom: 0, right: 0 }}>
-          <i
-            className="fa fa-clock-o"
-            aria-hidden="true"
-            style={{ fontSize: 14, cursor: 'pointer', marginRight: '5px' }}
-            title="Click to see user's timelog"
-            onClick={e => {
-              if (!canSeeReports) {
-                e.preventDefault();
-                return;
-              }
-
-              if (e.metaKey || e.ctrlKey || e.button === 1) {
-                window.open(`/timelog/${props.user._id}`, '_blank');
-                return;
-              }
-
-              e.preventDefault(); // prevent full reload
-              history.push(`/timelog/${props.user._id}`);
+              width: 16,   
+              height: 16,
+              verticalAlign: 'middle',
             }}
           />
-        </span>
+        </Link>
+
+      </span>
+      <Link
+        to={`/timelog/${props.user._id}#currentWeek`}
+        style={{ position: 'absolute', bottom: 0, right: 0 }}
+        title="Click to see user's timelog"
+        onClick={(e) => {
+          if (!canSeeReports) {
+            e.preventDefault();
+            return;
+          }
+        }}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <i
+          className="fa fa-clock-o"
+          aria-hidden="true"
+          style={{ fontSize: 14, cursor: 'pointer', marginRight: '5px' }}
+        />
+      </Link>
+
 
         <TimeDifference
           userProfile={props.user}
@@ -389,11 +386,30 @@ const UserTableData = React.memo(props => {
         ) : (
           <input
             type="number"
-            className={`edituser_input ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
+            step={0.5}
+            className={`edituser_input ${
+              darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+            }`}
             value={formData.weeklycommittedHours}
             onChange={e => {
-              updateFormData({ ...formData, weeklycommittedHours: e.target.value });
-              addUserInformation('weeklycommittedHours', e.target.value, props.user._id);
+              const rawValue = e.target.value;
+              const numericValue = Number(rawValue);
+
+              if (numericValue < 0) {
+                toast.error('If negative hours worked, we’d all be on vacation already. Try again, and be sure weekly hours are set to zero or more.');
+                return; // stop update
+              }
+
+              updateFormData({
+                ...formData,
+                weeklycommittedHours: numericValue,
+              });
+
+              addUserInformation(
+                'weeklycommittedHours',
+                numericValue,
+                props.user._id
+              );
             }}
           />
         )}
@@ -413,7 +429,7 @@ const UserTableData = React.memo(props => {
         )}
         <button
           type="button"
-          className={`btn btn-outline-${props.isActive ? 'warning' : 'success'} btn-sm`}
+          className={`btn btn-outline-${props.user.isActive ? 'warning' : 'success'} btn-sm`}
           onClick={() => {
             if (cantUpdateDevAdminDetails(props.user.email, props.authEmail)) {
               // eslint-disable-next-line no-alert
@@ -425,7 +441,7 @@ const UserTableData = React.memo(props => {
             onReset(true);
             props.onPauseResumeClick(
               props.user,
-              props.isActive ? UserStatus.InActive : UserStatus.Active,
+              props.user.isActive ? UserStatus.Inactive : UserStatus.Active,
             );
           }}
           style={{
@@ -435,7 +451,6 @@ const UserTableData = React.memo(props => {
           disabled={!canChangeUserStatus}
           id={`btn-pause-profile-${props.user._id}`}
         >
-          {/* {isChanging ? '...' : props.isActive ? PAUSE : RESUME} */}
           {getButtonText()}
         </button>
       </td>
@@ -479,7 +494,7 @@ const UserTableData = React.memo(props => {
       <td>
         {!isCurrentUser && (
           <>
-            {!canChangeUserStatus ? (
+            {canSetFinalDay ? (
               <Tooltip
                 placement="bottom"
                 isOpen={tooltipFinalDayOpen}
@@ -491,13 +506,15 @@ const UserTableData = React.memo(props => {
             ) : (
               ''
             )}
-            <SetUpFinalDayButton
+                       <SetUpFinalDayButton
               userProfile={props.user}
               darkMode={darkMode}
               onFinalDaySave={updatedUser => {
                 // Update the user object in the parent state
                 props.onUserUpdate(updatedUser);
               }}
+              id={`btn-final-day-${props.user._id}`}
+              disabled={!canSetFinalDay}
             />
           </>
         )}
@@ -510,7 +527,7 @@ const UserTableData = React.memo(props => {
       <td>
         {editUser?.startDate ? (
           <span>
-            { props.user.startDate ? formatDateLocal(formData.startDate) : 'N/A' }
+            { props.user.startDate ? formatDateLocal(props.user.startDate) : 'N/A' }
             {/* {formData.startDate},{props.user.startDate} */}
           </span>
         ) : (
@@ -528,13 +545,13 @@ const UserTableData = React.memo(props => {
       <td className="email_cell">
         {editUser?.endDate ? (
           <div>
-            {props.user.endDate ? formatDateLocal(formData.endDate) : 'N/A'}
+            {props.user.endDate ? formatDate(props.user.endDate) : 'N/A'}
             <FontAwesomeIcon
               className="copy_icon"
               icon={faCopy}
               onClick={() => {
                 navigator.clipboard.writeText(
-                  props.user.endDate ? formatDateLocal(formData.endDate) : 'N/A',
+                  props.user.endDate ? formatDate(formData.endDate) : 'N/A',
                 );
                 toast.success('End Date Copied!');
               }}
@@ -554,7 +571,7 @@ const UserTableData = React.memo(props => {
       </td>
       {checkPermissionsOnOwner() ? null : (
         <td>
-          <span className="usermanagement-actions-cell">
+          <span className={styles.usermanagementActionsCell}>
             {!canDeleteUsers ? (
               <Tooltip
                 placement="bottom"
@@ -583,24 +600,58 @@ const UserTableData = React.memo(props => {
               {DELETE}
             </button>
           </span>
-          <span className="usermanagement-actions-cell">
+          <span className={styles.usermanagementActionsCell}>
             <ResetPasswordButton
               authEmail={props.authEmail}
               user={props.user}
               darkMode={darkMode}
               isSmallButton
-              canUpdatePassword={resetPasswordStatus || updatePasswordStatus}
+              canUpdatePassword={resetPasswordStatus}
             />
           </span>
         </td>
       )}
     </tr>
   );
-});
+};
+// UserTableData.propTypes = {
+//   hasPermission: PropTypes.func, // or PropTypes.bool depending on what it is
+//   user: PropTypes.object,        // if you access user or user._id
+// };
+
+const UserTableData = React.memo(UserTableDataComponent);
+UserTableData.displayName = 'UserTableData';
 
 const mapStateToProps = state => ({
   auth: state.auth,
   authEmail: state.auth.user.email,
 });
+UserTableDataComponent.propTypes = {
+  hasPermission: PropTypes.func.isRequired, // must be a function
+  user: PropTypes.shape({
+    _id: PropTypes.string.isRequired,
+    firstName: PropTypes.string,
+    lastName: PropTypes.string,
+    role: PropTypes.string,
+    jobTitle: PropTypes.string,
+    email: PropTypes.string,
+    weeklycommittedHours: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    startDate: PropTypes.string,
+    endDate: PropTypes.string,
+    infringementCount: PropTypes.number,
+    isActive: PropTypes.bool,
+    reactivationDate: PropTypes.string,
+  }).isRequired,
+  index: PropTypes.number,
+  isActive: PropTypes.bool,
+  resetLoading: PropTypes.bool,
+  authEmail: PropTypes.string,
+  auth: PropTypes.object,
+  onPauseResumeClick: PropTypes.func,
+  onDeleteClick: PropTypes.func,
+  onLogTimeOffClick: PropTypes.func,
+  onUserUpdate: PropTypes.func,
+  timeOffRequests: PropTypes.array,
+};
 
 export default connect(mapStateToProps, { hasPermission })(UserTableData);

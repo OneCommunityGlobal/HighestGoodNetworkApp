@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { FaEdit, FaRegSave } from 'react-icons/fa';
 import axios from 'axios';
@@ -8,11 +8,13 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setformData } from '~/actions/hgnFormAction';
 import { Spinner } from 'reactstrap';
 import styles from '../styles/FollowupQuestions.module.css';
+import getWordCount from '../../../utils/getWordCount';
 
 function FollowupQuestions() {
   const navigate = useHistory();
   const [questions, setQuestions] = useState([]);
   const formData = useSelector(state => state.hgnForm);
+  const darkMode = useSelector(state => state.theme.darkMode);
   const user = useSelector(state => state.auth.user);
   const [newVolunteer, setNewVolunteer] = useState(formData);
   const dispatch = useDispatch();
@@ -21,6 +23,7 @@ function FollowupQuestions() {
   const [loading, setLoading] = useState(true);
   const location = useLocation();
   const { isOwner } = location.state;
+  const textareaRef = useRef(null);
   // Fetch data from database
   useEffect(() => {
     const fetchQuestions = async () => {
@@ -188,18 +191,28 @@ function FollowupQuestions() {
       // Page 5
       followUp: {
         platform: finalData.followup_platform,
+        mern_work_experience: finalData.followup_mern_work_experience,
         other_skills: finalData.followup_other_skills,
         suggestion: finalData.followup_suggestion,
         additional_info: finalData.followup_additional_info,
       },
     };
   };
-
   const groupedData = groupFormDataByPage(newVolunteer, user.userid);
 
   // TODO: Add logic to send groupedData to backend
   const handleFormSubmission = e => {
     e.preventDefault();
+    const mernWorkExp = newVolunteer.followup_mern_work_experience;
+    const mernWorkExpWordCount = getWordCount(mernWorkExp);
+
+    if (mernWorkExpWordCount < 20) {
+      toast.error('Please enter at least 20 words.');
+      // Re-focus the textarea
+      textareaRef.current?.focus();
+      return;
+    }
+
     dispatch(setformData(newVolunteer));
     axios
       .post(ENDPOINTS.HGN_FORM_SUBMIT, groupedData)
@@ -226,6 +239,9 @@ function FollowupQuestions() {
     setNewVolunteer({ ...newVolunteer, [e.target.name]: e.target.value });
   };
 
+  const handleTextareaChange = e => {
+    setNewVolunteer({ ...newVolunteer, [e.target.name]: e.target.value });
+  };
   const searchQuestion = (page, qno) => {
     const questiontext = questions.find(question => question.page === page && question.qno === qno);
     return questiontext.text;
@@ -240,8 +256,10 @@ function FollowupQuestions() {
   }
 
   return (
-    <div className={`${styles.followupQuestions}`}>
-      <h3 className={`${styles.blueStrip}`}>Follow-up Questions</h3>
+    <div className={`${styles.followupQuestions} ${darkMode ? styles.darkContainer : ''}`}>
+      <h3 className={`${styles.blueStrip} ${darkMode ? styles.darkStrip : ''}`}>
+        Follow-up Questions
+      </h3>
       <form onSubmit={handleFormSubmission}>
         {questions.map((question, index) => {
           // Dynamically map formData field names to questions
@@ -255,13 +273,13 @@ function FollowupQuestions() {
           //     : 'followup_additional_info';
           const fieldNames = [
             'followup_platform',
+            'followup_mern_work_experience',
             'followup_other_skills',
             'followup_suggestion',
             'followup_additional_info',
           ];
 
           const fieldName = fieldNames[index] || 'followup_additional_info';
-
           return (
             <div className={`${styles.followUp}`} key={question._id || index}>
               <div className={`${styles.questionContainer}`}>
@@ -295,14 +313,24 @@ function FollowupQuestions() {
                   </p>
                 )}
               </div>
-
-              <input
-                type="text"
-                name={fieldName}
-                value={newVolunteer[fieldName] || ''}
-                onChange={handleTextChange}
-                required={index === 0} // Only the first field is required
-              />
+              {index === 1 ? (
+                <textarea
+                  name={fieldName}
+                  value={newVolunteer[fieldName] || ''}
+                  onChange={handleTextareaChange}
+                  ref={textareaRef}
+                  required
+                  className={`${styles.textarea}`}
+                />
+              ) : (
+                <input
+                  type="text"
+                  name={fieldName}
+                  value={newVolunteer[fieldName] || ''}
+                  onChange={handleTextChange}
+                  required={index === 0} // Only the first field is required
+                />
+              )}
             </div>
           );
         })}

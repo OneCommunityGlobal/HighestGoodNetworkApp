@@ -405,8 +405,9 @@ class Form extends Component {
     );
   }
 
-  renderInput({ name, label, type = 'text', ...rest }) {
+  renderInput({ name, label, type = 'text', darkMode, ...rest }) {
     const { data, errors } = { ...this.state };
+    // Filter out darkMode since Input component gets it from Redux
     return (
       <Input
         name={name}
