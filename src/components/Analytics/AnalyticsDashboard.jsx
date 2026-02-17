@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import React, { useState } from "react";
 import ReviewersRequirementChart from "./ReviewersRequirementChart";
 import PopularPRChart from "./PopularPRChart";
