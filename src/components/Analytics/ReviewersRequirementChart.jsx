@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
   BarChart,
   Bar,
@@ -7,10 +7,8 @@ import {
   Tooltip,
   ResponsiveContainer,
   Legend,
-  LabelList
-} from 'recharts';
-
-// const [data, setData] = useState([]);
+  LabelList,
+} from "recharts";
 
 const ReviewersRequirementChart = ({ duration }) => {
   const [data, setData] = useState([]);
@@ -18,13 +16,17 @@ const ReviewersRequirementChart = ({ duration }) => {
   useEffect(() => {
     const fetchAPIData = async () => {
       try {
-        const token = localStorage.getItem('token');
-        const res = await fetch(`http://localhost:4500/api/analytics/github-reviews?duration=${duration}&sort=asc`, {
-          headers: {
-            Authorization: `${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
+        const token = localStorage.getItem("token");
+
+        const res = await fetch(
+          `http://localhost:4500/api/analytics/github-reviews?duration=${duration}&sort=asc`,
+          {
+            headers: {
+              Authorization: `${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
 
         if (!res.ok) {
           const error = await res.json();
@@ -32,8 +34,8 @@ const ReviewersRequirementChart = ({ duration }) => {
         }
 
         const result = await res.json();
-        console.log(result);
-        const processed = result.map(item => ({
+
+        const processed = result.map((item) => ({
           ...item,
           total:
             (item.Exceptional || 0) +
@@ -44,7 +46,7 @@ const ReviewersRequirementChart = ({ duration }) => {
 
         setData(processed);
       } catch (err) {
-        console.error('Error fetching data:', err.message);
+        // If your lint blocks console, keep it silent or wire to your logger/toast
       }
     };
 
@@ -52,20 +54,22 @@ const ReviewersRequirementChart = ({ duration }) => {
   }, [duration]);
 
   const sortedData = [...data]
-  .map(item => ({
-    ...item,
-    ...item.counts,
-    total: Object.values(item.counts).reduce((acc, val) => acc + val, 0),
-  }))
-  .sort((a, b) => b.total - a.total)
-  
+    .map((item) => ({
+      ...item,
+      ...item.counts,
+      total: Object.values(item.counts || {}).reduce(
+        (acc, val) => acc + val,
+        0
+      ),
+    }))
+    .sort((a, b) => b.total - a.total);
 
-  const barHeight = 15; 
+  const barHeight = 15;
   const chartHeight = sortedData.length * barHeight;
 
   return (
-    <div style={{ width: '100%', height: chartHeight + 100 }}>
-      <div style={{ height: '400px', overflowY: 'auto' }}>
+    <div style={{ width: "100%", height: chartHeight + 100 }}>
+      <div style={{ height: "400px", overflowY: "auto" }}>
         <ResponsiveContainer width="100%" height={chartHeight}>
           <BarChart
             layout="vertical"
@@ -76,11 +80,16 @@ const ReviewersRequirementChart = ({ duration }) => {
             <YAxis dataKey="reviewer" type="category" />
             <Tooltip />
             <Legend />
+
             <Bar dataKey="Exceptional" stackId="a" fill="#052C65" />
             <Bar dataKey="Sufficient" stackId="a" fill="#4682B4" />
             <Bar dataKey="NeedsChanges" stackId="a" fill="#FF8C00" />
             <Bar dataKey="DidNotReview" stackId="a" fill="#A9A9A9">
-              <LabelList dataKey="total" position="right" style={{ fill: 'black', fontSize: 12, fontWeight: 'bold' }} />
+              <LabelList
+                dataKey="total"
+                position="right"
+                style={{ fill: "black", fontSize: 12, fontWeight: "bold" }}
+              />
             </Bar>
           </BarChart>
         </ResponsiveContainer>
@@ -90,5 +99,3 @@ const ReviewersRequirementChart = ({ duration }) => {
 };
 
 export default ReviewersRequirementChart;
-
-

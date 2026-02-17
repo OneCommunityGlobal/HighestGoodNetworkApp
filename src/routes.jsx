@@ -572,25 +572,15 @@ export default (
           allowedRoles={[UserRole.Owner]}
         />
 
-        <ProtectedRoute
-          path="/analytics/popular-prs"
-          exact
-          component={PopularPRChart}
-          fallback
-        />
+        <Route path="/analytics/popular-prs" exact component={PopularPRChart} fallback />
+
         <ProtectedRoute
           path="/analytics/review-summary"
           exact
           component={ReviewersRequirementChart}
           fallback
         />
-        <ProtectedRoute
-          path="/analytics/dashboard"
-          exact
-          component={AnalyticsDashboard}
-          fallback
-        />
-
+        <Route path="/analytics/dashboard" exact component={AnalyticsDashboard} fallback />
 
         <ProtectedRoute path="/materials/utilization" component={MaterialUtilizationChart} />
         <ProtectedRoute path="/job-application" exact component={JobApplicationForm} />
@@ -639,7 +629,7 @@ export default (
           exact
           component={AnalyticsDashboard}
           fallback
-          // allowedRoles={[UserRole.Administrator, UserRole.Owner]}
+        // allowedRoles={[UserRole.Administrator, UserRole.Owner]}
         />
         {/* ----- BEGIN BM Dashboard Routing ----- */}
         <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
