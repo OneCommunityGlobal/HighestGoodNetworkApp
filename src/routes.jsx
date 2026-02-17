@@ -164,12 +164,10 @@ import BrowseLessonPlan from './components/EductionPortal/BrowseLessonPlan/Brows
 import EPDashboard from './components/EductionPortal';
 
 import MostSusceptibleTools from './components/MostSusceptible/toolBreakdownChart';
-import FeedbackModal from './components/HGNHelpSkillsDashboard/FeedbackModal';
 import PopularPRChart from './components/Analytics/PopularPRChart';
 
 // import AddActivities from './components/CommunityPortal/Activities/AddActivities';
 // import ActvityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
-import ActivityAgenda from './components/CommunityPortal/Activities/ActivityAgenda';
 // HGN PR Dashboard
 import AssignAtoms from './components/EductionPortal/AssignAtoms/AssignAtoms';
 import ReportDownloadButton from './components/EductionPortal/AnalyticsDashboard/ReportDownloadButton';
@@ -203,11 +201,8 @@ import SupportLogViewer from './components/SupportPortal/SupportLogViewer';
 import MaterialUtilizationChart from './components/MaterialUtilization/MaterialUtilizationChart';
 
 // eslint-disable-next-line import/order, import/no-unresolved
-import LogTools from './components/BMDashboard/LogTools/LogTools';
 // import IssueDashboard from './components/BMDashboard/Issues/IssueDashboard';
-import EquipmentUpdate from './components/BMDashboard/Tools/EquipmentUpdate';
 import ReviewersRequirementChart from './components/Analytics/ReviewersRequirementChart';
-import AnalyticsDashboard from './components/Analytics/AnalyticsDashboard';
 
 // Social Architecture
 
