@@ -1,29 +1,54 @@
-import { timeEntriesForSpecifiedPeriodReducer } from '../timeEntriesForSpecifiedPeriodReducer';
+import reducer from '../timeEntriesForSpecifiedPeriodReducer';
 
 describe('timeEntriesForSpecifiedPeriodReducer', () => {
+  const samplePayload = [{ id: 1, time: '2023-01-01' }, { id: 2, time: '2023-01-02' }];
+  const initialState = null;
+
+  it('should return the initial state when state is undefined', () => {
+    const newState = reducer(undefined, {});
+    expect(newState).toEqual(initialState);
+  });
+
+  it('should return the current state when action type does not match', () => {
+    const currentState = [{ id: 99, time: '2023-04-30' }];
+    const newState = reducer(currentState, { type: 'UNKNOWN_ACTION' });
+    expect(newState).toEqual(currentState);
+  });
+
+  it('should return the new state when action type is GET_TIME_ENTRY_FOR_SPECIFIED_PERIOD', () => {
+    const newState = reducer(initialState, {
+      type: 'GET_TIME_ENTRY_FOR_SPECIFIED_PERIOD',
+      payload: samplePayload,
+    });
+    expect(newState).toEqual(samplePayload);
+  });
+
+  it('should update the state with the new time entries when action type is GET_TIME_ENTRY_FOR_SPECIFIED_PERIOD', () => {
+    const currentState = [{ id: 0, time: '2023-01-01' }];
+    const newState = reducer(currentState, {
+      type: 'GET_TIME_ENTRY_FOR_SPECIFIED_PERIOD',
+      payload: samplePayload,
+    });
+    expect(newState).toEqual(samplePayload);
+  });
+
   it('should return the initial state when no state is provided', () => {
-    const initialState = null;
-    const action = { type: 'UNKNOWN_ACTION' };
-    const result = timeEntriesForSpecifiedPeriodReducer(undefined, action);
-    expect(result).toBe(initialState);
+    const newState = reducer(undefined, {});
+    expect(newState).toEqual(initialState);
   });
 
   it('should return the current state for an unknown action type', () => {
-    const currentState = [{ id: 1, hours: 5 }];
-    const action = { type: 'UNKNOWN_ACTION' };
-    const result = timeEntriesForSpecifiedPeriodReducer(currentState, action);
-    expect(result).toEqual(currentState);
+    const currentState = [{ id: 3, time: '2023-04-29' }];
+    const newState = reducer(currentState, { type: 'SOME_UNKNOWN_TYPE' });
+    expect(newState).toEqual(currentState);
   });
 
   it('should handle GET_TIME_ENTRY_FOR_SPECIFIED_PERIOD and update the state', () => {
     const action = {
       type: 'GET_TIME_ENTRY_FOR_SPECIFIED_PERIOD',
-      payload: [
-        { id: 2, hours: 8 },
-        { id: 3, hours: 6 },
-      ],
+      payload: samplePayload,
     };
-    const result = timeEntriesForSpecifiedPeriodReducer(null, action);
-    expect(result).toEqual(action.payload);
+    const newState = reducer(null, action);
+    expect(newState).toEqual(samplePayload);
   });
 });
