@@ -25,7 +25,7 @@ import {
   Tooltip,
 } from 'recharts';
 import { ENDPOINTS } from '~/utils/URL';
-import styles from './style/UserProfilePage.module.css';
+// import styles from './style/UserProfilePage.module.css';
 
 // Sample data for skills
 const mockSkillsData = {
