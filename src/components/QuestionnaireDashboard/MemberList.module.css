@@ -11,7 +11,9 @@
   border: 1px solid #dee2e6;
   border-radius: 8px;
   padding: 20px;
-  margin-bottom: 30px;
+  margin: 0 auto 30px auto;
+  max-width: 900px;
+  width: 90%; 
 }
 
 .filterSection {
@@ -128,6 +130,8 @@
   gap: 16px;
   justify-items: center;
   width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
 }
 
 .memberCard {
@@ -207,78 +211,4 @@
   background-color: #007bff;
   color: #fff;
   font-weight: bold;
-}
-
-/* Dark Mode - Maximum Specificity */
-body.dark-mode:not(.no-global-theme) .filterBar {
-  background: #1a1a1a !important;
-  border-color: #444 !important;
-}
-
-body.dark-mode:not(.no-global-theme) .filterLabel,
-body.dark-mode:not(.no-global-theme) .scoreInput label,
-body.dark-mode:not(.no-global-theme) .scoreSeparator,
-body.dark-mode:not(.no-global-theme) .resultCount {
-  color: #fff !important;
-}
-
-body.dark-mode:not(.no-global-theme) .skillTag {
-  background: #2d2d2d;
-  border-color: #007bff;
-  color: #007bff;
-}
-
-body.dark-mode:not(.no-global-theme) .skillTag:hover {
-  background: #003d7a;
-}
-
-body.dark-mode:not(.no-global-theme) .skillTagActive {
-  background: #007bff;
-  color: #fff;
-}
-
-body.dark-mode:not(.no-global-theme) .scoreField {
-  background: #2d2d2d !important;
-  color: #fff !important;
-  border-color: #444 !important;
-}
-
-body.dark-mode:not(.no-global-theme) .memberCard {
-  background: #2d2d2d !important;
-  border-color: #444 !important;
-}
-
-body.dark-mode:not(.no-global-theme) .memberCard h3 {
-  color: #000 !important;
-}
-
-body.dark-mode:not(.no-global-theme) .memberCard p {
-  color: #000 !important;
-}
-
-body.dark-mode:not(.no-global-theme) .scoreGreen {
-  color: #5cb85c !important;
-}
-
-body.dark-mode:not(.no-global-theme) .scoreRed {
-  color: #ff6b6b !important;
-}
-
-body.dark-mode:not(.no-global-theme) .noResults {
-  color: #ccc !important;
-}
-
-body.dark-mode:not(.no-global-theme) .pageButton {
-  background: #2d2d2d;
-  color: #fff;
-  border-color: #444;
-}
-
-body.dark-mode:not(.no-global-theme) .pageButton:disabled {
-  opacity: 0.5;
-}
-
-body.dark-mode:not(.no-global-theme) .pageButton.active {
-  background: #007bff;
-  color: #fff;
 }
