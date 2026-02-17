@@ -50,6 +50,7 @@ function SingleTask(props) {
         const res = await axios.get(ENDPOINTS.GET_TASK(taskId));
         setTask(res?.data || {});
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.log(error);
       }
     };
@@ -89,115 +90,126 @@ function SingleTask(props) {
               </ol>
             </nav>
           )}
-
-          <table className={`table table-bordered tasks-table ${darkMode ? 'dark-mode text-light' : ''}`}>
-            <thead className={darkMode ? 'bg-space-cadet' : ''}>
-              <tr>
-                <th scope="col" data-tip="Action" colSpan="1">
-                  Action
-                </th>
-                <th scope="col" data-tip="task-num" colSpan="1">
-                  #
-                </th>
-                <th scope="col" data-tip="Task Name" className="task-name">
-                  Task Name
-                </th>
-                <th scope="col" data-tip="Priority">
-                  <i className="fa fa-star" aria-hidden="true" />
-                </th>
-                <th className="desktop-view" scope="col" data-tip="Resources">
-                  <i className="fa fa-users" aria-hidden="true" />
-                </th>
-                <th scope="col" data-tip="Assigned">
-                  <i className="fa fa-user-circle-o" aria-hidden="true" />
-                </th>
-                <th className="desktop-view" scope="col" data-tip="Status">
-                  <i className="fa fa-tasks" aria-hidden="true" />
-                </th>
-                <th className="desktop-view" scope="col" data-tip="Hours-Best">
-                  <i className="fa fa-hourglass-start" aria-hidden="true" />
-                </th>
-                <th className="desktop-view" scope="col" data-tip="Hours-Worst">
-                  <i className="fa fa-hourglass" aria-hidden="true" />
-                </th>
-                <th className="desktop-view" scope="col" data-tip="Hours-Most">
-                  <i className="fa fa-hourglass-half" aria-hidden="true" />
-                </th>
-                <th className="desktop-view" scope="col" data-tip="Estimated Hours">
-                  <i className="fa fa-clock-o" aria-hidden="true" />
-                </th>
-                <th className="desktop-view" scope="col" data-tip="Hours-Logged">
-                  <i className="fa fa-hourglass-end" aria-hidden="true" />
-                </th>
-                <th className="desktop-view" scope="col" data-tip="Start Date">
-                  <i className="fa fa-calendar-check-o" aria-hidden="true" />
-                  {' '}
-                  Start
-                </th>
-                <th className="desktop-view" scope="col" data-tip="Due Date">
-                  <i className="fa fa-calendar-times-o" aria-hidden="true" />
-                  {' '}
-                  End
-                </th>
-                <th className="desktop-view" scope="col" data-tip="Links">
-                  <i className="fa fa-link" aria-hidden="true" />
-                </th>
-                <th className="desktop-view" scope="col" data-tip="Details">
-                  <i className="fa fa-question" aria-hidden="true" />
-                </th>
-              </tr>
-            </thead>
-            <tbody className={darkMode ? 'bg-yinmn-blue' : ''}>
-              <tr>
-                <th scope="row">
-                  <div className="d-flex">
-                    <EditTaskModal
-                      key={`editTask_${task._id}`}
-                      parentNum={task.num}
-                      taskId={task._id}
-                      wbsId={task.wbsId}
-                      parentId1={task.parentId1}
-                      parentId2={task.parentId2}
-                      parentId3={task.parentId3}
-                      mother={task.mother}
-                      level={task.level}
-                      setTask={setTask}
-                    />
-                    {canDeleteTask && (
-                      <>
-                        <Button
-                          type="button"
-                          size="sm"
-                          className="btn btn-danger"
-                          onClick={() => showUpDeleteModal()}
-                          style={darkMode ? boxStyleDark : boxStyle}
-                        >
-                          Delete
-                          {' '}
-                          <i className="fa fa-trash" aria-hidden="true" />
-                        </Button>
-                        <ModalDelete
-                          isOpen={modalDelete}
-                          closeModal={() => setModalDelete(false)}
-                          confirmModal={() => deleteTask(task._id, task.mother)}
-                          modalMessage={
-                            props.popupEditor.currPopup.popupContent || 'DELETE THIS TASK ?'
+          <div className='tasks-table table-responsive mb-5'>
+            <table className={`table table-bordered ${darkMode ? 'dark-mode text-light' : ''}`}>
+              <thead className={darkMode ? 'bg-space-cadet' : ''}>
+                <tr>
+                  <th scope="col" data-tip="Action" colSpan="1">
+                    Action
+                  </th>
+                  <th scope="col" data-tip="task-num" colSpan="1">
+                    #
+                  </th>
+                  <th scope="col" data-tip="Task Name" style={{ minWidth: '200px' }}>
+                    Task Name
+                  </th>
+                  <th scope="col" data-tip="Priority">
+                    <i className="fa fa-star" aria-hidden="true" />
+                  </th>
+                  <th scope="col" data-tip="Resources">
+                    <i className="fa fa-users" aria-hidden="true" />
+                  </th>
+                  <th scope="col" data-tip="Assigned">
+                    <i className="fa fa-user-circle-o" aria-hidden="true" />
+                  </th>
+                  <th scope="col" data-tip="Status">
+                    <i className="fa fa-tasks" aria-hidden="true" />
+                  </th>
+                  <th scope="col" data-tip="Hours-Best">
+                    <i className="fa fa-hourglass-start" aria-hidden="true" />
+                  </th>
+                  <th scope="col" data-tip="Hours-Worst">
+                    <i className="fa fa-hourglass" aria-hidden="true" />
+                  </th>
+                  <th scope="col" data-tip="Hours-Most">
+                    <i className="fa fa-hourglass-half" aria-hidden="true" />
+                  </th>
+                  <th scope="col" data-tip="Estimated Hours">
+                    <i className="fa fa-clock-o" aria-hidden="true" />
+                  </th>
+                  <th scope="col" data-tip="Hours-Logged">
+                    <i className="fa fa-hourglass-end" aria-hidden="true" />
+                  </th>
+                  <th scope="col" data-tip="Start Date">
+                    <i className="fa fa-calendar-check-o" aria-hidden="true" />
+                    {' '}
+                    Start
+                  </th>
+                  <th scope="col" data-tip="Due Date">
+                    <i className="fa fa-calendar-times-o" aria-hidden="true" />
+                    {' '}
+                    End
+                  </th>
+                  <th scope="col" data-tip="Links">
+                    <i className="fa fa-link" aria-hidden="true" />
+                  </th>
+                  <th scope="col" data-tip="Details">
+                    <i className="fa fa-question" aria-hidden="true" />
+                  </th>
+                </tr>
+              </thead>
+              <tbody className={darkMode ? 'bg-yinmn-blue' : ''}>
+                <tr>
+                  <th scope="row">
+                    <div className="d-flex flex-column align-items-start">
+                      <EditTaskModal
+                        key={`editTask_${task._id}`}
+                        parentNum={task.num}
+                        taskId={task._id}
+                        wbsId={task.wbsId}
+                        parentId1={task.parentId1}
+                        parentId2={task.parentId2}
+                        parentId3={task.parentId3}
+                        mother={task.mother}
+                        level={task.level}
+                        setTask={setTask}
+                      />
+                      {canDeleteTask && (
+                        <>
+                          <Button
+                            type="button"
+                            size="sm"
+                            className="btn btn-danger mt-1 ml-2" 
+                            onClick={() => showUpDeleteModal()}
+                          >
+                            Delete
+                          </Button>
+                          <ModalDelete
+                            isOpen={modalDelete}
+                            closeModal={() => setModalDelete(false)}
+                            confirmModal={() => deleteTask(task._id, task.mother)}
+                            modalMessage={
+                              props.popupEditor.currPopup.popupContent || 'DELETE THIS TASK ?'
+                            }
+                            modalTitle={Message.CONFIRM_DELETION}
+                            darkMode={darkMode}
+                          />
+                        </>
+                      )}
+                    </div>
+                  </th>
+                  <th scope="row">{task.num}</th>
+                  <td>{task.taskName}</td>
+                  <td>{task.priority}</td>
+                  <td>
+                    {task?.resources &&
+                      task.resources.map((elem, i) => {
+                        try {
+                          if (elem.profilePic) {
+                            return (
+                              <a
+                                key={`res_${i}`}
+                                data-tip={elem.name}
+                                className="name"
+                                href={`/userprofile/${elem.userID}`}
+                                target="_blank"
+                                rel="noreferrer"
+                              >
+                                {/* eslint-disable-next-line jsx-a11y/alt-text */}
+                                <img className="img-circle" src={elem.profilePic} />
+                              </a>
+                            );
                           }
-                          modalTitle={Message.CONFIRM_DELETION}
-                          darkMode={darkMode}
-                        />
-                      </>
-                    )}
-                  </div>
-                </th>
-                <th scope="row">{task.num}</th>
-                <td>{task.taskName}</td>
-                <td>{task.priority}</td>
-                <td className="desktop-view">
-                  {task?.resources &&
-                    task.resources.map((elem, i) => {
-                      try {
-                        if (elem.profilePic) {
                           return (
                             <a
                               key={`res_${i}`}
@@ -207,48 +219,40 @@ function SingleTask(props) {
                               target="_blank"
                               rel="noreferrer"
                             >
-                              <img className="img-circle" src={elem.profilePic} />
+                              <span className="dot">{elem.name.substring(0, 2)}</span>
                             </a>
                           );
-                        }
-                        return (
-                          <a
-                            key={`res_${i}`}
-                            data-tip={elem.name}
-                            className="name"
-                            href={`/userprofile/${elem.userID}`}
-                            target="_blank"
-                            rel="noreferrer"
-                          >
-                            <span className="dot">{elem.name.substring(0, 2)}</span>
-                          </a>
-                        );
 
-                      } catch (err) { }
-                    })}
-                </td>
-                <td>
-                  {task.isAssigned ? (
-                    <i data-tip="Assigned" className="fa fa-check-square" aria-hidden="true" />
-                  ) : (
-                    <i data-tip="Not Assigned" className="fa fa-square-o" aria-hidden="true" />
-                  )}
-                </td>
-                <td>{task.status}</td>
-                <td>{task.hoursBest}</td>
-                <td>{task.hoursWorst}</td>
-                <td>{task.hoursMost}</td>
-                <td>{parseFloat(task.estimatedHours).toFixed(2)}</td>
-                <td>{parseFloat(task.hoursLogged).toFixed(2)}</td>
-                <td>{task.startedDatetime ? formatDate(task.startedDatetime) : 'N/A'}</td>
-                <td>{task.dueDatetime ? formatDate(task.dueDatetime) : 'N/A'}</td>
-                <td>{task.links}</td>
-                <td className="desktop-view" onClick={toggleModel}>
-                  <i className="fa fa-book" aria-hidden="true" />
-                </td>
-              </tr>
-            </tbody>
-          </table>
+                        } catch (err) { }
+                      })}
+                  </td>
+                  <td>
+                    {task.isAssigned ? (
+                      <i data-tip="Assigned" className="fa fa-check-square" aria-hidden="true" />
+                    ) : (
+                      <i data-tip="Not Assigned" className="fa fa-square-o" aria-hidden="true" />
+                    )}
+                  </td>
+                  <td>{task.status}</td>
+                  <td>{task.hoursBest}</td>
+                  <td>{task.hoursWorst}</td>
+                  <td>{task.hoursMost}</td>
+                  <td>{parseFloat(task.estimatedHours).toFixed(2)}</td>
+                  <td>{parseFloat(task.hoursLogged).toFixed(2)}</td>
+                  <td>{task.startedDatetime ? formatDate(task.startedDatetime) : 'N/A'}</td>
+                  <td>{task.dueDatetime ? formatDate(task.dueDatetime) : 'N/A'}</td>
+                  <td>
+                    <a href={task.links}>
+                      <i className={`fa fa-link ${darkMode ? 'text-azure' : ''}`} aria-hidden="true" />
+                    </a>
+                  </td>
+                  <td onClick={toggleModel}>
+                    <i className="fa fa-book" aria-hidden="true" />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
 
         <Modal isOpen={modal} toggle={toggleModel}>

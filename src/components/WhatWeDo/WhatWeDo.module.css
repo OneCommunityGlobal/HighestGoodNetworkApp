@@ -1,0 +1,189 @@
+.whatWeDoContainer {
+  padding: 20px;
+  text-align: left;
+  max-width: 1200px;
+  margin: 0 auto;
+  overflow-x: hidden; /* Prevent horizontal overflow */
+}
+
+.whatWeDoContainer h2 {
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 16px;
+  word-wrap: break-word;
+}
+
+.whatWeDoGrid {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(320px, 1fr)
+  ); /* Increased min-width for longer text */
+  gap: 20px; /* Increased gap for better spacing */
+  margin-top: 16px;
+  width: 100%;
+}
+
+.whatWeDoItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px; /* Increased gap between image and text */
+  text-decoration: none;
+  color: inherit;
+  padding: 16px; /* Increased padding */
+  border-radius: 8px;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+  min-width: 0;
+  overflow: hidden;
+  min-height: fit-content; /* Allow natural height expansion */
+}
+
+.whatWeDoItem:hover {
+  background-color: #f5f5f5;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.whatWeDoItem img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.whatWeDoText {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.whatWeDoText h3 {
+  margin: 0 0 12px 0; /* Increased margin */
+  font-size: 1.1rem;
+  color: #333;
+  line-height: 1.3;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.whatWeDoText p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #666;
+  line-height: 1.5; /* Improved line height for readability */
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+/* Improved responsive breakpoints */
+@media (max-width: 1024px) {
+  .whatWeDoGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+  }
+}
+
+@media (max-width: 768px) {
+  .whatWeDoContainer {
+    padding: 16px;
+  }
+
+  .whatWeDoGrid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .whatWeDoItem {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .whatWeDoContainer {
+    padding: 12px;
+  }
+
+  .whatWeDoContainer h2 {
+    font-size: 1.5rem;
+    text-align: center;
+  }
+
+  .whatWeDoItem {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 20px; /* More padding for mobile */
+  }
+
+  .whatWeDoItem img {
+    width: 100px; /* Larger image on mobile since text is below */
+    height: 100px;
+    margin-bottom: 16px;
+  }
+
+  .whatWeDoText h3 {
+    font-size: 1.2rem; /* Larger heading on mobile */
+    margin-bottom: 12px;
+  }
+
+  .whatWeDoText p {
+    font-size: 0.9rem; /* Slightly larger text for better readability */
+    line-height: 1.6;
+  }
+}
+
+@media (max-width: 320px) {
+  .whatWeDoContainer {
+    padding: 10px;
+  }
+
+  .whatWeDoGrid {
+    gap: 16px;
+  }
+
+  .whatWeDoItem {
+    padding: 16px;
+  }
+
+  .whatWeDoItem img {
+    width: 90px;
+    height: 90px;
+  }
+
+  .whatWeDoText h3 {
+    font-size: 1.1rem;
+  }
+
+  .whatWeDoText p {
+    font-size: 0.85rem;
+  }
+}
+
+/* Dark mode support - using :global for parent classes */
+:global(.user-collaboration-dark-mode) .whatWeDoContainer h2,
+:global(.user-collaboration-dark-mode) .whatWeDoText h3 {
+  color: #fff;
+}
+
+:global(.user-collaboration-dark-mode) .whatWeDoText p {
+  color: #ccc;
+}
+
+:global(.user-collaboration-dark-mode) .whatWeDoItem:hover {
+  background-color: #444;
+}
+
+/* Touch-friendly states */
+@media (hover: none) and (pointer: coarse) {
+  .whatWeDoItem:hover {
+    background-color: transparent;
+    box-shadow: none;
+  }
+
+  .whatWeDoItem:active {
+    background-color: #f0f0f0;
+  }
+}

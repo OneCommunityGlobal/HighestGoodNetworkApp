@@ -197,34 +197,36 @@ const mockSkillsData = {
     },
   ],
 };
+import styles from './style/UserProfile.module.css';
 
+// Custom tooltip for RadarChart
 function CustomTooltip({ active, payload }) {
   if (active && payload && payload.length) {
-    const val = payload[0].value;
+    const data = payload[0].payload;
     return (
-      <div className={styles.customTooltip}>
-        <p className={styles.tooltipTitle}>{payload[0].payload.name}</p>
-        <p className={styles.tooltipLine}>
+      <div className={`${styles.tooltip}`}>
+        <p className={`${styles.tooltipTitle}`}>{data.name}</p>
+        <p className={`${styles.tooltipScore}`}>
           Score:{' '}
-          <span className={classnames(styles.tooltipScore, val < 5 ? styles.low : styles.high)}>
-            {val}
+          <span className={data.value < 5 ? `${styles.scoreLow}` : `${styles.scoreHigh}`}>
+            {data.value}
           </span>
         </p>
-        <p className={styles.tooltipQuestion}>{payload[0].payload.question}</p>
+        <p className={`${styles.tooltipQuestion}`}>{data.question}</p>
       </div>
     );
   }
-
   return null;
 }
 
+// Single skill card
 function SkillItem({ item }) {
   return (
-    <div id={`tooltip-${item.id}`} className={styles.scoreItem}>
-      <div className={classnames(styles.scoreValue, item.score < 5 ? styles.low : styles.high)}>
+    <div id={`tooltip-${item.id}`} className={`${styles.skillItem}`}>
+      <div className={item.score < 5 ? `${styles.skillScoreLow}` : `${styles.skillScoreHigh}`}>
         {item.score}
       </div>
-      <div className={styles.scoreName}>{item.name}</div>
+      <div className={`${styles.skillName}`}>{item.name}</div>
       <UncontrolledTooltip placement="top" target={`tooltip-${item.id}`}>
         {item.question}
       </UncontrolledTooltip>
@@ -232,17 +234,17 @@ function SkillItem({ item }) {
   );
 }
 
-// Separate Skills Tabbed Section component
+// Skills tabbed section
 function SkillsTabbedSection({ skillsData }) {
   const [activeTab, setActiveTab] = useState('Dashboard');
+
   const allSkills = [
-    ...skillsData.Frontend,
-    ...skillsData.Backend,
-    ...skillsData.DevOps,
-    ...skillsData.SWPractices,
+    ...(skillsData.Frontend || []),
+    ...(skillsData.Backend || []),
+    ...(skillsData.DevOps || []),
+    ...(skillsData.SWPractices || []),
   ];
 
-  // Format all skills for the radar chart
   const radarData = allSkills.map(skill => ({
     name: skill.name,
     value: skill.score,
@@ -253,39 +255,23 @@ function SkillsTabbedSection({ skillsData }) {
     if (activeTab !== tab) setActiveTab(tab);
   };
 
-  const renderScoreItems = items => {
-    return (
-      <Row className="g-2">
-        {items.map(item => (
-          <Col key={item.id} xs={6} sm={4} md={3} lg={3} className="mb-3">
-            <SkillItem item={item} />
-          </Col>
-        ))}
-      </Row>
-    );
-  };
-
-  const renderRadarChart = () => {
-    return (
-      <ResponsiveContainer width="100%" height="100%">
-        <RadarChart outerRadius={160} data={radarData}>
-          <PolarGrid />
-          <PolarAngleAxis dataKey="name" tick={{ fontSize: 9 }} />
-          <PolarRadiusAxis angle={30} domain={[0, 10]} />
-          <Radar name="Skills" dataKey="value" stroke="#ff4d6d" fill="#ff4d6d" fillOpacity={0.6} />
-          <Tooltip content={<CustomTooltip />} />
-        </RadarChart>
-      </ResponsiveContainer>
-    );
-  };
+  const renderScoreItems = items => (
+    <Row>
+      {items.map(item => (
+        <Col key={item.id} xs={6} sm={4} md={3} lg={3}>
+          <SkillItem item={item} />
+        </Col>
+      ))}
+    </Row>
+  );
 
   return (
     <Card>
-      <CardBody className={styles.cardBody}>
-        <h5 className="mb-3">Skills</h5>
-        <Row className={styles.skillsRow}>
+      <CardBody className={`${styles.cardBody}`}>
+        <h5>Skills</h5>
+        <Row className={`${styles.skillsRow}`}>
           {/* Tabs column */}
-          <Col md={2} className={styles.tabsCol}>
+          <Col md={2} className={`${styles.navCol}`}>
             <Nav vertical pills>
               {[
                 'Dashboard',
@@ -294,9 +280,11 @@ function SkillsTabbedSection({ skillsData }) {
                 'Deployment & DevOps',
                 'Software Practices',
               ].map(tab => (
-                <NavItem key={tab} className={styles.navItem}>
+                <NavItem key={tab} className={`${styles.navItem}`}>
                   <NavLink
-                    className={classnames(styles.navLink, { [styles.active]: activeTab === tab })}
+                    className={classnames(styles.navLink, {
+                      [styles.activeNavLink]: activeTab === tab,
+                    })}
                     onClick={() => toggle(tab)}
                   >
                     {tab}
@@ -307,16 +295,34 @@ function SkillsTabbedSection({ skillsData }) {
           </Col>
 
           {/* Content column */}
-          <Col md={10} className={styles.contentCol}>
+          <Col md={10} className={`${styles.contentCol}`}>
             <TabContent activeTab={activeTab}>
               <TabPane tabId="Dashboard">
-                <div className={styles.chartWrapper}>{renderRadarChart()}</div>
+                <div className={`${styles.chartContainer}`}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <RadarChart outerRadius={160} data={radarData}>
+                      <PolarGrid />
+                      <PolarAngleAxis dataKey="name" tick={{ fontSize: 9 }} />
+                      <PolarRadiusAxis angle={30} domain={[0, 10]} />
+                      <Radar
+                        name="Skills"
+                        dataKey="value"
+                        stroke="#ff4d6d"
+                        fill="#ff4d6d"
+                        fillOpacity={0.6}
+                      />
+                      <Tooltip content={<CustomTooltip />} />
+                    </RadarChart>
+                  </ResponsiveContainer>
+                </div>
               </TabPane>
-              <TabPane tabId="Frontend">{renderScoreItems(skillsData.Frontend)}</TabPane>
-              <TabPane tabId="Backend">{renderScoreItems(skillsData.Backend)}</TabPane>
-              <TabPane tabId="Deployment & DevOps">{renderScoreItems(skillsData.DevOps)}</TabPane>
+              <TabPane tabId="Frontend">{renderScoreItems(skillsData.Frontend || [])}</TabPane>
+              <TabPane tabId="Backend">{renderScoreItems(skillsData.Backend || [])}</TabPane>
+              <TabPane tabId="Deployment & DevOps">
+                {renderScoreItems(skillsData.DevOps || [])}
+              </TabPane>
               <TabPane tabId="Software Practices">
-                {renderScoreItems(skillsData.SWPractices)}
+                {renderScoreItems(skillsData.SWPractices || [])}
               </TabPane>
             </TabContent>
           </Col>
@@ -326,13 +332,13 @@ function SkillsTabbedSection({ skillsData }) {
   );
 }
 
+// Main UserProfilePage
 function UserProfilePage() {
   const { userId } = useParams();
   const [userProfile, setUserProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Load user profile data
   useEffect(() => {
     const loadUserProfile = async () => {
       if (!userId) return;
@@ -343,8 +349,6 @@ function UserProfilePage() {
         setUserProfile(response.data);
         setLoading(false);
       } catch (err) {
-        // eslint-disable-next-line no-console
-        console.error('Error loading user profile:', err);
         setError('Failed to load user profile data');
         setLoading(false);
       }
@@ -354,19 +358,19 @@ function UserProfilePage() {
   }, [userId]);
 
   if (loading) return <div>Loading...</div>;
-  // if (error) return <div>Error: {error}</div>;
+  if (error) return <div>Error: {error}</div>;
 
   return (
-    <div className="user-profile-page">
-      {/* This is a placeholder for the other parts of the user profile */}
-      <div className="user-info-section mb-4">
+    <div className={`${styles.userProfilePage}`}>
+      <div>
         <div>User Profile Page Placeholder</div>
       </div>
 
-      {/* Skills tabbed section */}
-      <div className={styles.skillsSection}>
-        <SkillsTabbedSection skillsData={mockSkillsData} />
-      </div>
+      {userProfile?.skills && (
+        <div className={`${styles.skillsSection}`}>
+          <SkillsTabbedSection skillsData={userProfile.skills} />
+        </div>
+      )}
     </div>
   );
 }

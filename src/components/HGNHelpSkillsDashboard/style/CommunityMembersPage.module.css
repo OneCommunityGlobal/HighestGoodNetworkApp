@@ -1,5 +1,126 @@
-.skillsContainer {
+.container {
+  max-width: 100vw;
+  margin: 0 auto;
+  padding: 0 1rem;
+  min-height: 100vh;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.accordion {
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.accordionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  user-select: none;
+  background-color: #f3f4f6;
+  transition: background-color 0.2s;
+}
+
+.accordionHeader:hover {
+  background-color: #e5e7eb;
+}
+
+.accordionHeader.dark {
+  background-color: #1f2937;
+}
+
+.accordionHeader.dark:hover {
+  background-color: #374151;
+}
+
+.accordionTitle {
+  font-weight: 600;
+}
+
+.accordionIcon {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.accordionContent {
+  padding: 0.75rem;
+}
+
+/* Filters */
+.filterGroup {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 0.5rem;
+}
+
+.skillButton,
+.preferenceButton {
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  border: 1px solid #d1d5db;
+  background-color: white;
+  color: #1f2937;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.skillButton:hover,
+.preferenceButton:hover {
+  background-color: #f3f4f6;
+}
+
+.skillButton.selected {
+  background-color: #2563eb;
+  border-color: #2563eb;
+  color: white;
+}
+
+.preferenceButton.selected {
+  background-color: #16a34a;
+  border-color: #16a34a;
+  color: white;
+}
+
+.message {
+  text-align: center;
+  font-size: 0.95rem;
+  color: #6b7280;
+  margin-top: 1rem;
+}
+
+/* Dark mode */
+.darkMode {
+  background-color: #1b2a41;
+  color: #f9fafb;
+}
+
+.darkMode .skillButton,
+.darkMode .preferenceButton {
+  background-color: #1f2937;
+  color: #f9fafb;
+  border-color: #4b5563;
+}
+
+.darkMode .skillButton:hover,
+.darkMode .preferenceButton:hover {
+  background-color: #374151;
+}
+.darkMode .skillButton.selected {
+  background-color: #3b82f6;
+  border-color: #3b82f6;
+  color: #ffffff;
+}
+
+.darkMode .preferenceButton.selected {
+  background-color: #22c55e;
+  border-color: #22c55e;
+  color: #ffffff;
 }

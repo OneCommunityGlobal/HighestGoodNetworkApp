@@ -122,7 +122,6 @@ export const getAllUserTeams = () => {
       .then(res => {
         dispatch(teamMembersFectchACtion(res.data));
         return res.data;
-        // console.log("getAllUserTeams: res:", res.data)
       })
       .catch(() => {
         dispatch(teamMembersFectchACtion(undefined));
@@ -183,10 +182,14 @@ export const updateTeam = (teamName, teamId, isActive, teamCode) => {
   return async dispatch => {
     try {
       const updateTeamResponse = await axios.put(url, requestData);
-      dispatch(updateTeamAction(teamId, isActive, teamName, teamCode));
+      if (updateTeamResponse.status === 200) {
+        // Use the actual response data from the backend
+        const updatedTeam = updateTeamResponse.data;
+        dispatch(updateTeamAction(teamId, updatedTeam.isActive, updatedTeam.teamName, updatedTeam.teamCode));
+      }
       return updateTeamResponse;
     } catch (error) {
-      return error.response.data.error;
+      return error.response?.data?.error || error.message;
     }
   };
 };
@@ -248,7 +251,11 @@ export const updateTeamMemeberVisibility = (teamId, userId, visibility) => {
       .catch(error => {
         if (error.response) {
           // The request was made and the server responded with a status code
-          toast.error('Error updating visibility:', error.response.data);
+          const msg =
+            error.response?.data?.message ||
+            error.response?.data?.error ||
+            (typeof error.response?.data === 'string' ? error.response.data : 'Unknown error');
+          toast.error(`Error updating visibility: ${msg}`);
         } else if (error.request) {
           // The request was made but no response was received
           toast.error('Error updating visibility: No response received');
@@ -276,10 +283,13 @@ export const fetchAllTeamCodeSucess = payload => ({
  * @returns
  */
 
-export const getAllTeamCode = () => {
+export const getAllTeamCode = (includePRTeams = false) => {
   return async dispatch => {
     try {
-      const res = await axios.get(ENDPOINTS.USER_ALL_TEAM_CODE);
+      const url = includePRTeams 
+        ? `${ENDPOINTS.USER_ALL_TEAM_CODE}?includePRTeams=true`
+        : ENDPOINTS.USER_ALL_TEAM_CODE;
+      const res = await axios.get(url);
       if (!res || !res.data) {
         throw new Error('Invalid response from server');
       }

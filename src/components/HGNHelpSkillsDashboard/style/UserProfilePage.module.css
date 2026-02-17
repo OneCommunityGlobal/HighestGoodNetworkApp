@@ -1,22 +1,28 @@
-.cardBody {
-  padding: 1rem;
+.userProfilePage {
+  width: 100%;
 }
 
-.skillsRow {
-  min-height: 400px;
+.userInfoSection {
+  margin-bottom: 1rem;
 }
 
-.tabsCol {
+.skillsSection {
+  width: 100%;
+  text-align: left;
+  padding: 0 4px;
+}
+
+.tabNav {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
-.navItem {
+.tabItem {
   margin-bottom: 15px;
 }
 
-.navLink {
+.tabLink {
   background-color: #f1f1f1;
   color: #555;
   font-weight: 500;
@@ -24,20 +30,12 @@
   border-radius: 10px;
   cursor: pointer;
   padding: 10px;
-  transition: background-color 0.15s ease, color 0.15s ease;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-.navLink:hover {
-  background-color: #e9ecef;
-}
-
-.active {
+.tabLinkActive {
   background-color: #e3f2fd;
   color: #007bff;
-}
-
-.contentCol {
-  overflow-y: auto;
 }
 
 .chartWrapper {
@@ -62,17 +60,17 @@
   margin-bottom: 8px;
 }
 
+.scoreLow {
+  color: #dc3545; /* red */
+}
+
+.scoreHigh {
+  color: #28a745; /* green */
+}
+
 .scoreName {
   font-size: 14px;
   font-weight: bold;
-}
-
-.low {
-  color: #dc3545;
-}
-
-.high {
-  color: #28a745;
 }
 
 .customTooltip {
@@ -81,7 +79,7 @@
   border-radius: 8px;
   padding: 6px 8px;
   font-size: 12px;
-  box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.1);
   max-width: 180px;
   white-space: normal;
   word-wrap: break-word;
@@ -92,20 +90,10 @@
   font-weight: bold;
 }
 
-.tooltipLine {
-  margin: 0 0 4px 0;
-}
-
 .tooltipScore {
-  font-weight: bold;
+  margin: 0 0 4px 0;
 }
 
 .tooltipQuestion {
   margin: 0;
-}
-
-.skillsSection {
-  width: 100%;
-  text-align: left;
-  padding: 0 4px;
 }

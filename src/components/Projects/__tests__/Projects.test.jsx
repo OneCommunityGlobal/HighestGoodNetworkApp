@@ -76,7 +76,7 @@ describe("Projects component",()=>{
       data: [],
     });
     render(<Provider store={store}><Projects /></Provider>)
-    expect(screen.getByText('Project Name')).toBeInTheDocument();
+    expect(screen.getAllByText('Project Name')[0]).toBeInTheDocument();
   })
   it('check if Category header displays as expected',()=>{
     axios.get.mockResolvedValue({
@@ -197,7 +197,7 @@ describe("Projects component",()=>{
 
     const {container}=render(<MemoryRouter><Provider store={testStore}><Projects /></Provider></MemoryRouter>)
     expect(screen.getByText("ERROR")).toBeInTheDocument()
-
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
     const ascendingButton=container.querySelector('[id="Ascending"]')
     fireEvent.click(ascendingButton)
 

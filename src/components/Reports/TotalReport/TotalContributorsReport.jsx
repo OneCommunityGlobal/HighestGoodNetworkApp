@@ -1,10 +1,18 @@
 import { useEffect, useState, useMemo, useCallback } from 'react';
 import axios from 'axios';
 import { ENDPOINTS } from '~/utils/URL';
-import './TotalReport.css';
+import styles from './TotalReport.module.css';
 import TotalReportBarGraph from './TotalReportBarGraph';
 import Loading from '../../common/Loading';
 import EditableInfoModal from '../../UserProfile/EditableModal/EditableInfoModal';
+import { generateBarData as generateBarDataUtil } from './generateBarData';
+import {
+  getCachedData,
+  setCachedData,
+  validateUserList,
+  logApiRequest,
+  logApiResponse,
+} from './cacheUtils';
 
 function TotalContributorsReport({ startDate, endDate, userProfiles, darkMode, userRole }) {
   const [contributors, setContributors] = useState([]);
@@ -17,29 +25,73 @@ function TotalContributorsReport({ startDate, endDate, userProfiles, darkMode, u
 
   const fromDate = useMemo(() => startDate.toLocaleDateString('en-CA'), [startDate]);
   const toDate = useMemo(() => endDate.toLocaleDateString('en-CA'), [endDate]);
-  const userList = useMemo(() => userProfiles.map(({ _id }) => _id), [userProfiles]);
+  const userList = useMemo(() => {
+    const list = userProfiles?.map(({ _id }) => _id) || [];
+    // eslint-disable-next-line no-console
+    console.log('TotalContributorsReport userList created:', {
+      userProfilesLength: userProfiles?.length,
+      userListLength: list.length,
+    });
+    return list;
+  }, [userProfiles]);
 
   // Fetch time entries for the selected period
   const loadTimeEntriesForPeriod = useCallback(async (controller) => {
+    const reportName = 'TotalContributorsReport';
+    const url = ENDPOINTS.TIME_ENTRIES_REPORTS;
+
+    if (!url) {
+      return;
+    }
+
+    // Validate userList
+    if (!validateUserList(userList, userProfiles, reportName)) {
+      setTimeEntries([]);
+      setLoading(false);
+      return;
+    }
+
+    // Check cache with date range key
+    const cacheKey = `${reportName}_${fromDate}_${toDate}`;
+    const cached = getCachedData(cacheKey, reportName);
+    if (cached.data) {
+      setTimeEntries(cached.data);
+      setLoading(false);
+      return;
+    }
+
     try {
+      logApiRequest(reportName, url, { users: userList, fromDate, toDate }, {
+        usersCount: userList?.length,
+      });
+
       const response = await axios.post(
-        `${ENDPOINTS.APIEndpoint()}/TimeEntry/reports`,
-        {
-          fromDate,
-          toDate,
-          userList,
-        },
+        url,
+        { users: userList, fromDate, toDate },
         { signal: controller.signal }
       );
-      setTimeEntries(response.data);
+
+      logApiResponse(reportName, response.data?.length);
+
+      const mappedTimeEntries = response.data.map(entry => ({
+        userId: entry.personId,
+        hours: entry.hours,
+        minutes: entry.minutes,
+        isTangible: entry.isTangible,
+        date: entry.dateOfWork,
+      }));
+
+      setTimeEntries(mappedTimeEntries);
+      setCachedData(cacheKey, mappedTimeEntries, reportName);
     } catch (error) {
       // eslint-disable-next-line import/no-named-as-default-member
       if (!axios.isCancel(error)) {
-        // Handle error silently or show user-friendly message
+        // eslint-disable-next-line no-console
+        console.error(`${reportName} API Error:`, error);
         setTimeEntries([]);
       }
     }
-  }, [fromDate, toDate, userList]);
+  }, [fromDate, toDate, userList, userProfiles]);
 
   // Group time entries by user and calculate total hours
   const sumByUser = useCallback((entries) => {
@@ -94,25 +146,7 @@ function TotalContributorsReport({ startDate, endDate, userProfiles, darkMode, u
 
   // Generate bar chart data
   const generateBarData = useCallback((groupedDate, isYear = false) => {
-    if (isYear) {
-      const startMonth = startDate.getMonth();
-      const endMonth = endDate.getMonth();
-      const sumData = groupedDate.map(range => ({
-        label: range.timeRange,
-        value: range.usersOfTime.length,
-        months: 12,
-      }));
-      if (sumData.length > 1) {
-        sumData[0].months = 12 - startMonth;
-        sumData[sumData.length - 1].months = endMonth + 1;
-      }
-      const filteredData = sumData.filter(data => data.value > 0);
-      return filteredData;
-    }
-    return groupedDate.map(range => ({
-      label: range.timeRange,
-      value: range.usersOfTime.length,
-    }));
+    return generateBarDataUtil(groupedDate, isYear, startDate, endDate, 'usersOfTime');
   }, [startDate, endDate]);
 
   // Check if we should show monthly/yearly summaries
@@ -133,13 +167,23 @@ function TotalContributorsReport({ startDate, endDate, userProfiles, darkMode, u
 
   // Load data when date range changes
   useEffect(() => {
+    // Only make API call if userList has data
+    if (!userList || userList.length === 0) {
+      // eslint-disable-next-line no-console
+      console.log('TotalContributorsReport: Waiting for userProfiles to load...', {
+        userProfilesLength: userProfiles?.length,
+        userListLength: userList?.length,
+      });
+      return;
+    }
+
     setLoading(true);
     const controller = new AbortController();
     loadTimeEntriesForPeriod(controller).then(() => {
       setLoading(false);
     });
     return () => controller.abort();
-  }, [loadTimeEntriesForPeriod]);
+  }, [loadTimeEntriesForPeriod, userList]);
 
   // Process data when time entries are loaded
   useEffect(() => {
@@ -160,9 +204,9 @@ function TotalContributorsReport({ startDate, endDate, userProfiles, darkMode, u
   const totalTangibleTime = contributors.reduce((acc, obj) => acc + Number(obj.tangibleTime), 0);
 
   return (
-    <div className={`total-container ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
+    <div className={`${styles.totalContainer} ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
       <div className="d-flex align-items-center">
-        <h2 className={`total-title ${darkMode ? 'text-azure' : ''}`}>Contributors Report</h2>
+        <h2 className={`${styles.totalTitle} ${darkMode ? 'text-azure' : ''}`}>Contributors Report</h2>
         <EditableInfoModal
           areaName="contributorsReportInfo"
           areaTitle="Contributors Report"
@@ -173,16 +217,16 @@ function TotalContributorsReport({ startDate, endDate, userProfiles, darkMode, u
           darkMode={darkMode}
         />
       </div>
-      <div className="total-period">
+      <div className={styles.totalPeriod}>
         In the period from {startDate.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })} to {endDate.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })}:
       </div>
-      <div className="total-item">
-        <div className="total-number">{contributors.length}</div>
-        <div className="total-text">members have contributed more than 10 hours.</div>
+      <div className={styles.totalItem}>
+        <div className={styles.totalNumber}>{contributors.length}</div>
+        <div className={styles.totalText}>members have contributed more than 10 hours.</div>
       </div>
-      <div className="total-item">
-        <div className="total-number">{totalTangibleTime.toFixed(2)}</div>
-        <div className="total-text">hours of tangible time have been logged.</div>
+      <div className={styles.totalItem}>
+        <div className={styles.totalNumber}>{totalTangibleTime.toFixed(2)}</div>
+        <div className={styles.totalText}>hours of tangible time have been logged.</div>
       </div>
       <div>
         {showMonthly && contributorsInMonth.length > 0 && (

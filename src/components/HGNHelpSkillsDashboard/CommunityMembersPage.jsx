@@ -1,35 +1,100 @@
 import { useState } from 'react';
-import RankedUserList from './RankedUserList'; // wherever your RankedUserList is
+import { useSelector } from 'react-redux';
+import RankedUserList from './RankedUserList';
 import styles from './style/CommunityMembersPage.module.css';
+import { availableSkills, availablePreferences, formatSkillName } from './FilerData.js';
 
-const availableSkills = ['React', 'Redux', 'HTML', 'CSS', 'MongoDB', 'Database', 'Agile'];
+function Accordion({ title, children, defaultOpen = false, darkMode }) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div className={`${styles.accordion}`}>
+      <div
+        role="button"
+        tabIndex={0}
+        onClick={() => setOpen(prev => !prev)}
+        onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && setOpen(prev => !prev)}
+        className={`${styles.accordionHeader} ${darkMode ? styles.dark : ''}`}
+      >
+        <span className={`${styles.accordionTitle}`}>{title}</span>
+        <span className={`${styles.accordionIcon}`}>{open ? '−' : '+'}</span>
+      </div>
+      {open && <div className={`${styles.accordionContent}`}>{children}</div>}
+    </div>
+  );
+}
 
 function CommunityMembersPage() {
   const [selectedSkills, setSelectedSkills] = useState([]);
+  const [selectedPreferences, setSelectedPreferences] = useState([]);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
-  const handleCheckboxChange = skill => {
-    setSelectedSkills(prev =>
-      prev.includes(skill) ? prev.filter(s => s !== skill) : [...prev, skill],
+  const toggleItem = (item, selectedArray, setSelectedArray) => {
+    setSelectedArray(prev =>
+      prev.includes(item) ? prev.filter(i => i !== item) : [...prev, item],
     );
   };
 
-  return (
-    <div>
-      <h2>Select Skills to Filter Community Members</h2>
-      <div className={styles.skillsContainer}>
-        {availableSkills.map(skill => (
-          <label key={skill}>
-            <input
-              type="checkbox"
-              checked={selectedSkills.includes(skill)}
-              onChange={() => handleCheckboxChange(skill)}
-            />
-            {skill}
-          </label>
-        ))}
-      </div>
+  const renderSkillButtons = () => (
+    <div className={`${styles.filterGroup}`}>
+      {availableSkills.map(skillKey => {
+        const formattedName = formatSkillName(skillKey);
+        const isSelected = selectedSkills.includes(skillKey);
+        return (
+          <button
+            key={skillKey}
+            onClick={() => toggleItem(skillKey, selectedSkills, setSelectedSkills)}
+            type="button"
+            className={`${`${styles.skillButton}`} ${isSelected ? styles.selected : ''}`}
+          >
+            {formattedName}
+          </button>
+        );
+      })}
+    </div>
+  );
 
-      {selectedSkills.length > 0 && <RankedUserList selectedSkills={selectedSkills} />}
+  const renderPreferenceButtons = () => (
+    <div className={`${styles.filterGroup}`}>
+      {availablePreferences.map(pref => {
+        const isSelected = selectedPreferences.includes(pref);
+        return (
+          <button
+            key={pref}
+            onClick={() => toggleItem(pref, selectedPreferences, setSelectedPreferences)}
+            type="button"
+            className={`${`${styles.preferenceButton}`} ${isSelected ? styles.selected : ''}`}
+          >
+            {pref}
+          </button>
+        );
+      })}
+    </div>
+  );
+
+  return (
+    <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
+      <h1 className={`${styles.title}`}>Community Member Filters</h1>
+
+      <Accordion title="Filter by Skills" defaultOpen darkMode={darkMode}>
+        {renderSkillButtons()}
+      </Accordion>
+
+      <Accordion title="Filter by Preferences" darkMode={darkMode}>
+        {renderPreferenceButtons()}
+      </Accordion>
+
+      <div>
+        {selectedSkills.length > 0 || selectedPreferences.length > 0 ? (
+          <RankedUserList
+            selectedSkills={selectedSkills}
+            selectedPreferences={selectedPreferences}
+          />
+        ) : (
+          <p className={`${styles.message}`}>
+            Select skills or preferences above to see filtered members.
+          </p>
+        )}
+      </div>
     </div>
   );
 }
