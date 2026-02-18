@@ -126,25 +126,15 @@
   color-scheme: dark;
 }
 
-/* Light mode: dark (black) icon at full opacity */
+/* Icon color is handled automatically by color-scheme (light/dark).
+   No filter needed — browser renders dark icon in light mode, white in dark mode. */
 .datePicker::-webkit-calendar-picker-indicator {
   cursor: pointer;
   opacity: 1;
-  filter: invert(0);
-}
-
-:global(.dark-mode) .datePicker::-webkit-calendar-picker-indicator {
-  filter: invert(1) brightness(1.5);
-  opacity: 1;
-  cursor: pointer;
 }
 
 .datePicker::-webkit-calendar-picker-indicator:hover {
-  opacity: 0.8;
-}
-
-:global(.dark-mode) .datePicker::-webkit-calendar-picker-indicator:hover {
-  filter: invert(1) brightness(1.8);
+  opacity: 0.75;
 }
 
 /* Ensure the date text is visible */
