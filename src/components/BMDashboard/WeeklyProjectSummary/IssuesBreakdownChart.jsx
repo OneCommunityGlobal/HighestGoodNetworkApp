@@ -145,6 +145,15 @@ export default function IssuesBreakdownChart() {
   // Available options states
   const [availableProjects, setAvailableProjects] = useState([]);
 
+  // Today's date in YYYY-MM-DD format (local time) — used as max for date pickers
+  const today = useMemo(() => {
+    const d = new Date();
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }, []);
+
   // Ref for debouncing timeout
   const debounceTimeoutRef = useRef(null);
   // Ref for abort controller to cancel API calls on unmount
@@ -485,6 +494,7 @@ export default function IssuesBreakdownChart() {
                 className={styles.datePicker}
                 value={startDate || ''}
                 onChange={handleStartDateChange}
+                max={today}
                 aria-label="Start date"
               />
               <span className={styles.dateSeparator}>to</span>
@@ -495,6 +505,7 @@ export default function IssuesBreakdownChart() {
                 value={endDate || ''}
                 onChange={handleEndDateChange}
                 min={startDate || ''}
+                max={today}
                 aria-label="End date"
               />
             </div>
