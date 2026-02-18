@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './userManagement.module.css';
+import styles from './usermanagement.module.css';
 
 const NUMBER_OF_PAGE_LINK = 5;
 
