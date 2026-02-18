@@ -7,6 +7,96 @@
   background-color: #0f8292;
 } */
 
+.userManagementActiveCell {
+  position: relative;
+  width: 60px; /* fixed width prevents shifting */
+  min-width: 60px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.userManagementActiveWrapper {
+  position: relative;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.userManagementInfringementCount {
+  position: absolute;
+  bottom: 2px;
+  left: 4px;
+  font-size: 0.7rem;
+  color: dodgerblue;
+}
+
+.userManagementTopRightIcon {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+}
+
+.userManagementBottomRightIcon {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+}
+
+/* First column layout: left numbers | status dot | right icons */
+.activeCellGrid {
+  display: grid;
+  grid-template-columns: 18px 34px 18px; /* left stack, dot, right stack */
+  grid-template-rows: 1fr 1fr;           /* top + bottom */
+  align-items: center;
+  justify-items: center;
+  position: relative;
+  min-height: 42px; /* keeps rows consistent */
+}
+
+/* Left stacked numbers */
+.activeCellLeftTop {
+  grid-column: 1;
+  grid-row: 1;
+  justify-self: start;
+  font-size: 0.75rem;
+  line-height: 1;
+}
+
+.activeCellLeftBottom {
+  grid-column: 1;
+  grid-row: 2;
+  justify-self: start;
+  font-size: 0.75rem;
+  line-height: 1;
+}
+
+/* Center dot */
+.activeCellDot {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+}
+
+/* Right stacked icons */
+.activeCellRightTop {
+  grid-column: 3;
+  grid-row: 1;
+}
+
+.activeCellRightBottom {
+  grid-column: 3;
+  grid-row: 2;
+}
+
+/* make sure links/icons don’t add random spacing */
+.iconLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+  padding: 0;
+}
+
 .new_user_management {
   margin-bottom: 10px;
   box-sizing: border-box;
