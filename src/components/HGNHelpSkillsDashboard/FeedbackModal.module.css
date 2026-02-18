@@ -133,47 +133,128 @@
 }
 
 /* Dark mode support */
-[data-theme='dark'] .section h5 {
+body.dark-mode .section h5 {
   color: #fff;
 }
 
-[data-theme='dark'] .suggestion-link {
+body.dark-mode .suggestion-link {
   color: #ccc;
 }
 
-[data-theme='dark'] .star {
+body.dark-mode .star {
   color: #555;
 }
 
-[data-theme='dark'] .star:hover {
+body.dark-mode .star:hover {
   color: #ffc107;
 }
 
-[data-theme='dark'] .star.selected {
+body.dark-mode .star.selected {
   color: #ffc107;
 }
 
-[data-theme='dark'] .autocomplete-dropdown {
+body.dark-mode .autocomplete-dropdown {
   background: #2d2d2d;
   border-color: #444;
 }
 
-[data-theme='dark'] .autocomplete-item {
+body.dark-mode .autocomplete-item {
   border-bottom-color: #444;
 }
 
-[data-theme='dark'] .autocomplete-item:hover {
+body.dark-mode .autocomplete-item:hover {
   background-color: #3d3d3d;
 }
 
-[data-theme='dark'] .autocomplete-item strong {
+body.dark-mode .autocomplete-item strong {
   color: #fff;
 }
 
-[data-theme='dark'] .user-details {
+body.dark-mode .user-details {
   color: #aaa;
 }
 
-[data-theme='dark'] .loading {
+body.dark-mode .loading {
   color: #fff;
+}
+/* Dark Mode Support - Issues #6 & #7 */
+:global(body.dark-mode) .feedback-modal :global(.modal-content) {
+  background-color: #1e1e1e !important;
+  color: #fff !important;
+}
+
+:global(body.dark-mode) .feedback-modal :global(.modal-header) {
+  background-color: #2d2d2d !important;
+  border-bottom-color: #444 !important;
+  color: #fff !important;
+}
+
+:global(body.dark-mode) .feedback-modal :global(.modal-body) {
+  background-color: #1e1e1e !important;
+}
+
+:global(body.dark-mode) .feedback-modal :global(.modal-footer) {
+  background-color: #2d2d2d !important;
+  border-top-color: #444 !important;
+}
+
+:global(body.dark-mode) .section h5 {
+  color: #fff !important;
+}
+
+:global(body.dark-mode) .feedback-modal :global(.form-control),
+:global(body.dark-mode) .name-input,
+:global(body.dark-mode) .feedback-modal :global(input[type="text"]),
+:global(body.dark-mode) .feedback-modal :global(textarea) {
+  background-color: #2d2d2d !important;
+  color: #fff !important;
+  border-color: #444 !important;
+}
+
+:global(body.dark-mode) .feedback-modal :global(.form-control::placeholder),
+:global(body.dark-mode) .feedback-modal :global(input::placeholder),
+:global(body.dark-mode) .feedback-modal :global(textarea::placeholder) {
+  color: #888 !important;
+}
+
+:global(body.dark-mode) .autocomplete-dropdown {
+  background: #2d2d2d !important;
+  border-color: #444 !important;
+}
+
+:global(body.dark-mode) .autocomplete-item {
+  border-bottom-color: #444 !important;
+}
+
+:global(body.dark-mode) .autocomplete-item:hover {
+  background-color: #3d3d3d !important;
+}
+
+:global(body.dark-mode) .autocomplete-item strong {
+  color: #fff !important;
+}
+
+:global(body.dark-mode) .user-details {
+  color: #aaa !important;
+}
+
+:global(body.dark-mode) .suggestion-link {
+  color: #ccc !important;
+}
+
+:global(body.dark-mode) .suggestion-link a {
+  color: #4dabf7 !important;
+}
+
+:global(body.dark-mode) .loading {
+  color: #fff !important;
+}
+
+:global(body.dark-mode) .star {
+  color: #555 !important;
+}
+
+:global(body.dark-mode) .star:hover,
+:global(body.dark-mode) .star.selected {
+  color: #ffc107 !important;
 }
