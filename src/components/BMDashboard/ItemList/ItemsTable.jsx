@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Table, Button } from 'reactstrap';
+import { Table, Button, Badge } from 'reactstrap';
 import { BiPencil } from 'react-icons/bi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSortDown, faSort, faSortUp } from '@fortawesome/free-solid-svg-icons';
@@ -50,19 +50,16 @@ export default function ItemsTable({
 
   const handleViewRecordsClick = (data, type) => {
     if (type === 'UsageRecord') {
-      // For UsageRecord, show the chart directly
       const projectId = data.project?._id || data.projectId;
       if (projectId) {
         setChartProjectId(projectId);
         setShowChartModal(true);
       } else {
-        // If no project ID, fall back to the regular modal
         setModal(true);
         setRecord(data);
         setRecordType(type);
       }
     } else {
-      // For other record types, show the regular modal
       setModal(true);
       setRecord(data);
       setRecordType(type);
@@ -71,7 +68,6 @@ export default function ItemsTable({
 
   const sortData = columnName => {
     const newSortedData = [...sortedData];
-
     if (columnName === 'ProjectName') {
       if (projectNameCol.sortOrder === 'default' || projectNameCol.sortOrder === 'desc') {
         newSortedData.sort((a, b) => (a.project?.name || '').localeCompare(b.project?.name || ''));
@@ -98,7 +94,6 @@ export default function ItemsTable({
       }
       setProjectNameCol({ iconsToDisplay: faSort, sortOrder: 'default' });
     }
-
     setData(newSortedData);
   };
 
@@ -106,9 +101,34 @@ export default function ItemsTable({
     return path.split('.').reduce((acc, part) => (acc ? acc[part] : null), obj);
   };
 
+  // --- STYLES FOR VISUAL ENHANCEMENTS ---
+  const stickyHeaderStyle = {
+    position: 'sticky',
+    top: 0,
+    zIndex: 10,
+    backgroundColor: darkMode ? '#343a40' : '#f8f9fa',
+    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+    verticalAlign: 'middle',
+  };
+
+  // Right-align numeric columns
+  const numericHeaderStyle = { ...stickyHeaderStyle, textAlign: 'right' };
+  const numericCellStyle = { textAlign: 'right', verticalAlign: 'middle' };
+
+  // Visual Divider for Action Columns
+  const actionHeaderStyle = {
+    ...stickyHeaderStyle,
+    borderLeft: '2px solid #dee2e6',
+    textAlign: 'center',
+  };
+  const actionCellStyle = {
+    borderLeft: '2px solid #dee2e6',
+    textAlign: 'center',
+    verticalAlign: 'middle',
+  };
+
   return (
     <>
-      {/* Regular Records Modal for Update and Purchase records */}
       <RecordsModal
         modal={modal}
         setModal={setModal}
@@ -117,36 +137,56 @@ export default function ItemsTable({
         recordType={recordType}
       />
 
-      {/* Direct Chart Modal for Usage Records */}
       {showChartModal && chartProjectId && (
         <MaterialUsageChart projectId={chartProjectId} toggle={() => setShowChartModal(false)} />
       )}
 
       <UpdateItemModal modal={updateModal} setModal={setUpdateModal} record={updateRecord} />
-      <div className={`${styles.itemsTableContainer} ${darkMode ? styles.darkTableWrapper : ''}`}>
-        <Table className={darkMode ? styles.darkTable : ''}>
+
+      {/* Container with max-height to enable Sticky Header scrolling */}
+      <div
+        className={`${styles.itemsTableContainer} ${darkMode ? styles.darkTableWrapper : ''}`}
+        style={{ maxHeight: '75vh', overflowY: 'auto', position: 'relative' }}
+      >
+        <Table className={darkMode ? styles.darkTable : ''} hover responsive>
           <thead>
             <tr>
-              {selectedProject === 'all' ? (
-                <th onClick={() => sortData('ProjectName')}>
-                  Project <FontAwesomeIcon icon={projectNameCol.iconsToDisplay} size="lg" />
-                </th>
-              ) : (
-                <th>Project</th>
-              )}
-              {selectedItem === 'all' ? (
-                <th onClick={() => sortData('InventoryItemType')}>
-                  Name <FontAwesomeIcon icon={inventoryItemTypeCol.iconsToDisplay} size="lg" />
-                </th>
-              ) : (
-                <th>Name</th>
-              )}
-              {dynamicColumns.map(({ label }) => (
-                <th key={label}>{label}</th>
-              ))}
-              <th>Usage Record</th>
-              <th>Updates</th>
-              <th>Purchases</th>
+              {/* Project Column */}
+              <th onClick={() => sortData('ProjectName')} style={stickyHeaderStyle}>
+                Project <FontAwesomeIcon icon={projectNameCol.iconsToDisplay} />
+              </th>
+
+              {/* Name Column */}
+              <th onClick={() => sortData('InventoryItemType')} style={stickyHeaderStyle}>
+                Name <FontAwesomeIcon icon={inventoryItemTypeCol.iconsToDisplay} />
+              </th>
+
+              {/* Dynamic Columns (Unit, Bought, Used, Available, Waste) */}
+              {dynamicColumns.map(({ label, key }) => {
+                // Check if this is a numeric column to apply right-alignment
+                const isNumeric = [
+                  'stockBought',
+                  'stockUsed',
+                  'stockAvailable',
+                  'stockWasted',
+                ].includes(key);
+                return (
+                  <th key={label} style={isNumeric ? numericHeaderStyle : stickyHeaderStyle}>
+                    {label}
+                  </th>
+                );
+              })}
+
+              {/* ACTION COLUMNS (Grouped with Border) */}
+              <th style={actionHeaderStyle} title="View usage history and charts">
+                Usage Record
+              </th>
+              <th style={stickyHeaderStyle} title="View history of manual updates">
+                Updates
+              </th>
+              <th style={stickyHeaderStyle} title="View procurement history">
+                Purchases
+              </th>
             </tr>
           </thead>
 
@@ -155,46 +195,92 @@ export default function ItemsTable({
               sortedData.map(el => {
                 return (
                   <tr key={el._id}>
-                    <td>{el.project?.name}</td>
-                    <td>{el.itemType?.name}</td>
-                    {dynamicColumns.map(({ label, key }) => (
-                      <td key={label}>{getNestedValue(el, key)}</td>
-                    ))}
-                    <td className={`${styles.itemsCell}`}>
-                      <button
-                        type="button"
-                        onClick={() => handleEditRecordsClick(el, 'UsageRecord')}
-                        aria-label="Edit Record"
-                      >
-                        <BiPencil />
-                      </button>
-                      <Button
-                        color="primary"
-                        outline
-                        size="sm"
-                        onClick={() => handleViewRecordsClick(el, 'UsageRecord')}
-                      >
-                        View
-                      </Button>
+                    <td style={{ verticalAlign: 'middle' }}>{el.project?.name}</td>
+                    <td style={{ verticalAlign: 'middle' }}>{el.itemType?.name}</td>
+
+                    {dynamicColumns.map(({ label, key }) => {
+                      const value = getNestedValue(el, key);
+                      const isNumeric = [
+                        'stockBought',
+                        'stockUsed',
+                        'stockAvailable',
+                        'stockWasted',
+                      ].includes(key);
+
+                      // LOW STOCK BADGE LOGIC
+                      if (key === 'stockAvailable') {
+                        const isLowStock = Number(value) < 10;
+                        return (
+                          <td key={label} style={numericCellStyle}>
+                            {isLowStock && (
+                              <Badge
+                                color="danger"
+                                pill
+                                className="mr-2"
+                                style={{ marginRight: '8px' }}
+                              >
+                                Low
+                              </Badge>
+                            )}
+                            {value}
+                          </td>
+                        );
+                      }
+
+                      return (
+                        <td
+                          key={label}
+                          style={isNumeric ? numericCellStyle : { verticalAlign: 'middle' }}
+                        >
+                          {value}
+                        </td>
+                      );
+                    })}
+
+                    {/* Action Buttons with Divider */}
+                    <td style={actionCellStyle}>
+                      <div className="d-flex justify-content-center">
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-link p-1"
+                          onClick={() => handleEditRecordsClick(el, 'UsageRecord')}
+                          aria-label="Edit Record"
+                          style={{ fontSize: '1.2em' }}
+                        >
+                          <BiPencil />
+                        </button>
+                        <Button
+                          color="primary"
+                          outline
+                          size="sm"
+                          onClick={() => handleViewRecordsClick(el, 'UsageRecord')}
+                        >
+                          View
+                        </Button>
+                      </div>
                     </td>
-                    <td className={`${styles.itemsCell}`}>
-                      <button
-                        type="button"
-                        onClick={() => handleEditRecordsClick(el, 'Update')}
-                        aria-label="Edit Record"
-                      >
-                        <BiPencil />
-                      </button>
-                      <Button
-                        color="primary"
-                        outline
-                        size="sm"
-                        onClick={() => handleViewRecordsClick(el, 'Update')}
-                      >
-                        View
-                      </Button>
+                    <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      <div className="d-flex justify-content-center">
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-link p-1"
+                          onClick={() => handleEditRecordsClick(el, 'Update')}
+                          aria-label="Edit Record"
+                          style={{ fontSize: '1.2em' }}
+                        >
+                          <BiPencil />
+                        </button>
+                        <Button
+                          color="primary"
+                          outline
+                          size="sm"
+                          onClick={() => handleViewRecordsClick(el, 'Update')}
+                        >
+                          View
+                        </Button>
+                      </div>
                     </td>
-                    <td>
+                    <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                       <Button
                         color="primary"
                         outline
