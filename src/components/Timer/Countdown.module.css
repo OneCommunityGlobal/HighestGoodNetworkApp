@@ -204,16 +204,6 @@
   justify-content: center;
 }
 
-.goal .numberWrapper::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 0.5rem;
-  background-color: rgba(82, 92, 102, 1);
-  transform: translate(8px, 6px);
-  z-index: 0;
-}
-
 
 .up {
   position: absolute;
