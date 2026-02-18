@@ -15,7 +15,10 @@
 
 .whatWeDoGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); /* Increased min-width for longer text */
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(320px, 1fr)
+  ); /* Increased min-width for longer text */
   gap: 20px; /* Increased gap for better spacing */
   margin-top: 16px;
   width: 100%;

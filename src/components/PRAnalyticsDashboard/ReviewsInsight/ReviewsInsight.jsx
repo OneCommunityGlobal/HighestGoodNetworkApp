@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import Select from 'react-select';
-import './ReviewsInsight.css';
+import sharedStyles from './ReviewsInsight.module.css';
 import ActionDoneGraph from './ActionDoneGraph';
 import PRQualityGraph from './PRQualityGraph';
 import { fetchReviewsInsights } from '../../../actions/prAnalytics/reviewsInsightsAction';
@@ -9,9 +9,10 @@ import { getAllTeamCode } from '../../../actions/allTeamsAction';
 
 function ReviewsInsight() {
   const [duration, setDuration] = useState('Last Week');
-  const [selectedTeams, setSelectedTeams] = useState([]);
+  const [selectedTeams, setSelectedTeams] = useState([{ value: 'All', label: 'All Teams' }]);
   const [teamData, setTeamData] = useState({});
   const [qualityData, setQualityData] = useState({});
+  const [dataViewActive, setDataViewActive] = useState(false);
   const dispatch = useDispatch();
 
   const { loading, data, error } = useSelector(state => state.reviewsInsights);
@@ -19,7 +20,7 @@ function ReviewsInsight() {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   useEffect(() => {
-    dispatch(getAllTeamCode());
+    dispatch(getAllTeamCode(true));
   }, [dispatch]);
 
   useEffect(() => {
@@ -55,25 +56,21 @@ function ReviewsInsight() {
 
         formattedTeamData[team._id] = {
           actionSummary: {
-            Approved: actionSummary.find(action => action.actionTaken === 'Approved')?.count || 0,
+            Approved: actionSummary.find(a => a.actionTaken === 'Approved')?.count || 0,
             'Changes Requested':
-              actionSummary.find(action => action.actionTaken === 'Changes Requested')?.count || 0,
-            Commented: actionSummary.find(action => action.actionTaken === 'Commented')?.count || 0,
+              actionSummary.find(a => a.actionTaken === 'Changes Requested')?.count || 0,
+            Commented: actionSummary.find(a => a.actionTaken === 'Commented')?.count || 0,
           },
         };
 
         formattedQualityData[team._id] = {
-          NotApproved:
-            qualityDistribution.find(quality => quality.qualityLevel === 'Not approved')?.count ||
-            0,
-          LowQuality:
-            qualityDistribution.find(quality => quality.qualityLevel === 'Low Quality')?.count || 0,
-          Sufficient:
-            qualityDistribution.find(quality => quality.qualityLevel === 'Sufficient')?.count || 0,
-          Exceptional:
-            qualityDistribution.find(quality => quality.qualityLevel === 'Exceptional')?.count || 0,
+          NotApproved: qualityDistribution.find(q => q.qualityLevel === 'Not approved')?.count || 0,
+          LowQuality: qualityDistribution.find(q => q.qualityLevel === 'Low Quality')?.count || 0,
+          Sufficient: qualityDistribution.find(q => q.qualityLevel === 'Sufficient')?.count || 0,
+          Exceptional: qualityDistribution.find(q => q.qualityLevel === 'Exceptional')?.count || 0,
         };
       });
+
       setTeamData(formattedTeamData);
       setQualityData(formattedQualityData);
     }
@@ -93,13 +90,22 @@ function ReviewsInsight() {
   ];
 
   return (
-    <div className={`reviews-insight-container ${darkMode ? 'dark-mode' : ''}`}>
+    <div
+      className={`${sharedStyles.reviewsInsightContainer} ${darkMode ? sharedStyles.darkMode : ''}`}
+    >
       <h1>PR Reviews Insights</h1>
 
-      <div className="ri-filters">
-        <div className="ri-filter-item">
+      <div className={sharedStyles.riFilters}>
+        <div className={sharedStyles.riFilterItem}>
           <label htmlFor="ri-duration-filter">Duration:</label>
-          <select id="ri-duration-filter" value={duration} onChange={handleDurationChange}>
+          <select
+            id="ri-duration-filter"
+            className={`${sharedStyles.riDurationFilter} ${
+              darkMode ? sharedStyles.riDurationFilterDarkMode : ''
+            }`}
+            value={duration}
+            onChange={handleDurationChange}
+          >
             <option value="Last Week">Last Week</option>
             <option value="Last 2 weeks">Last 2 weeks</option>
             <option value="Last Month">Last Month</option>
@@ -107,7 +113,7 @@ function ReviewsInsight() {
           </select>
         </div>
 
-        <div className="ri-filter-item">
+        <div className={sharedStyles.riFilterItem}>
           <label htmlFor="team-filter">Team Code:</label>
           <Select
             id="team-filter"
@@ -116,6 +122,7 @@ function ReviewsInsight() {
             value={selectedTeams}
             onChange={handleTeamChange}
             placeholder="Search and select teams..."
+            classNamePrefix="react-select"
             styles={{
               control: base => ({
                 ...base,
@@ -125,72 +132,106 @@ function ReviewsInsight() {
                 color: darkMode ? '#f1f1f1' : '#000',
                 minHeight: '40px',
               }),
-              placeholder: base => ({
-                ...base,
-                color: darkMode ? '#f1f1f1' : '#000',
-              }),
-              input: base => ({
-                ...base,
-                color: darkMode ? '#f1f1f1' : '#000',
-              }),
-              multiValue: base => ({
-                ...base,
-                backgroundColor: darkMode ? '#1c2541' : '#e0e0e0',
-                color: darkMode ? '#f1f1f1' : '#000',
-              }),
-              multiValueLabel: base => ({
-                ...base,
-                color: darkMode ? '#f1f1f1' : '#000',
-              }),
-              multiValueRemove: base => ({
-                ...base,
-                color: darkMode ? '#f1f1f1' : '#000',
-                ':hover': {
-                  backgroundColor: '#dc3545',
-                  color: '#fff',
-                },
-              }),
-              dropdownIndicator: base => ({
-                ...base,
-                color: darkMode ? '#f1f1f1' : '#000',
-              }),
+
               menu: base => ({
                 ...base,
                 backgroundColor: darkMode ? '#1c2541' : '#fff',
                 color: darkMode ? '#f1f1f1' : '#000',
               }),
+
+              menuList: base => ({
+                ...base,
+                backgroundColor: darkMode ? '#1c2541' : '#fff',
+                color: darkMode ? '#f1f1f1' : '#000',
+              }),
+
               option: (base, state) => ({
                 ...base,
                 backgroundColor: state.isFocused
                   ? darkMode
-                    ? '#34495e'
-                    : '#e0e0e0'
+                    ? '#23304d'
+                    : '#e6e6e6'
                   : darkMode
                   ? '#1c2541'
                   : '#fff',
                 color: darkMode ? '#f1f1f1' : '#000',
+                cursor: 'pointer',
               }),
             }}
           />
         </div>
+
+        <div
+          className={`${sharedStyles.riFilterItem} ${
+            darkMode ? sharedStyles.darkModeForeground : ''
+          }`}
+        >
+          <span className={sharedStyles.riDataviewTitle}>Data View</span>
+          <div className={sharedStyles.riToggleWrap}>
+            <label className={sharedStyles.riSwitch}>
+              <input
+                type="checkbox"
+                checked={dataViewActive}
+                onChange={() => setDataViewActive(v => !v)}
+                aria-label="Toggle data view: Percent vs Number"
+                className={sharedStyles.riSwitchInput}
+              />
+              <span
+                className={`${sharedStyles.riSlider} ${
+                  darkMode ? sharedStyles.riSliderDarkMode : ''
+                }`}
+              />
+            </label>
+
+            <span
+              className={`${sharedStyles.riModeLabel} ${
+                darkMode ? sharedStyles.darkModeForeground : ''
+              }`}
+            >
+              {dataViewActive ? 'PERCENT' : 'NUMBER'}
+            </span>
+          </div>
+        </div>
       </div>
 
-      <div className="ri-selected-teams">
+      <div className={sharedStyles.riSelectedTeams}>
         {selectedTeams.length === 0 ? (
-          <p>No teams selected</p>
+          <p
+            className={`${sharedStyles.riSelectedTeams} ${
+              darkMode ? sharedStyles.darkModeForeground : ''
+            }`}
+          >
+            No teams selected
+          </p>
         ) : selectedTeams.some(team => team.value === 'All') ? (
-          <p>Selected Teams: All Teams</p>
+          <p
+            className={`${sharedStyles.riSelectedTeams} ${
+              darkMode ? sharedStyles.darkModeForeground : ''
+            }`}
+          >
+            Selected Teams: All Teams
+          </p>
         ) : (
-          <p>Selected Teams: {selectedTeams.map(team => team.label).join(', ')}</p>
+          <p
+            className={`${sharedStyles.riSelectedTeams} ${
+              darkMode ? sharedStyles.darkModeForeground : ''
+            }`}
+          >
+            Selected Teams: {selectedTeams.map(team => team.label).join(', ')}
+          </p>
         )}
       </div>
 
-      {loading && <div className="ri-loading">Loading...</div>}
-      {error && <div className="ri-error">{error}</div>}
+      {loading && <div className={sharedStyles.riLoading}>Loading...</div>}
+      {error && <div className={sharedStyles.riError}>{error}</div>}
       {!loading && !error && (
-        <div className="ri-graphs">
+        <div className={sharedStyles.riGraphs}>
           <ActionDoneGraph selectedTeams={selectedTeams} teamData={teamData} />
-          <PRQualityGraph selectedTeams={selectedTeams} qualityData={qualityData} />
+          <PRQualityGraph
+            selectedTeams={selectedTeams}
+            qualityData={qualityData}
+            isDataViewActive={dataViewActive}
+          />
         </div>
       )}
     </div>

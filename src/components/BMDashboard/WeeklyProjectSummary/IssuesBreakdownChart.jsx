@@ -127,6 +127,13 @@ const getSelectStyles = darkMode => {
   };
 };
 
+/** Dark palette – brighter & higher contrast, inspired by risk-chart style */
+const COLORS_DARK = {
+  equipmentIssues: '#6AA6FF', // brighter blue
+  laborIssues: '#FF7A7A', // brighter red
+  materialIssues: '#FFD166', // warm gold
+};
+
 export default function IssuesBreakdownChart() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -449,16 +456,19 @@ export default function IssuesBreakdownChart() {
           <span className={styles.legendItem}>
             <span
               className={styles.legendBox}
-              style={{ backgroundColor: COLORS.equipmentIssues }}
+              style={{ backgroundColor: PALETTE.equipmentIssues }}
             />
             <span className={styles.legendLabel}>Equipment Issues</span>
           </span>
           <span className={styles.legendItem}>
-            <span className={styles.legendBox} style={{ backgroundColor: COLORS.laborIssues }} />
+            <span className={styles.legendBox} style={{ backgroundColor: PALETTE.laborIssues }} />
             <span className={styles.legendLabel}>Labor Issues</span>
           </span>
           <span className={styles.legendItem}>
-            <span className={styles.legendBox} style={{ backgroundColor: COLORS.materialIssues }} />
+            <span
+              className={styles.legendBox}
+              style={{ backgroundColor: PALETTE.materialIssues }}
+            />
             <span className={styles.legendLabel}>Materials Issues</span>
           </span>
         </div>

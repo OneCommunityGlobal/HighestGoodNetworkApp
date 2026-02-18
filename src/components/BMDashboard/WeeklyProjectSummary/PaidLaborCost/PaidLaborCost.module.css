@@ -90,16 +90,22 @@
 }
 
 .paid-labor-cost-date-range-input {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  /* display: flex; */
+  /* justify-content: space-between; */
   margin-top: 3px;
-  padding: 2px 4px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  background-color: white;
-  cursor: pointer;
+  /* padding: 2px 4px; */
+  /* border: 1px solid #ddd; */
   transition: border-color 0.2s;
+  flex: 1;
+  padding: 0.2rem 2.5rem 0.2rem 0.2rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0 ninerem;
 }
 
 .paid-labor-cost-date-range-input:hover {
@@ -386,7 +392,7 @@
   align-items: center;
 }
 
-.paid-labor-cost-date-range-input {
+/* .paid-labor-cost-date-range-input {
   flex: 1;
   padding: 0.2rem 2.5rem 0.2rem 0.2rem;
   border: 1px solid #ccc;
@@ -397,7 +403,7 @@
   justify-content: center;
   cursor: pointer;
   font-size: 0 ninerem;
-}
+} */
 
 .paid-labor-cost-info-wrapper {
   position: absolute;
@@ -518,6 +524,9 @@
   width: 100%;
   overflow-x: auto;
   background-color: var(--bg-color);
+  scrollbar-width: thin;
+  scrollbar-color: var(--button-bg) var(--card-shadow);
+
 }
 
 .paidLaborCostChartScrollWrapper::-webkit-scrollbar {
@@ -533,7 +542,7 @@
   border-radius: 3px;
 }
 
-.paidLaborCostChartScrollWrapper {
+/* .paidLaborCostChartScrollWrapper {
   scrollbar-width: thin;
   scrollbar-color: var(--button-bg) var(--card-shadow);
-}
+} */
