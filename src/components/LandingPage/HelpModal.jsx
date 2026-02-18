@@ -61,23 +61,29 @@ function HelpModal({ show, onHide, auth }) {
       return;
     }
 
+    if (!userId) {
+      toast.error('User ID not found. Please refresh and try again.');
+      return;
+    }
+
     setIsSubmitting(true);
 
-    // Simulate API call with delay
-    setTimeout(() => {
-      try {
-        // TODO: Replace with actual API call when backend PR #2045 is merged
-        // await axios.post('/api/helprequest/create', { userId, topic: selectedOption, description: `Help request for: ${selectedOption}` });
+    try {
+      await axios.post('http://localhost:4500/api/helprequest/create', {
+        userId,
+        topic: selectedOption,
+        description: `Help request for: ${selectedOption}`,
+      });
 
-        toast.success('Help request submitted successfully!');
-        setSelectedOption('');
-        onHide();
-      } catch (err) {
-        toast.error('Failed to submit help request. Please try again.');
-      } finally {
-        setIsSubmitting(false);
-      }
-    }, 500);
+      toast.success('Help request submitted successfully!');
+      setSelectedOption('');
+      onHide();
+    } catch (err) {
+      console.error('Help request submission error:', err);
+      toast.error('Failed to submit help request. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleSuggestionsClick = () => {
