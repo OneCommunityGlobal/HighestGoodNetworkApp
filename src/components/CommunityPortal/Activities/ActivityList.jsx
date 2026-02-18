@@ -6,10 +6,10 @@ import { mockActivities } from './mockActivities';
 // import { useHistory } from 'react-router-dom';
 
 function ActivityList() {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const darkMode = useSelector(state => state.theme.darkMode);
   const [filter, setFilter] = useState({
     type: '',
     date: '',
@@ -17,6 +17,18 @@ function ActivityList() {
   });
   const [locationSuggestions, setLocationSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+
+  useEffect(() => {
+    if (darkMode) {
+      document.body.classList.add('activity-list-dark-body');
+    } else {
+      document.body.classList.remove('activity-list-dark-body');
+    }
+
+    return () => {
+      document.body.classList.remove('activity-list-dark-body');
+    };
+  }, [darkMode]);
 
   useEffect(() => {
     const fetchActivities = async () => {
@@ -103,27 +115,34 @@ function ActivityList() {
   };
 
   return (
-    <div className={`${styles.body} ${darkMode ? styles.darkBody : ''}`}>
-      <h1 className={styles.h1}>Activity List</h1>
+    <div className={`${styles.activityListContainer} ${darkMode ? 'bg-oxford-blue' : ''}`}>
+      <h1 className={`${styles.heading} ${darkMode ? 'text-light' : ''}`}>Activity List</h1>
 
-      <div className={`${styles.filters} ${darkMode ? styles.darkFilters : ''}`}>
-        <label>
+      <div className={`${styles.filters} ${darkMode ? styles.darkModeFilters : ''}`}>
+        <label className={darkMode ? 'text-light' : ''}>
           Type:
-          <select name="type" value={filter.type} onChange={handleFilterChange}>
-            <option value="">All</option>
-            <option value="Fitness">Fitness</option>
-            <option value="Social">Social</option>
-            <option value="Educational">Educational</option>
-            <option value="Art">Art</option>
-          </select>
+          <input
+            type="text"
+            name="type"
+            value={filter.type}
+            onChange={handleFilterChange}
+            placeholder="Enter type"
+            className={darkMode ? styles.darkModeInput : ''}
+          />
         </label>
 
-        <label>
+        <label className={darkMode ? 'text-light' : ''}>
           Date:
-          <input type="date" name="date" value={filter.date} onChange={handleFilterChange} />
+          <input
+            type="date"
+            name="date"
+            value={filter.date}
+            onChange={handleFilterChange}
+            className={darkMode ? styles.darkModeInput : ''}
+          />
         </label>
 
-        <label>
+        <label className={darkMode ? 'text-light' : ''}>
           Location:
           <div style={{ position: 'relative' }}>
             <input
@@ -144,6 +163,7 @@ function ActivityList() {
               }}
               placeholder="Enter location"
               autoComplete="off"
+              className={darkMode ? styles.darkModeInput : ''}
             />
             {showSuggestions && locationSuggestions.length > 0 && (
               <div
@@ -176,30 +196,31 @@ function ActivityList() {
             )}
           </div>
         </label>
-        <button
-          type="button"
-          onClick={handleClearFilters}
-          disabled={!filter.type && !filter.date && !filter.location}
-          className={styles.clearButton}
-        >
-          Clear All
-        </button>
+        <div className={styles.clearButtonWrapper}>
+          <button
+            type="button"
+            onClick={handleClearFilters}
+            disabled={!filter.type && !filter.date && !filter.location}
+            className={styles.clearButton}
+          >
+            Clear All
+          </button>
+        </div>
       </div>
-
-      <div className={`${styles.activityList} ${darkMode ? styles.darkActivityList : ''}`}>
+      <div className={`${styles.activityList} ${darkMode ? styles.darkModeList : ''}`}>
         {loading ? (
-          <p>Loading activities...</p>
+          <p className={darkMode ? 'text-light' : ''}>Loading activities...</p>
         ) : filteredActivities.length > 0 ? (
           <ul>
             {filteredActivities.map(activity => (
-              <li key={activity.id}>
+              <li key={activity.id} className={darkMode ? styles.darkModeItem : ''}>
                 <strong>{activity.name}</strong> - {activity.type} - {activity.date} -{' '}
                 {activity.location}
               </li>
             ))}
           </ul>
         ) : (
-          <p>No activities found</p>
+          <p className={darkMode ? 'text-light' : ''}>No activities found</p>
         )}
       </div>
     </div>

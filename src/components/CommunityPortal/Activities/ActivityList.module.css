@@ -1,18 +1,18 @@
 /* Enhanced Aesthetic CSS for Activity List */
 
-.body {
-  font-family: 'Poppins', sans-serif;
-  margin: 0;
-  padding: 0;
-  background-color: #fff;
-  color: #333;
+/* Activity List Container */
+.activityListContainer {
+  padding: 20px;
+  min-height: calc(100vh - 140px);
 }
 
-.darkBody {
-  background: #1b2a41;
+/* Dark mode follows Dashboard pattern using bg-oxford-blue */
+.activityListContainer:global(.bg-oxford-blue) {
+  color: #ffffff;
+  padding-bottom: 40px;
 }
 
-.h1 {
+.heading {
   text-align: center;
   margin: 20px 0;
   color: #1e3a8a;
@@ -20,9 +20,23 @@
   font-weight: 600;
 }
 
+/* Dark mode heading - uses global text-light class */
+.activityListContainer:global(.bg-oxford-blue) .heading {
+  color: #ffffff !important;
+}
+
+/* Body background helper when Activity List is in dark mode */
+:global(.activity-list-dark-body),
+:global(.activity-list-dark-body #root),
+:global(.activity-list-dark-body .App) {
+  background-color: #1b2a41 !important;
+  color: #ffffff !important;
+}
+
 .filters {
   display: flex;
   justify-content: center;
+  align-items: flex-end;
   gap: 30px;
   margin: 30px 0;
   padding: 10px;
@@ -31,8 +45,12 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.darkFilters {
-  background: #0f172a;
+/* Dark mode filters - navy-blue theme matching Dashboard */
+.darkModeFilters {
+  background: #1e2a3a;
+  box-shadow: none;
+  border: 1px solid #3a4a5c;
+  border-radius: 0;
 }
 
 .filters label {
@@ -49,6 +67,22 @@
   margin-top: 5px;
   font-size: 1rem;
   transition: all 0.3s ease;
+  background-color: #ffffff;
+  color: #333;
+}
+
+/* Dark mode inputs - navy-blue theme (#1e2a3a bg, #3a4a5c borders) */
+.darkModeInput {
+  background-color: #1e2a3a !important;
+  color: #ffffff !important;
+  border: 1px solid #3a4a5c !important;
+  color-scheme: dark;
+}
+
+/* Dark mode date input - style the calendar icon */
+.darkModeInput[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  cursor: pointer;
 }
 
 .filters input:focus {
@@ -57,44 +91,39 @@
   box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
 }
 
-.filters select {
-  padding: 10px;
-  height: 48px;
-  border: 1px solid #d1d5db;
+/* Dark mode input focus */
+.darkModeInput:focus {
+  border-color: #5c9ce6 !important;
+  box-shadow: 0 0 8px rgba(92, 156, 230, 0.5) !important;
+}
+
+/* Dark mode input placeholder */
+.darkModeInput::placeholder {
+  color: #a0a0a0;
+}
+
+/* Clear All button */
+.clearButton {
+  padding: 10px 20px;
+  background-color: #ef4444;
+  color: #ffffff;
+  border: none;
   border-radius: 6px;
-  margin-top: 5px;
   font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.filters select:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
+.clearButton:hover:not(:disabled) {
+  background-color: #dc2626;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
 }
 
-.filters button {
-  margin: 30px 0;
-  border: 1px solid #000000;
-  border-radius: 6px;
-  padding: 10px;
-}
-
-.filters button:hover:not(:disabled) {
-  transform: scale(1.05);
-}
-
-.darkFilters button {
-  border: 1px solid #ffffff;
-}
-
-.darkFilters input {
-  background: #0f172a;
-  border: 1px solid #ffffff;
-}
-
-.darkFilters select{
-  background: #0f172a;
-  border: 1px solid #ffffff;
+.clearButton:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 .activityList {
@@ -106,8 +135,13 @@
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
 }
 
-.darkActivityList {
-  background: #2b3e59;
+/* Dark mode activity list - remove border-radius, margin, box-shadow artifacts */
+.darkModeList {
+  background: #1e2a3a;
+  box-shadow: none;
+  border: 1px solid #3a4a5c;
+  border-radius: 0;
+  margin: 0 auto;
 }
 
 .activityList ul {
@@ -127,8 +161,12 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.darkActivityList li {
-  background: #1b2a41;
+/* Dark mode list items - navy-blue theme */
+.darkModeItem {
+  background-color: #1e2a3a !important;
+  border: 1px solid #3a4a5c !important;
+  color: #ffffff !important;
+  border-radius: 0;
 }
 
 .activityList li:hover {
@@ -136,13 +174,29 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* Dark mode list item hover - button color theme (#3d4f62) */
+.darkModeItem:hover {
+  background-color: #3d4f62 !important;
+  box-shadow: none !important;
+}
+
 .activityList li strong {
   color: #1e3a8a;
   font-size: 1.2rem;
 }
 
+/* Dark mode strong text */
+.darkModeItem strong {
+  color: #5c9ce6 !important;
+}
+
 .activityList li span {
   color: #4b5563;
+}
+
+/* Dark mode span text */
+.darkModeItem span {
+  color: #d1d5db !important;
 }
 
 .activityList p {
