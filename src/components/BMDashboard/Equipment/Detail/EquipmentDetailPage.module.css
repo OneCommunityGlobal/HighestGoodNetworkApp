@@ -5,6 +5,11 @@
 }
 
 .equipmentDetailPageHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
   margin-bottom: 1.5rem;
 }
 
@@ -70,23 +75,85 @@ button.descriptionItem_button:hover {
   margin-top: 1rem;
 }
 
-.valuePill {
-  background-color: #e2f3ea;
-  border: 1px solid #c1e0ce;
-  border-radius: 6px;
-  padding: 0.35rem 0.65rem;
-  min-height: 2rem;
-  display: inline-flex;
-  align-items: center;
-  color: #1f3b2d;
-  font-weight: 600;
+.editBtn {
+  white-space: nowrap;
 }
 
-.valuePillMuted {
-  background-color: #e7ecf2;
-  border-color: #cfd7e1;
-  color: #2f3a45;
+/* Editable section */
+
+.editableSection {
+  background-color: #f7faf9;
+  border: 1px solid #d4e4da;
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 0.75rem;
 }
+
+.editableField {
+  margin-bottom: 0.85rem;
+}
+
+.editableField:last-child {
+  margin-bottom: 0;
+}
+
+.editableFieldLabel {
+  font-weight: 600;
+  color: #27333c;
+  margin-bottom: 0.25rem;
+  display: block;
+}
+
+.editableFieldInput {
+  max-width: 340px;
+  border-radius: 6px;
+}
+
+.radioGroup {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.15rem;
+}
+
+.radioLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-weight: 500;
+  cursor: pointer;
+  color: #27333c;
+}
+
+.fieldError {
+  color: #dc3545;
+  font-size: 0.8rem;
+  margin-top: 0.2rem;
+}
+
+/* Action buttons */
+
+.actionButtons {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.saveBtn {
+  min-width: 140px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+.cancelBtn {
+  min-width: 100px;
+}
+
+/* Dark mode */
 
 @media (prefers-color-scheme: dark) {
   :global(.EquipmentDetailPage__span) {
@@ -95,15 +162,22 @@ button.descriptionItem_button:hover {
     color: #e7f0ff;
   }
 
-  .valuePill {
-    background-color: #2d3b4a;
-    border-color: #40536a;
-    color: #e7f0ff;
+  .editableSection {
+    background-color: #1e2a36;
+    border-color: #3a4d60;
   }
 
-  .valuePillMuted {
-    background-color: #374759;
-    border-color: #4a5d76;
-    color: #dce6f5;
+  .editableFieldLabel {
+    color: #d0dbe8;
+  }
+
+  .editableFieldInput {
+    background-color: #263240;
+    border-color: #3a4d60;
+    color: #e0eaf5;
+  }
+
+  .radioLabel {
+    color: #d0dbe8;
   }
 }
