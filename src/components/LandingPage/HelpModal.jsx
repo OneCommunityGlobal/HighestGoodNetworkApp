@@ -80,7 +80,9 @@ function HelpModal({ show, onHide, auth }) {
       onHide();
     } catch (err) {
       console.error('Help request submission error:', err);
-      toast.error('Failed to submit help request. Please try again.');
+      const errorMessage =
+        err.response?.data?.message || 'Failed to submit help request. Please try again.';
+      toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
