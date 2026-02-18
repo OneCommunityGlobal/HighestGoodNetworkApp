@@ -1,4 +1,5 @@
 import React from 'react';
+import styles from './usermanagement.module.css';
 
 const NUMBER_OF_PAGE_LINK = 5;
 
@@ -178,7 +179,7 @@ const PageLinkItemComponent = (props) => {
     <button
       type="button"
       style={{ fontWeight: props.isSelected ? 'bold' : 'normal' }}
-      className="page-no-link link-button"
+      className={`${styles.pageNoLink} ${styles.linkButton}`}
       onClick={e => {
         e.preventDefault();
         props.onPageSelect(props.pageNo);
