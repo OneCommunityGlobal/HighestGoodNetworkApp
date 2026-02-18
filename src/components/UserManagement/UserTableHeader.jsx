@@ -22,6 +22,7 @@ import {
   USER_START_DATE,
   USER_END_DATE,
 } from '../../languages/en/ui';
+import styles from './usermanagement.module.css';
 
 /**
  * The header row of the user table.
@@ -63,7 +64,7 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
       <tr className={darkMode ? 'bg-space-cadet' : ''}
           style={{fontSize: isMobile ? mobileFontSize : 'initial'}}
       >
-        <th scope="col" id="usermanagement_active" style={darkModeStyle}>
+        <th scope="col" className={styles.userManagementColActive} style={darkModeStyle}>
           {ACTIVE}
         </th>
         <th scope="col" id="usermanagement_first" className="p-auto" style={darkModeStyle}>
@@ -118,7 +119,7 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
             })()}
           </div>
         </th>
-        <th scope="col" id="usermanagement_role" style={darkModeStyle}>
+        <th scope="col" className={styles.roleCell} style={darkModeStyle}>
           <div className="text-center">
             <span className="m-auto">{ROLE}</span>
             {(() => {
@@ -144,7 +145,7 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
             })()}
           </div>
         </th>
-        <th scope="col" id="usermanagement_title" style={darkModeStyle}>
+        <th scope="col" className={styles.titleClamp} style={darkModeStyle}>
           <div>
             <div className="text-center">
               <span className="m-auto">{TITLE}</span>
@@ -253,11 +254,11 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
           <div className="text-center m-auto">{MANAGE_FINAL_DAY}</div>
         </th>
 
-        <th scope="col" id="usermanagement_resume_date" style={darkModeStyle}>
+        <th scope="col" className={styles.userManagementColResumeDate} style={darkModeStyle}>
           <div className="text-center m-auto">{USER_RESUME_DATE}</div>
         </th>
 
-        <th scope="col" id="usermanagement_resume_date" style={darkModeStyle}>
+        <th scope="col" className={styles.userManagementColResumeDate} style={darkModeStyle}>
           <div className="text-center">
             <span className="m-auto text-center">{USER_START_DATE}</span>
             {(() => {
@@ -284,7 +285,7 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
           </div>
         </th>
 
-        <th scope="col" id="usermanagement_resume_date" style={darkModeStyle}>
+        <th scope="col" className={styles.userManagementColResumeDate} style={darkModeStyle}>
           <div className="text-center">
             <span className="m-auto text-center">{USER_END_DATE}</span>
             {(() => {
@@ -312,7 +313,7 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
         </th>
 
         {userTableDataPermissions(authRole, roleSearchText) && (
-          <th scope="col" id="usermanagement_delete" aria-label="Delete User" style={darkModeStyle} />
+          <th scope="col" className={styles.userManagementColDelete} aria-label="Delete User" style={darkModeStyle} />
         )}
       </tr>
     );

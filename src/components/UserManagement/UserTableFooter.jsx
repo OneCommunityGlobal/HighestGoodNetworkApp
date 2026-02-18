@@ -14,7 +14,7 @@ const UserTableFooterComponent = (props) => {
   };
 
   return (
-    <div id="usermanagement-footer" className="row">
+    <div className={`row ${styles.userManagementFooter}`}>
       <PageSummaryLabel
         selectedPage={props.selectedPage}
         pageSize={props.pageSize}
@@ -179,7 +179,7 @@ const PageLinkItemComponent = (props) => {
     <button
       type="button"
       style={{ fontWeight: props.isSelected ? 'bold' : 'normal' }}
-      className={`${styles.pageNoLink} ${styles.linkButton}`}
+      className={`${styles.pageNoLink} ${styles.linkButton} ${styles.userManagementCellControl}`}
       onClick={e => {
         e.preventDefault();
         props.onPageSelect(props.pageNo);

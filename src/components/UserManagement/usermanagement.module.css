@@ -1,4 +1,4 @@
-:global(thead) {
+.userManagementTable thead {
   background: aliceblue;
 }
 
@@ -7,29 +7,46 @@
   background-color: #0f8292;
 } */
 
-:global(#new_usermanagement) {
+.new_user_management {
   margin-bottom: 10px;
   box-sizing: border-box;
   width: calc(100vw - 45px);
 }
 
-:global(#user-management-table) {
+.userManagementTable {
   width: calc(100vw - 45px);
 }
-:global(#usermanagement_order) {
-  width: 5px;
+
+.userManagementCellControl {
+  margin: 0;
+  box-sizing: border-box;
 }
 
-:global(#usermanagement_active) {
-  width: 10px;
+.userManagementIsActiveIcon {
+  color: lawngreen;
 }
 
-:global(#usermanagement__delete) {
-  width: 20px;
+.userManagementIsNotActive {
+  color: #dee2e6;
 }
 
-:global(#usermanagement_resume_date) {
-  min-width: 125px;
+.userManagementIsDisabled {
+  opacity: 0;
+  transition: opacity 10ms;
+  display: none;
+}
+
+.userManagementCellControlPadded {
+  padding-top: 15px;
+}
+
+.titleClamp {
+  width: 180px;
+  min-width: 180px;
+  max-width: 180px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .usermanagementTr {
@@ -42,76 +59,17 @@
   padding: 2px;
 }
 
-.usermanagementTr :global(.edituser_input),
-.usermanagementTr :global(.btn),
-.usermanagementTr :global(.copy_icon) {
-  margin: 0;
-  padding-top: 15px;
-  box-sizing: border-box;
-}
-
-:global(#usermanagement_title > div) {
-  width: 180px;
-  min-width: 180px;
-  max-width: 180px;
-  white-space: nowrap;
+.roleCell {
+  width: 100%;
   overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-:global(#user_title > div) {
-  width: 180px;
-  min-width: 180px;
-  max-width: 180px;
+  text-align: center;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
-.usermanagementOverviewTop {
-  background: gray;
-}
-
-.usermanagementOverviewTop :global(.card) {
-  width: 200px;
-  float: left;
-  margin-right: 10px;
-  margin-bottom: 10px;
-}
-
-:global(#card_project) {
-  /* background: #1d62f0; */
-  background: linear-gradient(to right bottom, rgb(100, 183, 255) 5%, rgb(146, 138, 239) 100%);
-  background-color: #1d62f0;
-  border-radius: 8px;
-  border: #08397e;
-  color: white;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-}
-
-:global(#card_team) {
-  background: linear-gradient(to right bottom, rgb(100, 183, 255) 5%, rgb(146, 138, 239) 100%);
-  background-color: dodgerblue;
-  border-radius: 8px;
-  border: #08397e;
-  color: white;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-}
-
-:global(#card_active) {
-  /* background: #fbad4c; */
-  background: linear-gradient(to right bottom, #ffdb56 5%, #ff9145 100%);
-  background-color: #fac17b;
-  border-radius: 8px;
-  border: #ff9145;
-  color: white;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
+.roleCell svg {
+  width: 14px;
+  height: 14px;
+  font-size: 14px;
 }
 
 .emailCell {
@@ -132,23 +90,24 @@
   max-width: 180px;
 }
 
-:global(#usermanagement_role),
-:global(#user_role),
-:global(td#usermanagement_role) {
-  width: 100%;
-  overflow: hidden;
-  text-align: center;
-  white-space: nowrap;
-}
-
-:global(td#usermanagement_role svg) {
-  font-size: 14px; /* Ensures icon fits within 20px */
-  width: 14px;
-  height: 14px;
-}
-
-:global(#user_role) {
+.userRoleCol {
   max-width: initial;
+}
+
+.userManagementColOrder {
+  width: 5px;
+}
+
+.userManagementColActive {
+  width: 10px;
+}
+
+.userManagementColDelete {
+  width: 20px;
+}
+
+.userManagementColResumeDate {
+  min-width: 125px;
 }
 
 .timeDifference {
@@ -161,13 +120,14 @@
 }
 
 .copyIcon {
-  cursor: pointer;
   position: absolute;
-  top: 0;
+  top: 50%;
   right: 0;
-  margin: 2px 2px;
+  transform: translateY(-50%);
+  margin: 0 2px;
   width: 16px;
   height: 16px;
+  cursor: pointer;
 }
 
 .usermanagementOrderInput div {
@@ -187,30 +147,12 @@
   border: 1px solid #dee2e6;
 }
 
-:global(.isActive i) {
-  color: lawngreen;
-}
-
-:global(.fa-circle-isActive) {
-  color: lawngreen;
-}
-
-:global(.isNotActive) {
-  color: #dee2e6;
-}
-
-:global(.isDisabled) {
-  opacity: 0;
-  transition: opacity 10ms;
-  display: none;
-}
-
 .usermanagementActionsCell {
   display: table-cell;
   padding-left: 10px;
 }
 
-:global(tr:hover) {
+.userManagementTable tbody tr:hover {
   background: #e9f6ff;
 }
 
@@ -274,8 +216,30 @@
   height: 36px;
 }
 
-:global(#setup-new-user-popup-btn) {
-  width: fit-content;
+.requestedTimeOffBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+.requestedTimeOffBtn:hover {
+  background-color: #95c0fe;
+}
+
+.requestedTimeOffCalendarSvg {
+  fill: #0d6efd;
+}
+
+.requestedTimeOffClockSvg {
+  width: 100%;
+  height: 100%;
+  fill: currentColor;
+}
+
+.requestedTimeOffClockSvg path {
+  fill: #0d6efd;
 }
 
 .setupNewUserPopupSuccess {
@@ -298,7 +262,7 @@
   padding: 5px;
 }
 
-:global(#usermanagement-footer) {
+.userManagementFooter {
   margin-bottom: 50px;
 }
 
@@ -307,25 +271,9 @@
   vertical-align: middle;
 }
 
-:global(#requested-time-off-btn) {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding-left: 4px;
-  padding-right: 4px;
-}
-
 .timeOffRequestBtnMoved {
   position: relative;
   right: -9px;
-}
-
-:global(#requested-time-off-btn:hover) {
-  background-color: #95c0fe;
-}
-
-:global(.requested-time-off-calender-svg) {
-  fill: #0d6efd;
 }
 
 .requestedTimeOffClockIcon {
@@ -339,16 +287,6 @@
   justify-content: center;
   border-radius: 50%;
   background-color: white;
-}
-
-:global(.requested-time-off-clock-icon-svg) {
-  width: 100%;
-  height: 100%;
-  fill: currentColor;
-}
-
-:global(.requested-time-off-clock-icon-svg path) {
-  fill: #0d6efd;
 }
 
 .loggedTimeOffCardsContainer {
@@ -408,20 +346,10 @@
   margin: auto;
 }
 
-:global(td) {
+.userManagementTable td {
   text-align: center;
   padding: 4px;
   vertical-align: middle;
-}
-
-/* custom-toast.css */
-:global(.custom-toast) {
-  background-color: #a69712;
-  color: white;
-}
-
-:global(.custom-toast-progress) {
-  background-color: white;
 }
 
 .darkUsermanagementData {

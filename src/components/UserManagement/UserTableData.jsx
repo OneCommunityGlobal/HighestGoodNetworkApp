@@ -251,7 +251,7 @@ const UserTableDataComponent = (props) => {
               {formData.firstName}{' '}
             </a>
             <FontAwesomeIcon
-              className="copy_icon"
+              className={styles.userManagementCellControl}
               icon={faCopy}
               onClick={() => {
                 navigator.clipboard.writeText(formData.firstName);
@@ -262,7 +262,7 @@ const UserTableDataComponent = (props) => {
         ) : (
           <input
             type="text"
-            className={`edituser_input_firstname ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
+            className={`${styles.userManagementCellControl} ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
             value={formData.firstName}
             onChange={e => {
               updateFormData({ ...formData, firstName: e.target.value });
@@ -278,7 +278,7 @@ const UserTableDataComponent = (props) => {
               {formData.lastName}
             </a>
             <FontAwesomeIcon
-              className="copy_icon"
+              className={styles.userManagementCellControl}
               icon={faCopy}
               onClick={() => {
                 navigator.clipboard.writeText(formData.lastName);
@@ -289,7 +289,7 @@ const UserTableDataComponent = (props) => {
         ) : (
           <input
             type="text"
-            className={`edituser_input text-center ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
+            className={`${styles.userManagementCellControl} text-center ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
             value={formData.lastName}
             onChange={e => {
               updateFormData({ ...formData, lastName: e.target.value });
@@ -298,7 +298,7 @@ const UserTableDataComponent = (props) => {
           />
         )}
       </td>
-      <td id="usermanagement_role">
+      <td className={styles.roleCell}>
         {editUser?.role && roles !== undefined ? (
           <>
           <FontAwesomeIcon id={`role-icon-${props.index}`} icon={roleIcons[formData.role] || faUser} />
@@ -332,7 +332,7 @@ const UserTableDataComponent = (props) => {
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", maxWidth: "100%" }}>
             <span className="tooltip-container">{formData.jobTitle}</span>
             <FontAwesomeIcon
-              className="copy_icon"
+              className={styles.userManagementCellControl}
               icon={faCopy}
               onClick={() => {
                 navigator.clipboard.writeText(formData.jobTitle);
@@ -343,7 +343,7 @@ const UserTableDataComponent = (props) => {
         ) : (
           <input
             type="text"
-            className="edituser_input"
+            className={styles.userManagementCellControl}
             style={{ maxWidth: "100%" }}
             value={formData.jobTitle}
             onChange={e => {
@@ -360,7 +360,7 @@ const UserTableDataComponent = (props) => {
           <div>
             {formData.email}
             <FontAwesomeIcon
-              className="copy_icon"
+              className={styles.userManagementCellControl}
               icon={faCopy}
               onClick={() => {
                 navigator.clipboard.writeText(formData.email);
@@ -371,7 +371,7 @@ const UserTableDataComponent = (props) => {
         ) : (
           <input
             type="text"
-            className={`edituser_input ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
+            className={`${styles.userManagementCellControl} ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
             value={formData.email}
             onChange={e => {
               updateFormData({ ...formData, email: e.target.value });
@@ -387,7 +387,7 @@ const UserTableDataComponent = (props) => {
           <input
             type="number"
             step={0.5}
-            className={`edituser_input ${
+            className={`${styles.userManagementCellControl} ${
               darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
             }`}
             value={formData.weeklycommittedHours}
@@ -458,10 +458,9 @@ const UserTableDataComponent = (props) => {
         <button
           type="button"
           aria-label="Log Time Off"
-          className={`btn btn-outline-primary btn-sm${props.timeOffRequests?.length > 0 ? ` time-off-request-btn-moved` : ''
+          className={`btn btn-outline-primary btn-sm ${styles.requestedTimeOffBtn}${props.timeOffRequests?.length > 0 ? ` ${styles.timeOffRequestBtnMoved}` : ''
             }`}
           onClick={() => props.onLogTimeOffClick(props.user)}
-          id="requested-time-off-btn"
           style={{
             ...darkMode ? { boxShadow: '0 0 0 0', fontWeight: 'bold' } : boxStyle,
             padding: '5px', // Added 2px padding
@@ -472,7 +471,7 @@ const UserTableDataComponent = (props) => {
             width="22"
             height="19"
             viewBox="0 0 448 512"
-            className="requested-time-off-calender-svg"
+            className={styles.requestedTimeOffCalendarSvg}
           >
             <path d="M128 0c17.7 0 32 14.3 32 32V64H288V32c0-17.7 14.3-32 32-32s32 14.3 32 32V64h48c26.5 0 48 21.5 48 48v48H0V112C0 85.5 21.5 64 48 64H96V32c0-17.7 14.3-32 32-32zM0 192H448V464c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V192zm64 80v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16zm128 0v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H208c-8.8 0-16 7.2-16 16zm144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H336zM64 400v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16zm144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H208zm112 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H336c-8.8 0-16 7.2-16 16z" />
           </svg>
@@ -484,7 +483,7 @@ const UserTableDataComponent = (props) => {
               width="18"
               height="18"
               viewBox="0 0 512 512"
-              className="requested-time-off-clock-icon-svg"
+              className={styles.requestedTimeOffClockSvg}
             >
               <path d="M464 256A208 208 0 1 1 48 256a208 208 0 1 1 416 0zM0 256a256 256 0 1 0 512 0A256 256 0 1 0 0 256zM232 120V256c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2V120c0-13.3-10.7-24-24-24s-24 10.7-24 24z" />
             </svg>
@@ -533,7 +532,7 @@ const UserTableDataComponent = (props) => {
         ) : (
           <input
             type="date"
-            className={`edituser_input ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
+            className={`${styles.userManagementCellControl} ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
             value={formData.startDate}
             onChange={e => {
               updateFormData({ ...formData, startDate: e.target.value });
@@ -547,7 +546,7 @@ const UserTableDataComponent = (props) => {
           <div>
             {props.user.endDate ? formatDate(props.user.endDate) : 'N/A'}
             <FontAwesomeIcon
-              className="copy_icon"
+              className={styles.userManagementCellControl}
               icon={faCopy}
               onClick={() => {
                 navigator.clipboard.writeText(
@@ -560,7 +559,7 @@ const UserTableDataComponent = (props) => {
         ) : (
           <input
             type="date"
-            className={`edituser_input ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
+            className={`${styles.userManagementCellControl} ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
             value={formData.endDate}
             onChange={e => {
               updateFormData({ ...formData, endDate: e.target.value });
