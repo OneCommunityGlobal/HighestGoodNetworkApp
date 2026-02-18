@@ -205,12 +205,6 @@
   display: none;
 }
 
-.pageNoLink {
-  margin-left: 10px;
-  text-align: center;
-  margin-top: 7px;
-}
-
 .usermanagementActionsCell {
   display: table-cell;
   padding-left: 10px;
@@ -218,6 +212,12 @@
 
 :global(tr:hover) {
   background: #e9f6ff;
+}
+
+.pageNoLink {
+  margin-left: 10px;
+  text-align: center;
+  margin-top: 7px;
 }
 
 .linkButton {
