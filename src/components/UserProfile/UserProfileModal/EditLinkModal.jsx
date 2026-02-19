@@ -96,7 +96,7 @@ const EditLinkModal = props => {
 
     if (isDuplicate) {
       setDuplicateNameError(true);
-      setIsValidLink(true); // mantém estado de URL limpo para não mostrar mensagem errada
+      setIsValidLink(true);
     } else if (hasInvalidUrl) {
       setDuplicateNameError(false);
       setIsValidLink(false);
