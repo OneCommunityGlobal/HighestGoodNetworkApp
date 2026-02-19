@@ -16,6 +16,7 @@
   --input-text: #1a202c;
   width: 100%;
   max-width: 1400px;
+  min-width: 0; /* allow shrink in flex layouts to prevent horizontal overflow */
   margin: 0 auto;
   padding: 12px;
   background-color: var(--chart-bg);
@@ -23,6 +24,7 @@
   min-height: 600px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   color: var(--chart-text);
+  box-sizing: border-box;
 }
 
 .darkMode {
@@ -62,6 +64,7 @@
 
 .chartContainer {
   width: 100%;
+  min-width: 0; /* allow shrink so ResponsiveContainer can fit viewport */
   padding: 12px;
   background: var(--chart-bg);
   border-radius: 8px;
@@ -69,6 +72,8 @@
   border: 1px solid var(--chart-border);
   box-sizing: border-box;
   overflow: hidden;
+  overflow-x: auto; /* if chart content is wide (many bars), scroll inside card only */
+  -webkit-overflow-scrolling: touch;
 }
 
 .loadingContainer,
