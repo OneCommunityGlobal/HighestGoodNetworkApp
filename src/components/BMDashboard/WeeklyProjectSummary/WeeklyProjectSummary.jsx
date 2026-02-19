@@ -8,6 +8,8 @@ import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
 import PaidLaborCost from './PaidLaborCost/PaidLaborCost';
 import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
 import QuantityOfMaterialsUsed from './QuantityOfMaterialsUsed/QuantityOfMaterialsUsed';
+import ToolsStoppageHorizontalBarChart from '../Tools/ToolsStoppageHorizontalBarChart';
+import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
 import InjuryCategoryBarChart from './GroupedBarGraphInjurySeverity/InjuryCategoryBarChart';
 import ToolsHorizontalBarChart from './Tools/ToolsHorizontalBarChart';
 import ExpenseBarChart from './Financials/ExpenseBarChart';
@@ -350,11 +352,19 @@ function WeeklyProjectSummary() {
       {
         title: 'Tools and Equipment Tracking',
         key: 'Tools and Equipment Tracking',
-        className: 'half',
+        className: 'full',
         content: (
-          <div className="weekly-project-summary-card normal-card" style={{ minHeight: '300px' }}>
-            <ToolsHorizontalBarChart darkMode={darkMode} />
-          </div>
+          <>
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.wideCard}`}>
+              <ToolsStoppageHorizontalBarChart darkMode={darkMode} />
+            </div>
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+              <ToolStatusDonutChart />
+            </div>
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+              <ToolsHorizontalBarChart darkMode={darkMode} />
+            </div>
+          </>
         ),
       },
       {

@@ -3,6 +3,13 @@ import Select from 'react-select';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import axios from 'axios';
 import { ENDPOINTS } from '../../../../utils/URL';
+import { getOptionBackgroundColor, getOptionColor } from '../../../../utils/reactSelectUtils';
+import {
+  getChartHeight,
+  getChartMargins,
+  getYAxisWidth,
+  getChartFontSize,
+} from '../../../../utils/chartResponsiveUtils';
 import styles from './ToolsHorizontalBarChart.module.css';
 
 // No mock data - use real backend data only
@@ -18,8 +25,8 @@ function CustomTooltip({ active, payload, label }) {
   return (
     <div className={styles['tools-horizontal-bar-chart-tooltip']}>
       <p className={styles['tools-horizontal-bar-chart-tooltip-label']}>{label}</p>
-      {payload.map((entry, index) => (
-        <p key={index} style={{ color: entry.color }}>
+      {payload.map(entry => (
+        <p key={entry.name} style={{ color: entry.color }}>
           {entry.name}: {entry.value}
         </p>
       ))}
@@ -34,6 +41,7 @@ function ToolsHorizontalBarChart({ darkMode }) {
   const [error, setError] = useState(null);
   const [allProjects, setAllProjects] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [allTools, setAllTools] = useState([]);
   const [selectedTools, setSelectedTools] = useState([]);
 
@@ -45,7 +53,11 @@ function ToolsHorizontalBarChart({ darkMode }) {
   const [startDate, setStartDate] = useState(startDate12MonthsAgo.toISOString().split('T')[0]);
   const [endDate, setEndDate] = useState(endOfCurrentMonth.toISOString().split('T')[0]);
 
-  // Date range logging removed for production
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Fetch projects list
   useEffect(() => {
@@ -66,7 +78,7 @@ function ToolsHorizontalBarChart({ darkMode }) {
           // Auto-select first project for initial display
           setSelectedProject(projectOptions[0]);
         }
-      } catch (err) {
+      } catch {
         setError('Failed to load projects');
       }
     };
@@ -143,8 +155,7 @@ function ToolsHorizontalBarChart({ darkMode }) {
         } else {
           setData([]);
         }
-      } catch (err) {
-        console.error(err);
+      } catch {
         setError('Failed to load tools data');
         setData([]);
         setAllTools([]);
@@ -300,62 +311,74 @@ function ToolsHorizontalBarChart({ darkMode }) {
             placeholder="Select a project"
             isClearable={false}
             isDisabled={allProjects.length === 0}
-            styles={
-              darkMode
-                ? {
-                    control: baseStyles => ({
-                      ...baseStyles,
-                      backgroundColor: '#2c3344',
-                      borderColor: '#364156',
-                      minHeight: '32px',
-                      fontSize: '12px',
-                    }),
-                    menu: baseStyles => ({
-                      ...baseStyles,
-                      backgroundColor: '#2c3344',
-                      fontSize: '12px',
-                    }),
-                    option: (baseStyles, state) => ({
-                      ...baseStyles,
-                      backgroundColor: state.isFocused ? '#364156' : '#2c3344',
-                      color: '#e0e0e0',
-                      fontSize: '12px',
-                    }),
-                    singleValue: baseStyles => ({
-                      ...baseStyles,
-                      color: '#e0e0e0',
-                      fontSize: '12px',
-                    }),
-                    placeholder: baseStyles => ({
-                      ...baseStyles,
-                      color: '#aaaaaa',
-                      fontSize: '12px',
-                    }),
-                  }
-                : {
-                    control: baseStyles => ({
-                      ...baseStyles,
-                      minHeight: '32px',
-                      fontSize: '12px',
-                    }),
-                    menu: baseStyles => ({
-                      ...baseStyles,
-                      fontSize: '12px',
-                    }),
-                    option: baseStyles => ({
-                      ...baseStyles,
-                      fontSize: '12px',
-                    }),
-                    singleValue: baseStyles => ({
-                      ...baseStyles,
-                      fontSize: '12px',
-                    }),
-                    placeholder: baseStyles => ({
-                      ...baseStyles,
-                      fontSize: '12px',
-                    }),
-                  }
-            }
+            styles={{
+              control: baseStyles => ({
+                ...baseStyles,
+                minHeight: '38px',
+                fontSize: '12px',
+                backgroundColor: darkMode ? '#253342' : '#fff',
+                borderColor: darkMode ? '#2d4059' : '#ccc',
+                color: darkMode ? '#ffffff' : '#000',
+                boxShadow: 'none',
+                borderRadius: '6px',
+                '&:hover': {
+                  borderColor: darkMode ? '#2d4059' : '#999',
+                },
+              }),
+              valueContainer: baseStyles => ({
+                ...baseStyles,
+                padding: '2px 8px',
+                color: darkMode ? '#ffffff' : '#000',
+              }),
+              input: baseStyles => ({
+                ...baseStyles,
+                margin: '0px',
+                padding: '0px',
+                color: darkMode ? '#ffffff' : '#000',
+              }),
+              indicatorsContainer: baseStyles => ({
+                ...baseStyles,
+                padding: '0 4px',
+              }),
+              menu: baseStyles => ({
+                ...baseStyles,
+                backgroundColor: darkMode ? '#253342' : '#fff',
+                fontSize: '12px',
+              }),
+              option: (baseStyles, state) => ({
+                ...baseStyles,
+                backgroundColor: getOptionBackgroundColor(state, darkMode),
+                color: getOptionColor(state, darkMode),
+                cursor: 'pointer',
+                padding: '8px 12px',
+                fontSize: '12px',
+                ':active': {
+                  backgroundColor: darkMode ? '#3a506b' : '#e0e0e0',
+                },
+              }),
+              singleValue: baseStyles => ({
+                ...baseStyles,
+                color: darkMode ? '#ffffff' : '#000',
+                fontSize: '12px',
+              }),
+              placeholder: baseStyles => ({
+                ...baseStyles,
+                color: darkMode ? '#aaaaaa' : '#666',
+                fontSize: '12px',
+              }),
+              indicatorSeparator: baseStyles => ({
+                ...baseStyles,
+                backgroundColor: darkMode ? '#2d4059' : '#ccc',
+              }),
+              dropdownIndicator: baseStyles => ({
+                ...baseStyles,
+                color: darkMode ? '#ffffff' : '#999',
+                padding: '4px',
+                ':hover': {
+                  color: darkMode ? '#ffffff' : '#666',
+                },
+              }),
+            }}
           />
         </div>
 
@@ -396,12 +419,8 @@ function ToolsHorizontalBarChart({ darkMode }) {
 
       {data.length > 0 ? (
         <div className={styles['tools-horizontal-bar-chart-content']}>
-          <ResponsiveContainer width="100%" height={200}>
-            <BarChart
-              layout="vertical"
-              data={data}
-              margin={{ top: 10, right: 30, left: 40, bottom: 10 }}
-            >
+          <ResponsiveContainer width="100%" height={getChartHeight(windowWidth)}>
+            <BarChart layout="vertical" data={data} margin={getChartMargins(windowWidth)}>
               <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
               <XAxis type="number" hide />
               <YAxis
@@ -409,9 +428,9 @@ function ToolsHorizontalBarChart({ darkMode }) {
                 dataKey="name"
                 tick={{
                   fill: darkMode ? '#e0e0e0' : '#333',
-                  fontSize: 12,
+                  fontSize: getChartFontSize(windowWidth),
                 }}
-                width={35}
+                width={getYAxisWidth(windowWidth)}
                 axisLine={false}
                 tickLine={false}
               />

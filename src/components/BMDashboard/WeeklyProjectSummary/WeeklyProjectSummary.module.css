@@ -127,6 +127,12 @@
   border-radius: 6px;
   text-align: center;
   box-shadow: 0 2px 5px var(--card-shadow);
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 
@@ -171,7 +177,7 @@
 
 .wideCard {
   width: 100%;
-  min-height: 250px;
+  min-height: auto; /* Let content determine height instead of forcing 250px */
   grid-column: span 2;
 }
 
@@ -182,7 +188,7 @@
 
 .normalCard {
   width: 100%;
-  min-height: 250px;
+  min-height: auto; /* Let content determine height instead of forcing 250px */
 }
 
 .mapCard {
@@ -222,6 +228,7 @@
   /* grid-template-columns: repeat(4, 1fr); */
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 20px;
+  align-items: stretch; /* Make all cards in a row the same height */
   border-top: 1px solid var(--card-shadow);
   animation: fadeIn 0.3s ease-in-out;
   background: var(--section-bg);
@@ -338,6 +345,25 @@
 }
 /* ---------------- RESPONSIVE DESIGN ---------------- */
 
+/* Large screens - Tools section layout optimization */
+@media (max-width: 1366px) {
+  /* Tools and Equipment Tracking - Switch to 2 column layout earlier for better chart visibility */
+  .weeklyProjectSummaryDashboardCategoryContent {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    padding: 12px;
+  }
+
+  /* Wide card spans 2 columns, normal cards span 1 column each */
+  .weeklyProjectSummaryDashboardCategoryContent .wideCard {
+    grid-column: span 2;
+  }
+
+  .weeklyProjectSummaryDashboardCategoryContent .normalCard {
+    grid-column: span 1;
+  }
+}
+
 /* Medium Screens - Wrap Items */
 @media (max-width: 1024px) {
   .weeklySummaryHeaderContainer {
@@ -353,6 +379,80 @@
 
   .weeklyProjectSummaryDashboardGrid {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Tools and Equipment Tracking - 2 column layout on tablet */
+  .weeklyProjectSummaryDashboardCategoryContent {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    padding: 12px;
+  }
+
+  /* Cards span full width on tablet */
+  .weeklyProjectSummaryDashboardCategoryContent .wideCard,
+  .weeklyProjectSummaryDashboardCategoryContent .normalCard {
+    grid-column: span 2;
+  }
+}
+
+/* Extra Small Screens - Small phones */
+@media (max-width: 375px) {
+  .weeklyProjectSummaryDashboardCategoryContent {
+    padding: 8px;
+    gap: 8px;
+  }
+
+  .weeklyProjectSummaryCard {
+    padding: 6px;
+  }
+
+  /* Ensure charts are fully visible on small mobile - prevent clipping */
+  .weeklyProjectSummaryDashboardCategoryContent .tools-horizontal-chart-container,
+  .weeklyProjectSummaryDashboardCategoryContent .tools-horizontal-bar-chart-content,
+  .weeklyProjectSummaryDashboardCategoryContent .tool-donut-wrapper {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+  }
+}
+
+/* Small Screens - Medium phones */
+@media (min-width: 376px) and (max-width: 428px) {
+  .weeklyProjectSummaryDashboardCategoryContent {
+    padding: 10px;
+    gap: 10px;
+  }
+
+  .weeklyProjectSummaryCard {
+    padding: 7px;
+  }
+
+  .weeklyProjectSummaryDashboardCategoryContent .tools-horizontal-chart-container,
+  .weeklyProjectSummaryDashboardCategoryContent .tools-horizontal-bar-chart-content,
+  .weeklyProjectSummaryDashboardCategoryContent .tool-donut-wrapper {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+  }
+}
+
+/* Small Screens - Large phones and tablets */
+@media (min-width: 429px) and (max-width: 768px) {
+  .weeklyProjectSummaryDashboardCategoryContent {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .weeklyProjectSummaryCard {
+    padding: 8px;
+  }
+
+  .weeklyProjectSummaryDashboardCategoryContent .tools-horizontal-chart-container,
+  .weeklyProjectSummaryDashboardCategoryContent .tools-horizontal-bar-chart-content,
+  .weeklyProjectSummaryDashboardCategoryContent .tool-donut-wrapper {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
   }
 }
 
@@ -392,6 +492,56 @@
 
   .projectStatusGrid {
     grid-template-columns: 1fr;
+  }
+
+  /* Tools and Equipment Tracking - Single column layout on mobile */
+  .weeklyProjectSummaryDashboardCategoryContent {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 10px;
+  }
+
+  /* Cards span full width on mobile - eliminate empty space */
+  .weeklyProjectSummaryDashboardCategoryContent .wideCard,
+  .weeklyProjectSummaryDashboardCategoryContent .normalCard {
+    grid-column: span 1;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Reduce card padding on mobile to minimize empty space */
+  .weeklyProjectSummaryCard {
+    padding: 8px;
+  }
+
+  /* Ensure filter controls don't overflow on mobile */
+  .weeklyProjectSummaryDashboardCategoryContent select,
+  .weeklyProjectSummaryDashboardCategoryContent input {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Ensure charts are fully visible on mobile - prevent clipping */
+  .weeklyProjectSummaryDashboardCategoryContent .tools-horizontal-chart-container,
+  .weeklyProjectSummaryDashboardCategoryContent .tools-horizontal-bar-chart-content,
+  .weeklyProjectSummaryDashboardCategoryContent .tool-donut-wrapper {
+    width: 100%;
+    max-width: 100%;
+    overflow: visible;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 576px) {
+  .weeklyProjectSummaryDashboardCategoryContent {
+    padding: 8px;
+    gap: 10px;
+  }
+
+  .weeklyProjectSummaryCard {
+    padding: 6px;
   }
 }
 

@@ -3,12 +3,15 @@
   background-color: var(--card-bg, #ffffff);
   border-radius: 8px;
   padding: 16px;
-  height: 100%;
+  height: 100%; /* Fill parent card height - will match grid row height */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
   transition: transform 0.2s ease;
-  min-height: 280px;
+  min-height: 0; /* Allow card to shrink to match donut chart height */
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .tools-horizontal-bar-chart-card:hover {
@@ -30,10 +33,10 @@
 }
 
 .tools-horizontal-bar-chart-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  overflow: visible; /* Allow chart tooltips and labels to show */
 }
 
 .tools-horizontal-bar-chart-loading {
@@ -213,16 +216,129 @@
   border-color: #5a6578;
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
+/* Responsive adjustments - gradient scaling for mobile */
+@media (max-width: 375px) {
   .tools-horizontal-bar-chart-card {
-    padding: 12px;
-    min-height: 250px;
+    padding: 6px;
+    min-height: auto;
+    max-height: none;
+  }
+  
+  .tools-horizontal-bar-chart-title {
+    font-size: 12px;
+    margin-bottom: 6px;
+  }
+  
+  .tools-horizontal-bar-chart-filters {
+    padding: 6px 0;
+    margin-bottom: 8px;
+  }
+  
+  .tools-horizontal-bar-chart-date-picker-group {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  
+  .tools-horizontal-bar-chart-date-picker {
+    min-width: 80px;
+    width: 100%;
+    font-size: 11px;
+  }
+
+  .tools-horizontal-bar-chart-loading,
+  .tools-horizontal-bar-chart-error,
+  .tools-horizontal-bar-chart-empty {
+    height: 150px;
+  }
+}
+
+@media (min-width: 376px) and (max-width: 428px) {
+  .tools-horizontal-bar-chart-card {
+    padding: 8px;
+    min-height: auto;
+    max-height: none;
+  }
+  
+  .tools-horizontal-bar-chart-title {
+    font-size: 13px;
+    margin-bottom: 8px;
+  }
+  
+  .tools-horizontal-bar-chart-filters {
+    padding: 7px 0;
+    margin-bottom: 9px;
+  }
+  
+  .tools-horizontal-bar-chart-date-picker-group {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+  
+  .tools-horizontal-bar-chart-date-picker {
+    min-width: 90px;
+    width: 100%;
+    font-size: 11.5px;
+  }
+
+  .tools-horizontal-bar-chart-loading,
+  .tools-horizontal-bar-chart-error,
+  .tools-horizontal-bar-chart-empty {
+    height: 165px;
+  }
+}
+
+@media (min-width: 429px) and (max-width: 480px) {
+  .tools-horizontal-bar-chart-card {
+    padding: 9px;
+    min-height: auto;
+    max-height: none;
+  }
+  
+  .tools-horizontal-bar-chart-title {
+    font-size: 13.5px;
+    margin-bottom: 9px;
+  }
+  
+  .tools-horizontal-bar-chart-filters {
+    padding: 7px 0;
+    margin-bottom: 9px;
+  }
+  
+  .tools-horizontal-bar-chart-date-picker-group {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+  
+  .tools-horizontal-bar-chart-date-picker {
+    min-width: 95px;
+    width: 100%;
+  }
+
+  .tools-horizontal-bar-chart-loading,
+  .tools-horizontal-bar-chart-error,
+  .tools-horizontal-bar-chart-empty {
+    height: 175px;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  .tools-horizontal-bar-chart-card {
+    padding: 10px;
+    min-height: auto;
+    max-height: none;
   }
 
   .tools-horizontal-bar-chart-title {
     font-size: 14px;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
+  }
+  
+  .tools-horizontal-bar-chart-filters {
+    padding: 8px 0;
+    margin-bottom: 10px;
   }
 
   .tools-horizontal-bar-chart-date-picker-group {
@@ -234,5 +350,19 @@
   .tools-horizontal-bar-chart-date-picker {
     min-width: 100px;
     width: 100%;
+  }
+
+  .tools-horizontal-bar-chart-loading,
+  .tools-horizontal-bar-chart-error,
+  .tools-horizontal-bar-chart-empty {
+    height: 180px;
+  }
+}
+
+/* Tablet adjustments */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .tools-horizontal-bar-chart-card {
+    padding: 12px;
+    min-height: auto;
   }
 }
