@@ -331,21 +331,7 @@ function MaterialCostCorrelationChart() {
 
       {/* Chart Section */}
       <div className={styles.chartContainer}>
-        {!hasData ? (
-          <div className={styles.noDataContainer}>
-            <p className={styles.noDataText}>No data available for selected filters</p>
-            <p className={styles.noDataHint}>
-              Try expanding your date range or selecting different projects or material types.
-            </p>
-            <button
-              type="button"
-              onClick={handleResetFilters}
-              className={styles.resetFiltersButton}
-            >
-              Reset Filters
-            </button>
-          </div>
-        ) : (
+        {hasData ? (
           <ResponsiveContainer
             width="100%"
             height={
@@ -361,7 +347,7 @@ function MaterialCostCorrelationChart() {
                   fontSize: chartConfig.xAxisTickFontSize,
                 }}
                 angle={chartConfig.xAxisAngle}
-                textAnchor={chartConfig.xAxisAngle === -90 ? 'end' : 'end'}
+                textAnchor="end"
                 height={chartConfig.xAxisHeight}
                 interval={chartConfig.xAxisInterval}
                 tickFormatter={value => {
@@ -433,6 +419,20 @@ function MaterialCostCorrelationChart() {
               />
             </ComposedChart>
           </ResponsiveContainer>
+        ) : (
+          <div className={styles.noDataContainer}>
+            <p className={styles.noDataText}>No data available for selected filters</p>
+            <p className={styles.noDataHint}>
+              Try expanding your date range or selecting different projects or material types.
+            </p>
+            <button
+              type="button"
+              onClick={handleResetFilters}
+              className={styles.resetFiltersButton}
+            >
+              Reset Filters
+            </button>
+          </div>
         )}
       </div>
     </div>
