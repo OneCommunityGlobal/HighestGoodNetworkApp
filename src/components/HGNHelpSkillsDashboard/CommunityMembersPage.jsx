@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { availablePreferences, availableSkills, formatSkillName } from './FilerData.js';
@@ -123,5 +124,11 @@ function CommunityMembersPage() {
     </div>
   );
 }
+Accordion.propTypes = {
+  title: PropTypes.string.isRequired,
+  children: PropTypes.node.isRequired,
+  defaultOpen: PropTypes.bool,
+  darkMode: PropTypes.bool,
+};
 
 export default CommunityMembersPage;

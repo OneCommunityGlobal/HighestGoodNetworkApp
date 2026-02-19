@@ -1,4 +1,5 @@
 import axios from 'axios';
+import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import styles from './style/RankedUserList.module.css';
@@ -30,6 +31,7 @@ function RankedUserList({ selectedSkills, selectedPreferences, searchQuery }) {
     };
 
     fetchUsers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedSkills, selectedPreferences]);
 
   // Client-side filter by searchQuery on top of API results
@@ -58,5 +60,11 @@ function RankedUserList({ selectedSkills, selectedPreferences, searchQuery }) {
     </div>
   );
 }
+
+RankedUserList.propTypes = {
+  selectedSkills: PropTypes.arrayOf(PropTypes.string),
+  selectedPreferences: PropTypes.arrayOf(PropTypes.string),
+  searchQuery: PropTypes.string,
+};
 
 export default RankedUserList;
