@@ -13,6 +13,10 @@ import {
   DropdownItem,
   Card,
   CardBody,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
 } from 'reactstrap';
 import {
   format,
@@ -23,6 +27,7 @@ import {
   addMonths,
   subMonths,
   isSameDay,
+  parseISO,
 } from 'date-fns';
 import { faCow, faUtensils, faSeedling, faAppleWhole } from '@fortawesome/free-solid-svg-icons';
 import styles from './KICalendar.module.css';
@@ -101,6 +106,8 @@ export default function KICalendar() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [eventFilter, setEventFilter] = useState('All Modules');
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState(null);
   const today = new Date();
   const MAX_EVENTS = 2;
   const moduleIcons = {
@@ -265,22 +272,28 @@ export default function KICalendar() {
                 return dateEvents.length > 0 ? (
                   <div className="small text-primary">
                     {dateEvents.slice(0, MAX_EVENTS).map(event => (
-                      <div
+                      <button
                         key={event.id}
                         className={`${styles.eventTitle} ${styles[event.type?.toLowerCase()]} ${
                           styles.smallText
                         }`}
+                        onClick={() => {
+                          setSelectedEvent(event);
+                          setModalOpen(true);
+                        }}
                       >
                         {moduleIcons[event.type] && (
                           <FontAwesomeIcon icon={moduleIcons[event.type]} className="me-2" />
                         )}{' '}
                         {event.title}
-                      </div>
+                      </button>
                     ))}
 
                     {dateEvents.length > MAX_EVENTS && (
                       <button
-                        onClick={() => handleSeeMore(dateEvents)}
+                        onClick={() => {
+                          setView('week');
+                        }}
                         className={`${styles.smallText} ${styles.linkText}`}
                       >
                         +{dateEvents.length - MAX_EVENTS} more
@@ -314,17 +327,21 @@ export default function KICalendar() {
                       <div>{format(day, 'MMM d')}</div>
                     </div>
                     {dateEvents.map(event => (
-                      <div
+                      <button
                         key={event.id}
                         className={`${styles.weeklyEventTitle} ${
                           styles[event.type?.toLowerCase()]
                         } ${styles.smallText}`}
+                        onClick={() => {
+                          setSelectedEvent(event);
+                          setModalOpen(true);
+                        }}
                       >
                         {moduleIcons[event.type] && (
                           <FontAwesomeIcon icon={moduleIcons[event.type]} className="me-2" />
                         )}{' '}
                         {event.title}
-                      </div>
+                      </button>
                     ))}
                   </Col>
                 );
@@ -333,6 +350,46 @@ export default function KICalendar() {
           )}
         </Col>
       </Row>
+      <Modal isOpen={modalOpen} toggle={() => setModalOpen(false)}>
+        <ModalHeader toggle={() => setModalOpen(false)}>
+          <h4>
+            {moduleIcons[selectedEvent?.type] && (
+              <FontAwesomeIcon
+                icon={moduleIcons[selectedEvent?.type]}
+                className={`me-2 ${styles[`${selectedEvent?.type?.toLowerCase()}Text`]}`}
+              />
+            )}{' '}
+            {selectedEvent?.title}
+          </h4>
+          <div
+            className={`mr-2 ${styles.eventTag} ${styles[selectedEvent?.type?.toLowerCase()]} ${
+              styles.smallText
+            }`}
+          >
+            {selectedEvent?.type}
+          </div>
+        </ModalHeader>
+        <ModalBody>
+          <p className="mb-0">
+            <b>Date:</b>
+          </p>
+          <p>
+            {selectedEvent?.date && format(parseISO(selectedEvent?.date), 'eeee, MMMM d, yyyy')}
+          </p>
+          <p className="mb-0">
+            <b>Description:</b>
+          </p>
+          <p>{selectedEvent?.description}</p>
+          <p className="mb-0">
+            <b>Assigned To:</b>
+          </p>
+          <p>{selectedEvent?.assignedTo || 'Unassigned'}</p>
+          <p className="mb-0">
+            <b>Related Item</b>
+          </p>
+          <p>{selectedEvent?.relatedItem || 'None'}</p>
+        </ModalBody>
+      </Modal>
     </Container>
   );
 }

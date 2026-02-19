@@ -44,19 +44,12 @@
   color: black !important
 }
 
-/* .calendar :global(.react-calendar__month-view__days__day--neighboringMonth), 
-.calendar :global(.react-calendar__decade-view__years__year--neighboringDecade), 
-.calendar :global(.react-calendar__century-view__decades__decade--neighboringCentury) {
-  background-color: #e5e5e5;
-  box-shadow: inset 0 0 0 1px #ffffff !important;
-} */
-
 .smallText {
   font-size: 0.7rem;
 }
 
 .eventTitle {
-  padding: 1px 2px;
+  padding: 1px 5px;
   border-radius: 5px;
   margin-bottom: 1px;
   white-space: nowrap;
@@ -82,17 +75,29 @@
   background-color: #caffdb;
   color: #1d7e3a;
 }
+.garden:hover {
+  border: 1px solid #1d7e3a;
+}
 .animals {
   background-color: #ffe0cb;
   color: #935425;
+}
+.animals:hover {
+  border: 1px solid #935425;
 }
 .kitchen {
   background-color: #dde4ff;
   color: #1a3bc0;
 }
+.kitchen:hover {
+  border: 1px solid #1a3bc0;
+}
 .orchard {
   background-color: #efd2ff;
   color:#7820a6;
+}
+.orchard:hover {
+  border: 1px solid #7820a6;
 }
 .gardenText {
   color: #1d7e3a;
@@ -109,6 +114,10 @@
 .linkText {
   cursor: pointer;
   color: #007bff;
+}
+
+.linkText:hover {
+  color: #005cbe;
 }
 
 .blueText {
