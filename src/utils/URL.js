@@ -524,6 +524,7 @@ export const ENDPOINTS = {
   PROMOTION_ELIGIBILITY: `${APIEndpoint}/promotion-eligibility`,
   PROMOTE_MEMBERS: `${APIEndpoint}/promote-members`,
 
+
   MATERIAL_UTILIZATION: () => `${APIEndpoint}/materials/utilization`,
   DISTINCT_PROJECTS: () => `${APIEndpoint}/materials/distinct-projects`,
   DISTINCT_MATERIALS: () => `${APIEndpoint}/materials/distinct-materials`,
@@ -532,6 +533,8 @@ export const ENDPOINTS = {
   PR_REVIEWS_INSIGHTS: `${APIEndpoint}/analytics/pr-review-insights`,
 
   // Education Portal endpoints
+  STUDENT_PROFILE: `${APIEndpoint}/student/profile`,
+  STUDENT_SUBJECT_TASKS: subjectId => `${APIEndpoint}/student/profile/subject/${subjectId}`,
   EDUCATOR_ASSIGN_ATOMS: () => `${APIEndpoint}/educator/assign-atoms`,
 
   LESSON_PLANS: `${APIEndpoint}/education/lesson-plans`,
