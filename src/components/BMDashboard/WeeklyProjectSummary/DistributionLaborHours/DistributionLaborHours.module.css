@@ -1,21 +1,27 @@
-
 .container {
-  background-color: var(--bg-color, white);
   border-radius: 8px;
   padding: 16px;
-  box-shadow: var(--shadow, 0 1px 3px rgba(0, 0, 0, 0.05));
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
   width: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
-  color: var(--text-color, #000);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .title {
   font-size: large;
-  color: var(--title-color, black);
   font-weight: bold;
   margin-bottom: 8px;
+  color: #2563eb;
+}
+
+/* Keep title blue in dark mode */
+:global(.dark) .title,
+:global(.dark-mode) .title,
+:global(.bm-dashboard-dark) .title,
+:global([data-theme='dark']) .title {
+  color: #2563eb !important;
 }
 
 .filters {
@@ -30,7 +36,6 @@
   display: flex;
   flex-direction: column;
   font-size: 0.9rem;
-  color: var(--label-color, #000);
 }
 
 .distributionSelect {
@@ -79,7 +84,6 @@
   align-items: center;
   margin-bottom: 8px;
   font-size: 0.85rem;
-  color: var(--text-color, #000);
 }
 
 .colorBox {
@@ -90,28 +94,54 @@
 }
 
 .tooltip {
-  background-color: var(--tooltip-bg, white);
-  border: 1px solid var(--border-color, #ccc);
+  background-color: #f3f4f6;
+  color: #111827; /* darker percentage text in light mode */
   padding: 8px;
-  font-size: 0.85rem;
-  border-radius: 4px;
-  color: var(--text-color, #000);
+  border-radius: 6px;
 }
 
+/* Dark mode: ensure tooltip text is white on hover */
+:global(.dark) .tooltip,
+:global(.dark-mode) .tooltip,
+:global([data-theme='dark']) .tooltip {
+  color: #ffffff;
+}
+
+:global(.dark) .tooltip:hover,
+:global(.dark-mode) .tooltip:hover,
+:global([data-theme='dark']) .tooltip:hover {
+  color: #ffffff;
+}
+
+/* Dark mode: force ALL tooltip text to white */
+:global(.dark) .tooltip *,
+:global(.dark-mode) .tooltip *,
+:global([data-theme='dark']) .tooltip * {
+  color: #ffffff !important;
+}
+
+/* Submit button – light & dark mode safe */
 .button {
-  background-color: #f5f5f5;
-  border: 1px solid #ccc;
-  border-radius: 10%;
-  padding: 10px 20px;
+  background-color: #2563eb; /* blue */
+  color: #ffffff;            /* white text */
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
   cursor: pointer;
-  transition: background-color 0.3s ease, border-color 0.3s ease;
-  color: #333;
-  font-weight: 500;
+  transition: background-color 0.3s ease;
 }
 
+/* Hover */
 .button:hover {
-  background-color: #e0e0e0;
-  border-color: #bbb;
+  background-color: #1d4ed8;
+}
+
+/* Dark mode – keep same button color (no brightness jump) */
+:global(.dark) .button,
+:global(.dark-mode) .button,
+:global([data-theme='dark']) .button {
+  background-color: #2563eb;
+  color: #ffffff;
 }
 
 .pieChartContainer {

@@ -31,6 +31,7 @@ const CustomTooltip = ({ active, payload, total, darkMode }) => {
 
 export default function DistributionLaborHours() {
   const darkMode = useSelector(state => state.theme.darkMode);
+
   const [originalData, setOriginalData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [startDate, setStartDate] = useState(null);
@@ -67,7 +68,7 @@ export default function DistributionLaborHours() {
   const totalHours = filteredData.reduce((sum, item) => sum + item.value, 0);
 
   return (
-    <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
+    <div className={styles.container}>
       <h3 className={styles.title}>Distribution of Labor Hours</h3>
 
       {/* Filters */}
@@ -148,7 +149,9 @@ export default function DistributionLaborHours() {
             <option value="Member 2">Member 2</option>
           </select>
         </label>
-        <button className={styles.button}>Submit</button>
+        <button className={styles.button} type="button">
+          Submit
+        </button>
       </div>
 
       {/* Chart + Legend */}
@@ -178,7 +181,19 @@ export default function DistributionLaborHours() {
                 cy="50%"
                 outerRadius={100}
                 labelLine={false}
-                label={({ value }) => `${((value / totalHours) * 100).toFixed(1)}%`}
+                label={({ x, y, value }) => (
+                  <text
+                    x={x}
+                    y={y}
+                    fill={darkMode ? '#ffffff' : '#1f2937'}
+                    textAnchor="middle"
+                    dominantBaseline="central"
+                    fontSize={12}
+                    fontWeight="600"
+                  >
+                    {`${((value / totalHours) * 100).toFixed(1)}%`}
+                  </text>
+                )}
               >
                 {filteredData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
