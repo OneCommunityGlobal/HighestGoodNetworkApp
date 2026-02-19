@@ -378,7 +378,7 @@ function ToolsHorizontalBarChart({ darkMode }) {
 
       {data.length > 0 ? (
         <div className="tools-horizontal-bar-chart-content">
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer width="100%" height={getChartHeight()}>
             <BarChart layout="vertical" data={data} margin={getChartMargins()}>
               <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
               <XAxis type="number" hide />
