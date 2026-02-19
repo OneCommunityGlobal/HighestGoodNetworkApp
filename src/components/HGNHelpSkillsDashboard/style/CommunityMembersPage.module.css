@@ -124,3 +124,49 @@
   border-color: #22c55e;
   color: #ffffff;
 }
+
+.searchContainer {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 6px 12px;
+  background: #fff;
+}
+
+.searchInput {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  background: transparent;
+  color: #000;
+}
+
+.clearButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #888;
+  font-size: 14px;
+  padding: 0 4px;
+}
+
+.darkSearch {
+  border-color: #555;
+  background: #2d3748;
+}
+
+.darkSearchInput {
+  color: #fff !important;
+  background: transparent;
+}
+
+.darkSearch .clearButton {
+  color: #ccc;
+}
+
+.darkClearButton {
+  color: #f2e8e8;
+}
