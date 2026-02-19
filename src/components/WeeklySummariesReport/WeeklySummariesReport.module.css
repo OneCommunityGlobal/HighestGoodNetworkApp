@@ -12,6 +12,13 @@
   border-color: #fff #dee2e6 #dee2e6;
 }
 
+.bioHighlight {
+  width: calc(100%, 24px);
+  margin-left: -12px;
+  margin-right: -12px;
+  padding: 8px 12px;
+}
+
 .reportWrapper {
   padding: 20px 0;
   margin-top: 5px;
@@ -50,7 +57,7 @@
 }
 
 /**  switch toggle*/
-.switchToggleControl{
+.switchToggleControl {
   position: relative;
   width: 25px;
   display: inline-block;
@@ -59,10 +66,10 @@
   margin-left: 5px;
   margin-right: 5px;
 }
-.switchToggle{
+.switchToggle {
   display: none;
 }
-.switchToggleLabel{
+.switchToggleLabel {
   display: block;
   overflow: hidden;
   cursor: pointer;
@@ -90,15 +97,15 @@
   box-sizing: border-box;
 }
 .switchToggleInner:before {
-  content: "";
+  content: '';
   padding-left: 2px;
   background-color: #2ba6ed;
 }
-.switchToggle:disabled + .switchToggleLabel .switchToggleInner::before{
+.switchToggle:disabled + .switchToggleLabel .switchToggleInner::before {
   background-color: #bbb;
 }
 .switch-toggle-inner:after {
-  content: "";
+  content: '';
   padding-right: 2px;
   text-align: right;
   background-color: white;
@@ -140,14 +147,14 @@
 
 .filterContainer {
   display: flex;
-  justify-content: flex-end;
+  justify-content: flex-start;
   flex-wrap: wrap;
+  gap: 15px;
 }
 .filterContainerTeamcode {
   display: flex;
   justify-content: space-between;
 }
-
 
 .filterStyle {
   font-size: 0.7em;
@@ -155,11 +162,9 @@
   align-items: center;
 }
 
-
 .marginRight {
   margin-right: 20px;
 }
-
 
 .containerWsrWrapper {
   min-height: 100%;
@@ -199,7 +204,6 @@
 .chip {
   display: flex;
   align-items: center;
-  background: #e0e0e0;
   border-radius: 20px;
   padding: 4px 10px;
   height: fit-content;
@@ -233,7 +237,7 @@
 }
 
 .textWhite {
-  color:white;
+  color: white;
 }
 
 .errorSelect {
@@ -258,24 +262,23 @@
 .darkModal {
   :global(.modal-content) {
     background-color: #2c3e50 !important;
-    color: white !important;           
+    color: white !important;
   }
 
   :global(.close) {
-    color: white !important; 
+    color: white !important;
   }
 }
 
 .darkChip {
   background-color: #1b2a41 !important;
-  color: white !important;   
+  color: white !important;
 }
 
 .redChip {
   background-color: #962929 !important;
-  color: white !important;   
+  color: white !important;
 }
-
 
 /* @media screen and (max-width: 544px) {
   .responsive-font-size {
@@ -291,13 +294,12 @@
 @media screen and (max-width: 576px) {
   .responsiveFontSize {
     font-size: 0.3rem !important;
-  }  
+  }
 
   .px-max-sm-0 {
     padding-left: 0 !important;
     padding-right: 0 !important;
   }
-
 }
 /* @media screen and (max-width: 544px) {
   .responsiveFontSize {
@@ -338,6 +340,24 @@
   margin: 10px 0 0 0;
   padding: 8px;
 }
+/* Nuclear option — beats ANY dark-mode global rule */
+:global(.dark-mode)
+  :global(.container-wsr-wrapper)
+  :global(.alert-danger).codeAlert {
+  color: #842029 !important;
+}
+
+:global(.dark-mode) .tabContent {
+  background-color: #2e5061 !important;
+  border: none !important;
+}
+
+/* Ensure the Bootstrap tab-content container is also dark */
+:global(.dark-mode) :global(.tab-content) {
+  background-color: #2e5061 !important;
+  color: white !important;
+  border: none !important;
+}
 
 .report-multi-select-filter {
   .options {
@@ -372,7 +392,6 @@
     max-width: 30px;
     padding: 5px 0;
   }
-
 }
 
 .multiSelectFilter {
@@ -403,7 +422,6 @@
   .dropdownContainer {
     z-index: 2;
   }
-
 }
 
 /* Saved Filter Styles */
@@ -507,4 +525,47 @@
 
 .saved-filter-button.active-filter .saved-filter-delete-btn:hover {
   color: #ffc107 !important;
+}
+
+:global(.dark-mode) :global(.dropdown-container) {
+  background-color: #2e3440 !important; /* Dark Blue-Grey Background */
+  border: 1px solid #4c566a !important; /* Dark Border */
+  color: #fff !important;               /* White Text */
+}
+
+/* The header area where selected items appear */
+:global(.dark-mode) :global(.dropdown-heading) {
+  color: #fff !important;
+}
+
+/* The dropdown menu list */
+:global(.dark-mode) :global(.dropdown-content) {
+  background-color: #2e3440 !important;
+  border: 1px solid #4c566a !important;
+  z-index: 10000 !important; /* Ensure it stays on top of modals */
+}
+
+/* Individual options in the list */
+:global(.dark-mode) :global(.select-item) {
+  background-color: #2e3440 !important;
+  color: #fff !important;
+}
+
+/* Hover state for options */
+:global(.dark-mode) :global(.select-item:hover) {
+  background-color: #434c5e !important; /* Slightly lighter for hover */
+  color: #fff !important;
+}
+
+/* The search input field inside the dropdown */
+:global(.dark-mode) :global(.dropdown-search) {
+  background-color: #3b4252 !important;
+  color: #fff !important;
+  border: 1px solid #4c566a !important;
+}
+
+/* The "Select All" label */
+:global(.dark-mode) :global(.select-item.selected) {
+  background-color: #4c566a !important;
+  font-weight: bold;
 }

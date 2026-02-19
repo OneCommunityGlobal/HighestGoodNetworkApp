@@ -1,39 +1,52 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import UserCard from './UserCard';
-import './style/UserCard.module.css';
+import { useSelector } from 'react-redux';
+import styles from './style/RankedUserList.module.css';
 
-function RankedUserList({ selectedSkills }) {
+function RankedUserList({ selectedSkills, selectedPreferences }) {
   const [rankedUsers, setRankedUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const darkMode = useSelector(state => state.theme.darkMode);
   useEffect(() => {
-    if (!selectedSkills || selectedSkills.length === 0) return;
+    if (
+      (!selectedSkills || selectedSkills.length === 0) &&
+      (!selectedPreferences || selectedPreferences.length === 0)
+    )
+      return;
 
     const fetchRankedUsers = async () => {
       setLoading(true);
       try {
-        const response = await axios.get('http://localhost:4500/api/hgnform/ranked', {
-          params: { skills: selectedSkills.join(',') },
+        const params = {};
+        if (selectedSkills.length > 0) params.skills = selectedSkills.join(',');
+        if (selectedPreferences.length > 0) params.preferences = selectedPreferences.join(',');
+
+        const response = await axios.get(`${process.env.REACT_APP_APIENDPOINT}/hgnform/ranked`, {
+          params,
         });
         setRankedUsers(response.data);
       } catch (err) {
-        // console.error('Error fetching ranked users:', err);
       } finally {
         setLoading(false);
       }
     };
 
     fetchRankedUsers();
-  }, [selectedSkills]);
+  }, [selectedSkills, selectedPreferences]);
 
-  if (loading) return <p>Loading ranked users...</p>;
+  if (loading) return <p className={`${styles.message}`}>Loading ranked users...</p>;
+  if (!rankedUsers.length) return <p className={`${styles.message}`}>No users found.</p>;
 
   return (
-    <div className="user-card-container">
-      {rankedUsers.map(user => (
-        <UserCard key={user._id} user={user} />
-      ))}
+    <div className={darkMode ? `${styles.darkMode}` : ''}>
+      <div className={`${styles.container}`}>
+        {rankedUsers.map(user => (
+          <div key={user._id} className={`${styles.userWrapper}`}>
+            <UserCard user={user} />
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

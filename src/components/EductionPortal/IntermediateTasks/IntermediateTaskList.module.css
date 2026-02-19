@@ -1,7 +1,8 @@
 .dashboard {
   min-height: 100vh;
   background-color: #f8f9fa;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
+    'Cantarell', sans-serif;
   padding: 2rem 0;
 }
 
@@ -158,8 +159,12 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .emptySubTasks {
@@ -364,3 +369,282 @@
   }
 }
 
+/* Dark Mode Styles - Using global dark-mode class for consistency across builds */
+:global(.dark-mode) .dashboard {
+  background-color: #1a1a1a;
+}
+
+:global(.dark-mode) .title {
+  color: #ffffff;
+}
+
+:global(.dark-mode) .subtitle {
+  color: #9ca3af;
+}
+
+:global(.dark-mode) .taskCard {
+  background-color: #2d2d2d;
+  border-color: #404040;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+:global(.dark-mode) .taskCard:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+}
+
+:global(.dark-mode) .taskTitle {
+  color: #ffffff;
+}
+
+:global(.dark-mode) .taskSubtitle {
+  color: #9ca3af;
+}
+
+:global(.dark-mode) .taskMeta {
+  color: #9ca3af;
+}
+
+:global(.dark-mode) .taskStatus {
+  color: #d1d5db;
+}
+
+:global(.dark-mode) .progressInfo {
+  color: #60a5fa;
+}
+
+:global(.dark-mode) .expandButton {
+  background-color: #2d2d2d;
+  border-color: #404040;
+  color: #9ca3af;
+}
+
+:global(.dark-mode) .expandButton:hover {
+  background-color: #363636;
+  border-color: #525252;
+  color: #d1d5db;
+}
+
+:global(.dark-mode) .subTasksContainer {
+  border-top-color: #404040;
+}
+
+:global(.dark-mode) .loadingState {
+  color: #9ca3af;
+}
+
+:global(.dark-mode) .spinner {
+  border-color: #404040;
+  border-top-color: #60a5fa;
+}
+
+:global(.dark-mode) .emptySubTasks {
+  color: #9ca3af;
+}
+
+:global(.dark-mode) .subTaskItem {
+  background-color: #252525;
+  border-color: #404040;
+}
+
+:global(.dark-mode) .subTaskItem:hover {
+  background-color: #2a2a2a;
+  border-color: #525252;
+}
+
+:global(.dark-mode) .subTaskTitle {
+  color: #ffffff;
+}
+
+:global(.dark-mode) .subTaskDescription {
+  color: #9ca3af;
+}
+
+:global(.dark-mode) .subTaskMeta {
+  color: #9ca3af;
+}
+
+:global(.dark-mode) .subTaskHours {
+  color: #d1d5db;
+}
+
+:global(.dark-mode) .subTaskDueDate {
+  color: #9ca3af;
+}
+
+:global(.dark-mode) .statuspending {
+  background-color: #404040;
+  color: #d1d5db;
+}
+
+:global(.dark-mode) .statusin_progress {
+  background-color: #1e3a5f;
+  color: #93c5fd;
+}
+
+:global(.dark-mode) .statuscompleted {
+  background-color: #1a4d2e;
+  color: #86efac;
+}
+
+:global(.dark-mode) .editButton,
+:global(.dark-mode) .deleteButton {
+  background-color: #2d2d2d;
+  border-color: #404040;
+  color: #9ca3af;
+}
+
+:global(.dark-mode) .editButton:hover {
+  background-color: #1e3a5f;
+  border-color: #60a5fa;
+  color: #60a5fa;
+}
+
+:global(.dark-mode) .deleteButton:hover {
+  background-color: #4a1a1a;
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+:global(.dark-mode) .markDoneButton {
+  background-color: #2563eb;
+  color: #ffffff;
+}
+
+:global(.dark-mode) .markDoneButton:hover {
+  background-color: #1d4ed8;
+}
+
+:global(.dark-mode) .completedBadge {
+  background-color: #1a4d2e;
+  color: #86efac;
+}
+
+:global(.dark-mode) .emptyState {
+  color: #9ca3af;
+  background-color: #2d2d2d;
+  border-color: #404040;
+}
+
+/* Form Modal Dark Mode Styles - Using global selectors for reactstrap Modal */
+:global(.dark-mode .modal-content) {
+  background-color: #2d2d2d !important;
+  border-color: #404040 !important;
+}
+
+:global(.dark-mode .modal-header) {
+  background-color: #2d2d2d !important;
+  border-bottom-color: #404040 !important;
+  color: #ffffff !important;
+}
+
+:global(.dark-mode .modal-header .close) {
+  color: #ffffff !important;
+  opacity: 0.8;
+}
+
+:global(.dark-mode .modal-header .close:hover) {
+  opacity: 1;
+}
+
+:global(.dark-mode .modal-body) {
+  background-color: #2d2d2d !important;
+  color: #ffffff !important;
+}
+
+:global(.dark-mode .modal-footer) {
+  background-color: #2d2d2d !important;
+  border-top-color: #404040 !important;
+}
+
+:global(.dark-mode .form-control) {
+  background-color: #1a1a1a !important;
+  border-color: #404040 !important;
+  color: #ffffff !important;
+}
+
+:global(.dark-mode .form-control:focus) {
+  background-color: #1a1a1a !important;
+  border-color: #60a5fa !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 0 0.2rem rgba(96, 165, 250, 0.25) !important;
+}
+
+:global(.dark-mode .form-control::placeholder) {
+  color: #6b7280 !important;
+}
+
+:global(.dark-mode label) {
+  color: #d1d5db !important;
+}
+
+:global(.dark-mode .btn-secondary) {
+  background-color: #404040 !important;
+  border-color: #525252 !important;
+  color: #ffffff !important;
+}
+
+:global(.dark-mode .btn-secondary:hover) {
+  background-color: #525252 !important;
+  border-color: #636363 !important;
+}
+
+:global(.dark-mode .btn-primary) {
+  background-color: #2563eb !important;
+  border-color: #2563eb !important;
+  color: #ffffff !important;
+}
+
+:global(.dark-mode .btn-primary:hover) {
+  background-color: #1d4ed8 !important;
+  border-color: #1d4ed8 !important;
+}
+
+:global(.dark-mode select.form-control) {
+  background-color: #1a1a1a !important;
+  border-color: #404040 !important;
+  color: #ffffff !important;
+}
+
+:global(.dark-mode select.form-control option) {
+  background-color: #1a1a1a !important;
+  color: #ffffff !important;
+}
+
+/* Additional styles for form inputs when using bg-yinmn-blue and bg-space-cadet */
+:global(.bg-yinmn-blue .form-control),
+:global(.bg-space-cadet .form-control) {
+  background-color: #1a1a1a !important;
+  border-color: #404040 !important;
+  color: #ffffff !important;
+}
+
+:global(.bg-yinmn-blue .form-control:focus),
+:global(.bg-space-cadet .form-control:focus) {
+  background-color: #1a1a1a !important;
+  border-color: #60a5fa !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 0 0.2rem rgba(96, 165, 250, 0.25) !important;
+}
+
+:global(.bg-yinmn-blue .form-control::placeholder),
+:global(.bg-space-cadet .form-control::placeholder) {
+  color: #6b7280 !important;
+}
+
+:global(.bg-yinmn-blue label),
+:global(.bg-space-cadet label) {
+  color: #d1d5db !important;
+}
+
+:global(.bg-yinmn-blue select.form-control),
+:global(.bg-space-cadet select.form-control) {
+  background-color: #1a1a1a !important;
+  border-color: #404040 !important;
+  color: #ffffff !important;
+}
+
+:global(.bg-yinmn-blue select.form-control option),
+:global(.bg-space-cadet select.form-control option) {
+  background-color: #1a1a1a !important;
+  color: #ffffff !important;
+}

@@ -1,0 +1,258 @@
+/* =======================
+   Light Mode Styles
+   ======================= */
+
+.reviewersChartContainer {
+  padding: 20px;
+  font-family: sans-serif;
+  height: auto;
+  width: 100%;
+  justify-self: center;
+  min-height: 100vh;
+}
+
+.reviewersFiltersBar,
+.filtersBar {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  font-size: 14px;
+}
+
+.reviewersFiltersBar .label,
+.reviewersLabel {
+  font-weight: 500;
+  min-width: 70px;
+  margin-right: 5px;
+}
+
+.reviewersScrollContainer {
+  overflow-x: auto;
+  border: 1px solid #ddd;
+  padding: 10px;
+  background-color: #fff;
+}
+
+.customTooltip {
+  background-color: #f8fafc;
+  padding: 10px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  transition: background-color 0.2s ease;
+}
+
+.customTooltip:hover {
+  background-color: #3d4a64;
+}
+
+.tooltipEntry {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 4px;
+}
+
+.tooltipLabel {
+  font-weight: bold;
+  margin-right: 8px;
+}
+
+.tooltipTitle {
+  color: black;
+}
+
+/* react-select overrides */
+.reviewersSelectContainer {
+  width: 180px;
+}
+
+.reviewersSelect__control {
+  background-color: white;
+  color: black;
+}
+
+.reviewersSelect__option--isFocused,
+.reviewersSelect__option:hover {
+  background-color: #eef0f2;
+  color: #000;
+}
+
+.reviewersSelect__option--isSelected {
+  background-color: #cbd5e1;
+  color: #000;
+}
+
+.reviewerStackbarLoading,
+.reviewersStackbarError,
+.reviewerDataEmpty {
+  display: grid;
+  place-items: center;
+  height: 200px;
+  font-size: 16px;
+  color: #000;
+  text-align: center;
+}
+
+.loadingSpinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.retryButton {
+  background-color: transparent;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+  margin-top: 10px;
+}
+
+.retryButton:hover {
+  background-color: #f0f0f0;
+}
+
+.emptyIcon {
+  font-size: 2rem;
+}
+
+.chartGrid {
+  stroke: #bfc7d1;
+  stroke-dasharray: 3 3;
+}
+
+.chartCursor {
+  fill: #e0e0e0;
+}
+
+.chartLegend {
+  color: black;
+}
+
+/* Responsive Typography */
+@media (max-width: 768px) {
+  .reviewersChartContainer h3 {
+    font-size: 1.25rem;
+  }
+
+  .reviewersFiltersBar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .reviewersFiltersBar > div {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .reviewersChartContainer h3 {
+    font-size: 1.1rem;
+  }
+
+  .reviewersLabel {
+    font-size: 0.9rem;
+  }
+
+  .reviewersSelectContainer {
+    font-size: 0.85rem;
+  }
+}
+
+.darkMode {
+  background-color: #1b2a41;
+  color: #f8fafc;
+}
+.darkMode .reviewersChartContainer {
+  background-color: #1b2a41;
+  color: #fff;
+}
+
+.darkMode .reviewersScrollContainer {
+  background-color: #324d77;
+  border-color: #444;
+}
+
+.darkMode .customTooltip {
+  background-color: #1c2d48;
+}
+
+.darkMode .tooltipTitle {
+  color: #f8fafc;
+}
+
+.darkMode :global(.reviewersSelect__control) {
+  background-color: #324d77 !important;
+  border-color: #444 !important;
+}
+
+.darkMode :global(.reviewersSelect__single-value) {
+  color: #f8fafc !important;
+}
+
+.darkMode :global(.reviewersSelect__menu) {
+  background-color: #1b2a41;
+  color: #f8fafc;
+  border: 1px solid #444;
+  z-index: 10;
+}
+
+.darkMode :global(.reviewersSelect__option--is-focused) {
+  background-color: #2f4a73 !important;
+  color: #fff !important;
+}
+
+.darkMode .rechartsLegendItemText {
+  color: black;
+}
+
+.darkMode .reviewerStackbarLoading,
+.darkMode .reviewersStackbarError,
+.darkMode .reviewerDataEmpty {
+  color: #f8fafc;
+}
+
+.darkMode .reviewerStackbarLoading p,
+.darkMode .reviewersStackbarError p,
+.darkMode .reviewerDataEmpty p {
+  color: #f8fafc;
+}
+
+.darkMode .loadingSpinner {
+  border-top: 4px solid #f8fafc;
+}
+
+.darkMode .retryButton {
+  color: #f8fafc;
+  border-color: #f8fafc;
+}
+
+.darkMode .retryButton:hover {
+  background-color: #324d77;
+}
+
+.darkMode .chartGrid {
+  stroke: #444;
+}
+
+.darkMode .chartCursor {
+  fill: rgb(50, 73, 105);
+}
+
+.darkMode .chartLegend {
+  color: white;
+}
