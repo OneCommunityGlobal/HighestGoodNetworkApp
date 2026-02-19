@@ -1,11 +1,9 @@
 import { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { Button } from 'react-bootstrap';
-
 import { fetchInvTypeByType } from '~/actions/bmdashboard/invTypeActions';
 import { fetchInvUnits } from '~/actions/bmdashboard/invUnitActions';
-import { Accordion, Card } from 'react-bootstrap';
+import { Accordion, Card, Button } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
@@ -101,11 +99,7 @@ export function InventoryTypesList(props) {
       </Accordion>
 
       <div className={`${styles.buttonContainer}`}>
-        <Button
-          variant="primary"
-          className={`${styles.backButton}`}
-          onClick={handleBack}
-        >
+        <Button variant="primary" className={`${styles.backButton}`} onClick={handleBack}>
           Back to previous list page
         </Button>
       </div>

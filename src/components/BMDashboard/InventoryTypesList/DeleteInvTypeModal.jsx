@@ -46,28 +46,18 @@ function DeleteInvTypeModal({ isOpen, toggle, itemType, category, isUnit = false
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <p>
           Are you sure you want to delete{' '}
-          <strong style={{ color: darkMode ? '#90EE90' : '#285739' }}>
-            {getItemName()}
-          </strong>
-          ?
+          <strong style={{ color: darkMode ? '#90EE90' : '#285739' }}>{getItemName()}</strong>?
         </p>
         <p className="text-muted">
-          This action cannot be undone. {!isUnit && 'This type will be removed from all inventory records.'}
+          This action cannot be undone.{' '}
+          {!isUnit && 'This type will be removed from all inventory records.'}
         </p>
       </ModalBody>
       <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-        <Button
-          onClick={toggle}
-          disabled={isDeleting}
-          className={styles.modalBtnCancel}
-        >
+        <Button onClick={toggle} disabled={isDeleting} className={styles.modalBtnCancel}>
           Cancel
         </Button>
-        <Button
-          onClick={handleDelete}
-          disabled={isDeleting}
-          className={styles.modalBtnDanger}
-        >
+        <Button onClick={handleDelete} disabled={isDeleting} className={styles.modalBtnDanger}>
           {isDeleting ? 'Deleting...' : 'Delete'}
         </Button>
       </ModalFooter>

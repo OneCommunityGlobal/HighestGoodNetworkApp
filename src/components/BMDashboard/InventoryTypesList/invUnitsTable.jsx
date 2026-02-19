@@ -81,12 +81,7 @@ export default function UnitsTable({ invUnits }) {
           onKeyPress={handleKeyPress}
           disabled={isAdding}
         />
-        <Button
-          size="sm"
-          className={`${styles.btnTypes}`}
-          onClick={handleAdd}
-          disabled={isAdding}
-        >
+        <Button size="sm" className={`${styles.btnTypes}`} onClick={handleAdd} disabled={isAdding}>
           {isAdding ? 'Adding...' : 'Add'}
         </Button>
       </div>

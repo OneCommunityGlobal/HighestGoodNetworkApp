@@ -68,11 +68,9 @@ function AddEditInvTypeFullModal({ isOpen, toggle, category, mode = 'add', itemT
   useEffect(() => {
     if (isOpen) {
       if (mode === 'edit' && itemType) {
-        // Debug: Log the itemType to see what data we're getting
-        console.log('Edit mode - itemType data:', itemType);
-        
+
         // Format dates for input fields
-        const formatDate = (dateStr) => {
+        const formatDate = dateStr => {
           if (!dateStr) return '';
           const date = new Date(dateStr);
           return date.toISOString().split('T')[0];
@@ -128,35 +126,71 @@ function AddEditInvTypeFullModal({ isOpen, toggle, category, mode = 'add', itemT
 
   const getValidationSchema = () => {
     const baseSchema = {
-      name: Joi.string().min(3).max(50).required().label('Name'),
-      description: Joi.string().min(5).max(500).required().label('Description'),
+      name: Joi.string()
+        .min(3)
+        .max(50)
+        .required()
+        .label('Name'),
+      description: Joi.string()
+        .min(5)
+        .max(500)
+        .required()
+        .label('Description'),
     };
 
     if (category === 'Equipments') {
       return Joi.object({
         ...baseSchema,
-        fuel: Joi.string().required().label('Fuel Type'),
+        fuel: Joi.string()
+          .required()
+          .label('Fuel Type'),
       }).unknown();
     }
 
     if (category === 'Tools' || category === 'Reusables') {
       return Joi.object({
         ...baseSchema,
-        invoice: Joi.string().required().label('Invoice'),
-        quantity: Joi.number().min(1).max(999).integer().required().label('Quantity'),
-        unitPrice: Joi.number().min(0).required().label('Unit Price'),
-        fromDate: Joi.date().required().label('Purchase/Rental Date'),
+        invoice: Joi.string()
+          .required()
+          .label('Invoice'),
+        quantity: Joi.number()
+          .min(1)
+          .max(999)
+          .integer()
+          .required()
+          .label('Quantity'),
+        unitPrice: Joi.number()
+          .min(0)
+          .required()
+          .label('Unit Price'),
+        fromDate: Joi.date()
+          .required()
+          .label('Purchase/Rental Date'),
       }).unknown();
     }
 
     // Materials, Consumables
     return Joi.object({
       ...baseSchema,
-      invoice: Joi.string().required().label('Invoice'),
-      quantity: Joi.number().min(1).max(999).integer().required().label('Quantity'),
-      unitPrice: Joi.number().min(0).required().label('Unit Price'),
-      unit: Joi.string().required().label('Unit'),
-      purchaseDate: Joi.date().required().label('Purchase Date'),
+      invoice: Joi.string()
+        .required()
+        .label('Invoice'),
+      quantity: Joi.number()
+        .min(1)
+        .max(999)
+        .integer()
+        .required()
+        .label('Quantity'),
+      unitPrice: Joi.number()
+        .min(0)
+        .required()
+        .label('Unit Price'),
+      unit: Joi.string()
+        .required()
+        .label('Unit'),
+      purchaseDate: Joi.date()
+        .required()
+        .label('Purchase Date'),
     }).unknown();
   };
 
@@ -185,7 +219,7 @@ function AddEditInvTypeFullModal({ isOpen, toggle, category, mode = 'add', itemT
 
     try {
       let response;
-      
+
       if (category === 'Equipments') {
         const payload = {
           name: formData.name,
@@ -219,8 +253,10 @@ function AddEditInvTypeFullModal({ isOpen, toggle, category, mode = 'add', itemT
         toggle();
       }
     } catch (err) {
-      console.error('Update error:', err);
-      const errorMsg = err.response?.data?.message || err.response?.data || 'Failed to update. Backend endpoint may not exist.';
+      const errorMsg =
+        err.response?.data?.message ||
+        err.response?.data ||
+        'Failed to update. Backend endpoint may not exist.';
       toast.error(typeof errorMsg === 'string' ? errorMsg : 'Failed to update');
     }
   };
@@ -325,7 +361,9 @@ function AddEditInvTypeFullModal({ isOpen, toggle, category, mode = 'add', itemT
   const renderEquipmentFields = () => (
     <>
       <FormGroup>
-        <Label>Fuel Type <span className="text-danger">*</span></Label>
+        <Label>
+          Fuel Type <span className="text-danger">*</span>
+        </Label>
         <Input
           type="select"
           value={formData.fuel}
@@ -344,7 +382,9 @@ function AddEditInvTypeFullModal({ isOpen, toggle, category, mode = 'add', itemT
   const renderToolFields = () => (
     <>
       <FormGroup>
-        <Label>Invoice Number <span className="text-danger">*</span></Label>
+        <Label>
+          Invoice Number <span className="text-danger">*</span>
+        </Label>
         <Input
           type="text"
           value={formData.invoice}
@@ -357,7 +397,9 @@ function AddEditInvTypeFullModal({ isOpen, toggle, category, mode = 'add', itemT
 
       <div className={styles.formRow}>
         <FormGroup>
-          <Label>Unit Price <span className="text-danger">*</span></Label>
+          <Label>
+            Unit Price <span className="text-danger">*</span>
+          </Label>
           <Input
             type="number"
             value={formData.unitPrice}
@@ -379,7 +421,9 @@ function AddEditInvTypeFullModal({ isOpen, toggle, category, mode = 'add', itemT
           </Input>
         </FormGroup>
         <FormGroup>
-          <Label>Quantity <span className="text-danger">*</span></Label>
+          <Label>
+            Quantity <span className="text-danger">*</span>
+          </Label>
           <Input
             type="number"
             value={formData.quantity}
@@ -417,7 +461,9 @@ function AddEditInvTypeFullModal({ isOpen, toggle, category, mode = 'add', itemT
 
       <div className={styles.formRow}>
         <FormGroup>
-          <Label>Purchase/Rental Date <span className="text-danger">*</span></Label>
+          <Label>
+            Purchase/Rental Date <span className="text-danger">*</span>
+          </Label>
           <Input
             type="date"
             value={formData.fromDate}
@@ -470,15 +516,19 @@ function AddEditInvTypeFullModal({ isOpen, toggle, category, mode = 'add', itemT
 
       <FormGroup>
         <Label>Upload Image</Label>
-        <DragAndDrop
-          updateUploadedFiles={setUploadedFiles}
-        />
+        <DragAndDrop updateUploadedFiles={setUploadedFiles} />
         {uploadedFiles.length > 0 && (
           <div className={styles.filePreviewContainer}>
             {uploadedFiles.map((file, index) => (
               <div key={`${file.name}-${file.lastModified}`} className={styles.filePreview}>
-                <img src={URL.createObjectURL(file)} alt={`preview-${index}`} style={{ maxWidth: '100px', maxHeight: '100px' }} />
-                <Button color="danger" size="sm" onClick={() => handleRemoveFile(index)}>X</Button>
+                <img
+                  src={URL.createObjectURL(file)}
+                  alt={`preview-${index}`}
+                  style={{ maxWidth: '100px', maxHeight: '100px' }}
+                />
+                <Button color="danger" size="sm" onClick={() => handleRemoveFile(index)}>
+                  X
+                </Button>
               </div>
             ))}
           </div>
@@ -486,7 +536,11 @@ function AddEditInvTypeFullModal({ isOpen, toggle, category, mode = 'add', itemT
         {mode === 'edit' && itemType?.images && uploadedFiles.length === 0 && (
           <div className="mt-2">
             <small className="text-muted">Current image:</small>
-            <img src={itemType.images} alt="current" style={{ maxWidth: '100px', maxHeight: '100px', display: 'block', marginTop: '5px' }} />
+            <img
+              src={itemType.images}
+              alt="current"
+              style={{ maxWidth: '100px', maxHeight: '100px', display: 'block', marginTop: '5px' }}
+            />
           </div>
         )}
       </FormGroup>
@@ -502,7 +556,9 @@ function AddEditInvTypeFullModal({ isOpen, toggle, category, mode = 'add', itemT
       </FormGroup>
 
       <div className={styles.totalPriceSection}>
-        <strong>Total Price: {calculateTotalPrice()} {formData.currency}</strong>
+        <strong>
+          Total Price: {calculateTotalPrice()} {formData.currency}
+        </strong>
       </div>
     </>
   );
@@ -510,7 +566,9 @@ function AddEditInvTypeFullModal({ isOpen, toggle, category, mode = 'add', itemT
   const renderMaterialFields = () => (
     <>
       <FormGroup>
-        <Label>Unit <span className="text-danger">*</span></Label>
+        <Label>
+          Unit <span className="text-danger">*</span>
+        </Label>
         <Input
           type="select"
           value={formData.unit}
@@ -519,14 +577,18 @@ function AddEditInvTypeFullModal({ isOpen, toggle, category, mode = 'add', itemT
         >
           <option value="">Select a Unit</option>
           {units.map((u, index) => (
-            <option key={index} value={u.unit}>{u.unit}</option>
+            <option key={index} value={u.unit}>
+              {u.unit}
+            </option>
           ))}
         </Input>
         {errors.unit && <div className="text-danger small">{errors.unit}</div>}
       </FormGroup>
 
       <FormGroup>
-        <Label>Invoice Number <span className="text-danger">*</span></Label>
+        <Label>
+          Invoice Number <span className="text-danger">*</span>
+        </Label>
         <Input
           type="text"
           value={formData.invoice}
@@ -539,7 +601,9 @@ function AddEditInvTypeFullModal({ isOpen, toggle, category, mode = 'add', itemT
 
       <div className={styles.formRow}>
         <FormGroup>
-          <Label>Unit Price <span className="text-danger">*</span></Label>
+          <Label>
+            Unit Price <span className="text-danger">*</span>
+          </Label>
           <Input
             type="number"
             value={formData.unitPrice}
@@ -561,7 +625,9 @@ function AddEditInvTypeFullModal({ isOpen, toggle, category, mode = 'add', itemT
           </Input>
         </FormGroup>
         <FormGroup>
-          <Label>Quantity <span className="text-danger">*</span></Label>
+          <Label>
+            Quantity <span className="text-danger">*</span>
+          </Label>
           <Input
             type="number"
             value={formData.quantity}
@@ -573,7 +639,9 @@ function AddEditInvTypeFullModal({ isOpen, toggle, category, mode = 'add', itemT
       </div>
 
       <FormGroup>
-        <Label>Purchase Date <span className="text-danger">*</span></Label>
+        <Label>
+          Purchase Date <span className="text-danger">*</span>
+        </Label>
         <Input
           type="date"
           value={formData.purchaseDate}
@@ -616,15 +684,19 @@ function AddEditInvTypeFullModal({ isOpen, toggle, category, mode = 'add', itemT
 
       <FormGroup>
         <Label>Upload Image</Label>
-        <DragAndDrop
-          updateUploadedFiles={setUploadedFiles}
-        />
+        <DragAndDrop updateUploadedFiles={setUploadedFiles} />
         {uploadedFiles.length > 0 && (
           <div className={styles.filePreviewContainer}>
             {uploadedFiles.map((file, index) => (
               <div key={`${file.name}-${file.lastModified}`} className={styles.filePreview}>
-                <img src={URL.createObjectURL(file)} alt={`preview-${index}`} style={{ maxWidth: '100px', maxHeight: '100px' }} />
-                <Button color="danger" size="sm" onClick={() => handleRemoveFile(index)}>X</Button>
+                <img
+                  src={URL.createObjectURL(file)}
+                  alt={`preview-${index}`}
+                  style={{ maxWidth: '100px', maxHeight: '100px' }}
+                />
+                <Button color="danger" size="sm" onClick={() => handleRemoveFile(index)}>
+                  X
+                </Button>
               </div>
             ))}
           </div>
@@ -632,7 +704,11 @@ function AddEditInvTypeFullModal({ isOpen, toggle, category, mode = 'add', itemT
         {mode === 'edit' && itemType?.images && uploadedFiles.length === 0 && (
           <div className="mt-2">
             <small className="text-muted">Current image:</small>
-            <img src={itemType.images} alt="current" style={{ maxWidth: '100px', maxHeight: '100px', display: 'block', marginTop: '5px' }} />
+            <img
+              src={itemType.images}
+              alt="current"
+              style={{ maxWidth: '100px', maxHeight: '100px', display: 'block', marginTop: '5px' }}
+            />
           </div>
         )}
       </FormGroup>
@@ -648,7 +724,9 @@ function AddEditInvTypeFullModal({ isOpen, toggle, category, mode = 'add', itemT
       </FormGroup>
 
       <div className={styles.totalPriceSection}>
-        <strong>Total Price: {calculateTotalPrice()} {formData.currency}</strong>
+        <strong>
+          Total Price: {calculateTotalPrice()} {formData.currency}
+        </strong>
       </div>
     </>
   );
@@ -665,14 +743,21 @@ function AddEditInvTypeFullModal({ isOpen, toggle, category, mode = 'add', itemT
   };
 
   return (
-    <Modal isOpen={isOpen} toggle={handleClose} size="lg" className={darkMode ? 'text-light dark-mode' : ''}>
+    <Modal
+      isOpen={isOpen}
+      toggle={handleClose}
+      size="lg"
+      className={darkMode ? 'text-light dark-mode' : ''}
+    >
       <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={handleClose}>
         {mode === 'edit' ? 'Edit' : 'Add'} {getCategoryLabel()} Type
       </ModalHeader>
       <ModalBody className={`${darkMode ? 'bg-yinmn-blue' : ''} ${styles.modalBody}`}>
         <Form onSubmit={handleSubmit}>
           <FormGroup>
-            <Label>Name <span className="text-danger">*</span></Label>
+            <Label>
+              Name <span className="text-danger">*</span>
+            </Label>
             <Input
               type="text"
               value={formData.name}
@@ -684,7 +769,9 @@ function AddEditInvTypeFullModal({ isOpen, toggle, category, mode = 'add', itemT
           </FormGroup>
 
           <FormGroup>
-            <Label>Description <span className="text-danger">*</span></Label>
+            <Label>
+              Description <span className="text-danger">*</span>
+            </Label>
             <Input
               type="textarea"
               rows={3}
@@ -709,7 +796,13 @@ function AddEditInvTypeFullModal({ isOpen, toggle, category, mode = 'add', itemT
           Cancel
         </Button>
         <Button onClick={handleSubmit} disabled={isSubmitting} className={styles.modalBtnPrimary}>
-          {isSubmitting ? (mode === 'edit' ? 'Updating...' : 'Adding...') : (mode === 'edit' ? 'Update' : 'Add')}
+          {isSubmitting
+            ? mode === 'edit'
+              ? 'Updating...'
+              : 'Adding...'
+            : mode === 'edit'
+            ? 'Update'
+            : 'Add'}
         </Button>
       </ModalFooter>
     </Modal>
@@ -717,4 +810,3 @@ function AddEditInvTypeFullModal({ isOpen, toggle, category, mode = 'add', itemT
 }
 
 export default AddEditInvTypeFullModal;
-
