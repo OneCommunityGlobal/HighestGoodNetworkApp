@@ -1,10 +1,12 @@
 import { Chart } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+import PropTypes from 'prop-types';
 import { Bar } from 'react-chartjs-2';
 import { useSelector } from 'react-redux';
 import sharedStyles from './ReviewsInsight.module.css';
 
 Chart.register(ChartDataLabels);
+
 function ActionDoneGraph({ selectedTeams, teamData }) {
   const darkMode = useSelector(state => state.theme.darkMode);
 
@@ -93,11 +95,8 @@ function ActionDoneGraph({ selectedTeams, teamData }) {
         ticks: {
           color: darkMode ? '#fff' : '#000',
           callback: function(value, index) {
-            const teamName = this.getLabelForValue(value);
             const team = teamsToDisplay[index];
             const memberCount = teamData[team]?.memberCount || 0;
-
-            // Unicode circled numbers (0-20)
             const circles = [
               '⓪',
               '①',
@@ -122,13 +121,13 @@ function ActionDoneGraph({ selectedTeams, teamData }) {
               '⑳',
             ];
             const circle = memberCount <= 20 ? circles[memberCount] : `(${memberCount})`;
-
-            return `${teamName} ${circle}`;
+            return `${team} ${circle}`;
           },
         },
       },
     },
   };
+
   return (
     <div className={sharedStyles.riActionDoneGraph}>
       <h2>PR: Action Done</h2>
@@ -138,5 +137,19 @@ function ActionDoneGraph({ selectedTeams, teamData }) {
     </div>
   );
 }
+
+ActionDoneGraph.propTypes = {
+  selectedTeams: PropTypes.arrayOf(
+    PropTypes.shape({
+      value: PropTypes.string,
+    }),
+  ),
+  teamData: PropTypes.objectOf(
+    PropTypes.shape({
+      actionSummary: PropTypes.object,
+      memberCount: PropTypes.number,
+    }),
+  ),
+};
 
 export default ActionDoneGraph;
