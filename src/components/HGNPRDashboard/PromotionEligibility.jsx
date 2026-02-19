@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { FaCheck } from 'react-icons/fa';
 import { getPromotionEligibility, postPromotionEligibility } from '../../actions/promotionActions';
-import './PromotionEligibility.css';
+import './PromotionEligibility.module.css';
 import { useSelector } from 'react-redux';
 
 function PromotionEligibility({ currentUser }) {
@@ -109,7 +109,12 @@ function PromotionEligibility({ currentUser }) {
   }) => (
     <tr key={id}>
       <td data-label="Reviewer Name">{reviewerName}</td>
-      <td data-label="Weekly Requirements">{weeklyRequirementsMet ? '✔️' : '❌'}</td>
+      <td
+        data-label="Weekly Requirements"
+        className={weeklyRequirementsMet ? 'status-met' : 'status-not-met'}
+      >
+        {weeklyRequirementsMet ? '✓ Has Met' : '✗ Has not Met'}
+      </td>
       <td data-label="Required PRs">{requiredPRs}</td>
       <td data-label="Total Reviews Done">{totalReviews}</td>
       <td data-label="Remaining Weeks">{remainingWeeks}</td>
