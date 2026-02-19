@@ -2,7 +2,7 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { toast } from 'react-toastify';
@@ -157,6 +157,8 @@ const initialState = {
   },
   // Saved filters functionality
   saveFilterModalOpen: false,
+  // Red 'i' acts as filter: when true, report shows only members with mismatched team codes (same prefix, different last 3)
+  filterByMismatchedTeamCodes: false,
 };
 
 const intialPermissionState = {
@@ -313,6 +315,38 @@ const WeeklySummariesReport = props => {
   const toggleCreateFilterModal = () => setCreateFilterModalOpen(prev => !prev);
   const toggleUpdateFilterModal = () => setUpdateFilterModalOpen(prev => !prev);
   const toggleSelectFilterModal = () => setSelectFilterModalOpen(prev => !prev);
+  const toggleFilterByMismatchedTeamCodes = () => {
+    setState(prev => ({ ...prev, filterByMismatchedTeamCodes: !prev.filterByMismatchedTeamCodes }));
+  };
+
+  // Mismatched team codes: same prefix (rest) but different last 3 characters.
+  // Group by prefix (all but last 3 chars); if a group has 2+ distinct full codes, everyone in that group is "mismatched".
+  const getRest = str => (str && str.length >= 3 ? str.slice(0, -3) : str || '');
+  const mismatchedTeamCodeMembers = useMemo(() => {
+    const byRest = {};
+    state.summaries.forEach(summary => {
+      const code = summary.teamCode || '';
+      const rest = getRest(code);
+      if (!byRest[rest]) byRest[rest] = [];
+      byRest[rest].push(summary);
+    });
+    const list = [];
+    Object.keys(byRest).forEach(rest => {
+      const group = byRest[rest];
+      const distinctCodes = [...new Set(group.map(s => s.teamCode || '').filter(Boolean))];
+      if (distinctCodes.length > 1) {
+        group.forEach(member => {
+          list.push({
+            ...member,
+            codePrefix: rest,
+            otherCodesInGroup: distinctCodes.filter(c => c !== (member.teamCode || '')),
+          });
+        });
+      }
+    });
+    return list;
+  }, [state.summaries]);
+
   // Filters state
   const {
     data: filterChoices = [],
@@ -1224,10 +1258,31 @@ const WeeklySummariesReport = props => {
         // eslint-disable-next-line no-console
         console.log(`✅ Filtered summaries for teamCode "a-BCC" (${filtered.length})`, filtered);
       }
+      // Red 'i' filter: restrict to members with mismatched team codes (same prefix, different last 3)
+      let finalFilteredSummaries = temp;
+      if (state.filterByMismatchedTeamCodes && summaries?.length > 0) {
+        const getRest = str => (str && str.length >= 3 ? str.slice(0, -3) : str || '');
+        const byRest = {};
+        summaries.forEach(s => {
+          const code = s.teamCode || '';
+          const rest = getRest(code);
+          if (!byRest[rest]) byRest[rest] = [];
+          byRest[rest].push(s);
+        });
+        const mismatchedIds = new Set();
+        Object.keys(byRest).forEach(rest => {
+          const group = byRest[rest];
+          const distinctCodes = [...new Set(group.map(m => m.teamCode || ''))];
+          if (distinctCodes.length > 1) {
+            group.forEach(m => mismatchedIds.add(m._id));
+          }
+        });
+        finalFilteredSummaries = temp.filter(s => mismatchedIds.has(s._id));
+      }
       setState(prev => ({
         ...prev,
         total: temptotal,
-        filteredSummaries: temp,
+        filteredSummaries: finalFilteredSummaries,
         chartData,
         structuredTableData: structuredTeamTableData,
       }));
@@ -2174,6 +2229,7 @@ const WeeklySummariesReport = props => {
     state.selectedExtraMembers,
     state.summaries,
     state.activeTab,
+    state.filterByMismatchedTeamCodes,
   ]);
 
   useEffect(() => {
@@ -2495,27 +2551,38 @@ const WeeklySummariesReport = props => {
           <div>
             {/* MultiSelect with Save/Delete Buttons */}
             <div style={{ position: 'relative' }}>
-              {state.teamCodeWarningUsers.length > 0 && (
-                <>
-                  <i
-                    className="fa fa-info-circle text-danger"
-                    data-tip
-                    data-placement="top"
-                    data-for="teamCodeWarningTooltip"
-                    style={{
-                      position: 'absolute',
-                      left: '-25px',
-                      top: '50%',
-                      transform: 'translateY(-50%)',
-                      fontSize: '20px',
-                      cursor: 'pointer',
-                    }}
-                  />
-                  <ReactTooltip id="teamCodeWarningTooltip" place="top" effect="solid">
-                    {state.teamCodeWarningUsers.length} users have mismatched team codes!
-                  </ReactTooltip>
-                </>
-              )}
+              <i
+                className="fa fa-info-circle text-danger"
+                role="button"
+                tabIndex={0}
+                data-tip
+                data-placement="top"
+                data-for="teamCodeInfoTooltip"
+                style={{
+                  position: 'absolute',
+                  left: '-25px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  fontSize: '20px',
+                  cursor: 'pointer',
+                }}
+                aria-label={
+                  state.filterByMismatchedTeamCodes
+                    ? 'Filter on: showing only mismatched team codes (click to clear)'
+                    : 'Filter to show only members with mismatched team codes'
+                }
+                onClick={toggleFilterByMismatchedTeamCodes}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    toggleFilterByMismatchedTeamCodes();
+                  }
+                }}
+              />
+              <ReactTooltip id="teamCodeInfoTooltip" place="top" effect="solid">
+                {mismatchedTeamCodeMembers.length} users have mismatched team codes! Smash this
+                &quot;i&quot; button to see who they are 👊
+              </ReactTooltip>
               <Select
                 isMulti
                 isSearchable
@@ -2538,7 +2605,7 @@ const WeeklySummariesReport = props => {
                 placeholder="Search and select team codes..."
                 classNamePrefix="custom-select"
                 className={`custom-select-container ${darkMode ? 'dark-mode' : ''} ${
-                  state.teamCodeWarningUsers.length > 0 ? 'warning-border' : ''
+                  mismatchedTeamCodeMembers.length > 0 ? 'warning-border' : ''
                 }`}
                 styles={customStyles}
               />
