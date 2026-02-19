@@ -19,6 +19,14 @@ import httpService from '../../../services/httpService';
 import logService from '../../../services/logService';
 import { ENDPOINTS } from '../../../utils/URL';
 import { getStandardSelectStyles } from '../../../utils/reactSelectUtils';
+import {
+  getChartHeight,
+  getMaxBarThickness,
+  getCategoryPercentage,
+  getBarPercentage,
+  getChartFontSize,
+  getChartTitleFontSize,
+} from '../../../utils/chartResponsiveUtils';
 import styles from './ToolsStoppageHorizontalBarChart.module.css';
 
 // Register Chart.js components
@@ -44,115 +52,11 @@ export default function ToolsStoppageHorizontalBarChart() {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const emptyData = [];
 
-  // Responsive height calculation
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
-
-  // Gradient responsive chart height scaling based on screen width
-  // Scales smoothly from smallest phones (180px) to desktop (300px)
-  const getChartHeight = () => {
-    if (windowWidth <= 375) {
-      // Small phones (iPhone SE, iPhone 12 mini): 180px
-      return 180;
-    } else if (windowWidth <= 428) {
-      // Medium phones (iPhone 12/13/14): 200px
-      return 200;
-    } else if (windowWidth <= 480) {
-      // Large phones: 220px
-      return 220;
-    } else if (windowWidth <= 768) {
-      // Tablets in portrait: 240px
-      return 240;
-    } else if (windowWidth <= 1024) {
-      // Tablets in landscape: 280px
-      return 280;
-    }
-    // Desktop: 300px
-    return 300;
-  };
-
-  // Gradient responsive maxBarThickness scaling
-  const getMaxBarThickness = () => {
-    if (windowWidth <= 375) {
-      return 15;
-    } else if (windowWidth <= 428) {
-      return 16;
-    } else if (windowWidth <= 480) {
-      return 18;
-    } else if (windowWidth <= 768) {
-      return 20;
-    } else if (windowWidth <= 1024) {
-      return 22;
-    }
-    return 25;
-  };
-
-  // Gradient responsive categoryPercentage scaling
-  const getCategoryPercentage = () => {
-    if (windowWidth <= 375) {
-      return 0.45;
-    } else if (windowWidth <= 428) {
-      return 0.47;
-    } else if (windowWidth <= 480) {
-      return 0.48;
-    } else if (windowWidth <= 768) {
-      return 0.5;
-    } else if (windowWidth <= 1024) {
-      return 0.55;
-    }
-    return 0.6;
-  };
-
-  // Gradient responsive barPercentage scaling
-  const getBarPercentage = () => {
-    if (windowWidth <= 375) {
-      return 0.8;
-    } else if (windowWidth <= 428) {
-      return 0.82;
-    } else if (windowWidth <= 480) {
-      return 0.84;
-    } else if (windowWidth <= 768) {
-      return 0.85;
-    } else if (windowWidth <= 1024) {
-      return 0.87;
-    }
-    return 0.9;
-  };
-
-  // Gradient responsive font size scaling
-  const getFontSize = () => {
-    if (windowWidth <= 375) {
-      return 8;
-    } else if (windowWidth <= 428) {
-      return 9;
-    } else if (windowWidth <= 480) {
-      return 9.5;
-    } else if (windowWidth <= 768) {
-      return 10;
-    } else if (windowWidth <= 1024) {
-      return 11;
-    }
-    return 12;
-  };
-
-  // Gradient responsive title font size scaling
-  const getTitleFontSize = () => {
-    if (windowWidth <= 375) {
-      return 9;
-    } else if (windowWidth <= 428) {
-      return 10;
-    } else if (windowWidth <= 480) {
-      return 10.5;
-    } else if (windowWidth <= 768) {
-      return 11;
-    } else if (windowWidth <= 1024) {
-      return 12;
-    }
-    return 14;
-  };
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -303,19 +207,19 @@ export default function ToolsStoppageHorizontalBarChart() {
         label: 'Used its lifetime',
         data: data.map(item => item.usedForLifetime || 0),
         backgroundColor: '#4589FF',
-        maxBarThickness: getMaxBarThickness(),
+        maxBarThickness: getMaxBarThickness(windowWidth),
       },
       {
         label: 'Damaged',
         data: data.map(item => item.damaged || 0),
         backgroundColor: '#FF0000',
-        maxBarThickness: getMaxBarThickness(),
+        maxBarThickness: getMaxBarThickness(windowWidth),
       },
       {
         label: 'Lost',
         data: data.map(item => item.lost || 0),
         backgroundColor: '#FFB800',
-        maxBarThickness: getMaxBarThickness(),
+        maxBarThickness: getMaxBarThickness(windowWidth),
       },
     ],
   };
@@ -330,14 +234,14 @@ export default function ToolsStoppageHorizontalBarChart() {
         position: 'top',
         labels: {
           color: darkMode ? '#e0e0e0' : '#000',
-          font: { size: getFontSize() },
+          font: { size: getChartFontSize(windowWidth) },
         },
       },
       tooltip: { enabled: true, color: darkMode ? '#FFFFFF' : '#000000' },
       datalabels: {
         display: true,
         color: '#fff',
-        font: { weight: 'bold', size: getFontSize() },
+        font: { weight: 'bold', size: getChartFontSize(windowWidth) },
       },
     },
     scales: {
@@ -350,7 +254,7 @@ export default function ToolsStoppageHorizontalBarChart() {
         },
         ticks: {
           color: darkMode ? '#ffffff' : '#000', // Brighter color in dark mode for better visibility
-          font: { size: getFontSize() },
+          font: { size: getChartFontSize(windowWidth) },
           maxRotation: 0,
         },
       },
@@ -359,7 +263,7 @@ export default function ToolsStoppageHorizontalBarChart() {
           display: true,
           text: 'Tools',
           color: darkMode ? '#FFFFFF' : '#000000',
-          font: { size: getTitleFontSize() },
+          font: { size: getChartTitleFontSize(windowWidth) },
         },
         stacked: true,
         grid: { display: false },
@@ -369,10 +273,10 @@ export default function ToolsStoppageHorizontalBarChart() {
         },
         ticks: {
           color: darkMode ? '#ffffff' : '#000', // Brighter color in dark mode for better visibility
-          font: { size: getFontSize() },
+          font: { size: getChartFontSize(windowWidth) },
         },
-        categoryPercentage: getCategoryPercentage(),
-        barPercentage: getBarPercentage(),
+        categoryPercentage: getCategoryPercentage(windowWidth),
+        barPercentage: getBarPercentage(windowWidth),
       },
     },
   };
@@ -456,7 +360,7 @@ export default function ToolsStoppageHorizontalBarChart() {
             style={{
               width: '100%',
               position: 'relative',
-              height: `${getChartHeight()}px`,
+              height: `${getChartHeight(windowWidth)}px`,
               backgroundColor: darkMode ? '#2c3344' : '#ffffff',
               borderRadius: '4px',
             }}

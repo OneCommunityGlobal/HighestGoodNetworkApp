@@ -4,6 +4,12 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGri
 import axios from 'axios';
 import { ENDPOINTS } from '../../../../utils/URL';
 import { getOptionBackgroundColor, getOptionColor } from '../../../../utils/reactSelectUtils';
+import {
+  getChartHeight,
+  getChartMargins,
+  getYAxisWidth,
+  getChartFontSize,
+} from '../../../../utils/chartResponsiveUtils';
 import styles from './ToolsHorizontalBarChart.module.css';
 
 // No mock data - use real backend data only
@@ -47,79 +53,11 @@ function ToolsHorizontalBarChart({ darkMode }) {
   const [startDate, setStartDate] = useState(startDate12MonthsAgo.toISOString().split('T')[0]);
   const [endDate, setEndDate] = useState(endOfCurrentMonth.toISOString().split('T')[0]);
 
-  // Responsive height calculation
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
-
-  // Gradient responsive chart height scaling - matches ToolsStoppageHorizontalBarChart
-  // Scales smoothly from smallest phones (180px) to desktop (300px)
-  const getChartHeight = () => {
-    if (windowWidth <= 375) {
-      return 180;
-    } else if (windowWidth <= 428) {
-      return 200;
-    } else if (windowWidth <= 480) {
-      return 220;
-    } else if (windowWidth <= 768) {
-      return 240;
-    } else if (windowWidth <= 1024) {
-      return 280;
-    }
-    return 300;
-  };
-
-  // Gradient responsive margins scaling
-  const getChartMargins = () => {
-    if (windowWidth <= 375) {
-      return { top: 3, right: 3, left: 12, bottom: 3 };
-    } else if (windowWidth <= 428) {
-      return { top: 4, right: 4, left: 13, bottom: 4 };
-    } else if (windowWidth <= 480) {
-      return { top: 4, right: 4, left: 14, bottom: 4 };
-    } else if (windowWidth <= 768) {
-      return { top: 5, right: 5, left: 15, bottom: 5 };
-    } else if (windowWidth <= 1024) {
-      return { top: 8, right: 15, left: 25, bottom: 8 };
-    }
-    return { top: 10, right: 30, left: 40, bottom: 10 };
-  };
-
-  // Gradient responsive Y-axis width scaling
-  const getYAxisWidth = () => {
-    if (windowWidth <= 375) {
-      return 18;
-    } else if (windowWidth <= 428) {
-      return 19;
-    } else if (windowWidth <= 480) {
-      return 19.5;
-    } else if (windowWidth <= 768) {
-      return 20;
-    } else if (windowWidth <= 1024) {
-      return 28;
-    }
-    return 35;
-  };
-
-  // Gradient responsive Y-axis font size scaling
-  const getYAxisFontSize = () => {
-    if (windowWidth <= 375) {
-      return 8;
-    } else if (windowWidth <= 428) {
-      return 9;
-    } else if (windowWidth <= 480) {
-      return 9.5;
-    } else if (windowWidth <= 768) {
-      return 10;
-    } else if (windowWidth <= 1024) {
-      return 11;
-    }
-    return 12;
-  };
-
-  // Date range logging removed for production
 
   // Fetch projects list
   useEffect(() => {
@@ -481,8 +419,8 @@ function ToolsHorizontalBarChart({ darkMode }) {
 
       {data.length > 0 ? (
         <div className={styles['tools-horizontal-bar-chart-content']}>
-          <ResponsiveContainer width="100%" height={getChartHeight()}>
-            <BarChart layout="vertical" data={data} margin={getChartMargins()}>
+          <ResponsiveContainer width="100%" height={getChartHeight(windowWidth)}>
+            <BarChart layout="vertical" data={data} margin={getChartMargins(windowWidth)}>
               <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
               <XAxis type="number" hide />
               <YAxis
@@ -490,9 +428,9 @@ function ToolsHorizontalBarChart({ darkMode }) {
                 dataKey="name"
                 tick={{
                   fill: darkMode ? '#e0e0e0' : '#333',
-                  fontSize: getYAxisFontSize(),
+                  fontSize: getChartFontSize(windowWidth),
                 }}
-                width={getYAxisWidth()}
+                width={getYAxisWidth(windowWidth)}
                 axisLine={false}
                 tickLine={false}
               />
