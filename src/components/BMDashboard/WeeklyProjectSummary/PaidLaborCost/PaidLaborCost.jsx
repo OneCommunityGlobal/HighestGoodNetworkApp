@@ -199,20 +199,6 @@ export default function PaidLaborCost() {
   // Ref to track if an API call is in progress to prevent race conditions
   const isFetchingRef = useRef(false);
 
-  // Apply global dark mode class for react-datepicker portal elements
-  // react-datepicker renders calendar in a portal, so it needs a global class
-  useEffect(() => {
-    if (darkMode) {
-      document.body.classList.add('paid-labor-cost-dark-mode');
-    } else {
-      document.body.classList.remove('paid-labor-cost-dark-mode');
-    }
-
-    return () => {
-      document.body.classList.remove('paid-labor-cost-dark-mode');
-    };
-  }, [darkMode]);
-
   /**
    * Common fetch helper to reduce code duplication
    */
@@ -853,6 +839,9 @@ export default function PaidLaborCost() {
                   showMonthDropdown
                   dropdownMode="select"
                   className={styles.paidLaborCostDatePicker}
+                  calendarClassName={`paid-labor-cost-calendar${
+                    darkMode ? ' paid-labor-cost-dark-calendar' : ''
+                  }`}
                 />
                 <span className={styles.paidLaborCostDateSeparator}>to</span>
                 <DatePicker
@@ -871,6 +860,9 @@ export default function PaidLaborCost() {
                   showMonthDropdown
                   dropdownMode="select"
                   className={styles.paidLaborCostDatePicker}
+                  calendarClassName={`paid-labor-cost-calendar${
+                    darkMode ? ' paid-labor-cost-dark-calendar' : ''
+                  }`}
                 />
               </div>
             </div>
