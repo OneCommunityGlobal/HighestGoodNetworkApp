@@ -126,33 +126,76 @@ function MaterialCostCorrelationChart() {
     }
   }, [data]);
 
-  // Chart configuration with responsive margins
+  // Chart configuration with responsive margins and X-axis behavior
+  // Breakpoints: mobile ≤480, iPad Mini / tablet ≤768, iPad Pro / small laptop ≤1024, desktop >1024
   const chartConfig = useMemo(() => {
     const textColor = darkMode ? '#f7fafc' : '#1a202c';
     const gridColor = darkMode ? '#4a5568' : '#e2e8f0';
 
-    // Adjust margins based on screen size
+    const isMobile = windowWidth <= 480;
+    const isTabletSmall = windowWidth <= 768; // iPad Mini portrait (768), small tablets
+    const isTabletLarge = windowWidth <= 1024; // iPad Mini landscape / iPad Pro (1024)
+
+    // Adjust margins based on screen size (more bottom space for vertical labels)
     let margin;
-    if (windowWidth <= 480) {
-      // Mobile phones
-      margin = { top: 10, right: 40, left: 40, bottom: 70 };
-    } else if (windowWidth <= 768) {
-      // Tablets/iPads
-      margin = { top: 10, right: 50, left: 50, bottom: 75 };
-    } else if (windowWidth <= 1024) {
-      // Small laptops
-      margin = { top: 10, right: 55, left: 55, bottom: 80 };
+    if (isMobile) {
+      margin = { top: 10, right: 36, left: 36, bottom: 90 };
+    } else if (isTabletSmall) {
+      margin = { top: 10, right: 44, left: 44, bottom: 90 };
+    } else if (isTabletLarge) {
+      margin = { top: 10, right: 52, left: 52, bottom: 85 };
     } else {
-      // Desktop
       margin = { top: 10, right: 60, left: 60, bottom: 80 };
     }
+
+    // X-axis: fewer ticks and shorter labels on smaller screens to prevent overlap
+    const dataLength = barChartData?.length || 0;
+    let xAxisInterval = 0;
+    let xAxisAngle = -45;
+    let xAxisHeight = 100;
+    let xAxisTickFontSize = 12;
+    let xAxisMaxNameLength = 15;
+
+    if (isMobile) {
+      xAxisAngle = -90;
+      xAxisHeight = 88;
+      xAxisTickFontSize = 10;
+      xAxisMaxNameLength = 8;
+      xAxisInterval = dataLength > 5 ? Math.ceil(dataLength / 5) - 1 : 0;
+    } else if (isTabletSmall) {
+      // iPad Mini (768): vertical labels to avoid overlap in limited width
+      xAxisAngle = -90;
+      xAxisHeight = 88;
+      xAxisTickFontSize = 10;
+      xAxisMaxNameLength = 10;
+      xAxisInterval = dataLength > 6 ? Math.ceil(dataLength / 6) - 1 : 0;
+    } else if (isTabletLarge) {
+      // iPad Pro (1024): angled labels with fewer ticks
+      xAxisAngle = -45;
+      xAxisTickFontSize = 11;
+      xAxisMaxNameLength = 12;
+      xAxisInterval = dataLength > 8 ? Math.ceil(dataLength / 8) - 1 : 0;
+    }
+
+    // Y-axis width: narrower on small screens to give more room to the chart
+    const yAxisWidth = isMobile ? 44 : isTabletSmall ? 50 : isTabletLarge ? 58 : 70;
+
+    // Use short Y-axis labels on mobile and tablet small (≤768)
+    const shortYAxisLabels = isMobile || isTabletSmall;
 
     return {
       textColor,
       gridColor,
       margin,
+      xAxisInterval,
+      xAxisAngle,
+      xAxisHeight,
+      xAxisTickFontSize,
+      xAxisMaxNameLength,
+      yAxisWidth,
+      shortYAxisLabels,
     };
-  }, [darkMode, windowWidth]);
+  }, [darkMode, windowWidth, barChartData?.length]);
 
   // Handlers
   const handleProjectChange = projectIds => {
@@ -306,51 +349,69 @@ function MaterialCostCorrelationChart() {
           <ResponsiveContainer
             width="100%"
             height={
-              windowWidth <= 480 ? 450 : windowWidth <= 768 ? 500 : windowWidth <= 1024 ? 550 : 600
+              windowWidth <= 480 ? 450 : windowWidth <= 768 ? 500 : windowWidth <= 1024 ? 540 : 600
             }
           >
             <ComposedChart data={barChartData} margin={chartConfig.margin}>
               <CartesianGrid strokeDasharray="3 3" stroke={chartConfig.gridColor} />
               <XAxis
                 dataKey="projectName"
-                tick={{ fill: chartConfig.textColor, fontSize: 12 }}
-                angle={-45}
-                textAnchor="end"
-                height={100}
-                interval={0}
+                tick={{
+                  fill: chartConfig.textColor,
+                  fontSize: chartConfig.xAxisTickFontSize,
+                }}
+                angle={chartConfig.xAxisAngle}
+                textAnchor={chartConfig.xAxisAngle === -90 ? 'end' : 'end'}
+                height={chartConfig.xAxisHeight}
+                interval={chartConfig.xAxisInterval}
                 tickFormatter={value => {
-                  // Truncate long project names to prevent overflow
-                  const maxLength = 15;
+                  const maxLength = chartConfig.xAxisMaxNameLength;
                   if (value && value.length > maxLength) {
                     return `${value.substring(0, maxLength)}...`;
                   }
-                  return value;
+                  return value || '';
                 }}
               />
               <YAxis
                 yAxisId="cost"
                 label={{
-                  value: 'Total Material Cost (×1000$)',
+                  value: chartConfig.shortYAxisLabels
+                    ? 'Cost (×1k$)'
+                    : 'Total Material Cost (×1000$)',
                   angle: -90,
                   position: 'insideLeft',
-                  offset: 10,
-                  style: { textAnchor: 'middle', fill: chartConfig.textColor },
+                  offset: 8,
+                  style: {
+                    textAnchor: 'middle',
+                    fill: chartConfig.textColor,
+                    fontSize: chartConfig.shortYAxisLabels ? 10 : 12,
+                  },
                 }}
-                tick={{ fill: chartConfig.textColor, fontSize: 12 }}
-                width={70}
+                tick={{
+                  fill: chartConfig.textColor,
+                  fontSize: chartConfig.shortYAxisLabels ? 10 : 12,
+                }}
+                width={chartConfig.yAxisWidth}
               />
               <YAxis
                 yAxisId="quantity"
                 orientation="right"
                 label={{
-                  value: 'Quantity of Materials Used',
+                  value: chartConfig.shortYAxisLabels ? 'Qty Used' : 'Quantity of Materials Used',
                   angle: 90,
                   position: 'insideRight',
-                  offset: 10,
-                  style: { textAnchor: 'middle', fill: chartConfig.textColor },
+                  offset: 8,
+                  style: {
+                    textAnchor: 'middle',
+                    fill: chartConfig.textColor,
+                    fontSize: chartConfig.shortYAxisLabels ? 10 : 12,
+                  },
                 }}
-                tick={{ fill: chartConfig.textColor, fontSize: 12 }}
-                width={70}
+                tick={{
+                  fill: chartConfig.textColor,
+                  fontSize: chartConfig.shortYAxisLabels ? 10 : 12,
+                }}
+                width={chartConfig.yAxisWidth}
               />
               <Tooltip content={<CustomTooltip darkMode={darkMode} />} />
               <Legend />
