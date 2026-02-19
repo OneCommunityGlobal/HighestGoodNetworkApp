@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import './DisplayBox.css';
+import styles from './DisplayBox.module.css';
 
 export default function DisplayBox({ onClose }) {
   const mockPromotionData = [
@@ -13,6 +13,8 @@ export default function DisplayBox({ onClose }) {
         { week: '2024-06-15', prCount: 10 },
         { week: '2024-06-22', prCount: 18 },
         { week: '2024-06-29', prCount: 14 },
+        { week: '2024-07-06', prCount: 16 },
+        { week: '2024-07-13', prCount: 20 },
       ],
     },
     {
@@ -29,7 +31,7 @@ export default function DisplayBox({ onClose }) {
     },
   ];
 
-  const [checkedItems, setCheckedItems] = useState(Array(mockPromotionData.length).fill(false));
+  const [checkedItems, setCheckedItems] = useState(new Array(mockPromotionData.length).fill(true));
   const allChecked = checkedItems.every(Boolean);
 
   const handleCheckedBoxChange = index => {
@@ -39,14 +41,16 @@ export default function DisplayBox({ onClose }) {
   };
 
   const handleSelectAll = () => {
-    setCheckedItems(Array(mockPromotionData.length).fill(!allChecked));
+    setCheckedItems(new Array(mockPromotionData.length).fill(!allChecked));
   };
 
   return (
-    <div className="overlay">
-      <div className="popup">
-        <h2 className="popup-heading">Are you sure you want to promote these PR reviewers?</h2>
-        <table className="popup-table">
+    <div className={styles.overlay}>
+      <div className={styles.popup}>
+        <h2 className={styles['popup-heading']}>
+          Are you sure you want to promote these PR reviewers?
+        </h2>
+        <table className={styles['popup-table']}>
           <thead>
             <tr>
               <th>
@@ -59,7 +63,7 @@ export default function DisplayBox({ onClose }) {
               </th>
               <th>PR Reviewer</th>
               <th>Team Code</th>
-              <th>Team Reviewer Name</th>
+              <th>Team Leader Name</th>
               <th>Weekly PR Counts</th>
             </tr>
           </thead>
@@ -78,10 +82,10 @@ export default function DisplayBox({ onClose }) {
                 <td>{promotion.teamCode}</td>
                 <td>{promotion.teamReviewerName}</td>
                 <td>
-                  {promotion.weeklyPRs.map(pr => (
+                  {promotion.weeklyPRs.map((pr, prIndex) => (
                     <span
                       key={`${promotion.prReviewer}-${pr.week}`}
-                      className={`pr-count-badge color-${pr.week}`}
+                      className={`${styles['pr-count-badge']} ${styles[`color-${prIndex}`]}`}
                     >
                       {pr.prCount}
                     </span>
@@ -91,11 +95,11 @@ export default function DisplayBox({ onClose }) {
             ))}
           </tbody>
         </table>
-        <div className="button-row">
-          <button type="button" className="button" onClick={onClose}>
+        <div className={styles['button-row']}>
+          <button type="button" className={styles.button} onClick={onClose}>
             Cancel
           </button>
-          <button type="button" className="button" disabled={!checkedItems.some(Boolean)}>
+          <button type="button" className={styles.button} disabled={!checkedItems.some(Boolean)}>
             Confirm
           </button>
         </div>

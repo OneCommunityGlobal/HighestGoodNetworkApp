@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import { Form, FormGroup, FormFeedback, Label, Input, Button } from 'reactstrap';
 import Joi from 'joi-browser';
 import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
 
-import { addEquipmentType } from '~/actions/bmdashboard/equipmentActions';
+import { addEquipmentType, fetchAllEquipments } from '~/actions/bmdashboard/equipmentActions';
 
 const FuelTypes = {
   dies: 'Diesel',
@@ -25,6 +26,7 @@ const schema = Joi.object({
 
 export default function AddTypeForm() {
   const history = useHistory();
+  const dispatch = useDispatch();
   const [name, setName] = useState('');
   const [desc, setDesc] = useState('');
   const [fuel, setFuel] = useState(FuelTypes.dies);
@@ -62,6 +64,8 @@ export default function AddTypeForm() {
     const response = await addEquipmentType({ name, desc, fuel });
     if (response.status === 201) {
       toast.success('Success: new equipment type added.');
+      // Refresh the equipment list to show the newly added item
+      dispatch(fetchAllEquipments());
       setIsRedirected(true);
     } else if (response.status === 409) {
       toast.error(`Error: that type already exists.`);

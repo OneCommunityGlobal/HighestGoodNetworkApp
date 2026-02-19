@@ -1,16 +1,20 @@
 import { Bar } from 'react-chartjs-2';
-import './ReviewsInsight.css';
+import sharedStyles from './ReviewsInsight.module.css';
 import { useSelector } from 'react-redux';
+import { Chart } from 'chart.js';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
+
+Chart.register(ChartDataLabels);
 
 function ActionDoneGraph({ selectedTeams, teamData }) {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   if (!selectedTeams || selectedTeams.length === 0) {
-    return <div> </div>;
+    return <div></div>;
   }
 
   if (!teamData || Object.keys(teamData).length === 0) {
-    return <div className="no-data-ri">No data available for Action Done Graph.</div>;
+    return <div className={sharedStyles.noData}>No data available for Action Graph.</div>;
   }
 
   const isAllTeams = selectedTeams.some(team => team.value === 'All');
@@ -45,25 +49,39 @@ function ActionDoneGraph({ selectedTeams, teamData }) {
       legend: {
         display: true,
         labels: {
-          font: {
-            size: 12,
-          },
+          font: { size: 12 },
           color: darkMode ? '#fff' : '#000',
         },
       },
       tooltip: {
         enabled: true,
+        callbacks: {
+          label: function(context) {
+            const label = context.dataset.label || '';
+            const value = Math.round(context.raw);
+            return `${label}: ${value} PRs reviewed`;
+          },
+        },
+      },
+      datalabels: {
+        color: darkMode ? '#fff' : '#000',
+        font: { weight: 'bold', size: 11 },
+        formatter: value => (value ? value : ''),
       },
     },
     scales: {
       x: {
         title: {
           display: true,
-          text: 'Count of PRs',
+          text: 'Number of PRs Reviewed',
           color: darkMode ? '#fff' : '#000',
         },
         ticks: {
           color: darkMode ? '#fff' : '#000',
+          stepSize: 1,
+          callback: function(value) {
+            return Math.floor(value);
+          },
         },
         beginAtZero: true,
       },
@@ -81,9 +99,9 @@ function ActionDoneGraph({ selectedTeams, teamData }) {
   };
 
   return (
-    <div className="ri-action-done-graph">
+    <div className={sharedStyles.riActionDoneGraph}>
       <h2>PR: Action Done</h2>
-      <div className="ri-graph">
+      <div className={sharedStyles.riGraph}>
         <Bar data={data} options={options} />
       </div>
     </div>
