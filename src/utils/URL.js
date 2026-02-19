@@ -364,6 +364,23 @@ export const ENDPOINTS = {
     if (params.length > 0) url += `?${params.join('&')}`;
     return url;
   },
+
+  // BM_ISSUE_CHART: `${APIEndpoint}/bm/issues`,
+
+  // bm issues endpoints
+  BM_GET_OPEN_ISSUES: (projectIds, startDate, endDate, tag) => {
+    let url = `${APIEndpoint}/bm/issues/open`;
+    const params = [];
+    if (projectIds) params.push(`projectIds=${projectIds}`);
+    if (startDate) params.push(`startDate=${startDate}`);
+    if (endDate) params.push(`endDate=${endDate}`);
+    if (tag) params.push(`tag=${tag}`);
+    if (params.length > 0) url += `?${params.join('&')}`;
+    return url;
+  },
+  BM_GET_ISSUE_PROJECTS: `${APIEndpoint}/bm/issues/projects`,
+  BM_ISSUE_UPDATE: issueId => `${APIEndpoint}/bm/issues/${issueId}`,
+
   BM_TAGS: `${APIEndpoint}/bm/tags`,
   BM_TAG_ADD: `${APIEndpoint}/bm/tags`,
   BM_TAGS_DELETE: `${APIEndpoint}/bm/tags`,

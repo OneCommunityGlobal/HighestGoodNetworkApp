@@ -15,12 +15,11 @@ import FinancialStatButtons from './Financials/FinancialStatButtons';
 import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
 import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMaterialCostPerProject';
 import styles from './WeeklyProjectSummary.module.css';
-import OpenIssueCharts from '../Issues/openIssueCharts';
-import SupplierPerformanceGraph from './SupplierPerformanceGraph.jsx';
+import IssueList from '../Issues/IssuesList';
+import IssueCharts from '../Issues/openIssueCharts';
 import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
 import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
 import MaterialStockOutRiskIndicator from './MaterialStockOutRiskIndicator/MaterialStockOutRiskIndicator';
-import IssueCharts from '../Issues/openIssueCharts';
 
 const projectStatusButtons = [
   {
@@ -342,9 +341,14 @@ function WeeklyProjectSummary() {
         key: 'Issue Tracking',
         className: 'full',
         content: (
-          <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
-            <OpenIssueCharts />
-          </div>
+          <>
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+              <IssueList />
+            </div>
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.wideCard}`}>
+              <IssueCharts />
+            </div>
+          </>
         ),
       },
       {
