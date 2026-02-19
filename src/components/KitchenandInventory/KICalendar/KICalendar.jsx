@@ -1,4 +1,5 @@
 import React, { useMemo, useState, useEffect } from 'react';
+import { connect, useDispatch } from 'react-redux';
 import { Calendar } from 'react-calendar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -100,7 +101,7 @@ const EVENTS = [
 
 /* ------------------ Component ------------------ */
 
-export default function KICalendar() {
+function KICalendar({ auth, darkMode }) {
   const [view, setView] = useState('month');
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -153,7 +154,7 @@ export default function KICalendar() {
   /* ------------------ Render ------------------ */
 
   return (
-    <Container fluid className="p-3">
+    <Container fluid className={`p-3 ${darkMode ? styles.darkMode : ''}`}>
       <h1>Unified Calendar</h1>
       <p>View and manage all events across Garden, Orchard, Animals and Kitchen modules</p>
       <Row>
@@ -201,14 +202,14 @@ export default function KICalendar() {
             <Col xs="12" md="6" className="mb-2 mb-md-0">
               <ButtonGroup className="mr-3">
                 <Button
-                  color={view === 'month' ? 'success' : 'light'}
+                  color={view === 'month' ? 'success' : darkMode ? '' : 'light'}
                   onClick={() => setView('month')}
                   className={view === 'month' ? '' : styles.grayBorder}
                 >
                   Month
                 </Button>
                 <Button
-                  color={view === 'week' ? 'success' : 'light'}
+                  color={view === 'week' ? 'success' : darkMode ? '' : 'light'}
                   onClick={() => setView('week')}
                   className={view === 'week' ? '' : styles.grayBorder}
                 >
@@ -221,7 +222,7 @@ export default function KICalendar() {
                 toggle={() => setDropdownOpen(v => !v)}
                 className="d-inline-block ms-2"
               >
-                <DropdownToggle caret color="light" className={styles.grayBorder}>
+                <DropdownToggle caret color={darkMode ? '' : 'light'} className={styles.grayBorder}>
                   {eventFilter}
                 </DropdownToggle>
                 <DropdownMenu>
@@ -243,7 +244,12 @@ export default function KICalendar() {
 
             {view === 'week' && (
               <Col xs="12" md="5" className="d-flex justify-content-md-end align-items-center">
-                <Button size="sm" onClick={goPrev} color="light" className={styles.grayBorder}>
+                <Button
+                  size="sm"
+                  onClick={goPrev}
+                  color={darkMode ? '' : 'light'}
+                  className={styles.grayBorder}
+                >
                   <i className="fa fa-angle-left"></i>
                 </Button>
                 <div className="mx-5">
@@ -251,7 +257,12 @@ export default function KICalendar() {
                     {`${format(weekDays[0], 'MMM d')} – ${format(weekDays[6], 'MMM d, yyyy')}`}
                   </strong>
                 </div>
-                <Button size="sm" onClick={goNext} color="light" className={styles.grayBorder}>
+                <Button
+                  size="sm"
+                  onClick={goNext}
+                  color={darkMode ? '' : 'light'}
+                  className={styles.grayBorder}
+                >
                   <i className="fa fa-angle-right"></i>
                 </Button>
               </Col>
@@ -350,7 +361,11 @@ export default function KICalendar() {
           )}
         </Col>
       </Row>
-      <Modal isOpen={modalOpen} toggle={() => setModalOpen(false)}>
+      <Modal
+        isOpen={modalOpen}
+        toggle={() => setModalOpen(false)}
+        className={` ${darkMode ? styles.darkMode : ''}`}
+      >
         <ModalHeader toggle={() => setModalOpen(false)}>
           <h4>
             {moduleIcons[selectedEvent?.type] && (
@@ -393,3 +408,10 @@ export default function KICalendar() {
     </Container>
   );
 }
+
+const mapStateToProps = state => ({
+  auth: state.auth,
+  darkMode: state.theme.darkMode,
+});
+
+export default connect(mapStateToProps)(KICalendar);
