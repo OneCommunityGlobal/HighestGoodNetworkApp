@@ -174,6 +174,7 @@ function UtilizationChart() {
               selected={startDate}
               onChange={date => setStartDate(date)}
               placeholderText="Start Date"
+              maxDate={endDate || '' || new Date()}
               className={styles.datepickerWrapper}
             />
 
@@ -181,6 +182,8 @@ function UtilizationChart() {
               selected={endDate}
               onChange={date => setEndDate(date)}
               placeholderText="End Date"
+              minDate={startDate || ''}
+              maxDate={new Date()}
               className={styles.datepickerWrapper}
             />
 
