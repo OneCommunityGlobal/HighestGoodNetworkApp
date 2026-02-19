@@ -163,7 +163,18 @@ function EDailyActivityLog(props) {
   return (
     <>
       {showConfirm && (
-        <div className="alert alert-warning d-flex justify-content-between align-items-center">
+        <div
+          className="alert alert-warning d-flex justify-content-between align-items-center"
+          style={
+            darkMode
+              ? {
+                  backgroundColor: 'rgba(255, 193, 7, 0.18)',
+                  borderColor: 'rgba(255, 193, 7, 0.35)',
+                  color: '#f8f9fa',
+                }
+              : undefined
+          }
+        >
           <span>Are you sure? This will update equipment availability.</span>
           <div className="d-flex gap-2">
             <Button size="sm" color="secondary" onClick={() => setShowConfirm(false)}>
