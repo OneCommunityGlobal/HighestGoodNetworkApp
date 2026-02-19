@@ -455,23 +455,13 @@ export default function ToolsStoppageHorizontalBarChart() {
           <div
             style={{
               width: '100%',
-              maxWidth: '100%',
-              flex: 1,
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              alignItems: 'stretch',
               position: 'relative',
+              height: `${getChartHeight()}px`,
               backgroundColor: darkMode ? '#2c3344' : '#ffffff',
               borderRadius: '4px',
-              padding: '8px',
-              /* Allow container to shrink to match donut chart height */
-              minHeight: 0,
             }}
           >
-            <div style={{ flex: 1, display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
-              <Bar data={chartData} options={chartOptions} height={getChartHeight()} />
-            </div>
+            <Bar data={chartData} options={chartOptions} />
           </div>
         )}
 

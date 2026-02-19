@@ -116,17 +116,15 @@
 /* React-select styling is handled ONLY via inline styles in JSX */
 /* No CSS overrides needed or wanted - inline styles are the proper method */
 
-/* Chart container - expand to fill available space */
+/* Chart container - sized by explicit chart height, no overflow clipping */
 :global(.tools-horizontal-chart-container) {
   width: 100%;
   max-width: 100%;
-  flex: 1; /* Expand to fill available space in flex container */
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
   background-color: #ffffff !important; /* White background to show through transparent canvas */
-  min-height: 0; /* Allow flex shrinking */
-  overflow: hidden; /* Prevent overflow on small screens */
+  overflow: visible; /* Allow chart labels and tooltips to render outside */
 }
 
 /* Dark mode for chart container */

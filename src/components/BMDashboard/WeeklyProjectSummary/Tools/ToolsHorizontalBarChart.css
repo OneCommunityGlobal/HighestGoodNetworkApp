@@ -38,13 +38,10 @@
 }
 
 .tools-horizontal-bar-chart-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
+  display: block;
   width: 100%;
   max-width: 100%;
-  overflow: hidden; /* Prevent overflow on small screens */
+  overflow: visible; /* Allow chart tooltips and labels to show */
 }
 
 .tools-horizontal-bar-chart-loading {
