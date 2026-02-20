@@ -1,15 +1,15 @@
-import { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { toast } from 'react-toastify';
-import { useHistory, useParams, useLocation } from 'react-router-dom';
+import jwtDecode from 'jwt-decode';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useHistory, useLocation, useParams } from 'react-router-dom';
 import { ClipLoader } from 'react-spinners';
+import { toast } from 'react-toastify';
+import config from '~/config.json';
 import httpService from '~/services/httpService';
 import { ENDPOINTS } from '~/utils/URL';
+import styles from '../styles/UserSkillsProfile.module.css';
 import LeftSection from './LeftSection';
 import RightSection from './RightSection';
-import styles from '../styles/UserSkillsProfile.module.css';
-import jwtDecode from 'jwt-decode';
-import config from '~/config.json';
 
 function UserSkillsProfile() {
   const { userId: routeUserId } = useParams();
@@ -80,7 +80,10 @@ function UserSkillsProfile() {
         }
 
         // Send data to Redux store
-        dispatch({ type: 'SET_USER_SKILLS_PROFILE_DATA', payload: data });
+        dispatch({
+          type: 'SET_USER_SKILLS_PROFILE_DATA',
+          payload: { ...data, loggedInUserId: decodedUserId },
+        });
 
         setProfileData(data);
         setLoading(false);
