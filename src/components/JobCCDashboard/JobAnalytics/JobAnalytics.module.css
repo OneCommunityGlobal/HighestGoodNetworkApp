@@ -362,3 +362,9 @@
 .gridStroke line {
   stroke: var(--grid-stroke) !important;
 }
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
