@@ -15,6 +15,9 @@ import {
 import { FaCalendarAlt, FaMapMarkerAlt, FaUserAlt, FaSearch, FaTimes } from 'react-icons/fa';
 import styles from './CPDashboard.module.css';
 import { ENDPOINTS } from '../../utils/URL';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { toast } from 'react-toastify';
 import axios from 'axios';
 
 const FixedRatioImage = ({ src, alt, fallback }) => (
@@ -76,6 +79,7 @@ export function CPDashboard() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedDate, setSelectedDate] = useState('');
   const [onlineOnly, setOnlineOnly] = useState(false);
+  const [dateError, setDateError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [dateFilter, setDateFilter] = useState('');
   const [error, setError] = useState(null);
@@ -86,6 +90,19 @@ export function CPDashboard() {
     total: 0,
     limit: 6,
   });
+
+  const handleDateChange = date => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // midnight today
+
+    if (date < today) {
+      toast.error('Past dates are not supported. Please select a future date.');
+      setSelectedDate('');
+      return;
+    }
+    setDateError('');
+    setSelectedDate(date);
+  };
 
   const FALLBACK_IMG =
     'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=600&q=60';
@@ -384,14 +401,20 @@ export function CPDashboard() {
                     Clear date filter
                   </Button>
                 </div>
-                <Input
-                  type="date"
-                  placeholder="Select Date"
-                  className={styles.dateFilter}
-                  value={selectedDate}
-                  onChange={e => setSelectedDate(e.target.value)}
-                  style={{ marginTop: '10px' }}
-                />
+
+                <div className={styles.dateFilterContainer}>
+                  <DatePicker
+                    selected={selectedDate ? new Date(selectedDate) : null}
+                    onChange={handleDateChange}
+                    placeholderText="Ending After"
+                    id="ending-after"
+                    className={styles.dateFilter}
+                    dateFormat="yyyy-MM-dd"
+                    minDate={new Date()}
+                    isClearable
+                  />
+                  {dateError && <p className={styles.dateErrorMessage}>{dateError}</p>}
+                </div>
               </div>
 
               <div className={styles.filterItem}>
