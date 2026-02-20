@@ -4,28 +4,25 @@ import BadgeImage from '../BadgeImage';
 const FeaturedBadges = props => {
   const [filteredBadges, setFilteredBadges] = useState([]);
 
-  const filterBadges = allBadges => {
-    if (!Array.isArray(allBadges)) return [];
+const filterBadges = allBadges => {
+  if (!Array.isArray(allBadges)) return [];
 
-    let filteredList = allBadges.filter(badge => badge && badge.badge);
+  const featuredBadges = allBadges.filter(
+    badge => badge && badge.badge && badge.featured
+  );
 
-    filteredList.sort((a, b) => {
-      const featuredA = a.featured ?? false;
-      const featuredB = b.featured ?? false;
-      const rankingA = a.badge?.ranking ?? 0;
-      const rankingB = b.badge?.ranking ?? 0;
-      const nameA = a.badge?.badgeName ?? '';
-      const nameB = b.badge?.badgeName ?? '';
+  featuredBadges.sort((a, b) => {
+    const rankingA = a.badge?.ranking ?? 0;
+    const rankingB = b.badge?.ranking ?? 0;
+    const nameA = a.badge?.badgeName ?? '';
+    const nameB = b.badge?.badgeName ?? '';
 
-      if (featuredA > featuredB) return -1;
-      if (featuredA < featuredB) return 1;
-      if (rankingA > rankingB) return 1;
-      if (rankingA < rankingB) return -1;
-      return nameA.localeCompare(nameB);
-    });
-
-    return filteredList.slice(0, 5);
-  };
+    if (rankingA > rankingB) return 1;
+    if (rankingA < rankingB) return -1;
+    return nameA.localeCompare(nameB);
+  });
+  return featuredBadges.slice(0, 5);
+};
 
   useEffect(() => {
     setFilteredBadges(filterBadges(props.badges));

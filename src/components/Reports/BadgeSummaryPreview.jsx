@@ -1,13 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Button } from 'react-bootstrap';
 import { MdPreview } from 'react-icons/md';
-import {
-  Button as ReactStrapButton,
-  Modal,
-  ModalBody,
-  ModalHeader,
-  ModalFooter,
-} from 'reactstrap';
+import { Button as ReactStrapButton, Modal, ModalBody, ModalHeader, ModalFooter } from 'reactstrap';
 import BadgeImage from '~/components/Badge/BadgeImage';
 import { boxStyle, boxStyleDark } from '../../styles';
 import '../Badge/BadgeReport.module.css';

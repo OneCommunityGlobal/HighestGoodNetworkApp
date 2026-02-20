@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, fireEvent, waitFor, screen } from '@testing-library/react';
-import BadgeReport from '../BadgeReport';
+import BadgeReport from '../BadgeReport/BadgeReport';
 import { UncontrolledTooltip } from 'reactstrap';
 import { formatDate } from '~/utils/formatDate';
 
