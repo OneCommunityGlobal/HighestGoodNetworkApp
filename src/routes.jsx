@@ -769,6 +769,53 @@ export default (
           exact
           component={Register}
         />
+        <CPProtectedRoute
+          path="/communityportal/usermanagement"
+          exact
+          component={UserManagement}
+          fallback
+          allowedRoles={[UserRole.Administrator, UserRole.Owner, UserRole.Manager]}
+          routePermissions={RoutePermissions.userManagement}
+        />
+        <CPProtectedRoute
+          path="/communityportal/badgemanagement"
+          exact
+          component={BadgeManagement}
+          fallback
+          routePermissions={RoutePermissions.badgeManagement}
+        />
+        <CPProtectedRoute
+          path="/communityportal/projects"
+          exact
+          component={Projects}
+          fallback
+          allowedRoles={[UserRole.Administrator, UserRole.Owner, UserRole.Manager]}
+          routePermissions={RoutePermissions.projects}
+        />
+        <CPProtectedRoute
+          path="/communityportal/teams"
+          exact
+          component={Teams}
+          fallback
+          allowedRoles={[UserRole.Administrator, UserRole.Owner]}
+          routePermissions={RoutePermissions.teams}
+        />
+        <CPProtectedRoute
+          path="/communityportal/announcements"
+          exact
+          component={Announcements}
+          routePermissions={RoutePermissions.announcements}
+        />
+        <CPProtectedRoute
+          path="/communityportal/permissionsmanagement"
+          exact
+          component={PermissionsManagement}
+          fallback
+          routePermissions={[
+            ...RoutePermissions.permissionsManagement,
+            ...RoutePermissions.userPermissionsManagement,
+          ].flat()}
+        />
         <CPProtectedRoute path="/communityportal/ActivityAgenda" exact component={ActivityAgenda} />
         <CPProtectedRoute
           path="/communityportal/activity/:activityId/engagement/Comments"
