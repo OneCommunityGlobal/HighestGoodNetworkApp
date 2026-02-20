@@ -2,6 +2,10 @@
   border: 1px solid #ddd !important;
 }
 
+.darkMode .dropdownItem:hover {
+  background-color: #073054 !important;
+}
+
 .calendar {
   width: 100%;
   height: auto;
@@ -42,6 +46,26 @@
   background-color: #f0f8ff !important;
   box-shadow: inset 0 0 0 1px #007bff !important;
   color: black !important
+}
+
+.calendar :global(.react-calendar__navigation__label:hover) {
+  background-color: #f0f8ff !important;
+}
+
+.calendar :global(.react-calendar__navigation__label) {
+  background-color: white !important;
+}
+
+.calendar :global(.react-calendar__tile:hover) {
+  background-color: #f0f8ff !important;
+}
+
+.calendar :global(.react-calendar__navigation__arrow) {
+  background-color: white !important;
+}
+
+.calendar :global(.react-calendar__navigation__arrow:hover) {
+  background-color: #f0f8ff !important;
 }
 
 .darkMode .calendar {
@@ -275,4 +299,22 @@
 .darkMode .currentWeekDay {
   background-color: #073054 !important;
   color: #66a3ff !important;
+}
+
+@media screen and (max-width: 768px) {
+  .weekRow {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .weekDay {
+    width: 90% !important;
+    flex-direction: column;
+    display: flex;
+    min-height: auto;
+  }
+
+  .calendarDay {
+    height: 80px;
+  }
 }

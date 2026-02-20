@@ -109,6 +109,7 @@ function KICalendar({ auth, darkMode }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const [isMobile, setIsMobile] = useState(false);
   const today = new Date();
   const MAX_EVENTS = 2;
   const moduleIcons = {
@@ -151,15 +152,25 @@ function KICalendar({ auth, darkMode }) {
     setCurrentDate(selectedDate);
   }, [selectedDate]);
 
+  const handleResize = () => {
+    setIsMobile(window.innerWidth <= 768);
+  };
+
+  useEffect(() => {
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   /* ------------------ Render ------------------ */
 
   return (
-    <Container fluid className={`p-3 ${darkMode ? styles.darkMode : ''}`}>
+    <Container fluid className={`p-3 mb-5 ${darkMode ? styles.darkMode : ''}`}>
       <h1>Unified Calendar</h1>
       <p>View and manage all events across Garden, Orchard, Animals and Kitchen modules</p>
       <Row>
         {/* ---------- Left Panel ---------- */}
-        <Col md="12" lg="4" xl="3" className="mb-3 mb-md-0">
+        <Col md="12" lg="4" xl="3" className="mb-3">
           <Card>
             <CardBody>
               <h6>{format(selectedDate, 'MMMM d, yyyy')}</h6>
@@ -227,7 +238,11 @@ function KICalendar({ auth, darkMode }) {
                 </DropdownToggle>
                 <DropdownMenu>
                   {['All Modules', 'Garden', 'Orchard', 'Animals', 'Kitchen'].map(type => (
-                    <DropdownItem key={type} onClick={() => setEventFilter(type)}>
+                    <DropdownItem
+                      key={type}
+                      onClick={() => setEventFilter(type)}
+                      className={styles.dropdownItem}
+                    >
                       {moduleIcons[type] && (
                         <FontAwesomeIcon
                           icon={moduleIcons[type]}
@@ -281,36 +296,47 @@ function KICalendar({ auth, darkMode }) {
               tileContent={({ date }) => {
                 const dateEvents = eventsForDate(date);
                 return dateEvents.length > 0 ? (
-                  <div className="small text-primary">
-                    {dateEvents.slice(0, MAX_EVENTS).map(event => (
-                      <button
-                        key={event.id}
-                        className={`${styles.eventTitle} ${styles[event.type?.toLowerCase()]} ${
-                          styles.smallText
-                        }`}
-                        onClick={() => {
-                          setSelectedEvent(event);
-                          setModalOpen(true);
-                        }}
-                      >
-                        {moduleIcons[event.type] && (
-                          <FontAwesomeIcon icon={moduleIcons[event.type]} className="me-2" />
-                        )}{' '}
-                        {event.title}
-                      </button>
-                    ))}
+                  isMobile ? (
+                    <button
+                      onClick={() => {
+                        setView('week');
+                      }}
+                      className={`${styles.smallText} ${styles.linkText}`}
+                    >
+                      {dateEvents.length} events
+                    </button>
+                  ) : (
+                    <div className="small text-primary">
+                      {dateEvents.slice(0, MAX_EVENTS).map(event => (
+                        <button
+                          key={event.id}
+                          className={`${styles.eventTitle} ${styles[event.type?.toLowerCase()]} ${
+                            styles.smallText
+                          }`}
+                          onClick={() => {
+                            setSelectedEvent(event);
+                            setModalOpen(true);
+                          }}
+                        >
+                          {moduleIcons[event.type] && (
+                            <FontAwesomeIcon icon={moduleIcons[event.type]} className="me-2" />
+                          )}{' '}
+                          {event.title}
+                        </button>
+                      ))}
 
-                    {dateEvents.length > MAX_EVENTS && (
-                      <button
-                        onClick={() => {
-                          setView('week');
-                        }}
-                        className={`${styles.smallText} ${styles.linkText}`}
-                      >
-                        +{dateEvents.length - MAX_EVENTS} more
-                      </button>
-                    )}
-                  </div>
+                      {dateEvents.length > MAX_EVENTS && (
+                        <button
+                          onClick={() => {
+                            setView('week');
+                          }}
+                          className={`${styles.smallText} ${styles.linkText}`}
+                        >
+                          +{dateEvents.length - MAX_EVENTS} more
+                        </button>
+                      )}
+                    </div>
+                  )
                 ) : null;
               }}
             />
@@ -318,7 +344,7 @@ function KICalendar({ auth, darkMode }) {
 
           {/* ---------- Week View ---------- */}
           {view === 'week' && (
-            <Row className="w-100 text-center">
+            <Row className={`w-100 text-center ${styles.weekRow}`}>
               {weekDays.map(day => {
                 const dateEvents = eventsForDate(day);
                 const isSelected = isSameDay(day, selectedDate);
@@ -337,23 +363,27 @@ function KICalendar({ auth, darkMode }) {
                       </div>
                       <div>{format(day, 'MMM d')}</div>
                     </div>
-                    {dateEvents.map(event => (
-                      <button
-                        key={event.id}
-                        className={`${styles.weeklyEventTitle} ${
-                          styles[event.type?.toLowerCase()]
-                        } ${styles.smallText}`}
-                        onClick={() => {
-                          setSelectedEvent(event);
-                          setModalOpen(true);
-                        }}
-                      >
-                        {moduleIcons[event.type] && (
-                          <FontAwesomeIcon icon={moduleIcons[event.type]} className="me-2" />
-                        )}{' '}
-                        {event.title}
-                      </button>
-                    ))}
+                    {dateEvents.length > 0 ? (
+                      dateEvents.map(event => (
+                        <button
+                          key={event.id}
+                          className={`${styles.weeklyEventTitle} ${
+                            styles[event.type?.toLowerCase()]
+                          } ${styles.smallText}`}
+                          onClick={() => {
+                            setSelectedEvent(event);
+                            setModalOpen(true);
+                          }}
+                        >
+                          {moduleIcons[event.type] && (
+                            <FontAwesomeIcon icon={moduleIcons[event.type]} className="me-2" />
+                          )}{' '}
+                          {event.title}
+                        </button>
+                      ))
+                    ) : (
+                      <p className="text-muted">No events</p>
+                    )}
                   </Col>
                 );
               })}
