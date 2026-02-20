@@ -339,6 +339,7 @@
 
 .eventCardCol {
   display: flex;
+  margin-bottom: 1.5rem;
 }
 
 .eventCard:hover {
@@ -353,6 +354,7 @@
 
 .eventCard {
   width: 100%;
+  height: 100%;
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -386,6 +388,10 @@
   font-weight: bold;
   font-size: 1.3rem;
   line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: default;
 }
 
 .eventDate,
