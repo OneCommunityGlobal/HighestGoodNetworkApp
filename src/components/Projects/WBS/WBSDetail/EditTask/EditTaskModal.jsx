@@ -19,7 +19,7 @@ import { toast } from 'react-toastify';
 import UserSearch from './UserSearch';
 import UserTag from './UserTag';
 import ReadOnlySectionWrapper from './ReadOnlySectionWrapper';
-import '../../../../Header/DarkMode.css';
+import '../../../../Header/index.css';
 import styles from '../wbs.module.css';
 import TagsSearch from '../components/TagsSearch';
 
@@ -170,6 +170,8 @@ function EditTaskModal(props) {
     autoresize_bottom_margin: 1,
     skin: darkMode ? 'oxide-dark' : 'oxide',
     content_css: darkMode ? 'dark' : 'default',
+    fixed_toolbar_container: '.modal-body',
+    ui_container: '.modal-content',
   };
   /*
    * -------------------------------- functions --------------------------------

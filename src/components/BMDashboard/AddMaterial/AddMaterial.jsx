@@ -66,6 +66,7 @@ export default function AddMaterialForm() {
   // console.log(materialTypes);
   // console.log(units)
   const createdBy = useSelector(state => state.auth.user.email);
+  const darkMode = useSelector(state => state.theme?.darkMode);
 
   useEffect(() => {
     dispatch(fetchMaterialTypes());
@@ -622,31 +623,34 @@ export default function AddMaterialForm() {
       <Modal
         isOpen={showNavigationModal}
         toggle={() => setShowNavigationModal(false)}
-        className="navigation-modal"
+        className={`navigation-modal ${darkMode ? 'text-light dark-mode' : ''}`}
       >
-        <ModalHeader toggle={() => setShowNavigationModal(false)}>
+        <ModalHeader
+          toggle={() => setShowNavigationModal(false)}
+          className={darkMode ? 'bg-space-cadet' : ''}
+        >
           <p>{`Material Added Successfully - What's Next?`}</p>
         </ModalHeader>
-        <ModalBody>
+        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           <div className={`${styles.navigationOptions}`}>
             <div className={`${styles.optionContainer}`}>
               <h5>View All Inventory Types</h5>
               <p>View your just added material, including all available inventory types</p>
-              <Button color="primary" onClick={handleViewInventory}>
+              <Button color="primary" onClick={handleViewInventory} style={boxStyle}>
                 View All Inventory Types
               </Button>
             </div>
             <div className={`${styles.optionContainer}`}>
               <h5>Start Material Purchase</h5>
               <p>Initiate a purchase request to be approved by project admin</p>
-              <Button color="success" onClick={handleStartPurchase}>
+              <Button color="success" onClick={handleStartPurchase} style={boxStyle}>
                 Start Purchase Request
               </Button>
             </div>
           </div>
         </ModalBody>
-        <ModalFooter>
-          <Button color="secondary" onClick={handleStayHere}>
+        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+          <Button color="secondary" onClick={handleStayHere} style={boxStyle}>
             Stay on Current Page
           </Button>
         </ModalFooter>

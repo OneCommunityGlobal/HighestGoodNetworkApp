@@ -1,5 +1,6 @@
 /* BiddingHomepage.css */
-body, .biddingBg {
+body,
+.biddingBg {
   background: var(--bg-color, #e5e5e5) !important;
   min-height: 100vh;
   overflow-x: hidden;
@@ -90,7 +91,7 @@ body, .biddingBg {
   background: var(--dropdown-bg, #fff) !important;
   border: 1px solid var(--border-color, #bbb) !important;
   border-radius: 4px !important;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1) !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1) !important;
   min-width: 180px !important;
   width: 180px !important;
 }
@@ -157,7 +158,9 @@ body, .biddingBg {
   gap: 18px;
 }
 
-.messages, .notifications, .userProfile {
+.messages,
+.notifications,
+.userProfile {
   font-size: 1.3rem;
   cursor: pointer;
   position: relative;
@@ -187,7 +190,7 @@ body, .biddingBg {
 }
 
 .navigationTabs::after {
-  content: "";
+  content: '';
   position: absolute;
   bottom: 0;
   left: 0;
@@ -389,7 +392,7 @@ body, .biddingBg {
   background: var(--dropdown-bg, #fff) !important;
   border: 1px solid var(--border-color, #bbb) !important;
   border-radius: 4px !important;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1) !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1) !important;
   min-width: 280px !important;
   padding: 15px !important;
 }
@@ -406,7 +409,7 @@ body, .biddingBg {
   margin-bottom: 15px;
 }
 
-.dateLabel  {
+.dateLabel {
   font-size: 0.9rem;
   font-weight: 600;
   color: var(--text-color, #222) !important;
@@ -488,7 +491,7 @@ body, .biddingBg {
 .sortFilter .dropdownMenu {
   border: 1px solid var(--border-color, #bbb) !important;
   border-radius: 4px !important;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1) !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1) !important;
   min-width: 160px;
 }
 
@@ -541,23 +544,24 @@ body, .biddingBg {
     flex-direction: column;
     gap: 10px;
   }
-  .tabsContainer, .mapLink {
+  .tabsContainer,
+  .mapLink {
     margin: 0;
   }
-  
+
   /* Tablet responsive adjustments for village filter */
   .biddingHeader .villageFilter .dropdownToggle {
     min-width: 200px !important;
     width: auto !important;
   }
-  
+
   .biddingHeader .villageFilter .dropdownMenu {
     min-width: 200px !important;
     width: 200px !important;
     left: 0 !important;
     right: auto !important;
   }
-  
+
   .biddingHeader .villageFilter .dropdownItem {
     white-space: normal !important;
     word-wrap: break-word !important;
@@ -583,12 +587,12 @@ body, .biddingBg {
     min-width: 90%;
     max-width: 95%;
   }
-  
+
   /* Mobile responsive adjustments for village filter */
   .biddingHeader .villageFilter {
     width: 100% !important;
   }
-  
+
   .biddingHeader .villageFilter .dropdownToggle {
     min-width: 100% !important;
     width: 100% !important;
@@ -596,7 +600,7 @@ body, .biddingBg {
     overflow: hidden !important;
     text-overflow: ellipsis !important;
   }
-  
+
   .biddingHeader .villageFilter .dropdownMenu {
     width: 100% !important;
     min-width: 100% !important;
@@ -605,7 +609,7 @@ body, .biddingBg {
     right: auto !important;
     overflow-x: hidden !important;
   }
-  
+
   .biddingHeader .villageFilter .dropdownItem {
     white-space: normal !important;
     word-wrap: break-word !important;
@@ -613,7 +617,7 @@ body, .biddingBg {
     padding: 12px 15px !important;
     line-height: 1.4 !important;
   }
-} 
+}
 
 /* Light mode variables (default) */
 :root {

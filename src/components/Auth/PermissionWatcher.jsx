@@ -13,74 +13,57 @@ function PermissionWatcher() {
   const userProfile = useSelector(state => state.userProfile);
   const isAcknowledged = userProfile?.permissions?.isAcknowledged;
   const [isAckLoading, setIsAckLoading] = useState(false);
-  // Get seconds remaining until force logout
   const secondsRemaining = useCountdown(forceLogoutAt);
   const [wasForceLoggedOut, setWasForceLoggedOut] = useState(false);
   const [flagReady, setFlagReady] = useState(false);
-  // Track the initial acknowledged state when user first logs in
   const [initialAcknowledgedState, setInitialAcknowledgedState] = useState(null);
-  // Track if user has just logged in (to distinguish from mid-session changes)
   const [isInitialLogin, setIsInitialLogin] = useState(false);
 
-  // On mount or when authentication changes, read flag from sessionStorage
   useEffect(() => {
     if (isAuthenticated) {
       try {
         const flag = sessionStorage.getItem('wasForceLoggedOut');
         setWasForceLoggedOut(flag === 'true');
         sessionStorage.removeItem('wasForceLoggedOut');
-      } catch {
-        // sessionStorage might not be available (private browsing, etc.)
-        // Silently fail - component will work without the flag
-      }
-
-      // Mark as initial login (initial state will be captured when profile loads)
+      } catch {}
       setIsInitialLogin(true);
-      setInitialAcknowledgedState(null); // Reset to wait for profile load
+      setInitialAcknowledgedState(null);
     } else {
-      // User logged out, reset state
       setIsInitialLogin(false);
       setInitialAcknowledgedState(null);
       setWasForceLoggedOut(false);
     }
-
     setFlagReady(true);
   }, [isAuthenticated]);
 
-  // Track when user profile is first loaded after login and handle initial login cases
   useEffect(() => {
     if (!isAuthenticated || !flagReady) return;
-    if (userProfile === null || userProfile === undefined) return; // Wait for profile to load
-    if (!isInitialLogin) return; // Only handle initial login cases
+    if (!userProfile) return;
+    if (!isInitialLogin) return;
 
-    // Capture the initial acknowledged state when profile is first loaded
     if (initialAcknowledgedState === null) {
-      setInitialAcknowledgedState(isAcknowledged);
-      return; // Wait for next render to check conditions
+      const safestate = isAcknowledged === undefined ? true : isAcknowledged;
+      setInitialAcknowledgedState(safestate);
+      return;
     }
 
-    // Edge Case 2: User permissions changed when logged out → show banner only on login
-    // Detected by: user just logged in with unacknowledged permissions
-    // AND was NOT force logged out (just normal logout with permission changes)
     const loggedInWithUnacknowledgedPermissions =
-      !isAcknowledged && !forceLogoutAt && !wasForceLoggedOut;
+      isAcknowledged === false && !forceLogoutAt && !wasForceLoggedOut;
 
     if (loggedInWithUnacknowledgedPermissions) {
-      setIsInitialLogin(false); // Mark as no longer initial login
+      setIsInitialLogin(false);
       return;
     }
 
-    // Edge Case 3: User was force logged out → permissions change → user logs back in → show banner only
-    // Detected by: user just logged in with unacknowledged permissions AND was force logged out
-    const loggedInAfterForceLogout = !isAcknowledged && !forceLogoutAt && wasForceLoggedOut;
+    const loggedInAfterForceLogout =
+      isAcknowledged === false && !forceLogoutAt && wasForceLoggedOut;
 
     if (loggedInAfterForceLogout) {
-      setIsInitialLogin(false); // Mark as no longer initial login
+      setIsInitialLogin(false);
       return;
     }
 
-    // If initial login and permissions are acknowledged, mark as no longer initial
-    if (isAcknowledged) {
+    if (isAcknowledged !== false) {
       setIsInitialLogin(false);
     }
   }, [
@@ -95,30 +78,23 @@ function PermissionWatcher() {
     userProfile,
   ]);
 
-  // Handle mid-session permission changes (Edge Case 1)
   useEffect(() => {
     if (!isAuthenticated || !flagReady) return;
-    if (userProfile === null || userProfile === undefined) return; // Wait for profile to load
-    if (isInitialLogin) return; // Skip mid-session checks during initial login
+    if (!userProfile) return;
+    if (isInitialLogin) return;
     // Don't trigger when permissions haven't been loaded yet (e.g. on /bmdashboard/login before profile fetch)
     if (userProfile?.permissions === undefined || userProfile?.permissions === null) return;
 
-    // User permissions changed when logged in → start timer
-    // Detected by: permissions were acknowledged (or was null/true), then became unacknowledged
-    // AND user was already logged in (not initial login)
-    // Use isAcknowledged === false to avoid treating undefined (profile not loaded) as unacknowledged
     const permissionsChangedMidSession =
-      isAcknowledged === false && !forceLogoutAt && initialAcknowledgedState !== false; // Was acknowledged or null before (not explicitly false)
+      isAcknowledged === false && !forceLogoutAt && initialAcknowledgedState !== false;
 
     if (permissionsChangedMidSession) {
       dispatch(startForceLogout(20000));
       return;
     }
 
-    // Case: permissions re-acknowledged → cancel timer
-    if (isAcknowledged && forceLogoutAt) {
+    if (isAcknowledged === true && forceLogoutAt) {
       dispatch(stopForceLogout());
-      // Reset initial state since permissions are now acknowledged
       setInitialAcknowledgedState(true);
     }
   }, [
@@ -132,16 +108,13 @@ function PermissionWatcher() {
     userProfile,
   ]);
 
-  // Handle acknowledgment of permission changes
   const handleAcknowledge = async () => {
     try {
       setIsAckLoading(true);
-
       if (!userProfile || !userProfile._id) {
         setIsAckLoading(false);
         return;
       }
-
       const { firstName: name, lastName, personalLinks, adminLinks, _id } = userProfile;
 
       axios
@@ -150,30 +123,23 @@ function PermissionWatcher() {
           lastName,
           personalLinks,
           adminLinks,
-
           isAcknowledged: true,
         })
         .then(() => {
           setIsAckLoading(false);
-          // Update initial state to reflect acknowledgment
           setInitialAcknowledgedState(true);
           setIsInitialLogin(false);
           dispatch(getUserProfile(_id));
         })
         .catch(error => {
-          // eslint-disable-next-line no-console
-          // console.error('Error updating user profile:', error);
           setIsAckLoading(false);
         });
     } catch (error) {
-      // eslint-disable-next-line no-console
-      // console.error('Error acknowledging permission changes:', error);
       setIsAckLoading(false);
     }
   };
 
-  // Force logout timer running (mid-session permission change)
-  if (forceLogoutAt && !isAcknowledged) {
+  if (forceLogoutAt && isAcknowledged === false) {
     return (
       <PopUpBar
         message={`Permissions changed—logging out in ${secondsRemaining}s unless acknowledged.`}

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { connect } from 'react-redux';
-import '../../Header/DarkMode.css';
+import '../../Header/index.css';
 import { addNewWBS } from './../../../actions/wbs';
 import { postNewProject } from './../../../actions/projects';
 import { findUserProfiles, assignProject } from './../../../actions/projectMembers';

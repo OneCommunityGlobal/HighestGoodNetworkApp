@@ -155,6 +155,28 @@ const TeamMemberTask = React.memo(
       Mentor: '#e9dd57', // yellow
     };
 
+    function getTaskCreatorName(task) {
+      if (!task) return 'Unknown';
+
+      if (task.creatorName) return task.creatorName;
+      if (task.createdByName) return task.createdByName;
+      if (task.createdByEmail) return task.createdByEmail;
+
+      const cb = task.createdBy;
+      if (cb && typeof cb === 'object') {
+        const first = (cb.firstName || cb.firstname || cb.givenName || '').trim();
+        const last = (cb.lastName || cb.lastname || cb.familyName || '').trim();
+        const full = [first, last]
+          .filter(Boolean)
+          .join(' ')
+          .trim();
+        return full || cb.email || 'Unknown';
+      }
+
+      // No more fallbacks (no owner/creator/strings)
+      return 'Unknown';
+    }
+
     function getInitials(name) {
       const initials = name
         .split(' ')
@@ -292,11 +314,24 @@ const TeamMemberTask = React.memo(
                                 style={{
                                   fontSize: 24,
                                   cursor: 'pointer',
+                                  marginLeft: 6,
                                   color: darkMode ? 'lightgray' : 'black',
                                 }}
                                 title="Click to see user's timelog"
                               />
                             </Link>
+                            <p
+                              style={{
+                                fontSize: 16,
+                                cursor: 'pointer',
+                                color: darkMode ? 'lightgray' : 'black',
+                                marginLeft: 6,
+                                paddingTop: 15,
+                              }}
+                              title="Number of weeks this person has completed, based on the total weekly summaries they’ve submitted."
+                            >
+                              {user.weeklySummariesCount}
+                            </p>
                           </div>
                           {user.role !== 'Volunteer' && (
                             <div
@@ -506,6 +541,7 @@ const TeamMemberTask = React.memo(
                                           className={styles['team-member-tasks-content-link']}
                                           to={task.projectId ? `/wbs/tasks/${task._id}` : '/'}
                                           data-testid={`${task.taskName}`}
+                                          title={`Created by: ${getTaskCreatorName(task)}`}
                                           style={{ color: darkMode ? '#339CFF' : undefined }}
                                         >
                                           <span>{`${task.num} ${task.taskName}`} </span>
@@ -595,7 +631,7 @@ const TeamMemberTask = React.memo(
                                         darkMode ? 'bg-yinmn-blue text-light' : ''
                                       }`}
                                     >
-                                      <>
+                                      <div className={styles['progress-wrapper']}>
                                         <div className={styles['team-task-progress-container']}>
                                           <div
                                             data-testid={`times-${task.taskName}`}
@@ -661,7 +697,7 @@ const TeamMemberTask = React.memo(
                                           )}
                                           className={styles['team-task-progress-bar']}
                                         />
-                                      </>
+                                      </div>
                                     </td>
                                   )}
                                 </tr>

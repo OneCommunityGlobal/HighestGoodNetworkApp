@@ -7,6 +7,7 @@ import { Tooltip, OverlayTrigger } from 'react-bootstrap';
 import { boxStyle, boxStyleDark } from '../../styles';
 import hasPermission from '../../utils/permissions';
 import { SEARCH, SHOW, CREATE_NEW_USER, SEND_SETUP_LINK } from '../../languages/en/ui';
+import styles from './usermanagement.module.css';
 
 const setupHistoryTooltip = <Tooltip id="tooltip">Setup History Modal</Tooltip>;
 
@@ -22,14 +23,14 @@ function UserSearchPanel({
   onNewUserClick,
   searchText,
   onSearch,
-  onActiveFiter,
+  onActiveFilter,
   darkMode,
 }) {
   const canCreateUsers = hasPermission('postUserProfile');
   const [tooltipCreateNewUserOpen, setTooltipCreateNewUserOpen] = useState(false);
   const toggleCreateNewUserTooltip = () => setTooltipCreateNewUserOpen(!tooltipCreateNewUserOpen);
   return (
-    <div className="input-group mt-3" id="new_usermanagement">
+    <div className={`input-group mt-3 ${styles.new_user_management}`}>
       <button
         type="button"
         disabled={!canCreateUsers}
@@ -101,7 +102,7 @@ function UserSearchPanel({
           id="active-filter-dropdown"
           style={{marginBottom: "0px"}}
           onChange={e => {
-            onActiveFiter(e.target.value);
+            onActiveFilter(e.target.value);
           }}
           className={darkMode ? 'bg-darkmode-liblack text-light' : ''}
         >
