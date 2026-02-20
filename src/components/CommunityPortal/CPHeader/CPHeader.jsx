@@ -70,6 +70,18 @@ export function Header(props) {
     [ALLOWED_ROLES_TO_INTERACT, props.auth.user.role],
   );
 
+  const PROFILE_ROUTE = '/communityportal/profile';
+  const userProfileLink = (
+    <NavLink tag={Link} to={`${PROFILE_ROUTE}/${displayUserId}`}>
+      <img
+        src={profilePic || '/pfp-default-header.png'}
+        alt=""
+        style={{ maxWidth: '60px', maxHeight: '60px' }}
+        className="dashboardimg"
+      />
+    </NavLink>
+  );
+
   // Users
   const canAccessUserManagement =
     props.hasPermission('postUserProfile', !isAuthUser && canInteractWithViewingUser) ||
@@ -231,16 +243,7 @@ export function Header(props) {
             )}
             <Nav className={`ml-auto ${styles.menuContainer} mr-3`} navbar>
               {/* --PROFILE SHOWS ON TOP IN MOBILE VIEW */}
-              <NavItem className={styles.showInMobile}>
-                <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
-                  <img
-                    alt=""
-                    src={`${profilePic || '/pfp-default-header.png'}`}
-                    style={{ maxWidth: '60px', maxHeight: '60px' }}
-                    className="dashboardimg"
-                  />
-                </NavLink>
-              </NavItem>
+              <NavItem className={styles.showInMobile}>{userProfileLink}</NavItem>
               <UncontrolledDropdown inNavbar nav className={styles.showInMobile}>
                 <DropdownToggle nav caret>
                   <span>
@@ -254,7 +257,7 @@ export function Header(props) {
                 >
                   <DropdownItem
                     tag={Link}
-                    to={`/userprofile/${displayUserId}`}
+                    to={`${PROFILE_ROUTE}/{displayUserId}`}
                     className={fontColor}
                   >
                     {VIEW_PROFILE}
@@ -428,16 +431,7 @@ export function Header(props) {
                   </DropdownMenu>
                 </UncontrolledDropdown>
               )}
-              <NavItem className={styles.hideInMobile}>
-                <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
-                  <img
-                    src={`${profilePic || '/pfp-default-header.png'}`}
-                    alt=""
-                    style={{ maxWidth: '60px', maxHeight: '60px' }}
-                    className="dashboardimg"
-                  />
-                </NavLink>
-              </NavItem>
+              <NavItem className={styles.hideInMobile}>{userProfileLink}</NavItem>
               <UncontrolledDropdown nav className={styles.hideInMobile}>
                 <DropdownToggle nav caret>
                   <span>
@@ -453,7 +447,11 @@ export function Header(props) {
                     Hello {firstName}
                   </DropdownItem>
                   <DropdownItem divider />
-                  <DropdownItem tag={Link} to={`/userprofile/${user.userid}`} className={fontColor}>
+                  <DropdownItem
+                    tag={Link}
+                    to={`${PROFILE_ROUTE}/${user.userid}`}
+                    className={fontColor}
+                  >
                     {VIEW_PROFILE}
                   </DropdownItem>
                   {!cantUpdateDevAdminDetails(props.userProfile.email, props.userProfile.email) && (
