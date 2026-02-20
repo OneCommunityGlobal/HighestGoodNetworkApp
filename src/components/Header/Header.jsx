@@ -49,6 +49,7 @@ import {
   TOTAL_ORG_SUMMARY,
   TOTAL_CONSTRUCTION_SUMMARY,
   PR_PROMOTIONS,
+  ACTUAL_COST_BREAKDOWN,
   BLUE_SQUARE_EMAIL_MANAGEMENT,
   JOB_ANALYTICS_REPORT,
 } from '../../languages/en/ui';
@@ -558,14 +559,6 @@ export function Header(props) {
                       </DropdownItem>
                       <DropdownItem
                         tag={Link}
-                        to="/bmdashboard/consumables"
-                        className={fontColor}
-                        disabled={headerDisabled}
-                      >
-                        Consumables
-                      </DropdownItem>
-                      <DropdownItem
-                        tag={Link}
                         to="/bmdashboard/Issue"
                         className={fontColor}
                         disabled={headerDisabled}
@@ -627,6 +620,14 @@ export function Header(props) {
                           {TOTAL_ORG_SUMMARY}
                         </DropdownItem>
                       )}
+                      <DropdownItem
+                        tag={Link}
+                        to="/actual-cost-breakdown"
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
+                        {ACTUAL_COST_BREAKDOWN}
+                      </DropdownItem>
                       {canGetJobAnalytics && (
                         <DropdownItem
                           tag={Link}
