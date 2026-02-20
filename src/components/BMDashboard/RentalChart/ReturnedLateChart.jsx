@@ -18,7 +18,10 @@ import {
 import { useSelector } from 'react-redux';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ChartDataLabels);
+// Register chart components but do NOT register ChartDataLabels globally here.
+// ChartDataLabels will be passed per-chart via the `plugins` prop so other charts
+// are not affected by the datalabels plugin by default.
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 export default function ReturnedLateChart() {
   const chartRef = useRef(null);
@@ -304,7 +307,7 @@ export default function ReturnedLateChart() {
           </div>
         )}
         {!loading && !error && chartData.labels.length > 0 && (
-          <Bar ref={chartRef} data={chartData} options={options} />
+          <Bar ref={chartRef} data={chartData} options={options} plugins={[ChartDataLabels]} />
         )}
       </div>
       {detailOpen && (
