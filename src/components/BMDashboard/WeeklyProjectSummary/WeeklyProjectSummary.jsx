@@ -1,26 +1,28 @@
 /* eslint-disable import/no-unresolved */
-import { useEffect, useMemo, useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
+import CostPredictionChart from './CostPredictionChart';
+import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
 import PaidLaborCost from './PaidLaborCost/PaidLaborCost';
 import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
 import QuantityOfMaterialsUsed from './QuantityOfMaterialsUsed/QuantityOfMaterialsUsed';
+import ProjectRiskProfileOverview from './ProjectRiskProfileOverview';
+import IssuesBreakdownChart from './IssuesBreakdownChart';
 import InjuryCategoryBarChart from './GroupedBarGraphInjurySeverity/InjuryCategoryBarChart';
 import ToolsHorizontalBarChart from './Tools/ToolsHorizontalBarChart';
 import ExpenseBarChart from './Financials/ExpenseBarChart';
-import FinancialStatButtons from './Financials/FinancialStatButtons';
 import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
 import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMaterialCostPerProject';
+import FinancialsTrackingCard from './ExpenditureChart/FinancialsTrackingCard';
+import EmbedInteractiveMap from '../InteractiveMap/EmbedInteractiveMap';
 import styles from './WeeklyProjectSummary.module.css';
-import OpenIssueCharts from '../Issues/openIssueCharts';
-import SupplierPerformanceGraph from './SupplierPerformanceGraph.jsx';
+import IssueCharts from '../Issues/openIssueCharts';
 import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
 import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
-import MaterialStockOutRiskIndicator from './MaterialStockOutRiskIndicator/MaterialStockOutRiskIndicator';
-import IssueCharts from '../Issues/openIssueCharts';
 
 const projectStatusButtons = [
   {
@@ -121,119 +123,11 @@ const projectStatusButtons = [
   },
 ];
 
-const clamp01 = n => Math.max(0, Math.min(1, n));
-
-const hexToRgb = hex => {
-  const c = hex.replace('#', '').trim();
-  if (c.length !== 6) return { r: 0, g: 0, b: 0 };
-  return {
-    r: Number.parseInt(c.slice(0, 2), 16),
-    g: Number.parseInt(c.slice(2, 4), 16),
-    b: Number.parseInt(c.slice(4, 6), 16),
-  };
-};
-
-const rgbToHex = ({ r, g, b }) =>
-  `#${[r, g, b].map(v => v.toString(16).padStart(2, '0')).join('')}`;
-
-const mixHex = (a, b, t) => {
-  const A = hexToRgb(a);
-  const B = hexToRgb(b);
-  const k = clamp01(t);
-  return rgbToHex({
-    r: Math.round(A.r * (1 - k) + B.r * k),
-    g: Math.round(A.g * (1 - k) + B.g * k),
-    b: Math.round(A.b * (1 - k) + B.b * k),
-  });
-};
-
-// Dark-mode card surface = dark base tinted with accent
-const darkTintedCardBg = accentHex => mixHex('#2b3e59', accentHex, 0.18);
-
-// ✅ Light theme: lighten the pill bg so text can be dark
-const lightPillBg = accentHex => mixHex(accentHex, '#ffffff', 0.55);
-
-const getReadableTextColor = hex => {
-  if (!hex || typeof hex !== 'string') return '#0b1220';
-  const c = hex.replace('#', '').trim();
-  if (c.length !== 6) return '#0b1220';
-
-  const r = Number.parseInt(c.slice(0, 2), 16) / 255;
-  const g = Number.parseInt(c.slice(2, 4), 16) / 255;
-  const b = Number.parseInt(c.slice(4, 6), 16) / 255;
-
-  const lin = v => (v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4));
-  const L = 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
-
-  return L > 0.6 ? '#0b1220' : '#ffffff';
-};
-
-const getChangeType = changeText => {
-  if (!changeText || typeof changeText !== 'string') return 'neutral';
-  const t = changeText.trim();
-  if (t.startsWith('+')) return 'positive';
-  if (t.startsWith('-') || t.startsWith('–')) return 'negative';
-  return 'neutral';
-};
-
-const wowColor = (type, darkMode) => {
-  if (type === 'positive') return darkMode ? '#22c55e' : '#15803d';
-  if (type === 'negative') return darkMode ? '#ef4444' : '#b91c1c';
-  return darkMode ? 'rgba(255,255,255,0.75)' : 'rgba(0,0,0,0.65)';
-};
-
-export function WeeklyProjectSummaryContent() {
-  const dispatch = useDispatch();
-  const materials = useSelector(state => state.materials?.materialslist || []);
-  const [openSections, setOpenSections] = useState({});
-
-  const getColorScheme = percentage => {
-    if (percentage === '-') return 'neutral';
-    if (percentage > 0) return 'positive';
-    if (percentage < 0) return 'negative';
-    return 'neutral';
-  };
-
-  const colorScheme = getColorScheme(monthOverMonth);
-
-  const titleClass = title.replace(/\s+/g, '-').toLowerCase();
-
-  return (
-    <div
-      className={`financial-card ${colorScheme} custom-box-shadow financial-card-background-${titleClass}`}
-      onMouseEnter={() => setShowTooltip(true)}
-      onMouseLeave={() => setShowTooltip(false)}
-    >
-      <div className="financial-card-title">{title}</div>
-      <div className={`financial-card-ellipse financial-card-ellipse-${titleClass}`} />
-      <div className="financial-card-value">{value === '-' ? '-' : value.toLocaleString()}</div>
-      <div className={`financial-card-month-over-month ${colorScheme}`}>
-        {monthOverMonth === '-'
-          ? '-'
-          : `${monthOverMonth > 0 ? '+' : ''}${monthOverMonth}% month over month`}
-      </div>
-
-      {/* Tooltip for Additional Info */}
-      {showTooltip && Object.keys(additionalInfo).length > 0 && (
-        <div className="financial-card-tooltip">
-          {Object.entries(additionalInfo).map(([key]) => (
-            <div key={key} className="financial-card-tooltip-item">
-              <span className="tooltip-key">{key}:</span>
-              <span className="tooltip-value">{value}</span>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
 function WeeklyProjectSummary() {
   const dispatch = useDispatch();
   const materials = useSelector(state => state.materials?.materialslist || []);
   const [openSections, setOpenSections] = useState({});
   const darkMode = useSelector(state => state.theme.darkMode);
-
   useEffect(() => {
     if (materials.length === 0) {
       dispatch(fetchAllMaterials());
@@ -256,50 +150,52 @@ function WeeklyProjectSummary() {
   const sections = useMemo(
     () => [
       {
+        title: 'Risk profile for projects',
+        key: 'Risk profile for projects',
+        className: 'full',
+        content: <ProjectRiskProfileOverview />,
+      },
+      {
         title: 'Project Status',
         key: 'Project Status',
         className: 'full',
         content: (
-          <div className={styles.projectStatusGrid}>
+          <div className={`${styles.projectStatusGrid}`}>
             {projectStatusButtons.map(button => {
               const uniqueId = uuidv4();
-              const changeType = getChangeType(button.change);
-              const accent = button.buttonColor;
-
-              const cardBg = darkMode ? darkTintedCardBg(accent) : button.bgColor;
-
-              // ✅ FIX: light theme pill gets lightened => dark text
-              const pillBg = darkMode ? accent : lightPillBg(accent);
-              const pillText = getReadableTextColor(pillBg);
-
-              const wowClr = wowColor(changeType, darkMode);
-
               return (
-                <button
+                <div
                   key={uniqueId}
-                  type="button"
                   className={`${styles.weeklyProjectSummaryCard} ${styles.statusCard}`}
-                  aria-label={`${button.title} status card`}
-                  onClick={e => e.preventDefault()}
-                  style={{
-                    backgroundColor: cardBg,
-                    borderColor: 'var(--card-border)',
-                    '--status-pill-bg': pillBg,
-                    '--status-pill-text': pillText,
-                    '--status-accent': accent,
-                    '--wow-color': wowClr,
-                  }}
+                  style={{ backgroundColor: button.bgColor }} // Dynamic Background
                 >
-                  <div className={styles.weeklyCardTitle}>{button.title}</div>
-
-                  <div className={styles.weeklyStatusButton}>
-                    <span className={styles.weeklyStatusValue}>{button.value}</span>
+                  <div className={`${styles.weeklyCardTitle}`}>{button.title}</div>
+                  <div
+                    className={`${styles.weeklyStatusButton}`}
+                    style={{ backgroundColor: button.buttonColor }} // Dynamic Oval Color
+                  >
+                    <span className={`${styles.weeklyStatusValue}`}>{button.value}</span>
                   </div>
-
-                  <div className={styles.weeklyStatusChange}>{button.change}</div>
-                </button>
+                  <div
+                    className="weekly-status-change"
+                    style={{ color: button.textColor }} // Dynamic Change Color
+                  >
+                    {button.change}
+                  </div>
+                </div>
               );
             })}
+          </div>
+        ),
+      },
+      // New Issues Breakdown card
+      {
+        title: 'Issues Breakdown',
+        key: 'Issues Breakdown',
+        className: 'full',
+        content: (
+          <div className={`${styles.weeklyProjectSummaryCard} ${styles.fullCard}`}>
+            <IssuesBreakdownChart />
           </div>
         ),
       },
@@ -328,22 +224,12 @@ function WeeklyProjectSummary() {
         }),
       },
       {
-        title: 'Material Stock-Out Risk Indicator',
-        key: 'Material Stock-Out Risk Indicator',
-        className: 'full',
-        content: (
-          <div className={`${styles.weeklyProjectSummaryCard} ${styles.fullCard}`}>
-            <MaterialStockOutRiskIndicator />
-          </div>
-        ),
-      },
-      {
         title: 'Issue Tracking',
         key: 'Issue Tracking',
         className: 'full',
         content: (
           <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
-            <OpenIssueCharts />
+            <IssueCharts />
           </div>
         ),
       },
@@ -351,21 +237,31 @@ function WeeklyProjectSummary() {
         title: 'Tools and Equipment Tracking',
         key: 'Tools and Equipment Tracking',
         className: 'half',
-        content: (
-          <div className="weekly-project-summary-card normal-card" style={{ minHeight: '300px' }}>
+        content: [
+          <div
+            key="donut-chart"
+            className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+          >
+            <ToolStatusDonutChart />
+          </div>,
+          <div
+            key="bar-chart"
+            className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+          >
             <ToolsHorizontalBarChart darkMode={darkMode} />
-          </div>
-        ),
+          </div>,
+        ],
       },
       {
         title: 'Lessons Learned',
         key: 'Lessons Learned',
         className: 'half',
-        content: (
-          <div className="weekly-project-summary-card normal-card" style={{ gridColumn: '1 / -1' }}>
+        content: [
+          <MostFrequentKeywords key="frequent-tags-card" />,
+          <div key="injury-chart" className="weekly-project-summary-card normal-card">
             <InjuryCategoryBarChart />
-          </div>
-        ),
+          </div>,
+        ],
       },
       {
         title: 'Financials',
@@ -373,12 +269,12 @@ function WeeklyProjectSummary() {
         className: 'large',
         content: (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
-            <div className="weekly-project-summary-card">
-              <FinancialStatButtons />
-            </div>
+            <div className="weekly-project-summary-card financial-small">📊 Card</div>
             <div className="weekly-project-summary-card financial-small financial-chart">
               <ExpenseBarChart />
             </div>
+            <div className="weekly-project-summary-card financial-small">📊 Card</div>
+            <div className="weekly-project-summary-card financial-small">📊 Card</div>
             <div className="weekly-project-summary-card financial-big">📊 Big Card</div>
           </div>
         ),
@@ -392,24 +288,22 @@ function WeeklyProjectSummary() {
         ),
       },
       {
-        title: 'Global Distribution and Project Status',
+        title: 'Global Distribution and Project Status Overview',
         key: 'Global Distribution and Project Status',
-        className: 'half',
+        className: 'full',
         content: (
-          <>
-            <div className={`${styles.weeklyProjectSummaryCard} ${styles.wideCard}`}>
-              📊 Wide Card
-            </div>
-            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
-              📊 Normal Card
-            </div>
-          </>
+          <div
+            className={`${styles.weeklyProjectSummaryCard} ${styles.mapCard}`}
+            style={{ height: '500px', padding: '0' }}
+          >
+            <EmbedInteractiveMap />
+          </div>
         ),
       },
       {
         title: 'Labor and Time Tracking',
         key: 'Labor and Time Tracking',
-        className: 'full',
+        className: 'half',
         content: [1, 2].map((_, index) => {
           const uniqueId = uuidv4();
           return (
@@ -429,8 +323,16 @@ function WeeklyProjectSummary() {
         content: [1, 2, 3, 4].map((_, index) => {
           const uniqueId = uuidv4();
           return (
-            <div key={uniqueId} className="weekly-project-summary-card normal-card">
-              {index === 3 ? <ActualVsPlannedCost /> : '📊 Card'}
+            <div
+              key={uniqueId}
+              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+            >
+              {(() => {
+                if (index === 0) return <FinancialsTrackingCard />;
+                if (index === 2) return <CostPredictionChart projectId={1} />;
+                if (index === 3) return <ActualVsPlannedCost />;
+                return '📊 Card';
+              })()}
             </div>
           );
         }),
