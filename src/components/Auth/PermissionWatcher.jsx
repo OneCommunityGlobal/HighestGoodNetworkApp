@@ -100,12 +100,15 @@ function PermissionWatcher() {
     if (!isAuthenticated || !flagReady) return;
     if (userProfile === null || userProfile === undefined) return; // Wait for profile to load
     if (isInitialLogin) return; // Skip mid-session checks during initial login
+    // Don't trigger when permissions haven't been loaded yet (e.g. on /bmdashboard/login before profile fetch)
+    if (userProfile?.permissions === undefined || userProfile?.permissions === null) return;
 
     // User permissions changed when logged in → start timer
     // Detected by: permissions were acknowledged (or was null/true), then became unacknowledged
     // AND user was already logged in (not initial login)
+    // Use isAcknowledged === false to avoid treating undefined (profile not loaded) as unacknowledged
     const permissionsChangedMidSession =
-      !isAcknowledged && !forceLogoutAt && initialAcknowledgedState !== false; // Was acknowledged or null before (not explicitly false)
+      isAcknowledged === false && !forceLogoutAt && initialAcknowledgedState !== false; // Was acknowledged or null before (not explicitly false)
 
     if (permissionsChangedMidSession) {
       dispatch(startForceLogout(20000));
