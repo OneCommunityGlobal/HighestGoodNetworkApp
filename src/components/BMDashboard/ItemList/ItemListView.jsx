@@ -130,6 +130,7 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
             UpdateItemModal={UpdateItemModal}
             dynamicColumns={dynamicColumns}
             darkMode={darkMode}
+            itemType={itemType}
           />
         )}
       </section>
