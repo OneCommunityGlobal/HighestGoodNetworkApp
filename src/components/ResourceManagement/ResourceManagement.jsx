@@ -34,6 +34,8 @@ function ResourceManagement() {
 
   // Standard Date Format: '2026-01-30T18:00:00.000Z'
 
+  // Standard Time/Duration Format: 'HH:mm:ss'
+
   const [resources] = useState([
     {
       id: 1,
@@ -116,7 +118,9 @@ function ResourceManagement() {
             <input type="checkbox" />
           </div>
           <div className={styles.resourceHeadingItem}>User</div>
-          <div className={styles.resourceHeadingItem}>Time/Duration</div>
+          <div className={styles.resourceHeadingItem} title="Session Length">
+            Time/Duration
+          </div>
           <div className={styles.resourceHeadingItem}>Facilities</div>
           <div className={styles.resourceHeadingItem}>Materials</div>
           <div className={styles.resourceHeadingItem}>Date</div>
@@ -133,7 +137,9 @@ function ResourceManagement() {
                   <input type="checkbox" />
                 </div>
                 <div className={styles.resourceItemDetail}>{resource.user}</div>
-                <div className={styles.resourceItemDetail}>{resource.timeDuration}</div>
+                <div className={styles.resourceItemDetail} title="Session Length">
+                  {resource.timeDuration}
+                </div>
                 <div className={styles.resourceItemDetail}>{resource.facilities}</div>
                 <div className={styles.resourceItemDetail}>{resource.materials}</div>
                 <div className={styles.resourceItemDetail}>
