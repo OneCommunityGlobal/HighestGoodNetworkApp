@@ -27,7 +27,7 @@ export default function WeeklySummariesToggleFilter({
   };
 
   const textColorClass = darkMode ? 'text-light' : '';
-  console.log('Haspermission', hasPermission);
+
   return (
     <div className={`${styles.filterContainer}`}>
       {(hasPermissionToFilter || hasPermission?.('highlightEligibleBios')) && (

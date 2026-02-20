@@ -2726,7 +2726,7 @@ const WeeklySummariesReport = props => {
             hasPermissionToFilter={hasPermissionToFilter}
             editable={true}
             formId="report"
-            hasPermission={hasPermission}
+            hasPermission={props.hasPermission}
             darkMode={darkMode}
           />
         </Col>
