@@ -36,6 +36,13 @@ import styles from './JobAnalytics.module.css';
 import hasPermission from '../../../utils/permissions';
 import { ENDPOINTS } from '../../../utils/URL';
 
+const ROLE_OPTIONS = [
+  'Frontend Developer',
+  'Backend Developer',
+  'Data Analyst',
+  'Product Manager',
+  'UX Designer',
+];
 // ======================== CONFIG ========================
 const CONFIG = {
   API: {
@@ -428,7 +435,7 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
 
   const [dateRange, setDateRange] = useState(null);
   const [comparisonPeriod, setComparisonPeriod] = useState('previous-month');
-
+  const [selectedRole, setSelectedRole] = useState(ROLE_OPTIONS[0]);
   const { data: analyticsData, loading, error, refetch } = useAnalyticsData(
     dateRange,
     comparisonPeriod,
@@ -469,7 +476,7 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
 
   return (
     <div className={styles.page}>
-      <header className={styles.header}>
+      {/* <header className={styles.header}>
         <h2 className={styles.title}>Job Analytics</h2>
         <button
           className={`${styles.btn} ${styles.btnPrimary}`}
@@ -479,6 +486,34 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
           <RefreshCw className={loading ? styles.spin : ''} size={16} />
           <span>Refresh</span>
         </button>
+      </header> */}
+      <header className={styles.header}>
+        <h2 className={styles.title}>Job Analytics</h2>
+
+        <div className={styles.headerActions}>
+          {/* Role Dropdown */}
+          <select
+            className={`${styles.input} ${styles.select}`}
+            value={selectedRole}
+            onChange={e => setSelectedRole(e.target.value)}
+          >
+            {ROLE_OPTIONS.map(roleOption => (
+              <option key={roleOption} value={roleOption}>
+                {roleOption}
+              </option>
+            ))}
+          </select>
+
+          {/* Refresh Button */}
+          <button
+            className={`${styles.btn} ${styles.btnPrimary}`}
+            onClick={refetch}
+            disabled={loading}
+          >
+            <RefreshCw className={loading ? styles.spin : ''} size={16} />
+            <span>Refresh</span>
+          </button>
+        </div>
       </header>
 
       <DateRangeSelector
