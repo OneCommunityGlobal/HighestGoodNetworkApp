@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { Button } from 'react-bootstrap';
 import styles from './TypesList.module.css';
 
@@ -20,3 +21,13 @@ export default function TypeRow({ itemType, id, onEdit, onDelete }) {
     </tr>
   );
 }
+
+TypeRow.propTypes = {
+  itemType: PropTypes.shape({
+    name: PropTypes.string,
+    description: PropTypes.string,
+  }).isRequired,
+  id: PropTypes.number.isRequired,
+  onEdit: PropTypes.func.isRequired,
+  onDelete: PropTypes.func.isRequired,
+};

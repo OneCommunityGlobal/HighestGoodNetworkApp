@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import { toast } from 'react-toastify';
+import PropTypes from 'prop-types';
 import { deleteInventoryType } from '~/actions/bmdashboard/invTypeActions';
 import { deleteInventoryUnit } from '~/actions/bmdashboard/invUnitActions';
 import styles from './TypesList.module.css';
@@ -64,5 +65,23 @@ function DeleteInvTypeModal({ isOpen, toggle, itemType, category, isUnit = false
     </Modal>
   );
 }
+
+DeleteInvTypeModal.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  toggle: PropTypes.func.isRequired,
+  itemType: PropTypes.shape({
+    _id: PropTypes.string,
+    name: PropTypes.string,
+    unit: PropTypes.string,
+  }),
+  category: PropTypes.string,
+  isUnit: PropTypes.bool,
+};
+
+DeleteInvTypeModal.defaultProps = {
+  itemType: null,
+  category: '',
+  isUnit: false,
+};
 
 export default DeleteInvTypeModal;

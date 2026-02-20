@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import PropTypes from 'prop-types';
 import { Table, Button } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import TypeRow from './TypeRow';
@@ -79,6 +80,21 @@ export function TypesTable(props) {
     </div>
   );
 }
+
+TypesTable.propTypes = {
+  itemTypes: PropTypes.arrayOf(
+    PropTypes.shape({
+      _id: PropTypes.string,
+      name: PropTypes.string,
+      description: PropTypes.string,
+    }),
+  ),
+  category: PropTypes.string.isRequired,
+};
+
+TypesTable.defaultProps = {
+  itemTypes: [],
+};
 
 const mapStateToProps = (state, ownProps) => ({
   itemTypes: state.bmInvTypes.invTypeList[ownProps?.category],

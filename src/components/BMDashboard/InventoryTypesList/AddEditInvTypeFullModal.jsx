@@ -15,6 +15,7 @@ import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import { toast } from 'react-toastify';
 import Joi from 'joi-browser';
+import PropTypes from 'prop-types';
 import axios from 'axios';
 import {
   postBuildingInventoryType,
@@ -68,7 +69,6 @@ function AddEditInvTypeFullModal({ isOpen, toggle, category, mode = 'add', itemT
   useEffect(() => {
     if (isOpen) {
       if (mode === 'edit' && itemType) {
-
         // Format dates for input fields
         const formatDate = dateStr => {
           if (!dateStr) return '';
@@ -208,9 +208,9 @@ function AddEditInvTypeFullModal({ isOpen, toggle, category, mode = 'add', itemT
 
   const calculateTotalPrice = () => {
     const { unitPrice, quantity, taxes, shippingFee } = formData;
-    const totalPrice = (parseFloat(unitPrice) || 0) * (parseInt(quantity, 10) || 0);
-    const totalTax = ((parseFloat(taxes) || 0) * totalPrice) / 100;
-    return (totalPrice + totalTax + (parseFloat(shippingFee) || 0)).toFixed(2);
+    const totalPrice = (Number.parseFloat(unitPrice) || 0) * (Number.parseInt(quantity, 10) || 0);
+    const totalTax = ((Number.parseFloat(taxes) || 0) * totalPrice) / 100;
+    return (totalPrice + totalTax + (Number.parseFloat(shippingFee) || 0)).toFixed(2);
   };
 
   const handleUpdate = async () => {
@@ -320,7 +320,7 @@ function AddEditInvTypeFullModal({ isOpen, toggle, category, mode = 'add', itemT
         dispatch(fetchInvTypeByType(category));
         toggle();
       }
-    } catch (err) {
+    } catch {
       toast.error('Failed to add type. Please try again.');
     }
   };
@@ -358,81 +358,174 @@ function AddEditInvTypeFullModal({ isOpen, toggle, category, mode = 'add', itemT
     setUploadedFiles(prev => prev.filter((_, i) => i !== index));
   };
 
-  const renderEquipmentFields = () => (
-    <>
+  const renderInvoiceField = () => (
+    <FormGroup>
+      <Label>
+        Invoice Number <span className="text-danger">*</span>
+      </Label>
+      <Input
+        type="text"
+        value={formData.invoice}
+        onChange={e => handleInputChange('invoice', e.target.value)}
+        invalid={!!errors.invoice}
+        placeholder="Invoice No or ID"
+      />
+      {errors.invoice && <div className="text-danger small">{errors.invoice}</div>}
+    </FormGroup>
+  );
+
+  const renderPricingRow = () => (
+    <div className={styles.formRow}>
       <FormGroup>
         <Label>
-          Fuel Type <span className="text-danger">*</span>
+          Unit Price <span className="text-danger">*</span>
         </Label>
         <Input
+          type="number"
+          value={formData.unitPrice}
+          onChange={e => handleInputChange('unitPrice', e.target.value)}
+          invalid={!!errors.unitPrice}
+        />
+        {errors.unitPrice && <div className="text-danger small">{errors.unitPrice}</div>}
+      </FormGroup>
+      <FormGroup>
+        <Label>Currency</Label>
+        <Input
           type="select"
-          value={formData.fuel}
-          onChange={e => handleInputChange('fuel', e.target.value)}
+          value={formData.currency}
+          onChange={e => handleInputChange('currency', e.target.value)}
         >
-          <option value="Diesel">Diesel</option>
-          <option value="Biodiesel">Biodiesel</option>
-          <option value="Gasoline">Gasoline</option>
-          <option value="Natural Gas">Natural Gas</option>
-          <option value="Ethanol">Ethanol</option>
+          <option value="USD">USD</option>
+          <option value="EUR">EUR</option>
+          <option value="CAD">CAD</option>
         </Input>
       </FormGroup>
-    </>
+      <FormGroup>
+        <Label>
+          Quantity <span className="text-danger">*</span>
+        </Label>
+        <Input
+          type="number"
+          value={formData.quantity}
+          onChange={e => handleInputChange('quantity', e.target.value)}
+          invalid={!!errors.quantity}
+        />
+        {errors.quantity && <div className="text-danger small">{errors.quantity}</div>}
+      </FormGroup>
+    </div>
+  );
+
+  const renderShippingTaxRow = () => (
+    <div className={styles.formRow}>
+      <FormGroup>
+        <Label>Shipping Fee</Label>
+        <Input
+          type="number"
+          value={formData.shippingFee}
+          onChange={e => handleInputChange('shippingFee', e.target.value)}
+          placeholder="0.00"
+        />
+      </FormGroup>
+      <FormGroup>
+        <Label>Taxes (%)</Label>
+        <Input
+          type="number"
+          value={formData.taxes}
+          onChange={e => handleInputChange('taxes', e.target.value)}
+          placeholder="%"
+        />
+      </FormGroup>
+    </div>
+  );
+
+  const renderPhoneField = () => (
+    <FormGroup>
+      <Label>Phone Number</Label>
+      <PhoneInput
+        country="us"
+        value={formData.phoneNumber}
+        onChange={phone => handleInputChange('phoneNumber', phone)}
+        inputStyle={{ width: '100%' }}
+      />
+    </FormGroup>
+  );
+
+  const renderImageUpload = () => (
+    <FormGroup>
+      <Label>Upload Image</Label>
+      <DragAndDrop updateUploadedFiles={setUploadedFiles} />
+      {uploadedFiles.length > 0 && (
+        <div className={styles.filePreviewContainer}>
+          {uploadedFiles.map((file, index) => (
+            <div key={`${file.name}-${file.lastModified}`} className={styles.filePreview}>
+              <img
+                src={URL.createObjectURL(file)}
+                alt={`preview-${index}`}
+                style={{ maxWidth: '100px', maxHeight: '100px' }}
+              />
+              <Button color="danger" size="sm" onClick={() => handleRemoveFile(index)}>
+                X
+              </Button>
+            </div>
+          ))}
+        </div>
+      )}
+      {mode === 'edit' && itemType?.images && uploadedFiles.length === 0 && (
+        <div className="mt-2">
+          <small className="text-muted">Current image:</small>
+          <img
+            src={itemType.images}
+            alt="current"
+            style={{ maxWidth: '100px', maxHeight: '100px', display: 'block', marginTop: '5px' }}
+          />
+        </div>
+      )}
+    </FormGroup>
+  );
+
+  const renderLinkField = (label = 'Link') => (
+    <FormGroup>
+      <Label>{label}</Label>
+      <Input
+        type="text"
+        value={formData.link}
+        onChange={e => handleInputChange('link', e.target.value)}
+        placeholder="https://"
+      />
+    </FormGroup>
+  );
+
+  const renderTotalPrice = () => (
+    <div className={styles.totalPriceSection}>
+      <strong>
+        Total Price: {calculateTotalPrice()} {formData.currency}
+      </strong>
+    </div>
+  );
+
+  const renderEquipmentFields = () => (
+    <FormGroup>
+      <Label>
+        Fuel Type <span className="text-danger">*</span>
+      </Label>
+      <Input
+        type="select"
+        value={formData.fuel}
+        onChange={e => handleInputChange('fuel', e.target.value)}
+      >
+        <option value="Diesel">Diesel</option>
+        <option value="Biodiesel">Biodiesel</option>
+        <option value="Gasoline">Gasoline</option>
+        <option value="Natural Gas">Natural Gas</option>
+        <option value="Ethanol">Ethanol</option>
+      </Input>
+    </FormGroup>
   );
 
   const renderToolFields = () => (
     <>
-      <FormGroup>
-        <Label>
-          Invoice Number <span className="text-danger">*</span>
-        </Label>
-        <Input
-          type="text"
-          value={formData.invoice}
-          onChange={e => handleInputChange('invoice', e.target.value)}
-          invalid={!!errors.invoice}
-          placeholder="Invoice No or ID"
-        />
-        {errors.invoice && <div className="text-danger small">{errors.invoice}</div>}
-      </FormGroup>
-
-      <div className={styles.formRow}>
-        <FormGroup>
-          <Label>
-            Unit Price <span className="text-danger">*</span>
-          </Label>
-          <Input
-            type="number"
-            value={formData.unitPrice}
-            onChange={e => handleInputChange('unitPrice', e.target.value)}
-            invalid={!!errors.unitPrice}
-          />
-          {errors.unitPrice && <div className="text-danger small">{errors.unitPrice}</div>}
-        </FormGroup>
-        <FormGroup>
-          <Label>Currency</Label>
-          <Input
-            type="select"
-            value={formData.currency}
-            onChange={e => handleInputChange('currency', e.target.value)}
-          >
-            <option value="USD">USD</option>
-            <option value="EUR">EUR</option>
-            <option value="CAD">CAD</option>
-          </Input>
-        </FormGroup>
-        <FormGroup>
-          <Label>
-            Quantity <span className="text-danger">*</span>
-          </Label>
-          <Input
-            type="number"
-            value={formData.quantity}
-            onChange={e => handleInputChange('quantity', e.target.value)}
-            invalid={!!errors.quantity}
-          />
-          {errors.quantity && <div className="text-danger small">{errors.quantity}</div>}
-        </FormGroup>
-      </div>
+      {renderInvoiceField()}
+      {renderPricingRow()}
 
       <div className={styles.formRow}>
         <FormGroup>
@@ -483,83 +576,11 @@ function AddEditInvTypeFullModal({ isOpen, toggle, category, mode = 'add', itemT
         </FormGroup>
       </div>
 
-      <div className={styles.formRow}>
-        <FormGroup>
-          <Label>Shipping Fee</Label>
-          <Input
-            type="number"
-            value={formData.shippingFee}
-            onChange={e => handleInputChange('shippingFee', e.target.value)}
-            placeholder="0.00"
-          />
-        </FormGroup>
-        <FormGroup>
-          <Label>Taxes (%)</Label>
-          <Input
-            type="number"
-            value={formData.taxes}
-            onChange={e => handleInputChange('taxes', e.target.value)}
-            placeholder="%"
-          />
-        </FormGroup>
-      </div>
-
-      <FormGroup>
-        <Label>Phone Number</Label>
-        <PhoneInput
-          country="us"
-          value={formData.phoneNumber}
-          onChange={phone => handleInputChange('phoneNumber', phone)}
-          inputStyle={{ width: '100%' }}
-        />
-      </FormGroup>
-
-      <FormGroup>
-        <Label>Upload Image</Label>
-        <DragAndDrop updateUploadedFiles={setUploadedFiles} />
-        {uploadedFiles.length > 0 && (
-          <div className={styles.filePreviewContainer}>
-            {uploadedFiles.map((file, index) => (
-              <div key={`${file.name}-${file.lastModified}`} className={styles.filePreview}>
-                <img
-                  src={URL.createObjectURL(file)}
-                  alt={`preview-${index}`}
-                  style={{ maxWidth: '100px', maxHeight: '100px' }}
-                />
-                <Button color="danger" size="sm" onClick={() => handleRemoveFile(index)}>
-                  X
-                </Button>
-              </div>
-            ))}
-          </div>
-        )}
-        {mode === 'edit' && itemType?.images && uploadedFiles.length === 0 && (
-          <div className="mt-2">
-            <small className="text-muted">Current image:</small>
-            <img
-              src={itemType.images}
-              alt="current"
-              style={{ maxWidth: '100px', maxHeight: '100px', display: 'block', marginTop: '5px' }}
-            />
-          </div>
-        )}
-      </FormGroup>
-
-      <FormGroup>
-        <Label>Link to Buy/Rent</Label>
-        <Input
-          type="text"
-          value={formData.link}
-          onChange={e => handleInputChange('link', e.target.value)}
-          placeholder="https://"
-        />
-      </FormGroup>
-
-      <div className={styles.totalPriceSection}>
-        <strong>
-          Total Price: {calculateTotalPrice()} {formData.currency}
-        </strong>
-      </div>
+      {renderShippingTaxRow()}
+      {renderPhoneField()}
+      {renderImageUpload()}
+      {renderLinkField('Link to Buy/Rent')}
+      {renderTotalPrice()}
     </>
   );
 
@@ -576,8 +597,8 @@ function AddEditInvTypeFullModal({ isOpen, toggle, category, mode = 'add', itemT
           invalid={!!errors.unit}
         >
           <option value="">Select a Unit</option>
-          {units.map((u, index) => (
-            <option key={index} value={u.unit}>
+          {units.map(u => (
+            <option key={u._id || u.unit} value={u.unit}>
               {u.unit}
             </option>
           ))}
@@ -585,58 +606,8 @@ function AddEditInvTypeFullModal({ isOpen, toggle, category, mode = 'add', itemT
         {errors.unit && <div className="text-danger small">{errors.unit}</div>}
       </FormGroup>
 
-      <FormGroup>
-        <Label>
-          Invoice Number <span className="text-danger">*</span>
-        </Label>
-        <Input
-          type="text"
-          value={formData.invoice}
-          onChange={e => handleInputChange('invoice', e.target.value)}
-          invalid={!!errors.invoice}
-          placeholder="Invoice No or ID"
-        />
-        {errors.invoice && <div className="text-danger small">{errors.invoice}</div>}
-      </FormGroup>
-
-      <div className={styles.formRow}>
-        <FormGroup>
-          <Label>
-            Unit Price <span className="text-danger">*</span>
-          </Label>
-          <Input
-            type="number"
-            value={formData.unitPrice}
-            onChange={e => handleInputChange('unitPrice', e.target.value)}
-            invalid={!!errors.unitPrice}
-          />
-          {errors.unitPrice && <div className="text-danger small">{errors.unitPrice}</div>}
-        </FormGroup>
-        <FormGroup>
-          <Label>Currency</Label>
-          <Input
-            type="select"
-            value={formData.currency}
-            onChange={e => handleInputChange('currency', e.target.value)}
-          >
-            <option value="USD">USD</option>
-            <option value="EUR">EUR</option>
-            <option value="CAD">CAD</option>
-          </Input>
-        </FormGroup>
-        <FormGroup>
-          <Label>
-            Quantity <span className="text-danger">*</span>
-          </Label>
-          <Input
-            type="number"
-            value={formData.quantity}
-            onChange={e => handleInputChange('quantity', e.target.value)}
-            invalid={!!errors.quantity}
-          />
-          {errors.quantity && <div className="text-danger small">{errors.quantity}</div>}
-        </FormGroup>
-      </div>
+      {renderInvoiceField()}
+      {renderPricingRow()}
 
       <FormGroup>
         <Label>
@@ -651,83 +622,11 @@ function AddEditInvTypeFullModal({ isOpen, toggle, category, mode = 'add', itemT
         {errors.purchaseDate && <div className="text-danger small">Date is required</div>}
       </FormGroup>
 
-      <div className={styles.formRow}>
-        <FormGroup>
-          <Label>Shipping Fee</Label>
-          <Input
-            type="number"
-            value={formData.shippingFee}
-            onChange={e => handleInputChange('shippingFee', e.target.value)}
-            placeholder="0.00"
-          />
-        </FormGroup>
-        <FormGroup>
-          <Label>Taxes (%)</Label>
-          <Input
-            type="number"
-            value={formData.taxes}
-            onChange={e => handleInputChange('taxes', e.target.value)}
-            placeholder="%"
-          />
-        </FormGroup>
-      </div>
-
-      <FormGroup>
-        <Label>Phone Number</Label>
-        <PhoneInput
-          country="us"
-          value={formData.phoneNumber}
-          onChange={phone => handleInputChange('phoneNumber', phone)}
-          inputStyle={{ width: '100%' }}
-        />
-      </FormGroup>
-
-      <FormGroup>
-        <Label>Upload Image</Label>
-        <DragAndDrop updateUploadedFiles={setUploadedFiles} />
-        {uploadedFiles.length > 0 && (
-          <div className={styles.filePreviewContainer}>
-            {uploadedFiles.map((file, index) => (
-              <div key={`${file.name}-${file.lastModified}`} className={styles.filePreview}>
-                <img
-                  src={URL.createObjectURL(file)}
-                  alt={`preview-${index}`}
-                  style={{ maxWidth: '100px', maxHeight: '100px' }}
-                />
-                <Button color="danger" size="sm" onClick={() => handleRemoveFile(index)}>
-                  X
-                </Button>
-              </div>
-            ))}
-          </div>
-        )}
-        {mode === 'edit' && itemType?.images && uploadedFiles.length === 0 && (
-          <div className="mt-2">
-            <small className="text-muted">Current image:</small>
-            <img
-              src={itemType.images}
-              alt="current"
-              style={{ maxWidth: '100px', maxHeight: '100px', display: 'block', marginTop: '5px' }}
-            />
-          </div>
-        )}
-      </FormGroup>
-
-      <FormGroup>
-        <Label>Link</Label>
-        <Input
-          type="text"
-          value={formData.link}
-          onChange={e => handleInputChange('link', e.target.value)}
-          placeholder="https://"
-        />
-      </FormGroup>
-
-      <div className={styles.totalPriceSection}>
-        <strong>
-          Total Price: {calculateTotalPrice()} {formData.currency}
-        </strong>
-      </div>
+      {renderShippingTaxRow()}
+      {renderPhoneField()}
+      {renderImageUpload()}
+      {renderLinkField()}
+      {renderTotalPrice()}
     </>
   );
 
@@ -738,7 +637,6 @@ function AddEditInvTypeFullModal({ isOpen, toggle, category, mode = 'add', itemT
     if (category === 'Tools' || category === 'Reusables') {
       return renderToolFields();
     }
-    // Materials, Consumables
     return renderMaterialFields();
   };
 
@@ -796,17 +694,45 @@ function AddEditInvTypeFullModal({ isOpen, toggle, category, mode = 'add', itemT
           Cancel
         </Button>
         <Button onClick={handleSubmit} disabled={isSubmitting} className={styles.modalBtnPrimary}>
-          {isSubmitting
-            ? mode === 'edit'
-              ? 'Updating...'
-              : 'Adding...'
-            : mode === 'edit'
-            ? 'Update'
-            : 'Add'}
+          {isSubmitting && (mode === 'edit' ? 'Updating...' : 'Adding...')}
+          {!isSubmitting && (mode === 'edit' ? 'Update' : 'Add')}
         </Button>
       </ModalFooter>
     </Modal>
   );
 }
+
+AddEditInvTypeFullModal.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  toggle: PropTypes.func.isRequired,
+  category: PropTypes.string.isRequired,
+  mode: PropTypes.string,
+  itemType: PropTypes.shape({
+    _id: PropTypes.string,
+    name: PropTypes.string,
+    description: PropTypes.string,
+    invoice: PropTypes.string,
+    unitPrice: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    currency: PropTypes.string,
+    quantity: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    unit: PropTypes.string,
+    purchaseRental: PropTypes.string,
+    condition: PropTypes.string,
+    fromDate: PropTypes.string,
+    toDate: PropTypes.string,
+    purchaseDate: PropTypes.string,
+    shippingFee: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    taxes: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    phoneNumber: PropTypes.string,
+    link: PropTypes.string,
+    fuel: PropTypes.string,
+    images: PropTypes.string,
+  }),
+};
+
+AddEditInvTypeFullModal.defaultProps = {
+  mode: 'add',
+  itemType: null,
+};
 
 export default AddEditInvTypeFullModal;

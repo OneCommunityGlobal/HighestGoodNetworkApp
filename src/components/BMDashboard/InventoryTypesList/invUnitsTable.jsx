@@ -1,14 +1,14 @@
 import { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import PropTypes from 'prop-types';
+import { useDispatch } from 'react-redux';
 import { Table, Button } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import { addInventoryUnit } from '~/actions/bmdashboard/invUnitActions';
 import DeleteInvTypeModal from './DeleteInvTypeModal';
 import styles from './TypesList.module.css';
 
-export default function UnitsTable({ invUnits }) {
+export default function UnitsTable({ invUnits = [] }) {
   const dispatch = useDispatch();
-  const darkMode = useSelector(state => state.theme.darkMode);
 
   const [newUnit, setNewUnit] = useState('');
   const [isAdding, setIsAdding] = useState(false);
@@ -96,3 +96,12 @@ export default function UnitsTable({ invUnits }) {
     </div>
   );
 }
+
+UnitsTable.propTypes = {
+  invUnits: PropTypes.arrayOf(
+    PropTypes.shape({
+      _id: PropTypes.string,
+      unit: PropTypes.string,
+    }),
+  ),
+};
