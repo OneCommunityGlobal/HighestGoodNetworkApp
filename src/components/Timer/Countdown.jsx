@@ -309,7 +309,7 @@ export default function Countdown({
                   />
                 )}
               </div>
-              :
+              <span className={css.timeColon}>:</span>
               <div className={css.numberWrapper}>
                 {editing && (
                   <FaAngleUp
