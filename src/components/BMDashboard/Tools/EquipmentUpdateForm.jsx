@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchAllEquipments } from '../../../actions/bmdashboard/equipmentActions';
 import { fetchTools } from '../../../actions/bmdashboard/toolActions';
 import { fetchBMProjects } from '../../../actions/bmdashboard/projectActions';
+import styles from './EquipmentUpdateForm.module.css';
 
 const initialFormState = {
   project: '',
@@ -88,11 +89,11 @@ export default function EquipmentUpdateForm() {
   };
 
   return (
-    <div className="add-tool-form">
+    <div className={styles.addToolForm}>
       <Form onSubmit={handleSubmit}>
         <FormGroup>
           <Label for="project">
-            Project <span className="field-required">*</span>
+            Project <span className={styles.fieldRequired}>*</span>
           </Label>
           <Input
             type="select"
@@ -108,12 +109,12 @@ export default function EquipmentUpdateForm() {
               </option>
             ))}
           </Input>
-          {!formData.project && <div className="toolFormError">Project is required</div>}
+          {!formData.project && <div className={styles.toolFormError}>Project is required</div>}
         </FormGroup>
 
         <FormGroup>
           <Label for="toolOrEquipment">
-            Tool or Equipment <span className="field-required">*</span>
+            Tool or Equipment <span className={styles.fieldRequired}>*</span>
           </Label>
           <Input
             type="select"
@@ -126,12 +127,14 @@ export default function EquipmentUpdateForm() {
             <option value="Tool">Tool</option>
             <option value="Equipment">Equipment</option>
           </Input>
-          {!formData.toolOrEquipment && <div className="toolFormError">This field is required</div>}
+          {!formData.toolOrEquipment && (
+            <div className={styles.toolFormError}>This field is required</div>
+          )}
         </FormGroup>
 
         <FormGroup>
           <Label for="name">
-            Name <span className="field-required">*</span>
+            Name <span className={styles.fieldRequired}>*</span>
           </Label>
           <Input
             type="select"
@@ -155,12 +158,12 @@ export default function EquipmentUpdateForm() {
                 </option>
               ))}
           </Input>
-          {!formData.name && <div className="toolFormError">Please select a name</div>}
+          {!formData.name && <div className={styles.toolFormError}>Please select a name</div>}
         </FormGroup>
 
         <FormGroup>
           <Label for="number">
-            Number <span className="field-required">*</span>
+            Number <span className={styles.fieldRequired}>*</span>
           </Label>
           <Input
             type="text"
@@ -170,9 +173,9 @@ export default function EquipmentUpdateForm() {
             onChange={handleChange}
             placeholder="Enter number"
           />
-          {!formData.number && <div className="toolFormError">Number is required</div>}
+          {!formData.number && <div className={styles.toolFormError}>Number is required</div>}
         </FormGroup>
-        <div className="add-tool-buttons">
+        <div className={styles.addToolButtons}>
           <Button color="primary" type="submit" disabled={!isFormValid}>
             Update
           </Button>

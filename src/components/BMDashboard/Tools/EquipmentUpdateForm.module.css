@@ -1,36 +1,36 @@
-.add-tool-form {
+.addToolForm {
   width: 100%;
   max-width: 600px;
   margin: 0 auto;
   padding: 1rem;
 }
 
-.add-tool-form label {
+.addToolForm label {
   font-size: 0.9em;
   font-weight: bold;
   display: block;
   margin-bottom: 0.5rem;
 }
 
-.add-tool-flex-group {
+.addToolFlexGroup {
   display: flex;
   gap: 1.5rem;
   flex-wrap: wrap;
 }
 
-.add-tool-buttons {
+.addToolButtons {
   display: flex;
   justify-content: space-between;
   gap: 1rem;
   margin: 1rem auto 2rem;
 }
 
-.add-tool-buttons button {
+.addToolButtons button {
   flex: 1;
   min-width: 120px;
 }
 
-.add-tool-total-price {
+.addToolTotalPrice {
   display: flex;
   border-radius: 10px;
   line-height: 3rem;
@@ -41,7 +41,7 @@
   align-items: center;
 }
 
-.file-preview-container {
+.filePreviewContainer {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
@@ -56,45 +56,45 @@
   margin-top: 0.25rem;
 }
 
-.field-required {
+.fieldRequired {
   color: red;
 }
 
 @media screen and (max-width: 600px) {
-  .add-tool-flex-group {
+  .addToolFlexGroup {
     flex-direction: column;
     gap: 1rem;
   }
 
-  .file-preview-container {
+  .filePreviewContainer {
     flex-direction: column;
   }
 
-  .add-tool-buttons {
+  .addToolButtons {
     flex-direction: column;
     align-items: stretch;
   }
 
-  .add-tool-buttons button {
+  .addToolButtons button {
     width: 100%;
   }
 }
 
 @media screen and (max-width: 400px) {
-  .add-tool-form {
+  .addToolForm {
     padding: 0.5rem;
   }
 
-  .add-tool-total-price {
+  .addToolTotalPrice {
     flex-direction: column;
     text-align: center;
   }
 
-  .add-tool-total-price div {
+  .addToolTotalPrice div {
     width: 100%;
   }
 
-  .add-tool-buttons {
+  .addToolButtons {
     gap: 0.5rem;
   }
 }
