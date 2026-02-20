@@ -1,12 +1,13 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchEquipmentById } from '~/actions/bmdashboard/equipmentActions';
-import { Button, Form, FormGroup, Label, Container, Row, Col, Input } from 'reactstrap';
+import { fetchEquipmentById, updateEquipment } from '~/actions/bmdashboard/equipmentActions';
+import { Button, Form, FormGroup, Label, Container, Row, Col, Input, Alert } from 'reactstrap';
 import CheckTypesModal from '~/components/BMDashboard/shared/CheckTypesModal';
 import { useHistory, useParams } from 'react-router-dom';
 import Radio from '~/components/common/Radio';
 import DragAndDrop from '~/components/common/DragAndDrop/DragAndDrop';
 import Image from '~/components/common/Image/Image';
+import FilePreview from '~/components/common/FilePreview/FilePreview'; // Import the new component
 import styles from './UpdateEquipment.module.css';
 import styles1 from '../../BMDashboard.module.css';
 
@@ -21,221 +22,628 @@ export default function UpdateEquipment() {
   const [replacementRequired, setReplacementRequired] = useState('');
   const [description, setDescription] = useState('');
   const [sendNote, setSendNote] = useState('');
-  const [updateDate, setUpdateDate] = useState('');
   const [status, setStatus] = useState('');
   const [notes, setNotes] = useState('');
   const [uploadedFiles, setUploadedFiles] = useState([]);
-  const equipmentDetails = useSelector(state => state.bmEquipments.singleEquipment);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+  const [submitSuccess, setSubmitSuccess] = useState('');
+  const [uploadedFilesPreview, setUploadedFilesPreview] = useState([]);
+  const [isUpdated, setIsUpdated] = useState(false);
 
+  const equipmentDetails = useSelector(state => state.bmEquipments.singleEquipment);
+  const darkMode = useSelector(state => state.theme.darkMode);
   const dispatch = useDispatch();
+
+  // Cleanup blob URLs
+  const cleanupFilePreviews = useCallback(files => {
+    files.forEach(file => {
+      if (file?.preview?.startsWith?.('blob:')) {
+        URL.revokeObjectURL(file.preview);
+      }
+    });
+  }, []);
+
   useEffect(() => {
     if (equipmentId) {
       dispatch(fetchEquipmentById(equipmentId));
     }
-  }, [dispatch, equipmentId]);
-  const handleCancel = () => history.goBack();
 
-  const calculateDaysLeft = endDate => {
-    if (!endDate) return '';
+    return () => {
+      cleanupFilePreviews(uploadedFilesPreview);
+    };
+  }, [dispatch, equipmentId, uploadedFilesPreview, cleanupFilePreviews]);
+
+  useEffect(() => {
+    return () => {
+      cleanupFilePreviews(uploadedFilesPreview);
+    };
+  }, [uploadedFilesPreview, cleanupFilePreviews]);
+
+  // Reset form when equipment details are updated
+  useEffect(() => {
+    if (equipmentDetails && isUpdated) {
+      const lastUpdate = equipmentDetails?.updateRecord?.[equipmentDetails.updateRecord.length - 1];
+      if (lastUpdate) {
+        setStatus(lastUpdate.condition || '');
+        setLastUsedBy(lastUpdate.lastUsedBy || '');
+        setLastUsedFor(lastUpdate.lastUsedFor || '');
+        setReplacementRequired(lastUpdate.replacementRequired || '');
+        setDescription(lastUpdate.description || '');
+        setNotes(lastUpdate.notes || '');
+        setSendNote(lastUpdate.notes ? 'yes' : 'no');
+      }
+
+      const timer = setTimeout(() => {
+        setSubmitSuccess('');
+        setIsUpdated(false);
+      }, 5000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [equipmentDetails, isUpdated]);
+
+  const handleCancel = useCallback(() => history.goBack(), [history]);
+
+  const calculateDaysLeft = useCallback(endDate => {
+    if (!endDate) return 'Unknown';
 
     const today = new Date();
     const rentalEnd = new Date(endDate);
     const timeDiff = rentalEnd.getTime() - today.getTime();
     const daysLeft = Math.ceil(timeDiff / (1000 * 3600 * 24));
 
-    return daysLeft >= 0 ? daysLeft : 'Expired';
-  };
+    if (daysLeft >= 0) {
+      return daysLeft.toString();
+    }
+    return 'Expired';
+  }, []);
 
-  const handleSubmit = e => {
-    e.preventDefault();
-  };
+  const validateForm = useCallback(() => {
+    const validations = [
+      [!status, 'Status/Condition is required'],
+      [!lastUsedBy, 'Please specify who used the tool/equipment last time'],
+      [
+        lastUsedBy === 'other' && !lastUsedByOther.trim(),
+        'Please specify the name of who used the tool/equipment',
+      ],
+      [!lastUsedFor, 'Please specify what the tool/equipment was used for'],
+      [
+        lastUsedFor === 'other' && !lastUsedForOther.trim(),
+        'Please specify what the tool/equipment was used for',
+      ],
+      [!replacementRequired, 'Please indicate if replacement is required'],
+      [sendNote === 'yes' && !notes.trim(), 'Please add a note if you selected to send one'],
+    ];
+
+    const failedValidation = validations.find(([condition]) => condition);
+    return failedValidation ? failedValidation[1] : null;
+  }, [
+    status,
+    lastUsedBy,
+    lastUsedByOther,
+    lastUsedFor,
+    lastUsedForOther,
+    replacementRequired,
+    sendNote,
+    notes,
+  ]);
+
+  const handleFileUpload = useCallback(
+    files => {
+      cleanupFilePreviews(uploadedFilesPreview);
+
+      const validFiles = files.filter(file => {
+        const fileType = file.type || '';
+        const fileName = file.name || '';
+        const isValidType = fileType.startsWith('image/');
+        const isValidExtension = fileName.match(/\.(jpg|jpeg|png|gif|webp)$/i);
+        return isValidType || isValidExtension;
+      });
+
+      if (validFiles.length === 0) {
+        console.warn('No valid image files found');
+        return;
+      }
+
+      const newPreviews = validFiles.map(file => ({
+        name: file.name || 'Image',
+        preview: URL.createObjectURL(file),
+        size: file.size || 0,
+        type: file.type || 'image/*',
+        file: file,
+        status: 'uploaded',
+        uploadedAt: new Date().toISOString(),
+      }));
+
+      setUploadedFiles(prev => [...prev, ...validFiles]);
+      setUploadedFilesPreview(prev => [...prev, ...newPreviews]);
+    },
+    [uploadedFilesPreview, cleanupFilePreviews],
+  );
+
+  const handleSubmit = useCallback(
+    async e => {
+      e.preventDefault();
+
+      const validationError = validateForm();
+      if (validationError) {
+        setSubmitError(validationError);
+        return;
+      }
+
+      setIsSubmitting(true);
+      setSubmitError('');
+      setSubmitSuccess('');
+
+      try {
+        const updateData = {
+          condition: status,
+          lastUsedBy: lastUsedBy === 'other' ? lastUsedByOther : lastUsedBy,
+          lastUsedFor: lastUsedFor === 'other' ? lastUsedForOther : lastUsedFor,
+          replacementRequired,
+          description,
+          notes: sendNote === 'yes' ? notes : '',
+        };
+
+        await dispatch(updateEquipment(equipmentId, updateData));
+        dispatch(fetchEquipmentById(equipmentId));
+        setIsUpdated(true);
+
+        let successMessage = 'Equipment status updated successfully!';
+
+        if (uploadedFiles.length > 0) {
+          successMessage += ' The form has been updated.';
+          cleanupFilePreviews(uploadedFilesPreview);
+          setUploadedFiles([]);
+          setUploadedFilesPreview([]);
+        }
+
+        setSubmitSuccess(successMessage);
+
+        if (lastUsedBy === 'other') setLastUsedByOther('');
+        if (lastUsedFor === 'other') setLastUsedForOther('');
+      } catch (error) {
+        console.error('Update failed:', error);
+
+        let errorMessage = 'Failed to update equipment. Please try again.';
+
+        if (error.message?.includes('User not authenticated')) {
+          errorMessage = 'Authentication error. Please check if you are logged in.';
+        } else if (error.response?.data?.error?.includes('Invalid user ID format')) {
+          errorMessage = 'User ID format error. Please contact support.';
+        }
+
+        if (uploadedFiles.length > 0) {
+          errorMessage += ' Note: Images were selected and previewed but not saved to database.';
+          setUploadedFilesPreview(prev =>
+            prev.map(file => ({
+              ...file,
+              status: 'not-saved',
+              message: 'Selected but not saved to database',
+            })),
+          );
+        }
+
+        setSubmitError(errorMessage);
+      } finally {
+        setIsSubmitting(false);
+      }
+    },
+    [
+      validateForm,
+      status,
+      lastUsedBy,
+      lastUsedByOther,
+      lastUsedFor,
+      lastUsedForOther,
+      replacementRequired,
+      description,
+      sendNote,
+      notes,
+      dispatch,
+      equipmentId,
+      uploadedFiles,
+      uploadedFilesPreview,
+      cleanupFilePreviews,
+    ],
+  );
+
+  const handleRemoveFile = useCallback(
+    index => {
+      const fileToRemove = uploadedFilesPreview[index];
+      if (fileToRemove?.preview?.startsWith?.('blob:')) {
+        URL.revokeObjectURL(fileToRemove.preview);
+      }
+
+      setUploadedFilesPreview(prev => prev.filter((_, i) => i !== index));
+      setUploadedFiles(prev => prev.filter((_, i) => i !== index));
+    },
+    [uploadedFilesPreview],
+  );
+
+  // Memoized styles
+  const formLabelStyle = useMemo(
+    () => ({
+      fontWeight: '600',
+      color: darkMode ? '#ffffff' : '#212529', // Fixed contrast
+      display: 'block',
+      marginBottom: '0.5rem',
+    }),
+    [darkMode],
+  );
+
+  const selectInputStyle = useMemo(
+    () => ({
+      borderColor: darkMode ? '#666666' : '#ced4da', // Fixed contrast
+      backgroundColor: darkMode ? '#2d2d2d' : '#ffffff',
+      color: darkMode ? '#ffffff' : '#212529', // Fixed contrast
+      appearance: 'none',
+      WebkitAppearance: 'none',
+      MozAppearance: 'none',
+      backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='${
+        darkMode ? '%23ffffff' : '%23343a40'
+      }' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e")`,
+      backgroundRepeat: 'no-repeat',
+      backgroundPosition: 'right 0.75rem center',
+      backgroundSize: '16px 12px',
+      paddingRight: '2.5rem',
+    }),
+    [darkMode],
+  );
+
+  const textInputStyle = useMemo(
+    () => ({
+      borderColor: darkMode ? '#666666' : '#ced4da', // Fixed contrast
+      backgroundColor: darkMode ? '#2d2d2d' : '#ffffff',
+      color: darkMode ? '#ffffff' : '#212529', // Fixed contrast
+    }),
+    [darkMode],
+  );
+
+  const readonlyStyle = useMemo(
+    () => ({
+      padding: '10px 12px',
+      backgroundColor: darkMode ? '#2d2d2d' : '#ffffff',
+      border: `1px solid ${darkMode ? '#666666' : '#ced4da'}`, // Fixed contrast
+      borderRadius: '6px',
+      color: darkMode ? '#ffffff' : '#212529', // Fixed contrast
+      fontSize: '1rem',
+      minHeight: '48px',
+      display: 'flex',
+      alignItems: 'center',
+      marginBottom: '5px',
+      fontWeight: '500',
+    }),
+    [darkMode],
+  );
+
+  const confirmationTextStyle = useMemo(
+    () => ({
+      color: darkMode ? '#0dcaf0' : '#0d6efd',
+      fontWeight: '600',
+      margin: '20px 0',
+      padding: '12px 16px',
+      backgroundColor: darkMode ? '#1a2a3a' : '#f8f9fa',
+      border: `1px solid ${darkMode ? '#0dcaf0' : '#cfe2ff'}`,
+      borderRadius: '6px',
+      fontSize: '1rem',
+    }),
+    [darkMode],
+  );
+
+  const buttonStyle = useMemo(
+    () =>
+      darkMode
+        ? {
+            backgroundColor: '#0dcaf0',
+            borderColor: '#0dcaf0',
+            color: '#000',
+          }
+        : {
+            backgroundColor: '#0d6efd',
+            borderColor: '#0d6efd',
+            color: '#fff',
+          },
+    [darkMode],
+  );
+
+  const secondaryButtonStyle = useMemo(
+    () =>
+      darkMode
+        ? {
+            backgroundColor: '#555555',
+            borderColor: '#555555',
+            color: '#fff',
+          }
+        : {
+            backgroundColor: '#6c757d',
+            borderColor: '#6c757d',
+            color: '#fff',
+          },
+    [darkMode],
+  );
+
+  // Derived values
+  const currentStatus = useMemo(
+    () =>
+      equipmentDetails?.updateRecord?.[equipmentDetails.updateRecord.length - 1]?.condition ||
+      'Unknown',
+    [equipmentDetails],
+  );
+
+  const rentalDueDate = useMemo(() => equipmentDetails?.rentalDueDate?.split('T')[0] || 'Unknown', [
+    equipmentDetails,
+  ]);
+
+  const hasUploadedFiles = uploadedFiles.length > 0;
+  const hasFilePreviews = uploadedFilesPreview.length > 0;
+  const hasNotSavedFiles =
+    hasFilePreviews && uploadedFilesPreview.some(f => f.status === 'not-saved');
 
   return (
-    <Container className={`${styles1.invFormPageContainer}`}>
+    <Container className={`${styles1.invFormPageContainer} ${darkMode ? 'dark-mode' : ''}`}>
       <CheckTypesModal modal={modal} setModal={setModal} type="Equipments" />
       <Row>
         <Col md={12}>
           <header className={`${styles1.bmDashboardHeader} text-center`}>
-            <h1>Update Tool or Equipment Status</h1>
+            <h1 style={{ color: darkMode ? '#ffffff' : '#212529' }}>
+              Update Tool or Equipment Status
+            </h1>
+            {isUpdated && (
+              <output className="text-success mt-2 d-block" style={{ fontSize: '0.9rem' }}>
+                <i className="fas fa-sync-alt me-2" />
+                Showing updated data for Equipment ID: {equipmentId}
+              </output>
+            )}
           </header>
         </Col>
       </Row>
 
-      {equipmentDetails && (
+      {submitError && (
         <Row>
+          <Col md={12}>
+            <Alert
+              color="danger"
+              className="mt-3"
+              style={{
+                backgroundColor: darkMode ? '#5c1a1a' : '#f8d7da',
+                borderColor: darkMode ? '#f5c2c7' : '#f1aeb5',
+                color: darkMode ? '#f8d7da' : '#842029',
+              }}
+            >
+              <i className="fas fa-exclamation-circle me-2" />
+              {submitError}
+            </Alert>
+          </Col>
+        </Row>
+      )}
+
+      {submitSuccess && (
+        <Row>
+          <Col md={12}>
+            <Alert
+              color="success"
+              className="mt-3"
+              style={{
+                backgroundColor: darkMode ? '#0a3a27' : '#d1e7dd',
+                borderColor: darkMode ? '#badbcc' : '#a3cfbb',
+                color: darkMode ? '#d1e7dd' : '#0f5132',
+              }}
+            >
+              <i className="fas fa-check-circle me-2" />
+              {submitSuccess}
+              <div className="mt-2 small">
+                You can continue editing or{' '}
+                <Button
+                  color="link"
+                  className="p-0"
+                  onClick={() => history.push(`/bmdashboard/tools/${equipmentId}`)}
+                  style={{ color: darkMode ? '#0dcaf0' : '#0d6efd' }}
+                >
+                  view the equipment details
+                </Button>
+              </div>
+            </Alert>
+          </Col>
+        </Row>
+      )}
+
+      {equipmentDetails && (
+        <Row className="mb-4">
           <Col md={3}>
             <Image
               name="equipment-image"
               src={equipmentDetails.imageUrl || 'https://via.placeholder.com/150'}
               alt="Equipment image"
-              className={`${styles.squareImage}`}
+              className={`${styles.largeSquareImage} mb-3`}
+              style={{
+                border: `2px solid ${darkMode ? '#444444' : '#dee2e6'}`,
+                backgroundColor: darkMode ? '#2d2d2d' : '#ffffff',
+              }}
             />
           </Col>
         </Row>
       )}
-      <Form className={`${styles1.invForm}`}>
+
+      <Form className={`${styles1.invForm}`} onSubmit={handleSubmit}>
         <FormGroup className="background-from-db">
           <Row form>
             <Col md={4}>
-              <Label for="itemName">Name</Label>
-              <div className={`${styles.readOnlyDiv}`}>
-                {equipmentDetails?.itemType?.name || 'Unknown'}
-              </div>
+              <Label for="itemName" style={formLabelStyle}>
+                Name
+              </Label>
+              <div style={readonlyStyle}>{equipmentDetails?.itemType?.name || 'Unknown'}</div>
             </Col>
             <Col md={4}>
-              <Label for="itemNumber">Number</Label>
-              <div className={`${styles.readOnlyDiv}`}>{equipmentDetails?._id || 'Unknown'}</div>
+              <Label for="itemNumber" style={formLabelStyle}>
+                Number
+              </Label>
+              <div style={readonlyStyle}>{equipmentDetails?._id || 'Unknown'}</div>
             </Col>
             <Col md={4}>
-              <Label for="itemClass">Class</Label>
-              <div className={`${styles.readOnlyDiv}`}>
-                {equipmentDetails?.itemType?.category || 'Unknown'}
-              </div>
+              <Label for="itemClass" style={formLabelStyle}>
+                Class
+              </Label>
+              <div style={readonlyStyle}>{equipmentDetails?.itemType?.category || 'Unknown'}</div>
             </Col>
           </Row>
           <Row form>
             <Col md={4}>
-              <Label for="itemProject">Project</Label>
-              <div className={`${styles.readOnlyDiv}`}>
-                {equipmentDetails?.project?.name || 'Unknown'}
-              </div>
+              <Label for="itemProject" style={formLabelStyle}>
+                Project
+              </Label>
+              <div style={readonlyStyle}>{equipmentDetails?.project?.name || 'Unknown'}</div>
             </Col>
             <Col md={4}>
-              <Label for="itemStatus">Current Status</Label>
-              <div className={`${styles.readOnlyDiv}`}>
-                {equipmentDetails?.updateRecord?.length > 0
-                  ? equipmentDetails.updateRecord[equipmentDetails.updateRecord.length - 1]
-                      .condition
-                  : 'Unknown'}
-              </div>
+              <Label for="itemStatus" style={formLabelStyle}>
+                Current Status
+              </Label>
+              <div style={readonlyStyle}>{currentStatus}</div>
             </Col>
             <Col md={4}>
-              <Label for="itemOwnership">Ownership</Label>
-              <div className={`${styles.readOnlyDiv}`}>
-                {equipmentDetails?.purchaseStatus || 'Unknown'}
-              </div>
+              <Label for="itemOwnership" style={formLabelStyle}>
+                Ownership
+              </Label>
+              <div style={readonlyStyle}>{equipmentDetails?.purchaseStatus || 'Unknown'}</div>
             </Col>
           </Row>
-          {equipmentDetails && equipmentDetails.purchaseStatus === 'Rental' && (
+          {equipmentDetails?.purchaseStatus === 'Rental' && (
             <Row form>
               <Col md={4}>
-                <Label>Rental End Date</Label>
-                <div className={`${styles.readOnlyDiv}`}>
-                  {equipmentDetails.rentalDueDate?.split('T')[0] || 'Unknown'}
-                </div>
+                <Label style={formLabelStyle}>Rental End Date</Label>
+                <div style={readonlyStyle}>{rentalDueDate}</div>
               </Col>
               <Col md={4}>
-                <Label>Days Left</Label>
-                <div className={`${styles.readOnlyDiv}`}>
+                <Label style={formLabelStyle}>Days Left</Label>
+                <div style={readonlyStyle}>
                   {calculateDaysLeft(equipmentDetails?.rentalDueDate)}
                 </div>
               </Col>
             </Row>
           )}
         </FormGroup>
+
         <Row form>
           <Col md={12}>
-            <div className={`${styles.updateConfirmText}`}>
+            <div style={confirmationTextStyle}>
               Please confirm you are updating the status of the tool or equipment shown above.
             </div>
           </Col>
         </Row>
-        <Row form>
-          <Col md={4}>
-            <FormGroup>
-              <Label for="updateDate">Update Date</Label>
-              <Input
-                type="date"
-                name="updateDate"
-                id="updateDate"
-                value={updateDate}
-                onChange={e => setUpdateDate(e.target.value)}
-                placeholder="DD/MM/YYYY"
-                className="form-control"
-              />
-            </FormGroup>
-          </Col>
-        </Row>
+
         <Row>
           <Col md={8}>
             <FormGroup>
-              <Label for="status">Status/Condition Now</Label>
+              <Label for="status" style={formLabelStyle}>
+                Status/Condition Now *
+              </Label>
               <Input
                 id="status"
                 name="status"
                 type="select"
                 value={status}
                 onChange={e => setStatus(e.target.value)}
+                required
+                style={selectInputStyle}
+                className="custom-select"
               >
-                <option value="1">Working well</option>
-                <option value="2">Broken/Needs repair</option>
-                <option value="3">Stolen/Lost</option>
-                <option value="4">End of life</option>
-                <option value="5">Returned</option>
+                <option value="">Select status</option>
+                <option value="Working well">Working well</option>
+                <option value="Broken/Needs repair">Broken/Needs repair</option>
+                <option value="Stolen/Lost">Stolen/Lost</option>
+                <option value="End of life">End of life</option>
+                <option value="Returned">Returned</option>
               </Input>
             </FormGroup>
           </Col>
+
           <Col md={8}>
             <FormGroup>
-              <Label for="lastUsedBy">Who used the tool/equipment last time?</Label>
+              <Label for="lastUsedBy" style={formLabelStyle}>
+                Who used the tool/equipment last time? *
+              </Label>
               <Input
                 type="select"
                 name="lastUsedBy"
                 id="lastUsedBy"
                 value={lastUsedBy}
                 onChange={e => setLastUsedBy(e.target.value)}
+                required
+                style={selectInputStyle}
+                className="custom-select"
               >
-                <option value="1">Jane Doe (Volunteer #1)</option>
-                <option value="2">Jane Doe (Volunteer #2)</option>
-                <option value="3">Jane Doe (Volunteer #3)</option>
-                <option value="4">Jane Doe (Volunteer #4)</option>
+                <option value="">Select user</option>
+                <option value="Jane Doe (Volunteer #1)">Jane Doe (Volunteer #1)</option>
+                <option value="Jane Doe (Volunteer #2)">Jane Doe (Volunteer #2)</option>
+                <option value="Jane Doe (Volunteer #3)">Jane Doe (Volunteer #3)</option>
+                <option value="Jane Doe (Volunteer #4)">Jane Doe (Volunteer #4)</option>
                 <option value="other">Other (Please specify below)</option>
               </Input>
-              <Input
-                type="text"
-                name="lastUsedByOther"
-                id="lastUsedByOther"
-                placeholder="If other is selected, input the name."
-                value={lastUsedByOther}
-                onChange={e => setLastUsedByOther(e.target.value)}
-                className="mt-2"
-              />
+              {lastUsedBy === 'other' && (
+                <Input
+                  type="text"
+                  name="lastUsedByOther"
+                  id="lastUsedByOther"
+                  placeholder="Please specify the name"
+                  value={lastUsedByOther}
+                  onChange={e => setLastUsedByOther(e.target.value)}
+                  className="mt-2"
+                  required
+                  style={textInputStyle}
+                />
+              )}
             </FormGroup>
           </Col>
         </Row>
+
         <Row>
           <Col md={8}>
             <FormGroup>
-              <Label for="lastUsedFor">What was it used for last time?</Label>
+              <Label for="lastUsedFor" style={formLabelStyle}>
+                What was it used for last time? *
+              </Label>
               <Input
                 type="select"
                 name="lastUsedFor"
                 id="lastUsedFor"
                 value={lastUsedFor}
                 onChange={e => setLastUsedFor(e.target.value)}
+                required
+                style={selectInputStyle}
+                className="custom-select"
               >
-                <option value="1">Kitchen - tiling</option>
-                <option value="2">Kitchen - tiling</option>
-                <option value="3">Kitchen - tiling</option>
-                <option value="4">Kitchen - tiling</option>
+                <option value="">Select usage</option>
+                <option value="Kitchen - tiling">Kitchen - tiling</option>
+                <option value="Bathroom - plumbing">Bathroom - plumbing</option>
+                <option value="Living room - painting">Living room - painting</option>
+                <option value="Garden - landscaping">Garden - landscaping</option>
                 <option value="other">Other (Please specify below)</option>
               </Input>
-              <Input
-                type="text"
-                name="lastUsedForOther"
-                id="lastUsedForOther"
-                placeholder="If other is selected, input the task."
-                value={lastUsedForOther}
-                onChange={e => setLastUsedForOther(e.target.value)}
-                className="mt-2"
-              />
+              {lastUsedFor === 'other' && (
+                <Input
+                  type="text"
+                  name="lastUsedForOther"
+                  id="lastUsedForOther"
+                  placeholder="Please specify the task"
+                  value={lastUsedForOther}
+                  onChange={e => setLastUsedForOther(e.target.value)}
+                  className="mt-2"
+                  required
+                  style={textInputStyle}
+                />
+              )}
             </FormGroup>
           </Col>
         </Row>
 
         <FormGroup>
-          <Label className="form-control-label" for="replacementRequired-yes">
-            Require a replacement?
+          <Label
+            className="form-control-label"
+            for="replacementRequired-yes"
+            style={formLabelStyle}
+          >
+            Require a replacement? *
           </Label>
           <Radio
             name="replacementRequired"
@@ -245,56 +653,131 @@ export default function UpdateEquipment() {
             ]}
             value={replacementRequired}
             onChange={e => setReplacementRequired(e.target.value)}
+            required
+            darkMode={darkMode}
           />
         </FormGroup>
 
         <FormGroup>
-          <Label for="file-upload-input">
+          <Label for="file-upload-input" style={formLabelStyle}>
             Upload latest picture of this tool or equipment. (optional)
+            <small className="text-muted ms-2" style={{ color: darkMode ? '#b0b7c0' : '#6c757d' }}>
+              Accepted: PNG, JPG, JPEG, GIF, WEBP
+            </small>
           </Label>
-          <DragAndDrop uploadedFiles={uploadedFiles} updateUploadedFiles={setUploadedFiles} />
+
+          {hasUploadedFiles && (
+            <Alert
+              color="info"
+              className="mb-3"
+              style={{
+                backgroundColor: darkMode ? '#0a3d4f' : '#d1ecf1',
+                borderColor: darkMode ? '#0dcaf0' : '#bee5eb',
+                color: darkMode ? '#d1ecf1' : '#0c5460',
+              }}
+            >
+              <i className="fas fa-info-circle me-2" />
+              {uploadedFiles.length} image{uploadedFiles.length > 1 ? 's' : ''} uploaded and ready
+              for preview
+            </Alert>
+          )}
+
+          <DragAndDrop updateUploadedFiles={handleFileUpload} />
+
+          {hasFilePreviews && (
+            <div className="mt-3">
+              <Label style={formLabelStyle}>Uploaded Images Preview:</Label>
+              <div className="d-flex flex-wrap gap-3 mt-2">
+                {uploadedFilesPreview.map((file, index) => (
+                  <FilePreview
+                    key={`file-${index}-${file.uploadedAt || Date.now()}`}
+                    file={file}
+                    index={index}
+                    darkMode={darkMode}
+                    onRemove={handleRemoveFile}
+                  />
+                ))}
+              </div>
+
+              <div className="mt-3">
+                <Alert
+                  color={hasNotSavedFiles ? 'warning' : 'info'}
+                  style={
+                    hasNotSavedFiles
+                      ? {
+                          backgroundColor: darkMode ? '#664d03' : '#fff3cd',
+                          borderColor: darkMode ? '#ffc107' : '#ffeaa7',
+                          color: darkMode ? '#fff9e6' : '#664d03', // Fixed contrast
+                        }
+                      : {
+                          backgroundColor: darkMode ? '#0a3d4f' : '#d1ecf1',
+                          borderColor: darkMode ? '#0dcaf0' : '#bee5eb',
+                          color: darkMode ? '#d1ecf1' : '#0c5460',
+                        }
+                  }
+                >
+                  <small>
+                    <i className="fas fa-info-circle me-1" />
+                    {hasNotSavedFiles
+                      ? 'Images are shown for preview purposes only and are not saved to the database.'
+                      : 'Images are uploaded for preview. Form data will be saved to database.'}
+                  </small>
+                </Alert>
+              </div>
+            </div>
+          )}
         </FormGroup>
 
         <FormGroup>
-          <Label for="notes">Additional Description (optional)</Label>
+          <Label for="description" style={formLabelStyle}>
+            Additional Description (optional)
+          </Label>
           <Input
             type="textarea"
             name="description"
             id="description"
-            placeholder="Provide detail description if need."
+            placeholder="Provide detail description if needed."
             rows="3"
             value={description}
             onChange={e => setDescription(e.target.value)}
+            style={textInputStyle}
           />
         </FormGroup>
 
         <FormGroup>
-          <Label className="form-control-label" for="sendNote-yes">
+          <Label className="form-control-label" for="sendNote-yes" style={formLabelStyle}>
             Do you want to send a note for this update?
           </Label>
           <Radio
             name="sendNote"
             options={[
-              { label: 'Yes', value: 'yes' },
-              { label: 'No', value: 'no' },
+              { label: 'Yes', value: 'yes', id: 'sendNote-yes' },
+              { label: 'No', value: 'no', id: 'sendNote-no' },
             ]}
             value={sendNote}
             onChange={e => setSendNote(e.target.value)}
+            darkMode={darkMode}
           />
         </FormGroup>
 
-        <FormGroup>
-          <Label for="notes">Note (All the managers in this project can see this)</Label>
-          <Input
-            type="textarea"
-            name="notes"
-            id="notes"
-            placeholder="A short note as a notice or reminder for your co-workers to learn about this update."
-            rows="3"
-            value={notes}
-            onChange={e => setNotes(e.target.value)}
-          />
-        </FormGroup>
+        {sendNote === 'yes' && (
+          <FormGroup>
+            <Label for="notes" style={formLabelStyle}>
+              Note (All the managers in this project can see this) *
+            </Label>
+            <Input
+              type="textarea"
+              name="notes"
+              id="notes"
+              placeholder="A short note as a notice or reminder for your co-workers to learn about this update."
+              rows="3"
+              value={notes}
+              onChange={e => setNotes(e.target.value)}
+              required={sendNote === 'yes'}
+              style={textInputStyle}
+            />
+          </FormGroup>
+        )}
 
         <FormGroup>
           <div className={`${styles1.invFormBtnGroup}`}>
@@ -302,11 +785,45 @@ export default function UpdateEquipment() {
               color="secondary"
               className={`${styles1.bmDashboardButton} btn btn-secondary`}
               onClick={handleCancel}
+              disabled={isSubmitting}
+              style={secondaryButtonStyle}
             >
               Cancel
             </Button>
-            <Button color="primary" onClick={handleSubmit}>
-              Submit
+            <Button
+              color="primary"
+              type="submit"
+              disabled={isSubmitting}
+              className="position-relative"
+              style={buttonStyle}
+            >
+              {isSubmitting ? (
+                <>
+                  <span
+                    className="spinner-border spinner-border-sm me-2"
+                    role="status"
+                    aria-hidden="true"
+                  />
+                  Updating...
+                </>
+              ) : (
+                <>
+                  <i className="fas fa-save me-2" />
+                  Update Status
+                  {hasUploadedFiles && (
+                    <span
+                      className="position-absolute top-0 start-100 translate-middle badge rounded-pill"
+                      style={{
+                        backgroundColor: darkMode ? '#0dcaf0' : '#0d6efd',
+                        color: darkMode ? '#000' : '#fff',
+                      }}
+                    >
+                      <i className="fas fa-image me-1" />
+                      {uploadedFiles.length}
+                    </span>
+                  )}
+                </>
+              )}
             </Button>
           </div>
         </FormGroup>
