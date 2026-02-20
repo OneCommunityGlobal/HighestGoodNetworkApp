@@ -229,19 +229,17 @@ function RadarChart({ profileData, compact = true }) {
     datasets: [
       {
         label: 'Skills',
-        data: skillsData.map(skill => skill.score),
-        backgroundColor: compact ? 'rgba(133, 146, 226, 0.35)' : 'rgba(62, 160, 203, 0.2)',
-        borderColor: compact ? 'rgba(110, 125, 215, 0.9)' : 'rgba(62, 160, 203, 1)',
-        borderWidth: compact ? 2 : 3,
-        pointBackgroundColor: compact ? 'rgba(110, 125, 215, 0.95)' : 'rgba(62, 160, 203, 1)',
-        pointBorderColor: '#fff',
-        pointHoverBackgroundColor: '#fff',
-        pointHoverBorderColor: compact ? 'rgba(110,125,215,1)' : 'rgba(62,160,203,1)',
-        pointRadius: compact ? 4 : 6,
-        pointHoverRadius: compact ? 6 : 8,
-        pointBorderWidth: 1.5,
-        pointHoverBorderWidth: 2,
-        fill: true,
+        data: SKILL_MAPPINGS.map(skill => {
+          const source = skill.value(general) ?? skill.value(frontend) ?? skill.value(backend) ?? 0;
+          return source;
+        }),
+        backgroundColor: 'rgba(37, 99, 235, 0.16)',
+        borderColor: '#2563eb',
+        borderWidth: 2,
+        pointBackgroundColor: '#1d4ed8',
+        pointBorderColor: '#eff6ff',
+        pointHoverBackgroundColor: '#eff6ff',
+        pointHoverBorderColor: '#1d4ed8',
       },
     ],
   };
@@ -295,11 +293,7 @@ function RadarChart({ profileData, compact = true }) {
         suggestedMax: 10,
         ticks: {
           stepSize: 2,
-          display: compact ? false : true,
-          color: '#666',
-          font: {
-            size: 10,
-          },
+          display: false,
         },
       },
     },
@@ -337,6 +331,9 @@ function RadarChart({ profileData, compact = true }) {
         filter: function(tooltipItem) {
           return tooltipItem.parsed.r > 0;
         },
+      },
+      datalabels: {
+        display: false,
       },
     },
     interaction: {

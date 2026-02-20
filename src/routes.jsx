@@ -876,6 +876,7 @@ export default (
         <ProtectedRoute path="/hgnform/page5" exact component={Page5} />
         <ProtectedRoute path="/hgnform/page6" exact component={Page6} />
         <ProtectedRoute path="/hgn/profile/skills" exact component={UserSkillsProfile} />
+        <ProtectedRoute path="/hgn-skills/profile" exact component={UserSkillsProfile} />
         <ProtectedRoute
           path="/hgn/profile/skills/:userId?"
           exact
@@ -884,7 +885,6 @@ export default (
           allowedRoles={[UserRole.Administrator, UserRole.CoreTeam, UserRole.Owner]}
           routePermissions={RoutePermissions.accessHgnSkillsDashboard}
         />
-        {/* Alternative route for HGN Skills Profile */}
         <ProtectedRoute
           path="/hgn-skills/profile/:userId?"
           exact
