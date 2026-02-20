@@ -163,6 +163,13 @@ import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
 import EPLogin from './components/EductionPortal/Login';
 import BrowseLessonPlan from './components/EductionPortal/BrowseLessonPlan/BrowseLP';
 import EPDashboard from './components/EductionPortal';
+
+// import MostSusceptibleTools from './components/MostSusceptible/toolBreakdownChart';
+import PopularPRChart from './components/Analytics/PopularPRChart';
+
+// import AddActivities from './components/CommunityPortal/Activities/AddActivities';
+// import ActvityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
+// HGN PR Dashboard
 import AssignAtoms from './components/EductionPortal/AssignAtoms/AssignAtoms';
 import ReportDownloadButton from './components/EductionPortal/AnalyticsDashboard/ReportDownloadButton';
 import GroupList from './components/EductionPortal/GroupList/GroupList';
@@ -193,6 +200,10 @@ import SupportLogin from './components/SupportPortal/SupportLogin';
 import SupportDashboard from './components/SupportPortal/SupportDashboard';
 import SupportLogViewer from './components/SupportPortal/SupportLogViewer';
 import MaterialUtilizationChart from './components/MaterialUtilization/MaterialUtilizationChart';
+
+// eslint-disable-next-line import/order, import/no-unresolved
+// import IssueDashboard from './components/BMDashboard/Issues/IssueDashboard';
+import ReviewersRequirementChart from './components/Analytics/ReviewersRequirementChart';
 
 // Social Architecture
 
@@ -561,6 +572,17 @@ export default (
           fallback
           allowedRoles={[UserRole.Owner]}
         />
+
+        <Route path="/analytics/popular-prs" exact component={PopularPRChart} fallback />
+
+        <ProtectedRoute
+          path="/analytics/review-summary"
+          exact
+          component={ReviewersRequirementChart}
+          fallback
+        />
+        <Route path="/analytics/dashboard" exact component={AnalyticsDashboard} fallback />
+
         <ProtectedRoute path="/materials/utilization" component={MaterialUtilizationChart} />
         <ProtectedRoute path="/job-application" exact component={JobApplicationForm} />
         <ProtectedRoute path="/popularity" component={PopularityTimelineChart} fallback />
@@ -858,6 +880,13 @@ export default (
         <ProtectedRoute path="/userprofile/:userId" fallback component={UserProfile} />
         <ProtectedRoute path="/userprofileedit/:userId" component={UserProfileEdit} />
         <ProtectedRoute path="/updatepassword/:userId" component={UpdatePassword} />
+
+        <ProtectedRoute path="/memberlist" exact component={MemberList} />
+        <Route path="/Logout" component={Logout} />
+        <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
+
+        {/* ----- HGN Help Community Skills Dashboard Routes ----- */}
+        <ProtectedRoute path="/hgnhelp" exact component={LandingPage} />
         <ProtectedRoute path="/promotiontable" exact component={PromotionTable} />
         <ProtectedRoute path="/memberlist" exact component={MemberList} />
         <Route path="/Logout" component={Logout} />
@@ -869,6 +898,10 @@ export default (
         <ProtectedRoute path="/hgnhelp/community" exact component={CommunityMembersPage} />
         <ProtectedRoute path="/hgnhelp/profile/:userId" exact component={UserProfilePage} />
         <ProtectedRoute path="/hgnhelp/feedback" exact component={FeedbackModal} />
+
+        <Route path="/Logout" component={Logout} />
+        <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
+
         <ProtectedRoute path="/hgnform" exact component={Page1} />
         <ProtectedRoute path="/hgnform/page2" exact component={Page2} />
         <ProtectedRoute path="/hgnform/page3" exact component={Page3} />
