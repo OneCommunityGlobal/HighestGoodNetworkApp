@@ -1,8 +1,11 @@
 import React from 'react';
 import { Plus } from 'lucide-react';
 import styles from './ReviewerRow.module.css';
+import { useRowSelection } from './SelectionContext';
 
 function ReviewerRow({ grading, onUpdatePRsReviewed, onAddPRClick }) {
+  const { activeId, selectRow } = useRowSelection();
+
   const handlePRsReviewedChange = e => {
     const value = e.target.value;
     // Allow empty string for better UX, but convert to 0 on blur if invalid
@@ -21,7 +24,9 @@ function ReviewerRow({ grading, onUpdatePRsReviewed, onAddPRClick }) {
   return (
     <tr className={styles.row}>
       <td className={styles.cell}>
-        <div className={styles.reviewerName}>{grading.reviewer}</div>
+        <button className={styles.reviewerName} onClick={() => selectRow(grading.reviewer)}>
+          {grading.reviewer}
+        </button>
       </td>
       <td className={styles.cell}>
         <input
