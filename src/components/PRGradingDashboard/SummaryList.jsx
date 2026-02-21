@@ -1,14 +1,29 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Trash2 } from 'lucide-react';
 import styles from './SummaryList.module.css';
+import { useRowSelection } from './SelectionContext';
 
 const GRADE_OPTIONS = ['Unsatisfactory', 'Okay', 'Exceptional', 'No Correct Image'];
 
 function SummaryList({ gradings, onUpdateGrade, onRemovePR }) {
+  const { activeId } = useRowSelection();
+  const rowRefs = useRef({});
+
+  useEffect(() => {
+    if (activeId && rowRefs.current[activeId]) {
+      rowRefs.current[activeId].scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [activeId]);
+
   return (
     <div className={styles.container}>
       {gradings.map(grading => (
-        <div key={grading.reviewer} className={styles.reviewerSection}>
+        <div
+          key={grading.reviewer}
+          id={grading.reviewer}
+          className={styles.reviewerSection}
+          ref={el => (rowRefs.current[grading.reviewer] = el)}
+        >
           <h3 className={styles.reviewerName}>{grading.reviewer}</h3>
           {grading.gradedPrs.length === 0 ? (
             <p className={styles.emptyMessage}>No graded PRs yet</p>

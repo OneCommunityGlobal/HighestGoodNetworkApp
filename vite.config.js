@@ -32,6 +32,15 @@ export default defineConfig(({ mode }) => {
     build: {
       outDir: 'build',
     },
-    plugins: [react()],
+    plugins: [
+      react({
+        babel: {
+          plugins: ['@babel/plugin-proposal-logical-assignment-operators'],
+        },
+      }),
+    ],
+    optimizeDeps: {
+      include: ['react-popper'], // helps with old reactstrap dependency
+    },
   };
 });
