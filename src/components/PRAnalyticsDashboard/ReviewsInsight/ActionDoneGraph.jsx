@@ -4,9 +4,7 @@ import { useSelector } from 'react-redux';
 import { Chart } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
-Chart.register(ChartDataLabels);
-
-function ActionDoneGraph({ selectedTeams, teamData }) {
+function ActionDoneGraph({ selectedTeams, teamData, orderedTeamIds }) {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   if (!selectedTeams || selectedTeams.length === 0) {
@@ -18,7 +16,7 @@ function ActionDoneGraph({ selectedTeams, teamData }) {
   }
 
   const isAllTeams = selectedTeams.some(team => team.value === 'All');
-  const teamsToDisplay = isAllTeams ? Object.keys(teamData) : selectedTeams.map(team => team.value);
+  const teamsToDisplay = isAllTeams ? orderedTeamIds : selectedTeams.map(team => team.value);
 
   const data = {
     labels: teamsToDisplay,

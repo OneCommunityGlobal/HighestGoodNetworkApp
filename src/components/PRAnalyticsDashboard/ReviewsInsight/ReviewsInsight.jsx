@@ -13,6 +13,7 @@ function ReviewsInsight() {
   const [teamData, setTeamData] = useState({});
   const [qualityData, setQualityData] = useState({});
   const [dataViewActive, setDataViewActive] = useState(false);
+  const [orderedTeamIds, setOrderedTeamIds] = useState([]);
   const dispatch = useDispatch();
 
   const { loading, data, error } = useSelector(state => state.reviewsInsights);
@@ -47,6 +48,7 @@ function ReviewsInsight() {
     if (data && data.teams) {
       const formattedTeamData = {};
       const formattedQualityData = {};
+      const teamIds = []; // Track team order
 
       data.teams.forEach(team => {
         const actionSummary = Array.isArray(team.actionSummary) ? team.actionSummary : [];
@@ -69,10 +71,16 @@ function ReviewsInsight() {
           Sufficient: qualityDistribution.find(q => q.qualityLevel === 'Sufficient')?.count || 0,
           Exceptional: qualityDistribution.find(q => q.qualityLevel === 'Exceptional')?.count || 0,
         };
+
+        teamIds.push(team._id);
       });
+
+      // Sort team IDs alphabetically for consistent ordering and remove duplicates
+      const sortedTeamIds = [...new Set(teamIds)].sort();
 
       setTeamData(formattedTeamData);
       setQualityData(formattedQualityData);
+      setOrderedTeamIds(sortedTeamIds);
     }
   }, [data]);
 
@@ -225,12 +233,17 @@ function ReviewsInsight() {
       {loading && <div className={sharedStyles.riLoading}>Loading...</div>}
       {error && <div className={sharedStyles.riError}>{error}</div>}
       {!loading && !error && (
-        <div className={sharedStyles.riGraphs}>
-          <ActionDoneGraph selectedTeams={selectedTeams} teamData={teamData} />
+        <div className={`${styles.riGraphs} ${darkMode ? styles.darkModeForeground : ''}`}>
+          <ActionDoneGraph
+            selectedTeams={selectedTeams}
+            teamData={teamData}
+            orderedTeamIds={orderedTeamIds}
+          />
           <PRQualityGraph
             selectedTeams={selectedTeams}
             qualityData={qualityData}
             isDataViewActive={dataViewActive}
+            orderedTeamIds={orderedTeamIds}
           />
         </div>
       )}
