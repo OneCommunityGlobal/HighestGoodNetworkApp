@@ -834,6 +834,11 @@ export default (
           component={ResourceUsage}
         />
         <CPProtectedRoute
+          path="/communityportal/activity/:activityid"
+          exact
+          component={ActivityAgenda}
+        />
+        <CPProtectedRoute
           path="/communityportal/database/design"
           exact
           component={DatabaseDesign}
