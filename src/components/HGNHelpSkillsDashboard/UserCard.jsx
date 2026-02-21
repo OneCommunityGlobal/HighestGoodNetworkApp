@@ -7,10 +7,6 @@ import { useSelector } from 'react-redux';
 function UserCard({ user }) {
   const { name, email, slack, score, topSkills } = user;
   const darkMode = useSelector(state => state.theme.darkMode);
-  const getScoreColor = userScore => {
-    if (userScore >= 5) return '#00754A';
-    return '#D93D3D';
-  };
 
   return (
     <div className={`${styles.userCard} ${darkMode ? styles.darkMode : ''}`}>
@@ -34,7 +30,9 @@ function UserCard({ user }) {
       <div className={`${styles.scoreSkillsWrapper}`}>
         <div className={`${styles.scoreLine}`}>
           <span className={`${styles.scoreLabel}`}>Score:</span>
-          <span className={`${styles.scoreValue}`} style={{ color: getScoreColor(score) }}>
+          <span
+            className={`${styles.scoreValue} ${score >= 5 ? styles.scoreHigh : styles.scoreLow}`}
+          >
             {score}
           </span>
           <span className={`${styles.scoreMax}`}> / 10</span>

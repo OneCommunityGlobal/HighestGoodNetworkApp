@@ -85,6 +85,14 @@
   padding-left: 4px;
 }
 
+.scoreHigh {
+  color: #00754a;
+}
+
+.scoreLow {
+  color: #d93d3d;
+}
+
 .skillsSection {
   width: 100%;
   text-align: left;
@@ -136,10 +144,16 @@
   color: #dcdcdc;
 }
 
-.darkMode .scoreValue {
-  color: inherit;
-}
-
 .darkMode .scoreMax {
   color: #ffffff;
+}
+
+.darkMode .scoreValue.scoreHigh,
+.userCard.darkMode .scoreValue.scoreHigh {
+  color: #4caf50 !important;
+}
+
+.darkMode .scoreValue.scoreLow,
+.userCard.darkMode .scoreValue.scoreLow {
+  color: #ff6b6b !important;
 }
