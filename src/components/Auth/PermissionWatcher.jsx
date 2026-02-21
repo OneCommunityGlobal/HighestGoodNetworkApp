@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import axios from 'axios';
 import { ENDPOINTS } from '~/utils/URL';
@@ -82,6 +82,8 @@ function PermissionWatcher() {
     if (!isAuthenticated || !flagReady) return;
     if (!userProfile) return;
     if (isInitialLogin) return;
+    // Don't trigger when permissions haven't been loaded yet (e.g. on /bmdashboard/login before profile fetch)
+    if (userProfile?.permissions === undefined || userProfile?.permissions === null) return;
 
     const permissionsChangedMidSession =
       isAcknowledged === false && !forceLogoutAt && initialAcknowledgedState !== false;
