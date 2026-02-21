@@ -238,15 +238,20 @@
   margin-top: 20px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 24px;
+}
+
+.filterItem {
+  margin-bottom: 0;
 }
 
 .filterItem input:not([type='checkbox']):not([type='radio']),
 .radioRow {
   display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
+  flex-direction: column;
+  gap: 12px;
   margin-top: 10px;
+  padding: 0;
 }
 
 .darkSidebar .filterItem input:not([type='checkbox']):not([type='radio']),
@@ -260,21 +265,49 @@
   color: #ecf0f1;
 }
 
+.darkSidebar .radioLabel {
+  color: #ecf0f1;
+}
+
 .darkSidebar input[type="date"] {
   color-scheme: dark;
 }
 
+.darkSidebar .radioInput,
+.darkSidebar .filterItem input[type='checkbox'] {
+  accent-color: #4da3ff;
+}
+
 .radioGroup {
-  margin-right: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
 }
 
 .radioInput {
-  margin-right: 6px;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: #1b3c55;
+  flex-shrink: 0;
+  margin: 0;
 }
 
 .radioLabel {
   margin-bottom: 0;
   vertical-align: middle;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 400;
+  color: #34495e;
+  display: inline;
+}
+
+.radioGroup label.radioLabel {
+  display: inline;
+  font-weight: 400;
+  margin-bottom: 0;
 }
 
 .filterItem input:not([type="checkbox"]):not([type="radio"]),
@@ -305,11 +338,15 @@
 
 .filterItem input[type='radio'],
 .filterItem input[type='checkbox'] {
-  display: inline-block; /* <– keeps input on same line as text */
-  width: auto;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  margin: 0;
   padding: 0;
-  margin: 5px 0px 0px 120px; /* top margin to line up under "Dates" */
+  accent-color: #1b3c55;
+  flex-shrink: 0;
   vertical-align: middle;
+  display: inline-block;
 }
 
 .filterItem input:focus,
