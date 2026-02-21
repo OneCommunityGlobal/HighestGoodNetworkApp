@@ -1,6 +1,12 @@
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { GET_EQUIPMENT_BY_ID, SET_EQUIPMENTS } from '../../constants/bmdashboard/equipmentConstants';
+import {
+  GET_EQUIPMENT_BY_ID,
+  SET_EQUIPMENTS,
+  UPDATE_EQUIPMENT_START,
+  UPDATE_EQUIPMENT_SUCCESS,
+  UPDATE_EQUIPMENT_ERROR,
+} from '../../constants/bmdashboard/equipmentConstants';
 import { GET_ERRORS } from '../../constants/errors';
 import { ENDPOINTS } from '~/utils/URL';
 
@@ -91,3 +97,20 @@ export const updateMultipleEquipmentLogs = (projectId, bulkArr) => dispatch => {
       throw err;
     });
 }
+
+export const updateEquipmentById = (equipmentId, updatedFields) => async dispatch => {
+  dispatch({ type: UPDATE_EQUIPMENT_START });
+  try {
+    const url = ENDPOINTS.BM_EQUIPMENT_BY_ID(equipmentId);
+    const res = await axios.put(url, updatedFields);
+    dispatch({ type: UPDATE_EQUIPMENT_SUCCESS, payload: res.data });
+    dispatch(setEquipment(res.data));
+    toast.success('Equipment updated successfully!');
+    return res.data;
+  } catch (err) {
+    const errorMsg = err.response?.data?.message || 'Failed to update equipment.';
+    dispatch({ type: UPDATE_EQUIPMENT_ERROR, payload: errorMsg });
+    toast.error(errorMsg);
+    throw err;
+  }
+};
