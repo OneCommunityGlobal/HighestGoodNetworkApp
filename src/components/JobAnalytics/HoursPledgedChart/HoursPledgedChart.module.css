@@ -50,11 +50,6 @@
   border-radius: 4px;
   width: 100%;
 }
-.darkMode .hpDateFilter input {
-  background-color: #1c2541;
-  color: #ffffff;
-  border: 1px solid #47526d;
-}
 
 label {
   font-weight: bold;
