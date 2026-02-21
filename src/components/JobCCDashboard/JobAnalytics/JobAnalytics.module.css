@@ -368,3 +368,15 @@
   align-items: center;
   gap: 12px;
 }
+
+
+.selectedJobIndicator {
+  max-width: 1600px;
+  margin: 0 auto 16px;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.selectedJobIndicator strong {
+  color: var(--primary);
+}
