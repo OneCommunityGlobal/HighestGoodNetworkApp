@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 import styles from './PromotionTable.module.css';
 
 const names = ['Alice', 'Bob', 'Charlie', 'Diana', 'Edward', 'Fiona', 'Grace'];
@@ -53,6 +54,8 @@ function MemberSection({ title, members, styles }) {
 function PromotionTable() {
   const [eligibilityData, setEligibilityData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [reviewLoading, setReviewLoading] = useState(false);
+  const [processingLoading, setProcessingLoading] = useState(false);
   const darkMode = useSelector(state => state.theme.darkMode);
 
   useEffect(() => {
@@ -64,6 +67,54 @@ function PromotionTable() {
     return () => clearTimeout(timer);
   }, []);
 
+  const handleReviewForThisWeek = async () => {
+    setReviewLoading(true);
+    try {
+      // Simulate API call to fetch weekly review data
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // Refresh the table with current week's data
+      setEligibilityData(prevData =>
+        prevData.map(member => ({
+          ...member,
+          hasMetWeekly: Math.random() > 0.5, // Simulate data refresh
+        })),
+      );
+
+      toast.success('Weekly review initiated. Table data refreshed.');
+    } catch (error) {
+      toast.error('Failed to initiate weekly review.');
+      console.error('Review error:', error);
+    } finally {
+      setReviewLoading(false);
+    }
+  };
+
+  const handleProcessPromotions = async () => {
+    setProcessingLoading(true);
+    try {
+      // Get selected members for promotion
+      const selectedMembers = eligibilityData.filter(m => m.promote);
+
+      if (selectedMembers.length === 0) {
+        toast.warning('No members selected for promotion.');
+        setProcessingLoading(false);
+        return;
+      }
+
+      // Simulate API call to process promotions
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
+      // Show success message
+      toast.success(`Promotions processed successfully for ${selectedMembers.length} member(s).`);
+    } catch (error) {
+      toast.error('Failed to process promotions.');
+      console.error('Promotion error:', error);
+    } finally {
+      setProcessingLoading(false);
+    }
+  };
+
   const newMembers = eligibilityData.filter(u => u.isNew);
   const existingMembers = eligibilityData.filter(u => !u.isNew);
 
@@ -74,11 +125,21 @@ function PromotionTable() {
       <div className={styles.header}>
         <h1>Promotion Eligibility</h1>
         <div className={styles.actions}>
-          <button type="button" className={`${styles.btn} ${styles['btnPrimary']}`}>
-            Review for This Week
+          <button
+            type="button"
+            className={`${styles.btn} ${styles['btnPrimary']}`}
+            onClick={handleReviewForThisWeek}
+            disabled={reviewLoading || loading}
+          >
+            {reviewLoading ? 'Reviewing...' : 'Review for This Week'}
           </button>
-          <button type="button" className={`${styles.btn} ${styles['btnSecondary']}`}>
-            Process Promotions
+          <button
+            type="button"
+            className={`${styles.btn} ${styles['btnSecondary']}`}
+            onClick={handleProcessPromotions}
+            disabled={processingLoading || loading}
+          >
+            {processingLoading ? 'Processing...' : 'Process Promotions'}
           </button>
         </div>
       </div>
