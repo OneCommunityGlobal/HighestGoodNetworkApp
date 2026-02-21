@@ -360,6 +360,16 @@ export const ENDPOINTS = {
   BM_TOOLS_RETURNED_LATE: `${APIEndpoint}/bm/tools/returned-late`,
   BM_TOOLS_RETURNED_LATE_PROJECTS: `${APIEndpoint}/bm/tools/returned-late/projects`,
   TOOLS_AVAILABILITY_PROJECTS: `${APIEndpoint}/bm/tools-availability/projects`,
+  BM_COST_BREAKDOWN: (projectId, startDate, endDate, categoryDetail) => {
+    let url = `${APIEndpoint}/costs/breakdown`;
+    const params = [];
+    if (projectId) params.push(`projectId=${projectId}`);
+    if (startDate) params.push(`startDate=${startDate}`);
+    if (endDate) params.push(`endDate=${endDate}`);
+    if (categoryDetail) params.push('categoryDetail=true');
+    if (params.length > 0) url += `?${params.join('&')}`;
+    return url;
+  },
   TOOLS_AVAILABILITY_BY_PROJECT: (projectId, startDate, endDate) => {
     let url = `${APIEndpoint}/bm/projects/${projectId}/tools-availability`;
     const params = [];
