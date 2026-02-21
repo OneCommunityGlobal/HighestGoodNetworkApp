@@ -13,6 +13,12 @@
   cursor: pointer;
 }
 
+.centerAction {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .disableDiv {
   pointer-events: none;
 }
