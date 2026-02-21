@@ -5,6 +5,8 @@ import {
   FETCH_BUILDING_MATERIAL_INVENTORY_UNITS,
   POST_BUILDING_MATERIAL_INVENTORY_UNIT,
   RESET_POST_BUILDING_MATERIAL_INVENTORY_UNIT,
+  DELETE_INVENTORY_UNIT_SUCCESS,
+  DELETE_INVENTORY_UNIT_ERROR,
 } from '../../constants/bmdashboard/inventoryTypeConstants';
 import { GET_ERRORS } from '../../constants/errors';
 
@@ -58,5 +60,45 @@ export const postBuildingInventoryUnit = payload => {
       .catch(err => {
         dispatch(setErrors(err));
       });
+  };
+};
+
+/**
+ * Add a new inventory unit
+ * @param {Object} payload - { unit }
+ */
+export const addInventoryUnit = payload => {
+  return async dispatch => {
+    try {
+      const res = await axios.post(ENDPOINTS.BM_INVENTORY_UNITS, payload);
+      dispatch(setPostInvUnitResult(res.data));
+      // Refresh the units list
+      dispatch(fetchInvUnits());
+      return { success: true, data: res.data };
+    } catch (err) {
+      const errorMsg = err.response?.data?.message || err.response?.data || 'Failed to add unit';
+      dispatch(setErrors(err));
+      return { success: false, error: errorMsg };
+    }
+  };
+};
+
+/**
+ * Delete an inventory unit
+ * @param {string} unitId - The ID of the unit to delete
+ */
+export const deleteInventoryUnit = unitId => {
+  return async dispatch => {
+    try {
+      await axios.delete(ENDPOINTS.BM_INVENTORY_UNIT_BY_ID(unitId));
+      dispatch({ type: DELETE_INVENTORY_UNIT_SUCCESS, payload: unitId });
+      // Refresh the units list
+      dispatch(fetchInvUnits());
+      return { success: true };
+    } catch (err) {
+      const errorMsg = err.response?.data?.message || err.response?.data || 'Failed to delete unit';
+      dispatch({ type: DELETE_INVENTORY_UNIT_ERROR, payload: errorMsg });
+      return { success: false, error: errorMsg };
+    }
   };
 };

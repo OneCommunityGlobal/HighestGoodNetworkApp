@@ -718,8 +718,7 @@ class UserManagement extends React.PureComponent {
             handleSetupHistoryPopup={this.handleSetupHistoryPopup}
             darkMode={darkMode}
           />
-
-          <div className="table-responsive" id="user-management-table">
+          <div className={`table-responsive ${styles.userManagementTable}`}>
             <Table
               className={`table table-bordered ${styles.noWrap} ${
                 darkMode ? 'text-light bg-yinmn-blue' : ''

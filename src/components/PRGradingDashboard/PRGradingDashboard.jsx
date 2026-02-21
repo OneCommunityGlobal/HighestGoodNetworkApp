@@ -6,6 +6,7 @@ import SummaryList from './SummaryList';
 import ConfirmationModal from './ConfirmationModal';
 import AddReviewerModal from './AddReviewerModal';
 import styles from './PRGradingDashboard.module.css';
+import { SelectionProvider } from './SelectionContext';
 
 const TEAM_CODE = 'TeamA';
 const TEAM_NAME = 'Team Alpha';
@@ -249,47 +250,48 @@ function PRGradingDashboard() {
         </div>
 
         {/* Main Table */}
-        <div className={styles.section}>
-          <div className={styles.tableHeaderActions}>
-            <button
-              type="button"
-              onClick={() => setShowAddReviewerModal(true)}
-              className={styles.addReviewerButton}
-            >
-              + Add Reviewer
-            </button>
+        <SelectionProvider>
+          <div className={styles.section}>
+            <div className={styles.tableHeaderActions}>
+              <button
+                type="button"
+                onClick={() => setShowAddReviewerModal(true)}
+                className={styles.addReviewerButton}
+              >
+                + Add Reviewer
+              </button>
+            </div>
+            <GradingTable
+              gradings={gradings}
+              onUpdatePRsReviewed={updatePRsReviewed}
+              onAddPRClick={setOpenAddModal}
+              openAddModal={openAddModal}
+              onAddGradedPR={requestAddGradedPR}
+            />
           </div>
-          <GradingTable
-            gradings={gradings}
-            onUpdatePRsReviewed={updatePRsReviewed}
-            onAddPRClick={setOpenAddModal}
-            openAddModal={openAddModal}
-            onAddGradedPR={requestAddGradedPR}
-          />
-        </div>
 
-        {/* Summary Section */}
-        <div className={styles.summarySection}>
-          <h2 className={styles.summaryTitle}>Summary</h2>
-          <SummaryList
-            gradings={gradings}
-            onUpdateGrade={updateGrade}
-            onRemovePR={removeGradedPR}
-          />
-        </div>
+          {/* Summary Section */}
+          <div className={styles.summarySection}>
+            <h2 className={styles.summaryTitle}>Summary</h2>
+            <SummaryList
+              gradings={gradings}
+              onUpdateGrade={updateGrade}
+              onRemovePR={removeGradedPR}
+            />
+          </div>
+        </SelectionProvider>
 
         {/* Footer */}
-        <div className={styles.footer}>
-          <div className={styles.footerContent}>
-            <button
-              onClick={handleSave}
-              disabled={saving}
-              type="button"
-              className={styles.saveButton}
-            >
-              {saving ? 'Saving...' : 'Save'}
-            </button>
-          </div>
+
+        <div className={styles.footerContent}>
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            type="button"
+            className={styles.saveButton}
+          >
+            {saving ? 'Saving...' : 'Save'}
+          </button>
         </div>
       </div>
 

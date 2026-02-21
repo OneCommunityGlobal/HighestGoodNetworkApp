@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import styles from './ResourceManagement.module.css';
 import { formatDateTimeLocal } from '../../utils/formatDate';
 
-function SearchBar() {
+function SearchBar({ searchTerm, onSearchChange, onClear }) {
   return (
     <div className={styles.searchBarContainer}>
       <div className={styles.searchBarContainerLeft}>
@@ -12,10 +12,18 @@ function SearchBar() {
         <span className={styles.iconToggle}>⇅</span>
       </div>
       <div className={styles.searchBarContainerRight}>
-        <input type="text" className={styles.searchInput} placeholder="Search" />
-        <button type="button" className={styles.searchButton}>
-          Search
-        </button>
+        <input
+          type="text"
+          className={styles.searchInput}
+          placeholder="Search by User"
+          value={searchTerm}
+          onChange={onSearchChange}
+        />
+        {searchTerm && (
+          <button type="button" className={styles.clearButton} onClick={onClear}>
+            ✕
+          </button>
+        )}
       </div>
     </div>
   );
@@ -37,7 +45,7 @@ function ResourceManagement() {
     },
     {
       id: 2,
-      user: 'First Last',
+      user: 'Test Last',
       timeDuration: '02:20:00',
       facilities: 'CRM Admin pages',
       materials: 'Larry San Francisco',
@@ -45,7 +53,7 @@ function ResourceManagement() {
     },
     {
       id: 3,
-      user: 'First Last',
+      user: 'Lorem ipsum',
       timeDuration: '03:00:00',
       facilities: 'Client Project',
       materials: 'Bagwell Avenue Ocala',
@@ -53,7 +61,7 @@ function ResourceManagement() {
     },
     {
       id: 4,
-      user: 'First Last',
+      user: 'Dolor Sit',
       timeDuration: '02:45:00',
       facilities: 'Admin Dashboard',
       materials: 'Washburn Baton Rouge',
@@ -61,13 +69,27 @@ function ResourceManagement() {
     },
     {
       id: 5,
-      user: 'First Last',
+      user: 'Elit Quisque',
       timeDuration: '03:30:00',
       facilities: 'App Landing page',
       materials: 'Nest Lane Olivette',
       date: '2025-02-02T17:00:00.000Z',
     },
   ]);
+
+  const [searchTerm, setSearchTerm] = useState(() => localStorage.getItem('resourceSearch') || '');
+
+  useEffect(() => {
+    localStorage.setItem('resourceSearch', searchTerm);
+  }, [searchTerm]);
+
+  const handleSearchChange = e => {
+    setSearchTerm(e.target.value);
+  };
+
+  const filteredResources = resources.filter(resource =>
+    resource.user.toLowerCase().includes(searchTerm.toLowerCase()),
+  );
 
   return (
     <div
@@ -82,7 +104,11 @@ function ResourceManagement() {
         </button>
       </div>
 
-      <SearchBar />
+      <SearchBar
+        searchTerm={searchTerm}
+        onSearchChange={handleSearchChange}
+        onClear={() => setSearchTerm('')}
+      />
 
       <div className={styles.resourceList}>
         <div className={styles.resourceHeading}>
@@ -97,23 +123,28 @@ function ResourceManagement() {
         </div>
         <hr className={styles.lineSperator} />
 
-        {resources.map(resource => (
-          <div key={resource.id}>
-            <div className={styles.resourceItem}>
-              <div className={styles.checkboxContainer}>
-                <input type="checkbox" />
+        {filteredResources.length === 0 ? (
+          <div className={styles.noResultsMessage}>No user found</div>
+        ) : (
+          filteredResources.map(resource => (
+            <div key={resource.id}>
+              <div className={styles.resourceItem}>
+                <div className={styles.checkboxContainer}>
+                  <input type="checkbox" />
+                </div>
+                <div className={styles.resourceItemDetail}>{resource.user}</div>
+                <div className={styles.resourceItemDetail}>{resource.timeDuration}</div>
+                <div className={styles.resourceItemDetail}>{resource.facilities}</div>
+                <div className={styles.resourceItemDetail}>{resource.materials}</div>
+                <div className={styles.resourceItemDetail}>
+                  <span className={styles.calendarIcon}>📅</span>{' '}
+                  {formatDateTimeLocal(resource.date)}
+                </div>
               </div>
-              <div className={styles.resourceItemDetail}>{resource.user}</div>
-              <div className={styles.resourceItemDetail}>{resource.timeDuration}</div>
-              <div className={styles.resourceItemDetail}>{resource.facilities}</div>
-              <div className={styles.resourceItemDetail}>{resource.materials}</div>
-              <div className={styles.resourceItemDetail}>
-                <span className={styles.calendarIcon}>📅</span> {formatDateTimeLocal(resource.date)}
-              </div>
+              <hr className={styles.lineSperator} />
             </div>
-            <hr className={styles.lineSperator} />
-          </div>
-        ))}
+          ))
+        )}
       </div>
 
       <div className={styles.pagination}>
