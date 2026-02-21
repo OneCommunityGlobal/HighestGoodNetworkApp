@@ -1,11 +1,5 @@
-.tableWrapper {
-  overflow-x: auto;
-  overflow-y: visible;
-}
-
 .table {
   width: 100%;
-  min-width: 100%;
   border-collapse: collapse;
 }
 

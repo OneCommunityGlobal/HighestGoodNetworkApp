@@ -43,7 +43,7 @@ vi.mock('react-phone-input-2', () => ({
       <input
         data-testid="phone-input"
         value={props.value}
-        onChange={e => props.onChange(e.target.value)}
+        onChange={e => props.onChange(e.target.value, { dialCode: '1', countryCode: 'us' })}
         placeholder="Phone number"
       />
     );

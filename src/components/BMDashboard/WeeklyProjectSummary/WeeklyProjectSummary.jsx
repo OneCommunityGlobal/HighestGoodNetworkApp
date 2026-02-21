@@ -352,9 +352,14 @@ function WeeklyProjectSummary() {
         key: 'Tools and Equipment Tracking',
         className: 'half',
         content: (
-          <div className="weekly-project-summary-card normal-card" style={{ minHeight: '300px' }}>
-            <ToolsHorizontalBarChart darkMode={darkMode} />
-          </div>
+          <>
+            <div className="weekly-project-summary-card normal-card" style={{ minHeight: '300px' }}>
+              <ToolsHorizontalBarChart darkMode={darkMode} />
+            </div>
+            <div className="weekly-project-summary-card normal-card" style={{ minHeight: '300px' }}>
+              <SupplierPerformanceGraph darkMode={darkMode} />
+            </div>
+          </>
         ),
       },
       {
