@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import styles from './TeamCard.module.css';
 import { TeamMemberRow } from './TeamMemberRow';
@@ -41,6 +42,7 @@ export default function TeamCard() {
     { id: 4, name: 'Sara Sabol', score: '2/10' },
   ];
 
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [selectedMembers, setSelectedMembers] = useState([]);
   const [confirmAction, setConfirmAction] = useState(null);
 
@@ -155,6 +157,7 @@ export default function TeamCard() {
           count={selectedMembers.length}
           onConfirm={handleConfirm}
           onCancel={handleCancel}
+          darkMode={darkMode}
         />
       )}
     </div>
