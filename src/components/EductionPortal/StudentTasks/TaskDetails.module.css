@@ -20,8 +20,6 @@
   z-index: 1;
 }
 
-
-
 /* ===========================
    HEADER SECTION
 =========================== */
@@ -231,9 +229,15 @@
   color: #e5e7eb;
 }
 
-.contentDark .title { color: #e5e7eb; }
-.contentDark .subtitle { color: #94a3b8; }
-.contentDark .divider { border-top: 1px solid #1f2937; }
+.contentDark .title {
+  color: #e5e7eb;
+}
+.contentDark .subtitle {
+  color: #94a3b8;
+}
+.contentDark .divider {
+  border-top: 1px solid #1f2937;
+}
 
 .contentDark .chartSection {
   background: #0f172a;
@@ -245,13 +249,19 @@
 .contentDark .progressSection {
   background: #0f172a;
   color: #e5e7eb;
-  box-shadow: 0 0 4px rgba(0,0,0,0.35);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.35);
 }
 
 /* bars */
-.contentDark .progressBar { background: #1f2937; }
-.contentDark .progressFill { background: #93c5fd; }
-.contentDark .progressFillDark { background: #2563eb; }
+.contentDark .progressBar {
+  background: #1f2937;
+}
+.contentDark .progressFill {
+  background: #93c5fd;
+}
+.contentDark .progressFillDark {
+  background: #2563eb;
+}
 
 /* bottom controls */
 .contentDark .dropdown {
@@ -259,17 +269,29 @@
   color: #e5e7eb;
   border-color: #1f2937;
 }
-.contentDark .dropdown:hover { border-color: #334155; }
-.contentDark .dropdown:focus { border-color: #60a5fa; box-shadow: 0 0 0 1px #60a5fa; }
+.contentDark .dropdown:hover {
+  border-color: #334155;
+}
+.contentDark .dropdown:focus {
+  border-color: #60a5fa;
+  box-shadow: 0 0 0 1px #60a5fa;
+}
 
 .contentDark .textbox {
   background: #0b1220;
   color: #e5e7eb;
   border-color: #1f2937;
 }
-.contentDark .textbox::placeholder { color: #94a3b8; }
-.contentDark .textbox:focus { border-color: #60a5fa; box-shadow: 0 0 0 1px #60a5fa; }
-.pageLayoutDark { background: #0b1220; }
+.contentDark .textbox::placeholder {
+  color: #94a3b8;
+}
+.contentDark .textbox:focus {
+  border-color: #60a5fa;
+  box-shadow: 0 0 0 1px #60a5fa;
+}
+.pageLayoutDark {
+  background: #0b1220;
+}
 .progressSectionDark {
   background: #0f172a;
   color: #e5e7eb;
@@ -277,6 +299,12 @@
   box-shadow: 0 0 0 transparent;
 }
 
-.progressSectionDark .progressTitle { color: #e5e7eb; }
-.progressSectionDark .progressRow { color: #cbd5e1; }
-.progressSectionDark .progressBar { background: #1f2937; }
+.progressSectionDark .progressTitle {
+  color: #e5e7eb;
+}
+.progressSectionDark .progressRow {
+  color: #cbd5e1;
+}
+.progressSectionDark .progressBar {
+  background: #1f2937;
+}

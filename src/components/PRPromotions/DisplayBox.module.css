@@ -94,31 +94,10 @@
   font-weight: bold;
 }
 
-.color-0 {
-  background-color: #9400D3;
-}
-
-.color-1 {
-  background-color: #4B0082;
-}
-
-.color-2 {
-  background-color: #0000FF;
-}
-
-.color-3 {
-  background-color: #00FF00;
-}
-
-.color-4 {
-  background-color: #FFFF00;
-}
-
-.color-5 {
-  background-color: #FF7F00;
-}
-
-.color-6 {
-  background-color: #FF0000;
-}
-
+.color-0 { background-color: #9400d3; }
+.color-1 { background-color: #4b0082; }
+.color-2 { background-color: #0000ff; }
+.color-3 { background-color: #00ff00; }
+.color-4 { background-color: #ffff00; }
+.color-5 { background-color: #ff7f00; }
+.color-6 { background-color: #ff0000; }

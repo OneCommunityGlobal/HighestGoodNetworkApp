@@ -14,8 +14,9 @@
   background-color: #f7f7f7;
   border-radius: 10px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  padding: 24px 28px;
   overflow: hidden;
+  /* height: 80vh; */
+  padding: 24px 28px;
   align-items: start;
 }
 

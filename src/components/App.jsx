@@ -9,7 +9,7 @@ import initAuth from '../utils/authInit';
 import routes from '../routes';
 import logger from '../services/logService';
 import Loading from './common/Loading';
-import '../App.css';
+import '../App.module.css';
 import { initMessagingSocket } from '../utils/messagingSocket';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import ThemeManager from './common/ThemeManager';
