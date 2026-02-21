@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import { Form, FormControl, InputGroup, Button } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { toast } from 'react-toastify';
@@ -12,7 +12,7 @@ import ExportConfirmationModal from './ExportConfirmationModal';
 import styles from './LessonListForm.module.css';
 
 function LessonList(props) {
-  const { lessons, darkMode, dispatch } = props;
+  const { lessons, dispatch } = props;
   const [tags, setTags] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [deleteValue, setDeleteInputValue] = useState('');
@@ -26,6 +26,7 @@ function LessonList(props) {
   const [confirmModal, setConfirmModal] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   // Load saved tags from localStorage on mount
   useEffect(() => {
@@ -139,6 +140,7 @@ function LessonList(props) {
   const isInThisWeek = date => {
     // Convert the date string to a Date object with consistent formatting
     const lessonDate = new Date(date);
+
     const currentDate = new Date();
 
     // Check if the year and week are the same
@@ -150,12 +152,14 @@ function LessonList(props) {
       const dayDifference = Math.abs(currentDate - lessonDate) / (1000 * 60 * 60 * 24);
       return dayDifference < 7;
     }
+
     return false;
   };
 
   const isInThisYear = date => {
     const currentDate = new Date();
     const lessonDate = new Date(date);
+
     return currentDate.getFullYear() === lessonDate.getFullYear();
   };
 
@@ -193,7 +197,9 @@ function LessonList(props) {
         setShowDeleteDropdown(false);
       }
     };
+
     document.addEventListener('mousedown', handleClickOutside);
+
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
@@ -221,6 +227,15 @@ function LessonList(props) {
     setDeleteInputValue('');
     setShowDeleteDropdown(false);
   };
+
+  /**
+  const handleInputKeyDown = event => {
+    if (event.key === 'Enter' || event.key === ',') {
+      event.preventDefault();
+      addTag(inputValue.trim());
+    }
+  };
+  */
 
   const handleDeleteKeyDown = event => {
     if (event.key === 'Enter' && deleteValue.trim()) {
@@ -254,15 +269,18 @@ function LessonList(props) {
       if (tags.length > 0) {
         filtered = filtered.filter(lesson => {
           const hasAllTags = lesson.tags && tags.every(tag => lesson.tags.includes(tag));
+
           return hasAllTags;
         });
       }
 
       // 2. Apply date filtering
+
       switch (filterOption) {
         case '2':
           filtered = filtered.filter(item => {
             const result = isInThisYear(item.date);
+
             return result;
           });
           break;
@@ -592,7 +610,11 @@ function LessonList(props) {
           </div>
           <div className={`${styles.formSelectContainer}`}>
             <div>
-              <Form.Group className={`${styles.singleForm}`} controlId="Form.ControlSelect1">
+              <Form.Group
+                className={`${styles.singleForm} ${darkMode ? styles.darkMode : ''}`}
+                controlId="Form.ControlSelect1"
+              >
+                {' '}
                 <Form.Label>Filter:</Form.Label>
                 <FormControl
                   className={`${styles.singleFormSelect}`}
@@ -609,7 +631,10 @@ function LessonList(props) {
               </Form.Group>
             </div>
             <div>
-              <Form.Group className={`${styles.singleForm}`} controlId="Form.ControlSelect2">
+              <Form.Group
+                className={`${styles.singleForm} ${darkMode ? styles.darkMode : ''}`}
+                controlId="Form.ControlSelect2"
+              >
                 <Form.Label>Sort:</Form.Label>
                 <FormControl
                   className={`${styles.singleFormSelect}`}
