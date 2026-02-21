@@ -34,27 +34,42 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, outerRadius, percent, width }
 };
 
 // Custom tooltip component
-const CustomTooltip = ({ active, payload, total, hasNoData, toolName, projectName, toolId }) => {
+const CustomTooltip = ({
+  active,
+  payload,
+  total,
+  hasNoData,
+  toolName,
+  projectName,
+  toolId,
+  darkMode,
+}) => {
   if (!active || !payload || !payload.length) {
     return null;
   }
+
+  const tooltipBg = darkMode ? '#2E3E5A' : 'rgba(255, 255, 255, 0.95)';
+  const tooltipBorder = darkMode ? '#555' : '#ccc';
+  const tooltipTextColor = darkMode ? '#fff' : '#333';
+  const tooltipSecondaryTextColor = darkMode ? '#e0e0e0' : '#666';
+  const tooltipShadow = darkMode ? '0 2px 8px rgba(0, 0, 0, 0.4)' : '0 2px 8px rgba(0, 0, 0, 0.15)';
 
   // If total is 0, show no tools match message
   if (total === 0) {
     return (
       <div
         style={{
-          backgroundColor: 'rgba(255, 255, 255, 0.95)',
-          border: '1px solid #ccc',
+          backgroundColor: tooltipBg,
+          border: `1px solid ${tooltipBorder}`,
           borderRadius: '4px',
           padding: '8px 12px',
           fontSize: '14px',
-          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
+          boxShadow: tooltipShadow,
           maxWidth: '200px',
         }}
       >
-        <div style={{ fontWeight: '600', color: '#333' }}>📊 No Tools Match</div>
-        <div style={{ color: '#666', fontSize: '12px' }}>
+        <div style={{ fontWeight: '600', color: tooltipTextColor }}>📊 No Tools Match</div>
+        <div style={{ color: tooltipSecondaryTextColor, fontSize: '12px' }}>
           No tools match the selected combination
         </div>
       </div>
@@ -66,17 +81,19 @@ const CustomTooltip = ({ active, payload, total, hasNoData, toolName, projectNam
     return (
       <div
         style={{
-          backgroundColor: 'rgba(255, 255, 255, 0.95)',
-          border: '1px solid #ccc',
+          backgroundColor: tooltipBg,
+          border: `1px solid ${tooltipBorder}`,
           borderRadius: '4px',
           padding: '8px 12px',
           fontSize: '14px',
-          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
+          boxShadow: tooltipShadow,
           maxWidth: '200px',
         }}
       >
-        <div style={{ fontWeight: '600', color: '#333' }}>{toolName}</div>
-        <div style={{ color: '#666', fontSize: '12px' }}>❌ Not used in this project</div>
+        <div style={{ fontWeight: '600', color: tooltipTextColor }}>{toolName}</div>
+        <div style={{ color: tooltipSecondaryTextColor, fontSize: '12px' }}>
+          ❌ Not used in this project
+        </div>
       </div>
     );
   }
@@ -87,22 +104,22 @@ const CustomTooltip = ({ active, payload, total, hasNoData, toolName, projectNam
   return (
     <div
       style={{
-        backgroundColor: 'rgba(255, 255, 255, 0.95)',
-        border: '1px solid #ccc',
+        backgroundColor: tooltipBg,
+        border: `1px solid ${tooltipBorder}`,
         borderRadius: '4px',
         padding: '8px 12px',
         fontSize: '14px',
-        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
+        boxShadow: tooltipShadow,
         maxWidth: '200px',
       }}
     >
-      <div style={{ fontWeight: '600', color: '#333', marginBottom: '4px' }}>
+      <div style={{ fontWeight: '600', color: tooltipTextColor, marginBottom: '4px' }}>
         {toolName || 'All Tools'}
       </div>
-      <div style={{ color: '#666', marginBottom: '2px' }}>
+      <div style={{ color: tooltipSecondaryTextColor, marginBottom: '2px' }}>
         Count: <strong>{data.value}</strong>
       </div>
-      <div style={{ color: '#666' }}>
+      <div style={{ color: tooltipSecondaryTextColor }}>
         Percentage: <strong>{percentage}%</strong>
       </div>
     </div>
@@ -316,6 +333,7 @@ export default function ToolStatusDonutChart() {
                     hasNoData={hasNoData}
                     toolName={toolName}
                     toolId={toolId}
+                    darkMode={darkMode}
                   />
                 }
                 cursor={false}

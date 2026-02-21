@@ -323,13 +323,10 @@ export default function ProjectRiskProfileOverview() {
       <div style={{ width: '100%', margin: '0 -24px', padding: '0 24px' }}>
         <ResponsiveContainer width="100%" height={400}>
           <BarChart
-            data={filteredData.map(item => {
-              console.log('Before transform:', item.predictedCostOverrun);
-              return {
-                ...item,
-                predictedCostOverrun: item.predictedCostOverrun,
-              };
-            })}
+            data={filteredData.map(item => ({
+              ...item,
+              predictedCostOverrun: item.predictedCostOverrun,
+            }))}
             margin={{ top: 20, right: 40, left: 60, bottom: 80 }}
             barCategoryGap="20%"
             barGap={4}

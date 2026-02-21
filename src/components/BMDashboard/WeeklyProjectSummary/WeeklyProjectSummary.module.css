@@ -417,6 +417,8 @@
 
 .weeklyStatusChange {
   font-weight: 600;
+  color: #1b2a41;
+  font-size: clamp(12px, 1.2vw, 14px);
 }
 
 .darkMode .statusCard .weeklyStatusChange,
@@ -539,4 +541,116 @@
   .projectStatusGrid {
     grid-template-columns: repeat(1, 1fr);
   }
+}
+
+/* ---------------- OVERRIDE GLOBAL DARK MODE FOR PROJECT STATUS CARDS ---------------- */
+/* These rules override the global dark mode text color rules specifically for Project Status cards */
+/* Using high specificity selectors to ensure they take precedence over global !important rules */
+/* The global CSS uses body.dark-mode * and body.bm-dashboard-dark * with !important, */
+/* so we need selectors with higher specificity (more elements) and also use !important */
+
+/* Target all text elements within Project Status cards - most specific selector */
+:global(body.dark-mode) .weeklyProjectSummaryContainer .projectStatusGrid .statusCard div.weeklyCardTitle,
+:global(body.bm-dashboard-dark) .weeklyProjectSummaryContainer .projectStatusGrid .statusCard div.weeklyCardTitle,
+:global(body.dark-mode) .weeklyProjectSummaryContainer .projectStatusGrid .statusCard span.weeklyStatusValue,
+:global(body.bm-dashboard-dark) .weeklyProjectSummaryContainer .projectStatusGrid .statusCard span.weeklyStatusValue,
+:global(body.dark-mode) .weeklyProjectSummaryContainer .projectStatusGrid .statusCard div.weekly-status-change,
+:global(body.bm-dashboard-dark) .weeklyProjectSummaryContainer .projectStatusGrid .statusCard div.weekly-status-change {
+  color: #1b2a41 !important;
+}
+
+/* Also target with class selectors for maximum specificity */
+:global(body.dark-mode) .weeklyProjectSummaryContainer .projectStatusGrid .statusCard .weeklyCardTitle,
+:global(body.bm-dashboard-dark) .weeklyProjectSummaryContainer .projectStatusGrid .statusCard .weeklyCardTitle {
+  color: #1b2a41 !important;
+}
+
+:global(body.dark-mode) .weeklyProjectSummaryContainer .projectStatusGrid .statusCard .weeklyStatusValue,
+:global(body.bm-dashboard-dark) .weeklyProjectSummaryContainer .projectStatusGrid .statusCard .weeklyStatusValue {
+  color: #1b2a41 !important;
+}
+
+:global(body.dark-mode) .weeklyProjectSummaryContainer .projectStatusGrid .statusCard .weekly-status-change,
+:global(body.bm-dashboard-dark) .weeklyProjectSummaryContainer .projectStatusGrid .statusCard .weekly-status-change {
+  color: #1b2a41 !important;
+}
+
+/* Target the statusCard container and all children with universal selector */
+:global(body.dark-mode) .weeklyProjectSummaryContainer .projectStatusGrid .statusCard,
+:global(body.bm-dashboard-dark) .weeklyProjectSummaryContainer .projectStatusGrid .statusCard {
+  color: #1b2a41 !important;
+}
+
+:global(body.dark-mode) .weeklyProjectSummaryContainer .projectStatusGrid .statusCard *,
+:global(body.bm-dashboard-dark) .weeklyProjectSummaryContainer .projectStatusGrid .statusCard * {
+  color: #1b2a41 !important;
+}
+
+/* Additional specific selectors for p, span, div elements within status cards */
+:global(body.dark-mode) .weeklyProjectSummaryContainer .projectStatusGrid .statusCard p,
+:global(body.dark-mode) .weeklyProjectSummaryContainer .projectStatusGrid .statusCard span,
+:global(body.dark-mode) .weeklyProjectSummaryContainer .projectStatusGrid .statusCard div,
+:global(body.bm-dashboard-dark) .weeklyProjectSummaryContainer .projectStatusGrid .statusCard p,
+:global(body.bm-dashboard-dark) .weeklyProjectSummaryContainer .projectStatusGrid .statusCard span,
+:global(body.bm-dashboard-dark) .weeklyProjectSummaryContainer .projectStatusGrid .statusCard div {
+  color: #1b2a41 !important;
+}
+
+/* Target the weeklyStatusChange class specifically */
+:global(body.dark-mode) .weeklyProjectSummaryContainer .projectStatusGrid .statusCard .weeklyStatusChange,
+:global(body.bm-dashboard-dark) .weeklyProjectSummaryContainer .projectStatusGrid .statusCard .weeklyStatusChange,
+:global(body.dark-mode) .weeklyProjectSummaryContainer .projectStatusGrid .statusCard .weekly-status-change,
+:global(body.bm-dashboard-dark) .weeklyProjectSummaryContainer .projectStatusGrid .statusCard .weekly-status-change {
+  color: #1b2a41 !important;
+}
+
+/* Extra specific selectors including intermediate containers for maximum specificity */
+:global(body.dark-mode) .weeklyProjectSummaryContainer .weeklyProjectSummaryDashboardCategoryContent .projectStatusGrid .statusCard *,
+:global(body.bm-dashboard-dark) .weeklyProjectSummaryContainer .weeklyProjectSummaryDashboardCategoryContent .projectStatusGrid .statusCard * {
+  color: #1b2a41 !important;
+}
+
+/* ---------------- SUPPLIER PERFORMANCE DARK MODE STYLES ---------------- */
+/* Style reactstrap Input select elements in Supplier Performance component */
+/* Using high specificity to override global body.dark-mode .form-control rules */
+:global(body.dark-mode) .supplier-performance-card-dark select.form-control,
+:global(body.bm-dashboard-dark) .supplier-performance-card-dark select.form-control,
+:global(body.dark-mode) .supplier-performance-card-dark select,
+:global(body.bm-dashboard-dark) .supplier-performance-card-dark select,
+:global(body.dark-mode) .supplier-performance-card-dark .supplier-performance-select,
+:global(body.bm-dashboard-dark) .supplier-performance-card-dark .supplier-performance-select,
+:global(body.dark-mode) .supplier-performance-card-dark .supplier-performance-select.form-control,
+:global(body.bm-dashboard-dark) .supplier-performance-card-dark .supplier-performance-select.form-control {
+  background-color: #2b3344 !important;
+  border-color: #3a506b !important;
+  color: #ffffff !important;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m1 6 7 7 7-7'/%3e%3c/svg%3e") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 0.75rem center !important;
+  background-size: 16px 12px !important;
+  padding-right: 2.25rem !important;
+}
+
+:global(body.dark-mode) .supplier-performance-card-dark select.form-control:focus,
+:global(body.bm-dashboard-dark) .supplier-performance-card-dark select.form-control:focus,
+:global(body.dark-mode) .supplier-performance-card-dark select:focus,
+:global(body.bm-dashboard-dark) .supplier-performance-card-dark select:focus,
+:global(body.dark-mode) .supplier-performance-card-dark .supplier-performance-select:focus,
+:global(body.bm-dashboard-dark) .supplier-performance-card-dark .supplier-performance-select:focus,
+:global(body.dark-mode) .supplier-performance-card-dark .supplier-performance-select.form-control:focus,
+:global(body.bm-dashboard-dark) .supplier-performance-card-dark .supplier-performance-select.form-control:focus {
+  background-color: #2b3344 !important;
+  border-color: #4a6072 !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 0 0.2rem rgba(74, 96, 114, 0.25) !important;
+}
+
+:global(body.dark-mode) .supplier-performance-card-dark select.form-control option,
+:global(body.bm-dashboard-dark) .supplier-performance-card-dark select.form-control option,
+:global(body.dark-mode) .supplier-performance-card-dark select option,
+:global(body.bm-dashboard-dark) .supplier-performance-card-dark select option,
+:global(body.dark-mode) .supplier-performance-card-dark .supplier-performance-select option,
+:global(body.bm-dashboard-dark) .supplier-performance-card-dark .supplier-performance-select option {
+  background-color: #2b3344 !important;
+  color: #ffffff !important;
 }

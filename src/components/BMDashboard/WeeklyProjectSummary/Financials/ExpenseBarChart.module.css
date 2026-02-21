@@ -1,0 +1,326 @@
+.expenseChartContainer {
+  width: 100%;
+  padding: 0.5rem;
+}
+
+.expenseChartTitle {
+  text-align: center;
+  margin-bottom: 0.75rem;
+}
+
+.expenseChartTitle h4 {
+  margin: 0;
+  color: #555;
+  font-size: 1.2rem;
+}
+
+.expenseChartError {
+  color: red;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+
+.expenseChartFilters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.expenseChartFilterLabel {
+  min-width: 150px;
+  color: #333;
+}
+
+.expenseChartSelect {
+  margin-left: 0.3rem;
+  width: 100%;
+  padding: 0.375rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  color: #000;
+  font-size: 0.875rem;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.expenseChartSelect:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+.expenseChartLegend {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  font-size: 0.75rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.expenseChartLegendItem {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: #333;
+}
+
+.expenseChartLegendBox {
+  width: 10px;
+  height: 10px;
+  display: inline-block;
+}
+
+.expenseChartWrapper {
+  width: 100%;
+  height: 240px;
+}
+
+/* Dark mode styles */
+.expenseChartContainer.darkMode .expenseChartTitle h4 {
+  color: #fff;
+}
+
+.expenseChartContainer.darkMode .expenseChartFilterLabel {
+  color: #fff;
+}
+
+.expenseChartContainer.darkMode .expenseChartLegendItem {
+  color: #fff;
+}
+
+/* High specificity selectors for dark mode filters */
+:global(body.dark-mode) .expenseChartContainer.darkMode .expenseChartSelect,
+:global(body.bm-dashboard-dark) .expenseChartContainer.darkMode .expenseChartSelect,
+.expenseChartContainer.darkMode .expenseChartSelect {
+  background-color: #2b3344 !important;
+  color: #fff !important;
+  border-color: #3a506b !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m1 6 7 7 7-7'/%3e%3c/svg%3e") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 0.75rem center !important;
+  background-size: 16px 12px !important;
+  padding-right: 2.25rem !important;
+}
+
+:global(body.dark-mode) .expenseChartContainer.darkMode .expenseChartSelect:focus,
+:global(body.bm-dashboard-dark) .expenseChartContainer.darkMode .expenseChartSelect:focus,
+.expenseChartContainer.darkMode .expenseChartSelect:focus {
+  background-color: #2b3344 !important;
+  border-color: #4a6072 !important;
+  color: #fff !important;
+  box-shadow: 0 0 0 2px rgba(74, 96, 114, 0.25) !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m1 6 7 7 7-7'/%3e%3c/svg%3e") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 0.75rem center !important;
+  background-size: 16px 12px !important;
+  padding-right: 2.25rem !important;
+}
+
+:global(body.dark-mode) .expenseChartContainer.darkMode .expenseChartSelect option,
+:global(body.bm-dashboard-dark) .expenseChartContainer.darkMode .expenseChartSelect option,
+.expenseChartContainer.darkMode .expenseChartSelect option {
+  background-color: #2b3344 !important;
+  color: #fff !important;
+}
+
+/* DatePicker wrapper */
+.expenseChartDatePickerWrapper {
+  width: 100%;
+  margin-left: 0.3rem;
+}
+
+.expenseChartDatePickerInputWrapper {
+  width: 100%;
+}
+
+.expenseChartDatePickerInput {
+  width: 100%;
+}
+
+/* High specificity selectors for DatePicker inputs - targeting all possible selectors */
+:global(body.dark-mode) .expenseChartContainer.darkMode .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper .react-datepicker__input-container input,
+:global(body.bm-dashboard-dark) .expenseChartContainer.darkMode .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper .react-datepicker__input-container input,
+:global(body.dark-mode) .expenseChartContainer.darkMode .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper .react-datepicker-wrapper .react-datepicker__input-container input,
+:global(body.bm-dashboard-dark) .expenseChartContainer.darkMode .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper .react-datepicker-wrapper .react-datepicker__input-container input,
+:global(body.dark-mode) .darkMode .expenseChartContainer .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper .react-datepicker__input-container input,
+:global(body.bm-dashboard-dark) .darkMode .expenseChartContainer .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper .react-datepicker__input-container input,
+:global(body.dark-mode) .darkMode .expenseChartContainer .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper .react-datepicker-wrapper .react-datepicker__input-container input,
+:global(body.bm-dashboard-dark) .darkMode .expenseChartContainer .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper .react-datepicker-wrapper .react-datepicker__input-container input,
+:global(body.dark-mode) .darkMode .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper .react-datepicker__input-container input,
+:global(body.bm-dashboard-dark) .darkMode .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper .react-datepicker__input-container input,
+:global(body.dark-mode) .darkMode .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper .react-datepicker-wrapper .react-datepicker__input-container input,
+:global(body.bm-dashboard-dark) .darkMode .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper .react-datepicker-wrapper .react-datepicker__input-container input,
+:global(body.dark-mode) .darkMode .expenseChartDatePickerInputWrapper .react-datepicker-wrapper .react-datepicker__input-container input,
+:global(body.bm-dashboard-dark) .darkMode .expenseChartDatePickerInputWrapper .react-datepicker-wrapper .react-datepicker__input-container input,
+:global(body.dark-mode) .darkMode .react-datepicker-wrapper .react-datepicker__input-container input,
+:global(body.bm-dashboard-dark) .darkMode .react-datepicker-wrapper .react-datepicker__input-container input,
+.expenseChartContainer.darkMode .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper .react-datepicker__input-container input,
+.expenseChartContainer.darkMode .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper .react-datepicker-wrapper .react-datepicker__input-container input,
+.darkMode .expenseChartContainer .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper .react-datepicker__input-container input,
+.darkMode .expenseChartContainer .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper .react-datepicker-wrapper .react-datepicker__input-container input,
+.darkMode .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper .react-datepicker__input-container input,
+.darkMode .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper .react-datepicker-wrapper .react-datepicker__input-container input,
+.darkMode .expenseChartDatePickerInputWrapper .react-datepicker-wrapper .react-datepicker__input-container input,
+.darkMode .react-datepicker-wrapper .react-datepicker__input-container input {
+  background-color: #2b3344 !important;
+  color: #fff !important;
+  border: 1px solid #3a506b !important;
+  padding: 0.375rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  width: 100%;
+}
+
+/* Target input elements directly within the wrapper */
+:global(body.dark-mode) .expenseChartContainer.darkMode .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper input,
+:global(body.bm-dashboard-dark) .expenseChartContainer.darkMode .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper input,
+:global(body.dark-mode) .darkMode .expenseChartContainer .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper input,
+:global(body.bm-dashboard-dark) .darkMode .expenseChartContainer .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper input,
+:global(body.dark-mode) .darkMode .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper input,
+:global(body.bm-dashboard-dark) .darkMode .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper input,
+.expenseChartContainer.darkMode .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper input,
+.darkMode .expenseChartContainer .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper input,
+.darkMode .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper input {
+  background-color: #2b3344 !important;
+  color: #fff !important;
+  border: 1px solid #3a506b !important;
+  padding: 0.375rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  width: 100%;
+}
+
+/* Target inputs with react-datepicker-ignore-onclickoutside class */
+:global(body.dark-mode) .expenseChartContainer.darkMode .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper input.react-datepicker-ignore-onclickoutside,
+:global(body.bm-dashboard-dark) .expenseChartContainer.darkMode .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper input.react-datepicker-ignore-onclickoutside,
+:global(body.dark-mode) .darkMode .expenseChartContainer .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper input.react-datepicker-ignore-onclickoutside,
+:global(body.bm-dashboard-dark) .darkMode .expenseChartContainer .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper input.react-datepicker-ignore-onclickoutside,
+.expenseChartContainer.darkMode .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper input.react-datepicker-ignore-onclickoutside,
+.darkMode .expenseChartContainer .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper input.react-datepicker-ignore-onclickoutside {
+  background-color: #2b3344 !important;
+  color: #fff !important;
+  border: 1px solid #3a506b !important;
+  padding: 0.375rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  width: 100%;
+}
+
+/* Placeholder styles */
+:global(body.dark-mode) .expenseChartContainer.darkMode .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper .react-datepicker__input-container input::placeholder,
+:global(body.bm-dashboard-dark) .expenseChartContainer.darkMode .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper .react-datepicker__input-container input::placeholder,
+:global(body.dark-mode) .darkMode .expenseChartContainer .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper .react-datepicker__input-container input::placeholder,
+:global(body.bm-dashboard-dark) .darkMode .expenseChartContainer .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper .react-datepicker__input-container input::placeholder,
+:global(body.dark-mode) .darkMode .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper .react-datepicker__input-container input::placeholder,
+:global(body.bm-dashboard-dark) .darkMode .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper .react-datepicker__input-container input::placeholder,
+.expenseChartContainer.darkMode .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper .react-datepicker__input-container input::placeholder,
+.darkMode .expenseChartContainer .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper .react-datepicker__input-container input::placeholder,
+.darkMode .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper .react-datepicker__input-container input::placeholder,
+.expenseChartContainer.darkMode .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper input::placeholder,
+.darkMode .expenseChartContainer .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper input::placeholder,
+.darkMode .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper input::placeholder {
+  color: #fff !important;
+}
+
+/* Focus styles */
+:global(body.dark-mode) .expenseChartContainer.darkMode .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper .react-datepicker__input-container input:focus,
+:global(body.bm-dashboard-dark) .expenseChartContainer.darkMode .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper .react-datepicker__input-container input:focus,
+:global(body.dark-mode) .darkMode .expenseChartContainer .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper .react-datepicker__input-container input:focus,
+:global(body.bm-dashboard-dark) .darkMode .expenseChartContainer .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper .react-datepicker__input-container input:focus,
+:global(body.dark-mode) .expenseChartContainer.darkMode .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper input:focus,
+:global(body.bm-dashboard-dark) .expenseChartContainer.darkMode .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper input:focus,
+:global(body.dark-mode) .darkMode .expenseChartContainer .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper input:focus,
+:global(body.bm-dashboard-dark) .darkMode .expenseChartContainer .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper input:focus,
+:global(body.dark-mode) .expenseChartContainer.darkMode .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper input.react-datepicker-ignore-onclickoutside:focus,
+:global(body.bm-dashboard-dark) .expenseChartContainer.darkMode .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper input.react-datepicker-ignore-onclickoutside:focus,
+.expenseChartContainer.darkMode .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper .react-datepicker__input-container input:focus,
+.darkMode .expenseChartContainer .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper .react-datepicker__input-container input:focus,
+.darkMode .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper .react-datepicker__input-container input:focus,
+.expenseChartContainer.darkMode .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper input:focus,
+.darkMode .expenseChartContainer .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper input:focus,
+.darkMode .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper input:focus,
+.expenseChartContainer.darkMode .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper input.react-datepicker-ignore-onclickoutside:focus,
+.darkMode .expenseChartContainer .expenseChartDatePickerWrapper .expenseChartDatePickerInputWrapper input.react-datepicker-ignore-onclickoutside:focus {
+  background-color: #2b3344 !important;
+  border-color: #4a6072 !important;
+  color: #fff !important;
+  box-shadow: 0 0 0 2px rgba(74, 96, 114, 0.25) !important;
+  outline: none !important;
+}
+
+/* Calendar popup dark mode styles - react-datepicker renders in portal so we need body-level selectors */
+:global(html body.dark-mode) .react-datepicker,
+:global(html body.bm-dashboard-dark) .react-datepicker {
+  background-color: #2b3344 !important;
+  border-color: #3a506b !important;
+  color: #fff !important;
+}
+
+:global(html body.dark-mode) .react-datepicker__header,
+:global(html body.bm-dashboard-dark) .react-datepicker__header {
+  background-color: #2b3344 !important;
+  border-bottom-color: #3a506b !important;
+}
+
+:global(html body.dark-mode) .react-datepicker__current-month,
+:global(html body.bm-dashboard-dark) .react-datepicker__current-month {
+  color: #fff !important;
+}
+
+:global(html body.dark-mode) .react-datepicker__day-name,
+:global(html body.bm-dashboard-dark) .react-datepicker__day-name {
+  color: #fff !important;
+}
+
+:global(html body.dark-mode) .react-datepicker__day,
+:global(html body.bm-dashboard-dark) .react-datepicker__day {
+  color: #fff !important;
+}
+
+:global(html body.dark-mode) .react-datepicker__day:hover,
+:global(html body.bm-dashboard-dark) .react-datepicker__day:hover {
+  background-color: #3a506b !important;
+  color: #fff !important;
+}
+
+:global(html body.dark-mode) .react-datepicker__day--selected,
+:global(html body.bm-dashboard-dark) .react-datepicker__day--selected {
+  background-color: #4a6072 !important;
+  color: #fff !important;
+}
+
+:global(html body.dark-mode) .react-datepicker__day--keyboard-selected,
+:global(html body.bm-dashboard-dark) .react-datepicker__day--keyboard-selected {
+  background-color: #4a6072 !important;
+  color: #fff !important;
+}
+
+:global(html body.dark-mode) .react-datepicker__day--in-range,
+:global(html body.bm-dashboard-dark) .react-datepicker__day--in-range {
+  background-color: #3a506b !important;
+  color: #fff !important;
+}
+
+:global(html body.dark-mode) .react-datepicker__navigation-icon::before,
+:global(html body.bm-dashboard-dark) .react-datepicker__navigation-icon::before {
+  border-color: #fff !important;
+}
+
+:global(html body.dark-mode) .react-datepicker__month-container,
+:global(html body.bm-dashboard-dark) .react-datepicker__month-container {
+  background-color: #2b3344 !important;
+}
+

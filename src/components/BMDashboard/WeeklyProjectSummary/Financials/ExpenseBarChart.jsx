@@ -1,14 +1,19 @@
 import { BarChart, Bar, XAxis, YAxis, LabelList, ResponsiveContainer } from 'recharts';
 import { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import styles from './ExpenseBarChart.module.css';
 
 const categories = ['Plumbing', 'Electrical', 'Structural', 'Mechanical'];
 const projects = ['Project A', 'Project B', 'Project C'];
 
 export default function ExpenseBarChart() {
+  const darkMode = useSelector(state => state.theme?.darkMode);
   const [projectId, setProjectId] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('ALL');
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
   const [data, setData] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -64,6 +69,10 @@ export default function ExpenseBarChart() {
           const entryDate = new Date(entry.date);
           const start = startDate ? new Date(startDate) : null;
           const end = endDate ? new Date(endDate) : null;
+          // Reset time to start/end of day for proper comparison
+          if (start) start.setHours(0, 0, 0, 0);
+          if (end) end.setHours(23, 59, 59, 999);
+          entryDate.setHours(0, 0, 0, 0);
           const dateMatch = (!start || entryDate >= start) && (!end || entryDate <= end);
           const projectMatch = projectId === '' || entry.projectId === projectId;
           const categoryMatch = categoryFilter === 'ALL' || entry.category === categoryFilter;
@@ -90,33 +99,19 @@ export default function ExpenseBarChart() {
   }, [projectId, categoryFilter, startDate, endDate]);
 
   return (
-    <div style={{ width: '100%', padding: '0.5rem' }}>
-      <div style={{ textAlign: 'center', marginBottom: '0.75rem' }}>
-        <h4 style={{ margin: 0, color: '#555', fontSize: '1.2rem' }}>Planned vs Actual Cost</h4>
-        {errorMessage && (
-          <div style={{ color: 'red', fontSize: '0.9rem', marginTop: '0.5rem' }}>
-            {errorMessage}
-          </div>
-        )}
+    <div className={`${styles.expenseChartContainer} ${darkMode ? styles.darkMode : ''}`}>
+      <div className={styles.expenseChartTitle}>
+        <h4>Planned vs Actual Cost</h4>
+        {errorMessage && <div className={styles.expenseChartError}>{errorMessage}</div>}
       </div>
 
-      <div
-        style={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          justifyContent: 'center',
-          alignItems: 'center',
-          gap: '1rem',
-          fontSize: '0.75rem',
-          marginBottom: '0.5rem',
-        }}
-      >
-        <label style={{ minWidth: '150px' }}>
-          Project:
+      <div className={styles.expenseChartFilters}>
+        <label className={styles.expenseChartFilterLabel}>
+          Project:{' '}
           <select
             value={projectId}
             onChange={e => setProjectId(e.target.value)}
-            style={{ marginLeft: '0.3rem', width: '100%' }}
+            className={styles.expenseChartSelect}
           >
             <option value="">All</option>
             {projects.map(p => (
@@ -126,12 +121,12 @@ export default function ExpenseBarChart() {
             ))}
           </select>
         </label>
-        <label style={{ minWidth: '150px' }}>
-          Category:
+        <label className={styles.expenseChartFilterLabel}>
+          Category:{' '}
           <select
             value={categoryFilter}
             onChange={e => setCategoryFilter(e.target.value)}
-            style={{ marginLeft: '0.3rem', width: '100%' }}
+            className={styles.expenseChartSelect}
           >
             <option value="ALL">All</option>
             {categories.map(cat => (
@@ -141,51 +136,70 @@ export default function ExpenseBarChart() {
             ))}
           </select>
         </label>
-        <label style={{ minWidth: '150px' }}>
-          Start Date:
-          <input
-            type="date"
-            value={startDate}
-            onChange={e => setStartDate(e.target.value)}
-            style={{ marginLeft: '0.3rem', width: '100%' }}
-          />
+        <label className={styles.expenseChartFilterLabel}>
+          Start Date:{' '}
+          <div className={styles.expenseChartDatePickerWrapper}>
+            <DatePicker
+              selected={startDate}
+              onChange={setStartDate}
+              selectsStart
+              startDate={startDate}
+              endDate={endDate}
+              maxDate={endDate || undefined}
+              placeholderText="Start date"
+              className={styles.expenseChartDatePickerInput}
+              wrapperClassName={styles.expenseChartDatePickerInputWrapper}
+              style={{
+                backgroundColor: darkMode ? '#2b3344' : '#fff',
+                color: darkMode ? '#fff' : '#000',
+                border: `1px solid ${darkMode ? '#3a506b' : '#ccc'}`,
+                borderRadius: '4px',
+                padding: '0.375rem',
+                fontSize: '0.875rem',
+                width: '100%',
+              }}
+            />
+          </div>
         </label>
-        <label style={{ minWidth: '150px' }}>
-          End Date:
-          <input
-            type="date"
-            value={endDate}
-            onChange={e => setEndDate(e.target.value)}
-            style={{ marginLeft: '0.3rem', width: '100%' }}
-          />
+        <label className={styles.expenseChartFilterLabel}>
+          End Date:{' '}
+          <div className={styles.expenseChartDatePickerWrapper}>
+            <DatePicker
+              selected={endDate}
+              onChange={setEndDate}
+              selectsEnd
+              startDate={startDate}
+              endDate={endDate}
+              minDate={startDate || undefined}
+              placeholderText="End date"
+              className={styles.expenseChartDatePickerInput}
+              wrapperClassName={styles.expenseChartDatePickerInputWrapper}
+              style={{
+                backgroundColor: darkMode ? '#2b3344' : '#fff',
+                color: darkMode ? '#fff' : '#000',
+                border: `1px solid ${darkMode ? '#3a506b' : '#ccc'}`,
+                borderRadius: '4px',
+                padding: '0.375rem',
+                fontSize: '0.875rem',
+                width: '100%',
+              }}
+            />
+          </div>
         </label>
       </div>
 
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          gap: '1rem',
-          fontSize: '0.75rem',
-          marginBottom: '0.75rem',
-          flexWrap: 'wrap',
-        }}
-      >
-        <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-          <span
-            style={{ width: 10, height: 10, backgroundColor: '#4285F4', display: 'inline-block' }}
-          />{' '}
+      <div className={styles.expenseChartLegend}>
+        <span className={styles.expenseChartLegendItem}>
+          <span className={styles.expenseChartLegendBox} style={{ backgroundColor: '#4285F4' }} />{' '}
           Planned
         </span>
-        <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-          <span
-            style={{ width: 10, height: 10, backgroundColor: '#EA4335', display: 'inline-block' }}
-          />{' '}
+        <span className={styles.expenseChartLegendItem}>
+          <span className={styles.expenseChartLegendBox} style={{ backgroundColor: '#EA4335' }} />{' '}
           Actual
         </span>
       </div>
 
-      <div style={{ width: '100%', height: '240px' }}>
+      <div className={styles.expenseChartWrapper}>
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data} margin={{ top: 10, right: 10, left: 35, bottom: 35 }}>
             <XAxis

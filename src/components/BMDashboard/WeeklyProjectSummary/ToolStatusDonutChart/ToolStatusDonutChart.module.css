@@ -74,6 +74,65 @@
   text-align: center;
 }
 
+/* Select element styles */
+.filterItem select {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: #fff;
+  color: #000;
+  min-width: 200px;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m1 6 7 7 7-7'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 16px 12px;
+  padding-right: 2.25rem;
+}
+
+.filterItem select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
+}
+
+/* Dark mode select styles - override global dark mode rules */
+/* Using high specificity selectors to override body.dark-mode * rule */
+:global(body.dark-mode) .toolDonutWrapper .toolDonutFilters .filterItem select,
+:global(body.bm-dashboard-dark) .toolDonutWrapper .toolDonutFilters .filterItem select,
+.toolDonutWrapperDark .toolDonutFilters .filterItem select {
+  background-color: #2b3344 !important;
+  border-color: #3a506b !important;
+  color: #ffffff !important;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m1 6 7 7 7-7'/%3e%3c/svg%3e") !important;
+}
+
+:global(body.dark-mode) .toolDonutWrapper .toolDonutFilters .filterItem select:focus,
+:global(body.bm-dashboard-dark) .toolDonutWrapper .toolDonutFilters .filterItem select:focus,
+.toolDonutWrapperDark .toolDonutFilters .filterItem select:focus {
+  background-color: #2b3344 !important;
+  border-color: #4a6072 !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 0 0.2rem rgba(74, 96, 114, 0.25) !important;
+}
+
+:global(body.dark-mode) .toolDonutWrapper .toolDonutFilters .filterItem select option,
+:global(body.bm-dashboard-dark) .toolDonutWrapper .toolDonutFilters .filterItem select option,
+.toolDonutWrapperDark .toolDonutFilters .filterItem select option {
+  background-color: #2b3344 !important;
+  color: #ffffff !important;
+}
+
+/* Additional specific selectors to ensure override */
+:global(body.dark-mode) .toolDonutWrapper .filterItem select,
+:global(body.bm-dashboard-dark) .toolDonutWrapper .filterItem select {
+  background-color: #2b3344 !important;
+  border-color: #3a506b !important;
+  color: #ffffff !important;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m1 6 7 7 7-7'/%3e%3c/svg%3e") !important;
+}
+
 /* Responsive adjustments for donut chart */
 @media (max-width: 768px) {
   .toolDonutFilters {
@@ -83,5 +142,10 @@
 
   .filterItem {
     width: 100%;
+  }
+  
+  .filterItem select {
+    width: 100%;
+    min-width: unset;
   }
 }

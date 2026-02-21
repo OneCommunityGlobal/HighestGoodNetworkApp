@@ -139,6 +139,8 @@
   .issueChartEventTitleDark {
     font-size: 20px;
   }
+}
+
 /* Wrapper to keep year bars aligned even when data is missing */
 .yearGroupWrapper {
   display: flex;
@@ -257,8 +259,9 @@
 
 :global(.react-datepicker.lightCalendar .react-datepicker__navigation-icon::before) {
   border-color: #0f172a;
-/* Generic year bar outline (applies to all years) */
 }
+
+/* Generic year bar outline (applies to all years) */
 .yearBar {
   border: 1.5px solid rgba(0, 0, 0, 0.3);
   border-radius: 4px;
@@ -274,5 +277,4 @@
   background-color: transparent !important;
   border-style: dashed;
   opacity: 0.7;
-}
 }

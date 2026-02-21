@@ -47,7 +47,14 @@
 }
 
 .darkMode .dropdownLabel {
-  color: #ddd;
+  color: #fff;
+}
+
+/* High specificity selectors for dark mode labels */
+:global(body.dark-mode) .wrapper.darkMode .dropdownLabel,
+:global(body.bm-dashboard-dark) .wrapper.darkMode .dropdownLabel,
+.wrapper.darkMode .dropdownLabel {
+  color: #fff !important;
 }
 
 .dropdownButton {
@@ -69,13 +76,28 @@
 }
 
 .darkMode .dropdownButton {
-  color: #ccc;
-  background: #2b2b2b;
-  border: 1px solid #555;
+  color: #fff;
+  background: #2b3344;
+  border: 1px solid #3a506b;
 }
 
 .darkMode .dropdownButton:hover {
-  background: #3a3a3a;
+  background: #3a506b;
+}
+
+/* High specificity selectors for dropdown button in dark mode */
+:global(body.dark-mode) .wrapper.darkMode .dropdownButton,
+:global(body.bm-dashboard-dark) .wrapper.darkMode .dropdownButton,
+.wrapper.darkMode .dropdownButton {
+  color: #fff !important;
+  background: #2b3344 !important;
+  border-color: #3a506b !important;
+}
+
+:global(body.dark-mode) .wrapper.darkMode .dropdownButton:hover,
+:global(body.bm-dashboard-dark) .wrapper.darkMode .dropdownButton:hover,
+.wrapper.darkMode .dropdownButton:hover {
+  background: #3a506b !important;
 }
 
 .dropdownMenu {
@@ -92,11 +114,18 @@
 }
 
 .darkMode .dropdownMenu {
-  background: #2c2c2c;
-  box-shadow: 0 2px 8px #000;
+  background: #2b3344;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
 }
 
-/* React-select overrides */
+/* High specificity selectors for dropdown menu in dark mode */
+:global(body.dark-mode) .wrapper.darkMode .dropdownMenu,
+:global(body.bm-dashboard-dark) .wrapper.darkMode .dropdownMenu,
+.wrapper.darkMode .dropdownMenu {
+  background: #2b3344 !important;
+}
+
+/* React-select overrides - Base styles */
 .customSelect__control {
   font-size: 14px;
   min-height: 34px;
@@ -105,20 +134,10 @@
   box-shadow: none;
 }
 
-.darkMode .customSelect__control {
-  color: #eee;
-  background: #2c2c2c;
-}
-
 .customSelect__multi-value {
   background: #e6f7ff;
   font-size: 12px;
   margin: 2px;
-}
-
-.darkMode .customSelect__multi-value {
-  background: #444;
-  color: #eee;
 }
 
 .customSelect__option {
@@ -130,17 +149,140 @@
   background-color: #f0f0f0;
 }
 
-.darkMode .customSelect__option {
-  color: #eee;
-  background-color: #2c2c2c;
-}
-
-.darkMode .customSelect__option:hover {
-  background-color: #3a3a3a;
-}
-
 .customSelect__menu {
   z-index: 9999;
+}
+
+/* High specificity selectors for react-select in dark mode */
+/* Control (the main select input) */
+:global(body.dark-mode) .wrapper.darkMode .customSelect__control,
+:global(body.bm-dashboard-dark) .wrapper.darkMode .customSelect__control,
+.wrapper.darkMode .customSelect__control,
+:global(body.dark-mode) .darkMode .wrapper .customSelect__control,
+:global(body.bm-dashboard-dark) .darkMode .wrapper .customSelect__control,
+.darkMode .wrapper .customSelect__control {
+  background-color: #2b3344 !important;
+  color: #fff !important;
+  border-color: #3a506b !important;
+}
+
+.wrapper.darkMode .customSelect__control:hover,
+.darkMode .wrapper .customSelect__control:hover {
+  border-color: #4a6072 !important;
+}
+
+.wrapper.darkMode .customSelect__control--is-focused,
+.darkMode .wrapper .customSelect__control--is-focused {
+  border-color: #4a6072 !important;
+  box-shadow: 0 0 0 1px #4a6072 !important;
+}
+
+/* Menu (dropdown menu) */
+:global(body.dark-mode) .wrapper.darkMode .customSelect__menu,
+:global(body.bm-dashboard-dark) .wrapper.darkMode .customSelect__menu,
+.wrapper.darkMode .customSelect__menu,
+:global(body.dark-mode) .darkMode .wrapper .customSelect__menu,
+:global(body.bm-dashboard-dark) .darkMode .wrapper .customSelect__menu,
+.darkMode .wrapper .customSelect__menu {
+  background-color: #2b3344 !important;
+  color: #fff !important;
+  border-color: #3a506b !important;
+}
+
+/* Menu list */
+.wrapper.darkMode .customSelect__menu-list,
+.darkMode .wrapper .customSelect__menu-list {
+  background-color: #2b3344 !important;
+  color: #fff !important;
+}
+
+/* Option */
+.wrapper.darkMode .customSelect__option,
+.darkMode .wrapper .customSelect__option {
+  background-color: #2b3344 !important;
+  color: #fff !important;
+}
+
+.wrapper.darkMode .customSelect__option--is-focused,
+.darkMode .wrapper .customSelect__option--is-focused {
+  background-color: #3a506b !important;
+  color: #fff !important;
+}
+
+.wrapper.darkMode .customSelect__option--is-selected,
+.darkMode .wrapper .customSelect__option--is-selected {
+  background-color: #4a6072 !important;
+  color: #fff !important;
+}
+
+.wrapper.darkMode .customSelect__option:hover,
+.darkMode .wrapper .customSelect__option:hover {
+  background-color: #3a506b !important;
+  color: #fff !important;
+}
+
+/* Multi-value */
+.wrapper.darkMode .customSelect__multi-value,
+.darkMode .wrapper .customSelect__multi-value {
+  background-color: #3a506b !important;
+}
+
+.wrapper.darkMode .customSelect__multi-value__label,
+.darkMode .wrapper .customSelect__multi-value__label {
+  color: #fff !important;
+}
+
+.wrapper.darkMode .customSelect__multi-value__remove,
+.darkMode .wrapper .customSelect__multi-value__remove {
+  color: #fff !important;
+}
+
+.wrapper.darkMode .customSelect__multi-value__remove:hover,
+.darkMode .wrapper .customSelect__multi-value__remove:hover {
+  background-color: #5a7082 !important;
+  color: #fff !important;
+}
+
+/* Single value and input */
+.wrapper.darkMode .customSelect__single-value,
+.darkMode .wrapper .customSelect__single-value,
+.wrapper.darkMode .customSelect__input-container,
+.darkMode .wrapper .customSelect__input-container,
+.wrapper.darkMode .customSelect__input-container input,
+.darkMode .wrapper .customSelect__input-container input {
+  color: #fff !important;
+}
+
+/* Placeholder */
+.wrapper.darkMode .customSelect__placeholder,
+.darkMode .wrapper .customSelect__placeholder {
+  color: #cbd5e0 !important;
+}
+
+/* Indicators */
+.wrapper.darkMode .customSelect__indicator-separator,
+.darkMode .wrapper .customSelect__indicator-separator {
+  background-color: #3a506b !important;
+}
+
+.wrapper.darkMode .customSelect__dropdown-indicator,
+.darkMode .wrapper .customSelect__dropdown-indicator {
+  color: #fff !important;
+}
+
+.wrapper.darkMode .customSelect__dropdown-indicator:hover,
+.darkMode .wrapper .customSelect__dropdown-indicator:hover {
+  color: #fff !important;
+}
+
+.wrapper.darkMode .customSelect__clear-indicator,
+.darkMode .wrapper .customSelect__clear-indicator {
+  color: #fff !important;
+}
+
+.wrapper.darkMode .customSelect__clear-indicator:hover,
+.darkMode .wrapper .customSelect__clear-indicator:hover {
+  color: #fff !important;
 }
 
 .error {
@@ -154,7 +296,7 @@
 
 /* ===================== DARK MODE ===================== */
 .darkMode .container {
-  background: #1e1e1e;
+  background: #253342;
   box-shadow: 0 2px 8px #111;
   color: #eee;
 }

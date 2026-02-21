@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import styles from './DistributionLaborHours.module.css';
 
 const COLORS = ['#2a647c', '#2e8ea3', '#ffab91', '#ffccbb', '#bbbbbb', '#f9f3e3'];
@@ -32,7 +34,8 @@ export default function DistributionLaborHours() {
 
   const [originalData, setOriginalData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
-  const [dateRange, setDateRange] = useState({ from: '', to: '' });
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
   const [projectFilter, setProjectFilter] = useState('');
   const [memberFilter, setMemberFilter] = useState('');
 
@@ -60,7 +63,7 @@ export default function DistributionLaborHours() {
       top5.push({ name: 'Others', value: othersTotal });
     }
     setFilteredData(top5);
-  }, [originalData, dateRange, projectFilter, memberFilter]);
+  }, [originalData, startDate, endDate, projectFilter, memberFilter]);
 
   const totalHours = filteredData.reduce((sum, item) => sum + item.value, 0);
 
@@ -70,33 +73,77 @@ export default function DistributionLaborHours() {
 
       {/* Filters */}
       <div className={styles.filters}>
-        <label>
+        <label htmlFor="start-date" className={styles.filterLabel}>
           From:
-          <input
-            type="date"
-            value={dateRange.from}
-            onChange={e => setDateRange({ ...dateRange, from: e.target.value })}
-          />
+          <div className={styles.datePickerWrapper}>
+            <DatePicker
+              id="start-date"
+              selected={startDate}
+              onChange={setStartDate}
+              selectsStart
+              startDate={startDate}
+              endDate={endDate}
+              maxDate={endDate || undefined}
+              placeholderText="Start date"
+              className={styles.distributionDatePicker}
+              wrapperClassName={styles.distributionDatePickerWrapper}
+              style={{
+                backgroundColor: darkMode ? '#2b3344' : '#fff',
+                color: darkMode ? '#fff' : '#000',
+                border: `1px solid ${darkMode ? '#3a506b' : '#ccc'}`,
+                borderRadius: '4px',
+                padding: '0.5rem',
+                fontSize: '14px',
+                width: '100%',
+              }}
+            />
+          </div>
         </label>
-        <label>
+        <label htmlFor="end-date" className={styles.filterLabel}>
           To:
-          <input
-            type="date"
-            value={dateRange.to}
-            onChange={e => setDateRange({ ...dateRange, to: e.target.value })}
-          />
+          <div className={styles.datePickerWrapper}>
+            <DatePicker
+              id="end-date"
+              selected={endDate}
+              onChange={setEndDate}
+              selectsEnd
+              startDate={startDate}
+              endDate={endDate}
+              minDate={startDate || undefined}
+              placeholderText="End date"
+              className={styles.distributionDatePicker}
+              wrapperClassName={styles.distributionDatePickerWrapper}
+              style={{
+                backgroundColor: darkMode ? '#2b3344' : '#fff',
+                color: darkMode ? '#fff' : '#000',
+                border: `1px solid ${darkMode ? '#3a506b' : '#ccc'}`,
+                borderRadius: '4px',
+                padding: '0.5rem',
+                fontSize: '14px',
+                width: '100%',
+              }}
+            />
+          </div>
         </label>
-        <label>
+        <label className={styles.filterLabel}>
           Project:
-          <select onChange={e => setProjectFilter(e.target.value)} value={projectFilter}>
+          <select
+            onChange={e => setProjectFilter(e.target.value)}
+            value={projectFilter}
+            className={styles.distributionSelect}
+          >
             <option value="">All</option>
             <option value="Project A">Project A</option>
             <option value="Project B">Project B</option>
           </select>
         </label>
-        <label>
+        <label className={styles.filterLabel}>
           Member:
-          <select onChange={e => setMemberFilter(e.target.value)} value={memberFilter}>
+          <select
+            onChange={e => setMemberFilter(e.target.value)}
+            value={memberFilter}
+            className={styles.distributionSelect}
+          >
             <option value="">All</option>
             <option value="Member 1">Member 1</option>
             <option value="Member 2">Member 2</option>
