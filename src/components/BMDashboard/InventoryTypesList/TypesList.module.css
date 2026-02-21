@@ -1,0 +1,440 @@
+.typesListContainer {
+  width: 100%;
+  max-width: 1080px;
+  margin: 1rem auto;
+  padding: 0 1rem;
+
+  --color-h50: #e8f4f9;
+  --color-h100: #78bdda;
+  --color-h500: #0d5675;
+  --color-n0: #ffffff;
+  --color-text: #1c8bcc;
+  --font-clickable: Roboto;
+}
+
+.timestampContainer {
+  display: flex;
+  gap: 5px;
+  margin: 10px 0;
+}
+
+#timestamp {
+  padding: 0 5px;
+  border: 1px solid var(--color-h50);
+  border-radius: 5px;
+}
+
+.cardHeader {
+  background-color: var(--color-h50);
+  color: var(--color-text);
+  font-weight: bold;
+  cursor: pointer;
+  text-align: start;
+}
+
+.buttonContainer {
+  margin-top: 10px;
+  display: flex;
+}
+
+.buttonContainer a {
+  background-color: var(--color-h500);
+  color: var(--color-n0);
+  padding: 10px 16px;
+  border-radius: 12px;
+  text-align: center;
+  text-decoration: none;
+}
+
+.btnTypes {
+  background-color: var(--color-h100);
+  color: var(--color-n0);
+  border: none;
+}
+
+.tableHeader {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.arrowIcon {
+  padding-right: 4px;
+  width: 20px;
+  height: auto;
+}
+
+.accordionCollapse {
+  max-height: 50vh;
+  overflow: auto;
+}
+
+#input-measurement {
+  padding: 0 5px;
+  border: 1px solid var(--color-h50);
+  border-radius: 5px;
+  margin-right: 5px;
+}
+
+.addUnitContainer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.backButton {
+  background-color: var(--color-h500);
+  color: var(--color-n0);
+  padding: 10px 16px;
+  border-radius: 12px;
+  text-align: center;
+  text-decoration: none;
+  border: none;
+}
+
+.backButton:hover {
+  background-color: var(--color-h100);
+}
+
+/* Modal button styles */
+.modalBtnCancel {
+  background-color: #495057 !important;
+  border-color: #495057 !important;
+  color: #fff !important;
+  font-weight: 500;
+  padding: 8px 20px;
+  opacity: 1 !important;
+}
+
+.modalBtnCancel:hover {
+  background-color: #3d4349 !important;
+  border-color: #3d4349 !important;
+}
+
+.modalBtnCancel:disabled {
+  background-color: #6c757d !important;
+  border-color: #6c757d !important;
+}
+
+.modalBtnPrimary {
+  background-color: #0d6efd !important;
+  border-color: #0d6efd !important;
+  color: #fff !important;
+  font-weight: 500;
+  padding: 8px 20px;
+  opacity: 1 !important;
+}
+
+.modalBtnPrimary:hover {
+  background-color: #0b5ed7 !important;
+  border-color: #0b5ed7 !important;
+}
+
+.modalBtnPrimary:disabled {
+  background-color: #6c9fd4 !important;
+  border-color: #6c9fd4 !important;
+}
+
+.modalBtnDanger {
+  background-color: #dc3545 !important;
+  border-color: #dc3545 !important;
+  color: #fff !important;
+  font-weight: 500;
+  padding: 8px 20px;
+  opacity: 1 !important;
+}
+
+.modalBtnDanger:hover {
+  background-color: #bb2d3b !important;
+  border-color: #bb2d3b !important;
+}
+
+.modalBtnDanger:disabled {
+  background-color: #e57373 !important;
+  border-color: #e57373 !important;
+}
+
+/* Form styles for full modal */
+.formRow {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.formRow > div {
+  flex: 1;
+  min-width: 150px;
+}
+
+.modalBody {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.totalPriceSection {
+  background-color: #f8f9fa;
+  padding: 10px 15px;
+  border-radius: 5px;
+  margin-top: 15px;
+  text-align: right;
+}
+
+.filePreviewContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.filePreview {
+  position: relative;
+  display: inline-block;
+}
+
+.filePreview img {
+  border-radius: 5px;
+  border: 1px solid #ddd;
+}
+
+.filePreview button {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  padding: 2px 6px;
+  font-size: 10px;
+}
+
+/* Main container dark mode */
+:global(.bm-dashboard-dark) .typesListContainer {
+  color: #ffffff;
+}
+
+:global(.bm-dashboard-dark) .typesListContainer h1 {
+  color: #ffffff !important;
+}
+
+/* Timestamp/DatePicker dark mode */
+:global(.bm-dashboard-dark) .timestampContainer {
+  color: #ffffff;
+}
+
+:global(.bm-dashboard-dark) .timestampContainer span {
+  color: #ffffff !important;
+}
+
+:global(.bm-dashboard-dark) #timestamp {
+  background-color: #2e5061 !important;
+  color: #ffffff !important;
+  border-color: #3a506b !important;
+}
+
+/* Card header (accordion toggle) dark mode */
+:global(.bm-dashboard-dark) .cardHeader {
+  background-color: #2e5061 !important;
+  color: #ffffff !important;
+  border-color: #3a506b !important;
+}
+
+:global(.bm-dashboard-dark) .cardHeader:hover {
+  background-color: #3a506b !important;
+}
+
+/* Accordion collapse body dark mode */
+:global(.bm-dashboard-dark) .accordionCollapse {
+  background-color: #1c2541 !important;
+  color: #ffffff !important;
+  scrollbar-width: thin;
+  scrollbar-color: #3a506b #1c2541;
+}
+
+/* Scrollbar dark mode - Webkit browsers */
+:global(.bm-dashboard-dark) .accordionCollapse::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+:global(.bm-dashboard-dark) .accordionCollapse::-webkit-scrollbar-track {
+  background: #1c2541;
+  border-radius: 4px;
+}
+
+:global(.bm-dashboard-dark) .accordionCollapse::-webkit-scrollbar-thumb {
+  background: #3a506b;
+  border-radius: 4px;
+}
+
+:global(.bm-dashboard-dark) .accordionCollapse::-webkit-scrollbar-thumb:hover {
+  background: #5a7a9b;
+}
+
+/* Table header dark mode */
+:global(.bm-dashboard-dark) .tableHeader {
+  border-color: #3a506b !important;
+  background-color: #1c2541 !important;
+}
+
+:global(.bm-dashboard-dark) .tableHeader th {
+  color: #ffffff !important;
+  background-color: #1c2541 !important;
+}
+
+/* Table dark mode - all tables */
+:global(.bm-dashboard-dark) .typesListContainer :global(table) {
+  color: #ffffff !important;
+  background-color: #1c2541 !important;
+}
+
+:global(.bm-dashboard-dark) .typesListContainer :global(table) :global(thead) {
+  background-color: #1c2541 !important;
+}
+
+:global(.bm-dashboard-dark) .typesListContainer :global(table) :global(thead) th {
+  color: #ffffff !important;
+  background-color: #1c2541 !important;
+  border-color: #3a506b !important;
+}
+
+:global(.bm-dashboard-dark) .typesListContainer :global(table) :global(tbody) {
+  background-color: #1c2541 !important;
+}
+
+:global(.bm-dashboard-dark) .typesListContainer :global(table) td {
+  color: #ffffff !important;
+  background-color: transparent !important;
+}
+
+:global(.bm-dashboard-dark) .typesListContainer :global(table) :global(tbody) tr {
+  background-color: #1c2541 !important;
+}
+
+:global(.bm-dashboard-dark) .typesListContainer :global(table) :global(tbody) tr:hover {
+  background-color: #3a506b !important;
+}
+
+/* Card header - Bootstrap override */
+:global(.bm-dashboard-dark) .typesListContainer :global(.card-header) {
+  background-color: #2e5061 !important;
+  color: #ffffff !important;
+  border-color: #3a506b !important;
+}
+
+/* Card body - Bootstrap override */
+:global(.bm-dashboard-dark) .typesListContainer :global(.card-body) {
+  background-color: #1c2541 !important;
+  color: #ffffff !important;
+}
+
+/* Buttons dark mode */
+:global(.bm-dashboard-dark) .btnTypes {
+  background-color: #3a506b !important;
+  color: #ffffff !important;
+  border-color: #5a7a9b !important;
+}
+
+:global(.bm-dashboard-dark) .btnTypes:hover {
+  background-color: #4a607b !important;
+  border-color: #6a8aab !important;
+}
+
+/* Back button dark mode */
+:global(.bm-dashboard-dark) .buttonContainer a {
+  background-color: #2e5061 !important;
+  color: #ffffff !important;
+}
+
+:global(.bm-dashboard-dark) .buttonContainer a:hover {
+  background-color: #3a506b !important;
+}
+
+/* Input measurement dark mode */
+:global(.bm-dashboard-dark) #input-measurement {
+  background-color: #2e5061 !important;
+  color: #ffffff !important;
+  border-color: #3a506b !important;
+}
+
+:global(.bm-dashboard-dark) #input-measurement::placeholder {
+  color: #b5bac5 !important;
+}
+
+/* All inputs in the container */
+:global(.bm-dashboard-dark) .typesListContainer input {
+  background-color: #2e5061 !important;
+  color: #ffffff !important;
+  border-color: #3a506b !important;
+}
+
+:global(.bm-dashboard-dark) .typesListContainer input::placeholder {
+  color: #b5bac5 !important;
+}
+
+:global(.bm-dashboard-dark) .typesListContainer input:focus {
+  background-color: #3a506b !important;
+  border-color: #5a7a9b !important;
+  box-shadow: 0 0 0 0.2rem rgba(106, 241, 234, 0.25) !important;
+}
+
+/* Autocomplete styling */
+:global(.bm-dashboard-dark) .typesListContainer input:-webkit-autofill,
+:global(.bm-dashboard-dark) .typesListContainer input:-webkit-autofill:hover,
+:global(.bm-dashboard-dark) .typesListContainer input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 30px #2e5061 inset !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+/* Bootstrap Card dark mode */
+:global(.bm-dashboard-dark) .typesListContainer :global(.card) {
+  background-color: #1c2541 !important;
+  border-color: #3a506b !important;
+}
+
+/* DatePicker calendar dark mode */
+:global(.bm-dashboard-dark) .typesListContainer :global(.react-datepicker) {
+  background-color: #2e5061 !important;
+  border-color: #3a506b !important;
+}
+
+:global(.bm-dashboard-dark) .typesListContainer :global(.react-datepicker__header) {
+  background-color: #1c2541 !important;
+  border-color: #3a506b !important;
+}
+
+:global(.bm-dashboard-dark) .typesListContainer :global(.react-datepicker__current-month),
+:global(.bm-dashboard-dark) .typesListContainer :global(.react-datepicker__day-name),
+:global(.bm-dashboard-dark) .typesListContainer :global(.react-datepicker__day) {
+  color: #ffffff !important;
+}
+
+:global(.bm-dashboard-dark) .typesListContainer :global(.react-datepicker__day:hover) {
+  background-color: #3a506b !important;
+}
+
+:global(.bm-dashboard-dark) .typesListContainer :global(.react-datepicker__day--selected) {
+  background-color: #2e86ab !important;
+}
+
+:global(.bm-dashboard-dark) .typesListContainer :global(.react-datepicker__time-container) {
+  background-color: #2e5061 !important;
+  border-color: #3a506b !important;
+}
+
+:global(.bm-dashboard-dark) .typesListContainer :global(.react-datepicker__time) {
+  background-color: #2e5061 !important;
+}
+
+:global(.bm-dashboard-dark) .typesListContainer :global(.react-datepicker__time-list-item) {
+  color: #ffffff !important;
+}
+
+:global(.bm-dashboard-dark) .typesListContainer :global(.react-datepicker__time-list-item:hover) {
+  background-color: #3a506b !important;
+}
+
+:global(.bm-dashboard-dark) .typesListContainer :global(.react-datepicker__input-time-container) {
+  color: #ffffff !important;
+}
+
+:global(.bm-dashboard-dark) .typesListContainer :global(.react-datepicker-time__input) input {
+  background-color: #1c2541 !important;
+  color: #ffffff !important;
+  border-color: #3a506b !important;
+}

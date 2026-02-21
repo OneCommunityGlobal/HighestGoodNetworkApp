@@ -1,0 +1,37 @@
+.dragDropContainer {
+  border: 2px dashed #ccc;
+  text-align: center;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.updateConfirmText {
+  color: red;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.cancelButton {
+  width: 100%;
+}
+
+.submitButton {
+  width: 100%;
+}
+
+.squareImage {
+  width: 100%;
+  height: auto;
+  max-width: 250px;
+  max-height: 250px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.readOnlyDiv {
+  padding: 8px;
+  background-color: #e6f5f2;
+  border-radius: 4px;
+  border: 1px solid #dee2e6;
+  color: #495057;
+}

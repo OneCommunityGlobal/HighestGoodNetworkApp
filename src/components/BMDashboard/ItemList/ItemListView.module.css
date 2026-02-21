@@ -1,0 +1,460 @@
+table thead th,
+table td {
+  vertical-align: middle !important;
+}
+
+.itemsListContainer {
+  width: 100%;
+  max-width: 1536px;
+  margin: 1rem auto;
+  padding: 0 1rem;
+}
+
+.itemsTableContainer {
+  overflow-x: scroll;
+}
+
+.itemsListContainer section {
+  margin-top: 2rem;
+}
+
+.itemsListContainer table {
+  text-align: center;
+  min-width: 1024px;
+  overflow: scroll;
+  font-size: small;
+}
+
+.itemsListContainer th {
+  height: 2rem;
+}
+
+.itemsCell td {
+  vertical-align: middle;
+}
+
+.itemsCell button {
+  cursor: pointer;
+}
+
+.itemsCell svg {
+  width: 20px;
+  height: 20px;
+  margin-right: 6px;
+  color: dimgray;
+}
+
+.itemsCell svg:hover {
+  color: black;
+}
+
+.selectInput {
+  display: grid;
+  grid-template-columns: auto 1fr auto 1fr auto 1fr;
+  align-items: center;
+  gap: 15px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto 10px auto;
+  overflow: visible;
+}
+
+.selectInput label {
+  font-weight: bold;
+  text-align: center;
+  white-space: nowrap;
+  margin-bottom: 8px;
+}
+
+.selectInput input,
+.selectInput select {
+  height: 38px;
+  width: 100%;
+  min-width: 180px;
+  max-width: 240px;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.selectInput input[type='text'] {
+  padding: 5px;
+  margin-bottom: 8px;
+}
+.btnPrimary {
+  background-color: #468ef9;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.buttonsRow {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+.btnPrimary:hover {
+  background-color: #3b82f6;
+}
+
+.darkMode {
+  color: #e8edf4;
+}
+
+.darkMode h3 {
+  color: #ffffff;
+}
+
+.darkMode .selectInput label {
+  color: #e8edf4;
+}
+
+
+/* RESET selects per theme — REQUIRED */
+.lightTheme .selectInput select {
+  background-color: #ffffff;
+  color: #111827;
+  border-color: #d1d5db;
+}
+
+.darkMode .selectInput input::placeholder {
+  color: #c8d2e0;
+}
+
+.darkMode .selectInput option {
+  background-color: #2a3f5f;
+  color: #e8edf4;
+}
+
+.darkTableWrapper {
+  background-color: #1b2a41;
+  border: 1px solid #2f4157;
+  border-radius: 6px;
+}
+
+.darkTable {
+  background-color: #1b2a41;
+  color: #e8edf4;
+}
+
+.darkTable thead th {
+  background-color: #2f4157;
+  color: #f2f6ff !important;
+  border-color: #3f5269 !important;
+}
+
+.darkTable tbody td,
+.darkTable tbody th {
+  border-color: #2f4157 !important;
+}
+
+.darkTable tbody tr:nth-child(odd) {
+  background-color: #1f2e45;
+}
+
+.darkTable tbody tr:nth-child(even) {
+  background-color: #23375b;
+}
+
+.darkDatePickerInput {
+  background-color: #2a3f5f !important;
+  color: #e8edf4 !important;
+  border: 1px solid #3f5269 !important;
+}
+
+.darkDatePickerInput::placeholder {
+  color: #c8d2e0 !important;
+}
+
+.darkDatePicker {
+  background-color: #1f2e45 !important;
+  color: #e8edf4 !important;
+  border: 1px solid #3f5269 !important;
+}
+
+.darkDatePicker .react-datepicker__header {
+  background-color: #2f4157;
+  border-color: #3f5269;
+}
+
+.darkDatePicker .react-datepicker__time-header {
+  color: #f2f6ff !important;
+  background-color: #2f4157 !important;
+  border-bottom: 1px solid #3f5269 !important;
+}
+
+.darkDatePicker .react-datepicker__current-month,
+.darkDatePicker .react-datepicker-year-header {
+  color: #f2f6ff !important;
+}
+
+.darkDatePicker .react-datepicker__day-name,
+.darkDatePicker .react-datepicker__day,
+.darkDatePicker .react-datepicker__time-name {
+  color: #e8edf4;
+}
+
+.darkDatePicker .react-datepicker__day--selected,
+.darkDatePicker .react-datepicker__day--keyboard-selected,
+.darkDatePicker .react-datepicker__time-list-item--selected {
+  background-color: #468ef9 !important;
+  color: #ffffff !important;
+}
+
+.darkDatePicker .react-datepicker__time-container {
+  border-color: #3f5269 !important;
+  background-color: #2a3f5f !important;
+}
+
+.darkDatePicker .react-datepicker__time-container .react-datepicker__time {
+  background-color: #2a3f5f !important;
+  border-color: #3f5269 !important;
+}
+
+.darkDatePicker .react-datepicker__time-container .react-datepicker__time-box {
+  background-color: #2a3f5f !important;
+  border-color: #3f5269 !important;
+}
+
+.darkDatePicker .react-datepicker__time-container .react-datepicker__time-list {
+  background-color: #2a3f5f !important;
+  color: #e8edf4 !important;
+  border-color: #3f5269 !important;
+}
+
+.darkDatePicker
+  .react-datepicker__time-container
+  .react-datepicker__time-box
+  ul.react-datepicker__time-list
+  li {
+  color: #e8edf4 !important;
+  background-color: #2a3f5f !important;
+  border-color: #3f5269 !important;
+}
+
+.darkDatePicker
+  .react-datepicker__time-container
+  .react-datepicker__time-box
+  ul.react-datepicker__time-list
+  li:hover {
+  background-color: #3a506b !important;
+  color: #ffffff !important;
+}
+
+.darkDatePicker
+  .react-datepicker__time-container
+  .react-datepicker__time-box
+  ul.react-datepicker__time-list {
+  background-color: #2a3f5f !important;
+}
+
+/* Explicitly target react-datepicker time list via :global to override inline white background */
+.darkDatePicker :global(.react-datepicker__time-container),
+.darkDatePicker :global(.react-datepicker__time-container .react-datepicker__time),
+.darkDatePicker :global(.react-datepicker__time-container .react-datepicker__time-box),
+.darkDatePicker
+  :global(.react-datepicker__time-container
+    .react-datepicker__time-box
+    ul.react-datepicker__time-list) {
+  background-color: #2a3f5f !important;
+  border-color: #3f5269 !important;
+  color: #e8edf4 !important;
+}
+
+.darkDatePicker :global(.react-datepicker__time-list-item) {
+  background-color: #2a3f5f !important;
+  color: #e8edf4 !important;
+}
+
+.darkDatePicker :global(.react-datepicker__time-list-item:hover),
+.darkDatePicker :global(.react-datepicker__time-list-item:focus) {
+  background-color: #3a506b !important;
+  color: #ffffff !important;
+}
+
+.darkDatePicker :global(.react-datepicker__time-list-item--selected) {
+  background-color: #468ef9 !important;
+  color: #ffffff !important;
+}
+
+.darkDatePickerPopper .react-datepicker__triangle {
+  display: none;
+}
+
+/* Light mode styles to improve time list contrast */
+.lightDatePickerInput {
+  background-color: #ffffff !important;
+  color: #111827 !important;
+  border: 1px solid #d1d5db !important;
+}
+
+.lightDatePicker {
+  background-color: #ffffff !important;
+  color: #111827 !important;
+  border: 1px solid #d1d5db !important;
+}
+
+.lightDatePicker .react-datepicker__header {
+  background-color: #f1f5f9;
+  border-color: #d1d5db;
+}
+
+.lightDatePicker .react-datepicker__current-month,
+.lightDatePicker .react-datepicker__time-header,
+.lightDatePicker .react-datepicker-year-header {
+  color: #111827 !important;
+}
+
+.lightDatePicker .react-datepicker__day-name,
+.lightDatePicker .react-datepicker__day,
+.lightDatePicker .react-datepicker__time-name {
+  color: #1f2937;
+}
+
+.lightDatePicker .react-datepicker__day--selected,
+.lightDatePicker .react-datepicker__day--keyboard-selected,
+.lightDatePicker .react-datepicker__time-list-item--selected {
+  background-color: #468ef9 !important;
+  color: #ffffff !important;
+}
+
+.lightDatePicker .react-datepicker__time-container {
+  border-color: #d1d5db !important;
+  background-color: #ffffff !important;
+}
+
+.lightDatePicker .react-datepicker__time-container .react-datepicker__time {
+  background-color: #ffffff !important;
+  border-color: #d1d5db !important;
+}
+
+.lightDatePicker .react-datepicker__time-container .react-datepicker__time-box {
+  background-color: #ffffff !important;
+  border-color: #d1d5db !important;
+}
+
+.lightDatePicker .react-datepicker__time-container .react-datepicker__time-list {
+  background-color: #ffffff !important;
+  color: #1f2937 !important;
+  border-color: #d1d5db !important;
+}
+
+.lightDatePicker :global(.react-datepicker__time-container),
+.lightDatePicker :global(.react-datepicker__time-container .react-datepicker__time),
+.lightDatePicker :global(.react-datepicker__time-container .react-datepicker__time-box),
+.lightDatePicker
+  :global(.react-datepicker__time-container
+    .react-datepicker__time-box
+    ul.react-datepicker__time-list) {
+  background-color: #ffffff !important;
+  border-color: #d1d5db !important;
+  color: #1f2937 !important;
+}
+
+.lightDatePicker :global(.react-datepicker__time-list-item) {
+  background-color: #ffffff !important;
+  color: #1f2937 !important;
+}
+
+.lightDatePicker :global(.react-datepicker__time-list-item:hover),
+.lightDatePicker :global(.react-datepicker__time-list-item:focus) {
+  background-color: #e5e7eb !important;
+  color: #111827 !important;
+}
+
+.lightDatePicker :global(.react-datepicker__time-list-item--selected) {
+  background-color: #468ef9 !important;
+  color: #ffffff !important;
+}
+
+.lightDatePickerPopper .react-datepicker__triangle {
+  display: none;
+}
+
+.filterSelect {
+  height: 40px;
+  padding: 0 0.75rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  border: 1px solid transparent;
+  appearance: none;
+}
+
+.darkTheme .filterSelect {
+  background-color: #1e293b;
+  color: #e5e7eb;
+  border-color: #334155;
+}
+.darkTheme .filterSelect option {
+  background-color: #1e293b;
+  color: #e5e7eb;
+}
+
+.lightTheme .filterSelect option {
+  background-color: #ffffff;
+  color: #111827;
+}
+.lightTheme .filterSelect:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.25);
+}
+
+.darkTheme .filterSelect:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.3);
+}
+
+.lightTheme .selectInput select option {
+  background-color: #ffffff;
+  color: #111827;
+}
+
+.darkTheme .selectInput select option {
+  background-color: #1e293b;
+  color: #e5e7eb;
+}
+
+
+/* Dark theme selects */
+.itemsListContainer.darkTheme select {
+  background-color: #1e293b;
+  color: #e5e7eb;
+  border-color: #334155;
+}
+
+/* Light theme selects */
+.itemsListContainer.lightTheme select {
+  background-color: #ffffff;
+  color: #111827;
+  border-color: #d1d5db;
+}
+/* ===========================
+   SELECT FOCUS (AUTHORITATIVE)
+   =========================== */
+
+/* Base select reset */
+.selectInput select {
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+/* LIGHT MODE focus */
+.itemsListContainer.lightTheme .selectInput select:focus {
+  border-color: #2563eb !important; /* blue-600 */
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.35) !important;
+  background-color: #ffffff !important;
+  color: #111827 !important;
+}
+
+/* DARK MODE focus */
+.itemsListContainer.darkTheme .selectInput select:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.25);
+  background-color: #1e293b !important;
+  color: #e5e7eb !important;
+}

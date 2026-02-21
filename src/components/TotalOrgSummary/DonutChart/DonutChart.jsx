@@ -2,22 +2,12 @@ import PropTypes from 'prop-types';
 import { Doughnut } from 'react-chartjs-2';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { Chart, ArcElement } from 'chart.js';
-import './DonutChart.css';
+import styles from './DonutChart.module.css';
 
 Chart.register(ArcElement);
 
 function DonutChart(props) {
-  const { title, totalCount, percentageChange, data, colors, hasData } = props;
-
-  if (!hasData) {
-    return (
-      <div className="donut-container">
-        <div className="donut-no-data">
-          <p className="no-data-text">No data available</p>
-        </div>
-      </div>
-    );
-  }
+  const { title, totalCount, percentageChange, data, colors, comparisonType, darkMode } = props;
 
   const chartData = {
     labels: data.map(item => item.label),
@@ -56,25 +46,32 @@ function DonutChart(props) {
   const percentageChangeColor = percentageChange >= 0 ? 'var(--success)' : 'var(--danger)';
 
   return (
-    <div className="donut-container">
-      <div className="donut-scrollable">
-        <div className="donut-chart">
+    <div className={styles.donutContainer}>
+      <div className={styles.donutScrollable}>
+        <div className={styles.donutChart}>
           <Doughnut data={chartData} options={options} plugins={[ChartDataLabels]} />
-          <div className="donut-center">
-            <h5 className="donut-heading">{title}</h5>
+          <div className={styles.donutCenter}>
+            <h5 className="donut-heading" style={{ color: darkMode ? 'white' : 'black' }}>
+              {title}
+            </h5>
             <h4 className="donut-count">{totalCount}</h4>
-            <h6 className="donut-comparison-percent" style={{ color: percentageChangeColor }}>
-              {percentageChange >= 0
-                ? `+${percentageChange}% WEEK OVER WEEK`
-                : `${percentageChange}% WEEK OVER WEEK`}
-            </h6>
+            {comparisonType !== 'No Comparison' && (
+              <h6
+                className={styles.donutComparisonPercent}
+                style={{ color: percentageChangeColor }}
+              >
+                {percentageChange >= 0
+                  ? `+${(percentageChange * 100).toFixed(0)}% ${comparisonType.toUpperCase()}`
+                  : `${(percentageChange * 100).toFixed(0)}% ${comparisonType.toUpperCase()}`}
+              </h6>
+            )}
           </div>
         </div>
-        <div className="donut-labels">
+        <div className={styles.donutLabels}>
           {data.map((item, index) => (
-            <div key={item.label} className="donut-label">
+            <div key={item.label} className={styles.donutLabel}>
               <span
-                className="donut-color"
+                className={styles.donutColor}
                 style={{ backgroundColor: chartData.datasets[0].backgroundColor[index] }}
               />
               {item.label}
@@ -97,11 +94,7 @@ DonutChart.propTypes = {
     }),
   ).isRequired,
   colors: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
-  hasData: PropTypes.bool,
-};
-
-DonutChart.defaultProps = {
-  hasData: true,
+  comparisonType: PropTypes.string.isRequired,
 };
 
 export default DonutChart;

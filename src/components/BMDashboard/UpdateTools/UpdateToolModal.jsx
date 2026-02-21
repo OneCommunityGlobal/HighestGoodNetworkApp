@@ -1,6 +1,6 @@
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 // import UpdateMaterial from './UpdateMaterial';
-import './UpdateTool.css';
+import styles from './UpdateTool.module.css';
 
 function UpdateToolModal({ modal, setModal, record }) {
   if (record) {
@@ -9,10 +9,16 @@ function UpdateToolModal({ modal, setModal, record }) {
     };
 
     return (
-      <Modal isOpen={modal} size="md">
+      <Modal
+        isOpen={modal}
+        size="lg"
+        className={styles.darkBlueModal}
+        contentClassName={styles.darkBlueModalContent} // Add this
+        backdropClassName={styles.darkBlueBackdrop}
+      >
         <ModalHeader>Update Tool Form</ModalHeader>
         <ModalBody>
-          <div className="updateModalContainer">Under Construction</div>
+          <div className={`${styles.updateModalContainer}`}>Under Construction</div>
         </ModalBody>
         <ModalFooter>
           <Button onClick={toggle}>Close</Button>

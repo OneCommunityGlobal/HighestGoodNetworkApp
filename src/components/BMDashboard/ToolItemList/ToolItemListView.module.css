@@ -1,0 +1,346 @@
+/* ---------- BASE CONTAINER ---------- */
+
+.itemsListContainer {
+  width: 100%;
+  max-width: 1536px;
+  margin: 1rem auto;
+  padding: 0 1rem;
+}
+
+
+.lightTheme {
+  background-color: #ffffff;
+  color: #111827;
+}
+
+.darkTheme {
+  background-color: #0f1b2b;
+  color: #f5f7fb;
+}
+
+/* ---------- FILTERS LAYOUT ---------- */
+
+/* Whole filters block: stack 2 rows (top: Project+Tool, bottom: Available+Using+Search) */
+.filtersRow {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Row 1: Project + Tool side by side */
+.projectToolColumn {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-end;
+}
+
+/* Each filter in that row */
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 auto;
+}
+
+/* Make inner Form not forced full-width */
+.filterGroup form {
+  display: inline-block;
+}
+
+/* Width for the reactstrap selects (Project / Tool) */
+.selectInput {
+  display: flex;
+  align-items: flex-end;
+  width: 260px;
+  column-gap: 1rem;
+}
+
+/* Row 2: Available, Using, Search side by side */
+.availSearchColumn {
+  display: flex;
+  width: 100%;
+}
+
+.availSearchRow {
+  display: flex;
+  width: 100%;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 1rem;
+}
+
+/* Available + Using on the left */
+.availUsingGroup {
+  display: flex;
+  gap: 1rem;
+  flex: 0 0 auto;
+}
+
+/* Search group on the right */
+.searchGroup {
+  display: flex;
+  flex-direction: column;
+  margin-left: auto;
+}
+
+/* Force FontAwesome SVG internals (prevents dark theme overriding) */
+.statusIconOk,
+.statusIconOk svg,
+.statusIconOk path {
+  color: #16a34a !important;
+  fill: #16a34a !important;
+}
+
+.statusIconBad,
+.statusIconBad svg,
+.statusIconBad path {
+  color: #dc2626 !important;
+  fill: #dc2626 !important;
+}
+
+
+
+/* Smaller groups for Available / Using */
+.filterGroupSmall {
+  display: flex;
+  flex-direction: column;
+  min-width: 140px;
+}
+
+/* Label text */
+.filterLabel {
+  font-size: 0.85rem;
+  margin-bottom: 0.25rem;
+}
+
+/* Base input styles */
+.filterSelect,
+.searchInput {
+  height: 40px;
+  padding: 0 0.75rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  border: 1px solid transparent;
+}
+
+.searchInput {
+  width: 100%;
+}
+
+/* LIGHT theme inputs */
+.lightTheme .filterSelect,
+.lightTheme .searchInput {
+  background-color: #ffffff;
+  color: #111827;
+  border-color: #d1d5db;
+}
+
+.lightTheme .filterSelect:focus,
+.lightTheme .searchInput:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.25);
+}
+
+/* DARK theme inputs */
+.darkTheme .filterSelect,
+.darkTheme .searchInput {
+  background-color: #1e293b;
+  color: #f5f7fb;
+  border-color: #1d3c52;
+}
+
+.darkTheme .filterSelect:focus,
+.darkTheme .searchInput:focus {
+  outline: none;
+  border-color: #4ba3ff;
+  box-shadow: 0 0 0 1px rgba(75, 163, 255, 0.3);
+}
+
+/* Responsive layout */
+@media (max-width: 900px) {
+  .filtersRow {
+    align-items: flex-start;
+  }
+
+  .projectToolColumn,
+  .availSearchColumn {
+    width: 100%;
+  }
+
+  .availSearchRow {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .searchGroup {
+    min-width: 100%;
+    max-width: 100%;
+  }
+}
+
+/* ---------- TABLE STYLES ---------- */
+
+.itemsTableContainer {
+  border-radius: 4px;
+  margin-top: 1.5rem;
+  overflow-x: scroll;
+  align-items: center;
+}
+
+/* Shared */
+.itemsTableContainer table {
+  width: 100%;
+  min-width: 1024px;
+  border-collapse: collapse;
+  font-size: small;
+  text-align: center;
+}
+
+.itemsTableContainer td {
+  padding: 0.5rem 0.75rem;
+  text-align: center;
+}
+
+/* LIGHT theme table */
+.lightTheme .itemsTableContainer {
+  border: 1px solid #e5e7eb;
+}
+
+.lightTheme .itemsTableContainer thead th {
+  background-color: #f3f4f6;
+  color: #111827;
+  border-bottom: 1px solid #e5e7eb;
+  height: 2.5rem;
+}
+
+.lightTheme .itemsTableContainer thead th:hover {
+  background-color: #e5e7eb;
+}
+
+.lightTheme .itemsTableContainer tbody tr {
+  background-color: #ffffff;
+}
+
+.lightTheme .itemsTableContainer tbody tr:nth-child(even) {
+  background-color: #f9fafb;
+}
+
+.lightTheme .itemsTableContainer tbody tr:hover {
+  background-color: #edf2ff;
+}
+
+/* DARK theme table */
+.darkTheme .itemsTableContainer {
+  border: 1px solid #374151;
+}
+
+.darkTheme .itemsTableContainer thead th {
+  background-color: #1c2b3b;
+  color: #f5f7fb;
+  border-bottom: 1px solid #1d3c52;
+  height: 2.5rem;
+}
+
+.darkTheme .itemsTableContainer thead th:hover {
+  background-color: #25374c;
+}
+
+.darkTheme .itemsTableContainer tbody tr {
+  background-color: #101c2a;
+}
+
+.darkTheme .itemsTableContainer tbody tr:nth-child(even) {
+  background-color: #131f30;
+}
+
+.darkTheme .itemsTableContainer tbody tr:hover {
+  background-color: #1e3046;
+}
+
+/* Misc existing styles */
+
+.itemsListContainer section {
+  margin-top: 2rem;
+}
+
+.itemsListContainer table {
+  text-align: center;
+  min-width: 1024px;
+  overflow: scroll;
+  font-size: small;
+}
+
+.itemsTable th {
+  height: 2rem;
+}
+
+.itemsListContainer th {
+  height: 2rem;
+}
+
+.itemsCell svg {
+  width: 20px;
+  height: 20px;
+  margin-right: 6px;
+  color: dimgray;
+}
+
+.itemsCell svg:hover {
+  color: black;
+}
+
+.darkTheme .itemsCell svg {
+  color: #d1d5db;
+}
+
+.darkTheme .itemsCell svg:hover {
+  color: #ffffff;
+}
+
+.conditionCell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding-left: 0;
+}
+/* vertical-align: middle;
+  display: flex;
+  gap: 20px;
+  justify-content: center; */
+
+  /* Base select */
+
+
+/* Bootstrap override */
+.darkTheme .form-select,
+.darkTheme .filterSelect {
+  background-color: #1e293b !important;
+  color: #e5e7eb !important;
+  border-color: #334155 !important;
+}
+
+/* Dropdown options */
+.darkTheme .form-select option,
+.darkTheme .filterSelect option {
+  background-color: #1e293b;
+  color: #e5e7eb;
+}
+
+.darkTheme .form-select:focus {
+  box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
+  border-color: #3b82f6;
+}
+
+
+
+/* dropdown options */
+.forceDarkSelect select option,
+.forceDarkSelect .form-select option {
+  background-color: #1e293b !important;
+  color: #e5e7eb !important;
+}
+

@@ -1,7 +1,7 @@
-import Joi from 'joi';
+import Joi from 'joi-browser';
 import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
-import NetlifyPoweredLink from 'components/Footer/NetlifyPoweredLink';
+import NetlifyPoweredLink from '~/components/Footer/NetlifyPoweredLink';
 import Form from '../common/Form/Form';
 import { loginUser } from '../../actions/authActions';
 import { clearErrors } from '../../actions/errorsActions';
@@ -23,6 +23,7 @@ export class Login extends Form {
   };
 
   componentDidMount() {
+    this._isMounted = true;
     if (this.props.auth.isAuthenticated) {
       this.props.history.push('/');
     }
@@ -48,6 +49,7 @@ export class Login extends Form {
   }
 
   componentWillUnmount() {
+    this._isMounted = false;
     this.props.clearErrors();
   }
 
@@ -55,7 +57,7 @@ export class Login extends Form {
     const { email, password } = this.state.data;
     const formattedEmail = email.replace(/[A-Z]/g, char => char.toLowerCase());
     await this.props.loginUser({ email: formattedEmail, password });
-    if (this.props.errors) {
+    if (this.props.errors && this._isMounted) {
       this.setState({ errors: this.props.errors });
     }
   };
@@ -64,7 +66,7 @@ export class Login extends Form {
     const { darkMode } = this.props;
     return (
       <div
-        className={`pt-5 h-100 container-fluid d-flex flex-column align-items-center ${
+        className={`pt-5 min-vh-100 container-fluid d-flex flex-column align-items-center ${
           darkMode ? 'bg-oxford-blue' : ''
         }`}
       >
@@ -94,7 +96,7 @@ export class Login extends Form {
             </Link>
           </div>
         </form>
-        <footer>
+        <footer className="mt-5">
           <NetlifyPoweredLink />
         </footer>
       </div>

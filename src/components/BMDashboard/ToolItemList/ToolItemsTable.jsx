@@ -4,6 +4,10 @@ import { BiPencil } from 'react-icons/bi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSortDown, faSort, faSortUp, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import ToolRecordsModal from './ToolRecordsModal';
+import styles from './ToolItemListView.module.css';
+
+const okColor = '#16a34a';
+const badColor = '#dc2626';
 
 export default function ToolItemsTable({
   selectedProject,
@@ -18,11 +22,20 @@ export default function ToolItemsTable({
   const [recordType, setRecordType] = useState('');
   const [updateModal, setUpdateModal] = useState(false);
   const [updateRecord, setUpdateRecord] = useState(null);
+
   const [projectNameCol, setProjectNameCol] = useState({
     iconsToDisplay: faSort,
     sortOrder: 'default',
   });
   const [inventoryItemTypeCol, setInventoryItemTypeCol] = useState({
+    iconsToDisplay: faSort,
+    sortOrder: 'default',
+  });
+  const [conditionCol, setConditionCol] = useState({
+    iconsToDisplay: faSort,
+    sortOrder: 'default',
+  });
+  const [toolStatusCol, setToolStatusCol] = useState({
     iconsToDisplay: faSort,
     sortOrder: 'default',
   });
@@ -34,6 +47,8 @@ export default function ToolItemsTable({
   useEffect(() => {
     setInventoryItemTypeCol({ iconsToDisplay: faSort, sortOrder: 'default' });
     setProjectNameCol({ iconsToDisplay: faSort, sortOrder: 'default' });
+    setConditionCol({ iconsToDisplay: faSort, sortOrder: 'default' });
+    setToolStatusCol({ iconsToDisplay: faSort, sortOrder: 'default' });
   }, [selectedProject, selectedItem]);
 
   const handleEditRecordsClick = (selectedEl, type) => {
@@ -60,22 +75,58 @@ export default function ToolItemsTable({
         setProjectNameCol({ iconsToDisplay: faSortDown, sortOrder: 'desc' });
       }
       setInventoryItemTypeCol({ iconsToDisplay: faSort, sortOrder: 'default' });
+      setConditionCol({ iconsToDisplay: faSort, sortOrder: 'default' });
+      setToolStatusCol({ iconsToDisplay: faSort, sortOrder: 'default' });
     } else if (columnName === 'InventoryItemType') {
       if (
         inventoryItemTypeCol.sortOrder === 'default' ||
         inventoryItemTypeCol.sortOrder === 'desc'
       ) {
         newSortedData.sort((a, b) =>
-          (a.itemType?.name || '').localeCompare(b.itemType?.name || ''),
+          (a.itemType?.name || '').localeCompare(
+            b.itemType?.name || '',
+            undefined,
+            { sensitivity: 'base' }, // 👈 case-insensitive
+          ),
         );
         setInventoryItemTypeCol({ iconsToDisplay: faSortUp, sortOrder: 'asc' });
       } else if (inventoryItemTypeCol.sortOrder === 'asc') {
         newSortedData.sort((a, b) =>
-          (b.itemType?.name || '').localeCompare(a.itemType?.name || ''),
+          (b.itemType?.name || '').localeCompare(a.itemType?.name || '', undefined, {
+            sensitivity: 'base',
+          }),
         );
         setInventoryItemTypeCol({ iconsToDisplay: faSortDown, sortOrder: 'desc' });
       }
       setProjectNameCol({ iconsToDisplay: faSort, sortOrder: 'default' });
+      setConditionCol({ iconsToDisplay: faSort, sortOrder: 'default' });
+      setToolStatusCol({ iconsToDisplay: faSort, sortOrder: 'default' });
+    } else if (columnName === 'ToolStatusColumn') {
+      // Add logic for sorting by Status if needed
+      const usingRows = newSortedData.filter(item => item.itemType?.using?.includes(item._id));
+      const notUsingRows = newSortedData.filter(item => !item.itemType?.using?.includes(item._id));
+      if (toolStatusCol.sortOrder === 'default' || toolStatusCol.sortOrder === 'desc') {
+        newSortedData.splice(0, newSortedData.length, ...notUsingRows, ...usingRows);
+        setToolStatusCol({ iconsToDisplay: faSortUp, sortOrder: 'asc' });
+      } else if (toolStatusCol.sortOrder === 'asc') {
+        setToolStatusCol({ iconsToDisplay: faSortDown, sortOrder: 'desc' });
+        newSortedData.splice(0, newSortedData.length, ...usingRows, ...notUsingRows);
+      }
+      setProjectNameCol({ iconsToDisplay: faSort, sortOrder: 'default' });
+      setInventoryItemTypeCol({ iconsToDisplay: faSort, sortOrder: 'default' });
+      setConditionCol({ iconsToDisplay: faSort, sortOrder: 'default' });
+    } else if (columnName === 'ConditionColumn') {
+      // Add logic for sorting by Condition if needed
+      if (conditionCol.sortOrder === 'default' || conditionCol.sortOrder === 'desc') {
+        newSortedData.sort((a, b) => (a.condition || '').localeCompare(b.condition || ''));
+        setConditionCol({ iconsToDisplay: faSortUp, sortOrder: 'asc' });
+      } else if (conditionCol.sortOrder === 'asc') {
+        newSortedData.sort((a, b) => (b.condition || '').localeCompare(a.condition || ''));
+        setConditionCol({ iconsToDisplay: faSortDown, sortOrder: 'desc' });
+      }
+      setProjectNameCol({ iconsToDisplay: faSort, sortOrder: 'default' });
+      setInventoryItemTypeCol({ iconsToDisplay: faSort, sortOrder: 'default' });
+      setToolStatusCol({ iconsToDisplay: faSort, sortOrder: 'default' });
     }
 
     setData(newSortedData);
@@ -91,8 +142,8 @@ export default function ToolItemsTable({
         recordType={recordType}
       />
       <UpdateItemModal modal={updateModal} setModal={setUpdateModal} record={updateRecord} />
-      <div className="items_table_container">
-        <Table>
+      <div className={`${styles.itemsTableContainer}`}>
+        <Table className={`${styles.itemsTable}`}>
           <thead>
             <tr>
               {selectedProject === 'all' ? (
@@ -109,9 +160,19 @@ export default function ToolItemsTable({
               ) : (
                 <th>Name</th>
               )}
-              {dynamicColumns.map(({ label }) => (
-                <th key={label}>{label}</th>
-              ))}
+              {dynamicColumns.map(
+                ({ label }) =>
+                  (label == 'Condition' && (
+                    <th onClick={() => sortData('ConditionColumn')} key={label}>
+                      {label} <FontAwesomeIcon icon={conditionCol.iconsToDisplay} size="lg" />
+                    </th>
+                  )) ||
+                  (label == 'Using' && (
+                    <th onClick={() => sortData('ToolStatusColumn')} key={label}>
+                      {label} <FontAwesomeIcon icon={toolStatusCol.iconsToDisplay} size="lg" />
+                    </th>
+                  )) || <th key={label}>{label}</th>,
+              )}
               <th>Updates</th>
               <th>Purchases</th>
             </tr>
@@ -123,39 +184,67 @@ export default function ToolItemsTable({
                 return (
                   <tr key={el._id}>
                     <td>{el.project?.name}</td>
-                    <td>{el.itemType?.name}</td>
+                    <td>{el.itemType?.name ?? el.name}</td>
                     <td>{el.purchaseStatus === 'Purchased' ? 'Yes' : 'No'}</td>
                     <td>
-                      {el.itemType?.using?.includes(el._id) ? (
-                        <FontAwesomeIcon icon={faCheck} size="lg" color="green" />
-                      ) : (
-                        <FontAwesomeIcon icon={faTimes} size="lg" color="red" />
-                      )}
+                      <FontAwesomeIcon
+                        icon={el.itemType?.using?.includes(el._id) ? faCheck : faTimes}
+                        size="lg"
+                        className={
+                          el.itemType?.using?.includes(el._id)
+                            ? styles.statusIconOk
+                            : styles.statusIconBad
+                        }
+                      />
                     </td>
+
                     <td>
-                      {el.itemType?.available?.includes(el._id) &&
-                      el.condition !== 'Lost' &&
-                      el.condition !== 'Needs Replacing' ? (
-                        <FontAwesomeIcon icon={faCheck} size="lg" color="green" />
-                      ) : (
-                        <FontAwesomeIcon icon={faTimes} size="lg" color="red" />
-                      )}
+                      <FontAwesomeIcon
+                        icon={
+                          el.itemType?.available?.includes(el._id) &&
+                          el.condition !== 'Lost' &&
+                          el.condition !== 'Needs Replacing'
+                            ? faCheck
+                            : faTimes
+                        }
+                        size="lg"
+                        className={
+                          el.itemType?.available?.includes(el._id) &&
+                          el.condition !== 'Lost' &&
+                          el.condition !== 'Needs Replacing'
+                            ? styles.statusIconOk
+                            : styles.statusIconBad
+                        }
+                      />
                     </td>
-                    <td>
-                      <div className="condition_cell">
-                        {el.condition === 'Lost' ||
-                        el.condition === 'Needs Replacing' ||
-                        el.condition === 'Worn' ||
-                        el.condition === 'Needs Repair' ? (
-                          <FontAwesomeIcon icon={faTimes} size="lg" color="red" />
-                        ) : (
-                          <FontAwesomeIcon icon={faCheck} size="lg" color="green" />
-                        )}
+
+                    <td className={styles.conditionTd}>
+                      <div className={styles.conditionCell}>
+                        <FontAwesomeIcon
+                          icon={
+                            el.condition === 'Lost' ||
+                            el.condition === 'Needs Replacing' ||
+                            el.condition === 'Worn' ||
+                            el.condition === 'Needs Repair'
+                              ? faTimes
+                              : faCheck
+                          }
+                          size="lg"
+                          className={
+                            el.condition === 'Lost' ||
+                            el.condition === 'Needs Replacing' ||
+                            el.condition === 'Worn' ||
+                            el.condition === 'Needs Repair'
+                              ? styles.statusIconBad
+                              : styles.statusIconOk
+                          }
+                        />
                         {el.condition}
                       </div>
                     </td>
+
                     <td>{el.code}</td>
-                    <td className="items_cell">
+                    <td className={`${styles.itemsCell}`}>
                       <button
                         type="button"
                         onClick={() => handleEditRecordsClick(el, 'Update')}

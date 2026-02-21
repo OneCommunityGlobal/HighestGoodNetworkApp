@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
 import { toast } from 'react-toastify';
-import './style.css';
+import styles from './style.module.css';
 import { useSelector } from 'react-redux';
 
 // eslint-disable-next-line react/function-component-definition
@@ -14,7 +14,8 @@ const CopyToClipboard = ({ writeText, message }) => {
 
   return (
     <FontAwesomeIcon
-      className="copy-to-clipboard"
+      className={`${styles.copyToClipboard}`}
+      data-testid="copy-icon"
       icon={faCopy}
       onClick={handleCopyToClipboard}
       color={darkMode ? 'lightgrey' : ''}

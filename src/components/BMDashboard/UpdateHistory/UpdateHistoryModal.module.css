@@ -1,0 +1,169 @@
+.updateHistoryModal {
+  max-width: 95vw;
+}
+
+.controls {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.filterInfo {
+  font-size: 0.9rem;
+  color: #6c757d;
+  font-style: italic;
+}
+
+.refreshBtn {
+  white-space: nowrap;
+}
+
+.tableContainer {
+  overflow: auto;
+  max-height: 60vh;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+}
+
+.historyTable {
+  margin-bottom: 0;
+  font-size: 0.875rem;
+  white-space: nowrap;
+}
+
+.historyTable thead {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.historyTable thead th {
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.changesCell {
+  font-family: monospace;
+  font-size: 0.85rem;
+  white-space: normal;
+  max-width: 400px;
+  word-break: break-word;
+}
+
+.noRecords {
+  text-align: center;
+  font-weight: 500;
+  padding: 2rem !important;
+  color: #6c757d;
+}
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  gap: 1rem;
+}
+
+.errorMessage {
+  background-color: #fee2e2;
+  color: #991b1b;
+  padding: 1rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+.recordCount {
+  margin-top: 1rem;
+  text-align: right;
+  font-size: 0.875rem;
+  color: #6c757d;
+}
+
+/* Dark Mode Styles */
+.darkMode .darkHeader {
+  background-color: #1b2a41;
+  color: #e8edf4;
+  border-bottom-color: #2f4157;
+}
+
+.darkMode .darkHeader .btn-close {
+  filter: invert(1);
+}
+
+.darkMode .darkBody {
+  background-color: #1f2e45;
+  color: #e8edf4;
+}
+
+.darkMode .darkFooter {
+  background-color: #1b2a41;
+  border-top-color: #2f4157;
+}
+
+.darkMode .tableContainer {
+  border-color: #2f4157;
+}
+
+.darkMode .darkTable {
+  background-color: #1b2a41;
+  color: #e8edf4;
+}
+
+.darkMode .darkTable thead th {
+  background-color: #2f4157;
+  color: #f2f6ff;
+  border-color: #3f5269;
+}
+
+.darkMode .darkTable tbody td,
+.darkMode .darkTable tbody th {
+  border-color: #2f4157;
+}
+
+.darkMode .darkTable tbody tr:nth-child(odd) {
+  background-color: #1f2e45;
+}
+
+.darkMode .darkTable tbody tr:nth-child(even) {
+  background-color: #23375b;
+}
+
+.darkMode .darkTable tbody tr:hover {
+  background-color: #2a3f5f;
+}
+
+.darkMode .darkInput {
+  background-color: #2a3f5f;
+  color: #e8edf4;
+  border-color: #3f5269;
+}
+
+.darkMode .darkInput::placeholder {
+  color: #a0aec0;
+}
+
+.darkMode .changesCell {
+  color: #a0d2db;
+}
+
+.darkMode .noRecords {
+  color: #a0aec0;
+}
+
+.darkMode .recordCount {
+  color: #a0aec0;
+}
+
+.darkMode a {
+  color: #60a5fa;
+}
+
+.darkMode a:hover {
+  color: #93c5fd;
+}
+
+

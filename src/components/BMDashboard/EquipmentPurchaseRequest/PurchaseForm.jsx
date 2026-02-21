@@ -3,12 +3,12 @@ import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Form, FormGroup, FormText, Label, Input, Button } from 'reactstrap';
-import Joi from 'joi';
+import Joi from 'joi-browser';
 
-import { boxStyle } from 'styles';
-import { purchaseEquipment } from 'actions/bmdashboard/equipmentActions';
+import { boxStyle } from '~/styles';
+import { purchaseEquipment } from '~/actions/bmdashboard/equipmentActions';
 
-import './PurchaseForm.css';
+import stylesPurchaseForm from './PurchaseForm.module.css';
 
 export default function PurchaseForm() {
   const bmProjects = useSelector(state => state.bmProjects);
@@ -137,9 +137,9 @@ export default function PurchaseForm() {
         </Input>
       </FormGroup>
       <div className="purchase-equipment-flex-group">
-        <FormGroup className="flex-group-qty">
+        <FormGroup className={`${stylesPurchaseForm.flexGroupQty}`}>
           <Label for="input-quantity">Quantity</Label>
-          <div className="flex-group-qty-container">
+          <div className={`${stylesPurchaseForm.flexGroupQtyContainer}`}>
             <Input
               id="input-quantity"
               type="number"

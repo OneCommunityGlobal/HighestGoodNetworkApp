@@ -1,0 +1,196 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+.helpModal .modalDialog {
+  max-width: 992px;
+  margin: 1.75rem auto;
+  width: 100%;
+  padding: 0 15px;
+}
+
+.helpModal .modalContent {
+  width: 100%;
+  min-height: 416px;
+  background: #ffffff;
+  border: 1px solid #000000;
+  border-radius: 4px;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  position: relative;
+  overflow: hidden;
+}
+
+.helpModal .modalHeader {
+  border: none;
+  padding: 48px 80px 24px;
+}
+
+.helpModal .modalTitle {
+  font-family: 'Roboto';
+  font-weight: 700;
+  font-size: 32px;
+  color: #000000;
+  margin: 0;
+}
+
+.selectContainer {
+  width: 100%;
+  max-width: 832px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.selectButton {
+  box-sizing: border-box;
+  width: 100%;
+  height: 55px;
+  background: #fff;
+  border: 2px solid rgba(0, 0, 0, 0.8);
+  padding: 12px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  margin-bottom: 50px;
+}
+
+.selectButtonText {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 24px;
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.selected {
+  color: #000;
+}
+
+.selectButtonArrow {
+  width: 12px;
+  height: 12px;
+  border-style: solid;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+  transition: transform 0.3s ease;
+  border-color: #000;
+}
+
+.open {
+  transform: rotate(-135deg);
+  margin-top: 6px;
+}
+
+.selectOptions {
+  position: absolute;
+  top: 100%;
+  margin-top: -2px;
+  left: 0;
+  width: 100%;
+  background: #fff;
+  border: 2px solid rgba(0, 0, 0, 0.8);
+  border-radius: 0 0 10px 10px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1050;
+}
+
+.selectOption {
+  padding: 12px 20px;
+  font-family: 'Roboto';
+  font-size: 18px;
+  color: #000;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.selectOption:hover {
+  background: rgba(86, 54, 213, 0.1);
+}
+
+.textMuted {
+  font-family: 'Roboto';
+  font-style: italic;
+  font-size: 20px;
+  color: #666;
+  margin: 5px 0 48px;
+  padding-left: 5px;
+}
+
+/* ============================================
+   DARK MODE STYLES
+   ============================================ */
+
+.darkMode .modalContent {
+  background-color: #2b3e59 !important;
+  border: 1px solid #4a5a77 !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4) !important;
+}
+
+.darkMode .modalHeader {
+  border-bottom: 1px solid #4a5a77 !important;
+}
+
+.darkMode .modalTitle {
+  color: #ffffff !important;
+}
+
+.darkMode p button {
+  font-size: 18px;
+  color: #ddb55e !important;
+  text-decoration: underline;
+}
+
+.darkMode p button:hover {
+  color: #f5a926 !important;
+}
+
+.selectButtonDark {
+  background-color: #3a506b;
+  border: 2px solid #4a5a77;
+  color: #ffffff;
+}
+
+.selectButtonTextDark {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.selectedDark {
+  color: #ffffff;
+}
+
+.selectButtonArrowDark {
+  border-color: #ffffff;
+}
+
+.selectOptionsDark {
+  background-color: #2d4059;
+  border: 2px solid #4a5a77;
+}
+
+.selectOptionDark {
+  color: #ffffff;
+}
+
+.selectOptionDark:hover {
+  background-color: #253342;
+}
+
+.textMutedDark {
+  color: #cfd8e3;
+}
+
+.darkMode :global(.alert-warning) {
+  background-color: #4a3b1f;
+  color: #f5e6c8;
+  border-color: #e8a71c;
+}
+
+@media (max-width: 992px) {
+  .helpModal .modalBody {
+    padding: 0 20px;
+  }
+
+  .textMuted {
+    padding-left: 0;
+  }
+}

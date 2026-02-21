@@ -1,5 +1,6 @@
 export const CONFIRM_DELETION = 'Confirm Deletion';
 export const CONFIRM_ARCHIVE = 'Confirm Archive';
+export const CONFIRM_UNARCHIVE = 'Confirm UnArchive';
 export const DELETE = 'delete';
 export const ARE_YOU_SURE_YOU_WANT_TO = 'Are you sure you want to ';
 export const THIS_PROJECT_NAME_IS_ALREADY_TAKEN = 'This project name is already taken';
@@ -20,3 +21,9 @@ export const USER_DELETE_DATA_ARCHIVE = 'Wait, Save the Data! Data Archiving is 
 export const USER_DELETE_OPTION_HEADING = 'Choose A Delete Action';
 export const USER_STATUS_CHANGE_CONFIRMATION = (fullName, status) =>
   `Please confirm that you want to make "${fullName}" as ${status}.`;
+export const PROJECT_INACTIVE_CONFIRMATION = `<strong>Wait, what?!</strong>
+    <br />Switching to Inactive pulls the project and its tasks from the whole team’s view. That’s a lot of disappearing. 
+    <br /><b/>Sure about this?`;
+export const PROJECT_ACTIVE_CONFIRMATION = `<strong>It’s alive! IT’S ALIVE!</strong>
+    <br />You’re about to reanimate this project and unleash all its action items back onto your team’s dashboards. 
+    <br/><b/>Proceed like the mad scientist you are?`;

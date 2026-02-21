@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faSave } from '@fortawesome/free-solid-svg-icons';
-import { useSelector } from 'react-redux';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { getAllUserProfile } from '../../actions/userManagement';
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import userTableDataPermissions from '../../utils/userTableDataPermissions';
+import PropTypes from 'prop-types';
 import {
   ACTIVE,
   FIRST_NAME,
@@ -21,14 +21,13 @@ import {
   MANAGE_FINAL_DAY,
   USER_START_DATE,
   USER_END_DATE,
-  REQUESTED_TIME_OFF,
 } from '../../languages/en/ui';
+import styles from './usermanagement.module.css';
 
 /**
  * The header row of the user table.
  */
-const UserTableHeader = React.memo(
-  ({ authRole, roleSearchText, darkMode, editUser, enableEditUserInfo, disableEditUserInfo, isMobile, mobileFontSize }) => {
+const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser, enableEditUserInfo, disableEditUserInfo, isMobile, mobileFontSize }) => {
     const dispatch = useDispatch();
     const [editFlag, setEditFlag] = useState(editUser);
     const updatedUserData = useSelector(state => state.userProfileEdit.newUserData);
@@ -65,11 +64,11 @@ const UserTableHeader = React.memo(
       <tr className={darkMode ? 'bg-space-cadet' : ''}
           style={{fontSize: isMobile ? mobileFontSize : 'initial'}}
       >
-        <th scope="col" id="usermanagement_active" style={darkModeStyle}>
+        <th scope="col" className={styles.userManagementColActive} style={darkModeStyle}>
           {ACTIVE}
         </th>
         <th scope="col" id="usermanagement_first" className="p-auto" style={darkModeStyle}>
-          <div className="text-center flex">
+        <div className={styles.userManagementHeaderCell}>
             <span className="m-auto">{FIRST_NAME}</span>
             {(() => {
               if (authRole === 'Owner') {
@@ -95,7 +94,7 @@ const UserTableHeader = React.memo(
           </div>
         </th>
         <th scope="col" id="usermanagement_last_name" className="" style={darkModeStyle}>
-          <div className="text-center">
+        <div className={styles.userManagementHeaderCell}>
             <span className="m-auto">{LAST_NAME}</span>
             {(() => {
               if (authRole === 'Owner') {
@@ -120,8 +119,8 @@ const UserTableHeader = React.memo(
             })()}
           </div>
         </th>
-        <th scope="col" id="usermanagement_role" style={darkModeStyle}>
-          <div className="text-center">
+        <th scope="col" className={styles.roleCell} style={darkModeStyle}>
+        <div className={styles.userManagementHeaderCell}>
             <span className="m-auto">{ROLE}</span>
             {(() => {
               if (authRole === 'Owner') {
@@ -146,9 +145,9 @@ const UserTableHeader = React.memo(
             })()}
           </div>
         </th>
-        <th scope="col" id="usermanagement_title" style={darkModeStyle}>
+        <th scope="col" className={styles.titleClamp} style={darkModeStyle}>
           <div>
-            <div className="text-center">
+          <div className={styles.userManagementHeaderCell}>
               <span className="m-auto">{TITLE}</span>
               {(() => {
                 if (authRole === 'Owner') {
@@ -176,7 +175,7 @@ const UserTableHeader = React.memo(
         </th>
 
         <th scope="col" id="usermanagement_email" style={darkModeStyle}>
-          <div className="text-center">
+        <div className={styles.userManagementHeaderCell}>
             <span className="m-auto text-center">{EMAIL}</span>
             {(() => {
               if (authRole === 'Owner') {
@@ -202,7 +201,7 @@ const UserTableHeader = React.memo(
           </div>
         </th>
         <th scope="col" id="usermanagement_hrs" style={darkModeStyle}>
-          <div className="text-center">
+        <div className={styles.userManagementHeaderCell}>
             <span className="m-auto">{WKLY_COMMITTED_HRS}</span>
             {(() => {
               if (authRole === 'Owner') {
@@ -233,19 +232,34 @@ const UserTableHeader = React.memo(
         </th>
 
         <th scope="col" id="usermanagement_requested_time_off" style={darkModeStyle}>
-          <div className="text-center m-auto">{REQUESTED_TIME_OFF}</div>
+        <div
+          className="text-center m-auto"
+          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}
+        >
+          <span>Req.</span>
+          <i
+            className="fa fa-clock-o"
+            aria-hidden="true"
+            title="time"
+            style={{
+              fontSize: '14px',
+              color: darkMode ? 'lightgray' : 'black',
+            }}
+          />
+          <span>off</span>
+        </div>
         </th>
 
         <th scope="col" id="usermanagement_finalday" style={darkModeStyle}>
           <div className="text-center m-auto">{MANAGE_FINAL_DAY}</div>
         </th>
 
-        <th scope="col" id="usermanagement_resume_date" style={darkModeStyle}>
+        <th scope="col" className={styles.userManagementColResumeDate} style={darkModeStyle}>
           <div className="text-center m-auto">{USER_RESUME_DATE}</div>
         </th>
 
-        <th scope="col" id="usermanagement_resume_date" style={darkModeStyle}>
-          <div className="text-center">
+        <th scope="col" className={styles.userManagementColResumeDate} style={darkModeStyle}>
+        <div className={styles.userManagementHeaderCell}>
             <span className="m-auto text-center">{USER_START_DATE}</span>
             {(() => {
               if (authRole === 'Owner') {
@@ -271,8 +285,8 @@ const UserTableHeader = React.memo(
           </div>
         </th>
 
-        <th scope="col" id="usermanagement_resume_date" style={darkModeStyle}>
-          <div className="text-center">
+        <th scope="col" className={styles.userManagementColResumeDate} style={darkModeStyle}>
+        <div className={styles.userManagementHeaderCell}>
             <span className="m-auto text-center">{USER_END_DATE}</span>
             {(() => {
               if (authRole === 'Owner') {
@@ -299,11 +313,25 @@ const UserTableHeader = React.memo(
         </th>
 
         {userTableDataPermissions(authRole, roleSearchText) && (
-          <th scope="col" id="usermanagement_delete" aria-label="Delete User" style={darkModeStyle} />
+          <th scope="col" className={styles.userManagementColDelete} aria-label="Delete User" style={darkModeStyle} />
         )}
       </tr>
     );
-  },
-);
+  };
+
+UserTableHeaderComponent.propTypes = {
+  authRole: PropTypes.string.isRequired,
+  roleSearchText: PropTypes.string,
+  darkMode: PropTypes.bool,
+  editUser: PropTypes.object,
+  enableEditUserInfo: PropTypes.func.isRequired,
+  disableEditUserInfo: PropTypes.func.isRequired,
+  isMobile: PropTypes.bool,
+  mobileFontSize: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+ 
+};
+
+const UserTableHeader = React.memo(UserTableHeaderComponent);
+UserTableHeader.displayName = 'UserTableHeader';
 
 export default UserTableHeader;

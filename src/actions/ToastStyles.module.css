@@ -1,0 +1,42 @@
+/* Toast content container */
+.toastContent {
+  font-size: 1rem;
+  color: var(--toast-text-color);
+  background-color: var(--toast-bg-color);
+  padding: 10px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+/* Close button */
+.closeButton {
+  margin-top: 10px;
+  padding: 8px 16px;
+  background-color: #4497a8;
+  color: var(--button-text-color);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.closeButton:hover {
+  background-color: var(--button-hover-bg-color);
+}
+
+/* Light mode variables */
+:root {
+  --toast-text-color: #000;
+  --toast-bg-color: #fff;
+  --button-bg-color: #007bff;
+  --button-text-color: #fff;
+  --button-hover-bg-color: #0056b3;
+}
+
+/* Dark mode variables */
+[data-theme='dark'] {
+  --toast-text-color: #fff;
+  --toast-bg-color: #333;
+  --button-bg-color: #1e90ff;
+  --button-text-color: #fff;
+  --button-hover-bg-color: #1c86ee;
+}

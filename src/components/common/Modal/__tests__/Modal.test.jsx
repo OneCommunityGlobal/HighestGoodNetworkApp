@@ -2,10 +2,10 @@
 import React from 'react';
 import { render, fireEvent, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import configureStore from 'redux-mock-store';
+import { configureStore } from 'redux-mock-store';
 import '@testing-library/jest-dom';
 import ModalExample from '../Modal';
-
+import { vi } from 'vitest';
 const mockStore = configureStore([]);
 const initialState = {
   theme: { darkMode: false },
@@ -25,10 +25,15 @@ describe('ModalExample Component', () => {
   });
 
   it('closes when close button is clicked', () => {
-    const closeModalMock = jest.fn();
+    const closeModalMock = vi.fn();
     render(
       <Provider store={store}>
-        <ModalExample isOpen closeModal={closeModalMock} modalTitle="Test Modal" />
+        <ModalExample
+          isOpen
+          closeModal={closeModalMock}
+          confirmModal={() => {}}
+          modalTitle="Test Modal"
+        />
       </Provider>,
     );
 
@@ -74,25 +79,43 @@ describe('ModalExample Component', () => {
     expect(screen.getByText('Add')).toBeDisabled();
   });
 
+  // it('calls setInactiveModal when "Set inactive" button is clicked', () => {
+  //   const setInactiveModalMock = vi.fn();
+  //   render(
+  //     <Provider store={store}>
+  //       <ModalExample
+  //         isOpen
+  //         closeModal={() => {}}
+  //         setInactiveModal={setInactiveModalMock}
+  //         setInactiveButton="Yes, hide it all"
+  //         modalTitle="Test Modal"
+  //       />
+  //     </Provider>,
+  //   );
+
+  //   fireEvent.click(screen.getByText(/yes, hide it all/i));
+  //   expect(setInactiveModalMock).toHaveBeenCalled();
+  // });
+  // updated test
   it('calls setInactiveModal when "Set inactive" button is clicked', () => {
-    const setInactiveModalMock = jest.fn();
+    const setInactiveModalMock = vi.fn();
     render(
-      <Provider store={store}>
-        <ModalExample
-          isOpen
-          closeModal={() => {}}
-          setInactiveModal={setInactiveModalMock}
-          modalTitle="Test Modal"
-        />
-      </Provider>,
+      <ModalExample
+        isOpen={true}
+        closeModal={vi.fn()}
+        setInactiveModal={setInactiveModalMock}
+        hasInactiveBtn={true} // This is crucial!
+        setInactiveButton="Yes, hide it all"
+        modalTitle="Test Modal"
+      />,
     );
 
-    fireEvent.click(screen.getByText(/set inactive/i));
+    fireEvent.click(screen.getByText(/yes, hide it all/i));
     expect(setInactiveModalMock).toHaveBeenCalled();
   });
 
   it('calls confirmModal when confirm button is clicked', () => {
-    const confirmModalMock = jest.fn();
+    const confirmModalMock = vi.fn();
     render(
       <Provider store={store}>
         <ModalExample

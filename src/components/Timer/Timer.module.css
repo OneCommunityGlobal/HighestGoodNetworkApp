@@ -54,15 +54,12 @@
   top: 4rem;
   background: #343a40;
   border-radius: 1rem;
-  box-shadow: 15px 20px 25px -5px rgb(0 0 0 / 0.5), 0 8px 10px -6px rgb(0 0 0 / 0.1);
   overflow: hidden;
   border-color: #343a40;
 }
 
 .timerContent {
-  /* position: relative; */
   padding: 1rem;
-  /* padding-top: 2rem; */
   margin-bottom: auto;
   margin-top: auto;
   gap: 1rem;

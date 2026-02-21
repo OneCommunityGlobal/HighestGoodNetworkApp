@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendarCheck } from '@fortawesome/free-regular-svg-icons';
 import moment from 'moment';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 import CountdownTimer from './CountdownTimer';
 
 function DueDateTime({ dueDate, isShow, darkMode }) {
@@ -22,6 +22,7 @@ function DueDateTime({ dueDate, isShow, darkMode }) {
           <FontAwesomeIcon icon={faCalendarCheck} className="mr-1" />{' '}
           {displayTime.format('MMM-DD-YY')} at {displayTime.format('HH:mm')} PST
         </div>
+
         <CountdownTimer date={dueDate} darkMode={darkMode} />
       </div>
     </div>
