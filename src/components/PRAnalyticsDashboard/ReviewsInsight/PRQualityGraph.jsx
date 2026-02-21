@@ -6,7 +6,7 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 Chart.register(ChartDataLabels);
 
-function PRQualityGraph({ selectedTeams, qualityData, isDataViewActive }) {
+function PRQualityGraph({ selectedTeams, qualityData, isDataViewActive, orderedTeamIds }) {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   if (!selectedTeams || selectedTeams.length === 0) {
@@ -18,9 +18,7 @@ function PRQualityGraph({ selectedTeams, qualityData, isDataViewActive }) {
   }
 
   const isAllTeams = selectedTeams.some(team => team.value === 'All');
-  const teamsToDisplay = isAllTeams
-    ? Object.keys(qualityData)
-    : selectedTeams.map(team => team.value);
+  const teamsToDisplay = isAllTeams ? orderedTeamIds : selectedTeams.map(team => team.value);
 
   const generateChartData = team => {
     const teamQualityData = qualityData[team] || {};
