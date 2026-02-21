@@ -145,71 +145,26 @@
   display: none;
 }
 
-.project_info_modal_ol {
-  padding-left: 20px;
-}
-
-.search-project-person {
-  position: relative;
-  width: 100%;
-}
-
-.suggestions-list {
+.project-member-badge {
   position: absolute;
-  background-color: white;
-  border: 1px solid #ccc;
-  width: 100%;
-  z-index: 1000;
-  list-style: none;
-  margin: 0;
-  padding: 0;
+  top: -10px;
+  right: -32px;
+  min-width: 22px;
+  height: 22px;
+  background: lawngreen;
+  color: #111;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: bold;
+  box-shadow: 0 0 2px #888;
+  z-index: 2;
 }
 
-.suggestion-item {
-  padding: 8px;
-  cursor: pointer;
-}
-
-.suggestion-item:hover {
-  background-color: #f0f0f0;
-}
-
-.suggestion-button {
-  display: block;
-  width: 100%; 
-  padding: 10px; 
-  text-align: left; 
-  background: none; 
-  border: none; 
-  cursor: pointer; 
-}
-
-.suggestion-button:hover {
-  background-color: #f0f0f0;
-}
-
-tr:hover {
-  background: #e9f6ff;
-}
-.archived-button {
-  background-color: #007bff;
-  border: none;
-  color: white;
-  padding: 10px 20px;
-  text-align: center;
-  font-size: 16px;
-  cursor: pointer;
-  border-radius: 4px;
-  margin-left: 10px;
-}
-
-.archived-button:hover {
-  background-color: #0056b3;
-}
-
-@media (max-width: 375px) {
-  #new_project .form-control {
-    flex: 1 1 auto;
-    width: 50%;
-  }
+.project-member-btn .fa-users {
+  font-size: 1.5rem;
+  line-height: 1;
+  margin-top: 0;
 }
