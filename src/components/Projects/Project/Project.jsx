@@ -96,11 +96,10 @@ const Project = props => {
   }, [props.projectData, props.category]);
 
   return (
-    <>
-      <tr
-        className={styles['projects__tr']}
-        id={`tr_${props.projectId}`}
-      >
+    <tr
+      className={styles['projects__tr']}
+      id={`tr_${props.projectId}`}
+    >
         <th className={styles['projects__order--input']} scope="row">
           <div className={darkMode ? 'text-light' : ''}>{index + 1}</div>
         </th>
@@ -224,8 +223,7 @@ const Project = props => {
             </button>
           </td>
         ) : null}
-      </tr>
-    </>
+    </tr>
   );
 };
 

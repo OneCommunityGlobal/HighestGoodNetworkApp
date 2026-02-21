@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import './../projects.module.css';
 import {
   PROJECT_NAME,
@@ -13,7 +14,7 @@ import hasPermission from '~/utils/permissions';
 import { connect } from 'react-redux';
 import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSort, faArrowUp, faArrowDown, faSortDown} from '@fortawesome/free-solid-svg-icons';
+import { faArrowUp, faArrowDown, faSortDown } from '@fortawesome/free-solid-svg-icons';
 import { Dropdown,DropdownButton } from 'react-bootstrap';
 
 // import DropdownButton from 'react-bootstrap/DropdownButton';
@@ -28,11 +29,23 @@ const ProjectTableHeader = props => {
   const categoryList = ['Unspecified', 'Food', 'Energy', 'Housing', 'Education', 'Society', 'Economics', 'Stewardship', 'Other'];
   const statusList = ['Active', 'Inactive'];
 
-  const getSortIcon = (column) => {
+  const getSortIcon = column => {
     if (props.sorted.column !== column || props.sorted.direction === "DEFAULT") return faSortDown;
     if (props.sorted.direction === "ASC") return faArrowDown;
     if (props.sorted.direction === "DESC") return faArrowUp;
+    return faSortDown;
   };
+
+  const renderSortButton = column => (
+    <Button
+      size="sm"
+      className="ml-3 mb-1"
+      id={`${column.toLowerCase()}_sort`}
+      onClick={() => props.handleSort(column)}
+    >
+      <FontAwesomeIcon icon={getSortIcon(column)} pointerEvents="none" />
+    </Button>
+  );
 
   return (
     <tr className={darkMode ? 'bg-space-cadet text-light' : ''}>
@@ -44,11 +57,7 @@ const ProjectTableHeader = props => {
         <span className='d-flex justify-content-between align-middle mt-1'>
           {PROJECT_NAME}
           <div>
-            <Button size='sm' className='ml-3 mb-1' id='projects_sort' onClick={() => { props.handleSort("PROJECTS") }}><FontAwesomeIcon icon={props.sorted.direction === "DEFAULT"
-          ? getSortIcon("PROJECTS")
-          : props.sorted.direction === "ASC"
-            ? getSortIcon("PROJECTS")
-            : getSortIcon("PROJECTS")} pointerEvents="none"/></Button>
+            {renderSortButton('PROJECTS')}
           </div>
         </span>
       </th>
@@ -80,22 +89,14 @@ const ProjectTableHeader = props => {
         <span className='d-flex justify-content-between'>
           {INVENTORY}
           <div>
-            <Button size='sm' className='ml-3 mb-1' id='projects_sort' onClick={() => { props.handleSort("INVENTORY") }}><FontAwesomeIcon icon={props.sorted.direction === "DEFAULT"
-          ? getSortIcon("INVENTORY")
-          : props.sorted.direction === "ASC"
-            ? getSortIcon("INVENTORY")
-            : getSortIcon("INVENTORY")} pointerEvents="none"/></Button>
+            {renderSortButton('INVENTORY')}
           </div>
         </span> 
       </th>
       <th scope="col" id="projects__members" className='align-middle'>
         <span className='d-flex'>
           {MEMBERS}
-          <Button size='sm' className='ml-3 mb-1' id='members_sort' onClick={() => { props.handleSort("MEMBERS") }}><FontAwesomeIcon icon={props.sorted.direction === "DEFAULT"
-          ? getSortIcon("MEMBERS")
-          : props.sorted.direction === "ASC"
-            ? getSortIcon("MEMBERS")
-            : getSortIcon("MEMBERS")} pointerEvents="none"/></Button>
+          {renderSortButton('MEMBERS')}
         </span>
       </th>
       <th scope="col" id="projects__wbs" className='align-middle'>
@@ -119,6 +120,20 @@ const ProjectTableHeader = props => {
       ) : null}
     </tr>
   );
+};
+
+ProjectTableHeader.propTypes = {
+  role: PropTypes.string,
+  darkMode: PropTypes.bool,
+  selectedValue: PropTypes.string,
+  showStatus: PropTypes.string,
+  onChange: PropTypes.func.isRequired,
+  selectStatus: PropTypes.func.isRequired,
+  handleSort: PropTypes.func.isRequired,
+  sorted: PropTypes.shape({
+    column: PropTypes.string.isRequired,
+    direction: PropTypes.string.isRequired,
+  }).isRequired,
 };
 
 const mapStateToProps = state => ({

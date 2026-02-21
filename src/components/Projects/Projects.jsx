@@ -1,9 +1,9 @@
 /* eslint-disable no-shadow */
 /* eslint-disable no-use-before-define */
 import { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { connect , useSelector } from 'react-redux';
 import SearchProjectByPerson from '~/components/SearchProjectByPerson/SearchProjectByPerson';
-import ProjectsList from '~/components/BMDashboard/Projects/ProjectsList';
 import { fetchAllProjects, modifyProject, clearError } from '../../actions/projects';
 import { fetchProjectsWithActiveUsers } from '../../actions/projectMembers';
 import { getProjectsByUsersName } from '../../actions/userProfile';
@@ -24,8 +24,7 @@ const Projects = function(props) {
   const { role } = props.state.userProfile;
   const { darkMode } = props.state.theme;
   
-const allReduxProjects = useSelector(state => state.allProjects.projects);
-const projectFetchStatus = useSelector(state => state.allProjects.status);
+  const allReduxProjects = useSelector(state => state.allProjects.projects);
   const numberOfProjects = props.state.allProjects.projects.length;
   const numberOfActive = props.state.allProjects.projects.filter(project => project.isActive)
     .length;
@@ -42,7 +41,6 @@ const projectFetchStatus = useSelector(state => state.allProjects.status);
   const [modalData, setModalData] = useState(initialModalData);
   const [categorySelectedForSort, setCategorySelectedForSort] = useState("");
   const [showStatus, setShowStatus] = useState("");
-  const [sortedByName, setSortedByName] = useState("");
   const [sorter, setSorter] = useState({
     column: "PROJECTS",
     direction: "DEFAULT",
@@ -92,7 +90,7 @@ const projectFetchStatus = useSelector(state => state.allProjects.status);
     });
   };
 
-  const onClickProjectStatusBtn = (projectData) => {
+  const onClickProjectStatusBtn = projectData => {
     setProjectTarget(projectData);
     if (projectData.isActive) {
       // If the project is archived, allow unarchiving
@@ -104,8 +102,7 @@ const projectFetchStatus = useSelector(state => state.allProjects.status);
         hasInactiveBtn: true, // No need for inactive button
         hasActiveBtn: false,
       });
-    } else if (!projectData.isActive) {
-      // If the project is inactive, allow setting it to active
+    } else {
       setModalData({
         showModal: true,
         modalMessage: `<p style="${darkMode ? 'color: white' : 'color: black;'}">${PROJECT_ACTIVE_CONFIRMATION}</p>`,
@@ -130,18 +127,18 @@ const projectFetchStatus = useSelector(state => state.allProjects.status);
     setShowStatus(value);
   };
 
-  const handleSort = (column) => {
+  const getNextSortDirection = direction => {
+    if (direction === 'DEFAULT') return 'ASC';
+    if (direction === 'ASC') return 'DESC';
+    return 'DEFAULT';
+  };
+
+  const handleSort = column => {
     setSorter(prev => {
       if (prev.column === column) {
-        const nextDirection = prev.direction === "DEFAULT"
-          ? "ASC"
-          : prev.direction === "ASC"
-            ? "DESC"
-            : "DEFAULT";
-        return { column, direction: nextDirection };
-      } else {
-        return { column, direction: "ASC" };
+        return { column, direction: getNextSortDirection(prev.direction) };
       }
+      return { column, direction: 'ASC' };
     });
   };
   
@@ -172,11 +169,6 @@ const projectFetchStatus = useSelector(state => state.allProjects.status);
     setIsChangingStatus(false);
     // Close the modal after update
     onCloseModal();
-  };
-
-  const postProject = async (name, category) => {
-    await props.postNewProject(name, category);
-    refreshProjects(); // Refresh project list after adding a project
   };
 
   const generateProjectList = (categorySelectedForSort, showStatus) => {
@@ -253,10 +245,6 @@ const projectFetchStatus = useSelector(state => state.allProjects.status);
   };
   
 
-  const refreshProjects = async () => {
-    await props.fetchAllProjects();
-  };
-
   useEffect(() => {
     props.fetchAllProjects();
   }, []);
@@ -266,12 +254,6 @@ const projectFetchStatus = useSelector(state => state.allProjects.status);
   }, []);
 
   useEffect(() => {
-    // console.log('generateProjectList triggered:', {
-    //   fetched: props.state.allProjects.fetched,
-    //   fetching: props.state.allProjects.fetching,
-    //   dataLength: allReduxProjects?.length || 0,
-    //   status: props.state.allProjects.status
-    // });
     generateProjectList(categorySelectedForSort, showStatus);
     if (status !== 200) {
       setModalData({
@@ -312,11 +294,7 @@ const projectFetchStatus = useSelector(state => state.allProjects.status);
       ));
 
       setProjectList(mapped);
-      return;
-    }
-
-    // Mode 2: Search by project name
-    if (searchMode === 'project') {
+    } else if (searchMode === 'project') {
       const filteredProjects = allReduxProjects.filter(p =>
         p.projectName?.toLowerCase().includes(debouncedSearchName.toLowerCase())
       );
@@ -334,7 +312,6 @@ const projectFetchStatus = useSelector(state => state.allProjects.status);
       ));
 
       setProjectList(mapped);
-      return;
     }
   };
 
@@ -428,6 +405,33 @@ const projectFetchStatus = useSelector(state => state.allProjects.status);
 
 const mapStateToProps = state => {
   return { state };
+};
+
+Projects.propTypes = {
+  clearError: PropTypes.func.isRequired,
+  fetchAllProjects: PropTypes.func.isRequired,
+  fetchProjectsWithActiveUsers: PropTypes.func.isRequired,
+  getProjectsByUsersName: PropTypes.func.isRequired,
+  hasPermission: PropTypes.func.isRequired,
+  modifyProject: PropTypes.func.isRequired,
+  state: PropTypes.shape({
+    allProjects: PropTypes.shape({
+      projects: PropTypes.arrayOf(PropTypes.object).isRequired,
+      fetching: PropTypes.bool,
+      fetched: PropTypes.bool,
+      status: PropTypes.number,
+      error: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
+    }).isRequired,
+    projectMembers: PropTypes.shape({
+      activeMemberCounts: PropTypes.objectOf(PropTypes.number),
+    }),
+    theme: PropTypes.shape({
+      darkMode: PropTypes.bool,
+    }).isRequired,
+    userProfile: PropTypes.shape({
+      role: PropTypes.string,
+    }).isRequired,
+  }).isRequired,
 };
 
 export default connect(mapStateToProps, {
