@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import Select from 'react-select';
-import sharedStyles from './ReviewsInsight.module.css';
+import { getAllTeamCode } from '../../../actions/allTeamsAction';
+import { fetchReviewsInsights } from '../../../actions/prAnalytics/reviewsInsightsAction';
 import ActionDoneGraph from './ActionDoneGraph';
 import PRQualityGraph from './PRQualityGraph';
-import { fetchReviewsInsights } from '../../../actions/prAnalytics/reviewsInsightsAction';
-import { getAllTeamCode } from '../../../actions/allTeamsAction';
+import sharedStyles from './ReviewsInsight.module.css';
 
 function ReviewsInsight() {
   const [duration, setDuration] = useState('Last Week');
@@ -61,6 +61,7 @@ function ReviewsInsight() {
               actionSummary.find(a => a.actionTaken === 'Changes Requested')?.count || 0,
             Commented: actionSummary.find(a => a.actionTaken === 'Commented')?.count || 0,
           },
+          memberCount: team.memberCount || 0,
         };
 
         formattedQualityData[team._id] = {
