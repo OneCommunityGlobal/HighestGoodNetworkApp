@@ -19,6 +19,7 @@ import OpenIssueCharts from '../Issues/openIssueCharts';
 import SupplierPerformanceGraph from './SupplierPerformanceGraph.jsx';
 import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
 import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
+import MaterialCostCorrelationChart from '../MaterialCostCorrelation';
 import MaterialStockOutRiskIndicator from './MaterialStockOutRiskIndicator/MaterialStockOutRiskIndicator';
 import IssueCharts from '../Issues/openIssueCharts';
 
@@ -309,7 +310,9 @@ function WeeklyProjectSummary() {
         className: 'large',
         content: [1, 2, 3].map((_, index) => {
           let content;
-          if (index === 1) {
+          if (index === 0) {
+            content = <MaterialCostCorrelationChart />;
+          } else if (index === 1) {
             content = <QuantityOfMaterialsUsed data={quantityOfMaterialsUsedData} />;
           } else if (index === 2) {
             content = <TotalMaterialCostPerProject />;
