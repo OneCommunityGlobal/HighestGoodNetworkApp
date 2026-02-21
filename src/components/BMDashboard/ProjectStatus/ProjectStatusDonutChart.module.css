@@ -1,0 +1,91 @@
+.container {
+  width: 100%;
+  margin-top: 20px;
+  background: #ffffff;
+  color: #111827;
+  padding: 20px;
+  border-radius: 12px;
+  position: relative;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.title {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 26px;
+  font-weight: 600;
+}
+
+.filterRow {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.applyBtn {
+  background: #4285f4;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+.chartWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 80px;
+  width: 100%;
+}
+
+.summaryBox {
+  flex: 0 0 280px;
+  min-width: 260px;
+}
+
+.label {
+  font-size: 14px;
+  font-weight: 700;
+  color: #6b7280;
+}
+
+.value {
+  font-size: 22px;
+  color: #d9534f;
+  margin-bottom: 10px;
+}
+
+@media (max-width: 768px) {
+  .chartWrapper {
+    flex-direction: column;
+    gap: 28px;
+    align-items: center;
+  }
+
+  .chartContainer {
+    flex: none;
+    width: 92vw;
+    max-width: 420px;
+    height: 92vw;
+    max-height: 420px;
+  }
+
+  .summaryBox {
+    width: 100%;
+    align-items: center;
+    text-align: center;
+  }
+}
+.centerLabel {
+  font-size: 16px;
+  font-weight: 600;
+  fill: currentColor;
+}
+
+.centerValue {
+  font-size: 18px;
+  font-weight: 700;
+  fill: currentColor;
+}
