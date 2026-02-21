@@ -83,7 +83,6 @@ const sanitizeInput = input => {
 };
 
 // Utility function to generate secure random numbers for demo purposes
-// Utility function to generate secure random numbers for demo purposes
 const getSecureRandomInt = (min, max) => {
   // Use a deterministic approach for demo data instead of Math.random()
   // In a real application, you would get this data from a secure API
