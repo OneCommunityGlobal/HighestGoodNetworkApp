@@ -6,7 +6,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Typography from '@mui/material/Typography';
 import Feedback from './FeedBackSection/Feedback';
 import { feedbackData } from './FeedbackData';
-import styles from './Activity.module.css';
+import styles from './ActivityFeedback.module.css';
 
 const data = {
   eventName: 'Event Name',
@@ -62,7 +62,7 @@ const getAvatarColorClass = (name = '', index = 0, stylesRef) => {
   return isPurple ? stylesRef.purple : stylesRef.blue;
 };
 
-function Activity() {
+function ActivityFeedback() {
   const darkMode = useSelector(state => state.theme?.darkMode);
   const [tab, setTab] = useState('Feedback');
   const [event, setEvent] = useState(data);
@@ -305,4 +305,4 @@ function Activity() {
   );
 }
 
-export default Activity;
+export default ActivityFeedback;

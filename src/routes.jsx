@@ -101,7 +101,7 @@ import CPLogin from './components/CommunityPortal/Login';
 import CPDashboard from './components/CommunityPortal';
 import CPProtectedRoute from './components/common/CPDashboard/CPProtectedRoute';
 import ActivityList from './components/CommunityPortal/Activities/ActivityList';
-import Activity from './components/CommunityPortal/Activities/activityId/Activity';
+import ActivityFeedback from './components/CommunityPortal/Activities/activityId/ActivityFeedback';
 import ActivityAttendance from './components/CommunityPortal/Activities/ActivityAttendance';
 import ActivityAgenda from './components/CommunityPortal/Activities/ActivityAgenda';
 import ActivitiesPage from './components/CommunityPortal/Activities/ActivitiesPage';
@@ -694,7 +694,7 @@ export default (
         <CPProtectedRoute
           path="/communityportal/activity/:activityId/feedback"
           exact
-          component={Activity}
+          component={ActivityFeedback}
         />
         <CPProtectedRoute
           path="/communityportal/activities/Feedbackform/:eventId/:email"
