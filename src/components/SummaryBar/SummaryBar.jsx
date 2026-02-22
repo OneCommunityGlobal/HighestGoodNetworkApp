@@ -416,26 +416,31 @@ const SummaryBar = React.forwardRef((props, ref) => {
   };
 
   const renderSummary = () => {
+    // NOT SUBMITTED
     if (!weeklySummary) {
+      // Weekly Summary Not Required
       if (weeklySummaryNotReq) {
         return (
           <div
-            className={`${styles['border-black']} col-4 bg-super-awesome no-gutters d-flex justify-content-center align-items-center`}
+            className={`${styles['border-black']} col-4 ${styles['bg--summary-purple']} no-gutters d-flex justify-content-center align-items-center`}
             style={{ textAlign: 'center' }}
           >
-            <font className={`${styles['text-center']} text-light`} size="3">
+            <font className="text-light" size="3">
               SUMMARY
             </font>
           </div>
         );
       }
+
+      // Summary Required but Not Submitted (!)
       return (
         <div
-          className={`border border-danger col-4 no-gutters ${
-            darkMode ? 'bg-yinmn-blue' : 'bg-white'
+          className={`border border-danger col-4 no-gutters d-flex flex-column justify-content-center ${
+            darkMode ? 'bg-yinmn-blue' : styles['bg--summary-purple']
           }`}
         >
           <div className="py-1"> </div>
+
           {isAuthUser || canEditData() ? (
             <div className="d-flex justify-content-center">
               <button
@@ -455,20 +460,29 @@ const SummaryBar = React.forwardRef((props, ref) => {
               !
             </p>
           )}
-          <font className={`${styles['text-center']}`} size="3">
+
+          <font className={`${styles['text-center']} text-light`} size="3">
             SUMMARY
           </font>
+
           <div className="py-2"> </div>
         </div>
       );
     }
+
+    // SUBMITTED (✓)
     return (
-      <div className={`${styles['border-green']} col-4 ${styles['bg--dark-green']}`}>
+      <div
+        className={`${styles['border-green']} col-4 ${
+          darkMode ? 'bg-yinmn-blue' : styles['bg--summary-purple']
+        }`}
+      >
         <div className="py-1"> </div>
+
         <div className="d-flex justify-content-center">
           <button
             onClick={props.toggleSubmitForm}
-            className={`${styles['text-center']} ${styles.large_text_summary} ${styles['summary-toggle']}`}
+            className={`${styles['text-center']} ${styles.large_text_summary} ${styles['summary-toggle']} text-light`}
             style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
             aria-label="Toggle submit form"
             type="button"
@@ -476,9 +490,11 @@ const SummaryBar = React.forwardRef((props, ref) => {
             ✓
           </button>
         </div>
-        <font className={`${styles['text-center']}`} size="3">
+
+        <font className={`${styles['text-center']} text-light`} size="3">
           SUMMARY
         </font>
+
         <div className="py-2"> </div>
       </div>
     );

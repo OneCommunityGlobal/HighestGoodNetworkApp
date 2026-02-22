@@ -251,7 +251,11 @@ export const updateTeamMemeberVisibility = (teamId, userId, visibility) => {
       .catch(error => {
         if (error.response) {
           // The request was made and the server responded with a status code
-          toast.error('Error updating visibility:', error.response.data);
+          const msg =
+            error.response?.data?.message ||
+            error.response?.data?.error ||
+            (typeof error.response?.data === 'string' ? error.response.data : 'Unknown error');
+          toast.error(`Error updating visibility: ${msg}`);
         } else if (error.request) {
           // The request was made but no response was received
           toast.error('Error updating visibility: No response received');
