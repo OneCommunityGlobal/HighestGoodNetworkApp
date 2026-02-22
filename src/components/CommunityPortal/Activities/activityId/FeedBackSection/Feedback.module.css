@@ -2,6 +2,7 @@
   width: 90%;
   margin: 20px auto;
   font-family: Arial, sans-serif;
+  padding: 10px 12px 14px;
 }
 
 .feedbackTitle {
@@ -297,7 +298,7 @@
   width: 90%;
   margin: 20px auto;
   font-family: Arial, sans-serif;
-  background-color: #1b2a41;
+  background-color: #1f3048;
   color: #e2e8f0;
 }
 
@@ -388,6 +389,50 @@
 
 .darkMode .textarea::placeholder {
   color: #94a3b8;
+}
+
+@media (max-width: 800px) {
+  .feedbackHeader {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .searchContainer {
+    width: 100%;
+  }
+
+  .sortOptions {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: flex-start;
+  }
+
+  .filter {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-right: 0;
+  }
+
+  .filterDropdown {
+    flex: 1;
+    min-width: 120px;
+  }
+
+  .sortBtn {
+    width: auto;
+    align-self: flex-start;
+    justify-content: flex-start;
+    padding: 8px 12px;
+  }
+
+  .hostViewToggles {
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 6px 0;
+  }
 }
 
 .darkMode .badgePublic {

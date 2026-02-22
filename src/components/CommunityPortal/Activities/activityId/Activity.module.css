@@ -183,6 +183,11 @@
   color: #475569;
 }
 
+.activityCalendarTable td:hover {
+  background: #eef2f7;
+  color: #1e3a8a;
+}
+
 .activityCalendarTable th {
   background: #eef2f7;
   font-weight: 600;
@@ -318,7 +323,7 @@
     height: 160px;
     line-height: 120px;
     font-size: 18px;
-    margin: 10px auto;
+    margin: 10px 0;
   }
 
   .activityCalendarBox {
@@ -398,6 +403,11 @@
   color: #e2e8f0;
 }
 
+.darkMode {
+  background-color: #1b2a41;
+  min-height: 100vh;
+}
+
 .darkMode .activityEventCard {
   border: 1px solid #2f425d;
   background-color: #1f3048;
@@ -467,6 +477,11 @@
 
 .darkMode .activityCalendarTable th {
   background: #1f2f48;
+}
+
+.darkMode .activityCalendarTable td:hover {
+  background: #2c4463;
+  color: #f8fafc;
 }
 
 .darkMode .activityActiveDate {
