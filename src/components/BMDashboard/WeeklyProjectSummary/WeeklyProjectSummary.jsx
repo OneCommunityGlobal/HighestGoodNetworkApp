@@ -12,7 +12,7 @@ import InjuryCategoryBarChart from './GroupedBarGraphInjurySeverity/InjuryCatego
 import ToolsHorizontalBarChart from './Tools/ToolsHorizontalBarChart';
 import ExpenseBarChart from './Financials/ExpenseBarChart';
 import FinancialStatButtons from './Financials/FinancialStatButtons';
-import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
+import FinancialsTrackingSection from './ExpenditureChart/FinancialsTrackingSection';
 import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMaterialCostPerProject';
 import styles from './WeeklyProjectSummary.module.css';
 import OpenIssueCharts from '../Issues/openIssueCharts';
@@ -431,14 +431,11 @@ function WeeklyProjectSummary() {
         title: 'Financials Tracking',
         key: 'Financials Tracking',
         className: 'full',
-        content: [1, 2, 3, 4].map((_, index) => {
-          const uniqueId = uuidv4();
-          return (
-            <div key={uniqueId} className="weekly-project-summary-card normal-card">
-              {index === 3 ? <ActualVsPlannedCost /> : '📊 Card'}
-            </div>
-          );
-        }),
+        content: (
+          <div style={{ gridColumn: '1 / -1', width: '100%' }}>
+            <FinancialsTrackingSection />
+          </div>
+        ),
       },
     ],
     [quantityOfMaterialsUsedData, darkMode],
@@ -478,7 +475,9 @@ function WeeklyProjectSummary() {
         .querySelectorAll(
           'button, .weekly-project-summary-dropdown-icon, .no-print, .weekly-summary-header-controls',
         )
-        .forEach(el => el.parentNode?.removeChild(el));
+        .forEach(el => {
+          el.parentNode?.removeChild(el);
+        });
 
       const styleElem = document.createElement('style');
       styleElem.textContent = `
