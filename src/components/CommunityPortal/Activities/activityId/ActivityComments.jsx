@@ -609,18 +609,16 @@ function ActivityComments() {
 
   const renderStars = (rating, isInteractive = false, onRatingChange = null) => {
     return (
-      <div style={{ display: 'flex', gap: '2px' }}>
+      <div className={styles.feedbackStarsContainer}>
         {[1, 2, 3, 4, 5].map(star => (
           <button
             key={star}
             type="button"
+            className={`${styles.feedbackStarBtn} ${
+              star <= rating ? styles.feedbackStarSelected : ''
+            }`}
             style={{
-              fontSize: '1.2rem',
-              color: star <= rating ? '#ffc107' : '#ddd',
               cursor: isInteractive ? 'pointer' : 'default',
-              background: 'none',
-              border: 'none',
-              padding: 0,
             }}
             onClick={() => isInteractive && onRatingChange && onRatingChange(star)}
             disabled={!isInteractive}

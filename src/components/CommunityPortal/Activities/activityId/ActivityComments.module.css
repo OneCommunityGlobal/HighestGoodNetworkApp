@@ -791,6 +791,23 @@
   flex: 1;
 }
 
+.feedbackStarsContainer {
+  display: flex;
+  gap: 2px;
+}
+
+.feedbackStarBtn {
+  font-size: 1.2rem;
+  background: none;
+  border: none;
+  padding: 0;
+  color: #ddd;
+}
+
+.feedbackStarBtn.feedbackStarSelected {
+  color: #ffc107;
+}
+
 .feedbackRatingLabel {
   font-size: 0.9rem;
   color: #666;
@@ -860,6 +877,16 @@
 :global(body.dark-mode) .feedbackRatingLabel,
 :global(body.bm-dashboard-dark) .feedbackRatingLabel {
   color: #b8c5d1 !important;
+}
+
+:global(body.dark-mode) .feedbackStarBtn,
+:global(body.bm-dashboard-dark) .feedbackStarBtn {
+  color: #6b7c8a !important;
+}
+
+:global(body.dark-mode) .feedbackStarBtn.feedbackStarSelected,
+:global(body.bm-dashboard-dark) .feedbackStarBtn.feedbackStarSelected {
+  color: #ffc107 !important;
 }
 
 :global(body.dark-mode) .feedbackRatingText,
