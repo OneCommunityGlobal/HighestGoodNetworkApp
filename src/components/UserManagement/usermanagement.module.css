@@ -1,4 +1,4 @@
-thead {
+.userManagementTable thead {
   background: aliceblue;
 }
 
@@ -7,151 +7,202 @@ thead {
   background-color: #0f8292;
 } */
 
-#new_usermanagement {
+.userManagementActiveCell {
+  position: relative;
+  width: 60px; /* fixed width prevents shifting */
+  min-width: 60px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.userManagementActiveWrapper {
+  position: relative;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.userManagementInfringementCount {
+  position: absolute;
+  bottom: 2px;
+  left: 4px;
+  font-size: 0.7rem;
+  color: dodgerblue;
+}
+
+.userManagementTopRightIcon {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+}
+
+.userManagementBottomRightIcon {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+}
+
+.activeCellGrid {
+  display: grid;
+  grid-template-columns: 18px 34px 18px; 
+  grid-template-rows: 1fr 1fr;           
+  align-items: center;
+  justify-items: center;
+  position: relative;
+  min-height: 42px; 
+}
+
+.activeCellLeftTop {
+  grid-column: 1;
+  grid-row: 1;
+  justify-self: start;
+  font-size: 0.75rem;
+  line-height: 1;
+}
+
+.activeCellLeftBottom {
+  grid-column: 1;
+  grid-row: 2;
+  justify-self: start;
+  font-size: 0.75rem;
+  line-height: 1;
+}
+
+.activeCellDot {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+}
+
+.activeCellRightTop {
+  grid-column: 3;
+  grid-row: 1;
+}
+
+.activeCellRightBottom {
+  grid-column: 3;
+  grid-row: 2;
+}
+
+.userManagementHeaderCell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.iconLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+  padding: 0;
+}
+
+.new_user_management {
   margin-bottom: 10px;
   box-sizing: border-box;
   width: calc(100vw - 45px);
 }
 
-#user-management-table {
+.userManagementTable {
   width: calc(100vw - 45px);
 }
-#usermanagement_order {
-  width: 5px;
+
+.userManagementCellControl {
+  margin: 0;
+  box-sizing: border-box;
 }
 
-#usermanagement_active {
-  width: 10px;
+.userManagementIsActiveIcon {
+  color: lawngreen;
 }
 
-#usermanagement__delete {
-  width: 20px;
+.userManagementIsNotActive {
+  color: #dee2e6;
 }
 
-#usermanagement_resume_date {
-  min-width: 125px;
+.userManagementIsDisabled {
+  opacity: 0;
+  transition: opacity 10ms;
+  display: none;
 }
 
-.usermanagement__tr {
+.userManagementCellControlPadded {
+  padding-top: 15px;
+}
+
+.titleClamp {
+  width: 180px;
+  min-width: 180px;
+  max-width: 180px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.usermanagementTr {
   text-align: center;
 }
 
-.usermanagement__tr td {
+.usermanagementTr td {
   overflow: hidden;
   vertical-align: middle;
   padding: 2px;
 }
 
-.usermanagement__tr .edituser_input,
-.usermanagement__tr .btn,
-.usermanagement__tr .copy_icon {
-  margin: 0;
-  padding-top: 15px;
-  box-sizing: border-box;
-}
-
-#usermanagement_title > div {
-  width: 180px;
-  min-width: 180px;
-  max-width: 180px;
-  white-space: nowrap;
+.roleCell {
+  width: 100%;
   overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-#user_title > div {
-  width: 180px;
-  min-width: 180px;
-  max-width: 180px;
+  text-align: center;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
-.usermanagement_overview--top {
-  background: gray;
+.roleCell svg {
+  width: 14px;
+  height: 14px;
+  font-size: 14px;
 }
 
-.usermanagement_overview--top .card {
-  width: 200px;
-  float: left;
-  margin-right: 10px;
-  margin-bottom: 10px;
-}
-
-#card_project {
-  /* background: #1d62f0; */
-  background: linear-gradient(to right bottom, rgb(100, 183, 255) 5%, rgb(146, 138, 239) 100%);
-  background-color: #1d62f0;
-  border-radius: 8px;
-  border: #08397e;
-  color: white;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-}
-
-#card_team {
-  background: linear-gradient(to right bottom, rgb(100, 183, 255) 5%, rgb(146, 138, 239) 100%);
-  background-color: dodgerblue;
-  border-radius: 8px;
-  border: #08397e;
-  color: white;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-}
-
-#card_active {
-  /* background: #fbad4c; */
-  background: linear-gradient(to right bottom, #ffdb56 5%, #ff9145 100%);
-  background-color: #fac17b;
-  border-radius: 8px;
-  border: #ff9145;
-  color: white;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-}
-
-.email_cell {
+.emailCell {
   position: relative;
 }
 
-.email_cell a:hover {
+.emailCell a:hover {
   text-decoration: none;
 }
-.title_cell {
+.titleCell {
   width: 180px;
   min-width: 180px;
   max-width: 180px;
 }
 
-.fixed-width-container input {
+.fixedWidthContainer input {
   width: 100%;
   max-width: 180px;
 }
 
-#usermanagement_role,
-#user_role,
-td#usermanagement_role {
-  width: 100%;
-  overflow: hidden;
-  text-align: center;
-  white-space: nowrap;
-}
-
-td#usermanagement_role svg {
-  font-size: 14px; /* Ensures icon fits within 20px */
-  width: 14px;
-  height: 14px;
-}
-
-#user_role {
+.userRoleCol {
   max-width: initial;
 }
 
-.time_difference {
+.userManagementColOrder {
+  width: 5px;
+}
+
+.userManagementColActive {
+  width: 10px;
+}
+
+.userManagementColDelete {
+  width: 20px;
+}
+
+.userManagementColResumeDate {
+  min-width: 125px;
+}
+
+.timeDifference {
   cursor: pointer;
   position: absolute;
   top: 0;
@@ -160,67 +211,50 @@ td#usermanagement_role svg {
   margin: 2px 4px;
 }
 
-.copy_icon {
-  cursor: pointer;
+.copyIcon {
   position: absolute;
-  top: 0;
+  top: 50%;
   right: 0;
-  margin: 2px 2px;
+  transform: translateY(-50%);
+  margin: 0 2px;
   width: 16px;
   height: 16px;
+  cursor: pointer;
 }
 
-.usermanagement__order--input div {
+.usermanagementOrderInput div {
   margin-top: 7px;
 }
 
-.usermanagement__active--input i {
+.usermanagementActiveInput i {
   margin-top: 10px;
   cursor: pointer;
 }
 
-.usermanagement__name--input input {
+.usermanagementNameInput input {
   border: 1px solid white;
 }
 
-.usermanagement__name--input input:hover {
+.usermanagementNameInput input:hover {
   border: 1px solid #dee2e6;
 }
 
-.isActive i {
-  color: lawngreen;
+.usermanagementActionsCell {
+  display: table-cell;
+  padding-left: 10px;
 }
 
-.fa-circle-isActive {
-  color: lawngreen;
+.userManagementTable tbody tr:hover {
+  background: #e9f6ff;
 }
 
-.isNotActive {
-  color: #dee2e6;
-}
-
-.isDisabled {
-  opacity: 0;
-  transition: opacity 10ms;
-  display: none;
-}
-
-.page-no-link {
+.pageNoLink {
   margin-left: 10px;
   text-align: center;
   margin-top: 7px;
 }
 
-.usermanagement-actions-cell {
-  display: table-cell;
-  padding-left: 10px;
-}
-
-tr:hover {
-  background: #e9f6ff;
-}
-
-.link-button {
+.linkButton {
   background-color: transparent;
   border: none;
   cursor: pointer;
@@ -231,12 +265,12 @@ tr:hover {
   color: #1d62f0;
 }
 
-.link-button:hover,
-.link-button:focus {
+.linkButton:hover,
+.linkButton:focus {
   text-decoration: none;
 }
 
-.add-user-modal {
+.addUserModal {
   min-width: 50vw;
   /* Occupy the 90% of the screen width */
   max-width: 90vw !important;
@@ -246,21 +280,21 @@ tr:hover {
   white-space: nowrap;
 }
 
-.setup-new-user-popup-section {
+.setupNewUserPopupSection {
   display: grid;
   width: 80%;
   margin: 0 auto;
   gap: 10px;
 }
 
-.setup-invitation-popup-section {
+.setupInvitationPopupSection {
   display: grid;
   width: 95%;
   margin: 0 auto;
   gap: 10px;
 }
 
-.setup-new-user-popup-label {
+.setupNewUserPopupLabel {
   margin: 0px;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
     'Noto Sans', 'Liberation Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
@@ -270,15 +304,37 @@ tr:hover {
   color: #212529;
 }
 
-.setup-new-user-popup-input {
+.setupNewUserPopupInput {
   height: 36px;
 }
 
-#setup-new-user-popup-btn {
-  width: fit-content;
+.requestedTimeOffBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 4px;
+  padding-right: 4px;
 }
 
-.setup-new-user-popup-success {
+.requestedTimeOffBtn:hover {
+  background-color: #95c0fe;
+}
+
+.requestedTimeOffCalendarSvg {
+  fill: #0d6efd;
+}
+
+.requestedTimeOffClockSvg {
+  width: 100%;
+  height: 100%;
+  fill: currentColor;
+}
+
+.requestedTimeOffClockSvg path {
+  fill: #0d6efd;
+}
+
+.setupNewUserPopupSuccess {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
     'Noto Sans', 'Liberation Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
     'Segoe UI Symbol', 'Noto Color Emoji';
@@ -288,7 +344,7 @@ tr:hover {
   padding: 5px;
 }
 
-.setup-new-user-popup-error {
+.setupNewUserPopupError {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
     'Noto Sans', 'Liberation Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
     'Segoe UI Symbol', 'Noto Color Emoji';
@@ -298,37 +354,21 @@ tr:hover {
   padding: 5px;
 }
 
-#usermanagement-footer {
+.userManagementFooter {
   margin-bottom: 50px;
 }
 
-.centered-td {
+.centeredTd {
   text-align: center;
   vertical-align: middle;
 }
 
-#requested-time-off-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding-left: 4px;
-  padding-right: 4px;
-}
-
-.time-off-request-btn-moved {
+.timeOffRequestBtnMoved {
   position: relative;
   right: -9px;
 }
 
-#requested-time-off-btn:hover {
-  background-color: #95c0fe;
-}
-
-.requested-time-off-calender-svg {
-  fill: #0d6efd;
-}
-
-.requested-time-off-clock-icon {
+.requestedTimeOffClockIcon {
   position: relative;
   top: -8px;
   font-size: 18px;
@@ -341,46 +381,36 @@ tr:hover {
   background-color: white;
 }
 
-.requested-time-off-clock-icon-svg {
-  width: 100%;
-  height: 100%;
-  fill: currentColor;
-}
-
-.requested-time-off-clock-icon-svg path {
-  fill: #0d6efd;
-}
-
-.Logged-time-off-cards-container {
+.loggedTimeOffCardsContainer {
   overflow: auto;
   overflow-x: hidden;
   max-height: 215px;
 }
 
-.Logged-time-off-cards-container::-webkit-scrollbar {
+.loggedTimeOffCardsContainer::-webkit-scrollbar {
   width: 12px;
 }
 
-.Logged-time-off-cards-container::-webkit-scrollbar-track {
+.loggedTimeOffCardsContainer::-webkit-scrollbar-track {
   border-radius: 4px;
   background-color: #e7e7e7;
   border: 1px solid #cacaca;
   box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
 }
 
-.Logged-time-off-cards-container::-webkit-scrollbar-thumb {
+.loggedTimeOffCardsContainer::-webkit-scrollbar-thumb {
   border-radius: 8px;
   background-color: #007bff;
   box-shadow: inset 0 0 3px #e7e7e7;
 }
 
-.time-off-request-alert {
+.timeOffRequestAlert {
   height: 2.4rem;
   font-size: 1rem;
   line-height: 1rem;
 }
 
-.date-of-leave-datepicker {
+.dateOfLeaveDatepicker {
   display: block;
   height: calc(1.5em + 0.75rem + 2px);
   padding: 0.375rem 0.75rem;
@@ -394,7 +424,7 @@ tr:hover {
   border-radius: 0.25rem;
 }
 
-.date-of-leave-datepicker:focus {
+.dateOfLeaveDatepicker:focus {
   color: #495057;
   background-color: #fff;
   border-color: #80bdff;
@@ -408,39 +438,29 @@ tr:hover {
   margin: auto;
 }
 
-td {
+.userManagementTable td {
   text-align: center;
   padding: 4px;
   vertical-align: middle;
 }
 
-/* custom-toast.css */
-.custom-toast {
-  background-color: #a69712;
-  color: white;
-}
-
-.custom-toast-progress {
-  background-color: white;
-}
-
-.dark-usermanagement-data {
+.darkUsermanagementData {
   background-color: #3a506b;
 }
 
-.dark-usermanagement-data:hover {
+.darkUsermanagementData:hover {
   background-color: #111831;
 }
 
-.light-usermanagement-data {
+.lightUsermanagementData {
   background-color: white;
 }
 
-.light-usermanagement-data:hover {
+.lightUsermanagementData:hover {
   background-color: #f0f8ff;
 }
 
-.tooltip-container {
+.tooltipContainer {
   position: relative;
   display: inline-block;
   max-width: 150px; /* Set max width for text overflow */
@@ -449,7 +469,7 @@ td {
   text-overflow: ellipsis;
 }
 
-.tooltip-container:hover::after {
+.tooltipContainer:hover::after {
   content: attr(data-title); /* Show full text when hovered */
   position: absolute;
   background-color: rgba(0, 0, 0, 0.8);
@@ -467,13 +487,13 @@ td {
   opacity: 1;
 }
 
-.tooltip-container::after {
+.tooltipContainer::after {
   visibility: hidden;
   opacity: 0;
   transition: opacity 0.2s ease-in-out;
 }
 
-.infringement-count {
+.infringementCount {
   cursor: pointer;
   position: absolute;
   bottom: 0;
@@ -483,6 +503,6 @@ td {
   color: dodgerblue;
 }
 
-.infringement-count a:hover {
+.infringementCount a:hover {
   text-decoration: none;
 }

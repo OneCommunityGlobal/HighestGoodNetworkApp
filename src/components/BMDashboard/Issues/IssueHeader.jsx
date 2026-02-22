@@ -1,30 +1,51 @@
 import { Search, MoreHorizontal, ChevronDown } from 'lucide-react';
 import styles from './IssueHeader.module.css';
 import { connect, useDispatch, useSelector } from 'react-redux';
-import { getHeaderData } from '~/actions/authActions';
+import { getHeaderData, logoutUser } from '~/actions/authActions';
 import { Link } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import { fetchBMProjects } from '~/actions/bmdashboard/projectActions';
+import {
+  UncontrolledDropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
+} from 'reactstrap';
+import DarkModeButton from '~/components/Header/DarkModeButton';
+import { cantUpdateDevAdminDetails } from '~/utils/permissions';
+import { WELCOME, VIEW_PROFILE, UPDATE_PASSWORD, LOGOUT } from '~/languages/en/ui';
+import Logout from '~/components/Logout/Logout';
 
 export function IssueHeader(props) {
   const dispatch = useDispatch();
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const { profilePic, firstName } = props.auth;
+  const { profilePic, firstName, user } = props.auth;
   const projects = useSelector(state => state.bmProjects);
+  const userProfile = useSelector(state => state.userProfile);
 
   const [activeTab, setActiveTab] = useState('info');
   const [searchTerm, setSearchTerm] = useState('');
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [logoutPopup, setLogoutPopup] = useState(false);
   const searchRef = useRef(null);
+
+  const userId = user?.userid || user?.id;
 
   useEffect(() => {
     dispatch(fetchBMProjects());
   }, [dispatch]);
 
-  const filteredProjects = projects.filter(project =>
-    project.name.toLowerCase().includes(searchTerm.toLowerCase()),
-  );
+  const filteredProjects = isSearchFocused
+    ? searchTerm
+      ? projects.filter(project => project.name.toLowerCase().includes(searchTerm.toLowerCase()))
+      : projects
+    : [];
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -38,87 +59,170 @@ export function IssueHeader(props) {
   }, []);
 
   return (
-    <div className={`${darkMode ? 'issue-header-container-dark' : 'issue-header-container '}`}>
-      <div className={`${styles.topRow}`}>
-        <div className={`${darkMode ? 'title-section-dark' : 'title-section'}`}>
-          <h1 className={`${darkMode ? 'section-dark' : 'section'}`}>Issues</h1>
+    <div className={darkMode ? styles.issueHeaderContainerDark : styles.issueHeaderContainer}>
+      <div className={darkMode ? styles.topRowDark : styles.topRow}>
+        <div className={darkMode ? styles.titleSectionDark : styles.titleSection}>
+          <h1 className={darkMode ? styles.sectionDark : styles.section}>Issues</h1>
         </div>
 
-        <div className={`${styles.actionSection}`}>
-          <button className={`${styles.moreButton}`} type="button" label="More Button">
-            <MoreHorizontal size={20} />
-          </button>
+        <div className={styles.actionSection}>
+          <UncontrolledDropdown>
+            <DropdownToggle
+              tag="button"
+              className={darkMode ? styles.moreButtonDark : styles.moreButton}
+              type="button"
+            >
+              <MoreHorizontal size={20} color={darkMode ? '#ffffff' : '#000000'} />
+            </DropdownToggle>
+            <DropdownMenu className={darkMode ? 'bg-yinmn-blue' : ''}>
+              <DropdownItem header className={darkMode ? 'text-light' : ''}>
+                More Options
+              </DropdownItem>
+              <DropdownItem divider />
+              <DropdownItem
+                tag={Link}
+                to="/bmdashboard/issues"
+                className={darkMode ? 'text-light' : ''}
+              >
+                View All Issues
+              </DropdownItem>
+              <DropdownItem
+                tag={Link}
+                to="/bmdashboard/projects"
+                className={darkMode ? 'text-light' : ''}
+              >
+                Projects
+              </DropdownItem>
+            </DropdownMenu>
+          </UncontrolledDropdown>
           <Link to="/bmdashboard/projects" style={{ textDecoration: 'none' }}>
-            <button className={`${styles.backButton}`} type="button">
+            <button className={darkMode ? styles.backButtonDark : styles.backButton} type="button">
               Back to Projects
             </button>
           </Link>
-          <div className={`${styles.avatar}`}>
-            {profilePic ? (
-              <img src={profilePic} alt={`${firstName}'s avatar`} />
-            ) : (
-              <img src="/pfp-default-header.png" alt="Default avatar" />
-            )}
-            <ChevronDown size={20} color="#828282" />
-          </div>
+          <UncontrolledDropdown>
+            <DropdownToggle
+              tag="div"
+              className={styles.avatar}
+              style={{ cursor: 'pointer' }}
+              caret={false}
+            >
+              {profilePic ? (
+                <img src={profilePic} alt={`${firstName}'s avatar`} />
+              ) : (
+                <img src="/pfp-default-header.png" alt="Default avatar" />
+              )}
+            </DropdownToggle>
+            <DropdownMenu className={darkMode ? 'bg-yinmn-blue' : ''}>
+              <DropdownItem header className={darkMode ? 'text-light' : ''}>
+                Hello {firstName}
+              </DropdownItem>
+              <DropdownItem divider />
+              <DropdownItem
+                tag={Link}
+                to={`/userprofile/${userId}`}
+                className={darkMode ? 'text-light' : ''}
+              >
+                {VIEW_PROFILE}
+              </DropdownItem>
+              {!cantUpdateDevAdminDetails(userProfile?.email, userProfile?.email) && (
+                <DropdownItem
+                  tag={Link}
+                  to={`/updatepassword/${userId}`}
+                  className={darkMode ? 'text-light' : ''}
+                >
+                  {UPDATE_PASSWORD}
+                </DropdownItem>
+              )}
+              <DropdownItem className={darkMode ? 'text-light' : ''}>
+                <DarkModeButton />
+              </DropdownItem>
+              <DropdownItem divider />
+              <DropdownItem
+                onClick={() => setLogoutPopup(true)}
+                className={darkMode ? 'text-light' : ''}
+              >
+                {LOGOUT}
+              </DropdownItem>
+            </DropdownMenu>
+          </UncontrolledDropdown>
         </div>
       </div>
 
-      <div className={`${darkMode ? 'bg-oxide-blue' : ''} 'top-row-dark'`}>
-        <div className={` project-tab`}>
+      <div className={darkMode ? styles.bottomRowDark : styles.bottomRow}>
+        <div className={darkMode ? styles.projectTabDark : styles.projectTab}>
           <button
             type="button"
-            className={`tab-item ${activeTab === 'info' ? 'active' : ''}`}
+            className={`${styles.tabItem} ${activeTab === 'info' ? 'active' : ''} ${
+              darkMode ? styles.tabItemDark : ''
+            }`}
             onClick={() => setActiveTab('info')}
           >
-            Project 1
+            Project Info
           </button>
           <button
             type="button"
-            className={`tab-item ${activeTab === 'dates' ? 'active' : ''}`}
+            className={`${styles.tabItem} ${activeTab === 'dates' ? 'active' : ''} ${
+              darkMode ? styles.tabItemDark : ''
+            }`}
             onClick={() => setActiveTab('dates')}
           >
-            Dates of Project 1
+            Project Dates
           </button>
         </div>
 
-        <div className={`${styles.searchContainer}`} ref={searchRef}>
-          <div className={`${styles.searchIcon}`}>
-            <Search size={20} />
+        <div className={styles.searchContainer} ref={searchRef}>
+          <div className={darkMode ? styles.searchIconDark : styles.searchIcon}>
+            <Search size={20} color={darkMode ? '#ffffff' : '#828282'} />
           </div>
           <input
             type="text"
-            placeholder="Search..."
-            className={`${styles.searchInput}`}
+            placeholder="Search projects..."
+            className={darkMode ? styles.searchInputDark : styles.searchInput}
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
             onFocus={() => setIsSearchFocused(true)}
           />
 
-          {searchTerm && isSearchFocused && (
-            <div className={`${styles.searchResults}`}>
+          {isSearchFocused && (
+            <div className={darkMode ? styles.searchResultsDark : styles.searchResults}>
               {filteredProjects.length > 0 ? (
-                <div className={`${styles.searchResultsList}`}>
+                <div className={styles.searchResultsList}>
                   {filteredProjects.map(project => (
                     <Link
                       to={`/bmdashboard/projects/${project._id}`}
-                      key={project.id}
+                      key={project._id || project.id}
                       style={{ textDecoration: 'none' }}
+                      onClick={() => {
+                        setIsSearchFocused(false);
+                        setSearchTerm('');
+                      }}
                     >
-                      <div className={`${styles.searchResultItem}`}>
-                        <span className={`${styles.resultName}`}>{project.name}</span>
-                        <span className={`${styles.resultCategory}`}>{project.category}</span>
+                      <div
+                        className={darkMode ? styles.searchResultItemDark : styles.searchResultItem}
+                      >
+                        <span className={darkMode ? styles.resultNameDark : styles.resultName}>
+                          {project.name}
+                        </span>
+                        <span
+                          className={darkMode ? styles.resultCategoryDark : styles.resultCategory}
+                        >
+                          {project.category || 'No category'}
+                        </span>
                       </div>
                     </Link>
                   ))}
                 </div>
               ) : (
-                <div className={`${styles.searchNoResults}`}>No matching projects found</div>
+                <div className={darkMode ? styles.searchNoResultsDark : styles.searchNoResults}>
+                  {searchTerm ? 'No matching projects found' : 'Start typing to search projects'}
+                </div>
               )}
             </div>
           )}
         </div>
       </div>
+      <Logout setLogoutPopup={setLogoutPopup} open={logoutPopup} />
     </div>
   );
 }
