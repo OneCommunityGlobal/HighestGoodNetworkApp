@@ -14,7 +14,7 @@ import { useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEyeSlash, faEye } from '@fortawesome/free-solid-svg-icons';
 import { boxStyle, boxStyleDark } from '~/styles';
-import '../Header/DarkMode.css';
+import '../Header/index.css';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { ENDPOINTS } from '~/utils/URL';
