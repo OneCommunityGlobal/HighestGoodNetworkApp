@@ -19,6 +19,7 @@ export const fetchProjects = async () => {
 
     return response.data || [];
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error('Error fetching projects:', error);
     throw new Error('Failed to fetch projects');
   }
@@ -45,6 +46,7 @@ export const fetchPlannedCostBreakdown = async projectId => {
 
     return response.data;
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error('Error fetching planned cost breakdown:', error);
     throw new Error(error.response?.data?.message || 'Failed to fetch planned cost breakdown');
   }
@@ -77,6 +79,7 @@ export const createOrUpdatePlannedCost = async (projectId, category, plannedCost
 
     return response.data;
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error('Error creating/updating planned cost:', error);
     throw new Error(error.response?.data?.message || 'Failed to create/update planned cost');
   }
@@ -104,6 +107,7 @@ export const deletePlannedCost = async (projectId, category) => {
 
     return response.data;
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error('Error deleting planned cost:', error);
     throw new Error(error.response?.data?.message || 'Failed to delete planned cost');
   }
@@ -127,6 +131,7 @@ export const getAllPlannedCostsForProject = async projectId => {
 
     return response.data || [];
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error('Error fetching all planned costs:', error);
     throw new Error(error.response?.data?.message || 'Failed to fetch planned costs');
   }

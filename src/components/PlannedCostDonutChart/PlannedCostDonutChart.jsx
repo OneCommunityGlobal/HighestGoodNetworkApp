@@ -203,9 +203,7 @@ const PlannedCostDonutChart = () => {
   }
 
   return (
-    <div
-      className={`${styles['planned-cost-container']} ${darkMode ? styles['dark-mode'] : ''}`}
-    >
+    <div className={`${styles['planned-cost-container']} ${darkMode ? styles['dark-mode'] : ''}`}>
       <h2 className={styles['chart-title']}>Planned Cost Breakdown by Type of Expenditure</h2>
 
       {/* Project Filter */}
@@ -230,9 +228,7 @@ const PlannedCostDonutChart = () => {
                 setSearchTerm('');
               }}
             />
-            <span
-              className={`${styles['dropdown-arrow']} ${dropdownOpen ? styles.open : ''}`}
-            >
+            <span className={`${styles['dropdown-arrow']} ${dropdownOpen ? styles.open : ''}`}>
               &#9662;
             </span>
             {dropdownOpen && (
