@@ -1,0 +1,135 @@
+/* ============================================================
+   FinancialsTrackingSection — CSS Module
+   Manages the 2×2 grid (stacked) and top+bottom (comparison)
+   layouts for the Financials Tracking section.
+   All colours cascade from WeeklyProjectSummary.module.css.
+   ============================================================ */
+
+/* ── Section wrapper ─────────────────────────────────────────── */
+.section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── View-mode toggle ────────────────────────────────────────── */
+.toggleGroup {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.toggleBtn {
+  padding: 7px 18px;
+  background: var(--section-bg);
+  color: var(--text-color);
+  border: 1px solid var(--border-color, #cccccc);
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+  white-space: nowrap;
+}
+
+.toggleBtn:hover {
+  background: var(--section-title-hover);
+}
+
+.toggleBtn:focus-visible {
+  outline: 2px solid var(--focus-border-color, #3b82f6);
+  outline-offset: 2px;
+}
+
+/* Active / pressed state */
+.toggleBtnActive {
+  background: var(--button-bg);
+  color: #ffffff;
+  border-color: var(--button-bg);
+}
+
+.toggleBtnActive:hover {
+  background: var(--button-hover);
+  border-color: var(--button-hover);
+}
+
+/* ── Stacked mode: 2×2 grid ──────────────────────────────────── */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  width: 100%;
+}
+
+/* ── Comparison mode: column layout ─────────────────────────── */
+.comparisonLayout {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+/* ── Comparison mode: bottom row (2 cards side-by-side) ─────── */
+.bottomRow {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  width: 100%;
+}
+
+/* ── Shared card wrapper for non-expenditure charts ─────────── */
+.chartCard {
+  background: var(--card-bg);
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: 0 2px 8px var(--card-shadow);
+  min-height: 340px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Placeholder card ────────────────────────────────────────── */
+.placeholderCard {
+  background: var(--card-bg);
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 8px var(--card-shadow);
+  min-height: 340px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed var(--border-color, #cccccc);
+  box-sizing: border-box;
+}
+
+.placeholderText {
+  font-size: 14px;
+  color: var(--text-color);
+  opacity: 0.5;
+  text-align: center;
+  margin: 0;
+}
+
+/* ── Responsive ──────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .bottomRow {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .toggleGroup {
+    width: 100%;
+  }
+
+  .toggleBtn {
+    flex: 1;
+    text-align: center;
+  }
+}
