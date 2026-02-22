@@ -43,17 +43,6 @@ function Collaboration() {
 
       const data = await res.json();
       const jobs = data.jobs || [];
-      // let finalJobs = jobs;
-
-      // if (ENABLE_JOB_DUPLICATION && jobs.length > 0) {
-      //   const MULTIPLIER = 15; // 3 × 10 = 30 jobs
-      //   finalJobs = Array.from({ length: MULTIPLIER }).flatMap((_, i) =>
-      //     jobs.map(job => ({
-      //       ...job,
-      //       _id: `${job._id}-dup-${i}`, // ensure unique key
-      //     })),
-      //   );
-      // }
 
       setAllJobs(jobs);
 
@@ -95,6 +84,13 @@ function Collaboration() {
   const handleSubmit = e => {
     e.preventDefault();
     setSearchTerm(query);
+  };
+
+  const handleClearAllFilters = () => {
+    setCategoriesSelected([]);
+    setSearchTerm('');
+    setQuery('');
+    setCurrentPage(1);
   };
 
   const handleShowSummaries = async () => {
@@ -179,12 +175,12 @@ function Collaboration() {
             Select Categories ▼
           </button>
         </nav>
+
         {showCategoryDropdown && (
           <div
             role="menu"
             style={{
               position: 'absolute',
-              // top: '100%',
               marginTop: '7px',
               right: 0,
               background: 'rgba(0, 0, 0, 0.75)',
@@ -239,12 +235,10 @@ function Collaboration() {
         {/* LISTING TEXT + SUMMARY BUTTON */}
         <div className="job-queries">
           <p className="job-query">
-            {searchTerm || categoriesSelected.length > 0
-              ? `Listing results for ${
-                  searchTerm && categoriesSelected.length > 0
-                    ? `'${searchTerm}' + '${categoriesSelected.join(', ')}'`
-                    : `'${searchTerm || categoriesSelected.join(', ')}'`
-                }`
+            {searchTerm
+              ? `Listing results for '${searchTerm}'`
+              : categoriesSelected.length > 0
+              ? 'Listing results for selected categories'
               : 'Listing all job ads.'}
           </p>
 
@@ -252,6 +246,8 @@ function Collaboration() {
             Show Summaries
           </button>
         </div>
+
+        {/* SELECTED CATEGORY CHIPS + CLEAR ALL */}
         {categoriesSelected.length > 0 && (
           <div className={styles.jobQueries}>
             {categoriesSelected.map(cat => (
@@ -259,6 +255,10 @@ function Collaboration() {
                 {cat}
               </span>
             ))}
+
+            <button type="button" className={styles.clearAllButton} onClick={handleClearAllFilters}>
+              Clear All
+            </button>
           </div>
         )}
 
@@ -297,23 +297,20 @@ function Collaboration() {
             ‹
           </button>
 
-          {(() => {
-            const pagesToRender = Math.max(totalPages, 2);
-            return Array.from({ length: pagesToRender }, (_, i) => (
-              <button
-                key={i + 1}
-                type="button"
-                aria-current={currentPage === i + 1 ? 'page' : undefined}
-                disabled={currentPage === i + 1}
-                className={
-                  currentPage === i + 1 ? styles.paginationButtonActive : styles.paginationButton
-                }
-                onClick={() => setCurrentPage(i + 1)}
-              >
-                {i + 1}
-              </button>
-            ));
-          })()}
+          {Array.from({ length: Math.max(totalPages, 2) }, (_, i) => (
+            <button
+              key={i + 1}
+              type="button"
+              aria-current={currentPage === i + 1 ? 'page' : undefined}
+              disabled={currentPage === i + 1}
+              className={
+                currentPage === i + 1 ? styles.paginationButtonActive : styles.paginationButton
+              }
+              onClick={() => setCurrentPage(i + 1)}
+            >
+              {i + 1}
+            </button>
+          ))}
 
           <button type="button" onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}>
             ›
