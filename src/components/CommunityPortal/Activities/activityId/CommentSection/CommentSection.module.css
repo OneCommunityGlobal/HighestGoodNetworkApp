@@ -68,19 +68,19 @@
   }
 }
 
-.darkMode.activityCommentFooter {
+.darkMode .activityCommentFooter {
   color: #aaa;
 }
 
-.darkMode.activityComment {
+.darkMode .activityComment {
   background-color: transparent;
 }
 
-.darkMode.activityCommentsSection {
+.darkMode .activityCommentsSection {
   background-color: transparent;
 }
 
-.darkMode.activityCommentText {
+.darkMode .activityCommentText {
   background-color: #3a506b;
   color: #ffffff;
 }
