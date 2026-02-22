@@ -1,50 +1,90 @@
-/* General Styles */
-:global(body) {
-  margin: 0;
-  padding: 0;
-  background-color: white;
+/* ==========================================
+   1) Light Mode (Default Variables)
+   ========================================== */
+.resourceManagementPage {
+  --bg-color: #ffffff;
+  --text-color: #000000;
+  --heading-color: #000000;
+  --card-bg: #ffffff;
+  --border-color: #dddddd;
+  --separator-color: #dddddd;
+  --input-bg: #ffffff;
+  --input-border: #cccccc;
+  --search-bar-bg: #f0f0f0;
+  --button-bg: #d3d3d3;
+  --button-hover: #b3b3b3;
+  --pagination-bg: #f1f1f1;
+  --table-header-color: #555555;
+  --table-text-color: #333333;
+
+  min-height: 100vh;
+  background-color: var(--bg-color);
+  padding: 20px;
   font-family: Arial, sans-serif;
 }
 
-.resourceManagementDashboard {
-  padding: 20px;
+/* ==========================================
+   2) Dark Mode Override
+   ========================================== */
+.resourceManagementDarkMode {
+  --bg-color: #0f172a; /* Deep slate background */
+  --text-color: #e5e7eb; /* Light gray text */
+  --heading-color: #f8fafc; /* Almost white headings */
+  --card-bg: #020617; /* Darker card background */
+  --border-color: #1e293b; /* Dark border */
+  --separator-color: #1e293b; /* Dark separator lines */
+  --input-bg: #0f172a; /* Dark input background */
+  --input-border: #334155; /* Dark input border */
+  --search-bar-bg: #1e293b; /* Dark search bar */
+  --button-bg: #334155; /* Dark button background */
+  --button-hover: #475569; /* Dark button hover */
+  --pagination-bg: #1e293b; /* Dark pagination */
+  --table-header-color: #94a3b8; /* Muted header text */
+  --table-text-color: #e5e7eb; /* Light table text */
 }
 
+/* ==========================================
+   3) Layout Components
+   ========================================== */
 .dashboardTitle {
   display: flex;
   align-items: center;
   gap: 20px;
-  /* Spacing between the title and button */
   margin-bottom: 20px;
 }
 
 .dashboardTitle h2 {
   font-size: 1.5em;
   font-weight: bold;
-  color: black;
+  color: var(--heading-color) !important;
+  margin: 0;
 }
 
 .addLogButton {
-  background-color: #d3d3d3;
-  color: black;
+  background-color: var(--button-bg);
+  color: var(--text-color) !important;
   border: none;
   padding: 10px 20px;
   border-radius: 5px;
   cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
 }
 
 .addLogButton:hover {
-  background-color: #b3b3b3;
+  background-color: var(--button-hover);
 }
 
-/* Search Bar */
+/* ==========================================
+   4) Search Bar
+   ========================================== */
 .searchBarContainer {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
-  background-color: #f0f0f0;
-  border: 1px solid #ddd;
+  background-color: var(--search-bar-bg);
+  border: 1px solid var(--border-color);
   border-radius: 5px;
   padding: 10px;
 }
@@ -54,44 +94,57 @@
   gap: 10px;
   align-items: center;
   font-size: 1.2em;
+  color: var(--table-text-color) !important;
 }
 
 .searchBarContainerRight {
   display: flex;
+  position: relative;
   gap: 10px;
 }
 
 .searchInput {
-  padding: 5px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
-.searchButton {
-  background-color: #007bff;
-  color: white;
-  border: none;
   padding: 5px 10px;
+  border: 1px solid var(--input-border);
   border-radius: 5px;
+  background-color: var(--input-bg);
+  color: var(--text-color) !important;
+}
+
+.searchInput::placeholder {
+  color: var(--table-header-color);
+}
+
+.clearButton {
+  position: absolute;
+  top: 10px;
+  right: 8px;
+  background: transparent;
+  border: none;
   cursor: pointer;
+  font-size: 16px;
+  color: var(--table-header-color);
+  padding: 0;
+  line-height: 1;
 }
 
-.searchButton:hover {
-  background-color: #0056b3;
+.clearButton:hover {
+  color: var(--text-color);
 }
 
-/* Resource List */
+/* ==========================================
+   5) Resource List / Table
+   ========================================== */
 .resourceList {
-  background-color: white;
-  border: 1px solid #ddd;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
   border-radius: 5px;
   padding: 10px;
 }
+
 .checkboxContainer {
   flex: 0;
-  /* Ensures the checkbox doesn't stretch unnecessarily */
   margin-right: 20px;
-  /* Add a margin to create space between the checkbox and the rest of the items */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -102,55 +155,68 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 0;
+  padding: 15px 0;
 }
 
 .resourceHeadingItem {
   flex: 1;
   text-align: left;
-  color: #555;
-  /* Font color for headings */
+  color: var(--table-header-color) !important;
   font-weight: bold;
 }
 
 .resourceItemDetail {
   flex: 1;
   text-align: left;
-  color: #333;
-  /* Font color for logs */
+  color: var(--table-text-color) !important;
 }
 
 .calendarIcon {
-  margin-right: 5px;
-  /* Space between icon and text */
+  margin-right: 6px;
+  opacity: 0.9;
 }
 
 .lineSperator {
   border: none;
-  border-top: 1px solid #ddd;
+  border-top: 1px solid var(--separator-color);
+  margin: 0;
 }
 
-/* Pagination */
-.rmPagination {
+.noResultsMessage{
+  text-align: center;
+  margin-top: 20px;
+}
+
+/* ==========================================
+   6) Pagination
+   ========================================== */
+.pagination {
   display: flex;
   gap: 10px;
   justify-content: flex-end;
   margin-top: 20px;
+  align-items: center;
 }
 
-.rmPagination button {
-  background-color: #f1f1f1;
-  border: 1px solid #ddd;
+.pagination button {
+  background-color: var(--pagination-bg);
+  border: 1px solid var(--border-color);
   padding: 5px 10px;
   cursor: pointer;
+  color: var(--text-color) !important;
+  border-radius: 4px;
+  min-width: 32px;
+  transition: all 0.2s ease;
 }
 
-.rmPagination button:hover {
-  background-color: #007bff;
-  color: white;
+.pagination button:hover {
+  background-color: #006FE6;
+  border-color: #006FE6;
+  color: white !important;
 }
 
-.arrow-button {
+.arrowButton {
   font-weight: bold;
-  padding: 5px 15px;
+  padding: 5px 15px !important;
+  font-size: 16px;
 }
