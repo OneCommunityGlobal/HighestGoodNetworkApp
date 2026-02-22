@@ -1,0 +1,82 @@
+/* ============================================================
+   SingleExpenditureCard — CSS Module
+   Independent card for one pie chart (actual or planned).
+   All colours cascade from WeeklyProjectSummary.module.css
+   (:root / .darkMode). Light/dark switching is automatic.
+   ============================================================ */
+
+/* ── Outer card ──────────────────────────────────────────────── */
+.card {
+  background: var(--card-bg);
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 8px var(--card-shadow);
+  width: 100%;
+  box-sizing: border-box;
+  color: var(--text-color);
+  min-height: 340px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Controls row (project dropdown) ─────────────────────────── */
+.controls {
+  margin-bottom: 12px;
+}
+
+/* ── Project select group ────────────────────────────────────── */
+.selectGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-width: 240px;
+}
+
+.selectLabel {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-color);
+}
+
+.select {
+  padding: 6px 10px;
+  background: var(--section-bg);
+  color: var(--text-color);
+  border: 1px solid var(--border-color, #cccccc);
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.select:focus {
+  outline: none;
+  border-color: var(--focus-border-color, #3b82f6);
+}
+
+/* ── Loading / error states ──────────────────────────────────── */
+.stateMessage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 20px;
+  font-size: 14px;
+  color: var(--text-color);
+  text-align: center;
+}
+
+.errorMessage {
+  color: var(--neg-color, #b91c1c);
+}
+
+/* ── Responsive ─────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .card {
+    padding: 16px;
+  }
+
+  .selectGroup {
+    max-width: 100%;
+    width: 100%;
+  }
+}
