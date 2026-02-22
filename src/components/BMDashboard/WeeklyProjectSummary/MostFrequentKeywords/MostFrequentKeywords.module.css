@@ -33,7 +33,7 @@
   color: var(--label-color, #374151);
 }
 
-.mfkSelect{
+.mfkSelect {
   width: 100%;
   font-size: 0.9rem;
   border-radius: 0.375rem;

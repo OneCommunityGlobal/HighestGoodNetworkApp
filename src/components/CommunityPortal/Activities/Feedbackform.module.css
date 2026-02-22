@@ -35,11 +35,11 @@
 .modal-button-group {
   display: flex;
   justify-content: center;
-  gap:25px;
+  gap: 25px;
   margin-bottom: 15px;
 }
 
-.Modal-container .modal-content{
+.Modal-container .modal-content {
   display: flex;
   border-radius: 12px;
   padding: 20px;
@@ -109,10 +109,10 @@
 }
 
 .required::after {
-  content: " *";
+  content: ' *';
   color: red;
   font-size: 0.8em;
-  vertical-align: super; 
+  vertical-align: super;
 }
 .error-text {
   color: red;

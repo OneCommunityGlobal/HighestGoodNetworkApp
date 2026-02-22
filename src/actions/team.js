@@ -106,7 +106,7 @@ export const fetchAllManagingTeams = (userId, managingTeams) => async dispatch =
     await dispatch(setTeamsStart());
     dispatch(setTeams(allManagingTeams));
   } catch (err) {
-    toast.error(err);
+    toast.error(err?.message || String(err));
     dispatch(setTeamsError(err));
   }
 };

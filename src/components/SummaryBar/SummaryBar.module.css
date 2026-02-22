@@ -262,6 +262,10 @@
   }
 }
 
+.bg--summary-purple {
+  background-color: #5b2aa6; 
+}
+
 .text-center {
   display: flex;
   justify-content: center;

@@ -64,6 +64,44 @@
   padding: 8px 12px;
   border-radius: 6px;
   border: 1px solid #ccc;
+  /* border-radius: 8px;
+  padding: 6px 0; */
+  z-index: 999;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  animation: fadeInDropdown 0.12s ease-in-out;
+}
+
+@keyframes fadeInDropdown {
+  from {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdownItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #333;
+  border-radius: 4px;
+  transition: background-color 0.15s ease;
+}
+
+.dropdownItem:hover {
+  background-color: #f0f0f0;
+}
+
+.dropdownItem input[type='checkbox'] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
   background-color: #ffffff;
   color: #333333;
   font-size: 14px;
@@ -120,6 +158,11 @@
   grid-template-columns: repeat(6, 1fr);
   gap: 20px;
   width: 100%;
+  margin: 0 auto;
+  justify-content: center;
+  justify-items: center;
+  align-items: start;
+  margin-top: 20px;
   padding: 20px;
 }
 
@@ -134,7 +177,7 @@
 
 .jobAd:hover {
   transform: translateY(-5px);
-  box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
 .jobAd img {
@@ -164,6 +207,92 @@
    DARK MODE ROOT
    ====================================================== */
 
+.jobsSummariesList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.jobsSummariesList h3 {
+  font-size: 1.5rem;
+  color: #07471e;
+  text-decoration: underline;
+}
+
+.jobSummaryItem {
+  border: 1px solid #ddd;
+  background: linear-gradient(135deg, #fff, #f9f9f9);
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* ======================================================
+   RESPONSIVE BREAKPOINTS
+   ====================================================== */
+
+@media (max-width: 1080px) {
+  .jobAd {
+    width: 31%;
+  }
+}
+
+@media (max-width: 800px) {
+  .jobNavbar {
+    flex-direction: column;
+  }
+
+  .jobNavbarLeft,
+  .jobNavbarRight {
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .jobSearchForm input,
+  .jobSearchForm button {
+    width: 90%;
+    max-width: 300px;
+  }
+
+  .jobAd {
+    width: 45%;
+  }
+
+  .jobTooltip {
+    width: 40%;
+    margin-top: 50px;
+  }
+}
+
+@media (max-width: 480px) {
+  .jobAd {
+    width: 90%;
+  }
+
+  .jobNavbar {
+    padding: 5px;
+  }
+
+  .jobSearchForm input {
+    width: 90%;
+  }
+
+  .jobSearchForm button {
+    width: 90%;
+    padding: 8px;
+  }
+
+  .jobPagination button {
+    padding: 8px;
+  }
+}
+
+/* ======================================================
+   DARK MODE
+   ====================================================== */
+
+.darkMode {
 .dark {
   background-color: #1b2a41;
   color: #f1f1f1;
@@ -185,7 +314,7 @@
 .dark .jobAd h3 {
   color: #e0e0e0;
 }
-
+}
 /* ======================================================
    RESPONSIVE
    ====================================================== */

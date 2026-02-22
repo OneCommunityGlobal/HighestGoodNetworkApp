@@ -257,6 +257,10 @@
   resize: vertical;
 }
 
+.pausedUser {
+  color: red !important;
+}
+
 .activeUser {
   color: lawngreen !important;
 }
@@ -370,3 +374,4 @@
 span.activeUser i.fa-circle { color: lawngreen !important; }
 span.notActiveUser i.fa-circle { color: #dee2e6 !important; }
 span.scheduledUser i.fa-circle { color: orange !important; }
+span.pausedUser i.fa-circle { color: red !important; }
