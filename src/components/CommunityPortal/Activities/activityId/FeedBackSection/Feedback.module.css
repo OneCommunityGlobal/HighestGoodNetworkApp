@@ -350,6 +350,10 @@
   color: #94a3b8;
 }
 
+.darkMode .feedbackHeader strong {
+  color: #f8fafc;
+}
+
 .darkMode .label {
   font-weight: 600;
   margin-bottom: 0.5rem;
