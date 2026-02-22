@@ -30,12 +30,19 @@
 
 .searchInput {
   width: 100%;
-  padding: 8px 8px 8px 30px;
-  border: 1px solid #ddd;
+  padding: 10px 12px 10px 34px;
+  border: 1px solid #d8dde3;
   border-radius: 20px;
   font-size: 14px;
   outline: none;
   background-color: white;
+  color: #1f2a37;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.searchInput:focus {
+  border-color: #5b8fd9;
+  box-shadow: 0 0 0 3px rgba(91, 143, 217, 0.2);
 }
 
 .icon {
@@ -48,6 +55,9 @@
 
 .sortOptions {
   margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .filter {
@@ -57,32 +67,44 @@
 }
 
 .filterDropdown {
-  margin-left: 5px;
-  padding: 4px 6px;
-  border-radius: 4px;
+  margin-left: 6px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid #cfd6e0;
+  background: #f8fafc;
+  color: #1f2a37;
 }
 
 .sortBtn {
-  background: none;
-  border: none;
+  background: #f3f6fb;
+  border: 1px solid #d6dde8;
   cursor: pointer;
   font-size: 14px;
-  color: gray;
+  color: #475569;
+  padding: 6px 10px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .feedbackCard {
   display: flex;
   align-items: flex-start;
   gap: 15px;
-  border-bottom: 1px solid #eee;
-  padding: 10px 0;
+  border-radius: 10px;
+  padding: 14px 16px;
+  background: #f5f7fb;
+  border: 1px solid #e3e8f0;
+  margin-bottom: 12px;
 }
 
 .avatar {
-  width: 40px;
-  height: 40px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
-  background: gray;
+  background: #94a3b8;
+  flex-shrink: 0;
 }
 
 .feedbackContent {
@@ -91,18 +113,73 @@
 
 .feedbackText {
   font-size: 14px;
-  line-height: 1.5;
-  color: #555;
+  line-height: 1.6;
+  color: #2a3340;
 }
 
 .feedbackDate {
-  color: gray;
+  color: #6b7280;
   font-size: 12px;
 }
 
 .feedbackRating {
-  color: gold;
+  color: #f7c948;
   font-size: 16px;
+}
+
+.star {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 2px;
+}
+
+.badgePublic,
+.badgePrivate,
+.badgeSuggestion {
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+.badgePublic {
+  background: #e7f4ff;
+  color: #1d4ed8;
+}
+
+.badgePrivate {
+  background: #fde8e8;
+  color: #b91c1c;
+}
+
+.badgeSuggestion {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.hostViewToggles button {
+  background: transparent;
+  border: 1px solid #d8dde3;
+  color: #465569;
+  padding: 6px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.hostViewToggles button:hover {
+  background: #f1f5f9;
+  border-color: #c7d6ea;
+  color: #1e3a8a;
+}
+
+.hostViewToggles .toggleActive {
+  background: #f1f5f9;
+  border-color: #c7d6ea;
+  color: #1e3a8a;
+  box-shadow: 0 6px 12px rgba(30, 58, 138, 0.12);
 }
 
 /* Feedback form elements */
@@ -121,17 +198,18 @@
 .textarea {
   resize: none;
   padding: 0.75rem;
-  border: 1px solid #ccc;
-  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
   font-family: inherit;
   font-size: 0.95rem;
   color: var(--text-color, #222);
   background-color: var(--bg-color, #fff);
-  transition: border-color 0.2s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .textarea:focus {
-  border-color: #007bff;
+  border-color: #5b8fd9;
+  box-shadow: 0 0 0 3px rgba(91, 143, 217, 0.2);
   outline: none;
 }
 
@@ -174,8 +252,8 @@
   padding: 10px 20px;
   border: none;
   border-radius: 4px;
-  background-color: #8c8d8d;
-  color: rgb(10, 10, 10);
+  background-color: #475569;
+  color: #ffffff;
   cursor: pointer;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
@@ -191,68 +269,123 @@
   padding: 10px;
 }
 
-.darMode.hostViewToggles button {
-  color: white;
+.darkMode .loadMore button {
+  color: #e2e8f0;
 }
 
-.darkMode.loadMore button {
-  color: white;
-}
-
-.darkMode.feedbackContainer {
+.darkMode .feedbackContainer {
   width: 90%;
   margin: 20px auto;
   font-family: Arial, sans-serif;
   background-color: #1b2a41;
-  color: white;
+  color: #e2e8f0;
 }
 
-.darkMode.participateFeedbackBtn {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  background-color: #4a90e2;
-  color: white;
-  cursor: pointer;
+.darkMode .participateFeedbackBtn {
+  background-color: #3f5f88;
+  color: #f8fafc;
 }
 
-.darkMode.formGroupRow span {
-  color: white;
+.darkMode .formGroupRow span {
+  color: #e2e8f0;
 }
 
-.darkMode.feedbackTitle {
+.darkMode .feedbackTitle {
   padding-left: 20px;
   padding-top: 20px;
   font-size: 20px;
-  color: white;
+  color: #f8fafc;
   font-weight: bold;
   text-align: left;
 }
 
-.darkMode.feedbackCount {
+.darkMode .feedbackCount {
   font-size: 14px;
-  color: white;
+  color: #cbd5e1;
 }
 
-.darkMode.filter {
-  color: white;
+.darkMode .filter {
+  color: #cbd5e1;
 }
 
-.darkMode.feedbackCard {
-  display: flex;
-  align-items: flex-start;
+.darkMode .searchInput {
+  background-color: #243853;
+  color: #f8fafc;
+  border-color: #334155;
+}
+
+.darkMode .searchInput::placeholder {
+  color: #94a3b8;
+}
+
+.darkMode .icon {
+  color: #94a3b8;
+}
+
+.darkMode .filterDropdown {
+  background: #243853;
+  color: #e2e8f0;
+  border-color: #334155;
+}
+
+.darkMode .sortBtn {
+  background: #243853;
+  color: #e2e8f0;
+  border-color: #334155;
+}
+
+.darkMode .feedbackCard {
   background: #3a506b;
-  border-radius: 5px;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #3c516d;
+  box-shadow: 0 6px 14px rgba(8, 18, 32, 0.2);
+  padding: 14px 16px;
 }
 
-.darkMode.feedbackText {
-  color: white;
+.darkMode .feedbackText {
+  color: #e2e8f0;
 }
 
-.darkMode.label {
+.darkMode .feedbackDate {
+  color: #94a3b8;
+}
+
+.darkMode .label {
   font-weight: 600;
   margin-bottom: 0.5rem;
-  color: white;
+  color: #f8fafc;
+}
+
+.darkMode .badgePublic {
+  background: rgba(59, 130, 246, 0.2);
+  color: #93c5fd;
+}
+
+.darkMode .badgePrivate {
+  background: rgba(248, 113, 113, 0.2);
+  color: #fecaca;
+}
+
+.darkMode .badgeSuggestion {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fde68a;
+}
+
+.darkMode .hostViewToggles button {
+  background: transparent;
+  border: 1px solid #3c516d;
+  color: #cbd5e1;
+}
+
+.darkMode .hostViewToggles button:hover {
+  background: #243853;
+  border-color: #4b637f;
+  color: #f8fafc;
+}
+
+.darkMode .hostViewToggles .toggleActive {
+  background: #243853;
+  border-color: #4b637f;
+  color: #f8fafc;
+  box-shadow: 0 10px 18px rgba(8, 18, 32, 0.35);
 }
