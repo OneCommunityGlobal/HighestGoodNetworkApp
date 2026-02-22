@@ -69,7 +69,7 @@ function Feedback({
 
   const renderStars = feedback =>
     Array.from({ length: 5 }, (_, i) => (
-      <span key={`star-${feedback.id}-${i}`} className={styles.star}>
+      <span key={`star-${feedback.id}-${i}`} className={`${styles.star}`}>
         {i < (feedback.rating || 0) ? <AiFillStar /> : <AiOutlineStar />}
       </span>
     ));
@@ -134,290 +134,270 @@ function Feedback({
   const suggestionList = feedbackList.filter(fb => fb.visibility === 'suggestion');
 
   return (
-    <div className={`${styles.feedbackContainer} ${darkMode ? styles.feedbackContainerDark : ''}`}>
-      {/* Host view (management) */}
-      {isHost && (
-        <>
-          <div className={styles.feedbackHeader}>
-            <div className={styles.searchContainer}>
-              <FaSearch className={styles.icon} />
-              <input
-                type="text"
-                placeholder="Search comments, names..."
-                value={searchTerm}
-                onChange={handleSearch}
-                className={styles.searchInput}
-              />
-            </div>
+    <div className={`${darkMode ? styles.darkMode : ''}`}>
+      <div className={`${styles.feedbackContainer}`}>
+        {isHost && (
+          <>
+            <div className={`${styles.feedbackHeader}`}>
+              <div className={`${styles.searchContainer}`}>
+                <FaSearch className={`${styles.icon}`} />
+                <input
+                  type="text"
+                  placeholder="Search comments, names..."
+                  value={searchTerm}
+                  onChange={handleSearch}
+                  className={`${styles.searchInput}`}
+                />
+              </div>
 
-            <div className={styles.sortOptions}>
-              <label className={`${styles.filter} ${darkMode ? styles.filterDark : ''}`}>
-                Filter by:
-                <select
-                  value={filterBy}
-                  onChange={handleFilterChange}
-                  className={styles.filterDropdown}
-                >
-                  <option value="date">Date</option>
-                  <option value="rating">Rating</option>
-                </select>
-              </label>
-
-              <label className={`${styles.filter} ${darkMode ? styles.filterDark : ''}`}>
-                Visibility:
-                <select
-                  value={visibilityFilter}
-                  onChange={e => setVisibilityFilter(e.target.value)}
-                  className={styles.filterDropdown}
-                >
-                  <option value="all">All</option>
-                  <option value="public">Public</option>
-                  <option value="host-only">Private: Host Only</option>
-                  <option value="suggestion">Suggestions</option>
-                </select>
-              </label>
-
-              <button type="button" className={styles.sortBtn} onClick={handleSortChange}>
-                Sort {sortOrder === 'asc' ? <MdArrowUpward /> : <MdArrowDownward />}
-              </button>
-            </div>
-          </div>
-
-          {/* Toggle between Reviews and Suggestions view */}
-          <div
-            className={`${styles.hostViewToggles} ${darkMode ? styles.hostViewTogglesDark : ''}`}
-          >
-            <button
-              type="button"
-              className={showSuggestionsOnly ? '' : styles.toggleActive}
-              onClick={() => setShowSuggestionsOnly(false)}
-            >
-              Reviews
-            </button>
-            <button
-              type="button"
-              className={showSuggestionsOnly ? styles.toggleActive : ''}
-              onClick={() => setShowSuggestionsOnly(true)}
-            >
-              Suggestions ({suggestionList.length})
-            </button>
-          </div>
-
-          {showSuggestionsOnly ? (
-            <div className={styles.suggestionsList}>
-              {suggestionList.length === 0 ? (
-                <div className={styles.emptyState}>No suggestions yet.</div>
-              ) : (
-                suggestionList.map(s => (
-                  <div
-                    key={s.id}
-                    className={`${styles.feedbackCard} ${darkMode ? styles.feedbackCardDark : ''}`}
+              <div className={`${styles.sortOptions}`}>
+                <label className={`${styles.filter}`}>
+                  Filter by:
+                  <select
+                    value={filterBy}
+                    onChange={handleFilterChange}
+                    className={`${styles.filterDropdown}`}
                   >
-                    <img alt="User" className={styles.avatar} />
-                    <div className={styles.feedbackContent}>
-                      <div className={styles.feedbackHeader}>
-                        <strong>{s.name}</strong>
-                        <span className={styles.feedbackDate}>{s.date}</span>
-                      </div>
-                      <p
-                        className={`${styles.feedbackText} ${
-                          darkMode ? styles.feedbackTextDark : ''
-                        }`}
-                      >
-                        {s.comment}
-                      </p>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          ) : (
-            <div>
-              {filteredFeedback.length === 0 ? (
-                <div className={styles.emptyState}>No feedback matches your filters.</div>
-              ) : (
-                filteredFeedback.slice(0, visibleCount).map(feedback => (
-                  <div
-                    key={feedback.id}
-                    className={`${styles.feedbackCard} ${darkMode ? styles.feedbackCardDark : ''}`}
+                    <option value="date">Date</option>
+                    <option value="rating">Rating</option>
+                  </select>
+                </label>
+
+                <label className={`${styles.filter}`}>
+                  Visibility:
+                  <select
+                    value={visibilityFilter}
+                    onChange={e => setVisibilityFilter(e.target.value)}
+                    className={`${styles.filterDropdown}`}
                   >
-                    <img alt="User" className={styles.avatar} />
-                    <div className={styles.feedbackContent}>
-                      <div className={styles.feedbackHeader}>
-                        <strong>{feedback.name}</strong>
-                        <span className={styles.feedbackDate}>{feedback.date}</span>
-                        {/* Visibility badge */}
-                        <span
-                          className={
-                            feedback.visibility === 'host-only'
-                              ? styles.badgePrivate
-                              : feedback.visibility === 'suggestion'
-                              ? styles.badgeSuggestion
-                              : styles.badgePublic
-                          }
-                          title={
-                            feedback.visibility === 'host-only'
-                              ? 'Private: Visible to host only'
-                              : feedback.visibility === 'suggestion'
-                              ? 'Suggestion'
-                              : 'Public'
-                          }
-                        >
-                          {feedback.visibility === 'host-only'
-                            ? 'Private'
-                            : feedback.visibility === 'suggestion'
-                            ? 'Suggestion'
-                            : 'Public'}
-                        </span>
-                      </div>
+                    <option value="all">All</option>
+                    <option value="public">Public</option>
+                    <option value="host-only">Private: Host Only</option>
+                    <option value="suggestion">Suggestions</option>
+                  </select>
+                </label>
 
-                      {/* rating */}
-                      {feedback.rating !== null && (
-                        <div className={styles.feedbackRating}>{renderStars(feedback)}</div>
-                      )}
-
-                      <p
-                        className={`${styles.feedbackText} ${
-                          darkMode ? styles.feedbackTextDark : ''
-                        }`}
-                      >
-                        {feedback.comment}
-                      </p>
-                    </div>
-                  </div>
-                ))
-              )}
+                <button type="button" className={`${styles.sortBtn}`} onClick={handleSortChange}>
+                  Sort {sortOrder === 'asc' ? <MdArrowUpward /> : <MdArrowDownward />}
+                </button>
+              </div>
             </div>
-          )}
-          {visibleCount < feedbackList.length && (
-            <div className={darkMode ? styles.loadMoreDark : styles.loadMore}>
-              <button
-                className={styles.loadMoreBtn}
-                onClick={() => setVisibleCount(visibleCount + 2)}
-              >
-                Load More
-              </button>
-            </div>
-          )}
-        </>
-      )}
 
-      {/* Participant view / modal */}
-      {!isHost && (
-        <>
-          {/* Notice if reviews disabled */}
-          {!reviewsEnabled && !suggestionsOnly && (
-            <div className={styles.notice}>Reviews are currently disabled for this event.</div>
-          )}
-
-          {/* Button to open modal if parent didn't provide one */}
-          {!modalOpen && (reviewsEnabled || suggestionsOnly) && (
-            <div style={{ marginTop: 12 }}>
+            <div className={`${styles.hostViewToggles}`}>
               <button
                 type="button"
-                className={
-                  darkMode ? styles.participateFeedbackBtnDark : styles.participateFeedbackBtn
-                }
-                onClick={handleOpenModal}
-                disabled={!reviewsEnabled && !suggestionsOnly}
-                title={!reviewsEnabled && !suggestionsOnly ? 'Reviews disabled' : ''}
+                className={showSuggestionsOnly ? '' : styles.toggleActive}
+                onClick={() => setShowSuggestionsOnly(false)}
               >
-                {suggestionsOnly ? 'Share a suggestion' : 'Leave feedback'}
+                Reviews
+              </button>
+              <button
+                type="button"
+                className={showSuggestionsOnly ? styles.toggleActive : ''}
+                onClick={() => setShowSuggestionsOnly(true)}
+              >
+                Suggestions ({suggestionList.length})
               </button>
             </div>
-          )}
 
-          {/* Modal-like simple panel (replace with your modal component if you have one) */}
-          {modalOpen && (
-            <FeedbackModal
-              title={suggestionsOnly ? 'Share Your Ideas' : 'Leave Feedback'}
-              onClose={() => {
-                setModalOpen(false);
-                if (setShowModal) setShowModal(false);
-              }}
-              onSubmit={handleSubmitFeedback}
-              show={modalOpen}
-              importantLabel={
-                eventWithinFirstMonth
-                  ? 'Your feedback is only visible to the host for the first month.'
-                  : null
-              }
-              disableSubmit={
-                (!suggestionsOnly && !modalComment && !modalRating) ||
-                (suggestionsOnly && !modalSuggestionText) ||
-                (!reviewsEnabled && !suggestionsOnly)
-              }
-            >
-              {suggestionsOnly ? (
-                <div className={darkMode ? styles.formGroupDark : styles.formGroup}>
-                  <label htmlFor="suggestions" className={styles.label}>
-                    Share Your Ideas
-                  </label>
-                  <textarea
-                    id="suggestions"
-                    placeholder="Write your idea here…"
-                    value={modalSuggestionText}
-                    onChange={e => setModalSuggestionText(e.target.value)}
-                    rows={5}
-                    className={styles.textarea}
-                  />
-                </div>
-              ) : (
-                <>
-                  <div className={darkMode ? styles.formGroupDark : styles.formGroup}>
-                    <label htmlFor="rating" className={styles.label}>
-                      Rating
-                    </label>
-                    <div id="rating" className={styles.ratingRow}>
-                      {Array.from({ length: 5 }, (_, i) => (
-                        <button
-                          key={i}
-                          type="button"
-                          className={i < modalRating ? styles.starBtnActive : styles.starBtn}
-                          onClick={() => setModalRating(i + 1)}
-                        >
-                          ★
-                        </button>
-                      ))}
+            {showSuggestionsOnly ? (
+              <div className={`${styles.suggestionsList}`}>
+                {suggestionList.length === 0 ? (
+                  <div className={`${styles.emptyState}`}>No suggestions yet.</div>
+                ) : (
+                  suggestionList.map(s => (
+                    <div key={s.id} className={`${styles.feedbackCard}`}>
+                      <img alt="User" className={`${styles.avatar}`} />
+                      <div className={`${styles.feedbackContent}`}>
+                        <div className={`${styles.feedbackHeader}`}>
+                          <strong>{s.name}</strong>
+                          <span className={`${styles.feedbackDate}`}>{s.date}</span>
+                        </div>
+                        <p className={`${styles.feedbackText}`}>{s.comment}</p>
+                      </div>
                     </div>
-                  </div>
+                  ))
+                )}
+              </div>
+            ) : (
+              <div>
+                {filteredFeedback.length === 0 ? (
+                  <div className={`${styles.emptyState}`}>No feedback matches your filters.</div>
+                ) : (
+                  filteredFeedback.slice(0, visibleCount).map(feedback => (
+                    <div key={feedback.id} className={`${styles.feedbackCard}`}>
+                      <img alt="User" className={`${styles.avatar}`} />
+                      <div className={`${styles.feedbackContent}`}>
+                        <div className={`${styles.feedbackHeader}`}>
+                          <strong>{feedback.name}</strong>
+                          <span className={`${styles.feedbackDate}`}>{feedback.date}</span>
+                          {/* Visibility badge */}
+                          <span
+                            className={
+                              feedback.visibility === 'host-only'
+                                ? styles.badgePrivate
+                                : feedback.visibility === 'suggestion'
+                                ? styles.badgeSuggestion
+                                : styles.badgePublic
+                            }
+                            title={
+                              feedback.visibility === 'host-only'
+                                ? 'Private: Visible to host only'
+                                : feedback.visibility === 'suggestion'
+                                ? 'Suggestion'
+                                : 'Public'
+                            }
+                          >
+                            {feedback.visibility === 'host-only'
+                              ? 'Private'
+                              : feedback.visibility === 'suggestion'
+                              ? 'Suggestion'
+                              : 'Public'}
+                          </span>
+                        </div>
 
-                  <div className={darkMode ? styles.formGroupDark : styles.formGroup}>
-                    <label htmlFor="feedback" className={styles.label}>
-                      Comments
+                        {/* rating */}
+                        {feedback.rating !== null && (
+                          <div className={`${styles.feedbackRating}`}>{renderStars(feedback)}</div>
+                        )}
+
+                        <p className={`${styles.feedbackText}`}>{feedback.comment}</p>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
+            {visibleCount < feedbackList.length && (
+              <div className={`${styles.loadMore}`}>
+                <button
+                  className={`${styles.loadMoreBtn}`}
+                  onClick={() => setVisibleCount(visibleCount + 2)}
+                >
+                  Load More
+                </button>
+              </div>
+            )}
+          </>
+        )}
+
+        {/* Participant view / modal */}
+        {!isHost && (
+          <>
+            {/* Notice if reviews disabled */}
+            {!reviewsEnabled && !suggestionsOnly && (
+              <div className={`${styles.notice}`}>
+                Reviews are currently disabled for this event.
+              </div>
+            )}
+
+            {/* Button to open modal if parent didn't provide one */}
+            {!modalOpen && (reviewsEnabled || suggestionsOnly) && (
+              <div style={{ marginTop: 12 }}>
+                <button
+                  type="button"
+                  className={`${styles.participateFeedbackBtn}`}
+                  onClick={handleOpenModal}
+                  disabled={!reviewsEnabled && !suggestionsOnly}
+                  title={!reviewsEnabled && !suggestionsOnly ? 'Reviews disabled' : ''}
+                >
+                  {suggestionsOnly ? 'Share a suggestion' : 'Leave feedback'}
+                </button>
+              </div>
+            )}
+
+            {/* Modal-like simple panel (replace with your modal component if you have one) */}
+            {modalOpen && (
+              <FeedbackModal
+                title={suggestionsOnly ? 'Share Your Ideas' : 'Leave Feedback'}
+                onClose={() => {
+                  setModalOpen(false);
+                  if (setShowModal) setShowModal(false);
+                }}
+                onSubmit={handleSubmitFeedback}
+                show={modalOpen}
+                importantLabel={
+                  eventWithinFirstMonth
+                    ? 'Your feedback is only visible to the host for the first month.'
+                    : null
+                }
+                disableSubmit={
+                  (!suggestionsOnly && !modalComment && !modalRating) ||
+                  (suggestionsOnly && !modalSuggestionText) ||
+                  (!reviewsEnabled && !suggestionsOnly)
+                }
+              >
+                {suggestionsOnly ? (
+                  <div className={`${styles.formGroup}`}>
+                    <label htmlFor="suggestions" className={`${styles.label}`}>
+                      Share Your Ideas
                     </label>
                     <textarea
-                      id="feedback"
-                      placeholder="Write your feedback here…"
-                      value={modalComment}
-                      onChange={e => setModalComment(e.target.value)}
-                      rows={4}
-                      className={styles.textarea}
+                      id="suggestions"
+                      placeholder="Write your idea here…"
+                      value={modalSuggestionText}
+                      onChange={e => setModalSuggestionText(e.target.value)}
+                      rows={5}
+                      className={`${styles.textarea}`}
                     />
                   </div>
+                ) : (
+                  <>
+                    <div className={`${styles.formGroup}`}>
+                      <label htmlFor="rating" className={`${styles.label}`}>
+                        Rating
+                      </label>
+                      <div id="rating" className={`${styles.ratingRow}`}>
+                        {Array.from({ length: 5 }, (_, i) => (
+                          <button
+                            key={i}
+                            type="button"
+                            className={i < modalRating ? styles.starBtnActive : styles.starBtn}
+                            onClick={() => setModalRating(i + 1)}
+                          >
+                            ★
+                          </button>
+                        ))}
+                      </div>
+                    </div>
 
-                  <div className={darkMode ? styles.formGroupRowDark : styles.formGroupRow}>
-                    <label>
-                      <input
-                        type="checkbox"
-                        checked={modalPrivate || eventWithinFirstMonth}
-                        onChange={e => setModalPrivate(e.target.checked)}
-                        disabled={eventWithinFirstMonth}
+                    <div className={`${styles.formGroup}`}>
+                      <label htmlFor="feedback" className={`${styles.label}`}>
+                        Comments
+                      </label>
+                      <textarea
+                        id="feedback"
+                        placeholder="Write your feedback here…"
+                        value={modalComment}
+                        onChange={e => setModalComment(e.target.value)}
+                        rows={4}
+                        className={styles.textarea}
                       />
-                      <span style={{ marginLeft: 8 }}>
-                        Private (Visible to host only){' '}
-                        {eventWithinFirstMonth && (
-                          <em style={{ fontSize: 12 }}>(required for new events)</em>
-                        )}
-                      </span>
-                    </label>
-                  </div>
-                </>
-              )}
-            </FeedbackModal>
-          )}
-        </>
-      )}
+                    </div>
+
+                    <div className={`${styles.formGroupRow}`}>
+                      <label>
+                        <input
+                          type="checkbox"
+                          checked={modalPrivate || eventWithinFirstMonth}
+                          onChange={e => setModalPrivate(e.target.checked)}
+                          disabled={eventWithinFirstMonth}
+                        />
+                        <span style={{ marginLeft: 8 }}>
+                          Private (Visible to host only){' '}
+                          {eventWithinFirstMonth && (
+                            <em style={{ fontSize: 12 }}>(required for new events)</em>
+                          )}
+                        </span>
+                      </label>
+                    </div>
+                  </>
+                )}
+              </FeedbackModal>
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 }
