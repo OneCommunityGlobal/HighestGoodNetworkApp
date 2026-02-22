@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
-import { Input, Label, Row, Col, Alert, Spinner } from 'reactstrap';
+import { Label, Row, Col, Alert, Spinner } from 'reactstrap';
 import { fetchProjects, fetchPlannedCostBreakdown } from './plannedCostService';
 import './PlannedCostDonutChart.module.css';
 
@@ -32,13 +32,32 @@ const CustomTooltip = ({ active, payload, totalCost }) => {
 
 const PlannedCostDonutChart = () => {
   const [selectedProject, setSelectedProject] = useState('');
+  const [selectedProjectName, setSelectedProjectName] = useState('');
   const [chartData, setChartData] = useState([]);
   const [totalCost, setTotalCost] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [projects, setProjects] = useState([]);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const darkMode = useSelector(state => state.theme?.darkMode);
+  const dropdownRef = useRef(null);
+
+  const filteredProjects = projects.filter(project => {
+    const name = project.name || project.projectName || '';
+    return name.toLowerCase().includes(searchTerm.toLowerCase());
+  });
+
+  useEffect(() => {
+    const handleClickOutside = event => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   // Fetch projects list
   useEffect(() => {
@@ -177,7 +196,7 @@ const PlannedCostDonutChart = () => {
         fontSize="12"
         fontWeight="bold"
       >
-        {percent > 0.05 ? `${(percent * 100).toFixed(0)}%` : ''}
+        {percent > 0.05 ? `${parseFloat((percent * 100).toFixed(1))}%` : ''}
       </text>
     );
   };
@@ -197,21 +216,61 @@ const PlannedCostDonutChart = () => {
       {/* Project Filter */}
       <Row className="filter-section">
         <Col md="6">
-          <Label for="project-select">Select Project</Label>
-          <Input
-            id="project-select"
-            type="select"
-            value={selectedProject}
-            onChange={e => setSelectedProject(e.target.value)}
-            className="project-select"
-          >
-            <option value="">Choose a project...</option>
-            {projects.map(project => (
-              <option key={project._id} value={project._id}>
-                {project.name || project.projectName}
-              </option>
-            ))}
-          </Input>
+          <Label for="project-search">Select Project</Label>
+          <div className="searchable-dropdown" ref={dropdownRef}>
+            <input
+              id="project-search"
+              type="text"
+              className="dropdown-search-input"
+              placeholder="Choose a project..."
+              value={dropdownOpen ? searchTerm : selectedProjectName}
+              onChange={e => {
+                setSearchTerm(e.target.value);
+                if (!dropdownOpen) setDropdownOpen(true);
+              }}
+              onFocus={() => {
+                setDropdownOpen(true);
+                setSearchTerm('');
+              }}
+            />
+            <span className={`dropdown-arrow ${dropdownOpen ? 'open' : ''}`}>&#9662;</span>
+            {dropdownOpen && (
+              <div className="dropdown-options">
+                {filteredProjects.length > 0 ? (
+                  filteredProjects.map(project => (
+                    <div
+                      key={project._id}
+                      role="option"
+                      tabIndex={0}
+                      aria-selected={selectedProject === project._id}
+                      className={`dropdown-option ${
+                        selectedProject === project._id ? 'selected' : ''
+                      }`}
+                      onClick={() => {
+                        setSelectedProject(project._id);
+                        setSelectedProjectName(project.name || project.projectName);
+                        setDropdownOpen(false);
+                        setSearchTerm('');
+                      }}
+                      onKeyDown={e => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          setSelectedProject(project._id);
+                          setSelectedProjectName(project.name || project.projectName);
+                          setDropdownOpen(false);
+                          setSearchTerm('');
+                        }
+                      }}
+                    >
+                      {project.name || project.projectName}
+                    </div>
+                  ))
+                ) : (
+                  <div className="dropdown-no-results">No projects found</div>
+                )}
+              </div>
+            )}
+          </div>
         </Col>
       </Row>
 
