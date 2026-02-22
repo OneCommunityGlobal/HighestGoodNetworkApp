@@ -6,6 +6,8 @@ export default function SearchProjectByPerson({
   suggestions,
   onSelectSuggestion,
   searchMode,
+  handleFetchArchivedProjects,
+  showArchived,
 }) {
   const [inputValue, setInputValue] = useState(''); // Keep track of input value
   const [showSuggestions, setShowSuggestions] = useState(false); // Control whether suggestions are shown
@@ -48,6 +50,24 @@ export default function SearchProjectByPerson({
           value={inputValue}
           onChange={handleInputChange} // Trigger input change
         />
+        <div>
+          {/* <button type="submit" className="archived-button" onClick={handleFetchArchivedProjects}>
+            {showArchived ? 'Hide Archived' : 'Show Archived'}
+          </button> */}
+          <button
+            type="button"
+            onClick={handleFetchArchivedProjects}
+            className={`btn ${
+              showArchived
+                ? 'btn-warning'
+                : darkMode
+                ? 'btn-outline-light'
+                : 'btn-outline-secondary'
+            }`}
+          >
+            {showArchived ? 'Hide Archived' : 'Show Archived'}
+          </button>
+        </div>
       </form>
 
       {showSuggestions && suggestions?.length > 0 && (
