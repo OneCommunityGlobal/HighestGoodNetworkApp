@@ -106,7 +106,9 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
 
   // Generate clean data for any project
   const generateProjectSpecificData = projectName => {
-    if (projectName.toLowerCase().includes('duplicable city center')) {
+    const isDuplicableCityCenter = projectName.toLowerCase().includes('duplicable city center');
+
+    if (isDuplicableCityCenter) {
       return [
         { tag: 'Modular Design', count: 85, date: '2025-03-15' },
         { tag: 'Prefabrication', count: 78, date: '2025-04-22' },
@@ -497,12 +499,10 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
 
   const handleTouchEnd = event => {
     event.preventDefault();
-    // Don't hide immediately on touch end - let the timeout handle it
   };
 
   const handleTouchMove = event => {
     event.preventDefault();
-    // Update tooltip position on touch move
     if (!tooltip.visible) return;
 
     const svgRect = svgRef.current.getBoundingClientRect();
@@ -555,12 +555,9 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
       .attr('transform', `translate(${x}, ${y})`)
       .style('pointer-events', 'none');
 
-    let tagFontSize;
-    if (sizes.isMobile) {
-      tagFontSize = Math.min(sizes.maxFontSize, Math.max(9, r * 0.22));
-    } else {
-      tagFontSize = Math.min(sizes.maxFontSize, Math.max(10, r * 0.22));
-    }
+    const tagFontSize = sizes.isMobile
+      ? Math.min(sizes.maxFontSize, Math.max(9, r * 0.22))
+      : Math.min(sizes.maxFontSize, Math.max(10, r * 0.22));
 
     const countFontSize = sizes.countFontSize;
 
@@ -642,24 +639,11 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
   };
 
   // Function to render all bubbles
-  const renderBubbles = useCallback(
-    (svg, positions, sizes) => {
-      positions.forEach((pos, i) => {
-        renderSingleBubble(svg, pos, i, sizes);
-      });
-    },
-    [
-      darkMode,
-      getNodeColor,
-      handleMouseEnter,
-      handleMouseMove,
-      handleMouseLeave,
-      handleTouchStart,
-      handleTouchEnd,
-      handleTouchMove,
-      getDisplayText,
-    ],
-  );
+  const renderBubbles = useCallback((svg, positions, sizes) => {
+    positions.forEach((pos, i) => {
+      renderSingleBubble(svg, pos, i, sizes);
+    });
+  }, []);
 
   // Function to render tooltip
   const renderTooltip = useCallback(
@@ -823,12 +807,12 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
   }, [
     tags,
     dimensions,
-    darkMode,
     getPositions,
     getResponsiveSizes,
     tooltip,
     renderBubbles,
     renderTooltip,
+    darkMode,
   ]);
 
   useEffect(() => {
@@ -841,14 +825,11 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
 
     options.push({
       label: '📊 TEST DATASETS',
-      options: Object.entries(testDatasets).map(([key, dataset]) => {
-        const cleanLabel = dataset.label;
-        return {
-          label: cleanLabel,
-          value: key,
-          type: 'test',
-        };
-      }),
+      options: Object.entries(testDatasets).map(([key, dataset]) => ({
+        label: dataset.label,
+        value: key,
+        type: 'test',
+      })),
     });
 
     if (projects.length > 0) {
@@ -896,12 +877,13 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
   });
 
   const getOptionStyles = (base, state) => {
-    let backgroundColor;
-    if (state.isFocused) {
-      backgroundColor = darkMode ? '#475569' : '#e2e8f0';
-    } else {
-      backgroundColor = darkMode ? '#1e293b' : 'white';
-    }
+    const backgroundColor = state.isFocused
+      ? darkMode
+        ? '#475569'
+        : '#e2e8f0'
+      : darkMode
+      ? '#1e293b'
+      : 'white';
 
     return {
       ...base,
