@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
-import { Label, Row, Col, Alert, Spinner } from 'reactstrap';
+import { Alert, Spinner } from 'reactstrap';
 import { fetchProjects, fetchPlannedCostBreakdown } from './plannedCostService';
-import './PlannedCostDonutChart.module.css';
+import styles from './PlannedCostDonutChart.module.css';
 
 const COLORS = {
   Plumbing: '#FF6384',
@@ -20,10 +20,10 @@ const CustomTooltip = ({ active, payload, totalCost }) => {
     const percentage = ((data.value / totalCost) * 100).toFixed(1);
 
     return (
-      <div className="planned-cost-tooltip">
-        <p className="tooltip-category">{data.name}</p>
-        <p className="tooltip-cost">Planned Cost: ${data.value.toLocaleString()}</p>
-        <p className="tooltip-percentage">Percentage: {percentage}%</p>
+      <div className={styles['planned-cost-tooltip']}>
+        <p className={styles['tooltip-category']}>{data.name}</p>
+        <p className={styles['tooltip-cost']}>Planned Cost: ${data.value.toLocaleString()}</p>
+        <p className={styles['tooltip-percentage']}>Percentage: {percentage}%</p>
       </div>
     );
   }
@@ -93,7 +93,6 @@ const PlannedCostDonutChart = () => {
         let total = 0;
 
         if (Array.isArray(breakdown)) {
-          // If backend returns array of objects like [{category: 'Plumbing', plannedCost: 5500}, ...]
           const categoryMap = {};
           breakdown.forEach(item => {
             if (item.category && typeof item.plannedCost === 'number') {
@@ -110,13 +109,9 @@ const PlannedCostDonutChart = () => {
 
           total = Object.values(categoryMap).reduce((sum, cost) => sum + cost, 0);
         } else {
-          // If backend returns object like {total: 90000, breakdown: {plumbing: 5500, ...}}
           if (breakdown.total && breakdown.breakdown) {
-            // Use the total from backend and breakdown for chart data
-            // Handle case-insensitive matching
             const breakdownData = breakdown.breakdown;
 
-            // Check if we actually have valid data
             const hasValidData = Object.values(breakdownData).some(
               value => typeof value === 'number' && value > 0,
             );
@@ -138,14 +133,12 @@ const PlannedCostDonutChart = () => {
                 },
               ];
 
-              total = breakdown.total; // Use the total from backend
+              total = breakdown.total;
             } else {
-              // No valid data available
               transformedData = [];
               total = 0;
             }
           } else {
-            // Fallback to old format
             transformedData = [
               { name: 'Plumbing', value: breakdown.plumbing || 0 },
               { name: 'Electrical', value: breakdown.electrical || 0 },
@@ -203,25 +196,29 @@ const PlannedCostDonutChart = () => {
 
   if (error && !selectedProject) {
     return (
-      <div className="planned-cost-container">
+      <div className={styles['planned-cost-container']}>
         <Alert color="danger">{error}</Alert>
       </div>
     );
   }
 
   return (
-    <div className={`planned-cost-container ${darkMode ? 'dark-mode' : ''}`}>
-      <h2 className="chart-title">Planned Cost Breakdown by Type of Expenditure</h2>
+    <div
+      className={`${styles['planned-cost-container']} ${darkMode ? styles['dark-mode'] : ''}`}
+    >
+      <h2 className={styles['chart-title']}>Planned Cost Breakdown by Type of Expenditure</h2>
 
       {/* Project Filter */}
-      <Row className="filter-section">
-        <Col md="6">
-          <Label for="project-search">Select Project</Label>
-          <div className="searchable-dropdown" ref={dropdownRef}>
+      <div className={styles['filter-section']}>
+        <div className={styles['filter-col']}>
+          <label htmlFor="project-search" className={styles['filter-label']}>
+            Select Project
+          </label>
+          <div className={styles['searchable-dropdown']} ref={dropdownRef}>
             <input
               id="project-search"
               type="text"
-              className="dropdown-search-input"
+              className={styles['dropdown-search-input']}
               placeholder="Choose a project..."
               value={dropdownOpen ? searchTerm : selectedProjectName}
               onChange={e => {
@@ -233,9 +230,13 @@ const PlannedCostDonutChart = () => {
                 setSearchTerm('');
               }}
             />
-            <span className={`dropdown-arrow ${dropdownOpen ? 'open' : ''}`}>&#9662;</span>
+            <span
+              className={`${styles['dropdown-arrow']} ${dropdownOpen ? styles.open : ''}`}
+            >
+              &#9662;
+            </span>
             {dropdownOpen && (
-              <div className="dropdown-options">
+              <div className={styles['dropdown-options']}>
                 {filteredProjects.length > 0 ? (
                   filteredProjects.map(project => (
                     <div
@@ -243,8 +244,8 @@ const PlannedCostDonutChart = () => {
                       role="option"
                       tabIndex={0}
                       aria-selected={selectedProject === project._id}
-                      className={`dropdown-option ${
-                        selectedProject === project._id ? 'selected' : ''
+                      className={`${styles['dropdown-option']} ${
+                        selectedProject === project._id ? styles.selected : ''
                       }`}
                       onClick={() => {
                         setSelectedProject(project._id);
@@ -266,18 +267,18 @@ const PlannedCostDonutChart = () => {
                     </div>
                   ))
                 ) : (
-                  <div className="dropdown-no-results">No projects found</div>
+                  <div className={styles['dropdown-no-results']}>No projects found</div>
                 )}
               </div>
             )}
           </div>
-        </Col>
-      </Row>
+        </div>
+      </div>
 
       {/* Chart Area */}
-      <div className="chart-area">
+      <div className={styles['chart-area']}>
         {loading ? (
-          <div className="loading-container">
+          <div className={styles['loading-container']}>
             <Spinner color="primary" />
             <p>Loading planned cost data...</p>
           </div>
@@ -306,21 +307,24 @@ const PlannedCostDonutChart = () => {
             </ResponsiveContainer>
 
             {/* Center display showing total */}
-            <div className="chart-center-info">
-              <div className="total-cost-display">
-                <span className="total-label">Total Planned Cost</span>
-                <span className="total-amount">${totalCost.toLocaleString()}</span>
+            <div className={styles['chart-center-info']}>
+              <div className={styles['total-cost-display']}>
+                <span className={styles['total-label']}>Total Planned Cost</span>
+                <span className={styles['total-amount']}>${totalCost.toLocaleString()}</span>
               </div>
             </div>
 
             {/* Legend */}
-            <div className="legend-container">
-              <div className="legend-items">
+            <div className={styles['legend-container']}>
+              <div className={styles['legend-items']}>
                 {chartData.map((entry, index) => (
-                  <div key={entry.name} className="legend-item">
-                    <div className="legend-color" style={{ backgroundColor: COLORS[entry.name] }} />
-                    <span className="legend-label">{entry.name}</span>
-                    <span className="legend-value">
+                  <div key={entry.name} className={styles['legend-item']}>
+                    <div
+                      className={styles['legend-color']}
+                      style={{ backgroundColor: COLORS[entry.name] }}
+                    />
+                    <span className={styles['legend-label']}>{entry.name}</span>
+                    <span className={styles['legend-value']}>
                       ${entry.value.toLocaleString()} (
                       {((entry.value / totalCost) * 100).toFixed(1)}%)
                     </span>
@@ -330,11 +334,11 @@ const PlannedCostDonutChart = () => {
             </div>
           </>
         ) : selectedProject ? (
-          <div className="no-data-container">
+          <div className={styles['no-data-container']}>
             <p>No planned cost data available for this project.</p>
           </div>
         ) : (
-          <div className="select-project-container">
+          <div className={styles['select-project-container']}>
             <p>Please select a project to view the planned cost breakdown.</p>
           </div>
         )}
