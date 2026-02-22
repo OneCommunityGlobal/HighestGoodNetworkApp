@@ -7,7 +7,7 @@ import { useSelector } from 'react-redux';
 function ActivitiesPage() {
   const darkMode = useSelector(state => state.theme.darkMode);
   return (
-    <div className={`${darkMode ? styles.darkMode : ''}`}>
+    <div className={`${darkMode ? styles.darkmode : ''}`}>
       <div className={`${styles.activitiesPage}`}>
         <header className={`${styles.header}`}>
           <h1>Event Registrations</h1>

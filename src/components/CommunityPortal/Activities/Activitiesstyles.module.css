@@ -340,6 +340,12 @@
   background-color: white;
 }
 
+.inputError {
+  border-color: #dc2626 !important;
+  background-color: #fef2f2;
+  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.12);
+}
+
 .registrationForm input[type='date'] {
   max-width: 180px;
 }
@@ -378,6 +384,57 @@
 
 .submitbtn:hover {
   background-color: #1e40af;
+}
+
+.registrationToast {
+  background-color: #ffffff;
+  color: #1f2937;
+  border-radius: 12px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.14);
+  border: 1px solid #e5e7eb;
+  font-size: 0.92rem;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.registrationToastProgress {
+  background: linear-gradient(90deg, #2563eb, #38bdf8);
+}
+
+.registrationToast.darkmode {
+  background-color: #0b1220;
+  color: #e5e7eb;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.55);
+  border: 1px solid #1e293b;
+}
+
+.registrationToast :global(.Toastify__toast-body) {
+  margin: 0;
+  padding: 12px 10px;
+}
+
+.registrationToast :global(.Toastify__close-button) {
+  color: #334155;
+  opacity: 0.8;
+}
+
+.registrationToast :global(.Toastify__close-button:hover) {
+  color: #0f172a;
+  opacity: 1;
+}
+
+.registrationToast.darkmode :global(.Toastify__close-button) {
+  color: #e2e8f0;
+  opacity: 0.85;
+}
+
+.registrationToast.darkmode :global(.Toastify__close-button:hover) {
+  color: #ffffff;
+  opacity: 1;
+}
+
+.registrationToastProgress.darkmode {
+  background: linear-gradient(90deg, #38bdf8, #60a5fa);
 }
 
 .viewToggle button {
@@ -440,169 +497,175 @@
   box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
 }
 
-.darkMode .activitiesPage {
+.darkmode .activitiesPage {
   background-color: #0f172a;
   color: #e5e7eb;
 }
 
-.darkMode .header h1,
-.darkMode .header h2,
-.darkMode .resourceMonitoring h2,
-.darkMode .latestRegistration h2,
-.darkMode .myEvent h2 {
+.darkmode .header h1,
+.darkmode .header h2,
+.darkmode .resourceMonitoring h2,
+.darkmode .latestRegistration h2,
+.darkmode .myEvent h2 {
   color: #f9fafb;
 }
 
-.darkMode .resourceMonitoring,
-.darkMode .latestRegistration,
-.darkMode .myEvent,
-.darkMode .registrationForm {
+.darkmode .resourceMonitoring,
+.darkmode .latestRegistration,
+.darkmode .myEvent,
+.darkmode .registrationForm {
   background-color: #020617;
   border: 1px solid #1e293b;
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.02), 0 12px 28px rgba(0, 0, 0, 0.75);
 }
 
-.darkMode .resourceCard {
+.darkmode .resourceCard {
   background: #020617;
   border: 1px solid #1e293b;
 }
 
-.darkMode .resourceTitle {
+.darkmode .resourceTitle {
   color: #9ca3af;
 }
 
-.darkMode .resourceValue,
-.darkMode .circleLabel {
+.darkmode .resourceValue,
+.darkmode .circleLabel {
   color: #f9fafb;
 }
 
-.darkMode .resourceStats p {
+.darkmode .resourceStats p {
   color: #9ca3af;
 }
 
-.darkMode .latestRegistration li {
+.darkmode .latestRegistration li {
   border-bottom-color: #1e293b;
 }
 
-.darkMode .registerinfo p {
+.darkmode .registerinfo p {
   color: #f9fafb;
 }
 
-.darkMode .time {
+.darkmode .time {
   color: #9ca3af;
 }
 
-.darkMode .myEventsTable th {
+.darkmode .myEventsTable th {
   background-color: #020617;
   color: #e5e7eb;
 }
 
-.darkMode .myEventsTable td {
+.darkmode .myEventsTable td {
   color: #e5e7eb;
   border-bottom-color: #1e293b;
 }
 
-.darkMode .myEventsTable tr:hover {
+.darkmode .myEventsTable tr:hover {
   background-color: #020617;
 }
 
-.darkMode .dateBox .day {
+.darkmode .dateBox .day {
   color: #fb923c;
 }
 
-.darkMode .dateBox .date {
+.darkmode .dateBox .date {
   color: #f9fafb;
 }
 
-.darkMode .registrationForm input,
-.darkMode .registrationForm select,
-.darkMode .filterControls select {
+.darkmode .registrationForm input,
+.darkmode .registrationForm select,
+.darkmode .filterControls select {
   background-color: #020617;
   border-color: #1e293b;
   color: #e5e7eb;
 }
 
-.darkMode .registrationForm input::placeholder {
+.darkmode .registrationForm input::placeholder {
   color: #64748b;
 }
 
-.darkMode .registrationForm input:focus,
-.darkMode .registrationForm select:focus,
-.darkMode .filterControls select:focus {
+.darkmode .registrationForm input:focus,
+.darkmode .registrationForm select:focus,
+.darkmode .filterControls select:focus {
   border-color: #60a5fa;
   background-color: #020617;
 }
 
-.darkMode .approveBtn,
-.darkMode .applyFiltersBtn,
-.darkMode .submitbtn {
+.darkmode .inputError {
+  border-color: #f87171 !important;
+  background-color: rgba(127, 29, 29, 0.25);
+  box-shadow: 0 0 0 2px rgba(248, 113, 113, 0.2);
+}
+
+.darkmode .approveBtn,
+.darkmode .applyFiltersBtn,
+.darkmode .submitbtn {
   background-color: #2563eb;
 }
 
-.darkMode .createNewBtn {
+.darkmode .createNewBtn {
   background-color: #16a34a;
 }
 
-.darkMode .approveBtn:hover,
-.darkMode .applyFiltersBtn:hover,
-.darkMode .submitbtn:hover {
+.darkmode .approveBtn:hover,
+.darkmode .applyFiltersBtn:hover,
+.darkmode .submitbtn:hover {
   background-color: #1e40af;
 }
 
-.darkMode .createNewBtn:hover {
+.darkmode .createNewBtn:hover {
   background-color: #15803d;
 }
 
-.darkMode .viewToggle button {
+.darkmode .viewToggle button {
   background-color: #020617;
   color: #9ca3af;
   border: 1px solid #1e293b;
   transition: background-color 0.15s ease, color 0.15s ease;
 }
 
-.darkMode .viewToggle button:hover {
+.darkmode .viewToggle button:hover {
   background-color: #020617;
   color: #f9fafb;
 }
 
-.darkMode .viewToggle .activeView {
+.darkmode .viewToggle .activeView {
   background-color: #2563eb;
   color: #ffffff;
   border-color: #2563eb;
 }
 
-.darkMode .viewToggle .activeView:hover {
+.darkmode .viewToggle .activeView:hover {
   background-color: #1e40af;
 }
 
-.darkMode .viewToggle .inactiveView {
+.darkmode .viewToggle .inactiveView {
   background-color: #020617;
   color: #9ca3af;
 }
 
-.darkMode .viewToggle .inactiveView:hover {
+.darkmode .viewToggle .inactiveView:hover {
   color: #f9fafb;
 }
 
-.darkMode .status,
-.darkMode .resource {
+.darkmode .status,
+.darkmode .resource {
   color: #e5e7eb;
 }
 
-.darkMode .status.active,
-.darkMode .resource.completed {
+.darkmode .status.active,
+.darkmode .resource.completed {
   background-color: rgba(34, 197, 94, 0.25);
 }
 
-.darkMode .status.closed {
+.darkmode .status.closed {
   background-color: rgba(99, 102, 241, 0.25);
 }
 
-.darkMode .status.cancelled,
-.darkMode .resource.cancelled {
+.darkmode .status.cancelled,
+.darkmode .resource.cancelled {
   background-color: rgba(239, 68, 68, 0.25);
 }
 
-.darkMode .resource.pending {
+.darkmode .resource.pending {
   background-color: rgba(234, 179, 8, 0.25);
 }
