@@ -80,7 +80,7 @@ function RegistrationForm() {
             aria-invalid={showValidation && !eventDate}
           />
 
-          <button type="submit" className={`${styles.submitbtn}`} disabled={!isFormComplete}>
+          <button type="submit" className={`${styles.submitbtn}`}>
             Register
           </button>
         </div>
