@@ -49,6 +49,7 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
   transition: all 0.3s ease;
+  min-height: 80px;
 }
 
 .weeklySummaryHeaderTitle {
@@ -57,16 +58,27 @@
   font-size: x-large;
   text-align: center;
   flex-wrap: wrap;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.weeklySummaryHeaderSubtitle {
+  font-size: 14px;
+  opacity: 0.7;
+  font-weight: normal;
 }
 
 .weeklySummaryHeaderControls {
   display: flex;
   gap: 10px;
   align-items: center;
+  flex-wrap: wrap;
 }
 
+/* Fix for select dropdown arrows */
 .weeklySummaryHeaderControls select {
-  padding: 8px 12px;
+  padding: 8px 32px 8px 12px;
   border: 1px solid var(--border-color, #ccc);
   border-radius: 6px;
   min-width: 200px;
@@ -74,6 +86,20 @@
   background: var(--section-bg);
   color: var(--text-color);
   transition: all 0.3s ease;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 16px;
+}
+
+.darkMode .weeklySummaryHeaderControls select {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+  background-color: var(--card-bg) !important;
+  color: var(--text-color) !important;
+  border-color: var(--card-shadow) !important;
 }
 
 .weeklySummaryHeaderControls select:focus {
@@ -85,17 +111,12 @@
   background-color: var(--section-title-hover) !important;
 }
 
-.darkMode select {
-  background-color: var(--card-bg) !important;
-  color: var(--text-color) !important;
-  border-color: var(--card-shadow) !important;
-}
-
 .darkMode select option {
   background-color: var(--card-bg);
   color: var(--text-color);
 }
 
+/* Share PDF Button - Fixed */
 .weeklySummaryShareBtn {
   background-color: var(--button-bg) !important;
   color: white;
@@ -103,10 +124,30 @@
   white-space: nowrap;
   border-radius: 8px !important;
   transition: background 0.2s ease-in-out;
+  padding: 8px 16px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 100px;
+  font-size: 14px;
+  line-height: 1.5;
 }
 
 .weeklySummaryShareBtn:hover {
   background-color: var(--button-hover) !important;
+}
+
+.weeklySummaryShareBtn:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+}
+
+.weeklySummaryShareBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 /* ---------------- DASHBOARD ---------------- */
@@ -249,12 +290,28 @@
   grid-column: span 4;
 }
 
+/* ---------------- DASHBOARD SECTIONS ---------------- */
 .weeklyProjectSummaryDashboardSection {
   background: var(--section-bg);
   border-radius: 8px;
   padding: 10px;
   box-shadow: 0 2px 4px var(--card-shadow);
   transition: all 0.3s ease;
+}
+
+/* Fix for double arrows - ensure no pseudo-elements add extra arrows */
+.weeklyProjectSummaryDashboardCategoryTitle::before,
+.weeklyProjectSummaryDashboardCategoryTitle::after {
+  display: none !important;
+  content: none !important;
+}
+
+/* Ensure the button only shows our arrow span */
+.weeklyProjectSummaryDashboardCategoryTitle span {
+  display: inline-block;
+  margin-left: 8px;
+  font-size: 16px;
+  font-weight: bold;
 }
 
 .weeklyProjectSummaryDashboardCategoryTitle {
@@ -442,10 +499,6 @@
   color: var(--text-color) !important;
 }
 
-.darkMode .weekly-summary-header-wrapper {
-  background-color: var(--bg-color) !important;
-}
-
 /* Tooltip styles */
 .quantityOfMaterialsUsedChartTooltip {
   max-height: 80vh !important;
@@ -475,10 +528,6 @@
 
 .darkMode .quantityOfMaterialsUsedChartTooltip::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.3);
-}
-
-.darkMode .quantityOfMaterialsUsedChartTooltip {
-  scrollbar-color: rgba(255, 255, 255, 0.3) rgba(255, 255, 255, 0.1);
 }
 
 /* Animation */
@@ -636,6 +685,7 @@
   .weeklySummaryHeaderContainer {
     flex-direction: column;
     align-items: center;
+    width: 95%;
   }
 
   .weeklySummaryHeaderControls {
@@ -650,6 +700,7 @@
 
   .weeklySummaryShareBtn {
     width: 100%;
+    margin-top: 5px;
   }
 
   .weeklyProjectSummaryDashboardGrid {
@@ -726,6 +777,12 @@
   
   .normalCard {
     min-height: 260px;
+  }
+  
+  .weeklySummaryHeaderTitle {
+    font-size: large;
+    flex-direction: column;
+    gap: 5px;
   }
 }
 
@@ -809,5 +866,10 @@
   .financialsTrackingGrid {
     break-inside: avoid;
     page-break-inside: avoid;
+  }
+  
+  .weeklySummaryShareBtn,
+  .weeklySummaryHeaderControls select {
+    display: none;
   }
 }
