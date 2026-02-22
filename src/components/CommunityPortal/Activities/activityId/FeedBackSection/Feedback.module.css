@@ -4,14 +4,6 @@
   font-family: Arial, sans-serif;
 }
 
-.feedbackContainerDark {
-  width: 90%;
-  margin: 20px auto;
-  font-family: Arial, sans-serif;
-  background-color: #1b2a41;
-  color: white;
-}
-
 .feedbackTitle {
   font-size: 20px;
   color: black;
@@ -19,23 +11,9 @@
   text-align: left;
 }
 
-.feedbackTitleDark {
-  padding-left: 20px;
-  padding-top: 20px;
-  font-size: 20px;
-  color: white;
-  font-weight: bold;
-  text-align: left;
-}
-
 .feedbackCount {
   font-size: 14px;
   color: gray;
-}
-
-.feedbackCountDark {
-  font-size: 14px;
-  color: white;
 }
 
 .feedbackHeader {
@@ -78,10 +56,6 @@
   margin-right: 10px;
 }
 
-.filterDark {
-  color: white;
-}
-
 .filterDropdown {
   margin-left: 5px;
   padding: 4px 6px;
@@ -104,15 +78,6 @@
   padding: 10px 0;
 }
 
-.feedbackCardDark {
-  display: flex;
-  align-items: flex-start;
-  background: #3a506b;
-  border-radius: 5px;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-  padding: 10px;
-}
-
 .avatar {
   width: 40px;
   height: 40px;
@@ -130,10 +95,6 @@
   color: #555;
 }
 
-.feedbackTextDark {
-  color: white;
-}
-
 .feedbackDate {
   color: gray;
   font-size: 12px;
@@ -143,7 +104,6 @@
   color: gold;
   font-size: 16px;
 }
-
 
 /* Feedback form elements */
 .formGroup {
@@ -156,12 +116,6 @@
   font-weight: 600;
   margin-bottom: 0.5rem;
   color: black;
-}
-
-.labelDark {
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-  color: white;
 }
 
 .textarea {
@@ -208,31 +162,12 @@
   color: black;
 }
 
-.formGroupDark label {
-  color: white;
-}
-
-/* Checkbox section */
 .formGroupRow {
   margin-top: 1rem;
   display: flex;
   align-items: center;
   font-size: 0.9rem;
   color: var(--text-color, #333);
-}
-
-.formGroupRowDark span{
-  color: white;
-}
-
-.participateFeedbackBtnDark {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  background-color: #4a90e2;
-  color: white;
-  cursor: pointer;
-  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .participateFeedbackBtn {
@@ -245,12 +180,8 @@
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.loadMore button{
+.loadMore button {
   color: black;
-}
-
-.loadMoreDark button{
-  color: white;
 }
 
 .hostViewToggles {
@@ -260,14 +191,68 @@
   padding: 10px;
 }
 
-.hostViewTogglesDark button{
+.darMode.hostViewToggles button {
   color: white;
 }
 
-/* Dark mode variables */
-:global(.dark) {
-  --modal-bg: #1e1e1e;
-  --modal-text: #f2f2f2;
-  --bg-color: #2c2c2c;
-  --text-color: #e5e5e5;
+.darkMode.loadMore button {
+  color: white;
+}
+
+.darkMode.feedbackContainer {
+  width: 90%;
+  margin: 20px auto;
+  font-family: Arial, sans-serif;
+  background-color: #1b2a41;
+  color: white;
+}
+
+.darkMode.participateFeedbackBtn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  background-color: #4a90e2;
+  color: white;
+  cursor: pointer;
+}
+
+.darkMode.formGroupRow span {
+  color: white;
+}
+
+.darkMode.feedbackTitle {
+  padding-left: 20px;
+  padding-top: 20px;
+  font-size: 20px;
+  color: white;
+  font-weight: bold;
+  text-align: left;
+}
+
+.darkMode.feedbackCount {
+  font-size: 14px;
+  color: white;
+}
+
+.darkMode.filter {
+  color: white;
+}
+
+.darkMode.feedbackCard {
+  display: flex;
+  align-items: flex-start;
+  background: #3a506b;
+  border-radius: 5px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+}
+
+.darkMode.feedbackText {
+  color: white;
+}
+
+.darkMode.label {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: white;
 }

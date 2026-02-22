@@ -186,14 +186,14 @@ function Feedback({
             <div className={`${styles.hostViewToggles}`}>
               <button
                 type="button"
-                className={showSuggestionsOnly ? '' : styles.toggleActive}
+                className={`${showSuggestionsOnly ? '' : styles.toggleActive}`}
                 onClick={() => setShowSuggestionsOnly(false)}
               >
                 Reviews
               </button>
               <button
                 type="button"
-                className={showSuggestionsOnly ? styles.toggleActive : ''}
+                className={`${showSuggestionsOnly ? styles.toggleActive : ''}`}
                 onClick={() => setShowSuggestionsOnly(true)}
               >
                 Suggestions ({suggestionList.length})
@@ -352,7 +352,7 @@ function Feedback({
                           <button
                             key={i}
                             type="button"
-                            className={i < modalRating ? styles.starBtnActive : styles.starBtn}
+                            className={`${i < modalRating ? styles.starBtnActive : styles.starBtn}`}
                             onClick={() => setModalRating(i + 1)}
                           >
                             ★
@@ -371,7 +371,7 @@ function Feedback({
                         value={modalComment}
                         onChange={e => setModalComment(e.target.value)}
                         rows={4}
-                        className={styles.textarea}
+                        className={`${styles.textarea}`}
                       />
                     </div>
 
