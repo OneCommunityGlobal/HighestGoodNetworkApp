@@ -1,63 +1,227 @@
+/* ============================================================
+   ExpenditureChart — CSS Module
+   All colors use CSS custom properties defined in
+   WeeklyProjectSummary.module.css (:root / .darkMode scope)
+   so light/dark switching is automatic for anything that uses
+   var(--*). Recharts elements that need dark-mode colours are
+   handled via inline styles in JSX using the darkMode prop.
+   ============================================================ */
+
+/* ── Stacked mode: outer flex row ─────────────────────────── */
 .expenditure-chart-wrapper {
   display: flex;
-  justify-content: center;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 20px;
   width: 100%;
-  padding: 0;
-  margin: 0;
 }
 
+/* ── Stacked mode: individual pie card ─────────────────────── */
 .expenditure-chart-card {
-  flex: 1 1 220px;
-  max-width: 260px;
-  padding: 12px 10px;
-  min-height: 300px;
+  flex: 1 1 260px;
+  max-width: 520px;
   background: var(--card-bg);
-  box-shadow: 0 2px 4px var(--card-shadow);
-  border-radius: 8px;
+  border-radius: 10px;
+  padding: 16px 14px 12px;
+  box-shadow: 0 2px 8px var(--card-shadow);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  min-height: 340px;
+}
+
+/* ── Comparison mode: full-width layout wrapper ─────────────── */
+.expenditure-chart-comparison {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* ── Comparison mode: tab bar (hidden on desktop) ───────────── */
+.expenditure-chart-tab-bar {
+  display: none; /* shown only on mobile via media query below */
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.expenditure-chart-tab {
+  flex: 1;
+  padding: 8px 16px;
+  background: var(--section-bg);
+  color: var(--text-color);
+  border: 1px solid var(--border-color, #ccc);
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+  text-align: center;
+}
+
+.expenditure-chart-tab:hover {
+  background: var(--section-title-hover);
+}
+
+.expenditure-chart-tab--active {
+  background: var(--button-bg);
+  color: #fff;
+  border-color: var(--button-bg);
+}
+
+.expenditure-chart-tab:focus-visible {
+  outline: 2px solid var(--focus-border-color, #3b82f6);
+  outline-offset: 2px;
+}
+
+/* ── Comparison mode: panes row (side-by-side on desktop) ──── */
+.expenditure-chart-panes {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  width: 100%;
+}
+
+/* ── Comparison mode: each half-panel ─────────────────────── */
+.expenditure-chart-panel {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+/* Hidden panel class — only activates on mobile (see @media) */
+.expenditure-chart-panel--hidden-mobile {
+  /* no-op on desktop; hidden on mobile via media query */
+}
+
+/* ── Shared chart-pane (title + ResponsiveContainer) ────────── */
+.chart-pane {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
+  width: 100%;
+  height: 100%;
 }
 
-.expenditure-chart-title {
-  font-size: 1.1rem;
-  font-weight: bold;
-  text-align: center;
-  margin-bottom: 6px;
-}
-
-.recharts-legend-wrapper {
-  margin-top: -10px !important;
-}
-
-.recharts-legend-item-text {
-  font-size: 12px !important;
-  white-space: nowrap;
-}
-
-.recharts-pie-label-text {
-  font-size: 10px !important;
+.chart-pane__title {
+  font-size: 1rem;
   font-weight: 600;
-  fill: white;
-  text-anchor: middle;
-  alignment-baseline: central;
-  white-space: nowrap;
-}
-
-.dark-mode .expenditure-chart-card {
-  background: var(--card-bg);
-  box-shadow: 0 2px 5px rgba(255, 255, 255, 0.08);
-}
-
-.dark-mode .expenditure-chart-title {
   color: var(--text-color);
+  text-align: center;
+  margin: 0 0 10px 0;
 }
 
-.dark-mode .recharts-default-tooltip {
-  background-color: #333 !important;
-  color: #fff !important;
-  border: 1px solid #555 !important;
+/* ResponsiveContainer wrapper — must have explicit height */
+.chart-pane__container {
+  width: 100%;
+  height: 280px;
+  max-height: 340px;
+  flex: 1 1 auto;
+}
+
+/* Compact variant used in comparison mode panes */
+.chart-pane--compact .chart-pane__container {
+  height: 260px;
+}
+
+/* No-data message inside a chart pane */
+.chart-pane__empty {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  font-size: 14px;
+  color: var(--text-color);
+  text-align: center;
+  opacity: 0.7;
+  padding: 16px;
+}
+
+/* ── Loading state ──────────────────────────────────────────── */
+.expenditure-chart-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 48px 20px;
+  font-size: 14px;
+  color: var(--text-color);
+  text-align: center;
+}
+
+/* CSS spinner */
+.expenditure-chart-spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid var(--card-shadow);
+  border-top-color: var(--button-bg);
+  border-radius: 50%;
+  flex-shrink: 0;
+  animation: expenditure-spin 0.75s linear infinite;
+}
+
+@keyframes expenditure-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ── Error state ────────────────────────────────────────────── */
+.expenditure-chart-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 40px 20px;
+  font-size: 14px;
+  color: var(--neg-color, #b91c1c);
+  text-align: center;
+}
+
+/* ── No-project selected state ──────────────────────────────── */
+.expenditure-chart-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  font-size: 14px;
+  color: var(--text-color);
+  text-align: center;
+  opacity: 0.7;
+}
+
+/* ── Responsive: small screens ─────────────────────────────── */
+@media (max-width: 640px) {
+  /* Show tab bar in comparison mode */
+  .expenditure-chart-tab-bar {
+    display: flex;
+  }
+
+  /* Stack the two panes vertically (only one is visible at a time via JS) */
+  .expenditure-chart-panes {
+    flex-direction: column;
+  }
+
+  /* Hide inactive panel in comparison mode on mobile */
+  .expenditure-chart-panel--hidden-mobile {
+    display: none;
+  }
+
+  /* Stacked mode cards go full-width */
+  .expenditure-chart-wrapper {
+    flex-direction: column;
+  }
+
+  .expenditure-chart-card {
+    max-width: 100%;
+    flex-basis: auto;
+  }
+
+  /* Slightly shorter charts on small screens */
+  .chart-pane__container {
+    height: 240px;
+  }
+
+  .chart-pane--compact .chart-pane__container {
+    height: 220px;
+  }
 }
