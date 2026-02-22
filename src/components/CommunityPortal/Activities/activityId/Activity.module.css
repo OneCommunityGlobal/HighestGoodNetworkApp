@@ -3,25 +3,28 @@
   flex-direction: column;
   align-items: center;
   padding: 20px;
-  background-color: #f9f9f9;
-  color: #111;
+  background-color: #f3f5f9;
+  color: #0f172a;
   height: 100%;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .activityEventCard {
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  padding: 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 20px;
   font-family: Arial, sans-serif;
-  background-color: #fff;
+  background-color: #ffffff;
   max-width: 1100px;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  width: 100%;
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.08);
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
 .activityEventHeader {
   display: flex;
   gap: 20px;
+  align-items: flex-start;
 }
 
 .titlesAndViews {
@@ -29,25 +32,31 @@
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  gap: 20px;
+}
+
+.titles {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .viewToggler {
-  padding: 20px;
-}
-
-.viewToggler button {
-  color: #000;
+  padding: 12px 0;
+  display: flex;
+  gap: 10px;
 }
 
 .activityEventImage {
   width: 180px;
   height: 180px;
-  background-color: #e0e0e0;
+  background: linear-gradient(145deg, #e2e8f0, #f8fafc);
   text-align: center;
   line-height: 180px;
   font-weight: bold;
-  color: #555;
-  border-radius: 8px;
+  color: #475569;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
 }
 
 .activityEventDetails {
@@ -56,109 +65,172 @@
 
 .activityEventType {
   font-size: 12px;
-  color: gray;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
 }
 
 .activityEventTitle {
-  margin: 5px 0;
-}
-
-.switchToggle {
-  color: #000;
+  margin: 2px 0 0;
+  font-size: 24px;
+  color: #0f172a;
 }
 
 .activityEventLocation {
   font-size: 14px;
+  color: #475569;
 }
 
 .activityEventLink {
-  color: #1a73e8;
+  color: #1d4ed8;
   text-decoration: none;
+  font-size: 14px;
+}
+
+.activityEventLink:hover {
+  text-decoration: underline;
 }
 
 .activityEventInfo {
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
-  margin-top: 10px;
+  margin-top: 14px;
+  color: #1e293b;
 }
 
 .activityEventInfo > div {
   min-width: 120px;
 }
 
+.activityEventInfo strong {
+  color: #0f172a;
+}
+
 .activityCapacity {
-  color: red;
+  color: #dc2626;
+  font-weight: 600;
 }
 
 .activityStatusActive {
-  color: green;
-  font-weight: bold;
+  color: #16a34a;
+  font-weight: 700;
+}
+
+.activityStar {
+  color: #f7c948;
+  margin-right: 2px;
+}
+
+.activityStarEmpty {
+  color: #cbd5e1;
+  margin-right: 2px;
+}
+
+.switchToggle {
+  color: #0f172a;
+  font-weight: 600;
 }
 
 .activityEventButtons {
-  margin-top: 10px;
+  margin-top: 12px;
 }
 
 .contactBtn {
-  padding: 5px 12px;
+  padding: 8px 14px;
   margin-right: 10px;
-  border: none;
-  border-radius: 4px;
-  background-color: #dedede;
+  border: 1px solid #cbd5e1;
+  border-radius: 999px;
+  background-color: #f1f5f9;
+  color: #1e293b;
   cursor: pointer;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 
 .contactBtn:hover {
-  background-color: #ccc;
+  background-color: #e2e8f0;
+  border-color: #b8c9e3;
+  color: #1e3a8a;
 }
 
 .activityCalendarBox {
   min-width: 220px;
   text-align: center;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  padding: 10px 12px;
 }
 
 .activityCalendarHeader {
-  font-weight: bold;
-  margin-bottom: 5px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: #1e293b;
 }
 
 .activityCalendarTable {
   width: 100%;
   border-collapse: collapse;
+  font-size: 12px;
 }
 
 .activityCalendarTable th,
 .activityCalendarTable td {
   width: 14.2%;
   padding: 4px;
-  border: 1px solid #ddd;
+  border: 1px solid #e2e8f0;
+  color: #475569;
+}
+
+.activityCalendarTable th {
+  background: #eef2f7;
+  font-weight: 600;
 }
 
 .activityActiveDate {
-  background-color: #f48fb1;
+  background-color: #f472b6;
   border-radius: 50%;
-  color: #fff;
+  color: #ffffff;
+  font-weight: 700;
 }
 
 .activityEventTabs {
   display: flex;
-  gap: 20px;
-  border-top: 1px solid #ddd;
+  gap: 16px;
+  border-top: 1px solid #e2e8f0;
   margin-top: 20px;
-  padding-top: 10px;
+  padding-top: 12px;
 }
 
 .activityTab {
   padding: 6px 12px;
   cursor: pointer;
-  transition: color 0.2s, border-color 0.2s;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  color: #475569;
+  transition: color 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.activityTab:hover {
+  color: #1e3a8a;
+  background: #f1f5f9;
+  border-color: #c7d6ea;
 }
 
 .activityTabActive {
-  border-bottom: 2px solid #000;
-  font-weight: bold;
+  border-bottom: 2px solid #1e3a8a;
+  font-weight: 700;
+  color: #1e3a8a;
+  border-radius: 0;
+  padding-bottom: 8px;
+}
+
+.active {
+  background: #f1f5f9;
+  border-color: #c7d6ea;
+  color: #1e3a8a;
+  box-shadow: 0 6px 12px rgba(30, 58, 138, 0.12);
 }
 
 .activityParticipatesSection {
@@ -170,24 +242,39 @@
 
 .activityParticipant {
   display: flex;
-  gap: 5px;
+  align-items: center;
+  gap: 8px;
+  color: #1e293b;
 }
 
 .activityFaqsSection {
   margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-.activityFaqText {
-  color: #555;
+.activityFaq {
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
 }
 
 .activityFaqTitle {
-  color: #000;
+  color: #0f172a;
+  margin: 0 0 6px;
+}
+
+.activityFaqText {
+  color: #475569;
+  margin: 0;
 }
 
 .activityEventDescription p {
-  color: #030303;
-  padding: 10px;
+  color: #1e293b;
+  padding: 10px 0;
+  line-height: 1.6;
 }
 
 .activityIcon {
@@ -200,16 +287,29 @@
   font-weight: bold;
 }
 
+.purple {
+  background-color: #7c3aed;
+}
+
+.blue {
+  background-color: #2563eb;
+}
+
 @media (max-width: 800px) {
   .activityEventCard {
     max-width: 98vw;
-    padding: 8px;
+    padding: 12px;
   }
 
   .activityEventHeader {
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
     align-items: stretch;
+  }
+
+  .titlesAndViews {
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   .activityEventImage {
@@ -250,7 +350,7 @@
 
 @media (max-width: 500px) {
   .activityEventCard {
-    padding: 4px;
+    padding: 8px;
     font-size: 14px;
   }
 
@@ -292,76 +392,134 @@
   }
 }
 
-.darkMode.activityEventLocation {
-  font-size: 14px;
-  color: #fff;
-}
-
-.darkMode.activityContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px;
+.darkMode .activityContainer {
   background-color: #1b2a41;
-  color: white;
-  height: 100%;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  color: #e2e8f0;
 }
 
-.darkMode.activityEventCard {
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  padding: 16px;
-  font-family: Arial, sans-serif;
-  background-color: #1b2a41;
-  max-width: 1100px;
-  transition: background-color 0.3s ease, color 0.3s ease;
+.darkMode .activityEventCard {
+  border: 1px solid #2f425d;
+  background-color: #1f3048;
+  box-shadow: 0 18px 40px rgba(2, 8, 18, 0.5);
 }
 
-.darkMode.viewToggler button {
-  color: #fff;
+.darkMode .activityEventImage {
+  background: linear-gradient(145deg, #243853, #2b3f5d);
+  color: #cbd5e1;
+  border-color: #2f425d;
 }
 
-.darkMode.activityEventDetails {
-  flex-grow: 2;
-  color: #ffffff;
+.darkMode .activityEventType {
+  color: #cbd5e1;
 }
 
-.darkMode.activityEventType {
-  font-size: 12px;
-  color: rgb(255, 255, 255);
+.darkMode .activityEventTitle {
+  color: #f8fafc;
 }
 
-.darkMode.activityEventTitle {
-  margin: 5px 0;
-  color: #ffffff;
+.darkMode .activityEventLocation {
+  color: #e2e8f0;
 }
 
-.darMode.switchToggle {
-  color: #fff;
+.darkMode .activityEventLink {
+  color: #93c5fd;
 }
 
-.darkMode.activityEventDescription p {
-  color: #fff;
-  padding: 10px;
+.darkMode .activityEventInfo {
+  color: #e2e8f0;
 }
 
-.darkMode.activityEventInfo strong {
-  color: #ffffff;
+.darkMode .activityEventInfo strong {
+  color: #f8fafc;
 }
 
-.darkMode.activityCalendarTable th {
-  background-color: #212529;
+.darkMode .switchToggle {
+  color: #e2e8f0;
 }
 
-.darkMode.activityEventTabs button {
-  color: white;
+.darkMode .contactBtn {
+  background-color: #243853;
+  border-color: #4b637f;
+  color: #e2e8f0;
 }
 
-.darkMode.activityFaqText {
-  color: #ccc;
+.darkMode .contactBtn:hover {
+  background-color: #2c4463;
+  border-color: #5a7698;
+  color: #f8fafc;
 }
 
-.darkMode.activityFaqTitle {
-  color: #fff;
+.darkMode .activityCalendarBox {
+  background: #243853;
+  border-color: #2f425d;
+}
+
+.darkMode .activityCalendarHeader {
+  color: #f8fafc;
+}
+
+.darkMode .activityCalendarTable th,
+.darkMode .activityCalendarTable td {
+  border-color: #2f425d;
+  color: #cbd5e1;
+}
+
+.darkMode .activityCalendarTable th {
+  background: #1f2f48;
+}
+
+.darkMode .activityActiveDate {
+  background-color: #f472b6;
+  color: #0b1220;
+}
+
+.darkMode .activityEventTabs {
+  border-top-color: #2f425d;
+}
+
+.darkMode .activityTab {
+  color: #cbd5e1;
+}
+
+.darkMode .activityTab:hover {
+  color: #f8fafc;
+  background: #243853;
+  border-color: #4b637f;
+}
+
+.darkMode .activityTabActive {
+  border-bottom-color: #93c5fd;
+  color: #93c5fd;
+}
+
+.darkMode .active {
+  background: #243853;
+  border-color: #4b637f;
+  color: #f8fafc;
+  box-shadow: 0 10px 18px rgba(8, 18, 32, 0.35);
+}
+
+.darkMode .activityParticipatesSection {
+  color: #e2e8f0;
+}
+
+.darkMode .activityParticipant {
+  color: #e2e8f0;
+}
+
+.darkMode .activityFaq {
+  background: #243853;
+  border-color: #2f425d;
+}
+
+.darkMode .activityFaqTitle {
+  color: #f8fafc;
+}
+
+.darkMode .activityFaqText {
+  color: #cbd5e1;
+}
+
+.darkMode .activityEventDescription p {
+  color: #e2e8f0;
 }
