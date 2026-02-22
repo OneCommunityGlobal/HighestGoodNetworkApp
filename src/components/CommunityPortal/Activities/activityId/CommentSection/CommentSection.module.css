@@ -5,19 +5,11 @@
   transition: color 0.3s ease;
 }
 
-.activityCommentFooterDark {
-  color: #aaa;
-}
-
 .activityComment {
   display: flex;
   align-items: flex-start;
   gap: 10px;
   transition: background-color 0.3s ease;
-}
-
-.activityCommentDark {
-  background-color: transparent;
 }
 
 .activityCommentsSection {
@@ -26,10 +18,6 @@
   flex-direction: column;
   gap: 20px;
   transition: all 0.3s ease;
-}
-
-.activityCommentsSectionDark {
-  background-color: transparent;
 }
 
 .activityCommentUser {
@@ -43,11 +31,6 @@
   padding: 10px;
   border-radius: 6px;
   transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.activityCommentTextDark {
-  background-color: #3a506b;
-  color: #ffffff;
 }
 
 .activityIcon {
@@ -83,4 +66,21 @@
     gap: 10px;
     padding: 15px;
   }
+}
+
+.darkMode.activityCommentFooter {
+  color: #aaa;
+}
+
+.darkMode.activityComment {
+  background-color: transparent;
+}
+
+.darkMode.activityCommentsSection {
+  background-color: transparent;
+}
+
+.darkMode.activityCommentText {
+  background-color: #3a506b;
+  color: #ffffff;
 }
