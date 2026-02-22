@@ -56,6 +56,55 @@ const toolsData = [
 
 // ---------- Projects Dropdown ----------
 const projects = ['All Projects', ...new Set(toolsData.map(item => item.project))];
+const topNOptions = [3, 5, 10, 'All'];
+const sortOptions = [
+  { value: 'highest', label: 'Highest Risk First' },
+  { value: 'lowest', label: 'Lowest Risk First' },
+  { value: 'alpha', label: 'Tool Name (A-Z)' },
+];
+
+const getControlStyle = darkMode => ({
+  width: '100%',
+  minHeight: '42px',
+  padding: '0 12px',
+  border: '1px solid',
+  borderColor: darkMode ? '#444' : '#d1d5db',
+  color: darkMode ? '#e5e5e5' : '#111',
+  backgroundColor: darkMode ? '#1C2541' : '#ffffff',
+  borderRadius: '8px',
+  fontSize: '0.95rem',
+  boxSizing: 'border-box',
+  outlineColor: darkMode ? '#93c5fd' : '#2563eb',
+});
+
+function ToolChartTooltip({ active, payload, darkMode }) {
+  if (!active || !payload || payload.length === 0) return null;
+  const point = payload[0].payload;
+
+  return (
+    <div
+      role="status"
+      aria-live="polite"
+      style={{
+        backgroundColor: darkMode ? '#0f172a' : 'rgba(255, 255, 255, 0.95)',
+        border: darkMode ? '1px solid #93c5fd' : '1px solid #d1d5db',
+        color: darkMode ? '#f8fafc' : '#111827',
+        borderRadius: '8px',
+        boxShadow: '0 6px 18px rgba(0, 0, 0, 0.35)',
+        padding: '10px 12px',
+        minWidth: '180px',
+      }}
+    >
+      <div style={{ fontWeight: 700, marginBottom: '4px' }}>{point.name}</div>
+      <div style={{ fontSize: '13px', lineHeight: 1.4 }}>
+        Exact replacement rate: <strong>{point.replacedPercentage.toFixed(1)}%</strong>
+      </div>
+      <div style={{ fontSize: '12px', opacity: 0.95, marginTop: '3px' }}>
+        Higher percentages indicate more frequent replacement needs.
+      </div>
+    </div>
+  );
+}
 
 // ---------- Date Range Picker ----------
 function DateRangePicker({ dateRange, setDateRange }) {
@@ -143,18 +192,17 @@ function DateRangePicker({ dateRange, setDateRange }) {
     <div style={{ position: 'relative' }} ref={pickerRef}>
       <button
         type="button"
+        aria-haspopup="dialog"
+        aria-expanded={isOpen}
+        aria-controls="tool-date-range-dialog"
+        aria-label="Open date range picker"
         style={{
-          width: '100%',
-          padding: '8px 16px',
+          ...getControlStyle(darkMode),
           textAlign: 'left',
-          border: '1px solid',
-          borderColor: darkMode ? '#444' : '#d1d5db',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          backgroundColor: darkMode ? '#1C2541' : '#fff',
           cursor: 'pointer',
-          color: darkMode ? '#e5e5e5' : '#111',
         }}
         onClick={() => setIsOpen(!isOpen)}
       >
@@ -186,6 +234,7 @@ function DateRangePicker({ dateRange, setDateRange }) {
 
       {isOpen && (
         <div
+          id="tool-date-range-dialog"
           style={{
             position: 'absolute',
             zIndex: 10,
@@ -281,6 +330,9 @@ function DateRangePicker({ dateRange, setDateRange }) {
 export default function SimpleToolChart() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const [selectedProject, setSelectedProject] = useState('All Projects');
+  const [sortBy, setSortBy] = useState('highest');
+  const [topN, setTopN] = useState('All');
+  const [showInfo, setShowInfo] = useState(false);
   const [dateRange, setDateRange] = useState({
     from: new Date(2023, 0, 1),
     to: new Date(2023, 11, 31),
@@ -327,13 +379,28 @@ export default function SimpleToolChart() {
       });
     });
 
-    return Object.keys(toolMap)
-      .map(name => ({
-        name,
-        replacedPercentage: Math.round(toolMap[name].total / toolMap[name].count),
-      }))
-      .sort((a, b) => b.replacedPercentage - a.replacedPercentage);
-  }, [selectedProject, dateRange]);
+    const aggregated = Object.keys(toolMap).map(name => ({
+      name,
+      replacedPercentage: Number((toolMap[name].total / toolMap[name].count).toFixed(1)),
+    }));
+
+    let sorted = [...aggregated];
+    if (sortBy === 'highest') sorted.sort((a, b) => b.replacedPercentage - a.replacedPercentage);
+    if (sortBy === 'lowest') sorted.sort((a, b) => a.replacedPercentage - b.replacedPercentage);
+    if (sortBy === 'alpha') sorted.sort((a, b) => a.name.localeCompare(b.name));
+
+    if (topN !== 'All') {
+      return sorted.slice(0, Number(topN));
+    }
+    return sorted;
+  }, [selectedProject, dateRange, sortBy, topN]);
+
+  const leadingTool = filteredData[0];
+  const insightText = leadingTool
+    ? `${
+        leadingTool.name
+      } is currently the highest-risk tool at ${leadingTool.replacedPercentage.toFixed(1)}%.`
+    : 'No replacement trend is available for the selected filters.';
 
   return (
     <div
@@ -354,13 +421,35 @@ export default function SimpleToolChart() {
           fontWeight: 'bold',
           textAlign: 'center',
           color: darkMode ? '#e5e5e5' : '#111',
+          letterSpacing: darkMode ? '0.2px' : 'normal',
         }}
       >
         Tools Most Susceptible to Breakdown
       </h2>
+      <div
+        style={{
+          marginTop: '8px',
+          marginBottom: '6px',
+          textAlign: 'center',
+          color: darkMode ? '#cbd5e1' : '#374151',
+          fontSize: '0.95rem',
+          lineHeight: 1.45,
+        }}
+      >
+        {insightText}
+      </div>
 
       {/* Filters */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', margin: '16px 0' }}>
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+          gap: '16px',
+          margin: '16px auto',
+          maxWidth: '980px',
+          alignItems: 'end',
+        }}
+      >
         <div>
           <label htmlFor="projectSelect" style={{ color: darkMode ? '#e5e5e5' : '#111' }}>
             Project
@@ -369,14 +458,8 @@ export default function SimpleToolChart() {
             id="projectSelect"
             value={selectedProject}
             onChange={e => setSelectedProject(e.target.value)}
-            style={{
-              width: '100%',
-              padding: '8px',
-              border: '1px solid',
-              borderColor: darkMode ? '#444' : '#d1d5db',
-              color: darkMode ? '#e5e5e5' : '#111',
-              backgroundColor: darkMode ? '#1C2541' : '#fff',
-            }}
+            aria-label="Filter chart by project"
+            style={getControlStyle(darkMode)}
           >
             {projects.map(project => (
               <option key={project}>{project}</option>
@@ -391,6 +474,93 @@ export default function SimpleToolChart() {
           <div id="dateRangePicker">
             <DateRangePicker dateRange={dateRange} setDateRange={setDateRange} />
           </div>
+        </div>
+
+        <div>
+          <label htmlFor="sortBySelect" style={{ color: darkMode ? '#e5e5e5' : '#111' }}>
+            Quick Sort
+          </label>
+          <select
+            id="sortBySelect"
+            value={sortBy}
+            onChange={e => setSortBy(e.target.value)}
+            aria-label="Sort tools by replacement trend"
+            style={getControlStyle(darkMode)}
+          >
+            {sortOptions.map(option => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label htmlFor="topNSelect" style={{ color: darkMode ? '#e5e5e5' : '#111' }}>
+            Focus (Top N)
+          </label>
+          <select
+            id="topNSelect"
+            value={topN}
+            onChange={e => setTopN(e.target.value)}
+            aria-label="Limit results to top N tools"
+            style={getControlStyle(darkMode)}
+          >
+            {topNOptions.map(option => (
+              <option key={option} value={option}>
+                {option === 'All' ? 'All Tools' : `Top ${option}`}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div style={{ position: 'relative' }}>
+          <button
+            type="button"
+            aria-describedby="tool-chart-info"
+            aria-label="Show chart data meaning"
+            onMouseEnter={() => setShowInfo(true)}
+            onMouseLeave={() => setShowInfo(false)}
+            onFocus={() => setShowInfo(true)}
+            onBlur={() => setShowInfo(false)}
+            style={{
+              border: '1px solid',
+              borderColor: darkMode ? '#64748b' : '#9ca3af',
+              background: darkMode ? '#0f172a' : '#f8fafc',
+              color: darkMode ? '#e2e8f0' : '#1f2937',
+              borderRadius: '999px',
+              padding: '6px 12px',
+              fontSize: darkMode ? '0.95rem' : '0.9rem',
+              cursor: 'help',
+              outlineColor: darkMode ? '#93c5fd' : '#2563eb',
+            }}
+          >
+            What this means
+          </button>
+          {showInfo && (
+            <div
+              id="tool-chart-info"
+              role="tooltip"
+              style={{
+                position: 'absolute',
+                top: '38px',
+                left: 0,
+                zIndex: 4,
+                width: 'min(92vw, 460px)',
+                backgroundColor: darkMode ? '#0f172a' : 'rgba(255, 255, 255, 0.95)',
+                color: darkMode ? '#f8fafc' : '#111827',
+                border: darkMode ? '1px solid #93c5fd' : '1px solid #d1d5db',
+                borderRadius: '8px',
+                padding: '10px 12px',
+                boxShadow: '0 8px 18px rgba(0, 0, 0, 0.35)',
+                lineHeight: 1.45,
+                fontSize: darkMode ? '0.95rem' : '0.9rem',
+              }}
+            >
+              This chart shows average replacement percentage by tool for the selected filters.
+              Higher values mean more frequent replacements and higher maintenance risk.
+            </div>
+          )}
         </div>
       </div>
 
@@ -428,12 +598,8 @@ export default function SimpleToolChart() {
               tick={{ fontSize: 14, fill: darkMode ? '#e5e5e5' : '#111' }}
             />
             <Tooltip
-              formatter={value => [`${value}%`, 'Replaced Percentage']}
-              contentStyle={{
-                backgroundColor: darkMode ? '#1C2541' : '#ffffff',
-                border: darkMode ? '1px solid #666' : '1px solid #ccc',
-                color: darkMode ? '#f5f5f5' : '#000',
-              }}
+              content={<ToolChartTooltip darkMode={darkMode} />}
+              cursor={{ fill: darkMode ? 'rgba(147, 197, 253, 0.18)' : 'rgba(30, 64, 175, 0.10)' }}
             />
             <Bar
               dataKey="replacedPercentage"
@@ -445,7 +611,7 @@ export default function SimpleToolChart() {
                 dataKey="replacedPercentage"
                 position="right"
                 content={({ value }) => (
-                  <text fill={darkMode ? '#e5e5e5' : '#374151'} fontWeight="500">
+                  <text fill={darkMode ? '#e5e5e5' : '#374151'} fontWeight="600">
                     {`${value}%`}
                   </text>
                 )}
