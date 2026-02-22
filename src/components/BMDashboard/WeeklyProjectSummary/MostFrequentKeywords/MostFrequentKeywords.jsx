@@ -20,7 +20,6 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
-  const [dateRangeInfo, setDateRangeInfo] = useState('');
   const [isMobile, setIsMobile] = useState(false);
   const [tooltip, setTooltip] = useState({ visible: false, text: '', x: 0, y: 0 });
   const API_BASE = process.env.REACT_APP_APIENDPOINT;
@@ -257,15 +256,12 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
           }
         }
 
-        const datasetLabel = selectedOption?.label || 'Data';
-        setDateRangeInfo(datasetLabel);
         return latestItems;
       }
 
-      setDateRangeInfo(selectedOption?.label || 'Data');
       return sorted;
     },
-    [selectedOption, isMobile],
+    [isMobile],
   );
 
   const filterTagsByDate = useCallback(
@@ -301,13 +297,6 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
         return true;
       });
 
-      if (startDate || endDate) {
-        const dateStr = [];
-        if (startDate) dateStr.push(startDate.toLocaleDateString());
-        if (endDate) dateStr.push(endDate.toLocaleDateString());
-        setDateRangeInfo(`${selectedOption?.label || 'Data'} ${dateStr.join('-')}`);
-      }
-
       const sorted = [...filtered].sort((a, b) => b.count - a.count);
       const maxItems = isMobile ? 6 : 8;
       const result = sorted.slice(0, maxItems);
@@ -320,7 +309,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
 
       return result;
     },
-    [startDate, endDate, getLatestData, selectedOption, isMobile],
+    [startDate, endDate, getLatestData, isMobile],
   );
 
   useEffect(() => {
@@ -528,7 +517,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
     }));
   };
 
-  // Helper function to create hit area for bubble
+  // Function to create hit area for bubble
   const createHitArea = (nodeGroup, fullTag, count, r) => {
     return nodeGroup
       .append('ellipse')
@@ -540,8 +529,8 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
       .style('pointer-events', 'all');
   };
 
-  // Helper function to create visible bubble
-  const createVisibleBubble = (nodeGroup, colors, r, darkMode) => {
+  // Function to create visible bubble
+  const createVisibleBubble = (nodeGroup, colors, r) => {
     return nodeGroup
       .append('ellipse')
       .attr('class', 'bubble-fill')
@@ -559,7 +548,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
       .style('pointer-events', 'none');
   };
 
-  // Helper function to create text elements
+  // Function to create text elements
   const createTextElements = (svg, x, y, tag, count, r, sizes, colors) => {
     const textGroup = svg
       .append('g')
@@ -602,53 +591,61 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
       .text(count);
   };
 
-  // Function to render bubbles - simplified with helper functions
+  // Add event handlers to bubble
+  const addBubbleEventHandlers = (hitArea, fullTag, count) => {
+    hitArea
+      .on('mouseenter', event => {
+        handleMouseEnter(event, fullTag, count);
+        d3.select(event.currentTarget.parentNode)
+          .select('ellipse.bubble-fill')
+          .attr('stroke-width', 2.5)
+          .attr('stroke', darkMode ? '#ffffff' : '#000000');
+      })
+      .on('mousemove', handleMouseMove)
+      .on('mouseleave', () => {
+        handleMouseLeave();
+        d3.selectAll('.bubble-fill')
+          .attr('stroke-width', 1.5)
+          .attr('stroke', (d, j) => getNodeColor(j).stroke);
+      })
+      .on('touchstart', event => {
+        handleTouchStart(event, fullTag, count);
+        d3.select(event.currentTarget.parentNode)
+          .select('ellipse.bubble-fill')
+          .attr('stroke-width', 2.5)
+          .attr('stroke', darkMode ? '#ffffff' : '#000000');
+      })
+      .on('touchmove', handleTouchMove)
+      .on('touchend', handleTouchEnd)
+      .on('touchcancel', handleTouchEnd);
+  };
+
+  // Function to render a single bubble
+  const renderSingleBubble = (svg, pos, i, sizes) => {
+    const { x, y, r, tag, count, fullTag } = pos;
+    const colors = getNodeColor(i);
+
+    const nodeGroup = svg
+      .append('g')
+      .attr('transform', `translate(${x}, ${y})`)
+      .attr('class', 'bubble-group');
+
+    // Create hit area
+    const hitArea = createHitArea(nodeGroup, fullTag, count, r);
+    addBubbleEventHandlers(hitArea, fullTag, count);
+
+    // Create visible bubble
+    createVisibleBubble(nodeGroup, colors, r);
+
+    // Create text elements
+    createTextElements(svg, x, y, tag, count, r, sizes, colors);
+  };
+
+  // Function to render all bubbles
   const renderBubbles = useCallback(
     (svg, positions, sizes) => {
       positions.forEach((pos, i) => {
-        const { x, y, r, tag, count, fullTag } = pos;
-        const colors = getNodeColor(i);
-
-        const nodeGroup = svg
-          .append('g')
-          .attr('transform', `translate(${x}, ${y})`)
-          .attr('class', 'bubble-group');
-
-        // Create hit area
-        const hitArea = createHitArea(nodeGroup, fullTag, count, r);
-
-        // Add event handlers to hit area
-        hitArea
-          .on('mouseenter', event => {
-            handleMouseEnter(event, fullTag, count);
-            d3.select(event.currentTarget.parentNode)
-              .select('ellipse.bubble-fill')
-              .attr('stroke-width', 2.5)
-              .attr('stroke', darkMode ? '#ffffff' : '#000000');
-          })
-          .on('mousemove', handleMouseMove)
-          .on('mouseleave', () => {
-            handleMouseLeave();
-            d3.selectAll('.bubble-fill')
-              .attr('stroke-width', 1.5)
-              .attr('stroke', (d, j) => getNodeColor(j).stroke);
-          })
-          .on('touchstart', event => {
-            handleTouchStart(event, fullTag, count);
-            d3.select(event.currentTarget.parentNode)
-              .select('ellipse.bubble-fill')
-              .attr('stroke-width', 2.5)
-              .attr('stroke', darkMode ? '#ffffff' : '#000000');
-          })
-          .on('touchmove', handleTouchMove)
-          .on('touchend', handleTouchEnd)
-          .on('touchcancel', handleTouchEnd);
-
-        // Create visible bubble
-        createVisibleBubble(nodeGroup, colors, r, darkMode);
-
-        // Create text elements
-        createTextElements(svg, x, y, tag, count, r, sizes, colors);
+        renderSingleBubble(svg, pos, i, sizes);
       });
     },
     [
@@ -729,118 +726,115 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
     [darkMode],
   );
 
-  useEffect(() => {
-    const drawTimeout = setTimeout(() => {
-      const svgEl = svgRef.current;
-      if (!tags?.length || !svgEl || dimensions.width === 0) return;
+  // Function to draw center circle
+  const drawCenterCircle = (svg, centerX, centerY, sizes) => {
+    const centerGroup = svg.append('g').attr('transform', `translate(${centerX}, ${centerY})`);
 
-      const svg = d3.select(svgEl);
-      svg.selectAll('*').remove();
+    centerGroup
+      .append('circle')
+      .attr('r', sizes.centerSize)
+      .attr('fill', darkMode ? '#1e293b' : '#ffffff')
+      .attr('stroke', darkMode ? '#60A5FA' : '#3B82F6')
+      .attr('stroke-width', 2)
+      .style(
+        'filter',
+        darkMode
+          ? 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))'
+          : 'drop-shadow(0 2px 3px rgba(0,0,0,0.1))',
+      );
 
-      const width = dimensions.width;
-      const height = dimensions.height;
-      const centerX = width / 2;
-      const centerY = height / 2;
+    const centerFontSize = sizes.isMobile ? 11 : 13;
 
-      const sizes = getResponsiveSizes();
-      const centerSize = sizes.centerSize;
+    centerGroup
+      .append('text')
+      .attr('x', 0)
+      .attr('y', -centerFontSize * 0.25)
+      .attr('text-anchor', 'middle')
+      .attr('fill', darkMode ? '#f1f5f9' : '#1e293b')
+      .attr('font-weight', '600')
+      .attr('font-size', centerFontSize)
+      .text(sizes.isMobile ? 'Top' : 'Most');
 
-      // Draw center circle
-      const centerGroup = svg.append('g').attr('transform', `translate(${centerX}, ${centerY})`);
+    centerGroup
+      .append('text')
+      .attr('x', 0)
+      .attr('y', centerFontSize * 0.8)
+      .attr('text-anchor', 'middle')
+      .attr('fill', darkMode ? '#f1f5f9' : '#1e293b')
+      .attr('font-weight', '600')
+      .attr('font-size', centerFontSize)
+      .text(sizes.isMobile ? 'Words' : 'Frequent');
+  };
 
-      centerGroup
-        .append('circle')
-        .attr('r', centerSize)
-        .attr('fill', darkMode ? '#1e293b' : '#ffffff')
-        .attr('stroke', darkMode ? '#60A5FA' : '#3B82F6')
-        .attr('stroke-width', 2)
-        .style(
-          'filter',
-          darkMode
-            ? 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))'
-            : 'drop-shadow(0 2px 3px rgba(0,0,0,0.1))',
-        );
+  // Function to draw connection lines
+  const drawConnectionLines = (svg, positions, centerX, centerY, centerSize, sizes) => {
+    positions.forEach((pos, i) => {
+      const angle = pos.angle;
+      const startX = centerX + centerSize * Math.cos(angle);
+      const startY = centerY + centerSize * Math.sin(angle);
+      const endX = pos.x - pos.r * 0.2 * Math.cos(angle);
+      const endY = pos.y - pos.r * 0.2 * Math.sin(angle);
 
-      const centerFontSize = sizes.isMobile ? 11 : 13;
+      const hue = (i * 45) % 360;
+      const lineColor = darkMode ? `hsl(${hue}, 80%, 60%)` : `hsl(${hue}, 70%, 45%)`;
 
-      centerGroup
-        .append('text')
-        .attr('x', 0)
-        .attr('y', -centerFontSize * 0.25)
-        .attr('text-anchor', 'middle')
-        .attr('fill', darkMode ? '#f1f5f9' : '#1e293b')
-        .attr('font-weight', '600')
-        .attr('font-size', centerFontSize)
-        .text(sizes.isMobile ? 'Top' : 'Most');
+      svg
+        .append('line')
+        .attr('x1', startX)
+        .attr('y1', startY)
+        .attr('x2', endX)
+        .attr('y2', endY)
+        .attr('stroke', lineColor)
+        .attr('stroke-width', sizes.isMobile ? 1.5 : 2)
+        .attr('stroke-opacity', 0.6)
+        .attr('stroke-linecap', 'round');
+    });
+  };
 
-      centerGroup
-        .append('text')
-        .attr('x', 0)
-        .attr('y', centerFontSize * 0.8)
-        .attr('text-anchor', 'middle')
-        .attr('fill', darkMode ? '#f1f5f9' : '#1e293b')
-        .attr('font-weight', '600')
-        .attr('font-size', centerFontSize)
-        .text(sizes.isMobile ? 'Words' : 'Frequent');
+  // Main draw function
+  const drawChart = useCallback(() => {
+    const svgEl = svgRef.current;
+    if (!tags?.length || !svgEl || dimensions.width === 0) return;
 
-      // Get positions
-      const positions = getPositions(tags, width, height, centerX, centerY);
+    const svg = d3.select(svgEl);
+    svg.selectAll('*').remove();
 
-      // Draw connection lines - clean and simple
-      positions.forEach((pos, i) => {
-        const angle = pos.angle;
-        const startX = centerX + centerSize * Math.cos(angle);
-        const startY = centerY + centerSize * Math.sin(angle);
-        const endX = pos.x - pos.r * 0.2 * Math.cos(angle);
-        const endY = pos.y - pos.r * 0.2 * Math.sin(angle);
+    const width = dimensions.width;
+    const height = dimensions.height;
+    const centerX = width / 2;
+    const centerY = height / 2;
 
-        const hue = (i * 45) % 360;
-        const lineColor = darkMode ? `hsl(${hue}, 80%, 60%)` : `hsl(${hue}, 70%, 45%)`;
+    const sizes = getResponsiveSizes();
 
-        svg
-          .append('line')
-          .attr('x1', startX)
-          .attr('y1', startY)
-          .attr('x2', endX)
-          .attr('y2', endY)
-          .attr('stroke', lineColor)
-          .attr('stroke-width', sizes.isMobile ? 1.5 : 2)
-          .attr('stroke-opacity', 0.6)
-          .attr('stroke-linecap', 'round');
-      });
+    // Draw center circle
+    drawCenterCircle(svg, centerX, centerY, sizes);
 
-      // Draw bubbles using extracted function
-      renderBubbles(svg, positions, sizes);
+    // Get positions
+    const positions = getPositions(tags, width, height, centerX, centerY);
 
-      // Draw tooltip using extracted function
-      renderTooltip(svg, tooltip, sizes, width, height);
+    // Draw connection lines
+    drawConnectionLines(svg, positions, centerX, centerY, sizes.centerSize, sizes);
 
-      // Date range info
-      if (dateRangeInfo && width > 200) {
-        svg
-          .append('text')
-          .attr('x', 5)
-          .attr('y', 15)
-          .attr('fill', darkMode ? '#94a3b8' : '#64748b')
-          .attr('font-size', sizes.isMobile ? 7 : 8)
-          .attr('font-weight', '400')
-          .text(dateRangeInfo);
-      }
-    }, 100);
+    // Draw bubbles
+    renderBubbles(svg, positions, sizes);
 
-    return () => clearTimeout(drawTimeout);
+    // Draw tooltip
+    renderTooltip(svg, tooltip, sizes, width, height);
   }, [
     tags,
     dimensions,
     darkMode,
     getPositions,
-    dateRangeInfo,
     getResponsiveSizes,
-    isMobile,
     tooltip,
     renderBubbles,
     renderTooltip,
   ]);
+
+  useEffect(() => {
+    const drawTimeout = setTimeout(drawChart, 100);
+    return () => clearTimeout(drawTimeout);
+  }, [drawChart]);
 
   const getDropdownOptions = useCallback(() => {
     const options = [];
@@ -968,7 +962,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
             onChange={handleStartDateChange}
             className={styles.mfkDatepicker}
             placeholderText="Start"
-            dateFormat={isMobile ? 'MM/dd' : 'MM/dd/yy'}
+            dateFormat={isMobile ? 'MM/dd/yyyy' : 'MM/dd/yy'}
             isClearable
             maxDate={endDate || today}
             minDate={new Date('2023-01-01')}
@@ -984,7 +978,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
             onChange={handleEndDateChange}
             className={styles.mfkDatepicker}
             placeholderText="End"
-            dateFormat={isMobile ? 'MM/dd' : 'MM/dd/yy'}
+            dateFormat={isMobile ? 'MM/dd/yyyy' : 'MM/dd/yy'}
             isClearable
             minDate={startDate || new Date('2023-01-01')}
             maxDate={today}

@@ -432,10 +432,13 @@ function WeeklyProjectSummary() {
       const pdfWidth = 210; // A4 width in mm
       const imgHeight = (canvas.height * pdfWidth) / canvas.width;
 
+      // FIXED: Using Math.max() instead of ternary for better readability
+      const pdfHeight = Math.max(imgHeight, 297); // Min A4 height
+
       const pdf = new jsPDF({
         orientation: imgHeight > pdfWidth ? 'portrait' : 'landscape',
         unit: 'mm',
-        format: [pdfWidth, imgHeight > 297 ? imgHeight : 297], // Min A4 height
+        format: [pdfWidth, pdfHeight],
       });
 
       pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, imgHeight);
@@ -499,7 +502,8 @@ function WeeklyProjectSummary() {
                 aria-expanded={openSections[key]}
               >
                 {title}
-                <span aria-hidden="true">{openSections[key] ? '∧' : '∨'}</span>
+                {/* FIXED: Added proper spacing with a space before the span */}
+                <span aria-hidden="true"> {openSections[key] ? '∧' : '∨'}</span>
               </button>
               {openSections[key] && (
                 <div className={`${styles.weeklyProjectSummaryDashboardCategoryContent}`}>
