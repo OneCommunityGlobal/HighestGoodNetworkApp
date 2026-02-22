@@ -11,14 +11,21 @@ export default function initAuth() {
   const token = localStorage.getItem(config.tokenKey);
   if (!token) return;
 
-  const decoded = jwtDecode(token);
-  const nowSec = Date.now() / 1000;
-  const expirySec = new Date(decoded.expiryTimestamp).getTime() / 1000;
+  try {
+    const decoded = jwtDecode(token);
+    const nowSec = Date.now() / 1000;
+    const expirySec = new Date(decoded.expiryTimestamp).getTime() / 1000;
 
-  if (expirySec - TOKEN_LIFETIME_BUFFER < nowSec) {
+    if (expirySec - TOKEN_LIFETIME_BUFFER < nowSec) {
+      store.dispatch(logoutUser());
+    } else {
+      httpService.setjwt(token);
+      store.dispatch(setCurrentUser(decoded));
+    }
+  } catch (error) {
+    // Handle invalid or malformed token
+    console.error('Invalid token detected, clearing authentication:', error);
+    localStorage.removeItem(config.tokenKey);
     store.dispatch(logoutUser());
-  } else {
-    httpService.setjwt(token);
-    store.dispatch(setCurrentUser(decoded));
   }
 }
