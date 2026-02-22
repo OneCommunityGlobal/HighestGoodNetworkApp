@@ -20,10 +20,6 @@
   background-color: #1b2a41;
 }
 
-.riGraphs {
-  display: flex;
-  justify-content: space-around;
-}
 /* Headings */
 .reviewsInsightContainer h1 {
   color: #000000;

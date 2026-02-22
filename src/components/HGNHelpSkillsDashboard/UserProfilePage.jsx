@@ -25,6 +25,178 @@ import {
   Tooltip,
 } from 'recharts';
 import { ENDPOINTS } from '~/utils/URL';
+// import styles from './style/UserProfilePage.module.css';
+
+// Sample data for skills
+const mockSkillsData = {
+  Frontend: [
+    {
+      id: 'fe1',
+      name: 'UX/UI Design',
+      score: 8,
+      question: 'How comfortable are you with UX/UI Design principles and implementation?',
+    },
+    {
+      id: 'fe2',
+      name: 'Bootstrap',
+      score: 4,
+      question: 'Rate your proficiency with the Bootstrap framework',
+    },
+    {
+      id: 'fe3',
+      name: 'Advanced React',
+      score: 10,
+      question:
+        'How would you rate your expertise with advanced React concepts like hooks, context API, and optimizations?',
+    },
+    {
+      id: 'fe4',
+      name: 'Overall Frontend',
+      score: 3,
+      question: 'Rate your overall frontend development skills',
+    },
+    {
+      id: 'fe5',
+      name: 'Web Sockets',
+      score: 1,
+      question: 'How comfortable are you integrating web sockets in frontend applications?',
+    },
+    {
+      id: 'fe6',
+      name: 'HTML Semantics',
+      score: 2,
+      question: 'Rate your knowledge of semantic HTML structure and accessibility',
+    },
+    {
+      id: 'fe7',
+      name: 'CSS Advanced',
+      score: 9,
+      question:
+        'How would you rate your expertise with CSS preprocessing, animations, and layouts?',
+    },
+    {
+      id: 'fe8',
+      name: 'Redux',
+      score: 7,
+      question: 'Rate your proficiency with Redux state management and middleware',
+    },
+    {
+      id: 'fe9',
+      name: 'Responsive UI',
+      score: 6,
+      question:
+        'How proficient are you with implementing responsive design across different devices?',
+    },
+    {
+      id: 'fe10',
+      name: 'Figma',
+      score: 5,
+      question: 'Rate your proficiency with Figma for UI/UX design',
+    },
+  ],
+  Backend: [
+    {
+      id: 'be1',
+      name: 'Backend',
+      score: 6,
+      question: 'Rate your overall backend development skills',
+    },
+    {
+      id: 'be2',
+      name: 'TDD Backend',
+      score: 5,
+      question: 'How comfortable are you with Test-Driven Development for backend?',
+    },
+    {
+      id: 'be3',
+      name: 'Database',
+      score: 8,
+      question: 'Rate your knowledge of database design and management',
+    },
+    {
+      id: 'be4',
+      name: 'MongoDB',
+      score: 7,
+      question: 'How would you rate your expertise with MongoDB?',
+    },
+    {
+      id: 'be5',
+      name: 'Mock MongoDB',
+      score: 4,
+      question: 'Rate your proficiency with mocking MongoDB for testing',
+    },
+    {
+      id: 'be6',
+      name: 'MERN Stack',
+      score: 9,
+      question: 'How comfortable are you working with the complete MERN stack?',
+    },
+  ],
+  DevOps: [
+    {
+      id: 'devops1',
+      name: 'Deployment',
+      score: 5,
+      question: 'How comfortable are you with deploying applications to production?',
+    },
+    {
+      id: 'devops2',
+      name: 'Version Control',
+      score: 8,
+      question: 'Rate your proficiency with version control systems like Git',
+    },
+    {
+      id: 'devops3',
+      name: 'Env Setup',
+      score: 3,
+      question: 'How would you rate your expertise with setting up development environments?',
+    },
+    {
+      id: 'devops4',
+      name: 'Testing',
+      score: 7,
+      question: 'Rate your knowledge of different testing methodologies',
+    },
+  ],
+  SWPractices: [
+    {
+      id: 'sp1',
+      name: 'Agile',
+      score: 7,
+      question: 'How comfortable are you working in an Agile environment?',
+    },
+    {
+      id: 'sp2',
+      name: 'Code Review',
+      score: 9,
+      question: 'Rate your proficiency with conducting thorough code reviews',
+    },
+    {
+      id: 'sp3',
+      name: 'Advanced Coding',
+      score: 6,
+      question: 'How would you rate your expertise with advanced coding practices?',
+    },
+    {
+      id: 'sp4',
+      name: 'Documentation',
+      score: 8,
+      question: 'Rate your skill with creating clear and comprehensive documentation',
+    },
+    {
+      id: 'sp5',
+      name: 'Markdown & Graphs',
+      score: 5,
+      question: 'How comfortable are you with markdown and creating graphs/charts?',
+    },
+    {
+      id: 'sp6',
+      name: 'Leadership Skills',
+      score: 7,
+      question: 'Rate your leadership skills within a development team',
+    },
+  ],
+};
 import styles from './style/UserProfile.module.css';
 
 // Custom tooltip for RadarChart
