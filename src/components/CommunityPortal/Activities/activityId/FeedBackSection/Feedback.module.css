@@ -259,7 +259,20 @@
 }
 
 .loadMore button {
-  color: black;
+  color: #1e3a8a;
+  background: #f1f5f9;
+  border: 1px solid #c7d6ea;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.loadMore button:hover {
+  background: #e8eef7;
+  border-color: #b8c9e3;
+  color: #1d4ed8;
 }
 
 .hostViewToggles {
@@ -270,7 +283,14 @@
 }
 
 .darkMode .loadMore button {
-  color: #e2e8f0;
+  color: #f8fafc;
+  background: #243853;
+  border-color: #4b637f;
+}
+
+.darkMode .loadMore button:hover {
+  background: #2c4463;
+  border-color: #5a7698;
 }
 
 .darkMode .feedbackContainer {
@@ -358,6 +378,16 @@
   font-weight: 600;
   margin-bottom: 0.5rem;
   color: #f8fafc;
+}
+
+.darkMode .textarea {
+  background-color: #243853;
+  color: #e2e8f0;
+  border-color: #4b637f;
+}
+
+.darkMode .textarea::placeholder {
+  color: #94a3b8;
 }
 
 .darkMode .badgePublic {

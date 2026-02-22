@@ -17,12 +17,7 @@
   max-width: 500px;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
   animation: fadeIn 0.25s ease;
-}
-
-/* Dark Mode */
-.modalDark {
-  background-color: #1b2a41;
-  color: #fff;
+  border: 1px solid #e2e8f0;
 }
 
 .modalHeader {
@@ -35,6 +30,7 @@
 .modalHeader h3 {
   margin: 0;
   font-size: 1.25rem;
+  color: inherit;
 }
 
 .modalHeader button {
@@ -43,32 +39,23 @@
   font-size: 1.2rem;
   cursor: pointer;
   color: inherit;
-  transition: transform 0.2s ease;
+  transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
 .modalHeader button:hover {
   transform: scale(1.1);
+  opacity: 0.8;
 }
 
 .importantLabel {
-  background-color: #fff3cd;
-  color: #856404;
-  border: 1px solid #ffeeba;
-  padding: 0.6rem;
-  border-radius: 8px;
+  background-color: #fff7e6;
+  color: #8a5a12;
+  border: 1px solid #fde2b8;
+  padding: 0.7rem 0.8rem;
+  border-radius: 10px;
   font-size: 0.9rem;
   margin-bottom: 1rem;
-}
-
-/* Dark Mode importantLabel */
-.modalDark .importantLabel {
-  background-color: #fff3cd;
-  color: #856404;
-  border: 1px solid #ffeeba;
-  padding: 0.6rem;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  margin-bottom: 1rem;
+  line-height: 1.4;
 }
 
 .modalBody {
@@ -82,17 +69,18 @@
 }
 
 .btnPrimary {
-  background: #007bff;
-  border: none;
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
+  background: #1e3a8a;
+  border: 1px solid #1e3a8a;
+  color: #ffffff;
+  padding: 0.55rem 1.1rem;
+  border-radius: 999px;
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: background 0.2s ease, border-color 0.2s ease;
 }
 
 .btnPrimary:hover:not(:disabled) {
-  background: #0069d9;
+  background: #1d4ed8;
+  border-color: #1d4ed8;
 }
 
 .btnPrimary:disabled {
@@ -101,27 +89,59 @@
 }
 
 .btnSecondary {
-  background: #e9ecef;
-  border: none;
-  color: #333;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #334155;
+  padding: 0.55rem 1.1rem;
+  border-radius: 999px;
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
 .btnSecondary:hover {
-  background: #d6d8db;
+  background: #e2e8f0;
+  border-color: #b8c9e3;
+  color: #1e3a8a;
 }
 
-/* Dark Mode secondary button */
-.btnSecondaryDark {
-  background: #3a506b;
-  color: #fff;
+.darkMode .modalOverlay {
+  background: rgba(5, 10, 20, 0.7);
 }
 
-.btnSecondaryDark:hover {
-  background: #2e3e57;
+.darkMode .modal {
+  background-color: #1b2a41;
+  color: #e2e8f0;
+  border: 1px solid #2f425d;
+  box-shadow: 0 18px 40px rgba(2, 8, 18, 0.5);
+}
+
+.darkMode .importantLabel {
+  background-color: #3b2f1e;
+  color: #f7d7a6;
+  border: 1px solid #5a4327;
+}
+
+.darkMode .btnPrimary {
+  background: #5b7fb1;
+  border-color: #5b7fb1;
+  color: #0b1220;
+}
+
+.darkMode .btnPrimary:hover:not(:disabled) {
+  background: #6d8fbe;
+  border-color: #6d8fbe;
+}
+
+.darkMode .btnSecondary {
+  background: #243853;
+  border-color: #4b637f;
+  color: #e2e8f0;
+}
+
+.darkMode .btnSecondary:hover {
+  background: #2c4463;
+  border-color: #5a7698;
+  color: #f8fafc;
 }
 
 @keyframes fadeIn {

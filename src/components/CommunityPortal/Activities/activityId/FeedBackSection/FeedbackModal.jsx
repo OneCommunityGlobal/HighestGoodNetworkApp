@@ -19,37 +19,35 @@ const FeedbackModal = ({
   if (!show) return null;
 
   return (
-    <div className={styles.modalOverlay}>
-      <div className={`${styles.modal} ${darkMode ? styles.modalDark : ''}`}>
-        <div className={styles.modalHeader}>
-          <h3>{title}</h3>
-          <button type="button" onClick={onClose}>
-            ✕
-          </button>
-        </div>
-
-        {importantLabel && <div className={styles.importantLabel}>{importantLabel}</div>}
-
-        <div className={styles.modalBody}>{children}</div>
-
-        <div className={styles.modalActions}>
-          <button
-            type="button"
-            onClick={onClose}
-            className={`${styles.btnSecondary} ${darkMode ? styles.btnSecondaryDark : ''}`}
-          >
-            {cancelLabel}
-          </button>
-          {showSubmit && (
-            <button
-              type="button"
-              onClick={onSubmit}
-              disabled={disableSubmit}
-              className={styles.btnPrimary}
-            >
-              {submitLabel}
+    <div className={`${darkMode ? styles.darkMode : ''}`}>
+      <div className={`${styles.modalOverlay}`}>
+        <div className={`${styles.modal}`}>
+          <div className={`${styles.modalHeader}`}>
+            <h3>{title}</h3>
+            <button type="button" onClick={onClose}>
+              ✕
             </button>
-          )}
+          </div>
+
+          {importantLabel && <div className={`${styles.importantLabel}`}>{importantLabel}</div>}
+
+          <div className={`${styles.modalBody}`}>{children}</div>
+
+          <div className={`${styles.modalActions}`}>
+            <button type="button" onClick={onClose} className={`${styles.btnSecondary}`}>
+              {cancelLabel}
+            </button>
+            {showSubmit && (
+              <button
+                type="button"
+                onClick={onSubmit}
+                disabled={disableSubmit}
+                className={`${styles.btnPrimary}`}
+              >
+                {submitLabel}
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>
