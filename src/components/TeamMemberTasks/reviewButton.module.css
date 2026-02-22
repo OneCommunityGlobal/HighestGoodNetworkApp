@@ -19,10 +19,9 @@
 }
 
 .review-button-dropdown {
-  overflow-y: auto; /* enable scrolling if the dropdown is too long*/
-  z-index: 1000;
-  position:fixed !important;
-  margin-top: -50px;
+  max-height: 240px;       
+  overflow-y: auto;
+  z-index: 9999;   
 }
 
 .reviewBtn-dropdown-wrapper{

@@ -2,6 +2,7 @@
 
 # dependencies
 /node_modules
+package-lock.json
 # testing
 /coverage
 *.code-snippets
@@ -10,11 +11,16 @@
 
 # misc
 .DS_Store
+
+# Environment files
 .env
 .env.local
+.env.development
 .env.development.local
 .env.test.local
 .env.production.local
+
+
 
 npm-debug.log*
 yarn-debug.log*

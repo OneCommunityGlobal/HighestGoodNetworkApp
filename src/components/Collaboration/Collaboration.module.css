@@ -1,289 +1,211 @@
+/* ======================================================
+   BASE LAYOUT
+   ====================================================== */
+
+.jobLanding {
+  width: 100%;
+  min-height: 100%;
+}
+
+.userCollaborationContainer {
+  width: 90%;
+  margin: 0 auto;
+  background-color: #ffffff;
+  border-radius: 10px;
+  padding-bottom: 24px;
+}
+
+/* ======================================================
+   HEADER
+   ====================================================== */
+
 .jobHeader {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 20px;
-  color: #fff;
+  padding: 16px 0;
 }
 
-.headings,
-.jobAd {
-  text-align: center;
-}
-.jobContainer {
-  width: 90%;
-  margin: 0 auto;
-  flex-direction: column;
-  align-items: center;
-  background-color: #fff;
+.jobHeader img {
+  width: clamp(160px, 30vw, 600px);
+  height: auto;
 }
 
-.jobQueries {
-  margin: 20px 0;
+/* ======================================================
+   NAVBAR
+   ====================================================== */
+
+.navbar {
   display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #9c0;
+  padding: 12px;
+  gap: 12px;
+}
+
+.navbarLeft,
+.jobNavbarRight {
+  display: flex;
+  align-items: center;
   gap: 10px;
 }
 
-.jobQueries p {
-  margin: 0;
-}
-
-.jobLanding {
-  width: 100%;
-  height: 100%;
-}
-
-.jobLanding .jobHeader img {
-  height: auto;
-  margin: 0 auto;
-  flex-direction: column;
-}
-.jobNavbar {
-  width: 100%;
+.searchForm {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.1rem; 
-  padding: 1rem;
-  flex-flow: row wrap;
-  background-color: #9c0;
-  padding: 20px;
-  flex-flow: row nowrap;
-  box-sizing: border-box;
-  flex-wrap: wrap;
+  gap: 8px;
 }
 
-.jobTooltip {
-  position: absolute;
-  box-shadow: 2px 2px 4px 1px black;
-  background-color: #f9f9f9;
+/* ======================================================
+   CATEGORY SELECT (LIGHT MODE)
+   ====================================================== */
+
+.jobSelect {
+  padding: 8px 12px;
+  border-radius: 6px;
   border: 1px solid #ccc;
-  margin-top: 5px;
-  width: 250px;
-  border-radius: 5px;
-  padding: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  text-wrap: wrap;
-  z-index: 10;
+  /* border-radius: 8px;
+  padding: 6px 0; */
+  z-index: 999;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  animation: fadeInDropdown 0.12s ease-in-out;
 }
 
-.jobTooltip p {
-  color: black;
+@keyframes fadeInDropdown {
+  from {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-
-.jobTooltip::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 10%;
-  transform: translateX(-50%) rotate(-45deg);
-  border-width: 0 5px 5px 5px;
-  border-style: solid;
-  border-color: transparent #f9f9f9 transparent transparent;
-}
-
-.jobTooltip-dismiss {
-  background: none;
-  border: none;
-  color: #007bff;
+.dropdownItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
   cursor: pointer;
   font-size: 14px;
-  margin-top: 5px;
-}
-
-.jobTooltip button {
-  color: #f1f1f1;
-  background-color: #6c757d;
-  padding: 5px 10px;
-  border-radius: 5px;
-}
-
-.jobQueryOption {
-  display: flex !important;
-  align-items: center;
-  gap: 5px;
-  align-content: center;
-  justify-content: center;
-  text-align: center;
-}
-
-.jobCrossButton {
-  cursor: pointer;
-  display: flex;
-}
-
-.jobCrossButton:hover {
-  background-color: transparent;
-}
-
-.jobNavbar-left input,
-.jobNavbar-left select {
-  display: flex;
-  padding: 8px;
-  margin-right: 10px;
-  align-items: center;
-}
-.jobNavbar-left,
-.jobNavbar-right,
-.jobSearchForm {
-  display: flex;
-  align-items: center;
-  padding: 4px;
-}
-.jobSearchForm input {
-  margin-right: 10px;
-  padding: 5px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  border-radius: 4px;
-}
-.jobPagination button,
-.search {
-  padding: 5px 10px;
-  cursor: pointer;
-}
-.jobSelect {
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  transition: background-image 0.2s;
-}
-.jobSelect {
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  background-color: #fff;
   color: #333;
-  background-image: url("data:image/svg+xml;utf8,<svg fill='gray' height='20' viewBox='0 0 20 20' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  background-size: 18px 18px;
-  padding-right: 36px;
+  border-radius: 4px;
+  transition: background-color 0.15s ease;
 }
 
-.jobSelect:focus,
-.jobSelect:active {
-  background-image: url("data:image/svg+xml;utf8,<svg fill='black' height='20' viewBox='0 0 20 20' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 15l5-5 5 5z'/></svg>");
+.dropdownItem:hover {
+  background-color: #f0f0f0;
 }
+
+.dropdownItem input[type='checkbox'] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  background-color: #ffffff;
+  color: #333333;
+  font-size: 14px;
+}
+
+/* ======================================================
+   CATEGORY SELECT (DARK MODE – FIXED)
+   ====================================================== */
+
+.jobSelectDark {
+  background-color: #1c1c1c;
+  color: #f1f1f1;
+  border: 1px solid #444;
+}
+
+/* dropdown options */
+.jobSelectDark option {
+  background-color: #1c1c1c;
+  color: #f1f1f1;
+}
+
+/* selected option visibility (Chrome / Safari fix) */
+.jobSelectDark option:checked {
+  background-color: #2a2a2a;
+  color: #ffffff;
+}
+
+/* focus */
+.jobSelectDark:focus {
+  outline: none;
+  border-color: #9c0;
+}
+
+/* ======================================================
+   HEADINGS
+   ====================================================== */
+
+.headings {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.jobHead {
+  color: #07471e;
+  font-weight: 800;
+}
+
+/* ======================================================
+   JOB GRID (6 × 3 GUARANTEED)
+   ====================================================== */
+
 .jobList {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
   gap: 20px;
   width: 100%;
+  margin: 0 auto;
+  justify-content: center;
+  justify-items: center;
+  align-items: start;
+  margin-top: 20px;
+  padding: 20px;
 }
+
 .jobAd {
-  width: 23%;
+  background: #ffffff;
+  border-radius: 12px;
   border: 1px solid #ddd;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  overflow: hidden;
-  background: linear-gradient(135deg, #fff, #f9f9f9);
-  transition: transform 0.3s, box-shadow 0.3s;
-  padding: 10px;
+  padding: 14px;
+  text-align: center;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
-.jobAd img {
-  max-width: 100%;
-  height: auto;
-  border-bottom: 1px solid #ddd;
-}
-.jobAd h3 {
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #333;
-  margin: 10px 0;
-  transition: color 0.3s;
-  margin: 10px 0;
-  transition: color 0.3s;
-}
-.jobAd a {
-  text-decoration: none;
-  color: inherit;
-  display:flex;
-}
-.jobAd a:hover h3 {
-  color: #007acc;
-}
+
 .jobAd:hover {
   transform: translateY(-5px);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
-.jobPagination {
+
+.jobAd img {
+  width: 100%;
+  border-bottom: 1px solid #ddd;
+}
+
+.jobAd h3 {
+  margin-top: 10px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #183a9b;
+}
+
+/* ======================================================
+   PAGINATION
+   ====================================================== */
+
+.pagination {
   display: flex;
   justify-content: center;
-  gap: 10px;
-  margin-top: 20px;
-  margin-bottom: 20px;
-}
-.jobPagination button:disabled {
-  background-color: #ccc;
-  color: #333;
-  cursor: default;
-}
-.headings {
-  margin-bottom: 10px;
-}
-.search {
-  background-color: #fff;
-  border: 10px solid #fff;
-  border-radius: 5px;
-}
-
-.jobPagination button:hover {
-  background-color: #4a99ee;
-}
-.jobSearchForm button {
-  padding: 10px 15px;
-  border: none;
-  border-radius: 2px;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.jobNoResults h2 {
-  color: black;
-}
-
-.darkMode .jobNoResults h2{
-  color: #9c0;
-}
-
-.jobNavbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  width: 100%;
-  padding: 10px;
-  background-color: #9c0;
-}
-
-.jobSearchForm {
-  display: flex;
-  align-items: center;
   gap: 8px;
+  margin: 20px 0;
 }
 
-.jobSearchForm input {
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-.jobSearchForm button {
-  padding: 6px 10px;
-  border: none;
-  border-radius: 2px;
-  cursor: pointer;
-  position: relative;
-}
-
-.jobQuery {
-  color: gray;
-  font-weight: bold;
-  font-size: 20px;
-}
+/* ======================================================
+   DARK MODE ROOT
+   ====================================================== */
 
 .jobsSummariesList {
   display: flex;
@@ -297,279 +219,193 @@
   text-decoration: underline;
 }
 
-.jobSummaryContent {
-  text-indent: 25px;
+.jobSummaryItem {
+  border: 1px solid #ddd;
+  background: linear-gradient(135deg, #fff, #f9f9f9);
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
-.jobSummaryContent p {
-  margin: 0;
-  color: #07471e;
-}
+/* ======================================================
+   RESPONSIVE BREAKPOINTS
+   ====================================================== */
 
-
-.responsiveImg {
-  max-width: 100%;
-  height: auto;
-  display: block;
-  margin: 0 auto;
-}
-
-@media screen and (max-width: 1080px) {
+@media (max-width: 1080px) {
   .jobAd {
     width: 31%;
   }
 }
 
-@media screen and (max-width: 800px) {
+@media (max-width: 800px) {
   .jobNavbar {
     flex-direction: column;
-    align-items: center;
-  }
-
-  .jobAd {
-    width: 45%;
   }
 
   .jobNavbarLeft,
   .jobNavbarRight {
     width: 100%;
-    display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
-  }
-
-  .jobSearchForm {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 10px;
   }
 
   .jobSearchForm input,
   .jobSearchForm button {
     width: 90%;
     max-width: 300px;
-    margin: 0 auto;
   }
 
-  .jobSearchForm button {
-    padding: 10px;
-    font-size: 14px;
+  .jobAd {
+    width: 45%;
   }
 
   .jobTooltip {
     width: 40%;
     margin-top: 50px;
   }
-
-  .jobTooltip::after {
-    left: 50%;
-  }
-
-  .categoryTooltip {
-    margin-top: 50px;
-  }
 }
 
-@media screen and (max-width: 480px) {
-
+@media (max-width: 480px) {
   .jobAd {
     width: 90%;
   }
 
-  .jobList {
-    justify-content: center;
-  }
-
   .jobNavbar {
-    flex-direction: column;
     padding: 5px;
-    text-align: center;
-  }
-
-  .jobNavbarLeft,
-  .jobNavbarRight {
-    width: 100%;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .jobSearchForm {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    gap: 10px;
   }
 
   .jobSearchForm input {
     width: 90%;
-    margin-bottom: 10px;
   }
 
   .jobSearchForm button {
     width: 90%;
     padding: 8px;
-    font-size: 14px;
   }
 
   .jobPagination button {
     padding: 8px;
-    width: auto;
   }
 }
 
+/* ======================================================
+   DARK MODE
+   ====================================================== */
 
 .darkMode {
+.dark {
   background-color: #1b2a41;
   color: #f1f1f1;
 }
-/* #1C1C1C 
-#3A506B
-#1C2541
-#1C2541
-#6C757D
-#225163
-*/
-.darkMode .jobContainer {
+
+.dark .userCollaborationContainer {
   background-color: #1b2a41;
 }
 
-.darkMode .jobNavbar {
+.dark .navbar {
   background-color: #1c2541;
-  box-shadow: 2px 2px 4px 1px black;
 }
 
-.darkMode .jobAd {
+.dark .jobAd {
   background: linear-gradient(135deg, #23272a, #181a1b);
   border-color: #333;
 }
 
-.darkMode .jobAd h3,
-.darkMode .jobsSummariesList h3 {
+.dark .jobAd h3 {
   color: #e0e0e0;
 }
+}
+/* ======================================================
+   RESPONSIVE
+   ====================================================== */
 
-.darkMode .jobTooltip,
-.darkMode .categoryTooltip {
-  background-color: #225163;
-  color: #f1f1f1;
-  box-shadow: 2px 2px 4px 1px black;
-  border-color: #3a506b;
+@media (max-width: 1200px) {
+  .jobList {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }
 
-.darkMode .jobTooltip p {
-  color: #f1f1f1;
+@media (max-width: 900px) {
+  .jobList {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
-.darkMode .jobTooltip button {
-  color: #f1f1f1;
-  background-color: #6c757d;
-  padding: 5px 10px;
-  border-radius: 5px;
-}
+@media (max-width: 600px) {
+  .jobList {
+    grid-template-columns: repeat(2, 1fr);
+  }
 
-.darkMode .jobTooltip::after {
-  border-color: transparent #225163 transparent transparent;
+  .navbar {
+    flex-direction: column;
+  }
 }
+/* ======================================================
+   DARK MODE – SEARCH INPUT FIX
+   ====================================================== */
 
-.darkMode .jobPagination button {
-  background-color: #23272a;
-  color: #f1f1f1;
-  border: 1px solid #444;
-}
-
-.darkMode .jobPagination button:disabled {
-  background-color: #333333;
-  color: #888888;
-}
-
-.darkMode .jobSearchForm input,
-.darkMode select {
+.dark .searchForm input {
   background-color: #1c1c1c;
   color: #f1f1f1;
   border: 1px solid #444;
 }
 
-.darkMode .jobSearchForm input::placeholder {
-  color: #f1f1f1;
+/* Placeholder text */
+.dark .searchForm input::placeholder {
+  color: #b0b0b0;
 }
 
-.darkMode .jobSelect {
+/* Focus state */
+.dark .searchForm input:focus {
+  outline: none;
+  border-color: #9c0;
+}
+/* =========================
+   PAGINATION BUTTONS
+   ========================= */
+
+.paginationButton {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background-color: #ffffff;
+  color: #333333;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.paginationButton:hover {
+  background-color: #f0f0f0;
+}
+
+/* ACTIVE PAGE (LIGHT MODE) */
+.paginationButtonActive {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #9c0;
+  background-color: #9c0;
+  color: #000000;
+  font-weight: 700;
+}
+
+/* =========================
+   DARK MODE PAGINATION
+   ========================= */
+
+.dark .paginationButton {
   background-color: #1c1c1c;
-  color: #f1f1f1;
   border: 1px solid #444;
-  background-image: url("data:image/svg+xml;utf8,<svg fill='lightgray' height='20' viewBox='0 0 20 20' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  background-size: 18px 18px;
-  padding-right: 36px;
+  color: #dddddd;
 }
 
-.darkMode .jobSearchForm button,
-.darkMode .btn {
-  background-color: #333;
-  color: #f1f1f1;
-  border: 1px solid #444;
+.dark .paginationButton:hover {
+  background-color: #2a2a2a;
 }
 
-.darkMode .jobQuery {
-  color: #f1f1f1;
-}
-
-.darkMode .jobQuery strong {
-  color: #9c0;
-}
-
-.darkMode .jobHead {
-  color: #f1f1f1;
-}
-
-.jobHead,
-.jobIntro {
-  color: #07471e;
-}
-
-.jobDetails {
-  width: 100%;
-}
-
-.jobHeadings {
-  text-align: center;
-}
-
-.darkMode .jobIntro {
-  color: #f1f1f1;
-}
-
-.darkMode .jobsSummariesList {
-  gap: 10px;
-}
-
-.darkMode .jobSummaryItem {
-  background: linear-gradient(135deg, #23272a, #181a1b);
-  padding: 10px;
-  border-radius: 5px;
-  border: none;
-}
-
-.jobSummaryItem {
-  border: 1px solid #ddd;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  overflow: hidden;
-  background: linear-gradient(135deg, #fff, #f9f9f9);
-  transition: transform 0.3s, box-shadow 0.3s;
-  padding: 10px;
-  border-radius: 5px;
-}
-
-.darkMode .jobSummaryItem p {
-  color: #e0e0e0;
-}
-
-.darkMode .jobSelect:focus,
-.darkMode .jobSelect:active {
-  background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='20' viewBox='0 0 20 20' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 15l5-5 5 5z'/></svg>");
+/* ACTIVE PAGE (DARK MODE) */
+.dark .paginationButtonActive {
+  background-color: #9c0;
+  border: 1px solid #9c0;
+  color: #000000;
+  font-weight: 700;
 }

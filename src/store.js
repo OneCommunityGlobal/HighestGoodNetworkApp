@@ -7,8 +7,9 @@ import { userPreferencesReducer } from './reducers/listBidDashboard/userPreferen
 import { messagingReducer } from './reducers/listBidDashboard/messagingReducer';
 import { weeklyProjectSummaryReducer } from '~/reducers/bmdashboard/weeklyProjectSummaryReducer';
 import { localReducers, sessionReducers } from './reducers';
+import { weeklySummariesFiltersApi } from './actions/weeklySummariesFilterAction';
 
-const middleware = [thunk];
+const middleware = [thunk, weeklySummariesFiltersApi.middleware];
 const initialState = {};
 const devTools = window.__REDUX_DEVTOOLS_EXTENSION__
   ? window.__REDUX_DEVTOOLS_EXTENSION__()
