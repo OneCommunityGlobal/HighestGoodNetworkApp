@@ -1,100 +1,78 @@
-/* stylelint-disable  */
-.financialsTrackingCard {
-  width: 100%;
-  padding: 20px;
-  background: var(--section-bg);
-  border-radius: 8px;
-  box-shadow: 0 2px 4px var(--card-shadow);
-}
+/* ============================================================
+   FinancialsTrackingCard — CSS Module (Combined Comparison View)
+   All colours use CSS custom properties that cascade from
+   WeeklyProjectSummary.module.css (:root / .darkMode).
+   Light / dark switching is therefore automatic.
+   ============================================================ */
 
-.projectDropdown {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 20px;
-  padding: 16px;
+/* ── Outer card ──────────────────────────────────────────────── */
+.card {
   background: var(--card-bg);
-  border-radius: 6px;
-  box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
-}
-
-.projectDropdown label {
-  font-weight: 600;
-  font-size: 1rem;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 8px var(--card-shadow);
+  width: 100%;
+  box-sizing: border-box;
   color: var(--text-color);
-  white-space: nowrap;
 }
 
-.projectDropdown select {
-  flex: 1;
-  max-width: 300px;
-  padding: 10px 14px;
-  border: 1px solid var(--border-color, #ccc);
+/* ── Controls row (shared project dropdown) ──────────────────── */
+.controls {
+  margin-bottom: 20px;
+}
+
+/* ── Project select group ────────────────────────────────────── */
+.selectGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-width: 280px;
+}
+
+.selectLabel {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-color);
+}
+
+.select {
+  padding: 6px 10px;
+  background: var(--section-bg);
+  color: var(--text-color);
+  border: 1px solid var(--border-color, #cccccc);
   border-radius: 6px;
   font-size: 14px;
-  background: var(--section-bg);
-  color: var(--text-color);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: border-color 0.15s ease;
 }
 
-.projectDropdown select option {
-  background: var(--section-bg, #fff);
-  color: var(--text-color, #000);
-  padding: 8px;
-}
-
-.projectDropdown select:hover {
-  border-color: var(--primary-color, #6777ef);
-  background-color: var(--hover-bg, rgb(103 119 239 / 5%));
-}
-
-.projectDropdown select:focus {
+.select:focus {
   outline: none;
-  border-color: var(--primary-color, #6777ef);
-  box-shadow: 0 0 0 3px rgb(103 119 239 / 10%);
+  border-color: var(--focus-border-color, #3b82f6);
 }
 
-/* Dark mode support */
-.dark-mode .financialsTrackingCard {
-  background: var(--section-bg);
-  box-shadow: 0 2px 5px rgb(255 255 255 / 5%);
-}
-
-.dark-mode .projectDropdown {
-  background: var(--card-bg);
-  box-shadow: 0 1px 3px rgb(255 255 255 / 8%);
-}
-
-.dark-mode .projectDropdown select {
-  border-color: var(--border-color, #444);
-  background: var(--section-bg);
+/* ── Loading / error states ──────────────────────────────────── */
+.stateMessage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 20px;
+  font-size: 14px;
   color: var(--text-color);
+  text-align: center;
 }
 
-.dark-mode .projectDropdown select option {
-  background: #2d3748;
-  color: #fff;
+.errorMessage {
+  color: var(--neg-color, #b91c1c);
 }
 
-.dark-mode .projectDropdown select:hover {
-  border-color: var(--primary-color, #6777ef);
-  background-color: rgb(103 119 239 / 15%);
-}
-
-/* Responsive design */
-@media (width <= 768px) {
-  .financialsTrackingCard {
-    padding: 12px;
+/* ── Responsive ─────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .card {
+    padding: 16px;
   }
 
-  .projectDropdown {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-  }
-
-  .projectDropdown select {
+  .selectGroup {
     max-width: 100%;
     width: 100%;
   }
