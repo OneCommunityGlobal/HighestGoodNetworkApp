@@ -52,6 +52,16 @@ const data = {
   ],
 };
 
+const getAvatarColorClass = (name = '', index = 0, stylesRef) => {
+  let hash = 0;
+  for (let i = 0; i < name.length; i += 1) {
+    hash = (hash << 5) - hash + name.charCodeAt(i);
+    hash |= 0;
+  }
+  const isPurple = (hash + index) % 2 === 0;
+  return isPurple ? stylesRef.purple : stylesRef.blue;
+};
+
 function Activity() {
   const darkMode = useSelector(state => state.theme?.darkMode);
   const [tab, setTab] = useState('Feedback');
@@ -241,9 +251,7 @@ function Activity() {
               {event.eventParticipates.map((p, i) => (
                 <div key={i} className={`${styles.activityParticipant}`}>
                   <span
-                    className={`${styles.activityIcon} ${
-                      Math.random() > 0.5 ? styles.purple : styles.blue
-                    }`}
+                    className={`${styles.activityIcon} ${getAvatarColorClass(p.name, i, styles)}`}
                   >
                     {p.name[0]}
                   </span>
