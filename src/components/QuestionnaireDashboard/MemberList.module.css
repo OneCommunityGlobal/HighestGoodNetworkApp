@@ -203,3 +203,36 @@
   color: #fff;
   font-weight: bold;
 }
+
+@media (max-width: 768px) {
+  .cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .skillTags {
+    gap: 6px;
+  }
+
+  .skillTag {
+    font-size: 12px;
+    padding: 5px 10px;
+  }
+
+  .scoreRange {
+    flex-wrap: wrap;
+  }
+
+  .filterActions {
+    flex-wrap: wrap;
+  }
+
+  .paginationControls {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .cards {
+    grid-template-columns: 1fr;
+  }
+}
