@@ -11,7 +11,14 @@ import {
 import { getHeaderData } from '~/actions/authActions';
 import { getUserProfile } from '~/actions/userProfile';
 
-const TODAY = new Date().toISOString().split('T')[0];
+// Helper function to get today's date in YYYY-MM-DD format
+const getToday = () => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
 
 const buildToolNumbers = (name = 'EQ', qty = 0) => {
   const prefix = (
@@ -66,8 +73,9 @@ function EDailyActivityLog(props) {
 
   /* local state */
   const [selectedProject, setSelectedProject] = useState(null);
-  const [date, setDate] = useState(TODAY);
+  const [date, setDate] = useState(getToday());
   const [logType, setLogType] = useState('check-in'); // 'check-in' | 'check-out'
+
   const [rows, setRows] = useState([]);
 
   useEffect(() => {
@@ -118,7 +126,7 @@ function EDailyActivityLog(props) {
     setSelectedProject(null);
     setRows([]);
     setLogType('check-in');
-    setDate(TODAY);
+    setDate(getToday());
   };
 
   const handleSubmit = () => {
@@ -152,8 +160,77 @@ function EDailyActivityLog(props) {
             color: #fff !important;
             transition: background-color 0.2s;
           }
+          
+          /* Comprehensive dark mode date picker styling */
+          .dark-date-input {
+            background-color: #343a40 !important;
+            color: #f8f9fa !important;
+            border-color: #495057 !important;
+          }
+          
+          .dark-date-input::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            cursor: pointer;
+          }
+          
+          .dark-date-input::-webkit-datetime-edit {
+            color: #f8f9fa;
+          }
+          
+          .dark-date-input::-webkit-datetime-edit-fields-wrapper {
+            color: #f8f9fa;
+          }
+          
+          .dark-date-input::-webkit-datetime-edit-text {
+            color: #f8f9fa;
+          }
+          
+          .dark-date-input::-webkit-datetime-edit-month-field,
+          .dark-date-input::-webkit-datetime-edit-day-field,
+          .dark-date-input::-webkit-datetime-edit-year-field {
+            color: #f8f9fa;
+          }
+          
+          /* For Firefox */
+          .dark-date-input[type="date"] {
+            color-scheme: dark;
+          }
+          
+          /* For calendar dropdown - limited browser support */
+          .dark-date-input::-webkit-calendar-picker-indicator {
+            background-color: #495057;
+            border-radius: 4px;
+            padding: 4px;
+          }
+          
+          /* Make the calendar dropdown dark - this is limited to browsers that support it */
+          @supports (-webkit-appearance: none) or (-moz-appearance: none) {
+            .dark-date-input {
+              color-scheme: dark;
+            }
+          }
         `}</style>
       )}
+
+      {/* Also add light mode styles */}
+      {!darkMode && (
+        <style>{`
+          .light-date-input {
+            background-color: #fff !important;
+            color: #000 !important;
+            border-color: #ced4da !important;
+          }
+          
+          .light-date-input::-webkit-calendar-picker-indicator {
+            filter: invert(0);
+          }
+          
+          .light-date-input[type="date"] {
+            color-scheme: light;
+          }
+        `}</style>
+      )}
+
       <div className="container">
         <h4 className="mb-4">Daily Equipment Log</h4>
 
@@ -170,15 +247,25 @@ function EDailyActivityLog(props) {
             <input
               type="date"
               id="date"
-              className={`form-control${darkMode ? ' bg-dark text-light border-secondary' : ''}`}
+              className={`form-control ${darkMode ? 'dark-date-input' : 'light-date-input'}`}
               value={date}
+              min={getToday()}
               onChange={e => setDate(e.target.value)}
               style={
                 darkMode
-                  ? { backgroundColor: '#343a40', color: '#f8f9fa', borderColor: '#495057' }
+                  ? {
+                      backgroundColor: '#343a40',
+                      color: '#f8f9fa',
+                      borderColor: '#495057',
+                    }
                   : {}
               }
             />
+            {darkMode && (
+              <small className="text-muted mt-1 d-block">
+                Note: Calendar appearance depends on your browser and OS.
+              </small>
+            )}
           </div>
 
           <div className="col-md-5">
