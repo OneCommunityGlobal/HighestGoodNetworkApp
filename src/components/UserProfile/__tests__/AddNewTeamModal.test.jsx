@@ -50,7 +50,7 @@ describe('AddNewTeamModal component', () => {
         />
       </Provider>,
     );
-    expect(screen.queryByText('Modal title')).toBeInTheDocument();
+    expect(screen.getByText('Modal title')).toBeInTheDocument();
   });
   it('renders modal when isOpen is false', () => {
     render(
@@ -76,7 +76,7 @@ describe('AddNewTeamModal component', () => {
         />
       </Provider>,
     );
-    expect(screen.queryByText('Modal title')).toBeInTheDocument();
+    expect(screen.getByText('Modal title')).toBeInTheDocument();
     expect(screen.getByText('Choose a Team:')).toBeInTheDocument();
   });
   it('check team name option', () => {
@@ -91,10 +91,10 @@ describe('AddNewTeamModal component', () => {
       </Provider>,
     );
 
-    expect(screen.queryByText('team11')).toBeInTheDocument();
-    expect(screen.queryByText('team12')).toBeInTheDocument();
-    expect(screen.queryByText('team13')).toBeInTheDocument();
-    expect(screen.queryByText('team24')).toBeInTheDocument();
+    expect(screen.getByText('team11')).toBeInTheDocument();
+    expect(screen.getByText('team12')).toBeInTheDocument();
+    expect(screen.getByText('team13')).toBeInTheDocument();
+    expect(screen.getByText('team24')).toBeInTheDocument();
   });
   it('check click on one of the options', () => {
     render(

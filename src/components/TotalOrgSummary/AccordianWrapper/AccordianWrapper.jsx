@@ -1,5 +1,5 @@
 import Collapsible from 'react-collapsible';
-import './AccordianWrapper.css';
+import './AccordianWrapper.module.css';
 import { useSelector } from 'react-redux';
 
 export default function AccordianWrapper({ children, title }) {
