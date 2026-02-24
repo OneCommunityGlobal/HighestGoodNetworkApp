@@ -12,6 +12,7 @@ import {
   ModalFooter,
 } from 'reactstrap';
 import PhoneInput from 'react-phone-input-2';
+import { parsePhoneNumberFromString } from 'libphonenumber-js/max';
 import { toast } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
 import Joi from 'joi-browser';
@@ -47,6 +48,7 @@ export default function AddMaterialForm() {
   const [formData, setFormData] = useState(initialFormState);
   const [areaCode, setAreaCode] = useState('1');
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [phoneValid, setPhoneValid] = useState(true);
   const [uploadedFiles, setUploadedFiles] = useState([]); // log here for correct state snapshot (will show each render)
   const [errors, setErrors] = useState({});
   const history = useHistory();
@@ -59,10 +61,12 @@ export default function AddMaterialForm() {
   const [showTextbox, setShowTextbox] = useState(false);
   const [selectedUnit, setSelectedUnit] = useState('');
   const [newUnit, setNewUnit] = useState('');
+  const [dateError, setDateError] = useState(null);
   const units = useSelector(state => state.bmInvUnits.list);
   // console.log(materialTypes);
   // console.log(units)
   const createdBy = useSelector(state => state.auth.user.email);
+  const darkMode = useSelector(state => state.theme?.darkMode);
 
   useEffect(() => {
     dispatch(fetchMaterialTypes());
@@ -138,10 +142,27 @@ export default function AddMaterialForm() {
   };
 
   const handleInputChange = (name, value) => {
-    setFormData(prevData => ({
-      ...prevData,
-      [name]: value,
-    }));
+    if (name === 'purchaseDate') {
+      const today = new Date().toLocaleDateString('en-CA');
+      if (value && value > today) {
+        setDateError("Purchase date should be equal or earlier to today's date");
+        setFormData(prevData => ({
+          ...prevData,
+          [name]: '',
+        }));
+      } else {
+        setDateError(null);
+        setFormData(prevData => ({
+          ...prevData,
+          [name]: value,
+        }));
+      }
+    } else {
+      setFormData(prevData => ({
+        ...prevData,
+        [name]: value,
+      }));
+    }
   };
 
   const { unitPrice, quantity, taxes, shippingFee } = formData;
@@ -153,16 +174,73 @@ export default function AddMaterialForm() {
   const totalTax = calculateTotalTax(Number(taxes), totalPrice);
   const totalPriceWithShipping = (totalPrice + totalTax + Number(shippingFee)).toFixed(2);
 
-  const phoneChange = (name, phone) => {
+  const phoneChange = (name, phone, countryData) => {
+    const dialCode = countryData.dialCode;
+    const countryCode = countryData.countryCode.toUpperCase();
+
+    // Get the national number (remove dial code from beginning)
+    let nationalNumber = '';
+    if (phone && phone.startsWith(dialCode)) {
+      nationalNumber = phone.slice(dialCode.length);
+    } else if (phone) {
+      nationalNumber = phone;
+    }
+
+    // Check if country changed (dial code in formData is different from current)
+    const previousDialCode = formData.areaCode ? formData.areaCode.replace('+', '') : '1';
+    const countryChanged = previousDialCode !== dialCode;
+
+    // If country changed, reset to just the dial code
+    if (countryChanged && formData.phoneNumber) {
+      setFormData(prevData => ({
+        ...prevData,
+        [name]: dialCode,
+        areaCode: `+${dialCode}`,
+      }));
+      setPhoneValid(true);
+      return;
+    }
+
     setFormData(prevData => ({
       ...prevData,
       [name]: phone,
+      areaCode: `+${dialCode}`,
     }));
+
+    // If no national number entered, consider it valid (optional field)
+    if (!nationalNumber) {
+      setPhoneValid(true);
+      return;
+    }
+
+    // Validate phone number
+    try {
+      const fullNumber = `+${dialCode}${nationalNumber}`;
+      const phoneNumberObj = parsePhoneNumberFromString(fullNumber, countryCode);
+
+      if (phoneNumberObj) {
+        const isValidFormat = phoneNumberObj.isValid();
+        const numberType = phoneNumberObj.getType();
+
+        // Number must be valid AND must have a recognized type (MOBILE, FIXED_LINE, etc.)
+        const hasValidType = numberType !== undefined;
+        setPhoneValid(isValidFormat && hasValidType);
+      } else {
+        setPhoneValid(false);
+      }
+    } catch (error) {
+      setPhoneValid(false);
+    }
   };
 
   const handleSubmit = async event => {
     event.preventDefault();
     const validationErrors = validate(formData);
+    if (!phoneValid) {
+      toast.error('Invalid phone number for the selected country');
+      return;
+    }
+
     setErrors(validationErrors || {});
 
     if (validationErrors) {
@@ -404,7 +482,7 @@ export default function AddMaterialForm() {
               <Input
                 id="purchase-date"
                 type="date"
-                name="purchase-date"
+                name="purchaseDate"
                 value={formData.purchaseDate}
                 onChange={event => handleInputChange('purchaseDate', event.target.value)}
               />
@@ -413,6 +491,9 @@ export default function AddMaterialForm() {
                   Enter Date
                 </Label>
               )}
+              <Label for="purchaseDateErr" sm={12} className={`${styles.materialFormError}`}>
+                {dateError}
+              </Label>
             </FormGroup>
           </div>
           <div className={`${styles.addMaterialFlexGroup}`}>
@@ -439,15 +520,23 @@ export default function AddMaterialForm() {
               />
             </FormGroup>
           </div>
-
-          <PhoneInput
-            country="US"
-            regions={['america', 'europe', 'asia', 'oceania', 'africa']}
-            limitMaxLength="true"
-            value={formData.phoneNumber}
-            onChange={phone => phoneChange('phoneNumber', phone)}
-            inputStyle={{ height: 'auto', width: '40%', fontSize: 'inherit' }}
-          />
+          <FormGroup>
+            <Label for="Phone Number">Phone Number</Label>
+            <div>
+              <PhoneInput
+                country="us"
+                value={formData.phoneNumber}
+                onChange={(phone, countryData) => phoneChange('phoneNumber', phone, countryData)}
+                enableLongNumbers={false}
+                inputStyle={{ height: 'auto', width: '40%', fontSize: 'inherit' }}
+              />
+              {!phoneValid && formData.phoneNumber && (
+                <Label className={`${styles.materialFormError}`}>
+                  Invalid phone number for the selected country
+                </Label>
+              )}
+            </div>
+          </FormGroup>
           <FormGroup>
             <Label for="imageUpload">Upload Material Picture</Label>
             <DragAndDrop
@@ -534,31 +623,34 @@ export default function AddMaterialForm() {
       <Modal
         isOpen={showNavigationModal}
         toggle={() => setShowNavigationModal(false)}
-        className="navigation-modal"
+        className={`navigation-modal ${darkMode ? 'text-light dark-mode' : ''}`}
       >
-        <ModalHeader toggle={() => setShowNavigationModal(false)}>
+        <ModalHeader
+          toggle={() => setShowNavigationModal(false)}
+          className={darkMode ? 'bg-space-cadet' : ''}
+        >
           <p>{`Material Added Successfully - What's Next?`}</p>
         </ModalHeader>
-        <ModalBody>
+        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           <div className={`${styles.navigationOptions}`}>
             <div className={`${styles.optionContainer}`}>
               <h5>View All Inventory Types</h5>
               <p>View your just added material, including all available inventory types</p>
-              <Button color="primary" onClick={handleViewInventory}>
+              <Button color="primary" onClick={handleViewInventory} style={boxStyle}>
                 View All Inventory Types
               </Button>
             </div>
             <div className={`${styles.optionContainer}`}>
               <h5>Start Material Purchase</h5>
               <p>Initiate a purchase request to be approved by project admin</p>
-              <Button color="success" onClick={handleStartPurchase}>
+              <Button color="success" onClick={handleStartPurchase} style={boxStyle}>
                 Start Purchase Request
               </Button>
             </div>
           </div>
         </ModalBody>
-        <ModalFooter>
-          <Button color="secondary" onClick={handleStayHere}>
+        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+          <Button color="secondary" onClick={handleStayHere} style={boxStyle}>
             Stay on Current Page
           </Button>
         </ModalFooter>

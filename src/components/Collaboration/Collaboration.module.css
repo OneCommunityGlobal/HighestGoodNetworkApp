@@ -15,6 +15,13 @@
   padding-bottom: 24px;
 }
 
+/* ================= DARK MODE – BASE ================= */
+
+.dark .userCollaborationContainer {
+  background-color: #0f172a; /* deep slate */
+  color: #e5e7eb;
+}
+
 /* ======================================================
    HEADER
    ====================================================== */
@@ -36,6 +43,7 @@
    ====================================================== */
 
 .navbar {
+  position: relative;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -44,29 +52,41 @@
   gap: 12px;
 }
 
-.navbarLeft,
-.jobNavbarRight {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
 .searchForm {
   display: flex;
   gap: 8px;
 }
 
+/* ================= DARK MODE – NAVBAR ================= */
+
+.dark .navbar {
+  background-color: #1e293b;
+}
+
+.dark .searchForm input {
+  background-color: #0f172a;
+  color: #e5e7eb;
+  border: 1px solid #334155;
+}
+
+.dark .searchForm input::placeholder {
+  color: #94a3b8;
+}
+
 /* ======================================================
-   CATEGORY SELECT (LIGHT MODE)
+   CATEGORY DROPDOWN
    ====================================================== */
 
 .jobSelect {
+  position: absolute;
+  top: 100%;
+  right: 12px;
+  margin-top: 6px;
+  background-color: #ffffff;
   padding: 8px 12px;
   border-radius: 6px;
   border: 1px solid #ccc;
-  /* border-radius: 8px;
-  padding: 6px 0; */
-  z-index: 999;
+  z-index: 1500;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
   animation: fadeInDropdown 0.12s ease-in-out;
 }
@@ -86,53 +106,31 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 8px 12px;
+  padding: 6px 4px;
   cursor: pointer;
   font-size: 14px;
   color: #333;
   border-radius: 4px;
-  transition: background-color 0.15s ease;
 }
 
 .dropdownItem:hover {
   background-color: #f0f0f0;
 }
 
-.dropdownItem input[type='checkbox'] {
-  width: 16px;
-  height: 16px;
-  cursor: pointer;
-  background-color: #ffffff;
-  color: #333333;
-  font-size: 14px;
+/* ================= DARK MODE – DROPDOWN ================= */
+
+.dark .jobSelect {
+  background-color: #020617;
+  color: #e5e7eb;
+  border: 1px solid #334155;
 }
 
-/* ======================================================
-   CATEGORY SELECT (DARK MODE – FIXED)
-   ====================================================== */
-
-.jobSelectDark {
-  background-color: #1c1c1c;
-  color: #f1f1f1;
-  border: 1px solid #444;
+.dark .dropdownItem {
+  color: #e5e7eb;
 }
 
-/* dropdown options */
-.jobSelectDark option {
-  background-color: #1c1c1c;
-  color: #f1f1f1;
-}
-
-/* selected option visibility (Chrome / Safari fix) */
-.jobSelectDark option:checked {
-  background-color: #2a2a2a;
-  color: #ffffff;
-}
-
-/* focus */
-.jobSelectDark:focus {
-  outline: none;
-  border-color: #9c0;
+.dark .dropdownItem:hover {
+  background-color: #1e293b;
 }
 
 /* ======================================================
@@ -149,20 +147,20 @@
   font-weight: 800;
 }
 
+/* ================= DARK MODE – HEADINGS ================= */
+
+.dark .jobHead {
+  color: #e5e7eb;
+}
+
 /* ======================================================
-   JOB GRID (6 × 3 GUARANTEED)
+   JOB GRID
    ====================================================== */
 
 .jobList {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   gap: 20px;
-  width: 100%;
-  margin: 0 auto;
-  justify-content: center;
-  justify-items: center;
-  align-items: start;
-  margin-top: 20px;
   padding: 20px;
 }
 
@@ -172,6 +170,7 @@
   border: 1px solid #ddd;
   padding: 14px;
   text-align: center;
+  cursor: pointer;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
@@ -182,7 +181,6 @@
 
 .jobAd img {
   width: 100%;
-  border-bottom: 1px solid #ddd;
 }
 
 .jobAd h3 {
@@ -190,6 +188,17 @@
   font-size: 1.05rem;
   font-weight: 700;
   color: #183a9b;
+}
+
+/* ================= DARK MODE – JOB GRID ================= */
+
+.dark .jobAd {
+  background-color: #020617;
+  border: 1px solid #334155;
+}
+
+.dark .jobAd h3 {
+  color: #93c5fd;
 }
 
 /* ======================================================
@@ -203,209 +212,139 @@
   margin: 20px 0;
 }
 
-/* ======================================================
-   DARK MODE ROOT
-   ====================================================== */
-
-.jobsSummariesList {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.jobsSummariesList h3 {
-  font-size: 1.5rem;
-  color: #07471e;
-  text-decoration: underline;
-}
-
-.jobSummaryItem {
-  border: 1px solid #ddd;
-  background: linear-gradient(135deg, #fff, #f9f9f9);
-  padding: 10px;
-  border-radius: 5px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-}
-
-/* ======================================================
-   RESPONSIVE BREAKPOINTS
-   ====================================================== */
-
-@media (max-width: 1080px) {
-  .jobAd {
-    width: 31%;
-  }
-}
-
-@media (max-width: 800px) {
-  .jobNavbar {
-    flex-direction: column;
-  }
-
-  .jobNavbarLeft,
-  .jobNavbarRight {
-    width: 100%;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .jobSearchForm input,
-  .jobSearchForm button {
-    width: 90%;
-    max-width: 300px;
-  }
-
-  .jobAd {
-    width: 45%;
-  }
-
-  .jobTooltip {
-    width: 40%;
-    margin-top: 50px;
-  }
-}
-
-@media (max-width: 480px) {
-  .jobAd {
-    width: 90%;
-  }
-
-  .jobNavbar {
-    padding: 5px;
-  }
-
-  .jobSearchForm input {
-    width: 90%;
-  }
-
-  .jobSearchForm button {
-    width: 90%;
-    padding: 8px;
-  }
-
-  .jobPagination button {
-    padding: 8px;
-  }
-}
-
-/* ======================================================
-   DARK MODE
-   ====================================================== */
-
-.darkMode {
-.dark {
-  background-color: #1b2a41;
-  color: #f1f1f1;
-}
-
-.dark .userCollaborationContainer {
-  background-color: #1b2a41;
-}
-
-.dark .navbar {
-  background-color: #1c2541;
-}
-
-.dark .jobAd {
-  background: linear-gradient(135deg, #23272a, #181a1b);
-  border-color: #333;
-}
-
-.dark .jobAd h3 {
-  color: #e0e0e0;
-}
-}
-/* ======================================================
-   RESPONSIVE
-   ====================================================== */
-
-@media (max-width: 1200px) {
-  .jobList {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
-@media (max-width: 900px) {
-  .jobList {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-@media (max-width: 600px) {
-  .jobList {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .navbar {
-    flex-direction: column;
-  }
-}
-/* ======================================================
-   DARK MODE – SEARCH INPUT FIX
-   ====================================================== */
-
-.dark .searchForm input {
-  background-color: #1c1c1c;
-  color: #f1f1f1;
-  border: 1px solid #444;
-}
-
-/* Placeholder text */
-.dark .searchForm input::placeholder {
-  color: #b0b0b0;
-}
-
-/* Focus state */
-.dark .searchForm input:focus {
-  outline: none;
-  border-color: #9c0;
-}
-/* =========================
-   PAGINATION BUTTONS
-   ========================= */
-
 .paginationButton {
   padding: 6px 12px;
   border-radius: 6px;
   border: 1px solid #ccc;
   background-color: #ffffff;
-  color: #333333;
   cursor: pointer;
+}
+
+.paginationButtonActive {
+  background-color: #9c0;
+  border-color: #9c0;
+  font-weight: 700;
+}
+
+/* ================= DARK MODE – PAGINATION ================= */
+
+.dark .paginationButton {
+  background-color: #020617;
+  color: #e5e7eb;
+  border: 1px solid #334155;
+}
+
+.dark .paginationButtonActive {
+  background-color: #65a30d;
+  border-color: #65a30d;
+  color: #020617;
+}
+
+/* ======================================================
+   SELECTED FILTER CHIPS
+   ====================================================== */
+
+.jobQueries {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.chip {
+  background-color: #9c0;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 13px;
   font-weight: 600;
 }
 
-.paginationButton:hover {
-  background-color: #f0f0f0;
-}
-
-/* ACTIVE PAGE (LIGHT MODE) */
-.paginationButtonActive {
+.clearAllButton {
+  border: 1px solid #333;
+  background: transparent;
   padding: 6px 12px;
-  border-radius: 6px;
-  border: 1px solid #9c0;
-  background-color: #9c0;
-  color: #000000;
-  font-weight: 700;
+  border-radius: 16px;
+  cursor: pointer;
 }
 
-/* =========================
-   DARK MODE PAGINATION
-   ========================= */
+/* ================= DARK MODE – CHIPS ================= */
 
-.dark .paginationButton {
-  background-color: #1c1c1c;
-  border: 1px solid #444;
-  color: #dddddd;
+.dark .chip {
+  background-color: #65a30d;
+  color: #020617;
 }
 
-.dark .paginationButton:hover {
-  background-color: #2a2a2a;
+.dark .clearAllButton {
+  border-color: #94a3b8;
+  color: #e5e7eb;
 }
 
-/* ACTIVE PAGE (DARK MODE) */
-.dark .paginationButtonActive {
-  background-color: #9c0;
-  border: 1px solid #9c0;
-  color: #000000;
-  font-weight: 700;
+/* ======================================================
+   MODAL
+   ====================================================== */
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.modal {
+  position: relative;
+  background-color: #ffffff;
+  border-radius: 10px;
+  padding: 28px;
+  max-width: 520px;
+  width: 90%;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+/* ================= DARK MODE – MODAL ================= */
+
+.dark .modal {
+  background-color: #020617;
+  color: #e5e7eb;
+}
+
+/* ======================================================
+   MODAL – CLOSE BUTTON
+   ====================================================== */
+
+.closeButton {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  background: transparent;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  line-height: 1;
+  color: #333;
+}
+
+.closeButton:hover {
+  opacity: 0.75;
+}
+
+.dark .closeButton {
+  color: #e5e7eb;
+}
+
+/* ======================================================
+   MODAL – ACTIONS
+   ====================================================== */
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 28px;
+}
+
+.modalActions button {
+  min-width: 120px;
 }

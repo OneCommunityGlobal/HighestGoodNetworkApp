@@ -7,6 +7,7 @@ import BMError from '../shared/BMError';
 import SelectForm from './SelectForm';
 import SelectItem from './SelectItem';
 import ItemsTable from './ItemsTable';
+import UpdateHistoryModal from '../UpdateHistory/UpdateHistoryModal';
 import styles from './ItemListView.module.css';
 
 export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamicColumns }) {
@@ -15,7 +16,12 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
   const [selectedItem, setSelectedItem] = useState('all');
   const [isError, setIsError] = useState(false);
   const [selectedTime, setSelectedTime] = useState(new Date());
+  const [updateHistoryModalOpen, setUpdateHistoryModalOpen] = useState(false);
   const darkMode = useSelector(state => state.theme.darkMode);
+
+  const toggleUpdateHistoryModal = () => {
+    setUpdateHistoryModalOpen(prev => !prev);
+  };
 
   useEffect(() => {
     if (items) setFilteredItems([...items]);
@@ -99,11 +105,23 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
             <button type="button" className={`${styles.btnPrimary}`}>
               Edit Name/Measurement
             </button>
-            <button type="button" className={`${styles.btnPrimary}`}>
+            <button
+              type="button"
+              className={`${styles.btnPrimary}`}
+              onClick={toggleUpdateHistoryModal}
+            >
               View Update History
             </button>
           </div>
         </span>
+
+        <UpdateHistoryModal
+          isOpen={updateHistoryModalOpen}
+          toggle={toggleUpdateHistoryModal}
+          itemType={itemType}
+          selectedProject={selectedProject}
+        />
+
         {filteredItems && (
           <ItemsTable
             selectedProject={selectedProject}
@@ -112,6 +130,7 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
             UpdateItemModal={UpdateItemModal}
             dynamicColumns={dynamicColumns}
             darkMode={darkMode}
+            itemType={itemType}
           />
         )}
       </section>
