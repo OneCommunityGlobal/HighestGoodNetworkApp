@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useSelector } from 'react-redux';
 import {
   BarChart,
   Bar,
@@ -11,10 +12,12 @@ import {
 } from 'recharts';
 import Select from 'react-select';
 import httpService from '../../../services/httpService';
+import styles from './ProjectRiskProfileOverview.module.css';
 
 // Fetch project risk profile data from backend
 
 export default function ProjectRiskProfileOverview() {
+  const darkMode = useSelector(state => state.theme?.darkMode || false);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -26,8 +29,24 @@ export default function ProjectRiskProfileOverview() {
   const [showDateDropdown, setShowDateDropdown] = useState(false);
 
   // Refs for focusing dropdowns
-  const allSpanRef = useRef(null);
-  const dateSpanRef = useRef(null);
+  const projectWrapperRef = useRef(null);
+  const dateWrapperRef = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (projectWrapperRef.current && !projectWrapperRef.current.contains(event.target)) {
+        setShowProjectDropdown(false);
+      }
+      if (dateWrapperRef.current && !dateWrapperRef.current.contains(event.target)) {
+        setShowDateDropdown(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   useEffect(() => {
     async function fetchData() {
@@ -76,76 +95,34 @@ export default function ProjectRiskProfileOverview() {
     return `${selectedDates.length} selected`;
   };
 
+  // Colors aligned with your global theme
+  const chartColors = {
+    grid: darkMode ? 'rgba(255,255,255,0.1)' : '#e5e5e5',
+    text: darkMode ? '#e5e5e5' : '#333',
+    tooltipBg: darkMode ? '#1c2541' : '#ffffff',
+    tooltipBorder: darkMode ? '#3a506b' : '#ccc',
+    tooltipText: darkMode ? '#ffffff' : '#000000',
+  };
+
   if (loading) return <div>Loading project risk profiles...</div>;
   if (error) return <div style={{ color: 'red' }}>{error}</div>;
 
   return (
-    <div
-      style={{
-        background: '#fff',
-        borderRadius: 8,
-        boxShadow: '0 2px 8px #eee',
-        padding: 24,
-        marginBottom: 24,
-        width: '100%',
-        gridColumn: '1 / -1',
-      }}
-    >
-      <h2 style={{ marginBottom: 24 }}>Project Risk Profile Overview</h2>
-      <div
-        style={{
-          display: 'flex',
-          gap: 40,
-          flexWrap: 'wrap',
-          marginBottom: 24,
-          alignItems: 'flex-end',
-        }}
-      >
+    <div className={`${styles.chartCard} ${darkMode ? styles.darkMode : ''}`}>
+      <h2 className={styles.chartTitle}>Project Risk Profile Overview</h2>
+      <div className={styles.filterContainer}>
         {/* Project Dropdown */}
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            minWidth: 90,
-          }}
-        >
-          <span style={{ fontWeight: 'bold', fontSize: 16, marginBottom: 0 }}>Project</span>
+        <div ref={projectWrapperRef} className={styles.formGroup}>
+          <span className={styles.label}>Project</span>
           <button
-            ref={allSpanRef}
             type="button"
-            style={{
-              fontSize: 14,
-              color: '#444',
-              fontWeight: 500,
-              marginBottom: 2,
-              cursor: 'pointer',
-              position: 'relative',
-              display: 'inline-block',
-              minWidth: 60,
-              textAlign: 'center',
-              background: 'none',
-              border: 'none',
-              padding: 0,
-            }}
+            className={styles.dropdownButton}
             onClick={() => setShowProjectDropdown(true)}
             aria-label="Show project dropdown"
           >
             {getProjectLabel()}
             {showProjectDropdown && (
-              <div
-                style={{
-                  position: 'absolute',
-                  left: 0,
-                  top: '100%',
-                  zIndex: 2000,
-                  minWidth: 120,
-                  background: 'white',
-                  boxShadow: '0 2px 8px #eee',
-                  borderRadius: 4,
-                  marginTop: 2,
-                }}
-              >
+              <div className={styles.dropdownMenu}>
                 <Select
                   menuIsOpen
                   isMulti
@@ -180,15 +157,28 @@ export default function ProjectRiskProfileOverview() {
                     }),
                     multiValue: base => ({
                       ...base,
-                      background: '#e6f7ff',
+                      background: darkMode ? '#3a506b' : '#e6f7ff',
                       fontSize: 12,
                       margin: '0 2px',
+                    }),
+                    multiValueLabel: base => ({
+                      ...base,
+                      color: darkMode ? '#ffffff' : '#000000',
+                    }),
+                    multiValueRemove: base => ({
+                      ...base,
+                      color: darkMode ? '#ffffff' : '#000000',
+                      ':hover': {
+                        backgroundColor: darkMode ? '#2f4157' : '#bae7ff',
+                        color: darkMode ? '#ffffff' : '#000000',
+                      },
                     }),
                     input: base => ({
                       ...base,
                       margin: 0,
                       padding: 0,
                       textAlign: 'center',
+                      color: darkMode ? '#ffffff' : '#000000',
                     }),
                     placeholder: base => ({
                       ...base,
@@ -202,7 +192,27 @@ export default function ProjectRiskProfileOverview() {
                       alignItems: 'center',
                       justifyContent: 'center',
                     }),
-                    menu: base => ({ ...base, zIndex: 9999, fontSize: 14 }),
+                    menu: base => ({
+                      ...base,
+                      zIndex: 9999,
+                      fontSize: 14,
+                      background: darkMode ? '#1c2541' : '#ffffff',
+                    }),
+                    option: (base, state) => ({
+                      ...base,
+                      backgroundColor: state.isFocused
+                        ? darkMode
+                          ? '#3a506b'
+                          : '#f0f0f0'
+                        : darkMode
+                        ? '#1c2541'
+                        : '#ffffff',
+                      color: darkMode ? '#ffffff' : '#000000',
+                      fontWeight: state.isFocused ? 'bold' : 'normal',
+                      '&:active': {
+                        backgroundColor: darkMode ? '#2f4157' : '#e6f7ff',
+                      },
+                    }),
                   }}
                 />
               </div>
@@ -210,50 +220,17 @@ export default function ProjectRiskProfileOverview() {
           </button>
         </div>
         {/* Date Dropdown */}
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            minWidth: 90,
-          }}
-        >
-          <span style={{ fontWeight: 'bold', fontSize: 16, marginBottom: 0 }}>Dates</span>
+        <div ref={dateWrapperRef} className={styles.formGroup}>
+          <span className={styles.label}>Dates</span>
           <button
-            ref={dateSpanRef}
             type="button"
-            style={{
-              fontSize: 14,
-              color: '#444',
-              fontWeight: 500,
-              marginBottom: 2,
-              cursor: 'pointer',
-              position: 'relative',
-              display: 'inline-block',
-              minWidth: 60,
-              textAlign: 'center',
-              background: 'none',
-              border: 'none',
-              padding: 0,
-            }}
+            className={styles.dropdownButton}
             onClick={() => setShowDateDropdown(true)}
             aria-label="Show date dropdown"
           >
             {getDateLabel && getDateLabel()}
             {showDateDropdown && (
-              <div
-                style={{
-                  position: 'absolute',
-                  left: 0,
-                  top: '100%',
-                  zIndex: 2000,
-                  minWidth: 120,
-                  background: 'white',
-                  boxShadow: '0 2px 8px #eee',
-                  borderRadius: 4,
-                  marginTop: 2,
-                }}
-              >
+              <div className={styles.dropdownMenu}>
                 <Select
                   menuIsOpen
                   isMulti
@@ -288,15 +265,28 @@ export default function ProjectRiskProfileOverview() {
                     }),
                     multiValue: base => ({
                       ...base,
-                      background: '#e6f7ff',
+                      background: darkMode ? '#3a506b' : '#e6f7ff',
                       fontSize: 12,
                       margin: '0 2px',
+                    }),
+                    multiValueLabel: base => ({
+                      ...base,
+                      color: darkMode ? '#ffffff' : '#000000',
+                    }),
+                    multiValueRemove: base => ({
+                      ...base,
+                      color: darkMode ? '#ffffff' : '#000000',
+                      ':hover': {
+                        backgroundColor: darkMode ? '#2f4157' : '#bae7ff',
+                        color: darkMode ? '#ffffff' : '#000000',
+                      },
                     }),
                     input: base => ({
                       ...base,
                       margin: 0,
                       padding: 0,
                       textAlign: 'center',
+                      color: darkMode ? '#ffffff' : '#000000',
                     }),
                     placeholder: base => ({
                       ...base,
@@ -310,7 +300,27 @@ export default function ProjectRiskProfileOverview() {
                       alignItems: 'center',
                       justifyContent: 'center',
                     }),
-                    menu: base => ({ ...base, zIndex: 9999, fontSize: 14 }),
+                    menu: base => ({
+                      ...base,
+                      zIndex: 9999,
+                      fontSize: 14,
+                      background: darkMode ? '#1c2541' : '#ffffff',
+                    }),
+                    option: (base, state) => ({
+                      ...base,
+                      backgroundColor: state.isFocused
+                        ? darkMode
+                          ? '#3a506b'
+                          : '#f0f0f0'
+                        : darkMode
+                        ? '#1c2541'
+                        : '#ffffff',
+                      color: darkMode ? '#ffffff' : '#000000',
+                      fontWeight: state.isFocused ? 'bold' : 'normal',
+                      '&:active': {
+                        backgroundColor: darkMode ? '#2f4157' : '#e6f7ff',
+                      },
+                    }),
                   }}
                 />
               </div>
@@ -320,11 +330,10 @@ export default function ProjectRiskProfileOverview() {
       </div>
 
       {/* Chart Section */}
-      <div style={{ width: '100%', margin: '0 -24px', padding: '0 24px' }}>
+      <div className={styles.chartContainer}>
         <ResponsiveContainer width="100%" height={400}>
           <BarChart
             data={filteredData.map(item => {
-              console.log('Before transform:', item.predictedCostOverrun);
               return {
                 ...item,
                 predictedCostOverrun: item.predictedCostOverrun,
@@ -334,10 +343,10 @@ export default function ProjectRiskProfileOverview() {
             barCategoryGap="20%"
             barGap={4}
           >
-            <CartesianGrid strokeDasharray="3 3" />
+            <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke={chartColors.grid} />
             <XAxis
               dataKey="projectName"
-              tick={{ fontSize: 12, fill: '#666' }}
+              tick={{ fontSize: 12, fill: chartColors.text }}
               angle={-45}
               textAnchor="end"
               height={80}
@@ -351,14 +360,22 @@ export default function ProjectRiskProfileOverview() {
                 style: {
                   textAnchor: 'middle',
                   fontSize: 14,
-                  fill: '#333',
+                  fill: chartColors.text,
                   fontWeight: '500',
                 },
               }}
               tickFormatter={value => (Number.isInteger(value) ? value : value.toFixed(0))}
-              tick={{ fontSize: 12, fill: '#666' }}
+              tick={{ fontSize: 12, fill: chartColors.text }}
             />
             <Tooltip
+              contentStyle={{
+                backgroundColor: chartColors.tooltipBg,
+                border: `1px solid ${chartColors.tooltipBorder}`,
+                color: chartColors.tooltipText,
+                borderRadius: '4px',
+              }}
+              cursor={{ fill: darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }}
+              itemStyle={{ color: chartColors.tooltipText }}
               formatter={(value, name) => {
                 if (typeof value === 'number') {
                   // Format Time Delay specifically to 2 decimal places
@@ -371,7 +388,7 @@ export default function ProjectRiskProfileOverview() {
                 return value;
               }}
             />
-            <Legend wrapperStyle={{ marginTop: 20 }} />
+            <Legend wrapperStyle={{ marginTop: 20, color: chartColors.text }} />
             <Bar
               dataKey="predictedCostOverrun"
               name="Predicted Cost Overrun (%)"
