@@ -95,6 +95,13 @@ export default function ProjectRiskProfileOverview() {
     return `${selectedDates.length} selected`;
   };
 
+  const getOptionBackgroundColor = isFocused => {
+    if (isFocused) {
+      return darkMode ? '#3a506b' : '#f0f0f0';
+    }
+    return darkMode ? '#1c2541' : '#ffffff';
+  };
+
   // Colors aligned with your global theme
   const chartColors = {
     grid: darkMode ? 'rgba(255,255,255,0.1)' : '#e5e5e5',
@@ -200,13 +207,7 @@ export default function ProjectRiskProfileOverview() {
                     }),
                     option: (base, state) => ({
                       ...base,
-                      backgroundColor: state.isFocused
-                        ? darkMode
-                          ? '#3a506b'
-                          : '#f0f0f0'
-                        : darkMode
-                        ? '#1c2541'
-                        : '#ffffff',
+                      backgroundColor: getOptionBackgroundColor(state.isFocused),
                       color: darkMode ? '#ffffff' : '#000000',
                       fontWeight: state.isFocused ? 'bold' : 'normal',
                       '&:active': {
@@ -308,13 +309,7 @@ export default function ProjectRiskProfileOverview() {
                     }),
                     option: (base, state) => ({
                       ...base,
-                      backgroundColor: state.isFocused
-                        ? darkMode
-                          ? '#3a506b'
-                          : '#f0f0f0'
-                        : darkMode
-                        ? '#1c2541'
-                        : '#ffffff',
+                      backgroundColor: getOptionBackgroundColor(state.isFocused),
                       color: darkMode ? '#ffffff' : '#000000',
                       fontWeight: state.isFocused ? 'bold' : 'normal',
                       '&:active': {
