@@ -68,7 +68,7 @@ export default function ProjectStatusDonutChart() {
     return (
       <div className={styles.container}>
         <h2 className={styles.title}>PROJECT STATUS</h2>
-        <p>No project status data available.</p>
+        <p className={styles.noDataMessage}>No project status data available.</p>
       </div>
     );
   }

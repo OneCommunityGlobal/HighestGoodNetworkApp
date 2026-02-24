@@ -89,3 +89,9 @@
   font-weight: 700;
   fill: currentColor;
 }
+
+.noDataMessage {
+  text-align: center;
+  margin-top: 16px;
+  font-weight: 500;
+}
