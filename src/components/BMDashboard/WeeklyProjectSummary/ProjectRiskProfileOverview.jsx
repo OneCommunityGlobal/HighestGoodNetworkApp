@@ -102,6 +102,78 @@ export default function ProjectRiskProfileOverview() {
     return darkMode ? '#1c2541' : '#ffffff';
   };
 
+  const customSelectStyles = {
+    control: base => ({
+      ...base,
+      fontSize: 14,
+      minHeight: 22,
+      width: 120,
+      background: 'none',
+      border: 'none',
+      boxShadow: 'none',
+      textAlign: 'center',
+      alignItems: 'center',
+      padding: 0,
+    }),
+    valueContainer: base => ({
+      ...base,
+      padding: '0 2px',
+      justifyContent: 'center',
+    }),
+    multiValue: base => ({
+      ...base,
+      background: darkMode ? '#3a506b' : '#e6f7ff',
+      fontSize: 12,
+      margin: '0 2px',
+    }),
+    multiValueLabel: base => ({
+      ...base,
+      color: darkMode ? '#ffffff' : '#000000',
+    }),
+    multiValueRemove: base => ({
+      ...base,
+      color: darkMode ? '#ffffff' : '#000000',
+      ':hover': {
+        backgroundColor: darkMode ? '#2f4157' : '#bae7ff',
+        color: darkMode ? '#ffffff' : '#000000',
+      },
+    }),
+    input: base => ({
+      ...base,
+      margin: 0,
+      padding: 0,
+      textAlign: 'center',
+      color: darkMode ? '#ffffff' : '#000000',
+    }),
+    placeholder: base => ({
+      ...base,
+      color: '#aaa',
+      textAlign: 'center',
+    }),
+    dropdownIndicator: base => ({
+      ...base,
+      padding: 0,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+    }),
+    menu: base => ({
+      ...base,
+      zIndex: 9999,
+      fontSize: 14,
+      background: darkMode ? '#1c2541' : '#ffffff',
+    }),
+    option: (base, state) => ({
+      ...base,
+      backgroundColor: getOptionBackgroundColor(state.isFocused),
+      color: darkMode ? '#ffffff' : '#000000',
+      fontWeight: state.isFocused ? 'bold' : 'normal',
+      '&:active': {
+        backgroundColor: darkMode ? '#2f4157' : '#e6f7ff',
+      },
+    }),
+  };
+
   // Colors aligned with your global theme
   const chartColors = {
     grid: darkMode ? 'rgba(255,255,255,0.1)' : '#e5e5e5',
@@ -144,77 +216,7 @@ export default function ProjectRiskProfileOverview() {
                   closeMenuOnSelect={false}
                   hideSelectedOptions={false}
                   components={{ IndicatorSeparator: () => null, ClearIndicator: () => null }}
-                  styles={{
-                    control: base => ({
-                      ...base,
-                      fontSize: 14,
-                      minHeight: 22,
-                      width: 120,
-                      background: 'none',
-                      border: 'none',
-                      boxShadow: 'none',
-                      textAlign: 'center',
-                      alignItems: 'center',
-                      padding: 0,
-                    }),
-                    valueContainer: base => ({
-                      ...base,
-                      padding: '0 2px',
-                      justifyContent: 'center',
-                    }),
-                    multiValue: base => ({
-                      ...base,
-                      background: darkMode ? '#3a506b' : '#e6f7ff',
-                      fontSize: 12,
-                      margin: '0 2px',
-                    }),
-                    multiValueLabel: base => ({
-                      ...base,
-                      color: darkMode ? '#ffffff' : '#000000',
-                    }),
-                    multiValueRemove: base => ({
-                      ...base,
-                      color: darkMode ? '#ffffff' : '#000000',
-                      ':hover': {
-                        backgroundColor: darkMode ? '#2f4157' : '#bae7ff',
-                        color: darkMode ? '#ffffff' : '#000000',
-                      },
-                    }),
-                    input: base => ({
-                      ...base,
-                      margin: 0,
-                      padding: 0,
-                      textAlign: 'center',
-                      color: darkMode ? '#ffffff' : '#000000',
-                    }),
-                    placeholder: base => ({
-                      ...base,
-                      color: '#aaa',
-                      textAlign: 'center',
-                    }),
-                    dropdownIndicator: base => ({
-                      ...base,
-                      padding: 0,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }),
-                    menu: base => ({
-                      ...base,
-                      zIndex: 9999,
-                      fontSize: 14,
-                      background: darkMode ? '#1c2541' : '#ffffff',
-                    }),
-                    option: (base, state) => ({
-                      ...base,
-                      backgroundColor: getOptionBackgroundColor(state.isFocused),
-                      color: darkMode ? '#ffffff' : '#000000',
-                      fontWeight: state.isFocused ? 'bold' : 'normal',
-                      '&:active': {
-                        backgroundColor: darkMode ? '#2f4157' : '#e6f7ff',
-                      },
-                    }),
-                  }}
+                  styles={customSelectStyles}
                 />
               </div>
             )}
@@ -246,77 +248,7 @@ export default function ProjectRiskProfileOverview() {
                   closeMenuOnSelect={false}
                   hideSelectedOptions={false}
                   components={{ IndicatorSeparator: () => null, ClearIndicator: () => null }}
-                  styles={{
-                    control: base => ({
-                      ...base,
-                      fontSize: 14,
-                      minHeight: 22,
-                      width: 120,
-                      background: 'none',
-                      border: 'none',
-                      boxShadow: 'none',
-                      textAlign: 'center',
-                      alignItems: 'center',
-                      padding: 0,
-                    }),
-                    valueContainer: base => ({
-                      ...base,
-                      padding: '0 2px',
-                      justifyContent: 'center',
-                    }),
-                    multiValue: base => ({
-                      ...base,
-                      background: darkMode ? '#3a506b' : '#e6f7ff',
-                      fontSize: 12,
-                      margin: '0 2px',
-                    }),
-                    multiValueLabel: base => ({
-                      ...base,
-                      color: darkMode ? '#ffffff' : '#000000',
-                    }),
-                    multiValueRemove: base => ({
-                      ...base,
-                      color: darkMode ? '#ffffff' : '#000000',
-                      ':hover': {
-                        backgroundColor: darkMode ? '#2f4157' : '#bae7ff',
-                        color: darkMode ? '#ffffff' : '#000000',
-                      },
-                    }),
-                    input: base => ({
-                      ...base,
-                      margin: 0,
-                      padding: 0,
-                      textAlign: 'center',
-                      color: darkMode ? '#ffffff' : '#000000',
-                    }),
-                    placeholder: base => ({
-                      ...base,
-                      color: '#aaa',
-                      textAlign: 'center',
-                    }),
-                    dropdownIndicator: base => ({
-                      ...base,
-                      padding: 0,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }),
-                    menu: base => ({
-                      ...base,
-                      zIndex: 9999,
-                      fontSize: 14,
-                      background: darkMode ? '#1c2541' : '#ffffff',
-                    }),
-                    option: (base, state) => ({
-                      ...base,
-                      backgroundColor: getOptionBackgroundColor(state.isFocused),
-                      color: darkMode ? '#ffffff' : '#000000',
-                      fontWeight: state.isFocused ? 'bold' : 'normal',
-                      '&:active': {
-                        backgroundColor: darkMode ? '#2f4157' : '#e6f7ff',
-                      },
-                    }),
-                  }}
+                  styles={customSelectStyles}
                 />
               </div>
             )}
