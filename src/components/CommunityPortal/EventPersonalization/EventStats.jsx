@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import styles from './EventStats.module.css';
 import { useSelector } from 'react-redux';
+import styles from './EventStats.module.css';
 
 const dummyData = [
   {

@@ -1,4 +1,9 @@
 {
+  "ignoreFiles": [
+    "build/**/*.css",
+    "public/**/*.css",
+    "node_modules/**/*.css"
+  ],
   "rules": {
     "no-duplicate-selectors": true
   }

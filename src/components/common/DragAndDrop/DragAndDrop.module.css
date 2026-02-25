@@ -1,0 +1,56 @@
+.fileUploadForm {
+  height: 16rem;
+  width: 100%;
+  text-align: center;
+  position: relative;
+}
+
+.fileUploadInput {
+  display: none;
+}
+
+.fileUploadLabel {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-width: 2px;
+  border-radius: 1rem;
+  border-style: dashed;
+  border-color: #cbd5e1;
+  background-color: #ffffff;
+}
+
+.dragActive {
+  background-color: #f8fafc;
+}
+
+.dragFileElement {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 1rem;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.uploadButton {
+  cursor: pointer;
+  padding: 0.25rem;
+  font-size: 1rem;
+  border: none;
+  font-family: 'Oswald', sans-serif;
+  background-color: transparent;
+}
+
+.uploadButton:hover {
+  text-decoration-line: underline;
+}
+
+.fileUploadIcon {
+  font-size: 2rem;
+  margin-bottom: 8px;
+}
