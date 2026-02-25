@@ -29,7 +29,7 @@ const WeeklySummaryEmailAssignment = (state = initialState, action = {}) => {
       return {
         ...state,
         emailAssignment: state.emailAssignment.map(item =>
-          item._id === action.payload._id ? { ...item, email: action.payload.email } : item,
+          item._id === action.payload._id ? { ...item, ...action.payload } : item,
         ),
         error: null,
       };

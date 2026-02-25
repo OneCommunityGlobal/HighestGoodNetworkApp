@@ -24,9 +24,9 @@ const weeklySummaryEmailBccError = error => ({
   payload: error,
 });
 
-const updateWeeklySummaryEmailBcc = (id, email) => ({
+const updateWeeklySummaryEmailBcc = assignment => ({
   type: types.UPDATE_WEEKLY_SUMMARY_EMAIL_ASSIGNMENT,
-  payload: { _id: id, email },
+  payload: assignment,
 });
 
 // fetch all assignments
@@ -84,8 +84,12 @@ export const updateWeeklySummaryEmailAssignment = (id, email) => async dispatch 
   try {
     const response = await axios.put(ENDPOINTS.UPDATE_WEEKLY_SUMMARY_EMAIL_BCC(id), { email });
     if (response.status === 200) {
-      const updated = response?.data?.assignment || { _id: id, email };
-      dispatch(updateWeeklySummaryEmailBcc(updated._id, updated.email));
+      const updated = response?.data?.assignment || response?.data || { _id: id, email };
+      if (updated && updated._id) {
+        dispatch(updateWeeklySummaryEmailBcc(updated));
+      } else {
+        dispatch(getAllWeeklySummaryEmailAssignments());
+      }
     } else {
       dispatch(weeklySummaryEmailBccError(response.data));
     }
