@@ -10,10 +10,6 @@
   top: 0;
 }
 
-body,
-html {
-  overflow: hidden;
-}
 .notFoundContent {
   padding: 5px;
   border-radius: 20px;
