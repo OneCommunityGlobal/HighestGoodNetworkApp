@@ -324,7 +324,7 @@ export default function ProjectRiskProfileOverview() {
         <ResponsiveContainer width="100%" height={400}>
           <BarChart
             data={filteredData.map(item => {
-              console.log('Before transform:', item.predictedCostOverrun);
+              //console.log('Before transform:', item.predictedCostOverrun);
               return {
                 ...item,
                 predictedCostOverrun: item.predictedCostOverrun,
