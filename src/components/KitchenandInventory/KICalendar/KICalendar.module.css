@@ -308,7 +308,7 @@
   }
 
   .weekDay {
-    width: 90% !important;
+    width: 95% !important;
     flex-direction: column;
     display: flex;
     min-height: auto;

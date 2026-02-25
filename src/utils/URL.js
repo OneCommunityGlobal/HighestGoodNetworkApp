@@ -538,6 +538,9 @@ export const ENDPOINTS = {
     return url;
   },
 
+  // Kitchen and Inventory Management endpoints
+  KI_CALENDAR_EVENTS: (month, year) => `${APIEndpoint}/kitchenandinventory/calendar?month=${month}&year=${year}`,
+
 };
 
 export const ApiEndpoint = APIEndpoint;

@@ -17,7 +17,6 @@ import {
   Modal,
   ModalHeader,
   ModalBody,
-  ModalFooter,
 } from 'reactstrap';
 import {
   format,
@@ -30,12 +29,14 @@ import {
   isSameDay,
   parseISO,
 } from 'date-fns';
+import { toast } from 'react-toastify';
 import { faCow, faUtensils, faSeedling, faAppleWhole } from '@fortawesome/free-solid-svg-icons';
 import styles from './KICalendar.module.css';
+import { useGetKICalendarEventsQuery } from '~/actions/kiCalendarAction';
 
 /* ------------------ Sample Events ------------------ */
 
-const EVENTS = [
+const TEST_EVENTS = [
   {
     id: 1,
     title: 'Garden Team Meeting',
@@ -119,6 +120,41 @@ function KICalendar({ auth, darkMode }) {
     Animals: faCow,
     Kitchen: faUtensils,
   };
+  const month = currentDate.getMonth() + 1;
+  const year = currentDate.getFullYear();
+  const prevDate = new Date(year, month - 2);
+  const nextDate = new Date(year, month);
+
+  const prevMonth = prevDate.getMonth() + 1;
+  const prevYear = prevDate.getFullYear();
+
+  const nextMonth = nextDate.getMonth() + 1;
+  const nextYear = nextDate.getFullYear();
+
+  const { data: currentMonthEvents = [], isError, isLoading } = useGetKICalendarEventsQuery({
+    month,
+    year,
+  });
+  const { data: prevMonthEvents = [] } = useGetKICalendarEventsQuery(
+    { month: prevMonth, year: prevYear },
+    { skip: prevMonth === month && prevYear === year },
+  );
+
+  const { data: nextMonthEvents = [] } = useGetKICalendarEventsQuery(
+    { month: nextMonth, year: nextYear },
+    { skip: nextMonth === month && nextYear === year },
+  );
+
+  // Get events of 3 consecutive months
+  const events = isError
+    ? TEST_EVENTS
+    : [...prevMonthEvents, ...currentMonthEvents, ...nextMonthEvents];
+
+  useEffect(() => {
+    if (isError) {
+      toast.error('Failed to load calendar events. Using demo data.');
+    }
+  }, [isError]);
 
   /* ------------------ Navigation ------------------ */
 
@@ -133,7 +169,7 @@ function KICalendar({ auth, darkMode }) {
   /* ------------------ Helpers ------------------ */
 
   const eventsForDate = date =>
-    EVENTS.filter(
+    events.filter(
       e =>
         format(date, 'yyyy-MM-dd') === e.date &&
         (eventFilter === 'All Modules' || e.type === eventFilter),
@@ -267,7 +303,7 @@ function KICalendar({ auth, darkMode }) {
                 >
                   <i className="fa fa-angle-left"></i>
                 </Button>
-                <div className="mx-5">
+                <div className="mx-4">
                   <strong>
                     {`${format(weekDays[0], 'MMM d')} – ${format(weekDays[6], 'MMM d, yyyy')}`}
                   </strong>
