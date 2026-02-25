@@ -3,15 +3,6 @@
   flex-direction: column;
   width: 100%;
   background-color: white;
-  overflow: visible;
-}
-
-.issueHeaderContainerDark {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  background-color: #1b2a41;
-  overflow: visible;
 }
 
 .topRow {
@@ -21,17 +12,6 @@
   margin-bottom: 12px;
   border-bottom: 1px solid #e0e0e0;
   padding: 14px 20px;
-  background-color: white;
-}
-
-.topRowDark {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-  border-bottom: 1px solid #3a506b;
-  padding: 14px 20px;
-  background-color: #1b2a41;
 }
 
 .titleSection {
@@ -43,27 +23,11 @@
   margin: 0;
 }
 
-.titleSectionDark {
-  display: flex;
-  align-items: center;
-  color: #ffffff;
-  font-size: 36px;
-  font-weight: 600;
-  margin: 0;
-}
-
 .section {
   font-size: 36px;
   font-weight: 600;
   margin: 0;
   color: #000000;
-}
-
-.sectionDark {
-  font-size: 36px;
-  font-weight: 600;
-  margin: 0;
-  color: #e0e0e0;
 }
 
 .actionSection {
@@ -83,20 +47,6 @@
   align-items: center;
   background-color: #eeeeee;
   border-radius: 8px;
-  transition: background-color 0.2s;
-}
-
-.moreButton:hover {
-  background-color: #e0e0e0;
-}
-
-.moreButtonDark {
-  background-color: #3a506b;
-  color: #ffffff;
-}
-
-.moreButtonDark:hover {
-  background-color: #4a5f7a;
 }
 
 .backButton {
@@ -108,20 +58,6 @@
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.backButton:hover {
-  background-color: #333;
-}
-
-.backButtonDark {
-  background-color: #3a506b;
-  color: #ffffff;
-}
-
-.backButtonDark:hover {
-  background-color: #4a5f7a;
 }
 
 .avatar {
@@ -129,23 +65,13 @@
   display: flex;
   align-items: center;
   cursor: pointer;
-  transition: opacity 0.2s;
   gap: 10px;
-}
-
-.avatar:hover {
-  opacity: 0.8;
-}
-
-.avatar::after {
-  display: none !important;
 }
 
 .avatar img {
   width: 32px;
   height: 32px;
   object-fit: cover;
-  border-radius: 50%;
 }
 
 .bottomRow {
@@ -153,21 +79,6 @@
   justify-content: space-between;
   align-items: center;
   padding: 14px 20px;
-  position: relative;
-  min-height: 60px;
-  overflow: visible;
-  background-color: white;
-}
-
-.bottomRowDark {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 14px 20px;
-  background-color: #1b2a41;
-  position: relative;
-  min-height: 60px;
-  overflow: visible;
 }
 
 .projectTab {
@@ -175,14 +86,6 @@
   background-color: #f3f4f6;
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  padding: 6px;
-}
-
-.projectTabDark {
-  display: inline-flex;
-  background-color: #1c2541;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   padding: 6px;
 }
 
@@ -195,122 +98,52 @@
   cursor: pointer;
   transition: background 0.2s;
   border-radius: 4px;
-  color: #1c1e1c;
 }
 
-.projectTab .tabItem:global(.active) {
+.tabItem.active {
   background-color: #ffffff;
-  color: #1c1e1c;
 }
 
-.projectTab .tabItem:not(:global(.active)):hover {
+.tabItem:not(.active):hover {
   background-color: #e5e7eb;
-}
-
-.tabItemDark {
-  color: #ffffff !important;
-}
-
-.projectTabDark .tabItemDark:global(.active) {
-  background-color: #3a506b;
-  color: #ffffff !important;
-}
-
-.projectTabDark .tabItemDark:not(:global(.active)):hover {
-  background-color: #2f4157;
 }
 
 .searchContainer {
   position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  width: 220px;
-  margin-left: auto;
-  flex-shrink: 0;
-  flex-grow: 0;
 }
 
 .searchIcon {
   position: absolute;
-  left: 12px;
+  left: 10px;
   top: 50%;
   transform: translateY(-50%);
   color: #828282;
   display: flex;
   align-items: center;
-  justify-content: center;
-  z-index: 2;
-  pointer-events: none;
-}
-
-.searchIconDark {
-  color: #ffffff;
-  position: absolute;
-  left: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2;
-  pointer-events: none;
 }
 
 .searchInput {
-  padding: 8px 12px 8px 32px;
+  padding: 8px 16px 8px 35px;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
   font-size: 16px;
-  width: 100%;
-  box-sizing: border-box;
+  width: 405px;
   background-color: #ffffff;
-  color: #1c1e1c;
-  transition: border-color 0.2s;
-  outline: none;
-  box-shadow: none;
-}
-
-.searchInput::placeholder {
-  color: #828282;
+  color: #4b4b4b;
 }
 
 .searchInput:focus {
   outline: none;
   border-color: #b9b9b9;
-  box-shadow: none;
 }
 
-.searchInputDark {
-  padding: 8px 12px 8px 32px;
-  border: 1px solid #3a506b;
-  border-radius: 8px;
-  font-size: 16px;
-  width: 100%;
-  box-sizing: border-box;
-  background-color: #1c2541;
-  color: #ffffff;
-  transition: border-color 0.2s;
-  outline: none;
-  box-shadow: none;
-}
-
-.searchInputDark::placeholder {
-  color: #b5bac5;
-}
-
-.searchInputDark:focus {
-  outline: none;
-  border-color: #4a5f7a;
-  box-shadow: none;
-}
-
-/* Search results styles - beautiful dropdown */
+/* Search results styles */
 .searchResults {
   position: absolute;
-  top: calc(100% + 4px);
+  top: 100%;
   left: 0;
   right: 0;
+  margin-top: 4px;
   background-color: white;
   border-radius: 8px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
@@ -318,22 +151,6 @@
   z-index: 1000;
   border: 1px solid #eaeaea;
   animation: fadeIn 0.2s ease-in-out;
-  min-width: 220px;
-}
-
-.searchResultsDark {
-  position: absolute;
-  top: calc(100% + 4px);
-  left: 0;
-  right: 0;
-  background-color: #1c2541;
-  border-radius: 8px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
-  overflow: hidden;
-  z-index: 1000;
-  border: 1px solid #3a506b;
-  animation: fadeIn 0.2s ease-in-out;
-  min-width: 220px;
 }
 
 @keyframes fadeIn {
@@ -369,23 +186,6 @@
   background-color: #f0f7ff;
 }
 
-.searchResultItemDark {
-  padding: 12px 16px;
-  border-bottom: 1px solid #3a506b;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  display: flex;
-  flex-direction: column;
-}
-
-.searchResultItemDark:last-child {
-  border-bottom: none;
-}
-
-.searchResultItemDark:hover {
-  background-color: #2f4157;
-}
-
 .resultName {
   font-size: 14px;
   font-weight: 500;
@@ -393,21 +193,9 @@
   margin-bottom: 2px;
 }
 
-.resultNameDark {
-  font-size: 14px;
-  font-weight: 500;
-  color: #ffffff;
-  margin-bottom: 2px;
-}
-
 .resultCategory {
   font-size: 12px;
   color: #757575;
-}
-
-.resultCategoryDark {
-  font-size: 12px;
-  color: #b5bac5;
 }
 
 .searchNoResults {
@@ -418,10 +206,86 @@
   font-size: 14px;
 }
 
-.searchNoResultsDark {
-  padding: 16px;
-  text-align: center;
-  color: #b5bac5;
-  font-style: italic;
-  font-size: 14px;
+.darkMode .issueHeaderContainer {
+  background-color: #1b2a41;
+  color: #f8fafc;
+}
+
+.darkMode .issueHeaderContainer .topRow {
+  border-bottom: 1px solid #4a5463;
+}
+
+.darkMode .issueHeaderContainer .titleSection {
+  color: #ffffff;
+}
+
+.darkMode .issueHeaderContainer .section {
+  color: #e0e0e0;
+}
+
+.darkMode .issueHeaderContainer .moreButton {
+  background-color: #333d4e;
+  color: #f8fafc;
+}
+
+.darkMode .issueHeaderContainer .searchIcon {
+  color: #b0b0b0;
+}
+
+.darkMode .issueHeaderContainer .searchInput {
+  background-color: #27374a;
+  border-color: #4a5463;
+  color: #f8fafc;
+}
+
+.darkMode .issueHeaderContainer .searchInput::placeholder {
+  color: #b0b0b0;
+}
+
+.darkMode .issueHeaderContainer .searchResults {
+  background-color: #1b2a41;
+  border-color: #3d444d;
+}
+
+.darkMode .issueHeaderContainer .searchResultItem {
+  border-bottom: 1px solid #27374a;
+}
+
+.darkMode .issueHeaderContainer .searchResultItem:hover {
+  background-color: #27374a;
+}
+
+.darkMode .issueHeaderContainer .resultName {
+  color: #f8fafc;
+}
+
+.darkMode .issueHeaderContainer .resultCategory {
+  color: #a3a3a3;
+}
+
+.darkMode .issueHeaderContainer .searchNoResults {
+  color: #a3a3a3;
+}
+.darkMode .issueHeaderContainer .backButton {
+  background-color: #3a3a3a;
+  color: #e0e0e0;
+}
+
+.darkMode .issueHeaderContainer .projectTab {
+  background-color: #27374a;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.darkMode .issueHeaderContainer .tabItem {
+  color: #cbd5e1;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.darkMode .issueHeaderContainer .tabItem.active {
+  background-color: #1b2a41;
+  color: #f8fafc;
+}
+
+.darkMode .issueHeaderContainer .tabItem:not(.active):hover {
+  background-color: #334155;
 }
