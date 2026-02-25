@@ -491,7 +491,9 @@ function ReviewButton({ user, task, updateTask }) {
             </DropdownToggle>
 
             <DropdownMenu
-              className={`${style['review-button-dropdown']} ${darkMode ? 'bg-space-cadet' : ''}`}
+              container="body"
+              strategy="fixed"
+              className={style['review-button-dropdown']}
             >
               {task.relatedWorkLinks &&
                 // eslint-disable-next-line no-shadow
@@ -532,7 +534,9 @@ function ReviewButton({ user, task, updateTask }) {
               Ready for Review
             </DropdownToggle>
             <DropdownMenu
-              className={`${style['review-button-dropdown']} ${darkMode ? 'bg-space-cadet' : ''}`}
+              container="body"
+              strategy="fixed"
+              className={style['review-button-dropdown']}
             >
               {task.relatedWorkLinks &&
                 task.relatedWorkLinks.map(dropLink => (
