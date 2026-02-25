@@ -91,7 +91,7 @@ function CreateEventModal({ isOpen, toggle }) {
     }
 
     if (formData.date) {
-      const selectedDate = moment(FormDataEvent.date, 'YYYY-MM-DD').startOf('day');
+      const selectedDate = moment(formData.date, 'YYYY-MM-DD').startOf('day');
       const today = moment()
         .tz('America/Los_Angeles')
         .startOf('day');
