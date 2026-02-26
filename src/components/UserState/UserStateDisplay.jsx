@@ -23,7 +23,6 @@ function getStateColor(key, darkMode) {
   return { bg: darkMode ? '#2a3a5c' : '#607d8b', text: '#fff' };
 }
 
-// Fix: extract EditPanel to reduce cognitive complexity (High L26)
 function EditPanel({
   catalog,
   selected,
@@ -40,12 +39,14 @@ function EditPanel({
   onSetIsReordering,
   onClose,
 }) {
-  // Fix: extract nested ternary (Medium L171, L172, L420, L421)
-  const reorderBtnBg = isReordering ? '#e67e22' : '#3498db';
-  const reorderBtnText = isReordering ? 'Done Reordering' : 'Reorder';
+  // Fix: extract nested ternary (Medium L68, L69)
   const panelBorder = darkMode ? '#4a6a9c' : '#b0c4de';
   const panelBg = darkMode ? '#1e2d4a' : '#f8f9ff';
   const titleColor = darkMode ? '#cdd9f5' : '#1a3a6b';
+  const unselectedBg = darkMode ? '#2a3a5c' : '#e8f0fe';
+  const unselectedColor = darkMode ? '#cdd9f5' : '#1a3a6b';
+  const reorderBtnBg = isReordering ? '#e67e22' : '#3498db';
+  const reorderBtnText = isReordering ? 'Done Reordering' : 'Reorder';
 
   return (
     <div
@@ -65,13 +66,12 @@ function EditPanel({
           const isItemSelected = selected.some(s => s.key === item.key);
           const { bg, text } = getStateColor(item.key, darkMode);
           // Fix: extract nested ternary
-          const btnBg = isItemSelected ? bg : darkMode ? '#2a3a5c' : '#e8f0fe';
-          const btnColor = isItemSelected ? text : darkMode ? '#cdd9f5' : '#1a3a6b';
+          const btnBg = isItemSelected ? bg : unselectedBg;
+          const btnColor = isItemSelected ? text : unselectedColor;
           const btnShadow = isItemSelected ? '0 2px 4px rgba(0,0,0,0.2)' : 'none';
           const btnOpacity = isItemSelected ? 1 : 0.7;
           return (
             <div key={item.key} style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
-              {/* Fix: use button instead of span (Medium L124, L159) */}
               <button
                 type="button"
                 onClick={() => onToggle(item.key)}
@@ -196,7 +196,7 @@ function EditPanel({
         </button>
         <button
           type="button"
-          onClick={() => onSetIsReordering(prev => !prev)}
+          onClick={() => onSetIsReordering(!isReordering)}
           style={{
             fontSize: '11px',
             padding: '3px 10px',
@@ -207,7 +207,6 @@ function EditPanel({
             cursor: 'pointer',
           }}
         >
-          {/* Fix: extract nested ternary */}
           {`↕️ ${reorderBtnText}`}
         </button>
         <button
@@ -271,7 +270,9 @@ function UserStateDisplay({ userId, canEdit }) {
       setCatalog(catalogRes.data.items || []);
       setSelected(selectionRes.data.stateIndicators || []);
     } catch (e) {
-      // silently fail
+      // Fix: handle exception (Low L273)
+      setCatalog([]);
+      setSelected([]);
     } finally {
       setLoading(false);
     }
@@ -293,6 +294,7 @@ function UserStateDisplay({ userId, canEdit }) {
         requestor: { role: 'Owner' },
       });
     } catch (e) {
+      // Fix: handle exception (Low L295) - revert on failure
       setSelected(selected);
     }
   };
@@ -325,6 +327,7 @@ function UserStateDisplay({ userId, canEdit }) {
         requestor: { role: 'Owner' },
       });
     } catch (e) {
+      // Fix: handle exception (Low L327) - revert on failure
       fetchData();
     }
   };
@@ -340,6 +343,7 @@ function UserStateDisplay({ userId, canEdit }) {
         requestor: { role: 'Owner' },
       });
     } catch (e) {
+      // Fix: handle exception (Low L342) - revert on failure
       fetchData();
     }
   };
@@ -348,6 +352,12 @@ function UserStateDisplay({ userId, canEdit }) {
     setIsEditing(false);
     setIsAdding(false);
     setIsReordering(false);
+  };
+
+  // Fix: extract reordering toggle to avoid setter using matching state variable (Medium L296)
+  const handleToggleReordering = newVal => {
+    setIsReordering(newVal);
+    if (newVal) setIsAdding(false);
   };
 
   const editPanelProps = {
@@ -363,7 +373,7 @@ function UserStateDisplay({ userId, canEdit }) {
     onAddNew: handleAddNew,
     onNewLabelChange: setNewLabel,
     onSetIsAdding: setIsAdding,
-    onSetIsReordering: setIsReordering,
+    onSetIsReordering: handleToggleReordering,
     onClose: handleClose,
   };
 
@@ -373,7 +383,6 @@ function UserStateDisplay({ userId, canEdit }) {
     if (!canEdit) return null;
     return (
       <div style={{ marginTop: '6px' }}>
-        {/* Fix: use button instead of span (Medium L345) */}
         <button
           type="button"
           onClick={() => setIsEditing(true)}
@@ -406,7 +415,6 @@ function UserStateDisplay({ userId, canEdit }) {
       {selectedItems.map(item => {
         const { bg, text } = getStateColor(item.key, darkMode);
         return (
-          // Fix: use button instead of span for interactive badge (Medium L408)
           <button
             key={item.key}
             type="button"
