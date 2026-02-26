@@ -139,6 +139,8 @@ export default function VolunteerHoursDistribution({
     };
   });
 
+  // end of component logic
+
   return (
     <div
       className="d-flex flex-row flex-wrap align-items-center justify-content-center"
@@ -154,4 +156,20 @@ export default function VolunteerHoursDistribution({
       <HoursWorkList data={hoursData} darkMode={darkMode} />
     </div>
   );
+}
+
+// computeDistribution: pure helper to derive the chart payload from API data
+export function computeDistribution(hoursData, totalHoursData) {
+  const safeHoursData = Array.isArray(hoursData) ? hoursData : [];
+  const totalVolunteers = safeHoursData.reduce((total, cur) => total + (cur.count || 0), 0);
+  const totalHoursWorked = totalHoursData?.current || 0;
+  const userData = safeHoursData.map(range => {
+    const value = range.count || 0;
+    return {
+      name: range._id,
+      value,
+      percentage: totalVolunteers ? Math.round((value / totalVolunteers) * 100) : 0,
+    };
+  });
+  return { userData, totalVolunteers, totalHoursWorked };
 }
