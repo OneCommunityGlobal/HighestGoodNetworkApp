@@ -54,20 +54,18 @@ export default function ItemsTable({
       if (projectId) {
         setChartProjectId(projectId);
         setShowChartModal(true);
-      } else {
-        setModal(true);
-        setRecord(data);
-        setRecordType(type);
+        return;
       }
-    } else {
-      setModal(true);
-      setRecord(data);
-      setRecordType(type);
     }
+
+    setModal(true);
+    setRecord(data);
+    setRecordType(type);
   };
 
   const sortData = columnName => {
     const newSortedData = [...sortedData];
+
     if (columnName === 'ProjectName') {
       if (projectNameCol.sortOrder === 'default' || projectNameCol.sortOrder === 'desc') {
         newSortedData.sort((a, b) => (a.project?.name || '').localeCompare(b.project?.name || ''));
@@ -94,6 +92,7 @@ export default function ItemsTable({
       }
       setProjectNameCol({ iconsToDisplay: faSort, sortOrder: 'default' });
     }
+
     setData(newSortedData);
   };
 
@@ -101,7 +100,6 @@ export default function ItemsTable({
     return path.split('.').reduce((acc, part) => (acc ? acc[part] : null), obj);
   };
 
-  // --- STYLES FOR VISUAL ENHANCEMENTS ---
   const stickyHeaderStyle = {
     position: 'sticky',
     top: 0,
@@ -111,11 +109,9 @@ export default function ItemsTable({
     verticalAlign: 'middle',
   };
 
-  // Right-align numeric columns
   const numericHeaderStyle = { ...stickyHeaderStyle, textAlign: 'right' };
   const numericCellStyle = { textAlign: 'right', verticalAlign: 'middle' };
 
-  // Visual Divider for Action Columns
   const actionHeaderStyle = {
     ...stickyHeaderStyle,
     borderLeft: '2px solid #dee2e6',
@@ -126,6 +122,27 @@ export default function ItemsTable({
     textAlign: 'center',
     verticalAlign: 'middle',
   };
+
+  const renderActionCell = (el, type, cellStyle, showEdit = true) => (
+    <td style={cellStyle}>
+      <div className="d-flex justify-content-center">
+        {showEdit && (
+          <button
+            type="button"
+            className="btn btn-sm btn-link p-1"
+            onClick={() => handleEditRecordsClick(el, type)}
+            aria-label="Edit Record"
+            style={{ fontSize: '1.2em' }}
+          >
+            <BiPencil />
+          </button>
+        )}
+        <Button color="primary" outline size="sm" onClick={() => handleViewRecordsClick(el, type)}>
+          View
+        </Button>
+      </div>
+    </td>
+  );
 
   return (
     <>
@@ -143,7 +160,6 @@ export default function ItemsTable({
 
       <UpdateItemModal modal={updateModal} setModal={setUpdateModal} record={updateRecord} />
 
-      {/* Container with max-height to enable Sticky Header scrolling */}
       <div
         className={`${styles.itemsTableContainer} ${darkMode ? styles.darkTableWrapper : ''}`}
         style={{ maxHeight: '75vh', overflowY: 'auto', position: 'relative' }}
@@ -151,19 +167,13 @@ export default function ItemsTable({
         <Table className={darkMode ? styles.darkTable : ''} hover responsive>
           <thead>
             <tr>
-              {/* Project Column */}
               <th onClick={() => sortData('ProjectName')} style={stickyHeaderStyle}>
                 Project <FontAwesomeIcon icon={projectNameCol.iconsToDisplay} />
               </th>
-
-              {/* Name Column */}
               <th onClick={() => sortData('InventoryItemType')} style={stickyHeaderStyle}>
                 Name <FontAwesomeIcon icon={inventoryItemTypeCol.iconsToDisplay} />
               </th>
-
-              {/* Dynamic Columns (Unit, Bought, Used, Available, Waste) */}
               {dynamicColumns.map(({ label, key }) => {
-                // Check if this is a numeric column to apply right-alignment
                 const isNumeric = [
                   'stockBought',
                   'stockUsed',
@@ -176,8 +186,6 @@ export default function ItemsTable({
                   </th>
                 );
               })}
-
-              {/* ACTION COLUMNS (Grouped with Border) */}
               <th style={actionHeaderStyle} title="View usage history and charts">
                 Usage Record
               </th>
@@ -189,7 +197,6 @@ export default function ItemsTable({
               </th>
             </tr>
           </thead>
-
           <tbody>
             {sortedData && sortedData.length > 0 ? (
               sortedData.map(el => {
@@ -207,7 +214,6 @@ export default function ItemsTable({
                         'stockWasted',
                       ].includes(key);
 
-                      // LOW STOCK BADGE LOGIC
                       if (key === 'stockAvailable') {
                         const isLowStock = Number(value) < 10;
                         return (
@@ -237,59 +243,19 @@ export default function ItemsTable({
                       );
                     })}
 
-                    {/* Action Buttons with Divider */}
-                    <td style={actionCellStyle}>
-                      <div className="d-flex justify-content-center">
-                        <button
-                          type="button"
-                          className="btn btn-sm btn-link p-1"
-                          onClick={() => handleEditRecordsClick(el, 'UsageRecord')}
-                          aria-label="Edit Record"
-                          style={{ fontSize: '1.2em' }}
-                        >
-                          <BiPencil />
-                        </button>
-                        <Button
-                          color="primary"
-                          outline
-                          size="sm"
-                          onClick={() => handleViewRecordsClick(el, 'UsageRecord')}
-                        >
-                          View
-                        </Button>
-                      </div>
-                    </td>
-                    <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                      <div className="d-flex justify-content-center">
-                        <button
-                          type="button"
-                          className="btn btn-sm btn-link p-1"
-                          onClick={() => handleEditRecordsClick(el, 'Update')}
-                          aria-label="Edit Record"
-                          style={{ fontSize: '1.2em' }}
-                        >
-                          <BiPencil />
-                        </button>
-                        <Button
-                          color="primary"
-                          outline
-                          size="sm"
-                          onClick={() => handleViewRecordsClick(el, 'Update')}
-                        >
-                          View
-                        </Button>
-                      </div>
-                    </td>
-                    <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                      <Button
-                        color="primary"
-                        outline
-                        size="sm"
-                        onClick={() => handleViewRecordsClick(el, 'Purchase')}
-                      >
-                        View
-                      </Button>
-                    </td>
+                    {renderActionCell(el, 'UsageRecord', actionCellStyle, true)}
+                    {renderActionCell(
+                      el,
+                      'Update',
+                      { textAlign: 'center', verticalAlign: 'middle' },
+                      true,
+                    )}
+                    {renderActionCell(
+                      el,
+                      'Purchase',
+                      { textAlign: 'center', verticalAlign: 'middle' },
+                      false,
+                    )}
                   </tr>
                 );
               })
