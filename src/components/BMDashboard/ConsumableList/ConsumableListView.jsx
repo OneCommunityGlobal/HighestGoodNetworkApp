@@ -10,18 +10,23 @@ function ConsumableListView() {
   const errors = useSelector(state => state.errors);
   const postConsumableUpdateResult = useSelector(state => state.bmConsumables.updateConsumables);
 
+  // --- DATA TRANSFORMATION ---
   const transformedConsumables = consumables
     ? consumables
         .map(item => ({
           ...item,
+          // Flatten Data
           projectName: item.project?.name || 'N/A',
           name: item.itemType?.name || 'N/A',
           unit: item.itemType?.unit || 'N/A',
+          // Dropdown Fixes
           inventoryItemType: item.itemType?.name || 'N/A',
           type: item.itemType?.name || 'N/A',
+          // Preserve Structure
           itemType: item.itemType || { name: 'N/A', unit: '' },
           id: item._id,
         }))
+        // Filter out bad data (empty names)
         .filter(item => item.name !== 'N/A')
     : [];
 

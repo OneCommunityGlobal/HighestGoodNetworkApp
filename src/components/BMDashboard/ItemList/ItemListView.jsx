@@ -89,6 +89,7 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
                 selectedProject={selectedProject}
                 selectedItem={selectedItem}
                 setSelectedItem={setSelectedItem}
+                label={itemType}
               />
             </div>
           )}
