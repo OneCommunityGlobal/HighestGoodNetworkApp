@@ -1,25 +1,16 @@
+// Note: render real chart in a sized container so Recharts can mount in tests.
+
 import { render, screen } from '@testing-library/react';
 import React from 'react';
 
-// mock HoursWorkedPieChart so we can inspect props
-vi.mock('../HoursWorkedPieChart/HoursWorkedPieChart', () => {
-  return {
-    __esModule: true,
-    default: ({ userData, totalHours }) => (
-      <div
-        data-testid="mock-pie"
-        data-userdata={JSON.stringify(userData)}
-        data-totalhours={totalHours}
-      />
-    ),
-  };
-});
-
-import VolunteerHoursDistribution from '../VolunteerHoursDistribution';
+import VolunteerHoursDistribution, { computeDistribution } from '../VolunteerHoursDistribution';
 
 let container = null;
 beforeEach(() => {
   container = document.createElement('div');
+  // give the container explicit size so ResponsiveContainer can compute dimensions
+  container.style.width = '800px';
+  container.style.height = '600px';
   document.body.appendChild(container);
 });
 afterEach(() => {
@@ -44,18 +35,18 @@ describe('VolunteerHoursDistribution wrapper', () => {
       { container },
     );
 
-    const chart = screen.getByTestId('mock-pie');
-    expect(chart).toBeInTheDocument();
-
     // legend/list should render counts as well
     expect(screen.getByText('10-19.99 hrs (2)')).toBeInTheDocument();
 
-    const passedUserData = JSON.parse(chart.getAttribute('data-userdata'));
-    expect(passedUserData).toEqual([
-      { name: '10', value: 2, percentage: 40 },
-      { name: '20', value: 3, percentage: 60 },
-    ]);
-
-    expect(chart.getAttribute('data-totalhours')).toBe('1234');
+    // verify computeDistribution helper produces expected output
+    const computed = computeDistribution(hoursData, totalHoursData);
+    expect(computed).toEqual({
+      userData: [
+        { name: '10', value: 2, percentage: 40 },
+        { name: '20', value: 3, percentage: 60 },
+      ],
+      totalVolunteers: 5,
+      totalHoursWorked: 1234,
+    });
   });
 });
