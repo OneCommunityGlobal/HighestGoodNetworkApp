@@ -1,4 +1,5 @@
 import hasPermission from '~/utils/permissions';
+import styles from './PRDashboard.module.css';
 
 function PRDashboard({ authUser }) {
   if (!hasPermission('accessPRTeamDashboard', authUser?.permissions)) {
@@ -7,7 +8,7 @@ function PRDashboard({ authUser }) {
 
   return (
     <div>
-      <h1>PR Team Dashboard</h1>
+      <h1 className={`${styles.prdashcontainer}`}>PR Team Dashboard</h1>
       {/* actual dashboard content */}
     </div>
   );

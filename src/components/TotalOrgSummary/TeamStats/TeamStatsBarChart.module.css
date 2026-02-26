@@ -1,26 +1,26 @@
-.team-stats-bar-chart {
+.teamStatsBarChart {
   position: relative;
   width: 100%;
   margin-top: 20px;
   margin-bottom: 55px;
 }
 
-.team-stats-title {
+.teamStatsTitle {
   text-align: center;
   margin-bottom: 20px;
   color: black;
   position: relative;
 }
 
-.team-stats-value {
+.teamStatsValue {
   font-weight: bolder;
 }
 
-.team-stats-bar-chart-summary span {
+.teamStatsBarChartSummary span {
   font-weight: 700;
 }
 
-.team-stats-y-axis {
+.teamStatsYAxis {
   color: black;
   font-weight: 500;
 }

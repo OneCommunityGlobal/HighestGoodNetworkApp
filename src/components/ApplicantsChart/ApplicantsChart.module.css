@@ -91,6 +91,11 @@
   color: #9ca3af !important;
   opacity: 1 !important;
 }
+.disabledDay {
+  color: #9ca3af !important;      /* gray */
+  pointer-events: none;
+  cursor: not-allowed;
+}
 
 :global(.text-light) :global(.hgn-datepicker-dark):focus,
 :global(.text-light) :global(.hgn-datepicker-dark):focus input,
