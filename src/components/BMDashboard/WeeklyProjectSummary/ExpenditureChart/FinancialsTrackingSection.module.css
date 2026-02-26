@@ -112,6 +112,26 @@
   margin: 0;
 }
 
+/* ── Button label tiers (responsive text) ────────────────────── */
+.labelFull {
+  display: inline;
+}
+
+.labelMed {
+  display: none;
+}
+
+.labelMin {
+  display: none;
+  align-items: center;
+  gap: 5px;
+}
+
+.btnIcon {
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+
 /* ── Responsive ──────────────────────────────────────────────── */
 @media (max-width: 768px) {
   .grid {
@@ -131,5 +151,25 @@
   .toggleBtn {
     flex: 1;
     text-align: center;
+  }
+
+  /* Switch to medium labels on tablet */
+  .labelFull {
+    display: none;
+  }
+
+  .labelMed {
+    display: inline;
+  }
+}
+
+@media (max-width: 420px) {
+  /* Switch to icon + short label on small phones */
+  .labelMed {
+    display: none;
+  }
+
+  .labelMin {
+    display: inline-flex;
   }
 }
