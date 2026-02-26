@@ -58,7 +58,8 @@ export default function PopularEvents() {
   const [timeFilter, setTimeFilter] = useState('All day');
   const [typeFilter, setTypeFilter] = useState('All');
 
-  const calculatePercentage = (attended, enrolled) => Math.round((attended / enrolled) * 100);
+  const calculatePercentage = (attended, enrolled) =>
+    enrolled === 0 ? 0 : Math.round((attended / enrolled) * 100);
 
   const getBarColor = percentage => {
     if (percentage > 60) return 'green';
@@ -72,23 +73,29 @@ export default function PopularEvents() {
     return timeMatch && typeMatch;
   });
 
-  const mostPopularEvent = filteredData.reduce(
-    (max, event) =>
-      calculatePercentage(event.attended, event.enrolled) >
-      calculatePercentage(max.attended, max.enrolled)
-        ? event
-        : max,
-    filteredData[0] || {},
-  );
+  const mostPopularEvent =
+    filteredData.length > 0
+      ? filteredData.reduce(
+          (max, event) =>
+            calculatePercentage(event.attended, event.enrolled) >
+            calculatePercentage(max.attended, max.enrolled)
+              ? event
+              : max,
+          filteredData[0],
+        )
+      : null;
 
-  const leastPopularEvent = filteredData.reduce(
-    (min, event) =>
-      calculatePercentage(event.attended, event.enrolled) <
-      calculatePercentage(min.attended, min.enrolled)
-        ? event
-        : min,
-    filteredData[0] || {},
-  );
+  const leastPopularEvent =
+    filteredData.length > 0
+      ? filteredData.reduce(
+          (min, event) =>
+            calculatePercentage(event.attended, event.enrolled) <
+            calculatePercentage(min.attended, min.enrolled)
+              ? event
+              : min,
+          filteredData[0],
+        )
+      : null;
   const darkMode = useSelector(state => state.theme.darkMode);
   return (
     <div className={darkMode ? styles.popularEventsContainerDark : styles.popularEventsContainer}>
