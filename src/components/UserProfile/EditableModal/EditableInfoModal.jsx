@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import DOMPurify from 'dompurify';
 import PropTypes from 'prop-types';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Row, Col } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import Select from 'react-select';
 import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
@@ -178,25 +178,23 @@ export class EditableInfoModal extends Component {
   };
 
   handleChangeInInfos = () => {
-    let newInfoElements = [...this.state.infoElements];
+    const { infoElements, infoName, infoContent, visibility } = this.state;
+  
     let findIndex = false;
     let foundInfoId;
-
-    newInfoElements = newInfoElements.map(index => {
-      if (index.infoName === this.state.infoName) {
+  
+    const newInfoElements = (infoElements || []).map(info => {
+      if (info.infoName === infoName) {
         findIndex = true;
-        foundInfoId = index._id;
-        return { ...index, infoContent: this.state.infoContent, visibility: this.state.visibility };
+        foundInfoId = info._id;
+        return { ...info, infoContent, visibility };
       }
-      return index;
+      return info;
     });
-
+  
     this.setState({ infoElements: newInfoElements });
-
-    return {
-      findIndex,
-      infoId: foundInfoId,
-    };
+  
+    return { findIndex, infoId: foundInfoId };
   };
 
   handleSelectChange = selectedOption => {
