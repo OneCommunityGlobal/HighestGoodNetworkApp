@@ -1648,12 +1648,15 @@ setUpdatedTasks(prev => {
             <div className="profile-tabs">
               <Nav tabs>
                 <NavItem>
-                  <NavLink
+                <NavLink
                     className={classnames(
-                      { active: activeTab === '1' },
                       'nav-link',
-                      darkMode && activeTab === '1' ? 'bg-space-cadet' : 'text-azure',
-                      darkMode ? 'text-light' : '',
+                      { active: activeTab === '1' },
+                      darkMode
+                        ? activeTab === '1'
+                          ? 'bg-space-cadet text-light'
+                          : 'text-azure'
+                        : 'text-azure',
                     )}
                     onClick={() => toggleTab('1')}
                     id="nabLink-basic"
@@ -1662,12 +1665,15 @@ setUpdatedTasks(prev => {
                   </NavLink>
                 </NavItem>
                 <NavItem>
-                  <NavLink
+                <NavLink
                     className={classnames(
-                      { active: activeTab === '2' },
                       'nav-link',
-                      darkMode && activeTab === '2' ? 'bg-space-cadet' : 'text-azure',
-                      darkMode ? 'text-light' : '',
+                      { active: activeTab === '2' },
+                      darkMode
+                        ? activeTab === '1'
+                          ? 'bg-space-cadet text-light'
+                          : 'text-azure'
+                        : 'text-azure',
                     )}
                     onClick={() => toggleTab('2')}
                     id="nabLink-time"
@@ -1676,12 +1682,15 @@ setUpdatedTasks(prev => {
                   </NavLink>
                 </NavItem>
                 <NavItem>
-                  <NavLink
+                <NavLink
                     className={classnames(
-                      { active: activeTab === '3' },
                       'nav-link',
-                      darkMode && activeTab === '3' ? 'bg-space-cadet' : 'text-azure',
-                      darkMode ? 'text-light' : '',
+                      { active: activeTab === '3' },
+                      darkMode
+                        ? activeTab === '1'
+                          ? 'bg-space-cadet text-light'
+                          : 'text-azure'
+                        : 'text-azure',
                     )}
                     onClick={() => toggleTab('3')}
                     id="nabLink-teams"
@@ -1690,12 +1699,15 @@ setUpdatedTasks(prev => {
                   </NavLink>
                 </NavItem>
                 <NavItem>
-                  <NavLink
+                <NavLink
                     className={classnames(
-                      { active: activeTab === '4' },
                       'nav-link',
-                      darkMode && activeTab === '4' ? 'bg-space-cadet' : 'text-azure',
-                      darkMode ? 'text-light' : '',
+                      { active: activeTab === '4' },
+                      darkMode
+                        ? activeTab === '1'
+                          ? 'bg-space-cadet text-light'
+                          : 'text-azure'
+                        : 'text-azure',
                     )}
                     onClick={() => toggleTab('4')}
                     id="nabLink-projects"
@@ -1705,19 +1717,19 @@ setUpdatedTasks(prev => {
                 </NavItem>
                 <NavItem>
                   <NavLink
+                    data-test-id="edit-history-tab"
                     className={classnames(
-                      { active: activeTab === '5' },
                       'nav-link',
-                      darkMode && activeTab === '5' ? 'bg-space-cadet' : 'text-azure',
-                      darkMode ? 'text-light' : '',
+                      { active: activeTab === '5' },
+                      darkMode
+                        ? activeTab === '1'
+                          ? 'bg-space-cadet text-light'
+                          : 'text-azure'
+                        : 'text-azure',
                     )}
-                    onClick={e => {
-                      e.preventDefault();
-                      toggleTab('5');
-                    }}
-                    data-testid="edit-history-tab"
+                    onClick={() => toggleTab('5')}
                   >
-                    Edit History
+                      Edit History
                   </NavLink>
                 </NavItem>
               </Nav>

@@ -12,6 +12,27 @@
   overflow: hidden;
 }
 
+.truncateTasksBtn {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.truncateTasksBtn:hover {
+  text-decoration: underline;
+}
+
+.truncateTasksBtn:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
 .progress-wrapper {
   display: inline-grid;
   width: fit-content;
@@ -32,7 +53,14 @@
 }
 
 .team-member-task-review-button {
-  margin-top: 0;
+  grid-column: 1;
+  grid-row: 2;
+
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+
+  min-height: 40px;
 }
 
 .team-member-tasks h1 {
@@ -120,10 +148,6 @@
 .task-break {
   /* border: red 1px solid; */
   border-bottom: 1px solid lightgray;
-  height: auto !important;
-  width: 100%;
-  display: flex;
-  margin: 1px 0 1px 0;
 }
 
 .task-break:last-of-type {
@@ -145,19 +169,20 @@
   flex: 1 1 auto;
   min-width: 0;
   height: auto !important;
+  vertical-align: middle !important;
 }
 
 .inner-task-align {
-  /* border: purple 1px solid !important; */
+  display: grid;
+  grid-template-columns: 1fr auto; 
+  grid-template-rows: auto auto;  
+  column-gap: 10px;
+  row-gap: 6px;
+  align-items: start;
+  width: 100%;
   padding: 0px 5px 5px 3px;
-  text-align: left;
-  display: flex;
-  justify-content: flex-start;
-  gap: 10px;
-  vertical-align: top;
-  flex-wrap: wrap;
-  margin: 0px;
 }
+
 .team-member-task-review-button,
 .task-align {
   /* Use the actual parent class from your HTML */
@@ -487,26 +512,24 @@
 }
 
 .team-member-tasks-icons {
-  /* border: green 1px solid; */
+  grid-column: 2;
+  grid-row: 1;
+
   display: inline-flex;
-  align-items: flex-start;
-  justify-content: flex-start;
+  align-items: center;
   gap: 7px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 
 .team-member-tasks-content {
-  /* border: blue 10px solid; */
-  align-items: flex-start !important;
-  justify-content: flex-start !important;
-  gap: 5px;
-  height: auto !important;
-  max-height: none !important;
-  overflow: visible !important;
-  text-align: left;
+  grid-column: 1;
+  grid-row: 1;
 
   display: flex;
-  /* min-width: 150px; */
+  align-items: center;
+  gap: 5px;
+
+  min-width: 0;
 }
 
 .team-member-tasks-content-link {
