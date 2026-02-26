@@ -6,6 +6,27 @@ import Loading from '../../common/Loading';
 
 const COLORS = ['#00AFF4', '#FFA500', '#00B030', '#EC52CB', '#F8FF00'];
 
+// convert backend range string (e.g. "10", "40+", "20-29")
+// into a user-facing label with units.
+export function formatRangeLabel(rangeStr) {
+  if (!rangeStr) return '';
+  let displayName = '';
+  if (rangeStr.includes('+')) {
+    const num = parseFloat(rangeStr.replace('+', ''));
+    if (num === 40) {
+      // bucket following 40 should display as 50+
+      displayName = '50+ hrs';
+    } else {
+      displayName = `${num}+ hrs`;
+    }
+  } else {
+    const num = parseFloat(rangeStr);
+    const next = (num + 9.99).toFixed(2);
+    displayName = `${num}-${next} hrs`;
+  }
+  return displayName;
+}
+
 function HoursWorkList({ data, darkMode }) {
   if (!data) return <div />;
 
@@ -13,11 +34,16 @@ function HoursWorkList({ data, darkMode }) {
     const rangeStr = elem._id;
     const entry = {
       name: rangeStr,
+      count: elem.count,
     };
 
-    const rangeArr = rangeStr.split('-');
+    // derive human-readable label for the bucket
+    const displayName = formatRangeLabel(rangeStr);
+
+    entry.displayName = displayName;
     entry.color = COLORS[index];
 
+    const rangeArr = rangeStr.split('-');
     if (rangeArr.length > 1) {
       const [min, max] = rangeArr;
       entry.min = Number(min);
@@ -46,7 +72,10 @@ function HoursWorkList({ data, darkMode }) {
                   backgroundColor: item.color,
                 }}
               />
-              <span className="ms-2">{item.name}</span>
+              <span className="ms-2">
+                {item.displayName || item.name}
+                {item.count !== undefined && ` (${item.count})`}
+              </span>
             </li>
           ))}
         </ul>
@@ -55,12 +84,14 @@ function HoursWorkList({ data, darkMode }) {
   );
 }
 
+// export HoursWorkList separately for testing
+export { HoursWorkList };
+
 export default function VolunteerHoursDistribution({
   isLoading,
   darkMode,
   hoursData,
   totalHoursData,
-  comparisonType,
 }) {
   const [windowSize, setWindowSize] = useState({
     width: window.innerWidth,
@@ -91,15 +122,20 @@ export default function VolunteerHoursDistribution({
     );
   }
 
-  const totalHours = hoursData.reduce((total, cur) => total + cur.count, 0);
+  // total volunteers is just the sum of all bucket counts
+  const safeHoursData = Array.isArray(hoursData) ? hoursData : [];
+  const totalVolunteers = safeHoursData.reduce((total, cur) => total + (cur.count || 0), 0);
 
-  const userData = hoursData.map(range => {
+  // the pie chart center should show total hours worked (comes from totalHoursData.current)
+  const totalHoursWorked = totalHoursData?.current || 0;
+
+  const userData = safeHoursData.map(range => {
+    const value = range.count || 0;
     return {
       name: range._id,
-      value: range.count,
-      totalHours,
-      title: 'HOURS WORKED',
-      comparisonPercentage: totalHoursData.comparison,
+      value,
+      // percentage of volunteers in this bucket (rounded)
+      percentage: totalVolunteers ? Math.round((value / totalVolunteers) * 100) : 0,
     };
   });
 
@@ -112,7 +148,7 @@ export default function VolunteerHoursDistribution({
         darkmode={darkMode}
         windowSize={windowSize}
         userData={userData}
-        comparisonType={comparisonType}
+        totalHours={totalHoursWorked}
         colors={COLORS}
       />
       <HoursWorkList data={hoursData} darkMode={darkMode} />

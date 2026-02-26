@@ -1,4 +1,5 @@
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
+import PropTypes from 'prop-types';
 
 const RADIAN = Math.PI / 180;
 
@@ -12,26 +13,12 @@ const renderCustomizedLabel = ({
   value,
   totalHours,
   title,
-  comparisonPercentage,
-  comparisonType,
 }) => {
   const radius = innerRadius + (outerRadius - innerRadius) * 0.4;
   const x = cx + radius * Math.cos(-midAngle * RADIAN);
   const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
-  const percentage = Math.round(comparisonPercentage);
-  const fillColor = comparisonPercentage > 1 ? 'green' : 'red';
-
-  const textContent =
-    comparisonType !== 'No Comparison' ? `${percentage}% ${comparisonType.toLowerCase()}` : '';
-  const fontSize = 10;
-  const maxTextLength = Math.floor((innerRadius / fontSize) * 4);
-
-  let adjustedText = textContent;
-  if (textContent.length > maxTextLength) {
-    adjustedText = `${textContent.substring(0, maxTextLength - 3)}...`;
-  }
-
+  // no comparison data; simply show count and percentage of slice
   return (
     <>
       <text
@@ -61,24 +48,21 @@ const renderCustomizedLabel = ({
       <text x={cx} y={cy} dy={14} textAnchor="middle" fill="#696969" fontSize="25">
         {totalHours.toFixed(0)}
       </text>
-      {comparisonType !== 'No Comparison' && (
-        <text x={cx} y={cy} dy={35} textAnchor="middle" fill={fillColor} fontSize="12">
-          {adjustedText}
-        </text>
-      )}
     </>
   );
 };
 
 import CustomTooltip from '../../CustomTooltip';
 
-export default function HoursWorkedPieChart({ userData, windowSize, comparisonType, colors }) {
+export default function HoursWorkedPieChart({ userData, windowSize, colors, totalHours = 0 }) {
   let innerRadius = 80;
   let outerRadius = 160;
   if (windowSize.width <= 650) {
     innerRadius = 65;
     outerRadius = 130;
   }
+  // We'll display totalHours in centre
+  const displayTotalHours = totalHours || 0;
   return (
     <div>
       <ResponsiveContainer maxWidth={600} maxHeight={600} minWidth={320} minHeight={320}>
@@ -88,7 +72,13 @@ export default function HoursWorkedPieChart({ userData, windowSize, comparisonTy
             cx="50%"
             cy="50%"
             labelLine={false}
-            label={props => renderCustomizedLabel({ ...props, comparisonType })}
+            label={props =>
+              renderCustomizedLabel({
+                ...props,
+                totalHours: displayTotalHours,
+                title: 'TOTAL HOURS',
+              })
+            }
             innerRadius={innerRadius}
             outerRadius={outerRadius}
             fill="#8884d8"
@@ -100,9 +90,16 @@ export default function HoursWorkedPieChart({ userData, windowSize, comparisonTy
                 <Cell key={`cell-${entry.value}`} fill={colors[index % colors.length]} />
               ))}
           </Pie>
-          <Tooltip content={<CustomTooltip />} />
+          <Tooltip content={<CustomTooltip tooltipType="hoursDistribution" />} />
         </PieChart>
       </ResponsiveContainer>
     </div>
   );
 }
+
+HoursWorkedPieChart.propTypes = {
+  userData: PropTypes.array.isRequired,
+  windowSize: PropTypes.shape({ width: PropTypes.number, height: PropTypes.number }).isRequired,
+  colors: PropTypes.array,
+  totalHours: PropTypes.number,
+};
