@@ -1,51 +1,52 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-import { useState, useRef, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
+import { useEffect, useRef, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import UserStateDisplay from '../UserState/UserStateDisplay';
 // import moment from 'moment';
 // import 'moment-timezone';
-import moment from 'moment-timezone';
+import { faCopy, faMailBulk } from '@fortawesome/free-solid-svg-icons';
+import axios from 'axios';
 import parse from 'html-react-parser';
+import moment from 'moment-timezone';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import axios from 'axios';
-import { faCopy, faMailBulk } from '@fortawesome/free-solid-svg-icons';
 import {
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
+  Alert,
   Button,
-  Input,
-  ListGroup,
-  ListGroupItem as LGI,
   Card,
-  Tooltip,
-  CardTitle,
   CardBody,
   CardImg,
   CardText,
-  UncontrolledPopover,
-  Row,
+  CardTitle,
   Col,
-  Alert,
+  Input,
+  ListGroupItem as LGI,
+  ListGroup,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  Row,
+  Tooltip,
+  UncontrolledPopover,
 } from 'reactstrap';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { assignStarDotColors, showStar } from '~/utils/leaderboardPermissions';
 
 import { postLeaderboardData } from '~/actions/leaderBoardData';
-import { calculateDurationBetweenDates, showTrophyIcon } from '~/utils/anniversaryPermissions';
 import { toggleUserBio } from '~/actions/weeklySummariesReport';
+import { calculateDurationBetweenDates, showTrophyIcon } from '~/utils/anniversaryPermissions';
 
 import RoleInfoModal from '~/components/UserProfile/EditableModal/RoleInfoModal';
 import CopyToClipboard from '~/components/common/Clipboard/CopyToClipboard';
-import styles from './WeeklySummariesReport.module.scss';
-import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import { ENDPOINTS } from '~/utils/URL';
+import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
 import GoogleDocIcon from '../common/GoogleDocIcon';
+import styles from './WeeklySummariesReport.module.scss';
 
 const textColors = {
   Default: '#000000',
@@ -156,7 +157,7 @@ function FormattedReport({
 
   return (
     <>
-      <ListGroup flush>
+      <ListGroup flush className={darkMode ? 'bg-yinmn-blue' : ''}>
         {summaries.map(summary => {
           // Add safety check for each summary
           if (
@@ -283,7 +284,7 @@ function EmailsList({ summaries, auth }) {
   return null;
 }
 
-function getTextColorForHoursLogged(hoursLogged, promisedHours) {
+function getTextColorForHoursLogged(hoursLogged, promisedHours, darkMode) {
   const percentage = (hoursLogged / promisedHours) * 100;
 
   if (percentage < 50) {
@@ -292,7 +293,7 @@ function getTextColorForHoursLogged(hoursLogged, promisedHours) {
   if (percentage < 100) {
     return '#0B6623';
   }
-  return 'black';
+  return darkMode ? '#fff' : 'black';
 }
 
 function ReportDetails({
@@ -337,7 +338,7 @@ function ReportDetails({
 
   return (
     <li className={`list-group-item px-0 ${darkMode ? 'bg-yinmn-blue' : ''}`} ref={ref}>
-      <ListGroup className="px-0" flush>
+      <ListGroup className={`px-0 ${darkMode ? 'bg-yinmn-blue' : ''}`} flush>
         <ListGroupItem darkMode={darkMode}>
           <Index
             summary={summary}
@@ -368,8 +369,8 @@ function ReportDetails({
         </ListGroupItem>
 
         {/* TWO-COLUMN CONTENT BELOW */}
-        <Row>
-          <Col md="6" xs="12">
+        <Row className={darkMode ? 'bg-yinmn-blue' : ''}>
+          <Col md="6" xs="12" className={darkMode ? 'bg-yinmn-blue' : ''}>
             <ListGroupItem darkMode={darkMode}>
               <TeamCodeRow
                 canEditTeamCode={canEditTeamCode && !cantEditJaeRelatedRecord}
@@ -389,17 +390,26 @@ function ReportDetails({
             </ListGroupItem>
 
             <ListGroupItem darkMode={darkMode}>
-              <p
-                style={{
-                  color: getTextColorForHoursLogged(hoursLogged, promisedHours),
-                  // summary.promisedHoursByWeek[weekIndex],
-                  // ),
-                  fontWeight: 'bold',
-                }}
-              >
-                {/* Hours logged: {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]} */}
-                Hours logged: {hoursLogged} / {promisedHours}
-              </p>
+              <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
+                <p
+                  style={{
+                    color: getTextColorForHoursLogged(hoursLogged, promisedHours, darkMode),
+                    fontWeight: 'bold',
+                    margin: 0,
+                  }}
+                >
+                  Hours logged: {hoursLogged} / {promisedHours}
+                </p>
+                <UserStateDisplay
+                  userId={summary._id}
+                  canEdit={
+                    ['Administrator', 'Owner'].includes(auth?.user?.role) ||
+                    auth?.user?.permissions?.frontPermissions?.includes(
+                      'manage_user_state_indicator',
+                    )
+                  }
+                />
+              </div>
             </ListGroupItem>
 
             <ListGroupItem darkMode={darkMode}>
@@ -409,6 +419,7 @@ function ReportDetails({
 
           <Col
             xs="6"
+            className={darkMode ? 'bg-yinmn-blue' : ''}
             style={{
               display: 'flex',
               flexDirection: 'row',

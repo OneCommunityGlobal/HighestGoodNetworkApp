@@ -2,86 +2,86 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import { useEffect, useState } from 'react';
+import axios from 'axios';
+import moment from 'moment';
+import 'moment-timezone';
 import PropTypes from 'prop-types';
+import { useEffect, useState } from 'react';
+import { MultiSelect } from 'react-multi-select-component';
 import { connect } from 'react-redux';
+import Select, { components } from 'react-select';
 import { toast } from 'react-toastify';
+import ReactTooltip from 'react-tooltip';
 import {
   Alert,
-  Container,
-  Row,
+  Button,
+  ButtonDropdown,
   Col,
-  TabContent,
-  TabPane,
+  Container,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
+  Input,
   Nav,
   NavItem,
   NavLink,
-  Button,
-  Input,
+  Row,
   Spinner,
-  ButtonDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
+  TabContent,
+  TabPane,
 } from 'reactstrap';
-import ReactTooltip from 'react-tooltip';
-import { MultiSelect } from 'react-multi-select-component';
-import Select, { components } from 'react-select';
-import moment from 'moment';
 import { boxStyle, boxStyleDark } from '~/styles';
-import 'moment-timezone';
-import axios from 'axios';
 
-import { ENDPOINTS } from '~/utils/URL';
 import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
-import { getAllUserTeams, getAllTeamCode } from '../../actions/allTeamsAction';
-import TeamChart from './TeamChart';
-import SkeletonLoading from '../common/SkeletonLoading';
-import { getWeeklySummariesReport } from '../../actions/weeklySummariesReport';
+import { ENDPOINTS } from '~/utils/URL';
+import { getAllTeamCode, getAllUserTeams } from '../../actions/allTeamsAction';
 import {
   updateOneSummaryReport,
-  updateSummaryReportFromServerAction,
   updateSummaryReport,
+  updateSummaryReportFromServerAction,
 } from '../../actions/weeklySummaries';
+import { getWeeklySummariesReport } from '../../actions/weeklySummariesReport';
+import SkeletonLoading from '../common/SkeletonLoading';
+import TeamChart from './TeamChart';
 
 import {
-  getSavedFilters,
   createSavedFilter,
   deleteSavedFilter,
+  getSavedFilters,
   updateSavedFilter,
-  updateSavedFiltersForTeamCodeChange,
   updateSavedFiltersForIndividualTeamCodeChange,
+  updateSavedFiltersForTeamCodeChange,
 } from '../../actions/savedFilterActions';
 
 import 'react-toastify/dist/ReactToastify.css';
-import WeeklySummaryRecipientsPopup from './WeeklySummaryRecepientsPopup';
+import { fetchAllBadges } from '../../actions/badgeManagement';
+import { getInfoCollections } from '../../actions/information';
+import { setTeamCodes } from '../../actions/teamCodes';
+import { showTrophyIcon } from '../../utils/anniversaryPermissions';
+import hasPermission from '../../utils/permissions';
+import CreateFilterModal from './components/CreateFilterModal';
+import SelectFilterModal from './components/SelectFilterModal';
+import UpdateFilterModal from './components/UpdateFilterModal';
 import FormattedReport from './FormattedReport';
 import GeneratePdfReport from './GeneratePdfReport';
-import hasPermission from '../../utils/permissions';
-import { getInfoCollections } from '../../actions/information';
-import { fetchAllBadges } from '../../actions/badgeManagement';
 import PasswordInputModal from './PasswordInputModal';
-import { showTrophyIcon } from '../../utils/anniversaryPermissions';
 import SelectTeamPieChart from './SelectTeamPieChart';
-import { setTeamCodes } from '../../actions/teamCodes';
-import CreateFilterModal from './components/CreateFilterModal';
-import UpdateFilterModal from './components/UpdateFilterModal';
-import SelectFilterModal from './components/SelectFilterModal';
 import styles from './WeeklySummariesReport.module.css';
+import WeeklySummaryRecipientsPopup from './WeeklySummaryRecepientsPopup';
 // Keeping this block commented intentionally for future reference
 // import { setField, toggleField, removeItemFromField, setChildField } from '~/utils/stateHelper';
 import { setField } from '~/utils/stateHelper';
 import WeeklySummariesToggleFilter from './components/WeeklySummariesToggleFilter';
 // Keeping this block commented intentionally for future reference —
-import { SlideToggle } from './components';
 import cn from 'classnames';
+import { getCustomStyles } from '~/utils/reactSelectStyles'; //  Import Styles
 import {
-  useGetWeeklySummariesFiltersQuery,
   useDeleteWeeklySummariesFilterMutation,
+  useGetWeeklySummariesFiltersQuery,
   useUpdateFiltersWithIndividualCodesChangeMutation,
   useUpdateFiltersWithReplacedTeamCodesMutation,
 } from '../../actions/weeklySummariesFilterAction';
-import { getCustomStyles } from '~/utils/reactSelectStyles'; //  Import Styles
+import { SlideToggle } from './components';
 
 const navItems = ['This Week', 'Last Week', 'Week Before Last', 'Three Weeks Ago'];
 const fullCodeRegex = /^.{5,7}$/;
@@ -2336,10 +2336,13 @@ const WeeklySummariesReport = props => {
       <Row className={styles['mx-max-sm-0']}>
         <style>
           {`
-        .custom-select__input-container {
-          grid-template-columns: auto !important;
-        }
-      `}
+            .custom-select__input-container {
+              grid-template-columns: auto !important;
+            }
+            .list-group-item.bg-yinmn-blue {
+              background-color: #3d5a80 !important;
+            }
+          `}
         </style>
         <Col lg={{ size: 10, offset: 1 }}>
           <h3 className="mt-3 mb-5">
