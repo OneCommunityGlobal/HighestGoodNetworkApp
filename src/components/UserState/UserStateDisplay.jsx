@@ -91,7 +91,7 @@ function UserStateDisplay({ userId, canEdit }) {
     [reordered[idx - 1], reordered[idx]] = [reordered[idx], reordered[idx - 1]];
     setCatalog(reordered);
     try {
-      await axios.put(`${ENDPOINTS.USER_STATE_CATALOG}/reorder`, {
+      await axios.put(ENDPOINTS.USER_STATE_CATALOG_REORDER, {
         orderedKeys: reordered.map(c => c.key),
         requestor: { role: 'Owner' },
       });
