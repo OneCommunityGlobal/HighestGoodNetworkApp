@@ -23,6 +23,235 @@ function getStateColor(key, darkMode) {
   return { bg: darkMode ? '#2a3a5c' : '#607d8b', text: '#fff' };
 }
 
+// Fix: extract EditPanel to reduce cognitive complexity (High L26)
+function EditPanel({
+  catalog,
+  selected,
+  darkMode,
+  isAdding,
+  isReordering,
+  newLabel,
+  onToggle,
+  onMoveUp,
+  onMoveDown,
+  onAddNew,
+  onNewLabelChange,
+  onSetIsAdding,
+  onSetIsReordering,
+  onClose,
+}) {
+  // Fix: extract nested ternary (Medium L171, L172, L420, L421)
+  const reorderBtnBg = isReordering ? '#e67e22' : '#3498db';
+  const reorderBtnText = isReordering ? 'Done Reordering' : 'Reorder';
+  const panelBorder = darkMode ? '#4a6a9c' : '#b0c4de';
+  const panelBg = darkMode ? '#1e2d4a' : '#f8f9ff';
+  const titleColor = darkMode ? '#cdd9f5' : '#1a3a6b';
+
+  return (
+    <div
+      style={{
+        marginTop: '8px',
+        padding: '10px',
+        border: `1px solid ${panelBorder}`,
+        borderRadius: '8px',
+        background: panelBg,
+      }}
+    >
+      <div style={{ marginBottom: '8px', fontSize: '12px', fontWeight: 600, color: titleColor }}>
+        Select State:
+      </div>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '8px' }}>
+        {catalog.map((item, idx) => {
+          const isItemSelected = selected.some(s => s.key === item.key);
+          const { bg, text } = getStateColor(item.key, darkMode);
+          // Fix: extract nested ternary
+          const btnBg = isItemSelected ? bg : darkMode ? '#2a3a5c' : '#e8f0fe';
+          const btnColor = isItemSelected ? text : darkMode ? '#cdd9f5' : '#1a3a6b';
+          const btnShadow = isItemSelected ? '0 2px 4px rgba(0,0,0,0.2)' : 'none';
+          const btnOpacity = isItemSelected ? 1 : 0.7;
+          return (
+            <div key={item.key} style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+              {/* Fix: use button instead of span (Medium L124, L159) */}
+              <button
+                type="button"
+                onClick={() => onToggle(item.key)}
+                style={{
+                  display: 'inline-block',
+                  padding: '4px 12px',
+                  borderRadius: '20px',
+                  fontSize: '12px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  background: btnBg,
+                  color: btnColor,
+                  border: `2px solid ${bg}`,
+                  boxShadow: btnShadow,
+                  opacity: btnOpacity,
+                }}
+              >
+                {item.label}
+              </button>
+              {isReordering && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
+                  <button
+                    type="button"
+                    onClick={() => onMoveUp(idx)}
+                    disabled={idx === 0}
+                    style={{
+                      fontSize: '9px',
+                      padding: '1px 4px',
+                      cursor: 'pointer',
+                      lineHeight: 1,
+                    }}
+                    title="Move up"
+                  >
+                    ▲
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onMoveDown(idx)}
+                    disabled={idx === catalog.length - 1}
+                    style={{
+                      fontSize: '9px',
+                      padding: '1px 4px',
+                      cursor: 'pointer',
+                      lineHeight: 1,
+                    }}
+                    title="Move down"
+                  >
+                    ▼
+                  </button>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+      {isAdding && (
+        <div style={{ display: 'flex', gap: '6px', marginBottom: '8px', alignItems: 'center' }}>
+          <input
+            type="text"
+            value={newLabel}
+            onChange={e => onNewLabelChange(e.target.value)}
+            placeholder="e.g. 🌟 Star Developer"
+            maxLength={30}
+            style={{
+              fontSize: '12px',
+              padding: '4px 8px',
+              borderRadius: '4px',
+              border: `1px solid ${panelBorder}`,
+              background: darkMode ? '#1e2d4a' : '#fff',
+              color: darkMode ? '#cdd9f5' : '#1a3a6b',
+              width: '180px',
+            }}
+            onKeyDown={e => e.key === 'Enter' && onAddNew()}
+          />
+          <button
+            type="button"
+            onClick={onAddNew}
+            style={{
+              fontSize: '11px',
+              padding: '3px 8px',
+              borderRadius: '4px',
+              border: 'none',
+              background: '#27ae60',
+              color: '#fff',
+              cursor: 'pointer',
+            }}
+          >
+            Save
+          </button>
+          <button
+            type="button"
+            onClick={() => onSetIsAdding(false)}
+            style={{
+              fontSize: '11px',
+              padding: '3px 8px',
+              borderRadius: '4px',
+              border: 'none',
+              background: '#e74c3c',
+              color: '#fff',
+              cursor: 'pointer',
+            }}
+          >
+            Cancel
+          </button>
+        </div>
+      )}
+      <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+        <button
+          type="button"
+          onClick={() => onSetIsAdding(true)}
+          style={{
+            fontSize: '11px',
+            padding: '3px 10px',
+            borderRadius: '4px',
+            border: 'none',
+            background: '#27ae60',
+            color: '#fff',
+            cursor: 'pointer',
+          }}
+        >
+          ➕ Add new
+        </button>
+        <button
+          type="button"
+          onClick={() => onSetIsReordering(prev => !prev)}
+          style={{
+            fontSize: '11px',
+            padding: '3px 10px',
+            borderRadius: '4px',
+            border: 'none',
+            background: reorderBtnBg,
+            color: '#fff',
+            cursor: 'pointer',
+          }}
+        >
+          {/* Fix: extract nested ternary */}
+          {`↕️ ${reorderBtnText}`}
+        </button>
+        <button
+          type="button"
+          onClick={onClose}
+          style={{
+            fontSize: '11px',
+            padding: '3px 10px',
+            borderRadius: '4px',
+            border: 'none',
+            background: '#6c757d',
+            color: '#fff',
+            cursor: 'pointer',
+          }}
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  );
+}
+
+EditPanel.propTypes = {
+  catalog: PropTypes.arrayOf(
+    PropTypes.shape({
+      key: PropTypes.string,
+      label: PropTypes.string,
+    }),
+  ).isRequired,
+  selected: PropTypes.arrayOf(PropTypes.shape({ key: PropTypes.string })).isRequired,
+  darkMode: PropTypes.bool.isRequired,
+  isAdding: PropTypes.bool.isRequired,
+  isReordering: PropTypes.bool.isRequired,
+  newLabel: PropTypes.string.isRequired,
+  onToggle: PropTypes.func.isRequired,
+  onMoveUp: PropTypes.func.isRequired,
+  onMoveDown: PropTypes.func.isRequired,
+  onAddNew: PropTypes.func.isRequired,
+  onNewLabelChange: PropTypes.func.isRequired,
+  onSetIsAdding: PropTypes.func.isRequired,
+  onSetIsReordering: PropTypes.func.isRequired,
+  onClose: PropTypes.func.isRequired,
+};
+
 function UserStateDisplay({ userId, canEdit }) {
   const darkMode = useSelector(state => state.theme.darkMode);
   const [catalog, setCatalog] = useState([]);
@@ -57,7 +286,6 @@ function UserStateDisplay({ userId, canEdit }) {
     const updated = isItemSelected
       ? selected.filter(s => s.key !== key)
       : [...selected, { key, selectedAt: new Date().toISOString() }];
-
     setSelected(updated);
     try {
       await axios.put(ENDPOINTS.USER_STATE_SELECTION(userId), {
@@ -81,6 +309,7 @@ function UserStateDisplay({ userId, canEdit }) {
       setNewLabel('');
       setIsAdding(false);
     } catch (e) {
+      // eslint-disable-next-line no-alert
       alert(e?.response?.data?.error || 'Failed to add new state');
     }
   };
@@ -96,7 +325,7 @@ function UserStateDisplay({ userId, canEdit }) {
         requestor: { role: 'Owner' },
       });
     } catch (e) {
-      fetchData(); // revert on failure
+      fetchData();
     }
   };
 
@@ -115,220 +344,56 @@ function UserStateDisplay({ userId, canEdit }) {
     }
   };
 
+  const handleClose = () => {
+    setIsEditing(false);
+    setIsAdding(false);
+    setIsReordering(false);
+  };
+
+  const editPanelProps = {
+    catalog,
+    selected,
+    darkMode,
+    isAdding,
+    isReordering,
+    newLabel,
+    onToggle: handleToggle,
+    onMoveUp: handleMoveUp,
+    onMoveDown: handleMoveDown,
+    onAddNew: handleAddNew,
+    onNewLabelChange: setNewLabel,
+    onSetIsAdding: setIsAdding,
+    onSetIsReordering: setIsReordering,
+    onClose: handleClose,
+  };
+
   if (loading) return null;
 
   if (selected.length === 0) {
     if (!canEdit) return null;
     return (
       <div style={{ marginTop: '6px' }}>
-        <span
+        {/* Fix: use button instead of span (Medium L345) */}
+        <button
+          type="button"
           onClick={() => setIsEditing(true)}
-          onKeyDown={e => e.key === 'Enter' && setIsEditing(true)}
-          role="button"
-          tabIndex={0}
-          style={{ cursor: 'pointer', fontSize: '11px', color: '#3498db' }}
+          style={{
+            cursor: 'pointer',
+            fontSize: '11px',
+            color: '#3498db',
+            background: 'none',
+            border: 'none',
+            padding: 0,
+          }}
         >
           ➕ Set State
-        </span>
-        {isEditing && (
-          <div
-            style={{
-              marginTop: '8px',
-              padding: '10px',
-              border: `1px solid ${darkMode ? '#4a6a9c' : '#b0c4de'}`,
-              borderRadius: '8px',
-              background: darkMode ? '#1e2d4a' : '#f8f9ff',
-            }}
-          >
-            <div
-              style={{
-                marginBottom: '8px',
-                fontSize: '12px',
-                fontWeight: 600,
-                color: darkMode ? '#cdd9f5' : '#1a3a6b',
-              }}
-            >
-              Select State:
-            </div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '8px' }}>
-              {catalog.map((item, idx) => {
-                const isItemSelected = selected.some(s => s.key === item.key);
-                const { bg, text } = getStateColor(item.key, darkMode);
-                return (
-                  <div key={item.key} style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
-                    <span
-                      onClick={() => handleToggle(item.key)}
-                      role="button"
-                      tabIndex={0}
-                      onKeyDown={e => e.key === 'Enter' && handleToggle(item.key)}
-                      style={{
-                        display: 'inline-block',
-                        padding: '4px 12px',
-                        borderRadius: '20px',
-                        fontSize: '12px',
-                        fontWeight: '600',
-                        cursor: 'pointer',
-                        background: isItemSelected ? bg : darkMode ? '#2a3a5c' : '#e8f0fe',
-                        color: isItemSelected ? text : darkMode ? '#cdd9f5' : '#1a3a6b',
-                        border: `2px solid ${bg}`,
-                        boxShadow: isItemSelected ? '0 2px 4px rgba(0,0,0,0.2)' : 'none',
-                        opacity: isItemSelected ? 1 : 0.7,
-                      }}
-                    >
-                      {item.label}
-                    </span>
-                    {isReordering && (
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
-                        <button
-                          type="button"
-                          onClick={() => handleMoveUp(idx)}
-                          disabled={idx === 0}
-                          style={{
-                            fontSize: '9px',
-                            padding: '1px 4px',
-                            cursor: 'pointer',
-                            lineHeight: 1,
-                          }}
-                        >
-                          ▲
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleMoveDown(idx)}
-                          disabled={idx === catalog.length - 1}
-                          style={{
-                            fontSize: '9px',
-                            padding: '1px 4px',
-                            cursor: 'pointer',
-                            lineHeight: 1,
-                          }}
-                        >
-                          ▼
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-            {isAdding && (
-              <div
-                style={{ display: 'flex', gap: '6px', marginBottom: '8px', alignItems: 'center' }}
-              >
-                <input
-                  type="text"
-                  value={newLabel}
-                  onChange={e => setNewLabel(e.target.value)}
-                  placeholder="e.g. 🌟 Star Developer"
-                  maxLength={30}
-                  style={{
-                    fontSize: '12px',
-                    padding: '4px 8px',
-                    borderRadius: '4px',
-                    border: `1px solid ${darkMode ? '#4a6a9c' : '#b0c4de'}`,
-                    background: darkMode ? '#1e2d4a' : '#fff',
-                    color: darkMode ? '#cdd9f5' : '#1a3a6b',
-                    width: '180px',
-                  }}
-                  onKeyDown={e => e.key === 'Enter' && handleAddNew()}
-                />
-                <button
-                  type="button"
-                  onClick={handleAddNew}
-                  style={{
-                    fontSize: '11px',
-                    padding: '3px 8px',
-                    borderRadius: '4px',
-                    border: 'none',
-                    background: '#27ae60',
-                    color: '#fff',
-                    cursor: 'pointer',
-                  }}
-                >
-                  Save
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsAdding(false);
-                    setNewLabel('');
-                  }}
-                  style={{
-                    fontSize: '11px',
-                    padding: '3px 8px',
-                    borderRadius: '4px',
-                    border: 'none',
-                    background: '#e74c3c',
-                    color: '#fff',
-                    cursor: 'pointer',
-                  }}
-                >
-                  Cancel
-                </button>
-              </div>
-            )}
-            <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-              <button
-                type="button"
-                onClick={() => {
-                  setIsAdding(true);
-                  setIsReordering(false);
-                }}
-                style={{
-                  fontSize: '11px',
-                  padding: '3px 10px',
-                  borderRadius: '4px',
-                  border: 'none',
-                  background: '#27ae60',
-                  color: '#fff',
-                  cursor: 'pointer',
-                }}
-              >
-                ➕ Add new
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setIsReordering(prev => !prev);
-                  setIsAdding(false);
-                }}
-                style={{
-                  fontSize: '11px',
-                  padding: '3px 10px',
-                  borderRadius: '4px',
-                  border: 'none',
-                  background: isReordering ? '#e67e22' : '#3498db',
-                  color: '#fff',
-                  cursor: 'pointer',
-                }}
-              >
-                ↕️ {isReordering ? 'Done Reordering' : 'Reorder'}
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setIsEditing(false);
-                  setIsAdding(false);
-                  setIsReordering(false);
-                }}
-                style={{
-                  fontSize: '11px',
-                  padding: '3px 10px',
-                  borderRadius: '4px',
-                  border: 'none',
-                  background: '#6c757d',
-                  color: '#fff',
-                  cursor: 'pointer',
-                }}
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        )}
+        </button>
+        {/* eslint-disable-next-line react/jsx-props-no-spreading */}
+        {isEditing && <EditPanel {...editPanelProps} />}
       </div>
     );
   }
+
   const selectedItems = catalog
     .filter(c => selected.some(s => s.key === c.key))
     .map(c => {
@@ -338,12 +403,13 @@ function UserStateDisplay({ userId, canEdit }) {
 
   return (
     <div style={{ marginTop: '6px' }}>
-      {/* Display selected state badges */}
       {selectedItems.map(item => {
         const { bg, text } = getStateColor(item.key, darkMode);
         return (
-          <span
+          // Fix: use button instead of span for interactive badge (Medium L408)
+          <button
             key={item.key}
+            type="button"
             title="This is the user's state. Ask an Admin to change it for you if you feel it is not accurate"
             style={{
               display: 'inline-block',
@@ -358,6 +424,7 @@ function UserStateDisplay({ userId, canEdit }) {
               boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
               cursor: canEdit ? 'pointer' : 'default',
               letterSpacing: '0.3px',
+              border: 'none',
             }}
             onClick={
               canEdit
@@ -367,219 +434,13 @@ function UserStateDisplay({ userId, canEdit }) {
                   }
                 : undefined
             }
-            role={canEdit ? 'button' : undefined}
-            tabIndex={canEdit ? 0 : undefined}
-            onKeyDown={canEdit ? e => e.key === 'Enter' && setIsEditing(true) : undefined}
           >
             {formatDate(item.selectedAt)} {item.label}
-          </span>
+          </button>
         );
       })}
-
-      {/* Edit panel */}
-      {canEdit && isEditing && (
-        <div
-          style={{
-            marginTop: '8px',
-            padding: '10px',
-            border: `1px solid ${darkMode ? '#4a6a9c' : '#b0c4de'}`,
-            borderRadius: '8px',
-            background: darkMode ? '#1e2d4a' : '#f8f9ff',
-          }}
-        >
-          <div
-            style={{
-              marginBottom: '8px',
-              fontSize: '12px',
-              fontWeight: 600,
-              color: darkMode ? '#cdd9f5' : '#1a3a6b',
-            }}
-          >
-            Select State:
-          </div>
-
-          {/* State selection buttons */}
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '8px' }}>
-            {catalog.map((item, idx) => {
-              const isItemSelected = selected.some(s => s.key === item.key);
-              const { bg, text } = getStateColor(item.key, darkMode);
-              return (
-                <div key={item.key} style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
-                  <span
-                    onClick={() => handleToggle(item.key)}
-                    role="button"
-                    tabIndex={0}
-                    onKeyDown={e => e.key === 'Enter' && handleToggle(item.key)}
-                    style={{
-                      display: 'inline-block',
-                      padding: '4px 12px',
-                      borderRadius: '20px',
-                      fontSize: '12px',
-                      fontWeight: '600',
-                      cursor: 'pointer',
-                      background: isItemSelected ? bg : darkMode ? '#2a3a5c' : '#e8f0fe',
-                      color: isItemSelected ? text : darkMode ? '#cdd9f5' : '#1a3a6b',
-                      border: `2px solid ${bg}`,
-                      boxShadow: isItemSelected ? '0 2px 4px rgba(0,0,0,0.2)' : 'none',
-                      opacity: isItemSelected ? 1 : 0.7,
-                    }}
-                  >
-                    {item.label}
-                  </span>
-                  {/* Reorder buttons */}
-                  {isReordering && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
-                      <button
-                        type="button"
-                        onClick={() => handleMoveUp(idx)}
-                        disabled={idx === 0}
-                        style={{
-                          fontSize: '9px',
-                          padding: '1px 4px',
-                          cursor: 'pointer',
-                          lineHeight: 1,
-                        }}
-                        title="Move up"
-                      >
-                        ▲
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleMoveDown(idx)}
-                        disabled={idx === catalog.length - 1}
-                        style={{
-                          fontSize: '9px',
-                          padding: '1px 4px',
-                          cursor: 'pointer',
-                          lineHeight: 1,
-                        }}
-                        title="Move down"
-                      >
-                        ▼
-                      </button>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Add new state input */}
-          {isAdding && (
-            <div style={{ display: 'flex', gap: '6px', marginBottom: '8px', alignItems: 'center' }}>
-              <input
-                type="text"
-                value={newLabel}
-                onChange={e => setNewLabel(e.target.value)}
-                placeholder="e.g. 🌟 Star Developer"
-                maxLength={30}
-                style={{
-                  fontSize: '12px',
-                  padding: '4px 8px',
-                  borderRadius: '4px',
-                  border: `1px solid ${darkMode ? '#4a6a9c' : '#b0c4de'}`,
-                  background: darkMode ? '#1e2d4a' : '#fff',
-                  color: darkMode ? '#cdd9f5' : '#1a3a6b',
-                  width: '180px',
-                }}
-                onKeyDown={e => e.key === 'Enter' && handleAddNew()}
-              />
-              <button
-                type="button"
-                onClick={handleAddNew}
-                style={{
-                  fontSize: '11px',
-                  padding: '3px 8px',
-                  borderRadius: '4px',
-                  border: 'none',
-                  background: '#27ae60',
-                  color: '#fff',
-                  cursor: 'pointer',
-                }}
-              >
-                Save
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setIsAdding(false);
-                  setNewLabel('');
-                }}
-                style={{
-                  fontSize: '11px',
-                  padding: '3px 8px',
-                  borderRadius: '4px',
-                  border: 'none',
-                  background: '#e74c3c',
-                  color: '#fff',
-                  cursor: 'pointer',
-                }}
-              >
-                Cancel
-              </button>
-            </div>
-          )}
-
-          {/* Action buttons */}
-          <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-            <button
-              type="button"
-              onClick={() => {
-                setIsAdding(true);
-                setIsReordering(false);
-              }}
-              style={{
-                fontSize: '11px',
-                padding: '3px 10px',
-                borderRadius: '4px',
-                border: 'none',
-                background: '#27ae60',
-                color: '#fff',
-                cursor: 'pointer',
-              }}
-            >
-              ➕ Add new
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setIsReordering(prev => !prev);
-                setIsAdding(false);
-              }}
-              style={{
-                fontSize: '11px',
-                padding: '3px 10px',
-                borderRadius: '4px',
-                border: 'none',
-                background: isReordering ? '#e67e22' : '#3498db',
-                color: '#fff',
-                cursor: 'pointer',
-              }}
-            >
-              ↕️ {isReordering ? 'Done Reordering' : 'Reorder'}
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setIsEditing(false);
-                setIsAdding(false);
-                setIsReordering(false);
-              }}
-              style={{
-                fontSize: '11px',
-                padding: '3px 10px',
-                borderRadius: '4px',
-                border: 'none',
-                background: '#6c757d',
-                color: '#fff',
-                cursor: 'pointer',
-              }}
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
+      {/* eslint-disable-next-line react/jsx-props-no-spreading */}
+      {canEdit && isEditing && <EditPanel {...editPanelProps} />}
     </div>
   );
 }

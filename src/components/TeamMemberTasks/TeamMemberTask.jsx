@@ -7,6 +7,7 @@ import {
   faTimesCircle,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import PropTypes from 'prop-types';
 import React, { useRef, useState } from 'react';
 import { Modal, ModalBody, ModalFooter, ModalHeader, Progress, Table } from 'reactstrap';
 import CopyToClipboard from '~/components/common/Clipboard/CopyToClipboard';
@@ -792,6 +793,22 @@ const TeamMemberTask = React.memo(
     );
   },
 );
+TeamMemberTask.propTypes = {
+  user: PropTypes.shape({
+    personId: PropTypes.string,
+    name: PropTypes.string,
+    role: PropTypes.string,
+    tasks: PropTypes.array,
+    totaltangibletime_hrs: PropTypes.number,
+    weeklycommittedHours: PropTypes.number,
+    weeklySummariesCount: PropTypes.number,
+    adminLinks: PropTypes.array,
+    timeOffFrom: PropTypes.string,
+    timeOffTill: PropTypes.string,
+  }).isRequired,
+  userRole: PropTypes.string.isRequired,
+  userId: PropTypes.string.isRequired,
+};
 
 TeamMemberTask.displayName = 'TeamMemberTask';
 

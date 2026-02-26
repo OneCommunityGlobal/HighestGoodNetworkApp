@@ -1188,25 +1188,43 @@ FormattedReport.propTypes = {
       filterColor: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
       promisedHoursByWeek: PropTypes.arrayOf(PropTypes.number),
       totalSeconds: PropTypes.number,
-      weeklySummaries: PropTypes.arrayOf(
-        PropTypes.shape({
-          summary: PropTypes.string,
-        }),
-      ),
+      weeklySummaries: PropTypes.arrayOf(PropTypes.shape({ summary: PropTypes.string })),
     }),
   ).isRequired,
   weekIndex: PropTypes.number.isRequired,
+  auth: PropTypes.shape({
+    user: PropTypes.shape({
+      role: PropTypes.string,
+      permissions: PropTypes.shape({
+        frontPermissions: PropTypes.arrayOf(PropTypes.string),
+      }),
+    }),
+  }),
+};
+
+FormattedReport.defaultProps = {
+  auth: {},
+};
+
+ReportDetails.propTypes = {
   summary: PropTypes.shape({
     _id: PropTypes.string,
-    filterColor: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
-    promisedHoursByWeek: PropTypes.arrayOf(PropTypes.number),
-    totalSeconds: PropTypes.number,
-    weeklySummaries: PropTypes.arrayOf(
-      PropTypes.shape({
-        summary: PropTypes.string,
+    email: PropTypes.string,
+    bioPosted: PropTypes.string,
+    teamCode: PropTypes.string,
+  }).isRequired,
+  auth: PropTypes.shape({
+    user: PropTypes.shape({
+      role: PropTypes.string,
+      permissions: PropTypes.shape({
+        frontPermissions: PropTypes.arrayOf(PropTypes.string),
       }),
-    ),
+    }),
   }),
+};
+
+ReportDetails.defaultProps = {
+  auth: {},
 };
 
 export default FormattedReport;
