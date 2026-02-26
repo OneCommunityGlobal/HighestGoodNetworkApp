@@ -39,7 +39,6 @@ function EditPanel({
   onSetIsReordering,
   onClose,
 }) {
-  // Fix: extract nested ternary (Medium L68, L69)
   const panelBorder = darkMode ? '#4a6a9c' : '#b0c4de';
   const panelBg = darkMode ? '#1e2d4a' : '#f8f9ff';
   const titleColor = darkMode ? '#cdd9f5' : '#1a3a6b';
@@ -65,7 +64,6 @@ function EditPanel({
         {catalog.map((item, idx) => {
           const isItemSelected = selected.some(s => s.key === item.key);
           const { bg, text } = getStateColor(item.key, darkMode);
-          // Fix: extract nested ternary
           const btnBg = isItemSelected ? bg : unselectedBg;
           const btnColor = isItemSelected ? text : unselectedColor;
           const btnShadow = isItemSelected ? '0 2px 4px rgba(0,0,0,0.2)' : 'none';
@@ -230,12 +228,8 @@ function EditPanel({
 }
 
 EditPanel.propTypes = {
-  catalog: PropTypes.arrayOf(
-    PropTypes.shape({
-      key: PropTypes.string,
-      label: PropTypes.string,
-    }),
-  ).isRequired,
+  catalog: PropTypes.arrayOf(PropTypes.shape({ key: PropTypes.string, label: PropTypes.string }))
+    .isRequired,
   selected: PropTypes.arrayOf(PropTypes.shape({ key: PropTypes.string })).isRequired,
   darkMode: PropTypes.bool.isRequired,
   isAdding: PropTypes.bool.isRequired,
@@ -250,6 +244,13 @@ EditPanel.propTypes = {
   onSetIsReordering: PropTypes.func.isRequired,
   onClose: PropTypes.func.isRequired,
 };
+
+function logError(context, error) {
+  if (process.env.NODE_ENV !== 'production') {
+    // eslint-disable-next-line no-console
+    console.error(`[UserStateDisplay] ${context}:`, error?.message || error);
+  }
+}
 
 function UserStateDisplay({ userId, canEdit }) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -269,8 +270,8 @@ function UserStateDisplay({ userId, canEdit }) {
       ]);
       setCatalog(catalogRes.data.items || []);
       setSelected(selectionRes.data.stateIndicators || []);
-    } catch (e) {
-      // Fix: handle exception (Low L273)
+    } catch (fetchError) {
+      logError('fetchData', fetchError);
       setCatalog([]);
       setSelected([]);
     } finally {
@@ -293,9 +294,9 @@ function UserStateDisplay({ userId, canEdit }) {
         selectedKeys: updated.map(s => s.key),
         requestor: { role: 'Owner' },
       });
-    } catch (e) {
-      // Fix: handle exception (Low L295) - revert on failure
-      setSelected(selected);
+    } catch (toggleError) {
+      logError('handleToggle', toggleError);
+      setSelected(prev => prev);
     }
   };
 
@@ -310,9 +311,9 @@ function UserStateDisplay({ userId, canEdit }) {
       setCatalog(prev => [...prev, res.data.item]);
       setNewLabel('');
       setIsAdding(false);
-    } catch (e) {
+    } catch (addError) {
       // eslint-disable-next-line no-alert
-      alert(e?.response?.data?.error || 'Failed to add new state');
+      alert(addError?.response?.data?.error || 'Failed to add new state');
     }
   };
 
@@ -326,8 +327,8 @@ function UserStateDisplay({ userId, canEdit }) {
         orderedKeys: reordered.map(c => c.key),
         requestor: { role: 'Owner' },
       });
-    } catch (e) {
-      // Fix: handle exception (Low L327) - revert on failure
+    } catch (moveError) {
+      logError('handleMoveUp', moveError);
       fetchData();
     }
   };
@@ -342,8 +343,8 @@ function UserStateDisplay({ userId, canEdit }) {
         orderedKeys: reordered.map(c => c.key),
         requestor: { role: 'Owner' },
       });
-    } catch (e) {
-      // Fix: handle exception (Low L342) - revert on failure
+    } catch (moveError) {
+      logError('handleMoveDown', moveError);
       fetchData();
     }
   };
@@ -354,10 +355,12 @@ function UserStateDisplay({ userId, canEdit }) {
     setIsReordering(false);
   };
 
-  // Fix: extract reordering toggle to avoid setter using matching state variable (Medium L296)
   const handleToggleReordering = newVal => {
-    setIsReordering(newVal);
-    if (newVal) setIsAdding(false);
+    const next = Boolean(newVal);
+    setIsReordering(next);
+    if (next) {
+      setIsAdding(false);
+    }
   };
 
   const editPanelProps = {
