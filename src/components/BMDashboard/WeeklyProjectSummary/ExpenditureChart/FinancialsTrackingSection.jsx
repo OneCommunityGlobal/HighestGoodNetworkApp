@@ -29,9 +29,27 @@ function FinancialsTrackingSection() {
           type="button"
           className={`${styles.toggleBtn} ${viewMode === 'stacked' ? styles.toggleBtnActive : ''}`}
           aria-pressed={viewMode === 'stacked'}
+          aria-label="Stacked View (Default)"
           onClick={() => setViewMode('stacked')}
         >
-          Stacked View (Default)
+          <span className={styles.labelFull}>Stacked View (Default)</span>
+          <span className={styles.labelMed}>Stacked View</span>
+          <span className={styles.labelMin} aria-hidden="true">
+            <svg
+              width="13"
+              height="13"
+              viewBox="0 0 13 13"
+              fill="currentColor"
+              className={styles.btnIcon}
+              aria-hidden="true"
+            >
+              <rect x="0" y="0" width="5.5" height="5.5" rx="1" />
+              <rect x="7.5" y="0" width="5.5" height="5.5" rx="1" />
+              <rect x="0" y="7.5" width="5.5" height="5.5" rx="1" />
+              <rect x="7.5" y="7.5" width="5.5" height="5.5" rx="1" />
+            </svg>
+            Stacked
+          </span>
         </button>
         <button
           type="button"
@@ -39,9 +57,25 @@ function FinancialsTrackingSection() {
             viewMode === 'comparison' ? styles.toggleBtnActive : ''
           }`}
           aria-pressed={viewMode === 'comparison'}
+          aria-label="Comparison View (Side-by-Side)"
           onClick={() => setViewMode('comparison')}
         >
-          Comparison View (Side-by-Side)
+          <span className={styles.labelFull}>Comparison View (Side-by-Side)</span>
+          <span className={styles.labelMed}>Comparison View</span>
+          <span className={styles.labelMin} aria-hidden="true">
+            <svg
+              width="13"
+              height="13"
+              viewBox="0 0 13 13"
+              fill="currentColor"
+              className={styles.btnIcon}
+              aria-hidden="true"
+            >
+              <rect x="0" y="0" width="5.5" height="13" rx="1" />
+              <rect x="7.5" y="0" width="5.5" height="13" rx="1" />
+            </svg>
+            Compare
+          </span>
         </button>
       </div>
 
