@@ -1,5 +1,7 @@
 /* ============================================================
-   FinancialsTrackingCard — CSS Module (Combined Comparison View)
+   ExpenditureCard — Shared CSS Module
+   Used by both FinancialsTrackingCard (comparison mode) and
+   SingleExpenditureCard (stacked mode).
    All colours use CSS custom properties that cascade from
    WeeklyProjectSummary.module.css (:root / .darkMode).
    Light / dark switching is therefore automatic.
@@ -16,9 +18,20 @@
   color: var(--text-color);
 }
 
-/* ── Controls row (shared project dropdown) ──────────────────── */
+/* Stacked-mode card needs fixed min-height and column flex */
+.cardStacked {
+  min-height: 340px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Controls row ────────────────────────────────────────────── */
 .controls {
   margin-bottom: 20px;
+}
+
+.controlsStacked {
+  margin-bottom: 12px;
 }
 
 /* ── Project select group ────────────────────────────────────── */
@@ -27,6 +40,10 @@
   flex-direction: column;
   gap: 4px;
   max-width: 280px;
+}
+
+.selectGroupStacked {
+  max-width: 240px;
 }
 
 .selectLabel {
@@ -72,7 +89,8 @@
     padding: 16px;
   }
 
-  .selectGroup {
+  .selectGroup,
+  .selectGroupStacked {
     max-width: 100%;
     width: 100%;
   }
