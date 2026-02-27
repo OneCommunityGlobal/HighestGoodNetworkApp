@@ -13,6 +13,7 @@ import styles from '../styles/RightSection.module.css';
 /* function RightSection({ profileData }) { */
 function RightSection() {
   const profileData = useSelector(state => state.userSkills.profileData);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   const [selectedSkill, setSelectedSkill] = useState('Dashboard');
 
@@ -39,7 +40,7 @@ function RightSection() {
   };
 
   return (
-    <div className={`${styles.rightSection}`}>
+    <div className={`${styles.rightSection} ${darkMode ? styles['dark-mode'] : ''}`}>
       <ProfileDetails profileData={profileData} />
       <div className={`${styles.skillsAndChart}`}>
         <Skills selectedSkill={selectedSkill} onSkillClick={handleSkillClick} />

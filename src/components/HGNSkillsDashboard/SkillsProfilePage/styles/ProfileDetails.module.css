@@ -53,7 +53,7 @@
 }
 
 strong {
-  color: #333;
+  /* color: #fffdfd; */
   font-weight: 600;
   font-size: 1rem;
 }
@@ -90,4 +90,39 @@ strong {
     flex-direction: column;
     gap: 5px;
   }
+}
+
+:global(.dark-mode) .profileDetails h3 {
+  color: #fff;
+}
+
+:global(.dark-mode) .profileDetails h4 {
+  color: #fff;
+}
+
+:global(.dark-mode) .horizontalSeparator {
+  border-top-color: #444;
+}
+
+:global(.dark-mode) .teamInfo,
+:global(.dark-mode) .contactsInfo {
+  color: #ccc;
+}
+
+:global(.dark-mode) .teamInfo strong,
+:global(.dark-mode) .contactsInfo strong {
+  color: #a6bace;
+}
+
+:global(.dark-mode) .value {
+  color: #ccc;
+}
+
+:global(.dark-mode) .githubLink {
+  color: #8ab4f8;
+}
+
+:global(.dark-mode) .githubLink:hover {
+  background-color: #333;
+  color: #adc8ff;
 }
