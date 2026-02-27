@@ -11,6 +11,7 @@ const TaskListItem = ({
   isExpanded = false,
   onToggleIntermediateTasks,
   onMarkIntermediateAsDone,
+  darkMode = false,
 }) => {
   const {
     progressPercentage,
