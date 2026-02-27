@@ -438,6 +438,31 @@ function ActivityComments() {
     }
   };
 
+  const toggleSortType = () => {
+    setSortType(prev => (prev === 'Newest' ? 'Oldest' : 'Newest'));
+  };
+
+  const sortedComments = [...comments].sort((a, b) => {
+    if (sortType === 'Newest') return new Date(b.createdAt) - new Date(a.createdAt);
+    if (sortType === 'Oldest') return new Date(a.createdAt) - new Date(b.createdAt);
+    return 0;
+  });
+  const handleUpvote = commentId => {
+    setComments(prevComments =>
+      prevComments.map(comment =>
+        comment.id === commentId ? { ...comment, upvotes: comment.upvotes + 1 } : comment,
+      ),
+    );
+  };
+
+  const handleDownvote = commentId => {
+    setComments(prevComments =>
+      prevComments.map(comment =>
+        comment.id === commentId ? { ...comment, downvotes: comment.downvotes + 1 } : comment,
+      ),
+    );
+  };
+
   const handlePostComment = () => {
     if (!commentInput.trim()) return;
 
@@ -533,9 +558,17 @@ function ActivityComments() {
 
   const handleHelpfulClick = feedbackId => {
     setFeedbacks(prevFeedbacks =>
-      prevFeedbacks.map(feedback =>
-        feedback.id === feedbackId ? { ...feedback, helpful: feedback.helpful + 1 } : feedback,
-      ),
+      prevFeedbacks.map(feedback => {
+        if (feedback.id !== feedbackId) return feedback;
+
+        const hasLiked = feedback.hasLiked ?? false;
+
+        return {
+          ...feedback,
+          helpful: hasLiked ? feedback.helpful - 1 : feedback.helpful + 1,
+          hasLiked: !hasLiked,
+        };
+      }),
     );
   };
 
@@ -892,8 +925,8 @@ function ActivityComments() {
                 <span className={styles.commentCount}>
                   Comment <span style={{ color: '#888', fontWeight: 400 }}>{comments.length}</span>
                 </span>
-                <button className={styles.sortBtn}>
-                  <span style={{ fontSize: '1.1em' }}>⇅</span> Sort
+                <button className={styles.sortBtn} onClick={toggleSortType}>
+                  <span style={{ fontSize: '1.1em' }}>⇅</span> {sortType}
                 </button>
               </div>
               <div className={styles.commentBox}>
@@ -910,7 +943,7 @@ function ActivityComments() {
                 </button>
               </div>
               <div className={styles.commentsList}>
-                {comments.map(comment => (
+                {sortedComments.map(comment => (
                   <div key={comment.id} className={styles.commentItem}>
                     <div className={styles.commentTopRow}>
                       <img
@@ -926,11 +959,16 @@ function ActivityComments() {
                     </div>
                     <div className={styles.commentText}>{comment.text}</div>
                     <div className={styles.commentActionsRow}>
-                      <button className={styles.upvoteBtn}>
+                      <button className={styles.upvoteBtn} onClick={() => handleUpvote(comment.id)}>
                         <span style={{ fontSize: '1.1em' }}>↑</span>
+                        <span className={styles.voteCount}>{comment.upvotes}</span>
                       </button>
-                      <button className={styles.downvoteBtn}>
+                      <button
+                        className={styles.downvoteBtn}
+                        onClick={() => handleDownvote(comment.id)}
+                      >
                         <span style={{ fontSize: '1.1em' }}>↓</span>
+                        <span className={styles.voteCount}>{comment.downvotes}</span>
                       </button>
                       <button
                         className={styles.replyBtn}
