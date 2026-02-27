@@ -13,6 +13,14 @@ const SEGMENT_COLORS = [
   '#10B981',
 ];
 
+const ROLE_OPTIONS = [
+  'Frontend Developer',
+  'DevOps Engineer',
+  'Project Manager',
+  'Junior Developer',
+  'Full Stack Developer',
+];
+
 const EXPERIENCE_LABELS = ['0-1 years', '1-3 years', '3-5 years', '5+ years'];
 
 // ✅ Crypto-based RNG (safer than Math.random)
@@ -34,7 +42,7 @@ function Spinner() {
 export default function ExperienceDonutChart() {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-  const [selectedRoles, setSelectedRoles] = useState([]);
+  const [selectedRole, setSelectedRole] = useState('ALL');
 
   const [appliedFilters, setAppliedFilters] = useState({ startDate: '', endDate: '', roles: [] });
 
@@ -68,13 +76,20 @@ export default function ExperienceDonutChart() {
       const url = `${process.env.REACT_APP_APIENDPOINT}/experience-breakdown`;
       const params = {};
 
-      if (filterStartDate && filterEndDate) {
-        params.startDate = filterStartDate;
-        params.endDate = filterEndDate;
-      } else if (filterRoles && filterRoles.length > 0) {
-        params.roles = filterRoles.join(',');
+      // if (filterStartDate && filterEndDate) {
+      //   params.startDate = filterStartDate;
+      //   params.endDate = filterEndDate;
+      // } else if (filterRoles && filterRoles.length > 0) {
+      //   params.roles = filterRoles.join(',');
+      // }
+      if (appliedFilters.startDate && appliedFilters.endDate) {
+        params.startDate = appliedFilters.startDate;
+        params.endDate = appliedFilters.endDate;
       }
 
+      if (appliedFilters.roles && appliedFilters.roles.length > 0) {
+        params.roles = appliedFilters.roles.join(',');
+      }
       // const response = await axios.get(url, { params });
       const response = await axios.get(url, {
         headers: { Authorization: token },
@@ -126,22 +141,47 @@ export default function ExperienceDonutChart() {
     setSelectedRoles(Array.from(e.target.selectedOptions, o => o.value));
   };
 
+  // const applyFilters = () => {
+  //   if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
+  //     setError(null);
+  //     setChartData(null);
+  //     setTotal(0);
+  //     setLoading(false);
+  //     return;
+  //   }
+  //   setAppliedFilters({ startDate, endDate, roles: selectedRoles });
+  // };
   const applyFilters = () => {
-    if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
-      setError(null);
-      setChartData(null);
-      setTotal(0);
-      setLoading(false);
-      return;
+    let rolesToApply = [];
+
+    if (selectedRole === 'ALL') {
+      rolesToApply = ROLE_OPTIONS;
+    } else {
+      rolesToApply = [selectedRole];
     }
-    setAppliedFilters({ startDate, endDate, roles: selectedRoles });
+
+    setAppliedFilters({
+      startDate,
+      endDate,
+      roles: rolesToApply,
+    });
   };
 
+  // const resetFilters = () => {
+  //   setStartDate('');
+  //   setEndDate('');
+  //   setSelectedRoles([]);
+  //   setAppliedFilters({ startDate: '', endDate: '', roles: [] });
+  // };
   const resetFilters = () => {
     setStartDate('');
     setEndDate('');
-    setSelectedRoles([]);
-    setAppliedFilters({ startDate: '', endDate: '', roles: [] });
+    setSelectedRole('ALL');
+    setAppliedFilters({
+      startDate: '',
+      endDate: '',
+      roles: ROLE_OPTIONS,
+    });
   };
 
   const DetailsPanel = () => {
@@ -230,15 +270,15 @@ export default function ExperienceDonutChart() {
               <select
                 id="roles"
                 className={styles['filter-select']}
-                multiple
-                value={selectedRoles}
-                onChange={onRolesChange}
+                value={selectedRole}
+                onChange={e => setSelectedRole(e.target.value)}
               >
-                <option value="Frontend Developer">Frontend Developer</option>
-                <option value="DevOps Engineer">DevOps Engineer</option>
-                <option value="Project Manager">Project Manager</option>
-                <option value="Junior Developer">Junior Developer</option>
-                <option value="Full Stack Developer">Full Stack Developer</option>
+                <option value="ALL">All Roles</option>
+                {ROLE_OPTIONS.map(role => (
+                  <option key={role} value={role}>
+                    {role}
+                  </option>
+                ))}
               </select>
             </div>
           </div>
