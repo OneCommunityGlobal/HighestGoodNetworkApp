@@ -1,30 +1,30 @@
-import React, { useState, useEffect, useRef , useMemo, useCallback } from 'react';
-import PropTypes from 'prop-types';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Row, Col } from 'reactstrap';
-import { connect } from 'react-redux';
-import ReactTooltip from 'react-tooltip';
-import { DayPicker } from 'react-day-picker';
-import 'react-day-picker/dist/style.css';
+import { faMinusCircle, faPlusCircle } from '@fortawesome/free-solid-svg-icons';
 import { Editor } from '@tinymce/tinymce-react';
+import clsx from 'clsx';
+import { isValid } from 'date-fns';
 import dateFnsFormat from 'date-fns/format';
 import dateFnsParse from 'date-fns/parse';
-import { isValid } from 'date-fns';
+import PropTypes from 'prop-types';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { DayPicker } from 'react-day-picker';
+import 'react-day-picker/dist/style.css';
+import { connect } from 'react-redux';
+import ReactTooltip from 'react-tooltip';
+import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import { boxStyle, boxStyleDark } from '~/styles';
 import { addNewTask } from '../../../../../actions/task';
-import { faPlusCircle, faMinusCircle } from '@fortawesome/free-solid-svg-icons';
-import { DUE_DATE_MUST_GREATER_THAN_START_DATE ,
-  START_DATE_ERROR_MESSAGE,
+import {
   END_DATE_ERROR_MESSAGE,
+  START_DATE_ERROR_MESSAGE
 } from '../../../../../languages/en/messages';
-import clsx from 'clsx';
 import '../../../../Header/index.css';
 import TagsSearch from '../components/TagsSearch';
 import styles from '../wbs.module.css';
 // import styles from './AddTaskModal.module.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { getProjectDetail } from '../../../../../actions/project';
 import { fetchAllMembers } from '../../../../../actions/projectMembers';
 import { fetchAllProjects } from '../../../../../actions/projects';
-import { getProjectDetail } from '../../../../../actions/project';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 /** small v8 DateInput - manual control without useInput **/
 function DateInput({ id, ariaLabel, placeholder, value, onChange, disabled }) {
@@ -192,7 +192,7 @@ function AddTaskModal(props) {
   const [category, setCategory] = useState('Unspecified');
   const [whyInfo, setWhyInfo] = useState('');
   const [intentInfo, setIntentInfo] = useState('');
-  const [startedDate, setStartedDate] = useState('');
+  const [startedDate, setStartedDate] = useState(() => dateFnsFormat(new Date(), 'MM/dd/yy'));
   const [endstateInfo, setEndstateInfo] = useState('');
   const [startDateError, setStartDateError] = useState(false);
   const [endDateError, setEndDateError] = useState(false);
@@ -506,7 +506,7 @@ function AddTaskModal(props) {
     setHoursWorst(0);
     setHoursMost(0);
     setHoursEstimate(0);
-    setStartedDate('');
+    setStartedDate(dateFnsFormat(new Date(), 'MM/dd/yy'));
     setDueDate('');
     setLinks([]);
     setWhyInfo('');
@@ -605,7 +605,7 @@ function AddTaskModal(props) {
 
   useEffect(() => {
     if (!modal) {
-      setStartedDate('');
+      setStartedDate(dateFnsFormat(new Date(), 'MM/dd/yy'));
       setDueDate('');
       setStartDateError(false);
       setEndDateError(false);
