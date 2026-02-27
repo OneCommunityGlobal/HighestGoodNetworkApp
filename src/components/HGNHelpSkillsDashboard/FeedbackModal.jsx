@@ -393,7 +393,11 @@ function FeedbackModal({ authUser }) {
           </p>
           <p className={styles['suggestion-link']}>
             If you have any suggestions please click{' '}
-            <a href="/suggestions" target="_blank" rel="noopener noreferrer">
+            <a
+              href="/dashboard"
+              onClick={() => localStorage.setItem('openSuggestionsModal', 'true')}
+              rel="noopener noreferrer"
+            >
               here
             </a>
           </p>
