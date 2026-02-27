@@ -959,13 +959,16 @@ function ActivityComments() {
                     </div>
                     <div className={styles.commentText}>{comment.text}</div>
                     <div className={styles.commentActionsRow}>
-                      <button className={styles.upvoteBtn} onClick={() => handleUpvote(comment.id)}>
+                      <button
+                        onClick={() => handleUpvote(comment.id)}
+                        className={darkMode ? styles.darkButton : styles.lightButton}
+                      >
                         <span style={{ fontSize: '1.1em' }}>↑</span>
                         <span className={styles.voteCount}>{comment.upvotes}</span>
                       </button>
                       <button
-                        className={styles.downvoteBtn}
                         onClick={() => handleDownvote(comment.id)}
+                        className={darkMode ? styles.darkButton : styles.lightButton}
                       >
                         <span style={{ fontSize: '1.1em' }}>↓</span>
                         <span className={styles.voteCount}>{comment.downvotes}</span>
