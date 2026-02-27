@@ -269,7 +269,12 @@ function KICalendar({ auth, darkMode }) {
                 toggle={() => setDropdownOpen(v => !v)}
                 className="d-inline-block ms-2"
               >
-                <DropdownToggle caret color={darkMode ? '' : 'light'} className={styles.grayBorder}>
+                <DropdownToggle
+                  caret
+                  color={darkMode ? '' : 'light'}
+                  className={styles.grayBorder}
+                  data-testid="modules-filter-dropdown"
+                >
                   {eventFilter}
                 </DropdownToggle>
                 <DropdownMenu>
@@ -278,6 +283,7 @@ function KICalendar({ auth, darkMode }) {
                       key={type}
                       onClick={() => setEventFilter(type)}
                       className={styles.dropdownItem}
+                      data-testid={`filter-${type.replace(' ', '-').toLowerCase()}`}
                     >
                       {moduleIcons[type] && (
                         <FontAwesomeIcon
@@ -323,6 +329,7 @@ function KICalendar({ auth, darkMode }) {
           {/* ---------- Month View ---------- */}
           {view === 'month' && (
             <Calendar
+              data-testid="month-calendar"
               value={selectedDate}
               activeStartDate={currentDate}
               onChange={setSelectedDate}
@@ -353,6 +360,7 @@ function KICalendar({ auth, darkMode }) {
                             setSelectedEvent(event);
                             setModalOpen(true);
                           }}
+                          data-testid={`event-${event.id}`}
                         >
                           {moduleIcons[event.type] && (
                             <FontAwesomeIcon icon={moduleIcons[event.type]} className="me-2" />
@@ -380,7 +388,7 @@ function KICalendar({ auth, darkMode }) {
 
           {/* ---------- Week View ---------- */}
           {view === 'week' && (
-            <Row className={`w-100 text-center ${styles.weekRow}`}>
+            <Row className={`w-100 text-center ${styles.weekRow}`} data-testid="week-calendar">
               {weekDays.map(day => {
                 const dateEvents = eventsForDate(day);
                 const isSelected = isSameDay(day, selectedDate);
@@ -431,6 +439,7 @@ function KICalendar({ auth, darkMode }) {
         isOpen={modalOpen}
         toggle={() => setModalOpen(false)}
         className={` ${darkMode ? styles.darkMode : ''}`}
+        data-testid="event-modal"
       >
         <ModalHeader toggle={() => setModalOpen(false)}>
           <h4>
