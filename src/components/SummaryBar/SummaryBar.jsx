@@ -617,14 +617,14 @@ const SummaryBar = React.forwardRef((props, ref) => {
               }`}
               style={{ border: '1px solid black' }}
             >
-              <div className={`m-auto p-2 ${styles['text-center']}`}>
+              <div className="w-100 p-2 text-center">
                 <span
                   role="button"
                   tabIndex={0}
                   onClick={props.toggleSubmitForm}
                   onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && props.toggleSubmitForm()}
                   className={`${styles['summary-toggle']}`}
-                  style={{ cursor: 'pointer', fontSize: '1.1rem' }}
+                  style={{ cursor: 'pointer', fontSize: '1.1rem', display: 'inline-block' }}
                 >
                   {renderSummaryMessage()}
                 </span>

@@ -820,7 +820,7 @@ return (
                     : timeLog.cardHeaderShadow
                   }
                 >
-                  <Row className="d-flex flex-nowrap align-items-start w-100 gx-0">
+                  <Row className="d-flex flex-nowrap align-items-center w-100 gx-0">
                   {/* LEFT: title/subtitle takes remaining space */}
                   <Col className="px-0 flex-grow-1" style={{ minWidth: 0 }}>
                     <CardTitle tag="h4">
