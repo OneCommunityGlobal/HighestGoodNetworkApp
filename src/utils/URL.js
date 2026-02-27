@@ -408,6 +408,7 @@ export const ENDPOINTS = {
   HGN_FORM_UPDATE_QUESTION: id => `${APIEndpoint}/questions/${id}`,
   HGN_FORM_SUBMIT: `${APIEndpoint}/hgnform`,
   HGN_FORM_UPDATE_USER_SKILLS_FOLLOWUP_SUBMIT: `${APIEndpoint}/skills/profile/updateFollowUp/`,
+  SKILLS_PROFILE_UPDATE_YEARS_OF_EXPERIENCE: userId => `${APIEndpoint}/skills/profile/updateYearsOfExperience/${userId}`,
   // HGN Skills Dashboard
   SKILLS_PROFILE: userId => `${APIEndpoint}/skills/profile/${userId}`,
 
@@ -537,6 +538,8 @@ export const ENDPOINTS = {
   PR_REVIEWS_INSIGHTS: `${APIEndpoint}/analytics/pr-review-insights`,
 
   // Education Portal endpoints
+  STUDENT_PROFILE: `${APIEndpoint}/student/profile`,
+  STUDENT_SUBJECT_TASKS: subjectId => `${APIEndpoint}/student/profile/subject/${subjectId}`,
   EDUCATOR_ASSIGN_ATOMS: () => `${APIEndpoint}/educator/assign-atoms`,
 
   LESSON_PLANS: `${APIEndpoint}/education/lesson-plans`,
