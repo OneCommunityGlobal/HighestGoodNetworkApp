@@ -1,5 +1,4 @@
 .popularEventsContainer {
-
   max-height: 100%;
   margin: 0 auto;
   padding: 20px;
@@ -8,7 +7,6 @@
 }
 
 .popularEventsContainerDark {
-
   margin: 0 auto;
   padding: 20px;
   font-family: Arial, sans-serif;
@@ -33,7 +31,6 @@
   font-size: 1.5rem;
   color: #000000;
   margin: 0;
-  font-weight: 700;
 }
 
 .popularEventsHeaderDark {
@@ -41,7 +38,6 @@
   color: #ffffff;
   margin: 0;
   background-color: #1C2541;
-  font-weight: 700;
 }
 
 .filters {
@@ -53,17 +49,6 @@
   display: flex;
   gap: 10px;
   background-color: #1C2541;
-}
-
-.filtersDark select {
-  background-color: #2d3748;
-  border-color: #4a5568;
-  color: #fff;
-}
-
-.filtersDark select option {
-  background-color: #2d3748;
-  color: #fff;
 }
 
 .filters select {
@@ -94,33 +79,29 @@
 }
 
 .statItem {
-  display: flex;
+  display: grid;
+  grid-template-columns: 140px 1fr auto;
   align-items: center;
-  justify-content: space-between;
+  gap: 15px;
 }
 
-
-
 .statLabel {
-  flex: 1;
   font-size: 14px;
   font-weight: bold;
   color: #333;
 }
 
 .statLabelDark {
-  flex: 1;
   font-size: 14px;
   font-weight: bold;
   color: #ffffff;
 }
 
 .statBar {
-  flex: 3;
+  width: 100%;
   background: #f0f0f0;
   height: 8px;
   border-radius: 5px;
-  margin: 0 10px;
   position: relative;
   overflow: hidden;
 }
@@ -144,26 +125,27 @@
 }
 
 .statValue {
-  flex: 1;
-  text-align: right;
   font-size: 14px;
   font-weight: bold;
   color: #333;
+  white-space: nowrap;
+  text-align: right;
+  min-width: 110px;
 }
 
 .statValueDark {
-  flex: 1;
-  text-align: right;
   font-size: 14px;
   font-weight: bold;
   color: #ffffff;
+  white-space: nowrap;
+  text-align: right;
+  min-width: 110px;
 }
 
 .eventSummary {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 10px;
-  max-height: 80px;
   margin-top: 20px;
   border-radius: 8px;
   text-align: center;
@@ -232,4 +214,107 @@
   font-weight: bold;
   color: #ffffff;
   margin-top: 4px;
+}
+
+/* ── Responsive: tablets and below ── */
+@media (max-width: 768px) {
+  .popularEventsContainer,
+  .popularEventsContainerDark {
+    padding: 14px;
+  }
+
+  .headerContainer,
+  .headerContainerDark {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .popularEventsHeader,
+  .popularEventsHeaderDark {
+    font-size: 1.2rem;
+  }
+
+  .filters,
+  .filtersDark {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .filters select,
+  .filtersDark select {
+    flex: 1;
+    min-width: 100px;
+  }
+
+  .stats,
+  .statsDark {
+    padding: 16px;
+    gap: 14px;
+  }
+
+  .statItem {
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+    gap: 6px 10px;
+  }
+
+  .statLabel,
+  .statLabelDark {
+    grid-column: 1 / -1;
+    font-size: 13px;
+  }
+
+  .statBar {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .statValue,
+  .statValueDark {
+    grid-column: 2;
+    grid-row: 2;
+    font-size: 13px;
+    min-width: unset;
+  }
+
+  .eventSummary {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    padding-bottom: 14px;
+  }
+
+  .summaryItem,
+  .summaryItemDark {
+    min-height: 70px;
+    padding: 10px;
+  }
+
+  .summaryTitle,
+  .summaryTitleDark {
+    font-size: 12px;
+  }
+
+  .summaryValue,
+  .summaryValueDark {
+    font-size: 13px;
+  }
+}
+
+/* ── Responsive: small phones ── */
+@media (max-width: 480px) {
+  .popularEventsHeader,
+  .popularEventsHeaderDark {
+    font-size: 1.1rem;
+  }
+
+  .statLabel,
+  .statLabelDark {
+    font-size: 12px;
+  }
+
+  .statValue,
+  .statValueDark {
+    font-size: 12px;
+  }
 }
