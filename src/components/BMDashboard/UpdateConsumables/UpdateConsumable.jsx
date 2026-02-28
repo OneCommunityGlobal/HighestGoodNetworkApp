@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { Container, FormGroup, Input, Label, Form, Col, Button } from 'reactstrap';
+import { Container, FormGroup, Input, Label, Form, Col, Button, Spinner } from 'reactstrap';
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
@@ -10,29 +10,65 @@ function UpdateConsumable({ record, setModal }) {
   const dispatch = useDispatch();
   const postConsumableUpdateResult = useSelector(state => state.bmConsumables.updateConsumables);
   const { purchaseRecord, stockAvailable, updateRecord: _, ...rest } = record;
-
   const recordInitialState = {
     date: moment(new Date()).format('YYYY-MM-DD'),
     quantityUsed: '0',
     quantityWasted: '0',
     qtyUsedLogUnit: 'unit',
     qtyWastedLogUnit: 'unit',
-    reasonWastage: '',
-    usedBy: '',
     consumable: rest,
     newAvailable: undefined,
   };
-
   const validationsInitialState = {
     quantityUsed: '',
     quantityWasted: '',
     quantityTogether: '',
   };
-
   const [updateRecord, setUpdateRecord] = useState(recordInitialState);
   const [validations, setValidations] = useState(validationsInitialState);
   const [availableCount, setAvailableCount] = useState(undefined);
   const [changeOccured, setChangeOccured] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    setUpdateRecord({ ...recordInitialState });
+    setValidations({ ...validationsInitialState });
+  }, []);
+
+  useEffect(() => {
+    if (postConsumableUpdateResult.loading === false && postConsumableUpdateResult.error === true) {
+      toast.error(`${postConsumableUpdateResult.result}`);
+      setIsSubmitting(false);
+      setModal(false);
+    } else if (
+      postConsumableUpdateResult.loading === false &&
+      postConsumableUpdateResult.result !== null &&
+      isSubmitting
+    ) {
+      toast.success(`Updated ${record?.itemType?.name} successfully`);
+      setIsSubmitting(false);
+      setModal(false);
+    }
+  }, [postConsumableUpdateResult, isSubmitting]);
+
+  useEffect(() => {
+    const qtyUsedFloat = parseFloat(updateRecord.quantityUsed);
+    const qtyWastedFloat = parseFloat(updateRecord.quantityWasted);
+
+    if (qtyUsedFloat || qtyWastedFloat) {
+      setChangeOccured(true);
+    } else {
+      setChangeOccured(false);
+    }
+
+    // eslint-disable-next-line no-use-before-define
+    validate(
+      updateRecord.quantityUsed,
+      updateRecord.quantityWasted,
+      updateRecord.qtyUsedLogUnit,
+      updateRecord.qtyWastedLogUnit,
+    );
+  }, [updateRecord]);
 
   const validate = (_qtyUsed, _qtyWasted, qtyUsedLogUnit, qtyWastedLogUnit) => {
     let unitsUsed = _qtyUsed === '' ? 0 : parseFloat(_qtyUsed);
@@ -50,16 +86,12 @@ function UpdateConsumable({ record, setModal }) {
 
     if (unitsUsed > stockAvailable) {
       tempValidations.quantityUsed = 'Quantity Used exceeds the available stock';
-    } else if (unitsUsed < 0) {
-      tempValidations.quantityUsed = 'Quantity Used cannot be negative';
     } else {
       tempValidations.quantityUsed = '';
     }
 
     if (unitsWasted > stockAvailable) {
       tempValidations.quantityWasted = 'Quantity Wasted exceeds the available stock';
-    } else if (unitsWasted < 0) {
-      tempValidations.quantityWasted = 'Quantity Wasted cannot be negative';
     } else {
       tempValidations.quantityWasted = '';
     }
@@ -80,49 +112,16 @@ function UpdateConsumable({ record, setModal }) {
     }
   };
 
-  useEffect(() => {
-    setUpdateRecord({ ...recordInitialState });
-    setValidations({ ...validationsInitialState });
-  }, []);
-
-  useEffect(() => {
-    if (postConsumableUpdateResult.loading === false && postConsumableUpdateResult.error === true) {
-      toast.error(`${postConsumableUpdateResult.result}`);
-      setModal(false);
-    } else if (
-      postConsumableUpdateResult.loading === false &&
-      postConsumableUpdateResult.result !== null
-    ) {
-      toast.success(`Updated ${record?.itemType?.name} successfully`);
-      setModal(false);
-    }
-  }, [postConsumableUpdateResult]);
-
-  useEffect(() => {
-    const qtyUsedFloat = parseFloat(updateRecord.quantityUsed);
-    const qtyWastedFloat = parseFloat(updateRecord.quantityWasted);
-
-    if (qtyUsedFloat || qtyWastedFloat) {
-      setChangeOccured(true);
-    } else {
-      setChangeOccured(false);
-    }
-
-    validate(
-      updateRecord.quantityUsed,
-      updateRecord.quantityWasted,
-      updateRecord.qtyUsedLogUnit,
-      updateRecord.qtyWastedLogUnit,
-    );
-  }, [updateRecord]);
-
   const submitHandler = () => {
+    if (isSubmitting) return; // Prevent double-click
+
     if (
       validations.quantityUsed === '' &&
       validations.quantityWasted === '' &&
       validations.quantityTogether === '' &&
       changeOccured
     ) {
+      setIsSubmitting(true);
       const postObject = {
         date: updateRecord.date,
         quantityUsed: updateRecord.quantityUsed === '' ? 0 : parseFloat(updateRecord.quantityUsed),
@@ -130,8 +129,6 @@ function UpdateConsumable({ record, setModal }) {
         quantityWasted:
           updateRecord.quantityWasted === '' ? 0 : parseFloat(updateRecord.quantityWasted),
         qtyWastedLogUnit: updateRecord.qtyWastedLogUnit,
-        reasonWastage: updateRecord.reasonWastage,
-        usedBy: updateRecord.usedBy,
         stockAvailable,
         consumable: updateRecord.consumable,
       };
@@ -146,6 +143,7 @@ function UpdateConsumable({ record, setModal }) {
     if (Number(value) < 0) return;
     const tempRecord = { ...updateRecord };
     tempRecord[name] = value;
+
     setUpdateRecord(tempRecord);
   };
 
@@ -175,7 +173,6 @@ function UpdateConsumable({ record, setModal }) {
                 {record?.project.name}
               </Col>
             </FormGroup>
-
             <FormGroup row className="align-items-center justify-content-start">
               <Label for="updateConsumableDate" sm={4} className={`${styles.consumableFormLabel}`}>
                 Date
@@ -212,7 +209,6 @@ function UpdateConsumable({ record, setModal }) {
                 </Col>
               </FormGroup>
             )}
-
             <FormGroup row>
               <Label
                 for="updateConsumableQuantityUsed"
@@ -230,12 +226,6 @@ function UpdateConsumable({ record, setModal }) {
                   value={updateRecord.quantityUsed}
                   onChange={e => changeRecordHandler(e)}
                   min={0}
-                  onKeyDown={e => {
-                    if (e.key === '+' || e.key === '-') e.preventDefault();
-                  }}
-                  onInput={e => {
-                    e.target.value = e.target.value.replace(/[^\d.]/g, '');
-                  }}
                 />
               </Col>
               <Col sm={{ size: 4 }} className={`${styles.consumableFormValue}`}>
@@ -279,12 +269,6 @@ function UpdateConsumable({ record, setModal }) {
                   value={updateRecord.quantityWasted}
                   onChange={e => changeRecordHandler(e)}
                   min={0}
-                  onKeyDown={e => {
-                    if (e.key === '+' || e.key === '-') e.preventDefault();
-                  }}
-                  onInput={e => {
-                    e.target.value = e.target.value.replace(/[^\d.]/g, '');
-                  }}
                 />
               </Col>
               <Col sm={{ size: 4 }} className={`${styles.consumableFormValue}`}>
@@ -309,42 +293,6 @@ function UpdateConsumable({ record, setModal }) {
                 </Label>
               )}
             </FormGroup>
-
-            <FormGroup row>
-              <Label for="updateConsumableReasonWastage" sm={4} className="consumableFormLabel">
-                Reason for Wastage
-              </Label>
-              <Col sm={8} className="consumableFormValue">
-                <Input
-                  id="updateConsumableReasonWastage"
-                  name="reasonWastage"
-                  type="select"
-                  value={updateRecord.reasonWastage}
-                  onChange={e => changeRecordHandler(e)}
-                >
-                  <option value="">Select Reason</option>
-                  <option value="expired">Expired</option>
-                  <option value="damaged">Damaged</option>
-                  <option value="overstock">Overstock</option>
-                </Input>
-              </Col>
-            </FormGroup>
-
-            <FormGroup row>
-              <Label for="updateConsumableUsedBy" sm={4} className="consumableFormLabel">
-                Used By
-              </Label>
-              <Col sm={8} className="consumableFormValue">
-                <Input
-                  id="updateConsumableUsedBy"
-                  name="usedBy"
-                  type="text"
-                  value={updateRecord.usedBy}
-                  onChange={e => changeRecordHandler(e)}
-                />
-              </Col>
-            </FormGroup>
-
             {validations.quantityTogether !== '' &&
               validations.quantityUsed === '' &&
               validations.quantityWasted === '' && (
@@ -362,6 +310,7 @@ function UpdateConsumable({ record, setModal }) {
             <FormGroup row className="d-flex justify-content-right">
               <Button
                 disabled={
+                  isSubmitting ||
                   postConsumableUpdateResult.loading ||
                   availableCount < 0 ||
                   changeOccured === false
@@ -369,7 +318,13 @@ function UpdateConsumable({ record, setModal }) {
                 className={`${styles.consumableButtonBg}`}
                 onClick={submitHandler}
               >
-                Update Consumable
+                {isSubmitting ? (
+                  <>
+                    <Spinner size="sm" /> Updating...
+                  </>
+                ) : (
+                  'Update Consumable'
+                )}
               </Button>
             </FormGroup>
           </Form>

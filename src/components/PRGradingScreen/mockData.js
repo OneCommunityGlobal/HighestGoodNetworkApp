@@ -1,6 +1,7 @@
 // Mock data for PR Grading Screen
 // This file contains sample data for testing the PR grading functionality
 // Delete this file once we have the backend endpoint to get data
+import { v4 as uuidv4 } from 'uuid';
 
 export const mockTeamData = {
   teamName: '91NePRT',
@@ -269,9 +270,7 @@ export const gradeOptions = [
 
 // Default data for new PR entries
 export const createNewPREntry = (prNumbers, grade) => ({
-  id: `pr_${Date.now()}_${Math.random()
-    .toString(36)
-    .substr(2, 9)}`,
+  id: `pr_${uuidv4()}`,
   prNumbers,
   grade,
 });
