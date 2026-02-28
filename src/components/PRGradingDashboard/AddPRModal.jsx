@@ -5,11 +5,22 @@ import styles from './AddPRModal.module.css';
 const PR_NUMBER_REGEX = /^\d+(?:\s*\+\s*\d+)*$/;
 const GRADE_OPTIONS = ['Unsatisfactory', 'Okay', 'Exceptional', 'No Correct Image'];
 
-function AddPRModal({ reviewer, onAdd, onCancel }) {
+const normalizePrNumbers = prNumbers => (prNumbers || '').replace(/\s+/g, '');
+
+function AddPRModal({ reviewer, existingPRs, onAdd, onCancel }) {
   const [prNumber, setPrNumber] = useState('');
   const [prNumberError, setPrNumberError] = useState('');
   const [selectedGrade, setSelectedGrade] = useState('');
   const [step, setStep] = useState(1); // 1: PR Number input, 2: Grade selection
+
+  const safeExistingPRs = Array.isArray(existingPRs) ? existingPRs : [];
+
+  const isDuplicatePR = value => {
+    const normalizedNew = normalizePrNumbers(value);
+    return safeExistingPRs.some(
+      pr => pr?.prNumbers && normalizePrNumbers(pr.prNumbers) === normalizedNew,
+    );
+  };
 
   const validatePRNumber = value => {
     const trimmedValue = value.trim();
@@ -22,6 +33,11 @@ function AddPRModal({ reviewer, onAdd, onCancel }) {
     const isValid = PR_NUMBER_REGEX.test(trimmedValue);
     if (!isValid) {
       setPrNumberError('Invalid format. Use format like "1234" or "1234 + 5678"');
+      return false;
+    }
+    // Check for duplicate PR number for this reviewer
+    if (isDuplicatePR(trimmedValue)) {
+      setPrNumberError(`PR number "${trimmedValue}" already exists for this reviewer`);
       return false;
     }
     setPrNumberError('');

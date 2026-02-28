@@ -34,6 +34,7 @@ function GradingTable({
                 <td colSpan="4" className={styles.modalCell}>
                   <AddPRModal
                     reviewer={grading.reviewer}
+                    existingPRs={grading.gradedPrs}
                     onAdd={onAddGradedPR}
                     onCancel={() => onAddPRClick(null)}
                   />
