@@ -14,6 +14,7 @@ export default function ItemsTable({
   UpdateItemModal,
   dynamicColumns,
   darkMode = false,
+  itemType,
 }) {
   const [sortedData, setData] = useState(filteredItems);
   const [modal, setModal] = useState(false);
@@ -31,6 +32,13 @@ export default function ItemsTable({
     iconsToDisplay: faSort,
     sortOrder: 'default',
   });
+
+  const [boughtCol, setBoughtCol] = useState({ iconsToDisplay: faSort, sortOrder: 'default' });
+  const [usedCol, setUsedCol] = useState({ iconsToDisplay: faSort, sortOrder: 'default' });
+  const [availableCol, setAvailableCol] = useState({
+    iconsToDisplay: faSort,
+  });
+  const [wastedCol, setWastedCol] = useState({ iconsToDisplay: faSort, sortOrder: 'default' });
 
   useEffect(() => {
     setData(filteredItems);
@@ -98,12 +106,65 @@ export default function ItemsTable({
       }
       setProjectNameCol({ iconsToDisplay: faSort, sortOrder: 'default' });
     }
+    // Sorting for Bought
+    if (columnName === 'Bought') {
+      if (boughtCol.sortOrder === 'default' || boughtCol.sortOrder === 'desc') {
+        newSortedData.sort((a, b) => (a.stockBought || 0) - (b.stockBought || 0));
+        setBoughtCol({ iconsToDisplay: faSortUp, sortOrder: 'asc' });
+      } else {
+        newSortedData.sort((a, b) => (b.stockBought || 0) - (a.stockBought || 0));
+        setBoughtCol({ iconsToDisplay: faSortDown, sortOrder: 'desc' });
+      }
+      resetOtherDynamicColumns('Bought');
+    }
 
+    // Sorting for Used
+    if (columnName === 'Used') {
+      if (usedCol.sortOrder === 'default' || usedCol.sortOrder === 'desc') {
+        newSortedData.sort((a, b) => (a.stockUsed || 0) - (b.stockUsed || 0));
+        setUsedCol({ iconsToDisplay: faSortUp, sortOrder: 'asc' });
+      } else {
+        newSortedData.sort((a, b) => (b.stockUsed || 0) - (a.stockUsed || 0));
+        setUsedCol({ iconsToDisplay: faSortDown, sortOrder: 'desc' });
+      }
+      resetOtherDynamicColumns('Used');
+    }
+
+    // Sorting for Available
+    if (columnName === 'Available') {
+      if (availableCol.sortOrder === 'default' || availableCol.sortOrder === 'desc') {
+        newSortedData.sort((a, b) => (a.stockAvailable || 0) - (b.stockAvailable || 0));
+        setAvailableCol({ iconsToDisplay: faSortUp, sortOrder: 'asc' });
+      } else {
+        newSortedData.sort((a, b) => (b.stockAvailable || 0) - (a.stockAvailable || 0));
+        setAvailableCol({ iconsToDisplay: faSortDown, sortOrder: 'desc' });
+      }
+      resetOtherDynamicColumns('Available');
+    }
+
+    // Sorting for Wasted
+    if (columnName === 'Wasted') {
+      if (wastedCol.sortOrder === 'default' || wastedCol.sortOrder === 'desc') {
+        newSortedData.sort((a, b) => (a.stockWasted || 0) - (b.stockWasted || 0));
+        setWastedCol({ iconsToDisplay: faSortUp, sortOrder: 'asc' });
+      } else {
+        newSortedData.sort((a, b) => (b.stockWasted || 0) - (a.stockWasted || 0));
+        setWastedCol({ iconsToDisplay: faSortDown, sortOrder: 'desc' });
+      }
+      resetOtherDynamicColumns('Wasted');
+    }
     setData(newSortedData);
   };
 
   const getNestedValue = (obj, path) => {
     return path.split('.').reduce((acc, part) => (acc ? acc[part] : null), obj);
+  };
+
+  const resetOtherDynamicColumns = active => {
+    if (active !== 'Bought') setBoughtCol({ iconsToDisplay: faSort, sortOrder: 'default' });
+    if (active !== 'Used') setUsedCol({ iconsToDisplay: faSort, sortOrder: 'default' });
+    if (active !== 'Available') setAvailableCol({ iconsToDisplay: faSort, sortOrder: 'default' });
+    if (active !== 'Wasted') setWastedCol({ iconsToDisplay: faSort, sortOrder: 'default' });
   };
 
   return (
@@ -115,6 +176,7 @@ export default function ItemsTable({
         record={record}
         setRecord={setRecord}
         recordType={recordType}
+        itemType={itemType}
       />
 
       {/* Direct Chart Modal for Usage Records */}
@@ -141,9 +203,21 @@ export default function ItemsTable({
               ) : (
                 <th>Name</th>
               )}
-              {dynamicColumns.map(({ label }) => (
-                <th key={label}>{label}</th>
-              ))}
+              {dynamicColumns.map(({ label }) => {
+                const stateMap = {
+                  Bought: boughtCol,
+                  Used: usedCol,
+                  Available: availableCol,
+                  Wasted: wastedCol,
+                };
+
+                return (
+                  <th key={label} onClick={() => sortData(label)}>
+                    {label}{' '}
+                    <FontAwesomeIcon icon={stateMap[label]?.iconsToDisplay || faSort} size="lg" />
+                  </th>
+                );
+              })}
               <th>Usage Record</th>
               <th>Updates</th>
               <th>Purchases</th>
