@@ -8,6 +8,8 @@ import { configureStore } from 'redux-mock-store';
 import UserTableData from '../UserTableData';
 import { authMock, themeMock } from '../../../__tests__/mockStates';
 import { renderWithProvider } from '../../../__tests__/utils';
+import { MemoryRouter } from 'react-router-dom';
+
 // Mock Axios requests
 vi.mock('axios');
 const mockStore = configureStore([thunk]);
@@ -19,7 +21,7 @@ const jaeAccountMock = {
     iat: 1597272666,
     userid: '1',
     permissions: {
-      frontPermissions: ['deleteUserProfile', 'resetPassword', 'changeUserStatus'],
+      frontPermissions: ['deleteUserProfile', 'updatePassword', 'changeUserStatus'],
       backPermissions: [],
     },
     role: 'Administrator',
@@ -39,7 +41,7 @@ const nonJaeAccountMock = {
     iat: 1597272666,
     userid: '2',
     permissions: {
-      frontPermissions: ['deleteUserProfile', 'resetPassword', 'changeUserStatus'],
+      frontPermissions: ['deleteUserProfile', 'updatePassword', 'changeUserStatus'],
       backPermissions: [],
     },
     role: 'Administrator',
@@ -50,6 +52,9 @@ const nonJaeAccountMock = {
   role: 'Administrator',
   weeklycommittedHours: 10,
   email: 'non_jae@hgn.net',
+  inactiveReason: null,
+  endDate: null,
+  isSet: false
 };
 
 const ownerAccountMock = {
@@ -60,7 +65,7 @@ const ownerAccountMock = {
     iat: 1597272666,
     userid: '3',
     permissions: {
-      frontPermissions: ['deleteUserProfile', 'resetPassword', 'changeUserStatus'],
+      frontPermissions: ['deleteUserProfile', 'updatePassword', 'changeUserStatus'],
       backPermissions: [],
     },
     role: 'Owner',
@@ -79,18 +84,20 @@ describe('User Table Data: Non-Jae related Account', () => {
   let store;
   const renderRow = (user) => {
     renderWithProvider(
-      <table>
-        <tbody>
-          <UserTableData
-            isActive
-            index={0}
-            user={user}
-            onActiveInactiveClick={onActiveInactiveClick}
-            onPauseResumeClick={onPauseResumeClick}
-            onDeleteClick={onDeleteClick}
-          />
-        </tbody>
-      </table>,
+      <MemoryRouter initialEntries={['/usermanagement']}>
+        <table>
+          <tbody>
+            <UserTableData
+              isActive
+              index={0}
+              user={user}
+              onActiveInactiveClick={onActiveInactiveClick}
+              onPauseResumeClick={onPauseResumeClick}
+              onDeleteClick={onDeleteClick}
+            />
+          </tbody>
+        </table>
+      </MemoryRouter>,
       { store },
     );
   }
@@ -102,7 +109,7 @@ describe('User Table Data: Non-Jae related Account', () => {
         roles: [
           {
             roleName: nonJaeAccountMock.role,
-            permissions: ['deleteUserProfile', 'resetPassword', 'changeUserStatus'],
+            permissions: ['deleteUserProfile', 'updatePassword', 'changeUserStatus'],
           },
         ],
       },
@@ -127,7 +134,7 @@ describe('User Table Data: Non-Jae related Account', () => {
     });
     it('should render a active/inactive button', () => {
       renderRow(nonJaeAccountMock);
-      expect(screen.getByTitle('Click here to change the user status')).toBeInTheDocument();
+      expect(screen.getByTitle('Click to change user status')).toBeInTheDocument();
     });
 
     it('should render the first name and last name in input fields', () => {
@@ -174,7 +181,7 @@ describe('User Table Data: Non-Jae related Account', () => {
 
     it('should render a `Pause` button', () => {
       renderRow(nonJaeAccountMock);
-      expect(screen.getByRole('button', { name: /pause/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /PAUSE/i })).toBeInTheDocument();
     });
     it('should render a `Delete` button', () => {
       renderRow(nonJaeAccountMock);
@@ -212,7 +219,7 @@ describe('User Table Data: Non-Jae related Account', () => {
     });
     it('should fire onActiveInactiveClick() once the user clicks the active/inactive button', async() => {
       renderRow(nonJaeAccountMock);
-      await userEvent.click(screen.getByTitle('Click here to change the user status'));
+      await userEvent.click(screen.getByTitle('Click to change user status'));
       expect(onActiveInactiveClick).toHaveBeenCalledTimes(1);
     });
     it('should render a modal once the user clicks the `reset password` button', async() => {
@@ -229,19 +236,21 @@ describe('User Table Data: Jae protected account record and login as Jae related
   let onActiveInactiveClick;
   let store;
   const renderRow = (user) => {
-     renderWithProvider(
-      <table>
-        <tbody>
-          <UserTableData
-            isActive
-            index={0}
-            user={user}
-            onActiveInactiveClick={onActiveInactiveClick}
-            onPauseResumeClick={onPauseResumeClick}
-            onDeleteClick={onDeleteClick}
-          />
-        </tbody>
-      </table>,
+    renderWithProvider(
+      <MemoryRouter initialEntries={['/usermanagement']}>
+        <table>
+          <tbody>
+            <UserTableData
+              isActive
+              index={0}
+              user={user}
+              onActiveInactiveClick={onActiveInactiveClick}
+              onPauseResumeClick={onPauseResumeClick}
+              onDeleteClick={onDeleteClick}
+            />
+          </tbody>
+        </table>
+      </MemoryRouter>,
       { store },
     );
   }
@@ -253,7 +262,7 @@ describe('User Table Data: Jae protected account record and login as Jae related
         roles: [
           {
             roleName: jaeAccountMock.role,
-            permissions: ['deleteUserProfile', 'resetPassword', 'changeUserStatus'],
+            permissions: ['deleteUserProfile', 'updatePassword', 'changeUserStatus'],
           },
         ],
       },
@@ -279,7 +288,7 @@ describe('User Table Data: Jae protected account record and login as Jae related
     });
     it('should render a active/inactive button', () => {
       renderRow(jaeAccountMock);
-      expect(screen.getByTitle('Click here to change the user status')).toBeInTheDocument();
+      expect(screen.getByTitle('Click to change user status')).toBeInTheDocument();
     });
     it('should render the correct first name and last name', () => {
       renderRow(jaeAccountMock);

@@ -1,3 +1,13 @@
+/* Custom dark mode table row hover effect */
+/* Improved dark mode table row hover effect */
+.toolTypeRow.dark-mode:hover,
+tr.toolTypeRow.dark-mode:hover,
+tbody tr.toolTypeRow.dark-mode:hover {
+  background-color: inherit !important;
+  color: inherit !important;
+  border: inherit !important;
+  transition: none !important;
+}
 .page {
   margin: 0;
   display: flex;
@@ -163,4 +173,49 @@
 .toolTypeRow {
   border: none !important;
   color:#aaacaf;
+}
+
+/* Dark mode styles */
+.page.dark-mode {
+  background-color: #1e2736 !important;
+}
+
+.logFormContainer.dark-mode {
+  background-color: #343a40 !important;
+  border-color: #495057 !important;
+  color: #fff !important;
+}
+
+.titleLabel.dark-mode {
+  color: #fff !important;
+}
+
+.selectorLabel.dark-mode {
+  color: #fff !important;
+}
+
+.subtitleRow.dark-mode {
+  background-color: #495057 !important;
+  color: #fff !important;
+}
+
+.tableSubtitle.dark-mode {
+  color: #adb5bd !important;
+}
+
+.subtitleHighlight.dark-mode {
+  color: red !important;
+}
+
+.toolTypeHead.dark-mode {
+  color: #fff !important;
+  border-bottom-color: #6c757d !important;
+}
+
+.toolTypeRow.dark-mode {
+  color: #fff !important;
+}
+
+.toolTypeRow.dark-mode td {
+  color: #fff !important;
 }

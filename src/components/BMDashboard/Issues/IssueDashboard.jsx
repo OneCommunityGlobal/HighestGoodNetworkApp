@@ -6,9 +6,18 @@ import {
   FiTrash2,
   FiCopy,
   FiEdit,
+  FiDownload,
 } from 'react-icons/fi';
-import './IssueDashboard.css';
-import { Col, Row, Table } from 'reactstrap';
+import styles from './IssueDashboard.module.css';
+import {
+  Col,
+  Row,
+  Table,
+  UncontrolledDropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+} from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   copyIssue,
@@ -17,23 +26,29 @@ import {
   renameIssue,
 } from '~/actions/bmdashboard/issueActions';
 import IssueHeader from './IssueHeader';
+import { toast } from 'react-toastify';
+import { jsPDF } from 'jspdf';
 
 export default function IssueDashboard() {
   const dispatch = useDispatch();
-  const issues = useSelector(state => state.bmIssues.issues || []);
+  const issues = useSelector(state => state.bmIssues?.issues || []);
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [menuOpen, setMenuOpen] = useState(null);
   const itemsPerPage = 5;
-  const totalPages = Math.ceil(issues.length / itemsPerPage);
+  const displayIssues = issues;
+  const totalPages = Math.ceil(displayIssues.length / itemsPerPage);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showRenameModal, setShowRenameModal] = useState(false);
   const [showCopyModal, setShowCopyModal] = useState(false);
   const [selectedIssue, setSelectedIssue] = useState(null);
   const [renameValue, setRenameValue] = useState('');
 
-  const currentItems = issues.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  const currentItems = displayIssues.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage,
+  );
 
   const toggleMenu = id => setMenuOpen(open => (open === id ? null : id));
 
@@ -77,6 +92,137 @@ export default function IssueDashboard() {
     dispatch(fetchAllIssues());
   }, [dispatch]);
 
+  const buildExportRows = sourceIssues => {
+    return (sourceIssues || []).map(issue => {
+      const assignedUser = issue.assignedTo
+        ? `${issue.assignedTo.firstName || ''} ${issue.assignedTo.lastName || ''}`.trim()
+        : issue.assignedToName || issue.assignee || 'Unassigned';
+
+      const formatDate = value => {
+        if (!value) return '-';
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return `${value}`;
+        return date.toLocaleDateString();
+      };
+
+      return {
+        issueName: issue.name || issue.issueName || '-',
+        status: issue.status || issue.state || issue.issueStatus || '-',
+        priority: issue.priority || issue.severity || issue.issuePriority || '-',
+        assignedUser: assignedUser || '-',
+        createdDate: formatDate(
+          issue.createdDate || issue.createdAt || issue.openDate || issue.dateCreated,
+        ),
+        lastUpdated: formatDate(issue.updatedDate || issue.updatedAt || issue.lastUpdated),
+      };
+    });
+  };
+
+  const exportHeaders = [
+    'Issue Name',
+    'Status',
+    'Priority',
+    'Assigned User',
+    'Created Date',
+    'Last Updated',
+  ];
+
+  const downloadBlob = (blob, filename) => {
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
+  };
+
+  const handleExportCsv = () => {
+    const exportRows = buildExportRows(displayIssues);
+    if (exportRows.length === 0) {
+      toast.info('No issues available to export.');
+      return;
+    }
+    const escapeCsv = value => `"${String(value ?? '').replace(/"/g, '""')}"`;
+    const rows = [
+      exportHeaders,
+      ...exportRows.map(row => [
+        row.issueName || '-',
+        row.status || '-',
+        row.priority || '-',
+        row.assignedUser || '-',
+        row.createdDate || '-',
+        row.lastUpdated || '-',
+      ]),
+    ];
+
+    const csvContent = rows.map(row => row.map(escapeCsv).join(',')).join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    downloadBlob(blob, `issues-export-${new Date().toISOString().slice(0, 10)}.csv`);
+    toast.success('Issue export generated (CSV).');
+  };
+
+  const handleExportPdf = () => {
+    const exportRows = buildExportRows(displayIssues);
+    if (exportRows.length === 0) {
+      toast.info('No issues available to export.');
+      return;
+    }
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const startX = 40;
+    const startY = 50;
+    const rowHeight = 18;
+    const colWidths = [160, 70, 70, 110, 80, 80];
+    const truncate = (text, maxWidth) => {
+      if (doc.getTextWidth(text) <= maxWidth) return text;
+      let truncated = text;
+      while (truncated.length > 0 && doc.getTextWidth(`${truncated}…`) > maxWidth) {
+        truncated = truncated.slice(0, -1);
+      }
+      return `${truncated}…`;
+    };
+
+    doc.setFontSize(12);
+    doc.text('Issue Export', startX, startY - 20);
+    doc.setFontSize(9);
+
+    let x = startX;
+    exportHeaders.forEach((header, index) => {
+      const width = colWidths[index];
+      doc.text(truncate(header, width - 4), x, startY);
+      x += width;
+    });
+
+    let y = startY + rowHeight;
+    exportRows.forEach(row => {
+      if (y > doc.internal.pageSize.getHeight() - 40) {
+        doc.addPage();
+        y = 50;
+      }
+      const values = [
+        row.issueName || '-',
+        row.status || '-',
+        row.priority || '-',
+        row.assignedUser || '-',
+        row.createdDate || '-',
+        row.lastUpdated || '-',
+      ];
+      let colX = startX;
+      values.forEach((value, index) => {
+        const width = colWidths[index];
+        doc.text(truncate(String(value ?? ''), width - 4), colX, y);
+        colX += width;
+      });
+      y += rowHeight;
+    });
+
+    const filename = `issues-export-${new Date().toISOString().slice(0, 10)}.pdf`;
+    doc.save(filename);
+    toast.success('Issue export generated (PDF).');
+  };
+
   function getTimeSince(dateStr) {
     const date = new Date(dateStr);
     const now = new Date();
@@ -106,20 +252,42 @@ export default function IssueDashboard() {
       </div>
       <Row className="mb-3">
         <Col>
-          <h4 className="fw-semibold">Issue Dashboard</h4>
+          <h4 className={`fw-semibold ${darkMode ? 'text-light' : ''}`}>Issue Dashboard</h4>
+        </Col>
+        <Col className="d-flex justify-content-end">
+          <UncontrolledDropdown>
+            <DropdownToggle tag="button" className="btn btn-sm btn-primary" type="button">
+              <FiDownload className="me-2" />
+              Export
+            </DropdownToggle>
+            <DropdownMenu end className={`${darkMode ? styles.exportDropdownMenuDark : ''}`}>
+              <DropdownItem
+                onClick={handleExportCsv}
+                className={`${darkMode ? styles.exportDropdownItemDark : ''}`}
+              >
+                Export as CSV
+              </DropdownItem>
+              <DropdownItem
+                onClick={handleExportPdf}
+                className={`${darkMode ? styles.exportDropdownItemDark : ''}`}
+              >
+                Export as PDF
+              </DropdownItem>
+            </DropdownMenu>
+          </UncontrolledDropdown>
         </Col>
       </Row>
 
-      <div className="issues-table-responsive">
+      <div className={`${styles.issuesTableResponsive}`}>
         <Table hover className={`mb-0 ${darkMode ? 'table-dark' : ''}`}>
           <thead className={darkMode ? 'table-dark' : 'table-light'}>
             <tr>
-              <th className="text-end">Issue Name </th>
-              <th className="text-end">Open since</th>
-              <th className="text-end">Category</th>
-              <th className="text-end">Person dealing</th>
-              <th className="text-end">Cost due to Issue</th>
-              <th className="text-end">Actions</th>
+              <th className={`${styles.textEnd}`}>Issue Name </th>
+              <th className={`${styles.textEnd}`}>Open since</th>
+              <th className={`${styles.textEnd}`}>Category</th>
+              <th className={`${styles.textEnd}`}>Person dealing</th>
+              <th className={`${styles.textEnd}`}>Cost due to Issue</th>
+              <th className={`${styles.textEnd}`}>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -135,19 +303,19 @@ export default function IssueDashboard() {
 
               return (
                 <tr key={issue._id}>
-                  <td className="fw-medium">{issue.name}</td>
-                  <td>{openSince}</td>
+                  <td className={`fw-medium ${darkMode ? 'text-light' : ''}`}>{issue.name}</td>
+                  <td className={darkMode ? 'text-light' : ''}>{openSince}</td>
                   <td>
-                    <span className="badge bg-info text-dark">{category}</span>
+                    <span className={`${styles.badge} ${styles.bgInfo} text-dark`}>{category}</span>
                   </td>
-                  <td>{assignedTo}</td>
-                  <td>{cost}</td>
-                  <td className="text-end position-relative">
+                  <td className={darkMode ? 'text-light' : ''}>{assignedTo}</td>
+                  <td className={darkMode ? 'text-light' : ''}>{cost}</td>
+                  <td className={`${styles.textEnd} position-relative`}>
                     <div className={`issue-dashboard-dropdown  ${darkMode ? 'bg-oxide-blue' : ''}`}>
                       <button
                         type="button"
                         aria-label="Actions menu"
-                        className="btn btn-sm btn-link"
+                        className={`btn btn-sm ${styles.btnLink}`}
                         onClick={() => toggleMenu(issue._id)}
                       >
                         <FiMoreHorizontal size={18} />
@@ -155,7 +323,9 @@ export default function IssueDashboard() {
 
                       {menuOpen === issue._id && (
                         <div
-                          className={`issue-dashboard-dropdown-menu show action-menu${
+                          className={`issue-dashboard-dropdown-menu show ${styles.actionMenu} ${
+                            darkMode ? styles.actionMenuDark : ''
+                          } ${
                             currentItems.indexOf(issue) === currentItems.length - 1
                               ? ' last-row-menu'
                               : ''
@@ -163,7 +333,7 @@ export default function IssueDashboard() {
                         >
                           <button
                             type="button"
-                            className="issue-dashboard-dropdown-item"
+                            className={`${styles.issueDashboardDropdownItem}`}
                             onClick={() => {
                               openRenameModal(issue);
                               setMenuOpen(null);
@@ -174,7 +344,7 @@ export default function IssueDashboard() {
                           </button>
                           <button
                             type="button"
-                            className="issue-dashboard-dropdown-item"
+                            className={`${styles.issueDashboardDropdownItem}`}
                             onClick={() => {
                               openCopyModal(issue);
                               setMenuOpen(null);
@@ -185,7 +355,7 @@ export default function IssueDashboard() {
                           </button>
                           <button
                             type="button"
-                            className="issue-dashboard-dropdown-item text-danger"
+                            className={`${styles.issueDashboardDropdownItem} text-danger`}
                             onClick={() => {
                               openDeleteModal(issue);
                               setMenuOpen(null);
@@ -204,7 +374,10 @@ export default function IssueDashboard() {
 
             {issues.length === 0 && (
               <tr>
-                <td colSpan="6" className="text-center py-4 text-muted">
+                <td
+                  colSpan="6"
+                  className={`text-center py-4 ${darkMode ? 'text-light' : 'text-muted'}`}
+                >
                   No issues found. Create one to get started.
                 </td>
               </tr>
@@ -215,14 +388,14 @@ export default function IssueDashboard() {
 
       <div
         className={`card-footer d-flex justify-content-between align-items-center ${
-          darkMode ? 'bg-dark text-light' : 'bg-light text-muted'
+          darkMode ? 'bg-space-cadet text-light' : 'bg-light text-muted'
         }`}
       >
-        <div className="small">
+        <div className={`small ${darkMode ? 'text-light' : ''}`}>
           Showing {currentItems.length} of {issues.length} issues
         </div>
         <nav aria-label="Issue pagination">
-          <ul className="pagination pagination-sm mb-0">
+          <ul className={`${styles.pagination} pagination-sm mb-0`}>
             <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
               <button
                 type="button"
@@ -233,31 +406,6 @@ export default function IssueDashboard() {
                 <FiChevronLeft size={16} />
               </button>
             </li>
-
-            {Array.from({ length: totalPages }, (_, i) => {
-              const isActive = currentPage === i + 1;
-              let buttonClass = 'page-link';
-
-              if (darkMode) {
-                buttonClass += ' bg-dark text-light border-secondary';
-              }
-
-              if (isActive) {
-                buttonClass += darkMode ? ' bg-secondary' : ' bg-primary';
-              }
-
-              return (
-                <li key={i + 1} className={`page-item ${isActive ? 'active' : ''}`}>
-                  <button
-                    type="button"
-                    className={buttonClass}
-                    onClick={() => setCurrentPage(i + 1)}
-                  >
-                    {i + 1}
-                  </button>
-                </li>
-              );
-            })}
 
             <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
               <button
@@ -275,7 +423,7 @@ export default function IssueDashboard() {
 
       {/* Rename Modal */}
       {showRenameModal && (
-        <div className="issues-modal-backdrop">
+        <div className={`${styles.issuesModalBackdrop}`}>
           <div className={`modal-dialog `}>
             <div className={`modal-content p-3 ${darkMode ? 'bg-oxford-blue text-light' : ''}`}>
               <h5>Rename Issue</h5>
@@ -310,7 +458,7 @@ export default function IssueDashboard() {
 
       {/* Delete Modal */}
       {showDeleteModal && (
-        <div className="issues-modal-backdrop">
+        <div className={`${styles.issuesModalBackdrop}`}>
           <div className={`modal-dialog ${darkMode ? 'bg-dark text-light' : ''}`}>
             <div className={`modal-content p-3 ${darkMode ? 'bg-oxford-blue text-light' : ''}`}>
               <h5>Confirm Delete</h5>
@@ -342,7 +490,7 @@ export default function IssueDashboard() {
 
       {/* Copy Modal */}
       {showCopyModal && (
-        <div className="issues-modal-backdrop">
+        <div className={`${styles.issuesModalBackdrop}`}>
           <div className={`modal-dialog ${darkMode ? 'bg-dark text-light' : ''}`}>
             <div className={`modal-content p-3 ${darkMode ? 'bg-oxford-blue text-light' : ''}`}>
               <h5>Confirm Copy</h5>
