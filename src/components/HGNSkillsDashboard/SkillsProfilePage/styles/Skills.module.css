@@ -33,7 +33,7 @@
   color: #168dc0;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .skills {
     width: 100%;
     flex-direction: column;
@@ -43,7 +43,7 @@
   .skills button {
     width: 100%;
     max-width: 80%;
-    font-size: 14x;
+    font-size: 14px;
   }
 }
 

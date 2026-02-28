@@ -463,6 +463,7 @@ function ReviewButton({ user, task, updateTask }) {
         <button
           className={`${style.reviewBtn} btn btn-primary`}
           onClick={toggleModal}
+          type="button"
           style={darkMode ? boxStyleDark : boxStyle}
           disabled={isSubmitting}
         >

@@ -81,11 +81,10 @@ function HoursPledgedChart() {
 
     const processedData = Object.values(roleMap).map(roleData => ({
       role: roleData.role,
-      avgHours: (roleData.totalHours / roleData.count).toFixed(2),
+      avgHours: roleData.totalHours / roleData.count,
     }));
 
-    processedData.sort((a, b) => Number(b.avgHours) - Number(a.avgHours));
-
+    processedData.sort((a, b) => b.avgHours - a.avgHours);
     setChartData(processedData);
   }, [rawData, startDate, endDate, selectedRoles]);
 
@@ -125,48 +124,9 @@ function HoursPledgedChart() {
             onChange={setSelectedRoles}
             placeholder="Select Roles"
             styles={{
-              control: base => ({
-                ...base,
-                backgroundColor: darkMode ? '#1c2541' : base.backgroundColor,
-              }),
-              menu: base => ({
-                ...base,
-                backgroundColor: darkMode ? '#1c2541' : base.backgroundColor,
-              }),
-              option: (base, state) => ({
-                ...base,
-                backgroundColor: darkMode
-                  ? state.isFocused
-                    ? '#47526dff'
-                    : '#1c2541'
-                  : base.backgroundColor,
-                color: darkMode ? '#ffffff' : base.color,
-              }),
               placeholder: base => ({
                 ...base,
-                color: darkMode ? '#ffffff' : base.color,
-              }),
-              input: base => ({
-                ...base,
-                color: darkMode ? '#ffffff' : base.color,
-              }),
-              multiValue: base => ({
-                ...base,
-                backgroundColor: darkMode ? '#47526d' : base.backgroundColor,
-              }),
-
-              multiValueLabel: base => ({
-                ...base,
-                color: darkMode ? '#ffffff' : base.color,
-              }),
-
-              multiValueRemove: base => ({
-                ...base,
-                color: darkMode ? '#ffffff' : base.color,
-                ':hover': {
-                  backgroundColor: darkMode ? '#5a6a85' : base[':hover']?.backgroundColor,
-                  color: '#ffffff',
-                },
+                color: 'black',
               }),
             }}
           />
@@ -187,35 +147,24 @@ function HoursPledgedChart() {
             height={400}
             data={chartData}
             layout="vertical"
-            margin={{ top: 20, right: 80, left: 100, bottom: 60 }}
+            margin={{ top: 20, right: 30, left: 100, bottom: 20 }}
           >
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis type="number" dataKey="avgHours" width={120} tickMargin={15}>
-              <Label value="Average Hours Pledged" position="insideBottom" offset={-20} dy={10} />
+            <XAxis type="number" dataKey="avgHours">
+              <Label value="Average Hours Pledged" position="insideBottom" offset={-10} />
             </XAxis>
-            <YAxis type="category" dataKey="role" width={120} tickMargin={15}>
+            <YAxis type="category" dataKey="role">
               <Label
                 value="Name of Role"
                 angle={-90}
                 position="outsideCenter"
                 offset={-20}
-                dx={-70}
+                dx={-50}
               />
             </YAxis>
-            <Tooltip
-              contentStyle={{
-                backgroundColor: darkMode ? '#1c2541' : '#ffffff',
-                color: darkMode ? '#ffffff' : '#000000',
-              }}
-              labelStyle={{
-                color: darkMode ? '#ffffff' : '#000000',
-              }}
-              itemStyle={{
-                color: darkMode ? '#ffffff' : '#000000',
-              }}
-            />
-            <Bar dataKey="avgHours" fill={darkMode ? '#9ca5f6ff' : '#8884d8'}>
-              <LabelList dataKey="avgHours" position="right" formatter={v => v} />
+            <Tooltip />
+            <Bar dataKey="avgHours" fill={darkMode ? '#225163' : '#8884d8'}>
+              <LabelList dataKey="avgHours" position="right" />
             </Bar>
           </BarChart>
         )}
