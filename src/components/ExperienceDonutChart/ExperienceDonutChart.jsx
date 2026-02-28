@@ -51,43 +51,16 @@ export default function ExperienceDonutChart() {
   const fetchData = async () => {
     setLoading(true);
     setError(null);
-
     try {
+      const queryParams = new URLSearchParams();
+      if (startDate) queryParams.append('startDate', startDate);
+      if (endDate) queryParams.append('endDate', endDate);
+      if (selectedRole !== 'ALL') queryParams.append('roles', selectedRole);
+
       const token = localStorage.getItem('token');
       if (!token) throw new Error('No token found');
 
-      const params = {};
-
-      if (appliedFilters.startDate && appliedFilters.endDate) {
-        params.startDate = appliedFilters.startDate;
-        params.endDate = appliedFilters.endDate;
-      }
-
-      if (appliedFilters.roles?.length) {
-        params.roles = appliedFilters.roles.join(',');
-      }
-
-      const response = await axios.get(
-        `${process.env.REACT_APP_APIENDPOINT}/experience-breakdown`,
-        {
-          headers: { Authorization: token },
-          params,
-        },
-      );
-
-      const apiData = response.data || [];
-
-      const formattedData = EXPERIENCE_LABELS.map((label, index) => {
-        const found = apiData.find(d => d.experience === label);
-        return {
-          name: label,
-          value: found ? found.count : 0,
-          color: SEGMENT_COLORS[index],
-        };
-      });
-
-      const totalCount = formattedData.reduce((sum, item) => sum + item.value, 0);
-
+      dispatchEvent(fetchExperienceBreakdown(queryParams.toString(), token));
       setChartData(formattedData);
       setTotal(totalCount);
     } catch (err) {
