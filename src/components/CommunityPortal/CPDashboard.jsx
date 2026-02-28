@@ -175,7 +175,9 @@ export function CPDashboard() {
         const day = String(parsedDate.getDate()).padStart(2, '0');
         return `${year}-${month}-${day}`;
       }
-    } catch (error) {}
+    } catch (error) {
+      setError('Failed parse date string.');
+    }
     return null;
   };
 
