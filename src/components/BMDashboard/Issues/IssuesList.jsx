@@ -220,7 +220,7 @@ export default function IssuesList() {
     <div className={`custom-container ${darkMode ? 'dark-theme' : ''}`}>
       <h4 className="mb-4">A List of Issues</h4>
       <Row className="mb-3 align-items-center">
-        <Col xs={12} md={6}>
+        <Col xs={12} md={6} className="mb-2 mb-md-0">
           <div className={styles.datepickerWrapper}>
             <DatePicker
               selectsRange
@@ -229,14 +229,14 @@ export default function IssuesList() {
               onChange={update => setDateRange(update)}
               placeholderText={dateRangeLabel || 'Filter by Date Range'}
               className={`${styles.datePickerInput} form-control ${darkMode ? 'dark-theme' : ''}`}
-              calendarClassName={darkMode ? styles.darkThemeCalendar : ''}
+              calendarClassName={darkMode ? styles.darkThemeCalendar : 'lightCalendar'}
             />
             <Button variant="outline-danger" size="sm" onClick={() => setDateRange([null, null])}>
               ✕
             </Button>
           </div>
         </Col>
-        <Col xs={12} md={4}>
+        <Col xs={12} md={4} className="mb-2 mb-md-0">
           <Select
             isMulti
             classNamePrefix="custom-select"
@@ -245,6 +245,10 @@ export default function IssuesList() {
             value={projectOptions.filter(option => selectedProjects.includes(option.value))}
             onChange={opts => setSelectedProjects(opts.map(o => o.value))}
             placeholder="Filter by Projects"
+            styles={{
+              multiValue: base => ({ ...base, flexShrink: 0 }),
+              multiValueLabel: base => ({ ...base, color: darkMode ? '#e0e0e0' : '#333' }),
+            }}
           />
         </Col>
         <Col xs={12} md={2}>
