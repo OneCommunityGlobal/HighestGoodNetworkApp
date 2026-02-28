@@ -932,7 +932,11 @@ class UserProfileAdd extends Component {
         createUser(userData)
           .then(res => {
             if (res.data.warning) {
-              toast.warn(res.data.warning);
+              toast.warn(
+                typeof res.data.warning === 'string'
+                  ? res.data.warning
+                  : res.data.warning?.message || JSON.stringify(res.data.warning),
+              );
             } else {
               toast.success('User profile created.');
               // eslint-disable-next-line react/no-direct-mutation-state
