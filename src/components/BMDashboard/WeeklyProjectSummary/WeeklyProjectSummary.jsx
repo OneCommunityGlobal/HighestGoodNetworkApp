@@ -23,9 +23,7 @@ import IssueCharts from '../Issues/openIssueCharts';
 import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
 import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
 import MaterialStockOutRiskIndicator from './MaterialStockOutRiskIndicator/MaterialStockOutRiskIndicator';
-import IssueCharts from '../Issues/openIssueCharts';
 import SupplierPerformanceGraph from './SupplierPerformanceGraph.jsx';
-import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
 
 const projectStatusButtons = [
   {
@@ -459,7 +457,9 @@ function WeeklyProjectSummary() {
 
       document.body.removeChild(pdfContainer);
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.error('PDF generation failed:', err);
+      // eslint-disable-next-line no-alert
       alert('Failed to generate PDF. Please try again.');
     } finally {
       setOpenSections(currentOpenSections);
