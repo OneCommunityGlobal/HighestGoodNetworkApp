@@ -1,7 +1,7 @@
 // Universal Custom Tooltip with dark mode support and all values
 import React from 'react';
 
-function CustomTooltip({ active, payload, label, yAxisLabel }) {
+function CustomTooltip({ active, payload, label, yAxisLabel, tooltipType }) {
   let isDarkMode = false;
   if (typeof window !== 'undefined' && window.matchMedia) {
     isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -10,8 +10,10 @@ function CustomTooltip({ active, payload, label, yAxisLabel }) {
     const data = payload[0].payload || {};
     // For WorkDistributionBarChart: show name, Total Hours, and percentage
     const name = data._id || data.name || label || '';
-    const totalHours = data.totalHours !== undefined ? data.totalHours : data.value;
     const percentage = data.percentage;
+    // when used for hours distribution we treat `value` as volunteer count
+    const volunteerCount = data.value;
+    const totalHours = data.totalHours !== undefined ? data.totalHours : data.value;
     return (
       <div
         style={{
@@ -26,11 +28,18 @@ function CustomTooltip({ active, payload, label, yAxisLabel }) {
         <div style={{ fontWeight: 'bold', marginBottom: 4, color: isDarkMode ? '#fff' : '#222' }}>
           {name}
         </div>
-        {totalHours !== undefined && (
-          <div style={{ color: isDarkMode ? '#fff' : '#222', fontWeight: 'bold' }}>
-            Total Hours: {totalHours}
-          </div>
-        )}
+        {/* display either volunteerCount or totalHours depending on tooltipType */}
+        {tooltipType === 'hoursDistribution'
+          ? volunteerCount !== undefined && (
+              <div style={{ color: isDarkMode ? '#fff' : '#222', fontWeight: 'bold' }}>
+                Volunteers: {volunteerCount}
+              </div>
+            )
+          : totalHours !== undefined && (
+              <div style={{ color: isDarkMode ? '#fff' : '#222', fontWeight: 'bold' }}>
+                Total Hours: {totalHours}
+              </div>
+            )}
         {percentage !== undefined && (
           <div style={{ color: isDarkMode ? '#90cdf4' : '#444' }}>Percentage: {percentage}</div>
         )}

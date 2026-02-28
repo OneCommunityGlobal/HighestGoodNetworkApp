@@ -30,7 +30,9 @@ import { getTotalOrgSummary, getTaskAndProjectStats } from '~/actions/totalOrgSu
 import '../Header/index.css';
 import styles from './TotalOrgSummary.module.css';
 import { clsx } from 'clsx';
-import VolunteerHoursDistribution from './VolunteerHoursDistribution/VolunteerHoursDistribution';
+import VolunteerHoursDistribution, {
+  formatRangeLabel,
+} from './VolunteerHoursDistribution/VolunteerHoursDistribution';
 import AccordianWrapper from './AccordianWrapper/AccordianWrapper';
 import VolunteerStatus from './VolunteerStatus/VolunteerStatus';
 import VolunteerActivities from './VolunteerActivities/VolunteerActivities';
@@ -736,12 +738,19 @@ ${
                     darkMode={darkMode}
                     hoursData={volunteerStats?.volunteerHoursStats}
                     totalHoursData={volunteerStats?.totalHoursWorked}
-                    comparisonType={selectedComparison}
                   />
                   <div className="d-flex flex-column align-items-center justify-content-center">
+                    {/* determine a descriptive range label from the distribution data */}
                     <NumbersVolunteerWorked
                       isLoading={isLoading}
                       data={volunteerStats?.volunteersOverAssignedTime}
+                      totalVolunteers={volunteerStats?.volunteerNumberStats?.totalVolunteers?.count}
+                      rangeText={
+                        volunteerStats?.volunteerHoursStats &&
+                        volunteerStats.volunteerHoursStats.length > 0
+                          ? formatRangeLabel(volunteerStats.volunteerHoursStats[0]._id)
+                          : '1+ hours'
+                      }
                       darkMode={darkMode}
                     />
                   </div>
