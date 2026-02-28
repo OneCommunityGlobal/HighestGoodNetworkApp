@@ -136,6 +136,18 @@
   border-radius: 4px;
 }
 
+.datepickerWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.datepickerWrapper :global(.react-datepicker-wrapper) {
+  flex: 1;
+  min-width: 0;
+}
+
   /* Dark theme overrides */
 :global(.dark-theme) .issueTable {
   background-color: #2b3e59;
@@ -193,6 +205,53 @@
 :global(.dark-theme) .datePickerInput::placeholder {
   color: #e0e0e0 !important;
   opacity: 1 !important;
+}
+
+/* Light mode calendar — overrides the unconditional dark styles from RentalChart.module.css
+   which apply :global(.react-datepicker) rules with no parent selector. */
+:global(.react-datepicker.lightCalendar) {
+  background-color: #fff !important;
+  color: #333 !important;
+  border: 1px solid #ddd !important;
+}
+
+:global(.react-datepicker.lightCalendar .react-datepicker__header) {
+  background-color: #f0f0f0 !important;
+  color: #333 !important;
+  border-bottom: 1px solid #ddd !important;
+  border-radius: 0.3rem 0.3rem 0 0 !important;
+}
+
+:global(.react-datepicker.lightCalendar .react-datepicker__month-container) {
+  background-color: #fff !important;
+}
+
+:global(.react-datepicker.lightCalendar .react-datepicker__current-month),
+:global(.react-datepicker.lightCalendar .react-datepicker__day-name),
+:global(.react-datepicker.lightCalendar .react-datepicker__day) {
+  color: #333 !important;
+  border-radius: 0.3rem !important;
+}
+
+:global(.react-datepicker.lightCalendar .react-datepicker__day:hover) {
+  background-color: #e9ecef !important;
+  color: #333 !important;
+}
+
+:global(.react-datepicker.lightCalendar .react-datepicker__day--selected),
+:global(.react-datepicker.lightCalendar .react-datepicker__day--in-selecting-range),
+:global(.react-datepicker.lightCalendar .react-datepicker__day--in-range) {
+  background-color: #0d6efd !important;
+  color: #fff !important;
+}
+
+:global(.react-datepicker.lightCalendar .react-datepicker__day--keyboard-selected) {
+  background-color: #0d6efd !important;
+  color: #fff !important;
+}
+
+:global(.react-datepicker.lightCalendar .react-datepicker__navigation-icon::before) {
+  border-color: #333 !important;
 }
 
 /* Dark theme calendar container */
@@ -279,17 +338,6 @@
 
 /* Filter controls layout for small screens */
 @media (max-width: 768px) {
-  .datepickerWrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .datepickerWrapper :global(.btn) {
-    margin-top: 8px;
-    width: 100%;
-  }
-
   :global(.custom-select__control) {
     font-size: 10px;
   }
