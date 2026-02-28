@@ -23,7 +23,6 @@ function Logout({ setLogoutPopup, open }) {
 
     closePopup();
     dispatch(logoutUser());
-    <Redirect to="/login" auth={false} />;
     return redirect.push('/login');
   };
 
