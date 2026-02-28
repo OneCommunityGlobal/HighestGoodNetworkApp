@@ -523,6 +523,7 @@ export const ENDPOINTS = {
   },
 
   JOB_ANALYTICS_ROLES: `${APIEndpoint.replace('/api', '')}/job-analytics/roles`,
+  JOB_ANALYTICS_EXPERIENCE_BREAKDOWN: `${APIEndpoint}/applicant-analytics/experience-breakdown`,
 
   // pr dashboard endpoints
   PROMOTION_ELIGIBILITY: `${APIEndpoint}/promotion-eligibility`,
