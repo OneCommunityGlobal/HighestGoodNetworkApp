@@ -165,18 +165,13 @@ export function CPDashboard() {
   // Helper function to extract date in YYYY-MM-DD format from event date
   const parseEventDate = dateString => {
     if (!dateString) return null;
-
-    try {
-      // Try to parse as ISO date string or standard date
-      const parsedDate = new Date(dateString);
-      if (!isNaN(parsedDate.getTime())) {
-        const year = parsedDate.getFullYear();
-        const month = String(parsedDate.getMonth() + 1).padStart(2, '0');
-        const day = String(parsedDate.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-      }
-    } catch (error) {
-      setError('Failed parse date string.');
+    // Try to parse as ISO date string or standard date
+    const parsedDate = new Date(dateString);
+    if (!isNaN(parsedDate.getTime())) {
+      const year = parsedDate.getFullYear();
+      const month = String(parsedDate.getMonth() + 1).padStart(2, '0');
+      const day = String(parsedDate.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
     }
     return null;
   };
