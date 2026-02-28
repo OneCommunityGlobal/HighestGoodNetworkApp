@@ -113,6 +113,40 @@ function Collaboration() {
     }
   };
 
+  /* ================= SUMMARIES VIEW ================= */
+  if (summaries) {
+    return (
+      <div className={`${styles.jobLanding} ${darkMode ? styles.dark : ''}`}>
+        <div className={styles.jobHeader}>
+          <a href="https://www.onecommunityglobal.org/collaboration/">
+            <img src={OneCommunityImage} alt="One Community Logo" />
+          </a>
+        </div>
+
+        <div className={`${styles.userCollaborationContainer} ${darkMode ? styles.dark : ''}`}>
+          <h2>Job Summaries</h2>
+
+          {summaries.jobs?.length ? (
+            summaries.jobs.map(job => (
+              <div key={job._id} className="job-summary-item">
+                <h4>
+                  <a href={job.jobDetailsLink}>{job.title}</a>
+                </h4>
+                <p>{job.description}</p>
+              </div>
+            ))
+          ) : (
+            <p>No summaries found.</p>
+          )}
+
+          <button className="btn btn-secondary" onClick={() => setSummaries(null)}>
+            ← Back to Job Listings
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   /* ================= MAIN VIEW ================= */
   return (
     <div className={`${styles.jobLanding} ${darkMode ? styles.dark : ''}`}>
