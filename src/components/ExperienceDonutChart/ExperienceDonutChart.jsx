@@ -28,7 +28,7 @@ function Spinner() {
 export default function ExperienceDonutChart() {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-  const [selectedRole, setSelectedRole] = useState('ALL');
+  const [selectedRole, setSelectedRole] = useState('All');
   const [appliedFilters, setAppliedFilters] = useState({
     startDate: '',
     endDate: '',
@@ -55,7 +55,7 @@ export default function ExperienceDonutChart() {
       const queryParams = new URLSearchParams();
       if (startDate) queryParams.append('startDate', startDate);
       if (endDate) queryParams.append('endDate', endDate);
-      if (selectedRole !== 'ALL') queryParams.append('roles', selectedRole);
+      if (selectedRole !== 'All') queryParams.append('roles', selectedRole);
 
       const token = localStorage.getItem('token');
       if (!token) throw new Error('No token found');
@@ -78,7 +78,7 @@ export default function ExperienceDonutChart() {
   }, [appliedFilters]);
 
   const applyFilters = () => {
-    const rolesToApply = selectedRole === 'ALL' ? ROLE_OPTIONS : [selectedRole];
+    const rolesToApply = selectedRole === 'All' ? ROLE_OPTIONS : [selectedRole];
 
     setAppliedFilters({
       startDate,
