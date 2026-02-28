@@ -4,6 +4,8 @@ import { useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import styles from './PRGradingScreen.module.css';
 
+const normalizePrNumbers = prNumbers => (prNumbers || '').replace(/\s+/g, '');
+
 const PRGradingScreen = ({ teamData, reviewers }) => {
   const darkMode = useSelector(state => state.theme.darkMode);
 
@@ -52,6 +54,17 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
     const validation = validatePRNumber(inputValue);
     if (!validation.isValid) {
       setInputError(validation.error);
+      return;
+    }
+
+    const reviewer = reviewerData.find(r => r.id === reviewerId);
+    const existingPRs = reviewer?.gradedPrs ?? [];
+    const normalizedNew = normalizePrNumbers(inputValue.trim());
+    const isDuplicate = existingPRs.some(
+      pr => pr?.prNumbers && normalizePrNumbers(pr.prNumbers) === normalizedNew,
+    );
+    if (isDuplicate) {
+      setInputError(`PR number "${inputValue.trim()}" already exists for this reviewer`);
       return;
     }
 
@@ -232,10 +245,25 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                             <input
                               type="text"
                               value={inputValue}
-                              onChange={e => setInputValue(e.target.value)}
-                              className={styles['pr-grading-screen-pr-number-input']}
+                              onChange={e => {
+                                setInputValue(e.target.value);
+                                if (inputError) setInputError('');
+                              }}
+                              className={`${styles['pr-grading-screen-pr-number-input']} ${
+                                inputError ? styles['pr-grading-screen-input-error'] : ''
+                              } ${darkMode ? styles['dark-mode'] : ''}`}
                               placeholder="1070 or 1070 + 1256"
                             />
+
+                            {inputError && (
+                              <p
+                                className={`${styles['pr-grading-screen-error-message']} ${
+                                  darkMode ? styles['dark-mode'] : ''
+                                }`}
+                              >
+                                {inputError}
+                              </p>
+                            )}
 
                             <Button
                               variant="primary"
