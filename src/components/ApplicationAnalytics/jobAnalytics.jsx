@@ -57,12 +57,32 @@ function JobAnalytics() {
 
   const maxApplications = Math.max(...processedData.map(item => item.applications), 10);
 
+  const xAxisTicks = useMemo(() => {
+    const ticks = [0];
+    let value = 5;
+    while (value < maxApplications) {
+      ticks.push(value);
+      value += 5;
+    }
+    if (maxApplications > 0 && ticks[ticks.length - 1] !== maxApplications) {
+      ticks.push(maxApplications);
+    }
+    return ticks;
+  }, [maxApplications]);
+
   return (
     <div className={darkMode ? styles.jobAnalyticsContainerDarkMode : ''}>
       <div className={styles.jobAnalyticsContainer}>
         <div className={styles.chartContainer}>
           <h2 className={styles.chartTitle}>Least Popular Roles</h2>
-          <div className={styles.chartArea}>
+          <div
+            className={styles.chartArea}
+            style={
+              processedData.length > 0
+                ? { '--x-grid-divisions': String(Math.max(1, xAxisTicks.length - 1)) }
+                : undefined
+            }
+          >
             {processedData.length > 0 ? (
               <>
                 <div className={styles.gridLines} />
@@ -74,13 +94,16 @@ function JobAnalytics() {
                   ))}
                 </div>
                 <div className={styles.xAxis}>
-                  {[0, 5, 10, 15, 20, 25].map(tick => (
+                  {xAxisTicks.map(tick => (
                     <div
                       key={tick}
                       className={styles.xAxisTick}
-                      style={{ left: `${(tick / maxApplications) * 100}%` }}
+                      style={{
+                        left: `${(tick / maxApplications) * 100}%`,
+                        transform: 'translateX(-50%)',
+                      }}
                     >
-                      {tick <= maxApplications ? tick : ''}
+                      {tick}
                     </div>
                   ))}
                 </div>
