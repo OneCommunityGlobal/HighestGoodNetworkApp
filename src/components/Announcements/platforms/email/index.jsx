@@ -9,7 +9,7 @@ import {
   ErrorBoundary,
   EmailOutbox,
 } from '../../../EmailManagement';
-import './EmailPanel.module.css';
+import './EmailPanel.css';
 
 export default function EmailPanel({ title, initialEmail }) {
   const darkMode = useSelector(state => state.theme.darkMode);

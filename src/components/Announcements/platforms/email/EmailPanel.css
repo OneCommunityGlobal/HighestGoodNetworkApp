@@ -77,9 +77,9 @@
 
 /* Comprehensive dark mode for all text elements in email platform */
 .email-update-container.dark-mode,
-.email-update-container.dark-mode * {
+/* .email-update-container.dark-mode * {
   color: #e9ecef;
-}
+} */
 
 .email-update-container.dark-mode .text-muted,
 .email-update-container.dark-mode .text-secondary {
@@ -259,3 +259,40 @@
   border-color: #f5c6cb;
 }
 
+
+/* Dark mode: Tab content background */
+.email-update-container.dark-mode .tab-content {
+  background-color: #1a1d23;  /* main dark surface */
+}
+
+/* Dark mode: Individual tab pane */
+.email-update-container.dark-mode .tab-pane {
+  background-color: #1a1d23;
+}
+
+/* If Bootstrap card or panel wrappers are inside */
+.email-update-container.dark-mode .card,
+.email-update-container.dark-mode .card-body {
+  background-color: #1f2937;
+  color: #e9ecef;
+}
+
+/* If you see white bordered areas */
+.email-update-container.dark-mode .nav-tabs {
+  border-bottom-color: #374151;
+}
+
+
+/* Fix the white header strip in dark mode */
+.email-update-container.dark-mode .card-header,
+.email-update-container.dark-mode .bg-light {
+  background-color: #1f2937 !important;
+  color: #e9ecef !important;
+  border-bottom-color: #374151 !important;
+}
+
+/* If there are links/buttons inside the header */
+.email-update-container.dark-mode .card-header *,
+.email-update-container.dark-mode .bg-light * {
+  color: #e9ecef !important;
+}
