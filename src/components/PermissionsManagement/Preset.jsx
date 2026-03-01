@@ -105,7 +105,7 @@ function Preset(props) {
           <FontAwesomeIcon
             icon={faEdit}
             size="lg"
-            className={`${styles['user-role-tab__icon']} edit-icon`}
+            className={`${styles.userRoleTabIcon} edit-icon`}
             onClick={onEditIconClicked}
           />
           {editing && (
