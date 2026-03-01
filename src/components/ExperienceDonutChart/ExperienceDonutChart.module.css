@@ -263,6 +263,7 @@
   justify-content: center;
 }
 
+/* Merged duplicate hover/active selectors */
 .detail-item:hover,
 .detail-item.active {
   background: #111827;
@@ -274,6 +275,8 @@
 .detail-item.active span {
   color: #ffffff !important;
 }
+.detail-item:hover .detail-pct,
+.detail-item.active .detail-pct { color: #93c5fd !important; } /* keep contrast on hover */
 
 /* Map children into the grid */
 .detail-dot {
@@ -511,6 +514,7 @@
 }
 
 /* --- Ensure detail cards always show a visible background --- */
+/* Merged all .chart-details .detail-item selectors */
 .chart-details .detail-item {
   background-color: #f1f5f9; /* stronger than #f8fafc, more visible */
   border: 1px solid #e2e8f0;

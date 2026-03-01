@@ -7,7 +7,7 @@ on:
 concurrency:
   group: Build and Deploy / ${{ github.ref_name == 'main' && 'Production' || 'Development' }}
   cancel-in-progress: true
-jobs:  
+jobs:
   # Build
   build:
     name: Build
@@ -23,14 +23,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'yarn'
+          cache: "yarn"
       - name: Install Dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn install --frozen-lockfile --ignore-platform
       # We don't run tests here since we assume it's already done during PR process.
       # - name: Update Browser List
       #   run: npx browserslist@latest --update-db
       - name: Build React App
-        run: yarn run build && cp build/index.html build/200.html 
+        run: yarn run build && cp build/index.html build/200.html
         env:
           NODE_ENV: ${{ github.ref_name == 'main' && 'production' || 'development' }}
           REACT_APP_APIENDPOINT: ${{ vars.REACT_APP_API_ENDPOINT }}
@@ -60,6 +60,6 @@ jobs:
         uses: dswistowski/surge-sh-action@v1
         with:
           domain: ${{ vars.SURGE_DOMAIN }}
-          project: './build'
+          project: "./build"
           login: ${{ secrets.SURGE_LOGIN }}
           token: ${{ secrets.SURGE_TOKEN }}
