@@ -434,7 +434,7 @@ const SummaryBar = React.forwardRef((props, ref) => {
     if (!isCompleted) {
       return (
         <div
-          className={`border border-danger col-4 ${
+          className={`${styles['summary-incomplete']} border border-danger col-4 ${
             darkMode ? 'bg-yinmn-blue' : 'bg-white'
           } d-flex flex-column justify-content-center`}
         >
