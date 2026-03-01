@@ -7,6 +7,12 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+.darkContainer {
+  background-color: #1c2541;
+  border-color: #3a506b;
+  color: #fff;
+}
+
 @media (max-width: 768px) {
   .followupQuestions {
     width: 80%;
@@ -55,12 +61,25 @@
   text-align: center;
 }
 
+.darkStrip { background-color: #3a506b; }
+
 .question {
   color: #2f5061;
   margin: 20px;
   font-size: 1.1em;
   margin-bottom: 10px;
 }
+
+.darkContainer .question { color: #93c5fd; }
+.darkContainer p { color: #b3bfca; }
+.darkContainer label { color: #e5eef6; }
+.darkContainer .followUp input[type="text"] {
+  background-color: transparent;
+  color: #ffffff;
+  border-color: #8aa0b4;
+}
+
+.darkContainer .finalButtonContainer button { border-color: #3a506b; color: #ffffff; }
 
 .followUp {
   display: flex;
@@ -76,6 +95,15 @@
   background-color: #e6f5f3;
 }
 
+
+.followUp textarea {
+  width: 90%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin: 10px 30px;
+  background-color: #e6f5f3;
+}
 
 .questionContainer{
   width:100%;
@@ -195,6 +223,7 @@
   background-color: #2e5163;
   border-radius: 10px;
   width: 20%;
+  color: #ffffff;
 }
 
 .nextButton:hover {
