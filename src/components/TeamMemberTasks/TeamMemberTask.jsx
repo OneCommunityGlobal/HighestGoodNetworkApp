@@ -656,7 +656,7 @@ const TeamMemberTask = React.memo(
                                           {canSeeFollowUpCheckButton && (
                                             <div className={styles['task-followup-icon']}>
                                               <FollowupCheckButton
-                                                moseoverText={followUpMouseoverText(task)}
+                                                mouseoverText={followUpMouseoverText(task)}
                                                 user={user}
                                                 task={task}
                                               />
