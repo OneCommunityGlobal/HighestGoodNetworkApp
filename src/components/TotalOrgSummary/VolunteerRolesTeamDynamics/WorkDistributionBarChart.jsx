@@ -71,7 +71,7 @@ export default function WorkDistributionBarChart({ isLoading, workDistributionSt
   }
 
   return (
-    <div className="work-distribution-container">
+    <div className={`${styles.workDistributionContainer}`}>
       <div className="work-distribution-chart" style={{ minWidth: 500 }}>
         <ResponsiveContainer width="100%" height="100%" minWidth={400} minHeight={430}>
           <BarChart

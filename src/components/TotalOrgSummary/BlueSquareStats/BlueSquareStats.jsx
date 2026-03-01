@@ -44,8 +44,8 @@ function BlueSquareStats({ isLoading, blueSquareStats, comparisonType, darkMode 
   const hasData = data.every(item => item.value !== 0);
   const pctChange = totalBlueSquares.comparisonPercentage ?? totalBlueSquares.percentageChange ?? 0;
   return (
-    <section className={styles['blue-square-stats']}>
-      <div className={styles['blue-square-stats-pie-chart']}>
+    <section className={styles.blueSquareStats}>
+      <div className={styles.blueSquareStatsPieChart}>
         <DonutChart
           title="TOTAL BLUE SQUARES"
           totalCount={totalBlueSquares.count}
