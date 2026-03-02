@@ -4,6 +4,15 @@ import { useSelector } from 'react-redux';
 import styles from './ActivityList.module.css';
 import { mockActivities } from './mockActivities';
 // import { useHistory } from 'react-router-dom';
+import {
+  FaTag,
+  FaCalendarAlt,
+  FaMapMarkerAlt,
+  FaDumbbell,
+  FaUsers,
+  FaGraduationCap,
+  FaPalette,
+} from 'react-icons/fa';
 
 function ActivityList() {
   const [activities, setActivities] = useState([]);
@@ -102,6 +111,21 @@ function ActivityList() {
     setShowSuggestions(false);
   };
 
+  const getTypeIcon = type => {
+    switch (type) {
+      case 'Fitness':
+        return <FaDumbbell className={styles.activityIcon} />;
+      case 'Social':
+        return <FaUsers className={styles.activityIcon} />;
+      case 'Educational':
+        return <FaGraduationCap className={styles.activityIcon} />;
+      case 'Art':
+        return <FaPalette className={styles.activityIcon} />;
+      default:
+        return <FaTag className={styles.activityIcon} />;
+    }
+  };
+
   return (
     <div className={`${styles.body} ${darkMode ? styles.darkBody : ''}`}>
       <h1 className={styles.h1}>Activity List</h1>
@@ -193,8 +217,26 @@ function ActivityList() {
           <ul>
             {filteredActivities.map(activity => (
               <li key={activity.id}>
-                <strong>{activity.name}</strong> - {activity.type} - {activity.date} -{' '}
-                {activity.location}
+                <strong>{activity.name}</strong>
+
+                {/* Type */}
+                <div className={styles.altypeRow}>
+                  {getTypeIcon(activity.type)}
+                  <span className={styles.altypeText}>{activity.type}</span>
+                </div>
+
+                {/* Location + Date */}
+                <div className={styles.allocationDateRow}>
+                  <div className={styles.allocation}>
+                    <FaMapMarkerAlt className={styles.alactivityIcon} />
+                    <span>{activity.location}</span>
+                  </div>
+
+                  <div className={styles.aldate}>
+                    <FaCalendarAlt className={styles.alactivityIcon} />
+                    <span>{activity.date}</span>
+                  </div>
+                </div>
               </li>
             ))}
           </ul>
