@@ -9,8 +9,21 @@ import initAuth from '../utils/authInit';
 import routes from '../routes';
 import logger from '../services/logService';
 import Loading from './common/Loading';
-import '../App.css';
+import '../App.module.css';
 import { initMessagingSocket } from '../utils/messagingSocket';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import ThemeManager from './common/ThemeManager';
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      cacheTime: 10 * 60 * 1000, // 10 minutes
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 // Check for token
 if (process.env.NODE_ENV !== 'test') {
@@ -94,6 +107,8 @@ function UpdateDocumentTitle() {
     { pattern: /^\/Logout$/, title: 'Logout' },
     { pattern: /^\/forcePasswordUpdate\/[^/]+$/, title: 'Force Password Update' },
     { pattern: /^\/$/, title: `Dashboard - ${fullName}` },
+    { pattern: /^\/kitchenandinventory\/login$/, title: 'Kitchen and Inventory Login' },
+    { pattern: /^\/kitchenandinventory$/, title: 'Kitchen and Inventory Dashboard' },
     { pattern: /.*/, title: 'HGN APP' }, // Default case
     {
       pattern: /^\/communityportal\/activity\/activityid\/feedback$/,
@@ -213,12 +228,15 @@ class App extends Component {
     return (
       <Provider store={store}>
         <PersistGate loading={<Loading />} persistor={persistor}>
-          <ModalProvider>
-            <Router>
-              <UpdateDocumentTitle />
-              {routes}
-            </Router>
-          </ModalProvider>
+          <QueryClientProvider client={queryClient}>
+            <ModalProvider>
+              <Router>
+                <ThemeManager />
+                <UpdateDocumentTitle />
+                {routes}
+              </Router>
+            </ModalProvider>
+          </QueryClientProvider>
         </PersistGate>
       </Provider>
     );
