@@ -161,6 +161,30 @@ export function CPDashboard() {
     });
   };
 
+  const eventTitleStyle = {
+    textAlign: 'left',
+    color: '#2f3f55',
+    margin: '0 0 8px',
+    fontWeight: 600,
+    fontSize: '1.1rem',
+    lineHeight: 1.3,
+  };
+
+  const eventMetaStyle = {
+    fontSize: '0.86rem',
+    color: '#5c6b7a',
+    gap: '6px',
+    margin: '4px 0',
+    lineHeight: 1.35,
+    fontWeight: 500,
+  };
+
+  const eventIconStyle = {
+    color: '#6b7785',
+    marginTop: '1px',
+    fontSize: '0.78rem',
+  };
+
   // Helper function to extract date in YYYY-MM-DD format from event date
   const parseEventDate = dateString => {
     if (!dateString) return null;
@@ -258,15 +282,20 @@ export function CPDashboard() {
             <FixedRatioImage src={event.image} alt={event.title} fallback={FALLBACK_IMG} />
           </div>
           <CardBody>
-            <h5 className={styles.eventTitle}>{event.title}</h5>
-            <p className={styles.eventDate}>
-              <FaCalendarAlt className={styles.eventIcon} /> {formatDate(event.date)}
+            <h5 className={styles.eventTitle} style={eventTitleStyle}>
+              {event.title}
+            </h5>
+            <p className={styles.eventDate} style={eventMetaStyle}>
+              <FaCalendarAlt className={styles.eventIcon} style={eventIconStyle} />{' '}
+              {formatDate(event.date)}
             </p>
-            <p className={styles.eventLocation}>
-              <FaMapMarkerAlt className={styles.eventIcon} /> {event.location || 'Location TBD'}
+            <p className={styles.eventLocation} style={eventMetaStyle}>
+              <FaMapMarkerAlt className={styles.eventIcon} style={eventIconStyle} />{' '}
+              {event.location || 'Location TBD'}
             </p>
-            <p className={styles.eventOrganizer}>
-              <FaUserAlt className={styles.eventIcon} /> {event.organizer || 'Organizer TBD'}
+            <p className={styles.eventOrganizer} style={eventMetaStyle}>
+              <FaUserAlt className={styles.eventIcon} style={eventIconStyle} />{' '}
+              {event.organizer || 'Organizer TBD'}
             </p>
           </CardBody>
         </Card>
