@@ -412,21 +412,21 @@ export function CPDashboard() {
                 </div>
               </div>
 
-              <div className={styles.filterItem}>
+              <div className={`${styles.filterItem} ${styles.compactDropdownFilter}`}>
                 <label htmlFor="branches">Branches</label>
                 <Input type="select" className={styles.rectangularDropdown}>
                   <option>Select branches</option>
                 </Input>
               </div>
 
-              <div className={styles.filterItem}>
+              <div className={`${styles.filterItem} ${styles.compactDropdownFilter}`}>
                 <label htmlFor="themes">Themes</label>
                 <Input type="select" className={styles.rectangularDropdown}>
                   <option>Select themes</option>
                 </Input>
               </div>
 
-              <div className={styles.filterItem}>
+              <div className={`${styles.filterItem} ${styles.compactDropdownFilter}`}>
                 <label htmlFor="categories">Categories</label>
                 <Input type="select" className={styles.rectangularDropdown}>
                   <option>Select categories</option>
