@@ -13,6 +13,7 @@ function QuestionSetManager({
   setFormFields,
   onImportQuestions,
   darkMode,
+  onTemplateSaved,
   templateName,
   setTemplateName,
   selectedTemplate,
@@ -118,7 +119,8 @@ function QuestionSetManager({
 
         setTemplates(prev => prev.map(t => (t._id === updatedTemplate._id ? updatedTemplate : t)));
 
-        safeAlert(`Template "${templateName}" updated.`);
+        safeAlert(`Template "${templateName}" updated successfully!`);
+        if (onTemplateSaved) onTemplateSaved();
       } else {
         const newTemplate = await api.createTemplate({
           name: templateName,
@@ -136,7 +138,8 @@ function QuestionSetManager({
         setTemplates(updated);
 
         localStorage.setItem('jobFormTemplates', JSON.stringify(updated));
-        safeAlert(`Template "${templateName}" created.`);
+        safeAlert(`Template "${templateName}" created successfully!`);
+        if (onTemplateSaved) onTemplateSaved();
       }
 
       setTemplateName('');
@@ -161,8 +164,11 @@ function QuestionSetManager({
           setTemplates(newTemplates);
           localStorage.setItem('jobFormTemplates', JSON.stringify(newTemplates));
         }
-      } catch (fallbackErr) {
-        console.error('Local save failed:', fallbackErr);
+        safeAlert(`Template "${templateName}" saved locally.`);
+        if (onTemplateSaved) onTemplateSaved();
+      } catch (localError) {
+        console.error('Failed to save local template:', localError);
+        safeAlert('Failed to save template. Please try again.');
       }
     } finally {
       setIsLoading(false);
@@ -406,11 +412,21 @@ QuestionSetManager.propTypes = {
   ).isRequired,
   setFormFields: PropTypes.func.isRequired,
   onImportQuestions: PropTypes.func.isRequired,
-  darkMode: PropTypes.bool.isRequired,
-  templateName: PropTypes.string.isRequired,
-  setTemplateName: PropTypes.func.isRequired,
-  selectedTemplate: PropTypes.string.isRequired,
-  setSelectedTemplate: PropTypes.func.isRequired,
+  darkMode: PropTypes.bool,
+  onTemplateSaved: PropTypes.func,
+  templateName: PropTypes.string,
+  setTemplateName: PropTypes.func,
+  selectedTemplate: PropTypes.string,
+  setSelectedTemplate: PropTypes.func,
+};
+
+QuestionSetManager.defaultProps = {
+  darkMode: false,
+  onTemplateSaved: null,
+  templateName: '',
+  setTemplateName: () => {},
+  selectedTemplate: '',
+  setSelectedTemplate: () => {},
 };
 
 export default QuestionSetManager;

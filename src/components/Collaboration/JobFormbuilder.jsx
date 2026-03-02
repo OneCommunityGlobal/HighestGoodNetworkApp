@@ -15,15 +15,11 @@ const safeConfirm = msg => globalThis.confirm(msg);
 function JobFormBuilder() {
   const { role } = useSelector(state => state.auth.user);
   const darkMode = useSelector(state => state.theme.darkMode);
-
   const [formFields, setFormFields] = useState([]);
   const [initialFormFields, setInitialFormFields] = useState([]);
-
   const [templateName, setTemplateName] = useState('');
   const [selectedTemplate, setSelectedTemplate] = useState('');
-
   const [currentFormId, setCurrentFormId] = useState(null);
-
   const [newField, setNewField] = useState({
     questionText: '',
     questionType: 'textbox',
@@ -43,10 +39,21 @@ function JobFormBuilder() {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editingQuestion, setEditingQuestion] = useState(null);
   const [editingIndex, setEditingIndex] = useState(null);
-
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   const jobPositions = ['Software Developer', 'Project Manager', 'Analyst'];
+
+  // Reset builder after template is saved
+  const resetBuilderState = () => {
+    setFormFields([]);
+    setNewField({
+      questionText: '',
+      questionType: 'textbox',
+      options: [],
+      visible: true,
+    });
+    setNewOption('');
+  };
 
   // Prevent refresh while unsaved changes exist
   useEffect(() => {
@@ -307,6 +314,7 @@ function JobFormBuilder() {
               setTemplateName={setTemplateName}
               selectedTemplate={selectedTemplate}
               setSelectedTemplate={setSelectedTemplate}
+              onTemplateSaved={resetBuilderState}
             />
 
             <form>
