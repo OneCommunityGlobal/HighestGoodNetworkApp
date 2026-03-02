@@ -7,6 +7,7 @@ import BMError from '../shared/BMError';
 import SelectForm from './SelectForm';
 import SelectItem from './SelectItem';
 import ItemsTable from './ItemsTable';
+import UpdateHistoryModal from '../UpdateHistory/UpdateHistoryModal';
 import styles from './ItemListView.module.css';
 import { Form, FormGroup, Label } from 'reactstrap';
 import AddMaterialModal from '../AddMaterial/AddMaterialModal';
@@ -24,7 +25,12 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
   const [selectedItem, setSelectedItem] = useState('all');
   const [isError, setIsError] = useState(false);
   const [selectedTime, setSelectedTime] = useState(new Date());
+  const [updateHistoryModalOpen, setUpdateHistoryModalOpen] = useState(false);
   const darkMode = useSelector(state => state.theme.darkMode);
+
+  const toggleUpdateHistoryModal = () => {
+    setUpdateHistoryModalOpen(prev => !prev);
+  };
   const dispatch = useDispatch();
   const materialTypes = useSelector(state => state.bmInvTypes.list);
   const consumableTypes = useSelector(state => state.bmInvTypes.consumablesList);
@@ -158,6 +164,14 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
             </button>
           </div>
         </span>
+
+        <UpdateHistoryModal
+          isOpen={updateHistoryModalOpen}
+          toggle={toggleUpdateHistoryModal}
+          itemType={itemType}
+          selectedProject={selectedProject}
+        />
+
         {filteredItems && (
           <ItemsTable
             selectedProject={selectedProject}
@@ -166,6 +180,7 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
             UpdateItemModal={UpdateItemModal}
             dynamicColumns={dynamicColumns}
             darkMode={darkMode}
+            itemType={itemType}
             selectedRowId={selectedRow?._id}
             onRowSelect={setSelectedRow}
           />

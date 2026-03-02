@@ -35,7 +35,7 @@ const defaultState = {
     Consumables: null,
     Equipments: null,
     Reusables: null,
-    'Tools:': null,
+    Tools: null,
   },
   postedResult: {
     result: null,

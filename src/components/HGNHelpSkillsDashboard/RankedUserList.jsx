@@ -1,59 +1,52 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import UserCard from './UserCard';
-import './style/UserCard.module.css';
+import { useSelector } from 'react-redux';
+import styles from './style/RankedUserList.module.css';
 
-function RankedUserList({ selectedSkills = [] }) {
+function RankedUserList({ selectedSkills, selectedPreferences }) {
   const [rankedUsers, setRankedUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
+  const darkMode = useSelector(state => state.theme.darkMode);
   useEffect(() => {
-    let canceled = false;
+    if (
+      (!selectedSkills || selectedSkills.length === 0) &&
+      (!selectedPreferences || selectedPreferences.length === 0)
+    )
+      return;
 
     const fetchRankedUsers = async () => {
       setLoading(true);
-      setError(null);
-
       try {
         const params = {};
-        if (Array.isArray(selectedSkills) && selectedSkills.length > 0) {
-          params.skills = selectedSkills.join(',');
-        }
+        if (selectedSkills.length > 0) params.skills = selectedSkills.join(',');
+        if (selectedPreferences.length > 0) params.preferences = selectedPreferences.join(',');
 
-        const response = await axios.get('http://localhost:4500/api/hgnform/ranked', { params });
-
-        if (!canceled) {
-          const data = response?.data || [];
-          setRankedUsers(Array.isArray(data) ? data : []);
-        }
+        const response = await axios.get(`${process.env.REACT_APP_APIENDPOINT}/hgnform/ranked`, {
+          params,
+        });
+        setRankedUsers(response.data);
       } catch (err) {
-        console.error('Failed to fetch ranked users', err);
-        if (!canceled) {
-          setError(err);
-          setRankedUsers([]);
-        }
       } finally {
-        if (!canceled) setLoading(false);
+        setLoading(false);
       }
     };
 
     fetchRankedUsers();
+  }, [selectedSkills, selectedPreferences]);
 
-    return () => {
-      canceled = true;
-    };
-  }, [selectedSkills]);
-
-  if (loading) return <p>Loading ranked users...</p>;
-  if (error) return <p>Failed to load users.</p>;
-  if (!rankedUsers.length) return <p>No members found.</p>;
+  if (loading) return <p className={`${styles.message}`}>Loading ranked users...</p>;
+  if (!rankedUsers.length) return <p className={`${styles.message}`}>No users found.</p>;
 
   return (
-    <div className="user-card-container">
-      {rankedUsers.map(user => (
-        <UserCard key={user._id || user.id || user.uuid} user={user} />
-      ))}
+    <div className={darkMode ? `${styles.darkMode}` : ''}>
+      <div className={`${styles.container}`}>
+        {rankedUsers.map(user => (
+          <div key={user._id} className={`${styles.userWrapper}`}>
+            <UserCard user={user} />
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
