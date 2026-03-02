@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import parse from 'html-react-parser';
-import './Timelog.css';
-import { getUserProfile, updateUserProfile } from '~/actions/userProfile';
-import hasPermission from '~/utils/permissions';
+import { getUserProfile, updateUserProfile } from '../../actions/userProfile';
+import hasPermission from '../../utils/permissions';
 import { useDispatch, useSelector } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react';
 import Spinner from 'react-bootstrap/Spinner';
 import { updateWeeklySummaries } from '../../actions/weeklySummaries';
 import WeeklySummary from '../WeeklySummary/WeeklySummary';
+import styles from './Timelog.module.css';
 
 function WeeklySummaries({ userProfile, onEditSummary }) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -154,7 +154,7 @@ function WeeklySummaries({ userProfile, onEditSummary }) {
           <div style={{ marginTop: '10px' }}>
             <button
               type="button"
-              className="button save-button"
+              className={`${styles.button} ${styles.saveButton}`}
               onClick={() => handleSave(index)}
               disabled={LoadingHandleSave === index}
             >
@@ -163,7 +163,7 @@ function WeeklySummaries({ userProfile, onEditSummary }) {
 
             <button
               type="button"
-              className="button cancel-button"
+              className={`${styles.button} ${styles.cancelButton}`}
               onClick={() => handleCancel(index)}
             >
               Cancel
@@ -178,7 +178,7 @@ function WeeklySummaries({ userProfile, onEditSummary }) {
         <div className={darkMode ? 'bg-yinmn-blue summary-text-light' : ''}>
           <h3>{title}</h3>
           {parse(editedSummaries[index])}
-          <button type="button" className="button edit-button" onClick={() => toggleEdit(index)}>
+          <button type="button" className={`${styles.button} ${styles.editButton}`} onClick={() => toggleEdit(index)}>
             Edit
           </button>
         </div>
@@ -202,7 +202,17 @@ function WeeklySummaries({ userProfile, onEditSummary }) {
         </p>
         <button 
           type="button" 
-          className="button edit-button" 
+          className={`${styles.button} ${styles.editButton}`}
+          style={{
+                  marginLeft: '10px',
+                  padding: '5px 10px',
+                  border: 'none',
+                  borderRadius: '5px',
+                  cursor: 'pointer',
+                  fontWeight: 'bold',
+                  backgroundColor: 'blue',
+                  color: 'white',
+                }}
           onClick={() => handleEditSummary(index)}
         >
           Edit
@@ -212,7 +222,7 @@ function WeeklySummaries({ userProfile, onEditSummary }) {
   };
 
   return (
-    <div className={`responsive-font-size p-2 ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
+    <div className={`${styles['responsive-font-size']} p-2 ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
       {renderSummary("This week's summary", userProfile.weeklySummaries[0]?.summary, 0)}
       {renderSummary("Last week's summary", userProfile.weeklySummaries[1]?.summary, 1)}
       {renderSummary("The week before last's summary", userProfile.weeklySummaries[2]?.summary, 2)}
