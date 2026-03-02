@@ -5,7 +5,7 @@
 }
 
 .darkContainer {
-  background: #1B2A41;
+  background: #1b2a41;
 }
 
 .chartSection {
@@ -71,7 +71,7 @@
 }
 
 .darkInsightsSection {
-  background: #1B2A41;
+  background: #1b2a41;
 }
 
 .insightsHeader {
@@ -127,8 +127,8 @@
   border: 1px solid #e5e7eb;
 }
 
-.darkTooltip{
-    background: #1B2A41;
+.darkTooltip {
+  background: #1b2a41;
 }
 
 /* Responsive Design */
