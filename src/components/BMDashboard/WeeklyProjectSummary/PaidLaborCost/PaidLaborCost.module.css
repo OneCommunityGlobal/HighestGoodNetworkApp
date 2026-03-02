@@ -4,7 +4,6 @@
   padding: 10px;
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-
 }
 
 /* Title */
@@ -33,7 +32,7 @@
   align-items: center; /* align vertically */
   gap: 8px; /* space between label and select */
   width: fit-content; /* shrink-wrap to contents instead of 100% */
-    padding: 4px 8px; /* optional padding */
+  padding: 4px 8px; /* optional padding */
 }
 
 .paidLaborCostFilterLabel {
@@ -54,7 +53,6 @@
   border-radius: 4px;
   background-color: white;
 }
-
 
 /* Chart container */
 .paid-labor-cost-chart-container {
@@ -78,8 +76,8 @@
   max-width: 600px;
   margin: 0 auto;
 }
-/* Date Picker */
 
+/* Date Picker */
 .paid-labor-cost-custom-date-range-picker {
   position: relative;
   width: 100%;
@@ -272,27 +270,33 @@
 }
 
 /* Dark Mode Support for Paid Labor Cost Component */
-.dark-mode .paid-labor-cost-container {
-  background-color: var(--card-bg);
-  box-shadow: 0 1px 3px var(--card-shadow);
-}
-
-.dark-mode .paid-labor-cost-title {
+/* FIX: CSS module class names were camelCase in JSX; map dark mode overrides to those classes */
+.dark-mode .paidLaborCostTitle {
   color: var(--text-color);
 }
 
-.dark-mode .paid-labor-cost-filter-label {
+.dark-mode .paidLaborCostFilterLabel {
   color: var(--text-color);
-  opacity: 0.8;
+  opacity: 0.9;
 }
 
-.dark-mode .paid-labor-cost-filter-select {
-  background-color: var(--section-bg);
-  border-color: var(--section-title-bg);
-  color: var(--text-color);
+.dark-mode .paidLaborCostFilterSelect {
+  background-color: #2b3a55;      /* darker than current */
+  border: 1px solid #8fa1c7;      /* clear visible border */
+  color: #ffffff; 
 }
 
-.dark-mode .paid-labor-cost-loading {
+.dark-mode .paidLaborCostFilterSelect:hover {
+  border-color: var(--button-bg);
+}
+
+.dark-mode .paidLaborCostFilterSelect:focus,
+.dark-mode .paidLaborCostFilterSelect:focus-visible {
+  outline: 2px solid var(--button-bg);
+  outline-offset: 2px;
+}
+
+.dark-mode .paidLaborCostLoading {
   color: var(--text-color);
   opacity: 0.7;
 }
@@ -306,6 +310,12 @@
 
 .dark-mode .paid-labor-cost-date-range-input:hover {
   border-color: var(--button-bg);
+}
+
+.dark-mode .paid-labor-cost-date-range-input:focus,
+.dark-mode .paid-labor-cost-date-range-input:focus-visible {
+  outline: 2px solid var(--button-bg);
+  outline-offset: 2px;
 }
 
 .dark-mode .paid-labor-cost-date-range-text {
@@ -382,6 +392,27 @@
 .dark-mode .paid-labor-cost-selection-text {
   color: var(--text-color);
   opacity: 0.8;
+}
+
+.darkMode .paidLaborCostFilterLabel {
+  color: #ffffff;
+  opacity: 1;
+}
+
+.darkMode .paidLaborCostFilterSelect {
+  background-color: #2b3a55 !important;
+  border: 1px solid #8fa1c7 !important;
+  color: #ffffff !important;
+}
+
+.darkMode .paidLaborCostFilterSelect:hover {
+  border-color: var(--button-bg) !important;
+}
+
+.darkMode .paidLaborCostFilterSelect:focus,
+.darkMode .paidLaborCostFilterSelect:focus-visible {
+  outline: 2px solid var(--button-bg) !important;
+  outline-offset: 2px;
 }
 
 .paid-labor-cost-input-wrapper {
@@ -526,7 +557,6 @@
   background-color: var(--bg-color);
   scrollbar-width: thin;
   scrollbar-color: var(--button-bg) var(--card-shadow);
-
 }
 
 .paidLaborCostChartScrollWrapper::-webkit-scrollbar {
