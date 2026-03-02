@@ -32,7 +32,7 @@ function PermissionWatcher() {
       if (!userProfile || !userProfile._id) {
         // eslint-disable-next-line no-console
         //console.error('User profile not available');
-        setIsAckLoading(false);
+        setIsPermAckLoading(false);
         return;
       }
 
