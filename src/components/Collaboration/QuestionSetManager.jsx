@@ -164,16 +164,11 @@ function QuestionSetManager({
           setTemplates(newTemplates);
           localStorage.setItem('jobFormTemplates', JSON.stringify(newTemplates));
         }
-<<<<<<< HEAD
-        alert(`Template "${templateName}" saved locally.`);
+        safeAlert(`Template "${templateName}" saved locally.`);
         if (onTemplateSaved) onTemplateSaved();
       } catch (localError) {
         console.error('Failed to save local template:', localError);
-        alert('Failed to save template. Please try again.');
-=======
-      } catch (fallbackErr) {
-        console.error('Local save failed:', fallbackErr);
->>>>>>> origin/development
+        safeAlert('Failed to save template. Please try again.');
       }
     } finally {
       setIsLoading(false);
@@ -417,21 +412,21 @@ QuestionSetManager.propTypes = {
   ).isRequired,
   setFormFields: PropTypes.func.isRequired,
   onImportQuestions: PropTypes.func.isRequired,
-<<<<<<< HEAD
   darkMode: PropTypes.bool,
   onTemplateSaved: PropTypes.func,
+  templateName: PropTypes.string,
+  setTemplateName: PropTypes.func,
+  selectedTemplate: PropTypes.string,
+  setSelectedTemplate: PropTypes.func,
 };
 
 QuestionSetManager.defaultProps = {
   darkMode: false,
   onTemplateSaved: null,
-=======
-  darkMode: PropTypes.bool.isRequired,
-  templateName: PropTypes.string.isRequired,
-  setTemplateName: PropTypes.func.isRequired,
-  selectedTemplate: PropTypes.string.isRequired,
-  setSelectedTemplate: PropTypes.func.isRequired,
->>>>>>> origin/development
+  templateName: '',
+  setTemplateName: () => {},
+  selectedTemplate: '',
+  setSelectedTemplate: () => {},
 };
 
 export default QuestionSetManager;
