@@ -1,0 +1,310 @@
+/* ===========================
+   Issue Charts Module CSS
+   =========================== */
+
+/* ----- Containers ----- */
+.issueChartContainer,
+.issueChartEventContainer {
+  width: 100%;
+  margin: 0;
+  padding: 20px 40px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;               /* match dark mode layout */
+  flex-direction: column;      /* match dark mode */
+  align-items: center;         /* center filters like dark mode */
+}
+
+.issueChartContainerDark,
+.issueChartEventContainerDark {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 30px 40px;
+  
+    background:#1B2A41;
+  border-radius: 0;
+  box-shadow: none;
+  color: #ccd1dc;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ----- Titles ----- */
+.issueChartEventTitle {
+  text-align: center;
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.issueChartEventTitleDark {
+  color: #e0e6f0;
+}
+
+/* ----- Buttons ----- */
+.buttonGroup {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.chartButton {
+  padding: 10px 20px;
+  margin: 0 10px;
+  border: 2px solid #888;
+  background-color: white;
+  color: #333;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.chartButtonDark {
+  border-color: #3d444d;
+  background-color: #22272e;
+  color: #cfd7e3;
+}
+
+.chartButtonActive,
+.chartButtonActiveDark {
+  background-color: #4caf50;
+  color: #fff;
+  border-color: #4caf50;
+}
+
+/* ----- Chart Wrapper ----- */
+.chartWrapper {
+  width:100%;
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.chartWrapperDark {
+  background: #1a1c20;
+   width:100%;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.6);
+}
+
+/* ----- Labels & Select Controls ----- */
+.issueChartLabel {
+   width:100%;
+  font-size: 16px;
+  color: #555;
+  margin-right: 10px;
+}
+
+.issueChartLabelDark {
+  color: #aab1bf;
+}
+
+.selectContainer {
+   width:100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.issueChartSelect {
+  padding: 2px 10px;
+  font-size: 16px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  color: #333;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+  outline: none;
+  margin-bottom: 20px;
+}
+
+.issueChartSelectDark {
+  background-color: #22272e;
+  border: 1px solid #3d444d;
+  color: #cfd7e3;
+}
+
+.issueChartSelect:focus,
+.issueChartSelectDark:focus {
+  border-color: #4caf50;
+}
+
+/* ----- Filters ----- */
+.filtersContainer {
+  display: flex;
+  gap: 16px;
+  margin-top: 10px;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+}
+
+.filter {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dateRangePicker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filterSelect {
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  color: #333;
+}
+
+.filterSelectDark {
+  background-color: #22272e;
+  border: 1px solid #3d444d;
+  color: #cfd7e3;
+}
+
+/* fixed width for each DatePicker wrapper div from react-datepicker */
+.dateRangePickerStart :global(.react-datepicker-wrapper),
+.dateRangePickerEnd :global(.react-datepicker-wrapper) {
+  display: inline-block;
+  width: 220px; /* tweak width if needed */
+}
+
+/* inner container full width */
+.dateRangePickerStart :global(.react-datepicker__input-container),
+.dateRangePickerEnd :global(.react-datepicker__input-container) {
+  width: 100%;
+}
+
+/* actual input fills wrapper and doesn’t change layout */
+.dateRangePickerStart :global(.react-datepicker__input-container input),
+.dateRangePickerEnd :global(.react-datepicker__input-container input) {
+  width: 100%;
+  box-sizing: border-box;
+  height: 38px;
+}
+
+/* ---------- Select / input base styles ---------- */
+
+.filterSelect,
+.issueChartSelect {
+  height: 60px;
+  padding: 8px 12px;
+  font-size: 15px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e0;
+  background-color: #ffffff;
+  color: #2d3748;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.filterSelectDark,
+.issueChartSelectDark {
+  background-color: #2d3748;
+  border: 1px solid #4a5568;
+  color: #edf2f7;
+}
+
+.filterSelect:focus,
+.issueChartSelect:focus {
+  border-color: #4caf50;
+  outline: none;
+}
+
+/* ---------- Chart container ---------- */
+
+/* ----- Chart Container ----- */
+.chartContainer {
+  margin: 0 auto;
+  width: 100%;
+  height: 400px;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  color: #000;
+}
+
+.chartContainerDark {
+  width: 100%;
+  max-width: 900px; /* centers the chart while panel stays 100% */
+  background: #1a1c20;
+  padding: 25px;
+  border-radius: 12px;
+  margin: 0 auto;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.6);
+  color: #cfd7e3;
+}
+
+/* ----- No Data Messages ----- */
+.noDataMessage,
+.noDataContent {
+  text-align: center;
+}
+
+.noDataMessage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  color: #666;
+}
+
+.noDataMessageDark {
+  background: #1e1e1e;
+  color: #999;
+}
+
+.noDataContent {
+  padding: 40px 20px;
+  max-width: 400px;
+}
+
+.noDataContent h3 {
+  color: #666;
+  font-size: 20px;
+  margin-bottom: 16px;
+  font-weight: 500;
+}
+
+.noDataContentDark h3 {
+  color: #ccc;
+}
+
+.noDataContent p {
+  color: #888;
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+
+.noDataContentDark p {
+  color: #aaa;
+}
+
+/* ----- Responsive ----- */
+@media (max-width: 768px) {
+  .chartContainer {
+    height: 250px;
+    padding: 10px;
+  }
+
+  .filtersContainer {
+    flex-direction: column;
+  }
+
+  .filter {
+    width: 100%;
+  }
+}
