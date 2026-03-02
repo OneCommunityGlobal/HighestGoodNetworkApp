@@ -204,6 +204,35 @@
   font-weight: bold;
 }
 
+/* Dark Mode Fixes */
+:global(.dark-mode) .pageButton {
+  color: #fff;
+  border-color: #6c757d;
+}
+
+:global(.dark-mode) .pageButton.active {
+  background-color: #007bff;
+  color: #fff;
+  border-color: #007bff;
+}
+
+:global(.dark-mode) .memberCard .scoreGreen {
+  color: #48c774 !important;
+}
+
+:global(.dark-mode) .memberCard .scoreRed {
+  color: #ff6b6b !important;
+}
+
+:global(.dark-mode) .scoreField {
+  color: #fff;
+  border-color: #6c757d;
+}
+
+:global(.dark-mode) .filterBar {
+  border-color: #6c757d;
+}
+
 @media (max-width: 768px) {
   .cards {
     grid-template-columns: repeat(2, 1fr);
