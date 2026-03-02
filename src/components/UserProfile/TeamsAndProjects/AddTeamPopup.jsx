@@ -4,7 +4,7 @@ import AddTeamsAutoComplete from './AddTeamsAutoComplete';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import '../../Header/DarkMode.css';
+import '../../Header/index.css';
 import { postNewTeam, getAllUserTeams } from '../../../../src/actions/allTeamsAction';
 // eslint-disable-next-line import/no-named-as-default-member
 import axios from 'axios';

@@ -1,0 +1,252 @@
+/* Container */
+.page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.dark {
+  background-color: #1b2a41;
+  color: #e0e0e0;
+}
+
+/* Heading */
+.heading {
+  font-size: 2rem;
+  font-weight: 400;
+  margin: 0 0 24px;
+  color: inherit;
+}
+
+/* Filters */
+.filters {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.filterGroupInline {
+  display: flex;
+  flex-direction: column;
+  min-width: 220px;
+}
+
+.label {
+  font-weight: 500;
+  margin-bottom: 0;
+  color: inherit;
+}
+
+.dateInputWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 0;
+}
+
+.dateInputWrapper span {
+  margin: 0 4px;
+}
+
+/* Validation Error */
+.validationError {
+  color: #ffcc00;
+  margin-top: 8px;
+  font-weight: bold;
+}
+
+/* Status Messages */
+.statusMessage {
+  font-size: 1rem;
+  padding: 12px 0;
+}
+
+.errorMessage {
+  color: red;
+}
+
+/* Chart Container */
+.chartContainer {
+  width: 100%;
+  height: 400px;
+}
+
+/* No Data */
+.noData {
+  text-align: center;
+  padding: 40px 0;
+  color: inherit;
+}
+
+/* Dark Mode Global Overrides */
+.dark :global(.react-datepicker__input-container input) {
+  background-color: #0b2434;
+  border-color: #2b4a6b;
+  color: #ffffff;
+}
+
+.dark :global(.react-datepicker) {
+  background-color: #0b2434;
+  border-color: #2b4a6b;
+}
+
+.dark :global(.react-datepicker__header) {
+  background-color: #0b2434;
+  border-bottom-color: #2b4a6b;
+}
+
+.dark :global(.react-datepicker__current-month),
+.dark :global(.react-datepicker__day-name),
+.dark :global(.react-datepicker__day) {
+  color: #ffffff;
+}
+
+.dark :global(.react-datepicker__day:hover) {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark :global(.react-datepicker__day--selected) {
+  background-color: rgba(67, 160, 71, 0.22);
+}
+
+/* React Select Dark Mode Overrides */
+.dark :global(.custom-select__control) {
+  background-color: #0b2434 !important;
+  border-color: #2b4a6b !important;
+  color: #ffffff !important;
+}
+
+.dark :global(.custom-select__menu) {
+  background-color: #0b2434 !important;
+  color: #ffffff !important;
+}
+
+/* Target menu when it's portaled to body in dark mode */
+:global(.dark-mode-body) :global(.custom-select__menu) {
+  background-color: #0b2434 !important;
+  color: #ffffff !important;
+}
+
+.dark :global(.custom-select__option) {
+  background-color: transparent !important;
+  color: #ffffff !important;
+}
+
+:global(.dark-mode-body) :global(.custom-select__option) {
+  background-color: transparent !important;
+  color: #ffffff !important;
+}
+
+.dark :global(.custom-select__option--is-focused) {
+  background-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+:global(.dark-mode-body) :global(.custom-select__option--is-focused) {
+  background-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+.dark :global(.custom-select__option--is-selected) {
+  background-color: rgba(67, 160, 71, 0.22) !important;
+}
+
+:global(.dark-mode-body) :global(.custom-select__option--is-selected) {
+  background-color: rgba(67, 160, 71, 0.22) !important;
+}
+
+.dark :global(.custom-select__multi-value) {
+  background-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+.dark :global(.custom-select__multi-value__label) {
+  color: #ffffff !important;
+}
+
+.dark :global(.custom-select__multi-value__remove) {
+  color: #ffffff !important;
+}
+
+.dark :global(.custom-select__multi-value__remove:hover) {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
+}
+
+.dark :global(.custom-select__placeholder) {
+  color: rgba(224, 224, 224, 0.9) !important;
+}
+
+.dark :global(.custom-select__single-value) {
+  color: #ffffff !important;
+}
+
+.dark :global(.custom-select__input-container) {
+  color: #ffffff !important;
+}
+
+.dark :global(.custom-select__dropdown-indicator) {
+  color: #ffffff !important;
+}
+
+.dark :global(.custom-select__clear-indicator) {
+  color: #ffffff !important;
+}
+
+.dark :global(.custom-select__indicator-separator) {
+  background-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+/* Body Dark Mode */
+:global(.dark-mode-body),
+:global(.dark-mode-body) body,
+:global(.dark-mode-body) #root,
+:global(.dark-mode-body) .App {
+  background-color: #1b2a41 !important;
+  color: #e0e0e0 !important;
+}
+
+:global(.dark-mode-body) .header-wrapper,
+:global(.dark-mode-body) .content-wrapper,
+:global(.dark-mode-body) .page,
+:global(.dark-mode-body) .container,
+:global(.dark-mode-body) .container-fluid {
+  background-color: #1b2a41 !important;
+  color: #e0e0e0 !important;
+}
+
+:global(.dark-mode-body) .recharts-wrapper,
+:global(.dark-mode-body) .recharts-surface {
+  background-color: #1b2a41 !important;
+}
+
+/* Recharts Tooltip Dark Mode */
+.dark :global(.recharts-tooltip-wrapper) {
+  z-index: 100;
+}
+
+.dark :global(.recharts-default-tooltip) {
+  background-color: #1e293b !important;
+  border: 1px solid #475569 !important;
+  border-radius: 4px;
+  padding: 8px;
+}
+
+.dark :global(.recharts-tooltip-label) {
+  color: #f1f5f9 !important;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.dark :global(.recharts-tooltip-item) {
+  color: #e2e8f0 !important;
+}
+
+.dark :global(.recharts-tooltip-item-name),
+.dark :global(.recharts-tooltip-item-separator),
+.dark :global(.recharts-tooltip-item-value) {
+  color: #e2e8f0 !important;
+}
