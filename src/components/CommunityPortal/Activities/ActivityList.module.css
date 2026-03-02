@@ -97,6 +97,51 @@
   border: 1px solid #ffffff;
 }
 
+.darkFilters input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
+
+.showPastToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  color: #1f2937;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.showPastToggle input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  cursor: pointer;
+  accent-color: #3b82f6;
+}
+
+.showPastToggle input[type="checkbox"]:focus-visible {
+  outline: none;
+  border-radius: 4px;
+}
+
+.darkShowPastToggle {
+  background: #0f172a;
+  color: #f1f5f9;
+}
+
+.darkShowPastToggle input[type="checkbox"] {
+  accent-color: #60a5fa;
+}
+
+@media (max-width: 768px) {
+  .showPastToggle {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+
 .activityList {
   max-width: 900px;
   margin: 0 auto;
@@ -150,6 +195,41 @@
   color: #6b7280;
   font-size: 1.1rem;
   margin: 20px 0;
+}
+
+.clearFiltersButton {
+  margin: 30px 0;
+  padding: 10px 14px;
+  border: 1px solid #000000;
+  border-radius: 6px;
+  background: #f9fafb;
+  color: #1f2937;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s ease, opacity 0.2s ease;
+}
+
+.clearFiltersButton:hover:not(:disabled) {
+  transform: scale(1.05);
+  background-color: #f9fafb;
+}
+
+.clearFiltersButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.clearFiltersButtonDark {
+  border: 1px solid #ffffff;
+  background: #0f172a;
+  color: #f1f5f9;
+}
+
+.clearFiltersButtonDark:hover:not(:disabled) {
+  background: #111c33;
 }
 
 /* Autocomplete Suggestions Dropdown */
