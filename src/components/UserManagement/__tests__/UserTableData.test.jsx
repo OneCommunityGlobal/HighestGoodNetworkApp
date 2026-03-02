@@ -52,6 +52,9 @@ const nonJaeAccountMock = {
   role: 'Administrator',
   weeklycommittedHours: 10,
   email: 'non_jae@hgn.net',
+  inactiveReason: null,
+  endDate: null,
+  isSet: false
 };
 
 const ownerAccountMock = {
@@ -131,7 +134,7 @@ describe('User Table Data: Non-Jae related Account', () => {
     });
     it('should render a active/inactive button', () => {
       renderRow(nonJaeAccountMock);
-      expect(screen.getByTitle('Click here to change the user status')).toBeInTheDocument();
+      expect(screen.getByTitle('Click to change user status')).toBeInTheDocument();
     });
 
     it('should render the first name and last name in input fields', () => {
@@ -178,7 +181,7 @@ describe('User Table Data: Non-Jae related Account', () => {
 
     it('should render a `Pause` button', () => {
       renderRow(nonJaeAccountMock);
-      expect(screen.getByRole('button', { name: /pause/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /PAUSE/i })).toBeInTheDocument();
     });
     it('should render a `Delete` button', () => {
       renderRow(nonJaeAccountMock);
@@ -216,7 +219,7 @@ describe('User Table Data: Non-Jae related Account', () => {
     });
     it('should fire onActiveInactiveClick() once the user clicks the active/inactive button', async() => {
       renderRow(nonJaeAccountMock);
-      await userEvent.click(screen.getByTitle('Click here to change the user status'));
+      await userEvent.click(screen.getByTitle('Click to change user status'));
       expect(onActiveInactiveClick).toHaveBeenCalledTimes(1);
     });
     it('should render a modal once the user clicks the `reset password` button', async() => {
@@ -285,7 +288,7 @@ describe('User Table Data: Jae protected account record and login as Jae related
     });
     it('should render a active/inactive button', () => {
       renderRow(jaeAccountMock);
-      expect(screen.getByTitle('Click here to change the user status')).toBeInTheDocument();
+      expect(screen.getByTitle('Click to change user status')).toBeInTheDocument();
     });
     it('should render the correct first name and last name', () => {
       renderRow(jaeAccountMock);
