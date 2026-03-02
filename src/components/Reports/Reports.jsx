@@ -553,7 +553,7 @@ class ReportsPage extends Component {
               </div>
             </h2>
             <div>
-              <p >Select a Category</p>
+              <p>Select a Category</p>
             </div>
             <div className='report-container-data'>
               <div className='data-container' style={this.state.showCharts ? {width: '50%'} : {width: '100%'}}>
