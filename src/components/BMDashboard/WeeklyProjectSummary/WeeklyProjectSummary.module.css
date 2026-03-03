@@ -169,6 +169,7 @@
   background-color: var(--button-hover) !important;
 }
 
+
 /* Spinner for PDF generation */
 .spinner {
   display: inline-block;
@@ -295,7 +296,7 @@
   background: white;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
-  overflow: hidden;
+  overflow: visible;
   margin-bottom: 20px;
 }
 
@@ -325,8 +326,7 @@
 }
 
 .normalCard {
-  width: 100%;
-  min-height: auto; /* Let content determine height instead of forcing 250px */
+  width: 100%; /* Let content determine height instead of forcing 250px */
   max-width: 100%;
   min-height: 250px;
   box-sizing: border-box;
@@ -377,13 +377,17 @@
   box-sizing: border-box;
 }
 
+/* Adjust grid columns based on section size */
 .darkMode .weeklyProjectSummaryDashboardCategoryContent {
   background-color: var(--section-bg);
   border-top: 1px solid rgb(255 255 255 / 20%);
 }
 
-.weeklyProjectSummaryDashboardSection.half
-  .weeklyProjectSummaryDashboardCategoryContent {
+.weeklyProjectSummaryDashboardSection.full .weeklyProjectSummaryDashboardCategoryContent {
+  grid-template-columns: 1fr;
+}
+
+.weeklyProjectSummaryDashboardSection.half .weeklyProjectSummaryDashboardCategoryContent {
   grid-template-columns: repeat(2, 1fr);
   gap: 15px;
 }
@@ -395,14 +399,11 @@
   gap: 15px;
 }
 
-/* ---------------- LESSONS LEARNED SECTION ---------------- */
-.lessonsLearnedGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-  width: 100%;
-  align-items: stretch;
-  min-height: 600px;
+/* Stack cards vertically on tablet and mobile screens */
+@media (width <= 1024px) {
+  .weeklyProjectSummaryDashboardSection.half .weeklyProjectSummaryDashboardCategoryContent {
+    grid-template-columns: 1fr;
+  }
 }
 
 .lessonsCard {
@@ -463,12 +464,11 @@
 :root {
   --bg-color: #fff;
   --text-color: #000;
-  --text-secondary: #666;
-  --card-bg: #fff;
+  --card-bg: #fafafa;
   --card-shadow: rgb(0 0 0 / 10%);
-  --section-bg: #fff;
-  --section-title-bg: #f8fafc;
-  --section-title-hover: #f1f5f9;
+  --section-bg: white;
+  --section-title-bg: white;
+  --section-title-hover: #e0e0e0;
   --button-bg: black;
   --button-hover: #333;
   --border-color: #e5e7eb;
@@ -483,7 +483,6 @@
 .darkMode {
   --bg-color: #1b2a41;
   --text-color: #fff;
-  --text-secondary: #94a3b8;
   --card-bg: #2b3e59;
   --card-shadow: rgb(255 255 255 / 10%);
   --section-bg: #253342;
@@ -509,37 +508,25 @@
   background: #3a506b;
 }
 
+.darkMode .weeklyProjectSummaryDashboardCategoryTitle span {
+  color: #fff;
+}
+
+.darkMode * {
+  color: inherit;
+}
+
+.darkMode .weeklyProjectSummaryDashboardCategoryTitle * {
+  color: #fff;
+}
+
 .darkMode .weeklySummaryHeaderContainer {
   background: var(--section-bg);
   color: var(--text-color);
 }
 
-/* ---------------- STATUS CARD (base) ---------------- */
-.quantityOfMaterialsUsedChartTooltip::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 4px;
-}
-
-.quantityOfMaterialsUsedChartTooltip::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.3);
-  border-radius: 4px;
-}
-
-/* Additional adjustments for dark mode if needed */
-.darkMode .quantityOfMaterialsUsedChartTooltip::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.darkMode .quantityOfMaterialsUsedChartTooltip::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.3);
-}
-
-.darkMode .quantityOfMaterialsUsedChartTooltip {
-  scrollbar-color: rgba(255, 255, 255, 0.3) rgba(255, 255, 255, 0.1);
-}
-
 /* ---------------- RESPONSIVE DESIGN ---------------- */
-@media (max-width: 1024px) {
+@media (width <= 1024px) {
   .weeklySummaryHeaderContainer {
     flex-direction: column;
     align-items: stretch;
@@ -571,7 +558,7 @@
 }
 
 /* Extra Small Screens - Small phones */
-@media (max-width: 375px) {
+@media (width <= 375px) {
   .weeklyProjectSummaryDashboardCategoryContent {
     padding: 8px;
     gap: 8px;
@@ -592,7 +579,7 @@
 }
 
 /* Small Screens - Medium phones */
-@media (min-width: 376px) and (max-width: 428px) {
+@media (width >= 376px) and (width <= 428px) {
   .weeklyProjectSummaryDashboardCategoryContent {
     padding: 10px;
     gap: 10px;
@@ -612,7 +599,7 @@
 }
 
 /* Small Screens - Large phones and tablets */
-@media (min-width: 429px) and (max-width: 768px) {
+@media (width >= 429px) and (width <= 768px) {
   .weeklyProjectSummaryDashboardCategoryContent {
     padding: 12px;
     gap: 12px;
@@ -631,7 +618,7 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .weeklySummaryHeaderContainer {
     flex-direction: column;
     align-items: stretch;
@@ -907,7 +894,82 @@
   }
 }
 
-/* Small Screens */
+.materialConsumptionGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  align-items: start;
+}
+
+/* Tablet Screens — collapse Material Consumption chart grid to single column for readability */
+@media (width <= 1080px) {
+  .materialConsumptionGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Extra Small Screens - Small phones */
+@media (width <= 375px) {
+  .weeklyProjectSummaryDashboardCategoryContent {
+    padding: 8px;
+    gap: 8px;
+  }
+
+  .weeklyProjectSummaryCard {
+    padding: 6px;
+  }
+
+  /* Ensure charts are fully visible on small mobile - prevent clipping */
+  .weeklyProjectSummaryDashboardCategoryContent .tools-horizontal-chart-container,
+  .weeklyProjectSummaryDashboardCategoryContent .tools-horizontal-bar-chart-content,
+  .weeklyProjectSummaryDashboardCategoryContent .tool-donut-wrapper {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+  }
+}
+
+/* Small Screens - Medium phones */
+@media (width >= 376px) and (width <= 428px) {
+  .weeklyProjectSummaryDashboardCategoryContent {
+    padding: 10px;
+    gap: 10px;
+  }
+
+  .weeklyProjectSummaryCard {
+    padding: 7px;
+  }
+
+  .weeklyProjectSummaryDashboardCategoryContent .tools-horizontal-chart-container,
+  .weeklyProjectSummaryDashboardCategoryContent .tools-horizontal-bar-chart-content,
+  .weeklyProjectSummaryDashboardCategoryContent .tool-donut-wrapper {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+  }
+}
+
+/* Small Screens - Large phones and tablets */
+@media (width >= 429px) and (width <= 768px) {
+  .weeklyProjectSummaryDashboardCategoryContent {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .weeklyProjectSummaryCard {
+    padding: 8px;
+  }
+
+  .weeklyProjectSummaryDashboardCategoryContent .tools-horizontal-chart-container,
+  .weeklyProjectSummaryDashboardCategoryContent .tools-horizontal-bar-chart-content,
+  .weeklyProjectSummaryDashboardCategoryContent .tool-donut-wrapper {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+  }
+}
+
+/* Small Screens - Make Dropdowns Vertical */
 @media (width <= 768px) {
   .weeklySummaryHeaderContainer {
     flex-direction: column;
@@ -967,6 +1029,10 @@
     min-height: 500px;
   }
   
+  .materialConsumptionGrid {
+    grid-template-columns: 1fr;
+  }
+
   .toolsTrackingLayout {
     grid-template-columns: 1fr;
   }
@@ -1056,10 +1122,6 @@
 
 .darkMode .weeklyProjectSummaryDashboardSection {
   background: var(--section-bg);
-}
-
-.darkMode * {
-  color: inherit;
 }
 
 .darkMode .lessonsCard {
