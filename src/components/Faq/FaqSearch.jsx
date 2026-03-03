@@ -2,11 +2,7 @@ import { useState, useEffect } from 'react';
 import { debounce } from 'lodash';
 import { Button } from 'reactstrap';
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import { getAllFAQs, searchFAQs, logUnansweredQuestion } from './api';
-
-toast.configure();
 
 function FaqSearch() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -72,11 +68,11 @@ function FaqSearch() {
     setLogging(true);
     try {
       const response = await logUnansweredQuestion(searchQuery);
-      toast.success(response.data.message || 'Your question has been recorded.');
+      window.alert(response?.data?.message || 'Question logged successfully');
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('Error logging unanswered question:', error);
-      toast.error('Failed to log question. It may already exist.');
+      window.alert(error?.response?.data?.message || 'Failed to log question.');
     } finally {
       setLogging(false);
     }
