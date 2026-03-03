@@ -1,27 +1,48 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Table } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchItemUpdateHistory } from '~/actions/bmdashboard/invTypeActions';
-import moment from 'moment';
 import styles from './ItemListView.module.css';
 
-export default function ViewUpdatehistoryModal({ item, isOpen, toggle }) {
+export default function ViewUpdateHistoryModal({ item, isOpen, toggle }) {
   const dispatch = useDispatch();
-  const error = !item || item?.itemType === null;
-  const [errors, setErrors] = useState({});
-  const historyData = useSelector(state => state.bmInvTypes.historyList);
 
+  const historyData = useSelector(state => state.bmInvTypes?.historyList || []);
+
+  const itemTypeObj = item?.itemType ?? null;
+  const hasInvalidItem = !itemTypeObj;
+
+  // Fetch history when modal opens
   useEffect(() => {
-    if (!error && item && isOpen) dispatch(fetchItemUpdateHistory(item?.itemType?._id));
-  }, [item, isOpen, dispatch]);
+    if (isOpen && itemTypeObj?._id) {
+      dispatch(fetchItemUpdateHistory(itemTypeObj._id));
+    }
+  }, [isOpen, itemTypeObj?._id, dispatch]);
+
+  const formattedHistory = useMemo(() => {
+    return historyData.map(entry => ({
+      id: entry?._id,
+      date: entry?.editedAt ? new Date(entry.editedAt).toLocaleDateString() : 'N/A',
+      field: entry?.field ?? 'N/A',
+      oldValue: entry?.oldValue ?? 'N/A',
+      newValue: entry?.newValue ?? 'N/A',
+      userId: entry?.editedBy?._id,
+      userName: entry?.editedBy
+        ? `${entry.editedBy.firstName ?? ''} ${entry.editedBy.lastName ?? ''}`.trim()
+        : 'Unknown',
+      email: entry?.editedBy?.email ?? 'N/A',
+    }));
+  }, [historyData]);
 
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="xl">
       <ModalHeader toggle={toggle}>View Update History</ModalHeader>
+
       <ModalBody>
-        {error && 'Please select a named row for viewing history'}
-        <div className={styles.historyTable}>
-          {!error && (
+        {hasInvalidItem ? (
+          'Please select a valid row for viewing history'
+        ) : (
+          <div className={styles.historyTable}>
             <Table>
               <thead>
                 <tr>
@@ -34,27 +55,36 @@ export default function ViewUpdatehistoryModal({ item, isOpen, toggle }) {
                 </tr>
               </thead>
               <tbody>
-                {historyData.map(data => {
-                  return (
-                    <tr key={data._id}>
-                      <td>{moment.utc(data.editedAt).format('LL')}</td>
-                      <td>{data.field}</td>
-                      <td>{data.oldValue}</td>
-                      <td>{data.newValue}</td>
+                {formattedHistory.length === 0 ? (
+                  <tr>
+                    <td colSpan="6" className="text-center">
+                      No history available
+                    </td>
+                  </tr>
+                ) : (
+                  formattedHistory.map(entry => (
+                    <tr key={entry.id}>
+                      <td>{entry.date}</td>
+                      <td>{entry.field}</td>
+                      <td>{entry.oldValue}</td>
+                      <td>{entry.newValue}</td>
                       <td>
-                        <a href={`/userprofile/${data.editedBy._id}`}>
-                          {`${data.editedBy.firstName} ${data.editedBy.lastName}`}
-                        </a>
+                        {entry.userId ? (
+                          <a href={`/userprofile/${entry.userId}`}>{entry.userName}</a>
+                        ) : (
+                          entry.userName
+                        )}
                       </td>
-                      <td>{data.editedBy?.email}</td>
+                      <td>{entry.email}</td>
                     </tr>
-                  );
-                })}
+                  ))
+                )}
               </tbody>
             </Table>
-          )}
-        </div>
+          </div>
+        )}
       </ModalBody>
+
       <ModalFooter>
         <Button color="secondary" onClick={toggle}>
           Close
