@@ -43,12 +43,18 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
     );
   }
 
+  if (!data || !data.taskHours || !data.projectHours) {
+    return (
+      <div className="d-flex justify-content-center align-items-center">No data available</div>
+    );
+  }
+
   const { taskHours, projectHours } = data;
 
-  const taskPercentage = taskHours.submittedToCommittedHoursPercentage;
-  const projectPercentage = projectHours.submittedToCommittedHoursPercentage;
-  const taskChangePercentage = taskHours.comparisonPercentage;
-  const projectChangePercentage = projectHours.comparisonPercentage;
+  const taskPercentage = taskHours.submittedToCommittedHoursPercentage ?? 0;
+  const projectPercentage = projectHours.submittedToCommittedHoursPercentage ?? 0;
+  const taskChangePercentage = taskHours.comparisonPercentage ?? 0;
+  const projectChangePercentage = projectHours.comparisonPercentage ?? 0;
   const stats = [
     {
       name: 'Tasks',

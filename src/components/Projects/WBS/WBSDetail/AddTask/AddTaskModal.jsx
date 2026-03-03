@@ -155,16 +155,7 @@ function AddTaskModal(props) {
   // states from hooks
   const activeMembers = useMemo(() => {
     const members = Array.isArray(allMembers) ? allMembers : [];
-    const filtered = members.filter(u => {
-      if (!u) return false;
-      // Treat only explicit "inactive" as excluded; accept truthy/unknown as active
-      const isInactive =
-        u.status === 'Inactive' ||
-        u.isActive === false ||
-        String(u?.isActive).toLowerCase() === 'false';
-      return !isInactive;
-    });
-    return filtered.length ? filtered : members; // fallback so the list isn't empty
+    return members.filter(m => m && m.isActive === true);
   }, [allMembers]);
 
   const projectsList = Array.isArray(allProjects?.projects) ? allProjects.projects : [];

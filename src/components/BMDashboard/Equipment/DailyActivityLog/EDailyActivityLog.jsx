@@ -13,7 +13,14 @@ import { getUserProfile } from '~/actions/userProfile';
 
 import styles from './EDailyActivityLog.module.css';
 
-const TODAY = new Date().toISOString().split('T')[0];
+// Helper function to get today's date in YYYY-MM-DD format
+const getToday = () => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
 
 const buildToolNumbers = (name = 'EQ', qty = 0) => {
   const prefix = (
@@ -65,18 +72,17 @@ const getSelectStyles = (darkMode, isTableSelect = false) => ({
   }),
   control: base => ({
     ...base,
-
     backgroundColor: darkMode ? '#2a3f5f' : '#fff',
     borderColor: darkMode ? '#3a506b' : '#ced4da',
-    color: darkMode ? '#e0e0e0' : '#000',
+    color: darkMode ? '#ffffff' : '#000', // Changed to pure white
   }),
   singleValue: base => ({
     ...base,
-    color: darkMode ? '#e0e0e0' : '#000',
+    color: darkMode ? '#ffffff' : '#000', // Changed to pure white
   }),
   input: base => ({
     ...base,
-    color: darkMode ? '#e0e0e0' : '#000',
+    color: darkMode ? '#ffffff' : '#000', // Changed to pure white
   }),
   menu: base => ({
     ...base,
@@ -85,7 +91,6 @@ const getSelectStyles = (darkMode, isTableSelect = false) => ({
   }),
   option: (base, state) => ({
     ...base,
-
     backgroundColor: state.isFocused
       ? darkMode
         ? '#3a506b'
@@ -93,13 +98,13 @@ const getSelectStyles = (darkMode, isTableSelect = false) => ({
       : darkMode
       ? '#2a3f5f'
       : '#fff',
-    color: darkMode ? '#e0e0e0' : '#000',
+    color: darkMode ? '#ffffff' : '#000', // Changed to pure white
     cursor: 'pointer',
   }),
   placeholder: base => ({
     ...base,
-    color: darkMode ? '#e0e0e0' : '#6c757d',
-    opacity: 0.7,
+    color: darkMode ? '#ffffff' : '#6c757d', // Changed to pure white
+    opacity: 0.7, // Kept the opacity so it still looks like a placeholder
   }),
   multiValue: base => ({
     ...base,
@@ -107,11 +112,11 @@ const getSelectStyles = (darkMode, isTableSelect = false) => ({
   }),
   multiValueLabel: base => ({
     ...base,
-    color: darkMode ? '#e0e0e0' : '#000',
+    color: darkMode ? '#ffffff' : '#000', // Changed to pure white
   }),
   multiValueRemove: base => ({
     ...base,
-    color: darkMode ? '#e0e0e0' : '#000',
+    color: darkMode ? '#ffffff' : '#000', // Changed to pure white
     ':hover': {
       backgroundColor: 'red',
       color: 'white',
@@ -129,8 +134,9 @@ function EDailyActivityLog(props) {
   const { user } = props.auth;
 
   const [selectedProject, setSelectedProject] = useState(null);
-  const [date, setDate] = useState(TODAY);
-  const [logType, setLogType] = useState('check-in');
+  const [date, setDate] = useState(getToday());
+  const [logType, setLogType] = useState('check-in'); // 'check-in' | 'check-out'
+
   const [rows, setRows] = useState([]);
 
   useEffect(() => {
@@ -179,7 +185,7 @@ function EDailyActivityLog(props) {
     setSelectedProject(null);
     setRows([]);
     setLogType('check-in');
-    setDate(TODAY);
+    setDate(getToday());
   };
 
   const handleSubmit = () => {
@@ -203,26 +209,113 @@ function EDailyActivityLog(props) {
 
   return (
     <div className={`container-fluid ${styles.mainContainer} ${darkMode ? styles.darkMode : ''}`}>
+      {/* Custom dark mode styling for native date pickers and specific table hovers */}
+      {darkMode && (
+        <style>{`
+          .dark-table-row:hover,
+          thead.table-dark tr.text-light:hover,
+          tr.select-project-row.dark-mode:hover {
+            background-color: #222 !important;
+            color: #fff !important;
+            transition: background-color 0.2s;
+          }
+          
+          .dark-date-input {
+            background-color: #343a40 !important;
+            color: #f8f9fa !important;
+            border-color: #495057 !important;
+          }
+          
+          .dark-date-input::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            cursor: pointer;
+            background-color: #495057;
+            border-radius: 4px;
+            padding: 4px;
+          }
+          
+          .dark-date-input::-webkit-datetime-edit,
+          .dark-date-input::-webkit-datetime-edit-fields-wrapper,
+          .dark-date-input::-webkit-datetime-edit-text,
+          .dark-date-input::-webkit-datetime-edit-month-field,
+          .dark-date-input::-webkit-datetime-edit-day-field,
+          .dark-date-input::-webkit-datetime-edit-year-field {
+            color: #f8f9fa;
+          }
+          
+          .dark-date-input[type="date"] {
+            color-scheme: dark;
+          }
+          
+          @supports (-webkit-appearance: none) or (-moz-appearance: none) {
+            .dark-date-input {
+              color-scheme: dark;
+            }
+          }
+        `}</style>
+      )}
+
+      {!darkMode && (
+        <style>{`
+          .light-date-input {
+            background-color: #fff !important;
+            color: #000 !important;
+            border-color: #ced4da !important;
+          }
+          
+          .light-date-input::-webkit-calendar-picker-indicator {
+            filter: invert(0);
+          }
+          
+          .light-date-input[type="date"] {
+            color-scheme: light;
+          }
+        `}</style>
+      )}
+
       <div className="container">
         <h4 className="mb-4 pt-3">Daily Equipment Log</h4>
 
         {/* Header Row */}
         <div className="row mb-3 align-items-end">
           <div className="col-md-3">
-            <label className="form-label fw-bold" htmlFor="date">
+            <label
+              className={`form-label fw-bold${darkMode ? ' text-light' : ''}`}
+              htmlFor="date"
+              style={darkMode ? { color: '#f8f9fa' } : {}}
+            >
               Date
             </label>
             <input
               type="date"
               id="date"
-              className="form-control"
+              className={`form-control ${darkMode ? 'dark-date-input' : 'light-date-input'}`}
               value={date}
+              min={getToday()}
               onChange={e => setDate(e.target.value)}
+              style={
+                darkMode
+                  ? {
+                      backgroundColor: '#343a40',
+                      color: '#f8f9fa',
+                      borderColor: '#495057',
+                    }
+                  : {}
+              }
             />
+            {darkMode && (
+              <small className="text-muted mt-1 d-block">
+                Note: Calendar appearance depends on your browser and OS.
+              </small>
+            )}
           </div>
 
           <div className="col-md-5">
-            <label className="form-label fw-bold" htmlFor="project-select">
+            <label
+              className={`form-label fw-bold${darkMode ? ' text-light' : ''}`}
+              htmlFor="project-select"
+              style={darkMode ? { color: '#f8f9fa' } : {}}
+            >
               Project
             </label>
             <Select
@@ -236,8 +329,12 @@ function EDailyActivityLog(props) {
             />
           </div>
 
-          <div className="col-md-3">
-            <div className="form-label font-weight-bold mb-2" id="log-type-label">
+          <div className="col-md-4">
+            <div
+              className={`form-label fw-bold mb-2 ${darkMode ? 'text-light' : ''}`}
+              id="log-type-label"
+              style={darkMode ? { color: '#f8f9fa' } : {}}
+            >
               Log Type
             </div>
 
@@ -297,8 +394,8 @@ function EDailyActivityLog(props) {
           </thead>
           <tbody>
             {!selectedProject && (
-              <tr>
-                <td colSpan={5} className={`text-center py-3 ${darkMode ? styles.darkMode : ''}`}>
+              <tr className={darkMode ? `select-project-row dark-mode ${styles.darkMode}` : ''}>
+                <td colSpan={5} className={`text-center py-3 ${darkMode ? 'text-light' : ''}`}>
                   Select a project to load equipments.
                 </td>
               </tr>
@@ -319,7 +416,10 @@ function EDailyActivityLog(props) {
                 const limit = logType === 'check-in' ? r.availableQty : r.usingQty;
 
                 return (
-                  <tr key={r.id} className={`${darkMode ? styles.darkMode : ''}`}>
+                  <tr
+                    key={r.id}
+                    className={darkMode ? `dark-table-row text-light ${styles.darkMode}` : ''}
+                  >
                     <td>{r.name}</td>
                     <td>{r.workingQty}</td>
                     <td>{r.availableQty}</td>
