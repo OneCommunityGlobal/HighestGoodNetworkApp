@@ -1,0 +1,131 @@
+.page {
+  min-height: 100vh;
+  padding: 2rem 0;
+  background-color: #f9fafb;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.pageDark {
+  background-color: #0f172a;
+}
+
+.applicantChartContainer {
+  padding: 2rem 3rem;
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.filterRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.filterInput {
+  min-width: 180px;
+  flex: 1 1 180px;
+}
+
+.chartWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+.dark {
+  color: #e5e8f0;
+}
+
+.darkContainer {
+  background-color: #111827;
+  border-radius: 12px;
+  box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.08);
+  padding-bottom: 2rem;
+}
+
+.darkHeading {
+  color: #9cbaff;
+}
+
+.heading {
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+.darkInput {
+  background-color: #1f2937 !important;
+  color: #e5e7eb !important;
+  border-color: #3b82f6 !important;
+}
+
+@media (max-width: 1024px) {
+  .applicantChartContainer {
+    padding: 1.5rem 1.75rem;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .page {
+    padding: 1.5rem 0.75rem;
+  }
+
+  .applicantChartContainer {
+    padding: 1.5rem 1.25rem 3rem;
+    min-height: calc(100vh - 8rem);
+  }
+
+  .filterRow {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  .filterInput {
+    width: 100%;
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  .chartWrapper {
+    padding: 3.5rem 0 2.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+/* Dark mode tooltip styles */
+.dark :global(.recharts-tooltip-wrapper) {
+  z-index: 1000;
+}
+
+.dark :global(.recharts-default-tooltip) {
+  background-color: #1e293b !important;
+  border: 1px solid #475569 !important;
+  border-radius: 6px !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2) !important;
+}
+
+.dark :global(.recharts-tooltip-label) {
+  color: #f1f5f9 !important;
+  font-weight: 600 !important;
+  margin-bottom: 4px !important;
+}
+
+.dark :global(.recharts-tooltip-item) {
+  color: #e2e8f0 !important;
+}
+
+.dark :global(.recharts-tooltip-item-name),
+.dark :global(.recharts-tooltip-item-separator),
+.dark :global(.recharts-tooltip-item-value) {
+  color: #e2e8f0 !important;
+}

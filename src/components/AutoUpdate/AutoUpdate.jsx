@@ -17,40 +17,63 @@ function AutoUpdate() {
     headers: noCacheHeaders,
   };
 
-  const hashRequest = new Request('/hash.txt');
+  const resolveHashUrl = () => {
+    const isTestEnv =
+      (typeof import.meta !== 'undefined' && import.meta.env?.MODE === 'test') ||
+      (typeof process !== 'undefined' && process.env?.NODE_ENV === 'test');
+
+    if (isTestEnv || typeof window === 'undefined' || !window.location) {
+      return null;
+    }
+    return new URL('/hash.txt', window.location.origin).toString();
+  };
 
   useEffect(() => {
-    fetch(hashRequest, requestParams)
-      .then(response => {
-        response.text().then(text => {
+    const hashUrl = resolveHashUrl();
+    if (!hashUrl || typeof fetch === 'undefined') {
+      return undefined;
+    }
+
+    let isMounted = true;
+    fetch(hashUrl, requestParams)
+      .then(response => response.text())
+      .then(text => {
+        if (isMounted) {
           setHash(text);
-        });
+        }
       })
       .catch(err => {
         console.error(err); // eslint-disable-line no-console
       });
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   useEffect(() => {
-    if (hash !== undefined) {
-      const interval = setInterval(() => {
-        fetch(hashRequest, requestParams)
-          .then(response => {
-            response.text().then(text => {
-              if (text !== hash) {
-                setUpdated(true);
-              }
-            });
-          })
-          .catch(err => {
-            console.error(err); // eslint-disable-line no-console
-          });
-      }, 5 * MINUTE);
-      return () => clearInterval(interval);
+    if (hash === undefined) {
+      return undefined;
     }
 
-    // No cleanup needed if the hash is undefined.
-    return () => {};
+    const hashUrl = resolveHashUrl();
+    if (!hashUrl || typeof fetch === 'undefined') {
+      return undefined;
+    }
+
+    const interval = setInterval(() => {
+      fetch(hashUrl, requestParams)
+        .then(response => response.text())
+        .then(text => {
+          if (text !== hash) {
+            setUpdated(true);
+          }
+        })
+        .catch(err => {
+          console.error(err); // eslint-disable-line no-console
+        });
+    }, 5 * MINUTE);
+    return () => clearInterval(interval);
   }, [hash]);
 
   if (!updated) return null;

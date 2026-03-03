@@ -1,4 +1,9 @@
 import axios from 'axios';
+import { 
+  FETCH_INJURIES_REQUEST, 
+  FETCH_INJURIES_SUCCESS, 
+  FETCH_INJURIES_FAILURE 
+} from './types';
 import { ENDPOINTS } from '../../utils/URL';
 
 export const FETCH_BM_INJURY_DATA_REQUEST = 'FETCH_BM_INJURY_DATA_REQUEST';
@@ -10,6 +15,10 @@ export const FETCH_BM_INJURY_TYPES = 'FETCH_BM_INJURY_TYPES';
 export const FETCH_BM_INJURY_PROJECTS = 'FETCH_BM_INJURY_PROJECTS';
 export const FETCH_BM_INJURY_TREND_SUCCESS = 'FETCH_BM_INJURY_TREND_SUCCESS';
 export const CREATE_BM_INJURY_SUCCESS = 'CREATE_BM_INJURY_SUCCESS';
+
+// Legacy constants for backward compatibility
+export const GET_INJURY_SEVERITY = 'GET_INJURY_SEVERITY';
+export const GET_ERRORS = 'GET_ERRORS';
 
 // Helpers
 const cleanParams = (obj = {}) => {
@@ -40,8 +49,17 @@ const setInjuryDataError = payload => ({ type: FETCH_BM_INJURY_DATA_FAILURE, pay
 const setInjurySeverities = payload => ({ type: FETCH_BM_INJURY_SEVERITIES, payload });
 const setInjuryTypes = payload => ({ type: FETCH_BM_INJURY_TYPES, payload });
 const setInjuryProjects = payload => ({ type: FETCH_BM_INJURY_PROJECTS, payload });
-export const setInjuryTrendSuccess = payload => ({ type: FETCH_BM_INJURY_TREND_SUCCESS, payload });
-export const setCreateInjurySuccess = payload => ({ type: CREATE_BM_INJURY_SUCCESS, payload });
+
+// Legacy action creators for backward compatibility
+export const setInjurySeverity = payload => ({
+  type: GET_INJURY_SEVERITY,
+  payload,
+});
+
+export const setErrors = payload => ({
+  type: GET_ERRORS,
+  payload,
+});
 
 // Thunks
 export const fetchInjuryData = (filters) => async dispatch => {
@@ -111,3 +129,78 @@ export const createInjuries = (payload, { useDevSeed = false } = {}) => async di
   }
 };
 
+// Legacy function for backward compatibility
+export const fetchInjurySeverity = (filters = {}) => {
+  return async dispatch => {
+    try {
+      const params = {};
+
+      if (filters.projectIds?.length) {
+        params.projectIds = filters.projectIds.join(',');
+      }
+      if (filters.startDate && filters.endDate) {
+        params.startDate = filters.startDate;
+        params.endDate = filters.endDate;
+      }
+      if (filters.types?.length) {
+        params.types = filters.types.join(',');
+      }
+      if (filters.departments?.length) {
+        params.departments = filters.departments.join(',');
+      }
+
+      const res = await axios.get(ENDPOINTS.BM_INJURY_SEVERITY, { params });
+      dispatch(setInjurySeverity(res.data));
+    } catch (err) {
+      dispatch(setErrors(err.response?.data || err.message));
+    }
+  };
+};
+
+// Action creator for fetching injury data
+export const fetchInjuries = (projectId, startDate, endDate) => async dispatch => {
+  dispatch({ type: FETCH_INJURIES_REQUEST });
+
+  try {
+    // Build query parameters
+    const params = {};
+    if (projectId && projectId !== 'all') {
+      params.projectIds = projectId;
+    }
+    if (startDate) params.startDate = startDate;
+    if (endDate) params.endDate = endDate;
+
+    // API call
+    const response = await axios.get(ENDPOINTS.INJURIES, { params });
+
+    dispatch({
+      type: FETCH_INJURIES_SUCCESS,
+      payload: response.data
+    });
+
+    return response;
+  } catch (error) {
+    dispatch({
+      type: FETCH_INJURIES_FAILURE,
+      payload: {
+        message: error.response?.data?.message || 'Failed to fetch injury data',
+        status: error.response?.status
+      }
+    });
+
+    throw error;
+  }
+};
+
+// Function to get injury trend data (non-Redux version for direct component use)
+export const getInjuryData = async (projectId, startDate, endDate) => {
+  const params = {};
+  if (projectId && projectId !== 'all') {
+    params.projectId = projectId;
+  }
+  if (startDate) params.startDate = startDate;
+  if (endDate) params.endDate = endDate;
+
+  const response = await axios.get(ENDPOINTS.BM_INJURY_TREND, { params });
+  return response.data;
+};
