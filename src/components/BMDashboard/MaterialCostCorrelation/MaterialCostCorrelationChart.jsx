@@ -74,15 +74,17 @@ function MaterialCostCorrelationChart() {
   );
 
   const chartContainerRef = useRef(null);
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  // Track the actual rendered container width so breakpoints work correctly
+  // whether the chart is full-width or inside a narrow grid column.
+  const [containerWidth, setContainerWidth] = useState(400);
 
-  // Handle window resize for responsive chart margins
   useEffect(() => {
-    const handleResize = () => {
-      setWindowWidth(window.innerWidth);
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    if (!chartContainerRef.current) return undefined;
+    const observer = new ResizeObserver(([entry]) => {
+      setContainerWidth(entry.contentRect.width);
+    });
+    observer.observe(chartContainerRef.current);
+    return () => observer.disconnect();
   }, []);
 
   // Fetch data when filters change
@@ -126,62 +128,57 @@ function MaterialCostCorrelationChart() {
     }
   }, [data]);
 
-  // Chart configuration with responsive margins and X-axis behavior
-  // Breakpoints: mobile ≤480, iPad Mini / tablet ≤768, iPad Pro / small laptop ≤1024, desktop >1024
+  // Chart configuration — breakpoints use the actual rendered container width,
+  // not the window width, so the chart looks correct inside a narrow grid column.
+  // narrow < 500 px  (column card on any desktop or a small phone)
+  // medium < 700 px  (half-width layout or portrait tablet)
+  // wide   ≥ 700 px  (full-width on desktop)
   const chartConfig = useMemo(() => {
     const textColor = darkMode ? '#f7fafc' : '#1a202c';
     const gridColor = darkMode ? '#4a5568' : '#e2e8f0';
 
-    const isMobile = windowWidth <= 480;
-    const isTabletSmall = windowWidth <= 768; // iPad Mini portrait (768), small tablets
-    const isTabletLarge = windowWidth <= 1024; // iPad Mini landscape / iPad Pro (1024)
+    const isNarrow = containerWidth < 500;
+    const isMedium = containerWidth < 700;
 
-    // Adjust margins based on screen size (more bottom space for vertical labels)
     let margin;
-    if (isMobile) {
-      margin = { top: 10, right: 36, left: 36, bottom: 90 };
-    } else if (isTabletSmall) {
-      margin = { top: 10, right: 44, left: 44, bottom: 90 };
-    } else if (isTabletLarge) {
-      margin = { top: 10, right: 52, left: 52, bottom: 85 };
+    if (isNarrow) {
+      margin = { top: 10, right: 40, left: 40, bottom: 90 };
+    } else if (isMedium) {
+      margin = { top: 10, right: 50, left: 50, bottom: 90 };
     } else {
       margin = { top: 10, right: 60, left: 60, bottom: 80 };
     }
 
-    // X-axis: fewer ticks and shorter labels on smaller screens to prevent overlap
     const dataLength = barChartData?.length || 0;
-    let xAxisInterval = 0;
-    let xAxisAngle = -45;
-    let xAxisHeight = 100;
-    let xAxisTickFontSize = 12;
-    let xAxisMaxNameLength = 15;
+    let xAxisInterval;
+    let xAxisAngle;
+    let xAxisHeight;
+    let xAxisTickFontSize;
+    let xAxisMaxNameLength;
 
-    if (isMobile) {
+    if (isNarrow) {
+      // Vertical labels + aggressive skipping to prevent label pile-up
       xAxisAngle = -90;
-      xAxisHeight = 88;
+      xAxisHeight = 90;
       xAxisTickFontSize = 10;
       xAxisMaxNameLength = 8;
       xAxisInterval = dataLength > 5 ? Math.ceil(dataLength / 5) - 1 : 0;
-    } else if (isTabletSmall) {
-      // iPad Mini (768): vertical labels to avoid overlap in limited width
+    } else if (isMedium) {
       xAxisAngle = -90;
-      xAxisHeight = 88;
-      xAxisTickFontSize = 10;
-      xAxisMaxNameLength = 10;
-      xAxisInterval = dataLength > 6 ? Math.ceil(dataLength / 6) - 1 : 0;
-    } else if (isTabletLarge) {
-      // iPad Pro (1024): angled labels with fewer ticks
-      xAxisAngle = -45;
+      xAxisHeight = 85;
       xAxisTickFontSize = 11;
-      xAxisMaxNameLength = 12;
+      xAxisMaxNameLength = 10;
       xAxisInterval = dataLength > 8 ? Math.ceil(dataLength / 8) - 1 : 0;
+    } else {
+      xAxisAngle = -45;
+      xAxisHeight = 100;
+      xAxisTickFontSize = 12;
+      xAxisMaxNameLength = 15;
+      xAxisInterval = dataLength > 12 ? Math.ceil(dataLength / 12) - 1 : 0;
     }
 
-    // Y-axis width: narrower on small screens to give more room to the chart
-    const yAxisWidth = isMobile ? 44 : isTabletSmall ? 50 : isTabletLarge ? 58 : 70;
-
-    // Use short Y-axis labels on mobile and tablet small (≤768)
-    const shortYAxisLabels = isMobile || isTabletSmall;
+    const yAxisWidth = isNarrow ? 44 : isMedium ? 52 : 64;
+    const shortYAxisLabels = isNarrow;
 
     return {
       textColor,
@@ -195,7 +192,7 @@ function MaterialCostCorrelationChart() {
       yAxisWidth,
       shortYAxisLabels,
     };
-  }, [darkMode, windowWidth, barChartData?.length]);
+  }, [darkMode, containerWidth, barChartData?.length]);
 
   // Handlers
   const handleProjectChange = projectIds => {
@@ -334,9 +331,7 @@ function MaterialCostCorrelationChart() {
         {hasData ? (
           <ResponsiveContainer
             width="100%"
-            height={
-              windowWidth <= 480 ? 450 : windowWidth <= 768 ? 500 : windowWidth <= 1024 ? 540 : 600
-            }
+            height={containerWidth < 500 ? 400 : containerWidth < 700 ? 450 : 500}
           >
             <ComposedChart data={barChartData} margin={chartConfig.margin}>
               <CartesianGrid strokeDasharray="3 3" stroke={chartConfig.gridColor} />

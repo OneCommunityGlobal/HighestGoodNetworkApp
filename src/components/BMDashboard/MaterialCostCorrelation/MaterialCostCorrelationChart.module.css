@@ -21,7 +21,6 @@
   padding: 12px;
   background-color: var(--chart-bg);
   border-radius: 8px;
-  min-height: 600px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   color: var(--chart-text);
   box-sizing: border-box;
@@ -68,7 +67,7 @@
   padding: 12px;
   background: var(--chart-bg);
   border-radius: 8px;
-  min-height: 500px;
+  min-height: 300px;
   border: 1px solid var(--chart-border);
   box-sizing: border-box;
   overflow: hidden;
@@ -83,7 +82,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 500px;
+  min-height: 300px;
   gap: 16px;
 }
 
@@ -312,7 +311,6 @@
 @media (max-width: 768px) {
   .container {
     padding: 6px;
-    min-height: 500px;
   }
 
   .header {
@@ -327,7 +325,7 @@
 
   .chartContainer {
     padding: 6px;
-    min-height: 400px;
+    min-height: 300px;
   }
 
   .legendContent {
@@ -355,7 +353,7 @@
 
   .chartContainer {
     padding: 4px;
-    min-height: 350px;
+    min-height: 280px;
   }
 
   .legendSection {
