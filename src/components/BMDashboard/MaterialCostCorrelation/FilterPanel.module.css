@@ -40,8 +40,10 @@
 
 .filterGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 24px;
+  /* 160 px minimum lets the grid fit 2 columns in a ~380 px card column,
+     while still expanding to 4 columns in full-width contexts. */
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 16px;
 }
 
 .filterGroup {
@@ -61,7 +63,6 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 12px;
   flex-wrap: wrap;
 }
 
@@ -94,7 +95,8 @@
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
-  margin-top: 8px;
+  /* Sits below the filter grid as a full-width row */
+  margin-top: 12px;
 }
 
 .presetButtonLight,
@@ -354,11 +356,6 @@
     margin-bottom: 6px;
   }
 
-  .filterGrid {
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 16px;
-  }
-
   .dateRangeContainer {
     flex-direction: column;
     align-items: stretch;
@@ -378,15 +375,5 @@
   .filterGrid {
     grid-template-columns: 1fr;
     gap: 12px;
-  }
-
-  .presetButtons {
-    flex-direction: column;
-  }
-
-  .presetButtonLight,
-  .presetButtonDark {
-    width: 100%;
-    text-align: center;
   }
 }

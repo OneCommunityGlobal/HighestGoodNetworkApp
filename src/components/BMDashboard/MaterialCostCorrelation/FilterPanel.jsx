@@ -223,38 +223,6 @@ function FilterPanel({
               isClearable
             />
           </div>
-
-          {/* Preset Date Range Buttons */}
-          <div className={styles.presetButtons}>
-            <button
-              type="button"
-              onClick={() => handlePresetDateRange('lastWeek')}
-              className={darkMode ? styles.presetButtonDark : styles.presetButtonLight}
-            >
-              Last Week
-            </button>
-            <button
-              type="button"
-              onClick={() => handlePresetDateRange('lastMonth')}
-              className={darkMode ? styles.presetButtonDark : styles.presetButtonLight}
-            >
-              Last Month
-            </button>
-            <button
-              type="button"
-              onClick={() => handlePresetDateRange('last3Months')}
-              className={darkMode ? styles.presetButtonDark : styles.presetButtonLight}
-            >
-              Last 3 Months
-            </button>
-            <button
-              type="button"
-              onClick={() => handlePresetDateRange('allTime')}
-              className={darkMode ? styles.presetButtonDark : styles.presetButtonLight}
-            >
-              All Time
-            </button>
-          </div>
         </div>
 
         {/* Reset Button */}
@@ -270,6 +238,38 @@ function FilterPanel({
             Reset All Filters
           </button>
         </div>
+      </div>
+
+      {/* Preset date-range shortcuts — full-width horizontal row below the filter grid */}
+      <div className={styles.presetButtons}>
+        <button
+          type="button"
+          onClick={() => handlePresetDateRange('lastWeek')}
+          className={darkMode ? styles.presetButtonDark : styles.presetButtonLight}
+        >
+          Last Week
+        </button>
+        <button
+          type="button"
+          onClick={() => handlePresetDateRange('lastMonth')}
+          className={darkMode ? styles.presetButtonDark : styles.presetButtonLight}
+        >
+          Last Month
+        </button>
+        <button
+          type="button"
+          onClick={() => handlePresetDateRange('last3Months')}
+          className={darkMode ? styles.presetButtonDark : styles.presetButtonLight}
+        >
+          Last 3 Months
+        </button>
+        <button
+          type="button"
+          onClick={() => handlePresetDateRange('allTime')}
+          className={darkMode ? styles.presetButtonDark : styles.presetButtonLight}
+        >
+          All Time
+        </button>
       </div>
     </div>
   );
