@@ -68,11 +68,11 @@ function FaqSearch() {
     setLogging(true);
     try {
       const response = await logUnansweredQuestion(searchQuery);
-      window.alert(response?.data?.message || 'Question logged successfully');
+      globalThis.alert(response?.data?.message || 'Question logged successfully');
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('Error logging unanswered question:', error);
-      window.alert(error?.response?.data?.message || 'Failed to log question.');
+      globalThis.alert(error?.response?.data?.message || 'Failed to log question.');
     } finally {
       setLogging(false);
     }
