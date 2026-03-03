@@ -813,13 +813,17 @@ export default (
           component={EvaluationResultsWrapper}
         />
         <Route path="/educationportal/login" component={EPLogin} />
-        <Route path="/educationportal/InsightWidget" component={InsightWidget} />
-        <Route path="/educationportal/lesson-library" exact component={BrowseLessonPlan} />
+        <EPProtectedRoute path="/educationportal/InsightWidget" component={InsightWidget} />
+        <EPProtectedRoute
+          path="/educationportal/lesson-library"
+          exact
+          component={BrowseLessonPlan}
+        />
         <EPProtectedRoute path="/educationportal/assignAtoms" exact component={AssignAtoms} />
         <EPProtectedRoute path="/educationportal/tasks/upload" exact component={WriteTaskUpload} />
         <Route path="/educationportal/reportButton" component={ReportDownloadButton} />
-        <Route path="/educator/groups" exact component={GroupList} />
-        <EPProtectedRoute path="/educator/reports" exact component={EducatorReports} />
+        <EPProtectedRoute path="/educationportal/groups" exact component={GroupList} />
+        <EPProtectedRoute path="/educationportal/reports" exact component={EducatorReports} />
         <EPProtectedRoute
           path="/educationportal/tasks/intermediate"
           exact
