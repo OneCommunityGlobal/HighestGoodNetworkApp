@@ -55,6 +55,7 @@ export const ENDPOINTS = {
   USER_ALL_TEAM_CODE: `${APIEndpoint}/userProfile/teamCode/list`,
   LOGIN: `${APIEndpoint}/login`,
   PROJECTS: `${APIEndpoint}/projects`,
+  ARCHIVEDPROJECTS: `${APIEndpoint}/archivedProjects`,
   TEAM: `${APIEndpoint}/team`,
   TEAM_DATA: teamId => `${APIEndpoint}/team/${teamId}`,
   TEAM_USERS: teamId => `${APIEndpoint}/team/${teamId}/users`,
@@ -140,10 +141,9 @@ export const ENDPOINTS = {
     `${APIEndpoint}/userProfile/authorizeUser/weeeklySummaries`,
   TOTAL_ORG_SUMMARY: (startDate, endDate, comparisonStartDate, comparisonEndDate) =>
     `${APIEndpoint}/reports/volunteerstats?startDate=${startDate}&endDate=${endDate}&comparisonStartDate=${comparisonStartDate ||
-      ''}&comparisonEndDate=${comparisonEndDate || ''}`,
+    ''}&comparisonEndDate=${comparisonEndDate || ''}`,
   VOLUNTEER_TRENDS: (timeFrame, offset, customStartDate, customEndDate) =>
-    `${APIEndpoint}/reports/volunteertrends?timeFrame=${timeFrame}&offset=${offset}${
-      customStartDate ? `&customStartDate=${customStartDate}` : ''
+    `${APIEndpoint}/reports/volunteertrends?timeFrame=${timeFrame}&offset=${offset}${customStartDate ? `&customStartDate=${customStartDate}` : ''
     }${customEndDate ? `&customEndDate=${customEndDate}` : ''}`,
   HOURS_TOTAL_ORG_SUMMARY: (startDate, endDate) =>
     `${APIEndpoint}/reports/overviewsummaries/taskandprojectstats?startDate=${startDate}&endDate=${endDate}`,
@@ -306,8 +306,10 @@ export const ENDPOINTS = {
   BM_MATERIALS: `${APIEndpoint}/bm/materials`,
   BM_CONSUMABLES: `${APIEndpoint}/bm/consumables`,
   BM_UPDATE_CONSUMABLES: `${APIEndpoint}/bm/updateConsumablesRecord`,
+  BM_UPDATE_HISTORY: itemType => `${APIEndpoint}/bm/${itemType}/updateHistory`,
   BM_CONSUMABLE_TYPES: `${APIEndpoint}/bm/invtypes/consumables`,
   BM_CONSUMABLES_PURCHASE: `${APIEndpoint}/bm/consumables/purchase`,
+  BM_UPDATE_CONSUMABLE_STATUS: `${APIEndpoint}/bm/updateConsumableStatus`,
   BM_REUSABLE_TYPES: `${APIEndpoint}/bm/invtypes/reusables`,
   BM_REUSABLES: `${APIEndpoint}/bm/reusables`,
   BM_PURCHASE_REUSABLES: `${APIEndpoint}/bm/reusables/purchase`,
@@ -335,13 +337,16 @@ export const ENDPOINTS = {
   BM_LESSON_LIKES: lessonId => `${APIEndpoint}/bm/lesson/${lessonId}/like`,
   BM_EXTERNAL_TEAM: `${APIEndpoint}/bm/externalTeam`,
   BM_INVENTORY_UNITS: `${APIEndpoint}/bm/inventoryUnits`,
+  BM_INVENTORY_UNIT_BY_ID: unitId => `${APIEndpoint}/bm/inventoryUnits/${unitId}`,
   BM_INVTYPE_ROOT: `${APIEndpoint}/bm/invtypes`,
+  BM_INVTYPE_BY_ID: typeId => `${APIEndpoint}/bm/invtypes/${typeId}`,
   BM_TOOLS: `${APIEndpoint}/bm/tools/`,
   BM_TOOL_BY_ID: singleToolId => `${APIEndpoint}/bm/tools/${singleToolId}`,
   BM_TOOL_AVAILABILITY: (toolId = '', projectId = '') =>
     `${APIEndpoint}/tools/availability?toolId=${toolId}&projectId=${projectId}`,
   BM_LOG_TOOLS: `${APIEndpoint}/bm/tools/log`,
   BM_EQUIPMENT_BY_ID: singleEquipmentId => `${APIEndpoint}/bm/equipment/${singleEquipmentId}`,
+  BM_EQUIPMENT_STATUS_UPDATE: (equipmentId) => `${APIEndpoint}/bm/equipment/${equipmentId}/status`,
   BM_EQUIPMENTS: `${APIEndpoint}/bm/equipments`,
   BM_INVTYPE_TYPE: type => `${APIEndpoint}/bm/invtypes/${type}`,
   BM_ISSUE_CHART: `${APIEndpoint}/bm/issue/issue-chart`,
@@ -405,6 +410,7 @@ export const ENDPOINTS = {
   HGN_FORM_UPDATE_QUESTION: id => `${APIEndpoint}/questions/${id}`,
   HGN_FORM_SUBMIT: `${APIEndpoint}/hgnform`,
   HGN_FORM_UPDATE_USER_SKILLS_FOLLOWUP_SUBMIT: `${APIEndpoint}/skills/profile/updateFollowUp/`,
+  SKILLS_PROFILE_UPDATE_YEARS_OF_EXPERIENCE: userId => `${APIEndpoint}/skills/profile/updateYearsOfExperience/${userId}`,
   // HGN Skills Dashboard
   SKILLS_PROFILE: userId => `${APIEndpoint}/skills/profile/${userId}`,
 
@@ -524,6 +530,8 @@ export const ENDPOINTS = {
   PROMOTION_ELIGIBILITY: `${APIEndpoint}/promotion-eligibility`,
   PROMOTE_MEMBERS: `${APIEndpoint}/promote-members`,
 
+  // actual cost endpoints
+  ACTUAL_COST_BREAKDOWN: projectId => `${APIEndpoint}/projects/${projectId}/actual-cost-breakdown`,
   MATERIAL_UTILIZATION: () => `${APIEndpoint}/materials/utilization`,
   DISTINCT_PROJECTS: () => `${APIEndpoint}/materials/distinct-projects`,
   DISTINCT_MATERIALS: () => `${APIEndpoint}/materials/distinct-materials`,
@@ -532,6 +540,8 @@ export const ENDPOINTS = {
   PR_REVIEWS_INSIGHTS: `${APIEndpoint}/analytics/pr-review-insights`,
 
   // Education Portal endpoints
+  STUDENT_PROFILE: `${APIEndpoint}/student/profile`,
+  STUDENT_SUBJECT_TASKS: subjectId => `${APIEndpoint}/student/profile/subject/${subjectId}`,
   EDUCATOR_ASSIGN_ATOMS: () => `${APIEndpoint}/educator/assign-atoms`,
 
   LESSON_PLANS: `${APIEndpoint}/education/lesson-plans`,

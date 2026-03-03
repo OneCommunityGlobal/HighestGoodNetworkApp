@@ -544,7 +544,9 @@ const TeamMemberTask = React.memo(
                                           title={`Created by: ${getTaskCreatorName(task)}`}
                                           style={{ color: darkMode ? '#339CFF' : undefined }}
                                         >
-                                          <span>{`${task.num} ${task.taskName}`} </span>
+                                          <span
+                                            className={styles.taskTitle}
+                                          >{`${task.num} ${task.taskName}`}</span>
                                         </Link>
                                         <CopyToClipboard
                                           writeText={task.taskName}
@@ -709,7 +711,9 @@ const TeamMemberTask = React.memo(
                                 <button
                                   type="button"
                                   onClick={handleTruncateTasksButtonClick}
-                                  className={darkMode ? 'text-light' : ''}
+                                  className={`${styles.truncateTasksBtn} ${
+                                    darkMode ? 'text-light' : ''
+                                  }`}
                                 >
                                   {isTruncated
                                     ? `Show All (${activeTasks.length}) Tasks`

@@ -14,6 +14,7 @@ export default function ItemsTable({
   UpdateItemModal,
   dynamicColumns,
   darkMode = false,
+  itemType,
 }) {
   const [sortedData, setData] = useState(filteredItems);
   const [modal, setModal] = useState(false);
@@ -175,6 +176,7 @@ export default function ItemsTable({
         record={record}
         setRecord={setRecord}
         recordType={recordType}
+        itemType={itemType}
       />
 
       {/* Direct Chart Modal for Usage Records */}
