@@ -28,52 +28,52 @@
   min-height: 100vh;
   background-color: var(--bg-light);
   padding: 0;
-  margin-left: 200px;
-  transition: margin-left 0.3s ease;
+  margin-left: 0;
+  transition: none;
 }
 
 /* When sidebar is minimized, expand the content */
 .evaluationResultsPage[data-sidebar-minimized='true'] {
-  margin-left: 70px;
+  margin-left: 0;
 }
 
 @media (max-width: 991px) {
   .evaluationResultsPage {
-    margin-left: 180px;
+    margin-left: 0;
   }
 
   .evaluationResultsPage[data-sidebar-minimized='true'] {
-    margin-left: 70px;
+    margin-left: 0;
   }
 }
 
 @media (max-width: 767px) {
   .evaluationResultsPage {
-    margin-left: 240px;
+    margin-left: 0;
   }
 
   .evaluationResultsPage[data-sidebar-minimized='true'] {
-    margin-left: 70px;
+    margin-left: 0;
   }
 }
 
 @media (max-width: 480px) {
   .evaluationResultsPage {
-    margin-left: 220px;
+    margin-left: 0;
   }
 
   .evaluationResultsPage[data-sidebar-minimized='true'] {
-    margin-left: 70px;
+    margin-left: 0;
   }
 }
 
 @media (max-width: 359px) {
   .evaluationResultsPage {
-    margin-left: 200px;
+    margin-left: 0;
   }
 
   .evaluationResultsPage[data-sidebar-minimized='true'] {
-    margin-left: 70px;
+    margin-left: 0;
   }
 }
 

@@ -2,6 +2,8 @@
 import { Redirect, Route } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { Suspense } from 'react';
+import { SidebarProvider } from '~/components/EductionPortal/SidebarContext';
+import EducationPortalLayout from '~/components/EductionPortal/layout/EducationPortalLayout';
 
 // eslint-disable-next-line react/function-component-definition
 const EPProtectedRoute = ({ component: Component, render, auth, fallback, ...rest }) => {
@@ -19,8 +21,12 @@ const EPProtectedRoute = ({ component: Component, render, auth, fallback, ...res
             />
           );
         }
+
+        const Page = Component ? <Component {...props} /> : render(props);
+        const Wrapped = <EducationPortalLayout>{Page}</EducationPortalLayout>;
+
         // eslint-disable-next-line no-nested-ternary
-        return Component && fallback ? (
+        return fallback ? (
           <Suspense
             fallback={
               // eslint-disable-next-line react/jsx-wrap-multilines
@@ -29,12 +35,10 @@ const EPProtectedRoute = ({ component: Component, render, auth, fallback, ...res
               </div>
             }
           >
-            <Component {...props} />
+            <SidebarProvider>{Wrapped}</SidebarProvider>
           </Suspense>
-        ) : Component ? (
-          <Component {...props} />
         ) : (
-          render(props)
+          <SidebarProvider>{Wrapped}</SidebarProvider>
         );
       }}
     />

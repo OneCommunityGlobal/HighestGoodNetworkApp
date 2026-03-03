@@ -1,0 +1,95 @@
+:root {
+  --ep-font: 'Poppins', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --ep-bg-0: #0b1220;
+  --ep-bg-1: #0f1b34;
+  --ep-ink: #eaf0ff;
+  --ep-muted: rgba(234, 240, 255, 0.72);
+  --ep-stroke: rgba(255, 255, 255, 0.1);
+  --ep-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+  --ep-card: rgba(255, 255, 255, 0.06);
+  --ep-card-2: rgba(255, 255, 255, 0.09);
+  --ep-accent: #56d0ff;
+  --ep-accent-2: #7c5cff;
+  --ep-nav-w: 280px;
+  --ep-nav-w-mini: 88px;
+}
+
+.shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: var(--ep-nav-w) 1fr;
+  background: radial-gradient(1200px 700px at 16% 10%, rgba(124, 92, 255, 0.25), transparent 55%),
+    radial-gradient(1000px 650px at 70% 30%, rgba(86, 208, 255, 0.18), transparent 55%),
+    linear-gradient(180deg, var(--ep-bg-0), var(--ep-bg-1));
+  color: var(--ep-ink);
+  font-family: var(--ep-font);
+}
+
+.shell[data-minimized='true'] {
+  grid-template-columns: var(--ep-nav-w-mini) 1fr;
+}
+
+.main {
+  position: relative;
+  min-width: 0;
+}
+
+.content {
+  min-height: 100vh;
+  padding: 28px 28px 64px;
+}
+
+.mobileMenuButton {
+  display: none;
+}
+
+@media (max-width: 960px) {
+  .shell {
+    grid-template-columns: 1fr;
+  }
+
+  .shell[data-minimized='true'] {
+    grid-template-columns: 1fr;
+  }
+
+  .content {
+    padding: 22px 18px 56px;
+  }
+
+  .mobileMenuButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    position: sticky;
+    top: 12px;
+    margin: 12px 0 10px;
+    z-index: 5;
+    padding: 10px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--ep-stroke);
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--ep-ink);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
+    backdrop-filter: blur(10px);
+    cursor: pointer;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+  }
+
+  .mobileMenuButton:hover {
+    background: rgba(255, 255, 255, 0.12);
+  }
+
+  .mobileMenuIcon {
+    display: inline-flex;
+    width: 18px;
+    height: 18px;
+    border-radius: 6px;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(86, 208, 255, 0.3), rgba(124, 92, 255, 0.26));
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 14px;
+    line-height: 1;
+  }
+}

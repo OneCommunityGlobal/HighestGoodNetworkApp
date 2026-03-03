@@ -15,7 +15,6 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 import styles from './EvaluationResults.module.css';
-import SideBar from '../SideBar/SideBar';
 import { useSidebar } from '../SidebarContext';
 import EvaluationNotificationService from './evaluationNotificationService';
 import { mockEvaluationData } from './mockData_new';
@@ -188,7 +187,6 @@ const EvaluationResults = ({ auth }) => {
 
   return (
     <>
-      <SideBar />
       <div className={styles.evaluationResultsPage} data-sidebar-minimized={isMinimized}>
         {/* New Clean Header */}
         <div className={styles.headerSection}>

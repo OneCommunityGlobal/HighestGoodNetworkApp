@@ -1,7 +1,6 @@
 import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams, useLocation } from 'react-router-dom';
-import Sidebar from './StudentSidebar';
 import styles from './TaskDetails.module.css';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 
@@ -52,8 +51,6 @@ const TaskDetails = () => {
 
   return (
     <div className={`${styles.pageLayout} ${darkMode ? styles.pageLayoutDark : ''}`}>
-      <Sidebar />
-
       <div className={`${styles.content} ${darkMode ? styles.contentDark : ''}`}>
         <header className={styles.header}>
           <h2 className={styles.title}>{task.title}</h2>
