@@ -2,64 +2,19 @@ import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import styles from './Sidebar.module.css';
+import { sidebarMenuItems, sidebarBottomMenuItems } from '../mockdata';
 
 const Sidebar = () => {
   const location = useLocation();
   const darkMode = useSelector(state => state.theme?.darkMode || false);
   const authUser = useSelector(state => state.auth.user);
 
-  const menuItems = [
-    {
-      icon: '🏠',
-      label: 'Homepage',
-      path: '',
-      isActive: false,
-    },
-    {
-      icon: '📊',
-      label: 'Knowledge Evaluation',
-      path: '',
-      isActive: false,
-    },
-    {
-      icon: '📋',
-      label: 'Past Lesson Plans',
-      path: '/educator/reports',
-      isActive: location.pathname === '/educator/reports',
-    },
-    {
-      icon: '⭐',
-      label: 'My Saved Interests',
-      path: '/saved-interests',
-      isActive: location.pathname === '/saved-interests',
-    },
-    {
-      icon: '📈',
-      label: 'Evaluation results',
-      path: '/evaluation-results',
-      isActive: location.pathname === '/evaluation-results',
-    },
-    {
-      icon: '🏗️',
-      label: 'Build Lesson Plan',
-      path: '/build-lesson-plan',
-      isActive: location.pathname === '/build-lesson-plan',
-    },
-  ];
+  const menuItems = sidebarMenuItems.map(item => ({
+    ...item,
+    isActive: location.pathname === item.path,
+  }));
 
-  const bottomMenuItems = [
-    {
-      icon: '⚙️',
-      label: 'Settings',
-      path: '/settings',
-    },
-    {
-      icon: '🚪',
-      label: 'Log out',
-      path: '/logout',
-      isLogout: true,
-    },
-  ];
+  const bottomMenuItems = sidebarBottomMenuItems;
 
   const handleLogout = () => {
     // Handle logout logic here
