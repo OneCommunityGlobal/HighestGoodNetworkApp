@@ -1,6 +1,7 @@
 import { Form, FormGroup, Label, Input } from 'reactstrap';
 import { useSelector } from 'react-redux';
 import styles from './ItemListView.module.css';
+import PropTypes from 'prop-types';
 
 export default function SelectItem({
   items,
@@ -103,3 +104,6 @@ export default function SelectItem({
     </Form>
   );
 }
+SelectItem.propTypes = {
+  items: PropTypes.array,
+};

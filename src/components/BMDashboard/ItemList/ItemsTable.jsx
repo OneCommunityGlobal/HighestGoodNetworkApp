@@ -6,6 +6,7 @@ import { faSortDown, faSort, faSortUp } from '@fortawesome/free-solid-svg-icons'
 import RecordsModal from './RecordsModal';
 import MaterialUsageChart from '../MaterialUsage/MaterialUsageChart';
 import styles from './ItemListView.module.css';
+import PropTypes from 'prop-types';
 
 export default function ItemsTable({
   selectedProject,
@@ -301,3 +302,7 @@ export default function ItemsTable({
     </>
   );
 }
+ItemsTable.propTypes = {
+  selectedRowId: PropTypes.any,
+  onRowSelect: PropTypes.any,
+};

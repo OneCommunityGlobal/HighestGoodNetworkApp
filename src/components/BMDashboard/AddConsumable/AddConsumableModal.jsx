@@ -1,5 +1,6 @@
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import AddConsumable from './AddConsumable';
+import PropTypes from 'prop-types';
 
 export default function AddConsumableModal({ isACOpen, toggle }) {
   return (
@@ -14,3 +15,7 @@ export default function AddConsumableModal({ isACOpen, toggle }) {
     </Modal>
   );
 }
+AddConsumableModal.propTypes = {
+  toggle: PropTypes.func.isRequired,
+  isACOpen: PropTypes.any,
+};

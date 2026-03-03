@@ -3,6 +3,7 @@ import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Table } from 'react
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchItemUpdateHistory } from '~/actions/bmdashboard/invTypeActions';
 import styles from './ItemListView.module.css';
+import PropTypes from 'prop-types';
 
 export default function ViewUpdateHistoryModal({ item, isOpen, toggle }) {
   const dispatch = useDispatch();
@@ -93,3 +94,8 @@ export default function ViewUpdateHistoryModal({ item, isOpen, toggle }) {
     </Modal>
   );
 }
+ViewUpdateHistoryModal.propTypes = {
+  toggle: PropTypes.func.isRequired,
+  item: PropTypes.any,
+  isOpen: PropTypes.any,
+};

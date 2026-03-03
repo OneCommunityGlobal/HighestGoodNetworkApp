@@ -24,6 +24,7 @@ import { fetchAllConsumables } from '~/actions/bmdashboard/consumableActions';
 
 import { POST_UPDATE_NAME_AND_UNIT_RESET } from '../../../constants/bmdashboard/inventoryTypeConstants';
 import styles from './ItemListView.module.css';
+import PropTypes from 'prop-types';
 
 const MIN_NAME_LENGTH = 3;
 const MAX_NAME_LENGTH = 15;
@@ -190,5 +191,9 @@ function EditNameUnitModal({ item, isOpen, toggle }) {
     </Modal>
   );
 }
-
+EditNameUnitModal.propTypes = {
+  toggle: PropTypes.func.isRequired,
+  item: PropTypes.any,
+  isOpen: PropTypes.any,
+};
 export default EditNameUnitModal;

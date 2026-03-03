@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Joi from 'joi-browser';
 import { toast } from 'react-toastify';
 import Select from 'react-select';
+import PropTypes from 'prop-types';
 import { fetchInvUnits } from '../../../actions/bmdashboard/invUnitActions';
 import {
   fetchConsumableTypes,
@@ -307,5 +308,7 @@ function AddConsumable({ toggle }) {
     </Container>
   );
 }
-
+AddConsumable.propTypes = {
+  toggle: PropTypes.func.isRequired,
+};
 export default AddConsumable;
