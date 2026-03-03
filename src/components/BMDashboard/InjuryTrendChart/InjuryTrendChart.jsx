@@ -15,7 +15,7 @@ import Select from 'react-select';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { fetchInjuryProjects, fetchInjuryTrend } from '../../../actions/bmdashboard/injuryActions';
-import './InjuryTrendChart.css';
+import styles from './InjuryTrendChart.module.css';
 
 const toYMD = d =>
   d instanceof Date && !isNaN(d)
@@ -117,11 +117,11 @@ function InjuryTrendChart() {
   }, [trend]);
 
   return (
-    <div className={`injury-trend-container ${darkMode ? 'darkMode' : ''}`}>
-      <div className="injury-trend-header">
-        <h3 className="injury-trend-title">Injury Trend Over Time</h3>
-        <div className="injury-trend-filters">
-          <div className="filter-item">
+    <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
+      <div className={styles.header}>
+        <h3 className={styles.title}>Injury Trend Over Time</h3>
+        <div className={styles.filters}>
+          <div className={styles.filterItem}>
             <label htmlFor="injury-project-select">Project</label>
             <Select
               classNamePrefix="injury-select"
@@ -133,7 +133,7 @@ function InjuryTrendChart() {
               inputId="injury-project-select"
             />
           </div>
-          <div className="filter-item">
+          <div className={styles.filterItem}>
             <label htmlFor="injury-date-range">Date range</label>
             <DatePicker
               selectsRange
@@ -142,14 +142,14 @@ function InjuryTrendChart() {
               onChange={setDateRange}
               placeholderText="Select date range"
               isClearable
-              className="injury-datepicker"
+              className={styles.datepicker}
               id="injury-date-range"
             />
           </div>
         </div>
       </div>
 
-      <div className="injury-trend-chart-wrapper">
+      <div className={styles.chartWrapper}>
         {/* Quick add button for local/dev testing; remove when dedicated page exists */}
 
         {loading && <div style={{ marginBottom: 8, color: tickColor }}>Loading injury trend…</div>}
