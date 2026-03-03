@@ -821,7 +821,7 @@ export default (
         />
         <EPProtectedRoute path="/educationportal/assignAtoms" exact component={AssignAtoms} />
         <EPProtectedRoute path="/educationportal/tasks/upload" exact component={WriteTaskUpload} />
-        <Route path="/educationportal/reportButton" component={ReportDownloadButton} />
+        <EPProtectedRoute path="/educationportal/reportButton" component={ReportDownloadButton} />
         <EPProtectedRoute path="/educationportal/groups" exact component={GroupList} />
         <EPProtectedRoute path="/educationportal/reports" exact component={EducatorReports} />
         <EPProtectedRoute
