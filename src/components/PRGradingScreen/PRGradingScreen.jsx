@@ -65,10 +65,7 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
       ];
     });
 
-    const csvContent =
-      [headers, ...rows]
-        .map(row => row.join(','))
-        .join('\n');
+    const csvContent = [headers, ...rows].map(row => row.join(',')).join('\n');
 
     const blob = new Blob([csvContent], {
       type: 'text/csv;charset=utf-8;',
@@ -81,10 +78,7 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
     const start = teamData.dateRange.start.replace(/\//g, '-');
     const end = teamData.dateRange.end.replace(/\//g, '-');
 
-    link.setAttribute(
-      'download',
-      `weekly-pr-grading-${start}-to-${end}.csv`
-    );
+    link.setAttribute('download', `weekly-pr-grading-${start}-to-${end}.csv`);
 
     document.body.appendChild(link);
     link.click();
@@ -154,9 +148,7 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
         r.id === reviewerId
           ? {
               ...r,
-              gradedPrs: r.gradedPrs.map(pr =>
-                pr.id === prId ? { ...pr, grade: newGrade } : pr
-              ),
+              gradedPrs: r.gradedPrs.map(pr => (pr.id === prId ? { ...pr, grade: newGrade } : pr)),
             }
           : r,
       ),
