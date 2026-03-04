@@ -411,80 +411,58 @@
 }
 
 /*
-  Dark mode for reactstrap/Bootstrap Alerts.
-  Keep the same variant hues, just darker and tuned for dark backgrounds.
+  Dark mode alerts: keep the same readable text colors as light mode
+  and slightly darken the pastel backgrounds.
 */
 .darkMode .insightAlert {
-  color: rgba(255, 255, 255, 0.92);
-  /* Fallback if a variant class is missing */
-  background-color: rgba(15, 23, 42, 0.55);
+  color: #111827;
+  background-color: #e5e7eb;
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-/* Ensure reactstrap alert variant text colors don't override */
-.darkMode .insightAlert.insightAlertInfo,
-.darkMode .insightAlert.insightAlertInfo * {
-  color: rgba(255, 255, 255, 0.92);
-}
-
-.darkMode .insightAlert.insightAlertSuccess,
-.darkMode .insightAlert.insightAlertSuccess * {
-  color: rgba(255, 255, 255, 0.92);
-}
-
-.darkMode .insightAlert.insightAlertWarning,
-.darkMode .insightAlert.insightAlertWarning * {
-  color: rgba(255, 255, 255, 0.92);
-}
-
-.darkMode .insightAlert.insightAlertDanger,
-.darkMode .insightAlert.insightAlertDanger * {
-  color: rgba(255, 255, 255, 0.92);
-}
-
-.darkMode .insightAlert.insightAlertPrimary,
-.darkMode .insightAlert.insightAlertPrimary * {
-  color: rgba(255, 255, 255, 0.92);
-}
-
-.darkMode .insightAlert .insightContent {
-  color: rgba(255, 255, 255, 0.92);
-}
-
-.darkMode .insightAlert .insightContent strong {
-  color: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(17, 24, 39, 0.16);
 }
 
 .darkMode .insightAlert.insightAlertInfo {
-  background-color: rgba(14, 116, 144, 0.22);
-  border-color: rgba(56, 189, 248, 0.25);
-  color: rgba(255, 255, 255, 0.92);
+  background-color: #bcdde4;
+  border-color: #9acbd5;
+  color: #0c5460;
 }
 
 .darkMode .insightAlert.insightAlertSuccess {
-  background-color: rgba(22, 101, 52, 0.22);
-  border-color: rgba(34, 197, 94, 0.22);
-  color: rgba(255, 255, 255, 0.92);
+  background-color: #c3e0ca;
+  border-color: #a8d6b2;
+  color: #155724;
 }
 
 .darkMode .insightAlert.insightAlertWarning {
-  /* Make warning intent more visible on dark surfaces */
-  background-color: rgba(245, 158, 11, 0.18);
-  border-color: rgba(245, 158, 11, 0.3);
-  color: rgba(255, 255, 255, 0.92);
+  background-color: #f2e2b6;
+  border-color: #e9d28f;
+  color: #856404;
 }
 
 .darkMode .insightAlert.insightAlertDanger {
-  background-color: rgba(153, 27, 27, 0.22);
-  border-color: rgba(239, 68, 68, 0.22);
-  color: rgba(255, 255, 255, 0.92);
+  background-color: #e8c1c5;
+  border-color: #d9a1a7;
+  color: #721c24;
 }
 
 .darkMode .insightAlert.insightAlertPrimary {
-  background-color: rgba(30, 64, 175, 0.22);
-  border-color: rgba(59, 130, 246, 0.22);
-  color: rgba(255, 255, 255, 0.92);
+  background-color: #b7d6ff;
+  border-color: #94c5ff;
+  color: #004085;
+}
+
+/* Ensure nested content inherits variant text color */
+.darkMode .insightAlert.insightAlertInfo *,
+.darkMode .insightAlert.insightAlertSuccess *,
+.darkMode .insightAlert.insightAlertWarning *,
+.darkMode .insightAlert.insightAlertDanger *,
+.darkMode .insightAlert.insightAlertPrimary * {
+  color: inherit;
+}
+
+/* But keep button labels high-contrast */
+.darkMode .insightAlert .actionButton {
+  color: #fff;
 }
 
 .insightContent {
