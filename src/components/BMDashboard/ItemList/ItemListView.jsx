@@ -35,6 +35,8 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
   const materialTypes = useSelector(state => state.bmInvTypes.list);
   const consumableTypes = useSelector(state => state.bmInvTypes.consumablesList);
   const [isAMOpen, setisAMOpen] = useState(false); //MaterialsPage
+  const [selectedCondition, setSelectedCondition] = useState('all');
+  const [selectedToolStatus, setSelectedToolStatus] = useState('all');
   const [isEditOpen, setisEditOpen] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
   const [viewUpdate, setViewUpdate] = useState(false);
