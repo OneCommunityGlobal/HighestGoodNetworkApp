@@ -1,14 +1,19 @@
 .sidebar {
-  position: sticky;
+  position: fixed;
+  left: 0;
   top: 0;
-  height: 100vh;
+  height: 100dvh;
+  width: min(320px, 86vw);
   display: flex;
   flex-direction: column;
   border-right: 1px solid var(--ep-stroke);
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.03));
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.04) inset;
   backdrop-filter: blur(12px);
-  z-index: 10;
+  z-index: 1001;
+
+  transform: translateX(-110%);
+  transition: transform 180ms ease;
 }
 
 .brandRow {
@@ -54,21 +59,6 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-.collapseButton {
-  margin-left: auto;
-  width: 34px;
-  height: 34px;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.06);
-  color: var(--ep-ink);
-  cursor: pointer;
-}
-
-.collapseButton:hover {
-  background: rgba(255, 255, 255, 0.1);
 }
 
 .nav {
@@ -148,47 +138,17 @@
   background: rgba(255, 255, 255, 0.1);
 }
 
-.minimized .brandText,
-.minimized .label {
-  display: none;
-}
-
-.minimized .link,
-.minimized .logout {
-  grid-template-columns: 34px;
-  justify-items: center;
-}
-
-.minimized .collapseButton {
-  margin-left: 0;
-}
-
 .overlay {
-  display: none;
+  display: block;
+  position: fixed;
+  inset: 0;
+  border: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(2px);
+  z-index: 1000;
+  cursor: pointer;
 }
 
-@media (max-width: 960px) {
-  .sidebar {
-    position: fixed;
-    left: 0;
-    top: 0;
-    width: min(320px, 86vw);
-    transform: translateX(-110%);
-    transition: transform 180ms ease;
-  }
-
-  .mobileOpen {
-    transform: translateX(0);
-  }
-
-  .overlay {
-    display: block;
-    position: fixed;
-    inset: 0;
-    border: 0;
-    background: rgba(0, 0, 0, 0.45);
-    backdrop-filter: blur(2px);
-    z-index: 9;
-    cursor: pointer;
-  }
+.mobileOpen {
+  transform: translateX(0);
 }

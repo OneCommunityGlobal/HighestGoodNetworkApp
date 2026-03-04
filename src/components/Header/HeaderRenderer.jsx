@@ -12,11 +12,10 @@ export function HeaderRenderer(props) {
   const location = useLocation();
   const isKitchenAndInventory = location.pathname.startsWith('/kitchenandinventory');
   const isCommunityPortal = location.pathname.startsWith('/communityportal');
-  const isEducationEvaluation = location.pathname.startsWith('/educationportal/evaluation-results');
   const isEducatorReports = location.pathname.startsWith('/educator');
 
-  // Hide header for education portal evaluation results page
-  if (isEducationEvaluation || isEducatorReports) {
+  // Hide header for educator reports page
+  if (isEducatorReports) {
     return null;
   }
 

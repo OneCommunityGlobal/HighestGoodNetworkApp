@@ -1,9 +1,7 @@
 import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { NavLink, useHistory, useLocation } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { logoutUser } from '~/actions/authActions';
-import { useSidebar } from '../SidebarContext';
+import { useSelector } from 'react-redux';
 import styles from './EducationPortalSidebar.module.css';
 
 function isEducatorRole(role) {
@@ -11,12 +9,10 @@ function isEducatorRole(role) {
 }
 
 export default function EducationPortalSidebar({ mobileOpen, onRequestClose }) {
-  const dispatch = useDispatch();
   const history = useHistory();
   const location = useLocation();
   const authUser = useSelector(state => state.auth?.user);
   const role = authUser?.role;
-  const { isMinimized, setIsMinimized } = useSidebar();
 
   const canSeeEducator = isEducatorRole(role);
 
@@ -47,26 +43,20 @@ export default function EducationPortalSidebar({ mobileOpen, onRequestClose }) {
   }, [canSeeEducator]);
 
   const onLogout = () => {
-    const sessionStorageData = JSON.parse(window.sessionStorage.getItem('viewingUser'));
-    if (sessionStorageData) {
-      sessionStorage.removeItem('viewingUser');
-      window.dispatchEvent(new Event('storage'));
-    }
-    dispatch(logoutUser());
-    history.push('/login');
+    try {
+      const sessionStorageData = JSON.parse(window.sessionStorage.getItem('viewingUser'));
+      if (sessionStorageData) {
+        sessionStorage.removeItem('viewingUser');
+        window.dispatchEvent(new Event('storage'));
+      }
+    } catch (e) {}
+
+    sessionStorage.setItem('gePortalLoggedOut', 'true');
+    if (mobileOpen) onRequestClose();
+    history.push('/dashboard');
   };
 
-  const isMobile =
-    typeof window !== 'undefined' && window.matchMedia
-      ? window.matchMedia('(max-width: 960px)').matches
-      : false;
-
-  const sidebarClassName = [
-    styles.sidebar,
-    isMinimized ? styles.minimized : '',
-    isMobile ? styles.mobile : '',
-    mobileOpen ? styles.mobileOpen : '',
-  ]
+  const sidebarClassName = [styles.sidebar, mobileOpen ? styles.mobileOpen : '']
     .filter(Boolean)
     .join(' ');
 
@@ -75,69 +65,56 @@ export default function EducationPortalSidebar({ mobileOpen, onRequestClose }) {
       {mobileOpen && (
         <button
           type="button"
-          className={styles.overlay}
+          className={`${styles.overlay}`}
           aria-label="Close navigation"
           onClick={onRequestClose}
         />
       )}
 
-      <aside className={sidebarClassName} aria-label="Education Portal navigation">
-        <div className={styles.brandRow}>
-          <div className={styles.brandMark} aria-hidden="true">
+      <aside
+        id="ep-sidebar"
+        className={`${sidebarClassName}`}
+        aria-label="Education Portal navigation"
+      >
+        <div className={`${styles.brandRow}`}>
+          <div className={`${styles.brandMark}`} aria-hidden="true">
             GE
           </div>
-          {!isMinimized && (
-            <div className={styles.brandText}>
-              <div className={styles.brandName}>Good Education</div>
-              <div className={styles.brandSub}>
-                {authUser?.firstName ? `Welcome, ${authUser.firstName}` : 'Welcome'}
-              </div>
+          <div className={`${styles.brandText}`}>
+            <div className={`${styles.brandName}`}>Good Education</div>
+            <div className={`${styles.brandSub}`}>
+              {authUser?.firstName ? `Welcome, ${authUser.firstName}` : 'Welcome'}
             </div>
-          )}
-
-          <button
-            type="button"
-            className={styles.collapseButton}
-            aria-label={isMinimized ? 'Expand sidebar' : 'Collapse sidebar'}
-            onClick={() => setIsMinimized(!isMinimized)}
-          >
-            {isMinimized ? '»' : '«'}
-          </button>
+          </div>
         </div>
 
-        <nav className={styles.nav} aria-label="Primary">
+        <nav className={`${styles.nav}`} aria-label="Primary">
           {menu.map(item => (
             <NavLink
               key={item.to}
               to={item.to}
               exact={item.to === '/educationportal'}
-              className={styles.link}
-              activeClassName={styles.active}
+              className={`${styles.link}`}
+              activeClassName={`${styles.active}`}
               onClick={() => {
                 if (mobileOpen) onRequestClose();
               }}
               aria-current={location.pathname === item.to ? 'page' : undefined}
-              title={isMinimized ? item.label : undefined}
             >
-              <span className={styles.icon} aria-hidden="true">
+              <span className={`${styles.icon}`} aria-hidden="true">
                 {item.icon}
               </span>
-              <span className={styles.label}>{item.label}</span>
+              <span className={`${styles.label}`}>{item.label}</span>
             </NavLink>
           ))}
         </nav>
 
-        <div className={styles.footer}>
-          <button
-            type="button"
-            className={styles.logout}
-            onClick={onLogout}
-            title={isMinimized ? 'Logout' : undefined}
-          >
-            <span className={styles.icon} aria-hidden="true">
+        <div className={`${styles.footer}`}>
+          <button type="button" className={`${styles.logout}`} onClick={onLogout}>
+            <span className={`${styles.icon}`} aria-hidden="true">
               🚪
             </span>
-            <span className={styles.label}>Logout</span>
+            <span className={`${styles.label}`}>Logout</span>
           </button>
         </div>
       </aside>

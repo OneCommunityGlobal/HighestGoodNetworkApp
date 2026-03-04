@@ -32,51 +32,6 @@
   transition: none;
 }
 
-/* When sidebar is minimized, expand the content */
-.evaluationResultsPage[data-sidebar-minimized='true'] {
-  margin-left: 0;
-}
-
-@media (max-width: 991px) {
-  .evaluationResultsPage {
-    margin-left: 0;
-  }
-
-  .evaluationResultsPage[data-sidebar-minimized='true'] {
-    margin-left: 0;
-  }
-}
-
-@media (max-width: 767px) {
-  .evaluationResultsPage {
-    margin-left: 0;
-  }
-
-  .evaluationResultsPage[data-sidebar-minimized='true'] {
-    margin-left: 0;
-  }
-}
-
-@media (max-width: 480px) {
-  .evaluationResultsPage {
-    margin-left: 0;
-  }
-
-  .evaluationResultsPage[data-sidebar-minimized='true'] {
-    margin-left: 0;
-  }
-}
-
-@media (max-width: 359px) {
-  .evaluationResultsPage {
-    margin-left: 0;
-  }
-
-  .evaluationResultsPage[data-sidebar-minimized='true'] {
-    margin-left: 0;
-  }
-}
-
 /* ============================================================================
    HEADER SECTION - Clean Professional Header
    ============================================================================ */
@@ -1463,14 +1418,14 @@
 /* Tablets (768px and below) */
 @media (max-width: 991px) and (min-width: 768px) {
   .evaluationResultsPage {
-    margin-left: 180px;
+    margin-left: 0;
   }
 }
 
 /* Mobile phones (767px and below) */
 @media (max-width: 767px) {
   .evaluationResultsPage {
-    margin-left: 240px;
+    margin-left: 0;
   }
 
   .headerSection {
@@ -1579,7 +1534,7 @@
 /* Mobile phones (480px and below) */
 @media (max-width: 480px) {
   .evaluationResultsPage {
-    margin-left: 220px;
+    margin-left: 0;
   }
 
   .headerSection {
@@ -1677,7 +1632,7 @@
 /* Small phones (below 360px) */
 @media (max-width: 359px) {
   .evaluationResultsPage {
-    margin-left: 200px;
+    margin-left: 0;
   }
 
   .pageTitle {
