@@ -1,9 +1,9 @@
+/* ── Light mode base ─────────────────────────────────────────── */
+
 .shell {
   min-height: 100vh;
   display: block;
-  background: radial-gradient(1200px 700px at 16% 10%, rgba(124, 92, 255, 0.25), transparent 55%),
-    radial-gradient(1000px 650px at 70% 30%, rgba(86, 208, 255, 0.18), transparent 55%),
-    linear-gradient(180deg, var(--ep-bg-0), var(--ep-bg-1));
+  background: var(--ep-bg-0);
   color: var(--ep-ink);
   font-family: var(--ep-font);
 }
@@ -21,15 +21,15 @@
   align-items: center;
   gap: 12px;
   padding: 12px 18px;
-  background: rgba(11, 18, 32, 0.68);
+  background: #ffffffb0;
   backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid #0000001a;
 }
 
 .headerTitle {
   font-weight: 800;
   letter-spacing: 0.01em;
-  color: rgba(234, 240, 255, 0.95);
+  color: #1e2332f2;
   white-space: nowrap;
 }
 
@@ -49,21 +49,21 @@
   gap: 10px;
   padding: 10px 14px;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid #00000020;
+  background: #00000010;
   color: var(--ep-ink);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
+  box-shadow: 0 10px 24px #00000018;
   backdrop-filter: blur(10px);
   cursor: pointer;
 }
 
 .mobileMenuButton:focus-visible {
-  outline: 3px solid rgba(86, 208, 255, 0.55);
+  outline: 3px solid #56b4d0;
   outline-offset: 3px;
 }
 
 .mobileMenuButton:hover {
-  background: rgba(255, 255, 255, 0.12);
+  background: #00000018;
 }
 
 .mobileMenuIcon {
@@ -73,8 +73,8 @@
   border-radius: 6px;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, rgba(86, 208, 255, 0.3), rgba(124, 92, 255, 0.26));
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #c8e8f5;
+  border: 1px solid #a0cce0;
   line-height: 1;
 }
 
@@ -87,8 +87,41 @@
   .content {
     padding: 22px 18px 56px;
   }
-
   .header {
     padding: 10px 14px;
   }
+}
+
+/* ── Dark mode overrides ─────────────────────────────────────── */
+
+.darkMode .shell {
+  background: #1b2a41;
+}
+
+.darkMode .header {
+  background: #1b2a41;
+  border-bottom-color: #2a2a38;
+}
+
+.darkMode .headerTitle {
+  color: #eaf0ff;
+}
+
+.darkMode .mobileMenuButton {
+  border-color: #2a2a3a;
+  background: #1e1e2a;
+  box-shadow: 0 10px 24px #00000047;
+}
+
+.darkMode .mobileMenuButton:focus-visible {
+  outline-color: #56b4d088;
+}
+
+.darkMode .mobileMenuButton:hover {
+  background: #252532;
+}
+
+.darkMode .mobileMenuIcon {
+  background: #1a2e42;
+  border-color: #2a4058;
 }

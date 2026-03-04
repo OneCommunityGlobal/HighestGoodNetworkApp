@@ -7,11 +7,10 @@
   display: flex;
   flex-direction: column;
   border-right: 1px solid var(--ep-stroke);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.03));
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+  background: #ffffff;
+  box-shadow: inset 0 0 0 1px #00000008;
   backdrop-filter: blur(12px);
   z-index: 1001;
-
   transform: translateX(-110%);
   transition: transform 180ms ease;
 }
@@ -21,7 +20,7 @@
   align-items: center;
   gap: 12px;
   padding: 16px 14px 14px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid #00000014;
 }
 
 .brandMark {
@@ -32,13 +31,9 @@
   place-items: center;
   font-weight: 800;
   letter-spacing: 0.02em;
-  background: radial-gradient(
-    120% 120% at 20% 10%,
-    rgba(86, 208, 255, 0.5),
-    rgba(124, 92, 255, 0.35)
-  );
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.3);
+  background: #ddf0fb;
+  border: 1px solid #b6dff5;
+  box-shadow: 0 4px 12px #00000014;
 }
 
 .brandText {
@@ -75,7 +70,7 @@
   gap: 10px;
   padding: 10px 10px;
   border-radius: 14px;
-  color: rgba(234, 240, 255, 0.92);
+  color: #1e2332eb;
   text-decoration: none;
   border: 1px solid transparent;
   background: transparent;
@@ -83,15 +78,15 @@
 }
 
 .link:hover {
-  background: rgba(255, 255, 255, 0.07);
-  border-color: rgba(255, 255, 255, 0.1);
+  background: #0000000d;
+  border-color: #00000014;
   transform: translateY(-1px);
 }
 
 .active {
-  background: linear-gradient(135deg, rgba(86, 208, 255, 0.2), rgba(124, 92, 255, 0.14));
-  border-color: rgba(255, 255, 255, 0.16);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+  background: #ddf0fb;
+  border-color: #9dd4ef;
+  box-shadow: 0 4px 16px #00000014;
 }
 
 .icon {
@@ -100,8 +95,8 @@
   display: grid;
   place-items: center;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #0000000d;
+  border: 1px solid #00000012;
   font-size: 15px;
 }
 
@@ -117,7 +112,7 @@
 .footer {
   margin-top: auto;
   padding: 14px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid #00000014;
 }
 
 .logout {
@@ -128,14 +123,14 @@
   gap: 10px;
   padding: 10px 10px;
   border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid #0000001a;
+  background: #0000000a;
   color: var(--ep-ink);
   cursor: pointer;
 }
 
 .logout:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: #00000012;
 }
 
 .overlay {
@@ -143,7 +138,7 @@
   position: fixed;
   inset: 0;
   border: 0;
-  background: rgba(0, 0, 0, 0.45);
+  background: #00000040;
   backdrop-filter: blur(2px);
   z-index: 1000;
   cursor: pointer;
@@ -151,4 +146,58 @@
 
 .mobileOpen {
   transform: translateX(0);
+}
+
+/* ── Dark mode overrides ─────────────────────────────────────── */
+
+.darkMode .sidebar {
+  background: #0f172a;
+  box-shadow: inset 0 0 0 1px #1e1e26;
+}
+
+.darkMode .brandRow {
+  border-bottom-color: #2a2a36;
+}
+
+.darkMode .brandMark {
+  background: #1a2a3a;
+  border-color: #2a3a4a;
+  box-shadow: 0 18px 40px #00000080;
+}
+
+.darkMode .link {
+  color: #eaf0ff;
+}
+
+.darkMode .link:hover {
+  background: #1e1e2a;
+  border-color: #2a2a38;
+}
+
+.darkMode .active {
+  background: #1a2e42;
+  border-color: #2a4058;
+  box-shadow: 0 12px 30px #00000080;
+}
+
+.darkMode .icon {
+  background: #1e1e2a;
+  border-color: #2a2a38;
+}
+
+.darkMode .footer {
+  border-top-color: #2a2a36;
+}
+
+.darkMode .logout {
+  border-color: #2a2a38;
+  background: #1e1e2a;
+}
+
+.darkMode .logout:hover {
+  background: #252532;
+}
+
+.darkMode .overlay {
+  background: #00000099;
 }

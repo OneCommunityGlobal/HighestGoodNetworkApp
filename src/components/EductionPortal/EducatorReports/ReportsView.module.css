@@ -4,9 +4,8 @@
   background-color: var(--bg-color, #f8f9fa);
   min-height: 100vh;
 }
-
-.dashboardContainer.darkMode {
-  background-color: var(--dark-bg-color, #121212);
+.darkMode .dashboardContainer {
+  background-color: var(--dark-bg-color, #1e293b);
 }
 
 /* Dashboard Header */
@@ -16,8 +15,8 @@
   border-bottom: 2px solid #e0e0e0;
 }
 
-.dashboardHeader.darkMode {
-  border-bottom-color: #333;
+.darkMode .dashboardHeader {
+  border-bottom-color: rgba(255, 255, 255, 0.12);
 }
 
 .dashboardTitle {
@@ -27,7 +26,7 @@
   margin-bottom: 0;
 }
 
-.dashboardTitle.darkMode {
+.darkMode .dashboardTitle {
   color: var(--primary-color-dark, #ffffff);
 }
 
@@ -37,13 +36,14 @@
   margin: 0;
 }
 
-.dashboardSubtitle.darkMode {
+.darkMode .dashboardSubtitle {
   color: var(--text-secondary-dark, #ccc);
 }
 
 /* Section Rows */
 .sectionRow {
   margin-bottom: 30px;
+  padding: 0;
 }
 
 /* Report Cards */
@@ -59,12 +59,12 @@
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
-.reportCard.darkMode {
+.darkMode .reportCard {
   background: #1a1a1a;
   box-shadow: 0 4px 6px rgba(255, 255, 255, 0.1);
 }
 
-.reportCard.darkMode:hover {
+.darkMode .reportCard:hover {
   box-shadow: 0 6px 12px rgba(255, 255, 255, 0.15);
 }
 
@@ -77,13 +77,13 @@
 }
 
 .cardTitle {
-  color: var(--primary-color, #2c3e50);
+  color: var(--primary-color, #1d283a);
   font-size: 20px;
   font-weight: 600;
   margin: 0;
 }
 
-.cardTitle.darkMode {
+.darkMode .cardTitle {
   color: var(--primary-color-dark, #ffffff);
 }
 
@@ -100,10 +100,21 @@
   font-size: 14px;
 }
 
+.darkMode .dropdownToggle {
+  background: var(--primary-color-dark, #2563eb);
+  color: #fff;
+}
+
 .dropdownMenu {
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   border: none;
+}
+
+.darkMode .dropdownMenu {
+  background-color: #0f172a;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .dropdownItem {
@@ -112,8 +123,16 @@
   transition: background-color 0.2s ease;
 }
 
+.darkMode .dropdownItem {
+  color: rgba(255, 255, 255, 0.92);
+}
+
 .dropdownItem:hover {
   background-color: var(--hover-color, #f8f9fa);
+}
+
+.darkMode .dropdownItem:hover {
+  background-color: rgba(255, 255, 255, 0.06);
 }
 
 /* Colored Dropdown Items */
@@ -126,6 +145,11 @@
   opacity: 0.8;
 }
 
+.darkMode .coloredDropdownItem:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  opacity: 0.9;
+}
+
 /* Strengths and Gaps Table */
 .strengthsGapsSection {
   background: white;
@@ -135,7 +159,7 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.strengthsGapsSection.darkMode {
+.darkMode .strengthsGapsSection {
   background: #1a1a1a;
   box-shadow: 0 4px 6px rgba(255, 255, 255, 0.1);
 }
@@ -149,6 +173,10 @@
 .tableHeader {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
+}
+
+.darkMode .tableHeader {
+  background: linear-gradient(135deg, #4f66d6 0%, #5f3c86 100%);
 }
 
 .tableHeader th {
@@ -176,11 +204,11 @@
   background-color: #f8f9fa;
 }
 
-.tableRow.darkMode {
+.darkMode .tableRow {
   border-bottom-color: #333;
 }
 
-.tableRow.darkMode:hover {
+.darkMode .tableRow:hover {
   background-color: #2a2a2a;
 }
 
@@ -192,7 +220,7 @@
   font-size: 14px;
 }
 
-.tableCell.darkMode {
+.darkMode .tableCell {
   color: var(--text-primary-dark, #fff);
 }
 
@@ -201,7 +229,7 @@
   color: var(--primary-color, #2c3e50);
 }
 
-.subjectName.darkMode {
+.darkMode .subjectName {
   color: var(--primary-color-dark, #64b5f6);
 }
 
@@ -220,7 +248,7 @@
   overflow: hidden;
 }
 
-.progressBar.darkMode {
+.darkMode .progressBar {
   background-color: #333;
 }
 
@@ -261,6 +289,10 @@
   color: #f44336;
 }
 
+.darkMode .progressText {
+  color: rgba(255, 255, 255, 0.92);
+}
+
 /* Chart Container */
 .chartContainer {
   margin: 20px 0;
@@ -284,7 +316,7 @@
   color: var(--text-primary, #333);
 }
 
-.legendItem.darkMode {
+.darkMode .legendItem {
   color: var(--text-primary-dark, #fff);
 }
 
@@ -331,6 +363,130 @@
   padding: 20px;
 }
 
+/* Explicit variant hooks (avoid relying on Bootstrap alert-* selectors) */
+.insightAlertInfo {
+}
+.insightAlertSuccess {
+}
+.insightAlertWarning {
+}
+.insightAlertDanger {
+}
+.insightAlertPrimary {
+}
+
+/* Match insight actions to the alert intent (light mode) */
+.insightAlertInfo .actionButton {
+  background: #0ea5e9;
+}
+
+.insightAlertInfo .actionButton:hover {
+  background: #0284c7;
+}
+
+.insightAlertSuccess .actionButton {
+  background: #22c55e;
+}
+
+.insightAlertSuccess .actionButton:hover {
+  background: #16a34a;
+}
+
+.insightAlertWarning .actionButton {
+  /* Darker amber so white text stays readable */
+  background: #b45309;
+  color: #fff;
+}
+
+.insightAlertWarning .actionButton:hover {
+  background: #9a3412;
+}
+
+.insightAlertDanger .actionButton {
+  background: #ef4444;
+}
+
+.insightAlertDanger .actionButton:hover {
+  background: #dc2626;
+}
+
+/*
+  Dark mode for reactstrap/Bootstrap Alerts.
+  Keep the same variant hues, just darker and tuned for dark backgrounds.
+*/
+.darkMode .insightAlert {
+  color: rgba(255, 255, 255, 0.92);
+  /* Fallback if a variant class is missing */
+  background-color: rgba(15, 23, 42, 0.55);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Ensure reactstrap alert variant text colors don't override */
+.darkMode .insightAlert.insightAlertInfo,
+.darkMode .insightAlert.insightAlertInfo * {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.darkMode .insightAlert.insightAlertSuccess,
+.darkMode .insightAlert.insightAlertSuccess * {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.darkMode .insightAlert.insightAlertWarning,
+.darkMode .insightAlert.insightAlertWarning * {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.darkMode .insightAlert.insightAlertDanger,
+.darkMode .insightAlert.insightAlertDanger * {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.darkMode .insightAlert.insightAlertPrimary,
+.darkMode .insightAlert.insightAlertPrimary * {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.darkMode .insightAlert .insightContent {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.darkMode .insightAlert .insightContent strong {
+  color: rgba(255, 255, 255, 0.96);
+}
+
+.darkMode .insightAlert.insightAlertInfo {
+  background-color: rgba(14, 116, 144, 0.22);
+  border-color: rgba(56, 189, 248, 0.25);
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.darkMode .insightAlert.insightAlertSuccess {
+  background-color: rgba(22, 101, 52, 0.22);
+  border-color: rgba(34, 197, 94, 0.22);
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.darkMode .insightAlert.insightAlertWarning {
+  /* Make warning intent more visible on dark surfaces */
+  background-color: rgba(245, 158, 11, 0.18);
+  border-color: rgba(245, 158, 11, 0.3);
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.darkMode .insightAlert.insightAlertDanger {
+  background-color: rgba(153, 27, 27, 0.22);
+  border-color: rgba(239, 68, 68, 0.22);
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.darkMode .insightAlert.insightAlertPrimary {
+  background-color: rgba(30, 64, 175, 0.22);
+  border-color: rgba(59, 130, 246, 0.22);
+  color: rgba(255, 255, 255, 0.92);
+}
+
 .insightContent {
   margin-bottom: 15px;
   line-height: 1.6;
@@ -355,10 +511,49 @@
   transition: all 0.2s ease;
 }
 
+.darkMode .insightAlert.insightAlertInfo .actionButton {
+  background: #0284c7;
+}
+
+.darkMode .insightAlert.insightAlertInfo .actionButton:hover {
+  background: #0369a1;
+}
+
+.darkMode .insightAlert.insightAlertSuccess .actionButton {
+  background: #16a34a;
+}
+
+.darkMode .insightAlert.insightAlertSuccess .actionButton:hover {
+  background: #15803d;
+}
+
+.darkMode .insightAlert.insightAlertWarning .actionButton {
+  background: #b45309;
+  color: #fff;
+}
+
+.darkMode .insightAlert.insightAlertWarning .actionButton:hover {
+  background: #9a3412;
+}
+
+.darkMode .insightAlert.insightAlertDanger .actionButton {
+  background: #dc2626;
+}
+
+.darkMode .insightAlert.insightAlertDanger .actionButton:hover {
+  background: #b91c1c;
+}
+
 .actionButton:hover {
   background: var(--primary-hover, #0056b3);
   transform: translateY(-1px);
 }
+
+.darkMode .actionButton {
+  background: var(--primary-color-dark, #2563eb);
+}
+
+/* Keep a single hover source of truth; variant hovers override as needed */
 
 /* Status Badge Styles */
 .statusBadge {
@@ -391,6 +586,26 @@
   color: #c2185b;
 }
 
+.darkMode .statusBadge.excellent {
+  background-color: rgba(34, 197, 94, 0.16);
+  color: #86efac;
+}
+
+.darkMode .statusBadge.good {
+  background-color: rgba(245, 158, 11, 0.16);
+  color: #fcd34d;
+}
+
+.darkMode .statusBadge.needsImprovement {
+  background-color: rgba(239, 68, 68, 0.16);
+  color: #fca5a5;
+}
+
+.darkMode .statusBadge.critical {
+  background-color: rgba(236, 72, 153, 0.16);
+  color: #f9a8d4;
+}
+
 /* Visual Indicator Styles */
 .visualIndicator {
   font-size: 18px;
@@ -409,61 +624,61 @@
     padding: 10px;
     min-height: auto; /* Allow content to determine height */
   }
-  
+
   .dashboardHeader {
     margin-bottom: 15px;
     padding: 10px 0;
   }
-  
+
   .dashboardTitle {
     font-size: 20px;
   }
-  
+
   .sectionRow {
     margin-bottom: 20px;
   }
-  
+
   .cardHeader {
     flex-direction: column;
     gap: 15px;
     align-items: flex-start;
   }
-  
+
   .legend {
     justify-content: flex-start;
     gap: 16px;
   }
-  
+
   .insightActions {
     flex-direction: column;
   }
-  
+
   .actionButton {
     width: 100%;
     text-align: center;
   }
-  
+
   .tableCell {
     padding: 12px 8px;
     font-size: 12px;
   }
-  
+
   .tableHeader th {
     padding: 12px 8px;
     font-size: 12px;
   }
-  
+
   /* Ensure table columns are visible on mobile */
   .strengthsTable {
     font-size: 12px;
   }
-  
+
   .strengthsTable th,
   .strengthsTable td {
     min-width: 80px;
     white-space: nowrap;
   }
-  
+
   /* Status badge styling for mobile */
   .statusBadge {
     display: inline-block;
@@ -474,32 +689,32 @@
     text-align: center;
     min-width: 60px;
   }
-  
+
   .statusBadge.excellent {
     background-color: #e8f5e8;
     color: #2e7d32;
   }
-  
+
   .statusBadge.good {
     background-color: #fff3e0;
     color: #f57c00;
   }
-  
+
   .statusBadge.needsImprovement {
     background-color: #ffebee;
     color: #d32f2f;
   }
-  
+
   .statusBadge.critical {
     background-color: #fce4ec;
     color: #c2185b;
   }
-  
+
   .progressContainer {
     flex-direction: column;
     gap: 8px;
   }
-  
+
   .progressText {
     text-align: left;
   }
@@ -509,16 +724,16 @@
   .dashboardTitle {
     font-size: 24px;
   }
-  
+
   .cardTitle {
     font-size: 18px;
   }
-  
+
   .tableCell {
     padding: 10px 12px;
     font-size: 12px;
   }
-  
+
   .tableHeader th {
     padding: 12px 12px;
     font-size: 13px;

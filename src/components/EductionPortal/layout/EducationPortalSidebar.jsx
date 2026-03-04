@@ -13,7 +13,7 @@ export default function EducationPortalSidebar({ mobileOpen, onRequestClose }) {
   const location = useLocation();
   const authUser = useSelector(state => state.auth?.user);
   const role = authUser?.role;
-
+  const darkMode = useSelector(state => state.theme.darkMode);
   const canSeeEducator = isEducatorRole(role);
 
   const menu = useMemo(() => {
@@ -61,7 +61,7 @@ export default function EducationPortalSidebar({ mobileOpen, onRequestClose }) {
     .join(' ');
 
   return (
-    <>
+    <div className={`${darkMode ? styles.darkMode : ''}`}>
       {mobileOpen && (
         <button
           type="button"
@@ -118,7 +118,7 @@ export default function EducationPortalSidebar({ mobileOpen, onRequestClose }) {
           </button>
         </div>
       </aside>
-    </>
+    </div>
   );
 }
 

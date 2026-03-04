@@ -6,9 +6,11 @@ const DashboardLayout = ({ children }) => {
   const darkMode = useSelector(state => state.theme?.darkMode || false);
 
   return (
-    <div className={`${styles.dashboardLayout} ${darkMode ? styles.darkMode : ''}`}>
-      <div className={styles.mainContent}>
-        <div className={styles.contentWrapper}>{children}</div>
+    <div className={`${darkMode ? styles.darkMode : ''}`}>
+      <div className={`${styles.dashboardLayout} `}>
+        <div className={`${styles.mainContent}`}>
+          <div className={`${styles.contentWrapper}`}>{children}</div>
+        </div>
       </div>
     </div>
   );
