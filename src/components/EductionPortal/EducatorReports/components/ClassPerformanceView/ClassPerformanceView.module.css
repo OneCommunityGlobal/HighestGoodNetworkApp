@@ -79,6 +79,14 @@
   transition: all 0.3s ease;
 }
 
+/* Reactstrap <CardBody> wrapper */
+.cardBody {
+}
+
+.darkMode .cardBody {
+  background-color: #0f172a;
+}
+
 .reportCard.darkMode {
   background-color: #1f2937;
   border-color: #374151;

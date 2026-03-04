@@ -181,7 +181,7 @@ const ClassPerformanceView = ({ filters }) => {
         {/* Teaching Strategies Effectiveness */}
         <Col lg={6} className={styles.chartCol}>
           <Card className={`${styles.reportCard} ${darkMode ? styles.darkMode : ''}`}>
-            <CardBody>
+            <CardBody className={styles.cardBody}>
               <div className={styles.cardHeader}>
                 <h4 className={styles.cardTitle}>Effectiveness of Teaching Strategies</h4>
               </div>
@@ -222,7 +222,7 @@ const ClassPerformanceView = ({ filters }) => {
         {/* Impact of Life Strategies */}
         <Col lg={6} className={styles.chartCol}>
           <Card className={`${styles.reportCard} ${darkMode ? styles.darkMode : ''}`}>
-            <CardBody>
+            <CardBody className={styles.cardBody}>
               <div className={styles.cardHeader}>
                 <h4 className={styles.cardTitle}>Impact of Life Strategies</h4>
               </div>
@@ -269,7 +269,7 @@ const ClassPerformanceView = ({ filters }) => {
       <Row>
         <Col>
           <Card className={`${styles.reportCard} ${darkMode ? styles.darkMode : ''}`}>
-            <CardBody>
+            <CardBody className={styles.cardBody}>
               <h4 className={styles.cardTitle}>Actionable Insight</h4>
               <div className={styles.insightsContainer}>
                 {loading ? (

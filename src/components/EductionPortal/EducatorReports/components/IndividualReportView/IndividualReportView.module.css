@@ -6,7 +6,7 @@
   animation: fadeIn 0.5s ease-out;
 }
 
-.individualReport.darkMode {
+.darkMode .individualReport {
   color: #ffffff;
 }
 
@@ -79,7 +79,7 @@
   transition: all 0.3s ease;
 }
 
-.reportCard.darkMode {
+.darkMode .reportCard {
   background-color: #1f2937;
   border-color: #374151;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
@@ -261,7 +261,9 @@
 .chartCol {
   margin-bottom: 1rem;
 }
-
+.darkMode .cardBody {
+  background-color: #0f172a !important;
+}
 .chartContainer {
   height: 300px;
   position: relative;
@@ -326,6 +328,69 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
+/* Insight alert variants (keeps intent visible in dark mode too) */
+.insightAlert.insightAlertInfo {
+  background-color: #e3f2fd;
+  color: #0c5460;
+}
+
+.insightAlert.insightAlertSuccess {
+  background-color: #e8f5e9;
+  color: #155724;
+}
+
+.insightAlert.insightAlertWarning {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.insightAlert.insightAlertDanger {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.insightAlert.insightAlertPrimary {
+  background-color: #e8eaf6;
+  color: #2c2f5a;
+}
+
+.darkMode .insightAlert {
+  background-color: #111827;
+  border: 1px solid #374151;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+  color: #e5e7eb;
+}
+
+.darkMode .insightAlert.insightAlertInfo {
+  background-color: rgba(56, 189, 248, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  color: #0c5460;
+}
+
+.darkMode .insightAlert.insightAlertSuccess {
+  background-color: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  color: #155724;
+}
+
+.darkMode .insightAlert.insightAlertWarning {
+  background-color: rgba(245, 158, 11, 0.14);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  color: #856404;
+}
+
+.darkMode .insightAlert.insightAlertDanger {
+  background-color: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #721c24;
+}
+
+.darkMode .insightAlert.insightAlertPrimary {
+  background-color: rgba(99, 102, 241, 0.12);
+  border: 1px solid rgba(99, 102, 241, 0.35);
+  color: #2c2f5a;
+}
+
 .insightAlert:last-child {
   margin-bottom: 0;
 }
@@ -334,8 +399,16 @@
   line-height: 1.6;
 }
 
+.darkMode .insightContent {
+  color: #e5e7eb;
+}
+
 .insightContent strong {
   font-weight: 600;
+}
+
+.darkMode .insightContent strong {
+  color: #f9fafb;
 }
 
 /* Responsive Design */

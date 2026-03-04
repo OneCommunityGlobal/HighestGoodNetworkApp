@@ -118,7 +118,7 @@ const ReportsView = () => {
           <Row className={`${styles.sectionRow}`}>
             <Col>
               <Card className={`${styles.reportCard}`}>
-                <CardBody>
+                <CardBody className={styles.cardBody}>
                   <div className={`${styles.cardHeader}`}>
                     <h4 className={`${styles.cardTitle}`}>Strengths & Gaps by Subject</h4>
                     <Dropdown
@@ -215,7 +215,7 @@ const ReportsView = () => {
           <Row className={`${styles.sectionRow}`}>
             <Col>
               <Card className={`${styles.reportCard}`}>
-                <CardBody>
+                <CardBody className={styles.cardBody}>
                   <div className={`${styles.cardHeader}`}>
                     <h4 className={`${styles.cardTitle}`}>
                       Performance Trend by Subject Over Time
@@ -277,7 +277,7 @@ const ReportsView = () => {
           <Row className={`${styles.sectionRow}`}>
             <Col>
               <Card className={`${styles.reportCard}`}>
-                <CardBody>
+                <CardBody className={styles.cardBody}>
                   <h4 className={`${styles.cardTitle}`}>Effectiveness of Teaching Strategies</h4>
 
                   <div className={`${styles.chartContainer}`}>
@@ -333,7 +333,7 @@ const ReportsView = () => {
           <Row className={`${styles.sectionRow}`}>
             <Col>
               <Card className={`${styles.reportCard}`}>
-                <CardBody>
+                <CardBody className={styles.cardBody}>
                   <h4 className={`${styles.cardTitle}`}>Impact of Life Strategies</h4>
 
                   <div className={`${styles.chartContainer}`}>

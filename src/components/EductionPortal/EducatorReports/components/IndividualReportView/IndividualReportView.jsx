@@ -109,6 +109,23 @@ const IndividualReportView = ({ filters }) => {
     }
   };
 
+  const getInsightAlertVariantClass = color => {
+    switch (color) {
+      case 'info':
+        return styles.insightAlertInfo;
+      case 'success':
+        return styles.insightAlertSuccess;
+      case 'warning':
+        return styles.insightAlertWarning;
+      case 'danger':
+        return styles.insightAlertDanger;
+      case 'primary':
+        return styles.insightAlertPrimary;
+      default:
+        return '';
+    }
+  };
+
   const getVisualIndicator = visual => {
     switch (visual) {
       case 'high':
@@ -135,167 +152,171 @@ const IndividualReportView = ({ filters }) => {
   }
 
   return (
-    <div className={`${styles.individualReport} ${darkMode ? styles.darkMode : ''}`}>
-      {/* Key Metrics Row */}
-      <Row className={styles.metricsRow}>
-        <Col lg={3} md={6} className={styles.metricCol}>
-          <MetricCard
-            title="Average Score"
-            value={loading ? '...' : studentData?.metrics.averageScore}
-            unit="%"
-            change={studentData?.changes.averageScore}
-            changeType="positive"
-            icon="fa-chart-line"
-            color="primary"
-            loading={loading}
-          />
-        </Col>
-        <Col lg={3} md={6} className={styles.metricCol}>
-          <MetricCard
-            title="Lessons Completed"
-            value={loading ? '...' : studentData?.metrics.lessonsCompleted}
-            change={studentData?.changes.lessonsCompleted}
-            changeType="positive"
-            icon="fa-book"
-            color="success"
-            loading={loading}
-          />
-        </Col>
-        <Col lg={3} md={6} className={styles.metricCol}>
-          <MetricCard
-            title="Engagement Rate"
-            value={loading ? '...' : studentData?.metrics.engagementRate}
-            unit="%"
-            change={studentData?.changes.engagementRate}
-            changeType="negative"
-            icon="fa-heart"
-            color="warning"
-            loading={loading}
-          />
-        </Col>
-        <Col lg={3} md={6} className={styles.metricCol}>
-          <MetricCard
-            title="Time Spent"
-            value={loading ? '...' : studentData?.metrics.timeSpent}
-            change={studentData?.changes.timeSpent}
-            changeType="positive"
-            icon="fa-clock"
-            color="info"
-            loading={loading}
-          />
-        </Col>
-      </Row>
+    <div className={`${darkMode ? styles.darkMode : ''}`}>
+      <div className={`${styles.individualReport}`}>
+        {/* Key Metrics Row */}
+        <Row className={`${styles.metricsRow}`}>
+          <Col className={`${styles.metricCol}`}>
+            <MetricCard
+              title="Average Score"
+              value={loading ? '...' : studentData?.metrics.averageScore}
+              unit="%"
+              change={studentData?.changes.averageScore}
+              changeType="positive"
+              icon="fa-chart-line"
+              color="primary"
+              loading={loading}
+            />
+          </Col>
+          <Col lg={3} md={6} className={`${styles.metricCol}`}>
+            <MetricCard
+              title="Lessons Completed"
+              value={loading ? '...' : studentData?.metrics.lessonsCompleted}
+              change={studentData?.changes.lessonsCompleted}
+              changeType="positive"
+              icon="fa-book"
+              color="success"
+              loading={loading}
+            />
+          </Col>
+          <Col className={`${styles.metricCol}`}>
+            <MetricCard
+              title="Engagement Rate"
+              value={loading ? '...' : studentData?.metrics.engagementRate}
+              unit="%"
+              change={studentData?.changes.engagementRate}
+              changeType="negative"
+              icon="fa-heart"
+              color="warning"
+              loading={loading}
+            />
+          </Col>
+          <Col className={`${styles.metricCol}`}>
+            <MetricCard
+              title="Time Spent"
+              value={loading ? '...' : studentData?.metrics.timeSpent}
+              change={studentData?.changes.timeSpent}
+              changeType="positive"
+              icon="fa-clock"
+              color="info"
+              loading={loading}
+            />
+          </Col>
+        </Row>
 
-      <Row>
-        {/* Strengths & Gaps Table */}
-        <Col lg={7} className={styles.tableCol}>
-          <Card className={`${styles.reportCard} ${darkMode ? styles.darkMode : ''}`}>
-            <CardBody>
-              <div className={styles.cardHeader}>
-                <h4 className={styles.cardTitle}>Strengths & Gaps by Subject</h4>
-                <div className={styles.headerActions}>
-                  <span className={styles.subjectCount}>All Subjects</span>
+        <Row>
+          {/* Strengths & Gaps Table */}
+          <Col className={`${styles.tableCol}`}>
+            <Card className={`${styles.reportCard}`}>
+              <CardBody className={`${styles.cardBody}`}>
+                <div className={`${styles.cardHeader}`}>
+                  <h4 className={`${styles.cardTitle}`}>Strengths & Gaps by Subject</h4>
+                  <div className={`${styles.headerActions}`}>
+                    <span className={`${styles.subjectCount}`}>All Subjects</span>
+                  </div>
                 </div>
-              </div>
 
-              {loading ? (
-                <div className={styles.loading}>
-                  <i className="fa fa-spinner fa-spin" aria-hidden="true" />
-                  <p>Loading student data...</p>
-                </div>
-              ) : (
-                <div className={styles.tableContainer}>
-                  <Table responsive className={styles.performanceTable}>
-                    <thead>
-                      <tr>
-                        <th>Subject</th>
-                        <th>Performance</th>
-                        <th>Status</th>
-                        <th>Visual Indicator</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {studentData?.subjectPerformance.map((item, index) => (
-                        <tr key={index}>
-                          <td className={styles.subjectCell}>{item.subject}</td>
-                          <td className={styles.performanceCell}>
-                            <strong>{item.performance}</strong>
-                          </td>
-                          <td>
-                            <span className={`${styles.statusBadge} ${styles[item.status]}`}>
-                              {item.status.replace('-', ' ')}
-                            </span>
-                          </td>
-                          <td className={styles.visualCell}>
-                            <span className={styles.visualIndicator}>
-                              {getVisualIndicator(item.visual)}
-                            </span>
-                          </td>
+                {loading ? (
+                  <div className={`${styles.loading}`}>
+                    <i aria-hidden="true" />
+                    <p>Loading student data...</p>
+                  </div>
+                ) : (
+                  <div className={`${styles.tableContainer}`}>
+                    <Table responsive className={`${styles.performanceTable}`}>
+                      <thead>
+                        <tr>
+                          <th>Subject</th>
+                          <th>Performance</th>
+                          <th>Status</th>
+                          <th>Visual Indicator</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </Table>
+                      </thead>
+                      <tbody>
+                        {studentData?.subjectPerformance.map((item, index) => (
+                          <tr key={index}>
+                            <td className={`${styles.subjectCell}`}>{item.subject}</td>
+                            <td className={`${styles.performanceCell}`}>
+                              <strong>{item.performance}</strong>
+                            </td>
+                            <td>
+                              <span className={`${styles.statusBadge} ${styles[item.status]}`}>
+                                {item.status.replace('-', ' ')}
+                              </span>
+                            </td>
+                            <td className={`${styles.visualCell}`}>
+                              <span className={`${styles.visualIndicator}`}>
+                                {getVisualIndicator(item.visual)}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </Table>
+                  </div>
+                )}
+              </CardBody>
+            </Card>
+          </Col>
+
+          {/* Performance Trend Chart */}
+          <Col className={`${styles.chartCol}`}>
+            <Card className={`${styles.reportCard}`}>
+              <CardBody className={`${styles.cardBody}`}>
+                <h4 className={`${styles.cardTitle}`}>Performance Trend by Subject Over Time</h4>
+                <div className={`${styles.chartContainer}`}>
+                  {loading ? (
+                    <div className={`${styles.chartLoading}`}>
+                      <i aria-hidden="true" />
+                      <p>Loading chart data...</p>
+                    </div>
+                  ) : (
+                    <ReportChart
+                      type="line"
+                      data={studentData?.performanceTrend}
+                      height={300}
+                      showLegend
+                    />
+                  )}
                 </div>
-              )}
-            </CardBody>
-          </Card>
-        </Col>
+              </CardBody>
+            </Card>
+          </Col>
+        </Row>
 
-        {/* Performance Trend Chart */}
-        <Col lg={5} className={styles.chartCol}>
-          <Card className={`${styles.reportCard} ${darkMode ? styles.darkMode : ''}`}>
-            <CardBody>
-              <h4 className={styles.cardTitle}>Performance Trend by Subject Over Time</h4>
-              <div className={styles.chartContainer}>
-                {loading ? (
-                  <div className={styles.chartLoading}>
-                    <i className="fa fa-spinner fa-spin" aria-hidden="true" />
-                    <p>Loading chart data...</p>
-                  </div>
-                ) : (
-                  <ReportChart
-                    type="line"
-                    data={studentData?.performanceTrend}
-                    height={300}
-                    showLegend
-                  />
-                )}
-              </div>
-            </CardBody>
-          </Card>
-        </Col>
-      </Row>
-
-      {/* Actionable Insights */}
-      <Row>
-        <Col>
-          <Card className={`${styles.reportCard} ${darkMode ? styles.darkMode : ''}`}>
-            <CardBody>
-              <h4 className={styles.cardTitle}>Actionable Insight</h4>
-              <div className={styles.insightsContainer}>
-                {loading ? (
-                  <div className={styles.loading}>
-                    <i className="fa fa-spinner fa-spin" aria-hidden="true" />
-                    <p>Generating insights...</p>
-                  </div>
-                ) : (
-                  studentData?.insights.map((insight, index) => (
-                    <Alert
-                      key={index}
-                      color={getStatusColor(insight.type)}
-                      className={styles.insightAlert}
-                    >
-                      <div className={styles.insightContent}>
-                        <strong>{insight.title}:</strong> {insight.message}
-                      </div>
-                    </Alert>
-                  ))
-                )}
-              </div>
-            </CardBody>
-          </Card>
-        </Col>
-      </Row>
+        {/* Actionable Insights */}
+        <Row>
+          <Col>
+            <Card className={`${styles.reportCard}`}>
+              <CardBody className={`${styles.cardBody}`}>
+                <h4 className={`${styles.cardTitle}`}>Actionable Insight</h4>
+                <div className={`${styles.insightsContainer}`}>
+                  {loading ? (
+                    <div className={`${styles.loading}`}>
+                      <i aria-hidden="true" />
+                      <p>Generating insights...</p>
+                    </div>
+                  ) : (
+                    studentData?.insights.map((insight, index) => (
+                      <Alert
+                        key={index}
+                        color={getStatusColor(insight.type)}
+                        className={`${styles.insightAlert} ${getInsightAlertVariantClass(
+                          getStatusColor(insight.type),
+                        )}`}
+                      >
+                        <div className={`${styles.insightContent}`}>
+                          <strong>{insight.title}:</strong> {insight.message}
+                        </div>
+                      </Alert>
+                    ))
+                  )}
+                </div>
+              </CardBody>
+            </Card>
+          </Col>
+        </Row>
+      </div>
     </div>
   );
 };
