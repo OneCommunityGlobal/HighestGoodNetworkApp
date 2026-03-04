@@ -1,14 +1,12 @@
-/* Main Dashboard Container */
 .dashboardContainer {
   padding: 5px 20px 20px 20px;
-  background-color: var(--bg-color, #f8f9fa);
+  background-color: #fff;
   min-height: 100vh;
 }
 .darkMode .dashboardContainer {
-  background-color: var(--dark-bg-color, #1e293b);
+  background-color: #1b2a41;
 }
 
-/* Dashboard Header */
 .dashboardHeader {
   margin-bottom: 20px;
   padding: 10px 0;
@@ -40,23 +38,17 @@
   color: var(--text-secondary-dark, #ccc);
 }
 
-/* Section Rows */
 .sectionRow {
   margin-bottom: 30px;
   padding: 0;
 }
 
-/* Report Cards */
 .reportCard {
   border: none;
   border-radius: 12px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
   background: white;
-}
-
-/* Reactstrap <CardBody> wrapper */
-.cardBody {
 }
 
 .darkMode .cardBody {
@@ -70,10 +62,6 @@
 .darkMode .reportCard {
   background: #1a1a1a;
   box-shadow: 0 4px 6px rgba(255, 255, 255, 0.1);
-}
-
-.darkMode .reportCard:hover {
-  box-shadow: 0 6px 12px rgba(255, 255, 255, 0.15);
 }
 
 /* Card Headers */
@@ -95,7 +83,6 @@
   color: var(--primary-color-dark, #ffffff);
 }
 
-/* Dropdown Styling */
 .subjectDropdown {
   min-width: 140px;
 }
@@ -139,11 +126,6 @@
   background-color: var(--hover-color, #f8f9fa);
 }
 
-.darkMode .dropdownItem:hover {
-  background-color: rgba(255, 255, 255, 0.06);
-}
-
-/* Colored Dropdown Items */
 .coloredDropdownItem {
   font-weight: 500;
 }
@@ -153,12 +135,6 @@
   opacity: 0.8;
 }
 
-.darkMode .coloredDropdownItem:hover {
-  background-color: rgba(255, 255, 255, 0.08);
-  opacity: 0.9;
-}
-
-/* Strengths and Gaps Table */
 .strengthsGapsSection {
   background: white;
   border-radius: 12px;
@@ -216,10 +192,6 @@
   border-bottom-color: #333;
 }
 
-.darkMode .tableRow:hover {
-  background-color: #2a2a2a;
-}
-
 .tableCell {
   padding: 16px 20px;
   vertical-align: middle;
@@ -241,7 +213,6 @@
   color: var(--primary-color-dark, #64b5f6);
 }
 
-/* Progress Bars */
 .progressContainer {
   display: flex;
   align-items: center;
@@ -301,13 +272,11 @@
   color: rgba(255, 255, 255, 0.92);
 }
 
-/* Chart Container */
 .chartContainer {
   margin: 20px 0;
   min-height: 300px;
 }
 
-/* Legend Styling */
 .legend {
   display: flex;
   justify-content: center;
@@ -363,7 +332,6 @@
   background: #f44336;
 }
 
-/* Insight Alerts */
 .insightAlert {
   margin-top: 20px;
   border: none;
@@ -371,19 +339,6 @@
   padding: 20px;
 }
 
-/* Explicit variant hooks (avoid relying on Bootstrap alert-* selectors) */
-.insightAlertInfo {
-}
-.insightAlertSuccess {
-}
-.insightAlertWarning {
-}
-.insightAlertDanger {
-}
-.insightAlertPrimary {
-}
-
-/* Match insight actions to the alert intent (light mode) */
 .insightAlertInfo .actionButton {
   background: #0ea5e9;
 }
@@ -401,7 +356,6 @@
 }
 
 .insightAlertWarning .actionButton {
-  /* Darker amber so white text stays readable */
   background: #b45309;
   color: #fff;
 }
@@ -418,10 +372,6 @@
   background: #dc2626;
 }
 
-/*
-  Dark mode alerts: keep the same readable text colors as light mode
-  and slightly darken the pastel backgrounds.
-*/
 .darkMode .insightAlert {
   color: #111827;
   background-color: #e5e7eb;
@@ -459,7 +409,6 @@
   color: #004085;
 }
 
-/* Ensure nested content inherits variant text color */
 .darkMode .insightAlert.insightAlertInfo *,
 .darkMode .insightAlert.insightAlertSuccess *,
 .darkMode .insightAlert.insightAlertWarning *,
@@ -539,9 +488,6 @@
   background: var(--primary-color-dark, #2563eb);
 }
 
-/* Keep a single hover source of truth; variant hovers override as needed */
-
-/* Status Badge Styles */
 .statusBadge {
   display: inline-block;
   padding: 6px 12px;
@@ -592,23 +538,20 @@
   color: #f9a8d4;
 }
 
-/* Visual Indicator Styles */
 .visualIndicator {
   font-size: 18px;
   display: inline-block;
 }
 
-/* Table Container for horizontal scroll on mobile */
 .tableContainer {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
   .dashboardContainer {
     padding: 10px;
-    min-height: auto; /* Allow content to determine height */
+    min-height: auto;
   }
 
   .dashboardHeader {
@@ -654,7 +597,6 @@
     font-size: 12px;
   }
 
-  /* Ensure table columns are visible on mobile */
   .strengthsTable {
     font-size: 12px;
   }
@@ -665,7 +607,6 @@
     white-space: nowrap;
   }
 
-  /* Status badge styling for mobile */
   .statusBadge {
     display: inline-block;
     padding: 4px 8px;
@@ -724,4 +665,22 @@
     padding: 12px 12px;
     font-size: 13px;
   }
+}
+
+.darkMode .reportCard:hover {
+  box-shadow: 0 6px 12px rgba(255, 255, 255, 0.22);
+  transform: translateY(-2px);
+}
+
+.darkMode .tableRow:hover {
+  background-color: #2f3f55;
+}
+
+.darkMode .dropdownItem:hover {
+  background-color: rgba(255, 255, 255, 0.12);
+}
+
+.darkMode .coloredDropdownItem:hover {
+  background-color: rgba(255, 255, 255, 0.14);
+  opacity: 1;
 }
