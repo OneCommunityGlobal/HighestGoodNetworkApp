@@ -9,7 +9,6 @@ function DropOffTracking() {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
 
-  const PAGINATION_THRESHOLD = 20;
   const PAGE_SIZE_OPTIONS = [10, 20, 50];
 
   const getDateRange = () => {
@@ -78,35 +77,28 @@ function DropOffTracking() {
 
   const getVisiblePages = () => {
     const pages = [];
-    const maxVisible = 5; // numbers in the middle section
 
     if (totalPages <= 7) {
-      // Small page count → show everything
       return Array.from({ length: totalPages }, (_, i) => i + 1);
     }
 
     const leftBound = Math.max(2, currentPage - 1);
     const rightBound = Math.min(totalPages - 1, currentPage + 1);
 
-    // Always show first page
     pages.push(1);
 
-    // Show left ellipsis
     if (currentPage > 3) {
       pages.push('left-ellipsis');
     }
 
-    // Middle pages
     for (let i = leftBound; i <= rightBound; i++) {
       pages.push(i);
     }
 
-    // Show right ellipsis
     if (currentPage < totalPages - 2) {
       pages.push('right-ellipsis');
     }
 
-    // Always show last page
     pages.push(totalPages);
 
     return pages;

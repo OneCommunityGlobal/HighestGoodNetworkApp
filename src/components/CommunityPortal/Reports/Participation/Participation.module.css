@@ -294,6 +294,7 @@
   border-radius: 10px;
   padding: 10px;
   background: #fff;
+  margin-bottom: 20px;
 }
 .trackingListContainerDark {
   max-height: 600px;
@@ -1004,9 +1005,10 @@
   border-color: #777;
 }
 .paginationContainerDark .paginationControls button:disabled {
-  background-color: #2a2a2a;
-  border-color: #444;
-  color: #777;
+  background-color: #2E3B4E;  
+  border-color: #3A506B;
+  color: #C5D1E0;          
+  opacity: 0.7;
 }
 
 .pageIndicator {
@@ -1038,6 +1040,12 @@
 
 .paginationContainerDark .pageSizeSelector label {
   color: #aaa;
+}
+
+.paginationContainerDark .pageSizeSelector select {
+  background-color: #3A506B;
+  border-color: #4A607B;
+  color: #ffffff;
 }
 
 .pageSizeSelector select {
@@ -1074,9 +1082,9 @@
 }
 
 .activePage {
-  background: #007bff;
-  color: white;
-  border-color: #007bff;
+  background: #1E40AF;  
+  color: #ffffff;
+  border-color: #1E40AF;
 }
 
 .ellipsis {
