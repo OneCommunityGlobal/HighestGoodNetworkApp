@@ -27,7 +27,7 @@ import { fetchAllMembers } from '../../../../../actions/projectMembers';
 import { fetchAllProjects } from '../../../../../actions/projects';
 
 /** small v8 DateInput - manual control without useInput **/
-function DateInput({ id, ariaLabel, placeholder, value, onChange, disabled }) {
+function DateInput({ id, ariaLabel, placeholder, value, onChange, disabled, darkMode }) {
   const FORMAT = 'MM/dd/yy';
   const [isOpen, setIsOpen] = React.useState(false);
   
@@ -73,12 +73,14 @@ function DateInput({ id, ariaLabel, placeholder, value, onChange, disabled }) {
         className="form-control"
         style={{ 
           cursor: disabled ? 'default' : 'pointer',
-          backgroundColor: disabled ? '#e9ecef' : 'white',
+          backgroundColor: disabled ? '#e9ecef' : darkMode ? '#1b2a4a' : 'white',
+          color: darkMode ? '#fff' : '#000',
+          borderColor: darkMode ? '#495057' : undefined,
           opacity: 1
         }}
       />
       {isOpen && !disabled && (
-        <div style={{ position: 'absolute', right: 0, overflow: 'auto', zIndex: 10, backgroundColor: 'white', boxShadow: '0 2px 8px rgba(0,0,0,0.15)', borderRadius: '4px' }}>
+        <div style={{ position: 'absolute', right: 0, overflow: 'auto', zIndex: 10, backgroundColor: darkMode ? '#1b2a4a' : 'white', boxShadow: '0 2px 8px rgba(0,0,0,0.15)', borderRadius: '4px' }}>
           <DayPicker 
             mode="single"
             selected={selectedDate}
@@ -92,8 +94,9 @@ function DateInput({ id, ariaLabel, placeholder, value, onChange, disabled }) {
               width: '100%', 
               padding: '8px', 
               border: 'none', 
-              borderTop: '1px solid #ddd',
-              background: '#f5f5f5',
+              borderTop: darkMode ? '1px solid #495057' : '1px solid #ddd',
+              background: darkMode ? '#243b55' : '#f5f5f5',
+              color: darkMode ? '#fff' : '#000',
               cursor: 'pointer'
             }}
           >
@@ -1108,7 +1111,8 @@ function AddTaskModal(props) {
                       placeholder={dateFnsFormat(new Date(), FORMAT)}
                       value={startedDate}
                       onChange={changeDateStart}
-                      disabled={false} // always enabled here
+                      disabled={false}
+                      darkMode={darkMode}
                     />
                     <div className="warning text-danger">
                       {startDateFormatError && 'Please enter date in MM/dd/yy format'}
@@ -1135,6 +1139,7 @@ function AddTaskModal(props) {
                     value={dueDate}
                     onChange={changeDateEnd}
                     disabled={false}
+                    darkMode={darkMode}
                   />
                   <div className="warning text-danger">
                     {endDateFormatError && 'Please enter date in MM/dd/yy format'}
