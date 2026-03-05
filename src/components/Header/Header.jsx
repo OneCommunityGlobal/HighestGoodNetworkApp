@@ -754,7 +754,7 @@ export function Header(props) {
                       <DropdownItem divider className={styles.hideInMobile} />
                       <DropdownItem
                         tag={Link}
-                        to="/pr-dashboard/overview"
+                        to="/pr-dashboard/analytics"
                         className={fontColor}
                         disabled={headerDisabled}
                       >
