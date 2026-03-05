@@ -283,6 +283,15 @@
    MODAL
    ====================================================== */
 
+.dark {
+  background-color: #1b2a41;
+  color: #f1f1f1;
+}
+
+.dark .userCollaborationContainer {
+  background-color: #1b2a41;
+}
+
 .modalOverlay {
   position: fixed;
   inset: 0;
@@ -305,9 +314,13 @@
 
 /* ================= DARK MODE – MODAL ================= */
 
-.dark .modal {
-  background-color: #020617;
-  color: #e5e7eb;
+.dark .jobAd {
+  background: linear-gradient(135deg, #23272a, #181a1b);
+  border-color: #333;
+}
+
+.dark .jobAd h3 {
+  color: #e0e0e0;
 }
 
 /* ======================================================

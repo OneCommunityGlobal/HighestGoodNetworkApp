@@ -10,7 +10,7 @@
 
 .team-member-tasks {
   background-color: white;
-  overflow: hidden;
+  overflow: visible; 
 }
 
 .truncateTasksBtn {
@@ -67,7 +67,9 @@
 }
 
 .task_table-container {
-  overflow: hidden auto;
+  width: 100%;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .task_table-container table {
