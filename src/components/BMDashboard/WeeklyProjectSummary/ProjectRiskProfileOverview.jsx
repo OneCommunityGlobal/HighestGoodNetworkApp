@@ -108,8 +108,9 @@ function getStableRiskContributorKey(series) {
 }
 
 export default function ProjectRiskProfileOverview() {
-  const darkMode = useSelector(state => state.theme?.darkMode || false);
-  const [data, setData] = useState([]);
+  // Works with the common theme slice; still safe if shape differs.
+  const darkMode = useSelector(state => Boolean(state?.theme?.darkMode));
+
   const [rawProjects, setRawProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -169,7 +170,6 @@ export default function ProjectRiskProfileOverview() {
         const normalized = result.map(p => ({
           ...p,
           projectName: p.projectName || p.name || 'Unknown Project',
-
           history: Array.isArray(p.history) ? p.history : null,
         }));
 
@@ -291,7 +291,6 @@ export default function ProjectRiskProfileOverview() {
         predictedCostOverrun: latest.predictedCostOverrun,
         predictedTimeDelay: latest.predictedTimeDelay,
         totalOpenIssues: latest.totalOpenIssues,
-
         __history: p.historyFiltered,
       };
     });
@@ -416,13 +415,13 @@ export default function ProjectRiskProfileOverview() {
     const contributor = getStableRiskContributorKey(series);
 
     return (
-      <div style={{ background: '#fff', border: '1px solid #ddd', padding: 10, borderRadius: 6 }}>
-        <div style={{ fontWeight: 600, marginBottom: 6 }}>{label}</div>
+      <div className={`${styles.tooltip} ${darkMode ? styles.tooltipDark : ''}`}>
+        <div className={styles.tooltipTitle}>{label}</div>
         <div>Cost overrun: {row.predictedCostOverrun}</div>
         <div>Time delay: {row.predictedTimeDelay}</div>
         <div>Issues: {row.totalOpenIssues}</div>
-        <hr style={{ margin: '8px 0' }} />
-        <div style={{ fontWeight: 600, marginBottom: 4 }}>Summary (selected period)</div>
+        <hr className={styles.tooltipDivider} />
+        <div className={styles.tooltipSubtitle}>Summary (selected period)</div>
         <div>
           Key drivers of change: Cost {getArrow(deltas.cost)} {deltas.cost.toFixed(2)}, Delay{' '}
           {getArrow(deltas.delay)} {deltas.delay.toFixed(2)}, Issues {getArrow(deltas.issues)}{' '}
@@ -433,12 +432,26 @@ export default function ProjectRiskProfileOverview() {
     );
   };
 
-  if (loading) return <div>Loading project risk profiles...</div>;
-  if (error) return <div style={{ color: 'red' }}>{error}</div>;
+  const sparklineTooltipProps = useMemo(() => {
+    return {
+      contentStyle: {
+        backgroundColor: darkMode ? '#2c2c2c' : '#fff',
+        border: `1px solid ${darkMode ? '#555' : '#ddd'}`,
+        borderRadius: 6,
+        color: darkMode ? '#eee' : '#222',
+      },
+      labelStyle: { color: darkMode ? '#eee' : '#222' },
+      itemStyle: { color: darkMode ? '#eee' : '#222' },
+    };
+  }, [darkMode]);
+
+  if (loading) return <div className={styles.loading}>Loading project risk profiles...</div>;
+  if (error) return <div className={styles.error}>{error}</div>;
 
   return (
     <div className={`${styles.chartCard} ${darkMode ? styles.darkMode : ''}`}>
       <h2 className={styles.chartTitle}>Project Risk Profile Overview</h2>
+
       <div className={styles.filterContainer}>
         {/* Project Dropdown */}
         <div ref={projectWrapperRef} className={styles.formGroup}>
@@ -467,6 +480,7 @@ export default function ProjectRiskProfileOverview() {
             </div>
           )}
         </div>
+
         {/* Date Dropdown */}
         <div ref={dateWrapperRef} className={styles.formGroup}>
           <span className={styles.label}>Dates</span>
@@ -494,85 +508,71 @@ export default function ProjectRiskProfileOverview() {
             </div>
           )}
         </div>
+      </div>
 
-        {/* Window label */}
-        <div style={{ fontSize: 13, color: '#555', marginTop: 22 }}>
-          Period: <b>{effectiveWindow.start}</b> to <b>{effectiveWindow.end}</b>
+      {/* Trend Summary */}
+      <div className={styles.trendSection}>
+        <h3 className={styles.subHeading}>Trend Summary</h3>
+
+        {/* Chart Section */}
+        <div className={styles.chartContainer}>
+          <ResponsiveContainer width="100%" height={380}>
+            <BarChart data={barChartData} margin={{ top: 20, right: 40, left: 40, bottom: 80 }}>
+              <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke={chartColors.grid} />
+              <XAxis
+                dataKey="projectName"
+                angle={-45}
+                textAnchor="end"
+                height={80}
+                tick={{ fontSize: 12, fill: chartColors.text }}
+              />
+              <YAxis
+                label={{
+                  value: 'Percentage (%)',
+                  angle: -90,
+                  position: 'insideLeft',
+                  offset: 15,
+                  style: {
+                    textAnchor: 'middle',
+                    fontSize: 14,
+                    fill: chartColors.text,
+                    fontWeight: '500',
+                  },
+                }}
+                tickFormatter={value => (Number.isInteger(value) ? value : value.toFixed(0))}
+                tick={{ fontSize: 12, fill: chartColors.text }}
+              />
+              <Tooltip content={<RiskTooltip />} />
+              <Legend wrapperStyle={{ marginTop: 20, color: chartColors.text }} />
+              <Bar
+                dataKey="predictedCostOverrun"
+                name="Predicted Cost Overrun (%)"
+                fill="#4285F4"
+                barSize={30}
+              />
+              <Bar dataKey="totalOpenIssues" name="Issues" fill="#EA4335" barSize={30} />
+              <Bar
+                dataKey="predictedTimeDelay"
+                name="Predicted Time Delay (%)"
+                fill="#FBBC05"
+                barSize={30}
+              />
+            </BarChart>
+          </ResponsiveContainer>
         </div>
-      </div>
 
-      {/* Chart Section */}
-      <div className={styles.chartContainer}>
-        <ResponsiveContainer width="100%" height={380}>
-          <BarChart data={barChartData} margin={{ top: 20, right: 40, left: 40, bottom: 80 }}>
-            <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke={chartColors.grid} />
-            <XAxis
-              dataKey="projectName"
-              angle={-45}
-              textAnchor="end"
-              height={80}
-              tick={{ fontSize: 12, fill: chartColors.text }}
-            />
-            <YAxis
-              label={{
-                value: 'Percentage (%)',
-                angle: -90,
-                position: 'insideLeft',
-                offset: 15,
-                style: {
-                  textAnchor: 'middle',
-                  fontSize: 14,
-                  fill: chartColors.text,
-                  fontWeight: '500',
-                },
-              }}
-              tickFormatter={value => (Number.isInteger(value) ? value : value.toFixed(0))}
-              tick={{ fontSize: 12, fill: chartColors.text }}
-            />
-            <Tooltip content={<RiskTooltip />} />
-            <Legend wrapperStyle={{ marginTop: 20, color: chartColors.text }} />
-            <Bar
-              dataKey="predictedCostOverrun"
-              name="Predicted Cost Overrun (%)"
-              fill="#4285F4"
-              barSize={30}
-            />
-            <Bar dataKey="totalOpenIssues" name="Issues" fill="#EA4335" barSize={30} />
-            <Bar
-              dataKey="predictedTimeDelay"
-              name="Predicted Time Delay (%)"
-              fill="#FBBC05"
-              barSize={30}
-            />
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
-
-      {/* TRENDS + INDICATORS*/}
-      <div style={{ marginTop: 10 }}>
-        <h3 style={{ margin: '8px 0 10px 0' }}>Trend Summary</h3>
-
-        <div style={{ width: '100%', overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 900 }}>
+        <div className={styles.tableScroll}>
+          <table className={styles.table}>
             <thead>
-              <tr style={{ background: '#f7f7f7' }}>
-                <th style={{ padding: 10, textAlign: 'left', borderBottom: '1px solid #ddd' }}>
-                  Project
-                </th>
-                <th style={{ padding: 10, textAlign: 'left', borderBottom: '1px solid #ddd' }}>
-                  Cost overrun trend
-                </th>
-                <th style={{ padding: 10, textAlign: 'left', borderBottom: '1px solid #ddd' }}>
-                  Time delay trend
-                </th>
-                <th style={{ padding: 10, textAlign: 'left', borderBottom: '1px solid #ddd' }}>
-                  Issue count trend
-                </th>
-                <th style={{ padding: 10, textAlign: 'left', borderBottom: '1px solid #ddd' }}>
-                  Comparison + indicators
-                </th>
+              <tr className={styles.tableHeadRow}>
+                <th className={styles.th}>Project</th>
+                <th className={styles.th}>Cost overrun trend</th>
+                <th className={styles.th}>Time delay trend</th>
+                <th className={styles.th}>Issue count trend</th>
+                <th className={styles.th}>Comparison + indicators</th>
               </tr>
             </thead>
+
             <tbody>
               {filteredProjects.map(p => {
                 const s = p.historyFiltered;
@@ -585,7 +585,6 @@ export default function ProjectRiskProfileOverview() {
 
                 const contributor = getStableRiskContributorKey(s);
 
-                // tooltip text required by task (“key drivers” and “largest contributor”)
                 const indicatorTooltip = `Key drivers of change: Cost ${getArrow(
                   costDelta,
                 )} ${costDelta.toFixed(2)}, Delay ${getArrow(delayDelta)} ${delayDelta.toFixed(
@@ -596,17 +595,12 @@ export default function ProjectRiskProfileOverview() {
 
                 return (
                   <tr key={p.projectName}>
-                    <td
-                      style={{ padding: 10, borderBottom: '1px solid #eee', whiteSpace: 'nowrap' }}
-                    >
-                      {p.projectName}
-                    </td>
+                    <td className={styles.tdProject}>{p.projectName}</td>
 
-                    {/* Cost sparkline */}
-                    <td style={{ padding: 10, borderBottom: '1px solid #eee' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <span style={{ width: 22 }}>{getArrow(costDelta)}</span>
-                        <div style={{ width: 160, height: 36 }}>
+                    <td className={styles.td}>
+                      <div className={styles.sparkRow}>
+                        <span className={styles.arrow}>{getArrow(costDelta)}</span>
+                        <div className={styles.sparkline}>
                           <ResponsiveContainer width="100%" height="100%">
                             <LineChart data={s}>
                               <Line
@@ -615,19 +609,18 @@ export default function ProjectRiskProfileOverview() {
                                 dot={false}
                                 strokeWidth={2}
                               />
-                              <Tooltip />
+                              <Tooltip {...sparklineTooltipProps} />
                             </LineChart>
                           </ResponsiveContainer>
                         </div>
-                        <span style={{ fontSize: 12, color: '#555' }}>{costDelta.toFixed(2)}</span>
+                        <span className={styles.deltaText}>{costDelta.toFixed(2)}</span>
                       </div>
                     </td>
 
-                    {/* Delay sparkline */}
-                    <td style={{ padding: 10, borderBottom: '1px solid #eee' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <span style={{ width: 22 }}>{getArrow(delayDelta)}</span>
-                        <div style={{ width: 160, height: 36 }}>
+                    <td className={styles.td}>
+                      <div className={styles.sparkRow}>
+                        <span className={styles.arrow}>{getArrow(delayDelta)}</span>
+                        <div className={styles.sparkline}>
                           <ResponsiveContainer width="100%" height="100%">
                             <LineChart data={s}>
                               <Line
@@ -636,19 +629,18 @@ export default function ProjectRiskProfileOverview() {
                                 dot={false}
                                 strokeWidth={2}
                               />
-                              <Tooltip />
+                              <Tooltip {...sparklineTooltipProps} />
                             </LineChart>
                           </ResponsiveContainer>
                         </div>
-                        <span style={{ fontSize: 12, color: '#555' }}>{delayDelta.toFixed(2)}</span>
+                        <span className={styles.deltaText}>{delayDelta.toFixed(2)}</span>
                       </div>
                     </td>
 
-                    {/* Issues sparkline */}
-                    <td style={{ padding: 10, borderBottom: '1px solid #eee' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <span style={{ width: 22 }}>{getArrow(issuesDelta)}</span>
-                        <div style={{ width: 160, height: 36 }}>
+                    <td className={styles.td}>
+                      <div className={styles.sparkRow}>
+                        <span className={styles.arrow}>{getArrow(issuesDelta)}</span>
+                        <div className={styles.sparkline}>
                           <ResponsiveContainer width="100%" height="100%">
                             <LineChart data={s}>
                               <Line
@@ -657,24 +649,21 @@ export default function ProjectRiskProfileOverview() {
                                 dot={false}
                                 strokeWidth={2}
                               />
-                              <Tooltip />
+                              <Tooltip {...sparklineTooltipProps} />
                             </LineChart>
                           </ResponsiveContainer>
                         </div>
-                        <span style={{ fontSize: 12, color: '#555' }}>
-                          {issuesDelta.toFixed(0)}
-                        </span>
+                        <span className={styles.deltaText}>{issuesDelta.toFixed(0)}</span>
                       </div>
                     </td>
 
-                    {/* Indicators + tooltips */}
-                    <td style={{ padding: 10, borderBottom: '1px solid #eee' }}>
-                      <div title={indicatorTooltip} style={{ cursor: 'help' }}>
-                        <div style={{ fontSize: 13 }}>
+                    <td className={styles.td}>
+                      <div className={styles.indicatorBox} title={indicatorTooltip}>
+                        <div className={styles.indicatorLine}>
                           Cost: {getArrow(costDelta)} | Delay: {getArrow(delayDelta)} | Issues:{' '}
                           {getArrow(issuesDelta)}
                         </div>
-                        <div style={{ fontSize: 12, color: '#555', marginTop: 4 }}>
+                        <div className={styles.indicatorSub}>
                           Largest contributor: <b>{contributor || 'N/A'}</b>
                         </div>
                       </div>
@@ -685,7 +674,7 @@ export default function ProjectRiskProfileOverview() {
 
               {!filteredProjects.length && (
                 <tr>
-                  <td colSpan={5} style={{ padding: 12, color: '#777' }}>
+                  <td colSpan={5} className={styles.noDataRow}>
                     No data for the selected filters/time window.
                   </td>
                 </tr>
