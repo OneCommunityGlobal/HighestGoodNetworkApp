@@ -112,7 +112,6 @@ function ActivityList() {
 
   const handleCloseModal = () => {
     setModalOpen(false);
-    setSelectedActivity(null);
   };
 
   return (
