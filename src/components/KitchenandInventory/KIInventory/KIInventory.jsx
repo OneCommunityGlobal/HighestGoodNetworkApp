@@ -20,11 +20,16 @@ import {
 import { RiLeafLine } from 'react-icons/ri';
 import KIItemCard from './KIItemCard';
 import {
-  items,
+  ingredients,
   preservedItems,
   lowStock,
+  totalItems,
   criticalStock,
   onsiteGrown,
+  equipmentAndSupplies,
+  seeds,
+  canningSupplies,
+  animalSupplies,
 } from './KIInventorySampleItems.js';
 
 const KIInventory = () => {
@@ -59,7 +64,7 @@ const KIInventory = () => {
           <p>Track ingredients, equipment, and supplies across all kitchen operations</p>
         </div>
         <div className={styles.inventoryMetricCards}>
-          <MetricCard metricname={'Total Items'} metricvalue={items.length} iconcolor={'#023f80'}>
+          <MetricCard metricname={'Total Items'} metricvalue={totalItems} iconcolor={'#023f80'}>
             <FiPackage />
           </MetricCard>
           <MetricCard
@@ -209,7 +214,7 @@ const KIInventory = () => {
               </div>
             )}
             <div className={styles.ingredientsContainer}>
-              {items.map(item => (
+              {ingredients.map(item => (
                 <div key={item._id}>
                   <KIItemCard item={item} />
                 </div>
@@ -218,16 +223,48 @@ const KIInventory = () => {
           </div>
         </TabPane>
         <TabPane tabId={tabs[1]}>
-          <div>Equipment & Supplies Content</div>
+          <div className={styles.tabContainer}>
+            <div className={styles.ingredientsContainer}>
+              {equipmentAndSupplies.map(item => (
+                <div key={item._id}>
+                  <KIItemCard item={item} />
+                </div>
+              ))}
+            </div>
+          </div>
         </TabPane>
         <TabPane tabId={tabs[2]}>
-          <div>Seeds Content</div>
+          <div className={styles.tabContainer}>
+            <div className={styles.ingredientsContainer}>
+              {seeds.map(item => (
+                <div key={item._id}>
+                  <KIItemCard item={item} />
+                </div>
+              ))}
+            </div>
+          </div>
         </TabPane>
         <TabPane tabId={tabs[3]}>
-          <div>Canning Supplies Content</div>
+          <div className={styles.tabContainer}>
+            <div className={styles.ingredientsContainer}>
+              {canningSupplies.map(item => (
+                <div key={item._id}>
+                  <KIItemCard item={item} />
+                </div>
+              ))}
+            </div>
+          </div>
         </TabPane>
         <TabPane tabId={tabs[4]}>
-          <div>Animal Supplies Content</div>
+          <div className={styles.tabContainer}>
+            <div className={styles.ingredientsContainer}>
+              {animalSupplies.map(item => (
+                <div key={item._id}>
+                  <KIItemCard item={item} />
+                </div>
+              ))}
+            </div>
+          </div>
         </TabPane>
       </TabContent>
     </div>

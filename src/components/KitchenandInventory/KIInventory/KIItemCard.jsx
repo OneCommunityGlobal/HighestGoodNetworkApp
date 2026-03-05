@@ -9,6 +9,9 @@ function KIItemCard(props) {
   const healthyStock = item.presentQuantity > item.reorderAt;
   const lowStock =
     item.presentQuantity <= item.reorderAt && item.presentQuantity >= item.reorderAt * 0.75;
+  const supplyRatio = item.presentQuantity / item.monthlyUsage;
+  const healthySupply = supplyRatio >= 1;
+  const lowSupply = supplyRatio < 1 && supplyRatio >= 0.6;
   const darkMode = useSelector(state => state.theme.darkMode);
   return (
     <div className={`${styles.cardContainer} ${darkMode ? styles.darkCardContainer : ''}`}>
@@ -64,26 +67,32 @@ function KIItemCard(props) {
               Reorder at {item.reorderAt} {item.unit}
             </p>
           </div>
-          <div className={styles.quantityDetails}>
-            <div className={styles.currentStockDetails}>
-              <p style={{ margin: 0, padding: 0 }}>Monthly Supply</p>
-              <p style={{ margin: 0, padding: 0, fontWeight: 'bold' }}>
-                {Math.round((item.presentQuantity / item.monthlyUsage) * 10) / 10} months
+          {item.monthlyUsage && (
+            <div className={styles.quantityDetails}>
+              <div className={styles.currentStockDetails}>
+                <p style={{ margin: 0, padding: 0 }}>Monthly Supply</p>
+                <p style={{ margin: 0, padding: 0, fontWeight: 'bold' }}>
+                  {Math.round((item.presentQuantity / item.monthlyUsage) * 10) / 10} months
+                </p>
+              </div>
+              <div className={`${styles.statusBar}`}>
+                <div
+                  className={styles.supplyBarProgress}
+                  style={{
+                    width: `${Math.min((item.presentQuantity / item.monthlyUsage) * 100, 100)}%`,
+                    '--status-color': healthySupply
+                      ? '#007bff'
+                      : lowSupply
+                      ? '#dea208ff'
+                      : '#ef2d2dff',
+                  }}
+                ></div>
+              </div>
+              <p className={styles.smallerText}>
+                {`Target: 1 month minimum (${item.monthlyUsage} ${item.unit}/month)`}
               </p>
             </div>
-            <div className={`${styles.statusBar}`}>
-              <div
-                className={styles.supplyBarProgress}
-                style={{
-                  width: `${Math.min((item.presentQuantity / item.monthlyUsage) * 100, 100)}%`,
-                  '--status-color': healthyStock ? '#007bff' : lowStock ? '#dea208ff' : '#ef2d2dff',
-                }}
-              ></div>
-            </div>
-            <p className={styles.smallerText}>
-              {`Target: 1 month minimum (${item.monthlyUsage} ${item.unit}/month)`}
-            </p>
-          </div>
+          )}
         </div>
         <div className={styles.locationSourceContainer}>
           <div>
