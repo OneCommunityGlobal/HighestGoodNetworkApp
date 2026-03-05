@@ -101,11 +101,12 @@
 }
 
 .darkMode .dropdownToggle::after {
-  border-top-color: #fff;
+  border-top-color: #fff !important;
 }
 
 .darkMode .dropdownToggle:focus,
-.darkMode .dropdownToggle:active {
+.darkMode .dropdownToggle:active,
+.darkMode .dropdownToggle span {
   background: var(--primary-color-dark, #2563eb) !important;
   color: #fff !important;
   box-shadow: none !important;

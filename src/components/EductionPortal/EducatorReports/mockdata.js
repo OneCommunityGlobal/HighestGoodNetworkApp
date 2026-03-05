@@ -98,7 +98,7 @@ export const lifeStrategiesData = {
 };
 
 export const subjects = [
-  { name: 'All Subjects', color: '#333333' },
+  { name: 'All Subjects', color: '#6b7280' },
   { name: 'Arts/Trades', color: '#ff8c00' },
   { name: 'English', color: '#9c27b0' },
   { name: 'Health', color: '#4caf50' },
