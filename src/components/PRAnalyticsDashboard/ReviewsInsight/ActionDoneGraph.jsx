@@ -102,9 +102,9 @@ function ActionDoneGraph({ selectedTeams, teamData }) {
     <div className={sharedStyles.riActionDoneGraph}>
       <h2>
         PR: Action Done &nbsp;
-        <span class={sharedStyles.tooltip}>
-          <i class="fa fa-info-circle fa-sm" aria-hidden="true"></i>
-          <span class={`${sharedStyles.tooltipText} ${darkMode ? 'darkMode' : ''} `}>
+        <span className={sharedStyles.tooltip}>
+          <i className="fa fa-info-circle fa-sm" aria-hidden="true"></i>
+          <span className={`${sharedStyles.tooltipText} ${darkMode ? 'darkMode' : ''} `}>
             Approved: PR was approved without blocking changes <br />
             <br />
             Changes Requested: Reviewer requested changes before approval <br />
