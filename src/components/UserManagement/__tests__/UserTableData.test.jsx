@@ -78,197 +78,15 @@ const ownerAccountMock = {
   email: 'devadmin@hgn.net',
 };
 
-/**
- * ActiveCell uses `title` for its tooltip/cue.
- * The exact string varies by status (active/inactive/paused/scheduled) and permissions.
- * So tests should look for the control by matching any known title variants.
- */
-const getActiveCell = () =>
-  screen.getByTitle(
-    /click to change user status|user is inactive|inactive|scheduled for deactivation|final day scheduled|user has a final day scheduled|paused|user is paused/i,
-  );
-
-describe('User Table Data: Non-Jae related Account', () => {
-  let onPauseResumeClick;
-  let onDeleteClick;
-  let onActiveInactiveClick;
-  let store;
-
-  const renderRow = user => {
-    renderWithProvider(
-      <MemoryRouter initialEntries={['/usermanagement']}>
-        <table>
-          <tbody>
-            <UserTableData
-              isActive
-              index={0}
-              user={user}
-              onActiveInactiveClick={onActiveInactiveClick}
-              onPauseResumeClick={onPauseResumeClick}
-              onDeleteClick={onDeleteClick}
-            />
-          </tbody>
-        </table>
-      </MemoryRouter>,
-      { store },
-    );
-  };
-
-  beforeEach(() => {
-    store = mockStore({
-      auth: ownerAccountMock,
-      userProfile: nonJaeAccountMock,
-      role: {
-        roles: [
-          {
-            roleName: nonJaeAccountMock.role,
-            permissions: ['deleteUserProfile', 'updatePassword', 'changeUserStatus'],
-          },
-        ],
-      },
-      theme: themeMock,
-    });
-
-    onPauseResumeClick = vi.fn();
-    onDeleteClick = vi.fn();
-    onActiveInactiveClick = vi.fn();
-
+const setupAxios = (mode) => {
+  if (mode === 'non-jae') {
     axios.get.mockResolvedValue({
       data: [
         { id: 1, name: 'Administrator' },
         { id: 2, name: 'User' },
       ],
     });
-  });
-
-  describe('Structure', () => {
-    it('should render one row of data', () => {
-      renderRow(nonJaeAccountMock);
-      expect(screen.getByRole('row')).toBeInTheDocument();
-    });
-
-    it('should render an active/inactive button (ActiveCell)', () => {
-      renderRow(nonJaeAccountMock);
-      expect(getActiveCell()).toBeInTheDocument();
-    });
-
-    it('should render the first name and last name in input fields', () => {
-      renderRow(nonJaeAccountMock);
-      expect(screen.getByDisplayValue('Non')).toBeInTheDocument();
-      expect(screen.getByDisplayValue('Petterson')).toBeInTheDocument();
-    });
-
-    it('should render the correct email', () => {
-      renderRow(nonJaeAccountMock);
-      expect(screen.getByDisplayValue(nonJaeAccountMock.email)).toBeInTheDocument();
-    });
-
-    it('should render the correct weekly committed hrs', () => {
-      renderRow(nonJaeAccountMock);
-      expect(screen.getByDisplayValue('10')).toBeInTheDocument();
-    });
-
-    it('should render a `Pause` button', () => {
-      renderRow(nonJaeAccountMock);
-      expect(screen.getByRole('button', { name: /pause/i })).toBeInTheDocument();
-    });
-
-    it('should render a `Delete` button', () => {
-      renderRow(nonJaeAccountMock);
-      expect(screen.getByRole('button', { name: /delete/i })).toBeInTheDocument();
-    });
-
-    it('should render a `reset password` button', () => {
-      renderRow(nonJaeAccountMock);
-      expect(screen.getByRole('button', { name: /reset password/i })).toBeInTheDocument();
-    });
-  });
-
-  describe('Behavior', () => {
-    it('should display the correct first name and last name in input fields', () => {
-      renderRow(nonJaeAccountMock);
-
-      const firstNameInput = screen.getByDisplayValue(nonJaeAccountMock.firstName);
-      const lastNameInput = screen.getByDisplayValue(nonJaeAccountMock.lastName);
-
-      expect(firstNameInput).toBeInTheDocument();
-      expect(lastNameInput).toBeInTheDocument();
-
-      expect(firstNameInput).toHaveAttribute('value', nonJaeAccountMock.firstName);
-      expect(lastNameInput).toHaveAttribute('value', nonJaeAccountMock.lastName);
-    });
-
-    it('should fire onDeleteClick() once the user clicks the delete button', async () => {
-      renderRow(nonJaeAccountMock);
-      await userEvent.click(screen.getByRole('button', { name: /delete/i }));
-      expect(onDeleteClick).toHaveBeenCalledTimes(1);
-    });
-
-    it('should fire onPauseResumeClick() once the user clicks the pause button', async () => {
-      renderRow(nonJaeAccountMock);
-      await userEvent.click(screen.getByRole('button', { name: /pause/i }));
-      expect(onPauseResumeClick).toHaveBeenCalledTimes(1);
-    });
-
-    it('should fire onActiveInactiveClick() once the user clicks the active/inactive button', async () => {
-      renderRow(nonJaeAccountMock);
-      await userEvent.click(getActiveCell());
-      expect(onActiveInactiveClick).toHaveBeenCalledTimes(1);
-    });
-
-    it('should render a modal once the user clicks the `reset password` button', async () => {
-      renderRow(nonJaeAccountMock);
-      await userEvent.click(screen.getByRole('button', { name: /reset password/i }));
-      expect(screen.getByRole('dialog')).toBeInTheDocument();
-    });
-  });
-});
-
-describe('User Table Data: Jae protected account record and login as Jae related account', () => {
-  let onPauseResumeClick;
-  let onDeleteClick;
-  let onActiveInactiveClick;
-  let store;
-
-  const renderRow = user => {
-    renderWithProvider(
-      <MemoryRouter initialEntries={['/usermanagement']}>
-        <table>
-          <tbody>
-            <UserTableData
-              isActive
-              index={0}
-              user={user}
-              onActiveInactiveClick={onActiveInactiveClick}
-              onPauseResumeClick={onPauseResumeClick}
-              onDeleteClick={onDeleteClick}
-            />
-          </tbody>
-        </table>
-      </MemoryRouter>,
-      { store },
-    );
-  };
-
-  beforeEach(() => {
-    store = mockStore({
-      auth: authMock,
-      userProfile: jaeAccountMock,
-      role: {
-        roles: [
-          {
-            roleName: jaeAccountMock.role,
-            permissions: ['deleteUserProfile', 'updatePassword', 'changeUserStatus'],
-          },
-        ],
-      },
-      theme: themeMock,
-    });
-
-    onPauseResumeClick = vi.fn();
-    onDeleteClick = vi.fn();
-    onActiveInactiveClick = vi.fn();
-
+  } else {
     axios.get.mockResolvedValue({
       data: {
         _id: jaeAccountMock._id,
@@ -278,85 +96,190 @@ describe('User Table Data: Jae protected account record and login as Jae related
         email: jaeAccountMock.email,
       },
     });
+  }
+};
+
+const createStore = ({ authState, profileState, roleName }) =>
+  mockStore({
+    auth: authState,
+    userProfile: profileState,
+    role: {
+      roles: [
+        {
+          roleName,
+          permissions: ['deleteUserProfile', 'updatePassword', 'changeUserStatus'],
+        },
+      ],
+    },
+    theme: themeMock,
+  });
+
+const createHandlers = () => ({
+  onPauseResumeClick: vi.fn(),
+  onDeleteClick: vi.fn(),
+  onActiveInactiveClick: vi.fn(),
+});
+
+const renderUserRow = ({ store, user, handlers }) => {
+  renderWithProvider(
+    <MemoryRouter initialEntries={['/usermanagement']}>
+      <table>
+        <tbody>
+          <UserTableData
+            isActive
+            index={0}
+            user={user}
+            onActiveInactiveClick={handlers.onActiveInactiveClick}
+            onPauseResumeClick={handlers.onPauseResumeClick}
+            onDeleteClick={handlers.onDeleteClick}
+          />
+        </tbody>
+      </table>
+    </MemoryRouter>,
+    { store },
+  );
+};
+
+/**
+ * ActiveCell currently uses a <span role="button"> with a dynamic title.
+ * We locate it by role + id pattern to avoid brittle title text.
+ */
+const getActiveCellButton = () => screen.getByRole('button', { name: /user is/i });
+// If eslint complains about empty accessible name in your env, use this instead:
+// const getActiveCellButton = () => screen.getByRole('button');
+
+describe.each([
+  {
+    label: 'User Table Data: Non-Jae related Account',
+    mode: 'non-jae',
+    authState: ownerAccountMock,
+    profileState: nonJaeAccountMock,
+    user: nonJaeAccountMock,
+    expectDeleteAndReset: true,
+  },
+  {
+    label: 'User Table Data: Jae protected account record and login as Jae related account',
+    mode: 'jae',
+    authState: authMock,
+    profileState: jaeAccountMock,
+    user: jaeAccountMock,
+    expectDeleteAndReset: false,
+  },
+])('$label', ({ mode, authState, profileState, user, expectDeleteAndReset }) => {
+  let store;
+  let handlers;
+
+  const setup = () => {
+    setupAxios(mode);
+    store = createStore({ authState, profileState, roleName: user.role });
+    handlers = createHandlers();
+  };
+
+  beforeEach(() => {
+    setup();
   });
 
   describe('Structure', () => {
     it('should render one row of data', () => {
-      renderRow(jaeAccountMock);
+      renderUserRow({ store, user, handlers });
       expect(screen.getByRole('row')).toBeInTheDocument();
     });
 
     it('should render an active/inactive button (ActiveCell)', () => {
-      renderRow(jaeAccountMock);
-      expect(getActiveCell()).toBeInTheDocument();
+      renderUserRow({ store, user, handlers });
+      expect(getActiveCellButton()).toBeInTheDocument();
     });
 
-    it('should render the correct first name and last name', () => {
-      renderRow(jaeAccountMock);
-      expect(screen.getByDisplayValue(jaeAccountMock.firstName)).toBeInTheDocument();
-      expect(screen.getByDisplayValue(jaeAccountMock.lastName)).toBeInTheDocument();
+    it('should render the first name and last name in input fields', () => {
+      renderUserRow({ store, user, handlers });
+      expect(screen.getByDisplayValue(user.firstName)).toBeInTheDocument();
+      expect(screen.getByDisplayValue(user.lastName)).toBeInTheDocument();
     });
 
     it('should render the correct email', () => {
-      renderRow(jaeAccountMock);
-      expect(screen.getByDisplayValue(jaeAccountMock.email)).toBeInTheDocument();
+      renderUserRow({ store, user, handlers });
+      expect(screen.getByDisplayValue(user.email)).toBeInTheDocument();
     });
 
     it('should render the correct weekly committed hrs', () => {
-      renderRow(jaeAccountMock);
-      expect(screen.getByDisplayValue(`${jaeAccountMock.weeklycommittedHours}`)).toBeInTheDocument();
+      renderUserRow({ store, user, handlers });
+      expect(screen.getByDisplayValue(`${user.weeklycommittedHours}`)).toBeInTheDocument();
     });
 
     it('should render a `Pause` button', () => {
-      renderRow(jaeAccountMock);
+      renderUserRow({ store, user, handlers });
       expect(screen.getByRole('button', { name: /pause/i })).toBeInTheDocument();
     });
 
-    it('should render a `Set Final Date` button', () => {
-      renderRow(jaeAccountMock);
-      expect(screen.getByRole('button', { name: /set final day/i })).toBeInTheDocument();
-    });
+    if (expectDeleteAndReset) {
+      it('should render a `Delete` button', () => {
+        renderUserRow({ store, user, handlers });
+        expect(screen.getByRole('button', { name: /delete/i })).toBeInTheDocument();
+      });
 
-    it('should NOT render a `Delete` button', () => {
-      renderRow(jaeAccountMock);
-      expect(screen.queryByRole('button', { name: /delete/i })).not.toBeInTheDocument();
-    });
+      it('should render a `reset password` button', () => {
+        renderUserRow({ store, user, handlers });
+        expect(screen.getByRole('button', { name: /reset password/i })).toBeInTheDocument();
+      });
+    } else {
+      it('should render a `Set Final Day` button', () => {
+        renderUserRow({ store, user, handlers });
+        expect(screen.getByRole('button', { name: /set final day/i })).toBeInTheDocument();
+      });
 
-    it('should NOT render a `reset password` button', () => {
-      renderRow(jaeAccountMock);
-      expect(screen.queryByRole('button', { name: /reset password/i })).not.toBeInTheDocument();
-    });
+      it('should NOT render a `Delete` button', () => {
+        renderUserRow({ store, user, handlers });
+        expect(screen.queryByRole('button', { name: /delete/i })).not.toBeInTheDocument();
+      });
+
+      it('should NOT render a `reset password` button', () => {
+        renderUserRow({ store, user, handlers });
+        expect(screen.queryByRole('button', { name: /reset password/i })).not.toBeInTheDocument();
+      });
+    }
   });
 
   describe('Behavior', () => {
-    it('should render the first name input field with the correct value', () => {
-      renderRow(jaeAccountMock);
-      const firstNameInput = screen.getByDisplayValue(jaeAccountMock.firstName);
-      expect(firstNameInput).toBeInTheDocument();
-      expect(firstNameInput).toHaveAttribute('value', jaeAccountMock.firstName);
-    });
+    if (expectDeleteAndReset) {
+      it('should fire onPauseResumeClick() once the user clicks the pause button', async () => {
+        renderUserRow({ store, user, handlers });
+        await userEvent.click(screen.getByRole('button', { name: /pause/i }));
+        expect(handlers.onPauseResumeClick).toHaveBeenCalledTimes(1);
+      });
 
-    it('should render the last name input field with the correct value', () => {
-      renderRow(jaeAccountMock);
-      const lastNameInput = screen.getByDisplayValue(jaeAccountMock.lastName);
-      expect(lastNameInput).toBeInTheDocument();
-      expect(lastNameInput).toHaveAttribute('value', jaeAccountMock.lastName);
-    });
+      it('should fire onActiveInactiveClick() once the user clicks the active/inactive button', async () => {
+        renderUserRow({ store, user, handlers });
+        await userEvent.click(getActiveCellButton());
+        expect(handlers.onActiveInactiveClick).toHaveBeenCalledTimes(1);
+      });
 
-    it('should fire alert() once the user clicks the pause button', async () => {
-      renderRow(jaeAccountMock);
-      const alertMock = vi.spyOn(window, 'alert').mockImplementation(() => {});
-      await userEvent.click(screen.getByRole('button', { name: /pause/i }));
-      expect(alertMock).toHaveBeenCalledTimes(1);
-      alertMock.mockRestore();
-    });
+      it('should fire onDeleteClick() once the user clicks the delete button', async () => {
+        renderUserRow({ store, user, handlers });
+        await userEvent.click(screen.getByRole('button', { name: /delete/i }));
+        expect(handlers.onDeleteClick).toHaveBeenCalledTimes(1);
+      });
 
-    it('should not fire alert() when clicking Set Final Day (based on prior expectations)', async () => {
-      renderRow(jaeAccountMock);
-      const alertMock = vi.spyOn(window, 'alert').mockImplementation(() => {});
-      await userEvent.click(screen.getByRole('button', { name: /set final day/i }));
-      expect(alertMock).toHaveBeenCalledTimes(0);
-      alertMock.mockRestore();
-    });
+      it('should render a modal once the user clicks the `reset password` button', async () => {
+        renderUserRow({ store, user, handlers });
+        await userEvent.click(screen.getByRole('button', { name: /reset password/i }));
+        expect(screen.getByRole('dialog')).toBeInTheDocument();
+      });
+    } else {
+      it('should fire alert() once the user clicks the pause button', async () => {
+        renderUserRow({ store, user, handlers });
+        const alertMock = vi.spyOn(window, 'alert').mockImplementation(() => {});
+        await userEvent.click(screen.getByRole('button', { name: /pause/i }));
+        expect(alertMock).toHaveBeenCalledTimes(1);
+        alertMock.mockRestore();
+      });
+
+      it('should not fire alert() when clicking Set Final Day (based on prior expectations)', async () => {
+        renderUserRow({ store, user, handlers });
+        const alertMock = vi.spyOn(window, 'alert').mockImplementation(() => {});
+        await userEvent.click(screen.getByRole('button', { name: /set final day/i }));
+        expect(alertMock).toHaveBeenCalledTimes(0);
+        alertMock.mockRestore();
+      });
+    }
   });
 });
