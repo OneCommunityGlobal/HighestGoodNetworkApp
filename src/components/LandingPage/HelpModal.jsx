@@ -42,7 +42,7 @@ function HelpModal({ show, onHide, auth }) {
       try {
         const profileResponse = await axios.get(ENDPOINTS.USER_PROFILE(userId));
         setTeams(profileResponse.data?.teams || []);
-      } catch (err) {
+      } catch {
         setTeams([]);
       }
     };
