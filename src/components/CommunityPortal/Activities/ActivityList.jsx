@@ -244,9 +244,14 @@ function ActivityList() {
                 <strong>Date:</strong> {selectedActivity.date}
               </p>
               <p>
+                <strong>Time:</strong> {selectedActivity.time}
+              </p>
+              <p>
                 <strong>Location:</strong> {selectedActivity.location}
               </p>
-              <p>{selectedActivity.description}</p>
+              <p>
+                <strong>Description:</strong> {selectedActivity.description}
+              </p>
               {/* Add more details as needed */}
             </div>
           )}
