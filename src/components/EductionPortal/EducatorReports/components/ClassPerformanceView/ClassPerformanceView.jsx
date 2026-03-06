@@ -5,87 +5,185 @@ import styles from './ClassPerformanceView.module.css';
 import MetricCard from '../MetricCard/MetricCard';
 import ReportChart from '../ReportChart/ReportChart';
 
+const getClassMockData = classId => {
+  const classDataMap = {
+    '1': {
+      class: { id: '1', name: 'Grade 5A - Mathematics', studentCount: 25, teacher: 'Ms. Johnson' },
+      metrics: { classAverage: 78, completionRate: 85, engagementRate: 82, activeLearners: 23 },
+      changes: { classAverage: 3.5, completionRate: 7.2, engagementRate: -1.8, activeLearners: 2 },
+      teachingStrategies: {
+        labels: [
+          'Game Lesson',
+          'Power Play',
+          'Book Smart Exploration',
+          'Core Creative Centered Composition',
+          'Exercised Smart Generation',
+          'Curious Dropout',
+        ],
+        datasets: [
+          {
+            label: 'Effectiveness',
+            data: [92, 85, 85, 67, 78, 65],
+            backgroundColor: ['#10b981', '#10b981', '#10b981', '#3b82f6', '#3b82f6', '#ef4444'],
+          },
+        ],
+      },
+      lifeStrategies: {
+        labels: [
+          'Everything you do Should Increase Choices',
+          'Ask "what would Jesus do?"',
+          'Choose to trust with observation',
+          'Practice nurturing your emotional intelligence',
+        ],
+        datasets: [
+          {
+            label: 'Impact',
+            data: [91, 89, 82, 78],
+            backgroundColor: ['#10b981', '#10b981', '#fbbf24', '#fbbf24'],
+          },
+        ],
+      },
+      insights: [
+        {
+          type: 'success',
+          title: 'Game Lesson Strategy',
+          message:
+            'The Game Lesson Strategy has been effective. Students respond well to interactive gameplay.',
+          action: 'Analyze Micro Lesson Strategies',
+        },
+        {
+          type: 'warning',
+          title: 'Conversation Practice',
+          message:
+            'Conversing practice showed room for improvement. Consider focusing more on practical applications.',
+          action: 'Learn about application strategies',
+        },
+      ],
+    },
+    '2': {
+      class: { id: '2', name: 'Grade 6B - Science', studentCount: 28, teacher: 'Mr. Smith' },
+      metrics: { classAverage: 85, completionRate: 92, engagementRate: 88, activeLearners: 26 },
+      changes: { classAverage: 5.2, completionRate: 8.5, engagementRate: 3.1, activeLearners: 4 },
+      teachingStrategies: {
+        labels: [
+          'Power Play',
+          'Experiment Lab',
+          'Nature Walk Discovery',
+          'Tech Exploration',
+          'Group Discussion',
+          'Video Analysis',
+        ],
+        datasets: [
+          {
+            label: 'Effectiveness',
+            data: [95, 90, 88, 82, 76, 70],
+            backgroundColor: ['#10b981', '#10b981', '#10b981', '#10b981', '#3b82f6', '#3b82f6'],
+          },
+        ],
+      },
+      lifeStrategies: {
+        labels: [
+          'Everything you do Should Increase Choices',
+          'Ask "what would Jesus do?"',
+          'Practice observation skills',
+          'Collaborative learning',
+        ],
+        datasets: [
+          {
+            label: 'Impact',
+            data: [94, 91, 86, 82],
+            backgroundColor: ['#10b981', '#10b981', '#10b981', '#fbbf24'],
+          },
+        ],
+      },
+      insights: [
+        {
+          type: 'success',
+          title: 'Excellent Performance',
+          message:
+            'Grade 6B is performing above average. The Experiment Lab strategy is highly effective.',
+          action: 'Review lesson plans',
+        },
+        {
+          type: 'info',
+          title: 'Growing Engagement',
+          message: 'Video Analysis is improving. Continue integrating multimedia into lessons.',
+          action: 'Explore more videos',
+        },
+      ],
+    },
+    '3': {
+      class: { id: '3', name: 'Grade 4C - English', studentCount: 22, teacher: 'Mrs. Davis' },
+      metrics: { classAverage: 72, completionRate: 78, engagementRate: 68, activeLearners: 18 },
+      changes: {
+        classAverage: -2.1,
+        completionRate: 1.5,
+        engagementRate: -5.3,
+        activeLearners: -1,
+      },
+      teachingStrategies: {
+        labels: [
+          'Story Time',
+          'Reading Circle',
+          'Creative Writing',
+          'Peer Review',
+          'Grammar Games',
+          'Silent Reading',
+        ],
+        datasets: [
+          {
+            label: 'Effectiveness',
+            data: [88, 85, 78, 72, 65, 58],
+            backgroundColor: ['#10b981', '#10b981', '#3b82f6', '#3b82f6', '#f59e0b', '#ef4444'],
+          },
+        ],
+      },
+      lifeStrategies: {
+        labels: [
+          'Everything you do Should Increase Choices',
+          'Ask "what would Jesus do?"',
+          'Practice patience while reading',
+          'Empathy in storytelling',
+        ],
+        datasets: [
+          {
+            label: 'Impact',
+            data: [85, 80, 72, 68],
+            backgroundColor: ['#10b981', '#10b981', '#fbbf24', '#ef4444'],
+          },
+        ],
+      },
+      insights: [
+        {
+          type: 'warning',
+          title: 'Below Average Performance',
+          message:
+            'Grade 4C needs additional support in English. Consider differentiated instruction.',
+          action: 'Review student assessments',
+        },
+        {
+          type: 'info',
+          title: 'Strength: Story Time',
+          message:
+            'Story Time is highly effective. Increase frequency of narrative-based activities.',
+          action: 'Plan story sessions',
+        },
+      ],
+    },
+  };
+  return classDataMap[classId] || classDataMap['1'];
+};
+
 const ClassPerformanceView = ({ filters }) => {
   const [loading, setLoading] = useState(true);
   const [classData, setClassData] = useState(null);
   const darkMode = useSelector(state => state.theme?.darkMode || false);
 
-  // Mock data based on the design
-  const mockClassData = {
-    class: {
-      id: '1',
-      name: 'Grade 5A - Mathematics',
-      studentCount: 25,
-      teacher: 'Ms. Johnson',
-    },
-    metrics: {
-      classAverage: 78,
-      completionRate: 85,
-      engagementRate: 82,
-      activeLearners: 23,
-    },
-    changes: {
-      classAverage: 3.5,
-      completionRate: 7.2,
-      engagementRate: -1.8,
-      activeLearners: 2,
-    },
-    teachingStrategies: {
-      labels: [
-        'Game Lesson',
-        'Power Play',
-        'Book Smart Exploration',
-        'Core Creative Centered Composition',
-        'Exercised Smart Generation',
-        'Curious Dropout',
-      ],
-      datasets: [
-        {
-          label: 'Effectiveness',
-          data: [92, 85, 85, 67, 78, 65],
-          backgroundColor: ['#10b981', '#10b981', '#10b981', '#3b82f6', '#3b82f6', '#ef4444'],
-        },
-      ],
-    },
-    lifeStrategies: {
-      labels: [
-        'Everything you do Should Increase Choices',
-        'Ask "what would Jesus do?"',
-        'Choose to trust with observation',
-        'Practice nurturing your emotional intelligence to connect your current state during and nurturing',
-      ],
-      datasets: [
-        {
-          label: 'Impact',
-          data: [91, 89, 82, 78],
-          backgroundColor: ['#10b981', '#10b981', '#fbbf24', '#fbbf24'],
-        },
-      ],
-    },
-    insights: [
-      {
-        type: 'success',
-        title: 'Game Lesson Strategy',
-        message:
-          'The Game Lesson Strategy has been effective to align with your teaching style. Strategies that work align with your teaching style.',
-        action: 'Analyze Micro Lesson Strategies',
-      },
-      {
-        type: 'warning',
-        title: 'Conversation practice',
-        message:
-          'Conversing practice and mindset practices showed relevant increase choice to remediate with practice learning experience for you. Consider focusing more on practical applications and make learning tangible.',
-        action: 'Learn about application strategies',
-      },
-    ],
-  };
-
   useEffect(() => {
-    // Simulate API call
     const fetchClassData = async () => {
       setLoading(true);
       await new Promise(resolve => setTimeout(resolve, 1000));
-      setClassData(mockClassData);
+      setClassData(getClassMockData(filters.classId));
       setLoading(false);
     };
 

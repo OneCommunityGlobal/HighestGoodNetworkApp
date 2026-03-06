@@ -701,3 +701,83 @@
   background-color: rgba(255, 255, 255, 0.14);
   opacity: 1;
 }
+
+.tabNavigation {
+  margin-bottom: 20px;
+}
+
+.navTabs {
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.darkMode .navTabs {
+  border-bottom-color: rgba(255, 255, 255, 0.12);
+}
+
+.navTabs :global(.nav-link) {
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: #666;
+  font-weight: 500;
+  padding: 12px 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.darkMode .navTabs :global(.nav-link) {
+  color: #ccc;
+}
+
+.navTabs :global(.nav-link):hover {
+  color: #2c3e50;
+  border-color: transparent;
+}
+
+.darkMode .navTabs :global(.nav-link):hover {
+  color: #fff;
+}
+
+.activeTab {
+  color: #2c3e50 !important;
+  border-bottom-color: #2c3e50 !important;
+  background-color: transparent !important;
+}
+
+.darkMode .activeTab {
+  color: #fff !important;
+  border-bottom-color: #4f46e5 !important;
+}
+
+.filterBar {
+  background-color: #f8f9fa;
+  padding: 15px 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.darkMode .filterBar {
+  background-color: #2a3a4f;
+}
+
+.filterBar label {
+  font-weight: 500;
+  margin-bottom: 5px;
+  display: block;
+  color: #333;
+}
+
+.darkMode .filterBar label {
+  color: #ccc;
+}
+
+.filterBar .form-control {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 8px 12px;
+}
+
+.darkMode .filterBar .form-control {
+  background-color: #1b2a41;
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
