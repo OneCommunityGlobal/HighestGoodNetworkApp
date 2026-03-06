@@ -22,6 +22,8 @@ import IssueCharts from '../Issues/openIssueCharts';
 import SupplierPerformanceGraph from './SupplierPerformanceGraph.jsx';
 import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords.jsx';
 import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
+import MaterialCostCorrelationChart from '../MaterialCostCorrelation';
+import MaterialStockOutRiskIndicator from './MaterialStockOutRiskIndicator/MaterialStockOutRiskIndicator';
 
 const projectStatusButtons = [
   {
@@ -200,25 +202,19 @@ function WeeklyProjectSummary() {
         title: 'Material Consumption',
         key: 'Material Consumption',
         className: 'full',
-        content: [1, 2, 3].map((_, index) => {
-          let content;
-          if (index === 1) {
-            content = <QuantityOfMaterialsUsed data={quantityOfMaterialsUsedData} />;
-          } else if (index === 2) {
-            content = <TotalMaterialCostPerProject />;
-          } else {
-            content = <p>📊 Card</p>;
-          }
-          const uniqueId = uuidv4();
-          return (
-            <div
-              key={uniqueId}
-              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
-            >
-              {content}
+        content: (
+          <div className={styles.materialConsumptionGrid}>
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+              <MaterialCostCorrelationChart />
             </div>
-          );
-        }),
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+              <QuantityOfMaterialsUsed data={quantityOfMaterialsUsedData} />
+            </div>
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+              <TotalMaterialCostPerProject />
+            </div>
+          </div>
+        ),
       },
       {
         title: 'Issue Tracking',
