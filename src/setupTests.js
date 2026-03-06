@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { vi, expect } from 'vitest';
+import { vi } from 'vitest';
 import '@testing-library/jest-dom';
 
 // Mock axios with proper error handling

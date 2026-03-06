@@ -1,4 +1,5 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
+import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import Select from 'react-select';
 import {
@@ -13,9 +14,51 @@ import {
 } from 'recharts';
 import styles from './ReviewVolumeOverTimeChart.module.css';
 
+function ChartTooltip({ active, payload, darkMode }) {
+  if (!active || !payload?.length) return null;
+  const data = payload[0]?.payload;
+  if (!data) return null;
+  const total = (data.Negative ?? 0) + (data.Neutral ?? 0) + (data.Positive ?? 0);
+  const tooltipClass = darkMode ? styles.darkTooltip : '';
+  const textClass = darkMode ? styles.darkText : '';
+  return (
+    <div className={`${styles.customTooltip} ${tooltipClass}`}>
+      <p className={`${styles.tooltipLabel} ${textClass}`}>{data.month}</p>
+      {payload.map(entry => (
+        <p key={entry.name || entry.dataKey} style={{ color: entry.color }}>
+          {entry.name}: {entry.value}
+        </p>
+      ))}
+      <p className={`${styles.tooltipTotal} ${textClass}`}>Total: {total}</p>
+    </div>
+  );
+}
+
+ChartTooltip.propTypes = {
+  active: PropTypes.bool,
+  payload: PropTypes.arrayOf(PropTypes.shape({
+    payload: PropTypes.shape({
+      month: PropTypes.string,
+      Negative: PropTypes.number,
+      Neutral: PropTypes.number,
+      Positive: PropTypes.number,
+    }),
+    name: PropTypes.string,
+    value: PropTypes.number,
+    color: PropTypes.string,
+  })),
+  darkMode: PropTypes.bool,
+};
+
+ChartTooltip.defaultProps = {
+  active: false,
+  payload: [],
+  darkMode: false,
+};
+
 function ReviewVolumeOverTimeChart({ darkMode: propDarkMode, villages = [], loadingVillages = false, villagesError = null }) {
   const darkModeFromStore = useSelector(state => state.theme.darkMode);
-  const darkMode = propDarkMode !== undefined ? propDarkMode : darkModeFromStore;
+  const darkMode = propDarkMode === undefined ? darkModeFromStore : propDarkMode;
   
   // State for filters
   const [fromDate, setFromDate] = useState('');
@@ -25,7 +68,7 @@ function ReviewVolumeOverTimeChart({ darkMode: propDarkMode, villages = [], load
   const [selectedProperties, setSelectedProperties] = useState([]);
   
   // Mock data - replace with actual API call
-  const [chartData, setChartData] = useState([
+  const chartData = [
     {
       month: 'Apr 2023',
       Negative: 12,
@@ -74,7 +117,7 @@ function ReviewVolumeOverTimeChart({ darkMode: propDarkMode, villages = [], load
       Neutral: 23,
       Positive: 42,
     },
-  ]);
+  ];
 
   // Default village and property options (matching ReviewWordCloud)
   const defaultVillageOptions = [
@@ -109,9 +152,8 @@ function ReviewVolumeOverTimeChart({ darkMode: propDarkMode, villages = [], load
         }));
       
       // Merge with defaults if they're not already in API data
-      const defaultLabels = defaultVillageOptions.map(v => v.label);
-      const apiLabels = apiVillages.map(v => v.label);
-      const additionalDefaults = defaultVillageOptions.filter(v => !apiLabels.includes(v.label));
+      const apiLabels = new Set(apiVillages.map(v => v.label));
+      const additionalDefaults = defaultVillageOptions.filter(v => !apiLabels.has(v.label));
       
       return [...apiVillages, ...additionalDefaults];
     }
@@ -157,56 +199,72 @@ function ReviewVolumeOverTimeChart({ darkMode: propDarkMode, villages = [], load
     return Array.from(allPropertiesMap.values());
   }, [villages]);
 
-  // Grouped property options for display (matching ReviewWordCloud structure)
-  const groupedPropertyOptions = useMemo(() => {
-    const grouped = {};
-    
-    propertyOptions.forEach(prop => {
-      const village = prop.village || 'Other';
-      if (!grouped[village]) {
-        grouped[village] = [];
-      }
-      grouped[village].push({
-        value: prop.value,
-        label: prop.label,
-      });
-    });
-
-    // Convert to react-select grouped format
-    return Object.entries(grouped).map(([village, properties]) => ({
-      label: village.toUpperCase(),
-      options: properties,
-    }));
-  }, [propertyOptions]);
-
   const handleCategoryChange = (e) => {
     setCategory(e.target.value);
-    // Clear selections when category changes
     setSelectedVillages([]);
     setSelectedProperties([]);
   };
 
-  // Custom tooltip component
-  const CustomTooltip = ({ active, payload }) => {
-    if (active && payload && payload.length) {
-      const data = payload[0].payload;
-      const total = (data.Negative || 0) + (data.Neutral || 0) + (data.Positive || 0);
-      return (
-        <div className={`${styles.customTooltip} ${darkMode ? styles.darkTooltip : ''}`}>
-          <p className={`${styles.tooltipLabel} ${darkMode ? styles.darkText : ''}`}>{data.month}</p>
-          {payload.map((entry, index) => (
-            <p key={index} style={{ color: entry.color }}>
-              {entry.name}: {entry.value}
-            </p>
-          ))}
-          <p className={`${styles.tooltipTotal} ${darkMode ? styles.darkText : ''}`}>Total: {total}</p>
-        </div>
-      );
-    }
-    return null;
+  const renderTooltip = (props) => <ChartTooltip {...props} darkMode={darkMode} />;
+
+  const getOptionBackgroundColor = (isFocused) => {
+    if (isFocused) return darkMode ? '#34495e' : '#e6f7ff';
+    return darkMode ? '#1c2541' : '#fff';
   };
 
-  // Chart will render with sample data regardless of villages loading state
+  const selectStyles = {
+    control: (base) => ({
+      ...base,
+      backgroundColor: darkMode ? '#1c2541' : '#fff',
+      borderColor: darkMode ? '#34495e' : '#d9d9d9',
+      boxShadow: '2px 2px 4px 1px rgba(0,0,0,0.1)',
+      minHeight: '40px',
+      '&:hover': {
+        borderColor: darkMode ? '#4a5568' : '#40a9ff',
+      },
+    }),
+    menu: (base) => ({
+      ...base,
+      backgroundColor: darkMode ? '#1c2541' : '#fff',
+      zIndex: 9999,
+    }),
+    option: (base, state) => ({
+      ...base,
+      backgroundColor: getOptionBackgroundColor(state.isFocused),
+      color: darkMode ? '#f1f1f1' : '#000',
+      '&:active': {
+        backgroundColor: darkMode ? '#4a5568' : '#bae7ff',
+      },
+    }),
+    multiValue: (base) => ({
+      ...base,
+      backgroundColor: darkMode ? '#34495e' : '#e6f7ff',
+    }),
+    multiValueLabel: (base) => ({
+      ...base,
+      color: darkMode ? '#f1f1f1' : '#000',
+    }),
+    multiValueRemove: (base) => ({
+      ...base,
+      color: darkMode ? '#f1f1f1' : '#000',
+      '&:hover': {
+        backgroundColor: '#dc3545',
+        color: '#fff',
+      },
+    }),
+    placeholder: (base) => ({
+      ...base,
+      color: darkMode ? '#888' : '#999',
+    }),
+    input: (base) => ({
+      ...base,
+      color: darkMode ? '#f1f1f1' : '#000',
+    }),
+    singleValue: (base) => ({
+      ...base,
+      color: darkMode ? '#f1f1f1' : '#000',
+    }),
+  };
 
   return (
     <div className={`${styles.chartContainer} ${darkMode ? styles.darkContainer : ''}`}>
@@ -247,7 +305,7 @@ function ReviewVolumeOverTimeChart({ darkMode: propDarkMode, villages = [], load
                 style: { textAnchor: 'middle', fill: darkMode ? '#f1f1f1' : '#666', fontSize: 14 },
               }}
             />
-            <Tooltip content={<CustomTooltip />} />
+            <Tooltip content={renderTooltip} />
             <Legend
               wrapperStyle={{ paddingTop: '20px' }}
               iconType="rect"
@@ -268,27 +326,29 @@ function ReviewVolumeOverTimeChart({ darkMode: propDarkMode, villages = [], load
       <div className={`${styles.filtersContainer} ${darkMode ? styles.darkFilters : ''}`}>
         {/* Dates Filter */}
         <div className={styles.filterGroup}>
-          <label className={`${styles.filterLabel} ${darkMode ? styles.darkText : ''}`}>
+          <label htmlFor="review-volume-from-date" className={`${styles.filterLabel} ${darkMode ? styles.darkText : ''}`}>
             Dates:
           </label>
           <div className={styles.dateRangeContainer}>
             <input
+              id="review-volume-from-date"
               type="date"
               value={fromDate}
               onChange={(e) => setFromDate(e.target.value)}
               max={toDate || undefined}
-              className={`${styles.dateInput} ${darkMode ? `${styles.darkInput} calendar-icon-dark` : ''}`}
+              className={darkMode ? `${styles.dateInput} ${styles.darkInput} calendar-icon-dark` : styles.dateInput}
               style={darkMode ? { colorScheme: 'dark' } : {}}
             />
             <span className={`${styles.dateSeparator} ${darkMode ? styles.darkText : ''}`}>
               to
             </span>
             <input
+              id="review-volume-to-date"
               type="date"
               value={toDate}
               onChange={(e) => setToDate(e.target.value)}
               min={fromDate || undefined}
-              className={`${styles.dateInput} ${darkMode ? `${styles.darkInput} calendar-icon-dark` : ''}`}
+              className={darkMode ? `${styles.dateInput} ${styles.darkInput} calendar-icon-dark` : styles.dateInput}
               style={darkMode ? { colorScheme: 'dark' } : {}}
             />
           </div>
@@ -296,13 +356,14 @@ function ReviewVolumeOverTimeChart({ darkMode: propDarkMode, villages = [], load
 
         {/* Category Filter */}
         <div className={styles.filterGroup}>
-          <label className={`${styles.filterLabel} ${darkMode ? styles.darkText : ''}`}>
+          <label htmlFor="review-volume-category" className={`${styles.filterLabel} ${darkMode ? styles.darkText : ''}`}>
             Category:
           </label>
           <select
+            id="review-volume-category"
             value={category}
             onChange={handleCategoryChange}
-            className={`${styles.categorySelect} ${darkMode ? styles.darkSelect : ''}`}
+            className={darkMode ? `${styles.categorySelect} ${styles.darkSelect}` : styles.categorySelect}
           >
             <option value="By Village">By Village</option>
             <option value="By Property">By Property</option>
@@ -312,75 +373,18 @@ function ReviewVolumeOverTimeChart({ darkMode: propDarkMode, villages = [], load
         {/* Villages Multi-select (active when Category = "By Village") */}
         {category === 'By Village' && (
           <div className={styles.filterGroup}>
-            <label className={`${styles.filterLabel} ${darkMode ? styles.darkText : ''}`}>
+            <label htmlFor="review-volume-villages" className={`${styles.filterLabel} ${darkMode ? styles.darkText : ''}`}>
               Villages:
             </label>
             <Select
+              inputId="review-volume-villages"
               isMulti
               options={villageOptions}
               value={selectedVillages}
               onChange={setSelectedVillages}
               placeholder="Select villages..."
               className={styles.multiSelect}
-              styles={{
-                control: (base) => ({
-                  ...base,
-                  backgroundColor: darkMode ? '#1c2541' : '#fff',
-                  borderColor: darkMode ? '#34495e' : '#d9d9d9',
-                  boxShadow: '2px 2px 4px 1px rgba(0,0,0,0.1)',
-                  minHeight: '40px',
-                  '&:hover': {
-                    borderColor: darkMode ? '#4a5568' : '#40a9ff',
-                  },
-                }),
-                menu: (base) => ({
-                  ...base,
-                  backgroundColor: darkMode ? '#1c2541' : '#fff',
-                  zIndex: 9999,
-                }),
-                option: (base, state) => ({
-                  ...base,
-                  backgroundColor: state.isFocused
-                    ? darkMode
-                      ? '#34495e'
-                      : '#e6f7ff'
-                    : darkMode
-                    ? '#1c2541'
-                    : '#fff',
-                  color: darkMode ? '#f1f1f1' : '#000',
-                  '&:active': {
-                    backgroundColor: darkMode ? '#4a5568' : '#bae7ff',
-                  },
-                }),
-                multiValue: (base) => ({
-                  ...base,
-                  backgroundColor: darkMode ? '#34495e' : '#e6f7ff',
-                }),
-                multiValueLabel: (base) => ({
-                  ...base,
-                  color: darkMode ? '#f1f1f1' : '#000',
-                }),
-                multiValueRemove: (base) => ({
-                  ...base,
-                  color: darkMode ? '#f1f1f1' : '#000',
-                  '&:hover': {
-                    backgroundColor: '#dc3545',
-                    color: '#fff',
-                  },
-                }),
-                placeholder: (base) => ({
-                  ...base,
-                  color: darkMode ? '#888' : '#999',
-                }),
-                input: (base) => ({
-                  ...base,
-                  color: darkMode ? '#f1f1f1' : '#000',
-                }),
-                singleValue: (base) => ({
-                  ...base,
-                  color: darkMode ? '#f1f1f1' : '#000',
-                }),
-              }}
+              styles={selectStyles}
             />
           </div>
         )}
@@ -388,75 +392,18 @@ function ReviewVolumeOverTimeChart({ darkMode: propDarkMode, villages = [], load
         {/* Properties Multi-select (active when Category = "By Property") */}
         {category === 'By Property' && (
           <div className={styles.filterGroup}>
-            <label className={`${styles.filterLabel} ${darkMode ? styles.darkText : ''}`}>
+            <label htmlFor="review-volume-properties" className={`${styles.filterLabel} ${darkMode ? styles.darkText : ''}`}>
               Properties:
             </label>
             <Select
+              inputId="review-volume-properties"
               isMulti
               options={propertyOptions}
               value={selectedProperties}
               onChange={setSelectedProperties}
               placeholder="Select properties..."
               className={styles.multiSelect}
-              styles={{
-                control: (base) => ({
-                  ...base,
-                  backgroundColor: darkMode ? '#1c2541' : '#fff',
-                  borderColor: darkMode ? '#34495e' : '#d9d9d9',
-                  boxShadow: '2px 2px 4px 1px rgba(0,0,0,0.1)',
-                  minHeight: '40px',
-                  '&:hover': {
-                    borderColor: darkMode ? '#4a5568' : '#40a9ff',
-                  },
-                }),
-                menu: (base) => ({
-                  ...base,
-                  backgroundColor: darkMode ? '#1c2541' : '#fff',
-                  zIndex: 9999,
-                }),
-                option: (base, state) => ({
-                  ...base,
-                  backgroundColor: state.isFocused
-                    ? darkMode
-                      ? '#34495e'
-                      : '#e6f7ff'
-                    : darkMode
-                    ? '#1c2541'
-                    : '#fff',
-                  color: darkMode ? '#f1f1f1' : '#000',
-                  '&:active': {
-                    backgroundColor: darkMode ? '#4a5568' : '#bae7ff',
-                  },
-                }),
-                multiValue: (base) => ({
-                  ...base,
-                  backgroundColor: darkMode ? '#34495e' : '#e6f7ff',
-                }),
-                multiValueLabel: (base) => ({
-                  ...base,
-                  color: darkMode ? '#f1f1f1' : '#000',
-                }),
-                multiValueRemove: (base) => ({
-                  ...base,
-                  color: darkMode ? '#f1f1f1' : '#000',
-                  '&:hover': {
-                    backgroundColor: '#dc3545',
-                    color: '#fff',
-                  },
-                }),
-                placeholder: (base) => ({
-                  ...base,
-                  color: darkMode ? '#888' : '#999',
-                }),
-                input: (base) => ({
-                  ...base,
-                  color: darkMode ? '#f1f1f1' : '#000',
-                }),
-                singleValue: (base) => ({
-                  ...base,
-                  color: darkMode ? '#f1f1f1' : '#000',
-                }),
-              }}
+              styles={selectStyles}
             />
           </div>
         )}
@@ -464,5 +411,19 @@ function ReviewVolumeOverTimeChart({ darkMode: propDarkMode, villages = [], load
     </div>
   );
 }
+
+ReviewVolumeOverTimeChart.propTypes = {
+  darkMode: PropTypes.bool,
+  villages: PropTypes.arrayOf(PropTypes.object),
+  loadingVillages: PropTypes.bool,
+  villagesError: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
+};
+
+ReviewVolumeOverTimeChart.defaultProps = {
+  darkMode: undefined,
+  villages: [],
+  loadingVillages: false,
+  villagesError: null,
+};
 
 export default ReviewVolumeOverTimeChart;
