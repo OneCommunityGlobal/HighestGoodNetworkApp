@@ -43,15 +43,27 @@ export default function EducationPortalSidebar({ mobileOpen, onRequestClose }) {
   }, [canSeeEducator]);
 
   const onLogout = () => {
-    try {
-      const sessionStorageData = JSON.parse(window.sessionStorage.getItem('viewingUser'));
-      if (sessionStorageData) {
-        sessionStorage.removeItem('viewingUser');
-        window.dispatchEvent(new Event('storage'));
+    const storage = globalThis?.sessionStorage;
+    const rawViewingUser = storage ? storage.getItem('viewingUser') : null;
+    if (rawViewingUser) {
+      try {
+        const sessionStorageData = JSON.parse(rawViewingUser);
+        if (sessionStorageData) {
+          storage.removeItem('viewingUser');
+          if (
+            typeof globalThis?.dispatchEvent === 'function' &&
+            typeof globalThis?.Event === 'function'
+          ) {
+            globalThis.dispatchEvent(new globalThis.Event('storage'));
+          }
+        }
+      } catch (e) {
+        // If the stored value is malformed, clear it to avoid repeated parse errors.
+        storage.removeItem('viewingUser');
       }
-    } catch (e) {}
+    }
 
-    sessionStorage.setItem('gePortalLoggedOut', 'true');
+    if (storage) storage.setItem('gePortalLoggedOut', 'true');
     if (mobileOpen) onRequestClose();
     history.push('/dashboard');
   };

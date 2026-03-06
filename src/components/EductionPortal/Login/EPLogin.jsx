@@ -22,7 +22,7 @@ function EPLogin(props) {
   useEffect(() => {
     if (auth.user.access) {
       const access = auth.user.access;
-      const hasGEFlag = Object.prototype.hasOwnProperty.call(access, 'canAccessGEPortal');
+      const hasGEFlag = Object.hasOwn(access, 'canAccessGEPortal');
       const canAccessEP = hasGEFlag ? access.canAccessGEPortal : access.canAccessBMPortal;
       if (!canAccessEP) return;
 
