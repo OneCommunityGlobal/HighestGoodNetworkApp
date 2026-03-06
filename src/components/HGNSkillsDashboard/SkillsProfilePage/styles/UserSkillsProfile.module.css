@@ -6,19 +6,22 @@
 }
 
 .dashboardContainer {
-  display: flex;
+  display: grid;
+  grid-template-columns: 280px 1fr; /* Fixed left column, fluid right */
+  column-gap: 28px;
   max-width: 1400px;
   margin: 0 auto;
   background-color: #f7f7f7;
   border-radius: 10px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  overflow: hidden; 
+  overflow: hidden;
   /* height: 80vh; */
+  padding: 24px 28px;
+  align-items: start;
 }
 
-.verticalSeparator {
-  width: 1px;
-  background-color: #e0e0e0;
+.verticalSeparator { /* No longer needed with grid; keep for legacy safety */
+  display: none;
 }
 
 .skillsLoader {
@@ -45,13 +48,27 @@
   margin-top: 20px;
 }
 
+@media (max-width: 1100px) {
+  .dashboardContainer {
+    grid-template-columns: 240px 1fr;
+    column-gap: 24px;
+    padding: 20px 22px;
+  }
+}
+
+@media (max-width: 900px) {
+  .dashboardContainer {
+    grid-template-columns: 220px 1fr;
+    column-gap: 20px;
+    padding: 18px 20px;
+  }
+}
+
 @media (max-width: 768px) {
   .dashboardContainer {
+    display: flex;
     flex-direction: column;
-    height: max-content;
-  }
-  .verticalSeparator {
-    display: none;
+    padding: 18px 16px;
   }
 }
 

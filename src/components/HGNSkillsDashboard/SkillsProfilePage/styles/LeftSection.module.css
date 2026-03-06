@@ -1,11 +1,13 @@
 .leftSection {
-  width: 30%;
-  padding: 20px;
+  padding: 8px 8px 24px 8px;
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
+  background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
 }
 
 .profilePic {
@@ -30,8 +32,11 @@
 @media (max-width: 768px) {
   .leftSection {
     width: 100%;
-    padding: 20px 0;
+    padding: 16px 0 12px;
+    flex-direction: row;
+    gap: 20px;
   }
+  .leftSection h1, .leftSection h3 { text-align: left; }
 }
 
 :global(.dark-mode) .leftSection h1 {

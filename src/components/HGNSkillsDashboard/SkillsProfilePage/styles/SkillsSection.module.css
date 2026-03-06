@@ -82,7 +82,7 @@
 }
 
 :global(.dark-mode) .skillValue {
-  color: #fff; 
+  color: #fff;
 }
 
 :global(.dark-mode) .skillLabel {
