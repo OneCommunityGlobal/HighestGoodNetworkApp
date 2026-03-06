@@ -1,16 +1,36 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faChartLine,
+  faBook,
+  faHeart,
+  faClock,
+  faChartBar,
+  faCheckCircle,
+  faUserGraduate,
+} from '@fortawesome/free-solid-svg-icons';
 import styles from './MetricCard.module.css';
+
+const iconMap = {
+  'fa-chart-line': faChartLine,
+  'fa-book': faBook,
+  'fa-heart': faHeart,
+  'fa-clock': faClock,
+  'fa-chart-bar': faChartBar,
+  'fa-check-circle': faCheckCircle,
+  'fa-user-graduate': faUserGraduate,
+};
 
 const MetricCard = ({
   title,
   value,
   unit = '',
   change,
-  changeType = 'neutral', // 'positive', 'negative', 'neutral'
+  changeType = 'neutral',
   icon,
   color = 'primary',
-  size = 'medium', // 'small', 'medium', 'large'
+  size = 'medium',
   description,
   loading = false,
 }) => {
@@ -50,6 +70,8 @@ const MetricCard = ({
     );
   }
 
+  const faIcon = iconMap[icon];
+
   return (
     <div
       className={`${styles.metricCard} ${styles[size]} ${styles[color]} ${
@@ -58,9 +80,9 @@ const MetricCard = ({
     >
       {/* Header with icon and title */}
       <div className={styles.cardHeader}>
-        {icon && (
+        {icon && faIcon && (
           <div className={styles.iconContainer}>
-            <i className={`fa ${icon}`} aria-hidden="true" />
+            <FontAwesomeIcon icon={faIcon} />
           </div>
         )}
         <h3 className={styles.title}>{title}</h3>
