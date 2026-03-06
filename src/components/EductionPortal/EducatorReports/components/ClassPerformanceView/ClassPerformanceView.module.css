@@ -331,6 +331,83 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
+/* Alert variants (match ReportsView behavior)
+   Use combined selectors so we reliably override reactstrap's `.alert-*` rules. */
+.insightAlert.insightAlertInfo {
+  background-color: #e0f2fe;
+  border: 1px solid #bae6fd;
+  color: #075985;
+}
+
+.insightAlert.insightAlertSuccess {
+  background-color: #dcfce7;
+  border: 1px solid #bbf7d0;
+  color: #14532d;
+}
+
+.insightAlert.insightAlertWarning {
+  background-color: #fef9c3;
+  border: 1px solid #fde68a;
+  color: #713f12;
+}
+
+.insightAlert.insightAlertDanger {
+  background-color: #fee2e2;
+  border: 1px solid #fecaca;
+  color: #7f1d1d;
+}
+
+.insightAlert.insightAlertPrimary {
+  background-color: #dbeafe;
+  border: 1px solid #bfdbfe;
+  color: #1e3a8a;
+}
+
+.darkMode .insightAlert {
+  color: #111827;
+  background-color: #e5e7eb;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(17, 24, 39, 0.16);
+}
+
+.darkMode .insightAlert.insightAlertInfo {
+  background-color: #bcdde4;
+  border-color: #9acbd5;
+  color: #0c5460;
+}
+
+.darkMode .insightAlert.insightAlertSuccess {
+  background-color: #c3e0ca;
+  border-color: #a8d6b2;
+  color: #155724;
+}
+
+.darkMode .insightAlert.insightAlertWarning {
+  background-color: #f2e2b6;
+  border-color: #e9d28f;
+  color: #856404;
+}
+
+.darkMode .insightAlert.insightAlertDanger {
+  background-color: #e8c1c5;
+  border-color: #d9a1a7;
+  color: #721c24;
+}
+
+.darkMode .insightAlert.insightAlertPrimary {
+  background-color: #b7d6ff;
+  border-color: #94c5ff;
+  color: #004085;
+}
+
+.darkMode .insightAlert.insightAlertInfo *,
+.darkMode .insightAlert.insightAlertSuccess *,
+.darkMode .insightAlert.insightAlertWarning *,
+.darkMode .insightAlert.insightAlertDanger *,
+.darkMode .insightAlert.insightAlertPrimary * {
+  color: inherit;
+}
+
 .insightAlert:last-child {
   margin-bottom: 0;
 }
@@ -398,6 +475,76 @@
 
 .darkMode .actionButton:hover {
   background-color: #3730a3;
+}
+
+/* Keep buttons high-contrast on colored alerts */
+.insightAlertInfo .actionButton {
+  background: #0ea5e9;
+}
+
+.insightAlertInfo .actionButton:hover {
+  background: #0284c7;
+}
+
+.insightAlertSuccess .actionButton {
+  background: #22c55e;
+}
+
+.insightAlertSuccess .actionButton:hover {
+  background: #16a34a;
+}
+
+.insightAlertWarning .actionButton {
+  background: #b45309;
+  color: #fff;
+}
+
+.insightAlertWarning .actionButton:hover {
+  background: #9a3412;
+}
+
+.insightAlertDanger .actionButton {
+  background: #ef4444;
+}
+
+.insightAlertDanger .actionButton:hover {
+  background: #dc2626;
+}
+
+.darkMode .insightAlert .actionButton {
+  color: #fff;
+}
+
+.darkMode .insightAlert.insightAlertInfo .actionButton {
+  background: #0284c7;
+}
+
+.darkMode .insightAlert.insightAlertInfo .actionButton:hover {
+  background: #0369a1;
+}
+
+.darkMode .insightAlert.insightAlertSuccess .actionButton {
+  background: #16a34a;
+}
+
+.darkMode .insightAlert.insightAlertSuccess .actionButton:hover {
+  background: #15803d;
+}
+
+.darkMode .insightAlert.insightAlertWarning .actionButton {
+  background: #b45309;
+}
+
+.darkMode .insightAlert.insightAlertWarning .actionButton:hover {
+  background: #9a3412;
+}
+
+.darkMode .insightAlert.insightAlertDanger .actionButton {
+  background: #dc2626;
+}
+
+.darkMode .insightAlert.insightAlertDanger .actionButton:hover {
+  background: #b91c1c;
 }
 
 /* Responsive Design */

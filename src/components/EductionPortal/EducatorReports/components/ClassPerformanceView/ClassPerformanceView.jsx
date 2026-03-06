@@ -238,6 +238,23 @@ const ClassPerformanceView = ({ filters }) => {
     return 'Needs Improvement (65%)';
   };
 
+  const getInsightAlertVariantClass = color => {
+    switch (color) {
+      case 'info':
+        return styles.insightAlertInfo;
+      case 'success':
+        return styles.insightAlertSuccess;
+      case 'warning':
+        return styles.insightAlertWarning;
+      case 'danger':
+        return styles.insightAlertDanger;
+      case 'primary':
+        return styles.insightAlertPrimary;
+      default:
+        return '';
+    }
+  };
+
   if (!filters.classId) {
     return (
       <div className={`${styles.emptyState} ${darkMode ? styles.darkMode : ''}`}>
@@ -474,8 +491,10 @@ const ClassPerformanceView = ({ filters }) => {
                   classData?.insights.map((insight, index) => (
                     <Alert
                       key={index}
-                      color={insight.type === 'success' ? 'success' : 'warning'}
-                      className={styles.insightAlert}
+                      color={insight.type || 'info'}
+                      className={`${styles.insightAlert} ${getInsightAlertVariantClass(
+                        insight.type,
+                      )}`}
                     >
                       <div className={styles.insightContent}>
                         <div className={styles.insightHeader}>
