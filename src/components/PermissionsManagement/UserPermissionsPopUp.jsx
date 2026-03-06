@@ -52,7 +52,7 @@ function UserPermissionsPopUp({
   const [selectedAccount, setSelectedAccount] = useState('');
   const [toastShown, setToastShown] = useState(false);
   const [infoRoleModal, setinfoRoleModal] = useState(false);
-  const [modalContent, setContent] = useState(null);
+  const [modalContent, setModalContent] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const setToDefault = () => {
@@ -158,7 +158,7 @@ function UserPermissionsPopUp({
       The following permissions that had been changed (also indicated by a Star icon below) are: ${permissionNames.join(
         ', ',
       )}`;
-      setContent(description);
+      setModalContent(description);
       setinfoRoleModal(true);
     }
   };

@@ -38,6 +38,7 @@ import ActiveInactiveConfirmationPopup from './ActiveInactiveConfirmationPopup';
 import SetUpFinalDayPopUp from './SetUpFinalDayPopUp';
 import LogTimeOffPopUp from './logTimeOffPopUp';
 import SetupNewUserPopup from './setupNewUserPopup';
+import PropTypes from 'prop-types';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
 import {
   scheduleDeactivationAction,
@@ -771,6 +772,10 @@ class UserManagement extends React.PureComponent {
     );
   }
 }
+
+UserManagement.propTypes = {
+  state: PropTypes.object,
+};
 
 const mapStateToProps = (state) => {
   return { state };

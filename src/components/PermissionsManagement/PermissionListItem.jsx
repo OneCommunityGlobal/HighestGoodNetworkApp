@@ -9,6 +9,7 @@ import PermissionList from './PermissionList';
 import hasPermission from '../../utils/permissions';
 import styles from './UserRoleTab.module.css';
 import clsx from 'clsx';
+import PropTypes from 'prop-types';
 
 function PermissionListItem(props) {
   const {
@@ -197,6 +198,13 @@ function PermissionListItem(props) {
     return rolePermissions.includes(currentPermission);
   };
 
+  const getStarIconColor = () => {
+    if (!changedPermission(permission)) {
+      return darkMode ? styles.dark : styles.light;
+    }
+    return checkChangePermission(permission) ? styles.green : styles.red;
+  };
+
   return (
     <>
       <li className={styles.userRoleTabPermissions} key={permission} data-testid={permission}>
@@ -290,13 +298,7 @@ function PermissionListItem(props) {
                     className={clsx(
                       styles.changedPermission,
                       darkMode ? styles.darkBackground : styles.lightBackground,
-                      changedPermission(permission)
-                        ? checkChangePermission(permission)
-                          ? styles.green
-                          : styles.red
-                        : darkMode
-                        ? styles.dark
-                        : styles.light,
+                      getStarIconColor(),
                     )}
                     aria-label={changedPermission(permission) ? 'Modified Permission' : ''}
                     disabled
@@ -357,6 +359,12 @@ function PermissionListItem(props) {
     </>
   );
 }
+
+PermissionListItem.propTypes = {
+  rolePermissions: PropTypes.array,
+  immutablePermissions: PropTypes.array,
+  removedDefaultPermissions: PropTypes.array,
+};
 
 const mapStateToProps = state => ({ roles: state.role.roles });
 

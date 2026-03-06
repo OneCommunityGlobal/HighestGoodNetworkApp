@@ -40,11 +40,12 @@ const UserTableHeaderComponent = ({ authUser, roleSearchText, darkMode, editUser
         };
         const requestor = authUser;
         const roleUpdateData = updatedUserData.filter(change => change.item === 'role')
-        for (let i = 0; i < roleUpdateData.length; i+=1) {
-          const roleUpdate = roleUpdateData[i];
+        for(const roleUpdate of roleUpdateData) {
           const permissionURL = `${ENDPOINTS.PERMISSION_MANAGEMENT_UPDATE()}/user/${roleUpdate.user_id}`;
-          const roleIndex = roles?.findIndex(({ roleName }) => roleName === roleUpdate.value);
-          const rolePermissions = roleIndex !== -1 ? roles[roleIndex].permissions : [];
+          const role = roles?.find(
+            ({ roleName }) => roleName === roleUpdate.value
+          )
+          const rolePermissions = role?.permissions ?? [];
           permissions.defaultPermissions = rolePermissions
           const permissionData = {
             reason: `Role Changed to **${roleUpdate.value}**.`,
@@ -342,7 +343,7 @@ const UserTableHeaderComponent = ({ authUser, roleSearchText, darkMode, editUser
   };
 
 UserTableHeaderComponent.propTypes = {
-  authRole: PropTypes.string.isRequired,
+  authUser: PropTypes.object.isRequired,
   roleSearchText: PropTypes.string,
   darkMode: PropTypes.bool,
   editUser: PropTypes.object,
@@ -351,7 +352,6 @@ UserTableHeaderComponent.propTypes = {
   isMobile: PropTypes.bool,
   mobileFontSize: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   roles: PropTypes.object,
-  auth: PropTypes.object,
  
 };
 
