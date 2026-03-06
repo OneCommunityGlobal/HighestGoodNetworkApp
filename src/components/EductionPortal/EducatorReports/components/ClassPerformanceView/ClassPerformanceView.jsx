@@ -332,12 +332,14 @@ const ClassPerformanceView = ({ filters }) => {
                 <h4 className={styles.cardTitle}>Strengths & Gaps by Subject</h4>
               </div>
 
-              {loading ? (
+              {loading && (
                 <div className={styles.loading}>
                   <i className="fa fa-spinner fa-spin" aria-hidden="true" />
                   <p>Loading subject performance...</p>
                 </div>
-              ) : (
+              )}
+
+              {!loading && (
                 <div className={styles.tableContainer}>
                   <Table responsive className={styles.performanceTable}>
                     <thead>

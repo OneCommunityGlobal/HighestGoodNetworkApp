@@ -62,77 +62,90 @@ const ReportChart = ({
 
   const colors = darkMode ? defaultColors.dark : defaultColors.light;
 
+  const getLegendOptions = () => ({
+    display: showLegend,
+    position: 'top',
+    labels: {
+      color: darkMode ? '#d1d5db' : '#374151',
+      usePointStyle: true,
+      padding: 20,
+      font: {
+        size: 12,
+        family: "'Inter', sans-serif",
+      },
+    },
+  });
+
+  const getTitleOptions = () => ({
+    display: !!title,
+    text: title,
+    color: darkMode ? '#f9fafb' : '#111827',
+    font: {
+      size: 16,
+      weight: '600',
+      family: "'Inter', sans-serif",
+    },
+    padding: {
+      top: 10,
+      bottom: 20,
+    },
+  });
+
+  const getTooltipOptions = () => ({
+    backgroundColor: darkMode ? '#1f2937' : '#ffffff',
+    titleColor: darkMode ? '#f9fafb' : '#111827',
+    bodyColor: darkMode ? '#d1d5db' : '#374151',
+    borderColor: darkMode ? '#374151' : '#e5e7eb',
+    borderWidth: 1,
+    cornerRadius: 8,
+    displayColors: true,
+  });
+
+  const getScalesOptions = () => {
+    if (type === 'pie') return {};
+
+    const tickColor = darkMode ? '#9ca3af' : '#6b7280';
+    const gridColor = darkMode ? '#374151' : '#f3f4f6';
+    const borderColor = darkMode ? '#4b5563' : '#d1d5db';
+
+    return {
+      x: {
+        ticks: {
+          color: tickColor,
+          font: {
+            size: 11,
+          },
+        },
+        grid: {
+          color: gridColor,
+          borderColor,
+        },
+      },
+      y: {
+        ticks: {
+          color: tickColor,
+          font: {
+            size: 11,
+          },
+        },
+        grid: {
+          color: gridColor,
+          borderColor,
+        },
+      },
+    };
+  };
+
   // Common chart options
   const getBaseOptions = () => ({
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      legend: {
-        display: showLegend,
-        position: 'top',
-        labels: {
-          color: darkMode ? '#d1d5db' : '#374151',
-          usePointStyle: true,
-          padding: 20,
-          font: {
-            size: 12,
-            family: "'Inter', sans-serif",
-          },
-        },
-      },
-      title: {
-        display: !!title,
-        text: title,
-        color: darkMode ? '#f9fafb' : '#111827',
-        font: {
-          size: 16,
-          weight: '600',
-          family: "'Inter', sans-serif",
-        },
-        padding: {
-          top: 10,
-          bottom: 20,
-        },
-      },
-      tooltip: {
-        backgroundColor: darkMode ? '#1f2937' : '#ffffff',
-        titleColor: darkMode ? '#f9fafb' : '#111827',
-        bodyColor: darkMode ? '#d1d5db' : '#374151',
-        borderColor: darkMode ? '#374151' : '#e5e7eb',
-        borderWidth: 1,
-        cornerRadius: 8,
-        displayColors: true,
-      },
+      legend: getLegendOptions(),
+      title: getTitleOptions(),
+      tooltip: getTooltipOptions(),
     },
-    scales:
-      type !== 'pie'
-        ? {
-            x: {
-              ticks: {
-                color: darkMode ? '#9ca3af' : '#6b7280',
-                font: {
-                  size: 11,
-                },
-              },
-              grid: {
-                color: darkMode ? '#374151' : '#f3f4f6',
-                borderColor: darkMode ? '#4b5563' : '#d1d5db',
-              },
-            },
-            y: {
-              ticks: {
-                color: darkMode ? '#9ca3af' : '#6b7280',
-                font: {
-                  size: 11,
-                },
-              },
-              grid: {
-                color: darkMode ? '#374151' : '#f3f4f6',
-                borderColor: darkMode ? '#4b5563' : '#d1d5db',
-              },
-            },
-          }
-        : {},
+    scales: getScalesOptions(),
   });
 
   // Process data based on chart type
