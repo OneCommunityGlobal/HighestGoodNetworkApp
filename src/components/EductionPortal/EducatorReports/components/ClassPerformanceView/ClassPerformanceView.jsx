@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Card, CardBody, Alert } from 'reactstrap';
+import { Row, Col, Card, CardBody, Alert, Table } from 'reactstrap';
 import { useSelector } from 'react-redux';
 import styles from './ClassPerformanceView.module.css';
 import MetricCard from '../MetricCard/MetricCard';
 import ReportChart from '../ReportChart/ReportChart';
+import { getStatusClass, getStatusIcon, getStatusText } from '../../utils/statusUtils';
 
 const getClassMockData = classId => {
   const classDataMap = {
@@ -11,6 +12,16 @@ const getClassMockData = classId => {
       class: { id: '1', name: 'Grade 5A - Mathematics', studentCount: 25, teacher: 'Ms. Johnson' },
       metrics: { classAverage: 78, completionRate: 85, engagementRate: 82, activeLearners: 23 },
       changes: { classAverage: 3.5, completionRate: 7.2, engagementRate: -1.8, activeLearners: 2 },
+      subjectPerformance: [
+        { subject: 'Arts/Trades', performance: 69, color: '#8b5cf6' },
+        { subject: 'Mathematics', performance: 83, color: '#4f46e5' },
+        { subject: 'English', performance: 74, color: '#10b981' },
+        { subject: 'Science', performance: 68, color: '#f59e0b' },
+        { subject: 'Health', performance: 62, color: '#ef4444' },
+        { subject: 'Social Studies', performance: 71, color: '#06b6d4' },
+        { subject: 'Tech & Innovation', performance: 79, color: '#06b6d4' },
+        { subject: 'Values', performance: 87, color: '#84cc16' },
+      ],
       teachingStrategies: {
         labels: [
           'Game Lesson',
@@ -64,6 +75,16 @@ const getClassMockData = classId => {
       class: { id: '2', name: 'Grade 6B - Science', studentCount: 28, teacher: 'Mr. Smith' },
       metrics: { classAverage: 85, completionRate: 92, engagementRate: 88, activeLearners: 26 },
       changes: { classAverage: 5.2, completionRate: 8.5, engagementRate: 3.1, activeLearners: 4 },
+      subjectPerformance: [
+        { subject: 'Arts/Trades', performance: 77, color: '#8b5cf6' },
+        { subject: 'Science', performance: 89, color: '#f59e0b' },
+        { subject: 'Mathematics', performance: 82, color: '#4f46e5' },
+        { subject: 'English', performance: 76, color: '#10b981' },
+        { subject: 'Tech & Innovation', performance: 85, color: '#06b6d4' },
+        { subject: 'Social Studies', performance: 71, color: '#8b5cf6' },
+        { subject: 'Health', performance: 67, color: '#ef4444' },
+        { subject: 'Values', performance: 84, color: '#84cc16' },
+      ],
       teachingStrategies: {
         labels: [
           'Power Play',
@@ -121,6 +142,16 @@ const getClassMockData = classId => {
         engagementRate: -5.3,
         activeLearners: -1,
       },
+      subjectPerformance: [
+        { subject: 'Arts/Trades', performance: 60, color: '#8b5cf6' },
+        { subject: 'English', performance: 73, color: '#10b981' },
+        { subject: 'Mathematics', performance: 66, color: '#4f46e5' },
+        { subject: 'Science', performance: 61, color: '#f59e0b' },
+        { subject: 'Social Studies', performance: 58, color: '#8b5cf6' },
+        { subject: 'Health', performance: 54, color: '#ef4444' },
+        { subject: 'Tech & Innovation', performance: 64, color: '#06b6d4' },
+        { subject: 'Values', performance: 77, color: '#84cc16' },
+      ],
       teachingStrategies: {
         labels: [
           'Story Time',
@@ -276,6 +307,70 @@ const ClassPerformanceView = ({ filters }) => {
       </Row>
 
       <Row>
+        {/* Strengths & Gaps by Subject */}
+        <Col lg={12} className={styles.chartCol}>
+          <Card className={`${styles.reportCard} ${darkMode ? styles.darkMode : ''}`}>
+            <CardBody className={styles.cardBody}>
+              <div className={styles.cardHeader}>
+                <h4 className={styles.cardTitle}>Strengths & Gaps by Subject</h4>
+              </div>
+
+              {loading ? (
+                <div className={styles.loading}>
+                  <i className="fa fa-spinner fa-spin" aria-hidden="true" />
+                  <p>Loading subject performance...</p>
+                </div>
+              ) : (
+                <div className={styles.tableContainer}>
+                  <Table responsive className={styles.performanceTable}>
+                    <thead>
+                      <tr>
+                        <th>Subject</th>
+                        <th>Performance</th>
+                        <th>Status</th>
+                        <th>Visual Indicator</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {classData?.subjectPerformance?.map((item, index) => (
+                        <tr key={index}>
+                          <td className={styles.subjectCell}>{item.subject}</td>
+                          <td className={styles.performanceCell}>
+                            <div className={styles.performanceBar}>
+                              <div
+                                className={styles.performanceFill}
+                                style={{
+                                  width: `${item.performance}%`,
+                                  backgroundColor: item.color,
+                                }}
+                              />
+                              <span className={styles.performanceText}>{item.performance}%</span>
+                            </div>
+                          </td>
+                          <td>
+                            <span
+                              className={`${styles.statusBadge} ${
+                                styles[getStatusClass(item.performance)]
+                              }`}
+                            >
+                              {getStatusText(item.performance)}
+                            </span>
+                          </td>
+                          <td className={styles.visualCell}>
+                            <span className={styles.visualIndicator}>
+                              {getStatusIcon(item.performance)}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </Table>
+                </div>
+              )}
+            </CardBody>
+          </Card>
+        </Col>
+
         {/* Teaching Strategies Effectiveness */}
         <Col lg={6} className={styles.chartCol}>
           <Card className={`${styles.reportCard} ${darkMode ? styles.darkMode : ''}`}>

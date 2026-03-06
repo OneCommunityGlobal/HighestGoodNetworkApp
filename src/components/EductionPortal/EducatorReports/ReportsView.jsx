@@ -20,6 +20,7 @@ import styles from './ReportsView.module.css';
 import ReportChart from './ReportChart';
 import IndividualReportView from './components/IndividualReportView/IndividualReportView';
 import ClassPerformanceView from './components/ClassPerformanceView/ClassPerformanceView';
+import { getStatusClass, getStatusIcon, getStatusText } from './utils/statusUtils';
 import {
   strengthsGapsData,
   performanceTrendData,
@@ -81,26 +82,7 @@ const ReportsView = () => {
     setSubjectDropdownOpen(false);
   };
 
-  const getStatusIcon = performance => {
-    if (performance >= 85) return '🟢';
-    if (performance >= 70) return '🟡';
-    if (performance >= 50) return '🟠';
-    return '🔴';
-  };
-
-  const getStatusText = performance => {
-    if (performance >= 85) return 'Excellent';
-    if (performance >= 70) return 'Good';
-    if (performance >= 50) return 'Needs Improvement';
-    return 'Critical';
-  };
-
-  const getStatusClass = performance => {
-    if (performance >= 85) return 'excellent';
-    if (performance >= 70) return 'good';
-    if (performance >= 50) return 'needsImprovement';
-    return 'critical';
-  };
+  // Status helpers are shared via utils/statusUtils.js
 
   const getInsightAlertVariantClass = color => {
     switch (color) {

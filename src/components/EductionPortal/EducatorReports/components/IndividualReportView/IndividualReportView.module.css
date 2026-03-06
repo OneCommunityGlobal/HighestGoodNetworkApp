@@ -209,42 +209,13 @@
 /* Status Badges */
 .statusBadge {
   display: inline-block;
-  padding: 0.25rem 0.75rem;
-  font-size: 0.75rem;
+  padding: 5px 12px;
+  border-radius: 16px;
+  font-size: 12px;
   font-weight: 600;
-  text-transform: capitalize;
-  border-radius: 20px;
-  white-space: nowrap;
-}
-
-.statusBadge.excellent {
-  background-color: #d1fae5;
-  color: #047857;
-}
-
-.darkMode .statusBadge.excellent {
-  background-color: #064e3b;
-  color: #34d399;
-}
-
-.statusBadge.good {
-  background-color: #dbeafe;
-  color: #1d4ed8;
-}
-
-.darkMode .statusBadge.good {
-  background-color: #1e3a8a;
-  color: #60a5fa;
-}
-
-.statusBadge.needsImprovement {
-  background-color: #fef3c7;
-  color: #92400e;
-}
-
-.darkMode .statusBadge.needsImprovement {
-  background-color: #78350f;
-  color: #fbbf24;
+  text-align: center;
+  min-width: 80px;
+  border: 1px solid transparent;
 }
 
 /* Visual Indicators */
@@ -253,13 +224,13 @@
 }
 
 .visualIndicator {
-  font-size: 1.25rem;
+  font-size: 18px;
   display: inline-block;
 }
 
 /* Chart Styles */
 .chartCol {
-  margin-bottom: 1rem;
+  margin-bottom: 30px;
 }
 .darkMode .cardBody {
   background-color: #0f172a !important;
@@ -267,6 +238,7 @@
 .chartContainer {
   height: 300px;
   position: relative;
+  margin: 20px 0 60px 0;
 }
 
 .chartLoading {
@@ -558,4 +530,52 @@
 
 .darkMode .performanceTable:focus-within {
   outline-color: #818cf8;
+}
+
+.statusBadgeExcellent {
+  background-color: #dcfce7;
+  color: #15803d;
+  border-color: #bbf7d0;
+}
+
+.statusBadgeGood {
+  background-color: #fefce8;
+  color: #a16207;
+  border-color: #fef08a;
+}
+
+.statusBadgeNeedsImprovement {
+  background-color: #fff7ed;
+  color: #c2410c;
+  border-color: #fed7aa;
+}
+
+.statusBadgeCritical {
+  background-color: #fee2e2;
+  color: #b91c1c;
+  border-color: #fecaca;
+}
+
+.darkMode .statusBadgeExcellent {
+  background-color: rgba(21, 128, 61, 0.15);
+  color: #4ade80 !important;
+  border-color: rgba(74, 222, 128, 0.25);
+}
+
+.darkMode .statusBadgeGood {
+  background-color: rgba(161, 98, 7, 0.15);
+  color: #fcd34d !important;
+  border-color: rgba(252, 211, 77, 0.25);
+}
+
+.darkMode .statusBadgeNeedsImprovement {
+  background-color: rgba(194, 65, 12, 0.15);
+  color: #fb923c !important;
+  border-color: rgba(251, 146, 60, 0.25);
+}
+
+.darkMode .statusBadgeCritical {
+  background-color: rgba(185, 28, 28, 0.15);
+  color: #fca5a5 !important;
+  border-color: rgba(252, 165, 165, 0.25);
 }

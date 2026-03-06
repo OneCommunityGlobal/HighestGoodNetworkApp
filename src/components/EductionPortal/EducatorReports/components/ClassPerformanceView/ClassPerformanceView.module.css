@@ -129,12 +129,109 @@
 
 /* Chart Styles */
 .chartCol {
-  margin-bottom: 1.5rem;
+  margin-bottom: 30px;
+}
+
+/* Table Styles (match ReportsView) */
+.tableContainer {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.performanceTable {
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+.performanceTable th {
+  background-color: #f9fafb;
+  color: #374151;
+  font-weight: 600;
+  border: none;
+  padding: 1rem 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.75rem;
+}
+
+.darkMode .performanceTable th {
+  background-color: #374151;
+  color: #d1d5db;
+}
+
+.performanceTable td {
+  padding: 1rem 0.75rem;
+  border-top: 1px solid #e5e7eb;
+  vertical-align: middle;
+}
+
+.darkMode .performanceTable td {
+  border-top-color: #374151;
+  color: #d1d5db;
+}
+
+.performanceTable tbody tr:hover {
+  background-color: #f9fafb;
+}
+
+.darkMode .performanceTable tbody tr:hover {
+  background-color: #374151;
+}
+
+.subjectCell {
+  font-weight: 500;
+  color: #111827;
+}
+
+.darkMode .subjectCell {
+  color: #f9fafb;
+}
+
+.performanceCell {
+  font-size: 0.875rem;
+}
+
+.performanceBar {
+  position: relative;
+  height: 20px;
+  background-color: #e5e7eb;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.darkMode .performanceBar {
+  background-color: rgba(255, 255, 255, 0.12);
+}
+
+.performanceFill {
+  height: 100%;
+  border-radius: 10px;
+  transition: width 0.6s ease;
+}
+
+.performanceText {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 12px;
+  font-weight: 600;
+  color: #111827;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.65);
+}
+
+.darkMode .performanceText {
+  color: #f9fafb;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.6);
+}
+
+.visualCell {
+  text-align: center;
 }
 
 .chartContainer {
   position: relative;
-  margin-bottom: 1rem;
+  margin: 20px 0;
 }
 
 .legend {
@@ -489,4 +586,71 @@
 
 .impactBar.low {
   background-color: #fbbf24;
+}
+
+/* Status Badge Styles */
+.statusBadge {
+  display: inline-block;
+  padding: 5px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+  min-width: 80px;
+  border: 1px solid transparent;
+}
+
+.statusBadge.excellent {
+  background-color: #dcfce7;
+  color: #15803d;
+  border-color: #bbf7d0;
+}
+
+.statusBadge.good {
+  background-color: #fefce8;
+  color: #a16207;
+  border-color: #fef08a;
+}
+
+.statusBadge.needsImprovement,
+.statusBadge.needs-improvement {
+  background-color: #fff7ed;
+  color: #c2410c;
+  border-color: #fed7aa;
+}
+
+.statusBadge.critical {
+  background-color: #fee2e2;
+  color: #b91c1c;
+  border-color: #fecaca;
+}
+
+.darkMode .statusBadge.excellent {
+  background-color: rgba(21, 128, 61, 0.15);
+  color: #4ade80 !important;
+  border-color: rgba(74, 222, 128, 0.25);
+}
+
+.darkMode .statusBadge.good {
+  background-color: rgba(161, 98, 7, 0.15);
+  color: #fcd34d !important;
+  border-color: rgba(252, 211, 77, 0.25);
+}
+
+.darkMode .statusBadge.needsImprovement,
+.darkMode .statusBadge.needs-improvement {
+  background-color: rgba(194, 65, 12, 0.15);
+  color: #fb923c !important;
+  border-color: rgba(251, 146, 60, 0.25);
+}
+
+.darkMode .statusBadge.critical {
+  background-color: rgba(185, 28, 28, 0.15);
+  color: #fca5a5 !important;
+  border-color: rgba(252, 165, 165, 0.25);
+}
+
+.visualIndicator {
+  font-size: 18px;
+  display: inline-block;
 }

@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import styles from './IndividualReportView.module.css';
 import MetricCard from '../MetricCard/MetricCard';
 import ReportChart from '../ReportChart/ReportChart';
+import { getStatusClass, getStatusIcon, getStatusText } from '../../utils/statusUtils';
 
 const getStudentMockData = studentId => {
   const studentDataMap = {
@@ -17,14 +18,14 @@ const getStudentMockData = studentId => {
       },
       changes: { averageScore: 5.2, lessonsCompleted: 12.5, engagementRate: -2.1, timeSpent: 8.3 },
       subjectPerformance: [
-        { subject: 'Actor Tasks', performance: '85%', status: 'excellent', visual: 'high' },
-        { subject: 'English', performance: '88%', status: 'excellent', visual: 'high' },
-        { subject: 'Health', performance: '65%', status: 'needs-improvement', visual: 'medium' },
-        { subject: 'Mathematics', performance: '92%', status: 'excellent', visual: 'high' },
-        { subject: 'Science', performance: '78%', status: 'good', visual: 'medium' },
-        { subject: 'Social Studies', performance: '71%', status: 'good', visual: 'medium' },
-        { subject: 'Tech & Innovation', performance: '89%', status: 'excellent', visual: 'high' },
-        { subject: 'Values', performance: '95%', status: 'excellent', visual: 'high' },
+        { subject: 'Arts/Trades', performance: 85 },
+        { subject: 'English', performance: 88 },
+        { subject: 'Health', performance: 65 },
+        { subject: 'Mathematics', performance: 92 },
+        { subject: 'Science', performance: 78 },
+        { subject: 'Social Studies', performance: 71 },
+        { subject: 'Tech & Innovation', performance: 89 },
+        { subject: 'Values', performance: 95 },
       ],
       performanceTrend: {
         labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
@@ -73,14 +74,14 @@ const getStudentMockData = studentId => {
       },
       changes: { averageScore: 8.5, lessonsCompleted: 15.2, engagementRate: 5.3, timeSpent: 12.1 },
       subjectPerformance: [
-        { subject: 'Actor Tasks', performance: '92%', status: 'excellent', visual: 'high' },
-        { subject: 'English', performance: '95%', status: 'excellent', visual: 'high' },
-        { subject: 'Health', performance: '78%', status: 'good', visual: 'medium' },
-        { subject: 'Mathematics', performance: '88%', status: 'excellent', visual: 'high' },
-        { subject: 'Science', performance: '85%', status: 'excellent', visual: 'high' },
-        { subject: 'Social Studies', performance: '82%', status: 'excellent', visual: 'high' },
-        { subject: 'Tech & Innovation', performance: '75%', status: 'good', visual: 'medium' },
-        { subject: 'Values', performance: '98%', status: 'excellent', visual: 'high' },
+        { subject: 'Arts/Trades', performance: 92 },
+        { subject: 'English', performance: 95 },
+        { subject: 'Health', performance: 78 },
+        { subject: 'Mathematics', performance: 88 },
+        { subject: 'Science', performance: 85 },
+        { subject: 'Social Studies', performance: 82 },
+        { subject: 'Tech & Innovation', performance: 75 },
+        { subject: 'Values', performance: 98 },
       ],
       performanceTrend: {
         labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
@@ -133,19 +134,14 @@ const getStudentMockData = studentId => {
         timeSpent: -4.2,
       },
       subjectPerformance: [
-        { subject: 'Actor Tasks', performance: '72%', status: 'good', visual: 'medium' },
-        { subject: 'English', performance: '65%', status: 'needs-improvement', visual: 'medium' },
-        { subject: 'Health', performance: '58%', status: 'needs-improvement', visual: 'low' },
-        { subject: 'Mathematics', performance: '75%', status: 'good', visual: 'medium' },
-        { subject: 'Science', performance: '70%', status: 'good', visual: 'medium' },
-        {
-          subject: 'Social Studies',
-          performance: '62%',
-          status: 'needs-improvement',
-          visual: 'medium',
-        },
-        { subject: 'Tech & Innovation', performance: '78%', status: 'good', visual: 'medium' },
-        { subject: 'Values', performance: '68%', status: 'good', visual: 'medium' },
+        { subject: 'Arts/Trades', performance: 72 },
+        { subject: 'English', performance: 65 },
+        { subject: 'Health', performance: 58 },
+        { subject: 'Mathematics', performance: 75 },
+        { subject: 'Science', performance: 70 },
+        { subject: 'Social Studies', performance: 62 },
+        { subject: 'Tech & Innovation', performance: 78 },
+        { subject: 'Values', performance: 68 },
       ],
       performanceTrend: {
         labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
@@ -194,19 +190,14 @@ const getStudentMockData = studentId => {
       },
       changes: { averageScore: 2.1, lessonsCompleted: 8.3, engagementRate: 1.2, timeSpent: 3.5 },
       subjectPerformance: [
-        { subject: 'Actor Tasks', performance: '80%', status: 'good', visual: 'medium' },
-        { subject: 'English', performance: '78%', status: 'good', visual: 'medium' },
-        { subject: 'Health', performance: '72%', status: 'good', visual: 'medium' },
-        {
-          subject: 'Mathematics',
-          performance: '68%',
-          status: 'needs-improvement',
-          visual: 'medium',
-        },
-        { subject: 'Science', performance: '82%', status: 'excellent', visual: 'high' },
-        { subject: 'Social Studies', performance: '75%', status: 'good', visual: 'medium' },
-        { subject: 'Tech & Innovation', performance: '85%', status: 'excellent', visual: 'high' },
-        { subject: 'Values', performance: '80%', status: 'good', visual: 'medium' },
+        { subject: 'Arts/Trades', performance: 80 },
+        { subject: 'English', performance: 78 },
+        { subject: 'Health', performance: 72 },
+        { subject: 'Mathematics', performance: 68 },
+        { subject: 'Science', performance: 82 },
+        { subject: 'Social Studies', performance: 75 },
+        { subject: 'Tech & Innovation', performance: 85 },
+        { subject: 'Values', performance: 80 },
       ],
       performanceTrend: {
         labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
@@ -282,6 +273,17 @@ const IndividualReportView = ({ filters }) => {
     }
   };
 
+  const getStatusBadgeClass = performance => {
+    const status = getStatusClass(performance);
+    const statusMap = {
+      excellent: styles.statusBadgeExcellent,
+      good: styles.statusBadgeGood,
+      needsImprovement: styles.statusBadgeNeedsImprovement,
+      critical: styles.statusBadgeCritical,
+    };
+    return statusMap[status] || '';
+  };
+
   const getInsightAlertVariantClass = color => {
     switch (color) {
       case 'info':
@@ -299,18 +301,7 @@ const IndividualReportView = ({ filters }) => {
     }
   };
 
-  const getVisualIndicator = visual => {
-    switch (visual) {
-      case 'high':
-        return '🟢';
-      case 'medium':
-        return '🟡';
-      case 'low':
-        return '🔴';
-      default:
-        return '⚪';
-    }
-  };
+  const formatPerformance = performance => `${Math.round(performance)}%`;
 
   if (!filters.studentId) {
     return (
@@ -329,7 +320,7 @@ const IndividualReportView = ({ filters }) => {
       <div className={`${styles.individualReport}`}>
         {/* Key Metrics Row */}
         <Row className={`${styles.metricsRow}`}>
-          <Col className={`${styles.metricCol}`}>
+          <Col lg={3} md={6} className={styles.metricCol}>
             <MetricCard
               title="Average Score"
               value={loading ? '...' : studentData?.metrics.averageScore}
@@ -341,7 +332,7 @@ const IndividualReportView = ({ filters }) => {
               loading={loading}
             />
           </Col>
-          <Col lg={3} md={6} className={`${styles.metricCol}`}>
+          <Col lg={3} md={6} className={styles.metricCol}>
             <MetricCard
               title="Lessons Completed"
               value={loading ? '...' : studentData?.metrics.lessonsCompleted}
@@ -352,7 +343,7 @@ const IndividualReportView = ({ filters }) => {
               loading={loading}
             />
           </Col>
-          <Col className={`${styles.metricCol}`}>
+          <Col lg={3} md={6} className={styles.metricCol}>
             <MetricCard
               title="Engagement Rate"
               value={loading ? '...' : studentData?.metrics.engagementRate}
@@ -364,7 +355,7 @@ const IndividualReportView = ({ filters }) => {
               loading={loading}
             />
           </Col>
-          <Col className={`${styles.metricCol}`}>
+          <Col lg={3} md={6} className={styles.metricCol}>
             <MetricCard
               title="Time Spent"
               value={loading ? '...' : studentData?.metrics.timeSpent}
@@ -410,16 +401,20 @@ const IndividualReportView = ({ filters }) => {
                           <tr key={index}>
                             <td className={`${styles.subjectCell}`}>{item.subject}</td>
                             <td className={`${styles.performanceCell}`}>
-                              <strong>{item.performance}</strong>
+                              <strong>{formatPerformance(item.performance)}</strong>
                             </td>
                             <td>
-                              <span className={`${styles.statusBadge} ${styles[item.status]}`}>
-                                {item.status.replace('-', ' ')}
+                              <span
+                                className={`${styles.statusBadge} ${getStatusBadgeClass(
+                                  item.performance,
+                                )}`}
+                              >
+                                {getStatusText(item.performance)}
                               </span>
                             </td>
                             <td className={`${styles.visualCell}`}>
                               <span className={`${styles.visualIndicator}`}>
-                                {getVisualIndicator(item.visual)}
+                                {getStatusIcon(item.performance)}
                               </span>
                             </td>
                           </tr>

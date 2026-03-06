@@ -40,24 +40,48 @@
   border-left: 4px solid #4f46e5;
 }
 
+.darkMode.primary {
+  border-left-color: #818cf8;
+}
+
 .success {
   border-left: 4px solid #10b981;
+}
+
+.darkMode.success {
+  border-left-color: #34d399;
 }
 
 .warning {
   border-left: 4px solid #f59e0b;
 }
 
+.darkMode.warning {
+  border-left-color: #fbbf24;
+}
+
 .danger {
   border-left: 4px solid #ef4444;
+}
+
+.darkMode.danger {
+  border-left-color: #f87171;
 }
 
 .info {
   border-left: 4px solid #06b6d4;
 }
 
+.darkMode.info {
+  border-left-color: #67e8f9;
+}
+
 .secondary {
   border-left: 4px solid #8b5cf6;
+}
+
+.darkMode.secondary {
+  border-left-color: #a78bfa;
 }
 
 /* Header Section */
