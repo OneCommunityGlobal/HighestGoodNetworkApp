@@ -32,7 +32,7 @@ import {
 } from './mockdata';
 
 const ReportsView = () => {
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
   const [subjectFilter, setSubjectFilter] = useState('All Subjects');
   const [subjectDropdownOpen, setSubjectDropdownOpen] = useState(false);
   const [performanceDropdownOpen, setPerformanceDropdownOpen] = useState(false);
@@ -45,7 +45,6 @@ const ReportsView = () => {
   });
 
   const darkMode = useSelector(state => state.theme?.darkMode || false);
-  const authUser = useSelector(state => state.auth.user);
 
   useEffect(() => {
     // Simulate loading
@@ -224,8 +223,8 @@ const ReportsView = () => {
                           </tr>
                         </thead>
                         <tbody>
-                          {getFilteredStrengthsGapsData().map((item, index) => (
-                            <tr key={index}>
+                          {getFilteredStrengthsGapsData().map(item => (
+                            <tr key={item.subject}>
                               <td className={`${styles.subjectCell}`}>{item.subject}</td>
                               <td className={`${styles.performanceCell}`}>
                                 <div className={`${styles.performanceBar}`}>

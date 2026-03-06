@@ -163,14 +163,13 @@ const ReportChart = ({
 
         const processedDataset = {
           ...dataset,
-          backgroundColor:
-            backgroundColor ||
-            dataset.backgroundColor ||
-            (type === 'pie'
-              ? Object.values(colors)
-              : gradient
-              ? `linear-gradient(45deg, ${baseColor}, ${baseColor}99)`
-              : `${baseColor}20`),
+          backgroundColor: (() => {
+            if (backgroundColor) return backgroundColor;
+            if (dataset.backgroundColor) return dataset.backgroundColor;
+            if (type === 'pie') return Object.values(colors);
+            if (gradient) return `linear-gradient(45deg, ${baseColor}, ${baseColor}99)`;
+            return `${baseColor}20`;
+          })(),
           borderColor: borderColor || dataset.borderColor || baseColor,
           borderWidth: dataset.borderWidth || (type === 'line' ? 3 : 2),
         };

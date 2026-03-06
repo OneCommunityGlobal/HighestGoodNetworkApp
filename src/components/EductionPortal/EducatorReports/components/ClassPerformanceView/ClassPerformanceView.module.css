@@ -80,8 +80,6 @@
 }
 
 /* Reactstrap <CardBody> wrapper */
-.cardBody {
-}
 
 .darkMode .cardBody {
   background-color: #0f172a;

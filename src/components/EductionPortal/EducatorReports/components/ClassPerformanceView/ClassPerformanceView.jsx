@@ -226,18 +226,6 @@ const ClassPerformanceView = ({ filters }) => {
     }
   }, [filters.classId, filters.subject, filters.dateRange]);
 
-  const getStrategyColor = (value, index) => {
-    if (value >= 85) return '#10b981'; // Green - Highly Effective
-    if (value >= 70) return '#3b82f6'; // Blue - Effective
-    return '#ef4444'; // Red - Needs Improvement
-  };
-
-  const getStrategyLabel = value => {
-    if (value >= 85) return 'Highly Effective (85%)';
-    if (value >= 70) return 'Effective (70%)';
-    return 'Needs Improvement (65%)';
-  };
-
   const getInsightAlertVariantClass = color => {
     switch (color) {
       case 'info':
@@ -351,8 +339,8 @@ const ClassPerformanceView = ({ filters }) => {
                       </tr>
                     </thead>
                     <tbody>
-                      {classData?.subjectPerformance?.map((item, index) => (
-                        <tr key={index}>
+                      {classData?.subjectPerformance?.map(item => (
+                        <tr key={item.subject}>
                           <td className={styles.subjectCell}>{item.subject}</td>
                           <td className={styles.performanceCell}>
                             <div className={styles.performanceBar}>
@@ -490,9 +478,9 @@ const ClassPerformanceView = ({ filters }) => {
                     <p>Generating insights...</p>
                   </div>
                 ) : (
-                  classData?.insights.map((insight, index) => (
+                  classData?.insights.map(insight => (
                     <Alert
-                      key={index}
+                      key={insight.title}
                       color={insight.type || 'info'}
                       className={`${styles.insightAlert} ${getInsightAlertVariantClass(
                         insight.type,

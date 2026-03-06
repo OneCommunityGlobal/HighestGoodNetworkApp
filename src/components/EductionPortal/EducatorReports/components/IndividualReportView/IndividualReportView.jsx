@@ -397,8 +397,8 @@ const IndividualReportView = ({ filters }) => {
                         </tr>
                       </thead>
                       <tbody>
-                        {studentData?.subjectPerformance.map((item, index) => (
-                          <tr key={index}>
+                        {studentData?.subjectPerformance.map(item => (
+                          <tr key={item.subject}>
                             <td className={`${styles.subjectCell}`}>{item.subject}</td>
                             <td className={`${styles.performanceCell}`}>
                               <strong>{formatPerformance(item.performance)}</strong>
@@ -465,9 +465,9 @@ const IndividualReportView = ({ filters }) => {
                       <p>Generating insights...</p>
                     </div>
                   ) : (
-                    studentData?.insights.map((insight, index) => (
+                    studentData?.insights.map(insight => (
                       <Alert
-                        key={index}
+                        key={`${insight.type || 'info'}-${insight.title}`}
                         color={getStatusColor(insight.type)}
                         className={`${styles.insightAlert} ${getInsightAlertVariantClass(
                           getStatusColor(insight.type),
