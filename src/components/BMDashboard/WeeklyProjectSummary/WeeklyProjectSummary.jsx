@@ -22,6 +22,7 @@ import IssueCharts from '../Issues/openIssueCharts';
 import SupplierPerformanceGraph from './SupplierPerformanceGraph.jsx';
 import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords.jsx';
 import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
+import MaterialStockOutRiskIndicator from './MaterialStockOutRiskIndicator/MaterialStockOutRiskIndicator';
 
 const projectStatusButtons = [
   {
@@ -227,6 +228,16 @@ function WeeklyProjectSummary() {
         content: (
           <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
             <IssueCharts />
+          </div>
+        ),
+      },
+      {
+        title: 'Issues Breakdown',
+        key: 'Issues Breakdown',
+        className: 'full',
+        content: (
+          <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+            <IssuesBreakdownChart />
           </div>
         ),
       },
