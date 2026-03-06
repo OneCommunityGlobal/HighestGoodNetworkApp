@@ -7,7 +7,7 @@
 }
 
 .chartContainer.darkMode {
-  background: var(--dark-bg-color, #1a1a1a);
+  background: var(--dark-bg-color, #1e293b);
   box-shadow: 0 2px 4px rgba(255, 255, 255, 0.1);
 }
 

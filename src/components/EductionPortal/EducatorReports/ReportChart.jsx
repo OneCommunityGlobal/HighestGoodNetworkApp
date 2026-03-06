@@ -14,7 +14,7 @@ import {
 import { Bar, Line, Doughnut } from 'react-chartjs-2';
 import { useSelector } from 'react-redux';
 import styles from './ReportChart.module.css';
-
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -25,6 +25,7 @@ ChartJS.register(
   LineElement,
   PointElement,
   ArcElement,
+  ChartDataLabels,
 );
 
 const ReportChart = ({
@@ -43,30 +44,31 @@ const ReportChart = ({
       maintainAspectRatio: false,
       indexAxis: horizontal ? 'y' : 'x',
       plugins: {
+        datalabels: { display: type !== 'line', color: '#ffffff' },
         legend: {
           display: showLegend,
           labels: {
-            color: darkMode ? '#ffffff' : '#333333',
+            color: darkMode ? '#f1f5f9' : '#1e293b',
             font: {
               size: 12,
             },
           },
         },
         tooltip: {
-          backgroundColor: darkMode ? '#1a1a1a' : '#ffffff',
-          titleColor: darkMode ? '#ffffff' : '#333333',
-          bodyColor: darkMode ? '#ffffff' : '#666666',
-          borderColor: darkMode ? '#444444' : '#dddddd',
+          backgroundColor: darkMode ? '#0f172a' : '#ffffff',
+          titleColor: darkMode ? '#f1f5f9' : '#0f172a',
+          bodyColor: darkMode ? '#94a3b8' : '#475569',
+          borderColor: darkMode ? '#334155' : '#e2e8f0',
           borderWidth: 1,
         },
       },
       scales: {
         x: {
           grid: {
-            color: darkMode ? '#333333' : '#e0e0e0',
+            color: darkMode ? '#334155' : '#cbd5e1',
           },
           ticks: {
-            color: darkMode ? '#cccccc' : '#666666',
+            color: darkMode ? '#f1f5f9' : '#1e293b',
             font: {
               size: 11,
             },
@@ -74,10 +76,10 @@ const ReportChart = ({
         },
         y: {
           grid: {
-            color: darkMode ? '#333333' : '#e0e0e0',
+            color: darkMode ? '#334155' : '#cbd5e1',
           },
           ticks: {
-            color: darkMode ? '#cccccc' : '#666666',
+            color: darkMode ? '#f1f5f9' : '#1e293b',
             font: {
               size: 11,
             },
@@ -86,7 +88,14 @@ const ReportChart = ({
       },
     };
 
-    return { ...baseOptions, ...customOptions };
+    return {
+      ...baseOptions,
+      ...customOptions,
+      plugins: {
+        ...baseOptions.plugins,
+        ...(customOptions.plugins || {}),
+      },
+    };
   };
 
   const renderChart = () => {
