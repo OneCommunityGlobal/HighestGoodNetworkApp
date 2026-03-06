@@ -161,7 +161,7 @@ const ReportsView = () => {
         {(activeTab === 'individual' || activeTab === 'class') && (
           <div className={`${styles.filterBar}`}>
             <Row>
-              <Col md={4}>
+              <Col md={6}>
                 <label htmlFor="studentClassSelect">
                   {activeTab === 'individual' ? 'Select Student:' : 'Select Class:'}
                 </label>
@@ -193,21 +193,6 @@ const ReportsView = () => {
                           {cls.name}
                         </option>
                       ))}
-                </select>
-              </Col>
-              <Col md={4}>
-                <label htmlFor="subjectSelect">Subject:</label>
-                <select
-                  id="subjectSelect"
-                  className="form-control"
-                  value={filters.subject}
-                  onChange={e => setFilters({ ...filters, subject: e.target.value })}
-                >
-                  {subjects.map(s => (
-                    <option key={s.name} value={s.name}>
-                      {s.name}
-                    </option>
-                  ))}
                 </select>
               </Col>
             </Row>
