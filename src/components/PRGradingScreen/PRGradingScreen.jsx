@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { Container, Row, Col, Card, Button } from 'react-bootstrap';
+import PropTypes from 'prop-types';
+import { useState } from 'react';
+import { Button, Card, Col, Container, Row } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import styles from './PRGradingScreen.module.css';
@@ -233,7 +234,9 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                               type="text"
                               value={inputValue}
                               onChange={e => setInputValue(e.target.value)}
-                              className={styles['pr-grading-screen-pr-number-input']}
+                              className={`${styles['pr-grading-screen-pr-number-input']} ${
+                                darkMode ? styles['dark-mode'] : ''
+                              }`}
                               placeholder="1070 or 1070 + 1256"
                             />
 
@@ -369,6 +372,23 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
       )}
     </Container>
   );
+};
+PRGradingScreen.propTypes = {
+  teamData: PropTypes.shape({
+    teamName: PropTypes.string.isRequired,
+    dateRange: PropTypes.shape({
+      start: PropTypes.string.isRequired,
+      end: PropTypes.string.isRequired,
+    }).isRequired,
+  }).isRequired,
+  reviewers: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      reviewer: PropTypes.string.isRequired,
+      prsNeeded: PropTypes.number.isRequired,
+      gradedPrs: PropTypes.arrayOf(PropTypes.object).isRequired,
+    }),
+  ).isRequired,
 };
 
 export default PRGradingScreen;
