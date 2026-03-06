@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -9,6 +9,15 @@ import SelectItem from './SelectItem';
 import ItemsTable from './ItemsTable';
 import UpdateHistoryModal from '../UpdateHistory/UpdateHistoryModal';
 import styles from './ItemListView.module.css';
+import { Form, FormGroup, Label } from 'reactstrap';
+import AddMaterialModal from '../AddMaterial/AddMaterialModal';
+import {
+  fetchMaterialTypes,
+  fetchConsumableTypes,
+} from '../../../actions/bmdashboard/invTypeActions';
+import EditNameUnitModal from './EditNameUnitModal';
+import ViewUpdateHistoryModal from './ViewUpdateHistoryModal';
+import AddConsumableModal from '../AddConsumable/AddConsumableModal';
 
 export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamicColumns }) {
   const [filteredItems, setFilteredItems] = useState(items);
@@ -22,6 +31,17 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
   const toggleUpdateHistoryModal = () => {
     setUpdateHistoryModalOpen(prev => !prev);
   };
+  const dispatch = useDispatch();
+  const materialTypes = useSelector(state => state.bmInvTypes.list);
+  const consumableTypes = useSelector(state => state.bmInvTypes.consumablesList);
+  const [isAMOpen, setisAMOpen] = useState(false); //MaterialsPage
+  const [selectedCondition, setSelectedCondition] = useState('all');
+  const [selectedToolStatus, setSelectedToolStatus] = useState('all');
+  const [isEditOpen, setisEditOpen] = useState(false);
+  const [selectedRow, setSelectedRow] = useState(null);
+  const [viewUpdate, setViewUpdate] = useState(false);
+  const [isACOpen, setisACOpen] = useState(false); //Consumables Page
+  const selectList = itemType === 'Consumables' ? consumableTypes : materialTypes;
 
   useEffect(() => {
     if (items) setFilteredItems([...items]);
@@ -36,7 +56,11 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
       filterItems = items.filter(item => item.project?.name === selectedProject);
       setFilteredItems([...filterItems]);
     } else if (selectedProject === 'all' && selectedItem !== 'all') {
-      filterItems = items.filter(item => item.itemType?.name === selectedItem);
+      if (itemType === 'Materials') {
+        filterItems = items.filter(item => item.name === selectedItem);
+      } else if (itemType === 'Consumables') {
+        filterItems = items.filter(item => item.itemType?.name === selectedItem);
+      }
       setFilteredItems([...filterItems]);
     } else {
       filterItems = items.filter(
@@ -50,6 +74,11 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
     setIsError(Object.entries(errors).length > 0);
   }, [errors]);
 
+  useEffect(() => {
+    if (itemType === 'Materials') dispatch(fetchMaterialTypes());
+    if (itemType === 'Consumables') dispatch(fetchConsumableTypes());
+  }, [dispatch, itemType]);
+
   if (isError) {
     return (
       <main className={`${styles.itemsListContainer} ${darkMode ? styles.darkMode : ''}`}>
@@ -62,54 +91,75 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
     );
   }
 
+  const openAddModal = () => {
+    if (itemType === 'Materials') {
+      setisAMOpen(true);
+    } else if (itemType === 'Consumables') {
+      setisACOpen(true);
+    }
+  };
+  const handleEditClick = rowData => {
+    setisEditOpen(true);
+  };
+
+  const handleUpdateHistory = rowData => {
+    setViewUpdate(true);
+  };
+
   return (
     <main className={`${styles.itemsListContainer} ${darkMode ? styles.darkMode : ''}`}>
       <h3>{itemType}</h3>
       <section>
         <span>
           {items && (
-            <div className={`${styles.selectInput}`}>
-              <label htmlFor="itemListTime">Time:</label>
-              <DatePicker
-                selected={selectedTime}
-                onChange={date => setSelectedTime(date)}
-                showTimeSelect
-                timeFormat="HH:mm"
-                timeIntervals={15}
-                dateFormat="yyyy-MM-dd HH:mm:ss"
-                placeholderText="Select date and time"
-                inputId="itemListTime" // This is the key line
-                className={darkMode ? styles.darkDatePickerInput : styles.lightDatePickerInput}
-                calendarClassName={darkMode ? styles.darkDatePicker : styles.lightDatePicker}
-                popperClassName={
-                  darkMode ? styles.darkDatePickerPopper : styles.lightDatePickerPopper
-                }
-              />
+            <div className={`${styles.dropdownRow}`}>
+              <Form>
+                <FormGroup className={styles.datePickerGroup}>
+                  <Label htmlFor="itemListTime">Time:</Label>
+                  <DatePicker
+                    selected={selectedTime}
+                    onChange={date => setSelectedTime(date)}
+                    showTimeSelect
+                    timeFormat="HH:mm"
+                    timeIntervals={15}
+                    dateFormat="yyyy-MM-dd HH:mm:ss"
+                    placeholderText="Select date and time"
+                    id="itemListTime"
+                    inputId="itemListTime" // This is the key line
+                    className={darkMode ? styles.darkDatePickerInput : styles.lightDatePickerInput}
+                    calendarClassName={darkMode ? styles.darkDatePicker : styles.lightDatePicker}
+                    popperClassName={
+                      darkMode ? styles.darkDatePickerPopper : styles.lightDatePickerPopper
+                    }
+                  />
+                </FormGroup>
+              </Form>
+
               <SelectForm
                 items={items}
+                selectedProject={selectedProject}
                 setSelectedProject={setSelectedProject}
                 setSelectedItem={setSelectedItem}
+                setSelectedCondition={setSelectedCondition}
+                setSelectedToolStatus={setSelectedToolStatus}
               />
               <SelectItem
-                items={items}
-                selectedProject={selectedProject}
+                items={selectList}
                 selectedItem={selectedItem}
+                selectedProject={selectedProject}
                 setSelectedItem={setSelectedItem}
+                label={itemType}
               />
             </div>
           )}
           <div className={`${styles.buttonsRow}`}>
-            <button type="button" className={`${styles.btnPrimary}`}>
-              Add Material
+            <button type="button" className={`${styles.btnPrimary}`} onClick={openAddModal}>
+              Add {itemType}
             </button>
-            <button type="button" className={`${styles.btnPrimary}`}>
+            <button type="button" className={`${styles.btnPrimary}`} onClick={handleEditClick}>
               Edit Name/Measurement
             </button>
-            <button
-              type="button"
-              className={`${styles.btnPrimary}`}
-              onClick={toggleUpdateHistoryModal}
-            >
+            <button type="button" className={`${styles.btnPrimary}`} onClick={handleUpdateHistory}>
               View Update History
             </button>
           </div>
@@ -131,8 +181,30 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
             dynamicColumns={dynamicColumns}
             darkMode={darkMode}
             itemType={itemType}
+            selectedRowId={selectedRow?._id}
+            onRowSelect={setSelectedRow}
           />
         )}
+      </section>
+      <section>
+        <AddMaterialModal isAMOpen={isAMOpen} toggle={() => setisAMOpen(false)} />
+      </section>
+      <section>
+        <EditNameUnitModal
+          item={selectedRow}
+          isOpen={isEditOpen}
+          toggle={() => setisEditOpen(false)}
+        />
+      </section>
+      <section>
+        <ViewUpdateHistoryModal
+          item={selectedRow}
+          isOpen={viewUpdate}
+          toggle={() => setViewUpdate(false)}
+        />
+      </section>
+      <section>
+        <AddConsumableModal isACOpen={isACOpen} toggle={() => setisACOpen(false)} />
       </section>
     </main>
   );

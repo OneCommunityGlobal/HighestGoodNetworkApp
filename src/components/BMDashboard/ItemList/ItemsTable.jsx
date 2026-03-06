@@ -6,6 +6,7 @@ import { faSortDown, faSort, faSortUp } from '@fortawesome/free-solid-svg-icons'
 import RecordsModal from './RecordsModal';
 import MaterialUsageChart from '../MaterialUsage/MaterialUsageChart';
 import styles from './ItemListView.module.css';
+import PropTypes from 'prop-types';
 
 export default function ItemsTable({
   selectedProject,
@@ -15,6 +16,8 @@ export default function ItemsTable({
   dynamicColumns,
   darkMode = false,
   itemType,
+  selectedRowId,
+  onRowSelect,
 }) {
   const [sortedData, setData] = useState(filteredItems);
   const [modal, setModal] = useState(false);
@@ -228,7 +231,12 @@ export default function ItemsTable({
             {sortedData && sortedData.length > 0 ? (
               sortedData.map(el => {
                 return (
-                  <tr key={el._id}>
+                  <tr
+                    key={el._id}
+                    onClick={() => onRowSelect(el)}
+                    className={el._id === selectedRowId ? styles.selectedrow : ''}
+                    style={{ cursor: 'pointer' }}
+                  >
                     <td>{el.project?.name}</td>
                     <td>{el.itemType?.name}</td>
                     {dynamicColumns.map(({ label, key }) => (
@@ -294,3 +302,7 @@ export default function ItemsTable({
     </>
   );
 }
+ItemsTable.propTypes = {
+  selectedRowId: PropTypes.any,
+  onRowSelect: PropTypes.any,
+};
