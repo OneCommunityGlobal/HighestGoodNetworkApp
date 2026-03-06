@@ -10,7 +10,14 @@ import ItemsTable from './ItemsTable';
 import UpdateHistoryModal from '../UpdateHistory/UpdateHistoryModal';
 import styles from './ItemListView.module.css';
 
-export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamicColumns }) {
+export function ItemListView({
+  itemType,
+  items,
+  errors,
+  UpdateItemModal,
+  dynamicColumns,
+  children,
+}) {
   const [filteredItems, setFilteredItems] = useState(items);
   const [selectedProject, setSelectedProject] = useState('all');
   const [selectedItem, setSelectedItem] = useState('all');
@@ -66,25 +73,40 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
     <main className={`${styles.itemsListContainer} ${darkMode ? styles.darkMode : ''}`}>
       <h3>{itemType}</h3>
       <section>
-        <span>
+        <div
+          style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginBottom: '20px' }}
+        >
           {items && (
-            <div className={`${styles.selectInput}`}>
-              <label htmlFor="itemListTime">Time:</label>
-              <DatePicker
-                selected={selectedTime}
-                onChange={date => setSelectedTime(date)}
-                showTimeSelect
-                timeFormat="HH:mm"
-                timeIntervals={15}
-                dateFormat="yyyy-MM-dd HH:mm:ss"
-                placeholderText="Select date and time"
-                inputId="itemListTime" // This is the key line
-                className={darkMode ? styles.darkDatePickerInput : styles.lightDatePickerInput}
-                calendarClassName={darkMode ? styles.darkDatePicker : styles.lightDatePicker}
-                popperClassName={
-                  darkMode ? styles.darkDatePickerPopper : styles.lightDatePickerPopper
-                }
-              />
+            <div
+              className={`${styles.selectInput}`}
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: '15px',
+                alignItems: 'center',
+                width: '100%',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <label htmlFor="itemListTime" style={{ margin: 0 }}>
+                  Time:
+                </label>
+                <DatePicker
+                  selected={selectedTime}
+                  onChange={date => setSelectedTime(date)}
+                  showTimeSelect
+                  timeFormat="HH:mm"
+                  timeIntervals={15}
+                  dateFormat="yyyy-MM-dd HH:mm:ss"
+                  placeholderText="Select date and time"
+                  inputId="itemListTime"
+                  className={darkMode ? styles.darkDatePickerInput : styles.lightDatePickerInput}
+                  calendarClassName={darkMode ? styles.darkDatePicker : styles.lightDatePicker}
+                  popperClassName={
+                    darkMode ? styles.darkDatePickerPopper : styles.lightDatePickerPopper
+                  }
+                />
+              </div>
               <SelectForm
                 items={items}
                 setSelectedProject={setSelectedProject}
@@ -113,7 +135,7 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
               View Update History
             </button>
           </div>
-        </span>
+        </div>
 
         <UpdateHistoryModal
           isOpen={updateHistoryModalOpen}
@@ -121,6 +143,25 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
           itemType={itemType}
           selectedProject={selectedProject}
         />
+
+        {children && (
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '15px',
+              flexWrap: 'wrap',
+              gap: '15px',
+              backgroundColor: darkMode ? '#2d2d2d' : '#f8f9fa',
+              padding: '12px 15px',
+              borderRadius: '6px',
+              border: darkMode ? '1px solid #444' : '1px solid #dee2e6',
+            }}
+          >
+            {children}
+          </div>
+        )}
 
         {filteredItems && (
           <ItemsTable
@@ -167,10 +208,12 @@ ItemListView.propTypes = {
       key: PropTypes.string.isRequired,
     }),
   ).isRequired,
+  children: PropTypes.node,
 };
 
 ItemListView.defaultProps = {
   errors: {},
+  children: null,
 };
 
 export default ItemListView;
