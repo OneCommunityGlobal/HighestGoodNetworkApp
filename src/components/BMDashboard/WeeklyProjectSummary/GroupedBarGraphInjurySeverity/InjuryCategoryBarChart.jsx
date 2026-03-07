@@ -140,6 +140,7 @@ function InjuryCategoryBarChart() {
         control: base => ({
           ...base,
           backgroundColor: '#2b3e59',
+          borderColor: '#4a5568',
           color: 'white',
         }),
         menu: base => ({
@@ -160,6 +161,30 @@ function InjuryCategoryBarChart() {
           },
         }),
         singleValue: base => ({
+          ...base,
+          color: 'white',
+        }),
+        multiValue: base => ({
+          ...base,
+          backgroundColor: '#3a506b',
+        }),
+        multiValueLabel: base => ({
+          ...base,
+          color: 'white',
+        }),
+        multiValueRemove: base => ({
+          ...base,
+          color: 'white',
+          ':hover': {
+            backgroundColor: '#5a7082',
+            color: 'white',
+          },
+        }),
+        placeholder: base => ({
+          ...base,
+          color: '#cbd5e0',
+        }),
+        input: base => ({
           ...base,
           color: 'white',
         }),
