@@ -488,7 +488,6 @@
 }
 
 .darkMode .statusCard {
-  background: var(--card-bg) !important;
   color: var(--text-color) !important;
   border-color: rgba(255, 255, 255, 0.1) !important;
 }
