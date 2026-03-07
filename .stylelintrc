@@ -9,10 +9,9 @@
     "no-duplicate-selectors": true,
     "selector-pseudo-class-no-unknown": [
       true,
-      {
-        "ignorePseudoClasses": ["global", "local"]
-      }
+      { "ignorePseudoClasses": ["global", "local"] }
     ],
-    "selector-class-pattern": null
+    "selector-class-pattern": null,
+    "selector-id-pattern": null
   }
 }
