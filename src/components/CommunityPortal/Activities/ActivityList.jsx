@@ -1,6 +1,7 @@
 // Activity List Component
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import styles from './ActivityList.module.css';
 import { mockActivities } from './mockActivities';
 // import { useHistory } from 'react-router-dom';
@@ -10,6 +11,8 @@ function ActivityList() {
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedActivity, setSelectedActivity] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
   const [filter, setFilter] = useState({
     type: '',
     date: '',
@@ -114,6 +117,15 @@ function ActivityList() {
     setShowSuggestions(false);
   };
 
+  const handleActivityClick = activity => {
+    setSelectedActivity(activity);
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+  };
+
   return (
     <div className={`${styles.activityListContainer} ${darkMode ? 'bg-oxford-blue' : ''}`}>
       <h1 className={`${styles.heading} ${darkMode ? 'text-light' : ''}`}>Activity List</h1>
@@ -213,16 +225,64 @@ function ActivityList() {
         ) : filteredActivities.length > 0 ? (
           <ul>
             {filteredActivities.map(activity => (
-              <li key={activity.id} className={darkMode ? styles.darkModeItem : ''}>
-                <strong>{activity.name}</strong> - {activity.type} - {activity.date} -{' '}
-                {activity.location}
-              </li>
+              <div
+                key={activity.id}
+                style={{ cursor: 'pointer' }}
+                onClick={() => handleActivityClick(activity)}
+                tabIndex={0}
+                role="button"
+                aria-label={`View details for ${activity.name}`}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    handleActivityClick(activity);
+                  }
+                }}
+              >
+                <li>
+                  <strong>{activity.name}</strong> - {activity.type} - {activity.date} -{' '}
+                  {activity.location}
+                </li>
+              </div>
             ))}
           </ul>
         ) : (
           <p className={darkMode ? 'text-light' : ''}>No activities found</p>
         )}
       </div>
+
+      {/* Modal for activity details */}
+      <Modal isOpen={modalOpen} toggle={handleCloseModal}>
+        <ModalHeader toggle={handleCloseModal}>
+          {selectedActivity ? selectedActivity.name : ''}
+        </ModalHeader>
+        <ModalBody>
+          {selectedActivity && (
+            <div>
+              <p>
+                <strong>Type:</strong> {selectedActivity.type}
+              </p>
+              <p>
+                <strong>Date:</strong> {selectedActivity.date}
+              </p>
+              <p>
+                <strong>Time:</strong> {selectedActivity.time}
+              </p>
+              <p>
+                <strong>Location:</strong> {selectedActivity.location}
+              </p>
+              <p>
+                <strong>Description:</strong> {selectedActivity.description}
+              </p>
+              {/* Add more details as needed */}
+            </div>
+          )}
+        </ModalBody>
+        <ModalFooter>
+          <Button color="secondary" onClick={handleCloseModal}>
+            Close
+          </Button>
+        </ModalFooter>
+      </Modal>
     </div>
   );
 }
