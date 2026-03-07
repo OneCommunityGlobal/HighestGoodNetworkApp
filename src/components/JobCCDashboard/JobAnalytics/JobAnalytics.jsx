@@ -164,7 +164,7 @@ class AnalyticsService {
             roleOffset = 15;
             break;
           default:
-            roleOffset = 0;
+            break;
         }
         data.push({
           date: date.toISOString().split('T')[0],
