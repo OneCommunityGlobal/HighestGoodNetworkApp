@@ -1,306 +1,90 @@
-.wrapper {
-  width: 87vw;
-  display: block;
-  box-sizing: border-box;
-  padding: 0;
-  overflow-x: hidden;
-}
-
-.container {
-  width: 100%;
-  max-width: 1300px;
-  background: #fff;
+.chartCard {
+  background-color: #ffffff;
+  color: #232323;
   border-radius: 8px;
   box-shadow: 0 2px 8px #eee;
   padding: 24px;
-  box-sizing: border-box;
-  position: relative;
-}
-
-.heading {
   margin-bottom: 24px;
-  font-size: 20px;
-  font-weight: 600;
+  width: 100%;
+  grid-column: 1 / -1;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.filterRow {
+.chartCard.darkMode {
+  background-color: #1b2a41; /* --color-oxford-blue */
+  color: #e5e5e5; /* --text-dark */
+  box-shadow: 2px 2px 4px 1px black; /* box-shadow-dark */
+}
+
+.chartTitle {
+  margin-bottom: 24px;
+  font-size: 24px; /* match previous standard or h2 size */
+  font-weight: bold;
+}
+
+.darkMode .chartTitle {
+  color: inherit;
+}
+
+.filterContainer {
   display: flex;
-  gap: 32px;
+  gap: 40px;
   flex-wrap: wrap;
-  margin-bottom: 16px;
+  margin-bottom: 24px;
   align-items: flex-end;
 }
 
-.dropdownWrapper {
+.formGroup {
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-width: 140px;
-  position: relative;
+  min-width: 90px;
 }
 
-.dropdownLabel {
-  font-weight: 600;
-  font-size: 15px;
-  margin-bottom: 6px;
-  color: #222;
-}
-
-.darkMode .dropdownLabel {
-  color: #fff;
-}
-
-/* High specificity selectors for dark mode labels */
-:global(body.dark-mode) .wrapper.darkMode .dropdownLabel,
-:global(body.bm-dashboard-dark) .wrapper.darkMode .dropdownLabel,
-.wrapper.darkMode .dropdownLabel {
-  color: #fff !important;
+.label {
+  font-weight: bold;
+  font-size: 16px;
+  margin-bottom: 0;
 }
 
 .dropdownButton {
   font-size: 14px;
-  font-weight: 500;
   color: #444;
-  min-width: 100px;
-  text-align: center;
+  font-weight: 500;
+  margin-bottom: 2px;
   cursor: pointer;
-  background: #fff;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 6px 10px;
-  transition: background 0.2s, color 0.2s;
-}
-
-.dropdownButton:hover {
-  background: #f0f0f0;
+  position: relative;
+  display: inline-block;
+  min-width: 60px;
+  text-align: center;
+  background: none;
+  border: none;
+  padding: 0;
 }
 
 .darkMode .dropdownButton {
-  color: #fff;
-  background: #2b3344;
-  border: 1px solid #3a506b;
-}
-
-.darkMode .dropdownButton:hover {
-  background: #3a506b;
-}
-
-/* High specificity selectors for dropdown button in dark mode */
-:global(body.dark-mode) .wrapper.darkMode .dropdownButton,
-:global(body.bm-dashboard-dark) .wrapper.darkMode .dropdownButton,
-.wrapper.darkMode .dropdownButton {
-  color: #fff !important;
-  background: #2b3344 !important;
-  border-color: #3a506b !important;
-}
-
-:global(body.dark-mode) .wrapper.darkMode .dropdownButton:hover,
-:global(body.bm-dashboard-dark) .wrapper.darkMode .dropdownButton:hover,
-.wrapper.darkMode .dropdownButton:hover {
-  background: #3a506b !important;
+  color: #e5e5e5;
 }
 
 .dropdownMenu {
   position: absolute;
-  top: 100%;
   left: 0;
-  width: 100%;
+  top: 100%;
   z-index: 2000;
-  margin-top: 4px;
+  min-width: 120px;
+  background: white;
+  box-shadow: 0 2px 8px #eee;
   border-radius: 4px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-  background: #fff;
-  padding: 4px 0;
+  margin-top: 2px;
 }
 
 .darkMode .dropdownMenu {
-  background: #2b3344;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  background-color: #1c2541; /* --color-space-cadet */
+  box-shadow: 2px 2px 4px 1px black;
 }
 
-/* High specificity selectors for dropdown menu in dark mode */
-:global(body.dark-mode) .wrapper.darkMode .dropdownMenu,
-:global(body.bm-dashboard-dark) .wrapper.darkMode .dropdownMenu,
-.wrapper.darkMode .dropdownMenu {
-  background: #2b3344 !important;
-}
-
-/* React-select overrides - Base styles */
-.customSelect__control {
-  font-size: 14px;
-  min-height: 34px;
-  background: none;
-  border: none;
-  box-shadow: none;
-}
-
-.customSelect__multi-value {
-  background: #e6f7ff;
-  font-size: 12px;
-  margin: 2px;
-}
-
-.customSelect__option {
-  color: #000;
-  background-color: #fff;
-}
-
-.customSelect__option:hover {
-  background-color: #f0f0f0;
-}
-
-.customSelect__menu {
-  z-index: 9999;
-}
-
-/* High specificity selectors for react-select in dark mode */
-/* Control (the main select input) */
-:global(body.dark-mode) .wrapper.darkMode .customSelect__control,
-:global(body.bm-dashboard-dark) .wrapper.darkMode .customSelect__control,
-.wrapper.darkMode .customSelect__control,
-:global(body.dark-mode) .darkMode .wrapper .customSelect__control,
-:global(body.bm-dashboard-dark) .darkMode .wrapper .customSelect__control,
-.darkMode .wrapper .customSelect__control {
-  background-color: #2b3344 !important;
-  color: #fff !important;
-  border-color: #3a506b !important;
-}
-
-.wrapper.darkMode .customSelect__control:hover,
-.darkMode .wrapper .customSelect__control:hover {
-  border-color: #4a6072 !important;
-}
-
-.wrapper.darkMode .customSelect__control--is-focused,
-.darkMode .wrapper .customSelect__control--is-focused {
-  border-color: #4a6072 !important;
-  box-shadow: 0 0 0 1px #4a6072 !important;
-}
-
-/* Menu (dropdown menu) */
-:global(body.dark-mode) .wrapper.darkMode .customSelect__menu,
-:global(body.bm-dashboard-dark) .wrapper.darkMode .customSelect__menu,
-.wrapper.darkMode .customSelect__menu,
-:global(body.dark-mode) .darkMode .wrapper .customSelect__menu,
-:global(body.bm-dashboard-dark) .darkMode .wrapper .customSelect__menu,
-.darkMode .wrapper .customSelect__menu {
-  background-color: #2b3344 !important;
-  color: #fff !important;
-  border-color: #3a506b !important;
-}
-
-/* Menu list */
-.wrapper.darkMode .customSelect__menu-list,
-.darkMode .wrapper .customSelect__menu-list {
-  background-color: #2b3344 !important;
-  color: #fff !important;
-}
-
-/* Option */
-.wrapper.darkMode .customSelect__option,
-.darkMode .wrapper .customSelect__option {
-  background-color: #2b3344 !important;
-  color: #fff !important;
-}
-
-.wrapper.darkMode .customSelect__option--is-focused,
-.darkMode .wrapper .customSelect__option--is-focused {
-  background-color: #3a506b !important;
-  color: #fff !important;
-}
-
-.wrapper.darkMode .customSelect__option--is-selected,
-.darkMode .wrapper .customSelect__option--is-selected {
-  background-color: #4a6072 !important;
-  color: #fff !important;
-}
-
-.wrapper.darkMode .customSelect__option:hover,
-.darkMode .wrapper .customSelect__option:hover {
-  background-color: #3a506b !important;
-  color: #fff !important;
-}
-
-/* Multi-value */
-.wrapper.darkMode .customSelect__multi-value,
-.darkMode .wrapper .customSelect__multi-value {
-  background-color: #3a506b !important;
-}
-
-.wrapper.darkMode .customSelect__multi-value__label,
-.darkMode .wrapper .customSelect__multi-value__label {
-  color: #fff !important;
-}
-
-.wrapper.darkMode .customSelect__multi-value__remove,
-.darkMode .wrapper .customSelect__multi-value__remove {
-  color: #fff !important;
-}
-
-.wrapper.darkMode .customSelect__multi-value__remove:hover,
-.darkMode .wrapper .customSelect__multi-value__remove:hover {
-  background-color: #5a7082 !important;
-  color: #fff !important;
-}
-
-/* Single value and input */
-.wrapper.darkMode .customSelect__single-value,
-.darkMode .wrapper .customSelect__single-value,
-.wrapper.darkMode .customSelect__input-container,
-.darkMode .wrapper .customSelect__input-container,
-.wrapper.darkMode .customSelect__input-container input,
-.darkMode .wrapper .customSelect__input-container input {
-  color: #fff !important;
-}
-
-/* Placeholder */
-.wrapper.darkMode .customSelect__placeholder,
-.darkMode .wrapper .customSelect__placeholder {
-  color: #cbd5e0 !important;
-}
-
-/* Indicators */
-.wrapper.darkMode .customSelect__indicator-separator,
-.darkMode .wrapper .customSelect__indicator-separator {
-  background-color: #3a506b !important;
-}
-
-.wrapper.darkMode .customSelect__dropdown-indicator,
-.darkMode .wrapper .customSelect__dropdown-indicator {
-  color: #fff !important;
-}
-
-.wrapper.darkMode .customSelect__dropdown-indicator:hover,
-.darkMode .wrapper .customSelect__dropdown-indicator:hover {
-  color: #fff !important;
-}
-
-.wrapper.darkMode .customSelect__clear-indicator,
-.darkMode .wrapper .customSelect__clear-indicator {
-  color: #fff !important;
-}
-
-.wrapper.darkMode .customSelect__clear-indicator:hover,
-.darkMode .wrapper .customSelect__clear-indicator:hover {
-  color: #fff !important;
-}
-
-.error {
-  color: red;
-}
-
-.loading {
-  font-size: 16px;
-  font-weight: 500;
-}
-
-/* ===================== DARK MODE ===================== */
-.darkMode .container {
-  background: #253342;
-  box-shadow: 0 2px 8px #111;
-  color: #eee;
-}
-
-.darkMode .heading {
-  color: #eee;
+.chartContainer {
+  width: 100%;
+  margin: 0 -24px;
+  padding: 0 24px;
 }
