@@ -379,7 +379,11 @@ function JobApplicationForm() {
             {isAdmin ? (
               <RequirementsSection requirements={checkRequirements()} darkMode={darkMode} />
             ) : (
-              <UserRequirementsSection requirements={checkUserRequirements()} darkMode={darkMode} />
+              <RequirementsSection
+                requirements={checkUserRequirements()}
+                darkMode={darkMode}
+                variant="user"
+              />
             )}
 
             <div>
@@ -596,37 +600,43 @@ const requirementsPropType = PropTypes.shape({
   tenHoursPerWeek: PropTypes.bool,
 });
 
-function RequirementsSection({ requirements, darkMode }) {
-  const requirementList = [
-    {
-      id: 'reactExperience',
-      label: '1+ years of Full-Time ReactJS Experience',
-      satisfied: requirements.reactExperience,
-    },
-    {
-      id: 'twoMonthsCommitment',
-      label: 'Minimum of 2 Months Commitment',
-      satisfied: requirements.twoMonthsCommitment,
-    },
-    {
-      id: 'javascriptExperience',
-      label: '1+ years of Full-Time JavaScript Experience',
-      satisfied: requirements.javascriptExperience,
-    },
-    {
-      id: 'timeZoneLocation',
-      label: 'Time Zone and Location Matches',
-      satisfied: requirements.timeZoneLocation,
-    },
-    {
-      id: 'tenHoursPerWeek',
-      label: 'Minimum of 10 hours of work a week',
-      satisfied: requirements.tenHoursPerWeek,
-    },
-  ];
+const REQUIREMENT_ITEMS = [
+  { id: 'reactExperience', label: '1+ years of Full-Time ReactJS Experience' },
+  { id: 'twoMonthsCommitment', label: 'Minimum of 2 Months Commitment' },
+  { id: 'javascriptExperience', label: '1+ years of Full-Time JavaScript Experience' },
+  { id: 'timeZoneLocation', label: 'Time Zone and Location Matches' },
+  { id: 'tenHoursPerWeek', label: 'Minimum of 10 hours of work a week' },
+];
+
+const CheckIcon = () => (
+  <svg
+    width="14"
+    height="14"
+    viewBox="0 0 14 14"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M11.6667 3.5L5.25 9.91667L2.33334 7"
+      stroke="white"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+function RequirementsSection({ requirements, darkMode, variant = 'admin' }) {
+  const sectionClass =
+    variant === 'user' ? styles.userRequirementsSection : styles.adminRequirementsSection;
+  const requirementList = REQUIREMENT_ITEMS.map(({ id, label }) => ({
+    id,
+    label,
+    satisfied: requirements[id],
+  }));
 
   return (
-    <div className={styles.adminRequirementsSection}>
+    <div className={sectionClass}>
       <h3 className={styles.requirementsTitle}>Requirements Status</h3>
       <div className={styles.requirementsList}>
         {requirementList.map(req => (
@@ -644,23 +654,7 @@ function RequirementsSection({ requirements, darkMode }) {
                   req.satisfied ? styles.checked : ''
                 }`}
               >
-                {req.satisfied && (
-                  <svg
-                    width="14"
-                    height="14"
-                    viewBox="0 0 14 14"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M11.6667 3.5L5.25 9.91667L2.33334 7"
-                      stroke="white"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                )}
+                {req.satisfied && <CheckIcon />}
               </span>
               <span style={{ color: darkMode ? '#ffffff' : undefined }}>{req.label}</span>
             </label>
@@ -673,92 +667,11 @@ function RequirementsSection({ requirements, darkMode }) {
 RequirementsSection.propTypes = {
   requirements: requirementsPropType.isRequired,
   darkMode: PropTypes.bool,
+  variant: PropTypes.oneOf(['admin', 'user']),
 };
 RequirementsSection.defaultProps = {
   darkMode: false,
-};
-
-/* User Requirements Section Component - Shows requirements with checkboxes for user view */
-function UserRequirementsSection({ requirements, darkMode }) {
-  const requirementList = [
-    {
-      id: 'reactExperience',
-      label: '1+ years of Full-Time ReactJS Experience',
-      satisfied: requirements.reactExperience,
-    },
-    {
-      id: 'twoMonthsCommitment',
-      label: 'Minimum of 2 Months Commitment',
-      satisfied: requirements.twoMonthsCommitment,
-    },
-    {
-      id: 'javascriptExperience',
-      label: '1+ years of Full-Time JavaScript Experience',
-      satisfied: requirements.javascriptExperience,
-    },
-    {
-      id: 'timeZoneLocation',
-      label: 'Time Zone and Location Matches',
-      satisfied: requirements.timeZoneLocation,
-    },
-    {
-      id: 'tenHoursPerWeek',
-      label: 'Minimum of 10 hours of work a week',
-      satisfied: requirements.tenHoursPerWeek,
-    },
-  ];
-
-  return (
-    <div className={styles.userRequirementsSection}>
-      <h3 className={styles.requirementsTitle}>Requirements Status</h3>
-      <div className={styles.requirementsList}>
-        {requirementList.map(req => (
-          <div key={req.id} className={styles.requirementItem}>
-            <label className={styles.requirementCheckbox}>
-              <input
-                type="checkbox"
-                className={styles.requirementCheckboxInput}
-                checked={req.satisfied}
-                readOnly
-                disabled
-              />
-              <span
-                className={`${styles.requirementCheckboxCustom} ${
-                  req.satisfied ? styles.checked : ''
-                }`}
-              >
-                {req.satisfied && (
-                  <svg
-                    width="14"
-                    height="14"
-                    viewBox="0 0 14 14"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M11.6667 3.5L5.25 9.91667L2.33334 7"
-                      stroke="white"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                )}
-              </span>
-              <span style={{ color: darkMode ? '#ffffff' : undefined }}>{req.label}</span>
-            </label>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-UserRequirementsSection.propTypes = {
-  requirements: requirementsPropType.isRequired,
-  darkMode: PropTypes.bool,
-};
-UserRequirementsSection.defaultProps = {
-  darkMode: false,
+  variant: 'admin',
 };
 
 export default JobApplicationForm;
