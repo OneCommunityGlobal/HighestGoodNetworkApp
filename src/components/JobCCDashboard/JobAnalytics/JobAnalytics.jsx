@@ -501,7 +501,7 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
     if (!analyticsData?.deviceBreakdown) return [];
     const multiplier =
       selectedRole === 'All Roles' ? 1 : 1 + ROLE_OPTIONS.indexOf(selectedRole) * 0.05;
-    const dateFactor = dateRange ? 1 + Math.random() * 0.1 : 1;
+    const dateFactor = dateRange ? 1 + AnalyticsService.secureRandom(0, 10) / 100 : 1;
 
     return analyticsData.deviceBreakdown.map(d => ({
       ...d,
@@ -515,7 +515,7 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
     if (!analyticsData?.trafficSources) return [];
     const multiplier =
       selectedRole === 'All Roles' ? 1 : 1 + ROLE_OPTIONS.indexOf(selectedRole) * 0.05;
-    const dateFactor = dateRange ? 1 + Math.random() * 0.1 : 1;
+    const dateFactor = dateRange ? 1 + AnalyticsService.secureRandom(0, 10) / 100 : 1;
 
     return analyticsData.trafficSources.map(t => ({
       ...t,
