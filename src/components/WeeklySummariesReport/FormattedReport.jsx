@@ -352,7 +352,7 @@ function ReportDetails({
         <ListGroupItem darkMode={darkMode}>
           <div
             style={{
-              backgroundColor: isMeetCriteria ? '#989845' : 'transparent',
+              backgroundColor: isMeetCriteria ? '#FFF200' : 'transparent',
               width: '100%',
               padding: '6px 12px 6px 0px',
             }}

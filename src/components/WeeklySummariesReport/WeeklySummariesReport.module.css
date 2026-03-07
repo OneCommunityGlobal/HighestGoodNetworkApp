@@ -99,7 +99,7 @@
 .switchToggleInner:before {
   content: '';
   padding-left: 2px;
-  background-color: #2ba6ed;
+  background-color: #f1c40f; 
 }
 .switchToggle:disabled + .switchToggleLabel .switchToggleInner::before {
   background-color: #bbb;
