@@ -219,11 +219,10 @@
 }
 
 .jobAd h3 {
-  margin-top: 10px;
+  margin: 10px 0 0 0;
   font-size: 1.05rem;
   font-weight: 700;
   color: #333;
-  margin: 0;
   padding: 12px;
   transition: color .3s;
   text-align: center;

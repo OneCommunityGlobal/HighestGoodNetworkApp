@@ -270,11 +270,9 @@ function JobApplicationForm() {
       const doc = new DOMParser().parseFromString(html, 'text/html');
       const text = doc.body.textContent || doc.body.innerText || '';
       return text.replace(/\s+/g, ' ').trim();
-    } catch (error) {
-      return html
-        .replace(/<[^>]*>/g, '')
-        .replace(/\s+/g, ' ')
-        .trim();
+    } catch {
+      // Avoid regex that could cause ReDoS; only normalize whitespace in fallback
+      return (html || '').replace(/\s+/g, ' ').trim();
     }
   };
 
