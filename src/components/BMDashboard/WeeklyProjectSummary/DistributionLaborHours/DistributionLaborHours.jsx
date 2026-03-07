@@ -68,7 +68,7 @@ export default function DistributionLaborHours() {
   const totalHours = filteredData.reduce((sum, item) => sum + item.value, 0);
 
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
       <h3 className={styles.title}>Distribution of Labor Hours</h3>
 
       {/* Filters */}
@@ -87,15 +87,6 @@ export default function DistributionLaborHours() {
               placeholderText="Start date"
               className={styles.distributionDatePicker}
               wrapperClassName={styles.distributionDatePickerWrapper}
-              style={{
-                backgroundColor: darkMode ? '#2b3344' : '#fff',
-                color: darkMode ? '#fff' : '#000',
-                border: `1px solid ${darkMode ? '#3a506b' : '#ccc'}`,
-                borderRadius: '4px',
-                padding: '0.5rem',
-                fontSize: '14px',
-                width: '100%',
-              }}
             />
           </div>
         </label>
@@ -113,15 +104,6 @@ export default function DistributionLaborHours() {
               placeholderText="End date"
               className={styles.distributionDatePicker}
               wrapperClassName={styles.distributionDatePickerWrapper}
-              style={{
-                backgroundColor: darkMode ? '#2b3344' : '#fff',
-                color: darkMode ? '#fff' : '#000',
-                border: `1px solid ${darkMode ? '#3a506b' : '#ccc'}`,
-                borderRadius: '4px',
-                padding: '0.5rem',
-                fontSize: '14px',
-                width: '100%',
-              }}
             />
           </div>
         </label>
