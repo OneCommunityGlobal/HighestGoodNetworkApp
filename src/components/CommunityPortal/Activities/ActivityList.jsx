@@ -204,23 +204,24 @@ function ActivityList() {
         ) : filteredActivities.length > 0 ? (
           <ul>
             {filteredActivities.map(activity => (
-              <li key={activity.id}>
-                <div
-                  style={{ cursor: 'pointer' }}
-                  onClick={() => handleActivityClick(activity)}
-                  tabIndex={0}
-                  role="button"
-                  aria-label={`View details for ${activity.name}`}
-                  onKeyDown={e => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      handleActivityClick(activity);
-                    }
-                  }}
-                >
+              <div
+                key={activity.id}
+                style={{ cursor: 'pointer' }}
+                onClick={() => handleActivityClick(activity)}
+                tabIndex={0}
+                role="button"
+                aria-label={`View details for ${activity.name}`}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    handleActivityClick(activity);
+                  }
+                }}
+              >
+                <li>
                   <strong>{activity.name}</strong> - {activity.type} - {activity.date} -{' '}
                   {activity.location}
-                </div>
-              </li>
+                </li>
+              </div>
             ))}
           </ul>
         ) : (
