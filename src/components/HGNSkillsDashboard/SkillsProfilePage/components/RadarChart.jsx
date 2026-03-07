@@ -10,6 +10,7 @@ import {
   Legend,
 } from 'chart.js';
 import { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import styles from '../styles/RadarChart.module.css';
 
 ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
@@ -351,5 +352,16 @@ function RadarChart({ profileData, compact = true }) {
     </div>
   );
 }
+
+RadarChart.propTypes = {
+  profileData: PropTypes.shape({
+    skillInfo: PropTypes.shape({
+      general: PropTypes.object,
+      frontend: PropTypes.object,
+      backend: PropTypes.object,
+    }),
+  }),
+  compact: PropTypes.bool,
+};
 
 export default RadarChart;
