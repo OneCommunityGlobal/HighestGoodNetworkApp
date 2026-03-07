@@ -1,5 +1,10 @@
 {
   "extends": ["stylelint-config-standard"],
+  "ignoreFiles": [
+    "build/**/*.css",
+    "public/**/*.css",
+    "node_modules/**/*.css"
+  ],
   "rules": {
     "no-duplicate-selectors": true,
     "selector-pseudo-class-no-unknown": [
@@ -9,14 +14,5 @@
       }
     ],
     "selector-class-pattern": null
-  }
-{
-  "ignoreFiles": [
-    "build/**/*.css",
-    "public/**/*.css",
-    "node_modules/**/*.css"
-  ],
-  "rules": {
-    "no-duplicate-selectors": true
   }
 }
