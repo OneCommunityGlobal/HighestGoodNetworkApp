@@ -13,17 +13,26 @@ export const ENDPOINTS = {
   ADD_BLUE_SQUARE: userId => `${APIEndpoint}/userprofile/${userId}/addInfringement`,
 
   TOP_CONVERTED: (limit, startDate, endDate) =>
-    `${APIEndpoint}/job-analytics/top-converted?limit=${limit}${startDate && endDate ? `&startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}` : ''}`,
+    `${APIEndpoint}/job-analytics/top-converted?limit=${limit}${
+      startDate && endDate
+        ? `&startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`
+        : ''
+    }`,
   LEAST_CONVERTED: (limit, startDate, endDate) =>
-    `${APIEndpoint}/job-analytics/least-converted?limit=${limit}${startDate && endDate ? `&startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}` : ''}`,
+    `${APIEndpoint}/job-analytics/least-converted?limit=${limit}${
+      startDate && endDate
+        ? `&startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`
+        : ''
+    }`,
 
   MODIFY_BLUE_SQUARE: (userId, blueSquareId) =>
     `${APIEndpoint}/userprofile/${userId}/infringements/${blueSquareId}`,
 
-
   // Blue Square Email Triggers
-  BLUE_SQUARE_RESEND_INFRINGEMENT_EMAILS: () => `${APIEndpoint}/blueSquare/resend-infringement-emails-only`,
-  BLUE_SQUARE_RESEND_WEEKLY_SUMMARY_EMAILS: () => `${APIEndpoint}/blueSquare/resend-weekly-summary-emails`,
+  BLUE_SQUARE_RESEND_INFRINGEMENT_EMAILS: () =>
+    `${APIEndpoint}/blueSquare/resend-infringement-emails-only`,
+  BLUE_SQUARE_RESEND_WEEKLY_SUMMARY_EMAILS: () =>
+    `${APIEndpoint}/blueSquare/resend-weekly-summary-emails`,
   USERS_ALLTEAMCODE_CHANGE: `${APIEndpoint}/AllTeamCodeChanges`,
   REPLACE_TEAM_CODE: `${APIEndpoint}/userProfile/replaceTeamCode`,
 
@@ -46,6 +55,7 @@ export const ENDPOINTS = {
   USER_ALL_TEAM_CODE: `${APIEndpoint}/userProfile/teamCode/list`,
   LOGIN: `${APIEndpoint}/login`,
   PROJECTS: `${APIEndpoint}/projects`,
+  ARCHIVEDPROJECTS: `${APIEndpoint}/archivedProjects`,
   TEAM: `${APIEndpoint}/team`,
   TEAM_DATA: teamId => `${APIEndpoint}/team/${teamId}`,
   TEAM_USERS: teamId => `${APIEndpoint}/team/${teamId}/users`,
@@ -152,6 +162,8 @@ export const ENDPOINTS = {
   BADGE_ASSIGN_MULTIPLE: `${APIEndpoint}/badge/assign`,
   BADGE_ASSIGN: userId => `${APIEndpoint}/badge/assign/${userId}`,
   BADGE_BY_ID: badgeId => `${APIEndpoint}/badge/${badgeId}`,
+  ADMIN_LIST: () => `${APIEndpoint}/reports/getAdminList`,
+  SEND_EMAIL_REPORT: () => `${APIEndpoint}/reports/sendEmailReport`,
 
   TEAM_MEMBER_TASKS: userId => `${ENDPOINTS.APIEndpoint()}/user/${userId}/teams/tasks`,
   CREATE_OR_UPDATE_TASK_NOTIFICATION: taskId =>
@@ -183,7 +195,7 @@ export const ENDPOINTS = {
     return url.slice(0, -1);
   },
   ENHANCED_POPULARITY_ROLES: `${APIEndpoint}/popularity-enhanced/roles-enhanced`,
-  ENHANCED_POPULARITY_PAIRS: (roles) =>
+  ENHANCED_POPULARITY_PAIRS: roles =>
     `${APIEndpoint}/popularity-enhanced/role-pairs?roles=${encodeURIComponent(roles.join(','))}`,
 
   // titles endpoints
@@ -296,8 +308,10 @@ export const ENDPOINTS = {
   BM_MATERIALS: `${APIEndpoint}/bm/materials`,
   BM_CONSUMABLES: `${APIEndpoint}/bm/consumables`,
   BM_UPDATE_CONSUMABLES: `${APIEndpoint}/bm/updateConsumablesRecord`,
+  BM_UPDATE_HISTORY: itemType => `${APIEndpoint}/bm/${itemType}/updateHistory`,
   BM_CONSUMABLE_TYPES: `${APIEndpoint}/bm/invtypes/consumables`,
   BM_CONSUMABLES_PURCHASE: `${APIEndpoint}/bm/consumables/purchase`,
+  BM_UPDATE_CONSUMABLE_STATUS: `${APIEndpoint}/bm/updateConsumableStatus`,
   BM_REUSABLE_TYPES: `${APIEndpoint}/bm/invtypes/reusables`,
   BM_REUSABLES: `${APIEndpoint}/bm/reusables`,
   BM_PURCHASE_REUSABLES: `${APIEndpoint}/bm/reusables/purchase`,
@@ -324,13 +338,16 @@ export const ENDPOINTS = {
   BM_LESSON_LIKES: lessonId => `${APIEndpoint}/bm/lesson/${lessonId}/like`,
   BM_EXTERNAL_TEAM: `${APIEndpoint}/bm/externalTeam`,
   BM_INVENTORY_UNITS: `${APIEndpoint}/bm/inventoryUnits`,
+  BM_INVENTORY_UNIT_BY_ID: unitId => `${APIEndpoint}/bm/inventoryUnits/${unitId}`,
   BM_INVTYPE_ROOT: `${APIEndpoint}/bm/invtypes`,
+  BM_INVTYPE_BY_ID: typeId => `${APIEndpoint}/bm/invtypes/${typeId}`,
   BM_TOOLS: `${APIEndpoint}/bm/tools/`,
   BM_TOOL_BY_ID: singleToolId => `${APIEndpoint}/bm/tools/${singleToolId}`,
   BM_TOOL_AVAILABILITY: (toolId = '', projectId = '') =>
     `${APIEndpoint}/tools/availability?toolId=${toolId}&projectId=${projectId}`,
   BM_LOG_TOOLS: `${APIEndpoint}/bm/tools/log`,
   BM_EQUIPMENT_BY_ID: singleEquipmentId => `${APIEndpoint}/bm/equipment/${singleEquipmentId}`,
+  BM_EQUIPMENT_STATUS_UPDATE: (equipmentId) => `${APIEndpoint}/bm/equipment/${equipmentId}/status`,
   BM_EQUIPMENTS: `${APIEndpoint}/bm/equipments`,
   BM_INVTYPE_TYPE: type => `${APIEndpoint}/bm/invtypes/${type}`,
   BM_ISSUE_CHART: `${APIEndpoint}/bm/issue/issue-chart`,
@@ -359,7 +376,7 @@ export const ENDPOINTS = {
   BM_TAGS_DELETE: `${APIEndpoint}/bm/tags`,
 
   BM_ORGS_WITH_LOCATION: `${APIEndpoint}/bm/orgLocation`,
-  ORG_DETAILS: (projectId) => `${APIEndpoint}/bm/orgLocation/${projectId}`,
+  ORG_DETAILS: projectId => `${APIEndpoint}/bm/orgLocation/${projectId}`,
   BM_PROJECT_MEMBERS: projectId => `${APIEndpoint}/bm/project/${projectId}/users`,
 
   PROJECT_GLOBAL_DISTRIBUTION: `${APIEndpoint}/projectglobaldistribution`,
@@ -394,6 +411,7 @@ export const ENDPOINTS = {
   HGN_FORM_UPDATE_QUESTION: id => `${APIEndpoint}/questions/${id}`,
   HGN_FORM_SUBMIT: `${APIEndpoint}/hgnform`,
   HGN_FORM_UPDATE_USER_SKILLS_FOLLOWUP_SUBMIT: `${APIEndpoint}/skills/profile/updateFollowUp/`,
+  SKILLS_PROFILE_UPDATE_YEARS_OF_EXPERIENCE: userId => `${APIEndpoint}/skills/profile/updateYearsOfExperience/${userId}`,
   // HGN Skills Dashboard
   SKILLS_PROFILE: userId => `${APIEndpoint}/skills/profile/${userId}`,
 
@@ -497,18 +515,14 @@ export const ENDPOINTS = {
         ? `startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`
         : null,
 
-      roles && roles !== "All"
-        ? `roles=${encodeURIComponent(roles)}`
-        : null,
+      roles && roles !== 'All' ? `roles=${encodeURIComponent(roles)}` : null,
 
-      granularity
-        ? `granularity=${encodeURIComponent(granularity)}`
-        : null,
+      granularity ? `granularity=${encodeURIComponent(granularity)}` : null,
     ].filter(Boolean);
 
-    const qs = params.length ? `?${params.join("&")}` : "";
+    const qs = params.length ? `?${params.join('&')}` : '';
 
-    return `${APIEndpoint.replace("/api", "")}/job-analytics${qs}`;
+    return `${APIEndpoint.replace('/api', '')}/job-analytics${qs}`;
   },
 
   JOB_ANALYTICS_ROLES: `${APIEndpoint.replace('/api', '')}/job-analytics/roles`,
@@ -517,11 +531,18 @@ export const ENDPOINTS = {
   PROMOTION_ELIGIBILITY: `${APIEndpoint}/promotion-eligibility`,
   PROMOTE_MEMBERS: `${APIEndpoint}/promote-members`,
 
+  // actual cost endpoints
+  ACTUAL_COST_BREAKDOWN: projectId => `${APIEndpoint}/projects/${projectId}/actual-cost-breakdown`,
+  MATERIAL_UTILIZATION: () => `${APIEndpoint}/materials/utilization`,
+  DISTINCT_PROJECTS: () => `${APIEndpoint}/materials/distinct-projects`,
+  DISTINCT_MATERIALS: () => `${APIEndpoint}/materials/distinct-materials`,
 
   //pull requests analysis
   PR_REVIEWS_INSIGHTS: `${APIEndpoint}/analytics/pr-review-insights`,
 
   // Education Portal endpoints
+  STUDENT_PROFILE: `${APIEndpoint}/student/profile`,
+  STUDENT_SUBJECT_TASKS: subjectId => `${APIEndpoint}/student/profile/subject/${subjectId}`,
   EDUCATOR_ASSIGN_ATOMS: () => `${APIEndpoint}/educator/assign-atoms`,
 
   LESSON_PLANS: `${APIEndpoint}/education/lesson-plans`,
