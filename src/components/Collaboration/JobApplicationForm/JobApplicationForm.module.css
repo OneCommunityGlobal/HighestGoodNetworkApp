@@ -287,7 +287,7 @@
   transform: translateY(-1px);
 }
 
-.resumeLabel input[type="file"] {
+.resumeLabel input[type='file'] {
   display: none;
 }
 
@@ -323,7 +323,7 @@
 .darkMode .jobSelect,
 .darkMode input,
 .darkMode select,
-.darkMode textarea{
+.darkMode textarea {
   background: #181a1b;
   color: #f1f1f1;
   border: 1px solid #444;
@@ -432,7 +432,7 @@
   border-color: rgba(255, 255, 255, 0.05);
 }
 
-/* --- Admin Requirements Section --- */
+/* Admin Requirements Section */
 .adminRequirementsSection {
   margin: 20px 0;
   padding: 15px;
@@ -445,7 +445,7 @@
   min-height: 50px;
 }
 
-/* --- User Requirements Section --- */
+/* User Requirements Section */
 .userRequirementsSection {
   margin: 20px 0;
   padding: 15px;
@@ -534,14 +534,12 @@
   flex: 1;
 }
 
-/* Dark mode for admin requirements */
 .darkMode .adminRequirementsSection {
   background-color: #1c2541;
   border-top-color: #98cb03;
   border-bottom-color: #98cb03;
 }
 
-/* Dark mode for user requirements */
 .darkMode .userRequirementsSection {
   background-color: #1c2541;
   border-top-color: #98cb03;

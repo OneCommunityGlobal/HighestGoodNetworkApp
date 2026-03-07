@@ -155,6 +155,28 @@ const TeamMemberTask = React.memo(
       Mentor: '#e9dd57', // yellow
     };
 
+    function getTaskCreatorName(task) {
+      if (!task) return 'Unknown';
+
+      if (task.creatorName) return task.creatorName;
+      if (task.createdByName) return task.createdByName;
+      if (task.createdByEmail) return task.createdByEmail;
+
+      const cb = task.createdBy;
+      if (cb && typeof cb === 'object') {
+        const first = (cb.firstName || cb.firstname || cb.givenName || '').trim();
+        const last = (cb.lastName || cb.lastname || cb.familyName || '').trim();
+        const full = [first, last]
+          .filter(Boolean)
+          .join(' ')
+          .trim();
+        return full || cb.email || 'Unknown';
+      }
+
+      // No more fallbacks (no owner/creator/strings)
+      return 'Unknown';
+    }
+
     function getInitials(name) {
       const initials = name
         .split(' ')
@@ -292,11 +314,24 @@ const TeamMemberTask = React.memo(
                                 style={{
                                   fontSize: 24,
                                   cursor: 'pointer',
+                                  marginLeft: 6,
                                   color: darkMode ? 'lightgray' : 'black',
                                 }}
                                 title="Click to see user's timelog"
                               />
                             </Link>
+                            <p
+                              style={{
+                                fontSize: 16,
+                                cursor: 'pointer',
+                                color: darkMode ? 'lightgray' : 'black',
+                                marginLeft: 6,
+                                paddingTop: 15,
+                              }}
+                              title="Number of weeks this person has completed, based on the total weekly summaries they’ve submitted."
+                            >
+                              {user.weeklySummariesCount}
+                            </p>
                           </div>
                           {user.role !== 'Volunteer' && (
                             <div
@@ -499,33 +534,37 @@ const TeamMemberTask = React.memo(
                                       darkMode ? 'bg-yinmn-blue text-light' : ''
                                     }`}
                                   >
-                                    <div className={styles['inner-task-align']}>
-                                      {/*  */}
+                                    <div className={styles.taskColumnLayout}>
+                                      {/* Task title */}
                                       <div className={styles['team-member-tasks-content']}>
                                         <Link
                                           className={styles['team-member-tasks-content-link']}
                                           to={task.projectId ? `/wbs/tasks/${task._id}` : '/'}
                                           data-testid={`${task.taskName}`}
+                                          title={`Created by: ${getTaskCreatorName(task)}`}
                                           style={{ color: darkMode ? '#339CFF' : undefined }}
                                         >
-                                          <span>{`${task.num} ${task.taskName}`} </span>
+                                          <span className={styles.taskTitle}>
+                                            {`${task.num} ${task.taskName}`}
+                                          </span>
                                         </Link>
+
                                         <CopyToClipboard
                                           writeText={task.taskName}
                                           message="Task Copied!"
                                         />
                                       </div>
-                                      {/*  */}
-                                      <div className={styles['team-member-tasks-icons']}>
+
+                                      {/* Icons UNDER task name */}
+                                      <div className={styles.taskIconsUnderName}>
                                         {task.taskNotifications.length > 0 &&
-                                        task.taskNotifications.some(
-                                          notification =>
-                                            Object.prototype.hasOwnProperty.call(
-                                              notification,
-                                              'userId',
-                                            ) && notification.userId === user.personId,
-                                        ) ? (
-                                          <div>
+                                          task.taskNotifications.some(
+                                            notification =>
+                                              Object.prototype.hasOwnProperty.call(
+                                                notification,
+                                                'userId',
+                                              ) && notification.userId === user.personId,
+                                          ) && (
                                             <FontAwesomeIcon
                                               className={styles['team-member-tasks-bell']}
                                               title="Task Info Changes"
@@ -541,43 +580,37 @@ const TeamMemberTask = React.memo(
                                                   taskNotificationId,
                                                 );
                                               }}
-                                              data-taskid={`task-info-icon-${task.taskName}`}
                                             />
-                                          </div>
-                                        ) : null}
+                                          )}
+
                                         {isAllowedToResolveTasks && (
-                                          <div>
-                                            <FontAwesomeIcon
-                                              className={styles['team-member-tasks-done']}
-                                              icon={faCheckCircle}
-                                              title="Mark as Done"
-                                              onClick={() => {
-                                                handleMarkAsDoneModal(user.personId, task);
-                                                handleTaskModalOption('Checkmark');
-                                              }}
-                                              data-testid={`tick-${task.taskName}`}
-                                            />
-                                          </div>
+                                          <FontAwesomeIcon
+                                            className={styles['team-member-tasks-done']}
+                                            icon={faCheckCircle}
+                                            title="Mark as Done"
+                                            onClick={() => {
+                                              handleMarkAsDoneModal(user.personId, task);
+                                              handleTaskModalOption('Checkmark');
+                                            }}
+                                          />
                                         )}
+
                                         {(canUpdateTask || canDeleteTask) && (
-                                          <div>
-                                            <FontAwesomeIcon
-                                              className={styles['team-member-task-remove']}
-                                              icon={faTimesCircle}
-                                              title="Remove User from Task"
-                                              onClick={() => {
-                                                handleRemoveFromTaskModal(user.personId, task);
-                                                handleTaskModalOption('XMark');
-                                              }}
-                                              data-testid={`Xmark-${task.taskName}`}
-                                            />
-                                          </div>
+                                          <FontAwesomeIcon
+                                            className={styles['team-member-task-remove']}
+                                            icon={faTimesCircle}
+                                            title="Remove User from Task"
+                                            onClick={() => {
+                                              handleRemoveFromTaskModal(user.personId, task);
+                                              handleTaskModalOption('XMark');
+                                            }}
+                                          />
                                         )}
-                                        <div>
-                                          <TeamMemberTaskIconsInfo />
-                                        </div>
+
+                                        <TeamMemberTaskIconsInfo />
                                       </div>
-                                      {/*  */}
+
+                                      {/* Review Button */}
                                       <div className={styles['team-member-task-review-button']}>
                                         <ReviewButton
                                           user={user}
@@ -673,7 +706,9 @@ const TeamMemberTask = React.memo(
                                 <button
                                   type="button"
                                   onClick={handleTruncateTasksButtonClick}
-                                  className={darkMode ? 'text-light' : ''}
+                                  className={`${styles.truncateTasksBtn} ${
+                                    darkMode ? 'text-light' : ''
+                                  }`}
                                 >
                                   {isTruncated
                                     ? `Show All (${activeTasks.length}) Tasks`

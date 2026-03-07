@@ -16,7 +16,7 @@ import SetUpFinalDayButton from '~/components/UserManagement/SetUpFinalDayButton
 import './BasicInformationTab.css';
 import { boxStyle, boxStyleDark } from '~/styles';
 import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
-import { formatDateLocal } from '~/utils/formatDate';
+import { formatDateLocal, formatDateCompany } from '~/utils/formatDate';
 import { ENDPOINTS } from '~/utils/URL';
 import axios from 'axios';
 import { isString } from 'lodash';
@@ -489,6 +489,7 @@ const BasicInformationTab = props => {
     role,
     loadUserProfile,
     darkMode,
+    hasFinalDay,
   } = props;
   const [timeZoneFilter, setTimeZoneFilter] = useState('');
   const [desktopDisplay, setDesktopDisplay] = useState(window.innerWidth > 1024);
@@ -499,7 +500,7 @@ const BasicInformationTab = props => {
   rolesAllowedToEditStatusFinalDay.includes(role) || dispatch(hasPermission('pauseUserActivity'));
 
   const canEditEndDate =
-  rolesAllowedToEditStatusFinalDay.includes(role) || dispatch(hasPermission('setUserFinalDay'));
+  rolesAllowedToEditStatusFinalDay.includes(role) || dispatch(hasPermission('setFinalDay'));
 
 
   let topMargin = '6px';
@@ -894,7 +895,7 @@ const BasicInformationTab = props => {
             {userProfile.isActive
               ? 'Active'
               : userProfile.reactivationDate
-              ? 'Paused until ' + formatDateLocal(userProfile.reactivationDate)
+              ? 'Paused until ' + formatDateCompany(userProfile.reactivationDate)
               : 'Inactive'}
           </Label>
           {canEdit && canEditStatus && (
@@ -932,6 +933,7 @@ const BasicInformationTab = props => {
               isBigBtn={true}
               userProfile={userProfile}
               darkMode={darkMode}
+              hasFinalDay={hasFinalDay}
             />
           )}
         </div>

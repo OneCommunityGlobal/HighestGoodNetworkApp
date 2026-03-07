@@ -5,6 +5,7 @@ import hasPermission from '~/utils/permissions';
 import styles from './Collaboration.module.css';
 import { toast } from 'react-toastify';
 import { ApiEndpoint } from '~/utils/URL';
+import { useSelector } from 'react-redux';
 import OneCommunityImage from '../../assets/images/logo2.png';
 
 function Collaboration() {
@@ -487,7 +488,6 @@ function Collaboration() {
                         loading="lazy"
                         onError={e => {
                           e.currentTarget.onerror = null;
-                          // Fallback to general workspace image
                           e.currentTarget.src =
                             'https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=640&h=480&fit=crop&q=80';
                         }}
@@ -499,7 +499,6 @@ function Collaboration() {
               }
             }
 
-            // Show individual jobs when filtered
             if (jobAds.length > 0) {
               return jobAds.map(ad => {
                 if (!ad || !ad._id) return null;
@@ -566,7 +565,6 @@ function Collaboration() {
                       loading="lazy"
                       onError={e => {
                         e.currentTarget.onerror = null;
-                        // Fallback to general workspace image
                         e.currentTarget.src =
                           'https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=640&h=480&fit=crop&q=80';
                       }}

@@ -13,7 +13,6 @@
   margin: 0 auto;
 }
 
-/* --- Page wrappers --- */
 .jobLanding {
   min-height: 100vh;
   background-color: transparent;
@@ -22,16 +21,8 @@
 .collabContainer {
   width: 100%;
   margin: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background-color: transparent;
-  min-height: 100vh;
-  border-radius: 0;
-  padding: 0;
 }
 
-/* --- Navbar --- */
 .navbar {
   width: 100%;
   display: flex;
@@ -228,7 +219,8 @@
 }
 
 .jobAd h3 {
-  font-size: 1.1rem;
+  margin-top: 10px;
+  font-size: 1.05rem;
   font-weight: 700;
   color: #333;
   margin: 0;
@@ -253,7 +245,6 @@
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
-/* --- Admin Requirements Section --- */
 .adminRequirementsSection {
   margin-top: auto;
   padding: 15px;
@@ -326,7 +317,6 @@
   color: #333;
 }
 
-/* --- Summaries view --- */
 .summariesList {
   width: min(1100px, 100%);
   margin: 24px auto;
@@ -408,7 +398,6 @@
   }
 }
 
-/* --- Pagination --- */
 .pagination {
   margin: 20px 0;
   display: flex;
@@ -437,7 +426,6 @@
   cursor: default;
 }
 
-/* --- Empty state --- */
 .noJobads {
   display: flex;
   justify-content: center;
@@ -524,7 +512,6 @@
   }
 }
 
-/* --- Dark Mode --- */
 .jobLandingDark {
   background-color: #1c2541;
 }

@@ -115,7 +115,8 @@ class ReportsPage extends Component {
   async componentDidMount() {
     const fetchProjects = this.props.fetchAllProjects();
     const fetchTeams = this.props.getAllUserTeams();
-    const fetchUserProfile = this.props.getUserProfileBasicInfo();
+    // Added 'Report' parameter to identify the source for fetching all user basic info
+    const fetchUserProfile = this.props.getUserProfileBasicInfo({source:'Report'});
 
     // parallel api calls
     await Promise.all([fetchProjects, fetchTeams, fetchUserProfile]);
@@ -505,7 +506,7 @@ class ReportsPage extends Component {
       this.state.peopleSearchData = this.filteredPeopleList(this.state.peopleSearchData);
     }
 
-    const isOxfordBlue = darkMode ? 'bg-oxford-blue' : '';
+    const isOxfordBlue = darkMode ? 'bg-oxford-blue text-light' : 'bg-white-smoke';
     const isYinmnBlue = darkMode ? 'bg-yinmn-blue' : '';
     const textColor = darkMode ? 'text-blue-400' : 'text-dark';
     const boxStyling = darkMode ? boxStyleDark : boxStyle;
@@ -531,7 +532,7 @@ class ReportsPage extends Component {
           type="button"
         >
           <div className="container-component-category">
-            <h2 className="mt-3 mb-5">
+            <h2 className="mt-3 ">
               {/* Loading spinner at the top */}
               {this.state.loading && (
                 <div className="loading-spinner-top">
@@ -539,7 +540,7 @@ class ReportsPage extends Component {
                 </div>
               )}
               <div className="d-flex align-items-center">
-                <h2 className="mr-2">Reports Page</h2>
+                <h2 className="mr-2" style={darkMode ? { color: '#fff' } : undefined}>Reports Page</h2>
                 <EditableInfoModal
                   areaName="ReportsPage"
                   areaTitle="Reports Page"
@@ -552,7 +553,7 @@ class ReportsPage extends Component {
               </div>
             </h2>
             <div>
-              <div className={darkMode ? `text-white` : ``}>Select a Category</div>
+              <p >Select a Category</p>
             </div>
             <div className='report-container-data'>
               <div className='data-container' style={this.state.showCharts ? {width: '50%'} : {width: '100%'}}>
@@ -602,7 +603,7 @@ class ReportsPage extends Component {
                   style={darkMode ? boxStyleDark : boxStyle}
                 >
                   <ReportFilter
-                    filterStatus={this.state.filterStatus} 
+                    filterStatus={this.state.filterStatus}
                     setFilterStatus={this.setFilterStatus}
                     onWildCardSearch={this.onWildCardSearch}
                     onCreateNewTeamShow={this.onCreateNewTeamShow}
@@ -670,9 +671,9 @@ class ReportsPage extends Component {
 
                     </div>
                     <div className="total-report-item">
-                      <Button 
-                        type="button" 
-                        color="info" 
+                      <Button
+                        type="button"
+                        color="info"
                         onClick={this.showContributorsReport}
                       >
                         {this.state.showContributorsReport

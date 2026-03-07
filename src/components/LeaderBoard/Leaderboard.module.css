@@ -93,7 +93,7 @@
   }
 }
 
-.leaderboard-totals-title {
+.leaderboardTotalsTitle {
   color: #339cff;
   font-weight: bold;
 }
@@ -119,4 +119,7 @@
   min-width: 70px;
   padding: 0.5rem 0.3rem;
   vertical-align: middle;
+}
+.trophyTextWhite {
+  color: #fff;
 }
