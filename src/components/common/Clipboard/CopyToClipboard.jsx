@@ -14,11 +14,12 @@ const CopyToClipboard = ({ writeText, message }) => {
 
   return (
     <FontAwesomeIcon
-      className={`${styles.copyToClipboard}`}
+      className={styles.copyToClipboard}
       data-testid="copy-icon"
       icon={faCopy}
       onClick={handleCopyToClipboard}
       color={darkMode ? 'lightgrey' : ''}
+      size="lg"
     />
   );
 };
