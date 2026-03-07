@@ -323,22 +323,20 @@ function WeeklyProjectSummary() {
         title: 'Financials Tracking',
         key: 'Financials Tracking',
         className: 'full',
-        content: [1, 2, 3, 4].map((_, index) => {
-          const uniqueId = uuidv4();
-          return (
-            <div
-              key={uniqueId}
-              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
-            >
-              {(() => {
-                if (index === 0) return <FinancialsTrackingCard />;
-                if (index === 2) return <CostPredictionChart projectId={1} />;
-                if (index === 3) return <ActualVsPlannedCost />;
-                return '📊 Card';
-              })()}
+        content: (
+          <div className={styles.financialsTrackingGrid}>
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+              <FinancialsTrackingCard />
             </div>
-          );
-        }),
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>📊 Card</div>
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+              <CostPredictionChart projectId={1} />
+            </div>
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+              <ActualVsPlannedCost />
+            </div>
+          </div>
+        ),
       },
     ],
     [quantityOfMaterialsUsedData, darkMode],
