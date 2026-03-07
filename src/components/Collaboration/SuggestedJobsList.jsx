@@ -25,7 +25,7 @@ function SuggestedJobsList() {
     const text = doc.body.textContent || doc.body.innerText || '';
 
     // Clean up extra whitespace
-    const cleaned = text.replace(/\s+/g, ' ').trim();
+    const cleaned = text.replaceAll(/\s+/g, ' ').trim();
 
     // Truncate if needed
     if (cleaned.length > maxLength) {

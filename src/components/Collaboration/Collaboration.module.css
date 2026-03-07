@@ -102,7 +102,7 @@
 .searchButton:hover,
 .resetButton:hover,
 .showSummaries:hover {
-  filter: brightness(0.95);
+  filter: brightness(0.92);
 }
 
 .searchButton:active,
@@ -420,8 +420,8 @@
 }
 
 .pagination button:disabled {
-  background-color: #ccc;
-  color: #333;
+  background-color: #b0b0b0;
+  color: #1a1a1a;
   cursor: default;
 }
 
@@ -556,7 +556,7 @@
 }
 
 .jobLandingDark .pagination button:hover {
-  background-color: #4a99ee !important;
+  background-color: #2563eb !important;
   color: #fff !important;
 }
 

@@ -1,5 +1,5 @@
-// ...existing code...
 import React, { useState, useEffect, useRef } from 'react';
+import PropTypes from 'prop-types';
 import { useLocation } from 'react-router-dom';
 import styles from './JobApplicationForm.module.css';
 import OneCommunityImage from '../../../assets/images/logo2.png';
@@ -46,7 +46,8 @@ function JobApplicationForm() {
         role === 'ADMINISTRATOR' ||
         role === 'OWNER'
       );
-    } catch (error) {
+    } catch (err) {
+      console.error('Error checking admin status:', err);
       return false;
     }
   });
@@ -84,27 +85,27 @@ function JobApplicationForm() {
     }
   }, [location.state, location.search, location.pathname]);
 
-  // Fetch user's prior questionnaire data from referral link
+  const applyQuestionnairePreFill = data => {
+    if (!data) return;
+    if (data.name) setApplicantName(data.name);
+    if (data.email) setApplicantEmail(data.email);
+    if (data.locationTimezone) setLocationTimezone(data.locationTimezone);
+    if (data.phone) setPhone(data.phone);
+    if (data.fullTimeYears) setFullTimeYears(data.fullTimeYears);
+    if (data.monthsVolunteer) setMonthsVolunteer(data.monthsVolunteer);
+    if (data.hoursPerWeek) setHoursPerWeek(data.hoursPerWeek);
+    if (data.roleSkills) setRoleSkills(data.roleSkills);
+  };
+
   const fetchUserQuestionnaireData = async referralId => {
     try {
-      // This endpoint should return the user's questionnaire responses
-      // Adjust the endpoint based on your API structure
       const response = await axios.get(`${ENDPOINTS.GET_USER_QUESTIONNAIRE}/${referralId}`);
       if (response.data) {
         setUserQuestionnaireData(response.data);
-        // Pre-fill form fields from questionnaire data
-        if (response.data.name) setApplicantName(response.data.name);
-        if (response.data.email) setApplicantEmail(response.data.email);
-        if (response.data.locationTimezone) setLocationTimezone(response.data.locationTimezone);
-        if (response.data.phone) setPhone(response.data.phone);
-        if (response.data.fullTimeYears) setFullTimeYears(response.data.fullTimeYears);
-        if (response.data.monthsVolunteer) setMonthsVolunteer(response.data.monthsVolunteer);
-        if (response.data.hoursPerWeek) setHoursPerWeek(response.data.hoursPerWeek);
-        if (response.data.roleSkills) setRoleSkills(response.data.roleSkills);
+        applyQuestionnairePreFill(response.data);
       }
     } catch (error) {
       console.error('Error fetching user questionnaire data:', error);
-      // If referral data fetch fails, continue without it
     }
   };
 
@@ -201,11 +202,6 @@ function JobApplicationForm() {
     setAnswers(newAnswers);
   };
 
-  const handleShowDescription = e => {
-    e.preventDefault();
-    setShowDescription(true);
-  };
-
   const handleCloseDescription = () => {
     setShowDescription(false);
   };
@@ -269,10 +265,10 @@ function JobApplicationForm() {
     try {
       const doc = new DOMParser().parseFromString(html, 'text/html');
       const text = doc.body.textContent || doc.body.innerText || '';
-      return text.replace(/\s+/g, ' ').trim();
+      return text.replaceAll(/\s+/g, ' ').trim();
     } catch {
       // Avoid regex that could cause ReDoS; only normalize whitespace in fallback
-      return (html || '').replace(/\s+/g, ' ').trim();
+      return (html || '').replaceAll(/\s+/g, ' ').trim();
     }
   };
 
@@ -592,7 +588,14 @@ function JobApplicationForm() {
   );
 }
 
-/* Requirements Section Component */
+const requirementsPropType = PropTypes.shape({
+  reactExperience: PropTypes.bool,
+  twoMonthsCommitment: PropTypes.bool,
+  javascriptExperience: PropTypes.bool,
+  timeZoneLocation: PropTypes.bool,
+  tenHoursPerWeek: PropTypes.bool,
+});
+
 function RequirementsSection({ requirements, darkMode }) {
   const requirementList = [
     {
@@ -667,6 +670,13 @@ function RequirementsSection({ requirements, darkMode }) {
     </div>
   );
 }
+RequirementsSection.propTypes = {
+  requirements: requirementsPropType.isRequired,
+  darkMode: PropTypes.bool,
+};
+RequirementsSection.defaultProps = {
+  darkMode: false,
+};
 
 /* User Requirements Section Component - Shows requirements with checkboxes for user view */
 function UserRequirementsSection({ requirements, darkMode }) {
@@ -743,5 +753,12 @@ function UserRequirementsSection({ requirements, darkMode }) {
     </div>
   );
 }
+UserRequirementsSection.propTypes = {
+  requirements: requirementsPropType.isRequired,
+  darkMode: PropTypes.bool,
+};
+UserRequirementsSection.defaultProps = {
+  darkMode: false,
+};
 
 export default JobApplicationForm;

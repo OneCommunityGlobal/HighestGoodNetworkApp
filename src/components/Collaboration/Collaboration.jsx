@@ -7,6 +7,17 @@ import { toast } from 'react-toastify';
 import { ApiEndpoint } from '~/utils/URL';
 import OneCommunityImage from '../../assets/images/logo2.png';
 
+function getColumnsFromMQ() {
+  if (typeof globalThis.matchMedia !== 'function') return 1;
+  const mq = globalThis.matchMedia.bind(globalThis);
+  if (mq('(min-width: 1600px)').matches) return 6;
+  if (mq('(min-width: 1300px)').matches) return 5;
+  if (mq('(min-width: 1017px)').matches) return 4;
+  if (mq('(min-width: 768px)').matches) return 3;
+  if (mq('(min-width: 480px)').matches) return 2;
+  return 1;
+}
+
 function Collaboration() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -26,32 +37,6 @@ function Collaboration() {
   const history = useHistory();
   const userHasPermission = permission => dispatch(hasPermission(permission));
   const canReorderJobs = userHasPermission('reorderJobs');
-  const isAdmin = useSelector(state => {
-    try {
-      const user = state?.auth?.user;
-      const role = user?.role;
-      return (
-        role === 'Administrator' ||
-        role === 'Owner' ||
-        role === 'admin' ||
-        role === 'ADMINISTRATOR' ||
-        role === 'OWNER'
-      );
-    } catch (error) {
-      console.error('Error checking admin status:', error);
-      return false;
-    }
-  });
-
-  function getColumnsFromMQ() {
-    if (typeof window === 'undefined' || !window.matchMedia) return 1;
-    if (window.matchMedia('(min-width: 1600px)').matches) return 6;
-    if (window.matchMedia('(min-width: 1300px)').matches) return 5;
-    if (window.matchMedia('(min-width: 1017px)').matches) return 4;
-    if (window.matchMedia('(min-width: 768px)').matches) return 3;
-    if (window.matchMedia('(min-width: 480px)').matches) return 2;
-    return 1;
-  }
 
   const calculateAdsPerPage = () => {
     const rows = 5;
@@ -125,7 +110,7 @@ function Collaboration() {
   const getUniqueCategories = () => {
     const categoryMap = new Map();
     jobAds.forEach(ad => {
-      if (ad && ad.category) {
+      if (ad?.category) {
         const cat = ad.category;
         if (!categoryMap.has(cat)) {
           categoryMap.set(cat, {
@@ -215,7 +200,7 @@ function Collaboration() {
       setSummariesAll([]);
       setSummariesPage(1);
       setSummariesTotalPages(0);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      globalThis.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (error) {
       console.error('Error resetting filters:', error);
       toast.error('Error resetting filters');
@@ -225,7 +210,7 @@ function Collaboration() {
   const setPage = pageNumber => {
     setCurrentPage(pageNumber);
     fetchJobAds();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    globalThis.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleShowSummaries = async () => {
@@ -245,7 +230,7 @@ function Collaboration() {
       setSummariesAll(summariesData);
       setSummariesPage(1);
       setSummariesTotalPages(Math.max(1, Math.ceil(summariesData.length / summariesPageSize)));
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      globalThis.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (error) {
       console.error('Error fetching summaries:', error);
       toast.error('Error fetching summaries');
@@ -255,7 +240,7 @@ function Collaboration() {
   const handleSetSummariesPage = page => {
     const next = page < 1 ? 1 : page > summariesTotalPages ? summariesTotalPages : page;
     setSummariesPage(next);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    globalThis.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const debounce = (fn, ms = 150) => {
@@ -278,9 +263,9 @@ function Collaboration() {
   useEffect(() => {
     fetchJobAds();
     fetchCategories();
-    window.addEventListener('resize', handleResize);
+    globalThis.addEventListener('resize', handleResize);
     return () => {
-      window.removeEventListener('resize', handleResize);
+      globalThis.removeEventListener('resize', handleResize);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -523,7 +508,7 @@ function Collaboration() {
                             },
                           });
                         } else {
-                          window.location.href = `/job-application`;
+                          globalThis.location.href = `/job-application`;
                         }
                       } catch (error) {
                         console.error('Error navigating to job application:', error);
@@ -546,7 +531,7 @@ function Collaboration() {
                               },
                             });
                           } else {
-                            window.location.href = `/job-application`;
+                            globalThis.globalThis.location.href = `/job-application`;
                           }
                         } catch (error) {
                           console.error('Error navigating to job application:', error);
