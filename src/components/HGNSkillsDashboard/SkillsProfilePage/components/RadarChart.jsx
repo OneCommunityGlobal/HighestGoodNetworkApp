@@ -224,15 +224,14 @@ function RadarChart({ profileData, compact = true }) {
     );
   }
 
+  const { general = {}, frontend = {}, backend = {} } = profileData?.skillInfo || {};
+
   const chartData = {
     labels: skillsData.map(skill => (compact ? skill.shortLabel || skill.label : skill.label)),
     datasets: [
       {
         label: 'Skills',
-        data: SKILL_MAPPINGS.map(skill => {
-          const source = skill.value(general) ?? skill.value(frontend) ?? skill.value(backend) ?? 0;
-          return source;
-        }),
+        data: SKILL_MAPPINGS.map(skill => skill.value(general, frontend, backend) ?? 0),
         backgroundColor: 'rgba(37, 99, 235, 0.16)',
         borderColor: '#2563eb',
         borderWidth: 2,
