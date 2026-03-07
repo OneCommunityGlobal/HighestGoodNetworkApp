@@ -1,0 +1,90 @@
+.chartCard {
+  background-color: #ffffff;
+  color: #232323;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px #eee;
+  padding: 24px;
+  margin-bottom: 24px;
+  width: 100%;
+  grid-column: 1 / -1;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.chartCard.darkMode {
+  background-color: #1b2a41; /* --color-oxford-blue */
+  color: #e5e5e5; /* --text-dark */
+  box-shadow: 2px 2px 4px 1px black; /* box-shadow-dark */
+}
+
+.chartTitle {
+  margin-bottom: 24px;
+  font-size: 24px; /* match previous standard or h2 size */
+  font-weight: bold;
+}
+
+.darkMode .chartTitle {
+  color: inherit;
+}
+
+.filterContainer {
+  display: flex;
+  gap: 40px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+  align-items: flex-end;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 90px;
+}
+
+.label {
+  font-weight: bold;
+  font-size: 16px;
+  margin-bottom: 0;
+}
+
+.dropdownButton {
+  font-size: 14px;
+  color: #444;
+  font-weight: 500;
+  margin-bottom: 2px;
+  cursor: pointer;
+  position: relative;
+  display: inline-block;
+  min-width: 60px;
+  text-align: center;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.darkMode .dropdownButton {
+  color: #e5e5e5;
+}
+
+.dropdownMenu {
+  position: absolute;
+  left: 0;
+  top: 100%;
+  z-index: 2000;
+  min-width: 120px;
+  background: white;
+  box-shadow: 0 2px 8px #eee;
+  border-radius: 4px;
+  margin-top: 2px;
+}
+
+.darkMode .dropdownMenu {
+  background-color: #1c2541; /* --color-space-cadet */
+  box-shadow: 2px 2px 4px 1px black;
+}
+
+.chartContainer {
+  width: 100%;
+  margin: 0 -24px;
+  padding: 0 24px;
+}
