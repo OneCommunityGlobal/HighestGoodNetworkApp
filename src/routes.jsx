@@ -35,6 +35,7 @@ import HeaderRenderer from './components/Header/HeaderRenderer';
 import Announcements from './components/Announcements';
 import JobCCDashboard from './components/JobCCDashboard/JobCCDashboard';
 import WeeklyProjectSummary from './components/BMDashboard/WeeklyProjectSummary/WeeklyProjectSummary';
+import TotalOrgSummaryEmail from './components/TotalOrgSummary/WeeklySummaryEmail/TotalOrgSummaryEmail';
 import LessonForm from './components/BMDashboard/Lesson/LessonForm';
 import LessonList from './components/BMDashboard/LessonList/LessonListForm';
 import AddEquipmentType from './components/BMDashboard/Equipment/Add/AddEquipmentType';
@@ -546,6 +547,21 @@ export default (
           path="/totalorgsummary"
           exact
           component={TotalOrgSummary}
+          fallback
+          allowedRoles={[
+            UserRole.Administrator,
+            UserRole.Manager,
+            UserRole.CoreTeam,
+            UserRole.Owner,
+            UserRole.Mentor,
+          ]}
+          // setting permission as Weeklysummariesreport for now. Later it will be changed to weeklyVolunteerSummary. - H
+          routePermissions={RoutePermissions.weeklySummariesReport}
+        />
+        <ProtectedRoute
+          path="/TotalOrgSummaryEmail"
+          exact
+          component={TotalOrgSummaryEmail}
           fallback
           allowedRoles={[
             UserRole.Administrator,
