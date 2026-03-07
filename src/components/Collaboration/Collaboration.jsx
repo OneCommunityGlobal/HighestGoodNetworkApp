@@ -5,7 +5,6 @@ import hasPermission from '~/utils/permissions';
 import styles from './Collaboration.module.css';
 import { toast } from 'react-toastify';
 import { ApiEndpoint } from '~/utils/URL';
-import { useSelector } from 'react-redux';
 import OneCommunityImage from '../../assets/images/logo2.png';
 
 function Collaboration() {
