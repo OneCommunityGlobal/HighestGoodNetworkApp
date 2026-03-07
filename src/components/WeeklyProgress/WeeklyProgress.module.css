@@ -225,6 +225,28 @@
   text-align: center;
 }
 
+/* Tooltip: dark text so it’s visible in light and dark mode */
+.tooltipBox {
+  color: #1f2937;
+}
+.tooltipLabel {
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #1f2937;
+}
+.tooltipValue {
+  color: #1f2937;
+}
+/* Override any global dark-mode rule that forces light text on tooltips (ID + attribute for max specificity) */
+:global(#weekly-progress-tooltip-root),
+:global(#weekly-progress-tooltip-root) * {
+  color: #1f2937 !important;
+  fill: #1f2937 !important;
+  -webkit-text-fill-color: #1f2937 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
 /* Error banner */
 
 .errorBanner {

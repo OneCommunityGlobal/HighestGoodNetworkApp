@@ -18,6 +18,36 @@ const formatWeekLabel = isoDate => {
   return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
 };
 
+const TOOLTIP_ID = 'weekly-progress-tooltip-root';
+
+function CustomTooltipContent({ active, payload, label }) {
+  if (!active || !payload?.length) return null;
+  const value = payload[0]?.value;
+  return (
+    <div
+      id={TOOLTIP_ID}
+      data-weekly-progress-tooltip="true"
+      className={styles.tooltipBox}
+      style={{
+        backgroundColor: '#ffffff',
+        border: '1px solid #e5e7eb',
+        borderRadius: 6,
+        boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+        padding: '8px 12px',
+        fontSize: 12,
+      }}
+    >
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `#${TOOLTIP_ID},#${TOOLTIP_ID} *{color:#1f2937 !important;fill:#1f2937 !important;-webkit-text-fill-color:#1f2937 !important;}`,
+        }}
+      />
+      <div className={styles.tooltipLabel}>Week of {formatWeekLabel(label)}</div>
+      <div className={styles.tooltipValue}>Completed: {value} tasks</div>
+    </div>
+  );
+}
+
 const WeeklyProgressChart = ({ data, loading, error, weeks, startDate, endDate }) => {
   const hasData = data && data.length > 0;
 
@@ -50,11 +80,12 @@ const WeeklyProgressChart = ({ data, loading, error, weeks, startDate, endDate }
                   value: 'Weeks',
                   position: 'bottom',
                   offset: 0,
-                  style: { fontSize: 12, fill: '#e5e7eb', fontWeight: 'bold' },
+                  dx: -20,
+                  style: { fontSize: 14, fill: '#e5e7eb', fontWeight: 'bold' },
                 }}
                 dataKey="week"
                 tickFormatter={formatWeekLabel}
-                tick={{ fontSize: 12, fill: '#e5e7eb' }}
+                tick={{ fontSize: 14, fill: '#e5e7eb' }}
                 axisLine={{ stroke: '#e5e7eb' }}
                 tickLine={{ stroke: '#e5e7eb' }}
               />
@@ -73,8 +104,10 @@ const WeeklyProgressChart = ({ data, loading, error, weeks, startDate, endDate }
                 tickLine={{ stroke: '#e5e7eb' }}
               />
               <Tooltip
-                formatter={value => [`${value} tasks`, 'Completed']}
-                labelFormatter={label => `Week of ${formatWeekLabel(label)}`}
+                content={props => <CustomTooltipContent {...props} />}
+                contentStyle={{ backgroundColor: '#ffffff', color: '#1f2937' }}
+                itemStyle={{ color: '#1f2937' }}
+                labelStyle={{ color: '#1f2937' }}
               />
               <Legend verticalAlign="bottom" align="center" wrapperStyle={{ bottom: -10 }} />
               <Line
