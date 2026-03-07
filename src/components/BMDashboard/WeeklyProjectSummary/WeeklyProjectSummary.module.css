@@ -488,7 +488,6 @@
 }
 
 .darkMode .statusCard {
-  background: var(--card-bg) !important;
   color: var(--text-color) !important;
   border-color: rgba(255, 255, 255, 0.1) !important;
 }
@@ -605,6 +604,16 @@
 
 .darkMode .weeklyStatusValue {
   color: var(--text-color) !important;
+}
+
+.weeklyStatusChange {
+  font-weight: 600;
+  font-size: clamp(12px, 1.2vw, 14px);
+  transition: color 0.3s ease;
+}
+
+.statusCard .weeklyStatusChange {
+  color: var(--wow-color) !important;
 }
 
 .weekly-status-change {
