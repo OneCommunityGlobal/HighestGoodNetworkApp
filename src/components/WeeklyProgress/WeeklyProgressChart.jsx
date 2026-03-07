@@ -8,7 +8,6 @@ import {
   Tooltip,
   CartesianGrid,
   Legend,
-  LabelList,
 } from 'recharts';
 import styles from './WeeklyProgress.module.css';
 
@@ -65,8 +64,8 @@ const WeeklyProgressChart = ({ data, loading, error, weeks, startDate, endDate }
                   angle: -90,
                   position: 'insideLeft',
                   offset: 10,
-                  dy: 40,
-                  style: { fontSize: 12, fill: '#e5e7eb', fontWeight: 'bold' },
+                  dy: 58,
+                  style: { fontSize: 13, fill: '#e5e7eb', fontWeight: 'bold' },
                 }}
                 allowDecimals={false}
                 tick={{ fontSize: 12, fill: '#e5e7eb' }}
@@ -82,18 +81,11 @@ const WeeklyProgressChart = ({ data, loading, error, weeks, startDate, endDate }
                 type="linear"
                 dataKey="completed"
                 name="This Week"
-                stroke="#3b82f6"
+                stroke="#2B7FFF"
                 strokeWidth={2}
                 dot={{ r: 3 }}
                 activeDot={{ r: 5 }}
-              >
-                {/* Small value labels – optional, looks nice at peaks */}
-                <LabelList
-                  dataKey="completed"
-                  position="top"
-                  formatter={value => (value ? value : '')}
-                />
-              </Line>
+              ></Line>
             </LineChart>
           </ResponsiveContainer>
         </div>
