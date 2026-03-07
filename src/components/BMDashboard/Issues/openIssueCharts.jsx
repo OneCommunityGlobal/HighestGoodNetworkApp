@@ -20,6 +20,7 @@ import {
   setProjectFilter,
 } from '../../../actions/bmdashboard/issueChartActions';
 import styles from './issueCharts.module.css';
+import PropTypes from 'prop-types';
 
 /* ---------- helpers ---------- */
 
@@ -119,9 +120,8 @@ const getProjectColorMap = issues => {
 
 /* --------------------------- component --------------------------- */
 
-function IssueCharts() {
+function IssueCharts({ darkMode }) {
   const dispatch = useDispatch();
-  const darkMode = useSelector(state => state.theme.darkMode);
   const { issues, loading, error, selectedProjects } = useSelector(state => state.bmissuechart);
   const projects = useSelector(state => state.bmProjects);
 
@@ -317,51 +317,8 @@ function IssueCharts() {
             options={projectOptions}
             onChange={handleProjectChange}
             value={projectOptions.filter(option => (selectedProjects ?? []).includes(option.value))}
-            // className={filterSelectClass}
             classNamePrefix="select"
-            styles={{
-              control: base => ({
-                ...base,
-                backgroundColor: darkMode ? '#22272e' : '#ffffff',
-                borderColor: darkMode ? '#3d444d' : '#ccc',
-                color: darkMode ? '#cfd7e3' : '#333',
-                boxShadow: 'none',
-                '&:hover': {
-                  borderColor: '#4caf50',
-                },
-              }),
-              menu: base => ({
-                ...base,
-                backgroundColor: darkMode ? '#22272e' : '#ffffff',
-                color: darkMode ? '#cfd7e3' : '#333',
-              }),
-              option: (base, state) => ({
-                ...base,
-                backgroundColor: state.isFocused
-                  ? darkMode
-                    ? '#2f3540'
-                    : '#e5e5e5'
-                  : 'transparent',
-                color: darkMode ? '#fff' : '#333',
-              }),
-              multiValue: base => ({
-                ...base,
-                backgroundColor: darkMode ? '#3d444d' : '#e2e8f0',
-                color: darkMode ? '#fff' : '#333',
-              }),
-              multiValueLabel: base => ({
-                ...base,
-                color: darkMode ? '#fff' : '#333',
-              }),
-              multiValueRemove: base => ({
-                ...base,
-                color: darkMode ? '#fff' : '#333',
-                ':hover': {
-                  backgroundColor: '#4caf50',
-                  color: '#fff',
-                },
-              }),
-            }}
+            styles={selectStyles}
           />
         </div>
       </div>
@@ -436,5 +393,9 @@ function IssueCharts() {
     </div>
   );
 }
+
+IssueCharts.propTypes = {
+  darkMode: PropTypes.bool.isRequired,
+};
 
 export default IssueCharts;

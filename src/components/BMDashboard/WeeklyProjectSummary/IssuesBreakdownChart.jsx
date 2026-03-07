@@ -132,7 +132,7 @@ export default function IssuesBreakdownChart() {
         </div>
       </div>
 
-      <div className={styles.chartContainer}>
+      <div className={`${styles.chartContainer} ${darkMode ? 'bg-yinmn-blue' : ''}`}>
         <ResponsiveContainer>
           <BarChart
             data={data}

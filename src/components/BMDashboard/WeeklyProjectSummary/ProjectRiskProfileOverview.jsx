@@ -13,10 +13,11 @@ import {
 import Select from 'react-select';
 import httpService from '../../../services/httpService';
 import styles from './ProjectRiskProfileOverview.module.css';
+import PropTypes from 'prop-types';
 
 // Fetch project risk profile data from backend
 
-export default function ProjectRiskProfileOverview() {
+function ProjectRiskProfileOverview({ selectStyles }) {
   const darkMode = useSelector(state => state.theme?.darkMode || false);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -47,6 +48,9 @@ export default function ProjectRiskProfileOverview() {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+
+  const tooltipBg = darkMode ? '#3a506b' : '#fff';
+  const textColor = darkMode ? '#ffffff' : '#000000ff';
 
   useEffect(() => {
     async function fetchData() {
@@ -335,3 +339,9 @@ export default function ProjectRiskProfileOverview() {
     </div>
   );
 }
+
+ProjectRiskProfileOverview.propTypes = {
+  selectStyles: PropTypes.object.isRequired,
+};
+
+export default ProjectRiskProfileOverview;
