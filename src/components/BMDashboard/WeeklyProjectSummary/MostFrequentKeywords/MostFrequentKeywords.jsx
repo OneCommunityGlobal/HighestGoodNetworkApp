@@ -238,7 +238,7 @@ function MostFrequentKeywords() {
           <Select
             inputId="project-select"
             className={styles.mfkSelect}
-            classNamePrefix="project-select"
+            classNamePrefix="data-select"
             options={projects.map(p => ({
               label: p.projectName,
               value: p._id,

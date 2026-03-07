@@ -607,6 +607,16 @@
   color: var(--text-color) !important;
 }
 
+.weeklyStatusChange {
+  font-weight: 600;
+  font-size: clamp(12px, 1.2vw, 14px);
+  transition: color 0.3s ease;
+}
+
+.statusCard .weeklyStatusChange {
+  color: var(--wow-color) !important;
+}
+
 .weekly-status-change {
   transition: color 0.3s ease;
   font-size: 14px;
