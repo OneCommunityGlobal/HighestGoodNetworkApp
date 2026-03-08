@@ -20,7 +20,7 @@ const toYMD = d =>
       ).padStart(2, '0')}`
     : '';
 
-const useLessonsData = (selectedProject, startDate, endDate) => {
+const useLessonsData = (selectedProjects, startDate, endDate) => {
   const [allProjects, setAllProjects] = useState([]);
   const [lessonsData, setLessonsData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -52,8 +52,14 @@ const useLessonsData = (selectedProject, startDate, endDate) => {
       try {
         const params = {};
 
-        if (selectedProject) {
-          params.projectId = selectedProject.value;
+        // Backend supports single projectId or 'ALL'.
+        // For one selection send that ID; for 0 or 2+ send ALL and filter client-side.
+        const hasSelection = Array.isArray(selectedProjects) && selectedProjects.length > 0;
+        const singleProject = hasSelection && selectedProjects.length === 1;
+        if (singleProject) {
+          params.projectId = selectedProjects[0].value;
+        } else if (hasSelection) {
+          params.projectId = 'ALL';
         }
 
         const formattedStart = toYMD(startDate);
@@ -76,7 +82,15 @@ const useLessonsData = (selectedProject, startDate, endDate) => {
           changePercentage: item.changePercentage || '0%',
         }));
 
-        if (!cancelled) setLessonsData(transformedData);
+        // When multiple projects selected, filter to only the chosen ones
+        const needsClientFilter = hasSelection && !singleProject;
+        let filtered = transformedData;
+        if (needsClientFilter) {
+          const selectedIds = new Set(selectedProjects.map(p => p.value));
+          filtered = transformedData.filter(d => selectedIds.has(d.projectId));
+        }
+
+        if (!cancelled) setLessonsData(filtered);
       } catch (err) {
         if (!cancelled) {
           setError(err.message || 'Failed to fetch lessons data');
@@ -90,7 +104,7 @@ const useLessonsData = (selectedProject, startDate, endDate) => {
     return () => {
       cancelled = true;
     };
-  }, [selectedProject, startDate, endDate]);
+  }, [selectedProjects, startDate, endDate]);
 
   return { allProjects, lessonsData, isLoading, error };
 };
@@ -102,12 +116,12 @@ function LessonsLearntChart({ darkMode: propDarkMode }) {
   const reduxDarkMode = useSelector(state => state.theme.darkMode);
   const darkMode = propDarkMode === undefined ? reduxDarkMode : propDarkMode;
 
-  const [selectedProject, setSelectedProject] = useState(null);
+  const [selectedProjects, setSelectedProjects] = useState([]);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
 
   const { allProjects, lessonsData, isLoading, error } = useLessonsData(
-    selectedProject,
+    selectedProjects,
     startDate,
     endDate,
   );
@@ -118,17 +132,18 @@ function LessonsLearntChart({ darkMode: propDarkMode }) {
     return d;
   }, []);
 
-  const projectOptions = useMemo(() => {
-    const opts = Array.isArray(allProjects)
-      ? allProjects
-          .filter(proj => proj && (proj._id || proj.id))
-          .map(proj => ({
-            value: proj._id || proj.id,
-            label: proj.name || 'Unnamed Project',
-          }))
-      : [];
-    return [{ value: 'ALL', label: 'All Projects' }, ...opts];
-  }, [allProjects]);
+  const projectOptions = useMemo(
+    () =>
+      Array.isArray(allProjects)
+        ? allProjects
+            .filter(proj => proj && (proj._id || proj.id))
+            .map(proj => ({
+              value: proj._id || proj.id,
+              label: proj.name || 'Unnamed Project',
+            }))
+        : [],
+    [allProjects],
+  );
 
   const barColor = darkMode ? BAR_COLOR_DARK : BAR_COLOR_LIGHT;
 
@@ -195,9 +210,19 @@ function LessonsLearntChart({ darkMode: propDarkMode }) {
         fontSize: '13px',
         color: darkMode ? '#f1f5f9' : '#000',
       }),
-      singleValue: base => ({
+      multiValue: base => ({
+        ...base,
+        backgroundColor: darkMode ? '#475569' : '#e2e8f0',
+      }),
+      multiValueLabel: base => ({
         ...base,
         color: darkMode ? '#f1f5f9' : '#000',
+        fontSize: '11px',
+      }),
+      multiValueRemove: base => ({
+        ...base,
+        color: darkMode ? '#94a3b8' : '#6b7280',
+        ':hover': { backgroundColor: darkMode ? '#64748b' : '#cbd5e1', color: '#fff' },
       }),
       menu: base => ({
         ...base,
@@ -237,9 +262,10 @@ function LessonsLearntChart({ darkMode: propDarkMode }) {
           </label>
           <Select
             inputId="lessons-project-select"
+            isMulti
             options={projectOptions}
-            value={selectedProject}
-            onChange={setSelectedProject}
+            value={selectedProjects}
+            onChange={selected => setSelectedProjects(selected || [])}
             placeholder="All projects"
             isClearable
             styles={selectStyles}
