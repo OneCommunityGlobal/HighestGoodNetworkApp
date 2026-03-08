@@ -10,7 +10,7 @@ import { fetchAllBadges, setActiveTab } from '../../actions/badgeManagement';
 
 function BadgeManagement(props) {
   const { darkMode, activeTab, setActiveTab, role } = props;
-  const [isHovered, setIsHovered] = useState(false);
+  const [hoveredTab, setHoveredTab] = useState(null);
 
   useEffect(() => {
     props.fetchAllBadges();
@@ -47,12 +47,21 @@ function BadgeManagement(props) {
       <Nav pills className="mb-2">
         <NavItem>
           <NavLink
-            className={`mr-2 ${classnames({ active: activeTab === '1' })} ${
-              darkMode && activeTab !== '1' ? 'bg-light' : ''
-            }`}
+            className={`mr-2 ${classnames({ active: activeTab === '1' })}`}
             onClick={() => handleTabChange('1')}
+            onMouseEnter={() => setHoveredTab('1')}
+            onMouseLeave={() => setHoveredTab(null)}
             style={
-              darkMode ? { ...boxStyleDark, cursor: 'pointer' } : { ...boxStyle, cursor: 'pointer' }
+              darkMode && activeTab !== '1'
+                ? {
+                    ...boxStyleDark,
+                    cursor: 'pointer',
+                    backgroundColor: hoveredTab === '1' ? '#4a6072' : '#3a506b',
+                    color: '#ffffff',
+                  }
+                : darkMode
+                ? { ...boxStyleDark, cursor: 'pointer' }
+                : { ...boxStyle, cursor: 'pointer' }
             }
           >
             Badge Assignment
@@ -62,14 +71,14 @@ function BadgeManagement(props) {
           <NavLink
             className={classnames({ active: activeTab === '2' })}
             onClick={() => handleTabChange('2')}
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
+            onMouseEnter={() => setHoveredTab('2')}
+            onMouseLeave={() => setHoveredTab(null)}
             style={
               darkMode && activeTab !== '2'
                 ? {
                     ...boxStyleDark,
                     cursor: 'pointer',
-                    backgroundColor: isHovered ? '#4a6072' : '#3a506b',
+                    backgroundColor: hoveredTab === '2' ? '#4a6072' : '#3a506b',
                     color: '#ffffff',
                   }
                 : darkMode
