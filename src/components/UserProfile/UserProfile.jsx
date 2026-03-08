@@ -57,6 +57,7 @@ import { connect, useDispatch, useSelector } from 'react-redux';
 import { formatDateCompany } from '~/utils/formatDate';
 import EditableInfoModal from './EditableModal/EditableInfoModal';
 import { fetchAllProjects } from '../../actions/projects';
+import PropTypes from 'prop-types';
 
 import { toast } from 'react-toastify';
 import { setCurrentUser } from '../../actions/authActions';
@@ -980,9 +981,27 @@ setUpdatedTasks(prev => {
     // eslint-disable-next-line no-console
     axios.put(url, updatedTask.updatedTask).catch(err => console.error(err));
   }
-
+  const userId = userProfileToUpdate._id;
+  const permissionURL = `${ENDPOINTS.PERMISSION_MANAGEMENT_UPDATE()}/user/${userId}`;
+  const frontPermissions = userProfileToUpdate.permissions.frontPermissions;
+  const removedDefaultPermissions = userProfileToUpdate.permissions.removedDefaultPermissions;
+  const defaultPermissions = userProfileToUpdate.permissions.defaultPermissions;
+  const permissions = {
+      frontPermissions: frontPermissions,
+      removedDefaultPermissions: removedDefaultPermissions,
+      defaultPermissions: defaultPermissions,
+  };
+  const requestor = props.auth.user;
+  // Ensures a change log with reason and user's modified permissions when their role is changed
+  const permissionData = {
+    reason: `Role Changed to **${userProfileToUpdate.role}**.`,
+    permissions: permissions,
+    requestor: requestor,
+  };
   try {
     const result = await props.updateUserProfile(userProfileToUpdate);
+
+    await axios.patch(permissionURL, permissionData)
     if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
       await props.refreshToken(userProfile._id);
     }
@@ -1636,7 +1655,7 @@ setUpdatedTasks(prev => {
                       { active: activeTab === '1' },
                       darkMode
                         ? activeTab === '1'
-                          ? 'bg-space-cadet text-light'
+                          ? 'bg-space-cadet text-light darkMode'
                           : 'text-azure'
                         : 'text-azure',
                     )}
@@ -1653,7 +1672,7 @@ setUpdatedTasks(prev => {
                       { active: activeTab === '2' },
                       darkMode
                         ? activeTab === '1'
-                          ? 'bg-space-cadet text-light'
+                          ? 'bg-space-cadet text-light darkMode'
                           : 'text-azure'
                         : 'text-azure',
                     )}
@@ -1670,7 +1689,7 @@ setUpdatedTasks(prev => {
                       { active: activeTab === '3' },
                       darkMode
                         ? activeTab === '1'
-                          ? 'bg-space-cadet text-light'
+                          ? 'bg-space-cadet text-light darkMode'
                           : 'text-azure'
                         : 'text-azure',
                     )}
@@ -1687,7 +1706,7 @@ setUpdatedTasks(prev => {
                       { active: activeTab === '4' },
                       darkMode
                         ? activeTab === '1'
-                          ? 'bg-space-cadet text-light'
+                          ? 'bg-space-cadet text-light darkMode'
                           : 'text-azure'
                         : 'text-azure',
                     )}
@@ -1705,7 +1724,7 @@ setUpdatedTasks(prev => {
                       { active: activeTab === '5' },
                       darkMode
                         ? activeTab === '1'
-                          ? 'bg-space-cadet text-light'
+                          ? 'bg-space-cadet text-light darkMode'
                           : 'text-azure'
                         : 'text-azure',
                     )}
@@ -1718,7 +1737,7 @@ setUpdatedTasks(prev => {
             </div>
             <TabContent
               activeTab={activeTab}
-              className={`tab-content profile-tab ${darkMode ? 'bg-yinmn-blue' : ''}`}
+              className={`tab-content profile-tab ${darkMode ? 'darkMode bg-yinmn-blue' : ''}`}
               id="myTabContent"
               style={{ border: 0 }}
             >
@@ -2407,6 +2426,10 @@ setUpdatedTasks(prev => {
     </div>
   );
 }
+
+UserProfile.propTypes = {
+  auth: PropTypes.object,
+};
 
  const mapStateToProps = state => ({
    allProjects: state.allProjects || state.projects || {},   // <- gives you .projects array

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from 'reactstrap';
 import EditConfirmModal from '../UserProfileModal/EditConfirmModal';
-import { boxStyle, boxStyleDark } from '~/styles';
 
 /**
  *
@@ -109,7 +108,7 @@ const SaveButton = props => {
         onClick={handleSave}
         disabled={disabled}
         className='mr-1'
-        style={darkMode ? boxStyleDark : boxStyle}
+        style={{backgroundColor: darkMode ? '#1b2a41' : 'white'}}
       >
         Save Changes
       </Button>
