@@ -16,13 +16,30 @@ function dodgeY(items, minGap, top, bottom) {
     it.y = Math.min(y, bottom);
     last = it.y;
   }
+  
+  // Second pass: ensure no overlaps by pushing items up if needed
+  for (let i = items.length - 2; i >= 0; i--) {
+    const curr = items[i];
+    const next = items[i + 1];
+    if (next.y - curr.y < minGap) {
+      curr.y = next.y - minGap;
+    }
+  }
+  
+  // Third pass: ensure nothing goes above top bound
+  if (items.length > 0 && items[0].y < top) {
+    const shift = top - items[0].y;
+    for (const it of items) {
+      it.y += shift;
+    }
+  }
 }
 
 // Calculate adaptive gap based on container size and data count
 function getAdaptiveGap(windowSize, itemCount) {
   // Smaller screen or more items = larger gap to prevent overlap
-  const baseGap = windowSize <= 500 ? 20 : 16;
-  const countFactor = itemCount > 8 ? 4 : itemCount > 5 ? 2 : 0;
+  const baseGap = windowSize <= 500 ? 24 : 20;
+  const countFactor = itemCount > 10 ? 6 : itemCount > 8 ? 4 : itemCount > 5 ? 2 : 0;
   return baseGap + countFactor;
 }
 
@@ -192,8 +209,9 @@ export function ProjectPieChart  ({ userData, windowSize, darkMode }) {
                     const R = outerRadius + 6;
                     const textOffset = getTextOffset(windowSize);
                     const minGap = getAdaptiveGap(windowSize, userData.length);
-                    const topBound = cy - (R + 60);
-                    const botBound = cy + (R + 60);
+                    // Expanded bounds to give more room for labels
+                    const topBound = cy - (R + 100);
+                    const botBound = cy + (R + 100);
 
                     const total = userData.reduce((s, d) => s + d.value, 0) || 1;
                     
