@@ -3,7 +3,7 @@ import { useDispatch, connect, useSelector } from 'react-redux';
 import MemberAutoComplete from '~/components/Teams/MembersAutoComplete';
 import AddProjectsAutoComplete from '~/components/UserProfile/TeamsAndProjects/AddProjectsAutoComplete';
 import AddTeamsAutoComplete from '~/components/UserProfile/TeamsAndProjects/AddTeamsAutoComplete';
-import "../reportsPage.css";
+import "../reportsPage.module.css";
 import { Editor } from '@tinymce/tinymce-react';
 import moment from 'moment-timezone';
 import { Button, Col, Form, FormGroup, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader, Row } from 'reactstrap';

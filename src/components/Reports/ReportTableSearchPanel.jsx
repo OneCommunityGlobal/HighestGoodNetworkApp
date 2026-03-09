@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { SEARCH } from '../../languages/en/ui';
-import './reportsPage.css';
+import './reportsPage.module.css';
 
 /**
  * The search panel stateless component for Report grid
