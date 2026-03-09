@@ -11,6 +11,7 @@ const TaskCard = ({
   isExpanded = false,
   onToggleIntermediateTasks,
   onMarkIntermediateAsDone,
+  darkMode = false,
 }) => {
   const {
     progressPercentage,
