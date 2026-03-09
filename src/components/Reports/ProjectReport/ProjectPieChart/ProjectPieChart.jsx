@@ -216,32 +216,19 @@ export function ProjectPieChart  ({ userData, windowSize, darkMode }) {
                     const total = userData.reduce((s, d) => s + d.value, 0) || 1;
                     
                     // Determine max labels to show based on screen size
-                    const getMaxLabels = (size, count) => {
-                      if (size <= 400) return Math.min(count, 6);
-                      if (size <= 500) return Math.min(count, 8);
-                      if (size <= 640) return Math.min(count, 10);
-                      return count;
-                    };
-                    const maxLabels = getMaxLabels(windowSize, userData.length);
+                    // Desktop: show all, Mobile/Tablet: limit to prevent overcrowding
+                    const maxLabels = windowSize > 640 ? userData.length : 
+                                      windowSize > 500 ? 8 : 
+                                      windowSize > 400 ? 6 : 4;
                     
-                    // Filter out very small values (less than 2% of total) to prevent overcrowding
-                    const totalValue = userData.reduce((s, d) => s + d.value, 0) || 1;
-                    const significantIndices = userData
-                      .map((d, i) => ({ idx: i, value: d.value, pct: d.value / totalValue }))
-                      .filter(x => x.pct >= 0.02) // Only show items with >= 2% share
-                      .map(x => x.idx);
-                    
-                    // Sort by value descending and take top labels (limited by maxLabels)
+                    // Sort by value descending and take top labels
                     const sortedIndices = userData
                       .map((d, i) => ({ idx: i, value: d.value }))
                       .sort((a, b) => b.value - a.value)
                       .slice(0, maxLabels)
                       .map(x => x.idx);
                     
-                    // Combine both filters: must be significant AND in top N
-                    const visibleSet = new Set(
-                      sortedIndices.filter(idx => significantIndices.includes(idx))
-                    );
+                    const visibleSet = new Set(sortedIndices);
                     
                     let acc = 0;
                     const left = [], right = [];
