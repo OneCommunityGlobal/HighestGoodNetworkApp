@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 import { SlackIcon } from './SlackIcon';
 import styles from './TeamCard.module.css';
 
-export const TeamMemberRow = ({ member }) => {
+export const TeamMemberRow = ({ member, isSelected, onToggleSelect }) => {
   const getScoreStyle = score => {
-    const scoreNum = parseInt(score);
+    const scoreNum = parseInt(score, 10);
     const scoreColor = scoreNum >= 5 ? styles.scoreGreen : styles.scoreRed;
     return `${styles.scoreBase} ${scoreColor}`;
   };
@@ -14,7 +14,14 @@ export const TeamMemberRow = ({ member }) => {
   const hasSlack = member.slackId && member.slackId.trim() !== '';
 
   return (
-    <div className={styles.teamMemberRow}>
+    <div className={`${styles.teamMemberRow} ${isSelected ? styles.teamMemberRowSelected : ''}`}>
+      <input
+        type="checkbox"
+        className={styles.memberCheckbox}
+        checked={isSelected}
+        onChange={() => onToggleSelect(member.id)}
+        aria-label={`Select ${member.name}`}
+      />
       <div className={styles.teamMemberInfo}>
         <span className={styles.teamMemberName}>{member.name}</span>
         <div className={styles.teamMemberIcons}>
@@ -66,9 +73,12 @@ export const TeamMemberRow = ({ member }) => {
 
 TeamMemberRow.propTypes = {
   member: PropTypes.shape({
+    id: PropTypes.number.isRequired,
     name: PropTypes.string.isRequired,
     score: PropTypes.string.isRequired,
     email: PropTypes.string,
     slackId: PropTypes.string,
   }).isRequired,
+  isSelected: PropTypes.bool.isRequired,
+  onToggleSelect: PropTypes.func.isRequired,
 };
