@@ -750,7 +750,7 @@ const handleCcListUpdate = () => {
 
 UserProfileModal.propTypes = {
   specialWarnings: PropTypes.arrayOf(
-    propTypes.shape({
+    PropTypes.shape({
       title: PropTypes.string,
       warnings: PropTypes.arrayOf(PropTypes.string),
       abbreviation: PropTypes.string
