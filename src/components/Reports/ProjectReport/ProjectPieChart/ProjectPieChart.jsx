@@ -224,13 +224,24 @@ export function ProjectPieChart  ({ userData, windowSize, darkMode }) {
                     };
                     const maxLabels = getMaxLabels(windowSize, userData.length);
                     
-                    // Sort by value descending and take top labels
+                    // Filter out very small values (less than 2% of total) to prevent overcrowding
+                    const totalValue = userData.reduce((s, d) => s + d.value, 0) || 1;
+                    const significantIndices = userData
+                      .map((d, i) => ({ idx: i, value: d.value, pct: d.value / totalValue }))
+                      .filter(x => x.pct >= 0.02) // Only show items with >= 2% share
+                      .map(x => x.idx);
+                    
+                    // Sort by value descending and take top labels (limited by maxLabels)
                     const sortedIndices = userData
                       .map((d, i) => ({ idx: i, value: d.value }))
                       .sort((a, b) => b.value - a.value)
                       .slice(0, maxLabels)
                       .map(x => x.idx);
-                    const visibleSet = new Set(sortedIndices);
+                    
+                    // Combine both filters: must be significant AND in top N
+                    const visibleSet = new Set(
+                      sortedIndices.filter(idx => significantIndices.includes(idx))
+                    );
                     
                     let acc = 0;
                     const left = [], right = [];
@@ -264,6 +275,9 @@ export function ProjectPieChart  ({ userData, windowSize, darkMode }) {
                       } else {
                         text = `${d.name.substring(0,14)} ${d.lastName?.[0] ?? ''} ${d.value.toFixed(2)}Hrs (${pct.toFixed(1)}%)`;
                       }
+                      
+                      // Store index for later lookup
+                      item.originalIndex = i;
 
                       const item = { idx: i, side, sx, sy, tx, rawY, y: rawY, text };
                       (side === 'right' ? right : left).push(item);
@@ -282,11 +296,18 @@ export function ProjectPieChart  ({ userData, windowSize, darkMode }) {
                     dodgeY(left, minGap, topBound, botBound);
                     dodgeY(right, minGap, topBound, botBound);
 
-                    const map = { version: currentVersion };
+                    // Store all visible indices for quick lookup
+                    const visibleIndices = [...left, ...right].map(it => it.originalIndex);
+                    const map = { version: currentVersion, visibleIndices };
                     [...left, ...right].forEach(it => { map[it.idx] = it; });
                     layoutRef.current = map;
                   }
 
+                  // Check if this index should be rendered
+                  if (!layoutRef.current.visibleIndices.includes(index)) {
+                    return null;
+                  }
+                  
                   const node = layoutRef.current[index];
                   if (!node) return null;
 
@@ -296,6 +317,7 @@ export function ProjectPieChart  ({ userData, windowSize, darkMode }) {
                         d={`M${node.sx},${node.sy} L${(node.sx + node.tx)/2},${node.y} L${node.tx},${node.y}`}
                         stroke={darkMode ? '#fff' : '#333'}
                         fill="none"
+                        strokeWidth={windowSize <= 400 ? 1 : 1.5}
                       />
                       <text
                         x={node.tx}
@@ -303,6 +325,9 @@ export function ProjectPieChart  ({ userData, windowSize, darkMode }) {
                         textAnchor={node.side === 'right' ? 'start' : 'end'}
                         fill={darkMode ? '#fff' : '#333'}
                         dominantBaseline="middle"
+                        fontSize={windowSize <= 400 ? 11 : windowSize <= 500 ? 12 : 13}
+                        fontWeight={windowSize <= 400 ? 500 : 400}
+                        style={{ pointerEvents: 'none' }}
                       >
                         {node.text}
                       </text>
