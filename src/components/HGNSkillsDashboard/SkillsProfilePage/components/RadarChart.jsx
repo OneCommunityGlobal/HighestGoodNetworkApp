@@ -131,7 +131,7 @@ const SKILL_MAPPINGS = [
   {
     label: 'Agile',
     value: (general, frontend, backend) => backend?.AgileDevelopment || 0,
-    description: 'Agile development methodologies (Scrum, Kanban)',
+    description: 'Agile development methodologies',
   },
   {
     label: 'Mongo DB',
@@ -148,16 +148,16 @@ const SKILL_MAPPINGS = [
   {
     label: 'Documentation',
     value: (general, frontend, backend) => frontend?.Documentation || 0,
-    description: 'Technical documentation and API documentation',
+    description: 'Technical documentation',
   },
   {
     label: 'Markdown & Graphs',
     value: (general, frontend, backend) => frontend?.Documentation || general?.markdown_graphs || 0,
-    description: 'Markdown writing and data visualization with graphs',
+    description: 'Markdown writing and data visualization',
   },
 ];
 
-function RadarChart({ profileData, compact = true }) {
+function RadarChart({ profileData, compact = true, onSkillsDataReady }) {
   const darkMode = useSelector(state => state.theme.darkMode);
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
@@ -194,6 +194,12 @@ function RadarChart({ profileData, compact = true }) {
       });
 
       setSkillsData(processedData);
+
+      // Send data to summary cards
+      if (onSkillsDataReady) {
+        onSkillsDataReady(processedData);
+      }
+
       setIsLoading(false);
     } catch (error) {
       setHasError(true);
@@ -230,10 +236,10 @@ function RadarChart({ profileData, compact = true }) {
       {
         label: 'Skills',
         data: skillsData.map(skill => skill.score),
-        backgroundColor: compact ? 'rgba(133, 146, 226, 0.35)' : 'rgba(62, 160, 203, 0.2)',
-        borderColor: compact ? 'rgba(110, 125, 215, 0.9)' : 'rgba(62, 160, 203, 1)',
+        backgroundColor: compact ? 'rgba(133,146,226,0.35)' : 'rgba(62,160,203,0.2)',
+        borderColor: compact ? 'rgba(110,125,215,0.9)' : 'rgba(62,160,203,1)',
         borderWidth: compact ? 2 : 3,
-        pointBackgroundColor: compact ? 'rgba(110, 125, 215, 0.95)' : 'rgba(62, 160, 203, 1)',
+        pointBackgroundColor: compact ? 'rgba(110,125,215,0.95)' : 'rgba(62,160,203,1)',
         pointBorderColor: '#fff',
         pointHoverBackgroundColor: '#fff',
         pointHoverBorderColor: compact ? 'rgba(110,125,215,1)' : 'rgba(62,160,203,1)',
@@ -246,106 +252,39 @@ function RadarChart({ profileData, compact = true }) {
     ],
   };
 
-  const customTooltipPlugin = {
-    id: 'customTooltip',
-    afterDraw: chart => {
-      const tooltip = chart.tooltip;
-      if (tooltip && tooltip.opacity === 0) {
-        return;
-      }
-    },
-  };
-
   const chartOptions = {
     responsive: true,
     maintainAspectRatio: true,
     aspectRatio: 1,
     scales: {
       r: {
-        angleLines: {
-          display: true,
-          color: compact ? 'rgba(0,0,0,0.08)' : 'rgba(0, 0, 0, 0.1)',
-        },
-        grid: {
-          color: compact ? 'rgba(0,0,0,0.08)' : 'rgba(0, 0, 0, 0.1)',
-        },
-        pointLabels: {
-          font: {
-            size: function(context) {
-              const w = context.chart.width;
-              // Slightly smaller sizes to fit reduced chart
-              if (w < 340) return 8;
-              if (w < 480) return 9;
-              if (w < 640) return 10;
-              return 11;
-            },
-            weight: '500',
-          },
-          color: compact ? '#555' : '#333',
-          padding: compact ? 10 : 15,
-          callback: function(value, index) {
-            // Truncate long labels on small screens
-            if (window.innerWidth < 600 && value.length > 15) {
-              return value.substring(0, 12) + '...';
-            }
-            return value;
-          },
-        },
         suggestedMin: 0,
         suggestedMax: 10,
         ticks: {
           stepSize: 2,
           display: compact ? false : true,
           color: '#666',
+          font: { size: 10 },
+        },
+        angleLines: {
+          display: true,
+          color: compact ? 'rgba(0,0,0,0.08)' : 'rgba(0,0,0,0.1)',
+        },
+        grid: {
+          color: compact ? 'rgba(0,0,0,0.08)' : 'rgba(0,0,0,0.1)',
+        },
+        pointLabels: {
           font: {
-            size: 10,
+            size: 11,
+            weight: '500',
           },
+          color: compact ? '#555' : '#333',
+          padding: compact ? 10 : 15,
         },
       },
     },
     plugins: {
       legend: { display: false },
-      tooltip: {
-        enabled: true,
-        backgroundColor: 'rgba(0, 0, 0, 0.9)',
-        titleColor: '#fff',
-        bodyColor: '#fff',
-        borderColor: 'rgba(62, 160, 203, 1)',
-        borderWidth: 2,
-        cornerRadius: 8,
-        displayColors: false,
-        titleFont: {
-          size: 14,
-          weight: 'bold',
-        },
-        bodyFont: {
-          size: 12,
-        },
-        padding: 12,
-        callbacks: {
-          title: function(context) {
-            const index = context[0].dataIndex;
-            return skillsData[index].label;
-          },
-          label: function(context) {
-            const score = context.parsed.r;
-            const index = context.dataIndex;
-            const description = skillsData[index].description;
-            return [`Score: ${score}/10`, '', description];
-          },
-        },
-        filter: function(tooltipItem) {
-          return tooltipItem.parsed.r > 0;
-        },
-      },
-    },
-    interaction: {
-      intersect: false,
-      mode: 'point',
-    },
-    animation: {
-      duration: 1000,
-      easing: 'easeInOutQuart',
     },
   };
 
