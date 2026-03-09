@@ -1,17 +1,21 @@
-import React from 'react';
 import styles from './TeamCard.module.css';
 import { TeamMemberRow } from './TeamMemberRow';
 
 export default function TeamCard() {
   const teamMembers = [
-    { name: 'Shreya Laheri', score: '9/10' },
-    { name: 'Shreya Vithala', score: '7/10' },
-    { name: 'Jae Sabol', score: '5/10' },
-    { name: 'Sara Sabol', score: '2/10' },
+    { name: 'Shreya Laheri', score: '9/10', email: 'shreya.laheri@mock.com', slackId: 'U12345001' },
+    {
+      name: 'Shreya Vithala',
+      score: '7/10',
+      email: 'shreya.vithala@mock.com',
+      slackId: 'U12345002',
+    },
+    { name: 'Jae Sabol', score: '5/10', email: '', slackId: '' },
+    { name: 'Sara Sabol', score: '2/10', email: 'sara.sabol@mock.com', slackId: '' },
   ];
 
   return (
-    <>
+    <div className={styles.pageWrapper}>
       <div className={styles.teamCardContainer}>
         <div className={styles.teamCardHeader}>
           <h2 className={styles.teamCardTitle}>
@@ -47,6 +51,6 @@ export default function TeamCard() {
           </span>
         </span>
       </div>
-    </>
+    </div>
   );
 }
