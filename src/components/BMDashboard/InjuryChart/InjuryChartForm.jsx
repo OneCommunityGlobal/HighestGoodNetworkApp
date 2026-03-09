@@ -24,8 +24,24 @@ import 'react-datepicker/dist/react-datepicker.css';
 import styles from './InjuryChartForm.module.css';
 
 function InjuryChartForm({ dark }) {
-  // Chart type toggle state
-  const [chartType, setChartType] = useState('line'); // 'bar' or 'line'
+  const wrapperClass = dark ? styles.wrapperDark : 'bg-white';
+  const labelClass = dark ? styles.wrapperDark : '';
+  const gridStroke = dark ? '#374151' : '#eee';
+  const tickStyle = { fill: dark ? '#d1d5db' : '#666' };
+  const xLabelStyle = { value: 'Month', position: 'insideBottom', offset: -10, fill: tickStyle.fill };
+  const yLabelStyle = { value: 'Number of Injuries', angle: -90, position: 'insideLeft', fill: tickStyle.fill };
+  const tooltipStyle = {
+    backgroundColor: dark ? '#1e293b' : '#fff',
+    border: `1px solid ${dark ? '#475569' : '#ddd'}`,
+    borderRadius: 8,
+    color: dark ? '#e2e8f0' : '#333',
+  };
+  const tooltipLabelStyle = { color: dark ? '#f1f5f9' : '#333', fontWeight: 600 };
+  const tooltipItemStyle = { color: dark ? '#e2e8f0' : '#555' };
+  const noDataClass = dark ? 'bg-dark text-light' : 'bg-white';
+  const noDataText = dark ? 'text-light' : 'text-muted';
+
+  const [chartType, setChartType] = useState('line');
   const dispatch = useDispatch();
   const bmProjects = useSelector(state => state.bmProjects || []);
   // Form state
@@ -119,14 +135,12 @@ function InjuryChartForm({ dark }) {
     <div className={`${styles.injuryChartContainer} p-4`}>
       {/* Filter Form */}
       <div
-        className={`${styles.filterForm} mb-4 p-3  ${
-          dark ? styles.wrapperDark : 'bg-white'
-        } rounded shadow-sm`}
+        className={`${styles.filterForm} mb-4 p-3 ${wrapperClass} rounded shadow-sm`}
       >
         <div className="row g-3">
           <div className="col-md-4">
             <FormGroup>
-              <Label for="project" className={dark ? styles.wrapperDark : ''}>
+              <Label for="project" className={labelClass}>
                 Project
               </Label>
               <Input id="project" type="select" value={projectId} onChange={handleProjectChange}>
@@ -142,7 +156,7 @@ function InjuryChartForm({ dark }) {
 
           <div className="ol-md-4">
             <FormGroup>
-              <Label className={dark ? styles.wrapperDark : ''}>Start Date</Label>
+              <Label className={labelClass}>Start Date</Label>
               <DatePicker
                 selected={startDate}
                 onChange={handleStartDateChange}
@@ -157,7 +171,7 @@ function InjuryChartForm({ dark }) {
 
           <div className="col-md-4">
             <FormGroup>
-              <Label className={dark ? styles.wrapperDark : ''}>End Date</Label>
+              <Label className={labelClass}>End Date</Label>
               <DatePicker
                 selected={endDate}
                 onChange={handleEndDateChange}
@@ -183,9 +197,7 @@ function InjuryChartForm({ dark }) {
       {/* Chart Display with Toggle */}
       {!error && chartData && chartData.length > 0 && (
         <div
-          className={`${styles.injuryChartContainer} ${
-            dark ? styles.wrapperDark : 'bg-white'
-          } p-4 rounded shadow-sm`}
+          className={`${styles.injuryChartContainer} ${wrapperClass} p-4 rounded shadow-sm`}
         >
           <div className="d-flex justify-content-end mb-2">
             <button
@@ -214,38 +226,10 @@ function InjuryChartForm({ dark }) {
           <ResponsiveContainer width="100%" height={400}>
             {chartType === 'bar' ? (
               <BarChart data={chartData} margin={{ top: 10, right: 30, left: 10, bottom: 30 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke={dark ? '#374151' : '#eee'} />
-                <XAxis
-                  dataKey="month"
-                  padding={{ left: 20, right: 20 }}
-                  tick={{ fill: dark ? '#d1d5db' : '#666' }}
-                  label={{
-                    value: 'Month',
-                    position: 'insideBottom',
-                    offset: -10,
-                    fill: dark ? '#d1d5db' : '#666',
-                  }}
-                />
-                <YAxis
-                  allowDecimals={false}
-                  tick={{ fill: dark ? '#d1d5db' : '#666' }}
-                  label={{
-                    value: 'Number of Injuries',
-                    angle: -90,
-                    position: 'insideLeft',
-                    fill: dark ? '#d1d5db' : '#666',
-                  }}
-                />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: dark ? '#1e293b' : '#fff',
-                    border: `1px solid ${dark ? '#475569' : '#ddd'}`,
-                    borderRadius: 8,
-                    color: dark ? '#e2e8f0' : '#333',
-                  }}
-                  labelStyle={{ color: dark ? '#f1f5f9' : '#333', fontWeight: 600 }}
-                  itemStyle={{ color: dark ? '#e2e8f0' : '#555' }}
-                />
+                <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} />
+                <XAxis dataKey="month" padding={{ left: 20, right: 20 }} tick={tickStyle} label={xLabelStyle} />
+                <YAxis allowDecimals={false} tick={tickStyle} label={yLabelStyle} />
+                <Tooltip contentStyle={tooltipStyle} labelStyle={tooltipLabelStyle} itemStyle={tooltipItemStyle} />
                 <Legend verticalAlign="top" align="center" />
                 <Bar dataKey="Serious" fill="#dc3545" name="Serious" barSize={20} />
                 <Bar dataKey="Medium" fill="#fd7e14" name="Medium" barSize={20} />
@@ -253,38 +237,10 @@ function InjuryChartForm({ dark }) {
               </BarChart>
             ) : (
               <LineChart data={chartData} margin={{ top: 10, right: 30, left: 10, bottom: 30 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke={dark ? '#374151' : '#eee'} />
-                <XAxis
-                  dataKey="month"
-                  padding={{ left: 20, right: 20 }}
-                  tick={{ fill: dark ? '#d1d5db' : '#666' }}
-                  label={{
-                    value: 'Month',
-                    position: 'insideBottom',
-                    offset: -10,
-                    fill: dark ? '#d1d5db' : '#666',
-                  }}
-                />
-                <YAxis
-                  allowDecimals={false}
-                  tick={{ fill: dark ? '#d1d5db' : '#666' }}
-                  label={{
-                    value: 'Number of Injuries',
-                    angle: -90,
-                    position: 'insideLeft',
-                    fill: dark ? '#d1d5db' : '#666',
-                  }}
-                />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: dark ? '#1e293b' : '#fff',
-                    border: `1px solid ${dark ? '#475569' : '#ddd'}`,
-                    borderRadius: 8,
-                    color: dark ? '#e2e8f0' : '#333',
-                  }}
-                  labelStyle={{ color: dark ? '#f1f5f9' : '#333', fontWeight: 600 }}
-                  itemStyle={{ color: dark ? '#e2e8f0' : '#555' }}
-                />
+                <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} />
+                <XAxis dataKey="month" padding={{ left: 20, right: 20 }} tick={tickStyle} label={xLabelStyle} />
+                <YAxis allowDecimals={false} tick={tickStyle} label={yLabelStyle} />
+                <Tooltip contentStyle={tooltipStyle} labelStyle={tooltipLabelStyle} itemStyle={tooltipItemStyle} />
                 <Legend verticalAlign="top" align="center" />
                 <Line
                   type="monotone"
@@ -318,12 +274,8 @@ function InjuryChartForm({ dark }) {
 
       {/* No Data Display */}
       {!error && !loading && (!chartData || chartData.length === 0) && (
-        <div
-          className={`text-center p-5 rounded shadow-sm ${
-            dark ? 'bg-dark text-light' : 'bg-white'
-          }`}
-        >
-          <p className={dark ? 'text-light' : 'text-muted'}>
+        <div className={`text-center p-5 rounded shadow-sm ${noDataClass}`}>
+          <p className={noDataText}>
             No injury data available for the selected criteria.
           </p>
         </div>
