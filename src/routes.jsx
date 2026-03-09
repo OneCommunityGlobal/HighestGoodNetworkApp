@@ -207,6 +207,7 @@ import JobApplicationForm from './components/Collaboration/JobApplicationForm/Jo
 // Social Architecture
 const ResourceManagement = lazy(() => import('./components/ResourceManagement/ResourceManagement'));
 const RequestResources = lazy(() => import('./components/SocialArchitecture/RequestResources'));
+const PMResourceDashboard = lazy(() => import('./components/PMDashboard/PMResourceDashboard'));
 const ReusableListView = lazy(() => import('./components/BMDashboard/ReusableList'));
 const ConsumableListView = lazy(() => import('./components/BMDashboard/ConsumableList'));
 const MaterialListView = lazy(() => import('./components/BMDashboard/MaterialList'));
@@ -355,7 +356,12 @@ export default (
             return <Timelog userId={userId} />;
           }}
         />
-        <ProtectedRoute path="/peoplereport/:userId" component={PeopleReport} fallback />
+        <ProtectedRoute
+          path="/peoplereport/:userId"
+          component={PeopleReport}
+          fallback
+          routePermissions={RoutePermissions.reports}
+        />
         <ProtectedRoute path="/projectreport/:projectId" component={ProjectReport} fallback />
         <ProtectedRoute path="/teamreport/:teamId" component={TeamReport} fallback />
         <ProtectedRoute path="/taskeditsuggestions" component={TaskEditSuggestions} />
@@ -851,6 +857,15 @@ export default (
           path="/educationportal/tasks/intermediate"
           exact
           component={IntermediateTaskList}
+        />
+        {/* PM Resource Dashboard Route */}
+        <ProtectedRoute
+          path="/pm/dashboard/resources"
+          exact
+          component={PMResourceDashboard}
+          fallback
+          allowedRoles={[UserRole.Administrator, UserRole.Owner, UserRole.Manager]}
+          routePermissions={RoutePermissions.accessHgnSkillsDashboard}
         />
         <EPProtectedRoute path="/educationportal/dashboard" exact component={StudentDashboard} />
         <EPProtectedRoute path="/educationportal/student/tasks" exact component={StudentTasks} />
