@@ -22,6 +22,7 @@ import { OverlayTrigger, Popover } from 'react-bootstrap';
 import WarningModal from '../../Warnings/modals/WarningModal';
 import BlueSquareEmailCCPopup from '../BlueSquareEmailCCPopup';
 import CcUserList from './CCUserList';
+import PropTypes from 'prop-types';
 
 const UserProfileModal = props => {
   const {
@@ -745,6 +746,16 @@ const handleCcListUpdate = () => {
       />
     </>
   );
+};
+
+UserProfileModal.propTypes = {
+  specialWarnings: PropTypes.arrayOf(
+    propTypes.shape({
+      title: PropTypes.string,
+      warnings: PropTypes.arrayOf(PropTypes.string),
+      abbreviation: PropTypes.string
+    })
+  ),
 };
 
 export default connect(null, { hasPermission })(UserProfileModal);
