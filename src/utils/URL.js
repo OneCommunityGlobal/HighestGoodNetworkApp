@@ -357,6 +357,9 @@ export const ENDPOINTS = {
   BM_INJURY_SEVERITIES: `${APIEndpoint}/bm/injuries/injury-severities`,
   BM_INJURY_TYPES: `${APIEndpoint}/bm/injuries/injury-types`,
   BM_INJURY_PROJECTS: `${APIEndpoint}/bm/injuries/project-injury`,
+  BM_INJURY_CREATE: `${APIEndpoint}/bm/injuries`,
+  BM_INJURY_DEV_SEED: `${APIEndpoint}/bm/injuries/dev-seed`,
+  BM_INJURY_TREND: `${APIEndpoint}/bm/injuries/trend-data`,
   BM_INJURY_ISSUE: `${APIEndpoint}/bm/issues`,
   BM_INJURY_SEVERITY: `${APIEndpoint}/bm/injuries/severity-by-project`,
   BM_RENTAL_CHART: `${APIEndpoint}/bm/rentalChart`,
@@ -471,7 +474,7 @@ export const ENDPOINTS = {
   LB_MARK_MESSAGES_AS_READ: `${APIEndpoint}/lb/messages/mark-as-read`,
 
   // Injuries endpoints
-  INJURIES: `${APIEndpoint}/injuries`,
+  INJURIES: `${APIEndpoint}/bm/injuries/severity-by-project`,
 
   NOTIFICATIONS: `${APIEndpoint}/notification`,
   MSG_NOTIFICATION: `${APIEndpoint}/lb/notifications`,
