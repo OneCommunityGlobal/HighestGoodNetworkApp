@@ -678,7 +678,7 @@ const handleCcListUpdate = () => {
                       <Button
                         color="warning"
                         name="both"
-                        // disabled={!specialWarnings?.some(warn => warn.warnings.length >= 2)}
+                        disabled={!specialWarnings?.some(warn => warn.warnings.length >= 2)}
                         onClick={e => {
                           handleToggleLogWarning('both');
                         }}
