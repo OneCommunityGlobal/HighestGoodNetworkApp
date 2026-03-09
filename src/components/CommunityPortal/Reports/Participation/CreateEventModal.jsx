@@ -90,6 +90,16 @@ function CreateEventModal({ isOpen, toggle }) {
       newErrors.date = 'Date is required';
     }
 
+    if (formData.date) {
+      const selectedDate = moment(formData.date, 'YYYY-MM-DD').startOf('day');
+      const today = moment()
+        .tz('America/Los_Angeles')
+        .startOf('day');
+      if (selectedDate.isBefore(today)) {
+        newErrors.date = 'Event Date Cannot be in the past';
+      }
+    }
+
     if (!formData.startTime) {
       newErrors.startTime = 'Start time is required';
     }
@@ -273,6 +283,9 @@ function CreateEventModal({ isOpen, toggle }) {
               value={formData.date}
               onChange={handleChange}
               disabled={loading}
+              min={moment()
+                .tz('America/Los_Angeles')
+                .format('YYYY-MM-DD')}
               style={darkMode ? { colorScheme: 'dark' } : {}}
             />
             {errors.date && <div className="text-danger small">{errors.date}</div>}
