@@ -18,6 +18,22 @@ function dodgeY(items, minGap, top, bottom) {
   }
 }
 
+// Calculate adaptive gap based on container size and data count
+function getAdaptiveGap(windowSize, itemCount) {
+  // Smaller screen or more items = larger gap to prevent overlap
+  const baseGap = windowSize <= 500 ? 20 : 16;
+  const countFactor = itemCount > 8 ? 4 : itemCount > 5 ? 2 : 0;
+  return baseGap + countFactor;
+}
+
+// Get text offset based on screen size
+function getTextOffset(windowSize) {
+  if (windowSize <= 400) return 50;
+  if (windowSize <= 500) return 60;
+  if (windowSize <= 640) return 70;
+  return 80;
+}
+
 const generateRandomHexColor = () => {
 
   const randomColor = Math.floor(Math.random() * 16777215).toString(16);
@@ -102,7 +118,13 @@ export function ProjectPieChart  ({ userData, windowSize, darkMode }) {
   const [accumulatedValues, setAccumulatedValues] = useState(0);
   const switchId = useId();
   const layoutRef = useRef(null);
-  useEffect(() => { layoutRef.current = null; }, [userData, windowSize, showAllValues, darkMode]);
+  const layoutVersionRef = useRef(0);
+  
+  // Reset layout when dependencies change
+  useEffect(() => { 
+    layoutRef.current = null;
+    layoutVersionRef.current += 1;
+  }, [userData, windowSize, showAllValues, darkMode]);
 
   const onPieEnter = (data, index, event) => {
     if (event.ctrlKey) {
@@ -163,20 +185,44 @@ export function ProjectPieChart  ({ userData, windowSize, darkMode }) {
                   const { viewBox, index, value } = props;
                   if (!viewBox) return null;
 
-                  // build layout once
-                  if (!layoutRef.current) {
+                  // build layout once per version
+                  const currentVersion = layoutVersionRef.current;
+                  if (!layoutRef.current || layoutRef.current.version !== currentVersion) {
                     const { cx, cy, outerRadius } = viewBox;
                     const R = outerRadius + 6;
-                    const textOffset = 80;
-                    const minGap = 16;
+                    const textOffset = getTextOffset(windowSize);
+                    const minGap = getAdaptiveGap(windowSize, userData.length);
                     const topBound = cy - (R + 60);
                     const botBound = cy + (R + 60);
 
                     const total = userData.reduce((s, d) => s + d.value, 0) || 1;
+                    
+                    // Determine max labels to show based on screen size
+                    const getMaxLabels = (size, count) => {
+                      if (size <= 400) return Math.min(count, 6);
+                      if (size <= 500) return Math.min(count, 8);
+                      if (size <= 640) return Math.min(count, 10);
+                      return count;
+                    };
+                    const maxLabels = getMaxLabels(windowSize, userData.length);
+                    
+                    // Sort by value descending and take top labels
+                    const sortedIndices = userData
+                      .map((d, i) => ({ idx: i, value: d.value }))
+                      .sort((a, b) => b.value - a.value)
+                      .slice(0, maxLabels)
+                      .map(x => x.idx);
+                    const visibleSet = new Set(sortedIndices);
+                    
                     let acc = 0;
                     const left = [], right = [];
 
                     userData.forEach((d, i) => {
+                      // Skip labels that won't fit on small screens
+                      if (!visibleSet.has(i)) {
+                        acc += d.value;
+                        return;
+                      }
                       const mid = ((acc + d.value / 2) / total) * 360; 
                       acc += d.value;
 
@@ -190,7 +236,16 @@ export function ProjectPieChart  ({ userData, windowSize, darkMode }) {
                       const rawY = cy + (R + 8) * sin;
 
                       const pct = (d.value * 100 / (d.totalHoursCalculated || total)) || 0;
-                      const text = `${d.name.substring(0,14)} ${d.lastName?.[0] ?? ''} ${d.value.toFixed(2)}Hrs (${pct.toFixed(1)}%)`;
+                      
+                      // Simplify text on smaller screens
+                      let text;
+                      if (windowSize <= 400) {
+                        text = `${d.name.substring(0,8)} ${d.value.toFixed(1)}h`;
+                      } else if (windowSize <= 500) {
+                        text = `${d.name.substring(0,10)} ${d.lastName?.[0] ?? ''} ${d.value.toFixed(1)}h (${pct.toFixed(0)}%)`;
+                      } else {
+                        text = `${d.name.substring(0,14)} ${d.lastName?.[0] ?? ''} ${d.value.toFixed(2)}Hrs (${pct.toFixed(1)}%)`;
+                      }
 
                       const item = { idx: i, side, sx, sy, tx, rawY, y: rawY, text };
                       (side === 'right' ? right : left).push(item);
@@ -209,7 +264,7 @@ export function ProjectPieChart  ({ userData, windowSize, darkMode }) {
                     dodgeY(left, minGap, topBound, botBound);
                     dodgeY(right, minGap, topBound, botBound);
 
-                    const map = {};
+                    const map = { version: currentVersion };
                     [...left, ...right].forEach(it => { map[it.idx] = it; });
                     layoutRef.current = map;
                   }
