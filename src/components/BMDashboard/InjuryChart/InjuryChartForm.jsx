@@ -214,17 +214,38 @@ function InjuryChartForm({ dark }) {
           <ResponsiveContainer width="100%" height={400}>
             {chartType === 'bar' ? (
               <BarChart data={chartData} margin={{ top: 10, right: 30, left: 10, bottom: 30 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
+                <CartesianGrid strokeDasharray="3 3" stroke={dark ? '#374151' : '#eee'} />
                 <XAxis
                   dataKey="month"
                   padding={{ left: 20, right: 20 }}
-                  label={{ value: 'Month', position: 'insideBottom', offset: -10 }}
+                  tick={{ fill: dark ? '#d1d5db' : '#666' }}
+                  label={{
+                    value: 'Month',
+                    position: 'insideBottom',
+                    offset: -10,
+                    fill: dark ? '#d1d5db' : '#666',
+                  }}
                 />
                 <YAxis
                   allowDecimals={false}
-                  label={{ value: 'Number of Injuries', angle: -90, position: 'insideLeft' }}
+                  tick={{ fill: dark ? '#d1d5db' : '#666' }}
+                  label={{
+                    value: 'Number of Injuries',
+                    angle: -90,
+                    position: 'insideLeft',
+                    fill: dark ? '#d1d5db' : '#666',
+                  }}
                 />
-                <Tooltip />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: dark ? '#1e293b' : '#fff',
+                    border: `1px solid ${dark ? '#475569' : '#ddd'}`,
+                    borderRadius: 8,
+                    color: dark ? '#e2e8f0' : '#333',
+                  }}
+                  labelStyle={{ color: dark ? '#f1f5f9' : '#333', fontWeight: 600 }}
+                  itemStyle={{ color: dark ? '#e2e8f0' : '#555' }}
+                />
                 <Legend verticalAlign="top" align="center" />
                 <Bar dataKey="Serious" fill="#dc3545" name="Serious" barSize={20} />
                 <Bar dataKey="Medium" fill="#fd7e14" name="Medium" barSize={20} />
@@ -232,17 +253,38 @@ function InjuryChartForm({ dark }) {
               </BarChart>
             ) : (
               <LineChart data={chartData} margin={{ top: 10, right: 30, left: 10, bottom: 30 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
+                <CartesianGrid strokeDasharray="3 3" stroke={dark ? '#374151' : '#eee'} />
                 <XAxis
                   dataKey="month"
                   padding={{ left: 20, right: 20 }}
-                  label={{ value: 'Month', position: 'insideBottom', offset: -10 }}
+                  tick={{ fill: dark ? '#d1d5db' : '#666' }}
+                  label={{
+                    value: 'Month',
+                    position: 'insideBottom',
+                    offset: -10,
+                    fill: dark ? '#d1d5db' : '#666',
+                  }}
                 />
                 <YAxis
                   allowDecimals={false}
-                  label={{ value: 'Number of Injuries', angle: -90, position: 'insideLeft' }}
+                  tick={{ fill: dark ? '#d1d5db' : '#666' }}
+                  label={{
+                    value: 'Number of Injuries',
+                    angle: -90,
+                    position: 'insideLeft',
+                    fill: dark ? '#d1d5db' : '#666',
+                  }}
                 />
-                <Tooltip />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: dark ? '#1e293b' : '#fff',
+                    border: `1px solid ${dark ? '#475569' : '#ddd'}`,
+                    borderRadius: 8,
+                    color: dark ? '#e2e8f0' : '#333',
+                  }}
+                  labelStyle={{ color: dark ? '#f1f5f9' : '#333', fontWeight: 600 }}
+                  itemStyle={{ color: dark ? '#e2e8f0' : '#555' }}
+                />
                 <Legend verticalAlign="top" align="center" />
                 <Line
                   type="monotone"
@@ -276,8 +318,14 @@ function InjuryChartForm({ dark }) {
 
       {/* No Data Display */}
       {!error && !loading && (!chartData || chartData.length === 0) && (
-        <div className="text-center p-5 bg-white rounded shadow-sm">
-          <p className="text-muted">No injury data available for the selected criteria.</p>
+        <div
+          className={`text-center p-5 rounded shadow-sm ${
+            dark ? 'bg-dark text-light' : 'bg-white'
+          }`}
+        >
+          <p className={dark ? 'text-light' : 'text-muted'}>
+            No injury data available for the selected criteria.
+          </p>
         </div>
       )}
     </div>
