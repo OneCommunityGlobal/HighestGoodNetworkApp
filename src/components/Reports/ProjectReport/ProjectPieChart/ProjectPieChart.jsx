@@ -275,11 +275,8 @@ export function ProjectPieChart  ({ userData, windowSize, darkMode }) {
                       } else {
                         text = `${d.name.substring(0,14)} ${d.lastName?.[0] ?? ''} ${d.value.toFixed(2)}Hrs (${pct.toFixed(1)}%)`;
                       }
-                      
-                      // Store index for later lookup
-                      item.originalIndex = i;
 
-                      const item = { idx: i, side, sx, sy, tx, rawY, y: rawY, text };
+                      const item = { idx: i, originalIndex: i, side, sx, sy, tx, rawY, y: rawY, text };
                       (side === 'right' ? right : left).push(item);
                     });
 
