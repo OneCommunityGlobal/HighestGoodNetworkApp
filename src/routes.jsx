@@ -356,7 +356,12 @@ export default (
             return <Timelog userId={userId} />;
           }}
         />
-        <ProtectedRoute path="/peoplereport/:userId" component={PeopleReport} fallback />
+        <ProtectedRoute
+          path="/peoplereport/:userId"
+          component={PeopleReport}
+          fallback
+          routePermissions={RoutePermissions.reports}
+        />
         <ProtectedRoute path="/projectreport/:projectId" component={ProjectReport} fallback />
         <ProtectedRoute path="/teamreport/:teamId" component={TeamReport} fallback />
         <ProtectedRoute path="/taskeditsuggestions" component={TaskEditSuggestions} />
@@ -860,6 +865,7 @@ export default (
           component={PMResourceDashboard}
           fallback
           allowedRoles={[UserRole.Administrator, UserRole.Owner, UserRole.Manager]}
+          routePermissions={RoutePermissions.accessHgnSkillsDashboard}
         />
         <EPProtectedRoute path="/educationportal/dashboard" exact component={StudentDashboard} />
         <EPProtectedRoute path="/educationportal/student/tasks" exact component={StudentTasks} />
