@@ -202,8 +202,12 @@ export function ProjectPieChart({ userData, windowSize, darkMode }) {
   const containerHeight = windowSize <= 400 ? 480 : windowSize <= 640 ? 520 : 640;
   const containerMinHeight = windowSize <= 400 ? 420 : 350;
 
-  // Text offset based on screen size
-  const textOffset = windowSize <= 400 ? 55 : windowSize <= 500 ? 65 : windowSize <= 640 ? 75 : 85;
+  // Text offset based on screen size - smaller for mobile to keep text visible
+  const textOffset = windowSize <= 400 ? 45 : windowSize <= 500 ? 55 : windowSize <= 640 ? 70 : 85;
+  
+  // Font size based on screen
+  const fontSize = windowSize <= 400 ? 10 : windowSize <= 640 ? 11 : 13;
+  const lineStrokeWidth = windowSize <= 400 ? 1 : 1.5;
 
   return (
     <div className={`position-relative ${darkMode ? 'text-light' : ''} h-100`}>
@@ -268,17 +272,20 @@ export function ProjectPieChart({ userData, windowSize, darkMode }) {
                       
                       const pct = (d.value * 100 / total) || 0;
                       
-                      // Generate text based on screen size
+                      // Generate text based on screen size - shorter for mobile
                       let text;
                       if (windowSize <= 400) {
+                        // Very small screens: minimal text
                         text = d.isOthers 
                           ? d.name 
-                          : `${d.name.substring(0, 8)} ${d.value.toFixed(1)}h`;
+                          : `${d.name.substring(0, 6)} ${d.value.toFixed(0)}h`;
                       } else if (windowSize <= 640) {
+                        // Mobile: shorter text
                         text = d.isOthers
                           ? d.name
-                          : `${d.name.substring(0, 12)} ${d.value.toFixed(1)}h (${pct.toFixed(0)}%)`;
+                          : `${d.name.substring(0, 10)} ${d.value.toFixed(1)}h`;
                       } else {
+                        // Desktop: full text
                         text = d.isOthers
                           ? d.name
                           : `${d.name.substring(0, 14)} ${d.lastName?.substring(0, 1) || ''} ${d.value.toFixed(2)}Hrs (${pct.toFixed(1)}%)`;
@@ -313,7 +320,7 @@ export function ProjectPieChart({ userData, windowSize, darkMode }) {
                         d={`M${node.sx},${node.sy} L${(node.sx + node.tx)/2},${node.y} L${node.tx},${node.y}`}
                         stroke={darkMode ? '#fff' : '#333'}
                         fill="none"
-                        strokeWidth={windowSize <= 400 ? 1 : 1.5}
+                        strokeWidth={lineStrokeWidth}
                       />
                       <text
                         x={node.tx}
@@ -321,9 +328,12 @@ export function ProjectPieChart({ userData, windowSize, darkMode }) {
                         textAnchor={node.side === 'right' ? 'start' : 'end'}
                         fill={darkMode ? '#fff' : '#333'}
                         dominantBaseline="middle"
-                        fontSize={windowSize <= 400 ? 11 : windowSize <= 640 ? 12 : 13}
+                        fontSize={fontSize}
                         fontWeight={windowSize <= 400 ? 500 : 400}
-                        style={{ pointerEvents: 'none' }}
+                        style={{ 
+                          pointerEvents: 'none',
+                          textShadow: darkMode ? 'none' : '0 0 2px rgba(255,255,255,0.8)'
+                        }}
                       >
                         {node.text}
                       </text>
