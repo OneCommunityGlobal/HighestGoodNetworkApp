@@ -49,3 +49,13 @@
   color: #e74c3c;
   font-weight: bold;
 }
+
+/* Dark mode */
+:global(.dark-mode) .groupTitle {
+  color: #fff;
+}
+
+:global(.dark-mode) .card {
+  background: #2a2a2a;
+  color: #fff;
+}
