@@ -150,11 +150,17 @@ export default function ProjectRiskProfileOverview() {
             margin={{ top: 20, right: 30, left: 0, bottom: 5 }}
             barGap={8}
           >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="projectName" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
+            <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? '#555' : '#ccc'} />
+            <XAxis dataKey="projectName" tick={{ fill: darkMode ? '#fff' : '#333' }} />
+            <YAxis tick={{ fill: darkMode ? '#fff' : '#333' }} />
+            <Tooltip
+              contentStyle={{
+                backgroundColor: darkMode ? '#2c2c2c' : '#fff',
+                borderColor: darkMode ? '#555' : '#ccc',
+                color: darkMode ? '#fff' : '#333',
+              }}
+            />
+            <Legend wrapperStyle={{ color: darkMode ? '#fff' : '#333' }} />
             <Bar dataKey="predictedCostOverrun" name="Predicted Cost Overrun (%)" fill="#4285F4" />
             <Bar dataKey="totalOpenIssues" name="Issues" fill="#EA4335" />
             <Bar dataKey="predictedTimeDelay" name="Predicted Time Delay (%)" fill="#FBBC05" />

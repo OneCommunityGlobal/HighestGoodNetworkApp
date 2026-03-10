@@ -118,10 +118,11 @@
 /* ---------------- CARDS ---------------- */
 .weeklyProjectSummaryCard {
   background: var(--card-bg);
-  padding: 10px;
-  border-radius: 6px;
+  padding: 16px;
+  border-radius: 8px;
   text-align: center;
   box-shadow: 0 2px 5px var(--card-shadow);
+  margin-bottom: 12px;
 }
 
 :global(.dark-mode) .weeklyProjectSummaryCard {
@@ -212,10 +213,10 @@
 }
 
 .weeklyProjectSummaryDashboardCategoryContent {
-  padding: 15px;
+  padding: 20px;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
+  gap: 24px;
   border-top: 1px solid var(--card-shadow);
   animation: fadeIn 0.3s ease-in-out;
   background: var(--section-bg);

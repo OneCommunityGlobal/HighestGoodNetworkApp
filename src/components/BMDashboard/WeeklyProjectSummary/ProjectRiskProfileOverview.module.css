@@ -100,14 +100,16 @@
 .customSelect__control {
   font-size: 14px;
   min-height: 34px;
-  background: none;
-  border: none;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
   box-shadow: none;
 }
 
 .darkMode .customSelect__control {
   color: #eee;
   background: #2c2c2c;
+  border-color: #555;
 }
 
 .customSelect__multi-value {
@@ -118,6 +120,10 @@
 
 .darkMode .customSelect__multi-value {
   background: #444;
+  color: #eee;
+}
+
+.darkMode .customSelect__multi-value__label {
   color: #eee;
 }
 
@@ -141,6 +147,27 @@
 
 .customSelect__menu {
   z-index: 9999;
+  background-color: #fff;
+}
+
+.darkMode .customSelect__menu {
+  background-color: #2c2c2c;
+}
+
+.customSelect__single-value {
+  color: #000;
+}
+
+.darkMode .customSelect__single-value {
+  color: #eee;
+}
+
+.customSelect__placeholder {
+  color: #666;
+}
+
+.darkMode .customSelect__placeholder {
+  color: #aaa;
 }
 
 .error {
@@ -157,15 +184,6 @@
   background: #1e1e1e;
   box-shadow: 0 2px 8px #111;
   color: #eee;
-}
-
-.darkMode .dropdownButton {
-  color: #ccc;
-}
-
-.darkMode .dropdownMenu {
-  background: #2c2c2c;
-  box-shadow: 0 2px 8px #000;
 }
 
 .darkMode .heading {

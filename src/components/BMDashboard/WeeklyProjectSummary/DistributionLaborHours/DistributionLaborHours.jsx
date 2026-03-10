@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { useSelector } from 'react-redux';
 import styles from './DistributionLaborHours.module.css';
 
 const COLORS = ['#f9f3e3', '#2a647c', '#2e8ea3', '#ffab91', '#ffccbb', '#bbbbbbff'];
@@ -21,6 +22,7 @@ const CustomTooltip = ({ active, payload, total }) => {
 };
 
 export default function DistributionLaborHours() {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [originalData, setOriginalData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [dateRange, setDateRange] = useState({ from: '', to: '' });
@@ -56,7 +58,7 @@ export default function DistributionLaborHours() {
   const totalHours = filteredData.reduce((sum, item) => sum + item.value, 0);
 
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
       <h3 className={styles.title}>Distribution of Labor Hours</h3>
 
       <div className={styles.filters}>

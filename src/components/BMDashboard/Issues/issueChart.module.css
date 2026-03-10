@@ -5,6 +5,9 @@
   --border: #E0E0E0;
   --panel-bg: #ffffff;
   --panel-shadow: rgba(0, 0, 0, 0.08);
+  --select-bg: #ffffff;
+  --select-text: #1C1E1C;
+  --select-border: #ccc;
 
   background: var(--bg);
   color: var(--text);
@@ -22,6 +25,9 @@
   --border: rgba(255, 255, 255, 0.18);
   --panel-bg: #253342;
   --panel-shadow: rgba(255, 255, 255, 0.08);
+  --select-bg: #2b3e59;
+  --select-text: #ffffff;
+  --select-border: #555;
 }
 
 /* Filters */
@@ -48,6 +54,41 @@
 }
 .filterSelect {
   min-width: 220px;
+  background-color: var(--select-bg);
+  color: var(--select-text);
+  border-color: var(--select-border);
+}
+
+/* react-datepicker dark mode styles */
+.filterSelect input {
+  background-color: var(--select-bg);
+  color: var(--select-text);
+  border: 1px solid var(--select-border);
+  padding: 8px;
+  border-radius: 4px;
+}
+
+/* For react-select component */
+.filterSelect .select__control {
+  background-color: var(--select-bg);
+  border-color: var(--select-border);
+}
+
+.filterSelect .select__single-value {
+  color: var(--select-text);
+}
+
+.filterSelect .select__menu {
+  background-color: var(--select-bg);
+}
+
+.filterSelect .select__option {
+  background-color: var(--select-bg);
+  color: var(--select-text);
+}
+
+.filterSelect .select__option:hover {
+  background-color: var(--panel-bg);
 }
 
 /* Chart panel */

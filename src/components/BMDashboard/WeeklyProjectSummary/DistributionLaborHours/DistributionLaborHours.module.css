@@ -9,10 +9,19 @@
   flex-direction: column;
 }
 
+.container.darkMode {
+  background-color: #1b2a41;
+  color: white;
+}
+
 .title {
   font-size: large;
   color: black;
   font-weight: bold;
+}
+
+.darkMode .title {
+  color: white;
 }
 
 .filters {
@@ -27,6 +36,18 @@
   display: flex;
   flex-direction: column;
   font-size: 0.9rem;
+  color: black;
+}
+
+.darkMode .filters label {
+  color: white;
+}
+
+.darkMode .filters input,
+.darkMode .filters select {
+  background-color: #2b3e59;
+  color: white;
+  border: 1px solid #555;
 }
 
 .chartWrapper {
@@ -48,6 +69,11 @@
   align-items: center;
   margin-bottom: 8px;
   font-size: 0.85rem;
+  color: black;
+}
+
+.darkMode .legendItem {
+  color: white;
 }
 
 .colorBox {
@@ -63,6 +89,13 @@
   padding: 8px;
   font-size: 0.85rem;
   border-radius: 4px;
+  color: black;
+}
+
+.darkMode .tooltip {
+  background-color: #2b3e59;
+  border-color: #555;
+  color: white;
 }
 
 .button {
@@ -72,10 +105,21 @@
   padding: 10px 20px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  color: black;
 }
 
 .button:hover {
   background-color: #fff2f0;
+}
+
+.darkMode .button {
+  background-color: #2b3e59;
+  border-color: white;
+  color: white;
+}
+
+.darkMode .button:hover {
+  background-color: #3a506b;
 }
 
 .pieChartContainer {

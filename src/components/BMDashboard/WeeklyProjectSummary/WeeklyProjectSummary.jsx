@@ -311,23 +311,31 @@ function WeeklyProjectSummary() {
       {
         title: 'Financials',
         key: 'Financials',
-        className: 'large',
-        content: (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
-            <div
-              className={`${styles.weeklyProjectSummaryCard} ${styles.financialSmall} ${styles.financialChart}`}
-            >
-              <ExpenseBarChart />
-            </div>
-          </div>
-        ),
+        className: 'half',
+        content: [
+          <div
+            key="expense-chart"
+            className={`${styles.weeklyProjectSummaryCard} ${styles.financialSmall} ${styles.financialChart}`}
+          >
+            <ExpenseBarChart />
+          </div>,
+          <div
+            key="placeholder-chart"
+            className={`${styles.weeklyProjectSummaryCard} ${styles.financialSmall}`}
+          >
+            <p>Additional Financial Charts</p>
+          </div>,
+        ],
       },
       {
         title: 'Loss Tracking',
         key: 'Loss Tracking',
-        className: 'small',
+        className: 'half',
         content: (
-          <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>📊 Card</div>
+          <div className={`${styles.weeklyProjectSummaryCard} ${styles.wideCard}`}>
+            <h4>Loss Tracking Dashboard</h4>
+            <p>Loss tracking data visualization coming soon...</p>
+          </div>
         ),
       },
       {
@@ -337,7 +345,7 @@ function WeeklyProjectSummary() {
         content: (
           <div
             className={`${styles.weeklyProjectSummaryCard} ${styles.mapCard}`}
-            style={{ height: '500px', padding: '0' }}
+            style={{ height: '450px', padding: '8px', width: '100%' }}
           >
             <EmbedInteractiveMap />
           </div>
@@ -362,22 +370,21 @@ function WeeklyProjectSummary() {
       {
         title: 'Financials Tracking',
         key: 'Financials Tracking',
-        className: 'full',
-        content: [1, 2, 3, 4].map((_, index) => {
-          const uniqueId = uuidv4();
-          return (
-            <div
-              key={uniqueId}
-              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
-            >
-              {(() => {
-                if (index === 2) return <CostPredictionChart projectId={1} />;
-                if (index === 3) return <ActualVsPlannedCost />;
-                return '📊 Card';
-              })()}
-            </div>
-          );
-        }),
+        className: 'half',
+        content: [
+          <div
+            key="cost-prediction"
+            className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+          >
+            <CostPredictionChart projectId={1} />
+          </div>,
+          <div
+            key="actual-vs-planned"
+            className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+          >
+            <ActualVsPlannedCost />
+          </div>,
+        ],
       },
     ],
     [quantityOfMaterialsUsedData, darkMode],
