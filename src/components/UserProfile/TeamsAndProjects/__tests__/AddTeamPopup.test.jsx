@@ -148,29 +148,24 @@ describe('AddTeamPopup component', () => {
     axios.get.mockResolvedValue({
       status: 200,
     });
-
+  
     axios.post.mockResolvedValue({
       status: 200,
     });
+  
     const teamsData = {
       allTeams: store.getState().allTeams,
     };
+  
     renderComponent(true, teamsData, userTeams);
+  
     expect(screen.getByText('Add to Team')).toBeInTheDocument();
-    const modalFadeElement = screen.getByRole('document');
-    // eslint-disable-next-line testing-library/no-node-access
-    const modalContentElement = modalFadeElement.querySelector('.modal-content');
-    // eslint-disable-next-line testing-library/no-node-access
-    const modalBodyElement = modalContentElement.querySelector('.modal-body');
-    // eslint-disable-next-line testing-library/no-node-access
-    const searchElement = modalBodyElement.querySelector('.form-control');
-
+  
+    const searchElement = screen.getByPlaceholderText('Search or select a team...');
     fireEvent.change(searchElement, { target: { value: 'team111' } });
-    await waitFor(() => { });
-    // eslint-disable-next-line testing-library/no-node-access
-    const nextDivElement = modalBodyElement.querySelector('.input-group-prepend');
-    // eslint-disable-next-line testing-library/no-node-access
-    fireEvent.click(nextDivElement.querySelector('.btn.btn-primary'));
+  
+    fireEvent.click(screen.getByRole('button', { name: 'Confirm' }));
+  
     expect(
       screen.getByText('Oops, this team does not exist! Create it if you want it.'),
     ).toBeInTheDocument();
@@ -208,29 +203,24 @@ describe('AddTeamPopup component', () => {
     axios.get.mockResolvedValue({
       status: 200,
     });
-
+  
     axios.post.mockResolvedValue({
       status: 200,
     });
+  
     const teamsData = {
       allTeams: store.getState().allTeams,
     };
+  
     renderComponent(true, teamsData, userTeams);
+  
     expect(screen.getByText('Add to Team')).toBeInTheDocument();
-    const modalFadeElement = screen.getByRole('document');
-    // eslint-disable-next-line testing-library/no-node-access
-    const modalContentElement = modalFadeElement.querySelector('.modal-content');
-    // eslint-disable-next-line testing-library/no-node-access
-    const modalBodyElement = modalContentElement.querySelector('.modal-body');
-    // eslint-disable-next-line testing-library/no-node-access
-    const searchElement = modalBodyElement.querySelector('.form-control');
-
+  
+    const searchElement = screen.getByPlaceholderText('Search or select a team...');
     fireEvent.change(searchElement, { target: { value: '' } });
-    await waitFor(() => { });
-    // eslint-disable-next-line testing-library/no-node-access
-    const nextDivElement = modalBodyElement.querySelector('.input-group-prepend');
-    // eslint-disable-next-line testing-library/no-node-access
-    fireEvent.click(nextDivElement.querySelector('.btn.btn-primary'));
+  
+    fireEvent.click(screen.getByRole('button', { name: 'Confirm' }));
+  
     expect(screen.getByText('Hey, You need to pick a team first!')).toBeInTheDocument();
   });
   it('check if postNewTeam action works as expected', async () => {
