@@ -169,8 +169,7 @@ describe('User Teams Table Component', () => {
       expect(teamCodeInput).toBeInTheDocument();
       expect(teamCodeInput.tagName).toBe('INPUT');
     })
-    expect(teamCodeInput).toHaveAttribute('id', 'teamCode');
-;
+    expect(teamCodeInput).toHaveAttribute('id', 'teamCode');;
   });
 
   it('renders table headers with correct column titles', async () => {
