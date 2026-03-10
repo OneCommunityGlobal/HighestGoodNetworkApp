@@ -7,52 +7,93 @@ import './ProjectPieChart.css';
 
 const RAD = Math.PI / 180;
 
-function dodgeY(items, minGap, top, bottom) {
-  // items: [{ idx, side, sx, sy, tx, rawY, text, y }]
-  items.sort((a, b) => a.rawY - b.rawY);
-  let last = top;
-  for (const it of items) {
-    const y = Math.max(it.rawY, last + minGap);
-    it.y = Math.min(y, bottom);
-    last = it.y;
+// Smart label layout: distribute from center outward to prevent overlap
+function distributeLabels(items, minGap, top, bottom, centerY) {
+  if (items.length === 0) return;
+  
+  // Sort by distance from center
+  items.sort((a, b) => Math.abs(a.rawY - centerY) - Math.abs(b.rawY - centerY));
+  
+  // Place items starting from closest to center, expanding outward
+  const placed = [];
+  
+  for (const item of items) {
+    let y = item.rawY;
+    
+    // Find non-overlapping position
+    for (const p of placed) {
+      if (Math.abs(y - p.y) < minGap) {
+        // Push away from center
+        if (y < centerY) {
+          y = p.y - minGap;
+        } else {
+          y = p.y + minGap;
+        }
+      }
+    }
+    
+    // Clamp to bounds
+    y = Math.max(top, Math.min(y, bottom));
+    item.y = y;
+    placed.push(item);
   }
   
-  // Second pass: ensure no overlaps by pushing items up if needed
-  for (let i = items.length - 2; i >= 0; i--) {
-    const curr = items[i];
-    const next = items[i + 1];
-    if (next.y - curr.y < minGap) {
-      curr.y = next.y - minGap;
-    }
-  }
+  // Final adjustment: if any item is out of bounds, shift all
+  const minY = Math.min(...items.map(i => i.y));
+  const maxY = Math.max(...items.map(i => i.y));
   
-  // Third pass: ensure nothing goes above top bound
-  if (items.length > 0 && items[0].y < top) {
-    const shift = top - items[0].y;
-    for (const it of items) {
-      it.y += shift;
-    }
+  if (minY < top) {
+    const shift = top - minY;
+    items.forEach(it => it.y += shift);
+  } else if (maxY > bottom) {
+    const shift = bottom - maxY;
+    items.forEach(it => it.y += shift);
   }
 }
 
-// Calculate adaptive gap based on container size and data count
-function getAdaptiveGap(windowSize, itemCount) {
-  // Smaller screen or more items = larger gap to prevent overlap
-  const baseGap = windowSize <= 500 ? 24 : 20;
-  const countFactor = itemCount > 10 ? 6 : itemCount > 8 ? 4 : itemCount > 5 ? 2 : 0;
-  return baseGap + countFactor;
+// Aggregate small values into "Others" category
+function aggregateSmallValues(userData, threshold = 0.03) {
+  const total = userData.reduce((s, d) => s + d.value, 0) || 1;
+  
+  const significant = [];
+  const small = [];
+  
+  userData.forEach((d, i) => {
+    const pct = d.value / total;
+    if (pct >= threshold) {
+      significant.push({ ...d, originalIndex: i, pct });
+    } else {
+      small.push({ ...d, value: d.value, originalIndex: i });
+    }
+  });
+  
+  // If there are small values, aggregate them
+  if (small.length > 0) {
+    const othersValue = small.reduce((s, d) => s + d.value, 0);
+    const othersPct = othersValue / total;
+    
+    significant.push({
+      name: `Others (${small.length})`,
+      value: othersValue,
+      lastName: '',
+      totalHoursCalculated: total,
+      pct: othersPct,
+      isOthers: true,
+      othersItems: small
+    });
+  }
+  
+  return { aggregatedData: significant, hasOthers: small.length > 0 };
 }
 
-// Get text offset based on screen size
-function getTextOffset(windowSize) {
-  if (windowSize <= 400) return 50;
-  if (windowSize <= 500) return 60;
-  if (windowSize <= 640) return 70;
-  return 80;
+// Calculate adaptive gap based on available space
+function getAdaptiveGap(availableSpace, itemCount) {
+  // Minimum 18px, or distribute evenly if many items
+  const evenGap = availableSpace / Math.max(itemCount - 1, 1);
+  return Math.max(18, Math.min(evenGap, 28));
 }
 
 const generateRandomHexColor = () => {
-
   const randomColor = Math.floor(Math.random() * 16777215).toString(16);
   const hexColor = `#${  "0".repeat(6 - randomColor.length)  }${randomColor}`;
   return hexColor;
@@ -70,66 +111,48 @@ const renderActiveShape = (props, darkMode, showAllValues, accumulatedValues) =>
   const ey = my;
   const textAnchor = cos >= 0 ? 'start' : 'end';
 
-
   return (
     <g>
       {!showAllValues ? (
         <>
-        <svg
-        className="flex flex-column justify-content-center align-items-center"
-        >
-          <text x={cx} y={cy} dy={-32} textAnchor="middle" fill={darkMode ? 'white' : fill}  >
-          Selected values
+        <svg className="flex flex-column justify-content-center align-items-center">
+          <text x={cx} y={cy} dy={-32} textAnchor="middle" fill={darkMode ? 'white' : fill}>
+            Selected values
           </text>
-          <text x={cx} y={cy} dy={-14} textAnchor="middle" fill={darkMode ? 'white' : fill}  >
-          {accumulatedValues.toFixed(2)}hrs.
+          <text x={cx} y={cy} dy={-14} textAnchor="middle" fill={darkMode ? 'white' : fill}>
+            {accumulatedValues.toFixed(2)}hrs.
           </text>
-          <text x={cx} y={cy} dy={4} textAnchor="middle" fill={darkMode ? 'white' : fill}  >
-          Total hrs.({payload.totalHoursCalculated.toFixed(2)})
+          <text x={cx} y={cy} dy={4} textAnchor="middle" fill={darkMode ? 'white' : fill}>
+            Total hrs.({payload.totalHoursCalculated?.toFixed(2) || 0})
           </text>
         </svg>
           <text x={ex * .94 + (cos >= 0 ? 1 : -1) * 12} y={ey} textAnchor={textAnchor} fill={darkMode ? 'white' : '#333'}>
-              {`${payload.name.substring(0, 14)}`} {`${payload.lastName.substring(0, 1)}`} {`${value.toFixed(2)}hrs`} ({`${(percent * 100).toFixed(2)}%`})
+            {`${payload.name?.substring(0, 14) || ''}`} {`${payload.lastName?.substring(0, 1) || ''}`} {`${value?.toFixed(2) || 0}hrs`} ({`${((percent || 0) * 100).toFixed(2)}%`})
           </text>
         </>
-
       ) : (
         <>
-        <text x={cx} y={cy} dy={-30} textAnchor="middle" fill={darkMode ? 'white' : fill}  >
+        <text x={cx} y={cy} dy={-30} textAnchor="middle" fill={darkMode ? 'white' : fill}>
           All Members
         </text>
-        <text x={cx} y={cy} dy={0} textAnchor="middle" fill={darkMode ? 'white' : fill}  >
-        Total hrs: {payload.totalHoursCalculated.toFixed(2)}
+        <text x={cx} y={cy} dy={0} textAnchor="middle" fill={darkMode ? 'white' : fill}>
+          Total hrs: {payload.totalHoursCalculated?.toFixed(2) || 0}
         </text>
-
         </>
-      )
-      }
+      )}
       <Sector
-        cx={cx}
-        cy={cy}
-        innerRadius={innerRadius}
-        outerRadius={outerRadius}
-        startAngle={startAngle}
-        endAngle={endAngle}
-        fill={hexColor}
+        cx={cx} cy={cy} innerRadius={innerRadius} outerRadius={outerRadius}
+        startAngle={startAngle} endAngle={endAngle} fill={hexColor}
       />
       <Sector
-        cx={cx}
-        cy={cy}
-        startAngle={startAngle}
-        endAngle={endAngle}
-        innerRadius={outerRadius + 6}
-        outerRadius={outerRadius + 10}
-        fill={hexColor}
+        cx={cx} cy={cy} startAngle={startAngle} endAngle={endAngle}
+        innerRadius={outerRadius + 6} outerRadius={outerRadius + 10} fill={hexColor}
       />
-
     </g>
   );
 };
 
-export function ProjectPieChart  ({ userData, windowSize, darkMode }) {
-
+export function ProjectPieChart({ userData, windowSize, darkMode }) {
   const [activeIndices, setActiveIndices] = useState([]);
   const [showAllValues, setShowAllValues] = useState(false);
   const [accumulatedValues, setAccumulatedValues] = useState(0);
@@ -137,7 +160,11 @@ export function ProjectPieChart  ({ userData, windowSize, darkMode }) {
   const layoutRef = useRef(null);
   const layoutVersionRef = useRef(0);
   
-  // Reset layout when dependencies change
+  // Aggregate data to handle small values
+  const { aggregatedData, hasOthers } = useRef(() => 
+    aggregateSmallValues(userData, windowSize <= 640 ? 0.05 : 0.03)
+  ).current || aggregateSmallValues(userData, windowSize <= 640 ? 0.05 : 0.03);
+  
   useEffect(() => { 
     layoutRef.current = null;
     layoutVersionRef.current += 1;
@@ -148,28 +175,35 @@ export function ProjectPieChart  ({ userData, windowSize, darkMode }) {
       setActiveIndices(prevIndices => {
         if (prevIndices.includes(index)) {
           const newIndices = prevIndices.filter(i => i !== index);
-          const newAccumulatedValues = newIndices.reduce((acc, i) => acc + userData[i].value, 0);
+          const newAccumulatedValues = newIndices.reduce((acc, i) => acc + aggregatedData[i]?.value, 0);
           setAccumulatedValues(newAccumulatedValues);
           return newIndices;
         } 
-          const newAccumulatedValues = accumulatedValues + userData[index].value;
-          setAccumulatedValues(newAccumulatedValues);
-          return [...prevIndices, index];
-        
+        const newAccumulatedValues = accumulatedValues + (aggregatedData[index]?.value || 0);
+        setAccumulatedValues(newAccumulatedValues);
+        return [...prevIndices, index];
       });
     } else {
       setActiveIndices([index]);
-      setAccumulatedValues(userData[index].value);
+      setAccumulatedValues(aggregatedData[index]?.value || 0);
     }
   };
 
   const toggleShowAllValues = () => {
     setShowAllValues(!showAllValues);
   };
+
   let circleSize = 30;
   if (windowSize <= 1280) {
     circleSize = windowSize / 10 * 0.5;
   }
+
+  // Responsive container height
+  const containerHeight = windowSize <= 400 ? 480 : windowSize <= 640 ? 520 : 640;
+  const containerMinHeight = windowSize <= 400 ? 420 : 350;
+
+  // Text offset based on screen size
+  const textOffset = windowSize <= 400 ? 55 : windowSize <= 500 ? 65 : windowSize <= 640 ? 75 : 85;
 
   return (
     <div className={`position-relative ${darkMode ? 'text-light' : ''} h-100`}>
@@ -180,12 +214,12 @@ export function ProjectPieChart  ({ userData, windowSize, darkMode }) {
           handleToggle={toggleShowAllValues} 
         />
       </div>
-      <ResponsiveContainer maxWidth={640} maxHeight={640} minWidth={350} minHeight={350}>
+      <ResponsiveContainer maxWidth={640} maxHeight={containerHeight} minWidth={350} minHeight={containerMinHeight}>
         <PieChart>
           <Pie
             activeIndex={activeIndices}
             activeShape={(props) => renderActiveShape(props, darkMode, showAllValues, accumulatedValues)}
-            data={userData}
+            data={aggregatedData}
             cx="50%"
             cy="50%"
             innerRadius={60 + circleSize}
@@ -194,107 +228,85 @@ export function ProjectPieChart  ({ userData, windowSize, darkMode }) {
             dataKey="value"
             onMouseEnter={showAllValues ? null : (data, index, event) => onPieEnter(data, index, event.nativeEvent)}
             darkMode={darkMode}
-            >
+          >
             {showAllValues && (
               <LabelList
                 dataKey="value"
                 content={(props) => {
-                  const { viewBox, index, value } = props;
-                  if (!viewBox) return null;
+                  const { viewBox, index } = props;
+                  if (!viewBox || !aggregatedData[index]) return null;
 
-                  // build layout once per version
                   const currentVersion = layoutVersionRef.current;
                   if (!layoutRef.current || layoutRef.current.version !== currentVersion) {
                     const { cx, cy, outerRadius } = viewBox;
                     const R = outerRadius + 6;
-                    const textOffset = getTextOffset(windowSize);
-                    const minGap = getAdaptiveGap(windowSize, userData.length);
-                    // Expanded bounds to give more room for labels
-                    const topBound = cy - (R + 100);
-                    const botBound = cy + (R + 100);
-
-                    const total = userData.reduce((s, d) => s + d.value, 0) || 1;
+                    const centerY = cy;
                     
-                    // Determine max labels to show based on screen size
-                    // Desktop: show all, Mobile/Tablet: limit to prevent overcrowding
-                    const maxLabels = windowSize > 640 ? userData.length : 
-                                      windowSize > 500 ? 8 : 
-                                      windowSize > 400 ? 6 : 4;
+                    // Calculate available vertical space
+                    const availableHeight = windowSize <= 400 ? 320 : windowSize <= 640 ? 380 : 480;
+                    const topBound = centerY - availableHeight / 2;
+                    const botBound = centerY + availableHeight / 2;
                     
-                    // Sort by value descending and take top labels
-                    const sortedIndices = userData
-                      .map((d, i) => ({ idx: i, value: d.value }))
-                      .sort((a, b) => b.value - a.value)
-                      .slice(0, maxLabels)
-                      .map(x => x.idx);
+                    const total = aggregatedData.reduce((s, d) => s + d.value, 0) || 1;
                     
-                    const visibleSet = new Set(sortedIndices);
-                    
-                    let acc = 0;
+                    // Collect items for both sides
                     const left = [], right = [];
-
-                    userData.forEach((d, i) => {
-                      // Skip labels that won't fit on small screens
-                      if (!visibleSet.has(i)) {
-                        acc += d.value;
-                        return;
-                      }
+                    let acc = 0;
+                    
+                    aggregatedData.forEach((d, i) => {
                       const mid = ((acc + d.value / 2) / total) * 360; 
                       acc += d.value;
-
+                      
                       const cos = Math.cos(-RAD * mid);
                       const sin = Math.sin(-RAD * mid);
                       const side = cos >= 0 ? 'right' : 'left';
-
+                      
                       const sx = cx + (R - 8) * cos;
                       const sy = cy + (R - 8) * sin;
                       const tx = cx + (R + textOffset) * (side === 'right' ? 1 : -1);
                       const rawY = cy + (R + 8) * sin;
-
-                      const pct = (d.value * 100 / (d.totalHoursCalculated || total)) || 0;
                       
-                      // Simplify text on smaller screens
+                      const pct = (d.value * 100 / total) || 0;
+                      
+                      // Generate text based on screen size
                       let text;
                       if (windowSize <= 400) {
-                        text = `${d.name.substring(0,8)} ${d.value.toFixed(1)}h`;
-                      } else if (windowSize <= 500) {
-                        text = `${d.name.substring(0,10)} ${d.lastName?.[0] ?? ''} ${d.value.toFixed(1)}h (${pct.toFixed(0)}%)`;
+                        text = d.isOthers 
+                          ? d.name 
+                          : `${d.name.substring(0, 8)} ${d.value.toFixed(1)}h`;
+                      } else if (windowSize <= 640) {
+                        text = d.isOthers
+                          ? d.name
+                          : `${d.name.substring(0, 12)} ${d.value.toFixed(1)}h (${pct.toFixed(0)}%)`;
                       } else {
-                        text = `${d.name.substring(0,14)} ${d.lastName?.[0] ?? ''} ${d.value.toFixed(2)}Hrs (${pct.toFixed(1)}%)`;
+                        text = d.isOthers
+                          ? d.name
+                          : `${d.name.substring(0, 14)} ${d.lastName?.substring(0, 1) || ''} ${d.value.toFixed(2)}Hrs (${pct.toFixed(1)}%)`;
                       }
-
-                      const item = { idx: i, originalIndex: i, side, sx, sy, tx, rawY, y: rawY, text };
-                      (side === 'right' ? right : left).push(item);
+                      
+                      const item = { idx: i, side, sx, sy, tx, rawY, text, pct };
+                      
+                      if (side === 'right') {
+                        right.push(item);
+                      } else {
+                        left.push(item);
+                      }
                     });
-
-                    // helpers
-                    const dodgeY = (items, gap, top, bottom) => {
-                      items.sort((a, b) => a.rawY - b.rawY);
-                      let last = top;
-                      for (const it of items) {
-                        const y = Math.max(it.rawY, last + gap);
-                        it.y = Math.min(y, bottom);
-                        last = it.y;
-                      }
-                    };
-                    dodgeY(left, minGap, topBound, botBound);
-                    dodgeY(right, minGap, topBound, botBound);
-
-                    // Store all visible indices for quick lookup
-                    const visibleIndices = [...left, ...right].map(it => it.originalIndex);
-                    const map = { version: currentVersion, visibleIndices };
+                    
+                    // Distribute labels with adaptive gap
+                    const minGap = getAdaptiveGap(availableHeight, Math.max(left.length, right.length));
+                    distributeLabels(left, minGap, topBound, botBound, centerY);
+                    distributeLabels(right, minGap, topBound, botBound, centerY);
+                    
+                    // Build lookup map
+                    const map = { version: currentVersion };
                     [...left, ...right].forEach(it => { map[it.idx] = it; });
                     layoutRef.current = map;
-                  }
-
-                  // Check if this index should be rendered
-                  if (!layoutRef.current.visibleIndices.includes(index)) {
-                    return null;
                   }
                   
                   const node = layoutRef.current[index];
                   if (!node) return null;
-
+                  
                   return (
                     <g>
                       <path
@@ -309,7 +321,7 @@ export function ProjectPieChart  ({ userData, windowSize, darkMode }) {
                         textAnchor={node.side === 'right' ? 'start' : 'end'}
                         fill={darkMode ? '#fff' : '#333'}
                         dominantBaseline="middle"
-                        fontSize={windowSize <= 400 ? 11 : windowSize <= 500 ? 12 : 13}
+                        fontSize={windowSize <= 400 ? 11 : windowSize <= 640 ? 12 : 13}
                         fontWeight={windowSize <= 400 ? 500 : 400}
                         style={{ pointerEvents: 'none' }}
                       >
@@ -321,8 +333,8 @@ export function ProjectPieChart  ({ userData, windowSize, darkMode }) {
               />
             )}
           </Pie>
-          </PieChart>
-        </ResponsiveContainer>
-      </div>
-  )
+        </PieChart>
+      </ResponsiveContainer>
+    </div>
+  );
 }
