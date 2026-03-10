@@ -5,11 +5,11 @@
 
 .promo_table_container {
   max-width: 90vw;
-  background-color: rgb(241, 241, 241);
+  background-color: #f1f1f1;
   margin: 0 auto;
   padding: 1rem;
   border-radius: 12px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 5px #000;
 }
 
 .promo_table_header {
@@ -18,7 +18,6 @@
   flex-wrap: wrap;
   align-items: center;
   font-size: 2.5rem;
-  /* font-size: clamp(30px, 4vw, 40px); */
   padding: 0.75rem 1rem;
   font-weight: 500;
   margin-bottom: 10pt;
@@ -56,7 +55,7 @@
 }
 
 .promo_table th {
-  background-color: rgb(224, 237, 250);
+  background-color: #e0edfa;
   font-weight: 400;
 }
 
@@ -102,20 +101,20 @@
 }
 
 .promo_table-container.dark .promo_table tr:hover {
-  background-color: #555555;
+  background-color: #555;
 }
 
 .promo_table_container.dark {
   background-color: #1f1f1f;
   color: #f5f5f5;
-  box-shadow: 0 2px 5px rgba(255, 255, 255, 0.1);
+  box-shadow: 0 2px 5px #fff;
 }
 
 .promo_table_container.dark .promo_table {
   background-color: #2a2a2a;
 }
 
-.promo_table_container.dark .promo_table th {
+.promo_table_container.dark .promo_table th, .selectGroup.dark {
   background-color: #3b3b3b;
   color: #ddd;
 }
@@ -131,7 +130,7 @@
 
 .promo_table_container.dark .review_btn,
 .promo-table_container.dark .process_promo_btn {
-  background_color: #3b82f6;
+  background-color: #3b82f6;
   color: white;
 }
 
@@ -146,7 +145,7 @@
 }
 
 .promo_table_container.dark .custom_circular_checkbox.checked {
-  background-color: #00cc66;
+  background-color: #0c6;
 }
 
 .promo_table_container.dark .check_icon {
@@ -175,4 +174,13 @@
 
 .tableWrapper{
   overflow-x: auto;
+}
+
+.selectGroup {
+  border: none;
+  padding: 0.5rem 1rem;
+  margin-left: 0.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1.25rem;
 }

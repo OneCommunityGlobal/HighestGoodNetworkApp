@@ -13,8 +13,7 @@ function PromotionEligibility({ currentUser }) {
   const [selectedForPromotion, setSelectedForPromotion] = useState(new Set());
   const [processing, setProcessing] = useState(false);
 
-  const [showNew, setShowNew] = useState(true);
-  const [showExisting, setShowExisting] = useState(true);
+  const [selectGroup, setSelectedGroup] = useState('new');
 
   const darkMode = useSelector(state => state.theme.darkMode);
 
@@ -45,6 +44,7 @@ function PromotionEligibility({ currentUser }) {
 
   const newMembers = reviewers.filter(r => r.isNewMember);
   const existingMembers = reviewers.filter(r => !r.isNewMember);
+  const filteredMemebers = selectGroup === 'new' ? newMembers : existingMembers;
 
   const toggleSelectPromotion = id => {
     setSelectedForPromotion(prev => {
@@ -153,6 +153,14 @@ function PromotionEligibility({ currentUser }) {
         <div className={styles.promo_table_header}>
           Promotion Eligibility
           <div>
+            <select
+              className={`${styles.selectGroup}  ${darkMode ? styles.dark : ''}`}
+              value={selectGroup}
+              onChange={e => setSelectedGroup(e.target.value)}
+            >
+              <option value="new">New Member</option>
+              <option value="existing">Existing Member</option>
+            </select>
             <button
               type="button"
               onClick={() => toast.info('Review Weekly clicked. Logic not implemented yet.')}
@@ -209,33 +217,7 @@ function PromotionEligibility({ currentUser }) {
               )}
 
               {!loading && !error && (
-                <>
-                  {newMembers.length > 0 && (
-                    <>
-                      <tr
-                        className={styles.section_row}
-                        onClick={() => setShowNew(prev => !prev)}
-                        style={{ cursor: 'pointer' }}
-                      >
-                        <td colSpan="6">New Members {showNew ? '▲' : '▼'}</td>
-                      </tr>
-                      {showNew && newMembers.map(renderRow)}
-                    </>
-                  )}
-
-                  {existingMembers.length > 0 && (
-                    <>
-                      <tr
-                        className={styles.section_row}
-                        onClick={() => setShowExisting(prev => !prev)}
-                        style={{ cursor: 'pointer' }}
-                      >
-                        <td colSpan="6">Existing Members{showExisting ? '▲' : '▼'}</td>
-                      </tr>
-                      {showExisting && existingMembers.map(renderRow)}
-                    </>
-                  )}
-                </>
+                <>{filteredMemebers.length > 0 && filteredMemebers.map(renderRow)}</>
               )}
             </tbody>
           </table>
