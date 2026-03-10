@@ -207,7 +207,6 @@ const TeamMemberTask = React.memo(
       setSelectedTaskForChangeLog(null);
     };
 
-
     const openDetailModal = request => {
       dispatch(showTimeOffRequestModal(request));
     };
