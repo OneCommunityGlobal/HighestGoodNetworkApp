@@ -206,7 +206,7 @@ export function ProjectPieChart({ userData, windowSize, darkMode }) {
   // Responsive container dimensions - constrain on mobile
   const containerWidth = windowSize <= 400 ? 320 : windowSize <= 640 ? 380 : 640;
   const containerHeight = windowSize <= 400 ? 400 : windowSize <= 640 ? 460 : 640;
-  const containerMinHeight = windowSize <= 400 ? 350 : 350;
+  const containerMinHeight = 350;
 
   // Text offset based on screen size - much smaller for mobile
   const textOffset = windowSize <= 400 ? 35 : windowSize <= 500 ? 45 : windowSize <= 640 ? 60 : 85;
