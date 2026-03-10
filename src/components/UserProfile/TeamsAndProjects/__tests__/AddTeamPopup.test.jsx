@@ -86,7 +86,7 @@ const renderClosedPopup = (teamsData = emptyTeamsData, mockUserTeams = userTeams
 
 const getSearchInput = () => screen.getByPlaceholderText('Search or select a team...');
 const getConfirmButton = () => screen.getByRole('button', { name: 'Confirm' });
-const getCloseButton = () => screen.getByRole('button', { name: 'Close' });
+const getCloseButton = () => screen.getByText('Close');
 
 describe('AddTeamPopup component', () => {
   beforeEach(() => {
