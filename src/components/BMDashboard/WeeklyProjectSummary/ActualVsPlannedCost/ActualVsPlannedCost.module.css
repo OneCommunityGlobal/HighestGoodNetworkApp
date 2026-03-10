@@ -27,12 +27,25 @@
   width: 100%;
   max-height: 200px;
   overflow-y: auto;
-  background-color: var(--card-bg);
-  color: var(--text-color);
-  border: 1px solid var(--button-hover);
+  background-color: white;
+  color: black;
+  border: 1px solid #ccc;
   border-radius: 4px;
   padding: 4px 8px;
   box-sizing: border-box;
+}
+
+.darkMode .selectorGroup select,
+.darkSelect {
+  background-color: #2b3e59;
+  color: white;
+  border-color: #555;
+}
+
+.darkMode .selectorGroup select option,
+.darkSelect option {
+  background-color: #2b3e59;
+  color: white;
 }
 
 .chartCaption {
