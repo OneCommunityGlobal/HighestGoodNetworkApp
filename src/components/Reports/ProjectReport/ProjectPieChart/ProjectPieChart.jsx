@@ -160,10 +160,10 @@ export function ProjectPieChart({ userData, windowSize, darkMode }) {
   const layoutRef = useRef(null);
   const layoutVersionRef = useRef(0);
   
-  // Aggregate data to handle small values
-  const { aggregatedData, hasOthers } = useRef(() => 
-    aggregateSmallValues(userData, windowSize <= 640 ? 0.05 : 0.03)
-  ).current || aggregateSmallValues(userData, windowSize <= 640 ? 0.05 : 0.03);
+  // Aggregate data to handle small values - recalculate when userData changes
+  const aggregatedResult = aggregateSmallValues(userData, windowSize <= 640 ? 0.05 : 0.03);
+  const aggregatedData = aggregatedResult.aggregatedData;
+  const hasOthers = aggregatedResult.hasOthers;
   
   useEffect(() => { 
     layoutRef.current = null;
