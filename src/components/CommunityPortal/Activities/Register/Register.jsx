@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-// import Calendar from 'react-calendar';
-// import 'react-calendar/dist/Calendar.css';
 import styles from './Register.module.css';
-import EventDescription from './EventDescription';
+// import EventDescription from './EventDescription';
+import axios from 'axios';
+import { ENDPOINTS } from '../../../../utils/URL';
 
 function Register() {
   const { activityId } = useParams();
@@ -15,7 +15,10 @@ function Register() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   // eslint-disable-next-line no-unused-vars
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  // const [selectedDate, setSelectedDate] = useState(new Date());
+  const [activityDate, setActivityDate] = useState('');
+  const [activityStartTime, setActivityStartTime] = useState('');
+  const [activityEndTime, setActivityEndTime] = useState('');
   const [feedbackMessage, setFeedbackMessage] = useState(null);
   const [availability, setAvailability] = useState(0);
   const [isRegistering, setIsRegistering] = useState(false);
@@ -82,94 +85,12 @@ function Register() {
   }, [registrants, storageKey]);
 
   useEffect(() => {
-    // Simulate API call with loading and error handling
     const fetchActivity = async () => {
       try {
         setLoading(true);
         setError(null);
-
-        // Simulate network delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
-        const fetchedActivities = [
-          {
-            id: 1,
-            name: 'Yoga Class',
-            rating: 4,
-            type: 'Fitness',
-            date: '03-10-2025',
-            time: '10:00 AM',
-            organizer: 'Alex Brian',
-            location: 'Community Center',
-            capacity: 10,
-            image: 'https://cdn.pixabay.com/photo/2024/06/21/07/46/yoga-8843808_1280.jpg',
-            description: 'A relaxing yoga session to improve flexibility and mindfulness.',
-            faqs: [
-              { question: 'What should I bring?', answer: 'A yoga mat and a water bottle.' },
-              {
-                question: 'Is it beginner-friendly?',
-                answer: 'Yes, it is suitable for all levels.',
-              },
-            ],
-            participants: ['John Doe', 'Jane Smith', 'Alice Brown'],
-            comments: ['Looking forward to this!', 'This will be my first yoga session!'],
-          },
-          {
-            id: 2,
-            name: 'Book Club',
-            rating: 5,
-            type: 'Social',
-            date: '03-15-2025',
-            time: '5:00 PM',
-            organizer: 'Bob',
-            location: 'Library',
-            capacity: 5,
-            image: 'https://cdn.pixabay.com/photo/2019/01/30/08/30/book-3964050_1280.jpg',
-            description: 'A book club discussion on the latest bestsellers.',
-            faqs: [
-              {
-                question: 'Do I need to read the book beforehand?',
-                answer: "Yes, it's recommended.",
-              },
-              {
-                question: 'Are snacks provided?',
-                answer: 'Yes, light refreshments will be available.',
-              },
-            ],
-            participants: ['Emily White', 'Michael Green'],
-            comments: ['Excited to discuss my favorite book!', 'What book are we reading?'],
-          },
-        ];
-
-        const selectedActivity = fetchedActivities.find(
-          fetchedActivity => fetchedActivity.id === parseInt(activityId, 10),
-        );
-
-        if (selectedActivity) {
-          setActivity(selectedActivity);
-          let savedCount = 0;
-          if (typeof window !== 'undefined') {
-            try {
-              const existing = window.localStorage.getItem(storageKey);
-              if (existing) {
-                const parsed = JSON.parse(existing);
-                if (Array.isArray(parsed)) {
-                  savedCount = parsed.length;
-                }
-              }
-            } catch (storageErr) {
-              // eslint-disable-next-line no-console
-              console.error('Failed to read saved registrants during fetch', storageErr);
-            }
-          }
-          const baseCount = Array.isArray(selectedActivity.participants)
-            ? selectedActivity.participants.length
-            : 0;
-          const remaining = selectedActivity.capacity - baseCount - savedCount;
-          setAvailability(remaining > 0 ? remaining : 0);
-        } else {
-          setError('Activity not found');
-        }
+        const response = await axios.get(ENDPOINTS.EVENTS_BY_ID(activityId));
+        setActivity(response.data || []);
       } catch (err) {
         setError('Failed to load activity details. Please try again.');
       } finally {
@@ -182,8 +103,38 @@ function Register() {
 
   useEffect(() => {
     if (!activity) return;
-    const baseCount = Array.isArray(activity.participants) ? activity.participants.length : 0;
-    const remaining = activity.capacity - baseCount - registrants.length;
+    const eventDateTime = new Date(activity.startTime);
+    const eventDate = new Date(
+      new Intl.DateTimeFormat('en-US', {
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+      }).format(eventDateTime),
+    );
+    setActivityDate(eventDate.toLocaleDateString());
+
+    const timeString = new Intl.DateTimeFormat('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    }).format(new Date(eventDateTime));
+    setActivityStartTime(timeString);
+
+    const endTimeString = new Intl.DateTimeFormat('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    }).format(new Date(activity.endTime));
+    setActivityEndTime(endTimeString);
+  }, [activity]);
+
+  useEffect(() => {
+    if (!activity) return;
+    const baseCount = activity.currentAttendees;
+    const remaining = activity.maxAttendees - baseCount;
     setAvailability(remaining > 0 ? remaining : 0);
   }, [activity, registrants]);
   const resolveUserId = () =>
@@ -317,13 +268,6 @@ function Register() {
     }
   };
 
-  const handleRetry = () => {
-    setError(null);
-    setLoading(true);
-    // Re-fetch activity
-    window.location.reload();
-  };
-
   // Loading state
   if (loading) {
     return (
@@ -342,28 +286,8 @@ function Register() {
     );
   }
 
-  // Error state
-  if (error) {
-    return (
-      <div className={`${styles.mainContainer} ${darkMode ? styles.mainContainerDark : ''}`}>
-        <div className={`${styles.contentWrapper} ${darkMode ? styles.contentWrapperDark : ''}`}>
-          <div className={styles.errorContainer}>
-            <div className={styles.errorIcon}>⚠️</div>
-            <p className={`${styles.errorText} ${darkMode ? styles.errorTextDark : ''}`}>{error}</p>
-            <button
-              className={`${styles.retryButton} ${darkMode ? styles.retryButtonDark : ''}`}
-              onClick={handleRetry}
-            >
-              Try Again
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   // No activity found
-  if (!activity) {
+  if (error || !activity) {
     return (
       <div className={`${styles.mainContainer} ${darkMode ? styles.mainContainerDark : ''}`}>
         <div className={`${styles.contentWrapper} ${darkMode ? styles.contentWrapperDark : ''}`}>
@@ -380,140 +304,133 @@ function Register() {
   return (
     <div className={`${styles.mainContainer} ${darkMode ? styles.mainContainerDark : ''}`}>
       <div className={`${styles.contentWrapper} ${darkMode ? styles.contentWrapperDark : ''}`}>
-        <div
-          className={`${styles.registerContainer} ${darkMode ? styles.registerContainerDark : ''}`}
-        >
-          {/* Left Column: Image + Register Button */}
-          <div className={styles.leftColumn}>
-            <img src={activity.image} alt={activity.name} className={styles.eventImage} />
-            <button
-              type="button"
-              className={`${styles.registerButton} ${darkMode ? styles.registerButtonDark : ''} ${
-                isRegistering ? styles.registerButtonRegistering : ''
-              }`}
-              onClick={handleRegister}
-              disabled={availability === 0 || isRegistering || isAlreadyRegistered}
-            >
-              {isRegistering ? 'Registering...' : isAlreadyRegistered ? 'Registered' : 'Register'}
-            </button>
-            {feedbackMessage && (
-              <div
-                className={`${styles.feedbackMessage} ${
-                  feedbackMessage.type === 'success'
-                    ? `${styles.feedbackMessageSuccess} ${
-                        darkMode ? styles.feedbackMessageSuccessDark : ''
-                      }`
-                    : `${styles.feedbackMessageError} ${
-                        darkMode ? styles.feedbackMessageErrorDark : ''
-                      }`
-                }`}
-              >
-                {feedbackMessage.text}
-              </div>
-            )}
-          </div>
+        <div className={`${styles.eventPage} ${darkMode ? styles.eventPageDark : ''}`}>
+          <section className={styles.heroSection}>
+            <div className={styles.heroImageWrapper}>
+              <img src={activity.coverImage} alt={activity.title} className={styles.heroImage} />
+            </div>
 
-          {/* Middle Column: Event Details */}
-          <div className={`${styles.middleColumn} ${darkMode ? styles.middleColumnDark : ''}`}>
-            <h1 className={`${styles.eventTitle} ${darkMode ? styles.eventTitleDark : ''}`}>
-              {activity.name}
-            </h1>
-            <div className={styles.detailsGrid}>
-              <div className={`${styles.detailsRow} ${darkMode ? styles.detailsRowDark : ''}`}>
-                <p>
-                  <strong>Date:</strong> {activity.date}
-                </p>
-                <p>
-                  <strong>Time:</strong> {activity.time}
-                </p>
-                <p>
-                  <strong>Organizer:</strong> {activity.organizer || 'Not Available'}
-                </p>
+            <div className={styles.heroContent}>
+              <div className={styles.heroHeader}>
+                <span className={styles.typeBadge}>{activity.type}</span>
+                <span className={styles.statusBadge}>{activity.status}</span>
               </div>
-              <div className={`${styles.detailsRow} ${darkMode ? styles.detailsRowDark : ''}`}>
-                <p>
-                  <strong>Availability:</strong>
-                  <span className={styles.availabilityContainer}>
-                    <span className={styles.availabilityIcon}>
-                      {availability > 5 ? '🟢' : availability > 0 ? '🟡' : '🔴'}
-                    </span>
-                    <span
-                      className={`${styles.availabilityText} ${
-                        darkMode ? styles.availabilityTextDark : ''
-                      } ${
-                        availability <= 2
-                          ? styles.availabilityCritical
-                          : availability <= 5
-                          ? styles.availabilityLow
-                          : ''
-                      } ${
-                        darkMode
-                          ? availability <= 2
-                            ? styles.availabilityCriticalDark
-                            : availability <= 5
-                            ? styles.availabilityLowDark
-                            : ''
-                          : ''
-                      }`}
-                    >
-                      {availability} spots left
-                    </span>
-                  </span>
-                </p>
-                <p className={styles.ratingContainer}>
-                  <strong>Overall Rating:</strong>
-                  <span className={styles.starRating}>
-                    {[...Array(5)].map((_, starIndex) => {
-                      const key = `star-${activity.id}-${starIndex}`;
-                      return (
-                        <span
-                          key={key}
-                          className={
-                            starIndex < activity.rating
-                              ? styles.filledStar
-                              : `${styles.emptyStar} ${darkMode ? styles.emptyStarDark : ''}`
-                          }
-                        >
-                          {starIndex < activity.rating ? '★' : '☆'}
-                        </span>
-                      );
-                    })}
-                  </span>
-                </p>
-                <p>
-                  <strong>Status:</strong>
-                  <span
-                    className={`${availability > 0 ? styles.statusText : styles.statusTextFull} ${
-                      darkMode
-                        ? availability > 0
-                          ? styles.statusTextDark
-                          : styles.statusTextFullDark
-                        : ''
-                    }`}
-                  >
-                    {availability > 0 ? 'Available' : 'Full'}
-                  </span>
-                </p>
+
+              <h1 className={styles.eventTitle}>{activity.title}</h1>
+
+              <div className={styles.metaGrid}>
+                <div>
+                  <strong>Date:</strong> {activityDate}
+                </div>
+                <div>
+                  <strong>Time:</strong> {activityStartTime} - {activityEndTime}
+                </div>
+                <div>
+                  <strong>Location:</strong> {activity.location}
+                </div>
+                <div>
+                  <strong>Organizer:</strong> {activity.organizer || 'Organizer not specified'}
+                </div>
+              </div>
+
+              <div className={styles.heroActions}>
+                <button
+                  type="button"
+                  className={`${styles.registerButton} ${
+                    darkMode ? styles.registerButtonDark : ''
+                  }`}
+                  onClick={handleRegister}
+                  disabled={availability === 0 || isRegistering || isAlreadyRegistered}
+                >
+                  {isRegistering
+                    ? 'Registering...'
+                    : isAlreadyRegistered
+                    ? 'Registered'
+                    : 'Register'}
+                </button>
+
+                <div className={styles.quickStats}>
+                  <span>{availability} spots left</span>
+                </div>
+              </div>
+
+              {feedbackMessage && (
+                <div
+                  className={`${styles.feedbackMessage} ${
+                    feedbackMessage.type === 'success'
+                      ? styles.feedbackMessageSuccess
+                      : styles.feedbackMessageError
+                  }`}
+                >
+                  {feedbackMessage.text}
+                </div>
+              )}
+            </div>
+          </section>
+
+          <section className={styles.contentSection}>
+            <div className={styles.mainContent}>
+              <div className={styles.infoCard}>
+                <h2>About this event</h2>
+                <p>{activity.description}</p>
+              </div>
+
+              <div className={styles.infoCard}>
+                <h2>Event details</h2>
+                <div className={styles.detailsList}>
+                  <p>
+                    <strong>Type:</strong> {activity.type}
+                  </p>
+                  <p>
+                    <strong>Location:</strong> {activity.location}
+                  </p>
+                  <p>
+                    <strong>Status:</strong> {activity.status}
+                  </p>
+                  <p>
+                    <strong>Active:</strong> {activity.isActive ? 'Yes' : 'No'}
+                  </p>
+                  <p>
+                    <strong>Organizer:</strong> {activity.organizer || 'Organizer not specified'}
+                  </p>
+                </div>
+              </div>
+
+              <div className={styles.infoCard}>
+                <h2>Facilitators / Resources</h2>
+                <div className={styles.resourceList}>
+                  {activity.resources?.map(person => (
+                    <div key={person._id} className={styles.resourceCard}>
+                      <img
+                        src={person.profilePic || '/default-profile.png'}
+                        alt={person.name}
+                        className={styles.resourceAvatar}
+                      />
+                      <div>
+                        <p className={styles.resourceName}>{person.name}</p>
+                        <p className={styles.resourceLocation}>{person.location}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Right Column: Calendar */}
-          <div className={styles.rightColumn}>
-            {/*  <Calendar onChange={setSelectedDate} value={selectedDate} /> */}
-            <p className={`${styles.selectedDate} ${darkMode ? styles.selectedDateDark : ''}`}>
-              Selected Date: {selectedDate.toDateString()}
-            </p>
-          </div>
-        </div>
-
-        {/* Description Section */}
-        <div
-          className={`${styles.descriptionSection} ${
-            darkMode ? styles.descriptionSectionDark : ''
-          }`}
-        >
-          <EventDescription activity={activity} registrants={registrants} />
+            <aside className={styles.sidebar}>
+              <div className={styles.sideCard}>
+                <h3>Registration summary</h3>
+                <p>
+                  <strong>Current attendees:</strong> {activity.currentAttendees}
+                </p>
+                <p>
+                  <strong>Max attendees:</strong> {activity.maxAttendees}
+                </p>
+                <p>
+                  <strong>Spots left:</strong> {availability}
+                </p>
+              </div>
+            </aside>
+          </section>
         </div>
       </div>
     </div>
