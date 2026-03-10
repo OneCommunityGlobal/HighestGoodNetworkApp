@@ -193,17 +193,23 @@ export function ProjectPieChart({ userData, windowSize, darkMode }) {
     setShowAllValues(!showAllValues);
   };
 
+  // Responsive circle size - smaller on mobile for more label space
   let circleSize = 30;
-  if (windowSize <= 1280) {
+  if (windowSize <= 400) {
+    circleSize = 15; // Much smaller on mobile
+  } else if (windowSize <= 640) {
+    circleSize = 20;
+  } else if (windowSize <= 1280) {
     circleSize = windowSize / 10 * 0.5;
   }
 
-  // Responsive container height
-  const containerHeight = windowSize <= 400 ? 480 : windowSize <= 640 ? 520 : 640;
-  const containerMinHeight = windowSize <= 400 ? 420 : 350;
+  // Responsive container dimensions - constrain on mobile
+  const containerWidth = windowSize <= 400 ? 320 : windowSize <= 640 ? 380 : 640;
+  const containerHeight = windowSize <= 400 ? 400 : windowSize <= 640 ? 460 : 640;
+  const containerMinHeight = windowSize <= 400 ? 350 : 350;
 
-  // Text offset based on screen size - smaller for mobile to keep text visible
-  const textOffset = windowSize <= 400 ? 45 : windowSize <= 500 ? 55 : windowSize <= 640 ? 70 : 85;
+  // Text offset based on screen size - much smaller for mobile
+  const textOffset = windowSize <= 400 ? 35 : windowSize <= 500 ? 45 : windowSize <= 640 ? 60 : 85;
   
   // Font size based on screen
   const fontSize = windowSize <= 400 ? 10 : windowSize <= 640 ? 11 : 13;
@@ -218,7 +224,7 @@ export function ProjectPieChart({ userData, windowSize, darkMode }) {
           handleToggle={toggleShowAllValues} 
         />
       </div>
-      <ResponsiveContainer maxWidth={640} maxHeight={containerHeight} minWidth={350} minHeight={containerMinHeight}>
+      <ResponsiveContainer maxWidth={containerWidth} maxHeight={containerHeight} minWidth={280} minHeight={containerMinHeight}>
         <PieChart>
           <Pie
             activeIndex={activeIndices}
