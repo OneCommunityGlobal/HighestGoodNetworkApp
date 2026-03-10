@@ -141,7 +141,7 @@ function ActualVsPlannedCost() {
         Actual vs Planned Costs
       </h2>
 
-      <div className={`${styles.selectorsContainer} ${darkMode ? styles.darkMode : ''}`}>
+      <div className={styles.selectorsContainer}>
         <div className={styles.selectorGroup}>
           <label htmlFor="ActualVsPlannedCost-project-select">Project:</label>
           <select
@@ -153,7 +153,6 @@ function ActualVsPlannedCost() {
               fetchExpenses(id);
               setSelectedCategory('Overall');
             }}
-            className={darkMode ? styles.darkSelect : ''}
           >
             {projects.map(p => (
               <option key={p._id} value={p._id}>
@@ -169,7 +168,6 @@ function ActualVsPlannedCost() {
             id="ActualVsPlannedCost-category-select"
             value={selectedCategory}
             onChange={e => setSelectedCategory(e.target.value)}
-            className={darkMode ? styles.darkSelect : ''}
           >
             {categories.map(cat => (
               <option key={cat} value={cat}>
