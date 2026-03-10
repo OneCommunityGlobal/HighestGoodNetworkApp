@@ -221,7 +221,7 @@ describe('AddTeamPopup component', () => {
   
     fireEvent.click(screen.getByRole('button', { name: 'Confirm' }));
   
-    expect(screen.getByText('Hey, You need to pick a team first!')).toBeInTheDocument();
+    expect(screen.getByText('Hey, you need to pick a team first!')).toBeInTheDocument();
   });
   it('check if postNewTeam action works as expected', async () => {
     const responseData = { teamName: 'New Team', isActive: true };
