@@ -22,6 +22,7 @@ export default function CommunityCalendar() {
   const [showEventModal, setShowEventModal] = useState(false);
   const [overflowDate, setOverflowDate] = useState(null);
   const popupRef = useRef(null);
+  const [calendarView, setCalendarView] = useState('month');
 
   const currentDate = new Date();
   const currentMonth = currentDate.getMonth();
@@ -192,6 +193,106 @@ export default function CommunityCalendar() {
     'Full Event': 'statusFull',
   };
 
+  function WeeklyTimeGrid({ events, selectedDate, onEventClick, darkMode }) {
+    const hours = Array.from({ length: 24 }, (_, i) => i);
+
+    const startOfWeek = useMemo(() => {
+      const d = new Date(selectedDate);
+      d.setDate(d.getDate() - d.getDay());
+      return d;
+    }, [selectedDate]);
+
+    const weekDays = useMemo(() => {
+      return Array.from({ length: 7 }, (_, i) => {
+        const day = new Date(startOfWeek);
+        day.setDate(startOfWeek.getDate() + i);
+        return day;
+      });
+    }, [startOfWeek]);
+
+    return (
+      <div
+        className={`${styles.weekGridContainer} ${darkMode ? styles.weekGridContainerDark : ''}`}
+      >
+        <div className={`${styles.weekGridHeader} ${darkMode ? styles.weekGridHeaderDark : ''}`}>
+          <div className={styles.timeGutter} />
+          {weekDays.map(date => (
+            <div key={date.toString()} className={styles.dayColumnHeader}>
+              <div className={`${styles.dayLabel} ${darkMode ? styles.dayLabelDark : ''}`}>
+                {date.toLocaleDateString('en-US', { weekday: 'short' })}
+              </div>
+              <div className={`${styles.dateLabel} ${darkMode ? styles.dateLabelDark : ''}`}>
+                {date.getDate()}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className={styles.weekGridBody}>
+          {hours.map(hour => (
+            <div key={hour} className={`${styles.hourRow} ${darkMode ? styles.hourRowDark : ''}`}>
+              <div className={`${styles.timeLabel} ${darkMode ? styles.timeLabelDark : ''}`}>
+                {hour === 0
+                  ? '12 AM'
+                  : hour > 12
+                  ? `${hour - 12} PM`
+                  : hour === 12
+                  ? '12 PM'
+                  : `${hour} AM`}
+              </div>
+
+              {weekDays.map(date => {
+                const cellEvents = events.filter(e => {
+                  const eventDate = new Date(e.date);
+                  const [hStr] = e.time.split(':');
+                  let h = parseInt(hStr, 10);
+                  const isPM = e.time.toLowerCase().includes('pm');
+                  const isAM = e.time.toLowerCase().includes('am');
+                  if (isPM && h !== 12) h += 12;
+                  if (isAM && h === 12) h = 0;
+
+                  return eventDate.toDateString() === date.toDateString() && h === hour;
+                });
+
+                return (
+                  <div
+                    key={date.toString()}
+                    className={`${styles.gridCell} ${darkMode ? styles.gridCellDark : ''}`}
+                  >
+                    {cellEvents.map(ev => (
+                      <button
+                        key={ev.id}
+                        type="button"
+                        className={`${styles.gridEvent} ${darkMode ? styles.gridEventDark : ''}`}
+                        onClick={() => onEventClick(ev)}
+                        aria-label={`Open event ${ev.title} at ${ev.time}`}
+                      >
+                        <div
+                          className={`${styles.gridEventTime} ${
+                            darkMode ? styles.gridEventTimeDark : ''
+                          }`}
+                        >
+                          {ev.time}
+                        </div>
+                        <div
+                          className={`${styles.gridEventTitle} ${
+                            darkMode ? styles.gridEventTitleDark : ''
+                          }`}
+                        >
+                          {ev.title}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                );
+              })}
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   // Render event tiles
   const tileContent = useCallback(
     ({ date, view }) => {
@@ -211,20 +312,24 @@ export default function CommunityCalendar() {
                 key={e.id}
                 type="button"
                 className={`${styles.eventItem} ${styles[statusKey] || ''}`}
-                onClick={() => handleEventClick(e)}
+                onClick={e_obj => {
+                  e_obj.stopPropagation();
+                  handleEventClick(e);
+                }}
                 title={e.title}
               >
                 {e.title}
               </button>
             );
           })}
-
           {hiddenCount > 0 && (
             <button
               type="button"
               className={styles.moreEvents}
-              onClick={() => setOverflowDate(date)}
-              title="View all events"
+              onClick={e_obj => {
+                e_obj.stopPropagation();
+                setOverflowDate(date);
+              }}
             >
               +{hiddenCount} more
             </button>
@@ -345,6 +450,16 @@ export default function CommunityCalendar() {
       <header className={calendarClasses.header}>
         <h1>Community Calendar</h1>
         <div className={calendarClasses.filters}>
+          <select
+            value={calendarView}
+            onChange={e => setCalendarView(e.target.value)}
+            className={styles.viewSelector}
+          >
+            <option value="month">Day View (Month)</option>
+            <option value="week">Week View (Time Grid)</option>
+            <option value="year">Month View (Year)</option>
+            <option value="decade">Year View (Decade)</option>
+          </select>
           <select value={filter.type} onChange={handleFilterChange('type')}>
             <option value="all">All Types</option>
             {uniqueFilterValues.types.map(t => (
@@ -378,13 +493,25 @@ export default function CommunityCalendar() {
             />
           </div>
           <div className={calendarClasses.calendarSection}>
-            <ReactCalendar
-              className={calendarClasses.reactCalendar}
-              tileContent={tileContent}
-              tileClassName={tileClassName}
-              onClickDay={handleDateSelect}
-              value={selectedDate}
-            />
+            {calendarView === 'week' ? (
+              <WeeklyTimeGrid
+                events={filteredEvents}
+                selectedDate={selectedDate}
+                onEventClick={handleEventClick}
+                darkMode={darkMode}
+              />
+            ) : (
+              <ReactCalendar
+                className={calendarClasses.reactCalendar}
+                tileContent={tileContent}
+                tileClassName={tileClassName}
+                onClickDay={handleDateSelect}
+                value={selectedDate}
+                view={calendarView}
+                onViewChange={({ view }) => setCalendarView(view)}
+              />
+            )}
+
             <section
               className={`${styles.selectedDatePanel} ${
                 darkMode ? styles.selectedDatePanelDarkMode : ''

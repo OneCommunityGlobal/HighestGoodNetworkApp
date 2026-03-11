@@ -89,9 +89,9 @@ const WeeklySummaryEmailAssignmentPopUp = React.memo(props => {
     setEditingEmail(email);
   };
 
-  const handleEditSave = id => {
+  const handleEditSave = async id => {
     if (editingEmail && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(editingEmail)) {
-      dispatch(updateWeeklySummaryEmailAssignment(id, editingEmail));
+      await dispatch(updateWeeklySummaryEmailAssignment(id, editingEmail));
       setEditingId(null);
       setEditingEmail('');
     }
