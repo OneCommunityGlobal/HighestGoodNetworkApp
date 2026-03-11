@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import styles from './Participation.module.css';
 import mockEvents from './mockData';
@@ -6,6 +6,10 @@ import mockEvents from './mockData';
 function DropOffTracking() {
   const [selectedEvent, setSelectedEvent] = useState('All Events');
   const [selectedTime, setSelectedTime] = useState('All Time');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(20);
+
+  const PAGE_SIZE_OPTIONS = [10, 20, 50];
 
   const getDateRange = () => {
     const today = new Date();
@@ -43,6 +47,62 @@ function DropOffTracking() {
     }
     return true;
   });
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedEvent, selectedTime]);
+
+  const paginatedEvents = useMemo(() => {
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+
+    return filteredEvents.slice(startIndex, endIndex);
+  }, [filteredEvents, currentPage, pageSize]);
+
+  const totalPages = Math.ceil(filteredEvents.length / pageSize);
+  const showPagination = totalPages > 1;
+
+  const handlePageSizeChange = e => {
+    setPageSize(Number(e.target.value));
+    setCurrentPage(1);
+  };
+
+  const handlePreviousPage = () => {
+    setCurrentPage(prev => Math.max(prev - 1, 1));
+  };
+
+  const handleNextPage = () => {
+    setCurrentPage(prev => Math.min(prev + 1, totalPages));
+  };
+
+  const getVisiblePages = () => {
+    const pages = [];
+
+    if (totalPages <= 7) {
+      return Array.from({ length: totalPages }, (_, i) => i + 1);
+    }
+
+    const leftBound = Math.max(2, currentPage - 1);
+    const rightBound = Math.min(totalPages - 1, currentPage + 1);
+
+    pages.push(1);
+
+    if (currentPage > 3) {
+      pages.push('left-ellipsis');
+    }
+
+    for (let i = leftBound; i <= rightBound; i++) {
+      pages.push(i);
+    }
+
+    if (currentPage < totalPages - 2) {
+      pages.push('right-ellipsis');
+    }
+
+    pages.push(totalPages);
+
+    return pages;
+  };
 
   const darkMode = useSelector(state => state.theme.darkMode);
 
@@ -109,17 +169,90 @@ function DropOffTracking() {
             </tr>
           </thead>
           <tbody>
-            {filteredEvents.map(event => (
+            {paginatedEvents.map(event => (
               <tr key={event.id}>
                 <td>{event.eventName}</td>
-                <td className={`${styles.trackingRateGreen}`}>{event.noShowRate}</td>
-                <td className={`${styles.trackingRateRed}`}>{event.dropOffRate}</td>
+                <td className={styles.trackingRateGreen}>{event.noShowRate}</td>
+                <td className={styles.trackingRateRed}>{event.dropOffRate}</td>
                 <td>{event.attendees}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+
+      {/*Pagination*/}
+      {showPagination && (
+        <div
+          className={`${styles.paginationContainer} ${
+            darkMode ? styles.paginationContainerDark : ''
+          }`}
+        >
+          <div className={styles.paginationInfo}>
+            Showing {(currentPage - 1) * pageSize + 1} to{' '}
+            {Math.min(currentPage * pageSize, filteredEvents.length)} of {filteredEvents.length}{' '}
+            records
+          </div>
+
+          <div className={styles.paginationControls}>
+            <button
+              onClick={handlePreviousPage}
+              disabled={currentPage === 1}
+              className={darkMode ? styles.paginationButtonDark : ''}
+            >
+              Previous
+            </button>
+
+            <div className={styles.pageNumbers}>
+              {getVisiblePages().map(page =>
+                page === 'left-ellipsis' || page === 'right-ellipsis' ? (
+                  <span key={page} className={styles.ellipsis}>
+                    ...
+                  </span>
+                ) : (
+                  <button
+                    key={page}
+                    onClick={() => setCurrentPage(page)}
+                    className={`${styles.pageNumberButton} ${
+                      currentPage === page ? styles.activePage : ''
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ),
+              )}
+            </div>
+
+            <span className={styles.pageIndicator}>
+              Page {currentPage} of {totalPages}
+            </span>
+
+            <button
+              onClick={handleNextPage}
+              disabled={currentPage === totalPages}
+              className={darkMode ? styles.paginationButtonDark : ''}
+            >
+              Next
+            </button>
+          </div>
+
+          <div className={styles.pageSizeSelector}>
+            <label htmlFor="pageSize">Records per page:</label>
+            <select
+              id="pageSize"
+              value={pageSize}
+              onChange={handlePageSizeChange}
+              className={darkMode ? styles.pageSizeSelectorDark : ''}
+            >
+              {PAGE_SIZE_OPTIONS.map(size => (
+                <option key={size} value={size}>
+                  {size}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
