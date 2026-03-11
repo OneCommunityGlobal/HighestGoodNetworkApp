@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
-import RadarChart from '../HGNskillsDashboard/SkillsProfilePage/components/RadarChart';
+import RadarChart from '../HGNSkillsDashboard/SkillsProfilePage/components/RadarChart';
 import { availablePreferences, availableSkills, formatSkillName } from './FilerData.js';
 import RankedUserList from './RankedUserList';
 import styles from './style/SkillsOverviewPage.module.css';
