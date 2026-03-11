@@ -114,3 +114,26 @@
 :global(.bg-oxford-blue) .fieldRequired {
   color: #ff6b6b;
 }
+
+.currentCountBox {
+  margin-bottom: 1rem;
+  padding: 12px;
+  border: 1px solid #4b5563;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.currentCountText {
+  margin-bottom: 12px;
+  font-size: 0.95rem;
+}
+
+.currentCountTable {
+  margin-bottom: 0;
+}
+
+.fieldHint {
+  margin-top: 6px;
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
