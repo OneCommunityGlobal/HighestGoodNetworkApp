@@ -28,6 +28,7 @@ yarn-error.log*
 /.idea
 
 .vscode/launch.json
+.vscode/settings.json
 
 **\ **
 
