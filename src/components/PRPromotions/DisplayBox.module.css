@@ -1,45 +1,49 @@
 .overlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.6);
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 1000;
 }
 
 .popup {
-  background-color: rgb(187, 185, 185);
+  background-color: #ffffff;
   padding: 24px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
   max-width: 800px;
   width: 100%;
-  border: 6px solid black;
+  border: 1px solid #d1d5db;
 }
 
 .popup-heading {
   text-align: center;
   font-size: 20px;
   margin-bottom: 16px;
-  color: black;
+  color: #111827;
 }
 
 .popup-table {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 24px;
-  background-color: #f0f0f0;
+  background-color: #ffffff;
 }
 
 .popup-table th,
 .popup-table td {
-  border: 1px solid #ddd;
-  padding: 8px;
+  border: 1px solid #d1d5db;
+  padding: 10px;
   text-align: left;
+  color: #111827;
 }
 
 .popup-table thead th {
-  background-color: #f0f0f0;
+  background-color: #f3f4f6;
+  color: #111827;
+  font-weight: 600;
 }
 
 .button-row {
@@ -49,16 +53,22 @@
 
 .button {
   padding: 8px 16px;
-  border-radius: 4px;
-  border: none;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
   cursor: pointer;
-  background-color: #f0f0f0;
-  color: #000;
+  background-color: #f3f4f6;
+  color: #111827;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.button:hover:not(:disabled) {
+  background-color: #e5e7eb;
 }
 
 .promoteButton {
   padding: 8px 16px;
-  border-radius: 4px;
+  border-radius: 6px;
   border: none;
   cursor: pointer;
   background-color: #f0f0f0;
@@ -66,19 +76,11 @@
   font-weight: bold;
 }
 
-.button-row .button:last-child:not(:disabled):hover {
-  background-color: #2563eb;
-  color: white;
-}
-
 .button:disabled {
-  background-color: #ccc;
+  background-color: #d1d5db;
+  color: #6b7280;
   cursor: not-allowed;
-  opacity: 0.6;
-}
-
-.button:disabled:hover {
-  background-color: #ccc;
+  opacity: 0.8;
 }
 
 .pr-count-badge {
@@ -93,43 +95,43 @@
   font-weight: bold;
 }
 
-/* VIBGYOR Colors with proper text contrast */
+/* VIBGYOR Colors */
 .color-0 {
-  background-color: #9400D3; /* Violet - dark, use white text */
+  background-color: #9400d3;
   color: white;
 }
 
 .color-1 {
-  background-color: #4B0082; /* Indigo - very dark, use white text */
+  background-color: #4b0082;
   color: white;
 }
 
 .color-2 {
-  background-color: #0000FF; /* Blue - dark, use white text */
+  background-color: #0000ff;
   color: white;
 }
 
 .color-3 {
-  background-color: #00FF00; /* Green - bright, use black text */
+  background-color: #00ff00;
   color: black;
 }
 
 .color-4 {
-  background-color: #FFFF00; /* Yellow - bright, use black text */
+  background-color: #ffff00;
   color: black;
 }
 
 .color-5 {
-  background-color: #C45C00; /* Orange - darker shade for WCAG contrast with white text */
+  background-color: #c45c00;
   color: white;
 }
 
 .color-6 {
-  background-color: #FF0000; /* Red - dark, use white text */
+  background-color: #ff0000;
   color: white;
 }
 
-/* Dark mode - page and heading */
+/* Page dark mode */
 .page-dark {
   color: #e5e7eb;
 }
@@ -140,75 +142,94 @@
 
 .page-dark .promoteButton {
   background-color: #374151;
-  color: #e5e7eb;
+  color: #f9fafb;
 }
 
-/* Dark mode - popup modal */
+/* Modal dark mode */
 .popup-dark {
   background-color: #1f2937;
-  border-color: #4b5563;
+  border: 1px solid #4b5563;
+  color: #f9fafb;
 }
 
 .popup-heading-dark {
-  color: #e5e7eb;
+  color: #f9fafb;
 }
 
 .popup-table-dark {
-  background-color: #374151;
+  background-color: #1f2937;
 }
 
 .popup-table-dark th,
 .popup-table-dark td {
-  color: #e5e7eb;
-  border-color: #4b5563;
+  color: #f9fafb;
+  border: 1px solid #4b5563;
+  background-color: #1f2937;
 }
 
 .popup-table-dark thead th {
   background-color: #374151;
+  color: #f9fafb;
 }
 
 .popup-dark .button {
   background-color: #374151;
-  color: #e5e7eb;
+  color: #f9fafb;
+  border: 1px solid #6b7280;
 }
 
-.popup-dark .button:disabled {
+.popup-dark .button:hover:not(:disabled) {
   background-color: #4b5563;
 }
 
-/* Ensure PR count badge numbers stay visible in dark mode - override global body.dark-mode * { color } */
+.popup-dark .button:disabled {
+  background-color: #374151;
+  color: #9ca3af;
+  border: 1px solid #4b5563;
+}
+
+.popup-dark input[type='checkbox'] {
+  accent-color: #60a5fa;
+}
+
 :global(body.dark-mode) .popup-table-dark .pr-count-badge.color-0,
 :global(body.bm-dashboard-dark) .popup-table-dark .pr-count-badge.color-0 {
   color: #fff !important;
-  background-color: #9400D3 !important;
+  background-color: #9400d3 !important;
 }
+
 :global(body.dark-mode) .popup-table-dark .pr-count-badge.color-1,
 :global(body.bm-dashboard-dark) .popup-table-dark .pr-count-badge.color-1 {
   color: #fff !important;
-  background-color: #4B0082 !important;
+  background-color: #4b0082 !important;
 }
+
 :global(body.dark-mode) .popup-table-dark .pr-count-badge.color-2,
 :global(body.bm-dashboard-dark) .popup-table-dark .pr-count-badge.color-2 {
   color: #fff !important;
-  background-color: #0000FF !important;
+  background-color: #0000ff !important;
 }
+
 :global(body.dark-mode) .popup-table-dark .pr-count-badge.color-3,
 :global(body.bm-dashboard-dark) .popup-table-dark .pr-count-badge.color-3 {
   color: #000 !important;
-  background-color: #00FF00 !important;
+  background-color: #00ff00 !important;
 }
+
 :global(body.dark-mode) .popup-table-dark .pr-count-badge.color-4,
 :global(body.bm-dashboard-dark) .popup-table-dark .pr-count-badge.color-4 {
   color: #000 !important;
-  background-color: #FFFF00 !important;
+  background-color: #ffff00 !important;
 }
+
 :global(body.dark-mode) .popup-table-dark .pr-count-badge.color-5,
 :global(body.bm-dashboard-dark) .popup-table-dark .pr-count-badge.color-5 {
   color: #fff !important;
-  background-color: #C45C00 !important;
+  background-color: #c45c00 !important;
 }
+
 :global(body.dark-mode) .popup-table-dark .pr-count-badge.color-6,
 :global(body.bm-dashboard-dark) .popup-table-dark .pr-count-badge.color-6 {
   color: #fff !important;
-  background-color: #FF0000 !important;
+  background-color: #ff0000 !important;
 }
