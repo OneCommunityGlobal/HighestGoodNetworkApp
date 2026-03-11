@@ -4,6 +4,7 @@ import RadarChart from '../HGNSkillsDashboard/SkillsProfilePage/components/Radar
 import Accordion from './Accordion';
 import { PreferenceFilterButtons, SkillFilterButtons } from './FilterButtons';
 import RankedUserList from './RankedUserList';
+import SearchBar from './SearchBar';
 import styles from './style/SkillsOverviewPage.module.css';
 
 function SkillsOverviewPage() {
@@ -34,24 +35,7 @@ function SkillsOverviewPage() {
 
       {/* Search Bar */}
       <h2 className={styles.sectionTitle}>Find Community Members</h2>
-      <div className={`${styles.searchContainer} ${darkMode ? styles.darkSearch : ''}`}>
-        <input
-          type="text"
-          placeholder="Search members by name or skill..."
-          value={searchQuery}
-          onChange={e => setSearchQuery(e.target.value)}
-          className={`${styles.searchInput} ${darkMode ? styles.darkSearchInput : ''}`}
-        />
-        {searchQuery && (
-          <button
-            type="button"
-            className={`${styles.clearButton} ${darkMode ? styles.darkClearButton : ''}`}
-            onClick={() => setSearchQuery('')}
-          >
-            ✕
-          </button>
-        )}
-      </div>
+      <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} darkMode={darkMode} />
 
       {/* Skill Filters */}
       <Accordion title="Filter by Skills" defaultOpen darkMode={darkMode}>

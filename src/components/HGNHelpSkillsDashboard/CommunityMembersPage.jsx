@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import Accordion from './Accordion';
 import { PreferenceFilterButtons, SkillFilterButtons } from './FilterButtons';
 import RankedUserList from './RankedUserList';
+import SearchBar from './SearchBar';
 import styles from './style/CommunityMembersPage.module.css';
 
 function CommunityMembersPage() {
@@ -18,25 +19,7 @@ function CommunityMembersPage() {
     <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
       <h1 className={`${styles.title}`}>Community Member Filters</h1>
 
-      {/* Search Bar */}
-      <div className={`${styles.searchContainer} ${darkMode ? styles.darkSearch : ''}`}>
-        <input
-          type="text"
-          placeholder="Search members by name or skill..."
-          value={searchQuery}
-          onChange={e => setSearchQuery(e.target.value)}
-          className={`${styles.searchInput} ${darkMode ? styles.darkSearchInput : ''}`}
-        />
-        {searchQuery && (
-          <button
-            type="button"
-            className={`${styles.clearButton} ${darkMode ? styles.darkClearButton : ''}`}
-            onClick={() => setSearchQuery('')}
-          >
-            ✕
-          </button>
-        )}
-      </div>
+      <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} darkMode={darkMode} />
 
       <Accordion title="Filter by Skills" defaultOpen darkMode={darkMode}>
         <SkillFilterButtons selectedSkills={selectedSkills} setSelectedSkills={setSelectedSkills} />
