@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import RadarChart from '../HGNSkillsDashboard/SkillsProfilePage/components/RadarChart';
 import Accordion from './Accordion';
-import { availablePreferences, availableSkills, formatSkillName, toggleItem } from './FilerData.js';
+import { PreferenceFilterButtons, SkillFilterButtons } from './FilterButtons';
 import RankedUserList from './RankedUserList';
 import styles from './style/SkillsOverviewPage.module.css';
 
@@ -55,38 +55,15 @@ function SkillsOverviewPage() {
 
       {/* Skill Filters */}
       <Accordion title="Filter by Skills" defaultOpen darkMode={darkMode}>
-        <div className={styles.filterGroup}>
-          {availableSkills.map(skillKey => (
-            <button
-              key={skillKey}
-              type="button"
-              onClick={() => toggleItem(skillKey, selectedSkills, setSelectedSkills)}
-              className={`${styles.skillButton} ${
-                selectedSkills.includes(skillKey) ? styles.selected : ''
-              }`}
-            >
-              {formatSkillName(skillKey)}
-            </button>
-          ))}
-        </div>
+        <SkillFilterButtons selectedSkills={selectedSkills} setSelectedSkills={setSelectedSkills} />
       </Accordion>
 
       {/* Preference Filters */}
       <Accordion title="Filter by Preferences" darkMode={darkMode}>
-        <div className={styles.filterGroup}>
-          {availablePreferences.map(pref => (
-            <button
-              key={pref}
-              type="button"
-              onClick={() => toggleItem(pref, selectedPreferences, setSelectedPreferences)}
-              className={`${styles.preferenceButton} ${
-                selectedPreferences.includes(pref) ? styles.selected : ''
-              }`}
-            >
-              {pref}
-            </button>
-          ))}
-        </div>
+        <PreferenceFilterButtons
+          selectedPreferences={selectedPreferences}
+          setSelectedPreferences={setSelectedPreferences}
+        />
       </Accordion>
 
       {/* Results */}
