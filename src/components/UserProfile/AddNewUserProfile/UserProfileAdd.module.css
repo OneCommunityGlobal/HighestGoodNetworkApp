@@ -17,7 +17,7 @@ form-control {
   border: 1px solid #a8a8a8;
   text-align: center;
   z-index: 9;
-  opacity: 70%;
+  opacity: 0.7;
 }
 
 .profileEditTitleCenter {
@@ -51,7 +51,6 @@ form-control {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-content: center;
   text-align: center;
   width: 300px;
 }
@@ -73,6 +72,7 @@ form-control {
   background-color: dodgerblue;
   color: white;
 }
+
 .profileViewButton:hover {
   text-decoration: none;
 }
@@ -105,11 +105,11 @@ form-control {
 }
 
 .tab-pane .row {
-  padding: 15 px;
+  padding: 15px;
 }
 
 .required-user-field {
-  color: rgb(197, 2, 2);
+  color: rgb(197 2 2);
   padding-top: 0.3rem;
   font-size: 0.8rem;
 }
@@ -122,23 +122,24 @@ form-control {
   width: auto;
 }
 
-.text-md-right {
-  white-space: nowrap;
-}
-
-@media only screen and (max-width: 1024px) {
+@media (width <= 1024px) {
   .text-md-right {
-    padding: 0px !important;
+    white-space: nowrap;
+    padding: 0 !important;
   }
+
   label {
     font-weight: normal;
   }
 }
-@media only screen and (max-width: 992px) and (min-width: 768px) {
+
+@media (768px <= width <= 992px) {
   .user-add-row {
     font-size: 14px;
   }
+
   .add-new-user .form-control {
     max-width: 210px !important;
   }
-}/*# sourceMappingURL=UserProfileAdd.css.map */
+}
+
