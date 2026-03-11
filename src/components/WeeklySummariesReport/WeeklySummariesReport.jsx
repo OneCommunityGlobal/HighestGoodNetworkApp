@@ -1742,6 +1742,8 @@ const WeeklySummariesReport = props => {
             _ids: updatedSummaries.filter(s => s.teamCode === replaceCode).map(s => s._id),
           });
 
+        props.setTeamCodes(updatedTeamCodes);
+
         const updatedSelectedCodes = selectedCodes
           .filter(code => !oldTeamCodes.includes(code.value) && code.value !== replaceCode)
           .concat({
@@ -1795,6 +1797,10 @@ const WeeklySummariesReport = props => {
         setState(prev => ({
           ...prev,
           summaries: updatedSummaries,
+          summariesByTab: {
+            ...prev.summariesByTab,
+            [prev.activeTab]: updatedSummaries,
+          },
           teamCodes: updatedTeamCodes,
           selectedCodes: updatedSelectedCodes,
           replaceCode: '',
@@ -2298,6 +2304,12 @@ const WeeklySummariesReport = props => {
       isMounted = false;
     };
   }, [state.activeTab]);
+
+  useEffect(() => {
+    if (!Array.isArray(state.teamCodes)) return;
+
+    props.setTeamCodes(state.teamCodes);
+  }, [state.teamCodes, props.setTeamCodes]);
 
   const { role, darkMode } = props;
   const { error } = props;
