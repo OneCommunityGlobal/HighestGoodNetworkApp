@@ -1,40 +1,15 @@
-import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { availablePreferences, availableSkills, formatSkillName } from './FilerData.js';
+import Accordion from './Accordion';
+import { availablePreferences, availableSkills, formatSkillName, toggleItem } from './FilerData.js';
 import RankedUserList from './RankedUserList';
 import styles from './style/CommunityMembersPage.module.css';
-
-function Accordion({ title, children, defaultOpen = false, darkMode }) {
-  const [open, setOpen] = useState(defaultOpen);
-  return (
-    <div className={`${styles.accordion}`}>
-      <div
-        role="button"
-        tabIndex={0}
-        onClick={() => setOpen(prev => !prev)}
-        onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && setOpen(prev => !prev)}
-        className={`${styles.accordionHeader} ${darkMode ? styles.dark : ''}`}
-      >
-        <span className={`${styles.accordionTitle}`}>{title}</span>
-        <span className={`${styles.accordionIcon}`}>{open ? '−' : '+'}</span>
-      </div>
-      {open && <div className={`${styles.accordionContent}`}>{children}</div>}
-    </div>
-  );
-}
 
 function CommunityMembersPage() {
   const [selectedSkills, setSelectedSkills] = useState([]);
   const [selectedPreferences, setSelectedPreferences] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const darkMode = useSelector(state => state.theme.darkMode);
-
-  const toggleItem = (item, selectedArray, setSelectedArray) => {
-    setSelectedArray(prev =>
-      prev.includes(item) ? prev.filter(i => i !== item) : [...prev, item],
-    );
-  };
 
   const renderSkillButtons = () => (
     <div className={`${styles.filterGroup}`}>
@@ -124,11 +99,5 @@ function CommunityMembersPage() {
     </div>
   );
 }
-Accordion.propTypes = {
-  title: PropTypes.string.isRequired,
-  children: PropTypes.node.isRequired,
-  defaultOpen: PropTypes.bool,
-  darkMode: PropTypes.bool,
-};
 
 export default CommunityMembersPage;

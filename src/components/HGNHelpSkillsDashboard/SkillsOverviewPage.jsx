@@ -1,34 +1,10 @@
-import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import RadarChart from '../HGNSkillsDashboard/SkillsProfilePage/components/RadarChart';
-import { availablePreferences, availableSkills, formatSkillName } from './FilerData.js';
+import Accordion from './Accordion';
+import { availablePreferences, availableSkills, formatSkillName, toggleItem } from './FilerData.js';
 import RankedUserList from './RankedUserList';
 import styles from './style/SkillsOverviewPage.module.css';
-
-function Accordion({ title, children, defaultOpen = false, darkMode }) {
-  const [open, setOpen] = useState(defaultOpen);
-  return (
-    <div className={styles.accordion}>
-      <button
-        type="button"
-        onClick={() => setOpen(prev => !prev)}
-        className={`${styles.accordionHeader} ${darkMode ? styles.dark : ''}`}
-      >
-        <span className={styles.accordionTitle}>{title}</span>
-        <span className={styles.accordionIcon}>{open ? '−' : '+'}</span>
-      </button>
-      {open && <div className={styles.accordionContent}>{children}</div>}
-    </div>
-  );
-}
-
-Accordion.propTypes = {
-  title: PropTypes.string.isRequired,
-  children: PropTypes.node.isRequired,
-  defaultOpen: PropTypes.bool,
-  darkMode: PropTypes.bool,
-};
 
 function SkillsOverviewPage() {
   const [selectedSkills, setSelectedSkills] = useState([]);
@@ -36,12 +12,6 @@ function SkillsOverviewPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const darkMode = useSelector(state => state.theme.darkMode);
   const userProfile = useSelector(state => state.userProfile);
-
-  const toggleItem = (item, selectedArray, setSelectedArray) => {
-    setSelectedArray(prev =>
-      prev.includes(item) ? prev.filter(i => i !== item) : [...prev, item],
-    );
-  };
 
   const hasFilters =
     selectedSkills.length > 0 || selectedPreferences.length > 0 || searchQuery.trim().length > 0;
