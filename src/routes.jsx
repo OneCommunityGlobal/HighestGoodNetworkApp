@@ -22,7 +22,7 @@ import UserProfileEdit from './components/UserProfile/UserProfileEdit';
 import EditableInfoModal from './components/UserProfile/EditableModal/EditableInfoModal';
 import RoleInfoCollections from './components/UserProfile/EditableModal/RoleInfoModal';
 import PRDashboard from './components/PRDashboard';
-import ApplicantsAgeChart from './components/ApplicantsChart';
+// import ApplicantsAgeChart from './components/ApplicantsChart';
 import ApplicationTimeChartPage from './components/ApplicationTimeChart';
 import ApplicationAnalyticsContainer from './components/ApplicationAnalytics';
 import UserSkillsProfile from './components/HGNSkillsDashboard/SkillsProfilePage/components/UserSkillsProfile';
@@ -163,6 +163,9 @@ import ProtectedRoute from './components/common/ProtectedRoute';
 import { UserRole } from './utils/enums';
 
 import WriteTaskUpload from './components/EductionPortal/Tasks/WriteTaskUpload';
+
+// Education Portal
+import LessonPlanBuilder from './components/EductionPortal/LessonPlans/LessonPlanBuilder';
 
 // Social Architecture
 const ResourceManagement = lazy(() => import('./components/ResourceManagement/ResourceManagement'));
@@ -705,6 +708,7 @@ export default (
         <EPProtectedRoute path="/educationportal" exact component={EPDashboard} />
         <Route path="/educationportal/login" component={EPLogin} />
         <EPProtectedRoute path="/educationportal/tasks/upload" exact component={WriteTaskUpload} />
+        <EPProtectedRoute path="/educationportal/LessonPlans" exact component={LessonPlanBuilder} />
 
         <CPProtectedRoute
           path="/communityportal/reports/event/personalization"
