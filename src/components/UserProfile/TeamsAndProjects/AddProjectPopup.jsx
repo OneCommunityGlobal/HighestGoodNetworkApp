@@ -190,7 +190,7 @@ const AddProjectPopup = React.memo((props) => {
               style={{
                 ...(darkMode ? {} : boxStyle),
                 minWidth: '120px',
-                height: '48px',
+                height: '38px',
                 alignSelf: 'stretch',
               }}
               onClick={creatingNew ? handleCreateNew : handleConfirm}

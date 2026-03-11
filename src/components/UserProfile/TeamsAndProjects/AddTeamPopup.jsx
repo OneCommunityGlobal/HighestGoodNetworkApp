@@ -262,44 +262,43 @@ const AddTeamPopup = React.memo((props) => {
           >
             Team Name
           </label>
-
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'stretch',
-              gap: '0.75rem',
-              width: '100%',
-              flexWrap: 'wrap',
-            }}
-          >
             <div
               style={{
-                flex: '1 1 420px',
-                minWidth: '260px',
+                display: 'flex',
+                alignItems: 'stretch',
+                gap: '0.75rem',
+                width: '100%',
               }}
             >
-              <AddTeamsAutoComplete
-                teamsData={{ allTeams }}
-                onCreateNewTeam={onCreateTeam}
-                searchText={searchText}
-                setInputs={onSelectTeam}
-                setSearchText={setSearchText}
-              />
-            </div>
+              <div
+                style={{
+                  flex: 1,
+                  minWidth: 0,
+                }}
+              >
+                <AddTeamsAutoComplete
+                  teamsData={{ allTeams }}
+                  onCreateNewTeam={onCreateTeam}
+                  searchText={searchText}
+                  setInputs={onSelectTeam}
+                  setSearchText={setSearchText}
+                />
+              </div>
 
-            <Button
-              color="primary"
-              onClick={onConfirm}
-              disabled={isLoading}
-              style={{
-                minWidth: '120px',
-                height: '48px',
-                fontWeight: 600,
-              }}
-            >
-              {isLoading ? <Spinner color="light" size="sm" /> : 'Confirm'}
-            </Button>
-          </div>
+              <Button
+                color="primary"
+                onClick={onConfirm}
+                disabled={isLoading}
+                style={{
+                  width: '140px',
+                  height: '38px',
+                  fontWeight: 600,
+                  flexShrink: 0,
+                }}
+              >
+                {isLoading ? <Spinner color="light" size="sm" /> : 'Confirm'}
+              </Button>
+            </div>
 
           {teamsLoading && (
             <div
