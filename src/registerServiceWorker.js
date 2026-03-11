@@ -9,18 +9,18 @@
 // This link also includes instructions on opting out of this behavior.
 
 const isLocalhost = Boolean(
-  window.location.hostname === 'localhost' ||
+  globalThis.location.hostname === 'localhost' ||
     // [::1] is the IPv6 localhost address.
-    window.location.hostname === '[::1]' ||
+    globalThis.location.hostname === '[::1]' ||
     // 127.0.0.1/8 is considered localhost for IPv4.
-    window.location.hostname.match(/^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/),
+    globalThis.location.hostname.match(/^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/),
 );
 
 function registerValidSW(swUrl) {
   navigator.serviceWorker
     .register(swUrl)
     .then(originalRegistration => {
-      const registration = { ...originalRegistration }; // Clone the object
+      const registration = { ...originalRegistration };
       registration.onupdatefound = () => {
         const installingWorker = registration.installing;
         installingWorker.onstatechange = () => {
@@ -43,22 +43,18 @@ function registerValidSW(swUrl) {
 }
 
 function checkValidServiceWorker(swUrl) {
-  // Check if the service worker can be found. If it can't reload the page.
   fetch(swUrl)
     .then(response => {
-      // Ensure service worker exists, and that we really are getting a JS file.
       if (
         response.status === 404 ||
         response.headers.get('content-type').indexOf('javascript') === -1
       ) {
-        // No service worker found. Probably a different app. Reload the page.
         navigator.serviceWorker.ready.then(registration => {
           registration.unregister().then(() => {
-            window.location.reload();
+            globalThis.location.reload();
           });
         });
       } else {
-        // Service worker found. Proceed as normal.
         registerValidSW(swUrl);
       }
     })
@@ -70,20 +66,16 @@ function checkValidServiceWorker(swUrl) {
 
 export default function register() {
   if (import.meta.env.PROD && 'serviceWorker' in navigator) {
-    const publicUrl = new URL(import.meta.env.BASE_URL, window.location);
-    if (publicUrl.origin !== window.location.origin) {
+    const publicUrl = new URL(import.meta.env.BASE_URL, globalThis.location);
+    if (publicUrl.origin !== globalThis.location.origin) {
       return;
     }
 
-    window.addEventListener('load', () => {
+    globalThis.addEventListener('load', () => {
       const swUrl = `${import.meta.env.BASE_URL}service-worker.js`;
 
       if (isLocalhost) {
-        // This is running on localhost. Lets check if a service worker still exists or not.
         checkValidServiceWorker(swUrl);
-
-        // Add some additional logging to localhost, pointing developers to the
-        // service worker/PWA documentation.
         navigator.serviceWorker.ready.then(() => {
           // eslint-disable-next-line no-console
           console.log(
@@ -92,7 +84,6 @@ export default function register() {
           );
         });
       } else {
-        // Is not local host. Just register service worker
         registerValidSW(swUrl);
       }
     });
