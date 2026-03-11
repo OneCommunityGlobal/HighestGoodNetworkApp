@@ -10,16 +10,14 @@ function Accordion({ title, children, defaultOpen = false, darkMode }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
     <div className={styles.accordion}>
-      <div
-        role="button"
-        tabIndex={0}
+      <button
+        type="button"
         onClick={() => setOpen(prev => !prev)}
-        onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && setOpen(prev => !prev)}
         className={`${styles.accordionHeader} ${darkMode ? styles.dark : ''}`}
       >
         <span className={styles.accordionTitle}>{title}</span>
         <span className={styles.accordionIcon}>{open ? '−' : '+'}</span>
-      </div>
+      </button>
       {open && <div className={styles.accordionContent}>{children}</div>}
     </div>
   );

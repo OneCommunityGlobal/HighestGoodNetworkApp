@@ -64,7 +64,7 @@
   background: none;
   border: none;
   cursor: pointer;
-  color: #888;
+  color: #4b5563;
   font-size: 14px;
   padding: 0 4px;
 }
@@ -80,7 +80,7 @@
 }
 
 .darkClearButton {
-  color: #ccc;
+  color: #e5e7eb;
 }
 
 /* Accordion */
@@ -171,7 +171,7 @@
 .message {
   text-align: center;
   font-size: 0.95rem;
-  color: #6b7280;
+  color: #4b5563;
   margin-top: 1rem;
 }
 
@@ -206,12 +206,12 @@
 }
 
 .darkMode .message {
-  color: #9ca3af;
+  color: #e5e7eb;
 }
 
 .noDataMsg {
   text-align: center;
-  color: #6b7280;
+  color: #4b5563;
   padding: 2rem 0;
   font-size: 0.95rem;
 }
