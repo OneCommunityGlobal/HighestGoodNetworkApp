@@ -56,6 +56,21 @@
   background-color: #2f4157;
 }
 
+.exportDropdownMenuDark {
+  background-color: #1c2541;
+  border: 1px solid #3a506b;
+}
+
+.exportDropdownItemDark {
+  color: #ffffff !important;
+}
+
+.exportDropdownItemDark:hover,
+.exportDropdownItemDark:focus {
+  background-color: #2d3b66 !important;
+  color: #ffffff !important;
+}
+
 .issueDashboardDropdownItemDark.textDanger {
   color: #ff6b6b;
 }

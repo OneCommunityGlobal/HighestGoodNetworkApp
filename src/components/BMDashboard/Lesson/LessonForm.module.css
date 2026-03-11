@@ -9,6 +9,28 @@
  }
 }
 
+.formControl {
+  width: 25%;
+  flex: 0 0 25%;
+  padding: 0.375rem 0.75rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #212529;
+  background-color: #ffffff;
+  border: 1px solid #ced4da;
+  border-radius: 0.375rem;
+  outline: none;
+  box-shadow: none;
+}
+
+.formControl:focus,
+.formControl:active,
+.formControl:focus-visible {
+  border-color: #86b7fe;
+  outline: none;
+  box-shadow: none;
+}
+
 .masterContainer{
  display: flex;
  flex-direction: column;
@@ -197,3 +219,380 @@
 
  }
  }
+
+
+/* ===================== */
+/* Dark Mode Styles */
+/* ===================== */
+
+.masterContainerDark {
+  background-color: #1B2A41;
+  color: #ffffff;
+}
+
+.formContainerDark {
+  background-color: #1C2541;
+  color: #ffffff;
+}
+
+.suppressInitialFocus :global(:focus) {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: #404040 !important;
+}
+
+.suppressInitialFocus :global(.form-control:focus),
+.suppressInitialFocus :global(textarea:focus),
+.suppressInitialFocus :global(input:focus),
+.suppressInitialFocus :global(select:focus),
+.suppressInitialFocus :global(button:focus) {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.noFocusShadow :global(input.form-control),
+.noFocusShadow :global(textarea.form-control),
+.noFocusShadow :global(input[type='text']),
+.noFocusShadow :global(textarea) {
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+}
+
+.noFocusShadow :global(input.form-control:focus),
+.noFocusShadow :global(textarea.form-control:focus),
+.noFocusShadow :global(input[type='text']:focus),
+.noFocusShadow :global(textarea:focus) {
+  -webkit-box-shadow: 0 0 0 1000px #1C2541 inset !important;
+  box-shadow: 0 0 0 1000px #1C2541 inset !important;
+}
+
+/* Force no shadow unless focused */
+.formContainerDark .lessonTitleInputDark:not(:focus):not(:active):not(:focus-visible),
+.formContainerDark .lessonPlaceholderTextDark:not(:focus):not(:active):not(:focus-visible),
+:global(body.dark-mode) .formContainerDark :global(input.form-control:not(:focus)),
+:global(body.bm-dashboard-dark) .formContainerDark :global(input.form-control:not(:focus)),
+:global(body.dark-mode) .formContainerDark :global(textarea.form-control:not(:focus)),
+:global(body.bm-dashboard-dark) .formContainerDark :global(textarea.form-control:not(:focus)),
+:global(body.dark-mode) .formContainerDark :global(input[type='text']:not(:focus)),
+:global(body.bm-dashboard-dark) .formContainerDark :global(input[type='text']:not(:focus)),
+:global(body.dark-mode) .formContainerDark :global(textarea:not(:focus)),
+:global(body.bm-dashboard-dark) .formContainerDark :global(textarea:not(:focus)) {
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+}
+
+.lessonLabelDark {
+  color: #ffffff;
+}
+
+.lessonPlaceholderTextDark {
+  background-color: #1C2541 !important;
+  color: #ffffff !important;
+  border: 1px solid #404040 !important;
+  color-scheme: dark;
+  -webkit-text-fill-color: #ffffff;
+  box-shadow: none !important;
+}
+
+.lessonTitleInput {
+  max-width: unset !important;
+}
+
+.lessonTitleInputDark {
+  color-scheme: dark;
+  caret-color: #ffffff;
+  appearance: none;
+  -webkit-appearance: none;
+  -webkit-text-fill-color: #ffffff;
+  box-shadow: none !important;
+}
+
+.lessonTitleInputDark:focus,
+.lessonTitleInputDark:active,
+.lessonTitleInputDark:focus-visible {
+  background-color: #1C2541 !important;
+  border-color: #2563eb !important;
+  -webkit-box-shadow: 0 0 0 1000px #1C2541 inset !important;
+  background-clip: padding-box !important;
+  box-shadow: 0 0 0 1000px #1C2541 inset !important;
+  outline: none !important;
+}
+
+.formContainerDark .lessonTitleInputDark,
+.formContainerDark .lessonPlaceholderTextDark {
+  background-color: #1C2541 !important;
+  color: #ffffff !important;
+  border-color: #404040 !important;
+  -webkit-box-shadow: none !important;
+  background-clip: padding-box !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* Override Bootstrap .form-control:focus background */
+.lessonTitleInputDark:global(.form-control):focus,
+.lessonTitleInputDark:global(.form-control):active,
+.lessonTitleInputDark:global(.form-control):focus-visible,
+.lessonPlaceholderTextDark:global(.form-control):focus,
+.lessonPlaceholderTextDark:global(.form-control):active,
+.lessonPlaceholderTextDark:global(.form-control):focus-visible {
+  background-color: #1C2541 !important;
+  color: #ffffff !important;
+  border-color: #2563eb !important;
+  -webkit-box-shadow: 0 0 0 1000px #1C2541 inset !important;
+  background-clip: padding-box !important;
+  box-shadow: 0 0 0 1000px #1C2541 inset !important;
+  outline: none !important;
+}
+
+.lessonPlaceholderTextDark:focus,
+.lessonPlaceholderTextDark:active {
+  border-color: #2563eb !important;
+  background-color: #1C2541 !important;
+  -webkit-box-shadow: 0 0 0 1000px #1C2541 inset !important;
+  background-clip: padding-box !important;
+  box-shadow: 0 0 0 1000px #1C2541 inset !important;
+  outline: none !important;
+}
+
+/* Override global dark-mode input backgrounds */
+:global(body.dark-mode) .formContainerDark .lessonTitleInputDark,
+:global(body.bm-dashboard-dark) .formContainerDark .lessonTitleInputDark,
+:global(body.dark-mode) .formContainerDark .lessonPlaceholderTextDark,
+:global(body.bm-dashboard-dark) .formContainerDark .lessonPlaceholderTextDark {
+  background-color: #1C2541 !important;
+  color: #ffffff !important;
+  border-color: #404040 !important;
+  -webkit-box-shadow: none !important;
+  box-shadow: none !important;
+}
+
+.formSelectContainerDark {
+  color: #ffffff;
+}
+
+ .singleFormSelectDark {
+   background-color: #1C2541 !important;
+   color: #ffffff !important;
+   border: 1px solid #444;
+ }
+
+ .singleFormSelectDark:focus,
+ .singleFormSelectDark:active {
+   background-color: #1C2541 !important;
+   color: #ffffff !important;
+   border-color: #2563eb !important;
+   box-shadow: none !important;
+   outline: none !important;
+ }
+
+.dragAndDropStyleDark {
+  border: 2px dashed #555;
+  background-color: #1f1f1f;
+  color: #ffffff;
+}
+
+.dragandDropTextDark {
+  color: #b0b0b0;
+}
+
+.fileSelectedDark {
+  border-color: #ffffff;
+}
+
+.lessonFormButtonCancelDark {
+  background-color: #2a2a2a !important;
+  color: #ffffff !important;
+  border-color: #666 !important;
+}
+
+.lessonFormButtonSubmitDark {
+  background-color: #2563eb !important;
+  color: #ffffff !important;
+  border-color: #2563eb !important;
+}
+
+/* Tags - Dark Mode */
+
+.tagsDivDark {
+  color: #ffffff;
+}
+
+.tagDark {
+  background-color: #2a2a2a;
+  color: #ffffff;
+  border: 1px solid #555;
+}
+
+.removeTagBTNDark {
+  color: #ffffff;
+}
+
+.tagDropdownDark {
+  background-color: #1e1e1e;
+  color: #ffffff !important;
+  border: 1px solid #444;
+}
+
+.tagDropdownDark * {
+  color: #ffffff !important;
+}
+
+.tagOptionDark {
+  color: #ffffff !important;
+  background-color: transparent;
+}
+
+.tagOptionDark:hover,
+.tagOptionDark:focus,
+.tagOptionDark:active {
+  background-color: #2d3b66;
+  color: #ffffff !important;
+  outline: none;
+}
+
+.tagOptionDark:hover *,
+.tagOptionDark:focus *,
+.tagOptionDark:active * {
+  color: #ffffff !important;
+  background-color: transparent !important;
+}
+
+.inputGroupDark {
+  background-color: #1e1e1e;
+}
+
+.formControlDark {
+  background-color: #1C2541 !important;
+  color: #ffffff !important;
+  border: 1px solid #404040 !important;
+  box-shadow: none !important;
+}
+
+.formControlDark:focus,
+.formControlDark:active,
+.formControlDark:focus-visible {
+  background-color: #1C2541 !important;
+  color: #ffffff !important;
+  border-color: #2563eb !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.deleteTagBtnDark {
+  color: #ff6b6b;
+}
+
+.deleteTagBtnDark:hover {
+  color: #ff3b3b;
+}
+/* Remove default arrow in all browsers */
+.formSelectDark {
+  background-color: #1C2541;
+  color: #e8f0fe;
+  border: 1px solid #3a3f45;
+
+  /* Remove default arrows */
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  /* Add custom arrow spacing */
+  padding-right: 32px;
+
+  background-image: url("data:image/svg+xml;utf8,<svg fill='%23e8f0fe' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 18px;
+}
+/* Fix selected text background in dark mode */
+.lessonPlaceholderTextDark::selection,
+.lessonPlaceholderTextDark::-moz-selection,
+.lessonPlaceholderTextDark.form-control::selection,
+.lessonPlaceholderTextDark.form-control::-moz-selection,
+.lessonTitleInput::selection,
+.lessonTitleInput::-moz-selection,
+.lessonTitleInputDark::selection,
+.lessonTitleInputDark::-moz-selection {
+  background-color: #1C2541 !important;
+  color: #ffffff !important;
+}
+
+/* Hide selection when the field is not focused */
+.lessonTitleInputDark:not(:focus)::selection,
+.lessonTitleInputDark:not(:focus)::-moz-selection,
+.lessonPlaceholderTextDark:not(:focus)::selection,
+.lessonPlaceholderTextDark:not(:focus)::-moz-selection {
+  background-color: #1C2541 !important;
+  color: #1C2541 !important;
+}
+
+/* Absolute selection control under global dark-mode rules */
+:global(body.dark-mode) .formContainerDark :global(input.form-control)::selection,
+:global(body.bm-dashboard-dark) .formContainerDark :global(input.form-control)::selection,
+:global(body.dark-mode) .formContainerDark :global(textarea.form-control)::selection,
+:global(body.bm-dashboard-dark) .formContainerDark :global(textarea.form-control)::selection,
+:global(body.dark-mode) .formContainerDark :global(input[type='text'])::selection,
+:global(body.bm-dashboard-dark) .formContainerDark :global(input[type='text'])::selection,
+:global(body.dark-mode) .formContainerDark :global(textarea)::selection,
+:global(body.bm-dashboard-dark) .formContainerDark :global(textarea)::selection {
+  background-color: #1C2541 !important;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .formContainerDark :global(input.form-control:not(:focus))::selection,
+:global(body.bm-dashboard-dark) .formContainerDark :global(input.form-control:not(:focus))::selection,
+:global(body.dark-mode) .formContainerDark :global(textarea.form-control:not(:focus))::selection,
+:global(body.bm-dashboard-dark) .formContainerDark :global(textarea.form-control:not(:focus))::selection,
+:global(body.dark-mode) .formContainerDark :global(input[type='text']:not(:focus))::selection,
+:global(body.bm-dashboard-dark) .formContainerDark :global(input[type='text']:not(:focus))::selection,
+:global(body.dark-mode) .formContainerDark :global(textarea:not(:focus))::selection,
+:global(body.bm-dashboard-dark) .formContainerDark :global(textarea:not(:focus))::selection {
+  background-color: transparent !important;
+  color: inherit !important;
+}
+
+/* Fix Chrome autofill forcing white background */
+.formControlDark:-webkit-autofill,
+.formControlDark:-webkit-autofill:hover,
+.formControlDark:-webkit-autofill:focus,
+.formControlDark:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #1C2541 inset !important;
+  -webkit-text-fill-color: #ffffff !important;
+  transition: background-color 9999s ease-in-out 0s;
+}
+
+/* Force dark background for browser-autofill on Lesson Title */
+.lessonTitleInputDark:-webkit-autofill,
+.lessonTitleInputDark:-webkit-autofill:hover,
+.lessonTitleInputDark:-webkit-autofill:focus,
+.lessonTitleInputDark:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #1C2541 inset !important;
+  -webkit-text-fill-color: #ffffff !important;
+  caret-color: #ffffff !important;
+}
+
+:global(body.dark-mode) .formContainerDark :global(input.form-control:-webkit-autofill),
+:global(body.bm-dashboard-dark) .formContainerDark :global(input.form-control:-webkit-autofill),
+:global(body.dark-mode) .formContainerDark :global(input[type='text']:-webkit-autofill),
+:global(body.bm-dashboard-dark) .formContainerDark :global(input[type='text']:-webkit-autofill) {
+  -webkit-box-shadow: 0 0 0 1000px #1C2541 inset !important;
+  -webkit-text-fill-color: #ffffff !important;
+  caret-color: #ffffff !important;
+}
+
+
+/* FIX: Lesson Title input turns white on focus/selection (Bootstrap override) */
+
+/* FINAL AUTHORITATIVE FIX — Lesson Title NEVER turns white */
+.lessonPlaceholderTextDark,
+.lessonPlaceholderTextDark.form-control,
+.lessonPlaceholderTextDark.form-control:focus,
+.lessonPlaceholderTextDark.form-control:active,
+.lessonPlaceholderTextDark.form-control:focus-visible {
+  background-color: #1C2541 !important;
+  color: #ffffff !important;
+  border: 1px solid #404040 !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
