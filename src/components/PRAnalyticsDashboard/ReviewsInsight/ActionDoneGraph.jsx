@@ -1,8 +1,9 @@
-import { Bar } from 'react-chartjs-2';
-import sharedStyles from './ReviewsInsight.module.css';
-import { useSelector } from 'react-redux';
 import { Chart } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+import PropTypes from 'prop-types';
+import { Bar } from 'react-chartjs-2';
+import { useSelector } from 'react-redux';
+import sharedStyles from './ReviewsInsight.module.css';
 
 Chart.register(ChartDataLabels);
 
@@ -93,6 +94,35 @@ function ActionDoneGraph({ selectedTeams, teamData }) {
         },
         ticks: {
           color: darkMode ? '#fff' : '#000',
+          callback: function(value, index) {
+            const team = teamsToDisplay[index];
+            const memberCount = teamData[team]?.memberCount || 0;
+            const circles = [
+              '⓪',
+              '①',
+              '②',
+              '③',
+              '④',
+              '⑤',
+              '⑥',
+              '⑦',
+              '⑧',
+              '⑨',
+              '⑩',
+              '⑪',
+              '⑫',
+              '⑬',
+              '⑭',
+              '⑮',
+              '⑯',
+              '⑰',
+              '⑱',
+              '⑲',
+              '⑳',
+            ];
+            const circle = memberCount <= 20 ? circles[memberCount] : `(${memberCount})`;
+            return `${team} ${circle}`;
+          },
         },
       },
     },
@@ -107,5 +137,19 @@ function ActionDoneGraph({ selectedTeams, teamData }) {
     </div>
   );
 }
+
+ActionDoneGraph.propTypes = {
+  selectedTeams: PropTypes.arrayOf(
+    PropTypes.shape({
+      value: PropTypes.string,
+    }),
+  ),
+  teamData: PropTypes.objectOf(
+    PropTypes.shape({
+      actionSummary: PropTypes.object,
+      memberCount: PropTypes.number,
+    }),
+  ),
+};
 
 export default ActionDoneGraph;
