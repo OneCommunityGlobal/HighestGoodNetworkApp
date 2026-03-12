@@ -247,14 +247,12 @@
 
 .team-clocks {
   display: flex;
-  justify-content: center;
+  justify-content: left;
+  padding-left: 35px !important;
   align-items: center;
-  text-align: center;
-  vertical-align: middle !important;
-  gap: 4px;
-  width: 50%;
-  white-space: nowrap;
+  gap: 6px;
 }
+
 
 .team-member-tasks-number {
   display: inline-block;
