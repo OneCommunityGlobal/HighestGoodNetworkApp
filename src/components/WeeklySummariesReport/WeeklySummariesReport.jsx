@@ -632,7 +632,7 @@ const WeeklySummariesReport = props => {
       const badgeStatusCode = await fetchAllBadges();
       setPermissionState(prev => ({
         ...prev,
-        bioEditPermission: hasPermission('putUserProfileImportantInfo'),
+        bioEditPermission: hasPermission('requestBio'),
         canEditSummaryCount: hasPermission('putUserProfileImportantInfo'),
         codeEditPermission:
           hasPermission('editTeamCode') ||
@@ -1742,6 +1742,8 @@ const WeeklySummariesReport = props => {
             _ids: updatedSummaries.filter(s => s.teamCode === replaceCode).map(s => s._id),
           });
 
+        props.setTeamCodes(updatedTeamCodes);
+
         const updatedSelectedCodes = selectedCodes
           .filter(code => !oldTeamCodes.includes(code.value) && code.value !== replaceCode)
           .concat({
@@ -1795,6 +1797,10 @@ const WeeklySummariesReport = props => {
         setState(prev => ({
           ...prev,
           summaries: updatedSummaries,
+          summariesByTab: {
+            ...prev.summariesByTab,
+            [prev.activeTab]: updatedSummaries,
+          },
           teamCodes: updatedTeamCodes,
           selectedCodes: updatedSelectedCodes,
           replaceCode: '',
@@ -2191,7 +2197,7 @@ const WeeklySummariesReport = props => {
         await props.fetchAllBadges();
         setPermissionState(prev => ({
           ...prev,
-          bioEditPermission: props.hasPermission('putUserProfileImportantInfo'),
+          bioEditPermission: props.hasPermission('requestBio'),
           // codeEditPermission: props.hasPermission('replaceTeamCodes'),
           // allow team‑code edits for specific roles or permissions
           codeEditPermission:
@@ -2298,6 +2304,12 @@ const WeeklySummariesReport = props => {
       isMounted = false;
     };
   }, [state.activeTab]);
+
+  useEffect(() => {
+    if (!Array.isArray(state.teamCodes)) return;
+
+    props.setTeamCodes(state.teamCodes);
+  }, [state.teamCodes, props.setTeamCodes]);
 
   const { role, darkMode } = props;
   const { error } = props;
