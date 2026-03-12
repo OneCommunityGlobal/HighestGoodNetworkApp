@@ -2355,10 +2355,13 @@ const WeeklySummariesReport = props => {
       <Row className={styles['mx-max-sm-0']}>
         <style>
           {`
-        .custom-select__input-container {
-          grid-template-columns: auto !important;
-        }
-      `}
+            .custom-select__input-container {
+              grid-template-columns: auto !important;
+            }
+            .list-group-item.bg-yinmn-blue {
+              background-color: #3d5a80 !important;
+            }
+          `}
         </style>
         <Col lg={{ size: 10, offset: 1 }}>
           <h3 className="mt-3 mb-5">
