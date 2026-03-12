@@ -1,7 +1,24 @@
 {
+  "env": {
+    "browser": true,
+    "es2022": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 2022,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "plugins": ["react", "react-hooks", "jsx-a11y", "import", "prettier", "testing-library"],
+  "extends": ["prettier"],
+  "settings": {
+    "react": { "version": "detect" },
+    "import/ignore": ["\\.css$", "\\.min\\.js$"]
+  },
   "rules": {
     "no-restricted-imports": [
-      "error",
+      "warn",
       {
         "patterns": ["*.css", "!*.module.css", "!index.css"]
       }

@@ -19,6 +19,7 @@ import {
 import DemandOverTime from './LbAnalytics/DemandOverTime/DemandOverTime';
 import ReviewWordCloud from './ReviewWordCloud/ReviewWordCloud';
 import { CompareBarGraph } from './BarGraphs/CompareGraphs';
+import ReviewVolumeOverTimeChart from '../PRAnalyticsDashboard/ReviewsInsight/ReviewVolumeOverTimeChart';
 
 import httpService from '../../services/httpService';
 import { ApiEndpoint } from '../../utils/URL';
@@ -288,10 +289,18 @@ export function LBDashboard() {
         const res = await httpService.get(`${ApiEndpoint}/villages`);
         if (!mounted) return;
 
-        setVillagesRaw(Array.isArray(res?.data) ? res.data : []);
+        // Handle different response structures
+        const villagesData = res?.data?.data || res?.data || [];
+        setVillagesRaw(Array.isArray(villagesData) ? villagesData : []);
       } catch (e) {
         if (!mounted) return;
-        setVillagesError('Failed to load villages');
+        console.error('Error loading villages:', e);
+        // Set error message but allow component to still render with empty data
+        if (e?.response?.status === 401) {
+          setVillagesError('Authentication required. Please log in to load villages.');
+        } else {
+          setVillagesError('Failed to load villages. Chart showing sample data.');
+        }
         setVillagesRaw([]);
       } finally {
         if (mounted) setLoadingVillages(false);
@@ -505,7 +514,19 @@ export function LBDashboard() {
       </AnalysisSection>
 
       <AnalysisSection title="Insights from Reviews" darkMode={darkMode}>
-        <ReviewWordCloud darkMode={darkMode} />
+        <Row xs="1" md="2" className="g-3" style={{ alignItems: 'stretch' }}>
+          <Col style={{ display: 'flex' }}>
+            <ReviewWordCloud darkMode={darkMode} />
+          </Col>
+          <Col style={{ display: 'flex' }}>
+            <ReviewVolumeOverTimeChart
+              darkMode={darkMode}
+              villages={villagesRaw}
+              loadingVillages={loadingVillages}
+              villagesError={villagesError}
+            />
+          </Col>
+        </Row>
       </AnalysisSection>
     </Container>
   );
