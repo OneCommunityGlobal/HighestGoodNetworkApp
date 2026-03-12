@@ -34,13 +34,9 @@ const blueSquareEmailCCError = error => ({
 export const addCCEmail = (userId, payload) => {
   return async dispatch => {
     try {
-      console.log('Dispatching addCCEmail with:', userId, payload);
-
       const response = await axios.post(ENDPOINTS.ADD_BLUE_SQUARE_EMAIL_CC(userId), payload);
-
       if (response.status === 200) {
         const infringementCCList = response.data.infringementCCList || [];
-        console.log('Add CC success:', response.data);
 
         dispatch(addBlueSquareEmailCC(response.data));
         toast.success(response.data.message || 'CC email added successfully!');
@@ -52,7 +48,6 @@ export const addCCEmail = (userId, payload) => {
         return null;
       }
     } catch (err) {
-      console.error('Add CC error:', err);
       dispatch(blueSquareEmailCCError(err));
       toast.error(err?.response?.data?.error || 'Failed to add CC email.');
       throw err;
@@ -65,14 +60,12 @@ export const addCCEmail = (userId, payload) => {
 export const deleteCCEmail = (userId, email) => {
   return async dispatch => {
     try {
-      console.log('Dispatching deleteCCEmail with:', userId, email);
 
       const url = ENDPOINTS.DELETE_BLUE_SQUARE_EMAIL_CC(userId, encodeURIComponent(email));
       const response = await axios.delete(url);
 
       if (response.status === 200) {
         const infringementCCList = response.data.infringementCCList || [];
-        console.log('Delete CC success:', response.data);
 
         dispatch(removeBlueSquareEmailCC(response.data));
 
@@ -84,7 +77,6 @@ export const deleteCCEmail = (userId, email) => {
         return null;
       }
     } catch (err) {
-      console.error('Delete CC error:', err);
       dispatch(blueSquareEmailCCError(err));
       toast.error(err?.response?.data?.error || 'Failed to remove CC email.');
       throw err;

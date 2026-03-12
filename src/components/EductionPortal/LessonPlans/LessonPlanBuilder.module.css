@@ -1,22 +1,15 @@
 .lessonPlanContainer {
-  /* Main Shell */
-  /* Mimics container spacing */
-  /* max-width: 1300px; */
   margin-left: 0.05rem;
   padding-bottom: 0;
-  /* padding-left: 1rem; */
 }
 
 .tableHeader {
-  /* Custom light blue/gray header color */
-  /* background-color: #f0f8ff; */
   background-color: #f8f9fa;
   color: #343a40;
   font-weight: 600;
 }
 
 .titleBox {
-  /* Used for the 'Lesson Plan Builder' and 'Save Lesson Plan' line */
   display: flex;
   justify-content: space-between;
   gap: 1rem;
@@ -26,12 +19,6 @@
 }
 
 .grayBackgroundWrapper {
-  /* NEW: This wrapper handles the full stretch and gray background below the titleDiv /
-  background-color: #f8f8f8;
-  min-height: 100vh; / Ensure vertical stretch /
-  width: 100%; / Ensure it spans the remaining available space /
-  padding-top: 1rem; / Add some padding if needed below the title area /
-  padding-right: 1rem; / Padding on the right */
   margin-top: -0.02rem;
   min-height: calc(100vh - 70px);
   margin-right: 0.5rem;
@@ -40,11 +27,9 @@
 }
 
 .contentBox {
-  /* NEW: White background, light border, and padding for containment */
   background-color: white;
   border: 1px solid #dee2e6;
   padding: 1.5rem;
-  /* margin: 4rem 8rem; */
   border-radius: 0.2rem;
   box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
   position: relative;
@@ -55,13 +40,17 @@
   height: auto;
 }
 
+/* Light mode row hover effect */
+.contentBox table tbody tr:hover {
+  background-color: #f8f9fa; 
+}
+
 .controlRow {
   display: flex;
   gap: 1rem;
   margin-bottom: 1rem;
   width: auto;
   flex-wrap: wrap;
-  /* width: 125px; fit content  */
 }
 .controlRow select {
   width: 200px;
@@ -96,26 +85,18 @@
   border: 2px solid #78ce6a;
   margin-right: 5px;
   color: #78ce6a;
-  font-size: 0.875rem;
+  font-size: 1.2rem;
   padding: 0.25rem 0.5rem;
   line-height: 1.5;
   white-space: nowrap;
   border-radius: 0.25rem;
 }
-/* .duplicateBtn:hover {
-background-color: #d1eed1;
-} */
 
 .deleteIcon {
-  color: #dc3545 !important; /* Danger red */
+  color: #dc3545 !important;
   cursor: pointer;
   padding: 0.25rem;
 }
-/* .deleteIcon:hover {
-color: #c82333;
-} */
-
-/* --- Footer and Header Button Styles --- */
 
 .footerButtonWrapper {
   display: flex;
@@ -125,29 +106,24 @@ color: #c82333;
 }
 
 .headerSaveBtn {
-  /* Blue color for Save Lesson Plan */
   background-color: #3B75FC;
   color: white;
-  /* border: 1px solid #007bff; */
   width: auto;
   min-width: 150px;
-  height: 2.2rem;
-  font-size: 0.875rem;
-  padding: 0.02rem 1.5rem;
+  height: auto;
+  flex-shrink: 0;
+  font-size: 1.2rem;
+  padding: 0.5rem 1.5rem;
   border-radius: 0.30rem;
   margin-right: 3px;
   white-space: nowrap;
 }
-/* .headerSaveBtn:hover {
-background-color: #0056b3;
-} */
 
 .assignLsnBtn {
   background-color: #2ECC71;
   color: #FFFFFF;
-  /* border: 1px solid #007bff; */
   width: auto;
-  font-size: 0.875rem;
+  font-size: 1.2rem;
   padding: 0.25rem 1.5rem;
   margin-top: -10px;
   margin-bottom: 5px;
@@ -159,9 +135,35 @@ background-color: #0056b3;
   margin-left: 0.6rem;
   background-color: #3B75FC;
   color: white;
-  /* border: 1px solid #007bff; */
   width: 13%;
-  font-size: 0.875rem;
+  font-size: 1.2rem;
   padding: 0.25rem 1.5rem;
   border-radius: 0.30rem;
+}
+
+/* ========================================================== */
+/* DARK MODE OVERRIDES (Automatically triggered by global app) */
+/* ========================================================== */
+
+:global(body.dark-mode) .grayBackgroundWrapper {
+  background-color: #121212;
+}
+
+:global(body.dark-mode) .contentBox {
+  background-color: #1e1e1e;
+  border: 1px solid #333;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.5);
+}
+
+:global(body.dark-mode) .tableHeader {
+  background-color: #2d2d2d;
+  color: #e0e0e0;
+}
+
+:global(body.dark-mode) .titleBox {
+  border-bottom: 1px solid #444;
+}
+
+:global(body.dark-mode) .contentBox table tbody tr:hover {
+  background-color: #2a2a2a;
 }

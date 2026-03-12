@@ -25,9 +25,9 @@ import { jsPDF } from 'jspdf';
 import hasPermission from '~/utils/permissions';
 
 // actions
-import { getTotalOrgSummary } from '~/actions/totalOrgSummary';
+import { getTotalOrgSummary, getTaskAndProjectStats } from '~/actions/totalOrgSummary';
 
-import '../Header/DarkMode.css';
+import '../Header/index.css';
 import styles from './TotalOrgSummary.module.css';
 import { clsx } from 'clsx';
 import VolunteerHoursDistribution from './VolunteerHoursDistribution/VolunteerHoursDistribution';
@@ -129,6 +129,7 @@ function TotalOrgSummary(props) {
   useEffect(() => {
     const fetchVolunteerStats = async () => {
       try {
+        setIsLoading(true);
         const { comparisonStartDate, comparisonEndDate } = calculateComparisonDates(
           selectedComparison,
           currentFromDate,
@@ -141,7 +142,17 @@ function TotalOrgSummary(props) {
           comparisonStartDate,
           comparisonEndDate,
         );
-        setVolunteerStats(volunteerStatsResponse.data);
+
+        // Fetch task and project stats separately
+        const taskAndProjectStatsResponse = await props.getTaskAndProjectStats(
+          currentFromDate,
+          currentToDate,
+        );
+
+        setVolunteerStats({
+          ...volunteerStatsResponse.data,
+          taskAndProjectStats: taskAndProjectStatsResponse,
+        });
         await props.hasPermission('');
         setIsLoading(false);
       } catch (catchFetchError) {
@@ -156,12 +167,6 @@ function TotalOrgSummary(props) {
     if (isGeneratingPDF) return;
 
     setIsGeneratingPDF(true);
-
-    // Save the current state of collapsible sections.
-    const triggers = document.querySelectorAll('.Collapsible__trigger');
-    const originalStates = Array.from(triggers).map(trigger =>
-      trigger.classList.contains('is-open'),
-    );
 
     try {
       // Ensure required libraries are present.
@@ -178,20 +183,13 @@ function TotalOrgSummary(props) {
         return;
       }
 
-      // 1. Expand all collapsible sections so every part is visible.
-      triggers.forEach(trigger => {
-        if (!trigger.classList.contains('is-open')) {
-          trigger.click();
-        }
-      });
-
-      // 2. Wait a longer time to ensure charts and content are fully rendered.
-      await new Promise(resolve => {
-        setTimeout(resolve, 3000);
-      });
+      // 2. Wait longer for charts/maps to render (5 seconds)
+      await new Promise(resolve => setTimeout(resolve, 5000));
 
       // 3. Replace Chart.js canvas elements with images in the live DOM.
-      const chartCanvases = document.querySelectorAll('.volunteer-status-chart canvas');
+      const chartCanvases = document.querySelectorAll(
+        '[data-chart="volunteer-status"] canvas, [data-chart="mentor-status"] canvas',
+      );
       const originalCanvases = [];
       chartCanvases.forEach(canvasElem => {
         try {
@@ -225,13 +223,57 @@ function TotalOrgSummary(props) {
       pdfContainer.style.margin = '0';
 
       // Clone the main content area
+
       const originalContent = rootRef.current;
       const clonedContent = originalContent.cloneNode(true);
+
+      // Remove interactive or unwanted elements from the clone
 
       // Remove interactive or unwanted elements from the clone
       clonedContent
         .querySelectorAll('[data-pdf-hide], .controls, .no-print')
         .forEach(el => el.remove());
+
+      // Remove all collapsed AccordianWrapper (Collapsible) sections from the PDF
+      clonedContent.querySelectorAll('.Collapsible').forEach(collapsible => {
+        // If it does NOT have the 'is-open' class, it's collapsed
+        const trigger = collapsible.querySelector('.Collapsible__trigger');
+        if (!trigger || !trigger.classList.contains('is-open')) {
+          collapsible.remove();
+        }
+      });
+
+      // Copy canvas bitmap from live DOM to cloned DOM before converting to image
+      // This includes Chart.js, Leaflet, and heatmap overlays
+      const liveCanvases = Array.from(document.querySelectorAll('canvas'));
+      const clonedCanvases = Array.from(clonedContent.querySelectorAll('canvas'));
+      clonedCanvases.forEach(clonedCanvas => {
+        try {
+          // Try to find a matching live canvas by size and position
+          const match = liveCanvases.find(
+            liveCanvas =>
+              liveCanvas.width === clonedCanvas.width &&
+              liveCanvas.height === clonedCanvas.height &&
+              liveCanvas.parentNode?.className === clonedCanvas.parentNode?.className,
+          );
+          if (match) {
+            const ctx = clonedCanvas.getContext('2d');
+            ctx.clearRect(0, 0, clonedCanvas.width, clonedCanvas.height);
+            ctx.drawImage(match, 0, 0);
+          }
+          // Now convert to image if canvas has content
+          if (clonedCanvas.width > 0 && clonedCanvas.height > 0) {
+            const img = document.createElement('img');
+            img.src = clonedCanvas.toDataURL('image/png');
+            img.width = clonedCanvas.width;
+            img.height = clonedCanvas.height;
+            img.style.cssText = clonedCanvas.style.cssText;
+            clonedCanvas.parentNode.replaceChild(img, clonedCanvas);
+          }
+        } catch (err) {
+          /* ignore */
+        }
+      });
 
       // Adjust title row styling for a clean layout
       const titleRow = clonedContent.querySelector('[data-pdf-title-row]');
@@ -271,16 +313,20 @@ function TotalOrgSummary(props) {
           padding: 0 !important;
         }
 
-        /* Merges old .component-container + .component-border rules */
+        /* PDF block container: border and shadow, dark mode fidelity */
         [data-pdf-block] {
           page-break-inside: avoid;
           break-inside: avoid;
           margin: 15px 0 !important;
           padding: 20px !important;
-          background-color: #fff !important;
-          border: 1px solid #e0e0e0 !important;
+          background-color: ${darkMode ? '#1C2541' : '#fff'} !important;
+          border: 1px solid ${darkMode ? '#3a3a3a' : '#e0e0e0'} !important;
           border-radius: 10px !important;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08) !important;
+          box-shadow: ${
+            darkMode
+              ? '0 2px 12px 0 rgba(255,255,255,0.18), 0 1.5px 8px 0 rgba(255,255,255,0.10)'
+              : '0 2px 4px rgba(0, 0, 0, 0.08)'
+          } !important;
           overflow: hidden !important;
         }
 
@@ -327,6 +373,39 @@ function TotalOrgSummary(props) {
           margin: 10px !important;
           color: #333 !important;
         }
+
+        /* Force all chart and card titles to white in dark mode for PDF */
+${
+  darkMode
+    ? `
+  .componentContainer h1,
+  .componentContainer h2,
+  .componentContainer h3,
+  .componentContainer h4,
+  .componentContainer h5,
+  .componentContainer h6,
+  .componentContainer p,
+  .componentContainer .totalOrgChartTitle,
+  .componentContainer .volunteerStatusGrid h3,
+  .componentContainer .card-title,
+  .componentContainer .statistics-title,
+  .componentContainer .Collapsible__trigger,
+  .componentContainer .volunteer-status-header,
+  .componentContainer .volunteer-status-title {
+    color: #fff !important;
+    text-shadow: 0 1px 4px #000, 0 0 2px #000 !important;
+  }
+  .componentContainer [data-pdf-title] p {
+    color: #fff !important;
+    text-shadow: 0 1px 4px #000, 0 0 2px #000 !important;
+  }
+  .componentContainer [data-pdf-title] {
+    color: #fff !important;
+    text-shadow: 0 1px 4px #000, 0 0 2px #000 !important;
+  }
+`
+    : ''
+}
       `;
 
       // Add content to the PDF container
@@ -380,12 +459,6 @@ function TotalOrgSummary(props) {
       alert(`Error generating PDF: ${pdfError.message}`);
     } finally {
       setIsGeneratingPDF(false);
-      // Restore collapsible sections to their original states
-      triggers.forEach((trigger, idx) => {
-        if (trigger.classList.contains('is-open') !== originalStates[idx]) {
-          trigger.click();
-        }
-      });
     }
   };
 
@@ -612,7 +685,11 @@ function TotalOrgSummary(props) {
             </Col>
             <Col lg={{ size: 6 }}>
               <div
-                className={clsx(styles.componentContainer, styles.componentBorder)}
+                className={clsx(
+                  styles.componentContainer,
+                  styles.componentBorder,
+                  styles.componentBorderLoose,
+                )}
                 data-pdf-block
               >
                 <div
@@ -627,6 +704,7 @@ function TotalOrgSummary(props) {
                 <VolunteerStatusChart
                   isLoading={isLoading}
                   volunteerNumberStats={volunteerStats?.volunteerNumberStats}
+                  mentorNumberStats={volunteerStats?.mentorNumberStats}
                   comparisonType={selectedComparison}
                 />
               </div>
@@ -762,7 +840,7 @@ function TotalOrgSummary(props) {
             </Col>
           </Row>
         </AccordianWrapper>
-        <AccordianWrapper title="Volunteer Roles and Team Dynamics">
+        <AccordianWrapper title="Volunteer Work and Role Distribution">
           <Row>
             <Col lg={{ size: 7 }}>
               <div
@@ -809,7 +887,7 @@ function TotalOrgSummary(props) {
             </Col>
           </Row>
         </AccordianWrapper>
-        <AccordianWrapper title="Volunteer Roles and Team Dynamics">
+        <AccordianWrapper title="Teams and Blue Squares">
           <Row>
             <Col lg={{ size: 6 }}>
               <div
@@ -874,6 +952,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   getTotalOrgSummary: (startDate, endDate, comparisonStartDate, comparisonEndDate) =>
     dispatch(getTotalOrgSummary(startDate, endDate, comparisonStartDate, comparisonEndDate)),
+  getTaskAndProjectStats: (startDate, endDate) =>
+    dispatch(getTaskAndProjectStats(startDate, endDate)),
   hasPermission: permission => dispatch(hasPermission(permission)),
 });
 

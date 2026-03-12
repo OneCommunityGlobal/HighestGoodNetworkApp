@@ -1479,7 +1479,7 @@ export default function LessonPlanBuilder() {
                 ))}
                 {/* Empty row to create the constant space below the last entry */}
                 <tr className="border-bottom">
-                  <td colSpan="6" style={{ height: '100px', backgroundColor: 'white' }}></td>
+                  <td colSpan="6" style={{ height: '100px', backgroundColor: 'transparent' }}></td>
                 </tr>
               </tbody>
               <tfoot>
@@ -1487,21 +1487,21 @@ export default function LessonPlanBuilder() {
                 <tr>
                   <td
                     className="p-3 font-weight-bold text-secondary"
-                    style={{ backgroundColor: '#f8f9fa' }}
+                    style={{ backgroundColor: 'transparent' }}
                   >
                     Total
                   </td>
-                  <td colSpan={4} style={{ backgroundColor: '#f8f9fa' }}></td>
+                  <td colSpan={4} style={{ backgroundColor: 'transparent' }}></td>
                   <td
                     className="p-3 font-weight-bold text-right text-secondary"
                     colSpan={1}
-                    style={{ backgroundColor: '#f8f9fa' }}
+                    style={{ backgroundColor: 'transparent' }}
                   >
                     100%
                   </td>
                 </tr>
                 <tr className="border-bottom">
-                  <td colSpan="6" style={{ height: '80px', backgroundColor: 'white' }}></td>
+                  <td colSpan="6" style={{ height: '80px', backgroundColor: 'transparent' }}></td>
                 </tr>
               </tfoot>
             </table>
