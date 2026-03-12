@@ -135,17 +135,11 @@ export default function UserSkillsProfile() {
   }
 
   return (
-    <div className={`${styles.page} ${darkMode ? styles.darkMode : ''}`}>
-      <section className={`${styles.top} ${darkMode ? styles.darkMode : ''}`}>
-        {/* ...existing content... */}
-      </section>
-      <section className={`${styles.sections} ${darkMode ? styles.darkMode : ''}`}>
-        <div className={`${styles.dashboardContainer}`}>
-          <LeftSection />
-          <div className={`${styles.verticalSeparator}`} />
-          <RightSection />
-        </div>
-      </section>
+    <div className={`${styles.userProfileHome} ${darkMode ? 'dark-mode' : ''}`}>
+      <div className={styles.dashboardContainer}>
+        <LeftSection />
+        <RightSection />
+      </div>
     </div>
   );
 }

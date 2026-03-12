@@ -126,16 +126,3 @@ strong {
   background-color: #333;
   color: #adc8ff;
 }
-
-.details.darkMode {
-  background-color: #1a1a1a;
-  color: #e6e6e6;
-}
-
-.details.darkMode .label {
-  color: #bfbfbf;
-}
-
-.details.darkMode .value {
-  color: #ffffff;
-}

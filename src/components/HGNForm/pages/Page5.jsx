@@ -1,19 +1,15 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import Banner from '../questionpages/Banner';
-
 import FollowupQuestions from '../questionpages/FollowupQuestions';
 import Progress from '../questionpages/Progress';
 import containerStyles from '../styles/hgnform.module.css';
 
 function Page5() {
-  const headerRef = useRef(null);
   const darkMode = useSelector(state => state.theme.darkMode);
 
   useEffect(() => {
-    if (headerRef.current) {
-      headerRef.current.scrollIntoView({ behavior: 'auto', block: 'start' });
-    }
+    window.scrollTo({ top: 0, behavior: 'auto' });
   }, []);
 
   return (

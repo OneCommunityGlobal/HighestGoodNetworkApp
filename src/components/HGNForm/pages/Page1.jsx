@@ -3,25 +3,25 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { getUserProfileBasicInfo } from '~/actions/userManagement';
 import httpService from '~/services/httpService';
+import { ENDPOINTS } from '~/utils/URL';
 import Banner from '../questionpages/Banner';
 import QuestionnaireInfo from '../questionpages/QuestionnaireInfo';
 import InfoForm from '../questionpages/InfoForm';
 import Progress from '../questionpages/Progress';
 import styles from '../styles/hgnform.module.css';
 
-export default function Page1(/* existing props */) {
+export default function Page1() {
   const dispatch = useDispatch();
   const darkMode = useSelector(state => state.theme.darkMode);
-  const user = useSelector(state => state.auth.user);
+  const authUser = useSelector(state => state.auth.user);
   const history = useHistory();
-  const userProfile = useSelector(state => state?.userProfile?.profile);
   const [checkingExisting, setCheckingExisting] = useState(true);
 
   useEffect(() => {
-    if (user?.userid) {
-      dispatch(getUserProfileBasicInfo({ userId: user.userid }));
+    if (authUser?.userid) {
+      dispatch(getUserProfileBasicInfo({ userId: authUser.userid }));
     }
-  }, [dispatch, user?.userid]);
+  }, [dispatch, authUser?.userid]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -29,41 +29,50 @@ export default function Page1(/* existing props */) {
 
   useEffect(() => {
     let mounted = true;
-    async function checkExisting() {
+
+    async function checkExistingResponse() {
       try {
-        const userId = userProfile?._id;
-        const email = userProfile?.email;
-        if (!userId && !email) return;
-        // Prefer server-side filter by user_id; fallback to list + filter
-        const res = await httpService.get('/api/hgnformresponses', {
-          params: userId ? { user_id: userId } : undefined,
-        });
-        const rows = Array.isArray(res?.data) ? res.data : [];
-        const exists = rows.some(
-          r =>
-            (userId && (r?.user_id === userId || r?.userInfo?._id === userId)) ||
-            (email && r?.userInfo?.email?.toLowerCase() === email?.toLowerCase()),
-        );
-        if (mounted && exists) {
-          // Redirect to Skills page or the appropriate destination for submitted users
-          history.replace('/hgndashboard/skills');
+        const userId = authUser?.userid;
+        if (!userId) {
+          if (mounted) setCheckingExisting(false);
+          return;
+        }
+
+        const res = await httpService.get(ENDPOINTS.SKILLS_PROFILE(userId));
+        const data = res?.data;
+
+        // Response has skillInfo (not skills) — check if it exists
+        if (mounted && res?.status === 200 && data?.skillInfo) {
+          history.replace('/hgn/profile/skills');
           return;
         }
       } catch {
-        // Fail open: allow user to fill the form if the check fails
+        // 404 or error means no skills data → user hasn't submitted → show form
       } finally {
-        mounted && setCheckingExisting(false);
+        if (mounted) setCheckingExisting(false);
       }
     }
-    checkExisting();
+
+    checkExistingResponse();
     return () => {
       mounted = false;
     };
-  }, [userProfile, history]);
+  }, [authUser?.userid, history]);
 
   if (checkingExisting) {
-    // Keep it minimal to avoid layout shift
-    return <div style={{ padding: 12 }}>Checking your previous response…</div>;
+    return (
+      <div
+        className={`${styles['container-hgnform-wrapper']} ${darkMode ? 'bg-oxford-blue' : ''}`}
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          minHeight: '50vh',
+        }}
+      >
+        <p>Checking your previous response…</p>
+      </div>
+    );
   }
 
   return (

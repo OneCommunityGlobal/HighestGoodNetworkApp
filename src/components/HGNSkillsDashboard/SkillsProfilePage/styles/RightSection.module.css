@@ -38,21 +38,6 @@ h3 {
   color: #fff;
 }
 
-.container.darkMode {
-  background-color: #181818;
-  color: #e6e6e6;
-}
-
-.card.darkMode {
-  background-color: #202020;
-  border-color: #2f2f2f;
-}
-
-.listItem.darkMode {
-  background-color: #202020;
-  border-bottom: 1px solid #323232;
-}
-
 /* Dark variants applied via module classes */
 .rightSectionDark {
   background-color: #181818;

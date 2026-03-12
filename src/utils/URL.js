@@ -527,6 +527,8 @@ export const ENDPOINTS = {
     return url;
   },
 
+  HGN_FORM_RESPONSES: () => `${APIEndpoint}/hgnform`,
+
 };
 
 export const ApiEndpoint = APIEndpoint;
