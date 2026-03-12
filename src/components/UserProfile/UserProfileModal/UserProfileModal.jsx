@@ -189,14 +189,43 @@ const UserProfileModal = props => {
     });
   };
 
-  const handleSubmitWarning = () => {
+  const handleSubmitWarning = (warningData = warningSelections) => {
     setShowWarningSpinner(true);
-    handleLogWarning(warningSelections);
+    handleLogWarning(warningData);
     modifyBlueSquares(id, dateStamp, summary, 'delete');
     // setShowWarningSpinner(false);
   };
+
+  const handleLoggingBothWarnings = () => {
+    // Handling both case when both Blue Square warning trackers have 1 or 0 warning occurrences logged for a user
+    const updatedSelections = specialWarnings.reduce((acc, specialWarning) => {
+      acc[specialWarning.title] = { warn: 'Log Warning', color: 'blue' };
+      return acc;
+    }, {});
+
+    updatedSelections.bothTriggered = true;
+
+    const issueBlueSquare = Object.entries(updatedSelections)
+      .filter(([key]) => key !== 'bothTriggered' && key !== 'issueBlueSquare')
+      .reduce((acc, [warningTitle, selection]) => {
+        acc[warningTitle] = selection?.warn === 'Issue Blue Square';
+        return acc;
+      }, {});
+
+    const finalSelections = {
+      ...updatedSelections,
+      issueBlueSquare,
+    };
+
+    handleSubmitWarning(finalSelections);
+  };
+
   const handleToggleLogWarning = warningData => {
     if (warningData === 'both') {
+      if(specialWarnings[0].warnings.length <= 1 && specialWarnings[1].warnings.length <= 1) {
+        handleLoggingBothWarnings()
+        return
+      }
       setDisplayBothModal(true);
       setWarningType({
         specialWarnings,
@@ -679,7 +708,7 @@ const handleCcListUpdate = () => {
                       <Button
                         color="warning"
                         name="both"
-                        disabled={!specialWarnings?.some(warn => warn.warnings.length >= 2)}
+                        // disabled={!specialWarnings?.some(warn => warn.warnings.length >= 2)}
                         onClick={e => {
                           handleToggleLogWarning('both');
                         }}
