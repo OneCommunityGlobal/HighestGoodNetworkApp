@@ -1,61 +1,70 @@
-import { useEffect, useState } from 'react';
 import axios from 'axios';
+import PropTypes from 'prop-types';
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import styles from './style/RankedUserList.module.css';
 import UserCard from './UserCard';
-import './style/UserCard.module.css';
 
-function RankedUserList({ selectedSkills = [] }) {
-  const [rankedUsers, setRankedUsers] = useState([]);
+function RankedUserList({ selectedSkills, selectedPreferences, searchQuery }) {
+  const [allUsers, setAllUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   useEffect(() => {
-    let canceled = false;
-
-    const fetchRankedUsers = async () => {
+    const fetchUsers = async () => {
       setLoading(true);
-      setError(null);
-
       try {
         const params = {};
-        if (Array.isArray(selectedSkills) && selectedSkills.length > 0) {
-          params.skills = selectedSkills.join(',');
-        }
+        if (selectedSkills && selectedSkills.length > 0) params.skills = selectedSkills.join(',');
+        if (selectedPreferences && selectedPreferences.length > 0)
+          params.preferences = selectedPreferences.join(',');
 
-        const response = await axios.get('http://localhost:4500/api/hgnform/ranked', { params });
-
-        if (!canceled) {
-          const data = response?.data || [];
-          setRankedUsers(Array.isArray(data) ? data : []);
-        }
+        const response = await axios.get(`${process.env.REACT_APP_APIENDPOINT}/hgnform/ranked`, {
+          params,
+        });
+        setAllUsers(response.data);
       } catch (err) {
-        console.error('Failed to fetch ranked users', err);
-        if (!canceled) {
-          setError(err);
-          setRankedUsers([]);
-        }
+        // error handled silently
       } finally {
-        if (!canceled) setLoading(false);
+        setLoading(false);
       }
     };
 
-    fetchRankedUsers();
+    fetchUsers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedSkills, selectedPreferences]);
 
-    return () => {
-      canceled = true;
-    };
-  }, [selectedSkills]);
+  // Client-side filter by searchQuery on top of API results
+  const filteredUsers = searchQuery
+    ? allUsers.filter(user => {
+        const name = (user.name || '').toLowerCase();
+        const skills = (user.topSkills || []).join(' ').toLowerCase();
+        return (
+          name.includes(searchQuery.toLowerCase()) || skills.includes(searchQuery.toLowerCase())
+        );
+      })
+    : allUsers;
 
-  if (loading) return <p>Loading ranked users...</p>;
-  if (error) return <p>Failed to load users.</p>;
-  if (!rankedUsers.length) return <p>No members found.</p>;
+  if (loading) return <p className={`${styles.message}`}>Loading ranked users...</p>;
+  if (!filteredUsers.length) return <p className={`${styles.message}`}>No users found.</p>;
 
   return (
-    <div className="user-card-container">
-      {rankedUsers.map(user => (
-        <UserCard key={user._id || user.id || user.uuid} user={user} />
-      ))}
+    <div className={darkMode ? `${styles.darkMode}` : ''}>
+      <div className={`${styles.container}`}>
+        {filteredUsers.map(user => (
+          <div key={user._id} className={`${styles.userWrapper}`}>
+            <UserCard user={user} />
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
+
+RankedUserList.propTypes = {
+  selectedSkills: PropTypes.arrayOf(PropTypes.string),
+  selectedPreferences: PropTypes.arrayOf(PropTypes.string),
+  searchQuery: PropTypes.string,
+};
 
 export default RankedUserList;
