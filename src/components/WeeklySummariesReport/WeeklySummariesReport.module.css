@@ -586,6 +586,46 @@
   color: #fff !important;
 }
 
+.indicatorActionBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  margin: 0 4px;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  line-height: 1;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.indicatorActionBtn i {
+  margin: 0;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.saveIndicatorBtn {
+  background-color: #28a745;
+  color: white;
+}
+
+.saveIndicatorBtn:hover {
+  background-color: #218838;
+}
+
+.clearIndicatorBtn {
+  background-color: #dc3545;
+  color: white;
+}
+
+.clearIndicatorBtn:hover {
+  background-color: #c82333;
+}
+
 /* The search input field inside the dropdown */
 :global(.dark-mode) :global(.dropdown-search) {
   background-color: #3b4252 !important;
