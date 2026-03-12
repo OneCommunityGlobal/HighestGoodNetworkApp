@@ -1,8 +1,9 @@
 import React from 'react';
+import styles from './usermanagement.module.css';
 
 const NUMBER_OF_PAGE_LINK = 5;
 
-const UserTableFooter = React.memo(props => {
+const UserTableFooterComponent = (props) => {
   const { darkMode } = props;
   const onSelectPageSize = pageSize => {
     props.onSelectPageSize(parseInt(pageSize, 10));
@@ -13,7 +14,7 @@ const UserTableFooter = React.memo(props => {
   };
 
   return (
-    <div id="usermanagement-footer" className="row">
+    <div className={`row ${styles.userManagementFooter}`}>
       <PageSummaryLabel
         selectedPage={props.selectedPage}
         pageSize={props.pageSize}
@@ -56,12 +57,15 @@ const UserTableFooter = React.memo(props => {
       </div>
     </div>
   );
-});
+};
+
+const UserTableFooter = React.memo(UserTableFooterComponent);
+UserTableFooter.displayName = 'UserTableFooter';
 
 /**
  * The page size dropdown stateless component
  */
-const PageSizeDropDown = React.memo(props => {
+const PageSizeDropDownComponent = (props) => {
   return (
     <div className="col-md-2 col-sm-2 col-xs-2">
       <div className="pull-right">
@@ -81,12 +85,15 @@ const PageSizeDropDown = React.memo(props => {
       </div>
     </div>
   );
-});
+};
+
+const PageSizeDropDown = React.memo(PageSizeDropDownComponent);
+PageSizeDropDown.displayName = 'PageSizeDropDown';
 
 /**
  * Stateless component to display the page summary labels.
  */
-const PageSummaryLabel = React.memo(props => {
+const PageSummaryLabelComponent = (props) => {
   const firstUserOfPage = (props.selectedPage - 1) * props.pageSize + 1;
   const totalUsersFind = props.datacount;
   const lastUserOfPage = props.selectedPage * props.pageSize;
@@ -112,12 +119,15 @@ const PageSummaryLabel = React.memo(props => {
       {displayedUsers}
     </div>
   );
-});
+};
+
+const PageSummaryLabel = React.memo(PageSummaryLabelComponent);
+PageSummaryLabel.displayName = 'PageSummaryLabel';
 
 /**
  * Stateless component to display page links.
  */
-const PageLinks = React.memo(props => {
+const PageLinksComponent = (props) => {
   const onPageSelect = pageNo => {
     props.onPageSelect(pageNo);
     // change page on props
@@ -156,17 +166,20 @@ const PageLinks = React.memo(props => {
     pageCounter += 1;
   }
   return pageLinks;
-});
+};
+
+const PageLinks = React.memo(PageLinksComponent);
+PageLinks.displayName = 'PageLinks';
 
 /**
  * Single page lin item
  */
-const PageLinkItem = React.memo(props => {
+const PageLinkItemComponent = (props) => {
   return (
     <button
       type="button"
       style={{ fontWeight: props.isSelected ? 'bold' : 'normal' }}
-      className="page-no-link link-button"
+      className={`${styles.pageNoLink} ${styles.linkButton} ${styles.userManagementCellControl}`}
       onClick={e => {
         e.preventDefault();
         props.onPageSelect(props.pageNo);
@@ -176,6 +189,9 @@ const PageLinkItem = React.memo(props => {
       {props.pageNo}
     </button>
   );
-});
+};
+
+const PageLinkItem = React.memo(PageLinkItemComponent);
+PageLinkItem.displayName = 'PageLinkItem';
 
 export default UserTableFooter;

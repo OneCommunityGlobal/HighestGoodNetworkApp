@@ -1,62 +1,61 @@
 import { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, connect } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-regular-svg-icons';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
-import { connect } from 'react-redux';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
-import { boxStyle, boxStyleDark } from 'styles';
-import { getPresetsByRole, createNewPreset } from 'actions/rolePermissionPresets';
+import { boxStyle, boxStyleDark } from '~/styles';
+import { getPresetsByRole, createNewPreset } from '~/actions/rolePermissionPresets';
 import PermissionsPresetsModal from './PermissionsPresetsModal';
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import { updateRole, getAllRoles } from '../../actions/role';
 import PermissionList from './PermissionList';
 import permissionLabel from './PermissionsConst';
 import hasPermission from '../../utils/permissions';
-import './RolePermissions.css';
-// import { roleOperationLabels } from './PermissionsConst';
+import styles from './RolePermissions.module.css';
 
 function RolePermissions(props) {
   const { darkMode } = props;
+
   const [permissions, setPermissions] = useState(props.permissions);
   const [deleteRoleModal, setDeleteRoleModal] = useState(false);
   const [editRoleNameModal, setEditRoleNameModal] = useState(false);
   const [roleName, setRoleName] = useState('');
   const [changed, setChanged] = useState(false);
   const [disabled, setDisabled] = useState(true);
-  const history = useHistory();
   const [showPresetModal, setShowPresetModal] = useState(false);
 
+  const history = useHistory();
   const userProfile = useSelector(state => state.userProfile);
 
   const [infoRoleModal, setinfoRoleModal] = useState(false);
   const [modalContent, setContent] = useState(null);
 
+  const boxStyling = darkMode ? boxStyleDark : boxStyle;
+
   const handleModalOpen = description => {
     let content = '';
     if (description === 'save') {
       content = (
-        <div>
+        <div className={styles.modalInfoContent}>
           <p>Here you can create new presets and save your changes</p>
           <ul>
             <li>
-              {' '}
-              <b> Create New Presets: </b> Click this button to save the current settings as a new
-              preset that can be accessed with the “Load Presets” button.{' '}
+              <b>Create New Presets:</b> Click this button to save the current settings as a new
+              preset that can be accessed with the “Load Presets” button.
             </li>
             <li>
-              {' '}
-              <b> Save: </b> Click this button to save any changes you’ve made.{' '}
+              <b>Save:</b> Click this button to save any changes you’ve made.
             </li>
           </ul>
         </div>
       );
     } else if (description === 'delete') {
       content = (
-        <div>
+        <div className={styles.modalInfoContent}>
           <p>Here you can load saved presets and delete the current role.</p>
           <ul>
             <li>
@@ -76,52 +75,38 @@ function RolePermissions(props) {
     setinfoRoleModal(true);
   };
 
-  const toggleInfoRoleModal = () => {
-    setinfoRoleModal(!infoRoleModal);
-  };
+  const toggleInfoRoleModal = () => setinfoRoleModal(prev => !prev);
+  const toggleDeleteRoleModal = () => setDeleteRoleModal(prev => !prev);
+  const toggleEditRoleNameModal = () => setEditRoleNameModal(prev => !prev);
 
   const isEditableRole =
     props.role === 'Owner'
       ? props.hasPermission('addDeleteEditOwners')
       : props.auth.user.role !== props.role;
+
   const canEditRole = isEditableRole && props.hasPermission('putRole');
   const canDeleteRole = isEditableRole && props.hasPermission('deleteRole');
 
   useEffect(() => {
     setRoleName(props.role);
     props.getPresets(props.role);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     setPermissions(props.permissions);
-  }, [props.roles]);
-
-  const toggleDeleteRoleModal = () => {
-    setDeleteRoleModal(!deleteRoleModal);
-  };
-
-  const toggleEditRoleNameModal = () => {
-    setEditRoleNameModal(!editRoleNameModal);
-  };
-
-  const handleChangeRoleName = e => {
-    setRoleName(e.target.value);
-  };
+  }, [props.roles, props.permissions]);
 
   useEffect(() => {
-    if (roleName !== props.role) {
-      setDisabled(false);
-    } else {
-      setDisabled(true);
-    }
-  }, [roleName]);
+    setDisabled(roleName === props.role);
+  }, [roleName, props.role]);
+
+  const handleChangeRoleName = e => setRoleName(e.target.value);
 
   const handleSaveNewPreset = async () => {
     let count = 1;
-    // eslint-disable-next-line no-loop-func
-    while (props.presets.some(preset => preset.presetName === `New Preset ${count}`)) {
-      count += 1;
-    }
+    while (props.presets.some(preset => preset.presetName === `New Preset ${count}`)) count += 1;
+
     const newPreset = {
       presetName: `New Preset ${count}`,
       roleName: props.role,
@@ -129,32 +114,15 @@ function RolePermissions(props) {
     };
 
     const status = await props.createNewPreset(newPreset);
-    if (status === 0) {
-      toast.success(`Preset created successfully`);
-    } else {
-      toast.error(`Error creating preset`);
-    }
+    if (status === 0) toast.success('Preset created successfully');
+    else toast.error('Error creating preset');
   };
-
-  // const handleModalOpen = value => {
-  //   if (value === 'save') {
-  //     setShowRoleSaveOperationModal(true);
-  //   } else if (value === 'delete') {
-  //     setShowRoleDelteOperationModal(true);
-  //   } else {
-  //     setShowRoleSaveOperationModal(false);
-  //     setShowRoleDelteOperationModal(false);
-  //   }
-  // };
 
   const updateInfo = async () => {
     const id = props.roleId;
 
-    const updatedRole = {
-      roleName,
-      permissions,
-      roleId: id,
-    };
+    const updatedRole = { roleName, permissions, roleId: id };
+
     try {
       delete userProfile.permissions; // prevent overriding 'permissions' key-value pair
       await props.updateRole(id, { ...updatedRole, ...userProfile });
@@ -172,103 +140,104 @@ function RolePermissions(props) {
       await axios.delete(URL);
       history.push('/permissionsmanagement');
     } catch (error) {
-      // console.log(error.message);
+      // ignore
     }
   };
 
-  const boxStyling = darkMode ? boxStyleDark : boxStyle;
-
   return (
-    <>
-      {changed ? (
-        <Alert color="warning" className="user-role-tab__alert ">
+    <div className={styles.wrapper}>
+      {changed && (
+        <Alert color="warning" className={styles.unsavedAlert}>
           You have unsaved changes! Please click <strong>Save</strong> button to save changes!
         </Alert>
-      ) : null}
-      <header>
-        <div className="user-role-tab__name-container">
-          <div className="name-container__role-name">
-            <h1 className="user-role-tab__h1">Role Name: {roleName}</h1>
+      )}
+
+      <header className={styles.header}>
+        <div className={styles.nameContainer}>
+          <div className={styles.titleRow}>
+            <h1 className={styles.title} style={darkMode ? { color: '#fff' } : undefined}>
+              Role Name: {roleName}
+            </h1>
+
             {canEditRole && (
-              <FontAwesomeIcon
-                icon={faEdit}
-                size="lg"
-                className={`user-role-tab__icon edit-icon ${darkMode ? 'text-light' : ''}`}
+              <button
+                type="button"
+                className={styles.editIconBtn}
                 onClick={toggleEditRoleNameModal}
-              />
+                aria-label="Edit role name"
+                data-testid="edit-role-icon"
+              >
+                <FontAwesomeIcon icon={faEdit} size="lg" />
+              </button>
             )}
           </div>
+
           {canEditRole && (
-            <div style={{ flexDirection: 'row', display: 'flex' }}>
-              <div className="name-container__btn_columns">
-                <div className="name-container__btns">
+            <div className={styles.actionsRow}>
+              <div className={styles.actions}>
+                <Button
+                  className={styles.actionBtn}
+                  color="success"
+                  onClick={handleSaveNewPreset}
+                  style={boxStyling}
+                >
+                  Create New Preset
+                </Button>
+
+                <Button
+                  className={styles.actionBtn}
+                  color="primary"
+                  onClick={() => setShowPresetModal(true)}
+                  style={boxStyling}
+                >
+                  Load Presets
+                </Button>
+
+                <div className={styles.btnWithInfo}>
                   <Button
-                    className="btn_save responsive-font-size"
+                    className={styles.actionBtn}
                     color="success"
-                    onClick={handleSaveNewPreset}
+                    onClick={updateInfo}
                     style={boxStyling}
                   >
-                    Create New Preset
+                    Save
                   </Button>
-                  <Button
-                    className="responsive-font-size btn_save"
-                    color="primary"
-                    onClick={() => {
-                      setShowPresetModal(!showPresetModal);
-                    }}
-                    style={boxStyling}
+
+                  <button
+                    type="button"
+                    className={styles.infoIconBtn}
+                    aria-label="Info about saving and presets"
+                    onClick={() => handleModalOpen('save')}
                   >
-                    Load Presets
-                  </Button>
+                    <i className="fa fa-info-circle" aria-hidden="true" />
+                  </button>
                 </div>
-                <div className="name-container__btns">
-                  <div>
-                    <Button
-                      className="btn_save responsive-font-size mr-2"
-                      color="success"
-                      onClick={() => updateInfo()}
-                      style={boxStyling}
-                    >
-                      Save
-                    </Button>
-                    <i
-                      data-toggle="tooltip"
-                      data-placement="center"
-                      title="Click for information about this"
-                      aria-hidden="true"
-                      className="fa fa-info-circle"
-                      onClick={() => {
-                        // eslint-disable-next-line no-undef
-                        handleModalOpen('save');
-                      }}
-                    />
-                  </div>
-                  <div>
-                    <Button
-                      className="responsive-font-size btn_save mr-2"
-                      color="danger"
-                      onClick={toggleDeleteRoleModal}
-                      style={boxStyling}
-                      disabled={!canDeleteRole}
-                    >
-                      Delete Role
-                    </Button>
-                    <i
-                      data-toggle="tooltip"
-                      data-placement="center"
-                      title="Click for information about this"
-                      aria-hidden="true"
-                      className="fa fa-info-circle mt-2"
-                      onClick={() => {
-                        // eslint-disable-next-line no-undef
-                        handleModalOpen('delete');
-                      }}
-                    />
-                  </div>
+
+                <div className={`${styles.btnWithInfo} ${styles.dangerGroup}`}>
+                  <Button
+                    className={styles.actionBtn}
+                    color="danger"
+                    onClick={toggleDeleteRoleModal}
+                    style={boxStyling}
+                    disabled={!canDeleteRole}
+                  >
+                    Delete Role
+                  </Button>
+
+                  <button
+                    type="button"
+                    className={styles.infoIconBtn}
+                    aria-label="Info about deleting roles"
+                    onClick={() => handleModalOpen('delete')}
+                  >
+                    <i className="fa fa-info-circle" aria-hidden="true" />
+                  </button>
                 </div>
               </div>
             </div>
           )}
+
+          {/* Edit Role Name Modal */}
           <Modal
             className={darkMode ? 'dark-mode text-light' : ''}
             isOpen={editRoleNameModal}
@@ -305,33 +274,30 @@ function RolePermissions(props) {
             </ModalFooter>
           </Modal>
         </div>
-        <h2 className="user-role-tab__h2">Permission List</h2>
+
+        <h2 className={styles.permissionListTitle}>Permission List</h2>
       </header>
-      <ul className="user-role-tab__permissionList">
+
+      <div className={styles.permissionList}>
         <PermissionList
           rolePermissions={permissions}
           permissionsList={permissionLabel}
           editable={canEditRole}
           setPermissions={setPermissions}
-          onChange={() => {
-            setChanged(true);
-          }}
+          onChange={() => setChanged(true)}
           darkMode={darkMode}
         />
-      </ul>
+      </div>
 
+      {/* Delete Role Modal */}
       <Modal
         className={darkMode ? 'dark-mode text-light' : ''}
         isOpen={deleteRoleModal}
         toggle={toggleDeleteRoleModal}
       >
         <ModalHeader className={darkMode ? 'bg-space-cadet' : ''}>
-          <FontAwesomeIcon
-            icon={faExclamationTriangle}
-            size="lg"
-            className="user-role-tab__icon warning-icon"
-          />
-          Delete {roleName} Role
+          <FontAwesomeIcon icon={faExclamationTriangle} size="lg" className={styles.warningIcon} />
+          <span className={styles.deleteTitle}>Delete {roleName} Role</span>
         </ModalHeader>
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           Are you sure you want to delete <strong>{roleName}</strong> role?
@@ -340,25 +306,22 @@ function RolePermissions(props) {
           <Button onClick={toggleDeleteRoleModal} style={boxStyling}>
             Cancel
           </Button>
-          <Button color="danger" onClick={() => deleteRole()} style={boxStyling}>
+          <Button color="danger" onClick={deleteRole} style={boxStyling}>
             Delete
           </Button>
         </ModalFooter>
       </Modal>
 
+      {/* Presets Modal */}
       <Modal
         isOpen={showPresetModal}
-        toggle={() => {
-          setShowPresetModal(previous => !previous);
-        }}
+        toggle={() => setShowPresetModal(prev => !prev)}
         id="modal-content__new-role"
         className={darkMode ? 'dark-mode text-light' : ''}
       >
         <ModalHeader
           className={darkMode ? 'bg-space-cadet' : ''}
-          toggle={() => {
-            setShowPresetModal(previous => !previous);
-          }}
+          toggle={() => setShowPresetModal(prev => !prev)}
           cssModule={{ 'modal-title': 'w-100 text-center my-auto' }}
         >
           Role Presets
@@ -371,22 +334,23 @@ function RolePermissions(props) {
           />
         </ModalBody>
       </Modal>
+
+      {/* Info Modal */}
       <Modal
         isOpen={infoRoleModal}
         toggle={toggleInfoRoleModal}
-        id="#modal2-body_new-role--padding"
+        id="modal2-body_new-role--padding"
         className={darkMode ? 'text-light dark-mode' : ''}
       >
         <ModalHeader toggle={toggleInfoRoleModal}>Role Info</ModalHeader>
         <ModalBody>{modalContent}</ModalBody>
         <ModalFooter>
-          <Button onClick={toggleInfoRoleModal} color="secondary" className="float-left">
-            {' '}
-            Ok{' '}
+          <Button onClick={toggleInfoRoleModal} color="secondary">
+            Ok
           </Button>
         </ModalFooter>
       </Modal>
-    </>
+    </div>
   );
 }
 

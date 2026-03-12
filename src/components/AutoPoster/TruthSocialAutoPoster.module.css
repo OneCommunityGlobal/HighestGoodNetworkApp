@@ -1,0 +1,941 @@
+/* TruthSocialAutoPoster.module.css */
+
+.container {
+  max-width: 100%;
+  padding: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.darkMode {
+  background-color: #1a1a2e;
+  color: #e0e0e0;
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.truthIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, #e63946, #d62839);
+  color: white;
+  border-radius: 6px;
+  font-weight: 800;
+  font-size: 18px;
+}
+
+.connectionBadge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.statusDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #9ca3af;
+}
+
+.statusDot.success {
+  background-color: #10b981;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.darkMode .tabs {
+  border-bottom-color: #374151;
+}
+
+.tab {
+  padding: 10px 16px;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+
+.tab:hover {
+  color: #374151;
+}
+
+.activeTab {
+  color: #e63946;
+  border-bottom-color: #e63946;
+}
+
+.darkMode .tab:hover {
+  color: #e0e0e0;
+}
+
+.darkMode .activeTab {
+  color: #e63946;
+}
+
+/* Content */
+.content {
+  min-height: 300px;
+}
+
+/* Field Groups */
+.fieldGroup {
+  margin-bottom: 16px;
+}
+
+.fieldLabel {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 6px;
+}
+
+.darkMode .fieldLabel {
+  color: #d0d0d0;
+}
+
+/* Inputs */
+.textInput,
+.selectInput {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.textInput:focus,
+.selectInput:focus {
+  outline: none;
+  border-color: #e63946;
+}
+
+.darkMode .textInput,
+.darkMode .selectInput {
+  background-color: #2d2d44;
+  border-color: #374151;
+  color: #e0e0e0;
+}
+
+.contentInput {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  resize: vertical;
+  min-height: 120px;
+  box-sizing: border-box;
+}
+
+.contentInput:focus {
+  outline: none;
+  border-color: #e63946;
+}
+
+.darkMode .contentInput {
+  background-color: #2d2d44;
+  border-color: #374151;
+  color: #e0e0e0;
+}
+
+.charCount {
+  text-align: right;
+  font-size: 12px;
+  color: #10b981;
+  margin-top: 4px;
+}
+
+/* Row Group */
+.rowGroup {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.rowGroup .fieldGroup {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+/* Schedule Row */
+.scheduleRow {
+  display: flex;
+  gap: 12px;
+}
+
+.dateInput,
+.timeInput {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.dateInput:focus,
+.timeInput:focus {
+  outline: none;
+  border-color: #e63946;
+}
+
+.darkMode .dateInput,
+.darkMode .timeInput {
+  background-color: #2d2d44;
+  border-color: #374151;
+  color: #e0e0e0;
+}
+
+/* Image Upload */
+.imageUploadWrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.imageUploadLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background-color: #f3f4f6;
+  border: 1px dashed #d1d5db;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.imageUploadLabel:hover {
+  background-color: #e5e7eb;
+}
+
+.darkMode .imageUploadLabel {
+  background-color: #2d2d44;
+  border-color: #374151;
+  color: #a0a0a0;
+}
+
+.imageInput {
+  display: none;
+}
+
+.imageSizeHint {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.imagePreviewContainer {
+  position: relative;
+  display: inline-block;
+}
+
+.imagePreview {
+  max-width: 150px;
+  max-height: 100px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.removeImageBtn {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 20px;
+  height: 20px;
+  border: none;
+  background-color: #ef4444;
+  color: white;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.altTextInput {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  padding: 8px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 13px;
+  box-sizing: border-box;
+}
+
+.altTextInput:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+.darkMode .altTextInput {
+  background-color: #2d2d44;
+  border-color: #374151;
+  color: #e0e0e0;
+}
+
+/* Action Buttons */
+.actionButtonsRow {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.postNowBtn {
+  padding: 10px 20px;
+  background-color: #10b981;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.postNowBtn:hover:not(:disabled) {
+  background-color: #059669;
+}
+
+.postNowBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.scheduleBtn {
+  padding: 10px 20px;
+  background-color: #10b981;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.scheduleBtn:hover:not(:disabled) {
+  background-color: #059669;
+}
+
+.scheduleBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Cross Post */
+.crossPostWrapper {
+  position: relative;
+}
+
+.crossPostBtn {
+  padding: 10px 16px;
+  background-color: #6b7280;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.crossPostBtn:hover {
+  background-color: #4b5563;
+}
+
+.crossPostDropdown {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  margin-bottom: 4px;
+  background-color: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+  min-width: 150px;
+}
+
+.darkMode .crossPostDropdown {
+  background-color: #2d2d44;
+  border-color: #374151;
+}
+
+.crossPostOption {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.crossPostOption:hover {
+  background-color: #f3f4f6;
+}
+
+.darkMode .crossPostOption:hover {
+  background-color: #374151;
+}
+
+/* Posts List */
+.postsList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.postCard {
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 14px;
+}
+
+.darkMode .postCard {
+  background-color: #2d2d44;
+  border-color: #374151;
+}
+
+.postSubject {
+  font-weight: 600;
+  font-size: 15px;
+  margin-bottom: 6px;
+}
+
+.postContent {
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 10px;
+  word-wrap: break-word;
+}
+
+.postImage {
+  max-width: 100%;
+  max-height: 150px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+}
+
+.postMeta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 10px;
+}
+
+.visibilityBadge {
+  padding: 2px 8px;
+  background-color: #e5e7eb;
+  border-radius: 4px;
+  font-size: 12px;
+  text-transform: capitalize;
+}
+
+.darkMode .visibilityBadge {
+  background-color: #374151;
+}
+
+.postActions {
+  display: flex;
+  gap: 8px;
+}
+
+.postNowSmallBtn,
+.editBtn,
+.deleteBtn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.postNowSmallBtn {
+  background-color: #10b981;
+  color: white;
+}
+
+.postNowSmallBtn:hover:not(:disabled) {
+  background-color: #059669;
+}
+
+.postNowSmallBtn:disabled {
+  opacity: 0.5;
+}
+
+.editBtn {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.editBtn:hover {
+  background-color: #2563eb;
+}
+
+.deleteBtn {
+  background-color: #ef4444;
+  color: white;
+}
+
+.deleteBtn:hover {
+  background-color: #dc2626;
+}
+
+/* Empty & Loading States */
+.loading,
+.emptyState {
+  text-align: center;
+  padding: 40px 20px;
+  color: #6b7280;
+}
+
+.emptyIcon {
+  font-size: 48px;
+  margin-bottom: 12px;
+}
+
+/* Schedule Note */
+.scheduleNote {
+  margin-top: 8px;
+  padding: 10px 12px;
+  background-color: #fef3c7;
+  border: 1px solid #f59e0b;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #92400e;
+  line-height: 1.4;
+}
+
+.darkMode .scheduleNote {
+  background-color: rgba(245, 158, 11, 0.15);
+  border-color: #f59e0b;
+  color: #fbbf24;
+}
+
+/* Scheduled Tab Note */
+.scheduledNote {
+  margin-bottom: 16px;
+  padding: 12px 14px;
+  background-color: #fef3c7;
+  border: 1px solid #f59e0b;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #92400e;
+  line-height: 1.4;
+}
+
+.darkMode .scheduledNote {
+  background-color: rgba(245, 158, 11, 0.15);
+  border-color: #f59e0b;
+  color: #fbbf24;
+}
+
+/* Settings */
+.settingsSection {
+  max-width: 500px;
+}
+
+.settingsCard {
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.darkMode .settingsCard {
+  background-color: #2d2d44;
+  border-color: #374151;
+}
+
+.settingsTitle {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+}
+
+.settingsDescription {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0 0 16px 0;
+}
+
+.tokenInputWrapper {
+  display: flex;
+  gap: 8px;
+}
+
+.tokenInputWrapper .textInput {
+  flex: 1;
+}
+
+.toggleTokenBtn {
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.darkMode .toggleTokenBtn {
+  background-color: #374151;
+  border-color: #4b5563;
+}
+
+.saveBtn {
+  width: 100%;
+  margin-top: 12px;
+  padding: 10px 20px;
+  background-color: #e63946;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.saveBtn:hover:not(:disabled) {
+  background-color: #d62839;
+}
+
+.saveBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.loggedInState {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.successMessage {
+  color: #10b981;
+  font-weight: 500;
+}
+
+.logoutBtn {
+  padding: 8px 16px;
+  background-color: #6b7280;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.logoutBtn:hover {
+  background-color: #4b5563;
+}
+
+/* Confirmation Modal */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+
+.modalContent {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 24px;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.darkMode .modalContent {
+  background-color: #1a1a2e;
+  border: 1px solid #374151;
+}
+
+.modalTitle {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 12px 0;
+}
+
+.modalMessage {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0 0 20px 0;
+}
+
+.modalActions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.modalCancelBtn {
+  padding: 10px 18px;
+  border: 1px solid #d1d5db;
+  background-color: transparent;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.modalCancelBtn:hover {
+  background-color: #f3f4f6;
+}
+
+.darkMode .modalCancelBtn {
+  border-color: #374151;
+  color: #e0e0e0;
+}
+
+.darkMode .modalCancelBtn:hover {
+  background-color: #374151;
+}
+
+.modalConfirmBtn {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: white;
+  cursor: pointer;
+}
+
+.confirmBtnPrimary {
+  background-color: #3b82f6;
+}
+
+.confirmBtnPrimary:hover {
+  background-color: #2563eb;
+}
+
+.confirmBtnDanger {
+  background-color: #ef4444;
+}
+
+.confirmBtnDanger:hover {
+  background-color: #dc2626;
+}
+
+.confirmBtnSuccess {
+  background-color: #10b981;
+}
+
+.confirmBtnSuccess:hover {
+  background-color: #059669;
+}
+
+/* Edit Modal */
+.editModalContent {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 24px;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.darkMode .editModalContent {
+  background-color: #1a1a2e;
+  border: 1px solid #374151;
+}
+
+.editModalTitle {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 20px 0;
+}
+
+.editFieldGroup {
+  margin-bottom: 16px;
+}
+
+.editFieldLabel {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+.editInput {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.editInput:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+.darkMode .editInput {
+  background-color: #2d2d44;
+  border-color: #374151;
+  color: #e0e0e0;
+}
+
+.editTextarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  resize: vertical;
+  min-height: 100px;
+  box-sizing: border-box;
+}
+
+.editTextarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+.darkMode .editTextarea {
+  background-color: #2d2d44;
+  border-color: #374151;
+  color: #e0e0e0;
+}
+
+.editSelect {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.editSelect:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+.darkMode .editSelect {
+  background-color: #2d2d44;
+  border-color: #374151;
+  color: #e0e0e0;
+}
+
+.editRow {
+  display: flex;
+  gap: 16px;
+}
+
+.editRow .editFieldGroup {
+  flex: 1;
+}
+
+.editModalActions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.editCancelBtn {
+  padding: 10px 18px;
+  border: 1px solid #d1d5db;
+  background-color: transparent;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.editCancelBtn:hover {
+  background-color: #f3f4f6;
+}
+
+.darkMode .editCancelBtn {
+  border-color: #374151;
+  color: #e0e0e0;
+}
+
+.editSaveBtn {
+  padding: 10px 18px;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.editSaveBtn:hover {
+  background-color: #2563eb;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .rowGroup {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .scheduleRow {
+    flex-direction: column;
+  }
+
+  .actionButtonsRow {
+    flex-direction: column;
+  }
+
+  .actionButtonsRow button {
+    width: 100%;
+  }
+
+  .editRow {
+    flex-direction: column;
+  }
+  .visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+}

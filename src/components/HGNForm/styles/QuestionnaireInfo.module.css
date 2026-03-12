@@ -1,0 +1,144 @@
+.questionnaireInfo {
+  width: 50%;
+  margin: 10px auto;
+  border: 1px solid #c0c0c0;
+  border-radius: 15px;
+  background-color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Dark mode container */
+.darkContainer {
+  background-color: #1c2541;
+  border-color: #3a506b;
+  color: #fff;
+}
+
+.questionnaireInfo h1 {
+  text-align: left;
+  margin-bottom: 20px;
+  margin-left: 30px;
+  margin-right: 30px;
+  font-weight: 400;
+}
+
+.darkContainer h1 {
+  color: #93c5fd;
+}
+
+.questionnaireInfo p {
+  line-height: 1.2;
+  text-align: left;
+  margin-left: 30px;
+  margin-right: 30px;
+  margin-bottom: 0;
+  color: #555;
+}
+
+.darkContainer p {
+  color: #b3bfca;
+}
+
+.darkContainer ol,
+.darkContainer li {
+  color: #f3f6fa;
+}
+
+/* Dark mode list marker accent for better distinction */
+.darkContainer li::marker {
+  color: #78a5c4;
+}
+
+.questionnaireInfo ol {
+  text-align: left;
+  padding-left: 20px;
+  margin: 0 30px;
+}
+
+.questionnaireInfo hr {
+  border: none;
+  border-top: 2px solid #ddd;
+  margin: 10px 0;
+}
+
+/* Dark mode divider */
+.darkContainer hr {
+  border-top-color: #3a506b;
+}
+
+.blueStrip {
+  height: 20px;
+  background-color: #5082a7;
+  width: 100%;
+  margin-top: 0;
+  margin-bottom: 10px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+/* Dark mode strip */
+.darkStrip {
+  background-color: #3a506b;
+}
+
+.editLink {
+  cursor: pointer;
+  color: #2a31fc;
+  text-decoration: underline;
+  margin: 30px;
+}
+
+
+
+@media (max-width: 768px) {
+  .questionnaireInfo {
+    width: 80%;
+    margin: 10px auto;
+  }
+
+  .questionnaireInfo h1,
+  .questionnaireInfo p,
+  .questionnaireInfo ol {
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+
+  .blueStrip {
+    height: 15px;
+  }
+
+  .editLink {
+    margin: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .questionnaireInfo {
+    width: 90%;
+  }
+
+  .questionnaireInfo h1 {
+    font-size: 1.2rem;
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+
+  .questionnaireInfo p {
+    font-size: 0.9rem;
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+
+  .questionnaireInfo ol {
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+
+  .blueStrip {
+    height: 12px;
+  }
+
+  .editLink {
+    margin: 10px;
+  }
+}

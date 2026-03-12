@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Form, FormGroup, Label, Input, Button } from 'reactstrap';
-import DragAndDrop from 'components/common/DragAndDrop/DragAndDrop';
+import DragAndDrop from '~/components/common/DragAndDrop/DragAndDrop';
 import PhoneInput from 'react-phone-input-2';
 import { toast } from 'react-toastify';
 
 import { useDispatch, useSelector } from 'react-redux';
-import Joi from 'joi';
-import { boxStyle } from 'styles';
-import './AddActivityForm.css';
+import Joi from 'joi-browser';
+import { boxStyle } from '~/styles';
+import styles from './AddActivityForm.module.css';
 
 import {
   fetchToolTypes,
@@ -176,10 +176,10 @@ export default function AddToolForm() {
   };
 
   return (
-    <Form className="add-tool-form container" onSubmit={handleSubmit}>
+    <Form className={`${styles.addToolForm} container`} onSubmit={handleSubmit}>
       <FormGroup>
         <Label for="tool">
-          Tool name <span className="field-required">*</span>
+          Tool name <span className={`${styles.fieldRequired}`}>*</span>
         </Label>
         <Input
           id="tool"
@@ -190,7 +190,7 @@ export default function AddToolForm() {
           onChange={event => handleInputChange('name', event.target.value)}
         />
         {errors.name && (
-          <Label for="toolNameErr" sm={12} className="toolFormError">
+          <Label for="toolNameErr" sm={12} className={`${styles.toolFormError}`}>
             {/* Tool &quot;name&quot; length must be at least 4 characters that are not space. */}
             {errors.name}
           </Label>
@@ -198,7 +198,7 @@ export default function AddToolForm() {
       </FormGroup>
       <FormGroup>
         <Label for="invoice-number">
-          Invoice Number or ID <span className="field-required">*</span>
+          Invoice Number or ID <span className={`${styles.fieldRequired}`}>*</span>
         </Label>
         <Input
           id="invoice-number"
@@ -209,15 +209,15 @@ export default function AddToolForm() {
           onChange={event => handleInputChange('invoice', event.target.value)}
         />
         {errors.invoice && (
-          <Label for="toolInvoiceErr" sm={12} className="toolFormError">
+          <Label for="toolInvoiceErr" sm={12} className={`${styles.toolFormError}`}>
             {errors.invoice}
           </Label>
         )}
       </FormGroup>
-      <div className="add-tool-flex-group">
+      <div className={`${styles.addToolFlexGroup}`}>
         <FormGroup>
           <Label for="unit-price">
-            Unit Price (excl.taxes & shipping) <span className="field-required">*</span>
+            Unit Price (excl.taxes & shipping) <span className={`${styles.fieldRequired}`}>*</span>
           </Label>
           <Input
             id="unit-price"
@@ -227,7 +227,7 @@ export default function AddToolForm() {
             onChange={event => handleInputChange('unitPrice', event.target.value)}
           />
           {errors.unitPrice && (
-            <Label for="toolUnitPriceErr" sm={12} className="toolFormError">
+            <Label for="toolUnitPriceErr" sm={12} className={`${styles.toolFormError}`}>
               {errors.unitPrice}
             </Label>
           )}
@@ -248,7 +248,7 @@ export default function AddToolForm() {
         </FormGroup>
         <FormGroup>
           <Label for="quantity">
-            Total quantity <span className="field-required">*</span>
+            Total quantity <span className={`${styles.fieldRequired}`}>*</span>
           </Label>
           <Input
             id="quantity"
@@ -258,13 +258,13 @@ export default function AddToolForm() {
             onChange={event => handleInputChange('quantity', event.target.value)}
           />
           {errors.quantity && (
-            <Label for="toolQuantityErr" sm={12} className="toolFormError">
+            <Label for="toolQuantityErr" sm={12} className={`${styles.toolFormError}`}>
               {errors.quantity}
             </Label>
           )}
         </FormGroup>
       </div>
-      <div className="add-tool-flex-group">
+      <div className={`${styles.addToolFlexGroup}`}>
         <FormGroup>
           <Label for="purchase-rental">Purchase or Rental</Label>
           <Input
@@ -292,10 +292,10 @@ export default function AddToolForm() {
           </Input>
         </FormGroup>
       </div>
-      <div className="add-tool-flex-group">
+      <div className={`${styles.addToolFlexGroup}`}>
         <FormGroup>
           <Label for="from-date">
-            Purchase/Rental Date <span className="field-required">*</span>
+            Purchase/Rental Date <span className={`${styles.fieldRequired}`}>*</span>
           </Label>
           <Input
             id="from-date"
@@ -305,7 +305,7 @@ export default function AddToolForm() {
             onChange={event => handleInputChange('fromDate', event.target.value)}
           />
           {errors.fromDate && (
-            <Label for="fromDateErr" sm={12} className="toolFormError">
+            <Label for="fromDateErr" sm={12} className={`${styles.toolFormError}`}>
               Enter Date
             </Label>
           )}
@@ -321,13 +321,13 @@ export default function AddToolForm() {
             disabled={isPurchased}
           />
           {errors.toDate && (
-            <Label for="toDateErr" sm={12} className="toolFormError">
+            <Label for="toDateErr" sm={12} className={`${styles.toolFormError}`}>
               Return Date must be after Rental Date
             </Label>
           )}
         </FormGroup>
       </div>
-      <div className="add-tool-flex-group">
+      <div className={`${styles.addToolFlexGroup}`}>
         <FormGroup>
           <Label for="shipping-fee">Shipping Fee excluding taxes (enter 0 if free)</Label>
           <Input
@@ -370,7 +370,7 @@ export default function AddToolForm() {
           updateUploadedFiles={setUploadedFiles}
         />
         {uploadedFiles.length > 0 && (
-          <div className="file-preview-container">
+          <div className={`${styles.filePreviewContainer}`}>
             {uploadedFiles.map((file, index) => (
               <div key={`${file.name} - ${file.lastModified}`} className="file-preview">
                 <img src={URL.createObjectURL(file)} alt={`preview-${index}`} />
@@ -396,7 +396,7 @@ export default function AddToolForm() {
       </FormGroup>
       <FormGroup>
         <Label for="description">
-          Tool/Equipment Description <span className="field-required">*</span>
+          Tool/Equipment Description <span className={`${styles.fieldRequired}`}>*</span>
         </Label>
         <Input
           type="textarea"
@@ -407,15 +407,15 @@ export default function AddToolForm() {
           onChange={event => handleInputChange('description', event.target.value)}
         />
         {errors.description && (
-          <Label for="toolDescriptionErr" sm={12} className="toolFormError">
+          <Label for="toolDescriptionErr" sm={12} className={`${styles.toolFormError}`}>
             {/* Tool &quot;description&quot; length must be at least 4 characters that are not space. */}
             {errors.description}
           </Label>
         )}
       </FormGroup>
-      <div className="add-tool-total-price">
+      <div className={`${styles.addToolTotalPrice}`}>
         <div>Total Price</div>
-        <div className="total-price-calculated">
+        <div className={`${styles.totalPriceCalculated}`}>
           {totalPriceWithShipping} {formData.currency}
         </div>
       </div>
@@ -426,8 +426,10 @@ export default function AddToolForm() {
           errors.quantity ||
           errors.unitPrice ||
           errors.toDate ||
-          errors.fromDate) && <div className="toolFormError"> Missing Required Field </div>}
-      <div className="add-tool-buttons">
+          errors.fromDate) && (
+          <div className={`${styles.toolFormError}`}> Missing Required Field </div>
+        )}
+      <div className={`${styles.addToolButtons}`}>
         <Button outline style={boxStyle} onClick={handleCancelClick}>
           Cancel
         </Button>

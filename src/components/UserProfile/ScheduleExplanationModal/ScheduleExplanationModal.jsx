@@ -1,5 +1,5 @@
 import { Button, Container, Row, Col, Modal } from 'react-bootstrap';
-import { boxStyle } from 'styles';
+import { boxStyle } from '~/styles';
 import moment from 'moment-timezone';
 
 function SchedulerExplanationModal({
