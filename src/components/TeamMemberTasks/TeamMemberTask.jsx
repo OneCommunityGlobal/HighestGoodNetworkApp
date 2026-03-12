@@ -314,7 +314,6 @@ const TeamMemberTask = React.memo(
                                 style={{
                                   fontSize: 24,
                                   cursor: 'pointer',
-                                  marginLeft: 6,
                                   color: darkMode ? 'lightgray' : 'black',
                                 }}
                                 title="Click to see user's timelog"
@@ -325,7 +324,6 @@ const TeamMemberTask = React.memo(
                                 fontSize: 16,
                                 cursor: 'pointer',
                                 color: darkMode ? 'lightgray' : 'black',
-                                marginLeft: 6,
                                 paddingTop: 15,
                               }}
                               title="Number of weeks this person has completed, based on the total weekly summaries they’ve submitted."
@@ -336,7 +334,11 @@ const TeamMemberTask = React.memo(
                           {user.role !== 'Volunteer' && (
                             <div
                               className="user-role"
-                              style={{ fontSize: '14px', color: darkMode ? 'lightgray' : 'gray' }}
+                              style={{
+                                fontSize: '14px',
+                                color: darkMode ? 'lightgray' : 'gray',
+                                textAlign: 'center',
+                              }}
                             >
                               {user.role}
                             </div>
@@ -499,6 +501,12 @@ const TeamMemberTask = React.memo(
                           </td>
                           <td
                             data-label="Time"
+                            style={{
+                              textAlign: 'center',
+                              verticalAlign: 'middle',
+                              width: '50%',
+                              whiteSpace: 'nowrap',
+                            }}
                             className={`${styles['team-clocks']} ${darkMode ? 'text-light' : ''}`}
                           >
                             <u className={darkMode ? styles['dashboard-team-clocks'] : ''}>
