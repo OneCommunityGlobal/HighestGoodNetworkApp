@@ -51,7 +51,6 @@ const TeamMemberTask = React.memo(
     displayUser,
   }) => {
     const darkMode = useSelector(state => state.theme.darkMode);
-    const auth = useSelector(state => state.auth);
     const taskCounts = useSelector(state => state.dashboard?.taskCounts ?? {});
     const ref = useRef(null);
     const currentDate = moment.tz('America/Los_Angeles').startOf('day');

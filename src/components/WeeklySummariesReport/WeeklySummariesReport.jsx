@@ -1210,9 +1210,9 @@ const WeeklySummariesReport = props => {
         structuredTeamTableData.push({ team: 'Extra Members', color, members });
       }
 
-      chartData.sort();
+      chartData.sort((a, b) => a.name?.localeCompare(b.name));
       temptotal = chartData.reduce((acc, entry) => acc + entry.value, 0);
-      structuredTeamTableData.sort();
+      structuredTeamTableData.sort((a, b) => a.team?.localeCompare(b.team));
       // const selectedTeamCodes = selectedCodes.map(e => e.value);
       const selectedTeamCodes = Array.isArray(selectedCodes)
         ? selectedCodes.map(e => e.value)
