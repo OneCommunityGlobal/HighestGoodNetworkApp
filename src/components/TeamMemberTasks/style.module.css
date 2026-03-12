@@ -114,7 +114,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 10px;
 }
 
 .team-member-tasks .team-member-tasks-headers {
@@ -247,7 +247,13 @@
 
 .team-clocks {
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  vertical-align: middle !important;
+  gap: 4px;
+  width: 50%;
+  white-space: nowrap;
 }
 
 .team-member-tasks-number {
