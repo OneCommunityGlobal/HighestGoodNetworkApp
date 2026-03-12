@@ -323,6 +323,7 @@ function ReportDetails({
   //   promisedHoursByWeek: summary?.promisedHoursByWeek,
   // });
   const ref = useRef(null);
+  const dispatch = useDispatch();
   const cantEditJaeRelatedRecord = cantUpdateDevAdminDetails(summary.email, loggedInUserEmail);
 
   const totalSecondsArray = summary.totalSeconds || [];
@@ -402,12 +403,7 @@ function ReportDetails({
                 </p>
                 <UserStateDisplay
                   userId={summary._id}
-                  canEdit={
-                    ['Administrator', 'Owner'].includes(auth?.user?.role) ||
-                    auth?.user?.permissions?.frontPermissions?.includes(
-                      'manage_user_state_indicator',
-                    )
-                  }
+                  canEdit={dispatch(hasPermission('manage_user_state_indicator'))}
                 />
               </div>
             </ListGroupItem>

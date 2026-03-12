@@ -518,12 +518,7 @@ const TeamMemberTask = React.memo(
                             <div style={{ display: 'block', marginTop: '4px' }}>
                               <UserStateDisplay
                                 userId={user.personId}
-                                canEdit={
-                                  ['Administrator', 'Owner'].includes(userRole) ||
-                                  auth?.user?.permissions?.frontPermissions?.includes(
-                                    'manage_user_state_indicator',
-                                  )
-                                }
+                                canEdit={dispatch(hasPermission('manage_user_state_indicator'))}
                               />
                             </div>
                           </td>
