@@ -31,7 +31,34 @@ function computeCounts(members, loading, localMembers) {
 }
 import headerStyles from './TeamTableHeader.module.css';
 
-export function Team(props) {
+export function Team({
+  teamId,
+  name,
+  teamCode = '',
+  index = 0,
+  active = false,
+  onMembersClick = undefined,
+  onStatusClick = undefined,
+  onEditTeam = undefined,
+  onDeleteClick = undefined,
+  team = undefined,
+  hasPermission,
+  ...restProps
+}) {
+  const props = {
+    teamId,
+    name,
+    teamCode,
+    index,
+    active,
+    onMembersClick,
+    onStatusClick,
+    onEditTeam,
+    onDeleteClick,
+    team,
+    hasPermission,
+    ...restProps,
+  };
   const dispatch = useDispatch();
   const darkMode = useSelector(s => s.theme.darkMode);
   const canDeleteTeam = props.hasPermission('deleteTeam');
@@ -64,7 +91,7 @@ export function Team(props) {
   }, [dispatch, teamIdKey]);
 
   const members = localMembers ?? props.team?.members ?? [];
-  const { total, active, inactive } = computeCounts(members, loading, localMembers);
+  const { total, active: activeCount, inactive } = computeCounts(members, loading, localMembers);
 
   // Fire callback immediately (keeps tests & UX snappy), then refresh members
   const handleOpenMembers = () => {
@@ -86,7 +113,7 @@ export function Team(props) {
       </th>
       {/*  Wrap long names vertically */}
       <td className={headerStyles.teamNameCol}>
-        {props.name} ({total} | {active} | {inactive})
+        {props.name} ({total} | {activeCount} | {inactive})
       </td>
       <td className="teams__active--input">
         <button
@@ -197,17 +224,6 @@ Team.propTypes = {
       PropTypes.instanceOf(Date),
     ]),
   }),
-};
-
-Team.defaultProps = {
-  teamCode: '',
-  index: 0,
-  active: false,
-  onMembersClick: undefined,
-  onStatusClick: undefined,
-  onEditTeam: undefined,
-  onDeleteClick: undefined,
-  team: undefined,
 };
 
 export default connect(null, { hasPermission })(Team);
