@@ -30,6 +30,10 @@ function PauseAndResumeButton(props) {
     if (props.userProfile?.isActive !== undefined) setIsActive(props.userProfile.isActive);
   }, [props.userProfile?.isActive]);
 
+    const canInteractWithPauseUserButton =
+      props.hasPermission?.('interactWithPauseUserButton') ?? false;
+
+    if (!canInteractWithPauseUserButton) return null;
   /**
    * Call back on Pause confirmation button click to trigger the action to update user status
    */
