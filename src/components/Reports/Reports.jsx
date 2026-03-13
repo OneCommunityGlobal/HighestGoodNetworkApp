@@ -17,7 +17,7 @@ import ProjectTable from './ProjectTable';
 import { getUserProfileBasicInfo } from '../../actions/userManagement';
 import { fetchAllTasks } from '../../actions/task';
 import 'react-datepicker/dist/react-datepicker.css';
-import './reportsPage.css';
+import './index.css';
 import projectsImage from './images/Projects.svg';
 import peopleImage from './images/People.svg';
 import teamsImage from './images/Teams.svg';
@@ -553,7 +553,7 @@ class ReportsPage extends Component {
               </div>
             </h2>
             <div>
-              <p >Select a Category</p>
+              <p>Select a Category</p>
             </div>
             <div className='report-container-data'>
               <div className='data-container' style={this.state.showCharts ? {width: '50%'} : {width: '100%'}}>
