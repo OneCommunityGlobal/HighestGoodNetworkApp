@@ -77,12 +77,64 @@ function ResourceManagement() {
       materials: 'Nest Lane Olivette',
       date: '2025-02-02T17:00:00.000Z',
     },
+    {
+      id: 6,
+      user: 'First Last',
+      timeDuration: '02:30:00',
+      facilities: 'Landing Page',
+      materials: 'Meadow Lane Oakland',
+      date: '2026-01-30T18:00:00.000Z',
+    },
+    {
+      id: 7,
+      user: 'Test Last',
+      timeDuration: '02:20:00',
+      facilities: 'CRM Admin pages',
+      materials: 'Larry San Francisco',
+      date: '2026-01-30T17:59:00.000Z',
+    },
+    {
+      id: 8,
+      user: 'Lorem ipsum',
+      timeDuration: '03:00:00',
+      facilities: 'Client Project',
+      materials: 'Bagwell Avenue Ocala',
+      date: '2026-01-30T17:00:00.000Z',
+    },
+    {
+      id: 9,
+      user: 'Dolor Sit',
+      timeDuration: '02:45:00',
+      facilities: 'Admin Dashboard',
+      materials: 'Washburn Baton Rouge',
+      date: '2026-01-29T17:00:00.000Z',
+    },
+    {
+      id: 10,
+      user: 'Elit Quisque',
+      timeDuration: '03:30:00',
+      facilities: 'App Landing page',
+      materials: 'Nest Lane Olivette',
+      date: '2025-02-02T17:00:00.000Z',
+    },
+    {
+      id: 11,
+      user: 'Elit Quisque',
+      timeDuration: '03:30:00',
+      facilities: 'App Landing page',
+      materials: 'Nest Lane Olivette',
+      date: '2025-02-02T17:00:00.000Z',
+    },
   ]);
 
   const [searchTerm, setSearchTerm] = useState(() => localStorage.getItem('resourceSearch') || '');
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+
   useEffect(() => {
     localStorage.setItem('resourceSearch', searchTerm);
+    setCurrentPage(1);
   }, [searchTerm]);
 
   const handleSearchChange = e => {
@@ -92,6 +144,32 @@ function ResourceManagement() {
   const filteredResources = resources.filter(resource =>
     resource.user.toLowerCase().includes(searchTerm.toLowerCase()),
   );
+
+  const totalItems = filteredResources.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+
+  const currentResources = filteredResources.slice(startIndex, endIndex);
+
+  const goToPage = page => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
+
+  const nextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(prev => prev + 1);
+    }
+  };
+
+  const prevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(prev => prev - 1);
+    }
+  };
 
   return (
     <div
@@ -126,11 +204,25 @@ function ResourceManagement() {
           <div className={styles.resourceHeadingItem}>Date</div>
         </div>
         <hr className={styles.lineSperator} />
-
+        <div className={styles.itemsPerPage}>
+          <label>Rows per page:</label>
+          <select
+            value={itemsPerPage}
+            onChange={e => {
+              setItemsPerPage(Number(e.target.value));
+              setCurrentPage(1);
+            }}
+          >
+            <option value={10}>10</option>
+            <option value={25}>25</option>
+            <option value={50}>50</option>
+            <option value={100}>100</option>
+          </select>
+        </div>
         {filteredResources.length === 0 ? (
           <div className={styles.noResultsMessage}>No user found</div>
         ) : (
-          filteredResources.map(resource => (
+          currentResources.map(resource => (
             <div key={resource.id}>
               <div className={styles.resourceItem}>
                 <div className={styles.checkboxContainer}>
@@ -154,17 +246,42 @@ function ResourceManagement() {
       </div>
 
       <div className={styles.pagination}>
-        <button type="button" className={styles.arrowButton}>
+        <button
+          type="button"
+          className={styles.arrowButton}
+          onClick={prevPage}
+          disabled={currentPage === 1}
+        >
           ←
         </button>
-        <button type="button">1</button>
-        <button type="button">2</button>
-        <button type="button">3</button>
-        <button type="button">4</button>
-        <button type="button">5</button>
-        <button type="button" className={styles.arrowButton}>
+
+        {Array.from({ length: totalPages }, (_, index) => {
+          const page = index + 1;
+          return (
+            <button
+              key={page}
+              type="button"
+              onClick={() => goToPage(page)}
+              className={currentPage === page ? styles.activePage : ''}
+            >
+              {page}
+            </button>
+          );
+        })}
+
+        <button
+          type="button"
+          className={styles.arrowButton}
+          onClick={nextPage}
+          disabled={currentPage === totalPages}
+        >
           →
         </button>
+      </div>
+
+      <div className={styles.recordCount}>
+        Showing {totalItems === 0 ? 0 : startIndex + 1}–{Math.min(endIndex, totalItems)} of{' '}
+        {totalItems}
       </div>
     </div>
   );
