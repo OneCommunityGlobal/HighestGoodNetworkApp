@@ -78,6 +78,70 @@
   display: inline-block;
 }
 
+<<<<<<< HEAD
+=======
+/* Ensure date picker input text is visible in dark mode */
+:global(.text-light) :global(.hgn-datepicker-dark),
+:global(.text-light) :global(.hgn-datepicker-dark) input,
+:global(.text-light) :global(.hgn-datepicker-dark) input[type='text'] {
+  color: #e5e7eb !important;
+  background-color: #1f2937 !important;
+}
+
+:global(.text-light) :global(.hgn-datepicker-dark)::placeholder,
+:global(.text-light) :global(.hgn-datepicker-dark) input::placeholder {
+  color: #9ca3af !important;
+  opacity: 1 !important;
+}
+.disabledDay {
+  color: #9ca3af !important;      /* gray */
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+:global(.text-light) :global(.hgn-datepicker-dark):focus,
+:global(.text-light) :global(.hgn-datepicker-dark):focus input,
+:global(.text-light) :global(.hgn-datepicker-dark):focus input[type='text'] {
+  color: #e5e7eb !important;
+  background-color: #374151 !important;
+}
+
+/* Additional styles for react-datepicker input in dark mode */
+:global(.text-light) .datePickerWrapper :global(input.react-datepicker-ignore-onclickoutside),
+:global(.text-light) .datePickerWrapper :global(.react-datepicker__input-container input),
+:global(.text-light) .datePickerWrapper :global(.react-datepicker__input-container) :global(input) {
+  color: #e5e7eb !important;
+  background-color: #1f2937 !important;
+}
+
+:global(.text-light)
+  .datePickerWrapper
+  :global(input.react-datepicker-ignore-onclickoutside)::placeholder,
+:global(.text-light)
+  .datePickerWrapper
+  :global(.react-datepicker__input-container input)::placeholder,
+:global(.text-light)
+  .datePickerWrapper
+  :global(.react-datepicker__input-container)
+  :global(input)::placeholder {
+  color: #9ca3af !important;
+  opacity: 1 !important;
+}
+
+/* More specific targeting for react-datepicker input wrapper */
+:global(.text-light) :global(.react-datepicker-wrapper) :global(.hgn-datepicker-dark),
+:global(.text-light) :global(.react-datepicker-wrapper) :global(input) {
+  color: #e5e7eb !important;
+  background-color: #1f2937 !important;
+}
+
+:global(.text-light) :global(.react-datepicker-wrapper) :global(.hgn-datepicker-dark)::placeholder,
+:global(.text-light) :global(.react-datepicker-wrapper) :global(input)::placeholder {
+  color: #9ca3af !important;
+  opacity: 1 !important;
+}
+
+>>>>>>> origin/development
 /* Dark mode styles for recharts surface */
 :global(.bg-oxford-blue) :global(.recharts-surface) {
   background-color: #1b2a41 !important;
@@ -91,3 +155,47 @@
   stroke: #555 !important;
 }
 
+<<<<<<< HEAD
+=======
+/* Custom tooltip styles - ensure text is always visible */
+.customTooltip {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+}
+
+.customTooltip * {
+  color: #000000 !important;
+}
+
+.tooltipAgeGroup {
+  color: #000000 !important;
+  font-weight: 600 !important;
+}
+
+.tooltipApplicants {
+  color: #000000 !important;
+}
+
+.tooltipApplicants strong {
+  color: #000000 !important;
+  font-weight: 700 !important;
+}
+
+.tooltipChange {
+  color: #000000 !important;
+}
+
+/* Global tooltip styles to override any parent dark mode styles */
+:global(.recharts-tooltip-wrapper) .customTooltip,
+:global(.recharts-tooltip-wrapper) .customTooltip * {
+  color: #000000 !important;
+  background-color: #ffffff !important;
+}
+
+/* Override text-light class for tooltip */
+:global(.text-light) :global(.recharts-tooltip-wrapper) .customTooltip,
+:global(.text-light) :global(.recharts-tooltip-wrapper) .customTooltip * {
+  color: #000000 !important;
+  background-color: #ffffff !important;
+}
+>>>>>>> origin/development

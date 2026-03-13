@@ -767,10 +767,11 @@ export class WeeklySummary extends Component {
       toolbar:
         'bold italic underline link removeformat | bullist numlist outdent indent | styleselect fontsizeselect | table| strikethrough forecolor backcolor | subscript superscript charmap | help',
       branding: false,
-      min_height: 180,
+      min_height: 250,
       max_height: 500,
       autoresize_bottom_margin: 1,
-      content_style: 'body { font-size: 14px; }',
+      content_style:
+        'body { font-size: 14px; } .mce-content-body[data-mce-placeholder]:focus::before {content: "";}',
       images_upload_handler: customImageUploadHandler,
       skin: darkMode ? 'oxide-dark' : 'oxide',
       content_css: darkMode ? 'dark' : 'default',
