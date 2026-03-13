@@ -231,7 +231,8 @@ const WeeklySummaryRecipientsPopupComponent = props => {
                   }}
                 >
                   {filteredUsers.slice(0, 10).map(user => (
-                    <DropdownItem
+                    <button
+                      type="button"
                       key={user._id}
                       onClick={() => {
                         setSelectedUser(user);
@@ -239,14 +240,22 @@ const WeeklySummaryRecipientsPopupComponent = props => {
                         setDropdownOpen(false);
                         setIsValidUser(true);
                       }}
+                      style={{
+                        padding: '8px 12px',
+                        cursor: 'pointer',
+                        display: 'block',
+                        width: '100%',
+                        textAlign: 'left',
+                        background: 'none',
+                        border: 'none',
+                      }}
+                      className="dropdown-item"
                     >
-                      <div style={{ display: 'flex', flexDirection: 'column' }}>
-                        <span>
-                          {user.firstName} {user.lastName}
-                        </span>
-                        <small className="text-muted">{user.email}</small>
+                      <div>
+                        {user.firstName} {user.lastName}
                       </div>
-                    </DropdownItem>
+                      <small className="text-muted">{user.email}</small>
+                    </button>
                   ))}
                 </div>
               )}
