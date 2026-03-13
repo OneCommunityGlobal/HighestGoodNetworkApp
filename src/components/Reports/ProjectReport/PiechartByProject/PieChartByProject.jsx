@@ -228,7 +228,7 @@ export function PieChartByProject({
         </div>
 
         {isChecked && ( <div style={{textAlign:'left', margin:'auto'}}>
-        <p style={{textAlign:'center'}}>{showMembers === null ? 'All members' : ''}</p>
+        <p className={darkMode ? 'text-light' : 'blue'} style={{textAlign:'center'}}>{showMembers === null ? 'All members' : ''}</p>
         <div className={style.switchSection}>
         <div style={{ wordBreak: 'keep-all', color: darkMode ? 'white' : ''}}
           className={`d-flex flex-row align-items-center justify-content-between ${style.switchContainer}`}>
@@ -242,10 +242,13 @@ export function PieChartByProject({
           <p className={darkMode ? 'text-light' : 'green'}>Active Members</p>
         </div>
         </div>
-          <p style={{fontWeight:'bold'}}>Total Active Members:  {activeData.length}  <span> - Hrs Applied: { globalactiveHours.toFixed(2) } </span> </p>
-          <p style={{fontWeight:'bold'}}>Total Inactive Members: {inactiveData.length} <span> - Hrs Applied: { globalInactiveHours.toFixed(2) } </span> </p>
-          <p style={{fontWeight:'bold'}}>Total Applied Hours: {totalHours.toFixed(2)} </p>
-          <p style={{fontWeight:'bold'}}>Total Members:  {mergedProjectUsersArray.length}</p>
+          <p className={darkMode ? 'text-light' : 'blue'} style={{ fontWeight: 'bold' }}>
+            Total Active Members: {activeData.length}
+            <span> - Hrs Applied: {globalactiveHours.toFixed(2)}</span>
+          </p>
+          <p className={darkMode ? 'text-light' : 'blue'} style={{fontWeight:'bold'}}>Total Inactive Members: {inactiveData.length} <span> - Hrs Applied: { globalInactiveHours.toFixed(2) } </span> </p>
+          <p className={darkMode ? 'text-light' : 'blue'} style={{fontWeight:'bold'}}>Total Applied Hours: {totalHours.toFixed(2)} </p>
+          <p className={darkMode ? 'text-light' : 'blue'} style={{fontWeight:'bold'}}>Total Members:  {mergedProjectUsersArray.length}</p>
         </div>)}
 
       </div>
