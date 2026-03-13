@@ -44,24 +44,16 @@ export const JobsHitsApplicationsChart = () => {
 
   const CustomYAxisNames = ({ x, y, payload }) => {
     const text = payload.value;
-    const truncated = text.split(' ').slice(0, 2);
-
+    const extractedRole = text
+      .split('-')
+      .slice(0, 1)[0]
+      .trim();
     return (
       <g transform={`translate(${x},${y})`}>
-        {truncated.map((line, index) => (
-          <text
-            key={index}
-            x={0}
-            y={0}
-            dy={index * 14 - (truncated.length - 1) * 7}
-            textAnchor="end"
-            fill="#666"
-            fontSize={12}
-          >
-            <title>{text}</title>
-            {line}
-          </text>
-        ))}
+        <text x={0} y={0} textAnchor="end" fill="#666" fontSize={12}>
+          <title>{text}</title>
+          {extractedRole.length > 35 ? `${extractedRole.slice(0, 32)}...` : extractedRole}
+        </text>
       </g>
     );
   };
@@ -171,12 +163,28 @@ export const JobsHitsApplicationsChart = () => {
             </div>
           )}
           {!loading && !error && data.length > 0 && (
-            <ResponsiveContainer className={styles.chart} width="70%" height="100%">
+            <ResponsiveContainer className={styles.chart} width="100%" height="100%">
               <BarChart
                 layout="vertical"
                 data={data}
+                barCategoryGap="40%"
+                barGap={4}
                 margin={{ top: 20, right: 30, left: 65, bottom: 20 }}
               >
+                <Bar
+                  dataKey="hits"
+                  fill="#8884d8"
+                  activeBar={false}
+                  isAnimationActive={false}
+                  barSize={14}
+                />
+                <Bar
+                  dataKey="applications"
+                  fill="#82ca9d"
+                  activeBar={false}
+                  isAnimationActive={false}
+                  barSize={14}
+                />
                 <XAxis
                   type="number"
                   label={{
@@ -192,19 +200,13 @@ export const JobsHitsApplicationsChart = () => {
                   dataKey="role"
                   label={{
                     value: 'Roles',
-                    position: 'top',
+                    position: 'bottom',
                     style: {
                       fill: darkMode ? styles.colorWhite : '',
                     },
                   }}
+                  width={200}
                   tick={<CustomYAxisNames />}
-                />
-                <Bar dataKey="hits" fill="#8884d8" activeBar={false} isAnimationActive={false} />
-                <Bar
-                  dataKey="applications"
-                  fill="#82ca9d"
-                  activeBar={false}
-                  isAnimationActive={false}
                 />
                 <Tooltip cursor={{ fill: 'transparent' }} />
                 <Legend verticalAlign="top" align="center" />
