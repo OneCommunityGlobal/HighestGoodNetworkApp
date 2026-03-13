@@ -140,8 +140,7 @@
   color: #9ca3af !important;
   opacity: 1 !important;
 }
-
->>>>>>> origin/development
+ 
 /* Dark mode styles for recharts surface */
 :global(.bg-oxford-blue) :global(.recharts-surface) {
   background-color: #1b2a41 !important;
@@ -155,8 +154,6 @@
   stroke: #555 !important;
 }
 
-<<<<<<< HEAD
-=======
 /* Custom tooltip styles - ensure text is always visible */
 .customTooltip {
   background-color: #ffffff !important;
@@ -198,4 +195,3 @@
   color: #000000 !important;
   background-color: #ffffff !important;
 }
->>>>>>> origin/development

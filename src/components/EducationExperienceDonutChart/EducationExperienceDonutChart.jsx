@@ -378,9 +378,18 @@ const EducationExperienceDonutChart = () => {
 
                   <Tooltip
                     formatter={(value, name, { payload }) => {
-                      const pct = total ? ((payload.value / total) * 100).toFixed(1) : '0.0';
-                      return [`${value} (${pct}%)`, name];
+                      const raw = payload?.value ?? value ?? 0;
+                      const pct = total ? ((raw / total) * 100).toFixed(1) : '0.0';
+                      const label = payload?.category || name;
+                      return [`${raw} (${pct}%)`, label];
                     }}
+                    contentStyle={{
+                      backgroundColor: darkMode ? '#111827' : '#ffffff',
+                      borderRadius: 6,
+                      border: `1px solid ${darkMode ? '#4b5563' : '#d1d5db'}`,
+                      boxShadow: '0 4px 10px rgba(15, 23, 42, 0.35)',
+                    }}
+                    wrapperStyle={{ zIndex: 9999 }}
                   />
                 </PieChart>
               </ResponsiveContainer>
