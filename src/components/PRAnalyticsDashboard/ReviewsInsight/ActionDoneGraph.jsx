@@ -100,7 +100,19 @@ function ActionDoneGraph({ selectedTeams, teamData }) {
 
   return (
     <div className={sharedStyles.riActionDoneGraph}>
-      <h2>PR: Action Done</h2>
+      <h2>
+        PR: Action Done &nbsp;
+        <span className={sharedStyles.tooltip}>
+          <i className="fa fa-info-circle fa-sm" aria-hidden="true"></i>
+          <span className={`${sharedStyles.tooltipText} ${darkMode ? 'darkMode' : ''} `}>
+            Approved: PR was approved without blocking changes <br />
+            <br />
+            Changes Requested: Reviewer requested changes before approval <br />
+            <br />
+            Commented: Reviewer left comments but did not approve or request changes
+          </span>
+        </span>
+      </h2>
       <div className={sharedStyles.riGraph}>
         <Bar data={data} options={options} />
       </div>
