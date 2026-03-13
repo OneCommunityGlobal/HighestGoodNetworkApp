@@ -257,8 +257,10 @@ export function CPDashboard() {
           <div className={styles.eventCardImgContainer}>
             <FixedRatioImage src={event.image} alt={event.title} fallback={FALLBACK_IMG} />
           </div>
-          <CardBody>
-            <h5 className={styles.eventTitle}>{event.title}</h5>
+          <CardBody className={styles.eventCardBody}>
+            <h5 className={styles.eventTitle} title={event.title}>
+              {event.title}
+            </h5>
             <p className={styles.eventDate}>
               <FaCalendarAlt className={styles.eventIcon} /> {formatDate(event.date)}
             </p>
