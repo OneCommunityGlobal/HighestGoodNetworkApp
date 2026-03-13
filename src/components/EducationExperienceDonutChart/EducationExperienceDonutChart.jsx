@@ -46,41 +46,46 @@ const buildPieData = (rows, startDate, endDate, selectedRoles) => {
   );
 };
 
-const createLabelRenderer = (isMobile, darkMode) => props => {
-  const { cx, cy, midAngle, innerRadius, outerRadius, percent, name, value, payload } = props;
-  const RAD = Math.PI / 180;
-  const labelName = name || payload?.category || '';
-  const pctText = `${(percent * 100).toFixed(1)}%`;
+const createLabelRenderer = (isMobile, darkMode) => {
+  const EducationExperienceDonutChartLabel = props => {
+    const { cx, cy, midAngle, innerRadius, outerRadius, percent, name, value, payload } = props;
+    const RAD = Math.PI / 180;
+    const labelName = name || payload?.category || '';
+    const pctText = `${(percent * 100).toFixed(1)}%`;
 
-  if (isMobile) {
-    if (percent < 0.08) return null;
-    const r = innerRadius + (outerRadius - innerRadius) * 0.5;
+    if (isMobile) {
+      if (percent < 0.08) return null;
+      const r = innerRadius + (outerRadius - innerRadius) * 0.5;
+      const x = cx + r * Math.cos(-midAngle * RAD);
+      const y = cy + r * Math.sin(-midAngle * RAD);
+      return (
+        <text x={x} y={y} textAnchor="middle" dominantBaseline="central" fontSize={10} fill="#fff">
+          {pctText}
+        </text>
+      );
+    }
+
+    const r = outerRadius + 18;
     const x = cx + r * Math.cos(-midAngle * RAD);
     const y = cy + r * Math.sin(-midAngle * RAD);
+    const text = `${labelName}: ${value} (${pctText})`;
+
     return (
-      <text x={x} y={y} textAnchor="middle" dominantBaseline="central" fontSize={10} fill="#fff">
-        {pctText}
+      <text
+        x={x}
+        y={y}
+        textAnchor={x > cx ? 'start' : 'end'}
+        dominantBaseline="central"
+        fontSize={12}
+        fill={darkMode ? '#e2e8f0' : '#111'}
+      >
+        {text}
       </text>
     );
-  }
+  };
 
-  const r = outerRadius + 18;
-  const x = cx + r * Math.cos(-midAngle * RAD);
-  const y = cy + r * Math.sin(-midAngle * RAD);
-  const text = `${labelName}: ${value} (${pctText})`;
-
-  return (
-    <text
-      x={x}
-      y={y}
-      textAnchor={x > cx ? 'start' : 'end'}
-      dominantBaseline="central"
-      fontSize={12}
-      fill={darkMode ? '#e2e8f0' : '#111'}
-    >
-      {text}
-    </text>
-  );
+  EducationExperienceDonutChartLabel.displayName = 'EducationExperienceDonutChartLabel';
+  return EducationExperienceDonutChartLabel;
 };
 
 const useIsMobile = (bp = 640) => {
