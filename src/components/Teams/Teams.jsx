@@ -28,7 +28,7 @@ import CreateNewTeamPopup from './CreateNewTeamPopup';
 import DeleteTeamPopup from './DeleteTeamPopup';
 import TeamStatusPopup from './TeamStatusPopup';
 import isEqual from 'lodash/isEqual';
-import { getCachedTeamMembers } from './teamMembersCache';
+import { getCachedTeamMembers, invalidateTeamMembersCache } from './teamMembersCache';
 
 // constants
 const FILTER_ALL = 'all';
@@ -285,7 +285,7 @@ class Teams extends React.PureComponent {
 
     // prefer cache → snapshot → slice
     const cachedNow = getCachedTeamMembers(String(selectedTeamId));
-    const sliceMembers = this.props.state?.teamsTeamMembers || [];
+    const sliceMembers = this.props.state?.teamsTeamMembers?.teamMembers || [];
     const members =
       (Array.isArray(cachedNow) && cachedNow) ||
       (Array.isArray(initialMembersForPopup) && initialMembersForPopup) ||
@@ -304,7 +304,7 @@ class Teams extends React.PureComponent {
           members={members}
           fetching={membersFetching}
           onDeleteClick={this.onDeleteTeamMember}
-          usersdata={this.props.state?.allUserProfiles || []}
+          usersdata={this.props.state?.allUserProfiles?.userProfiles || []}
           onAddUser={this.onAddUser}
           teamData={selectedTeamData}
           onUpdateTeamMemberVisibility={this.onUpdateTeamMemberVisibility}
@@ -345,8 +345,8 @@ class Teams extends React.PureComponent {
 
   // ───────────────────────── handlers ─────────────────────────
 
-  onAddUser = user => {
-    this.props.addTeamMember(
+  onAddUser = async user => {
+    await this.props.addTeamMember(
       this.state.selectedTeamId,
       user._id,
       user.firstName,
@@ -354,10 +354,14 @@ class Teams extends React.PureComponent {
       user.role,
       Date.now(),
     );
+    invalidateTeamMembersCache(this.state.selectedTeamId);
+    this.setState({ initialMembersForPopup: null });
   };
 
-  onUpdateTeamMemberVisibility = (userId, visibility) => {
-    this.props.updateTeamMemeberVisibility(this.state.selectedTeamId, userId, visibility);
+  onUpdateTeamMemberVisibility = async (userId, visibility) => {
+    await this.props.updateTeamMemeberVisibility(this.state.selectedTeamId, userId, visibility);
+    invalidateTeamMembersCache(this.state.selectedTeamId);
+    this.setState({ initialMembersForPopup: null });
   };
 
   // NOTE: Team component calls (id, name, code) and we open immediately
@@ -480,8 +484,10 @@ class Teams extends React.PureComponent {
     this.setState({ teamStatusPopupOpen: false, deleteTeamPopupOpen: false });
   };
 
-  onDeleteTeamMember = deletedUserId => {
-    this.props.deleteTeamMember(this.state.selectedTeamId, deletedUserId);
+  onDeleteTeamMember = async deletedUserId => {
+    await this.props.deleteTeamMember(this.state.selectedTeamId, deletedUserId);
+    invalidateTeamMembersCache(this.state.selectedTeamId);
+    this.setState({ initialMembersForPopup: null });
   };
 
   toggleTeamNameSort = () => {
@@ -514,8 +520,15 @@ Teams.propTypes = {
     theme: PropTypes.shape({
       darkMode: PropTypes.bool,
     }),
-    teamsTeamMembers: PropTypes.array,
-    allUserProfiles: PropTypes.array,
+    teamsTeamMembers: PropTypes.shape({
+      teamMembers: PropTypes.array,
+      fetching: PropTypes.bool,
+      fetched: PropTypes.bool,
+      status: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    }),
+    allUserProfiles: PropTypes.shape({
+      userProfiles: PropTypes.array,
+    }),
   }).isRequired,
 
   // actions (all required by usage)

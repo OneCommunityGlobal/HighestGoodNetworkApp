@@ -518,11 +518,4 @@ TeamMembersPopup.propTypes = {
   onUpdateTeamMemberVisibility: PropTypes.func.isRequired,
 };
 
-TeamMembersPopup.defaultProps = {
-  members: [],
-  teamData: [],
-  usersdata: [],
-  fetching: false,
-};
-
 export default TeamMembersPopup;
