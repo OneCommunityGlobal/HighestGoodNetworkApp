@@ -1,7 +1,7 @@
 .container {
   font-family: Arial, sans-serif;
   margin: 0 auto;
-  padding: 20px;
+  padding: 20px 0 40px;
   background-color: #d9d9d9;
   width: 100%;
 }
@@ -17,7 +17,7 @@
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  padding: 10px;
+  padding: 10px 0 0;
   border-radius: 5px;
 }
 
@@ -25,46 +25,83 @@
   display: flex;
   gap: 10px;
   background-color: #98cb03;
-  width: 75%;
-  padding: 2%;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 12px 16px;
   justify-content: space-between;
+  align-items: center;
+  box-sizing: border-box;
+  flex-wrap: wrap;
 }
 
 .headerLeft {
   display: flex;
   gap: 10px;
+  flex: 1 1 0;
+  max-width: 50%;
+  align-items: center;
+  min-width: 260px;
 }
 
 .headerRight {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
+  flex: 1 1 0;
+  max-width: 50%;
 }
 
 .jobTitleInput {
-  padding: 5px;
+  padding: 6px 8px;
   border: 1px solid #ccc;
   border-radius: 5px;
+  flex: 1 1 0;
+  min-width: 0;
 }
 
 .jobSelect {
-  padding: 5px;
+  padding: 6px 8px;
   border: 1px solid #ccc;
   border-radius: 5px;
+  width: 100%;
 }
 
 .goButton {
   background-color: #4caf50;
   color: white;
   border: none;
-  padding: 5px 10px;
+  padding: 6px 14px;
   border-radius: 5px;
   cursor: pointer;
 }
 
+@media (max-width: 768px) {
+  .headerContent {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .headerLeft {
+    width: 100%;
+  }
+
+  .headerRight {
+    width: 100%;
+    margin-top: 8px;
+  }
+
+  .jobSelect {
+    max-width: 100%;
+  }
+}
+
 .formContainer {
   background-color: #f9f9f9;
-  padding: 2%;
-  width: 75%;
+  padding: 24px 32px 32px;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 

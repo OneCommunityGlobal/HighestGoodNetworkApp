@@ -4,15 +4,18 @@
 
 .jobLanding {
   width: 100%;
-  min-height: 100%;
+  min-height: 100vh;
+  padding: 32px 0 48px;
 }
 
 .userCollaborationContainer {
-  width: 90%;
+  width: 92%;
+  max-width: 1200px;
   margin: 0 auto;
   background-color: #ffffff;
-  border-radius: 10px;
-  padding-bottom: 24px;
+  border-radius: 12px;
+  padding: 24px 24px 32px;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
 }
 
 /* ================= DARK MODE – BASE ================= */
@@ -159,9 +162,9 @@
 
 .jobList {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 20px;
-  padding: 20px;
+  padding: 24px 20px 8px;
 }
 
 .jobAd {
