@@ -82,7 +82,7 @@ import SkillsOverviewPage from './components/HGNHelpSkillsDashboard/SkillsOvervi
 import CommunityMembersPage from './components/HGNHelpSkillsDashboard/CommunityMembersPage';
 import UserProfilePage from './components/HGNHelpSkillsDashboard/UserProfilePage';
 import FeedbackModal from './components/HGNHelpSkillsDashboard/FeedbackModal';
-import Activity from './components/CommunityPortal/Activities/activityId/Activity';
+import ActivityFeedback from './components/CommunityPortal/Activities/activityId/ActivityFeedback';
 import ActivityAttendance from './components/CommunityPortal/Activities/ActivityAttendance';
 import ActivityAgenda from './components/CommunityPortal/Activities/ActivityAgenda';
 import NoshowViz from './components/CommunityPortal/Attendence/NoshowViz';
@@ -759,6 +759,11 @@ export default (
         {/* ----- Community Calendar Routing ----- */}
         <CPProtectedRoute path="/communityportal/calendar" exact component={CommunityCalendar} />
         <CPProtectedRoute path="/communityportal/activities" exact component={ActivityList} />
+        <CPProtectedRoute
+          path="/communityportal/activity/:activityId/ActivityFeedback"
+          exact
+          component={ActivityFeedback}
+        />
         <CPProtectedRoute
           path="/communityportal/ActivityAttendance"
           exact
