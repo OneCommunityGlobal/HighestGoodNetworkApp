@@ -90,22 +90,8 @@ function CreateTestConfigModal({ onAdd, onCancel, existingTeamNames }) {
     if (e.target === e.currentTarget) handleCancel();
   };
 
-  const handleOverlayKeyDown = e => {
-    if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) {
-      e.preventDefault();
-      handleCancel();
-    }
-  };
-
   return (
-    <div
-      className={styles.overlay}
-      onClick={handleOverlayClick}
-      onKeyDown={handleOverlayKeyDown}
-      role="button"
-      tabIndex={0}
-      aria-label="Close modal by clicking outside"
-    >
+    <div className={styles.overlay} onClick={handleOverlayClick} role="presentation">
       <div
         className={styles.modal}
         role="dialog"
