@@ -16,6 +16,7 @@ import { FaCalendarAlt, FaMapMarkerAlt, FaUserAlt, FaSearch, FaTimes } from 'rea
 import styles from './CPDashboard.module.css';
 import { ENDPOINTS } from '../../utils/URL';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 const FixedRatioImage = ({ src, alt, fallback }) => (
   <div
@@ -164,18 +165,13 @@ export function CPDashboard() {
   // Helper function to extract date in YYYY-MM-DD format from event date
   const parseEventDate = dateString => {
     if (!dateString) return null;
-
-    try {
-      // Try to parse as ISO date string or standard date
-      const parsedDate = new Date(dateString);
-      if (!isNaN(parsedDate.getTime())) {
-        const year = parsedDate.getFullYear();
-        const month = String(parsedDate.getMonth() + 1).padStart(2, '0');
-        const day = String(parsedDate.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-      }
-    } catch (error) {
-      console.error('Error parsing date:', error);
+    // Try to parse as ISO date string or standard date
+    const parsedDate = new Date(dateString);
+    if (!isNaN(parsedDate.getTime())) {
+      const year = parsedDate.getFullYear();
+      const month = String(parsedDate.getMonth() + 1).padStart(2, '0');
+      const day = String(parsedDate.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
     }
     return null;
   };
@@ -253,23 +249,29 @@ export function CPDashboard() {
   } else if (displayedEvents.length > 0) {
     eventsContent = displayedEvents.map(event => (
       <Col md={4} key={event.id} className={styles.eventCardCol}>
-        <Card className={styles.eventCard}>
-          <div className={styles.eventCardImgContainer}>
-            <FixedRatioImage src={event.image} alt={event.title} fallback={FALLBACK_IMG} />
-          </div>
-          <CardBody>
-            <h5 className={styles.eventTitle}>{event.title}</h5>
-            <p className={styles.eventDate}>
-              <FaCalendarAlt className={styles.eventIcon} /> {formatDate(event.date)}
-            </p>
-            <p className={styles.eventLocation}>
-              <FaMapMarkerAlt className={styles.eventIcon} /> {event.location || 'Location TBD'}
-            </p>
-            <p className={styles.eventOrganizer}>
-              <FaUserAlt className={styles.eventIcon} /> {event.organizer || 'Organizer TBD'}
-            </p>
-          </CardBody>
-        </Card>
+        <Link
+          to={`/communityportal/Activities/Register/${event._id}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <Card className={styles.eventCard}>
+            <div className={styles.eventCardImgContainer}>
+              <FixedRatioImage src={event.coverImage} alt={event.title} fallback={FALLBACK_IMG} />
+            </div>
+            <CardBody>
+              <h5 className={styles.eventTitle}>{event.title}</h5>
+              <p className={styles.eventDate}>
+                <FaCalendarAlt className={styles.eventIcon} /> {formatDate(event.date)}
+              </p>
+              <p className={styles.eventLocation}>
+                <FaMapMarkerAlt className={styles.eventIcon} /> {event.location || 'Location TBD'}
+              </p>
+              <p className={styles.eventOrganizer}>
+                <FaUserAlt className={styles.eventIcon} /> {event.organizer || 'Organizer TBD'}
+              </p>
+            </CardBody>
+          </Card>
+        </Link>
       </Col>
     ));
   } else {
