@@ -78,8 +78,6 @@
   display: inline-block;
 }
 
-<<<<<<< HEAD
-=======
 /* Ensure date picker input text is visible in dark mode */
 :global(.text-light) :global(.hgn-datepicker-dark),
 :global(.text-light) :global(.hgn-datepicker-dark) input,

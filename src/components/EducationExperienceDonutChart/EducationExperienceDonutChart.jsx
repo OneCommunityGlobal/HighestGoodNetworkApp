@@ -20,6 +20,69 @@ const COLOR_BY_CATEGORY = {
 /** ---------- Helpers ---------- */
 const toDateOnlyString = d => (d ? d.toISOString().split('T')[0] : null);
 
+const buildPieData = (rows, startDate, endDate, selectedRoles) => {
+  const s = toDateOnlyString(startDate);
+  const e = toDateOnlyString(endDate);
+  const selected = new Set(selectedRoles.map(r => r.value));
+
+  const inRange = d => {
+    if (!s && !e) return true;
+    if (s && d < s) return false;
+    if (e && d > e) return false;
+    return true;
+  };
+
+  const roleMatch = r => (selected.size === 0 ? true : selected.has(r));
+
+  const filtered = rows.filter(r => inRange(r.date) && roleMatch(r.role));
+
+  const byCat = filtered.reduce((acc, cur) => {
+    acc[cur.category] = (acc[cur.category] || 0) + cur.value;
+    return acc;
+  }, {});
+
+  return ORDERED_CATEGORIES.map(cat => ({ category: cat, value: byCat[cat] || 0 })).filter(
+    d => d.value > 0,
+  );
+};
+
+const createLabelRenderer = (isMobile, darkMode) => props => {
+  const { cx, cy, midAngle, innerRadius, outerRadius, percent, name, value, payload } = props;
+  const RAD = Math.PI / 180;
+  const labelName = name || payload?.category || '';
+  const pctText = `${(percent * 100).toFixed(1)}%`;
+
+  if (isMobile) {
+    if (percent < 0.08) return null;
+    const r = innerRadius + (outerRadius - innerRadius) * 0.5;
+    const x = cx + r * Math.cos(-midAngle * RAD);
+    const y = cy + r * Math.sin(-midAngle * RAD);
+    return (
+      <text x={x} y={y} textAnchor="middle" dominantBaseline="central" fontSize={10} fill="#fff">
+        {pctText}
+      </text>
+    );
+  }
+
+  const r = outerRadius + 18;
+  const x = cx + r * Math.cos(-midAngle * RAD);
+  const y = cy + r * Math.sin(-midAngle * RAD);
+  const text = `${labelName}: ${value} (${pctText})`;
+
+  return (
+    <text
+      x={x}
+      y={y}
+      textAnchor={x > cx ? 'start' : 'end'}
+      dominantBaseline="central"
+      fontSize={12}
+      fill={darkMode ? '#e2e8f0' : '#111'}
+    >
+      {text}
+    </text>
+  );
+};
+
 const useIsMobile = (bp = 640) => {
   const [w, setW] = useState(typeof window !== 'undefined' ? window.innerWidth : 1024);
   useEffect(() => {
@@ -68,28 +131,7 @@ const EducationExperienceDonutChart = () => {
   /** Filter + aggregate into pie data */
   const data = useMemo(() => {
     try {
-      const s = toDateOnlyString(startDate);
-      const e = toDateOnlyString(endDate);
-      const selected = new Set(selectedRoles.map(r => r.value));
-
-      const inRange = d => {
-        if (!s && !e) return true;
-        if (s && d < s) return false;
-        if (e && d > e) return false;
-        return true;
-      };
-      const roleMatch = r => (selected.size === 0 ? true : selected.has(r));
-
-      const filtered = rows.filter(r => inRange(r.date) && roleMatch(r.role));
-
-      const byCat = filtered.reduce((acc, cur) => {
-        acc[cur.category] = (acc[cur.category] || 0) + cur.value;
-        return acc;
-      }, {});
-
-      return ORDERED_CATEGORIES.map(cat => ({ category: cat, value: byCat[cat] || 0 })).filter(
-        d => d.value > 0,
-      );
+      return buildPieData(rows, startDate, endDate, selectedRoles);
     } catch (err) {
       setError('Failed to process data');
       return [];
@@ -105,48 +147,8 @@ const EducationExperienceDonutChart = () => {
   ]);
   const centerLine2 = useMemo(() => formatDatesForCenter(startDate, endDate), [startDate, endDate]);
 
-  /** Adaptive labels:
-   *  - Desktop: outside with leader, "Category: Count (XX.X%)"
-   *  - Mobile: inside slice, percent only; hide on tiny slices
-   */
-  const renderLabel = props => {
-    const { cx, cy, midAngle, innerRadius, outerRadius, percent, name, value, payload } = props;
-    const RAD = Math.PI / 180;
-    const labelName = name || payload?.category || '';
-    const pctText = `${(percent * 100).toFixed(1)}%`;
-
-    if (isMobile) {
-      // Mobile: keep things clean—hide very small slices
-      if (percent < 0.08) return null;
-      const r = innerRadius + (outerRadius - innerRadius) * 0.5;
-      const x = cx + r * Math.cos(-midAngle * RAD);
-      const y = cy + r * Math.sin(-midAngle * RAD);
-      return (
-        <text x={x} y={y} textAnchor="middle" dominantBaseline="central" fontSize={10} fill="#fff">
-          {pctText}
-        </text>
-      );
-    }
-
-    // Desktop: outside label
-    const r = outerRadius + 18;
-    const x = cx + r * Math.cos(-midAngle * RAD);
-    const y = cy + r * Math.sin(-midAngle * RAD);
-    const text = `${labelName}: ${value} (${pctText})`;
-
-    return (
-      <text
-        x={x}
-        y={y}
-        textAnchor={x > cx ? 'start' : 'end'}
-        dominantBaseline="central"
-        fontSize={12}
-        fill={darkMode ? '#e2e8f0' : '#111'}
-      >
-        {text}
-      </text>
-    );
-  };
+  /** Prepare label renderer for Recharts */
+  const renderLabel = useMemo(() => createLabelRenderer(isMobile, darkMode), [isMobile, darkMode]);
 
   if (error) {
     return <div className={styles.error}>Something went wrong: {error}</div>;
