@@ -224,8 +224,8 @@
 
 .goal .numberWrapper {
   position: relative;
-  width: 3.6rem;
-  height: 3.4rem;
+  width: 4.2rem;
+  height: 4rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -243,8 +243,8 @@
   box-sizing: border-box;
   background-color: #f7f7f7 !important;
   color: #111 !important;
-  text-align: center;
-  font-size: 1.65rem;
+  text-align: center !important;
+  font-size: 1.8rem;
   font-weight: 800;
   line-height: 1;
   box-shadow: none !important;
@@ -253,8 +253,9 @@
 .bottom .timeColon {
   display: flex;
   align-items: center;
-  height: 3.4rem;
-  font-size: 1.85rem;
+  justify-content: center;
+  height: 4rem;
+  font-size: 2rem;
   font-weight: 800;
   line-height: 1;
   color: white;
@@ -280,6 +281,12 @@
 
 input[type='number'] {
   appearance: textfield;
+}
+
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+  margin: 0;
+  appearance: none;
 }
 
 .bottom .goal input:focus {
