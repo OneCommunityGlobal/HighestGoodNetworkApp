@@ -39,10 +39,30 @@
   .leftSection h1, .leftSection h3 { text-align: left; }
 }
 
+:global(.dark-mode) .leftSection {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border-color: #303030;
+  color: #e6e6e6;
+}
+
 :global(.dark-mode) .leftSection h1 {
   color: #fff;
 }
 
 :global(.dark-mode) .leftSection h3 {
   color: #ccc;
+}
+
+:global(.dark-mode) .leftSection a {
+  color: #9ecbff;
+}
+
+.container.darkMode {
+  background-color: #181818;
+  border: 1px solid #303030;
+  color: #e6e6e6;
+}
+
+.container.darkMode a {
+  color: #9ecbff;
 }

@@ -570,6 +570,9 @@ export const ENDPOINTS = {
     if (endDate) url += `&endDate=${encodeURIComponent(endDate)}`;
     return url;
   },
+
+  HGN_FORM_RESPONSES: () => `${APIEndpoint}/hgnform`,
+
 };
 
 export const ApiEndpoint = APIEndpoint;
