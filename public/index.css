@@ -12,17 +12,10 @@ body.bm-dashboard-dark:not(.no-global-theme) {
   background-color: #1b2a41 !important;
   color: #ffffff !important;
 }
-
 body.dark-mode:not(.no-global-theme) #root,
 body.bm-dashboard-dark:not(.no-global-theme) #root {
   background-color: #1b2a41 !important;
   color: #ffffff !important;
-}
-
-/* SAFE BASE (dark mode) */
-body.dark-mode:not(.no-global-theme),
-body.bm-dashboard-dark:not(.no-global-theme) {
-  color: #ffffff;
 }
 
 /* ========================= */

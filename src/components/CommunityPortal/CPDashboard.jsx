@@ -81,6 +81,7 @@ export function CPDashboard() {
   const [isLoading, setIsLoading] = useState(false);
   const [dateFilter, setDateFilter] = useState('');
   const [error, setError] = useState(null);
+  const [failedLogos, setFailedLogos] = useState(new Set());
   const darkMode = useSelector(state => state.theme.darkMode);
   const [pagination, setPagination] = useState({
     currentPage: 1,
@@ -91,6 +92,16 @@ export function CPDashboard() {
 
   const FALLBACK_IMG =
     'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=600&q=60';
+
+  const normalizeOrganizer = organizer => {
+    if (!organizer || typeof organizer !== 'string') return null;
+    const trimmed = organizer.trim();
+    return trimmed.length > 0 ? trimmed : null;
+  };
+
+  const handleLogoError = eventId => {
+    setFailedLogos(prev => new Set([...prev, eventId]));
+  };
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -117,7 +128,7 @@ export function CPDashboard() {
     const handler = setTimeout(() => {
       setSearchQuery(searchInput.trim());
       setPagination(prev => ({ ...prev, currentPage: 1 }));
-    }, 300); // debounce delay (300ms feels natural)
+    }, 300);
 
     return () => clearTimeout(handler);
   }, [searchInput]);
@@ -128,23 +139,22 @@ export function CPDashboard() {
     setPagination(prev => ({ ...prev, currentPage: 1 }));
   };
 
-  // keep this near your refs/functions
   const BASE_HEIGHT = 36;
 
   const autoGrow = el => {
     if (!el) return;
-    el.style.height = `${BASE_HEIGHT}px`; // reset to base
+    el.style.height = `${BASE_HEIGHT}px`;
     el.style.height = `${Math.min(el.scrollHeight, 120)}px`;
   };
 
   const searchRef = useRef(null);
   useEffect(() => {
-    autoGrow(searchRef.current); // ✅ runs even when you clear via button
+    autoGrow(searchRef.current);
   }, [searchInput]);
 
   const handleSearchKeyDown = e => {
     if (e.key === 'Enter') {
-      e.preventDefault(); // ✅ stops newline
+      e.preventDefault();
       const trimmed = searchInput.trim();
       setSearchQuery(trimmed);
       setPagination(prev => ({ ...prev, currentPage: 1 }));
@@ -188,12 +198,10 @@ export function CPDashboard() {
     return location;
   };
 
-  // Helper function to extract date in YYYY-MM-DD format from event date
   const parseEventDate = dateString => {
     if (!dateString) return null;
 
     try {
-      // Try to parse as ISO date string or standard date
       const parsedDate = new Date(dateString);
       if (!Number.isNaN(parsedDate.getTime())) {
         const year = parsedDate.getFullYear();
@@ -201,33 +209,29 @@ export function CPDashboard() {
         const day = String(parsedDate.getDate()).padStart(2, '0');
         return `${year}-${month}-${day}`;
       }
-    } catch (error) {
-      console.error('Error parsing date:', error);
+    } catch (err) {
+      console.error('Error parsing date:', err);
     }
     return null;
   };
 
   const filteredEvents = events.filter(event => {
-    // Filter by online only if checkbox is checked
     if (onlineOnly) {
       const isOnlineEvent = event.location?.toLowerCase() === 'virtual';
       if (!isOnlineEvent) return false;
     }
 
-    // Filter by date filter (Tomorrow / Weekend)
     if (dateFilter === 'tomorrow') {
       if (!isTomorrow(event.date)) return false;
     } else if (dateFilter === 'weekend') {
       if (!isComingWeekend(event.date)) return false;
     }
 
-    // Filter by specific date (if selected)
     const eventDate = event.date ? parseEventDate(event.date) : null;
     if (selectedDate && eventDate !== selectedDate) {
       return false;
     }
 
-    // Filter by search query if provided
     if (!searchQuery) return true;
     const term = searchQuery.toLowerCase();
 
@@ -238,7 +242,6 @@ export function CPDashboard() {
     );
   });
 
-  // Reset pagination to page 1 when filters change
   useEffect(() => {
     setPagination(prev => ({ ...prev, currentPage: 1 }));
   }, [searchQuery, selectedDate, onlineOnly, dateFilter]);
@@ -273,11 +276,7 @@ export function CPDashboard() {
 
   let eventsContent;
 
-  if (isLoading) {
-    eventsContent = <div className={styles.noEvents}>Loading events...</div>;
-  } else if (error) {
-    eventsContent = <div className={styles.noEvents}>{error}</div>;
-  } else if (displayedEvents.length > 0) {
+  if (displayedEvents.length > 0) {
     eventsContent = displayedEvents.map(event => (
       <Col md={4} key={event.id} className={styles.eventCardCol}>
         <Card className={styles.eventCard}>
@@ -299,7 +298,18 @@ export function CPDashboard() {
               <FaMapMarkerAlt className={styles.eventIcon} /> {getDisplayLocation(event.location)}
             </p>
             <p className={styles.eventOrganizer}>
-              <FaUserAlt className={styles.eventIcon} /> {event.organizer || 'Organizer TBD'}
+              {event.organizerLogo && !failedLogos.has(event._id) ? (
+                <img
+                  src={event.organizerLogo}
+                  alt={normalizeOrganizer(event.organizer) || 'Organizer'}
+                  className={styles.organizerLogo}
+                  onError={() => handleLogoError(event._id)}
+                  loading="lazy"
+                />
+              ) : (
+                <FaUserAlt className={styles.eventIcon} aria-hidden="true" />
+              )}{' '}
+              <span>{normalizeOrganizer(event.organizer) || 'Organizer TBD'}</span>
             </p>
           </CardBody>
         </Card>
@@ -363,7 +373,7 @@ export function CPDashboard() {
         </div>
       </header>
 
-      <Row className={styles.centeredRow}>
+      <Row>
         <Col md={3} className={`${styles.dashboardSidebar} ${darkMode ? styles.darkSidebar : ''}`}>
           <div className={styles.filterSection}>
             <h4>Search Filters</h4>
@@ -406,17 +416,16 @@ export function CPDashboard() {
                     </Label>
                   </FormGroup>
                 </div>
-                <div className={styles.dashboardActions}>
-                  <Button
-                    color="primary"
-                    onClick={() => {
-                      setDateFilter('');
-                      setSelectedDate('');
-                    }}
-                  >
-                    Clear date filter
-                  </Button>
-                </div>
+                <Button
+                  color="primary"
+                  size="sm"
+                  onClick={() => {
+                    setDateFilter('');
+                    setSelectedDate('');
+                  }}
+                >
+                  Clear date filter
+                </Button>
                 <Input
                   type="date"
                   placeholder="Select Date"
@@ -468,11 +477,15 @@ export function CPDashboard() {
         </Col>
 
         <Col md={9} className={`${styles.dashboardMain} ${darkMode ? styles.darkMain : ''}`}>
-          <h2 className={styles.sectionTitle}>Events</h2>
+          <div className={styles.eventsHeader}>
+            <h2 className={styles.sectionTitle}>Events</h2>
+            <Button color="primary" className={styles.showPastEventsBtn}>
+              Show Past Events
+            </Button>
+          </div>
 
           <Row>{eventsContent}</Row>
 
-          {/* Simple pagination controls if needed */}
           {totalPages > 1 && (
             <div className={styles.paginationContainer}>
               <Button
@@ -494,10 +507,6 @@ export function CPDashboard() {
               </Button>
             </div>
           )}
-
-          <div className={styles.dashboardActions}>
-            <Button color="primary">Show Past Events</Button>
-          </div>
         </Col>
       </Row>
     </Container>
