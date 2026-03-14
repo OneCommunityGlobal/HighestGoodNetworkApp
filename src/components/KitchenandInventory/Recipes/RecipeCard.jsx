@@ -36,8 +36,8 @@ const RecipeCard = ({ recipe, onViewDetails }) => {
 
       {/* User Tags */}
       <div className={styles.tagsContainer}>
-        {recipe.tags.map((tag, index) => (
-          <span key={index} className={styles.userTag}>
+        {recipe.tags.map(tag => (
+          <span key={tag} className={styles.userTag}>
             {tag}
           </span>
         ))}

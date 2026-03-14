@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import RecipeCard from './RecipeCard';
+import ViewRecipe from './ViewRecipe';
 import { mockRecipes } from './mockRecipes';
 import styles from './RecipesLandingPage.module.css';
 
@@ -7,6 +8,7 @@ const RecipesLandingPage = () => {
   const [recipes, setRecipes] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredRecipes, setFilteredRecipes] = useState([]);
+  const [selectedRecipe, setSelectedRecipe] = useState(null);
 
   useEffect(() => {
     setRecipes(mockRecipes);
@@ -29,8 +31,12 @@ const RecipesLandingPage = () => {
   }, [searchTerm, recipes]);
 
   const handleViewRecipe = recipeId => {
-    // eslint-disable-next-line no-console
-    console.log('View recipe:', recipeId);
+    const recipe = recipes.find(r => r.id === recipeId);
+    setSelectedRecipe(recipe);
+  };
+
+  const handleCloseRecipe = () => {
+    setSelectedRecipe(null);
   };
 
   const handleAddRecipe = () => {
@@ -39,44 +45,48 @@ const RecipesLandingPage = () => {
   };
 
   return (
-    <div className={styles.recipesContainer}>
-      <div className={styles.header}>
-        <h1 className={styles.pageTitle}>Recipes</h1>
+    <>
+      <div className={styles.recipesContainer}>
+        <div className={styles.header}>
+          <h1 className={styles.pageTitle}>Recipes</h1>
 
-        <div className={styles.headerActions}>
-          <div className={styles.searchContainer}>
-            <input
-              type="text"
-              placeholder="Search recipes by name, type, or tags..."
-              value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
-              className={styles.searchInput}
-            />
-            <span className={styles.searchIcon}>🔍</span>
+          <div className={styles.headerActions}>
+            <div className={styles.searchContainer}>
+              <input
+                type="text"
+                placeholder="Search recipes by name, type, or tags..."
+                value={searchTerm}
+                onChange={e => setSearchTerm(e.target.value)}
+                className={styles.searchInput}
+              />
+              <span className={styles.searchIcon}>&#128269;</span>
+            </div>
+
+            <button className={styles.addButton} onClick={handleAddRecipe}>
+              + Add New Recipe
+            </button>
           </div>
+        </div>
 
-          <button className={styles.addButton} onClick={handleAddRecipe}>
-            + Add New Recipe
-          </button>
+        <div className={styles.resultsCount}>
+          Showing {filteredRecipes.length} recipe{filteredRecipes.length === 1 ? '' : 's'}
+        </div>
+
+        <div className={styles.recipesGrid}>
+          {filteredRecipes.length > 0 ? (
+            filteredRecipes.map(recipe => (
+              <RecipeCard key={recipe.id} recipe={recipe} onViewDetails={handleViewRecipe} />
+            ))
+          ) : (
+            <div className={styles.noResults}>
+              <p>No recipes found matching &quot;{searchTerm}&quot;</p>
+            </div>
+          )}
         </div>
       </div>
 
-      <div className={styles.resultsCount}>
-        Showing {filteredRecipes.length} recipe{filteredRecipes.length !== 1 ? 's' : ''}
-      </div>
-
-      <div className={styles.recipesGrid}>
-        {filteredRecipes.length > 0 ? (
-          filteredRecipes.map(recipe => (
-            <RecipeCard key={recipe.id} recipe={recipe} onViewDetails={handleViewRecipe} />
-          ))
-        ) : (
-          <div className={styles.noResults}>
-            <p>No recipes found matching &quot;{searchTerm}&quot;</p>
-          </div>
-        )}
-      </div>
-    </div>
+      {selectedRecipe && <ViewRecipe recipe={selectedRecipe} onClose={handleCloseRecipe} />}
+    </>
   );
 };
 
