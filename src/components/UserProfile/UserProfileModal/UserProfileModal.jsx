@@ -18,6 +18,11 @@ import { boxStyle, boxStyleDark } from '~/styles';
 import styles from '../../Header/DarkMode.module.css'
 import hasPermission from '~/utils/permissions';
 import { connect, useSelector } from 'react-redux';
+// carlos: needed for fetching author name
+import axios from 'axios';
+import { ENDPOINTS } from '~/utils/URL';
+import { formatYYYYMMDDToMMDDYY } from '~/utils/formatDate';
+// development: needed for warning system and CC list
 import { OverlayTrigger, Popover } from 'react-bootstrap';
 import WarningModal from '../../Warnings/modals/WarningModal';
 import BlueSquareEmailCCPopup from '../BlueSquareEmailCCPopup';
@@ -34,6 +39,9 @@ const UserProfileModal = props => {
     type,
     userProfile,
     id,
+    // carlos: needed to fetch logged-in user's name when adding blue square
+    auth,
+    // development: needed for warning system
     specialWarnings,
     handleLogWarning,
   } = props;
@@ -66,20 +74,24 @@ const UserProfileModal = props => {
 
   const getCurrentDate = () => {
     const today = new Date();
-    return today.toLocaleDateString('en-CA').split('T')[0]; 
+    return today.toLocaleDateString('en-CA').split('T')[0];
   };
+
+  function getLastInitial(lastName) { // Returns last initial unless last name is "System"
+    return lastName != "System" ? lastName.charAt(0).toUpperCase() : lastName;
+  }
 
   // Fallback to a meaningful default if no data found
   if (blueSquare.length === 0) {
     blueSquare = [
       {
-        date: getCurrentDate(),  
+        date: getCurrentDate(),
         description: 'This is auto-generated text. You must save the document first before viewing newly created blue squares.',
       },
     ];
   }
 
-  
+
   const [dateStamp, setDateStamp] = useState(blueSquare[0]?.date || getCurrentDate());
 
   const [summary, setSummary] = useState(blueSquare[0]?.description || '');
@@ -166,6 +178,19 @@ const UserProfileModal = props => {
     }
   };
 
+  // carlos: author name state and fetch
+  const [firstName, setFirstName] = useState(blueSquare[0]?.authorFirstName || "");
+  const [lastName, setLastName] = useState(blueSquare[0]?.authorLastName || "");
+  useEffect(() => {
+    if (type === 'addBlueSquare' && auth?.user?.userid) {
+      axios.get(ENDPOINTS.USER_PROFILE(auth.user.userid)).then(response => {
+        setFirstName(response.data.firstName);
+        setLastName(response.data.lastName);
+      });
+    }
+  }, []);
+
+  // development: warning system handlers
   const handleWarningChange = (warningTitle, warn, color) => {
     setWarningSelections(prevData => {
       const updatedData = {
@@ -191,9 +216,9 @@ const UserProfileModal = props => {
   const handleSubmitWarning = () => {
     setShowWarningSpinner(true);
     handleLogWarning(warningSelections);
-    modifyBlueSquares(id, dateStamp, summary, 'delete');
-    // setShowWarningSpinner(false);
+    modifyBlueSquares(id, dateStamp, summary, '', '', 'delete');
   };
+
   const handleToggleLogWarning = warningData => {
     if (warningData === 'both') {
       setDisplayBothModal(true);
@@ -217,19 +242,20 @@ const UserProfileModal = props => {
     }
     setDisplayWarningModal(true);
   };
+
   const handleLogNewWarning = warningData => {
     setShowWarningSpinner(true);
     setWarningType('');
     handleLogWarning(warningData);
-
-    modifyBlueSquares(id, dateStamp, summary, 'delete');
+    modifyBlueSquares(id, dateStamp, summary, '', '', 'delete');
   };
+
   function checkFields(field1, field2) { 
-      if (field1.trim() && field2.trim()) {
-        setAddButton(false);
-      } else {
-        setAddButton(true);
-      }
+    if (field1.trim() && field2.trim()) {
+      setAddButton(false);
+    } else {
+      setAddButton(true);
+    }
   }
 
   const adjustTextareaHeight = (textarea) => {
@@ -246,13 +272,13 @@ const UserProfileModal = props => {
   const currentUser = allUsers.find(u => u._id === userProfile._id) || userProfile;
   const [ccCount, setCcCount] = useState(currentUser?.infringementCCList?.length || 0);
 
-useEffect(() => {
-  setCcCount(currentUser?.infringementCCList?.length || 0);
-}, [currentUser?.infringementCCList?.length]);
+  useEffect(() => {
+    setCcCount(currentUser?.infringementCCList?.length || 0);
+  }, [currentUser?.infringementCCList?.length]);
 
-const handleCcListUpdate = () => {
-  setCcCount(currentUser?.infringementCCList?.length || 0);
-};
+  const handleCcListUpdate = () => {
+    setCcCount(currentUser?.infringementCCList?.length || 0);
+  };
   
   const openCc  = () => setCcModalOpen(true);
   const closeCc = () => setCcModalOpen(false);
@@ -465,6 +491,12 @@ const handleCcListUpdate = () => {
 
             <FormGroup hidden={summaryFieldView}>
               <Label className={fontColor} for="report">Summary</Label>
+              {/* carlos: show who is assigning the blue square */}
+              <Input
+                id="asignment"
+                readOnly
+                value={`Assigned by ${firstName} ${getLastInitial(lastName)} ${formatYYYYMMDDToMMDDYY(dateStamp)}:`}
+              />
               <Input
                 type="textarea"
                 id="summary"
@@ -503,6 +535,12 @@ const handleCcListUpdate = () => {
                 <Label className={fontColor} for="report">
                   Summary
                 </Label>
+                {/* carlos: show who assigned the blue square */}
+                <Input
+                  id="asignment"
+                  readOnly
+                  value={`Assigned by ${firstName} ${getLastInitial(lastName)} ${formatYYYYMMDDToMMDDYY(dateStamp)}:`}
+                />
                 {canEditInfringements ? (
                   <Input
                     type="textarea"
@@ -538,6 +576,8 @@ const handleCcListUpdate = () => {
                 <Label className={fontColor} for="description">
                   Summary
                 </Label>
+                {/* carlos: show who assigned the blue square */}
+                <p className={fontColor}>{`Assigned by ${firstName} ${getLastInitial(lastName)} ${formatYYYYMMDDToMMDDYY(dateStamp)}:`}</p>
                 <p className={fontColor}>{blueSquare[0]?.description}</p>
                 <CcUserList users={blueSquare[0]?.ccdUsers} />
               </FormGroup>
@@ -589,7 +629,8 @@ const handleCcListUpdate = () => {
                   id="addBlueSquare"
                   disabled={addButton}
                   onClick={() => {
-                    modifyBlueSquares('', dateStamp, summary, 'add');
+                    // carlos: pass firstName and lastName to modifyBlueSquares
+                    modifyBlueSquares('', dateStamp, summary, firstName, lastName, 'add');
                   }}
                   style={boxStyling}
                 >
@@ -603,7 +644,8 @@ const handleCcListUpdate = () => {
                     <Button
                       color="info"
                       onClick={() => {
-                        modifyBlueSquares(id, dateStamp, summary, 'update');
+                        // carlos: pass firstName and lastName
+                        modifyBlueSquares(id, dateStamp, summary, firstName, lastName, 'update');
                       }}
                       style={{ ...boxStyling, width: '25%' }}
                     >
@@ -614,7 +656,8 @@ const handleCcListUpdate = () => {
                     <Button
                       color="danger"
                       onClick={() => {
-                        modifyBlueSquares(id, dateStamp, summary, 'delete');
+                        // carlos: pass firstName and lastName
+                        modifyBlueSquares(id, dateStamp, summary, firstName, lastName, 'delete');
                       }}
                       style={{ ...boxStyling, width: '25%' }}
                     >
