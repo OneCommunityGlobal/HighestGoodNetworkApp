@@ -28,7 +28,7 @@ const CustomTooltip = ({ active, payload, isDark, usePercentage }) => {
         style={{ fontSize: '0.875rem' }}
       >
         <p><strong>Role:</strong> {job.title}</p>
-        <p><strong>Conversion Rate:</strong> {usePercentage ? `${job.conversionRate}%` : job.conversionRate}</p>
+        <p><strong>Conversion Rate (Applications ÷ Hits):</strong> {usePercentage ? `${job.conversionRate}%` : job.conversionRate}</p>
         <p><strong>Hits:</strong> {job.hits}</p>
         <p><strong>Applications:</strong> {job.applications}</p>
       </div>
@@ -37,15 +37,38 @@ const CustomTooltip = ({ active, payload, isDark, usePercentage }) => {
   return null;
 };
 
-function ConvertedApplicationGraph({ data = [], usePercentage, isDark }) {
+function ConvertedApplicationGraph({ data = [], usePercentage, isDark, dateRange }) {
   const sortedData = useMemo(() => {
+    const map = new Map();
+
+    data.forEach((item) => {
+      const title = item.title;
+
+      if (!map.has(title)) {
+        map.set(title, { ...item });
+      } else {
+        const existing = map.get(title);
+
+        const hits = (existing.hits || 0) + (item.hits || 0);
+        const applications =
+          (existing.applications || 0) + (item.applications || 0);
+
+        map.set(title, {
+          ...existing,
+          hits,
+          applications,
+          conversionRate: hits ? Number((applications / hits) * 100).toFixed(2) : 0,
+        });
+      }
+    });
+
+    const uniqueRoles = Array.from(map.values());
+
     const key = usePercentage ? 'conversionRate' : 'applications';
-    const toNum = (v) => Number(v) || 0;
 
-    const cloned = [...data];
-    cloned.sort((a, b) => toNum(b[key]) - toNum(a[key]));
+    uniqueRoles.sort((a, b) => (b[key] || 0) - (a[key] || 0));
 
-    return cloned.slice(0, 10);
+    return uniqueRoles.slice(0, 10);
   }, [data, usePercentage]);
 
   return (
@@ -54,15 +77,17 @@ function ConvertedApplicationGraph({ data = [], usePercentage, isDark }) {
         isDark ? 'bg-space-cadet text-light boxStyleDark' : 'bg-white text-gray-900 boxStyle'
       }`}
     >
-      <h2 className={`text-lg font-semibold mb-2 ${isDark ? 'text-azure' : ''}`}>
-        Top 10 Job Postings by {usePercentage ? 'Conversion Rate' : 'Applications'}
-      </h2>
+      <div className="mb-4">
+        <h2 className={`text-lg font-semibold mb-2 ${isDark ? 'text-azure' : ''}`}>
+          Top 10 Job Postings by {usePercentage ? 'Conversion Rate' : 'Applications'} ({dateRange})
+        </h2>
+      </div>
 
       {sortedData.length === 0 ? (
         <p>No data available for the selected date range.</p>
       ) : (
         <ResponsiveContainer width="100%" height={400}>
-          <BarChart layout="vertical" data={sortedData} margin={{ top: 20, right: 90, bottom: 40, left: 180 }}>
+          <BarChart layout="vertical" data={sortedData} margin={{ top: 20, right: 90, bottom: 40, left: 20 }}>
             <XAxis
               type="number"
               domain={usePercentage ? [0, 100] : ['auto', 'auto']}
@@ -91,7 +116,12 @@ function ConvertedApplicationGraph({ data = [], usePercentage, isDark }) {
               />
             </YAxis>
 
-            <Tooltip content={<CustomTooltip isDark={isDark} usePercentage={usePercentage} />} />
+            <Tooltip
+              wrapperStyle={{
+                backgroundColor: isDark ? '#374151' : '#ffffff',
+                border: 'none'
+              }}
+              content={<CustomTooltip isDark={isDark} usePercentage={usePercentage} />} />
 
             <Bar dataKey={usePercentage ? 'conversionRate' : 'applications'} fill="#4CAF50">
               <LabelList

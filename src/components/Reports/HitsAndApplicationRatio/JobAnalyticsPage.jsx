@@ -93,12 +93,16 @@ function JobAnalyticsPage() {
                 onChange={(e) => setDateRange(e.target.value)}
                 className={`rounded px-2 py-1 ${
                   isDark
-                    ? 'bg-space-cadet text-light border border-yinmn-blue'
+                    ? 'bg-space-cadet text-gray-900 border border-yinmn-blue'
                     : 'bg-white text-gray-900 border border-gray-300'
                 }`}
               >
                 {dateOptions.map((option) => (
-                  <option key={option} value={option}>
+                  <option
+                    key={option}
+                    value={option}
+                    style={isDark ? { backgroundColor: '#1a1a2e', color: '#e0e0e0' } : {}}
+                  >
                     {option}
                   </option>
                 ))}
@@ -138,12 +142,16 @@ function JobAnalyticsPage() {
                 data={convertedData}
                 usePercentage={usePercentage}
                 isDark={isDark}
+                dateRange={dateRange}
               />
+
+              <div className={`my-8 border-t ${isDark ? 'border-yinmn-blue' : 'border-gray-200'}`} />
 
               <NonConvertedApplicationsGraph
                 data={nonConvertedData}
                 usePercentage={usePercentage}
                 isDark={isDark}
+                dateRange={dateRange}
               />
             </>
           )}

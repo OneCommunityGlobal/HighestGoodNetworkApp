@@ -35,7 +35,7 @@ const CustomTooltip = ({ active, payload, usePercentage, isDark }) => {
         style={{ fontSize: '0.875rem' }}
       >
         <p><strong>Role:</strong> {job.title}</p>
-        <p><strong>Conversion Rate:</strong> {fmtPct(job.conversionRate)}</p>
+        <p><strong>Conversion Rate (Applications ÷ Hits):</strong> {fmtPct(job.conversionRate)}</p>
         <p><strong>Hits:</strong> {fmtInt(job.hits)}</p>
         <p><strong>Applications:</strong> {fmtInt(job.applications)}</p>
       </div>
@@ -44,17 +44,42 @@ const CustomTooltip = ({ active, payload, usePercentage, isDark }) => {
   return null;
 };
 
-function NonConvertedApplicationsGraph({ data = [], usePercentage, isDark }) {
-  const normalized = useMemo(
-    () =>
-      data.map((d) => ({
-        ...d,
-        hits: toNum(d.hits),
-        applications: toNum(d.applications),
-        conversionRate: toNum(d.conversionRate),
-      })),
-    [data]
-  );
+function NonConvertedApplicationsGraph({ data = [], usePercentage, isDark, dateRange }) {
+  const normalized = useMemo(() => {
+    const map = new Map();
+
+    data.forEach((item) => {
+      const title = item.title;
+
+      const hits = toNum(item.hits);
+      const applications = toNum(item.applications);
+
+      if (!map.has(title)) {
+        map.set(title, {
+          ...item,
+          hits,
+          applications,
+          conversionRate: hits ? Number((applications / hits) * 100).toFixed(2) : 0,
+        });
+      } else {
+        const existing = map.get(title);
+
+        const totalHits = existing.hits + hits;
+        const totalApplications = existing.applications + applications;
+
+        map.set(title, {
+          ...existing,
+          hits: totalHits,
+          applications: totalApplications,
+          conversionRate: totalHits
+            ? (totalApplications / totalHits) * 100
+            : 0,
+        });
+      }
+    });
+
+    return Array.from(map.values());
+  }, [data]);
 
   const metricKey = usePercentage ? 'conversionRate' : 'applications';
 
@@ -83,11 +108,14 @@ function NonConvertedApplicationsGraph({ data = [], usePercentage, isDark }) {
         isDark ? 'bg-space-cadet text-light boxStyleDark' : 'bg-white text-gray-900 boxStyle'
       }`}
     >
-      <h2 className={`text-lg font-semibold mb-2 ${isDark ? 'text-azure' : ''}`}>
-        {usePercentage
-          ? 'Top 10 Job Postings with Lowest Conversion Rate'
-          : 'Top 10 Job Postings with Lowest Applications'}
-      </h2>
+
+      <div className="mb-4">
+        <h2 className={`text-lg font-semibold mb-2 ${isDark ? 'text-azure' : ''}`}>
+          Top 10 Job Postings with Lowest {usePercentage
+            ? 'Conversion Rate'
+            : 'Applications'} ({dateRange})
+        </h2>
+      </div>
 
       {rows.length === 0 ? (
         <p>No data available for the selected date range.</p>
@@ -96,7 +124,7 @@ function NonConvertedApplicationsGraph({ data = [], usePercentage, isDark }) {
           <BarChart
             layout="vertical"
             data={rows}
-            margin={{ top: 20, right: 90, bottom: 40, left: 180 }}
+            margin={{ top: 20, right: 90, bottom: 40, left: 20 }}
           >
             <XAxis
               type="number"
@@ -131,7 +159,12 @@ function NonConvertedApplicationsGraph({ data = [], usePercentage, isDark }) {
               />
             </YAxis>
 
-            <Tooltip content={<CustomTooltip usePercentage={usePercentage} isDark={isDark} />} />
+            <Tooltip
+              wrapperStyle={{
+                backgroundColor: isDark ? '#374151' : '#ffffff',
+                border: 'none'
+              }}
+              content={<CustomTooltip usePercentage={usePercentage} isDark={isDark} />} />
 
             <Bar dataKey={metricKey} fill="#F44336" minPointSize={3}>
               <LabelList
