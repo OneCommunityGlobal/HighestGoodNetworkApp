@@ -1,4 +1,4 @@
-import './TimeOffRequestsTable.css';
+import styles from './TimeOffRequestsTable.module.css';
 import moment from 'moment';
 
 const TimeOffRequestsTable = ({requests, openModal, darkMode}) => {
@@ -8,25 +8,25 @@ const TimeOffRequestsTable = ({requests, openModal, darkMode}) => {
     return momentA - momentB;
   };
   return (
-    <div className="user-profile-time-off-section">
-      <div className="user-profile-time-off-div-header">
-        <div className="user-profile-time-off-div-header-title">SCHEDULED TIME OFF</div>
+    <div className={styles['user-profile-time-off-section']}>
+      <div className={styles['user-profile-time-off-div-header']}>
+        <div className={styles['user-profile-time-off-div-header-title']}>SCHEDULED TIME OFF</div>
       </div>
       {requests?.length > 0 ? (
         <>
-          <div className={`user-profile-time-off-div-table-header ${darkMode ? 'bg-space-cadet text-light' : ''}`}>
-            <div className="user-profile-time-off-div-table-date">Date</div>
-            <div className="user-profile-time-off-div-table-duration">Duration</div>
+          <div className={`${styles['user-profile-time-off-div-table-header']} ${darkMode ? 'bg-space-cadet text-light' : ''}`}>
+            <div className={styles['user-profile-time-off-div-table-date']}>Date</div>
+            <div className={styles['user-profile-time-off-div-table-duration']}>Duration</div>
           </div>
-          <div className="user-profile-time-off-div-table-data">
+          <div className={styles['user-profile-time-off-div-table-data']}>
             {requests
               .slice()
               .sort(sortRequests)
               .map(request => (
-                <div className={`user-profile-time-off-div-table-entry ${darkMode ? 'bg-space-cadet text-light' : ''}`} key={request._id}>
-                  <div className="user-profile-time-off-div-table-entry-icon-tooltip-wrapper">
+                <div className={`${styles['user-profile-time-off-div-table-entry']} ${darkMode ? 'bg-space-cadet text-light' : ''}`} key={request._id}>
+                  <div className={styles['user-profile-time-off-div-table-entry-icon-tooltip-wrapper']}>
                     {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
-                    <div className="user-profile-time-off-div-table-entry-icon" onClick={() => openModal(request)}>
+                    <div className={styles['user-profile-time-off-div-table-entry-icon']} onClick={() => openModal(request)}>
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="22"
@@ -44,7 +44,7 @@ const TimeOffRequestsTable = ({requests, openModal, darkMode}) => {
                         <path d="M464 256A208 208 0 1 1 48 256a208 208 0 1 1 416 0zM0 256a256 256 0 1 0 512 0A256 256 0 1 0 0 256zM232 120V256c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2V120c0-13.3-10.7-24-24-24s-24 10.7-24 24z" />
                       </svg>
                     </div>
-                    <div className="user-profile-time-off-div-table-entry-tooltip">
+                    <div className={styles['user-profile-time-off-div-table-entry-tooltip']}>
                       <div>
                         <span style={{ fontWeight: 500, textDecoration: 'underline' }}>Date:</span>{' '}
                         {moment(request.startingDate).format('MM/DD/YYYY')}
@@ -64,10 +64,10 @@ const TimeOffRequestsTable = ({requests, openModal, darkMode}) => {
                     </div>
                   </div>
 
-                  <div className="user-profile-time-off-div-table-entry-date">
+                  <div className={styles['user-profile-time-off-div-table-entry-date']}>
                     {moment(request.startingDate).format('MM/DD/YYYY')}
                   </div>
-                  <div className="user-profile-time-off-div-table-entry-duration">
+                  <div className={styles['user-profile-time-off-div-table-entry-duration']}>
                     {request.duration}
                   </div>
                 </div>
