@@ -158,8 +158,18 @@ class ReportsPage extends Component {
 
   handleClearFilters() {
     this.setState({
-      startDate: new Date(DATE_PICKER_MIN_DATE),
-      endDate: new Date(),
+     startDate: moment()
+  .tz('America/Los_Angeles')
+  .subtract(1, 'week')
+  .startOf('week')
+  .toDate(),
+
+endDate: moment()
+  .tz('America/Los_Angeles')
+  .subtract(1, 'week')
+  .endOf('week')
+  .toDate(),
+
       wildCardSearchText: '',
       filterStatus: 'all',
     });
