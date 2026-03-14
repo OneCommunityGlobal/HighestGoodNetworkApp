@@ -1,10 +1,17 @@
-import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Table } from 'reactstrap';
+import { useState } from 'react';
+import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Table, Spinner } from 'reactstrap';
 import moment from 'moment';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import styles from './RecordsModal.module.css';
 import { approvePurchase, rejectPurchase } from '../../../actions/bmdashboard/materialsActions';
+import {
+  approveConsumablePurchase,
+  rejectConsumablePurchase,
+} from '../../../actions/bmdashboard/consumableActions';
 
-export default function RecordsModal({ modal, setModal, record, setRecord, recordType }) {
+const ALLOWED_ROLES = ['Owner', 'Administrator'];
+
+export default function RecordsModal({ modal, setModal, record, setRecord, recordType, itemType }) {
   if (record) {
     const toggle = () => {
       setModal(false);
@@ -17,7 +24,12 @@ export default function RecordsModal({ modal, setModal, record, setRecord, recor
         <ModalBody>
           <div className={`${styles.recordsModalTableContainer}`}>
             <Table>
-              <Record record={record} recordType={recordType} setRecord={setRecord} />
+              <Record
+                record={record}
+                recordType={recordType}
+                setRecord={setRecord}
+                itemType={itemType}
+              />
             </Table>
           </div>
         </ModalBody>
@@ -30,63 +42,64 @@ export default function RecordsModal({ modal, setModal, record, setRecord, recor
   return null;
 }
 
-export function Record({ record, recordType, setRecord }) {
+export function Record({ record, recordType, setRecord, itemType }) {
   const handleUndefined = value => {
     return value !== undefined && value !== null ? value : 'N/A';
   };
 
   const dispatch = useDispatch();
-  // const handleApprove = async (purchaseId, quantity) => {
-  //   await dispatch(approvePurchase(purchaseId, quantity));
-  // };
+  const [loadingId, setLoadingId] = useState(null);
 
-  // const handleReject = async purchaseId => {
-  //   await dispatch(rejectPurchase(purchaseId));
-  // };
+  const userRole = useSelector(state => state.auth?.user?.role);
+  const canApproveReject = ALLOWED_ROLES.includes(userRole);
+
+  const isConsumable = itemType === 'Consumables';
+
   const handleApprove = async (purchaseId, quantity) => {
+    setLoadingId(purchaseId);
     try {
-      const response = await dispatch(approvePurchase(purchaseId, quantity));
-      // Only update the state if the purchase was successfully approved
+      const action = isConsumable
+        ? approveConsumablePurchase(purchaseId, quantity)
+        : approvePurchase(purchaseId, quantity);
+      const response = await dispatch(action);
+
       if (response && response.status === 200) {
         const updatedPurchases = record.purchaseRecord.map(purchase => {
           if (purchase._id === purchaseId) {
-            return {
-              ...purchase,
-              status: 'Approved',
-            };
+            return { ...purchase, status: 'Approved' };
           }
           return purchase;
         });
-        setRecord({
-          ...record,
-          purchaseRecord: updatedPurchases,
-        });
+        setRecord({ ...record, purchaseRecord: updatedPurchases });
       }
-    } catch (error) {
-      // Optionally, you can handle UI feedback for the error
+    } catch {
+      // Toast error is handled inside the action
+    } finally {
+      setLoadingId(null);
     }
   };
+
   const handleReject = async purchaseId => {
+    setLoadingId(purchaseId);
     try {
-      const response = await dispatch(rejectPurchase(purchaseId));
-      // Only update the state if the purchase was successfully rejected
+      const action = isConsumable
+        ? rejectConsumablePurchase(purchaseId)
+        : rejectPurchase(purchaseId);
+      const response = await dispatch(action);
+
       if (response && response.status === 200) {
         const updatedPurchases = record.purchaseRecord.map(purchase => {
           if (purchase._id === purchaseId) {
-            return {
-              ...purchase,
-              status: 'Rejected',
-            };
+            return { ...purchase, status: 'Rejected' };
           }
           return purchase;
         });
-        setRecord({
-          ...record,
-          purchaseRecord: updatedPurchases,
-        });
+        setRecord({ ...record, purchaseRecord: updatedPurchases });
       }
-    } catch (error) {
-      // Optionally, you can handle UI feedback for the error
+    } catch {
+      // Toast error is handled inside the action
+    } finally {
+      setLoadingId(null);
     }
   };
 
@@ -144,12 +157,16 @@ export function Record({ record, recordType, setRecord }) {
             <th>Email</th>
             <th>Date</th>
             <th>Status</th>
+            {canApproveReject && <th>Actions</th>}
           </tr>
         </thead>
         <tbody>
           {record?.purchaseRecord && record?.purchaseRecord.length ? (
             record.purchaseRecord.map(
               ({ _id, date, status, brandPref, priority, quantity, requestedBy }) => {
+                const isActionComplete = status === 'Approved' || status === 'Rejected';
+                const isLoading = loadingId === _id;
+
                 return (
                   <tr key={_id}>
                     <td>{priority}</td>
@@ -162,32 +179,52 @@ export function Record({ record, recordType, setRecord }) {
                     </td>
                     <td>{requestedBy.email}</td>
                     <td>{moment(date).format('MM/DD/YY')}</td>
-                    <td>{status}</td>
                     <td>
-                      <Button
-                        type="button"
-                        onClick={() => handleApprove(_id, quantity)}
-                        className={`${styles.approveButton}`}
-                        disabled={status === 'Approved' || status === 'Rejected'}
+                      <span
+                        className={
+                          status === 'Approved'
+                            ? styles.statusApproved
+                            : status === 'Rejected'
+                            ? styles.statusRejected
+                            : styles.statusPending
+                        }
                       >
-                        Approve
-                      </Button>
-                      <Button
-                        type="button"
-                        onClick={() => handleReject(_id)}
-                        className={`${styles.rejectButton}`}
-                        disabled={status === 'Approved' || status === 'Rejected'}
-                      >
-                        Reject
-                      </Button>
+                        {status}
+                      </span>
                     </td>
+                    {canApproveReject && (
+                      <td>
+                        {isLoading ? (
+                          <Spinner size="sm" />
+                        ) : (
+                          <>
+                            <Button
+                              type="button"
+                              onClick={() => handleApprove(_id, quantity)}
+                              className={`${styles.approveButton}`}
+                              disabled={isActionComplete || loadingId !== null}
+                            >
+                              Approve
+                            </Button>
+                            <Button
+                              type="button"
+                              onClick={() => handleReject(_id)}
+                              className={`${styles.rejectButton}`}
+                              disabled={isActionComplete || loadingId !== null}
+                            >
+                              Reject
+                            </Button>
+                          </>
+                        )}
+                      </td>
+                    )}
                   </tr>
                 );
               },
             )
           ) : (
             <tr>
-              <td colSpan={6} style={{ fontWeight: 'bold' }}>
+              <td colSpan={canApproveReject ? 8 : 7} style={{ fontWeight: 'bold' }}>
                 There are no purchase records.
               </td>
             </tr>

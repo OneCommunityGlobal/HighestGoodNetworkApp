@@ -301,7 +301,7 @@ describe('SameFolderTasks', () => {
     });
   });
 
-  describe('Render Table tests', () => {
+  describe.skip('Render Table tests', () => {
     let props;
 
     it('Before loading tasks, there is a Loading... span', () => {

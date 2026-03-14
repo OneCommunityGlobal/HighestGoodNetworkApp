@@ -22,6 +22,11 @@
   margin-right: 8px;
 }
 
+.approveButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .rejectButton {
   background-color: red;
   color: white;
@@ -30,4 +35,24 @@
   cursor: pointer;
   border-radius: 4px;
   margin-right: 8px;
+}
+
+.rejectButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.statusApproved {
+  color: green;
+  font-weight: bold;
+}
+
+.statusRejected {
+  color: red;
+  font-weight: bold;
+}
+
+.statusPending {
+  color: #e6a800;
+  font-weight: bold;
 }

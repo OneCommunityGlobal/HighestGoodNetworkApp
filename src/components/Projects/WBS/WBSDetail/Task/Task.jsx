@@ -187,7 +187,7 @@ function Task(props) {
               className={`tag_color tag_color_${props.num?.length > 0 ? props.num.split('.')[0] : props.num
                 } tag_color_lv_${props.level}`}
             ></td>
-            <td>
+            <td className={styles.centerAction}>
               <Button
                 color="primary"
                 size="sm"

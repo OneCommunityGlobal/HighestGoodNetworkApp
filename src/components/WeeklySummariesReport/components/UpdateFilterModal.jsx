@@ -26,6 +26,8 @@ import {
   useUpdateWeeklySummariesFilterMutation,
 } from '../../../actions/weeklySummariesFilterAction';
 import { normalizeFilter } from '~/utils/weeklySummariesFilterHelper';
+import { getCustomStyles } from '~/utils/reactSelectStyles'; //  Import Styles
+import { mapFilterToState } from '~/utils/weeklySummariesFilterUtils'; // Import logic
 
 const defaultState = {
   filterName: '',
@@ -140,6 +142,8 @@ export default function UpdateFilterModal({
     }
   }, [isOpen]);
 
+  const customStyles = getCustomStyles(darkMode);
+
   const handleFilterNameChange = value => {
     setField(setState, 'filterName', value);
   };
@@ -148,73 +152,21 @@ export default function UpdateFilterModal({
     const filterChoice = e;
     setSelectedFilter(filterChoice);
     setUpdate(false);
-    const filter = filterChoice.filterData;
-    const selectedCodesChoice = teamCodes
-      .filter(code => filter.selectedCodes.has(code.value))
-      .map(item => {
-        const [code, count] = item.label.split(' (');
-        return {
-          ...item,
-          label: `${code.padEnd(10, ' ')} (${count}`,
-        };
-      });
-    const selectedCodesSet = new Set(selectedCodesChoice.map(item => item.value));
 
-    const selectedCodesInvalidChoice = [...filter.selectedCodes]
-      .filter(item => !selectedCodesSet.has(item))
-      .map(item => {
-        return {
-          label: `${item.padEnd(10, ' ')} (0)`,
-          value: item,
-          _ids: [],
-        };
-      });
-
-    const selectedColorsChoice = colorOptions.filter(color =>
-      filter.selectedColors.has(color.value),
+    const newState = mapFilterToState(
+      filterChoice.filterData,
+      teamCodes,
+      colorOptions,
+      summaries,
+      memberDict,
     );
-    const selectedColorsSet = new Set(selectedColorsChoice.map(item => item.value));
-    const selectedColorsInvalidChoice = [...filter.selectedColors]
-      .filter(item => !selectedColorsSet.has(item))
-      .map(item => {
-        return {
-          label: item,
-          value: item,
-        };
-      });
 
-    const selectedExtraMembersChoice = summaries
-      .filter(summary => filter.selectedExtraMembers.has(summary._id))
-      .map(summary => ({
-        label: `${summary.firstName} ${summary.lastName}`,
-        value: summary._id,
-        role: summary.role,
-      }));
-
-    const selectedExtraMembersSet = new Set(selectedExtraMembersChoice.map(item => item.value));
-    const selectedExtraMembersInvalidChoice = [...filter.selectedExtraMembers]
-      .filter(item => !selectedExtraMembersSet.has(item))
-      .map(item => {
-        return {
-          label: item in memberDict ? memberDict[item] : 'N/A',
-          value: item,
-          role: '',
-        };
-      });
+    // If you need the label specifically from the choice object:
+    newState.filterName = filterChoice.label;
 
     setState(prevState => ({
       ...prevState,
-      filterName: filterChoice.label,
-      selectedCodes: selectedCodesChoice,
-      selectedColors: selectedColorsChoice,
-      selectedExtraMembers: selectedExtraMembersChoice,
-      selectedTrophies: filter.selectedTrophies,
-      selectedSpecialColors: filter.selectedSpecialColors,
-      selectedBioStatus: filter.selectedBioStatus,
-      selectedOverTime: filter.selectedOverTime,
-      selectedCodesInvalid: selectedCodesInvalidChoice,
-      selectedColorsInvalid: selectedColorsInvalidChoice,
-      selectedExtraMembersInvalid: selectedExtraMembersInvalidChoice,
+      ...newState,
     }));
   };
 
@@ -287,50 +239,20 @@ export default function UpdateFilterModal({
 
   const rollBackUpdate = () => {
     setUpdate(false);
-    const filter = selectedFilter.filterData;
-    const selectedCodesChoice = teamCodes
-      .filter(code => filter.selectedCodes.has(code.value))
-      .map(item => {
-        const [code, count] = item.label.split(' (');
-        return {
-          ...item,
-          label: `${code.padEnd(10, ' ')} (${count}`,
-        };
-      });
 
-    const selectedCodesSet = new Set(selectedCodesChoice.map(item => item.value));
-
-    const selectedCodesInvalidChoice = [...filter.selectedCodes]
-      .filter(item => !selectedCodesSet.has(item))
-      .map(item => {
-        return {
-          label: `${item.padEnd(10, ' ')} (0)`,
-          value: item,
-          _ids: [],
-        };
-      });
-    const selectedColorsChoice = colorOptions.filter(color =>
-      filter.selectedColors.has(color.value),
+    const newState = mapFilterToState(
+      selectedFilter.filterData,
+      teamCodes,
+      colorOptions,
+      summaries,
+      memberDict,
     );
-    const selectedExtraMembersChoice = summaries
-      .filter(summary => filter.selectedExtraMembers.has(summary._id))
-      .map(summary => ({
-        label: `${summary.firstName} ${summary.lastName}`,
-        value: summary._id,
-        role: summary.role,
-      }));
+
+    newState.filterName = selectedFilter.label;
 
     setState(prevState => ({
       ...prevState,
-      filterName: selectedFilter.label,
-      selectedCodes: selectedCodesChoice,
-      selectedColors: selectedColorsChoice,
-      selectedExtraMembers: selectedExtraMembersChoice,
-      selectedTrophies: filter.selectedTrophies,
-      selectedSpecialColors: filter.selectedSpecialColors,
-      selectedBioStatus: filter.selectedBioStatus,
-      selectedOverTime: filter.selectedOverTime,
-      selectedCodesInvalid: selectedCodesInvalidChoice,
+      ...newState,
     }));
   };
 
@@ -352,9 +274,11 @@ export default function UpdateFilterModal({
               id="filterOverride"
               options={filters}
               value={selectedFilter}
-              onChange={handleSelectedFilter}
-              classNamePrefix="custom-select"
-              styles={darkMode ? modalDarkSelectStyles : undefined}
+              onChange={e => handleSelectedFilter(e)}
+              styles={customStyles}
+              className={`top-select ${mainStyles.textDark} ${
+                selectedFilter ? '' : `${mainStyles.errorSelect}`
+              }`}
             />
 
             {selectedFilter && (

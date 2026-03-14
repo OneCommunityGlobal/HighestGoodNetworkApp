@@ -9,32 +9,30 @@ import 'react-datepicker/dist/react-datepicker.css';
 
 function ApplicantVolunteerRatio() {
   const darkMode = useSelector(state => state.theme.darkMode);
+
   const [data, setData] = useState([]);
-  const [allRoles, setAllRoles] = useState([]); // Store all available roles
+  const [allRoles, setAllRoles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedRoles, setSelectedRoles] = useState([]);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [validationError, setValidationError] = useState('');
+  const [viewMode, setViewMode] = useState('count');
 
-  // Fetch all available roles (without filtering)
+  // Fetch all available roles
   useEffect(() => {
     const fetchAllRoles = async () => {
       try {
         const response = await getAllApplicantVolunteerRatios({});
         const apiData = response.data;
 
-        // Get all unique roles
         const uniqueRoles = [...new Set(apiData.map(item => item.role))];
         const roleOptions = uniqueRoles.map(role => ({ label: role, value: role }));
 
         setAllRoles(roleOptions);
-
-        // Set all roles as selected by default
         setSelectedRoles(roleOptions);
       } catch (err) {
-        // Error fetching all roles
         setError('Failed to load roles. Please try again.');
       }
     };
@@ -42,10 +40,9 @@ function ApplicantVolunteerRatio() {
     fetchAllRoles();
   }, []);
 
-  // Fetch filtered data based on selected roles and date range
+  // Fetch filtered data
   useEffect(() => {
     const fetchFilteredData = async () => {
-      // Validate date range: start must be before or equal to end
       if (startDate && endDate && startDate > endDate) {
         setValidationError('Start date must be earlier than or equal to End date.');
         setData([]);
@@ -53,7 +50,6 @@ function ApplicantVolunteerRatio() {
         return;
       }
 
-      // clear previous validation error when dates are valid
       if (validationError) setValidationError('');
 
       if (selectedRoles.length === 0) {
@@ -64,14 +60,9 @@ function ApplicantVolunteerRatio() {
       try {
         setLoading(true);
 
-        // Prepare filters
         const filters = {};
-        if (startDate) {
-          filters.startDate = startDate.toISOString().split('T')[0]; // Format as YYYY-MM-DD
-        }
-        if (endDate) {
-          filters.endDate = endDate.toISOString().split('T')[0]; // Format as YYYY-MM-DD
-        }
+        if (startDate) filters.startDate = startDate.toISOString().split('T')[0];
+        if (endDate) filters.endDate = endDate.toISOString().split('T')[0];
         if (selectedRoles.length > 0) {
           filters.roles = selectedRoles.map(role => role.value).join(',');
         }
@@ -79,7 +70,6 @@ function ApplicantVolunteerRatio() {
         const response = await getAllApplicantVolunteerRatios(filters);
         const apiData = response.data;
 
-        // Transform API data to match chart format
         const transformedData = apiData.map(item => ({
           role: item.role,
           applicants: item.totalApplicants,
@@ -88,7 +78,6 @@ function ApplicantVolunteerRatio() {
 
         setData(transformedData);
       } catch (err) {
-        // Error fetching applicant volunteer ratio data
         setError('Failed to load data. Please try again.');
       } finally {
         setLoading(false);
@@ -96,15 +85,28 @@ function ApplicantVolunteerRatio() {
     };
 
     fetchFilteredData();
-  }, [startDate, endDate, selectedRoles]); // Re-fetch when date range or selected roles change
+  }, [startDate, endDate, selectedRoles]);
 
-  // Filter and transform data for chart
-  const chartData = useMemo(
-    () => data.filter(d => selectedRoles.map(r => r.value).includes(d.role)),
-    [data, selectedRoles],
-  );
+  // Prepare chart data
+  const chartData = useMemo(() => {
+    const filtered = data.filter(d => selectedRoles.map(r => r.value).includes(d.role));
 
-  // Apply dark mode to document body
+    if (viewMode === 'percentage') {
+      return filtered.map(item => {
+        const percentage =
+          item.applicants > 0 ? Number(((item.hired / item.applicants) * 100).toFixed(1)) : 0;
+
+        return {
+          ...item,
+          hiredPercentage: percentage,
+        };
+      });
+    }
+
+    return filtered;
+  }, [data, selectedRoles, viewMode]);
+
+  // Apply dark mode
   useEffect(() => {
     if (darkMode) {
       document.body.classList.add('dark-mode-body');
@@ -138,10 +140,12 @@ function ApplicantVolunteerRatio() {
   return (
     <div className={`${styles.page} ${darkMode ? styles.dark : ''}`}>
       <h2 className={styles.heading}>Number of People Hired vs. Total Applications</h2>
+
+      {/* Filters */}
       <div className={styles.filters}>
         <div className={styles.filterGroup}>
           <label htmlFor="start-date" className={styles.label}>
-            Date Range:{' '}
+            Date Range:
           </label>
           <div className={styles.dateInputWrapper}>
             <DatePicker
@@ -173,9 +177,10 @@ function ApplicantVolunteerRatio() {
             </div>
           )}
         </div>
+
         <div className={styles.filterGroupInline}>
           <label htmlFor="role-select" className={styles.label}>
-            Role:{' '}
+            Role:
           </label>
           <Select
             id="role-select"
@@ -189,39 +194,119 @@ function ApplicantVolunteerRatio() {
           />
         </div>
       </div>
+
+      {/* Toggle Buttons */}
+      <div style={{ marginBottom: '12px', display: 'flex', gap: '8px' }}>
+        <button
+          type="button"
+          onClick={() => setViewMode('count')}
+          style={{
+            padding: '6px 12px',
+            cursor: 'pointer',
+            backgroundColor: viewMode === 'count' ? '#1976d2' : '#e0e0e0',
+            color: viewMode === 'count' ? '#fff' : '#000',
+            border: 'none',
+            borderRadius: '4px',
+          }}
+        >
+          Count View
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setViewMode('percentage')}
+          style={{
+            padding: '6px 12px',
+            cursor: 'pointer',
+            backgroundColor: viewMode === 'percentage' ? '#1976d2' : '#e0e0e0',
+            color: viewMode === 'percentage' ? '#fff' : '#000',
+            border: 'none',
+            borderRadius: '4px',
+          }}
+        >
+          Percentage View
+        </button>
+      </div>
+
       {chartData.length > 0 ? (
         <div className={styles.chartContainer}>
-          <ResponsiveContainer width="100%" height={400}>
+          <ResponsiveContainer width="100%" height={350}>
             <BarChart
               data={chartData}
               layout="vertical"
               margin={{ top: 20, right: 40, left: 80, bottom: 20 }}
               barCategoryGap={24}
+              barSize={16}
             >
               <XAxis
                 type="number"
-                label={{
-                  value: 'Percentage of People Hired vs. Total Applications',
-                  position: 'insideBottom',
-                  offset: -5,
-                }}
-                allowDecimals={false}
+                domain={viewMode === 'percentage' ? [0, 100] : ['auto', 'auto']}
+                allowDecimals={viewMode === 'percentage'}
               />
+
               <YAxis
                 dataKey="role"
                 type="category"
                 width={180}
-                label={{ value: 'Name of Role', angle: -90, position: 'insideLeft' }}
+                label={{ value: 'Role', angle: -90, position: 'insideLeft' }}
               />
+
               <Tooltip />
-              <Bar dataKey="applicants" fill="#1976d2" name="Total Applicants">
-                <LabelList dataKey="applicants" position="right" />
-              </Bar>
-              <Bar dataKey="hired" fill="#43a047" name="Total Hired">
-                <LabelList dataKey="hired" position="right" />
-              </Bar>
+
+              {viewMode === 'count' ? (
+                <>
+                  <Bar dataKey="applicants" fill="#1976d2">
+                    <LabelList dataKey="applicants" position="right" />
+                  </Bar>
+
+                  <Bar dataKey="hired" fill="#43a047">
+                    <LabelList dataKey="hired" position="right" />
+                  </Bar>
+                </>
+              ) : (
+                <Bar dataKey="hiredPercentage" fill="#43a047">
+                  <LabelList
+                    dataKey="hiredPercentage"
+                    position="right"
+                    formatter={value => `${value}%`}
+                  />
+                </Bar>
+              )}
             </BarChart>
           </ResponsiveContainer>
+
+          {/* Manual Legend */}
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              gap: '16px',
+              marginTop: '12px',
+              fontWeight: 500,
+            }}
+          >
+            {viewMode === 'count' ? (
+              <>
+                <span style={{ color: '#1976d2' }}>■ Total Applications</span>
+                <span style={{ color: '#43a047' }}>■ People Hired</span>
+              </>
+            ) : (
+              <span style={{ color: '#43a047' }}>■ People Hired (%)</span>
+            )}
+          </div>
+
+          {/* Axis Title */}
+          <div
+            style={{
+              textAlign: 'center',
+              marginTop: '10px',
+              fontWeight: 500,
+            }}
+          >
+            {viewMode === 'percentage'
+              ? 'Percentage of People Hired (%)'
+              : 'Number of Applications / Hires'}
+          </div>
         </div>
       ) : (
         <div className={styles.noData}>
