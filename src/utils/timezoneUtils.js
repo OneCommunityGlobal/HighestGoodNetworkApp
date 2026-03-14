@@ -124,3 +124,32 @@ export const formatDateTimeWithTimezone = (dateString, userTimezone) => {
     return 'Time not set';
   }
 };
+
+/**
+ * Builds a full datetime from event date and startTime so that time-only strings
+ * are interpreted in the context of the event date (consistent conversion across events).
+ * @param {string|Date} eventDate - Event date
+ * @param {string} startTime - Event start time (full ISO string or time-only)
+ * @returns {string} ISO string suitable for formatDateTimeWithTimezone
+ */
+function toFullEventDatetime(eventDate, startTime) {
+  if (!startTime) return null;
+  const s = String(startTime).trim();
+  const looksLikeFullDatetime = s.includes('T') || (s.includes('-') && s.length > 12);
+  if (looksLikeFullDatetime) return startTime;
+  const dateM = moment(eventDate);
+  if (!dateM.isValid()) return startTime;
+  const timeM = moment(s, ['HH:mm:ss', 'H:mm:ss', 'h:mm A', 'h:mm a', 'HH:mm', 'H:mm'], true);
+  if (!timeM.isValid()) return startTime;
+  dateM.set({ hour: timeM.hours(), minute: timeM.minutes(), second: timeM.seconds(), millisecond: 0 });
+  return dateM.format();
+}
+
+/**
+ * Formats event start time in user's timezone using event date for consistent conversion.
+ * Use this when startTime may be time-only so the same time on different days converts correctly.
+ */
+export const formatEventTimeWithTimezone = (eventDate, startTime, userTimezone) => {
+  const fullDatetime = toFullEventDatetime(eventDate, startTime);
+  return formatDateTimeWithTimezone(fullDatetime || startTime, userTimezone);
+};

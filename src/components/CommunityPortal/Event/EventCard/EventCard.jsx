@@ -10,7 +10,7 @@ import {
   faTag,
 } from '@fortawesome/free-solid-svg-icons';
 import { format } from 'date-fns';
-import { getUserTimezone, formatDateTimeWithTimezone } from '../../../../utils/timezoneUtils';
+import { getUserTimezone, formatEventTimeWithTimezone } from '../../../../utils/timezoneUtils';
 import styles from './EventCard.module.css';
 
 function EventCard(props) {
@@ -50,7 +50,11 @@ function EventCard(props) {
   };
 
   const getDisplayLocation = () => {
-    if (!location || location.trim() === '') {
+    if (
+      location == null ||
+      String(location).trim() === '' ||
+      String(location).toLowerCase() === 'tbd'
+    ) {
       return 'Location TBD';
     }
     return location;
@@ -72,17 +76,13 @@ function EventCard(props) {
     }
   };
 
-  const formatDateTime = dateString => {
+  const formatDateTime = (eventDate, timeString) => {
     try {
-      if (!dateString) {
+      if (!timeString) {
         return 'Time not set';
       }
-
-      // Get user's timezone
       const userTimezone = getUserTimezone();
-
-      // Format with timezone conversion and abbreviation
-      return formatDateTimeWithTimezone(dateString, userTimezone);
+      return formatEventTimeWithTimezone(eventDate, timeString, userTimezone);
     } catch (error) {
       console.error('Error formatting date time:', error);
       return 'Time not set';
@@ -153,7 +153,7 @@ function EventCard(props) {
           <div className="d-flex align-items-center mb-2">
             <FontAwesomeIcon icon={faClock} className="me-2" />
             <span>
-              {formatDateTime(startTime)} - {formatDateTime(endTime)}
+              {formatDateTime(date, startTime)} - {formatDateTime(date, endTime)}
             </span>
           </div>
         </div>

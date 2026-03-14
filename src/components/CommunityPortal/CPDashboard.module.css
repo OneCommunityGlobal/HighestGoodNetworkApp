@@ -436,6 +436,22 @@
   font-size: 1rem;
 }
 
+/* Dark mode: ensure date, time, location and organizer are readable */
+.darkMain .eventDate,
+.darkMain .eventDate .eventTime,
+.darkMain .eventLocation,
+.darkMain .eventOrganizer {
+  color: #e4e6eb;
+}
+
+.darkMain .eventTime {
+  color: #b0b3b8;
+}
+
+.darkMain .eventIcon {
+  color: #e4e6eb;
+}
+
 .noEvents {
   text-align: center;
   padding: 40px;

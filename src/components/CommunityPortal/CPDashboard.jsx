@@ -14,7 +14,7 @@ import {
 } from 'reactstrap';
 import { FaCalendarAlt, FaMapMarkerAlt, FaUserAlt, FaSearch, FaTimes } from 'react-icons/fa';
 import { format } from 'date-fns';
-import { getUserTimezone, formatDateTimeWithTimezone } from '../../utils/timezoneUtils';
+import { getUserTimezone, formatEventTimeWithTimezone } from '../../utils/timezoneUtils';
 import styles from './CPDashboard.module.css';
 import { ENDPOINTS } from '../../utils/URL';
 import axios from 'axios';
@@ -166,11 +166,11 @@ export function CPDashboard() {
     }
   };
 
-  const formatTime = timeStr => {
+  const formatTime = (eventDate, timeStr) => {
     if (!timeStr) return 'Time TBD';
     try {
       const userTimezone = getUserTimezone();
-      return formatDateTimeWithTimezone(timeStr, userTimezone);
+      return formatEventTimeWithTimezone(eventDate, timeStr, userTimezone);
     } catch (error) {
       console.error('Error formatting time:', error);
       return 'Time TBD';
@@ -178,7 +178,11 @@ export function CPDashboard() {
   };
 
   const getDisplayLocation = location => {
-    if (!location || location.trim() === '') {
+    if (
+      location == null ||
+      String(location).trim() === '' ||
+      String(location).toLowerCase() === 'tbd'
+    ) {
       return 'Location TBD';
     }
     return location;
@@ -287,7 +291,7 @@ export function CPDashboard() {
               <div>
                 <div>{formatDate(event.date)}</div>
                 {event.startTime && (
-                  <div className={styles.eventTime}>{formatTime(event.startTime)}</div>
+                  <div className={styles.eventTime}>{formatTime(event.date, event.startTime)}</div>
                 )}
               </div>
             </div>
