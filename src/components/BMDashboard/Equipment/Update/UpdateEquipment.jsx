@@ -11,6 +11,10 @@ import FilePreview from '~/components/common/FilePreview/FilePreview'; // Import
 import styles from './UpdateEquipment.module.css';
 import styles1 from '../../BMDashboard.module.css';
 
+const ALLOWED_MIME_TYPES = ['image/png', 'image/jpeg'];
+const MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024;
+const INVALID_IMAGE_MSG = 'Invalid image. Use PNG, JPG, or JPEG under 5MB.';
+
 export default function UpdateEquipment() {
   const history = useHistory();
   const { equipmentId } = useParams();
@@ -136,13 +140,14 @@ export default function UpdateEquipment() {
       const validFiles = files.filter(file => {
         const fileType = file.type || '';
         const fileName = file.name || '';
-        const isValidType = fileType.startsWith('image/');
-        const isValidExtension = fileName.match(/\.(jpg|jpeg|png|gif|webp)$/i);
-        return isValidType || isValidExtension;
+        const isValidType = ALLOWED_MIME_TYPES.includes(fileType);
+        const isValidExtension = /\.(jpg|jpeg|png)$/i.test(fileName);
+        const isValidSize = file.size <= MAX_IMAGE_SIZE_BYTES;
+        return (isValidType || isValidExtension) && isValidSize;
       });
 
       if (validFiles.length === 0) {
-        console.warn('No valid image files found');
+        setSubmitError(INVALID_IMAGE_MSG);
         return;
       }
 
@@ -172,6 +177,18 @@ export default function UpdateEquipment() {
         return;
       }
 
+      const imageFile = uploadedFiles.length > 0 ? uploadedFiles[0] : null;
+
+      if (imageFile) {
+        const isValidType = ALLOWED_MIME_TYPES.includes(imageFile.type);
+        const isValidSize = imageFile.size <= MAX_IMAGE_SIZE_BYTES;
+        if (!isValidType || !isValidSize) {
+          setSubmitError(INVALID_IMAGE_MSG);
+          setIsSubmitting(false);
+          return;
+        }
+      }
+
       setIsSubmitting(true);
       setSubmitError('');
       setSubmitSuccess('');
@@ -186,36 +203,35 @@ export default function UpdateEquipment() {
           notes: sendNote === 'yes' ? notes : '',
         };
 
-        await dispatch(updateEquipment(equipmentId, updateData));
+        await dispatch(updateEquipment(equipmentId, updateData, imageFile));
         dispatch(fetchEquipmentById(equipmentId));
         setIsUpdated(true);
 
-        let successMessage = 'Equipment status updated successfully!';
+        const successMessage = imageFile
+          ? 'Equipment status updated successfully! Image saved.'
+          : 'Equipment status updated successfully!';
 
-        if (uploadedFiles.length > 0) {
-          successMessage += ' The form has been updated.';
-          cleanupFilePreviews(uploadedFilesPreview);
-          setUploadedFiles([]);
-          setUploadedFilesPreview([]);
-        }
-
+        cleanupFilePreviews(uploadedFilesPreview);
+        setUploadedFiles([]);
+        setUploadedFilesPreview([]);
         setSubmitSuccess(successMessage);
 
         if (lastUsedBy === 'other') setLastUsedByOther('');
         if (lastUsedFor === 'other') setLastUsedForOther('');
       } catch (error) {
-        console.error('Update failed:', error);
+        const baseError =
+          error.response?.data?.error ||
+          error.response?.data?.message ||
+          (error.request ? 'No response from server. Please check your connection.' : null) ||
+          error.message ||
+          'Failed to update equipment. Please try again.';
 
-        let errorMessage = 'Failed to update equipment. Please try again.';
-
-        if (error.message?.includes('User not authenticated')) {
-          errorMessage = 'Authentication error. Please check if you are logged in.';
-        } else if (error.response?.data?.error?.includes('Invalid user ID format')) {
-          errorMessage = 'User ID format error. Please contact support.';
-        }
+        const errorMessage =
+          uploadedFiles.length > 0
+            ? `${baseError} Note: Images were selected and previewed but not saved to database.`
+            : baseError;
 
         if (uploadedFiles.length > 0) {
-          errorMessage += ' Note: Images were selected and previewed but not saved to database.';
           setUploadedFilesPreview(prev =>
             prev.map(file => ({
               ...file,
@@ -662,7 +678,7 @@ export default function UpdateEquipment() {
           <Label for="file-upload-input" style={formLabelStyle}>
             Upload latest picture of this tool or equipment. (optional)
             <small className="text-muted ms-2" style={{ color: darkMode ? '#b0b7c0' : '#6c757d' }}>
-              Accepted: PNG, JPG, JPEG, GIF, WEBP
+              Accepted: PNG, JPG, JPEG (max 5MB)
             </small>
           </Label>
 
@@ -720,7 +736,7 @@ export default function UpdateEquipment() {
                     <i className="fas fa-info-circle me-1" />
                     {hasNotSavedFiles
                       ? 'Images are shown for preview purposes only and are not saved to the database.'
-                      : 'Images are uploaded for preview. Form data will be saved to database.'}
+                      : 'Images will be submitted with the form and saved to the database.'}
                   </small>
                 </Alert>
               </div>
