@@ -30,3 +30,9 @@
 .equipmentUpdateWrapper:global(.bg-oxford-blue) .equipmentUpdateHeader h2 {
   color: #e9ecef;
 }
+
+.updateSubText {
+  margin-top: 8px;
+  font-size: 0.95rem;
+  color: #cbd5e1;
+}
