@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   LineChart,
@@ -14,7 +13,6 @@ import {
 } from 'recharts';
 import styles from './CostPredictionChart.module.css';
 import projectCostService from '../../../services/projectCostService';
-import { getTooltipStyles } from '../../../utils/bmChartStyles';
 
 // Custom dot renderer (unchanged)
 function renderDotTopOrBottom(lineKey, color) {
@@ -147,7 +145,6 @@ function CostPredictionChart({ projectId }) {
                 y={y + 15} // push text down so it doesn’t overlap axis line
                 textAnchor="middle"
                 fill={darkMode ? '#e5e7eb' : '#9ca3af'}
-                fontSize={12}
               >
                 {payload.value}
               </text>
@@ -156,22 +153,13 @@ function CostPredictionChart({ projectId }) {
           />
           <YAxis
             tick={({ x, y, payload }) => (
-              <text
-                x={x}
-                y={y}
-                textAnchor="end"
-                fill={darkMode ? '#e5e7eb' : '#9ca3af'}
-                fontSize={12}
-              >
+              <text x={x} y={y} textAnchor="end" fill={darkMode ? '#e5e7eb' : '#9ca3af'}>
                 {payload.value}
               </text>
             )}
           />
           {/* Tooltip & Legend */}
-          <Tooltip
-            {...getTooltipStyles(darkMode)}
-            cursor={{ stroke: darkMode ? '#e0e0e0' : '#999' }}
-          />
+          <Tooltip />
           <Legend
             verticalAlign="bottom"
             height={48}
@@ -182,7 +170,7 @@ function CostPredictionChart({ projectId }) {
                   <li key={item.label} className={styles.legendListItem}>
                     {/* icon */}
                     {item.type === 'circle' ? (
-                      <span className={styles.legendItem} style={{ backgroundColor: item.color }} />
+                      <span className={styles.legendItem} />
                     ) : (
                       <svg width="18" height="12">
                         <line
@@ -197,7 +185,7 @@ function CostPredictionChart({ projectId }) {
                       </svg>
                     )}
                     {/* label */}
-                    <span style={{ color: darkMode ? '#e5e7eb' : '#374151' }}>{item.label}</span>
+                    <span style={{ color: item.color }}>{item.label}</span>
                   </li>
                 ))}
               </ul>
@@ -241,9 +229,5 @@ function CostPredictionChart({ projectId }) {
     </div>
   );
 }
-
-CostPredictionChart.propTypes = {
-  projectId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-};
 
 export default CostPredictionChart;

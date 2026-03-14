@@ -4,7 +4,6 @@ import { Container } from 'reactstrap';
 import { fetchBMProjects } from '../../actions/bmdashboard/projectActions';
 import ProjectsList from './Projects/ProjectsList';
 import ProjectSelectForm from './Projects/ProjectSelectForm';
-import ProjectStatusDonutChart from './ProjectStatus/ProjectStatusDonutChart';
 import BMError from './shared/BMError';
 import styles from './BMDashboard.module.css';
 
@@ -201,7 +200,6 @@ export function BMDashboard() {
         ) : (
           <>
             <ProjectSelectForm />
-            <ProjectStatusDonutChart />
             <ProjectsList />
           </>
         )}

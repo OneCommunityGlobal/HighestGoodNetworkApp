@@ -49,6 +49,7 @@ function AddNewTitleModal({
   QSTTeamCodes,
 }) {
   const darkMode = useSelector(state => state.theme.darkMode);
+  const teamCodes = useSelector(state => state.teamCodes?.teamCodes || []);
 
   // ------------------------- state -----------------------------------------
 
@@ -128,10 +129,10 @@ function AddNewTitleModal({
     ? teamsData
     : (teamsData && Array.isArray(teamsData.allTeams) ? teamsData.allTeams : []);
 
-  const existTeamCodes = new Set(
-    (Array.isArray(QSTTeamCodes) ? QSTTeamCodes : [])
-      .map(code => code?.value)
-      .filter(Boolean)
+  let existTeamCodes = new Set(
+    (Array.isArray(teamsData?.allTeamCode?.distinctTeamCodes)
+      ? teamsData.allTeamCode.distinctTeamCodes
+      : [])
   );
 
   const existTeamName = new Set(
@@ -244,24 +245,19 @@ function AddNewTitleModal({
 
   const confirmOnClick = () => {
     if (!onTeamNameValidation(titleData.teamAssiged)) return;
-
-    const teamCodeValue = (titleData.teamCode || '').trim();
-
-    if (teamCodeValue && !isValidTeamCode) {
-      setWarningMessage({ title: 'Error', content: 'Please select a valid Team Code' });
-      setShowMessage(true);
-      return;
-    }
-
+  
     const safeTeams = allTeamsArray;
     const team = normalizeTeam(titleData.teamAssiged, safeTeams);
+  
+    // normalize teamCode to a pure string
+    const teamCodeValue = (titleData.teamCode || '').trim();
 
     const payload = {
       id: titleData.id,
       titleName: titleData.titleName?.trim() || '',
       titleCode: titleData.titleCode?.trim() || '',
       mediaFolder: titleData.mediaFolder?.trim() || '',
-      teamCode: teamCodeValue,
+      teamCode: teamCodeValue,         // now a non-empty string
       projectAssigned: titleData.projectAssigned || '',
     };
   

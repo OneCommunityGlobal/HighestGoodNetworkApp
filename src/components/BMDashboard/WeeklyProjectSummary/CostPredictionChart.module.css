@@ -1,5 +1,5 @@
 .title {
-  margin: 0 0 8px;
+  margin: 0 0 8px 0;
   text-align: center;
   font-size: 24px;
   font-weight: normal;
@@ -19,7 +19,6 @@
   list-style: none;
   margin: 0;
   padding: 0;
-  font-size: 12px;
 }
 
 .legendItem {
@@ -27,6 +26,7 @@
   width: 12px;
   height: 12px;
   border-radius: 50%;
+  background: var(--text-color);
 }
 
 .legendListItem {

@@ -1,9 +1,8 @@
-import axios from 'axios';
+import React, { useState, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { useEffect, useMemo, useState } from 'react';
-import { Button, Modal } from 'react-bootstrap';
+import { Modal, Button } from 'react-bootstrap';
 import { connect, useSelector } from 'react-redux';
-import { toast } from 'react-toastify';
+import axios from 'axios';
 import { ENDPOINTS } from '~/utils/URL';
 import styles from './HelpModal.module.css';
 
@@ -14,7 +13,6 @@ function HelpModal({ show, onHide, auth }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [teams, setTeams] = useState([]);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const darkMode = useSelector(state => state.theme.darkMode);
 
@@ -42,7 +40,8 @@ function HelpModal({ show, onHide, auth }) {
       try {
         const profileResponse = await axios.get(ENDPOINTS.USER_PROFILE(userId));
         setTeams(profileResponse.data?.teams || []);
-      } catch {
+      } catch (err) {
+        console.error('Failed to fetch user profile', err);
         setTeams([]);
       }
     };
@@ -55,36 +54,9 @@ function HelpModal({ show, onHide, auth }) {
     setIsOpen(false);
   };
 
-  const handleSubmit = async () => {
-    if (!selectedOption) {
-      toast.error('Please select a help category');
-      return;
-    }
-
-    if (!userId) {
-      toast.error('User ID not found. Please refresh and try again.');
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    try {
-      await axios.post('http://localhost:4500/api/helprequest/create', {
-        userId,
-        topic: selectedOption,
-        description: `Help request for: ${selectedOption}`,
-      });
-
-      toast.success('Help request submitted successfully!');
-      setSelectedOption('');
+  const handleSubmit = () => {
+    if (selectedOption) {
       onHide();
-    } catch (err) {
-      console.error('Help request submission error:', err);
-      const errorMessage =
-        err.response?.data?.message || 'Failed to submit help request. Please try again.';
-      toast.error(errorMessage);
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -199,9 +171,9 @@ function HelpModal({ show, onHide, auth }) {
         <Button
           variant="primary"
           onClick={handleSubmit}
-          disabled={!selectedOption || !isSoftwareDevMember || isSubmitting}
+          disabled={!selectedOption || !isSoftwareDevMember}
         >
-          {isSubmitting ? 'Submitting...' : 'Submit'}
+          Submit
         </Button>
       </Modal.Footer>
     </Modal>

@@ -47,20 +47,14 @@ export function TasksTable({ darkMode, tasks, projectId }) {
   };
 
   const getOptions = (filterName) => {
-    const options = Array.from(
-      new Set(tasks.map(item => item[filterName]).filter(Boolean)),
-    ).sort((a, b) => String(a).localeCompare(String(b)));
-  
+    const options = [...Array.from(new Set(tasks.map(item => item[filterName]))).sort()];
     return options.map(option => ({ value: option, label: option }));
   };
 
   const getUserOptions = () => {
-    const users = Array.from(
-      new Set(
-        tasks.flatMap(task => task.resources?.map(r => r.name) ?? []).filter(Boolean),
-      ),
-    ).sort((a, b) => a.localeCompare(b));
-  
+    let users = [];
+    tasks.forEach(task => task.resources?.forEach(resource => users.push(resource.name)));
+    users = Array.from(new Set(users)).sort();
     return users.map(user => ({ value: user, label: user }));
   };
 

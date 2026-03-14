@@ -67,7 +67,7 @@ function MockAddUserProfile() {
 vi.mock('../UserProfileAdd', () => {
   return {
     __esModule: true,
-    default: () => <MockAddUserProfile />,
+    default: props => MockAddUserProfile(props),
   };
 });
 

@@ -1,11 +1,7 @@
 import { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
-import { useSelector } from 'react-redux';
 import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
-// import httpService from '../../../../services/httpService';
-import { getProjectExpenditure } from './mockExpenditureData';
+import axios from 'axios';
 import styles from './ExpenditureChart.module.css';
-import { getTooltipStyles } from '../../../../utils/bmChartStyles';
 
 const COLORS = ['#6777EF', '#A0CD61', '#F5CD4B'];
 const CATEGORIES = ['Labor', 'Equipment', 'Materials'];
@@ -39,7 +35,6 @@ const renderCustomLabel = ({ cx, cy, midAngle, outerRadius, percent, name }) => 
 };
 
 function ExpenditureChart({ projectId }) {
-  const darkMode = useSelector(state => state.theme.darkMode);
   const [actual, setActual] = useState([]);
   const [planned, setPlanned] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -51,16 +46,11 @@ function ExpenditureChart({ projectId }) {
       setLoading(true);
       setError(null);
       try {
-        // Using mock data instead of API call
-        const data = getProjectExpenditure(projectId);
-        setActual(data.actual);
-        setPlanned(data.planned);
-        // Original API call (commented out for mock data)
-        // const res = await httpService.get(
-        //   `${process.env.REACT_APP_APIENDPOINT}/bm/expenditure/${projectId}/pie`,
-        // );
-        // setActual(res.data.actual);
-        // setPlanned(res.data.planned);
+        const res = await axios.get(
+          `${process.env.REACT_APP_APIENDPOINT}/bm/expenditure/${projectId}/pie`,
+        );
+        setActual(res.data.actual);
+        setPlanned(res.data.planned);
       } catch (err) {
         setError('Failed to load expenditure data');
       } finally {
@@ -71,8 +61,8 @@ function ExpenditureChart({ projectId }) {
   }, [projectId]);
 
   const renderChart = (data, title) => (
-    <div className={styles.expenditureChartCard}>
-      <h4 className={styles.expenditureChartTitle}>{title}</h4>
+    <div className={styles.expenditure - chart - card}>
+      <h4 className={styles.expenditure - chart - title}>{title}</h4>
       <PieChart width={280} height={280}>
         <Pie
           data={data}
@@ -89,38 +79,22 @@ function ExpenditureChart({ projectId }) {
             <Cell key={entry.category || index} fill={COLORS[index % COLORS.length]} />
           ))}
         </Pie>
-        <Tooltip
-          {...getTooltipStyles(darkMode)}
-          itemStyle={{ color: darkMode ? '#e0e0e0' : '#333' }}
-        />
-        <Legend
-          layout="horizontal"
-          verticalAlign="bottom"
-          align="center"
-          height={20}
-          wrapperStyle={{
-            color: darkMode ? '#e0e0e0' : '#333',
-          }}
-          iconSize={10}
-        />
+        <Tooltip />
+        <Legend layout="horizontal" verticalAlign="bottom" align="center" height={20} />
       </PieChart>
     </div>
   );
 
   if (loading)
-    return <div className={styles.expenditureChartLoading}>Loading expenditure data...</div>;
-  if (error) return <div className={styles.expenditureChartError}>{error}</div>;
+    return <div className={styles.expenditure - chart - loading}>Loading expenditure data...</div>;
+  if (error) return <div className={styles.expenditure - chart - error}>{error}</div>;
 
   return (
-    <div className={styles.expenditureChartWrapper}>
+    <div className={styles.expenditure - chart - wrapper}>
       {renderChart(normalizeData(actual), 'Actual Expenditure')}
       {renderChart(normalizeData(planned), 'Planned Expenditure')}
     </div>
   );
 }
-
-ExpenditureChart.propTypes = {
-  projectId: PropTypes.string.isRequired,
-};
 
 export default ExpenditureChart;

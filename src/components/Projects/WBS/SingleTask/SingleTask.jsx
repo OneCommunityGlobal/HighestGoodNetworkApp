@@ -94,56 +94,56 @@ function SingleTask(props) {
             <table className={`table table-bordered ${darkMode ? 'dark-mode text-light' : ''}`}>
               <thead className={darkMode ? 'bg-space-cadet' : ''}>
                 <tr>
-                  <th scope="col" data-tip="Action" colSpan="1" style={{ textAlign: 'center' }}>
+                  <th scope="col" data-tip="Action" colSpan="1">
                     Action
                   </th>
-                  <th scope="col" data-tip="task-num" colSpan="1" style={{ textAlign: 'center' }}>
+                  <th scope="col" data-tip="task-num" colSpan="1">
                     #
                   </th>
-                  <th scope="col" data-tip="Task Name" style={{ minWidth: '200px' }} >
+                  <th scope="col" data-tip="Task Name" style={{ minWidth: '200px' }}>
                     Task Name
                   </th>
-                  <th scope="col" data-tip="Priority" style={{ textAlign: 'center' }}>
+                  <th scope="col" data-tip="Priority">
                     <i className="fa fa-star" aria-hidden="true" />
                   </th>
-                  <th scope="col" data-tip="Resources" style={{ textAlign: 'center' }}>
+                  <th scope="col" data-tip="Resources">
                     <i className="fa fa-users" aria-hidden="true" />
                   </th>
-                  <th scope="col" data-tip="Assigned" style={{ textAlign: 'center' }}>
+                  <th scope="col" data-tip="Assigned">
                     <i className="fa fa-user-circle-o" aria-hidden="true" />
                   </th>
-                  <th scope="col" data-tip="Status" style={{ textAlign: 'center' }}>
+                  <th scope="col" data-tip="Status">
                     <i className="fa fa-tasks" aria-hidden="true" />
                   </th>
-                  <th scope="col" data-tip="Hours-Best" style={{ textAlign: 'center' }}>
+                  <th scope="col" data-tip="Hours-Best">
                     <i className="fa fa-hourglass-start" aria-hidden="true" />
                   </th>
-                  <th scope="col" data-tip="Hours-Worst" style={{ textAlign: 'center' }}>
+                  <th scope="col" data-tip="Hours-Worst">
                     <i className="fa fa-hourglass" aria-hidden="true" />
                   </th>
-                  <th scope="col" data-tip="Hours-Most" style={{ textAlign: 'center' }}>
+                  <th scope="col" data-tip="Hours-Most">
                     <i className="fa fa-hourglass-half" aria-hidden="true" />
                   </th>
-                  <th scope="col" data-tip="Estimated Hours" style={{ textAlign: 'center' }}>
+                  <th scope="col" data-tip="Estimated Hours">
                     <i className="fa fa-clock-o" aria-hidden="true" />
                   </th>
-                  <th scope="col" data-tip="Hours-Logged" style={{ textAlign: 'center' }}>
+                  <th scope="col" data-tip="Hours-Logged">
                     <i className="fa fa-hourglass-end" aria-hidden="true" />
                   </th>
-                  <th scope="col" data-tip="Start Date" style={{ textAlign: 'center' }}>
+                  <th scope="col" data-tip="Start Date">
                     <i className="fa fa-calendar-check-o" aria-hidden="true" />
                     {' '}
                     Start
                   </th>
-                  <th scope="col" data-tip="Due Date" style={{ textAlign: 'center' }}>
+                  <th scope="col" data-tip="Due Date">
                     <i className="fa fa-calendar-times-o" aria-hidden="true" />
                     {' '}
                     End
                   </th>
-                  <th scope="col" data-tip="Links" style={{ textAlign: 'center' }}>
+                  <th scope="col" data-tip="Links">
                     <i className="fa fa-link" aria-hidden="true" />
                   </th>
-                  <th scope="col" data-tip="Details" style={{ textAlign: 'center' }}>
+                  <th scope="col" data-tip="Details">
                     <i className="fa fa-question" aria-hidden="true" />
                   </th>
                 </tr>
@@ -151,7 +151,7 @@ function SingleTask(props) {
               <tbody className={darkMode ? 'bg-yinmn-blue' : ''}>
                 <tr>
                   <th scope="row">
-                    <div className="d-flex flex-column align-items-center">
+                    <div className="d-flex flex-column align-items-start">
                       <EditTaskModal
                         key={`editTask_${task._id}`}
                         parentNum={task.num}
@@ -188,7 +188,7 @@ function SingleTask(props) {
                       )}
                     </div>
                   </th>
-                  <th scope="row" style={{ textAlign: 'center', verticalAlign: 'middle' }}>{task.num}</th>
+                  <th scope="row">{task.num}</th>
                   <td>{task.taskName}</td>
                   <td>{task.priority}</td>
                   <td>

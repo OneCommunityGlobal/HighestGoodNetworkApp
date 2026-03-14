@@ -1,14 +1,14 @@
 // updated on june 11
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable no-console */
-const fs = require('node:fs');
-const path = require('node:path');
+const fs = require('fs');
+const path = require('path');
 const postcss = require('postcss');
 const safeParser = require('postcss-safe-parser');
 
 // Helper to convert kebab-case, snake_case, pascalcase to camelCase
 const toCamelCase = str => {
-  const formatted = str.replaceAll(/[-_](\w)/gu, (_, char) => char.toUpperCase());
+  const formatted = str.replace(/[-_](\w)/g, (_, char) => char.toUpperCase());
   return formatted.charAt(0).toLowerCase() + formatted.slice(1);
 };
 
@@ -21,7 +21,7 @@ const convertCSSFile = filePath => {
 
   root.walkRules(rule => {
     const updated = rule.selectors.map(selector => {
-      return selector.replaceAll(/\.(\w[\w-]*)/gu, (_, className) => {
+      return selector.replace(/\.(\w[\w-]*)/g, (_, className) => {
         const camel = toCamelCase(className);
         classMap[className] = camel;
         return `.${camel}`;
@@ -32,12 +32,15 @@ const convertCSSFile = filePath => {
   });
 
   fs.writeFileSync(filePath, root.toString());
+  // eslint-disable-next-line no-console
   console.log(`✅ Updated CSS: ${filePath}`);
+  // eslint-disable-next-line no-console
+  // console.log('classMap after CSS processing:', classMap);
 };
 
 // Step 2: Replace import statement for CSS module in JSX
 const replaceImportStatement = code => {
-  const importRegex = /import\s+['"](.+\/)?([a-zA-Z0-9_-]+)\.css['"];/u;
+  const importRegex = /import\s+['"](.+\/)?([a-zA-Z0-9_-]+)\.css['"];/;
   // eslint-disable-next-line default-param-last
   return code.replace(importRegex, (_, pathPrefix = '', cssFileName) => {
     return `import styles from '${pathPrefix}${cssFileName}.module.css';`;
@@ -61,8 +64,8 @@ const replaceInCodeFile = filePath => {
   }
 
   // Step 2: Replace className="text-light input-file-upload" → className={styles.textLight + " " + styles.inputFileUpload}
-  code = code.replaceAll(/className\s*=\s*["']([^"']+)["']/gu, (_, classStr) => {
-    const classList = classStr.trim().split(/\s+/u);
+  code = code.replace(/className\s*=\s*["']([^"']+)["']/g, (_, classStr) => {
+    const classList = classStr.trim().split(/\s+/);
 
     // Skip transforming if no class in classList exists in classMap
     if (classList.every(cls => !classMap[cls])) {
@@ -95,7 +98,7 @@ const walkDir = dir => {
     if (stats.isDirectory()) {
       walkDir(fullPath);
     } else if (file.endsWith('.css')) {
-      cssFiles.push(fullPath);
+      cssFiles.push(fullPath); // Add CSS file path to the array
     } else if (
       file.endsWith('.js') ||
       file.endsWith('.jsx') ||
@@ -103,23 +106,28 @@ const walkDir = dir => {
       file.endsWith('.tsx') ||
       file.endsWith('.html')
     ) {
-      codeFiles.push(fullPath);
+      codeFiles.push(fullPath); // Add JS/JSX file path to the array
     }
   });
 
   // Now process CSS files first
   cssFiles.forEach(cssFile => {
     console.log('Processing CSS file:', cssFile);
-    convertCSSFile(cssFile);
+    convertCSSFile(cssFile); // Process CSS files
   });
 
   // Then process code files (JS/JSX, etc.)
   codeFiles.forEach(codeFile => {
     console.log('Processing code file:', codeFile);
-    replaceInCodeFile(codeFile);
+    replaceInCodeFile(codeFile); // Process JS/JSX files
   });
 };
 
 // 🚀 Start here: Replace with your actual project folder path
 const rootDir = 'src/components/HGNForm';
 walkDir(rootDir);
+
+// const mapPath = path.join(__dirname, 'class-map.json');
+// fs.writeFileSync(mapPath, JSON.stringify(classMap, null, 2));
+// // eslint-disable-next-line no-console
+// console.log(`🗺️  Class map written to ${mapPath}`);

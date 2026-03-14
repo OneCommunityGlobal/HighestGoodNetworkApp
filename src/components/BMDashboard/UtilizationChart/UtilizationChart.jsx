@@ -9,9 +9,8 @@ import axios from 'axios';
 import styles from './UtilizationChart.module.css';
 import { useSelector } from 'react-redux';
 import { ENDPOINTS } from '../../../utils/URL';
-import ChartDataLabels from 'chartjs-plugin-datalabels';
 
-ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Title, ChartDataLabels);
+ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Title);
 
 function UtilizationChart() {
   const [toolsData, setToolsData] = useState([]);
@@ -93,10 +92,11 @@ function UtilizationChart() {
         labels: { color: darkMode ? '#ffffff' : '#333' },
       },
       datalabels: {
-        color: darkMode ? '#ffffff' : '#333',
+        color: '#333',
         anchor: 'end',
         align: 'end',
         font: {
+          weight: 'bold',
           size: 12,
         },
         formatter: (_, context) => {

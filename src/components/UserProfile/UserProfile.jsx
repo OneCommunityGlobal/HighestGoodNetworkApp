@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useId, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useId } from 'react';
 import {
   Row,
   Input,
@@ -101,36 +101,27 @@ function UserProfile(props) {
   // Explaination:
   //        fetchTeamCodeAllUsers get all weekly summaries and filter out the team codes. (~800ms - 1 sec res time)
   //        getAllTeamCode() will get all team codes from the database directly with distinct teamcode value (~15ms res time cache enabled).
-  const fetchTeamCodeAllUsers = useCallback(async () => {
-    const url = ENDPOINTS.WEEKLY_SUMMARIES_TEAM_CODES();
-  
+  const fetchTeamCodeAllUsers = async () => {
+    const url = ENDPOINTS.WEEKLY_SUMMARIES_REPORT();
     try {
       setIsLoading(true);
-  
-      const response = await axios.get(url, {
-        params: { _ts: Date.now() },
-        headers: { 'Cache-Control': 'no-cache', Pragma: 'no-cache' },
-      });
-  
-      const teamCodes = (Array.isArray(response.data) ? response.data : [])
-        .filter(item => typeof item === 'string' && item.trim() !== '');
-  
-      const uniqueTeamCodes = [...new Set(teamCodes)].sort((a, b) => a.localeCompare(b));
-  
-      setInputAutoComplete(uniqueTeamCodes);
+      const response = await axios.get(url);
+      const stringWithValue = response.data.map(item => item.teamCode).filter(Boolean);
+      const stringNoRepeat = stringWithValue
+        .map(item => item)
+        .filter((item, index, array) => array.indexOf(item) === index);
+      setInputAutoComplete(stringNoRepeat);
       setInputAutoStatus(response.status);
-  
-      return uniqueTeamCodes;
+      setIsLoading(false);
+      return stringNoRepeat;
     } catch (error) {
       // eslint-disable-next-line no-console
       console.log(error);
+      setIsLoading(false);
       toast.error(`It was not possible to retrieve the team codes.
       Please try again by clicking the icon inside the input auto complete.`);
-      return [];
-    } finally {
-      setIsLoading(false);
     }
-  }, []);
+  };
 
 
   /* Hooks */

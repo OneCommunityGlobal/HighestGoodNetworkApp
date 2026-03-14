@@ -12,7 +12,6 @@ function QuestionSetManager({
   formFields,
   setFormFields,
   onImportQuestions,
-  onTemplateSaved,
   darkMode,
   templateName,
   setTemplateName,
@@ -120,7 +119,6 @@ function QuestionSetManager({
         setTemplates(prev => prev.map(t => (t._id === updatedTemplate._id ? updatedTemplate : t)));
 
         safeAlert(`Template "${templateName}" updated.`);
-        onTemplateSaved && onTemplateSaved();
       } else {
         const newTemplate = await api.createTemplate({
           name: templateName,
@@ -139,7 +137,6 @@ function QuestionSetManager({
 
         localStorage.setItem('jobFormTemplates', JSON.stringify(updated));
         safeAlert(`Template "${templateName}" created.`);
-        onTemplateSaved && onTemplateSaved();
       }
 
       setTemplateName('');
@@ -409,7 +406,6 @@ QuestionSetManager.propTypes = {
   ).isRequired,
   setFormFields: PropTypes.func.isRequired,
   onImportQuestions: PropTypes.func.isRequired,
-  onTemplateSaved: PropTypes.func,
   darkMode: PropTypes.bool.isRequired,
   templateName: PropTypes.string.isRequired,
   setTemplateName: PropTypes.func.isRequired,

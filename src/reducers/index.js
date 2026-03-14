@@ -102,14 +102,13 @@ import reviewsInsightReducer from './prAnalytics/reviewsInsightReducer';
 import { hoursPledgedReducer } from './jobAnalytics/hoursPledgedReducer';
 import { studentTasksReducer } from './studentTasksReducer';
 
-// Education Dashboard Reducers
-import { studentReducer } from './studentProfileReducer';
+// education portal
 import { atomReducer } from './educationPortal/atomReducer';
 import { weeklySummariesFiltersApi } from '../actions/weeklySummariesFilterAction';
-import browseLessonPlanReducer from './educationPortal/broweLPReducer';
 
-// Kitchen and Inventory Management
-import { kiCalendarApi } from '../actions/kiCalendarAction';
+//education portal
+
+import browseLessonPlanReducer from './educationPortal/broweLPReducer';
 
 const localReducers = {
   auth: authReducer,
@@ -200,9 +199,6 @@ const localReducers = {
 
   // education portal
   browseLessonPlan: browseLessonPlanReducer,
-
-  // Kitchen and Inventory Management
-  [kiCalendarApi.reducerPath]: kiCalendarApi.reducer,
 };
 
 const sessionReducers = {
@@ -220,7 +216,6 @@ const sessionReducers = {
   timelogTracking: timelogTrackingReducer,
   teamMemberTasks: teamMemberTasksReducer,
   warning: warningsByUserIdReducer,
-  student: studentReducer,
 };
 
 export { localReducers, sessionReducers };

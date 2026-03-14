@@ -14,8 +14,6 @@
   max-width: 320px;
   aspect-ratio: 1 / 1;
   overflow: visible;
-  /* Enable container queries to scale font-size based on chart container width */
-  container-type: inline-size;
 }
 
 .volunteerStatusCenter {
@@ -29,25 +27,14 @@
 
 .volunteerStatusHeading {
   color: #828282;
+  font-size: 1.2rem;
   text-align: center;
-  line-height: 1.2;
-  max-width: 90%;
-  margin: 0 auto;
-  /* Scale font-size based on chart container width (not viewport width) */
-  /* At 280px container: 0.95rem, At 320px container: 1.2rem */
-  /* Uses container query width units (cqw): 1cqw = 1% of container width */
-  /* Percentage-based scaling: ~5.43-6% of container width */
-  font-size: clamp(0.95rem, 5.71cqw, 1.2rem);
 }
 
 .volunteerCount {
   color: #6c6c6c;
+  font-size: 1.8rem;
   font-weight: bolder;
-  /* Scale font-size based on chart container width (not viewport width) */
-  /* At 280px container: 1.35rem, At 320px container: 1.8rem */
-  /* Uses container query width units (cqw): 1cqw = 1% of container width */
-  /* Percentage-based scaling: ~7.71-9% of container width */
-  font-size: clamp(1.35rem, 8.36cqw, 1.8rem);
 }
 
 .volunteerStatusCenter > p {
@@ -64,13 +51,11 @@
   align-items: center;
   gap: 16px;
   margin-top: 32px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   margin-bottom: 24px;
-  overflow-x: visible;
+  overflow-x: auto;
   padding: 0 8px;
   width: 100%;
-  max-width: 100%;
-  box-sizing: border-box;
 }
 
 .volunteerStatusLabel {
@@ -78,10 +63,8 @@
   align-items: center;
   gap: 6px;
   margin: 0;
-  /* Responsive font-size: scales from 0.875rem at 1200px to 0.95rem at 1920px - INCREASES with screen size */
-  font-size: clamp(0.875rem, calc(0.75rem + 0.01042vw), 0.95rem);
+  font-size: 0.875rem;
   white-space: nowrap;
-  flex-shrink: 0;
 }
 
 .volunteerStatusColor {
