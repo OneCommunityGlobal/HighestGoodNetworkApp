@@ -79,6 +79,7 @@ export function CPDashboard() {
   const [isLoading, setIsLoading] = useState(false);
   const [dateFilter, setDateFilter] = useState('');
   const [error, setError] = useState(null);
+  const [failedLogos, setFailedLogos] = useState(new Set());
   const darkMode = useSelector(state => state.theme.darkMode);
   const [pagination, setPagination] = useState({
     currentPage: 1,
@@ -93,6 +94,16 @@ export function CPDashboard() {
   // Get today's date in YYYY-MM-DD format for min date restriction (local timezone so user can select today)
   const now = new Date();
   const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+
+  const normalizeOrganizer = organizer => {
+    if (!organizer || typeof organizer !== 'string') return null;
+    const trimmed = organizer.trim();
+    return trimmed.length > 0 ? trimmed : null;
+  };
+
+  const handleLogoError = eventId => {
+    setFailedLogos(prev => new Set([...prev, eventId]));
+  };
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -270,7 +281,18 @@ export function CPDashboard() {
               <FaMapMarkerAlt className={styles.eventIcon} /> {event.location || 'Location TBD'}
             </p>
             <p className={styles.eventOrganizer}>
-              <FaUserAlt className={styles.eventIcon} /> {event.organizer || 'Organizer TBD'}
+              {event.organizerLogo && !failedLogos.has(event._id) ? (
+                <img
+                  src={event.organizerLogo}
+                  alt={normalizeOrganizer(event.organizer) || 'Organizer'}
+                  className={styles.organizerLogo}
+                  onError={() => handleLogoError(event._id)}
+                  loading="lazy"
+                />
+              ) : (
+                <FaUserAlt className={styles.eventIcon} aria-hidden="true" />
+              )}{' '}
+              <span>{normalizeOrganizer(event.organizer) || 'Organizer TBD'}</span>
             </p>
           </CardBody>
         </Card>

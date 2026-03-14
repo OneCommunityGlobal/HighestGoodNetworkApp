@@ -40,7 +40,8 @@
 
 .permissionChangeLogTable-Header,
 .permissionChangeLogTable-HeaderDark,
-.permissionChangeLogTable-Cell {
+.permissionChangeLogTable-Cell,
+.permissionChangeLogTableCell {
   border: 1px solid #ddd;
   padding: 8px;
 }
