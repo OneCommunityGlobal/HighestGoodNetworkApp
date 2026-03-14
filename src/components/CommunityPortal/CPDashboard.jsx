@@ -439,7 +439,6 @@ export function CPDashboard() {
 
           <Row>{eventsContent}</Row>
 
-          {/* Simple pagination controls if needed */}
           {totalPages > 1 && (
             <div className={styles.paginationContainer}>
               <Button
@@ -461,7 +460,6 @@ export function CPDashboard() {
               </Button>
             </div>
           )}
-
           <div className={styles.dashboardActions}>
             <Button color="primary">Show Past Events</Button>
           </div>

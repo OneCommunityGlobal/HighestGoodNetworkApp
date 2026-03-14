@@ -50,7 +50,6 @@
   gap: 15px;
 }
 
-/* pill input */
 .dashboardSearchInput {
   width: 100%;
   border-radius: 999px;
@@ -59,8 +58,6 @@
   box-sizing: border-box;
 }
 
-
-/* clear X button */
 .dashboardClearBtn {
   position: absolute;
   right: 35px;
@@ -73,7 +70,6 @@
   color: #1b3c55;
 }
 
-/* blue circular search button inside the bar */
 .dashboardSearchIconBtn {
   position: absolute;
   right: 1%;
@@ -83,11 +79,11 @@
   height: 34px;
   border-radius: 50%;
   cursor: pointer;
-  background: transparent; /* 🔹 icon background now white */
+  background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #1b3c55; /* blue magnifying-glass icon */
+  color: #1b3c55;
   font-size: 0.9rem;
 }
 
@@ -96,11 +92,12 @@
   width: 400px;
   border-radius: 999px;
   overflow: hidden;
-   border: 2px solid #1b3c55;
+  border: 2px solid #1b3c55;
   background: #ffffff;
 }
+
 .darkHeader .dashboardSearchContainer {
-  border-color: #ffffff;   /* white when NOT focused */
+  border-color: #ffffff;
   background: #1b2a41;
 }
 
@@ -110,28 +107,18 @@
   border: none;
   outline: none;
   background: transparent;
-
   font-size: 1rem;
   line-height: 1.5;
-
-  /* IMPORTANT */
   padding: 10px 96px 10px 18px;
-
   min-height: 36px;
   max-height: 120px;
-
   box-sizing: border-box;
-
   overflow-y: auto;
   overflow-x: hidden;
-
-  white-space: pre-wrap;      /* ✅ Brave-like wrapping */
-  word-wrap: break-word;      /* ✅ prevents overflow */
-  word-break: break-word;     /* ✅ fixes long strings */
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  word-break: break-word;
 }
-
-
-
 
 @media (max-width: 850px) {
   .dashboardSearchContainer {
@@ -139,10 +126,10 @@
   }
 }
 
-
 .darkHeader .dashboardSearchTextarea {
   color: #ffffff;
 }
+
 .darkHeader .dashboardSearchTextarea::placeholder {
   color: #cbd5e1;
 }
@@ -159,7 +146,6 @@
   white-space: nowrap;
 }
 
-/* icon wrapper */
 .dashboardSearchButtons {
   position: absolute;
   right: 14px;
@@ -170,12 +156,11 @@
   gap: 6px;
 }
 
-
-
 .dashboardSearchContainer:focus,
 .dashboardSearchContainer:focus-visible {
   outline: none;
 }
+
 .dashboardSearchContainer input {
   outline: none;
 }
@@ -190,26 +175,10 @@
   border-color: #4da3ff;
   box-shadow: none;
 }
+
 .dashboardSearchContainer:focus-within:not(:focus-visible) {
   outline: none;
 }
-.dashboardSearchContainer,
-.dashboardSearchContainer:focus,
-.dashboardSearchContainer:focus-visible {
-  outline: none;
-}
-
-.dashboardSearchContainer input,
-.dashboardSearchContainer input:focus,
-.dashboardSearchContainer input:focus-visible {
-  outline: none;
-  box-shadow: none;
-}
-
-
-
-
-
 
 .centeredRow {
   padding: 30px;
@@ -305,10 +274,10 @@
 
 .filterItem input[type='radio'],
 .filterItem input[type='checkbox'] {
-  display: inline-block; /* <– keeps input on same line as text */
+  display: inline-block;
   width: auto;
   padding: 0;
-  margin: 5px 0px 0px 120px; /* top margin to line up under "Dates" */
+  margin: 5px 0px 0px 120px;
   vertical-align: middle;
 }
 
@@ -317,6 +286,10 @@
   border-color: #2c3e50;
   box-shadow: 0 0 5px rgba(44, 62, 80, 0.4);
   outline: none;
+}
+
+.dateFilter {
+  margin-top: 15px;
 }
 
 .dashboardMain {
@@ -442,7 +415,6 @@
   gap: 12px;
 }
 
-/* Hide browser's built-in clear icon for search inputs */
 .dashboardSearchInput::-webkit-search-cancel-button,
 .dashboardSearchInput::-webkit-search-decoration,
 .dashboardSearchInput::-webkit-search-results-button,
