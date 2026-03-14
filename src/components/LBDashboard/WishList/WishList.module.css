@@ -130,6 +130,8 @@ h1.list_itemTitleMobile {
   .item_detailsWrapper {
     padding: 10px;
     margin: 10px;
+    flex-direction: column;
+    align-items: center;
   }
 
   .wishlist_start_chat button {

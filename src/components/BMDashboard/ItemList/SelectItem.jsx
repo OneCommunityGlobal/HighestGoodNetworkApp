@@ -11,6 +11,7 @@ export default function SelectItem({
   selectedCondition,
   setSelectedCondition,
   label,
+  isDarkMode,
 }) {
   let itemSet = [];
   if (items?.length) {
@@ -43,15 +44,19 @@ export default function SelectItem({
     }
   }
 
+  const darkStyle = isDarkMode
+    ? { backgroundColor: '#1e293b', color: '#e5e7eb', borderColor: '#334155' }
+    : undefined;
+
   return (
     <Form>
       <FormGroup className={styles.selectInput}>
-        <Label htmlFor="select-material">{label ? `${label}:` : 'Material:'}</Label>
+        <Label htmlFor="select-item">{label}:</Label>
 
-        <Input
+        <select
           id="select-item"
           name="select-item"
-          type="select"
+          className={styles.filterSelect}
           value={
             label === 'Condition'
               ? selectedCondition
@@ -61,13 +66,9 @@ export default function SelectItem({
           }
           onChange={e => {
             const val = e.target.value;
-            if (label === 'Tool Status') {
-              setSelectedToolStatus(val);
-            } else if (label === 'Condition') {
-              setSelectedCondition(val);
-            } else {
-              setSelectedItem(val);
-            }
+            if (label === 'Tool Status') setSelectedToolStatus(val);
+            else if (label === 'Condition') setSelectedCondition(val);
+            else setSelectedItem(val);
           }}
           disabled={!itemSet.length}
         >
@@ -85,7 +86,7 @@ export default function SelectItem({
           ) : (
             <option key="no-data">No data</option>
           )}
-        </Input>
+        </select>
       </FormGroup>
     </Form>
   );

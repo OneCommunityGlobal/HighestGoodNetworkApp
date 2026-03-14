@@ -1,3 +1,5 @@
+/* Timelog.module.css */
+
 .dateBlock {
   display: flex;
   align-items: center;
@@ -12,6 +14,23 @@
 .cardHeaderShadow {
   box-shadow: 2px 2px 4px 1px lightgray;
   margin-bottom: 1px;
+}
+
+/* icon-only buttons (edit/delete) */
+.iconBtn {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  line-height: 0;
+  box-shadow: none;
+}
+
+.iconBtn:focus,
+.iconBtn:focus-visible,
+.iconBtn:active {
+  outline: none;
+  box-shadow: none;
 }
 
 .cardBodyShadowDark {
@@ -60,20 +79,20 @@
 }
 
 .indigo .progressBar {
-  background-color: #000066;
+  background-color: #006;
 }
 
 .violet .progressBar {
-  background-color: #990099;
+  background-color: #909;
 }
 
 .purple .progressBar {
-  background-color: #660099;
+  background-color: #609;
 }
 
 .navbarBorder {
   border-radius: 5px;
-  border: 1px solid rgba(0, 0, 0, 0.125);
+  border: 1px solid #00000020; /* ~12.5% */
 }
 
 .tabPane {
@@ -82,7 +101,7 @@
 
 .searchTimeEntriesBtn {
   margin-left: 6px;
-  margin-top: 0px;
+  margin-top: 0;
 }
 
 .minWidth100 {
@@ -93,6 +112,7 @@
   width: 100%;
   padding: 0 17%;
 }
+
 .navLink {
   color: #007bff;
   background-color: transparent;
@@ -100,7 +120,6 @@
   padding: 0.5rem 1rem;
   cursor: pointer;
   transition: all 0.2s ease;
-  /* padding: 10px; */
   display: inline-block;
   text-decoration: none;
 }
@@ -120,11 +139,10 @@
 
 .tabContentDark {
   margin-top: -4px !important;
-  background-color: #1c2541 !important;/* or your dark background */
+  background-color: #1c2541 !important;
   border: 1px solid transparent !important;
-  border-color: #1C1C1C #dee2e6 #dee2e6 !important; /* optional */
+  border-color: #1c1c1c #dee2e6 #dee2e6 !important;
 }
-
 
 /* Dark mode default for inactive tabs */
 .darkMode {
@@ -138,77 +156,79 @@
   color: #000;
 }
 
-/* ✅ Active + Dark Mode combination */
+/* Active + Dark Mode combination */
 .activeDarkMode {
-
-  background-color: #1C1C1C !important;
+  background-color: #1c1c1c !important;
   color: #fff !important;
   border-bottom: 0 !important;
   border-color: #dee2e6 #dee2e6 #fff !important;
-
-
-.notesTextLight p{
-  color: #fff; /* White text for dark mode */
 }
+
+.notesTextLight p {
+  color: #fff;
+}
+
 .text-dark {
-  color: #000 !important; /* Force black text */
+  color: #000 !important;
 }
 
-/* Hotfix: Prevent red color for project name and notes in Timelog */
-.notes-section, .notes-section *:not(a),
-.text-success, .text-light, .text-muted, .dark-text-info, .dark-text-muted {
-  color: #222 !important;
-}
-
-.notes-text-light, .notes-text-light *, .dark-text-info, .dark-text-muted {
+.notes-text-light,
+.notes-text-light * {
   color: #f1f1f1 !important;
 }
 
-/* Hotfix: Make "Viewing time Entries from" text white in dark mode */
+.notes-section,
+.notes-section *:not(a),
+.text-success,
+.text-light,
+.text-muted,
+.dark-text-info,
+.dark-text-muted {
+  color: #222 !important;
+}
+
 .bg-oxford-blue .text-dark {
   color: #fff !important;
 }
 
-
-@media screen and (max-width: 1400px) and (min-width: 1100px) {
+@media screen and (width <= 1400px) and (width >= 1100px) {
   .timelogPageContainer {
     padding: 0 10%;
   }
 }
 
-@media screen and (max-width: 1100px) and (min-width: 800px) {
+@media screen and (width <= 1100px) and (width >= 800px) {
   .timelogPageContainer {
     padding: 0 9%;
     margin-left: 15px;
   }
 }
 
-@media screen and (max-width: 800px) {
+@media screen and (width <= 800px) {
   .timelogPageContainer {
     padding: 0 8%;
     margin-left: 15px;
   }
 }
 
-@media screen and (max-width: 575px) and (min-width: 399px) {
+@media screen and (width <= 575px) and (width >= 399px) {
   .searchTimeEntriesBtn {
     margin-top: 15px;
   }
 }
 
-@media (max-width: 544px) {
+@media (width <= 544px) {
   .tabPane {
     max-height: 1000px;
     overflow-y: scroll;
     width: 100%;
   }
-
-  /* 
-  .right-padding-temp-fix {
-    padding-right: 0px !important;
-  } */
 }
 
+/* NOTE:
+   stylelint 'selector-id-pattern' complains about #projectSelected.
+   If you cannot rename the id in JSX, keep these rules and disable selector-id-pattern in .stylelintrc.
+*/
 #projectSelected {
   max-width: 100%;
 }
@@ -220,15 +240,13 @@
 }
 
 .rightPaddingTempFix {
-  padding-right: 0px !important;
+  padding-right: 0 !important;
 }
 
 .button {
   margin-left: 10px;
-  /* Add space between buttons */
   padding: 5px 10px;
-  /* Add padding to the buttons */
-  border: curved;
+  border: 1px solid #ccc;
   border-radius: 5px;
   cursor: pointer;
   font-weight: bold;
@@ -236,25 +254,26 @@
 
 .editButton {
   background-color: blue !important;
-  /* Blue for the Edit button */
   color: white;
 }
 
 .saveButton {
   background-color: green;
-  /* Green for the Save button */
   color: white;
 }
 
 .cancelButton {
   background-color: red;
-  /* Red for the Cancel button */
   color: white;
 }
 
 .editTextarea {
   min-height: 150px;
   resize: vertical;
+}
+
+.pausedUser {
+  color: red !important;
 }
 
 .activeUser {
@@ -281,11 +300,9 @@
   color: #dee2e6 !important;
 }
 
-
 .customTextAlignment {
   text-align: center;
 }
-
 
 .tasksAndTimelogHeaderRow {
   display: flex;
@@ -301,7 +318,7 @@
   font-size: 1.8rem;
 }
 
-@media screen and (max-width: 1240px) {
+@media screen and (width <= 1240px) {
   .tasksAndTimelogHeaderRow {
     display: grid;
     grid-template-columns: 1fr;
@@ -314,29 +331,28 @@
   }
 
   .taskAndTimelogCardNav {
-    font-size: .9rem;
+    font-size: 0.9rem;
   }
 }
 
-@media (min-width: 992px) {
+@media (width >= 992px) {
   .customTextAlignment {
     text-align: right;
   }
 }
-
 
 .containerTimelogWrapper {
   min-height: 100%;
   min-width: 100%;
 }
 
-@media only screen and (max-width: 544px) {
+@media only screen and (width <= 544px) {
   .responsiveFontSize {
     font-size: 0.75rem !important;
   }
 }
 
-@media only screen and (max-width: 575px) {
+@media only screen and (width <= 575px) {
   .dateSelectorForm {
     margin-left: 5px;
   }
@@ -347,7 +363,6 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  /* Maintain spacing between text and icon */
 }
 
 /* Adjust the icon position to ensure it stays on the right */
@@ -360,13 +375,25 @@
 .customStyle {
   font-size: 14px;
   margin-left: 5px;
-}}
+}
 
 .highlightGreen {
   color: #7cfc00 !important;
   padding: 1px;
 }
 
-span.activeUser i.fa-circle { color: lawngreen !important; }
-span.notActiveUser i.fa-circle { color: #dee2e6 !important; }
-span.scheduledUser i.fa-circle { color: orange !important; }
+span.activeUser i.fa-circle {
+  color: lawngreen !important;
+}
+
+span.notActiveUser i.fa-circle {
+  color: #dee2e6 !important;
+}
+
+span.scheduledUser i.fa-circle {
+  color: orange !important;
+}
+
+span.pausedUser i.fa-circle {
+  color: red !important;
+}
