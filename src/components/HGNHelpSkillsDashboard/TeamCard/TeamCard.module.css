@@ -1,0 +1,261 @@
+.teamCardWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+}
+
+.teamCardContainer {
+  width: 580px;
+  display: flex;
+  flex-direction: column;
+  border-radius: 20px;
+  border: 1px solid #000;
+  overflow: hidden;
+  padding: 20px;
+}
+
+.teamCardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+}
+
+.teamCardTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #6e6e6e;
+  font-family: Inter, sans-serif;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 150%;
+}
+
+.teamCardRatingLabel {
+  font-size: 24px;
+  font-weight: 600;
+  font-family: Inter, sans-serif;
+  line-height: 150%;
+  color: #6e6e6e;
+}
+
+/* ── Bulk Action Bar ── */
+.bulkActionBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  margin: 0 0 8px 0;
+  border: 1px solid #adb5bd;
+  border-radius: 8px;
+  background: transparent;
+}
+
+.selectedCount {
+  font-size: 14px;
+  font-weight: 500;
+  color: inherit;
+}
+
+.bulkButtons {
+  display: flex;
+  gap: 8px;
+}
+
+.bulkBtn {
+  padding: 7px 14px;
+  border: none;
+  border-radius: 4px;
+  background: #007bff;
+  color: #fff;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.bulkBtn:hover:not(:disabled) {
+  background: #0056b3;
+}
+
+.bulkBtn:disabled {
+  background: #adb5bd;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* ── Member Row ── */
+.teamMemberRow {
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+
+.teamMemberRowSelected {
+  background: rgba(0, 123, 255, 0.08);
+}
+
+.memberCheckbox {
+  width: 18px;
+  height: 18px;
+  margin-right: 12px;
+  cursor: pointer;
+  accent-color: #007bff;
+  flex-shrink: 0;
+}
+
+.teamMemberInfo {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.teamMemberName {
+  font-size: 32px;
+  font-weight: 600;
+  font-family: Inter, sans-serif;
+  line-height: 150%;
+  color: #000;
+  width: 250px;
+}
+
+.teamMemberIcons {
+  display: flex;
+  align-items: center;
+  margin-left: 58px;
+}
+
+.icon {
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  margin: 0 20px;
+  color: #6e6e6e;
+}
+
+.scoreBase {
+  font-size: 28px;
+  font-weight: 600;
+  font-family: Inter, sans-serif;
+  line-height: 150%;
+}
+
+.scoreGreen {
+  color: #008000;
+}
+
+.scoreRed {
+  color: #ff0000;
+}
+
+.showMoreLink {
+  margin-top: 8px;
+}
+
+.showMoreText {
+  font-size: 32px;
+  font-weight: 600;
+  font-family: Inter, sans-serif;
+  line-height: 150%;
+  color: #000;
+  text-decoration-line: underline;
+  cursor: pointer;
+  text-align: center;
+}
+
+.showMoreSpan {
+  width: 580px;
+  display: flex;
+  justify-content: space-evenly;
+}
+
+/* ── Confirmation Modal ── */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: #fff;
+  border-radius: 8px;
+  padding: 28px 32px;
+  width: 380px;
+  max-width: 90%;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  text-align: center;
+}
+
+.modalTitle {
+  margin: 0 0 12px 0;
+  font-size: 1.2rem;
+  font-family: Inter, sans-serif;
+  color: #000;
+}
+
+.modalText {
+  font-size: 15px;
+  margin-bottom: 24px;
+  font-family: Inter, sans-serif;
+  color: #333;
+}
+
+.modalActions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.confirmBtn {
+  padding: 9px 20px;
+  background: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.confirmBtn:hover {
+  background: #0056b3;
+}
+
+.cancelBtn {
+  padding: 9px 20px;
+  background: #6c757d;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.cancelBtn:hover {
+  background: #5a6268;
+}
+
+@media (prefers-color-scheme: dark) {
+  .modal {
+    background: #2b2b2b;
+  }
+
+  .modalTitle {
+    color: #fff;
+  }
+
+  .modalText {
+    color: #ccc;
+  }
+}

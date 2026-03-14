@@ -1,55 +1,104 @@
-import React, { useState, useEffect, useRef , useMemo } from 'react';
+import React, { useState, useEffect, useRef , useMemo, useCallback } from 'react';
+import PropTypes from 'prop-types';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Row, Col } from 'reactstrap';
 import { connect } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
-import { DayPicker, useInput } from 'react-day-picker';
+import { DayPicker } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
 import { Editor } from '@tinymce/tinymce-react';
 import dateFnsFormat from 'date-fns/format';
+import dateFnsParse from 'date-fns/parse';
+import { isValid } from 'date-fns';
 import { boxStyle, boxStyleDark } from '~/styles';
-
 import { addNewTask } from '../../../../../actions/task';
 import { faPlusCircle, faMinusCircle } from '@fortawesome/free-solid-svg-icons';
 import { DUE_DATE_MUST_GREATER_THAN_START_DATE ,
   START_DATE_ERROR_MESSAGE,
   END_DATE_ERROR_MESSAGE,
 } from '../../../../../languages/en/messages';
-
-import '../../../../Header/DarkMode.css';
+import clsx from 'clsx';
+import '../../../../Header/index.css';
 import TagsSearch from '../components/TagsSearch';
-import './AddTaskModal.css';
+import styles from '../wbs.module.css';
+// import styles from './AddTaskModal.module.css';
 import { fetchAllMembers } from '../../../../../actions/projectMembers';
+import { fetchAllProjects } from '../../../../../actions/projects';
 import { getProjectDetail } from '../../../../../actions/project';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-/** small v8 DateInput: uses useInput + DayPicker under the hood **/
+/** small v8 DateInput - manual control without useInput **/
 function DateInput({ id, ariaLabel, placeholder, value, onChange, disabled }) {
-  const { inputProps, dayPickerProps, show, toggle } = useInput({
-    mode: 'single',
-    selected: value ? new Date(value) : undefined,
-    onDayChange(date) {
+  const FORMAT = 'MM/dd/yy';
+  const [isOpen, setIsOpen] = React.useState(false);
+  
+  // Parse the value properly - it could be in MM/dd/yy format or empty
+  let selectedDate;
+  if (value) {
+    try {
+      if (value.includes('T')) {
+        // ISO format
+        selectedDate = new Date(value);
+      } else {
+        // MM/dd/yy format
+        selectedDate = dateFnsParse(value, FORMAT, new Date());
+      }
+      // Validate the parsed date
+      if (!isValid(selectedDate)) {
+        selectedDate = undefined;
+      }
+    } catch (error) {
+      selectedDate = undefined;
+    }
+  }
+
+  const handleDaySelect = (date) => {
+    if (date) {
       // format back to your MM/dd/yy
       const f = dateFnsFormat(date, FORMAT);
       onChange(f);
-      toggle(false);
-    },
-  });
+      setIsOpen(false);
+    }
+  };
 
   return (
     <div style={{ position: 'relative' }}>
       <input
-        {...inputProps}
         id={id}
         aria-label={ariaLabel}
         placeholder={placeholder}
-        onFocus={() => !disabled && toggle(true)}
+        value={value || ''}
+        onFocus={() => !disabled && setIsOpen(true)}
         readOnly
         disabled={disabled}
-        className="form-control" /* or whatever styling you need */
+        className="form-control"
+        style={{ 
+          cursor: disabled ? 'default' : 'pointer',
+          backgroundColor: disabled ? '#e9ecef' : 'white',
+          opacity: 1
+        }}
       />
-      {show && !disabled && (
-        <div style={{ position: 'absolute', zIndex: 10 }}>
-          <DayPicker {...dayPickerProps} />
+      {isOpen && !disabled && (
+        <div style={{ position: 'absolute', right: 0, overflow: 'auto', zIndex: 10, backgroundColor: 'white', boxShadow: '0 2px 8px rgba(0,0,0,0.15)', borderRadius: '4px' }}>
+          <DayPicker 
+            mode="single"
+            selected={selectedDate}
+            onSelect={handleDaySelect}
+            className={styles['datePicker']}
+          />
+          <button
+            type="button"
+            onClick={() => setIsOpen(false)}
+            style={{ 
+              width: '100%', 
+              padding: '8px', 
+              border: 'none', 
+              borderTop: '1px solid #ddd',
+              background: '#f5f5f5',
+              cursor: 'pointer'
+            }}
+          >
+            Close
+          </button>
         </div>
       )}
     </div>
@@ -65,7 +114,7 @@ const TINY_MCE_INIT_OPTIONS = {
                     styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
                     subscript superscript charmap  | help',
   branding: false,
-  min_height: 180,
+  min_height: 280,
   max_height: 300,
   autoresize_bottom_margin: 1,
 };
@@ -75,7 +124,7 @@ function AddTaskModal(props) {
    * -------------------------------- variable declarations --------------------------------
    */
   // props from store
-  const { copiedTask, allMembers, allProjects, error, darkMode, projectById } = props;
+  const { copiedTask, allMembers, allProjects, error, darkMode, projectById, fetchAllProjects } = props;
   const tasksList = Array.isArray(props.tasks) ? props.tasks : [];
 
   const handleBestHoursChange = e => {
@@ -104,37 +153,28 @@ function AddTaskModal(props) {
   };
 
   // states from hooks
-   const activeMembers = useMemo(() => {
-        const members = Array.isArray(allMembers) ? allMembers : [];
-        const filtered = members.filter(u => {
-          if (!u) return false;
-          // Treat only explicit “inactive” as excluded; accept truthy/unknown as active
-          const isInactive =
-            u.status === 'Inactive' ||
-            u.isActive === false ||
-            String(u?.isActive).toLowerCase() === 'false';
-          return !isInactive;
-        });
-        return filtered.length ? filtered : members; // fallback so the list isn't empty
-      }, [allMembers]);
+  const activeMembers = useMemo(() => {
+    const members = Array.isArray(allMembers) ? allMembers : [];
+    return members.filter(m => m && m.isActive === true);
+  }, [allMembers]);
 
-const projectsList = Array.isArray(allProjects?.projects) ? allProjects.projects : [];
-const defaultCategory = useMemo(() => {
-  if (props.taskId) {
-    const task = tasksList.find(t => t?._id === props.taskId);
-    return task?.category ?? 'Unspecified';
-  }
-  if (props.projectId) {
-    // Prefer the category from projectById if available (covers page refresh case)
-    const categoryFromProjectById = projectById?.category;
-    if (typeof categoryFromProjectById === 'string' && categoryFromProjectById.length) {
-      return categoryFromProjectById;
+  const projectsList = Array.isArray(allProjects?.projects) ? allProjects.projects : [];
+  const defaultCategory = useMemo(() => {
+    if (props.taskId) {
+      const task = tasksList.find(t => t?._id === props.taskId);
+      return task?.category ?? 'Unspecified';
     }
-    const project = projectsList.find(p => p?._id === props.projectId);
-    return project?.category ?? 'Unspecified';
-  }
-  return 'Unspecified';
-}, [props.taskId, props.projectId, projectById?.category, tasksList.length, projectsList.length]);
+    if (props.projectId) {
+      // Prefer the category from projectById if available (covers page refresh case)
+      const categoryFromProjectById = projectById?.category;
+      if (typeof categoryFromProjectById === 'string' && categoryFromProjectById.length) {
+        return categoryFromProjectById;
+      }
+      const project = projectsList.find(p => p?._id === props.projectId);
+      return project?.category ?? 'Unspecified';
+    }
+    return 'Unspecified';
+  }, [props.taskId, props.projectId, projectById?.category, tasksList.length, projectsList.length]);
 
 
   const [taskName, setTaskName] = useState('');
@@ -149,20 +189,25 @@ const defaultCategory = useMemo(() => {
   const [hasNegativeHours, setHasNegativeHours] = useState(false);
   const [link, setLink] = useState('');
   const [links, setLinks] = useState([]);
-  const [category, setCategory] = useState(defaultCategory);
+  const [category, setCategory] = useState('Unspecified');
   const [whyInfo, setWhyInfo] = useState('');
   const [intentInfo, setIntentInfo] = useState('');
   const [startedDate, setStartedDate] = useState('');
   const [endstateInfo, setEndstateInfo] = useState('');
   const [startDateError, setStartDateError] = useState(false);
   const [endDateError, setEndDateError] = useState(false);
+  const [startDateFormatError, setStartDateFormatError] = useState(false);
+  const [endDateFormatError, setEndDateFormatError] = useState(false);
   const [dueDate, setDueDate] = useState('');
   const [modal, setModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [newTaskNum, setNewTaskNum] = useState('1');
   const [dateWarning, setDateWarning] = useState(false);
   const [hoursWarning, setHoursWarning] = useState(false);
+  const [showReplicateConfirm, setShowReplicateConfirm] = useState(false);
+  const [isReplicating, setIsReplicating] = useState(false);
   const priorityRef = useRef(null);
+
 
   const categoryOptions = [
     { value: 'Unspecified', label: 'Unspecified' },
@@ -175,6 +220,83 @@ const defaultCategory = useMemo(() => {
     { value: 'Stewardship', label: 'Stewardship' },
     { value: 'Other', label: 'Other' },
   ];
+
+  const bumpNumAtLevel = (numStr, levelIdxZeroBased, bumpBy) => {
+    try {
+      const segs = String(numStr || '1').split('.').map(s => Number.parseInt(s || '0', 10));
+      const idx = Math.max(0, Math.min(levelIdxZeroBased, segs.length - 1));
+      segs[idx] = (Number.isNaN(segs[idx]) ? 0 : segs[idx]) + bumpBy;
+      return segs.join('.');
+    } catch {
+      const base = Number.parseInt(numStr, 10) || 1;
+      return String(base + bumpBy);
+    }
+  };
+
+  const openReplicateConfirm = () => {
+    if (!resourceItems?.length) {
+      globalThis?.toast?.error?.('Select at least one Resource to replicate to.') || alert('Select at least one Resource to replicate to.');
+      return;
+    }
+    if (!taskName?.trim()) {
+      globalThis?.toast?.error?.('Task Name is required to replicate.') || alert('Task Name is required to replicate.');
+      return;
+    }
+    if (hoursWarning || hasNegativeHours || startDateError || endDateError || startDateFormatError || endDateFormatError) {
+      globalThis?.toast?.error?.('Fix validation errors before replicating.') || alert('Fix validation errors before replicating.');
+      return;
+    }
+    setShowReplicateConfirm(true);
+  };
+
+  const doReplicate = async () => {
+    setIsReplicating(true);
+    try {
+      const baseNum = newTaskNum || '1';
+      const levelIdxZeroBased = (props.taskId ? (props.level + 1) : 1) - 1;
+  
+      for (let i = 0; i < resourceItems.length; i += 1) {
+        const singleResource = [resourceItems[i]];
+        const replicated = {
+          taskName,
+          wbsId: props.wbsId,
+          num: bumpNumAtLevel(baseNum, levelIdxZeroBased, i),
+          level: props.taskId ? props.level + 1 : 1,
+          priority,
+          resources: singleResource,           
+          isAssigned: true,                    
+          status,
+          hoursBest: Number.parseFloat(hoursBest),
+          hoursWorst: Number.parseFloat(hoursWorst),
+          hoursMost: Number.parseFloat(hoursMost),
+          estimatedHours: Number.parseFloat(hoursEstimate), 
+          startedDatetime: startedDate,
+          dueDatetime: dueDate,
+          links,
+          category,
+          parentId1: props.level === 1 ? props.taskId : props.parentId1,
+          parentId2: props.level === 2 ? props.taskId : props.parentId2,
+          parentId3: props.level === 3 ? props.taskId : props.parentId3,
+          mother: props.taskId,
+          position: 0,
+          isActive: true,
+          whyInfo,
+          intentInfo,
+          endstateInfo,
+        };
+        // eslint-disable-next-line no-await-in-loop
+        await props.addNewTask(replicated, props.wbsId, props.pageLoadTime);
+      }
+      setShowReplicateConfirm(false);
+      props.load?.(); 
+      globalThis?.toast?.success?.(`Replicated to ${resourceItems.length} ${resourceItems.length === 1 ? 'person' : 'people'}.`);
+    } catch (e) {
+      globalThis?.toast?.error?.('Replication failed.');
+    } finally {
+      setIsReplicating(false);
+    }
+  };
+
   const FORMAT = 'MM/dd/yy';
 
   /*
@@ -237,6 +359,37 @@ const defaultCategory = useMemo(() => {
 
   const formatDate = (date, format, locale) => dateFnsFormat(date, format, { locale });
 
+  const parseDate = (str, format, locale) => {
+    // Allow empty string for partial typing
+    if (!str || str.trim() === '') return undefined;
+    
+    try {
+      const parsed = dateFnsParse(str, format, new Date(), { locale });
+      if (isValid(parsed)) {
+        return parsed;
+      }
+    } catch (error) {
+      // Return undefined for invalid dates while typing
+    }
+    return undefined;
+  };
+
+  const validateDateFormat = (dateString) => {
+    if (!dateString || dateString.trim() === '') return true;
+    
+    // Check if it matches the expected format pattern MM/dd/yy
+    const formatRegex = /^(0?[1-9]|1[0-2])\/(0?[1-9]|[12]\d|3[01])\/\d{2}$/;
+    if (!formatRegex.test(dateString)) return false;
+    
+    // Check if it's a valid date
+    try {
+      const parsed = dateFnsParse(dateString, FORMAT, new Date());
+      return isValid(parsed);
+    } catch (error) {
+      return false;
+    }
+  };
+
   const calHoursEstimate = (isOn = null) => {
     let currHoursMost = parseInt(hoursMost);
     let currHoursWorst = parseInt(hoursWorst);
@@ -262,6 +415,12 @@ const defaultCategory = useMemo(() => {
   };
 
   useEffect(() => {
+    if (!allProjects?.fetched && !allProjects?.fetching) {
+      fetchAllProjects();
+    }
+  }, [allProjects?.fetched, allProjects?.fetching, fetchAllProjects]);
+
+  useEffect(() => {
     if (hoursBest < 0 || hoursWorst < 0 || hoursMost < 0 || hoursEstimate < 0) {
       setHasNegativeHours(true);
     } else {
@@ -269,16 +428,24 @@ const defaultCategory = useMemo(() => {
     }
   }, [hoursBest, hoursWorst, hoursMost, hoursEstimate]);
 
-  const changeDateStart = startDate => {
-    setStartedDate(startDate);
+  const changeDateStart = (value) => {
+    setStartedDate(value);
+    
+    // Validate format
+    const isValidFormat = validateDateFormat(value);
+    setStartDateFormatError(!isValidFormat);
   };
 
-  const changeDateEnd = dueDate => {
-    if (!startedDate) {
+  const changeDateEnd = (value) => {
+    if (!startedDate && value) {
       const newDate = dateFnsFormat(new Date(), FORMAT);
       setStartedDate(newDate);
     }
-    setDueDate(dueDate);
+    setDueDate(value);
+    
+    // Validate format
+    const isValidFormat = validateDateFormat(value);
+    setEndDateFormatError(!isValidFormat);
   };
 
   useEffect(() => {
@@ -289,7 +456,36 @@ const defaultCategory = useMemo(() => {
       setEndDateError(false);
       setStartDateError(false);
     }
+    if (!startedDate || !dueDate) {
+      setStartDateError(false);
+      setEndDateError(false);
+      return;
+    }
+    const s = dateFnsParse(startedDate, FORMAT, new Date());
+    const d = dateFnsParse(dueDate,   FORMAT, new Date());
+    const bad = isValid(s) && isValid(d) ? d.getTime() < s.getTime() : false;
+    setStartDateError(bad);
+    setEndDateError(bad);
   }, [startedDate, dueDate]);
+
+  // Validate date formats when dates change
+  useEffect(() => {
+    if (startedDate) {
+      const isValidFormat = validateDateFormat(startedDate);
+      setStartDateFormatError(!isValidFormat);
+    } else {
+      setStartDateFormatError(false);
+    }
+  }, [startedDate]);
+
+  useEffect(() => {
+    if (dueDate) {
+      const isValidFormat = validateDateFormat(dueDate);
+      setEndDateFormatError(!isValidFormat);
+    } else {
+      setEndDateFormatError(false);
+    }
+  }, [dueDate]);
 
   const addLink = () => {
     setLinks([...links, link]);
@@ -319,6 +515,8 @@ const defaultCategory = useMemo(() => {
     setCategory(defaultCategory);
     setStartDateError(false);
     setEndDateError(false);
+    setStartDateFormatError(false);
+    setEndDateFormatError(false);
     setHasNegativeHours(false);
   };
 
@@ -411,6 +609,8 @@ const defaultCategory = useMemo(() => {
       setDueDate('');
       setStartDateError(false);
       setEndDateError(false);
+      setStartDateFormatError(false);
+      setEndDateFormatError(false);
     }
   }, [modal]);
 
@@ -438,6 +638,8 @@ const defaultCategory = useMemo(() => {
     setCategory(defaultCategory);
   }, [defaultCategory]);
   
+  const closeConfirm = useCallback(() => setShowReplicateConfirm(false), []);
+  const confirmLabel = isReplicating ? 'Processing…' : 'YES, make it so! 💪';
   const fontColor = darkMode ? 'text-light' : '';
 
   return (
@@ -472,33 +674,33 @@ const defaultCategory = useMemo(() => {
         <ModalBody className={darkMode ? 'bg-yinmn-blue dark-mode no-hover' : ''}>
           <div className="table table-bordered responsive">
             <div>
-              <div className="add_new_task_form-group">
-                <span className={`add_new_task_form-label ${fontColor}`} data-tip="WBS ID">
+              <div className={styles["add_new_task_form-group"]}>
+                <span className={`${styles['add_new_task_form-label']} ${fontColor}`} data-tip="WBS ID">
                   WBS #
                 </span>
 
-                <span className={`add_new_task_form-input_area ${fontColor}`}>{newTaskNum}</span>
+                <span className={`${styles['add_new_task_form-input_area']} ${fontColor}`}>{newTaskNum}</span>
               </div>
-              <div className="add_new_task_form-group">
-                <label htmlFor="taskNameInput" className={`add_new_task_form-label ${fontColor}`}>
+              <div className={styles["add_new_task_form-group"]}>
+                <label htmlFor="taskNameInput" className={`${styles['add_new_task_form-label']} ${fontColor}`}>
                   Task Name
                 </label>
-                <span className="add_new_task_form-input_area">
+                <span className={styles['add_new_task_form-input_area']}>
                   <textarea
                     id="taskNameInput"
                     rows="2"
-                    className="task-name border border-dark rounded"
+                    className={`${styles['task-name']} border border-dark rounded`}
                     onChange={e => setTaskName(e.target.value)}
                     value={taskName}
                   />
                 </span>
               </div>
 
-              <div className="add_new_task_form-group">
-                <label htmlFor="priority" className={`add_new_task_form-label ${fontColor}`}>
+              <div className={styles["add_new_task_form-group"]}>
+                <label htmlFor="priority" className={`${styles['add_new_task_form-label']} ${fontColor}`}>
                   Priority
                 </label>
-                <span className="add_new_task_form-input_area">
+                <span className={styles['add_new_task_form-input_area']}>
                   <select
                     id="priority"
                     onChange={e => setPriority(e.target.value)}
@@ -511,29 +713,53 @@ const defaultCategory = useMemo(() => {
                 </span>
               </div>
 
-              <div className="add_new_task_form-group">
-                <label htmlFor="resource-input" className={`add_new_task_form-label ${fontColor}`}>
+              <div className={styles["add_new_task_form-group"]}>
+                <label htmlFor="resource-input" className={`${styles['add_new_task_form-label']} ${fontColor}`}>
                   Resources
                 </label>
-                <div className="add_new_task_form-input_area">
-                <TagsSearch
-                  key={`tags-${props.projectId}-${activeMembers.length}`}
-                  placeholder="Add resources"
-                  members={activeMembers}
-                  addResources={addResources}
-                  removeResource={removeResource}
-                  resourceItems={resourceItems}
-                  disableInput={false}
-                  inputTestId="resource-input"
-                  projectId={props.projectId}
-                />
+                <div className={styles['add_new_task_form-input_area']}>
+                  <div className={styles.resourceRow}>
+                    <div className={styles.tagsWrapper}>
+                      <TagsSearch
+                        key={`tags-${props.projectId}-${activeMembers.length}`}
+                        placeholder="Add resources"
+                        members={activeMembers}
+                        addResources={addResources}
+                        removeResource={removeResource}
+                        resourceItems={resourceItems}
+                        disableInput={false}
+                        inputTestId="resource-input"
+                        projectId={props.projectId}
+                      />
+                    </div>
+
+                    <div className={clsx(styles['replicate-control'], styles.replicateInline)}>
+                      <button
+                        type="button"
+                        className={styles['replicate-btn']}
+                        onClick={openReplicateConfirm}
+                        data-tip
+                        data-for="replicateTip"
+                        disabled={!resourceItems?.length || isLoading || isReplicating}
+                        aria-label="Replicate Task"
+                        title="Replicate Task"
+                      >
+                        <span style={{ fontWeight: 700 }}>RT</span>
+                      </button>
+                    </div>
+                  </div>
+                  <ReactTooltip id="replicateTip" effect="solid" place="top">
+                    Replicate Task: Clicking this button will replicate this task and add it to all the
+                    individuals chosen as Resources. Hours and all other details will be copied (not divided)
+                    for all people.
+                  </ReactTooltip>
                 </div>
               </div>
 
-              <div className="add_new_task_form-group">
+              <div className={styles["add_new_task_form-group"]}>
                 {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-                <label className={`add_new_task_form-label ${fontColor}`}>Assigned</label>
-                <div className="add_new_task_form-input_area">
+                <label className={`${styles['add_new_task_form-label']} ${fontColor}`}>Assigned</label>
+                <div className={styles['add_new_task_form-input_area']}>
                   <div className="flex-row d-inline align-items-center">
                     <div className="form-check form-check-inline">
                       <input
@@ -545,7 +771,7 @@ const defaultCategory = useMemo(() => {
                         checked={assigned === true}
                         onChange={() => setAssigned(true)}
                       />
-                      <label className={`form-check-label ${fontColor}`} htmlFor="assigned-yes">
+                      <label className={`form-check-label`} htmlFor="assigned-yes">
                         Yes
                       </label>
                     </div>
@@ -559,7 +785,7 @@ const defaultCategory = useMemo(() => {
                         checked={assigned === false}
                         onChange={() => setAssigned(false)}
                       />
-                      <label className={`form-check-label ${fontColor}`} htmlFor="assigned-no">
+                      <label className={`form-check-label`} htmlFor="assigned-no">
                         No
                       </label>
                     </div>
@@ -567,9 +793,9 @@ const defaultCategory = useMemo(() => {
                 </div>
               </div>
 
-              <div className="add_new_task_form-group">
-                <span className={`add_new_task_form-label ${fontColor}`}>Status</span>
-                <span className="add_new_task_form-input_area">
+              <div className={styles["add_new_task_form-group"]}>
+                <span className={`${styles['add_new_task_form-label']} ${fontColor}`}>Status</span>
+                <span className={styles['add_new_task_form-input_area']}>
                   <div className="d-flex align-items-center flex-wrap">
                     <span className="form-check form-check-inline mr-5">
                       <input
@@ -581,7 +807,7 @@ const defaultCategory = useMemo(() => {
                         checked={status === 'Active' || status === 'Started'}
                         onChange={e => setStatus(e.target.value)}
                       />
-                      <label className={`form-check-label ${fontColor}`} htmlFor="active">
+                      <label className={`form-check-label`} htmlFor="active">
                         Active
                       </label>
                     </span>
@@ -595,7 +821,7 @@ const defaultCategory = useMemo(() => {
                         checked={status === 'Not Started'}
                         onChange={e => setStatus(e.target.value)}
                       />
-                      <label className={`form-check-label ${fontColor}`} htmlFor="notStarted">
+                      <label className={`form-check-label`} htmlFor="notStarted">
                         Not Started
                       </label>
                     </span>
@@ -611,7 +837,7 @@ const defaultCategory = useMemo(() => {
                         checked={status === 'Paused'}
                         onChange={e => setStatus(e.target.value)}
                       />
-                      <label className={`form-check-label ${fontColor}`} htmlFor="paused">
+                      <label className={`form-check-label`} htmlFor="paused">
                         Paused
                       </label>
                     </span>
@@ -625,21 +851,22 @@ const defaultCategory = useMemo(() => {
                         checked={status === 'Complete'}
                         onChange={e => setStatus(e.target.value)}
                       />
-                      <label className={`form-check-label ${fontColor}`} htmlFor="complete">
+                      <label className={`form-check-label`} htmlFor="complete">
                         Complete
                       </label>
                     </span>
                   </div>
                 </span>
               </div>
-              <div className="add_new_task_form-group">
+              <div className={styles["add_new_task_form-group"]}>
                 {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-                <label className={`add_new_task_form-label ${fontColor}`}>Hours</label>
-                <div className="add_new_task_form-input_area">
+                <label className={`${styles['add_new_task_form-label']} ${fontColor}`}>Hours</label>
+                <div className={styles['add_new_task_form-input_area']}>
                   <div className="py-2 d-flex align-items-center justify-content-sm-around">
                     <label
                       htmlFor="bestCaseInput"
-                      className={`hours-label text-nowrap align-self-center ${fontColor}`}
+                      className={`${styles.hoursLabel} mr-2 text-nowrap align-self-center ${fontColor}`}
+                      // className={`${styles['hours-label']} text-nowrap align-self-center ${fontColor}`}
                     >
                       Best-case
                     </label>
@@ -651,7 +878,7 @@ const defaultCategory = useMemo(() => {
                       onChange={handleBestHoursChange}
                       onBlur={handleBestHoursBlur}
                       id="bestCaseInput"
-                      className="hours-input"
+                      className={styles['hours-input']}
                       aria-label="Best-case hours"
                     />
                   </div>
@@ -661,7 +888,8 @@ const defaultCategory = useMemo(() => {
                   <div className="py-2 d-flex align-items-center justify-content-sm-around">
                     <label
                       htmlFor="worstCaseInput"
-                      className={`hours-label text-nowrap align-self-center ${fontColor}`}
+                      className={`${styles.hoursLabel} mr-2 text-nowrap align-self-center ${fontColor}`}
+                      // className={`${styles['hours-label']} text-nowrap align-self-center ${fontColor}`}
                     >
                       Worst-case
                     </label>
@@ -673,7 +901,7 @@ const defaultCategory = useMemo(() => {
                       onChange={handleWorstHoursChange}
                       onBlur={handleWorstHoursBlur}
                       id="worstCaseInput"
-                      className="hours-input"
+                      className={styles['hours-input']}
                       aria-label="Worst-case hours"
                     />
                   </div>
@@ -685,7 +913,8 @@ const defaultCategory = useMemo(() => {
                   <div className="py-2 d-flex align-items-center justify-content-sm-around">
                     <label
                       htmlFor="mostCaseInput"
-                      className={`hours-label text-nowrap align-self-center ${fontColor}`}
+                      className={`${styles.hoursLabel} mr-2 text-nowrap align-self-center ${fontColor}`}
+                      // className={`${styles['hours-label']} text-nowrap align-self-center ${fontColor}`}
                     >
                       Most-case
                     </label>
@@ -697,7 +926,7 @@ const defaultCategory = useMemo(() => {
                       onChange={handleMostHoursChange}
                       onBlur={handleMostHoursBlur}
                       id="mostCaseInput"
-                      className="hours-input"
+                      className={styles['hours-input']}
                       aria-label="Most-case hours"
                     />
                   </div>
@@ -709,7 +938,8 @@ const defaultCategory = useMemo(() => {
                   <div className="py-2 d-flex align-items-center justify-content-sm-around">
                     <label
                       htmlFor="estimatedInput"
-                      className={`hours-label text-nowrap align-self-center ${fontColor}`}
+                      className={`${styles.hoursLabel} mr-2 text-nowrap align-self-center ${fontColor}`}
+                      // className={`${styles['hours-label']} text-nowrap align-self-center ${fontColor}`}
                     >
                       Estimated
                     </label>
@@ -720,7 +950,7 @@ const defaultCategory = useMemo(() => {
                       value={hoursEstimate}
                       onChange={handleEstimateHoursChange}
                       id="estimatedInput"
-                      className="hours-input"
+                      className={styles['hours-input']}
                       aria-label="Estimated hours"
                     />
                   </div>
@@ -730,11 +960,11 @@ const defaultCategory = useMemo(() => {
                 </div>
               </div>
 
-              <div className="add_new_task_form-group">
-                <label htmlFor="linkInput" className={`add_new_task_form-label ${fontColor}`}>
+              <div className={styles["add_new_task_form-group"]}>
+                <label htmlFor="linkInput" className={`${styles['add_new_task_form-label']} ${fontColor}`}>
                   Links
                 </label>
-                <span className="add_new_task_form-input_area">
+                <span className={styles['add_new_task_form-input_area']}>
                   <div className="d-flex flex-row">
                     <input
                       type="text"
@@ -806,10 +1036,10 @@ const defaultCategory = useMemo(() => {
               </div>
 
               <div className="d-flex border align-items-center">
-                <label htmlFor="category-select" className={`add_new_task_form-label ${fontColor}`}>
+                <label htmlFor="category-select" className={`${styles['add_new_task_form-label']} ${fontColor}`}>
                   Category
                 </label>
-                <span className="add_new_task_form-input_area">
+                <span className={styles['add_new_task_form-input_area']}>
                   <select
                     id="category-select"
                     value={category}
@@ -825,7 +1055,7 @@ const defaultCategory = useMemo(() => {
                 </span>
               </div>
               <div>
-                <div className={`border p-1 ${fontColor}`} aria-labelledby="why-task-label">
+                <div className={`border p-1`} aria-labelledby="why-task-label">
                   <div id="why-task-label">Why this Task is Important</div>
                   <Editor
                     tinymceScriptSrc="/tinymce/tinymce.min.js"
@@ -839,7 +1069,7 @@ const defaultCategory = useMemo(() => {
                 </div>
               </div>
               <div>
-                <div className={`border p-1 ${fontColor}`} aria-labelledby="design-intent-label">
+                <div className={`border p-1`} aria-labelledby="design-intent-label">
                   <div id="design-intent-label">Design Intent</div>
                   <Editor
                     tinymceScriptSrc="/tinymce/tinymce.min.js"
@@ -853,7 +1083,7 @@ const defaultCategory = useMemo(() => {
                 </div>
               </div>
               <div>
-                <div className={`border p-1 ${fontColor}`} aria-labelledby="endstate-label">
+                <div className={`border p-1`} aria-labelledby="endstate-label">
                   <div id="endstate-label">Endstate</div>
                   <Editor
                     tinymceScriptSrc="/tinymce/tinymce.min.js"
@@ -866,9 +1096,9 @@ const defaultCategory = useMemo(() => {
                   />
                 </div>
               </div>
-              <div className="d-flex border add-modal-dt">
+              <div className={`d-flex border ${styles['add-modal-dt']}`}>
                 {/* eslint-disable-next-line jsx-a11y/scope */}
-                <span scope="col" className={`form-date p-1 ${fontColor}`}>Start Date</span>
+                <span scope="col" className={`${styles['form-date']} p-1`}>Start Date</span>
                 {/* eslint-disable-next-line jsx-a11y/scope */}
                 <span scope="col" className="border-left p-1">
                   <div>
@@ -880,14 +1110,17 @@ const defaultCategory = useMemo(() => {
                       onChange={changeDateStart}
                       disabled={false} // always enabled here
                     />
+                    <div className="warning text-danger">
+                      {startDateFormatError && 'Please enter date in MM/dd/yy format'}
+                    </div>
                     <div className="warning">{startDateError ? START_DATE_ERROR_MESSAGE : ''}</div>
                   </div>
                 </span>
               </div>
-              <div className="d-flex border align-items-center  add-modal-dt">
+              <div className={`d-flex border align-items-center ${styles['add-modal-dt']}`}>
                 <label
                   htmlFor="end-date-input"
-                  className={`form-date p-1 ${fontColor}`}
+                  className={`${styles['form-date']} p-1`}
                   // eslint-disable-next-line jsx-a11y/scope
                   scope="col"
                 >
@@ -903,6 +1136,9 @@ const defaultCategory = useMemo(() => {
                     onChange={changeDateEnd}
                     disabled={false}
                   />
+                  <div className="warning text-danger">
+                    {endDateFormatError && 'Please enter date in MM/dd/yy format'}
+                  </div>
                   <div className="warning">{endDateError ? END_DATE_ERROR_MESSAGE : ''}</div>
                 </span>
               </div>
@@ -919,12 +1155,41 @@ const defaultCategory = useMemo(() => {
               isLoading ||
               startDateError ||
               endDateError ||
+              startDateFormatError ||
+              endDateFormatError ||
               hasNegativeHours
             }
             style={darkMode ? boxStyleDark : boxStyle}
           >
             {isLoading ? 'Adding Task...' : 'Save'}
           </Button>
+          
+          {/* [RT] Confirmation modal */}
+          <Modal isOpen={showReplicateConfirm} 
+            toggle={closeConfirm} 
+            lassName={clsx(darkMode && 'text-light dark-mode')}
+            contentClassName={clsx(darkMode && styles.confirmContentDark)}
+            backdropClassName={clsx(darkMode && styles.confirmBackdropDark)}
+            >
+            <ModalHeader toggle={closeConfirm}>Confirm Replication</ModalHeader>
+
+            <ModalBody>
+              <p style={{ whiteSpace: 'pre-wrap', margin: 0 }}>
+                <strong>Whoa, steady there, hero! 🦸</strong><br />
+                This doesn’t divide work—it duplicates it. Everyone gets the full deal.<br />
+                Are you sure you want to hit replicate?
+              </p>
+            </ModalBody>
+
+            <ModalFooter>
+              <button className="btn btn-outline-danger" onClick={closeConfirm}>
+                NO, take me back! 🛑
+              </button>
+              <button className="btn btn-primary" onClick={doReplicate} disabled={isReplicating}>
+                {confirmLabel}
+              </button>
+            </ModalFooter>
+          </Modal>
         </ModalFooter>
       </Modal>
       <Button
@@ -940,6 +1205,55 @@ const defaultCategory = useMemo(() => {
   );
 }
 
+// PropTypes validation
+AddTaskModal.propTypes = {
+  copiedTask: PropTypes.object,
+  allMembers: PropTypes.array,
+  allProjects: PropTypes.shape({
+    projects: PropTypes.array,
+    fetched: PropTypes.bool,
+    fetching: PropTypes.bool,
+  }),
+  error: PropTypes.string,
+  darkMode: PropTypes.bool,
+  tasks: PropTypes.array,
+  projectById: PropTypes.object,
+  fetchAllProjects: PropTypes.func.isRequired,
+  addNewTask: PropTypes.func.isRequired,
+  fetchAllMembers: PropTypes.func.isRequired,
+  getProjectDetail: PropTypes.func.isRequired,
+  projectId: PropTypes.string,
+  taskId: PropTypes.string,
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      projectId: PropTypes.string,
+      wbsId: PropTypes.string,
+    }),
+  }),
+};
+
+// Default props
+AddTaskModal.defaultProps = {
+  copiedTask: null,
+  allMembers: [],
+  allProjects: {
+    projects: [],
+    fetched: false,
+    fetching: false,
+  },
+  error: null,
+  darkMode: false,
+  tasks: [],
+  projectId: '',
+  taskId: '',
+  match: {
+    params: {
+      projectId: '',
+      wbsId: '',
+    },
+  },
+};
+
 const mapStateToProps = state => ({
   copiedTask: state.tasks.copiedTask,
   allMembers: state.projectMembers.members,
@@ -953,6 +1267,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = {
   addNewTask,
   fetchAllMembers,
+  fetchAllProjects,
   getProjectDetail,
 };
 
