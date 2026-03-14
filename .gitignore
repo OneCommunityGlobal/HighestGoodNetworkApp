@@ -28,7 +28,9 @@ yarn-error.log*
 /.idea
 
 .vscode/launch.json
+.vscode/settings.json
 
 **\ **
 
 /public/tinymce/
+package-lock.json
