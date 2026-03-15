@@ -49,7 +49,6 @@ import GlobalVolunteerMap from './GlobalVolunteerMap/GlobalVolunteerMap';
 import TaskCompletedBarChart from './TaskCompleted/TaskCompletedBarChart';
 
 function calculateStartDate() {
-  // returns a string date in YYYY-MM-DD format of the start of the previous week
   const currentDate = new Date();
   currentDate.setHours(0, 0, 0, 0);
   const dayOfWeek = currentDate.getDay();
@@ -59,7 +58,6 @@ function calculateStartDate() {
 }
 
 function calculateEndDate() {
-  // returns a string date in YYYY-MM-DD format of the end of the previous week
   const currentDate = new Date();
   currentDate.setHours(0, 0, 0, 0);
   const dayOfWeek = currentDate.getDay();
@@ -87,6 +85,20 @@ function calculateComparisonDates(comparisonType, fromDate, toDate) {
     comparisonStartDate: shiftedStart ? shiftedStart.toISOString().split('T')[0] : null,
     comparisonEndDate: shiftedEnd ? shiftedEnd.toISOString().split('T')[0] : null,
   };
+}
+
+function validatePDFPrerequisites(volunteerStats, isLoading) {
+  if (typeof jsPDF === 'undefined' || typeof html2canvas === 'undefined') {
+    // eslint-disable-next-line no-alert
+    alert('Required PDF libraries not loaded. Please refresh the page.');
+    return false;
+  }
+  if (!volunteerStats || isLoading) {
+    // eslint-disable-next-line no-alert
+    alert('Please wait for data to load before generating PDF.');
+    return false;
+  }
+  return true;
 }
 
 function replaceCanvasesWithImages(canvasElements) {
@@ -195,7 +207,6 @@ function TotalOrgSummary(props) {
           comparisonEndDate,
         );
 
-        // Fetch task and project stats separately
         const taskAndProjectStatsResponse = await props.getTaskAndProjectStats(
           currentFromDate,
           currentToDate,
@@ -217,23 +228,10 @@ function TotalOrgSummary(props) {
 
   const handleSaveAsPDF = async () => {
     if (isGeneratingPDF) return;
-
     setIsGeneratingPDF(true);
 
     try {
-      // Ensure required libraries are present.
-      if (typeof jsPDF === 'undefined' || typeof html2canvas === 'undefined') {
-        // eslint-disable-next-line no-alert
-        alert('Required PDF libraries not loaded. Please refresh the page.');
-        return;
-      }
-
-      // Ensure data is ready.
-      if (!volunteerStats || isLoading) {
-        // eslint-disable-next-line no-alert
-        alert('Please wait for data to load before generating PDF.');
-        return;
-      }
+      if (!validatePDFPrerequisites(volunteerStats, isLoading)) return;
 
       // Wait for charts/maps to render (5 seconds)
       await new Promise(resolve => setTimeout(resolve, 5000));
@@ -305,7 +303,6 @@ function TotalOrgSummary(props) {
           padding: 0 !important;
         }
 
-        /* PDF block container: border and shadow, dark mode fidelity */
         [data-pdf-block] {
           page-break-inside: avoid;
           break-inside: avoid;
@@ -366,7 +363,6 @@ function TotalOrgSummary(props) {
           color: #333 !important;
         }
 
-        /* Force all chart and card titles to white in dark mode for PDF */
 ${
   darkMode
     ? `
@@ -433,7 +429,7 @@ ${
       });
       doc.addImage(imgData, 'PNG', 0, 0, pdfWidth, imgHeight);
       const now = new Date();
-      const localDate = now.toLocaleDateString('en-CA'); // Using YYYY-MM-DD format
+      const localDate = now.toLocaleDateString('en-CA');
       doc.save(`volunteer-report-${localDate}.pdf`);
 
       // Cleanup: restore original canvases and remove temporary container
@@ -476,7 +472,6 @@ ${
       setSelectedDateRange(`${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}`);
       setShowDatePicker(false);
       setSelectedComparison('No Comparison');
-
       setCurrentFromDate(startDate.toISOString().split('T')[0]);
       setCurrentToDate(endDate.toISOString().split('T')[0]);
     }
@@ -582,7 +577,6 @@ ${
                   />
                 </div>
               </div>
-
               <div>
                 <label htmlFor="end-date" style={{ display: 'block', marginBottom: '1rem' }}>
                   End Date
