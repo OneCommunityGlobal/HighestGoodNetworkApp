@@ -309,6 +309,42 @@ function getPreviousWeekDates(fromDate, toDate) {
   };
 }
 
+async function generateTotalOrgPdf({ rootRef, darkMode, volunteerStats, isLoading }) {
+  if (!validatePDFPrerequisites(volunteerStats, isLoading)) return;
+
+  await new Promise(resolve => setTimeout(resolve, 5000));
+
+  const chartCanvases = document.querySelectorAll(
+    '[data-chart="volunteer-status"] canvas, [data-chart="mentor-status"] canvas',
+  );
+  const originalCanvases = replaceCanvasesWithImages(chartCanvases);
+
+  const pdfContainer = buildPDFContainer();
+  const clonedContent = rootRef.current.cloneNode(true);
+
+  clonedContent
+    .querySelectorAll('[data-pdf-hide], .controls, .no-print')
+    .forEach(el => el.remove());
+
+  removeCollapsedSections(clonedContent);
+
+  copyLiveCanvasesToClone(
+    Array.from(document.querySelectorAll('canvas')),
+    Array.from(clonedContent.querySelectorAll('canvas')),
+  );
+
+  adjustTitleRowForPDF(clonedContent);
+
+  pdfContainer.appendChild(buildPDFStyles(darkMode));
+  pdfContainer.appendChild(clonedContent);
+  document.body.appendChild(pdfContainer);
+
+  await captureAndSavePDF(pdfContainer);
+
+  restoreCanvases(originalCanvases);
+  document.body.removeChild(pdfContainer);
+}
+
 const fromDate = calculateStartDate();
 const toDate = calculateEndDate();
 
@@ -353,29 +389,7 @@ function TotalOrgSummary(props) {
     if (isGeneratingPDF) return;
     setIsGeneratingPDF(true);
     try {
-      if (!validatePDFPrerequisites(volunteerStats, isLoading)) return;
-      await new Promise(resolve => setTimeout(resolve, 5000));
-      const chartCanvases = document.querySelectorAll(
-        '[data-chart="volunteer-status"] canvas, [data-chart="mentor-status"] canvas',
-      );
-      const originalCanvases = replaceCanvasesWithImages(chartCanvases);
-      const pdfContainer = buildPDFContainer();
-      const clonedContent = rootRef.current.cloneNode(true);
-      clonedContent
-        .querySelectorAll('[data-pdf-hide], .controls, .no-print')
-        .forEach(el => el.remove());
-      removeCollapsedSections(clonedContent);
-      copyLiveCanvasesToClone(
-        Array.from(document.querySelectorAll('canvas')),
-        Array.from(clonedContent.querySelectorAll('canvas')),
-      );
-      adjustTitleRowForPDF(clonedContent);
-      pdfContainer.appendChild(buildPDFStyles(darkMode));
-      pdfContainer.appendChild(clonedContent);
-      document.body.appendChild(pdfContainer);
-      await captureAndSavePDF(pdfContainer);
-      restoreCanvases(originalCanvases);
-      document.body.removeChild(pdfContainer);
+      await generateTotalOrgPdf({ rootRef, darkMode, volunteerStats, isLoading });
     } catch (pdfError) {
       // eslint-disable-next-line no-console
       console.error('PDF generation failed:', pdfError);
