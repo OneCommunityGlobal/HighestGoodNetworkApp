@@ -220,13 +220,13 @@ function EquipmentsTable({ equipment, project }) {
                     <td>{new Date(rec.rentalDueDate).toLocaleDateString()}</td>
 
                     <td className="materials_cell">
-                      <button
-                        type="button"
-                        onClick={() => handleOpenModal(rec, 'UpdatesEdit')}
-                        aria-label="Edit updates"
+                      <Link
+                        to={`/bmdashboard/tools/${rec._id}/update`}
+                        aria-label="Update equipment status"
+                        style={{ display: 'inline-flex', color: 'inherit', textDecoration: 'none' }}
                       >
                         <BiPencil />
-                      </button>
+                      </Link>
                       <Button
                         color="primary"
                         outline
