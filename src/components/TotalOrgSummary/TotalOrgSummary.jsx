@@ -68,44 +68,25 @@ function calculateEndDate() {
   return currentDate.toISOString().split('T')[0];
 }
 
+function shiftDate(date, diffDays, type) {
+  if (type === 'Week Over Week') return new Date(date.setDate(date.getDate() - diffDays));
+  if (type === 'Month Over Month') return new Date(date.setMonth(date.getMonth() - 1));
+  if (type === 'Year Over Year') return new Date(date.setFullYear(date.getFullYear() - 1));
+  return null;
+}
+
 function calculateComparisonDates(comparisonType, fromDate, toDate) {
   const start = new Date(fromDate);
   const end = new Date(toDate);
-  const diffTime = Math.abs(end - start);
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  const diffDays = Math.ceil(Math.abs(end - start) / (1000 * 60 * 60 * 24));
 
-  switch (comparisonType) {
-    case 'Week Over Week':
-      return {
-        comparisonStartDate: new Date(start.setDate(start.getDate() - diffDays))
-          .toISOString()
-          .split('T')[0],
-        comparisonEndDate: new Date(end.setDate(end.getDate() - diffDays))
-          .toISOString()
-          .split('T')[0],
-      };
-    case 'Month Over Month':
-      return {
-        comparisonStartDate: new Date(start.setMonth(start.getMonth() - 1))
-          .toISOString()
-          .split('T')[0],
-        comparisonEndDate: new Date(end.setMonth(end.getMonth() - 1)).toISOString().split('T')[0],
-      };
-    case 'Year Over Year':
-      return {
-        comparisonStartDate: new Date(start.setFullYear(start.getFullYear() - 1))
-          .toISOString()
-          .split('T')[0],
-        comparisonEndDate: new Date(end.setFullYear(end.getFullYear() - 1))
-          .toISOString()
-          .split('T')[0],
-      };
-    default:
-      return {
-        comparisonStartDate: null,
-        comparisonEndDate: null,
-      };
-  }
+  const shiftedStart = shiftDate(start, diffDays, comparisonType);
+  const shiftedEnd = shiftDate(end, diffDays, comparisonType);
+
+  return {
+    comparisonStartDate: shiftedStart ? shiftedStart.toISOString().split('T')[0] : null,
+    comparisonEndDate: shiftedEnd ? shiftedEnd.toISOString().split('T')[0] : null,
+  };
 }
 
 const fromDate = calculateStartDate();
