@@ -1,5 +1,5 @@
 .container {
-  padding: 20px;
+  padding: 32px 48px 20px;
   max-width: 1200px;
   margin: 0 auto;
   background-color: #f9f9f9;
@@ -8,7 +8,7 @@
 
 .header {
   margin-bottom: 30px;
-  text-align: left;
+  text-align: center;
 }
 
 .title {
@@ -26,6 +26,8 @@
 
 .searchSection {
   margin-bottom: 24px;
+  display: flex;
+  justify-content: center;
 }
 
 .searchContainer {
@@ -33,6 +35,7 @@
   display: flex;
   align-items: center;
   max-width: 600px;
+  width: 100%;
 }
 
 .searchIcon {
@@ -60,6 +63,7 @@
 
 .filterSection {
   display: flex;
+  justify-content: center;
   gap: 12px;
   margin-bottom: 24px;
   flex-wrap: wrap;

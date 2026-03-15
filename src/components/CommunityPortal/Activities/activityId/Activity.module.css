@@ -9,7 +9,7 @@
 .eventCard {
   border: 1px solid #ccc;
   border-radius: 10px;
-  padding: 16px;
+  padding: 16px 32px;
   font-family: Arial, sans-serif;
   background-color: #fff;
   max-width: 1100px;
@@ -157,10 +157,11 @@
 
 .eventTabs {
   display: flex;
+  justify-content: space-between;
   gap: 20px;
   border-top: 1px solid #ddd;
   margin-top: 20px;
-  padding-top: 10px;
+  padding: 10px 8px 0;
 }
 
 .tab {
