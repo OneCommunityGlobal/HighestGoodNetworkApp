@@ -77,10 +77,8 @@ function calculateComparisonDates(comparisonType, fromDate, toDate) {
   const start = new Date(fromDate);
   const end = new Date(toDate);
   const diffDays = Math.ceil(Math.abs(end - start) / (1000 * 60 * 60 * 24));
-
   const shiftedStart = shiftDate(start, diffDays, comparisonType);
   const shiftedEnd = shiftDate(end, diffDays, comparisonType);
-
   return {
     comparisonStartDate: shiftedStart ? shiftedStart.toISOString().split('T')[0] : null,
     comparisonEndDate: shiftedEnd ? shiftedEnd.toISOString().split('T')[0] : null,
@@ -170,6 +168,141 @@ function adjustTitleRowForPDF(clonedContent) {
   }
 }
 
+function removeCollapsedSections(clonedContent) {
+  clonedContent.querySelectorAll('.Collapsible').forEach(collapsible => {
+    const trigger = collapsible.querySelector('.Collapsible__trigger');
+    if (!trigger || !trigger.classList.contains('is-open')) {
+      collapsible.remove();
+    }
+  });
+}
+
+function buildPDFContainer() {
+  const pdfContainer = document.createElement('div');
+  pdfContainer.id = 'pdf-export-container';
+  Object.assign(pdfContainer.style, {
+    width: '100%',
+    padding: '0',
+    position: 'absolute',
+    left: '-9999px',
+    top: '0',
+    zIndex: '9999',
+    boxSizing: 'border-box',
+    minHeight: '100%',
+    margin: '0',
+  });
+  return pdfContainer;
+}
+
+async function captureAndSavePDF(pdfContainer, darkMode) {
+  const screenshotCanvas = await html2canvas(pdfContainer, {
+    scale: 2,
+    useCORS: true,
+    windowWidth: pdfContainer.scrollWidth,
+    windowHeight: pdfContainer.scrollHeight,
+    logging: false,
+  });
+
+  if (!screenshotCanvas) throw new Error('html2canvas failed to capture the content.');
+
+  const imgData = screenshotCanvas.toDataURL('image/png');
+  if (!imgData || imgData.length < 100) throw new Error('Invalid image data generated.');
+
+  const pdfWidth = 210;
+  const imgHeight = (screenshotCanvas.height * pdfWidth) / screenshotCanvas.width;
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: [pdfWidth, imgHeight] });
+  doc.addImage(imgData, 'PNG', 0, 0, pdfWidth, imgHeight);
+  doc.save(`volunteer-report-${new Date().toLocaleDateString('en-CA')}.pdf`);
+}
+
+function buildPDFStyles(darkMode) {
+  const styleElem = document.createElement('style');
+  styleElem.textContent = `
+    [data-pdf-root] {
+      padding: 20px !important;
+      margin: 0 !important;
+      box-shadow: none !important;
+      border: none !important;
+      width: 100% !important;
+      min-height: 100% !important;
+    }
+    [data-pdf-title-row] {
+      display: flex !important;
+      justify-content: space-between !important;
+      align-items: center !important;
+      margin-bottom: 20px !important;
+      width: 100% !important;
+      padding: 0 !important;
+    }
+    [data-pdf-block] {
+      page-break-inside: avoid;
+      break-inside: avoid;
+      margin: 15px 0 !important;
+      padding: 20px !important;
+      background-color: ${darkMode ? '#1C2541' : '#fff'} !important;
+      border: 1px solid ${darkMode ? '#3a3a3a' : '#e0e0e0'} !important;
+      border-radius: 10px !important;
+      box-shadow: ${
+        darkMode
+          ? '0 2px 12px 0 rgba(255,255,255,0.18), 0 1.5px 8px 0 rgba(255,255,255,0.10)'
+          : '0 2px 4px rgba(0, 0, 0, 0.08)'
+      } !important;
+      overflow: hidden !important;
+    }
+    img, svg {
+      max-width: 100% !important;
+      height: auto !important;
+      page-break-inside: avoid !important;
+    }
+    .recharts-wrapper { width: 100% !important; height: auto !important; }
+    table { page-break-inside: avoid !important; }
+    .Collapsible__trigger {
+      background-color: ${darkMode ? '#1C2541' : '#fff'} !important;
+      color: ${darkMode ? '#fff' : '#000'} !important;
+    }
+    .volunteerStatusGrid {
+      display: grid !important;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)) !important;
+      gap: 1.5rem !important;
+      width: 100% !important;
+      margin-top: 15px !important;
+    }
+    .component-pie-chart-label {
+      font-size: 12px !important;
+      font-weight: 600 !important;
+      color: #000 !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+    }
+    [data-pdf-title] p {
+      font-size: 1.5em !important;
+      font-weight: bold !important;
+      text-align: center !important;
+      margin: 10px !important;
+      color: #333 !important;
+    }
+    ${
+      darkMode
+        ? `
+      .componentContainer h1, .componentContainer h2, .componentContainer h3,
+      .componentContainer h4, .componentContainer h5, .componentContainer h6,
+      .componentContainer p, .componentContainer .totalOrgChartTitle,
+      .componentContainer .volunteerStatusGrid h3, .componentContainer .card-title,
+      .componentContainer .statistics-title, .componentContainer .Collapsible__trigger,
+      .componentContainer .volunteer-status-header, .componentContainer .volunteer-status-title {
+        color: #fff !important;
+        text-shadow: 0 1px 4px #000, 0 0 2px #000 !important;
+      }
+      .componentContainer [data-pdf-title] p, .componentContainer [data-pdf-title] {
+        color: #fff !important;
+        text-shadow: 0 1px 4px #000, 0 0 2px #000 !important;
+      }`
+        : ''
+    }
+  `;
+  return styleElem;
+}
+
 const fromDate = calculateStartDate();
 const toDate = calculateEndDate();
 
@@ -199,19 +332,16 @@ function TotalOrgSummary(props) {
           currentFromDate,
           currentToDate,
         );
-
         const volunteerStatsResponse = await props.getTotalOrgSummary(
           currentFromDate,
           currentToDate,
           comparisonStartDate,
           comparisonEndDate,
         );
-
         const taskAndProjectStatsResponse = await props.getTaskAndProjectStats(
           currentFromDate,
           currentToDate,
         );
-
         setVolunteerStats({
           ...volunteerStatsResponse.data,
           taskAndProjectStats: taskAndProjectStatsResponse,
@@ -222,217 +352,40 @@ function TotalOrgSummary(props) {
         setIsVolunteerFetchingError(true);
       }
     };
-
     fetchVolunteerStats();
   }, [currentFromDate, currentToDate, selectedComparison]);
 
   const handleSaveAsPDF = async () => {
     if (isGeneratingPDF) return;
     setIsGeneratingPDF(true);
-
     try {
       if (!validatePDFPrerequisites(volunteerStats, isLoading)) return;
 
-      // Wait for charts/maps to render (5 seconds)
       await new Promise(resolve => setTimeout(resolve, 5000));
 
-      // Replace Chart.js canvas elements with images in the live DOM.
       const chartCanvases = document.querySelectorAll(
         '[data-chart="volunteer-status"] canvas, [data-chart="mentor-status"] canvas',
       );
       const originalCanvases = replaceCanvasesWithImages(chartCanvases);
-
-      // Create a temporary container for PDF generation
-      const pdfContainer = document.createElement('div');
-      pdfContainer.id = 'pdf-export-container';
-      Object.assign(pdfContainer.style, {
-        width: '100%',
-        padding: '0',
-        position: 'absolute',
-        left: '-9999px',
-        top: '0',
-        zIndex: '9999',
-        boxSizing: 'border-box',
-        minHeight: '100%',
-        margin: '0',
-      });
-
-      // Clone the main content area
+      const pdfContainer = buildPDFContainer();
       const clonedContent = rootRef.current.cloneNode(true);
 
-      // Remove interactive or unwanted elements from the clone
       clonedContent
         .querySelectorAll('[data-pdf-hide], .controls, .no-print')
         .forEach(el => el.remove());
-
-      // Remove all collapsed AccordianWrapper (Collapsible) sections from the PDF
-      clonedContent.querySelectorAll('.Collapsible').forEach(collapsible => {
-        const trigger = collapsible.querySelector('.Collapsible__trigger');
-        if (!trigger || !trigger.classList.contains('is-open')) {
-          collapsible.remove();
-        }
-      });
-
-      // Copy canvas bitmap from live DOM to cloned DOM before converting to image
+      removeCollapsedSections(clonedContent);
       copyLiveCanvasesToClone(
         Array.from(document.querySelectorAll('canvas')),
         Array.from(clonedContent.querySelectorAll('canvas')),
       );
-
-      // Adjust title row styling for a clean layout
       adjustTitleRowForPDF(clonedContent);
 
-      // Create a style element for the PDF container
-      const styleElem = document.createElement('style');
-      styleElem.textContent = `
-        [data-pdf-root] {
-          padding: 20px !important;
-          margin: 0 !important;
-          box-shadow: none !important;
-          border: none !important;
-          width: 100% !important;
-          min-height: 100% !important;
-        }
-
-        [data-pdf-title-row] {
-          display: flex !important;
-          justify-content: space-between !important;
-          align-items: center !important;
-          margin-bottom: 20px !important;
-          width: 100% !important;
-          padding: 0 !important;
-        }
-
-        [data-pdf-block] {
-          page-break-inside: avoid;
-          break-inside: avoid;
-          margin: 15px 0 !important;
-          padding: 20px !important;
-          background-color: ${darkMode ? '#1C2541' : '#fff'} !important;
-          border: 1px solid ${darkMode ? '#3a3a3a' : '#e0e0e0'} !important;
-          border-radius: 10px !important;
-          box-shadow: ${
-            darkMode
-              ? '0 2px 12px 0 rgba(255,255,255,0.18), 0 1.5px 8px 0 rgba(255,255,255,0.10)'
-              : '0 2px 4px rgba(0, 0, 0, 0.08)'
-          } !important;
-          overflow: hidden !important;
-        }
-
-        img, svg {
-          max-width: 100% !important;
-          height: auto !important;
-          page-break-inside: avoid !important;
-        }
-
-        .recharts-wrapper {
-          width: 100% !important;
-          height: auto !important;
-        }
-
-        table {
-          page-break-inside: avoid !important;
-        }
-
-        .Collapsible__trigger {
-          background-color: ${darkMode ? '#1C2541' : '#fff'} !important;
-          color: ${darkMode ? '#fff' : '#000'} !important;
-        }
-
-        .volunteerStatusGrid {
-          display: grid !important;
-          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)) !important;
-          gap: 1.5rem !important;
-          width: 100% !important;
-          margin-top: 15px !important;
-        }
-
-        .component-pie-chart-label {
-          font-size: 12px !important;
-          font-weight: 600 !important;
-          color: #000 !important;
-          overflow: hidden !important;
-          text-overflow: ellipsis !important;
-        }
-
-        [data-pdf-title] p {
-          font-size: 1.5em !important;
-          font-weight: bold !important;
-          text-align: center !important;
-          margin: 10px !important;
-          color: #333 !important;
-        }
-
-${
-  darkMode
-    ? `
-  .componentContainer h1,
-  .componentContainer h2,
-  .componentContainer h3,
-  .componentContainer h4,
-  .componentContainer h5,
-  .componentContainer h6,
-  .componentContainer p,
-  .componentContainer .totalOrgChartTitle,
-  .componentContainer .volunteerStatusGrid h3,
-  .componentContainer .card-title,
-  .componentContainer .statistics-title,
-  .componentContainer .Collapsible__trigger,
-  .componentContainer .volunteer-status-header,
-  .componentContainer .volunteer-status-title {
-    color: #fff !important;
-    text-shadow: 0 1px 4px #000, 0 0 2px #000 !important;
-  }
-  .componentContainer [data-pdf-title] p {
-    color: #fff !important;
-    text-shadow: 0 1px 4px #000, 0 0 2px #000 !important;
-  }
-  .componentContainer [data-pdf-title] {
-    color: #fff !important;
-    text-shadow: 0 1px 4px #000, 0 0 2px #000 !important;
-  }
-`
-    : ''
-}
-      `;
-
-      // Add content to the PDF container
-      pdfContainer.appendChild(styleElem);
+      pdfContainer.appendChild(buildPDFStyles(darkMode));
       pdfContainer.appendChild(clonedContent);
       document.body.appendChild(pdfContainer);
 
-      // Use html2canvas to capture the rendered container
-      const screenshotCanvas = await html2canvas(pdfContainer, {
-        scale: 2,
-        useCORS: true,
-        windowWidth: pdfContainer.scrollWidth,
-        windowHeight: pdfContainer.scrollHeight,
-        logging: false,
-      });
+      await captureAndSavePDF(pdfContainer, darkMode);
 
-      if (!screenshotCanvas) {
-        throw new Error('html2canvas failed to capture the content.');
-      }
-
-      const imgData = screenshotCanvas.toDataURL('image/png');
-      if (!imgData || imgData.length < 100) {
-        throw new Error('Invalid image data generated.');
-      }
-
-      // Create a single-page PDF
-      const pdfWidth = 210; // A4 width in mm
-      const imgHeight = (screenshotCanvas.height * pdfWidth) / screenshotCanvas.width;
-      const doc = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: [pdfWidth, imgHeight],
-      });
-      doc.addImage(imgData, 'PNG', 0, 0, pdfWidth, imgHeight);
-      const now = new Date();
-      const localDate = now.toLocaleDateString('en-CA');
-      doc.save(`volunteer-report-${localDate}.pdf`);
-
-      // Cleanup: restore original canvases and remove temporary container
       restoreCanvases(originalCanvases);
       document.body.removeChild(pdfContainer);
     } catch (pdfError) {
@@ -452,7 +405,6 @@ ${
       setSelectedDateRange(option);
       setShowDatePicker(false);
       setSelectedComparison('No Comparison');
-
       if (option === 'Current Week') {
         setCurrentFromDate(fromDate);
         setCurrentToDate(toDate);
