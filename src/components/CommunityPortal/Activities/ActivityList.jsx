@@ -180,7 +180,7 @@ function ActivityList() {
           type="button"
           onClick={handleClearFilters}
           disabled={!filter.type && !filter.date && !filter.location}
-          className={styles.clearButton}
+          className={`${styles.clearButton} ${darkMode ? styles.darkClearButton : ''}`}
         >
           Clear All
         </button>
