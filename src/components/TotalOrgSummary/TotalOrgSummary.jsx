@@ -194,7 +194,7 @@ function buildPDFContainer() {
   return pdfContainer;
 }
 
-async function captureAndSavePDF(pdfContainer, darkMode) {
+async function captureAndSavePDF(pdfContainer) {
   const screenshotCanvas = await html2canvas(pdfContainer, {
     scale: 2,
     useCORS: true,
@@ -202,12 +202,9 @@ async function captureAndSavePDF(pdfContainer, darkMode) {
     windowHeight: pdfContainer.scrollHeight,
     logging: false,
   });
-
   if (!screenshotCanvas) throw new Error('html2canvas failed to capture the content.');
-
   const imgData = screenshotCanvas.toDataURL('image/png');
   if (!imgData || imgData.length < 100) throw new Error('Invalid image data generated.');
-
   const pdfWidth = 210;
   const imgHeight = (screenshotCanvas.height * pdfWidth) / screenshotCanvas.width;
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: [pdfWidth, imgHeight] });
@@ -219,25 +216,16 @@ function buildPDFStyles(darkMode) {
   const styleElem = document.createElement('style');
   styleElem.textContent = `
     [data-pdf-root] {
-      padding: 20px !important;
-      margin: 0 !important;
-      box-shadow: none !important;
-      border: none !important;
-      width: 100% !important;
-      min-height: 100% !important;
+      padding: 20px !important; margin: 0 !important; box-shadow: none !important;
+      border: none !important; width: 100% !important; min-height: 100% !important;
     }
     [data-pdf-title-row] {
-      display: flex !important;
-      justify-content: space-between !important;
-      align-items: center !important;
-      margin-bottom: 20px !important;
-      width: 100% !important;
-      padding: 0 !important;
+      display: flex !important; justify-content: space-between !important;
+      align-items: center !important; margin-bottom: 20px !important;
+      width: 100% !important; padding: 0 !important;
     }
     [data-pdf-block] {
-      page-break-inside: avoid;
-      break-inside: avoid;
-      margin: 15px 0 !important;
+      page-break-inside: avoid; break-inside: avoid; margin: 15px 0 !important;
       padding: 20px !important;
       background-color: ${darkMode ? '#1C2541' : '#fff'} !important;
       border: 1px solid ${darkMode ? '#3a3a3a' : '#e0e0e0'} !important;
@@ -249,11 +237,7 @@ function buildPDFStyles(darkMode) {
       } !important;
       overflow: hidden !important;
     }
-    img, svg {
-      max-width: 100% !important;
-      height: auto !important;
-      page-break-inside: avoid !important;
-    }
+    img, svg { max-width: 100% !important; height: auto !important; page-break-inside: avoid !important; }
     .recharts-wrapper { width: 100% !important; height: auto !important; }
     table { page-break-inside: avoid !important; }
     .Collapsible__trigger {
@@ -261,25 +245,16 @@ function buildPDFStyles(darkMode) {
       color: ${darkMode ? '#fff' : '#000'} !important;
     }
     .volunteerStatusGrid {
-      display: grid !important;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)) !important;
-      gap: 1.5rem !important;
-      width: 100% !important;
-      margin-top: 15px !important;
+      display: grid !important; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)) !important;
+      gap: 1.5rem !important; width: 100% !important; margin-top: 15px !important;
     }
     .component-pie-chart-label {
-      font-size: 12px !important;
-      font-weight: 600 !important;
-      color: #000 !important;
-      overflow: hidden !important;
-      text-overflow: ellipsis !important;
+      font-size: 12px !important; font-weight: 600 !important; color: #000 !important;
+      overflow: hidden !important; text-overflow: ellipsis !important;
     }
     [data-pdf-title] p {
-      font-size: 1.5em !important;
-      font-weight: bold !important;
-      text-align: center !important;
-      margin: 10px !important;
-      color: #333 !important;
+      font-size: 1.5em !important; font-weight: bold !important; text-align: center !important;
+      margin: 10px !important; color: #333 !important;
     }
     ${
       darkMode
@@ -290,17 +265,48 @@ function buildPDFStyles(darkMode) {
       .componentContainer .volunteerStatusGrid h3, .componentContainer .card-title,
       .componentContainer .statistics-title, .componentContainer .Collapsible__trigger,
       .componentContainer .volunteer-status-header, .componentContainer .volunteer-status-title {
-        color: #fff !important;
-        text-shadow: 0 1px 4px #000, 0 0 2px #000 !important;
+        color: #fff !important; text-shadow: 0 1px 4px #000, 0 0 2px #000 !important;
       }
       .componentContainer [data-pdf-title] p, .componentContainer [data-pdf-title] {
-        color: #fff !important;
-        text-shadow: 0 1px 4px #000, 0 0 2px #000 !important;
+        color: #fff !important; text-shadow: 0 1px 4px #000, 0 0 2px #000 !important;
       }`
         : ''
     }
   `;
   return styleElem;
+}
+
+async function fetchOrgStats(props, selectedComparison, currentFromDate, currentToDate) {
+  const { comparisonStartDate, comparisonEndDate } = calculateComparisonDates(
+    selectedComparison,
+    currentFromDate,
+    currentToDate,
+  );
+  const volunteerStatsResponse = await props.getTotalOrgSummary(
+    currentFromDate,
+    currentToDate,
+    comparisonStartDate,
+    comparisonEndDate,
+  );
+  const taskAndProjectStatsResponse = await props.getTaskAndProjectStats(
+    currentFromDate,
+    currentToDate,
+  );
+  return {
+    ...volunteerStatsResponse.data,
+    taskAndProjectStats: taskAndProjectStatsResponse,
+  };
+}
+
+function getPreviousWeekDates(fromDate, toDate) {
+  const prevWeekStart = new Date(fromDate);
+  const prevWeekEnd = new Date(toDate);
+  prevWeekStart.setDate(prevWeekStart.getDate() - 7);
+  prevWeekEnd.setDate(prevWeekEnd.getDate() - 7);
+  return {
+    start: prevWeekStart.toISOString().split('T')[0],
+    end: prevWeekEnd.toISOString().split('T')[0],
+  };
 }
 
 const fromDate = calculateStartDate();
@@ -327,25 +333,13 @@ function TotalOrgSummary(props) {
     const fetchVolunteerStats = async () => {
       try {
         setIsLoading(true);
-        const { comparisonStartDate, comparisonEndDate } = calculateComparisonDates(
+        const stats = await fetchOrgStats(
+          props,
           selectedComparison,
           currentFromDate,
           currentToDate,
         );
-        const volunteerStatsResponse = await props.getTotalOrgSummary(
-          currentFromDate,
-          currentToDate,
-          comparisonStartDate,
-          comparisonEndDate,
-        );
-        const taskAndProjectStatsResponse = await props.getTaskAndProjectStats(
-          currentFromDate,
-          currentToDate,
-        );
-        setVolunteerStats({
-          ...volunteerStatsResponse.data,
-          taskAndProjectStats: taskAndProjectStatsResponse,
-        });
+        setVolunteerStats(stats);
         await props.hasPermission('');
         setIsLoading(false);
       } catch (catchFetchError) {
@@ -360,16 +354,13 @@ function TotalOrgSummary(props) {
     setIsGeneratingPDF(true);
     try {
       if (!validatePDFPrerequisites(volunteerStats, isLoading)) return;
-
       await new Promise(resolve => setTimeout(resolve, 5000));
-
       const chartCanvases = document.querySelectorAll(
         '[data-chart="volunteer-status"] canvas, [data-chart="mentor-status"] canvas',
       );
       const originalCanvases = replaceCanvasesWithImages(chartCanvases);
       const pdfContainer = buildPDFContainer();
       const clonedContent = rootRef.current.cloneNode(true);
-
       clonedContent
         .querySelectorAll('[data-pdf-hide], .controls, .no-print')
         .forEach(el => el.remove());
@@ -379,13 +370,10 @@ function TotalOrgSummary(props) {
         Array.from(clonedContent.querySelectorAll('canvas')),
       );
       adjustTitleRowForPDF(clonedContent);
-
       pdfContainer.appendChild(buildPDFStyles(darkMode));
       pdfContainer.appendChild(clonedContent);
       document.body.appendChild(pdfContainer);
-
-      await captureAndSavePDF(pdfContainer, darkMode);
-
+      await captureAndSavePDF(pdfContainer);
       restoreCanvases(originalCanvases);
       document.body.removeChild(pdfContainer);
     } catch (pdfError) {
@@ -401,21 +389,18 @@ function TotalOrgSummary(props) {
   const handleDateRangeSelect = option => {
     if (option === 'Select Date Range') {
       setShowDatePicker(true);
-    } else {
-      setSelectedDateRange(option);
-      setShowDatePicker(false);
-      setSelectedComparison('No Comparison');
-      if (option === 'Current Week') {
-        setCurrentFromDate(fromDate);
-        setCurrentToDate(toDate);
-      } else if (option === 'Previous Week') {
-        const prevWeekStart = new Date(fromDate);
-        const prevWeekEnd = new Date(toDate);
-        prevWeekStart.setDate(prevWeekStart.getDate() - 7);
-        prevWeekEnd.setDate(prevWeekEnd.getDate() - 7);
-        setCurrentFromDate(prevWeekStart.toISOString().split('T')[0]);
-        setCurrentToDate(prevWeekEnd.toISOString().split('T')[0]);
-      }
+      return;
+    }
+    setSelectedDateRange(option);
+    setShowDatePicker(false);
+    setSelectedComparison('No Comparison');
+    if (option === 'Current Week') {
+      setCurrentFromDate(fromDate);
+      setCurrentToDate(toDate);
+    } else if (option === 'Previous Week') {
+      const { start, end } = getPreviousWeekDates(fromDate, toDate);
+      setCurrentFromDate(start);
+      setCurrentToDate(end);
     }
   };
 
