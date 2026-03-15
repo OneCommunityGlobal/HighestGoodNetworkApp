@@ -233,6 +233,7 @@
   align-items: center;
   gap: 10px;
   margin-top: 10px;
+  flex-wrap: nowrap;
 }
 
 .radioInput,
@@ -286,10 +287,12 @@
   white-space: nowrap;
 }
 
-/* Prevent Bootstrap/Reactstrap form-check from causing overlap */
+/* Prevent Bootstrap/Reactstrap form-check from causing overlap; keep label on same row as control */
 .filterSection .radioGroup .radioLabel,
 .filterSection .checkboxGroup .radioLabel {
   padding-left: 0;
+  display: inline;
+  margin-bottom: 0;
 }
 
 .filterSection .radioGroup,
