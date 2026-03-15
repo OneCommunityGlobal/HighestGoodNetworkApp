@@ -27,18 +27,12 @@ function CustomTooltip({ active, payload, label, tooltipType }) {
   const renderMainValue = () => {
     if (tooltipType === 'hoursDistribution' && volunteerCount !== undefined) {
       return (
-        <div style={{ color: textColor, fontWeight: 'bold' }}>
-          Volunteers: {volunteerCount}
-        </div>
+        <div style={{ color: textColor, fontWeight: 'bold' }}>Volunteers: {volunteerCount}</div>
       );
     }
 
     if (totalHours !== undefined) {
-      return (
-        <div style={{ color: textColor, fontWeight: 'bold' }}>
-          Total Hours: {totalHours}
-        </div>
-      );
+      return <div style={{ color: textColor, fontWeight: 'bold' }}>Total Hours: {totalHours}</div>;
     }
 
     return null;
@@ -47,11 +41,7 @@ function CustomTooltip({ active, payload, label, tooltipType }) {
   const renderChange = () => {
     if (change === undefined) return null;
     const changeColor = change < 0 ? 'red' : isDarkMode ? 'lightgreen' : 'green';
-    return (
-      <div style={{ color: changeColor, fontWeight: 'bold' }}>
-        Change: {change}
-      </div>
-    );
+    return <div style={{ color: changeColor, fontWeight: 'bold' }}>Change: {change}</div>;
   };
 
   return (
@@ -65,14 +55,10 @@ function CustomTooltip({ active, payload, label, tooltipType }) {
         minWidth: 120,
       }}
     >
-      <div style={{ fontWeight: 'bold', marginBottom: 4, color: textColor }}>
-        {name}
-      </div>
+      <div style={{ fontWeight: 'bold', marginBottom: 4, color: textColor }}>{name}</div>
       {renderMainValue()}
       {percentage !== undefined && (
-        <div style={{ color: isDarkMode ? '#90cdf4' : '#444' }}>
-          Percentage: {percentage}
-        </div>
+        <div style={{ color: isDarkMode ? '#90cdf4' : '#444' }}>Percentage: {percentage}</div>
       )}
       {renderChange()}
     </div>
