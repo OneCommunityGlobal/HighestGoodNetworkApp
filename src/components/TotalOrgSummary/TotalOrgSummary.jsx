@@ -111,7 +111,7 @@ function replaceCanvasesWithImages(canvasElements) {
 function restoreCanvases(originalCanvases) {
   originalCanvases.forEach(({ canvas, parent }) => {
     const img = parent.querySelector('img');
-    if (img) parent.replaceChild(canvas, img);
+    if (img) img.replaceWith(canvas);
   });
 }
 
