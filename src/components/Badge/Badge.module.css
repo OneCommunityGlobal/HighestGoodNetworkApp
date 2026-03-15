@@ -51,6 +51,14 @@
   bottom: 2px;
   z-index: 10;
 }
+
+.report {
+  border: 2px solid white;
+}
+
+.mini {
+  transform: scale(0.8);
+}
 .bagde-box-shadow {
   box-shadow: 2px 2px 4px 1px lightgray;
 }
