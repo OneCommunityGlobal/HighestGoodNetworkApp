@@ -1,9 +1,8 @@
-import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { availablePreferences, availableSkills, formatSkillName } from './FilerData.js';
 import RankedUserList from './RankedUserList';
 import styles from './style/CommunityMembersPage.module.css';
+import { availableSkills, availablePreferences, formatSkillName } from './FilerData.js';
 
 function Accordion({ title, children, defaultOpen = false, darkMode }) {
   const [open, setOpen] = useState(defaultOpen);
@@ -27,7 +26,6 @@ function Accordion({ title, children, defaultOpen = false, darkMode }) {
 function CommunityMembersPage() {
   const [selectedSkills, setSelectedSkills] = useState([]);
   const [selectedPreferences, setSelectedPreferences] = useState([]);
-  const [searchQuery, setSearchQuery] = useState('');
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const toggleItem = (item, selectedArray, setSelectedArray) => {
@@ -46,7 +44,7 @@ function CommunityMembersPage() {
             key={skillKey}
             onClick={() => toggleItem(skillKey, selectedSkills, setSelectedSkills)}
             type="button"
-            className={`${styles.skillButton} ${isSelected ? styles.selected : ''}`}
+            className={`${`${styles.skillButton}`} ${isSelected ? styles.selected : ''}`}
           >
             {formattedName}
           </button>
@@ -64,7 +62,7 @@ function CommunityMembersPage() {
             key={pref}
             onClick={() => toggleItem(pref, selectedPreferences, setSelectedPreferences)}
             type="button"
-            className={`${styles.preferenceButton} ${isSelected ? styles.selected : ''}`}
+            className={`${`${styles.preferenceButton}`} ${isSelected ? styles.selected : ''}`}
           >
             {pref}
           </button>
@@ -73,32 +71,9 @@ function CommunityMembersPage() {
     </div>
   );
 
-  const hasFilters =
-    selectedSkills.length > 0 || selectedPreferences.length > 0 || searchQuery.trim().length > 0;
-
   return (
     <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
       <h1 className={`${styles.title}`}>Community Member Filters</h1>
-
-      {/* Search Bar */}
-      <div className={`${styles.searchContainer} ${darkMode ? styles.darkSearch : ''}`}>
-        <input
-          type="text"
-          placeholder="Search members by name or skill..."
-          value={searchQuery}
-          onChange={e => setSearchQuery(e.target.value)}
-          className={`${styles.searchInput} ${darkMode ? styles.darkSearchInput : ''}`}
-        />
-        {searchQuery && (
-          <button
-            type="button"
-            className={`${styles.clearButton} ${darkMode ? styles.darkClearButton : ''}`}
-            onClick={() => setSearchQuery('')}
-          >
-            ✕
-          </button>
-        )}
-      </div>
 
       <Accordion title="Filter by Skills" defaultOpen darkMode={darkMode}>
         {renderSkillButtons()}
@@ -109,26 +84,19 @@ function CommunityMembersPage() {
       </Accordion>
 
       <div>
-        {hasFilters ? (
+        {selectedSkills.length > 0 || selectedPreferences.length > 0 ? (
           <RankedUserList
             selectedSkills={selectedSkills}
             selectedPreferences={selectedPreferences}
-            searchQuery={searchQuery.trim()}
           />
         ) : (
           <p className={`${styles.message}`}>
-            Search or select skills and preferences above to see filtered members.
+            Select skills or preferences above to see filtered members.
           </p>
         )}
       </div>
     </div>
   );
 }
-Accordion.propTypes = {
-  title: PropTypes.string.isRequired,
-  children: PropTypes.node.isRequired,
-  defaultOpen: PropTypes.bool,
-  darkMode: PropTypes.bool,
-};
 
 export default CommunityMembersPage;

@@ -9,7 +9,6 @@ import SaveButton from '../UserProfileEdit/SaveButton';
 import AddNewTitleModal from './AddNewTitleModal';
 import EditTitlesModal from './EditTitlesModal';
 import { getAllTitle } from '../../../actions/title';
-import { setTeamCodes } from '../../../actions/teamCodes';
 import './QuickSetupModal.css';
 import '../../Header/index.css';
 import styles from '../../SummaryBar/SummaryBar.module.css'
@@ -30,24 +29,9 @@ function QuickSetupModal(props) {
   const [adminLinks, setAdminLinks] = useState([]);
   const [editModal, showEditModal] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [QSTTeamCodes, setQSTTeamCodes] = useState([])
 
   const stateTeamCodes = useSelector(state => state.teamCodes?.teamCodes || []);
-
-  const QSTTeamCodes = stateTeamCodes
-    .filter(code => {
-      if (typeof code === 'string') return code.trim() !== '';
-      return code?.value?.trim?.() !== '';
-    })
-    .map(code => {
-      if (typeof code === 'string') {
-        return { value: code, label: code };
-      }
-
-      return {
-        value: code.value || '',
-        label: code.label || code.value || '',
-      };
-    });
 
   useEffect(() => {
     getAllTitle()
@@ -71,24 +55,20 @@ function QuickSetupModal(props) {
     }
   };
 
-  useEffect(() => {
-    if (stateTeamCodes.length > 0 || !props.fetchTeamCodeAllUsers) return;
-
-    props
-      .fetchTeamCodeAllUsers()
-      .then(fetchedCodes => {
-        const formatted = (fetchedCodes || [])
-          .filter(code => typeof code === 'string' && code.trim() !== '')
-          .map(code => ({
-            value: code,
-            label: code,
-          }));
-
-        props.setTeamCodes(formatted);
+ useEffect(() => {
+  if (props.fetchTeamCodeAllUsers) {
+    props.fetchTeamCodeAllUsers()
+      .then((fetchedCodes) => {
+        if (fetchedCodes?.length) {
+          const formatted = fetchedCodes.map(code => ({ value: code }));
+          setQSTTeamCodes(formatted);
+        }
       })
       // eslint-disable-next-line no-console
-      .catch(err => console.error('Failed to fetch team codes:', err));
-  }, [stateTeamCodes, props.fetchTeamCodeAllUsers, props.setTeamCodes]);
+      .catch((err) => console.error('Failed to fetch team codes:', err));
+  }
+}, [stateTeamCodes.length, props.teamsData && props.teamsData.allTeamCode]);
+
 
   return (
     <div className={`container pt-3 ${darkMode ? 'bg-yinmn-blue text-light border-0' : ''}`}>
@@ -225,4 +205,4 @@ function QuickSetupModal(props) {
   );
 }
 
-export default connect(null, { hasPermission, setTeamCodes })(QuickSetupModal);
+export default connect(null, { hasPermission })(QuickSetupModal);

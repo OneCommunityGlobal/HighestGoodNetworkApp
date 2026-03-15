@@ -346,7 +346,7 @@ export function CPDashboard() {
             <h4>Search Filters</h4>
             <div className={styles.filterSectionDivider}>
               <div className={styles.filterItem}>
-                <label htmlFor="date-tomorrow"> Dates</label>
+                <div className={styles.filterSectionHeader}>Dates</div>
                 <div className={styles.radioRow}>
                   <FormGroup check className={styles.radioGroup + ' d-flex align-items-center'}>
                     <Input
@@ -357,11 +357,7 @@ export function CPDashboard() {
                       onChange={() => setDateFilter('tomorrow')}
                       className={styles.radioInput}
                     />
-                    <Label
-                      htmlFor="date-tomorrow"
-                      check
-                      className={styles.radioLabel + ' ms-2 mb-0'}
-                    >
+                    <Label htmlFor="date-tomorrow" check className={styles.radioLabel + ' mb-0'}>
                       Tomorrow
                     </Label>
                   </FormGroup>
@@ -374,11 +370,7 @@ export function CPDashboard() {
                       onChange={() => setDateFilter('weekend')}
                       className={styles.radioInput}
                     />
-                    <Label
-                      htmlFor="date-weekend"
-                      check
-                      className={styles.radioLabel + ' ms-2 mb-0'}
-                    >
+                    <Label htmlFor="date-weekend" check className={styles.radioLabel + ' mb-0'}>
                       This Weekend
                     </Label>
                   </FormGroup>
@@ -404,8 +396,8 @@ export function CPDashboard() {
               </div>
 
               <div className={styles.filterItem}>
-                <label htmlFor="online-only">Online</label>
-                <div>
+                <div className={styles.filterSectionHeader}>Online</div>
+                <FormGroup check className={styles.checkboxGroup}>
                   <Input
                     type="checkbox"
                     id="online-only"
@@ -414,9 +406,12 @@ export function CPDashboard() {
                       setOnlineOnly(e.target.checked);
                       setPagination(prev => ({ ...prev, currentPage: 1 }));
                     }}
-                  />{' '}
-                  Online Only
-                </div>
+                    className={styles.checkboxInput}
+                  />
+                  <Label htmlFor="online-only" check className={styles.radioLabel + ' mb-0'}>
+                    Online Only
+                  </Label>
+                </FormGroup>
               </div>
 
               <div className={styles.filterItem}>

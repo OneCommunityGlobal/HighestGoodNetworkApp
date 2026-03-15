@@ -39,36 +39,32 @@ export const peopleTasksPieChartViewData = (state) => {
   const completedUserEntries = allUserEntries.filter(e => e.isActive === true);
 
   const projectHours = {};
-  const projectNames = {};
-
   allUserEntries.forEach(entry => {
-    const { projectId, taskId, projectName } = entry;
-    if (!projectId || taskId) return;
+    const { projectId } = entry;
+    if (!projectId) return;
     const time = (entry.hours || 0) + (entry.minutes || 0) / 60;
     projectHours[projectId] = (projectHours[projectId] || 0) + time;
-    if (projectName) projectNames[projectId] = projectName;
   });
 
-  const hoursLoggedToProjectsOnly = Object.entries(projectHours).map(([projectId, totalTime]) => {
-    const project = (userProjects?.projects || []).find(p => p.projectId === projectId);
-    return {
-      projectId,
-      projectName: project?.projectName || projectNames[projectId] || `Unknown (${projectId.slice(-6)})`,
-      totalTime,
-    };
-  });
-
-  const userTasks = state.userTask?.tasks || [];
+  const hoursLoggedToProjectsOnly = (userProjects?.projects || []).map(project => ({
+    projectId: project.projectId,
+    projectName: project.projectName,
+    totalTime: projectHours[project.projectId] || 0,
+  }));
 
   const taskHours = {};
-  allUserEntries.forEach(entry => {
+  completedUserEntries.forEach(entry => {
     if (entry.taskId == null) return;
     const taskKey = entry.taskId;
-    const taskName = entry.taskName || `Task in "${entry.projectName || 'Unknown Project'}"`;
+    const taskName = entry.taskName || 'Unnamed Task';
     const time = (entry.hours || 0) + (entry.minutes || 0) / 60;
 
     if (!taskHours[taskKey]) {
-      taskHours[taskKey] = { totalTime: 0, projectId: entry.projectId, taskName };
+      taskHours[taskKey] = {
+        totalTime: 0,
+        projectId: entry.projectId,
+        taskName,
+      };
     }
     taskHours[taskKey].totalTime += time;
   });

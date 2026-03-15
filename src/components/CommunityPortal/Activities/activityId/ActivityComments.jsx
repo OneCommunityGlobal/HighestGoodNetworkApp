@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
 import styles from './ActivityComments.module.css';
 
 // Utility function to calculate relative time
@@ -82,6 +81,7 @@ const sanitizeInput = input => {
   return result.trim().substring(0, 5000); // Limit length to prevent DoS attacks
 };
 
+// Utility function to generate secure random numbers for demo purposes
 // Utility function to generate secure random numbers for demo purposes
 const getSecureRandomInt = (min, max) => {
   // Use a deterministic approach for demo data instead of Math.random()
@@ -244,8 +244,6 @@ const mockFeedbacks = [
 ];
 
 function ActivityComments() {
-  const darkMode = useSelector(state => state.theme?.darkMode || false);
-
   // Utility function to restore Date objects from localStorage
   const restoreDates = items => {
     return items.map(item => ({
@@ -632,44 +630,20 @@ function ActivityComments() {
     );
   };
 
-  /**
-   * Filter and sort feedbacks based on search, filter, and sort criteria
-   *
-   * Search Parameters:
-   * - Reviewer name (feedback.name): Searches in the reviewer's name
-   * - Feedback text (feedback.text): Searches in the feedback comment/description
-   *
-   * The search uses case-insensitive partial matching (contains) for both fields.
-   */
   const filteredFeedbacks = feedbacks
     .filter(feedback => {
-      // Search logic: check if search term matches reviewer name or feedback text
-      const searchTerm = feedbackSearch.trim().toLowerCase();
-      let matchesSearch = true;
-
-      if (searchTerm) {
-        const reviewerName = (feedback.name || '').toLowerCase();
-        const feedbackText = (feedback.text || '').toLowerCase();
-
-        // Explicit search matching: check both fields with OR logic
-        matchesSearch = reviewerName.includes(searchTerm) || feedbackText.includes(searchTerm);
-      }
-
-      // Rating filter logic
+      const matchesSearch =
+        feedback.text.toLowerCase().includes(feedbackSearch.toLowerCase()) ||
+        feedback.name.toLowerCase().includes(feedbackSearch.toLowerCase());
       const matchesFilter =
         feedbackFilter === 'All' || feedback.rating.toString() === feedbackFilter;
-
       return matchesSearch && matchesFilter;
     })
     .sort((a, b) => {
-      // Sort by creation date with null safety
-      const dateA = a.createdAt ? new Date(a.createdAt) : new Date(0);
-      const dateB = b.createdAt ? new Date(b.createdAt) : new Date(0);
-
-      if (feedbackSort === 'Oldest') return dateA - dateB;
+      if (feedbackSort === 'Oldest') return new Date(a.timestamp) - new Date(b.timestamp);
       if (feedbackSort === 'Highest Rated') return b.rating - a.rating;
       if (feedbackSort === 'Lowest Rated') return a.rating - b.rating;
-      return dateB - dateA; // Newest (default)
+      return new Date(b.timestamp) - new Date(a.timestamp); // Newest
     });
 
   return (
@@ -1015,7 +989,7 @@ function ActivityComments() {
               <div className={styles.feedbackControlsContainer}>
                 <input
                   type="text"
-                  placeholder="Search by reviewer name or feedback text..."
+                  placeholder="Search feedback..."
                   value={feedbackSearch}
                   onChange={e => setFeedbackSearch(e.target.value)}
                   className={styles.feedbackSearchInput}

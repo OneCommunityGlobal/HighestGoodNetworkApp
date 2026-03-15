@@ -77,7 +77,7 @@ export const fetchVillages = async () => {
 
     const allVillages = [...new Set([...FIXED_VILLAGES, ...apiVillages])];
 
-    return allVillages.sort((a, b) => String(a).localeCompare(String(b)));
+    return allVillages.sort();
   } catch (error) {
     // console.error('Error fetching villages:', error);
 

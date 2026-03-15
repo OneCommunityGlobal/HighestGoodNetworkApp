@@ -206,7 +206,9 @@ function PermissionListItem(props) {
               title="Click for more information"
               aria-hidden="true"
               className="fa fa-info-circle"
-              onClick={handleModalOpen}
+              onClick={() => {
+                handleModalOpen(description);
+              }}
               style={{ color: darkMode ? 'white' : 'black' }}
             />
           </div>

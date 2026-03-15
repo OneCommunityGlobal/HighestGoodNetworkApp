@@ -72,14 +72,6 @@
   cursor: pointer;
 }
 
-.summary-incomplete {
-  cursor: pointer;
-}
-
-.summary-incomplete:hover .large_text_summary {
-  text-decoration: underline;
-}
-
 .redBackgroup {
   z-index: 1;
   bottom: 0;

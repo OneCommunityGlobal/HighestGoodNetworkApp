@@ -1,33 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { boxStyle, boxStyleDark } from '~/styles';
 import '../Header/index.css';
-import {
-  Button,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Container,
-  Alert,
-  Input,
-  InputGroup,
-  Dropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-} from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Container, Alert } from 'reactstrap';
 import { toast } from 'react-toastify';
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import moment from 'moment';
 import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faInfoCircle, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import MembersAutoComplete from '../Teams/MembersAutoComplete';
 import {
   getSummaryRecipients,
   addSummaryRecipient,
   deleteSummaryRecipient,
 } from '../../actions/weeklySummariesReportRecepients';
-import { getAllUserProfile } from '~/actions/userManagement';
 
 // const membersList = [{ id: 1, firstName: "onecommunityglobal", lastName: '', email: "onecommunityglobal@gmail.com" },
 // { id: 2, firstName: "onecommunityhospitality", lastName: '', email: "onecommunityhospitality@gmail.com" }]
@@ -46,30 +32,6 @@ const WeeklySummaryRecipientsPopupComponent = props => {
   // The below states keeps a track of the list of Weekly Summary Report Recipients - sucheta
   const [recipients, setRecipients] = useState([]);
   const [updatedRecipients, setUpdatedRecipients] = useState(false);
-
-  const allUserProfiles = useSelector(state => state.allUserProfiles?.userProfiles) || [];
-
-  const allUsers = useSelector(state => state.allUserProfiles?.userProfiles) || [];
-  const activeUsers = allUsers.filter(user => user.isActive === true);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-
-  const filteredUsers = activeUsers.filter(user => {
-    if (searchText.includes(' ')) {
-      const [first, last] = searchText.split(' ');
-      return (
-        user.firstName.toLowerCase().includes(first.toLowerCase()) &&
-        user.lastName.toLowerCase().includes(last.toLowerCase())
-      );
-    }
-    return (
-      user.firstName.toLowerCase().includes(searchText.toLowerCase()) ||
-      user.lastName.toLowerCase().includes(searchText.toLowerCase())
-    );
-  });
-
-  useEffect(() => {
-    dispatch(getAllUserProfile());
-  }, []);
 
   useEffect(() => {
     let isMounted = true; // Track if component is mounted
@@ -110,7 +72,7 @@ const WeeklySummaryRecipientsPopupComponent = props => {
     if (selectedUser && !recipients?.some(x => x._id === selectedUser?._id)) {
       try {
         const result = await dispatch(addSummaryRecipient(selectedUser._id));
-        if (result !== 200) {
+        if (!result === 200) {
           toast.error('Did not find recipient');
           return;
         }
@@ -129,7 +91,7 @@ const WeeklySummaryRecipientsPopupComponent = props => {
   const deleteRecipient = async userId => {
     try {
       const result = await dispatch(deleteSummaryRecipient(userId));
-      if (result !== 200) {
+      if (!result === 200) {
         toast.error('Could not delete recipient at this time! Please try again');
       } else {
         toast.success('Deleted successful!');
@@ -191,75 +153,18 @@ const WeeklySummaryRecipientsPopupComponent = props => {
             </div>
           )}
         </ModalHeader>
-        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
-          <div className="input-group-prepend" style={{ width: '100%', marginBottom: '10px' }}>
-            <div style={{ position: 'relative', width: '100%' }}>
-              <InputGroup style={{ width: '100%' }}>
-                <Input
-                  type="text"
-                  placeholder="Search users..."
-                  value={searchText}
-                  onChange={e => {
-                    setSearchText(e.target.value);
-                    setDropdownOpen(true);
-                    setSelectedUser(undefined);
-                  }}
-                />
-                <Button
-                  color="primary"
-                  onClick={addUserFn}
-                  style={darkMode ? boxStyleDark : boxStyle}
-                >
-                  Add
-                </Button>
-              </InputGroup>
-
-              {dropdownOpen && filteredUsers.length > 0 && (
-                <div
-                  style={{
-                    position: 'absolute',
-                    top: '100%',
-                    left: 0,
-                    width: '100%',
-                    zIndex: 1050,
-                    backgroundColor: darkMode ? '#1a2b4a' : 'white',
-                    border: '1px solid #ccc',
-                    borderRadius: '4px',
-                    maxHeight: '200px',
-                    overflowY: 'auto',
-                    boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
-                  }}
-                >
-                  {filteredUsers.slice(0, 10).map(user => (
-                    <button
-                      type="button"
-                      key={user._id}
-                      onClick={() => {
-                        setSelectedUser(user);
-                        setSearchText(`${user.firstName} ${user.lastName}`);
-                        setDropdownOpen(false);
-                        setIsValidUser(true);
-                      }}
-                      style={{
-                        padding: '8px 12px',
-                        cursor: 'pointer',
-                        display: 'block',
-                        width: '100%',
-                        textAlign: 'left',
-                        background: 'none',
-                        border: 'none',
-                      }}
-                      className="dropdown-item"
-                    >
-                      <div>
-                        {user.firstName} {user.lastName}
-                      </div>
-                      <small className="text-muted">{user.email}</small>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+        <ModalBody style={{ textAlign: 'center' }} className={darkMode ? 'bg-yinmn-blue' : ''}>
+          <div className="input-group-prepend" style={{ marginBottom: '10px' }}>
+            <MembersAutoComplete
+              summaries={summaries}
+              onAddUser={selectUser}
+              searchText={searchText}
+              setSearchText={setSearchText}
+              context="WeeklySummary"
+            />
+            <Button color="primary" onClick={addUserFn} style={darkMode ? boxStyleDark : boxStyle}>
+              Add
+            </Button>
           </div>
           {!isValidUser && <Alert color="danger">Please choose a valid user.</Alert>}
           <table
@@ -267,40 +172,34 @@ const WeeklySummaryRecipientsPopupComponent = props => {
           >
             <thead>
               <tr>
-                <th>Status</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Date Added</th>
-                <th />
+                <th>#</th>
+                <th>Recipient Name</th>
+                <th style={{ cursor: 'pointer' }}>Date Added</th>
               </tr>
             </thead>
             <tbody>
               {recipients?.length > 0 &&
-                recipients?.toSorted().map((user, index) => {
-                  return (
-                    <tr key={`recipient_name_${index}`}>
-                      <td>
-                        <span className={user?.isActive ? 'isActive' : 'isNotActive'}>
-                          <i className="fa fa-circle" aria-hidden="true" />
-                        </span>
-                      </td>
-                      <td>{`${user.firstName} ${user.lastName}`}</td>
-                      <td>{user.email}</td>
-                      <td>
-                        {moment(user.permissionGrantedToGetWeeklySummaryReport).format('MMM-DD-YY')}
-                      </td>
-                      <td className="d-flex justify-content-center align-items-center">
-                        <Button
-                          color="danger"
-                          onClick={() => deleteRecipient(`${user._id}`)}
-                          style={darkMode ? boxStyleDark : boxStyle}
-                        >
-                          <FontAwesomeIcon icon={faTrashAlt} />
-                        </Button>
-                      </td>
-                    </tr>
-                  );
-                })}
+                recipients?.toSorted().map((user, index) => (
+                  // eslint-disable-next-line react/no-array-index-key
+                  <tr key={`recipient_name_${index}`}>
+                    <td>{index + 1}</td>
+                    <td>{`${user.firstName} ${user.lastName}`}</td>
+                    <td>
+                      {moment(user.permissionGrantedToGetWeeklySummaryReport).format('MMM-DD-YY')}
+                    </td>
+                    <td>
+                      <Button
+                        color="danger"
+                        onClick={() => {
+                          deleteRecipient(`${user._id}`);
+                        }}
+                        style={darkMode ? boxStyleDark : boxStyle}
+                      >
+                        Delete
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </ModalBody>

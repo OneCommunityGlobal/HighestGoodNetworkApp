@@ -122,7 +122,6 @@ export const ENDPOINTS = {
   UPDATE_PARENT_TASKS: wbsId => `${APIEndpoint}/task/updateAllParents/${wbsId}`,
   MOVE_TASKS: wbsId => `${APIEndpoint}/tasks/moveTasks/${wbsId}`,
   WEEKLY_SUMMARIES_REPORT: () => `${APIEndpoint}/reports/weeklysummaries`,
-  WEEKLY_SUMMARIES_TEAM_CODES: () => `${APIEndpoint}/reports/weeklysummaries/teamcodes`,
   WEEKLY_SUMMARIES_FILTERS: `${APIEndpoint}/weeklySummariesFilters`,
   WEEKLY_SUMMARIES_FILTER_BY_ID: filterId => `${APIEndpoint}/weeklySummariesFilters/${filterId}`,
   WEEKLY_SUMMARIES_FILTER_REPLACE_CODES: `${APIEndpoint}/weeklySummariesFilters/replaceTeamcodes`,
@@ -163,8 +162,6 @@ export const ENDPOINTS = {
   BADGE_ASSIGN_MULTIPLE: `${APIEndpoint}/badge/assign`,
   BADGE_ASSIGN: userId => `${APIEndpoint}/badge/assign/${userId}`,
   BADGE_BY_ID: badgeId => `${APIEndpoint}/badge/${badgeId}`,
-  ADMIN_LIST: () => `${APIEndpoint}/reports/getAdminList`,
-  SEND_EMAIL_REPORT: () => `${APIEndpoint}/reports/sendEmailReport`,
 
   TEAM_MEMBER_TASKS: userId => `${ENDPOINTS.APIEndpoint()}/user/${userId}/teams/tasks`,
   CREATE_OR_UPDATE_TASK_NOTIFICATION: taskId =>
@@ -348,7 +345,6 @@ export const ENDPOINTS = {
     `${APIEndpoint}/tools/availability?toolId=${toolId}&projectId=${projectId}`,
   BM_LOG_TOOLS: `${APIEndpoint}/bm/tools/log`,
   BM_EQUIPMENT_BY_ID: singleEquipmentId => `${APIEndpoint}/bm/equipment/${singleEquipmentId}`,
-  BM_EQUIPMENT_STATUS_UPDATE: (equipmentId) => `${APIEndpoint}/bm/equipment/${equipmentId}/status`,
   BM_EQUIPMENTS: `${APIEndpoint}/bm/equipments`,
   BM_INVTYPE_TYPE: type => `${APIEndpoint}/bm/invtypes/${type}`,
   BM_ISSUE_CHART: `${APIEndpoint}/bm/issue/issue-chart`,
@@ -361,18 +357,8 @@ export const ENDPOINTS = {
   BM_INJURY_ISSUE: `${APIEndpoint}/bm/issues`,
   BM_INJURY_SEVERITY: `${APIEndpoint}/bm/injuries/severity-by-project`,
   BM_RENTAL_CHART: `${APIEndpoint}/bm/rentalChart`,
-
-  // Project cost tracking endpoints
-  PROJECT_COST_IDS: `${APIEndpoint}/bm/projects-cost/ids`,
-  PROJECT_COSTS_BY_ID: (projectId, categories, fromDate, toDate) => {
-    let url = `${APIEndpoint}/bm/projects/${projectId}/costs`;
-    const params = [];
-    if (categories) params.push(`categories=${categories}`);
-    if (fromDate) params.push(`fromDate=${fromDate}`);
-    if (toDate) params.push(`toDate=${toDate}`);
-    if (params.length > 0) url += `?${params.join('&')}`;
-    return url;
-  },
+  BM_TOOLS_RETURNED_LATE: `${APIEndpoint}/bm/tools/returned-late`,
+  BM_TOOLS_RETURNED_LATE_PROJECTS: `${APIEndpoint}/bm/tools/returned-late/projects`,
   TOOLS_AVAILABILITY_PROJECTS: `${APIEndpoint}/bm/tools-availability/projects`,
   TOOLS_AVAILABILITY_BY_PROJECT: (projectId, startDate, endDate) => {
     let url = `${APIEndpoint}/bm/projects/${projectId}/tools-availability`;
@@ -422,7 +408,6 @@ export const ENDPOINTS = {
   HGN_FORM_UPDATE_QUESTION: id => `${APIEndpoint}/questions/${id}`,
   HGN_FORM_SUBMIT: `${APIEndpoint}/hgnform`,
   HGN_FORM_UPDATE_USER_SKILLS_FOLLOWUP_SUBMIT: `${APIEndpoint}/skills/profile/updateFollowUp/`,
-  SKILLS_PROFILE_UPDATE_YEARS_OF_EXPERIENCE: userId => `${APIEndpoint}/skills/profile/updateYearsOfExperience/${userId}`,
   // HGN Skills Dashboard
   SKILLS_PROFILE: userId => `${APIEndpoint}/skills/profile/${userId}`,
 
@@ -552,8 +537,6 @@ export const ENDPOINTS = {
   PR_REVIEWS_INSIGHTS: `${APIEndpoint}/analytics/pr-review-insights`,
 
   // Education Portal endpoints
-  STUDENT_PROFILE: `${APIEndpoint}/student/profile`,
-  STUDENT_SUBJECT_TASKS: subjectId => `${APIEndpoint}/student/profile/subject/${subjectId}`,
   EDUCATOR_ASSIGN_ATOMS: () => `${APIEndpoint}/educator/assign-atoms`,
 
   LESSON_PLANS: `${APIEndpoint}/education/lesson-plans`,
@@ -570,10 +553,6 @@ export const ENDPOINTS = {
     if (endDate) url += `&endDate=${encodeURIComponent(endDate)}`;
     return url;
   },
-
-  // Kitchen and Inventory Management endpoints
-  KI_CALENDAR_EVENTS: (month, year) => `${APIEndpoint}/kitchenandinventory/calendar?month=${month}&year=${year}`,
-
 };
 
 export const ApiEndpoint = APIEndpoint;

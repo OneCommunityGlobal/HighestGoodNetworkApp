@@ -80,13 +80,7 @@ export class Login extends Form {
             darkMode,
           })}
           <div>
-            {this.renderButton({
-              name: 'submit',
-              id: 'submit',
-              label: 'Submit',
-              type: 'submit',
-              darkMode,
-            })}
+            {this.renderButton({ label: 'Submit', darkMode })}
             <Link to="forgotpassword">
               <span
                 style={{

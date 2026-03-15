@@ -66,8 +66,8 @@ export default function Countdown({
   const remainingSecondsDisplay = remainingSeconds.toString().padStart(2, '0');
 
   const shouldDisplay = {
-    hour: true,
-    minute: true,
+    hour: !!remainingHours,
+    minute: !!remainingHours || !!remainingMinutes,
   };
 
   const forceMinMax = (event, ref) => {

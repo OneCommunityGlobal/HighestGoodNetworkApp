@@ -1,6 +1,7 @@
 *.png
 *.svg
 src/actions/**
+src/App.css
 src/config.json
 
 src/languages/**

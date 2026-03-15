@@ -58,8 +58,7 @@ export default function PopularEvents() {
   const [timeFilter, setTimeFilter] = useState('All day');
   const [typeFilter, setTypeFilter] = useState('All');
 
-  const calculatePercentage = (attended, enrolled) =>
-    enrolled === 0 ? 0 : Math.round((attended / enrolled) * 100);
+  const calculatePercentage = (attended, enrolled) => Math.round((attended / enrolled) * 100);
 
   const getBarColor = percentage => {
     if (percentage > 60) return 'green';
@@ -73,37 +72,39 @@ export default function PopularEvents() {
     return timeMatch && typeMatch;
   });
 
-  const mostPopularEvent =
-    filteredData.length > 0
-      ? filteredData.reduce(
-          (max, event) =>
-            calculatePercentage(event.attended, event.enrolled) >
-            calculatePercentage(max.attended, max.enrolled)
-              ? event
-              : max,
-          filteredData[0],
-        )
-      : null;
+  const mostPopularEvent = filteredData.reduce(
+    (max, event) =>
+      calculatePercentage(event.attended, event.enrolled) >
+      calculatePercentage(max.attended, max.enrolled)
+        ? event
+        : max,
+    filteredData[0] || {},
+  );
 
-  const leastPopularEvent =
-    filteredData.length > 0
-      ? filteredData.reduce(
-          (min, event) =>
-            calculatePercentage(event.attended, event.enrolled) <
-            calculatePercentage(min.attended, min.enrolled)
-              ? event
-              : min,
-          filteredData[0],
-        )
-      : null;
+  const leastPopularEvent = filteredData.reduce(
+    (min, event) =>
+      calculatePercentage(event.attended, event.enrolled) <
+      calculatePercentage(min.attended, min.enrolled)
+        ? event
+        : min,
+    filteredData[0] || {},
+  );
   const darkMode = useSelector(state => state.theme.darkMode);
   return (
-    <div className={darkMode ? styles.popularEventsContainerDark : styles.popularEventsContainer}>
-      <div className={darkMode ? styles.headerContainerDark : styles.headerContainer}>
-        <h2 className={darkMode ? styles.popularEventsHeaderDark : styles.popularEventsHeader}>
+    <div
+      className={`${styles.popularEventsContainer} ${
+        darkMode ? styles.popularEventsContainerDark : ''
+      }`}
+    >
+      <div className={`${styles.headerContainer} ${darkMode ? styles.headerContainerDark : ''}`}>
+        <h2
+          className={`${styles.popularEventsHeader} ${
+            darkMode ? styles.popularEventsHeaderDark : ''
+          }`}
+        >
           Most Popular Event
         </h2>
-        <div className={darkMode ? styles.filtersDark : styles.filters}>
+        <div className={`${styles.filters} ${darkMode ? styles.filtersDark : ''}`}>
           <select value={timeFilter} onChange={e => setTimeFilter(e.target.value)}>
             <option value="All day">All day</option>
             <option value="Morning">Morning</option>
@@ -117,58 +118,60 @@ export default function PopularEvents() {
           </select>
         </div>
       </div>
-
-      <div className={darkMode ? styles.statsDark : styles.stats}>
-        {filteredData.map(event => {
-          const percentage = calculatePercentage(event.attended, event.enrolled);
-          return (
-            <div key={event.id} className={styles.statItem}>
-              <div className={darkMode ? styles.statLabelDark : styles.statLabel}>{event.type}</div>
-              <div className={styles.statBar}>
-                <div
-                  className={`${styles.bar} ${styles[getBarColor(percentage)]}`}
-                  style={{ width: `${percentage}%` }}
-                />
-              </div>
-              <div className={darkMode ? styles.statValueDark : styles.statValue}>
-                {`${percentage}% (${event.attended}/${event.enrolled})`}
-              </div>
+      <div className={`${styles.stats} ${darkMode ? styles.statsDark : ''}`}>
+        {filteredData.map(event => (
+          <div key={event.id} className={styles.statItem}>
+            <div className={`${styles.statLabel} ${darkMode ? styles.statLabelDark : ''}`}>
+              {event.type}
             </div>
-          );
-        })}
+            <div className={styles.statBar}>
+              <div
+                className={`${styles.bar} ${
+                  styles[getBarColor(calculatePercentage(event.attended, event.enrolled))]
+                }`}
+                style={{ width: `${calculatePercentage(event.attended, event.enrolled)}%` }}
+              />
+            </div>
+            <div className={`${styles.statValue} ${darkMode ? styles.statValueDark : ''}`}>
+              {`${calculatePercentage(event.attended, event.enrolled)}% (${event.attended}/${
+                event.enrolled
+              })`}
+            </div>
+          </div>
+        ))}
       </div>
       <div className={styles.eventSummary}>
-        <div className={darkMode ? styles.summaryItemDark : styles.summaryItem}>
-          <div className={darkMode ? styles.summaryTitleDark : styles.summaryTitle}>
+        <div className={`${styles.summaryItem} ${darkMode ? styles.summaryItemDark : ''}`}>
+          <div className={`${styles.summaryTitle} ${darkMode ? styles.summaryTitleDark : ''}`}>
             Total Number of Events
           </div>
-          <div className={darkMode ? styles.summaryValueDark : styles.summaryValue}>
+          <div className={`${styles.summaryValue} ${darkMode ? styles.summaryValueDark : ''}`}>
             {filteredData.length}
           </div>
         </div>
-        <div className={darkMode ? styles.summaryItemDark : styles.summaryItem}>
-          <div className={darkMode ? styles.summaryTitleDark : styles.summaryTitle}>
+        <div className={`${styles.summaryItem} ${darkMode ? styles.summaryItemDark : ''}`}>
+          <div className={`${styles.summaryTitle} ${darkMode ? styles.summaryTitleDark : ''}`}>
             Total Number of Event Enrollments
           </div>
-          <div className={darkMode ? styles.summaryValueDark : styles.summaryValue}>
+          <div className={`${styles.summaryValue} ${darkMode ? styles.summaryValueDark : ''}`}>
             {filteredData.reduce((acc, event) => acc + event.enrolled, 0)}
           </div>
         </div>
         {filteredData.length > 0 && (
           <>
-            <div className={darkMode ? styles.summaryItemDark : styles.summaryItem}>
-              <div className={darkMode ? styles.summaryTitleDark : styles.summaryTitle}>
+            <div className={`${styles.summaryItem} ${darkMode ? styles.summaryItemDark : ''}`}>
+              <div className={`${styles.summaryTitle} ${darkMode ? styles.summaryTitleDark : ''}`}>
                 Most Popular Event
               </div>
-              <div className={darkMode ? styles.summaryValueDark : styles.summaryValue}>
+              <div className={`${styles.summaryValue} ${darkMode ? styles.summaryValueDark : ''}`}>
                 {mostPopularEvent.type || 'N/A'}
               </div>
             </div>
-            <div className={darkMode ? styles.summaryItemDark : styles.summaryItem}>
-              <div className={darkMode ? styles.summaryTitleDark : styles.summaryTitle}>
+            <div className={`${styles.summaryItem} ${darkMode ? styles.summaryItemDark : ''}`}>
+              <div className={`${styles.summaryTitle} ${darkMode ? styles.summaryTitleDark : ''}`}>
                 Least Popular Event
               </div>
-              <div className={darkMode ? styles.summaryValueDark : styles.summaryValue}>
+              <div className={`${styles.summaryValue} ${darkMode ? styles.summaryValueDark : ''}`}>
                 {leastPopularEvent.type || 'N/A'}
               </div>
             </div>

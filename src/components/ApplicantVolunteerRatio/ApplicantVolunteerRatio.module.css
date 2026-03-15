@@ -1,6 +1,6 @@
 /* Container */
 .page {
-  max-width: 1200px;
+  max-width: 900px;
   margin: 0 auto;
   padding: 24px;
 }
@@ -74,7 +74,7 @@
 /* Chart Container */
 .chartContainer {
   width: 100%;
-  height: auto;
+  height: 400px;
 }
 
 /* No Data */

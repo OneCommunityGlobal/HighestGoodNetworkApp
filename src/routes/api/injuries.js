@@ -226,7 +226,7 @@ const aggregateInjuriesByMonth = (injuries, startDate, endDate) => {
   const low = [];
 
   Object.keys(monthlyData)
-    .sort((a, b) => a.localeCompare(b))
+    .sort()
     .forEach(monthKey => {
       const data = monthlyData[monthKey];
       months.push(data.month);

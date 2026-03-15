@@ -48,11 +48,6 @@ function JobFormBuilder() {
 
   const jobPositions = ['Software Developer', 'Project Manager', 'Analyst'];
 
-  const markAsSaved = fields => {
-    setInitialFormFields(structuredClone(fields));
-    setHasUnsavedChanges(false);
-  };
-
   // Prevent refresh while unsaved changes exist
   useEffect(() => {
     const handler = event => {
@@ -78,10 +73,13 @@ function JobFormBuilder() {
 
           setCurrentFormId(id);
           setFormFields(form.questions || []);
-          markAsSaved(form.questions || []);
+          setInitialFormFields(form.questions || []);
+
           setNewField(initialNewField);
+          setHasUnsavedChanges(false);
         }
       } catch (error) {
+        // still allowed logging
         console.error(error);
       }
     };
@@ -103,6 +101,7 @@ function JobFormBuilder() {
   // Clone field
   const cloneField = async (field, index) => {
     const clone = structuredClone(field);
+
     const updated = [...formFields.slice(0, index + 1), clone, ...formFields.slice(index + 1)];
     setFormFields(updated);
 
@@ -112,7 +111,6 @@ function JobFormBuilder() {
           question: clone,
           position: index + 1,
         });
-        markAsSaved(updated);
       } catch (error) {
         console.error(error);
       }
@@ -134,7 +132,6 @@ function JobFormBuilder() {
           fromIndex: index,
           toIndex: newIndex,
         });
-        markAsSaved(updated);
       } catch (error) {
         console.error(error);
       }
@@ -150,7 +147,6 @@ function JobFormBuilder() {
     if (currentFormId) {
       try {
         await axios.delete(ENDPOINTS.DELETE_QUESTION(currentFormId, index));
-        markAsSaved(updated);
       } catch (error) {
         console.error(error);
       }
@@ -191,7 +187,6 @@ function JobFormBuilder() {
           ENDPOINTS.UPDATE_QUESTION(currentFormId, editingIndex),
           updated[editingIndex],
         );
-        markAsSaved(updated);
       } catch (error) {
         console.error(error);
       }
@@ -241,7 +236,6 @@ function JobFormBuilder() {
           question: newField,
           position: formFields.length,
         });
-        markAsSaved(updated);
       } catch (error) {
         console.error(error);
       }
@@ -307,13 +301,7 @@ function JobFormBuilder() {
             <QuestionSetManager
               formFields={formFields}
               setFormFields={setFormFields}
-              onImportQuestions={fields => {
-                setFormFields(fields);
-                markAsSaved(fields);
-              }}
-              onTemplateSaved={() => {
-                markAsSaved(formFields);
-              }}
+              onImportQuestions={setFormFields}
               darkMode={darkMode}
               templateName={templateName}
               setTemplateName={setTemplateName}

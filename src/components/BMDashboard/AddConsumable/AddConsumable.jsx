@@ -288,7 +288,7 @@ function AddConsumable() {
                 )}
                 <FormGroup row className="d-flex justify-content-right">
                   <Button
-                    onClick={submitHandler}
+                    onClick={event => submitHandler(event)}
                     className={`${styles.consumableButtonBg}`}
                     disabled={disableSubmit}
                   >

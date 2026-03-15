@@ -15,19 +15,11 @@ function ActiveCell(props) {
   const now = moment();
 
   function deriveUserStatus({ isActive, reactivationDate, endDate }) {
-    if (reactivationDate) return UserStatus.Paused;
-  
-  
-    if (isActive === false) return UserStatus.Inactive;
-  
-  
-    if (isActive && !!endDate && moment(endDate).isAfter(now)) return UserStatus.Scheduled;
-  
-    if (endDate) return UserStatus.Inactive;
-    if (isActive) return UserStatus.Active;
-  
-    return UserStatus.Inactive;
-  }
+  if (reactivationDate) return UserStatus.Paused;
+  if (isActive && !!endDate && moment(endDate).isAfter(now)) return UserStatus.Scheduled;
+  if (endDate) return UserStatus.Inactive;
+  if (isActive) return UserStatus.Active;
+}
 
   const isScheduled = deriveUserStatus({ isActive, reactivationDate, endDate }) === UserStatus.Scheduled;
   const isPaused = deriveUserStatus({ isActive, reactivationDate, endDate }) === UserStatus.Paused;

@@ -33,10 +33,8 @@ function JobCCDashboard() {
   }, []);
 
   useEffect(() => {
-    const uniqueCategories = [
-      ...new Set(jobs.map(job => job.category).filter(Boolean)),
-    ].sort((a, b) => a.localeCompare(b));
-
+    // Extract unique categories whenever jobs data changes
+    const uniqueCategories = [...new Set(jobs.map(job => job.category))].sort();
     setCategories(uniqueCategories);
   }, [jobs]);
 
