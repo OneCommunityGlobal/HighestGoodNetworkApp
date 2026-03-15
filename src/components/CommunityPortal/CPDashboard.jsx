@@ -93,7 +93,9 @@ export function CPDashboard() {
 
   // Get today's date in YYYY-MM-DD format for min date restriction (local timezone so user can select today)
   const now = new Date();
-  const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+  const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(
+    now.getDate(),
+  ).padStart(2, '0')}`;
 
   const normalizeOrganizer = organizer => {
     if (!organizer || typeof organizer !== 'string') return null;
