@@ -292,10 +292,7 @@ async function fetchOrgStats(props, selectedComparison, currentFromDate, current
     currentFromDate,
     currentToDate,
   );
-  return {
-    ...volunteerStatsResponse.data,
-    taskAndProjectStats: taskAndProjectStatsResponse,
-  };
+  return { ...volunteerStatsResponse.data, taskAndProjectStats: taskAndProjectStatsResponse };
 }
 
 function getPreviousWeekDates(fromDate, toDate) {
@@ -311,38 +308,151 @@ function getPreviousWeekDates(fromDate, toDate) {
 
 async function generateTotalOrgPdf({ rootRef, darkMode, volunteerStats, isLoading }) {
   if (!validatePDFPrerequisites(volunteerStats, isLoading)) return;
-
   await new Promise(resolve => setTimeout(resolve, 5000));
-
   const chartCanvases = document.querySelectorAll(
     '[data-chart="volunteer-status"] canvas, [data-chart="mentor-status"] canvas',
   );
   const originalCanvases = replaceCanvasesWithImages(chartCanvases);
-
   const pdfContainer = buildPDFContainer();
   const clonedContent = rootRef.current.cloneNode(true);
-
   clonedContent
     .querySelectorAll('[data-pdf-hide], .controls, .no-print')
     .forEach(el => el.remove());
-
   removeCollapsedSections(clonedContent);
-
   copyLiveCanvasesToClone(
     Array.from(document.querySelectorAll('canvas')),
     Array.from(clonedContent.querySelectorAll('canvas')),
   );
-
   adjustTitleRowForPDF(clonedContent);
-
   pdfContainer.appendChild(buildPDFStyles(darkMode));
   pdfContainer.appendChild(clonedContent);
   document.body.appendChild(pdfContainer);
-
   await captureAndSavePDF(pdfContainer);
-
   restoreCanvases(originalCanvases);
   document.body.removeChild(pdfContainer);
+}
+
+function ReportHeader({
+  darkMode,
+  selectedDateRange,
+  selectedComparison,
+  dateRangeDropdownOpen,
+  comparisonDropdownOpen,
+  isGeneratingPDF,
+  onDateRangeToggle,
+  onComparisonToggle,
+  onDateRangeSelect,
+  onComparisonSelect,
+  onSavePDF,
+}) {
+  return (
+    <Row className={styles.totalOrgReportHeaderRow} data-pdf-title-row>
+      <div className={styles.reportHeaderTitle} data-pdf-title-col>
+        <h3 className="my-0">Total Org Summary</h3>
+      </div>
+      <div className={styles.reportHeaderActions}>
+        <Dropdown isOpen={dateRangeDropdownOpen} toggle={onDateRangeToggle}>
+          <DropdownToggle caret>{selectedDateRange}</DropdownToggle>
+          <DropdownMenu>
+            <DropdownItem onClick={() => onDateRangeSelect('Current Week')}>
+              Current Week
+            </DropdownItem>
+            <DropdownItem onClick={() => onDateRangeSelect('Previous Week')}>
+              Previous Week
+            </DropdownItem>
+            <DropdownItem onClick={() => onDateRangeSelect('Select Date Range')}>
+              Select Date Range
+            </DropdownItem>
+          </DropdownMenu>
+        </Dropdown>
+        <Dropdown isOpen={comparisonDropdownOpen} toggle={onComparisonToggle}>
+          <DropdownToggle caret>{selectedComparison}</DropdownToggle>
+          <DropdownMenu>
+            <DropdownItem onClick={() => onComparisonSelect('No Comparison')}>
+              No Comparison
+            </DropdownItem>
+            <DropdownItem onClick={() => onComparisonSelect('Week Over Week')}>
+              Week Over Week
+            </DropdownItem>
+            <DropdownItem onClick={() => onComparisonSelect('Month Over Month')}>
+              Month Over Month
+            </DropdownItem>
+            <DropdownItem onClick={() => onComparisonSelect('Year Over Year')}>
+              Year Over Year
+            </DropdownItem>
+          </DropdownMenu>
+        </Dropdown>
+        <Button
+          className={styles.sharePdfBtn}
+          data-pdf-hide
+          onClick={onSavePDF}
+          disabled={isGeneratingPDF}
+        >
+          {isGeneratingPDF ? 'Generating PDF...' : 'Save as PDF'}
+        </Button>
+      </div>
+    </Row>
+  );
+}
+
+function DateRangeModal({
+  showDatePicker,
+  startDate,
+  endDate,
+  onToggle,
+  onStartChange,
+  onEndChange,
+  onCancel,
+  onApply,
+}) {
+  return (
+    <Modal isOpen={showDatePicker} toggle={onToggle}>
+      <ModalHeader toggle={onToggle}>Select Date Range</ModalHeader>
+      <ModalBody>
+        <div className="d-flex flex-column gap-4">
+          <div>
+            <label htmlFor="start-date" style={{ display: 'block', marginBottom: '1rem' }}>
+              Start Date
+            </label>
+            <div style={{ padding: '0.5rem 0' }}>
+              <DatePicker
+                id="start-date"
+                selected={startDate}
+                onChange={onStartChange}
+                className="form-control"
+                dateFormat="MM/dd/yyyy"
+                placeholderText="Select start date"
+              />
+            </div>
+          </div>
+          <div>
+            <label htmlFor="end-date" style={{ display: 'block', marginBottom: '1rem' }}>
+              End Date
+            </label>
+            <div style={{ padding: '0.5rem 0' }}>
+              <DatePicker
+                id="end-date"
+                selected={endDate}
+                onChange={onEndChange}
+                className="form-control"
+                dateFormat="MM/dd/yyyy"
+                placeholderText="Select end date"
+                minDate={startDate}
+              />
+            </div>
+          </div>
+        </div>
+      </ModalBody>
+      <ModalFooter>
+        <Button color="secondary" onClick={onCancel}>
+          Cancel
+        </Button>
+        <Button color="primary" onClick={onApply} disabled={!startDate || !endDate}>
+          Apply
+        </Button>
+      </ModalFooter>
+    </Modal>
+  );
 }
 
 const fromDate = calculateStartDate();
@@ -454,111 +564,29 @@ function TotalOrgSummary(props) {
       )}
     >
       <div ref={rootRef} data-pdf-root>
-        <Row className={styles.totalOrgReportHeaderRow} data-pdf-title-row>
-          <div className={styles.reportHeaderTitle} data-pdf-title-col>
-            <h3 className="my-0">Total Org Summary</h3>
-          </div>
-          <div className={styles.reportHeaderActions}>
-            <Dropdown
-              isOpen={dateRangeDropdownOpen}
-              toggle={() => setDateRangeDropdownOpen(!dateRangeDropdownOpen)}
-            >
-              <DropdownToggle caret>{selectedDateRange}</DropdownToggle>
-              <DropdownMenu>
-                <DropdownItem onClick={() => handleDateRangeSelect('Current Week')}>
-                  Current Week
-                </DropdownItem>
-                <DropdownItem onClick={() => handleDateRangeSelect('Previous Week')}>
-                  Previous Week
-                </DropdownItem>
-                <DropdownItem onClick={() => handleDateRangeSelect('Select Date Range')}>
-                  Select Date Range
-                </DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
-            <Dropdown
-              isOpen={comparisonDropdownOpen}
-              toggle={() => setComparisonDropdownOpen(!comparisonDropdownOpen)}
-            >
-              <DropdownToggle caret>{selectedComparison}</DropdownToggle>
-              <DropdownMenu>
-                <DropdownItem onClick={() => setSelectedComparison('No Comparison')}>
-                  No Comparison
-                </DropdownItem>
-                <DropdownItem onClick={() => setSelectedComparison('Week Over Week')}>
-                  Week Over Week
-                </DropdownItem>
-                <DropdownItem onClick={() => setSelectedComparison('Month Over Month')}>
-                  Month Over Month
-                </DropdownItem>
-                <DropdownItem onClick={() => setSelectedComparison('Year Over Year')}>
-                  Year Over Year
-                </DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
-            <Button
-              className={styles.sharePdfBtn}
-              data-pdf-hide
-              onClick={handleSaveAsPDF}
-              disabled={isGeneratingPDF}
-            >
-              {isGeneratingPDF ? 'Generating PDF...' : 'Save as PDF'}
-            </Button>
-          </div>
-        </Row>
-
-        <Modal isOpen={showDatePicker} toggle={() => setShowDatePicker(!showDatePicker)}>
-          <ModalHeader toggle={() => setShowDatePicker(!showDatePicker)}>
-            Select Date Range
-          </ModalHeader>
-          <ModalBody>
-            <div className="d-flex flex-column gap-4">
-              <div>
-                <label htmlFor="start-date" style={{ display: 'block', marginBottom: '1rem' }}>
-                  Start Date
-                </label>
-                <div style={{ padding: '0.5rem 0' }}>
-                  <DatePicker
-                    id="start-date"
-                    selected={startDate}
-                    onChange={date => setStartDate(date)}
-                    className="form-control"
-                    dateFormat="MM/dd/yyyy"
-                    placeholderText="Select start date"
-                  />
-                </div>
-              </div>
-              <div>
-                <label htmlFor="end-date" style={{ display: 'block', marginBottom: '1rem' }}>
-                  End Date
-                </label>
-                <div style={{ padding: '0.5rem 0' }}>
-                  <DatePicker
-                    id="end-date"
-                    selected={endDate}
-                    onChange={date => setEndDate(date)}
-                    className="form-control"
-                    dateFormat="MM/dd/yyyy"
-                    placeholderText="Select end date"
-                    minDate={startDate}
-                  />
-                </div>
-              </div>
-            </div>
-          </ModalBody>
-          <ModalFooter>
-            <Button color="secondary" onClick={() => setShowDatePicker(false)}>
-              Cancel
-            </Button>
-            <Button
-              color="primary"
-              onClick={handleDatePickerSubmit}
-              disabled={!startDate || !endDate}
-            >
-              Apply
-            </Button>
-          </ModalFooter>
-        </Modal>
+        <ReportHeader
+          darkMode={darkMode}
+          selectedDateRange={selectedDateRange}
+          selectedComparison={selectedComparison}
+          dateRangeDropdownOpen={dateRangeDropdownOpen}
+          comparisonDropdownOpen={comparisonDropdownOpen}
+          isGeneratingPDF={isGeneratingPDF}
+          onDateRangeToggle={() => setDateRangeDropdownOpen(!dateRangeDropdownOpen)}
+          onComparisonToggle={() => setComparisonDropdownOpen(!comparisonDropdownOpen)}
+          onDateRangeSelect={handleDateRangeSelect}
+          onComparisonSelect={setSelectedComparison}
+          onSavePDF={handleSaveAsPDF}
+        />
+        <DateRangeModal
+          showDatePicker={showDatePicker}
+          startDate={startDate}
+          endDate={endDate}
+          onToggle={() => setShowDatePicker(!showDatePicker)}
+          onStartChange={date => setStartDate(date)}
+          onEndChange={date => setEndDate(date)}
+          onCancel={() => setShowDatePicker(false)}
+          onApply={handleDatePickerSubmit}
+        />
 
         <hr />
         <AccordianWrapper title="Volunteer Status">
