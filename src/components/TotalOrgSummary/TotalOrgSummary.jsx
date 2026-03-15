@@ -89,6 +89,75 @@ function calculateComparisonDates(comparisonType, fromDate, toDate) {
   };
 }
 
+function replaceCanvasesWithImages(canvasElements) {
+  const originalCanvases = [];
+  canvasElements.forEach(canvasElem => {
+    try {
+      const img = document.createElement('img');
+      img.src = canvasElem.toDataURL('image/png');
+      img.width = canvasElem.width;
+      img.height = canvasElem.height;
+      img.style.cssText = canvasElem.style.cssText;
+      originalCanvases.push({ canvas: canvasElem, parent: canvasElem.parentNode });
+      canvasElem.parentNode.replaceChild(img, canvasElem);
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('Error converting canvas to image:', err);
+    }
+  });
+  return originalCanvases;
+}
+
+function restoreCanvases(originalCanvases) {
+  originalCanvases.forEach(({ canvas, parent }) => {
+    const img = parent.querySelector('img');
+    if (img) parent.replaceChild(canvas, img);
+  });
+}
+
+function copyLiveCanvasesToClone(liveCanvases, clonedCanvases) {
+  clonedCanvases.forEach(clonedCanvas => {
+    try {
+      const match = liveCanvases.find(
+        liveCanvas =>
+          liveCanvas.width === clonedCanvas.width &&
+          liveCanvas.height === clonedCanvas.height &&
+          liveCanvas.parentNode?.className === clonedCanvas.parentNode?.className,
+      );
+      if (match) {
+        const ctx = clonedCanvas.getContext('2d');
+        ctx.clearRect(0, 0, clonedCanvas.width, clonedCanvas.height);
+        ctx.drawImage(match, 0, 0);
+      }
+      if (clonedCanvas.width > 0 && clonedCanvas.height > 0) {
+        const img = document.createElement('img');
+        img.src = clonedCanvas.toDataURL('image/png');
+        img.width = clonedCanvas.width;
+        img.height = clonedCanvas.height;
+        img.style.cssText = clonedCanvas.style.cssText;
+        clonedCanvas.parentNode.replaceChild(img, clonedCanvas);
+      }
+    } catch (err) {
+      /* ignore */
+    }
+  });
+}
+
+function adjustTitleRowForPDF(clonedContent) {
+  const titleRow = clonedContent.querySelector('[data-pdf-title-row]');
+  if (!titleRow) return;
+  const titleCol = titleRow.querySelector('[data-pdf-title-col]');
+  if (titleCol) titleCol.style.width = '100%';
+  const mainTitle = titleRow.querySelector('h3');
+  if (mainTitle) {
+    mainTitle.style.fontSize = '24pt';
+    mainTitle.style.fontWeight = 'bold';
+    mainTitle.style.textAlign = 'left';
+    mainTitle.style.color = '#000';
+    mainTitle.style.margin = '0';
+  }
+}
+
 const fromDate = calculateStartDate();
 const toDate = calculateEndDate();
 
@@ -166,51 +235,32 @@ function TotalOrgSummary(props) {
         return;
       }
 
-      // 2. Wait longer for charts/maps to render (5 seconds)
+      // Wait for charts/maps to render (5 seconds)
       await new Promise(resolve => setTimeout(resolve, 5000));
 
-      // 3. Replace Chart.js canvas elements with images in the live DOM.
+      // Replace Chart.js canvas elements with images in the live DOM.
       const chartCanvases = document.querySelectorAll(
         '[data-chart="volunteer-status"] canvas, [data-chart="mentor-status"] canvas',
       );
-      const originalCanvases = [];
-      chartCanvases.forEach(canvasElem => {
-        try {
-          const img = document.createElement('img');
-          img.src = canvasElem.toDataURL('image/png');
-          img.width = canvasElem.width;
-          img.height = canvasElem.height;
-          img.style.cssText = canvasElem.style.cssText;
-          originalCanvases.push({
-            canvas: canvasElem,
-            parent: canvasElem.parentNode,
-          });
-          canvasElem.parentNode.replaceChild(img, canvasElem);
-        } catch (err) {
-          // eslint-disable-next-line no-console
-          console.error('Error converting canvas to image:', err);
-        }
-      });
+      const originalCanvases = replaceCanvasesWithImages(chartCanvases);
 
-      // 4. Create a temporary container for PDF generation
+      // Create a temporary container for PDF generation
       const pdfContainer = document.createElement('div');
       pdfContainer.id = 'pdf-export-container';
-      pdfContainer.style.width = '100%';
-      pdfContainer.style.padding = '0';
-      pdfContainer.style.position = 'absolute';
-      pdfContainer.style.left = '-9999px';
-      pdfContainer.style.top = '0';
-      pdfContainer.style.zIndex = '9999';
-      pdfContainer.style.boxSizing = 'border-box';
-      pdfContainer.style.minHeight = '100%';
-      pdfContainer.style.margin = '0';
+      Object.assign(pdfContainer.style, {
+        width: '100%',
+        padding: '0',
+        position: 'absolute',
+        left: '-9999px',
+        top: '0',
+        zIndex: '9999',
+        boxSizing: 'border-box',
+        minHeight: '100%',
+        margin: '0',
+      });
 
       // Clone the main content area
-
-      const originalContent = rootRef.current;
-      const clonedContent = originalContent.cloneNode(true);
-
-      // Remove interactive or unwanted elements from the clone
+      const clonedContent = rootRef.current.cloneNode(true);
 
       // Remove interactive or unwanted elements from the clone
       clonedContent
@@ -219,7 +269,6 @@ function TotalOrgSummary(props) {
 
       // Remove all collapsed AccordianWrapper (Collapsible) sections from the PDF
       clonedContent.querySelectorAll('.Collapsible').forEach(collapsible => {
-        // If it does NOT have the 'is-open' class, it's collapsed
         const trigger = collapsible.querySelector('.Collapsible__trigger');
         if (!trigger || !trigger.classList.contains('is-open')) {
           collapsible.remove();
@@ -227,53 +276,13 @@ function TotalOrgSummary(props) {
       });
 
       // Copy canvas bitmap from live DOM to cloned DOM before converting to image
-      // This includes Chart.js, Leaflet, and heatmap overlays
-      const liveCanvases = Array.from(document.querySelectorAll('canvas'));
-      const clonedCanvases = Array.from(clonedContent.querySelectorAll('canvas'));
-      clonedCanvases.forEach(clonedCanvas => {
-        try {
-          // Try to find a matching live canvas by size and position
-          const match = liveCanvases.find(
-            liveCanvas =>
-              liveCanvas.width === clonedCanvas.width &&
-              liveCanvas.height === clonedCanvas.height &&
-              liveCanvas.parentNode?.className === clonedCanvas.parentNode?.className,
-          );
-          if (match) {
-            const ctx = clonedCanvas.getContext('2d');
-            ctx.clearRect(0, 0, clonedCanvas.width, clonedCanvas.height);
-            ctx.drawImage(match, 0, 0);
-          }
-          // Now convert to image if canvas has content
-          if (clonedCanvas.width > 0 && clonedCanvas.height > 0) {
-            const img = document.createElement('img');
-            img.src = clonedCanvas.toDataURL('image/png');
-            img.width = clonedCanvas.width;
-            img.height = clonedCanvas.height;
-            img.style.cssText = clonedCanvas.style.cssText;
-            clonedCanvas.parentNode.replaceChild(img, clonedCanvas);
-          }
-        } catch (err) {
-          /* ignore */
-        }
-      });
+      copyLiveCanvasesToClone(
+        Array.from(document.querySelectorAll('canvas')),
+        Array.from(clonedContent.querySelectorAll('canvas')),
+      );
 
       // Adjust title row styling for a clean layout
-      const titleRow = clonedContent.querySelector('[data-pdf-title-row]');
-      if (titleRow) {
-        const titleCol = titleRow.querySelector('[data-pdf-title-col]');
-        if (titleCol) {
-          titleCol.style.width = '100%';
-        }
-        const mainTitle = titleRow.querySelector('h3');
-        if (mainTitle) {
-          mainTitle.style.fontSize = '24pt';
-          mainTitle.style.fontWeight = 'bold';
-          mainTitle.style.textAlign = 'left';
-          mainTitle.style.color = '#000';
-          mainTitle.style.margin = '0';
-        }
-      }
+      adjustTitleRowForPDF(clonedContent);
 
       // Create a style element for the PDF container
       const styleElem = document.createElement('style');
@@ -396,7 +405,7 @@ ${
       pdfContainer.appendChild(clonedContent);
       document.body.appendChild(pdfContainer);
 
-      // 5. Use html2canvas to capture the rendered container
+      // Use html2canvas to capture the rendered container
       const screenshotCanvas = await html2canvas(pdfContainer, {
         scale: 2,
         useCORS: true,
@@ -414,7 +423,7 @@ ${
         throw new Error('Invalid image data generated.');
       }
 
-      // 6. Create a single-page PDF
+      // Create a single-page PDF
       const pdfWidth = 210; // A4 width in mm
       const imgHeight = (screenshotCanvas.height * pdfWidth) / screenshotCanvas.width;
       const doc = new jsPDF({
@@ -428,12 +437,7 @@ ${
       doc.save(`volunteer-report-${localDate}.pdf`);
 
       // Cleanup: restore original canvases and remove temporary container
-      originalCanvases.forEach(({ canvas, parent }) => {
-        const img = parent.querySelector('img');
-        if (img) {
-          parent.replaceChild(canvas, img);
-        }
-      });
+      restoreCanvases(originalCanvases);
       document.body.removeChild(pdfContainer);
     } catch (pdfError) {
       // eslint-disable-next-line no-console
@@ -480,12 +484,7 @@ ${
 
   if (error || isVolunteerFetchingError) {
     return (
-      <Container
-        className={clsx(
-          styles.containerTotalOrgWrapper,
-          darkMode && 'bg-oxford-blue', // keep global theme utility if needed
-        )}
-      >
+      <Container className={clsx(styles.containerTotalOrgWrapper, darkMode && 'bg-oxford-blue')}>
         <Row
           className="align-self-center pt-2"
           data-testid="error"
@@ -505,7 +504,7 @@ ${
       className={clsx(
         styles.containerTotalOrgWrapper,
         'py-3 mb-5',
-        darkMode ? 'bg-oxford-blue text-light' : 'cbg--white-smoke', // or add .whiteSmoke
+        darkMode ? 'bg-oxford-blue text-light' : 'cbg--white-smoke',
       )}
     >
       <div ref={rootRef} data-pdf-root>
@@ -721,7 +720,6 @@ ${
                     totalHoursData={volunteerStats?.totalHoursWorked}
                   />
                   <div className="d-flex flex-column align-items-center justify-content-center">
-                    {/* determine a descriptive range label from the distribution data */}
                     <NumbersVolunteerWorked
                       isLoading={isLoading}
                       data={volunteerStats?.volunteersOverAssignedTime}
