@@ -213,8 +213,8 @@
 .filterItem input:not([type='checkbox']):not([type='radio']),
 .radioRow {
   display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
+  flex-direction: column;
+  gap: 8px;
   margin-top: 10px;
 }
 
@@ -225,7 +225,8 @@
   border: 1px solid #4a6572;
 }
 
-.darkSidebar .filterItem label {
+.darkSidebar .filterItem label,
+.darkSidebar .filterSectionHeader {
   color: #ecf0f1;
 }
 
@@ -234,16 +235,27 @@
 }
 
 .radioGroup {
-  margin-right: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
 }
 
-.radioInput {
-  margin-right: 6px;
+.checkboxGroup {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
 }
 
-.radioLabel {
-  margin-bottom: 0;
-  vertical-align: middle;
+.radioInput,
+.checkboxInput {
+  margin: 0;
+  flex-shrink: 0;
+  min-width: 18px;
+  min-height: 18px;
+  width: 18px;
+  height: 18px;
 }
 
 .filterItem input:not([type="checkbox"]):not([type="radio"]),
@@ -265,6 +277,13 @@
   background-size: 1em;
 }
 
+.filterSectionHeader {
+  font-weight: 600;
+  color: #34495e;
+  margin-bottom: 8px;
+  font-size: 1rem;
+}
+
 .filterItem label {
   display: block;
   font-weight: 600;
@@ -272,13 +291,44 @@
   margin-bottom: 8px;
 }
 
+.radioLabel {
+  margin-bottom: 0;
+  margin-left: 0;
+  vertical-align: middle;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+/* Prevent Bootstrap/Reactstrap form-check from causing overlap */
+.filterSection .radioGroup .radioLabel,
+.filterSection .checkboxGroup .radioLabel {
+  padding-left: 0;
+}
+
+.filterSection .radioGroup,
+.filterSection .checkboxGroup {
+  /* Override any form-check positioning so flex layout controls spacing */
+  position: relative;
+}
+
+.filterSection .radioGroup input,
+.filterSection .checkboxGroup input {
+  position: static;
+  margin-left: 0 !important;
+}
+
 .filterItem input[type='radio'],
 .filterItem input[type='checkbox'] {
   display: inline-block;
-  width: auto;
+  width: 18px;
+  min-width: 18px;
+  height: 18px;
+  min-height: 18px;
   padding: 0;
-  margin: 5px 0px 0px 120px;
+  margin: 0;
   vertical-align: middle;
+  flex-shrink: 0;
+  position: static;
 }
 
 .filterItem input:focus,
