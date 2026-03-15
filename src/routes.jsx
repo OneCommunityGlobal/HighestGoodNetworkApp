@@ -35,6 +35,7 @@ import HeaderRenderer from './components/Header/HeaderRenderer';
 import Announcements from './components/Announcements';
 import JobCCDashboard from './components/JobCCDashboard/JobCCDashboard';
 import WeeklyProjectSummary from './components/BMDashboard/WeeklyProjectSummary/WeeklyProjectSummary';
+import TotalOrgSummaryEmail from './components/TotalOrgSummary/WeeklySummaryEmail/TotalOrgSummaryEmail';
 import LessonForm from './components/BMDashboard/Lesson/LessonForm';
 import LessonList from './components/BMDashboard/LessonList/LessonListForm';
 import AddEquipmentType from './components/BMDashboard/Equipment/Add/AddEquipmentType';
@@ -133,6 +134,9 @@ import CheckTypes from './components/BMDashboard/shared/CheckTypes';
 import AttendanceNoShow from './components/AttendanceSystem/AttendanceNoShowCharts.jsx';
 import LessonsLearntChart from './components/BMDashboard/LessonsLearnt/LessonsLearntChart';
 import UtilizationChart from './components/BMDashboard/UtilizationChart/UtilizationChart';
+import CostPredictionPage from './components/BMDashboard/CostPrediction/CostPredictionPage';
+//import MostSusceptibleTools from './components/MostSusceptible/toolBreakdownChart';
+
 import RentalChart from './components/BMDashboard/RentalChart/RentalChart';
 import ReturnedLateChart from './components/BMDashboard/RentalChart/ReturnedLateChart';
 import CreateNewTeam from './components/BMDashboard/Team/CreateNewTeam/CreateNewTeam';
@@ -158,6 +162,8 @@ import CommunityCalendar from './components/CommunityPortal/Calendar/CommunityCa
 import KitchenandInventoryLogin from './components/KitchenandInventory/Login';
 import KIProtectedRoute from './components/common/KitchenandInventory/KIProtectedRoute';
 import KIDashboard from './components/KitchenandInventory/KIDashboard/KIDashboard';
+import KICalendar from './components/KitchenandInventory/KICalendar/KICalendar';
+
 // Education Portal
 import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
 import EPLogin from './components/EductionPortal/Login';
@@ -558,6 +564,21 @@ export default (
           routePermissions={RoutePermissions.weeklySummariesReport}
         />
         <ProtectedRoute
+          path="/TotalOrgSummaryEmail"
+          exact
+          component={TotalOrgSummaryEmail}
+          fallback
+          allowedRoles={[
+            UserRole.Administrator,
+            UserRole.Manager,
+            UserRole.CoreTeam,
+            UserRole.Owner,
+            UserRole.Mentor,
+          ]}
+          // setting permission as Weeklysummariesreport for now. Later it will be changed to weeklyVolunteerSummary. - H
+          routePermissions={RoutePermissions.weeklySummariesReport}
+        />
+        <ProtectedRoute
           path="/job-notification-dashboard"
           exact
           component={JobCCDashboard}
@@ -665,6 +686,8 @@ export default (
           fallback
           component={PurchaseConsumable}
         />
+
+        <BMProtectedRoute path="/bmdashboard/cost-prediction" component={CostPredictionPage} />
         <BMProtectedRoute path="/bmdashboard/rentalchart" component={RentalChart} />
         <BMProtectedRoute path="/bmdashboard/returned-late-chart" component={ReturnedLateChart} />
         <BMProtectedRoute path="/bmdashboard/inventory/types" component={CheckTypes} />
@@ -779,12 +802,12 @@ export default (
           component={ActivityComments}
         />
         <CPProtectedRoute
-          path="/communityportal/activity/:activityId/resourcesusage"
+          path="/communityportal/activity/:activityId/Resources"
           exact
           component={ResourcesUsage}
         />
         <CPProtectedRoute
-          path="/communityportal/activity/:activityId/resources"
+          path="/communityportal/activity/:activityId/ResourceManagement"
           exact
           component={ResourceManagement}
           fallback
@@ -852,6 +875,7 @@ export default (
         {/* ----- END BM Dashboard Routing ----- */}
         {/* ----- Kitchen and Inventory Portal Routes ----- */}
         <KIProtectedRoute path="/kitchenandinventory" exact component={KIDashboard} />
+        <KIProtectedRoute path="/kitchenandinventory/calendar" exact component={KICalendar} />
         <Route path="/kitchenandinventory/login" exact component={KitchenandInventoryLogin} />
         {/* ----- End of Kitchen and Inventory Portal Routes ----- */}
         <Route path="/login" component={Login} />
