@@ -181,10 +181,6 @@ import StudentTasks from './components/EductionPortal/StudentTasks/StudentTasks'
 import TaskDetails from './components/EductionPortal/StudentTasks/TaskDetails';
 
 import PRReviewTeamAnalytics from './components/HGNPRDashboard/PRReviewTeamAnalytics';
-import PRDashboardOverview from './components/HGNPRDashboard/PRDashboardOverview';
-import PRDashboardPromotionEligibility from './components/HGNPRDashboard/PRDashboardPromotionEligibility';
-import PRDashboardTopReviewedPRs from './components/HGNPRDashboard/PRDashboardTopReviewedPRs';
-import PRDashboardDetails from './components/HGNPRDashboard/PRDashboardDetails';
 import PromotionEligibility from './components/HGNPRDashboard/PromotionEligibility';
 import PRPromotionsPage from './components/PRPromotions/PRPromotionsPage';
 import ReviewersStackedBarChart from './components/HGNPRDashboard/ReviewersStackedBarChart/ReviewersStackedBarChart';
@@ -863,6 +859,11 @@ export default (
           path="/communityportal/reports/resourceusage"
           exact
           component={ResourceUsage}
+        />
+        <CPProtectedRoute
+          path="/communityportal/activity/:activityid"
+          exact
+          component={ActivityAgenda}
         />
         <CPProtectedRoute
           path="/communityportal/database/design"
