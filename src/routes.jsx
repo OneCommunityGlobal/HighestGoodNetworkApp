@@ -191,10 +191,6 @@ import StudentDashboard from './components/EductionPortal/StudentTasks/StudentDa
 import StudentTasks from './components/EductionPortal/StudentTasks/StudentTasks';
 import TaskDetails from './components/EductionPortal/StudentTasks/TaskDetails';
 import PRReviewTeamAnalytics from './components/HGNPRDashboard/PRReviewTeamAnalytics';
-import PRDashboardOverview from './components/HGNPRDashboard/PRDashboardOverview';
-import PRDashboardPromotionEligibility from './components/HGNPRDashboard/PRDashboardPromotionEligibility';
-import PRDashboardTopReviewedPRs from './components/HGNPRDashboard/PRDashboardTopReviewedPRs';
-import PRDashboardDetails from './components/HGNPRDashboard/PRDashboardDetails';
 import PromotionEligibility from './components/HGNPRDashboard/PromotionEligibility';
 import PRPromotionsPage from './components/PRPromotions/PRPromotionsPage';
 import PRGradingDashboard from './components/PRGradingDashboard/PRGradingDashboard';
@@ -229,9 +225,6 @@ const PurchaseMaterials = lazy(() =>
 const PurchaseReusables = lazy(() =>
   import('./components/BMDashboard/PurchaseRequests/ReusablePurchaseRequest'),
 );
-// const PurchaseEquipment = lazy(() =>
-//   import('./components/BMDashboard/PurchaseRequests/EquipmentPurchaseRequest'),
-// );
 const BMTimeLogCard = lazy(() => import('./components/BMDashboard/BMTimeLogger/BMTimeLogCard'));
 const ProjectDetails = lazy(() =>
   import('./components/BMDashboard/Projects/ProjectDetails/ProjectDetails'),
