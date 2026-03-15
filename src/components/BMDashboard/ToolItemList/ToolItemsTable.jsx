@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { Table, Button } from 'reactstrap';
 import { BiPencil } from 'react-icons/bi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -14,12 +13,15 @@ export default function ToolItemsTable({
   selectedProject,
   selectedItem,
   filteredItems,
+  UpdateItemModal,
   dynamicColumns,
 }) {
   const [sortedData, setData] = useState(filteredItems);
   const [modal, setModal] = useState(false);
   const [record, setRecord] = useState(null);
   const [recordType, setRecordType] = useState('');
+  const [updateModal, setUpdateModal] = useState(false);
+  const [updateRecord, setUpdateRecord] = useState(null);
 
   const [projectNameCol, setProjectNameCol] = useState({
     iconsToDisplay: faSort,
@@ -48,6 +50,13 @@ export default function ToolItemsTable({
     setConditionCol({ iconsToDisplay: faSort, sortOrder: 'default' });
     setToolStatusCol({ iconsToDisplay: faSort, sortOrder: 'default' });
   }, [selectedProject, selectedItem]);
+
+  const handleEditRecordsClick = (selectedEl, type) => {
+    if (type === 'Update') {
+      setUpdateModal(true);
+      setUpdateRecord(selectedEl);
+    }
+  };
 
   const handleViewRecordsClick = (data, type) => {
     setModal(true);
@@ -132,6 +141,7 @@ export default function ToolItemsTable({
         setRecord={setRecord}
         recordType={recordType}
       />
+      <UpdateItemModal modal={updateModal} setModal={setUpdateModal} record={updateRecord} />
       <div className={`${styles.itemsTableContainer}`}>
         <Table className={`${styles.itemsTable}`}>
           <thead>
@@ -235,13 +245,13 @@ export default function ToolItemsTable({
 
                     <td>{el.code}</td>
                     <td className={`${styles.itemsCell}`}>
-                      <Link
-                        to={`/bmdashboard/tools/${el._id}/update`}
-                        aria-label="Update tool status"
-                        style={{ display: 'inline-flex', color: 'inherit', textDecoration: 'none' }}
+                      <button
+                        type="button"
+                        onClick={() => handleEditRecordsClick(el, 'Update')}
+                        aria-label="Edit Record"
                       >
                         <BiPencil />
-                      </Link>
+                      </button>
                       <Button
                         color="primary"
                         outline
