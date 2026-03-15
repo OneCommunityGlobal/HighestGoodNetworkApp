@@ -5,7 +5,9 @@ import styles from '../ProjectDetails.module.css';
 function RentedToolsDisplay() {
   return (
     <Card className={`card ${styles['cards-container']}`}>
-      <h2>Rented Tools or equipment to be returned in 3 days.</h2>
+      <h2 className={styles['cards-container__header']}>
+        Rented Tools or equipment to be returned in 3 days.
+      </h2>
       <ToolCards />
     </Card>
   );

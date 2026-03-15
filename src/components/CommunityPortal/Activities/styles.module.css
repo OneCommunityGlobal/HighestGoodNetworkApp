@@ -130,6 +130,15 @@
   color: red;
 }
 
+/* Resource Monitoring Title */
+.resourceMonitoring .resourceTitle {
+  font-weight: bold;
+  color: grey;
+  text-align: left;
+  font-size: 1.2rem;
+  margin-bottom: 5px;
+}
+
 .registrationForm,
 .filters {
   margin: 20px 0;
@@ -240,17 +249,24 @@
   font-size: 1.5em;
 }
 
-.status.active {
+.myEvent .status {
+  padding: 5px;
+  border-radius: 5px;
+  color: white;
+  font-weight: bold;
+}
+
+.myEvent .status.active {
   background-color: rgb(200, 240, 200);
   color: green;
 }
 
-.status.closed {
+.myEvent .status.closed {
   background-color: rgb(191, 191, 238);
   color: purple;
 }
 
-.status.cancelled {
+.myEvent .status.cancelled {
   background-color: rgb(239, 170, 170);
   color: red;
 }
@@ -321,11 +337,21 @@
 
 /* Resource Monitoring */
 
+
+
 .resourceValue {
   font-weight: bold;
   color: black;
   font-size: 1rem;
 }
+
+.resourceMonitoring .resourceStats {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+}
+
+
 
 /* My Events toggle button */
 .viewToggle button {
@@ -369,6 +395,17 @@
 .applyFiltersBtn:hover {
   background-color: #0056b3;
 }
+
+.myEvent .createNewBtn {
+  padding: 8px 20px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+
 
 .registerinfo {
   display: flex;
