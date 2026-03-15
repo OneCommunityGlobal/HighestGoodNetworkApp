@@ -974,18 +974,10 @@ export default (
           component={PRGradingDashboard}
           fallback
         />
-        <ProtectedRoute path="/pr-dashboard/overview" exact component={PRDashboardOverview} />
-        <ProtectedRoute
-          path="/pr-dashboard/promotion-eligibility"
-          exact
-          component={PRDashboardPromotionEligibility}
-        />
-        <ProtectedRoute
-          path="/pr-dashboard/top-reviewed-prs"
-          exact
-          component={PRDashboardTopReviewedPRs}
-        />
-        <ProtectedRoute path="/pr-dashboard/details" exact component={PRDashboardDetails} />
+        <ProtectedRoute path="/pr-dashboard/overview" exact component={PRDashboard} />
+        <ProtectedRoute path="/pr-dashboard/promotion-eligibility" exact component={PRDashboard} />
+        <ProtectedRoute path="/pr-dashboard/top-reviewed-prs" exact component={PRDashboard} />
+        <ProtectedRoute path="/pr-dashboard/details" exact component={PRDashboard} />
         <Route path="*" component={NotFoundPage} />
       </Switch>
     </>
