@@ -4,22 +4,27 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 20px;
-  background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  border: 1px solid rgba(62, 160, 203, 0.1);
-  min-height: 500px;
-  position: relative;
+  padding: 10px 0;
+  margin: 0 auto;
+  max-width: 720px;
+  width: 100%;
 }
 
-.radarChart.compact {
-  padding: 0;
-  background: transparent;
-  box-shadow: none;
-  border: none;
-  min-height: auto;
-  align-items: stretch;
+.radarChart canvas {
+  width: 100% !important;
+  height: auto !important;
+  max-width: 720px;
+  max-height: 640px;
+}
+
+@media (max-width: 1100px) {
+  .radarChart {
+    padding: 12px 0;
+  }
+
+  .radarChart canvas {
+    max-height: 540px;
+  }
 }
 
 .chartTitle {
@@ -125,87 +130,17 @@
 /* Responsive breakpoints */
 @media (max-width: 768px) {
   .radarChart {
-    padding: 15px;
-    min-height: 450px;
+    padding: 10px 0;
   }
 
-  .chartTitle h4 {
-    font-size: 20px;
-  }
-
-  .chartTitle p {
-    font-size: 13px;
-  }
-
-  .chartContainer {
-    max-width: clamp(280px, 58vw, 500px);
-  }
-
-  .legendItem {
-    font-size: 13px;
+  .radarChart canvas {
+    max-height: 460px;
   }
 }
 
 @media (max-width: 480px) {
-  .radarChart {
-    padding: 10px;
-    min-height: 400px;
-  }
-
-  .chartTitle h4 {
-    font-size: 18px;
-  }
-
-  .chartTitle p {
-    font-size: 12px;
-  }
-
-  .chartContainer {
-    max-width: clamp(240px, 78vw, 420px);
-  }
-
-  .chartLegend {
-    flex-direction: column;
-    gap: 10px;
-    margin-top: 15px;
-  }
-
-  .legendItem {
-    font-size: 12px;
-  }
-
-  .legendColor {
-    width: 16px;
-    height: 16px;
-  }
-}
-
-/* High DPI displays */
-@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-  .chartContainer canvas {
-    image-rendering: -webkit-optimize-contrast;
-    image-rendering: crisp-edges;
-  }
-}
-
-/* Dark theme support (optional) */
-@media (prefers-color-scheme: dark) {
-  .radarChart {
-    background: linear-gradient(145deg, #2d3748 0%, #1a202c 100%);
-    border-color: rgba(62, 160, 203, 0.3);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-  }
-
-  .chartTitle h4 {
-    color: #63b3ed;
-  }
-
-  .chartTitle p {
-    color: #a0aec0;
-  }
-
-  .legendItem {
-    color: #e2e8f0;
+  .radarChart canvas {
+    max-height: 380px;
   }
 }
 
