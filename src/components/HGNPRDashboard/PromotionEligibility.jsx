@@ -1,61 +1,109 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { toast } from 'react-toastify';
 import { FaCheck } from 'react-icons/fa';
-import { getPromotionEligibility, postPromotionEligibility } from '../../actions/promotionActions';
-import './PromotionEligibility.module.css';
+import styles from './PromotionEligibility.module.css';
 import { useSelector } from 'react-redux';
 
-function PromotionEligibility({ currentUser }) {
+const AUTHORIZED_ROLES = ['Administrator', 'Owner'];
+const STORAGE_KEY = 'promotionEligibilitySelections';
+
+const names = ['Alice', 'Bob', 'Charlie', 'Diana', 'Edward', 'Fiona', 'Grace'];
+
+function seededRandom(seed) {
+  const x = Math.sin(seed) * 10000;
+  return x - Math.floor(x);
+}
+
+const dummyReviewers = Array.from({ length: 45 }, (_, i) => ({
+  id: i + 1,
+  reviewerName: names[i % names.length],
+  weeklyRequirementsMet: i % 2 === 0,
+  requiredPRs: 5,
+  totalReviews: Math.floor(seededRandom(i) * 10),
+  remainingWeeks: Math.max(0, 4 - Math.floor(seededRandom(i + 1) * 4)),
+  promoteEligible: Math.max(0, 4 - Math.floor(seededRandom(i + 1) * 4)) <= 0,
+  isNewMember: i < 15,
+}));
+
+// Load persisted selections from localStorage
+function loadPersistedSelections() {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      return new Set(parsed);
+    }
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error('Failed to load persisted selections:', e);
+  }
+  return new Set();
+}
+
+// Save selections to localStorage
+function saveSelectionsToStorage(selections) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(Array.from(selections)));
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error('Failed to save selections:', e);
+  }
+}
+
+function PromotionEligibility() {
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [reviewers, setReviewers] = useState([]);
 
-  const [selectedForPromotion, setSelectedForPromotion] = useState(new Set());
+  const [selectedForPromotion, setSelectedForPromotion] = useState(() => loadPersistedSelections());
   const [processing, setProcessing] = useState(false);
 
   const [showNew, setShowNew] = useState(true);
   const [showExisting, setShowExisting] = useState(true);
 
   const darkMode = useSelector(state => state.theme.darkMode);
+  const authUser = useSelector(state => state.auth.user);
+
+  const userRole = authUser?.role || '';
+  const canModifyPromotion = AUTHORIZED_ROLES.includes(userRole);
 
   useEffect(() => {
-    (async () => {
-      try {
-        const data = await getPromotionEligibility();
-
-        const mappedData = data.map(r => ({
-          ...r,
-          requiredPRs: r.requiredPRs ?? r.pledgedHours / 2,
-          promoteEligible: r.remainingWeeks <= 0,
-          id: r.reviewerId,
-          reviewerName: r.reviewerName,
-          isNewMember: r.isNewMember,
-        }));
-
-        setReviewers(mappedData);
-        setLoading(false);
-      } catch (e) {
-        const msg = 'Failed to load Reviewers.';
-        setError(msg);
-        toast.error(msg);
-        setLoading(false);
-      }
-    })();
+    // Simulate loading with dummy data
+    const timer = setTimeout(() => {
+      setReviewers(dummyReviewers);
+      setLoading(false);
+    }, 500);
+    return () => clearTimeout(timer);
   }, []);
 
   const newMembers = reviewers.filter(r => r.isNewMember);
   const existingMembers = reviewers.filter(r => !r.isNewMember);
 
-  const toggleSelectPromotion = id => {
-    setSelectedForPromotion(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(id)) newSet.delete(id);
-      else newSet.add(id);
-      return newSet;
-    });
-  };
+  const toggleSelectPromotion = useCallback(
+    id => {
+      if (!canModifyPromotion) {
+        toast.warning('Only Administrators and Owners can modify promotion selections.');
+        return;
+      }
 
-  const handleProcessPromotions = async () => {
+      setSelectedForPromotion(prev => {
+        const newSet = new Set(prev);
+        if (newSet.has(id)) newSet.delete(id);
+        else newSet.add(id);
+        saveSelectionsToStorage(newSet);
+        return newSet;
+      });
+
+      toast.success('Changes saved successfully.');
+    },
+    [canModifyPromotion],
+  );
+
+  const handleProcessPromotions = () => {
+    if (!canModifyPromotion) {
+      toast.warning('Only Administrators and Owners can process promotions.');
+      return;
+    }
+
     if (selectedForPromotion.size === 0) {
       toast.info('No reviewers selected for promotion.');
       return;
@@ -63,7 +111,8 @@ function PromotionEligibility({ currentUser }) {
 
     setProcessing(true);
 
-    try {
+    // Simulate processing
+    setTimeout(() => {
       const selectedIds = Array.from(selectedForPromotion);
       const selectedReviewers = reviewers.filter(r => selectedIds.includes(r.id));
 
@@ -80,22 +129,22 @@ function PromotionEligibility({ currentUser }) {
 
       if (eligible.length === 0) {
         toast.info('No eligible reviewers to promote.');
+        setProcessing(false);
         return;
       }
 
-      await postPromotionEligibility(
-        eligible.map(r => r.id),
-        currentUser,
-      );
       toast.success(`Successfully promoted ${eligible.length} reviewer(s).`);
 
-      setReviewers(prev => prev.filter(r => !eligible.map(e => e.id).includes(r.id)));
-      setSelectedForPromotion(new Set());
-    } catch (err) {
-      toast.error('Failed to process promotions.');
-    } finally {
+      // Remove promoted reviewers from list and clear their selections
+      const promotedIds = eligible.map(e => e.id);
+      setReviewers(prev => prev.filter(r => !promotedIds.includes(r.id)));
+
+      const newSelections = new Set(selectedForPromotion);
+      promotedIds.forEach(id => newSelections.delete(id));
+      setSelectedForPromotion(newSelections);
+
       setProcessing(false);
-    }
+    }, 1000);
   };
 
   const renderRow = ({
@@ -105,72 +154,104 @@ function PromotionEligibility({ currentUser }) {
     requiredPRs,
     totalReviews,
     remainingWeeks,
-    promoteEligible,
-  }) => (
-    <tr key={id}>
-      <td data-label="Reviewer Name">{reviewerName}</td>
-      <td
-        data-label="Weekly Requirements"
-        className={weeklyRequirementsMet ? 'status-met' : 'status-not-met'}
-      >
-        {weeklyRequirementsMet ? '✓ Has Met' : '✗ Has not Met'}
-      </td>
-      <td data-label="Required PRs">{requiredPRs}</td>
-      <td data-label="Total Reviews Done">{totalReviews}</td>
-      <td data-label="Remaining Weeks">{remainingWeeks}</td>
-      <td data-label="Promote?">
-        <div
-          role="checkbox"
-          tabIndex={promoteEligible ? 0 : -1}
-          aria-checked={selectedForPromotion.has(id)}
-          onClick={() => !processing && toggleSelectPromotion(id)}
-          onKeyDown={e => {
-            if ((e.key === 'Enter' || e.key === ' ') && !processing) {
-              e.preventDefault();
-              toggleSelectPromotion(id);
-            }
-          }}
-          className={`custom-circular-checkbox-wrapper ${processing ? 'disabled' : ''}`}
-          style={{
-            cursor: !processing ? 'pointer' : 'not-allowed',
-          }}
+  }) => {
+    const isDisabled = processing || !canModifyPromotion;
+
+    return (
+      <tr key={id}>
+        <td data-label="Reviewer Name">{reviewerName}</td>
+        <td
+          data-label="Weekly Requirements"
+          className={weeklyRequirementsMet ? styles['status-met'] : styles['status-not-met']}
         >
+          {weeklyRequirementsMet ? '✓ Has Met' : '✗ Has not Met'}
+        </td>
+        <td data-label="Required PRs">{requiredPRs}</td>
+        <td data-label="Total Reviews Done">{totalReviews}</td>
+        <td data-label="Remaining Weeks">{remainingWeeks}</td>
+        <td data-label="Promote?">
           <div
-            className={`custom-circular-checkbox ${selectedForPromotion.has(id) ? 'checked' : ''}`}
+            role="checkbox"
+            tabIndex={!isDisabled ? 0 : -1}
+            aria-checked={selectedForPromotion.has(id)}
+            aria-disabled={isDisabled}
+            onClick={() => !isDisabled && toggleSelectPromotion(id)}
+            onKeyDown={e => {
+              if ((e.key === 'Enter' || e.key === ' ') && !isDisabled) {
+                e.preventDefault();
+                toggleSelectPromotion(id);
+              }
+            }}
+            className={`${styles['custom-circular-checkbox-wrapper']} ${
+              isDisabled ? styles.disabled : ''
+            }`}
+            style={{
+              cursor: !isDisabled ? 'pointer' : 'not-allowed',
+            }}
+            title={
+              !canModifyPromotion ? 'Only Administrators and Owners can modify selections' : ''
+            }
           >
-            {selectedForPromotion.has(id) && <FaCheck className="check-icon" />}
+            <div
+              className={`${styles['custom-circular-checkbox']} ${
+                selectedForPromotion.has(id) ? styles.checked : ''
+              }`}
+            >
+              {selectedForPromotion.has(id) && <FaCheck className={styles['check-icon']} />}
+            </div>
           </div>
-        </div>
-      </td>
-    </tr>
-  );
+        </td>
+      </tr>
+    );
+  };
 
   return (
-    <div className={`page-wrapper ${darkMode ? 'dark' : ''}`}>
-      <div className={`promo-table-container ${darkMode ? 'dark' : ''}`}>
-        <div className="promo-table-header">
+    <div className={`${styles['page-wrapper']} ${darkMode ? styles.dark : ''}`}>
+      <div className={`${styles['promo-table-container']} ${darkMode ? styles.dark : ''}`}>
+        <div className={styles['promo-table-header']}>
           Promotion Eligibility
           <div>
             <button
               type="button"
               onClick={() => toast.info('Review Weekly clicked. Logic not implemented yet.')}
-              disabled={processing}
-              className="review-btn"
+              disabled={processing || !canModifyPromotion}
+              className={styles['review-btn']}
+              title={
+                !canModifyPromotion ? 'Only Administrators and Owners can perform this action' : ''
+              }
             >
               Review for this week
             </button>
             <button
               type="button"
               onClick={handleProcessPromotions}
-              disabled={processing}
-              className="process-promo-btn"
+              disabled={processing || !canModifyPromotion}
+              className={styles['process-promo-btn']}
+              title={
+                !canModifyPromotion ? 'Only Administrators and Owners can process promotions' : ''
+              }
             >
               {processing ? 'Processing...' : 'Process Promotions'}
             </button>
           </div>
         </div>
 
-        <table className="promo-table">
+        {!canModifyPromotion && (
+          <div
+            style={{
+              padding: '0.5rem 1rem',
+              marginBottom: '0.5rem',
+              backgroundColor: darkMode ? '#3b3b3b' : '#fef3cd',
+              color: darkMode ? '#ffc107' : '#856404',
+              borderRadius: '4px',
+              fontSize: '0.9rem',
+            }}
+          >
+            View-only mode: Only Administrators and Owners can modify promotion selections.
+          </div>
+        )}
+
+        <table className={styles['promo-table']}>
           <thead>
             <tr>
               <th>Reviewer Name</th>
@@ -211,7 +292,7 @@ function PromotionEligibility({ currentUser }) {
                 {newMembers.length > 0 && (
                   <>
                     <tr
-                      className="section-row"
+                      className={styles['section-row']}
                       onClick={() => setShowNew(prev => !prev)}
                       style={{ cursor: 'pointer' }}
                     >
@@ -224,7 +305,7 @@ function PromotionEligibility({ currentUser }) {
                 {existingMembers.length > 0 && (
                   <>
                     <tr
-                      className="section-row"
+                      className={styles['section-row']}
                       onClick={() => setShowExisting(prev => !prev)}
                       style={{ cursor: 'pointer' }}
                     >
