@@ -18,6 +18,7 @@ import {
 
 import DemandOverTime from './LbAnalytics/DemandOverTime/DemandOverTime';
 import ReviewWordCloud from './ReviewWordCloud/ReviewWordCloud';
+import SentimentBreakdownDonutChart from './SentimentBreakdownDonutChart/SentimentBreakdownDonutChart';
 import { CompareBarGraph } from './BarGraphs/CompareGraphs';
 import ReviewVolumeOverTimeChart from '../PRAnalyticsDashboard/ReviewsInsight/ReviewVolumeOverTimeChart';
 
@@ -513,8 +514,10 @@ export function LBDashboard() {
         </Row>
       </AnalysisSection>
 
-      <AnalysisSection title="Insights from Reviews" darkMode={darkMode}>
         <Row xs="1" md="2" className="g-3" style={{ alignItems: 'stretch' }}>
+          <Col style={{ display: 'flex' }}>
+            <SentimentBreakdownDonutChart darkMode={darkMode} />
+          </Col>
           <Col style={{ display: 'flex' }}>
             <ReviewWordCloud darkMode={darkMode} />
           </Col>
