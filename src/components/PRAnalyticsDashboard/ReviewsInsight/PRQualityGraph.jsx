@@ -54,7 +54,6 @@ function PRQualityGraph({ selectedTeams, qualityData, isDataViewActive }) {
       mode: 'dataset',
     },
     plugins: {
-      datalabels: { display: false },
       legend: {
         position: 'bottom',
         labels: {
