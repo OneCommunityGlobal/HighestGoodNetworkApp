@@ -112,12 +112,12 @@ export function ItemListView({
                 setSelectedProject={setSelectedProject}
                 setSelectedItem={setSelectedItem}
               />
-              <SelectItem
+              {/* <SelectItem
                 items={items}
                 selectedProject={selectedProject}
                 selectedItem={selectedItem}
-                setSelectedItem={setSelectedItem}
-              />
+                setSelectedItem={setSelectedItem} 
+              /> */}
             </div>
           )}
           <div className={`${styles.buttonsRow}`}>
