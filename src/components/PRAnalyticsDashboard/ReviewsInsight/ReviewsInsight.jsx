@@ -233,7 +233,9 @@ function ReviewsInsight() {
       {loading && <div className={sharedStyles.riLoading}>Loading...</div>}
       {error && <div className={sharedStyles.riError}>{error}</div>}
       {!loading && !error && (
-        <div className={`${styles.riGraphs} ${darkMode ? styles.darkModeForeground : ''}`}>
+        <div
+          className={`${sharedStyles.riGraphs} ${darkMode ? sharedStyles.darkModeForeground : ''}`}
+        >
           <ActionDoneGraph
             selectedTeams={selectedTeams}
             teamData={teamData}
