@@ -1,4 +1,5 @@
 import { Pie } from 'react-chartjs-2';
+import PropTypes from 'prop-types';
 import sharedStyles from './ReviewsInsight.module.css';
 import { useSelector } from 'react-redux';
 import { Chart } from 'chart.js';
@@ -102,5 +103,31 @@ function PRQualityGraph({ selectedTeams, qualityData, isDataViewActive, orderedT
     </div>
   );
 }
+
+PRQualityGraph.propTypes = {
+  selectedTeams: PropTypes.arrayOf(
+    PropTypes.shape({
+      value: PropTypes.string,
+      label: PropTypes.string,
+    }),
+  ),
+  qualityData: PropTypes.objectOf(
+    PropTypes.shape({
+      NotApproved: PropTypes.number,
+      LowQuality: PropTypes.number,
+      Sufficient: PropTypes.number,
+      Exceptional: PropTypes.number,
+    }),
+  ),
+  isDataViewActive: PropTypes.bool,
+  orderedTeamIds: PropTypes.arrayOf(PropTypes.string),
+};
+
+PRQualityGraph.defaultProps = {
+  selectedTeams: [],
+  qualityData: {},
+  isDataViewActive: false,
+  orderedTeamIds: [],
+};
 
 export default PRQualityGraph;

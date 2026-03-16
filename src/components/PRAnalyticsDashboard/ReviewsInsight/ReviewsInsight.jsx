@@ -76,7 +76,7 @@ function ReviewsInsight() {
       });
 
       // Sort team IDs alphabetically for consistent ordering and remove duplicates
-      const sortedTeamIds = [...new Set(teamIds)].sort();
+      const sortedTeamIds = [...new Set(teamIds)].sort((a, b) => a.localeCompare(b));
 
       setTeamData(formattedTeamData);
       setQualityData(formattedQualityData);

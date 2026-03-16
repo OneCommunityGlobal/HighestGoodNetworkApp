@@ -1,8 +1,7 @@
 import { Bar } from 'react-chartjs-2';
+import PropTypes from 'prop-types';
 import sharedStyles from './ReviewsInsight.module.css';
 import { useSelector } from 'react-redux';
-import { Chart } from 'chart.js';
-import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 function ActionDoneGraph({ selectedTeams, teamData, orderedTeamIds }) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -105,5 +104,26 @@ function ActionDoneGraph({ selectedTeams, teamData, orderedTeamIds }) {
     </div>
   );
 }
+
+ActionDoneGraph.propTypes = {
+  selectedTeams: PropTypes.arrayOf(
+    PropTypes.shape({
+      value: PropTypes.string,
+      label: PropTypes.string,
+    }),
+  ),
+  teamData: PropTypes.objectOf(
+    PropTypes.shape({
+      actionSummary: PropTypes.objectOf(PropTypes.number),
+    }),
+  ),
+  orderedTeamIds: PropTypes.arrayOf(PropTypes.string),
+};
+
+ActionDoneGraph.defaultProps = {
+  selectedTeams: [],
+  teamData: {},
+  orderedTeamIds: [],
+};
 
 export default ActionDoneGraph;
