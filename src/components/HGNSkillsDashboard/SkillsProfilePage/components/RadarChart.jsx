@@ -1,16 +1,16 @@
-import { Radar } from 'react-chartjs-2';
-import { useSelector } from 'react-redux';
 import {
   Chart as ChartJS,
-  RadialLinearScale,
-  PointElement,
-  LineElement,
   Filler,
-  Tooltip,
   Legend,
+  LineElement,
+  PointElement,
+  RadialLinearScale,
+  Tooltip,
 } from 'chart.js';
-import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { useEffect, useState } from 'react';
+import { Radar } from 'react-chartjs-2';
+import { useSelector } from 'react-redux';
 import styles from '../styles/RadarChart.module.css';
 
 ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
@@ -225,33 +225,26 @@ function RadarChart({ profileData, compact = true }) {
     );
   }
 
-  const { general = {}, frontend = {}, backend = {} } = profileData?.skillInfo || {};
-
   const chartData = {
     labels: skillsData.map(skill => (compact ? skill.shortLabel || skill.label : skill.label)),
     datasets: [
       {
         label: 'Skills',
-        data: SKILL_MAPPINGS.map(skill => skill.value(general, frontend, backend) ?? 0),
-        backgroundColor: 'rgba(37, 99, 235, 0.16)',
-        borderColor: '#2563eb',
-        borderWidth: 2,
-        pointBackgroundColor: '#1d4ed8',
-        pointBorderColor: '#eff6ff',
-        pointHoverBackgroundColor: '#eff6ff',
-        pointHoverBorderColor: '#1d4ed8',
+        data: skillsData.map(skill => skill.score),
+        backgroundColor: compact ? 'rgba(133, 146, 226, 0.35)' : 'rgba(62, 160, 203, 0.2)',
+        borderColor: compact ? 'rgba(110, 125, 215, 0.9)' : 'rgba(62, 160, 203, 1)',
+        borderWidth: compact ? 2 : 3,
+        pointBackgroundColor: compact ? 'rgba(110, 125, 215, 0.95)' : 'rgba(62, 160, 203, 1)',
+        pointBorderColor: '#fff',
+        pointHoverBackgroundColor: '#fff',
+        pointHoverBorderColor: compact ? 'rgba(110,125,215,1)' : 'rgba(62,160,203,1)',
+        pointRadius: compact ? 4 : 6,
+        pointHoverRadius: compact ? 6 : 8,
+        pointBorderWidth: 1.5,
+        pointHoverBorderWidth: 2,
+        fill: true,
       },
     ],
-  };
-
-  const customTooltipPlugin = {
-    id: 'customTooltip',
-    afterDraw: chart => {
-      const tooltip = chart.tooltip;
-      if (tooltip && tooltip.opacity === 0) {
-        return;
-      }
-    },
   };
 
   const chartOptions = {
@@ -262,10 +255,18 @@ function RadarChart({ profileData, compact = true }) {
       r: {
         angleLines: {
           display: true,
-          color: compact ? 'rgba(0,0,0,0.08)' : 'rgba(0, 0, 0, 0.1)',
+          color: darkMode
+            ? 'rgba(255,255,255,0.15)'
+            : compact
+            ? 'rgba(0,0,0,0.08)'
+            : 'rgba(0,0,0,0.1)',
         },
         grid: {
-          color: compact ? 'rgba(0,0,0,0.08)' : 'rgba(0, 0, 0, 0.1)',
+          color: darkMode
+            ? 'rgba(255,255,255,0.15)'
+            : compact
+            ? 'rgba(0,0,0,0.08)'
+            : 'rgba(0,0,0,0.1)',
         },
         pointLabels: {
           font: {
@@ -279,7 +280,7 @@ function RadarChart({ profileData, compact = true }) {
             },
             weight: '500',
           },
-          color: compact ? '#555' : '#333',
+          color: darkMode ? '#ccc' : compact ? '#333' : '#222',
           padding: compact ? 10 : 15,
           callback: function(value, index) {
             // Truncate long labels on small screens
@@ -293,7 +294,11 @@ function RadarChart({ profileData, compact = true }) {
         suggestedMax: 10,
         ticks: {
           stepSize: 2,
-          display: false,
+          display: compact ? false : true,
+          color: '#666',
+          font: {
+            size: 10,
+          },
         },
       },
     },
@@ -331,9 +336,6 @@ function RadarChart({ profileData, compact = true }) {
         filter: function(tooltipItem) {
           return tooltipItem.parsed.r > 0;
         },
-      },
-      datalabels: {
-        display: false,
       },
     },
     interaction: {
