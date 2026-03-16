@@ -425,6 +425,10 @@ export const ENDPOINTS = {
   SKILLS_PROFILE_UPDATE_YEARS_OF_EXPERIENCE: userId => `${APIEndpoint}/skills/profile/updateYearsOfExperience/${userId}`,
   // HGN Skills Dashboard
   SKILLS_PROFILE: userId => `${APIEndpoint}/skills/profile/${userId}`,
+  // User State Indicator endpoints
+  USER_STATE_CATALOG: `${APIEndpoint}/userstate/catalog`,
+  USER_STATE_CATALOG_REORDER: `${APIEndpoint}/userstate/catalog/reorder`,
+  USER_STATE_SELECTION: userId => `${APIEndpoint}/userstate/selection/${userId}`,
 
   CREATE_JOB_FORM: `${APIEndpoint}/jobforms`,
   UPDATE_JOB_FORM: `${APIEndpoint}/jobforms`,
