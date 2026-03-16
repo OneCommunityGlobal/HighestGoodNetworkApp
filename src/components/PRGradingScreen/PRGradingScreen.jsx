@@ -221,7 +221,7 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                               tabIndex={0}
                               className={`${styles['pr-grading-screen-pr-number']} ${
                                 pr.prNumbers.includes('+') ? styles['pr-grading-screen-pair'] : ''
-                              } ${dm}`}
+                              } ${darkMode ? styles['dark-mode'] : ''}`}
                               onClick={() => handlePRNumberClick(reviewer.id)}
                               onKeyDown={e => {
                                 if (e.key === 'Enter' || e.key === ' ') {
@@ -251,7 +251,9 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                                 type="text"
                                 value={inputValue}
                                 onChange={e => setInputValue(e.target.value)}
-                                className={styles['pr-grading-screen-pr-number-input']}
+                                className={`${styles['pr-grading-screen-pr-number-input']} ${
+                                  darkMode ? styles['dark-mode'] : ''
+                                }`}
                                 placeholder="1070 or 1070 + 1256"
                               />
                               <Button
@@ -265,6 +267,9 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                                 Cancel
                               </Button>
                             </div>
+                          )}
+                          {inputError && activeInput === reviewer.id && (
+                            <div className={styles['pr-grading-screen-error']}>{inputError}</div>
                           )}
                         </td>
                       </tr>
