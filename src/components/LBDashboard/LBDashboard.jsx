@@ -514,6 +514,7 @@ export function LBDashboard() {
         </Row>
       </AnalysisSection>
 
+      <AnalysisSection title="Insights from Reviews" darkMode={darkMode}>
         <Row xs="1" md="2" className="g-3" style={{ alignItems: 'stretch' }}>
           <Col style={{ display: 'flex' }}>
             <SentimentBreakdownDonutChart darkMode={darkMode} />
