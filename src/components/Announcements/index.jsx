@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react';
 import { boxStyle, boxStyleDark } from '../../styles';
 import { toast } from 'react-toastify';
-import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
+import { sendEmail } from '../../actions/sendEmails';
 import BlueskyPostDetails from './BlueskyPostDetails';
 import BlueskyIcon from '../../assets/images/BlueskyIcon.svg';
 
@@ -19,7 +19,6 @@ function Announcements({ title, email: initialEmail }) {
   const [isFileUploaded, setIsFileUploaded] = useState(false);
   const tinymce = useRef(null);
   const [showBluesky, setShowBluesky] = useState(false);
-  const [showEmailSection, setShowEmailSection] = useState(true);
   const [emailContent, setEmailContent] = useState('');
   const [emailList, setEmailList] = useState([]);
 
@@ -47,7 +46,7 @@ function Announcements({ title, email: initialEmail }) {
       value
         .split(',')
         .map(email => email.trim())
-        .filter(email => email),
+        .filter(Boolean),
     );
   };
   const handleHeaderContentChange = e => setHeaderContent(e.target.value);
@@ -91,9 +90,11 @@ function Announcements({ title, email: initialEmail }) {
       reader.onload = event => {
         if (tinymce.current) {
           const content = tinymce.current.getContent();
-          tinymce.current.setContent(
-            content + `<img src="${event.target.result}" alt="Uploaded Image" />`,
-          );
+          const imgSrc =
+            typeof event.target.result === 'string'
+              ? event.target.result
+              : String(event.target.result);
+          tinymce.current.setContent(content + `<img src="${imgSrc}" alt="Uploaded Image" />`);
         }
         setIsFileUploaded(true);
       };
