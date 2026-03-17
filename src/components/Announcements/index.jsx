@@ -1,6 +1,6 @@
 /* global tinymce */
 import { useState, useEffect, useRef } from 'react';
-import './Announcements.css';
+// Removed import for deleted Announcements.css
 import { useDispatch, useSelector } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react';
 import { boxStyle, boxStyleDark } from '../../styles';
