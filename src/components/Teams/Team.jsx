@@ -1,5 +1,5 @@
 /* eslint-disable react/destructuring-assignment */
-import './Team.module.css';
+import styles from './Team.module.css';
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect, useSelector, useDispatch } from 'react-redux';
@@ -107,7 +107,10 @@ export function Team({
   };
 
   return (
-    <tr className="teams__tr" id={`tr_${teamIdKey}`}>
+    <tr
+      className={`${styles.teams__tr} ${darkMode ? styles.darkModeRow : ''}`}
+      id={`tr_${teamIdKey}`}
+    >
       <th className="teams__order--input" scope="row">
         <div>{(props.index ?? 0) + 1}</div>
       </th>
@@ -155,8 +158,8 @@ export function Team({
       </td>
 
       {(canDeleteTeam || canPutTeam) && (
-        <td>
-          <span className="usermanagement-actions-cell">
+        <td style={{ verticalAlign: 'middle' }}>
+          <div className={styles.actionButtonsContainer}>
             <Button
               color="success"
               onClick={() => props.onEditTeam(props.name, teamIdRaw, props.active, props.teamCode)}
@@ -165,8 +168,6 @@ export function Team({
             >
               Edit
             </Button>
-          </span>
-          <span className="usermanagement-actions-cell">
             <Button
               color="danger"
               onClick={() =>
@@ -177,7 +178,7 @@ export function Team({
             >
               {DELETE}
             </Button>
-          </span>
+          </div>
         </td>
       )}
     </tr>
