@@ -35,8 +35,9 @@ describe('VolunteerHoursDistribution wrapper', () => {
       { container },
     );
 
-    // legend/list should render counts as well
-    expect(screen.getByText('10-19.99 hrs (2)')).toBeInTheDocument();
+    // legend now shows plain bucket IDs only
+    expect(screen.getByText('10')).toBeInTheDocument();
+    expect(screen.getByText('20')).toBeInTheDocument();
 
     // verify computeDistribution now allocates hours to buckets so slices add up to total hours
     const computed = computeDistribution(hoursData, totalHoursData);

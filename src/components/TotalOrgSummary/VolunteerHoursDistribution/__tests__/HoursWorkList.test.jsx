@@ -13,7 +13,7 @@ afterEach(() => {
 });
 
 describe('HoursWorkList label formatting', () => {
-  it('converts simple numeric ids into ranges and adds hrs', () => {
+  it('renders plain bucket ids in the legend and merges 40+ into 50+', () => {
     const mockData = [
       { _id: '10', count: 5 },
       { _id: '40', count: 2 },
@@ -23,10 +23,10 @@ describe('HoursWorkList label formatting', () => {
 
     render(<HoursWorkList data={mockData} darkMode={false} />, { container });
 
-    expect(screen.getByText('10-19.99 hrs (5)')).toBeInTheDocument();
-    expect(screen.getByText('40-49.99 hrs (2)')).toBeInTheDocument();
-    // '50+' bucket should appear for both the original 50+ and the remapped 40+
-    expect(screen.getByText('50+ hrs (3)')).toBeInTheDocument();
-    expect(screen.getByText('50+ hrs (1)')).toBeInTheDocument();
+    // legend now shows plain bucket IDs (no range suffix, no count)
+    expect(screen.getByText('10')).toBeInTheDocument();
+    expect(screen.getByText('40')).toBeInTheDocument();
+    // 50+ and 40+ are merged into a single 50+ bucket
+    expect(screen.getByText('50+')).toBeInTheDocument();
   });
 });
