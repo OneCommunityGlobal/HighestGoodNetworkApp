@@ -1,0 +1,26 @@
+#!/bin/sh
+# Load nvm if available
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+# Use Node 20 if available (or install if needed)
+if [ -f .nvmrc ]; then
+  nvm use 20 2>/dev/null || nvm install 20 && nvm use 20
+fi
+
+. "$(dirname "$0")/_/husky.sh"
+
+echo "🧪 Running tests before push..."
+npm run test -- --bail=1
+test_status=$?
+
+echo "🧹 Running lint before push..."
+npm run lint
+lint_status=$?
+
+# Block push if either fails
+if [ $test_status -ne 0 ] || [ $lint_status -ne 0 ]; then
+  echo "❌ Push blocked: Lint or test failed."
+  exit 1
+fi
+
+echo "✅ All checks passed. Proceeding with push..."

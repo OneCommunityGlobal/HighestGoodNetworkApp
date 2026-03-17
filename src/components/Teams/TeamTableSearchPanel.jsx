@@ -1,36 +1,45 @@
-import React from 'react';
-import { SEARCH, CREATE_NEW_TEAM } from '../../languages/en/ui';
-import hasPermission from 'utils/permissions';
-import { boxStyle } from 'styles';
+/* eslint-disable react/destructuring-assignment */
 import { connect } from 'react-redux';
+import { useEffect, useRef } from 'react';
+import { boxStyle, boxStyleDark } from '~/styles';
+import hasPermission from '~/utils/permissions';
+import { SEARCH, CREATE_NEW_TEAM } from '../../languages/en/ui';
 
 /**
  * The search panel stateless component for  Teams grid
  */
-export const TeamTablesearchPanel = props => {
+export function TeamTableSearchPanelBase(props) {
+  const { darkMode } = props;
   const canPostTeam = props.hasPermission('postTeam');
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    inputRef.current.focus(); // Programmatically focus the input
+  }, []);
   return (
     <div className="input-group" id="new_team">
       {canPostTeam && (
         <button
           type="button"
           className="btn btn-info"
-          onClick={e => {
+          onClick={() => {
             props.onCreateNewTeamClick();
           }}
-          style={boxStyle}
+          style={darkMode ? boxStyleDark : boxStyle}
         >
           {CREATE_NEW_TEAM}
         </button>
       )}
       <div className="input-group-prepend" style={{ marginLeft: '10px' }}>
-        <span className="input-group-text">{SEARCH}</span>
+        <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
+          {SEARCH}
+        </span>
       </div>
 
       <input
-        autoFocus
+        ref={inputRef}
         type="text"
-        className="form-control"
+        className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
         aria-label="Search"
         placeholder="Search Text"
         id="team-profiles-wild-card-search"
@@ -40,6 +49,5 @@ export const TeamTablesearchPanel = props => {
       />
     </div>
   );
-};
-
-export default connect(null, { hasPermission })(TeamTablesearchPanel);
+}
+export default connect(null, { hasPermission })(TeamTableSearchPanelBase);

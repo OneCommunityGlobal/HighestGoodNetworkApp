@@ -12,6 +12,7 @@ export const updateObject = (oldObject, updatedProperties) => ({
   ...updatedProperties,
 });
 
+// eslint-disable-next-line default-param-last
 export const teamUsersReducer = (teamMembers = teamUsersInitial, action) => {
   switch (action.type) {
     case types.RECEIVE_TEAM_USERS:
@@ -36,6 +37,11 @@ export const teamUsersReducer = (teamMembers = teamUsersInitial, action) => {
         fetching: false,
         fetched: true,
         status: '200',
+      });
+    case types.FETCH_TEAM_USERS_START:
+      return updateObject(teamMembers, {
+        fetching: true,
+        fetched: false,
       });
 
     default:

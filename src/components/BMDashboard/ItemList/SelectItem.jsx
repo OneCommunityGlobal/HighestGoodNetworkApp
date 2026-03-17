@@ -1,46 +1,92 @@
 import { Form, FormGroup, Label, Input } from 'reactstrap';
+import styles from './ItemListView.module.css';
 
-export default function SelectItem({ items, selectedProject, selectedItem, setSelectedItem }) {
+export default function SelectItem({
+  items,
+  selectedProject,
+  selectedItem,
+  setSelectedItem,
+  selectedToolStatus,
+  setSelectedToolStatus,
+  selectedCondition,
+  setSelectedCondition,
+  label,
+  isDarkMode,
+}) {
   let itemSet = [];
-  if (items.length) {
-    if (selectedProject === 'all') itemSet = [...new Set(items.map(m => m.itemType?.name))];
-    else
-      itemSet = [
-        ...new Set(
-          items.filter(mat => mat.project?.name === selectedProject).map(m => m.itemType?.name),
-        ),
-      ];
+  if (items?.length) {
+    if (label === 'Tool') {
+      if (selectedProject === 'all') {
+        itemSet = [...new Set(items.filter(m => m.itemType?.name).map(m => m.itemType.name))];
+      } else {
+        itemSet = [
+          ...new Set(
+            items
+              .filter(mat => mat.project?.name === selectedProject && mat.itemType?.name)
+              .map(m => m.itemType.name),
+          ),
+        ];
+      }
+    } else if (label === 'Tool Status') {
+      itemSet = ['Using', 'Available', 'Under Maintenance'];
+    } else if (label === 'Condition') {
+      if (selectedProject === 'all') {
+        itemSet = [...new Set(items.filter(m => m.condition).map(m => m.condition))];
+      } else {
+        itemSet = [
+          ...new Set(
+            items
+              .filter(mat => mat.project?.name === selectedProject && mat.condition)
+              .map(m => m.condition),
+          ),
+        ];
+      }
+    }
   }
+
+  const darkStyle = isDarkMode
+    ? { backgroundColor: '#1e293b', color: '#e5e7eb', borderColor: '#334155' }
+    : undefined;
 
   return (
     <Form>
-      <FormGroup className="select_input">
-        <Label htmlFor="select-material" style={{ marginLeft: '10px' }}>
-          Material:
-        </Label>
-        <Input
+      <FormGroup className={styles.selectInput}>
+        <Label htmlFor="select-item">{label}:</Label>
+
+        <select
           id="select-item"
           name="select-item"
-          type="select"
-          value={selectedItem}
-          onChange={e => setSelectedItem(e.target.value)}
-          disabled={!items.length}
+          className={styles.filterSelect}
+          value={
+            label === 'Condition'
+              ? selectedCondition
+              : label === 'Tool Status'
+              ? selectedToolStatus
+              : selectedItem
+          }
+          onChange={e => {
+            const val = e.target.value;
+            if (label === 'Tool Status') setSelectedToolStatus(val);
+            else if (label === 'Condition') setSelectedCondition(val);
+            else setSelectedItem(val);
+          }}
+          disabled={!itemSet.length}
         >
-          {items.length ? (
+          {itemSet.length ? (
             <>
-              <option value="all">All</option>
-              {itemSet.map(name => {
-                return (
-                  <option key={name} value={name}>
-                    {name}
-                  </option>
-                );
-              })}
+              <option value="all" key="all-option">
+                All
+              </option>
+              {itemSet.map(item => (
+                <option key={`item-${item}`} value={item}>
+                  {item}
+                </option>
+              ))}
             </>
           ) : (
-            <option>No data</option>
+            <option key="no-data">No data</option>
           )}
-        </Input>
+        </select>
       </FormGroup>
     </Form>
   );

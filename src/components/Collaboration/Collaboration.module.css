@@ -1,0 +1,363 @@
+/* ======================================================
+   BASE LAYOUT
+   ====================================================== */
+
+.jobLanding {
+  width: 100%;
+  min-height: 100%;
+}
+
+.userCollaborationContainer {
+  width: 90%;
+  margin: 0 auto;
+  background-color: #ffffff;
+  border-radius: 10px;
+  padding-bottom: 24px;
+}
+
+/* ================= DARK MODE – BASE ================= */
+
+.dark .userCollaborationContainer {
+  background-color: #0f172a; /* deep slate */
+  color: #e5e7eb;
+}
+
+/* ======================================================
+   HEADER
+   ====================================================== */
+
+.jobHeader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px 0;
+}
+
+.jobHeader img {
+  width: clamp(160px, 30vw, 600px);
+  height: auto;
+}
+
+/* ======================================================
+   NAVBAR
+   ====================================================== */
+
+.navbar {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #9c0;
+  padding: 12px;
+  gap: 12px;
+}
+
+.searchForm {
+  display: flex;
+  gap: 8px;
+}
+
+/* ================= DARK MODE – NAVBAR ================= */
+
+.dark .navbar {
+  background-color: #1e293b;
+}
+
+.dark .searchForm input {
+  background-color: #0f172a;
+  color: #e5e7eb;
+  border: 1px solid #334155;
+}
+
+.dark .searchForm input::placeholder {
+  color: #94a3b8;
+}
+
+/* ======================================================
+   CATEGORY DROPDOWN
+   ====================================================== */
+
+.jobSelect {
+  position: absolute;
+  top: 100%;
+  right: 12px;
+  margin-top: 6px;
+  background-color: #ffffff;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  z-index: 1500;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  animation: fadeInDropdown 0.12s ease-in-out;
+}
+
+@keyframes fadeInDropdown {
+  from {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdownItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 4px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #333;
+  border-radius: 4px;
+}
+
+.dropdownItem:hover {
+  background-color: #f0f0f0;
+}
+
+/* ================= DARK MODE – DROPDOWN ================= */
+
+.dark .jobSelect {
+  background-color: #020617;
+  color: #e5e7eb;
+  border: 1px solid #334155;
+}
+
+.dark .dropdownItem {
+  color: #e5e7eb;
+}
+
+.dark .dropdownItem:hover {
+  background-color: #1e293b;
+}
+
+/* ======================================================
+   HEADINGS
+   ====================================================== */
+
+.headings {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.jobHead {
+  color: #07471e;
+  font-weight: 800;
+}
+
+/* ================= DARK MODE – HEADINGS ================= */
+
+.dark .jobHead {
+  color: #e5e7eb;
+}
+
+/* ======================================================
+   JOB GRID
+   ====================================================== */
+
+.jobList {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 20px;
+  padding: 20px;
+}
+
+.jobAd {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  padding: 14px;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.jobAd:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.jobAd img {
+  width: 100%;
+}
+
+.jobAd h3 {
+  margin-top: 10px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #183a9b;
+}
+
+/* ================= DARK MODE – JOB GRID ================= */
+
+.dark .jobAd {
+  background-color: #020617;
+  border: 1px solid #334155;
+}
+
+.dark .jobAd h3 {
+  color: #93c5fd;
+}
+
+/* ======================================================
+   PAGINATION
+   ====================================================== */
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin: 20px 0;
+}
+
+.paginationButton {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background-color: #ffffff;
+  cursor: pointer;
+}
+
+.paginationButtonActive {
+  background-color: #9c0;
+  border-color: #9c0;
+  font-weight: 700;
+}
+
+/* ================= DARK MODE – PAGINATION ================= */
+
+.dark .paginationButton {
+  background-color: #020617;
+  color: #e5e7eb;
+  border: 1px solid #334155;
+}
+
+.dark .paginationButtonActive {
+  background-color: #65a30d;
+  border-color: #65a30d;
+  color: #020617;
+}
+
+/* ======================================================
+   SELECTED FILTER CHIPS
+   ====================================================== */
+
+.jobQueries {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.chip {
+  background-color: #9c0;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.clearAllButton {
+  border: 1px solid #333;
+  background: transparent;
+  padding: 6px 12px;
+  border-radius: 16px;
+  cursor: pointer;
+}
+
+/* ================= DARK MODE – CHIPS ================= */
+
+.dark .chip {
+  background-color: #65a30d;
+  color: #020617;
+}
+
+.dark .clearAllButton {
+  border-color: #94a3b8;
+  color: #e5e7eb;
+}
+
+/* ======================================================
+   MODAL
+   ====================================================== */
+
+.dark {
+  background-color: #1b2a41;
+  color: #f1f1f1;
+}
+
+.dark .userCollaborationContainer {
+  background-color: #1b2a41;
+}
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.modal {
+  position: relative;
+  background-color: #ffffff;
+  border-radius: 10px;
+  padding: 28px;
+  max-width: 520px;
+  width: 90%;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+/* ================= DARK MODE – MODAL ================= */
+
+.dark .jobAd {
+  background: linear-gradient(135deg, #23272a, #181a1b);
+  border-color: #333;
+}
+
+.dark .jobAd h3 {
+  color: #e0e0e0;
+}
+
+/* ======================================================
+   MODAL – CLOSE BUTTON
+   ====================================================== */
+
+.closeButton {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  background: transparent;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  line-height: 1;
+  color: #333;
+}
+
+.closeButton:hover {
+  opacity: 0.75;
+}
+
+.dark .closeButton {
+  color: #e5e7eb;
+}
+
+/* ======================================================
+   MODAL – ACTIONS
+   ====================================================== */
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 28px;
+}
+
+.modalActions button {
+  min-width: 120px;
+}

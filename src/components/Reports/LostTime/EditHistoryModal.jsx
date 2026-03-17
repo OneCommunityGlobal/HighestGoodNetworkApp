@@ -1,32 +1,33 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, FormGroup, Label, Input, Form, Row, Col } from 'reactstrap';
-import { boxStyle } from 'styles';
+import { getFontColor, getBoxStyling } from '~/styles';
 import { connect, useDispatch } from 'react-redux';
-import { getUserProfile } from 'actions/userProfile';
-import AddProjectsAutoComplete from 'components/UserProfile/TeamsAndProjects/AddProjectsAutoComplete';
-import MemberAutoComplete from 'components/Teams/MembersAutoComplete';
-import AddTeamsAutoComplete from 'components/UserProfile/TeamsAndProjects/AddTeamsAutoComplete';
+import { getUserProfile } from '~/actions/userProfile';
 import moment from 'moment';
 import { isEmpty } from 'lodash';
-import { deleteTimeEntry, editTimeEntry } from 'actions/timeEntries';
-import { ENDPOINTS } from 'utils/URL';
-import axios from 'axios';
+import { deleteTimeEntry, editTimeEntry } from '~/actions/timeEntries';
 import './EditHistoryModal.css';
+import '../../Header/index.css'
+import { toast } from 'react-toastify';
 
-const EditHistoryModal = props => {
+function EditHistoryModal(props) {
+  const {darkMode} = props;
+  const fontColor = getFontColor(darkMode);
+  const boxStyling = getBoxStyling(darkMode);
+  const MAX_HOURS_PER_ENTRY = 40;
 
   const initialForm = {
-    projectId: props.entryType == 'project'? props.dataId: undefined,
-    personId: props.entryType == 'person'? props.dataId: undefined,
-    teamId: props.entryType == 'team'? props.dataId: undefined,
+    projectId: props.entryType === 'project'? props.dataId: undefined,
+    personId: props.entryType === 'person'? props.dataId: undefined,
+    teamId: props.entryType === 'team'? props.dataId: undefined,
     dateOfWork: props.dateOfWork,
     hours: props.hours,
     minutes: props.minutes,
     isTangible: props.isTangible,
   };
 
-  const initialData = props.allData.find(data => data._id == props.dataId);
-  const initialName = props.entryType == 'person'? initialData.firstName + " " + initialData.lastName: '';
+  const initialData = props.allData.find(data => data._id === props.dataId);
+  const initialName = props.entryType === 'person'? `${initialData.firstName  } ${  initialData.lastName}`: '';
 
   const dispatch = useDispatch();
 
@@ -34,7 +35,7 @@ const EditHistoryModal = props => {
   const [inputs, setInputs] = useState(initialForm);
   
   const [searchText, setSearchText] = useState(initialName);
-  const [selectedData, setSelectedData] = useState(initialData);
+  const [selectedData] = useState(initialData);
 
   const [errors, setErrors] = useState({});
   const [editModal, setEditModal] = useState(false);
@@ -54,77 +55,49 @@ const EditHistoryModal = props => {
     setDeleteModal(!deleteModal)
   };
 
-  const selectData = data => {
-    if(props.entryType == 'project') {
-      setInputs(inputs => ({
-        ...inputs,
-        projectId: data._id,
-        personId: undefined,
-        teamId: undefined,
-      }));
-      setSelectedData(data);
-    } else if (props.entryType == 'person') {
-      if(data){
-        setInputs(inputs => ({
-          ...inputs,
-          projectId: undefined,
-          personId: data._id,
-          teamId: undefined,
-        }));
-      }
-    } else if (props.entryType == 'team') {
-      setInputs(inputs => ({
-        ...inputs,
-        projectId: undefined,
-        personId: undefined,
-        teamId: data._id,
-      }));
-      setSelectedData(data);
-    }
-  }
-
   const handleFormContent = () => {
-    if (props.entryType == 'project') {
+    if (props.entryType === 'project') {
       return (
         <FormGroup>
-          <Label>Project Name</Label>
+          <Label className={fontColor}>Project Name</Label>
           <Input
             defaultValue={selectedData.projectName}
+            className={darkMode ? "bg-darkmode-liblack text-light border-0" : ''}
             disabled
           />
         </FormGroup>
       )
-    } else if (props.entryType == 'person') {
+    } if (props.entryType === 'person') {
       return (
-        <>
-          <FormGroup>
-            <Label>Name</Label>
+        <FormGroup>
+            <Label className={fontColor}>Name</Label>
             <Input
               defaultValue={searchText}
+              className={darkMode ? "bg-darkmode-liblack text-light border-0" : ''}
               disabled
             />
           </FormGroup>
-        </>
       )
-    } else if (props.entryType == 'team') {
+    } if (props.entryType === 'team') {
       return (
         <FormGroup>
-          <Label>Team Name</Label>
+          <Label className={fontColor}>Team Name</Label>
           <Input
             defaultValue={selectedData.teamName}
+            className={darkMode ? "bg-darkmode-liblack text-light border-0" : ''}
             disabled
           />
         </FormGroup>
       )
-    } else {
-      return (<></>)
-    }
+    } 
+      return null;
+    
   };
 
   const handleInputChange = event => {
     event.persist();
-    setInputs(inputs => ({
-      ...inputs,
+    setInputs(prevInputs => ({
+      ...prevInputs,
       [event.target.name]: event.target.value,
     }));
   };
@@ -134,105 +107,96 @@ const EditHistoryModal = props => {
     setSearchText('');
     setErrors({});
   }
-  const handleCancel = closed => {
+  const handleCancel = () => {
     resetForm();
     toggleEdit();
   };
 
-  const validateInputs = () => {
-    const result = {};
-
-    const date = moment(inputs.dateOfWork);
+  const validateDate = (dateOfWork) => {
+    const errors = {};
+    const date = moment(dateOfWork);
     const today = moment(
       moment()
         .tz('America/Los_Angeles')
         .format('YYYY-MM-DD'),
     );
+  
     if (!date.isValid()) {
-      result.dateOfWork = 'Invalid date';
-    } else if (
-        today.diff(date, 'days') < 0
+      errors.dateOfWork = 'Invalid date';
+    } else if (today.diff(date, 'days') < 0) {
+      errors.dateOfWork = 'Cannot add lost time for future dates.';
+    }
+  
+    return errors;
+  };
+  
+  const validateTime = (hoursInput, minutesInput) => {
+    const errors = {};
+    const hours = Number(hoursInput);
+    const minutes = Number(minutesInput);
+  
+    if (
+      Number.isNaN(hours) ||
+      Number.isNaN(minutes) ||
+      (hours === 0 && minutes === 0)
     ) {
-      result.dateOfWork = 'Cannot add lost time for future dates.';
+      errors.time = 'Time is required';
+      return errors;
     }
-
-    if (inputs.hours === 0 && inputs.minutes === 0) {
-      result.time = 'Time is required';
-    } else {
-      const hours = inputs.hours * 1;
-      const minutes = inputs.minutes * 1;
-      if (!Number.isInteger(hours) || !Number.isInteger(minutes)) {
-        result.time = 'Hours and minutes should be integers';
-      }
-      if (hours < 0 || minutes < 0) {
-        result.time = 'Time should be greater than 0';
-      }
+  
+    if (!Number.isInteger(hours) || !Number.isInteger(minutes)) {
+      errors.time = 'Hours and minutes should be integers';
+      return errors;
     }
-
-    if (props.entryType == 'project' && inputs.projectId == undefined) {
-      result.projectId = 'Project is required';
+  
+    if (hours < 0 || minutes < 0) {
+      errors.time = 'Time should be greater than 0';
+      return errors;
     }
-    if (props.entryType == 'person' && inputs.personId == undefined) {
-      result.personId = 'Person is required';
+  
+    const totalMinutes = hours * 60 + minutes;
+    const maxMinutes = MAX_HOURS_PER_ENTRY * 60;
+  
+    if (totalMinutes > maxMinutes) {
+      errors.time = `You can’t log more than ${MAX_HOURS_PER_ENTRY} hours in a single entry.`;
+      toast.error(
+        "Hold up, workhorse! You’ve hit the 40-hour limit for a single entry. You can pop in a new time log for any additional hours.",
+        { autoClose: 5000 }
+      );
     }
-    if (props.entryType == 'team' && inputs.teamId == undefined) {
-      result.teamId = 'Team is required';
+  
+    return errors;
+  };
+  
+  const validateEntryType = (inputs, entryType) => {
+    const errors = {};
+  
+    if (entryType === 'project' && inputs.projectId === undefined) {
+      errors.projectId = 'Project is required';
+    } else if (entryType === 'person' && inputs.personId === undefined) {
+      errors.personId = 'Person is required';
+    } else if (entryType === 'team' && inputs.teamId === undefined) {
+      errors.teamId = 'Team is required';
     }
-
+  
+    return errors;
+  };
+  
+  const validateInputs = () => {
+    const dateErrors = validateDate(inputs.dateOfWork);
+    const timeErrors = validateTime(inputs.hours, inputs.minutes);
+    const entryTypeErrors = validateEntryType(inputs, props.entryType);
+  
+    const result = {
+      ...dateErrors,
+      ...timeErrors,
+      ...entryTypeErrors,
+    };
+  
     setErrors(result);
     return isEmpty(result);
   };
-
-  const updateHours = async (userProfile, timeEntry, hours, minutes) => {
-    const { hoursByCategory } = userProfile;
-    const { isTangible, personId } = timeEntry;
-
-    const oldEntryTime = parseFloat(initialForm.hours) + parseFloat(initialForm.minutes) / 60;
-    const currEntryTime = parseFloat(hours) + parseFloat(minutes) / 60;
-    const timeDifference = currEntryTime - oldEntryTime;
-
-    if (initialForm.isTangible == 'true' && isTangible == 'true') {
-      hoursByCategory['unassigned'] += timeDifference;
-    } else if (initialForm.isTangible == 'false' && isTangible == 'false') {
-      userProfile.totalIntangibleHrs += timeDifference;
-    } else if (initialForm.isTangible == 'true' && isTangible == 'false') {
-      hoursByCategory['unassigned'] -= oldEntryTime;
-      userProfile.totalIntangibleHrs += currEntryTime;
-    } else {
-      userProfile.totalIntangibleHrs -= oldEntryTime;
-      hoursByCategory['unassigned'] += currEntryTime;
-    }
-
-    try {
-      const url = ENDPOINTS.USER_PROFILE_PROPERTY(personId);
-      await axios.patch(url, { key: 'hoursByCategory', value: hoursByCategory });
-      await axios.patch(url, { key: 'totalIntangibleHrs', value: userProfile.totalIntangibleHrs });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const deleteHours = async (userProfile, timeEntry) => {
-    const { hoursByCategory } = userProfile;
-    const { isTangible, personId } = timeEntry;
-
-    const entryTime = parseFloat(initialForm.hours) + parseFloat(initialForm.minutes) / 60;
-
-    if (isTangible == 'true') {
-      hoursByCategory['unassigned'] -= entryTime;
-    } else {
-      userProfile.totalIntangibleHrs -= entryTime;
-    }
-
-    try {
-      const url = ENDPOINTS.USER_PROFILE_PROPERTY(personId);
-      await axios.patch(url, { key: 'hoursByCategory', value: hoursByCategory });
-      await axios.patch(url, { key: 'totalIntangibleHrs', value: userProfile.totalIntangibleHrs });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
+  
   const handleSubmit = async event => {
 
     if (event) event.preventDefault();
@@ -240,7 +204,7 @@ const EditHistoryModal = props => {
     if (!validateInputs()) return;
 
     let isIdEqual = false;
-    if (props.entryType == 'person') {
+    if (props.entryType === 'person') {
       isIdEqual =  initialForm.personId === inputs.personId;
     } else if (props.entryType === 'project') {
       isIdEqual = initialForm.projectId === inputs.projectId;
@@ -262,26 +226,18 @@ const EditHistoryModal = props => {
       projectId: inputs.projectId,
       teamId: inputs.teamId,
       dateOfWork: inputs.dateOfWork,
-      isTangible: inputs.isTangible.toString(),
+      isTangible: inputs.isTangible,
       entryType: props.entryType,
-      hours: parseInt(inputs.hours),
-      minutes: parseInt(inputs.minutes),
+      hours: parseInt(inputs.hours, 10),
+      minutes: parseInt(inputs.minutes, 10),
     };
 
-    if(inputs.personId) {
-      updateHours(props.userProfile, timeEntry, inputs.hours, inputs.minutes);
-    }
-
     setSubmitting(true);
-    let timeEntryStatus;
-    timeEntryStatus = await dispatch(editTimeEntry(props._id, timeEntry, initialForm.dateOfWork));
+    const timeEntryStatus = await dispatch(editTimeEntry(props._id, timeEntry, initialForm.dateOfWork));
     setSubmitting(false);
 
     if (timeEntryStatus !== 200) {
       toggleEdit();
-      alert(
-        `An error occurred while attempting to update your time entry. Error code: ${timeEntryStatus}`,
-      );
       return;
     }
 
@@ -301,22 +257,15 @@ const EditHistoryModal = props => {
       projectId: inputs.projectId,
       teamId: inputs.teamId,
       dateOfWork: inputs.dateOfWork,
-      isTangible: inputs.isTangible.toString(),
+      isTangible: inputs.isTangible,
       entryType: props.entryType,
-      hours: parseInt(inputs.hours),
-      minutes: parseInt(inputs.minutes),
+      hours: parseInt(inputs.hours, 10),
+      minutes: parseInt(inputs.minutes, 10),
     };
-
-    if(inputs.personId) {
-      deleteHours(props.userProfile, timeEntry);
-    }
 
     const timeEntryStatus = await dispatch(deleteTimeEntry(timeEntry));
     if (timeEntryStatus !== 200) {
       toggleDelete();
-      alert(
-        `An error occurred while attempting to delete your time entry. Error code: ${timeEntryStatus}`,
-      );
       return;
     }
     if (deleteModal) toggleDelete();
@@ -325,22 +274,23 @@ const EditHistoryModal = props => {
 
   return(
     <>
-    <Modal isOpen={editModal} toggle={toggleEdit}>
-      <ModalHeader toggle={toggleEdit}>
+    <Modal isOpen={editModal} toggle={toggleEdit} className={darkMode ? 'text-light dark-mode' : ''}>
+      <ModalHeader toggle={toggleEdit} className={darkMode ? 'bg-space-cadet text-light' : ''}>
         Edit Lost Time
       </ModalHeader>
-      <ModalBody>
+      <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <Form>
           <>
             {handleFormContent()}
             <FormGroup>
-              <Label for="dateOfWork">Date</Label>
+              <Label for="dateOfWork" className={fontColor}>Date</Label>
               <Input
                 type="date"
                 name="dateOfWork"
                 id="dateOfWork"
                 value={inputs.dateOfWork}
                 onChange={handleInputChange}
+                className={darkMode ? "bg-darkmode-liblack text-light border-0 calendar-icon-dark" : ''}
               />
               {'dateOfWork' in errors && (
                 <div className="text-danger">
@@ -349,7 +299,7 @@ const EditHistoryModal = props => {
               )}
             </FormGroup>
             <FormGroup>
-              <Label for="timeSpent">Time (HH:MM)</Label>
+              <Label for="timeSpent" className={fontColor}>Time (HH:MM)</Label>
               <Row form>
                 <Col>
                   <Input
@@ -361,6 +311,7 @@ const EditHistoryModal = props => {
                     placeholder="Hours"
                     value={inputs.hours}
                     onChange={handleInputChange}
+                    className={darkMode ? "bg-darkmode-liblack text-light border-0" : ''}
                   />
                 </Col>
                 <Col>
@@ -373,6 +324,7 @@ const EditHistoryModal = props => {
                     placeholder="Minutes"
                     value={inputs.minutes}
                     onChange={handleInputChange}
+                    className={darkMode ? "bg-darkmode-liblack text-light border-0" : ''}
                   />
                 </Col>
               </Row>
@@ -383,15 +335,15 @@ const EditHistoryModal = props => {
               )}
             </FormGroup>
             <FormGroup check>
-              <Label check>
+              <Label check className={fontColor}>
                 <Input
                   type="checkbox"
                   name="isTangible"
                   checked={inputs.isTangible}
                   onChange={e => {
                     e.persist();
-                    setInputs(inputs => ({
-                      ...inputs,
+                    setInputs(prevInputs => ({
+                      ...prevInputs,
                       [e.target.name]: e.target.checked,
                     }));
                   }}
@@ -402,46 +354,47 @@ const EditHistoryModal = props => {
           </>
         </Form>
       </ModalBody>
-      <ModalFooter>
-        <Button onClick={handleCancel} color="danger" style={boxStyle}>
+      <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+        <Button onClick={handleCancel} color="danger" style={boxStyling}>
           Cancel
         </Button>
-        <Button onClick={handleSubmit} color="primary" style={boxStyle}>
+        <Button onClick={handleSubmit} color="primary" style={boxStyling}>
           Update
         </Button>
       </ModalFooter>
     </Modal>
-    <Modal isOpen={deleteModal} toggle={toggleDelete}>
-      <ModalHeader toggle={toggleDelete}>
+    <Modal isOpen={deleteModal} toggle={toggleDelete} className={darkMode ? 'dark-mode text-light' : ''}>
+      <ModalHeader toggle={toggleDelete} className={darkMode ? 'bg-space-cadet text-light' : ''}>
         Delete Lost Time
       </ModalHeader>
-      <ModalBody>
+      <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         Are you sure you want to delete this?
       </ModalBody>
-      <ModalFooter>
-        <Button onClick={toggleDelete} color="primary" style={boxStyle}>
+      <ModalFooter className={darkMode ? 'bg-yinmn-blue text-light' : ''}>
+        <Button onClick={toggleDelete} color="primary" style={boxStyling}>
           Close
         </Button>
-        <Button onClick={handleDelete} color="danger" style={boxStyle}>
+        <Button onClick={handleDelete} color="danger" style={boxStyling}>
           Confirm
         </Button>
       </ModalFooter>
     </Modal>
     <div className='history-btn-div'>
-      <Button className='history-btn' color="primary" onClick={toggleEdit} style={boxStyle}>
+      <Button className='history-btn' color="primary" onClick={toggleEdit} style={boxStyling}>
         Edit
       </Button>
-      <Button className='history-btn' color="danger" onClick={toggleDelete} style={boxStyle}>
+      <Button className='history-btn' color="danger" onClick={toggleDelete} style={boxStyling}>
         Delete
       </Button>
     </div>
     </>
   );
-};
+}
 
 const mapStateToProps = state => ({
   userProfile: state.userProfile,
   auth: state.auth,
+  darkMode: state.theme.darkMode,
 });
 
 const mapDispatchToProps = dispatch => ({

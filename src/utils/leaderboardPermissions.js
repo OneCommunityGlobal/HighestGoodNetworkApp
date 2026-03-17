@@ -13,26 +13,28 @@ export const hasLeaderboardPermissions = authRole => {
 };
 
 export const assignStarDotColors = (hoursLogged, weeklyCommittedHours) => {
-  return hoursLogged >= weeklyCommittedHours * PURPLE_TIER
-    ? 'purple'
-    : hoursLogged >= weeklyCommittedHours * FUCHSIA_TIER &&
-      hoursLogged < weeklyCommittedHours * PURPLE_TIER
-    ? 'fuchsia'
-    : hoursLogged >= weeklyCommittedHours * DARKGREEN_TIER &&
-      hoursLogged < weeklyCommittedHours * FUCHSIA_TIER
-    ? 'darkgreen'
-    : 'green';
+  if (hoursLogged >= weeklyCommittedHours * PURPLE_TIER) {
+    return 'purple';
+  }
+  if (
+    hoursLogged >= weeklyCommittedHours * FUCHSIA_TIER &&
+    hoursLogged < weeklyCommittedHours * PURPLE_TIER
+  ) {
+    return 'fuchsia';
+  }
+  if (
+    hoursLogged >= weeklyCommittedHours * DARKGREEN_TIER &&
+    hoursLogged < weeklyCommittedHours * FUCHSIA_TIER
+  ) {
+    return 'darkgreen';
+  }
+  return 'green';
 };
 
 export const showStar = (hoursLogged, weeklyCommittedHours) => {
   return weeklyCommittedHours !== 0 && hoursLogged >= weeklyCommittedHours * DARKGREEN_TIER;
 };
 
-
 export const viewZeroHouraMembers = authRole => {
-  return (
-    authRole === 'Owner' ||
-    authRole === 'Administrator' ||
-    authRole === 'Core Team'
-  );
+  return authRole === 'Owner' || authRole === 'Administrator' || authRole === 'Core Team';
 };

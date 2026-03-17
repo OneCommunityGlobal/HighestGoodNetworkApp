@@ -1,58 +1,66 @@
 import { createStore, applyMiddleware, compose, combineReducers } from 'redux';
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage'; // defaults to localStorage for web
-import storageSession from 'redux-persist/lib/storage/session';
-import concatenateReducers from 'redux-concatenate-reducers';
 
 import thunk from 'redux-thunk';
+import { userPreferencesReducer } from './reducers/listBidDashboard/userPreferencesReducer';
+import { messagingReducer } from './reducers/listBidDashboard/messagingReducer';
+import { weeklyProjectSummaryReducer } from '~/reducers/bmdashboard/weeklyProjectSummaryReducer';
 import { localReducers, sessionReducers } from './reducers';
+import { weeklySummariesFiltersApi } from './actions/weeklySummariesFilterAction';
+import { kiCalendarApi } from './actions/kiCalendarAction';
 
-const middleware = [thunk];
+const middleware = [thunk, weeklySummariesFiltersApi.middleware, kiCalendarApi.middleware];
 const initialState = {};
 const devTools = window.__REDUX_DEVTOOLS_EXTENSION__
   ? window.__REDUX_DEVTOOLS_EXTENSION__()
   : f => f;
-  
-const localPersistReducer = persistReducer({
+
+export const rootReducers = combineReducers({
+  userPreferences: userPreferencesReducer,
+  messages: messagingReducer,
+  weeklyProjectSummary: weeklyProjectSummaryReducer,
+  ...localReducers,
+  ...sessionReducers,
+});
+
+const persistConfig = {
   key: 'root',
   storage,
-  blacklist: ['auth', 'errors', ...Object.keys(sessionReducers)]
-}, combineReducers(localReducers));
-
-const sessionPersistReducer = persistReducer({
-  key: 'root',
-  storage: storageSession,
-  blacklist: [...Object.keys(localReducers)]
-}, combineReducers(sessionReducers));
-
-const filteredReducer = (reducer) => {
-  let knownKeys = Object.keys(reducer(undefined, { type: '@@FILTER/INIT' }));
-  return (state, action) => {
-      let filteredState = state;
-      if (knownKeys.length && state !== undefined) {
-          filteredState = knownKeys.reduce((current, key) => Object.assign(current, { [key]: state[key] }), {});
+  whitelist: ['theme', 'role'], // Only persist theme settings
+  blacklist: ['auth', 'errors', ...Object.keys(sessionReducers)],
+  timeout: 0, // No timeout
+  writeFailHandler: (err) => {
+    // If storage quota is exceeded, clear storage and try again
+    if (err.name === 'QuotaExceededError') {
+      try {
+        storage.removeItem('persist:root');
+        // Use setTimeout to avoid blocking the current execution
+        setTimeout(() => {
+          window.location.reload();
+        }, 100);
+      } catch (clearError) {
+        // If we can't clear storage, just reload anyway
+        setTimeout(() => {
+          window.location.reload();
+        }, 100);
       }
-      const newState = reducer(filteredState, action);
-      let nextState = state;
-      if (newState !== filteredState) {
-          knownKeys = Object.keys(newState);
-          nextState = {
-              ...state,
-              ...newState
-          };
-      }
-      return nextState;
-  };
+    } 
+    // else {
+    //   // For other errors, just log them and continue
+    //   console.warn('Non-quota storage error, continuing without persistence');
+    // }
+  }
 };
 
-export const rootReducers = concatenateReducers([filteredReducer(sessionPersistReducer), filteredReducer(localPersistReducer)]);
+const localPersistReducer = persistReducer(persistConfig, rootReducers);
 
-export default () => {
-  const store = createStore(
-    rootReducers,
-    initialState,
-    compose(applyMiddleware(...middleware), devTools)
-  );
-  const persistor = persistStore(store);
-  return { store, persistor };
-};
+const store = createStore(
+  localPersistReducer,
+  initialState,
+  compose(applyMiddleware(...middleware), devTools),
+);
+
+const persistor = persistStore(store);
+
+export { store, persistor };

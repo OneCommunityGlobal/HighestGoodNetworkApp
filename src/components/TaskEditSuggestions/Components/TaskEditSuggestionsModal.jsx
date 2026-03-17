@@ -1,5 +1,6 @@
-import React from 'react';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Row, Col, Button } from 'reactstrap';
+import { useStore, useDispatch } from 'react-redux';
+import { toast } from 'react-toastify';
 import {
   resourcesToString,
   booleanToString,
@@ -7,32 +8,58 @@ import {
   arrayToString,
   trimParagraphTags,
   datetimeToDate,
-} from 'components/TeamMemberTasks/components/TaskDifferenceModal';
-import DiffedText from 'components/TeamMemberTasks/components/DiffedText';
-import { useDispatch } from 'react-redux';
-import { rejectTaskEditSuggestion } from '../thunks';
-import { updateTask } from 'actions/task';
-import hasPermission from 'utils/permissions';
-import { useSelector, useStore } from 'react-redux';
-import { useState } from 'react';
+} from '../../TeamMemberTasks/components/TaskDifferenceModal';
+import DiffedText from '../../TeamMemberTasks/components/DiffedText';
+import { updateTask } from '../../../actions/task';
+import hasPermission from '../../../utils/permissions';
+import { incrementDashboardTaskCount } from '../../../actions/dashboardActions';
+import { rejectTaskEditSuggestionHTTP } from '../service';
+import { rejectTaskEditSuggestionSuccess } from '../actions';
+import { fetchTaskEditSuggestions } from '../thunks';
 
-export const TaskEditSuggestionsModal = ({
+export default function TaskEditSuggestionsModal({
   isTaskEditSuggestionModalOpen,
   taskEditSuggestion,
   handleToggleTaskEditSuggestionModal,
-}) => {
+  userRole,
+}) {
   const dispatch = useDispatch();
 
   const { getState } = useStore();
 
-  const approveTask = () => {
-    // console.log('mainproblem', taskEditSuggestion);
-    updateTask(
-      taskEditSuggestion.taskId,
-      taskEditSuggestion.newTask,
-      dispatch(hasPermission('updateTask')),
-    )(dispatch, getState);
-    dispatch(rejectTaskEditSuggestion(taskEditSuggestion._id));
+  const approveTask = async () => {
+    try {
+      await rejectTaskEditSuggestionHTTP(taskEditSuggestion._id).then(() => {
+        updateTask(
+          taskEditSuggestion.taskId,
+          taskEditSuggestion.newTask,
+          dispatch(hasPermission('updateTask')),
+        )(dispatch, getState);
+      });
+      dispatch(rejectTaskEditSuggestionSuccess(taskEditSuggestion._id));
+
+      if (userRole !== 'Volunteer') {
+        dispatch(incrementDashboardTaskCount(taskEditSuggestion.taskId));
+      }
+    } catch (e) {
+      dispatch(fetchTaskEditSuggestions());
+      toast.error(
+        'The suggestion might have already been resolved. Reloading the suggestion list...',
+      );
+    }
+    handleToggleTaskEditSuggestionModal();
+  };
+
+  const rejectTask = async () => {
+    try {
+      await rejectTaskEditSuggestionHTTP(taskEditSuggestion._id);
+      dispatch(rejectTaskEditSuggestionSuccess(taskEditSuggestion._id));
+    } catch (e) {
+      dispatch(fetchTaskEditSuggestions());
+      toast.error(
+        'The suggestion might have already been resolved. Reloading the suggestion list...',
+      );
+    }
     handleToggleTaskEditSuggestionModal();
   };
 
@@ -60,121 +87,123 @@ export const TaskEditSuggestionsModal = ({
             <table className="table table-bordered">
               <tbody>
                 <tr>
-                  <td scope="col" data-tip="WBS ID">
+                  <th scope="col" data-tip="WBS ID">
                     WBS #
-                  </td>
-                  {taskEditSuggestion && taskEditSuggestion.oldTask && <td scope="col">{taskEditSuggestion.oldTask.num}</td>}
+                  </th>
+                  {taskEditSuggestion && taskEditSuggestion.oldTask && (
+                    <th scope="col">{taskEditSuggestion.oldTask.num}</th>
+                  )}
                 </tr>
                 <tr>
-                  <td scope="col">Task Name</td>
-                  <td scope="col">
+                  <th scope="col">Task Name</th>
+                  <th scope="col" aria-label="Task Name">
                     <DiffedText
                       oldText={taskEditSuggestion.oldTask.taskName}
                       newText={taskEditSuggestion.newTask.taskName}
                     />
-                  </td>
+                  </th>
                 </tr>
                 <tr>
-                  <td scope="col">Priority</td>
-                  <td scope="col">
+                  <th scope="col">Priority</th>
+                  <th scope="col" aria-label="Priority">
                     <DiffedText
                       oldText={taskEditSuggestion.oldTask.priority}
                       newText={taskEditSuggestion.newTask.priority}
                     />
-                  </td>
+                  </th>
                 </tr>
                 <tr>
-                  <td scope="col">Resources</td>
-                  <td scope="col">
+                  <th scope="col">Resources</th>
+                  <th scope="col" aria-label="Resources">
                     <DiffedText
                       oldText={resourcesToString(taskEditSuggestion.oldTask.resources)}
                       newText={resourcesToString(taskEditSuggestion.newTask.resources)}
                     />
-                  </td>
+                  </th>
                 </tr>
                 <tr>
-                  <td scope="col">Assigned</td>
-                  <td scope="col">
+                  <th scope="col">Assigned</th>
+                  <th scope="col" aria-label="Assigned">
                     <DiffedText
                       oldText={booleanToString(taskEditSuggestion.oldTask.isAssigned)}
                       newText={booleanToString(taskEditSuggestion.newTask.isAssigned)}
                     />
-                  </td>
+                  </th>
                 </tr>
                 <tr>
-                  <td scope="col">Status</td>
-                  <td scope="col">
+                  <th scope="col">Status</th>
+                  <th scope="col" aria-label="Status">
                     <DiffedText
                       oldText={taskEditSuggestion.oldTask.status}
                       newText={taskEditSuggestion.newTask.status}
                     />
-                  </td>
+                  </th>
                 </tr>
                 <tr>
-                  <td scope="col" data-tip="Hours - Best-case">
+                  <th scope="col" data-tip="Hours - Best-case">
                     Hours - Best-case
-                  </td>
-                  <td scope="col" data-tip="Hours - Best-case">
+                  </th>
+                  <th scope="col" data-tip="Hours - Best-case" aria-label="Best Hours">
                     <DiffedText
                       oldText={numberToString(taskEditSuggestion.oldTask.hoursBest)}
                       newText={numberToString(taskEditSuggestion.newTask.hoursBest)}
                     />
-                  </td>
+                  </th>
                 </tr>
                 <tr>
-                  <td scope="col" data-tip="Hours - Worst-case">
+                  <th scope="col" data-tip="Hours - Worst-case">
                     Hours - Worst-case
-                  </td>
-                  <td scope="col" data-tip="Hours - Worst-case">
+                  </th>
+                  <th scope="col" data-tip="Hours - Worst-case" aria-label="Worst Hours">
                     <DiffedText
                       oldText={numberToString(taskEditSuggestion.oldTask.hoursWorst)}
                       newText={numberToString(taskEditSuggestion.newTask.hoursWorst)}
                     />
-                  </td>
+                  </th>
                 </tr>
                 <tr>
-                  <td scope="col" data-tip="Hours - Most-case">
+                  <th scope="col" data-tip="Hours - Most-case">
                     Hours - Most-case
-                  </td>
-                  <td scope="col" data-tip="Hours - Most-case">
+                  </th>
+                  <th scope="col" data-tip="Hours - Most-case" aria-label="Most Hours">
                     <DiffedText
                       oldText={numberToString(taskEditSuggestion.oldTask.hoursMost)}
                       newText={numberToString(taskEditSuggestion.newTask.hoursMost)}
                     />
-                  </td>
+                  </th>
                 </tr>
                 <tr>
-                  <td scope="col" data-tip="Estimated Hours">
+                  <th scope="col" data-tip="Estimated Hours">
                     Estimated Hours
-                  </td>
-                  <td scope="col" data-tip="Estimated Hours">
+                  </th>
+                  <th scope="col" data-tip="Estimated Hours" aria-label="Estimated Hours">
                     <DiffedText
                       oldText={numberToString(taskEditSuggestion.oldTask.estimatedHours)}
                       newText={numberToString(taskEditSuggestion.newTask.estimatedHours)}
                     />
-                  </td>
+                  </th>
                 </tr>
 
                 <tr>
-                  <td scope="col">Links</td>
-                  <td scope="col">
+                  <th scope="col">Links</th>
+                  <th scope="col" aria-label="Links">
                     <DiffedText
                       oldText={arrayToString(taskEditSuggestion.oldTask.links)}
                       newText={arrayToString(taskEditSuggestion.newTask.links)}
                     />
-                  </td>
+                  </th>
                 </tr>
                 <tr>
-                  <td scope="col">Classification</td>
-                  <td scope="col">
+                  <th scope="col">Classification</th>
+                  <th scope="col" aria-label="Classifications">
                     <DiffedText
                       oldText={taskEditSuggestion.oldTask.classification}
                       newText={taskEditSuggestion.newTask.classification}
                     />
-                  </td>
+                  </th>
                 </tr>
                 <tr>
-                  <td scope="col">Why this Task is Important</td>
+                  <th scope="col">Why this Task is Important</th>
                   <td>
                     <DiffedText
                       oldText={trimParagraphTags(taskEditSuggestion.oldTask.whyInfo)}
@@ -183,7 +212,7 @@ export const TaskEditSuggestionsModal = ({
                   </td>
                 </tr>
                 <tr>
-                  <td scope="col">Design Intent</td>
+                  <th scope="col">Design Intent</th>
                   <td>
                     <DiffedText
                       oldText={trimParagraphTags(taskEditSuggestion.oldTask.intentInfo)}
@@ -192,7 +221,7 @@ export const TaskEditSuggestionsModal = ({
                   </td>
                 </tr>
                 <tr>
-                  <td scope="col">Endstate</td>
+                  <th scope="col">Endstate</th>
                   <td>
                     <DiffedText
                       oldText={trimParagraphTags(taskEditSuggestion.oldTask.endstateInfo)}
@@ -201,22 +230,22 @@ export const TaskEditSuggestionsModal = ({
                   </td>
                 </tr>
                 <tr>
-                  <td scope="col">Start Date</td>
-                  <td scope="col">
+                  <th scope="col">Start Date</th>
+                  <th scope="col" aria-label="Start Date">
                     <DiffedText
                       oldText={datetimeToDate(taskEditSuggestion.oldTask.startedDatetime)}
                       newText={datetimeToDate(taskEditSuggestion.newTask.startedDatetime)}
                     />
-                  </td>
+                  </th>
                 </tr>
                 <tr>
-                  <td scope="col">End Date</td>
-                  <td scope="col">
+                  <th scope="col">End Date</th>
+                  <th scope="col" aria-label="End Date">
                     <DiffedText
                       oldText={datetimeToDate(taskEditSuggestion.oldTask.dueDatetime)}
                       newText={datetimeToDate(taskEditSuggestion.newTask.dueDatetime)}
                     />
-                  </td>
+                  </th>
                 </tr>
               </tbody>
             </table>
@@ -231,14 +260,7 @@ export const TaskEditSuggestionsModal = ({
             </Button>
           </Col>
           <Col style={{ display: 'flex' }}>
-            <Button
-              color="danger"
-              style={{ marginLeft: 'auto' }}
-              onClick={() => {
-                dispatch(rejectTaskEditSuggestion(taskEditSuggestion._id));
-                handleToggleTaskEditSuggestionModal();
-              }}
-            >
+            <Button color="danger" style={{ marginLeft: 'auto' }} onClick={rejectTask}>
               Reject
             </Button>
           </Col>
@@ -246,4 +268,4 @@ export const TaskEditSuggestionsModal = ({
       </ModalFooter>
     </Modal>
   );
-};
+}

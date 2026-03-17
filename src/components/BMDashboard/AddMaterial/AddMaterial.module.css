@@ -1,0 +1,271 @@
+.addMaterialForm{
+  width: 100%;
+}
+
+.addMaterialForm Label{
+font-size: .8em;
+}
+
+.addMaterialFlexGroup{
+  display: flex;  
+  gap: 2rem;
+}
+
+.addMaterialButtons{
+  display: flex;
+  gap: 1rem;
+  margin: 1rem auto 2rem;
+}
+
+.addMaterialButtons button{
+  width: 50%;
+}
+
+.addMaterialTotalPrice{
+  display: flex;  
+  border-radius: 10px;
+  line-height: 3rem;
+  font-weight: bolder;
+  background-color: #f5e6e6;
+  padding-left: 1em;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.addMaterialTotalPrice div{
+  width: 50%;
+}
+
+.totalPriceCalculated{
+  text-align: end;
+  padding-right: 1em;
+}
+
+.addMaterialCreatedby{
+  display: flex;  
+  border-radius: 10px;
+  line-height: 3rem;
+  font-weight: bolder;
+  background-color: #add3ef;
+  padding-left: 1em;
+  margin-top: 1em;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.addMaterialCreatedby div{
+  width: 50%;
+}
+
+.createdby{
+  text-align: end;
+  padding-right: 1em;
+}
+
+.filePreviewContainer{
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.materialFormError {
+  font-weight: 500;
+  font-size: 11px !important;
+  color: red;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.fieldRequired{
+  color: red;
+}
+
+@media screen and (max-width: 640px) {
+  .addMaterialFlexGroup {
+    display: block;
+  }
+
+  .filePreviewContainer{
+    display: block;
+  }
+}
+
+.addMaterialContainer{
+  width: 100%;
+  max-width: 800px;
+  margin: 1rem auto;
+  padding: 1rem 2rem;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  background-color: #ffffff;
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+.addMaterialHeader h2{
+ font-size: clamp(1.5rem, 2.5vw, 2.5rem);
+ margin-left: 1rem;
+}
+
+
+@media screen and (max-width: 800px) {
+  .addMaterialContainer {
+    width: 95%;
+  }
+}
+
+.navigationOptions .optionContainer {
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 15px;
+}
+.navigationOptions .optionContainer:hover {
+  background-color: #f8f9fa;
+}
+.navigationOptions h5 {
+  margin-bottom: 8px;
+}
+.navigationOptions p {
+  margin-bottom: 15px;
+  font-size: 0.9rem;
+}
+
+/* ================== DARK MODE STYLES ================== */
+/* Only styles for elements with hardcoded light colors not covered by global BMDashboard styles */
+
+/* Main container - has hardcoded white background */
+:global(.bm-dashboard-dark) .addMaterialContainer {
+  background-color: #1c2541;
+  border-color: #3a506b;
+}
+
+/* Total Price section - has hardcoded pink background (#f5e6e6) */
+:global(.bm-dashboard-dark) .addMaterialTotalPrice {
+  background-color: #2e5061;
+}
+
+:global(.bm-dashboard-dark) .totalPriceCalculated {
+  color: #6af1ea !important;
+}
+
+/* Created by section - has hardcoded light blue background (#add3ef) */
+:global(.bm-dashboard-dark) .addMaterialCreatedby {
+  background-color: #2e5061;
+}
+
+:global(.bm-dashboard-dark) .createdby {
+  color: #6af1ea !important;
+}
+
+/* Navigation modal options - has hardcoded hover color (#f8f9fa) */
+:global(.bm-dashboard-dark) .navigationOptions .optionContainer {
+  background-color: #2e5061;
+  border-color: #3a506b;
+}
+
+:global(.bm-dashboard-dark) .navigationOptions .optionContainer:hover {
+  background-color: #3a506b;
+}
+
+/* DragAndDrop - has hardcoded white background in DragAndDrop.css */
+:global(.bm-dashboard-dark) .addMaterialForm :global(#file-upload-form) :global(#file-upload-label) {
+  background-color: #2e5061 !important;
+  border-color: #5a7a9b !important;
+}
+
+:global(.bm-dashboard-dark) .addMaterialForm :global(#file-upload-form) :global(#file-upload-label.drag-active) {
+  background-color: #3a506b !important;
+}
+
+/* Error messages - red color in dark mode */
+:global(.bm-dashboard-dark) .materialFormError {
+  color: #ff6b6b !important;
+}
+
+:global(.bm-dashboard-dark) .fieldRequired {
+  color: #ff6b6b !important;
+}
+
+/* Select dropdown options - white background when selecting */
+:global(.bm-dashboard-dark) .addMaterialForm select option {
+  background-color: #2e5061 !important;
+  color: #ffffff !important;
+}
+
+/* Browser autocomplete suggestions - white background when selecting */
+:global(.bm-dashboard-dark) .addMaterialForm input:-webkit-autofill,
+:global(.bm-dashboard-dark) .addMaterialForm input:-webkit-autofill:hover,
+:global(.bm-dashboard-dark) .addMaterialForm input:-webkit-autofill:focus,
+:global(.bm-dashboard-dark) .addMaterialForm input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px #2e5061 inset !important;
+  -webkit-text-fill-color: #ffffff !important;
+  caret-color: #ffffff !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Date input - calendar picker dark mode */
+:global(.bm-dashboard-dark) .addMaterialForm input[type="date"] {
+  color-scheme: dark;
+}
+
+:global(.bm-dashboard-dark) .addMaterialForm input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  cursor: pointer;
+}
+
+/* Number input spinner arrows dark mode */
+:global(.bm-dashboard-dark) .addMaterialForm input[type="number"]::-webkit-inner-spin-button,
+:global(.bm-dashboard-dark) .addMaterialForm input[type="number"]::-webkit-outer-spin-button {
+  filter: invert(1);
+}
+
+/* PhoneInput dark mode styling */
+:global(.bm-dashboard-dark) .addMaterialForm :global(.react-tel-input) :global(.form-control) {
+  background-color: #2e5061 !important;
+  color: #ffffff !important;
+  border-color: #3a506b !important;
+}
+
+:global(.bm-dashboard-dark) .addMaterialForm :global(.react-tel-input) :global(.flag-dropdown) {
+  background-color: #2e5061 !important;
+  border-color: #3a506b !important;
+}
+
+:global(.bm-dashboard-dark) .addMaterialForm :global(.react-tel-input) :global(.selected-flag) {
+  background-color: #2e5061 !important;
+}
+
+:global(.bm-dashboard-dark) .addMaterialForm :global(.react-tel-input) :global(.selected-flag):hover,
+:global(.bm-dashboard-dark) .addMaterialForm :global(.react-tel-input) :global(.selected-flag):focus,
+:global(.bm-dashboard-dark) .addMaterialForm :global(.react-tel-input) :global(.selected-flag.open) {
+  background-color: #3a506b !important;
+}
+
+:global(.bm-dashboard-dark) .addMaterialForm :global(.react-tel-input) :global(.country-list) {
+  background-color: #2e5061 !important;
+  color: #ffffff !important;
+  border-color: #3a506b !important;
+}
+
+:global(.bm-dashboard-dark) .addMaterialForm :global(.react-tel-input) :global(.country-list) :global(.country) {
+  background-color: #2e5061 !important;
+}
+
+:global(.bm-dashboard-dark) .addMaterialForm :global(.react-tel-input) :global(.country-list) :global(.country):hover,
+:global(.bm-dashboard-dark) .addMaterialForm :global(.react-tel-input) :global(.country-list) :global(.country.highlight) {
+  background-color: #3a506b !important;
+}
+
+:global(.bm-dashboard-dark) .addMaterialForm :global(.react-tel-input) :global(.country-list) :global(.country-name),
+:global(.bm-dashboard-dark) .addMaterialForm :global(.react-tel-input) :global(.country-list) :global(.dial-code) {
+  color: #ffffff !important;
+}
+
+:global(.bm-dashboard-dark) .addMaterialForm :global(.react-tel-input) :global(.arrow) {
+  border-top-color: #ffffff !important;
+}
+
+:global(.bm-dashboard-dark) .addMaterialForm :global(.react-tel-input) :global(.arrow.up) {
+  border-bottom-color: #ffffff !important;
+  border-top-color: transparent !important;
+}
