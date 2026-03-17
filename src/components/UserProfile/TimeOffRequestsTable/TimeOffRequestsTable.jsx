@@ -26,7 +26,7 @@ const TimeOffRequestsTable = ({requests, openModal, darkMode}) => {
                 <div className={`user-profile-time-off-div-table-entry ${darkMode ? 'bg-space-cadet text-light' : ''}`} key={request._id}>
                   <div className="user-profile-time-off-div-table-entry-icon-tooltip-wrapper">
                     {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
-                    <div className="user-profile-time-off-div-table-entry-icon" onClick={openModal}>
+                    <div className="user-profile-time-off-div-table-entry-icon" onClick={() => openModal(request)}>
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="22"
