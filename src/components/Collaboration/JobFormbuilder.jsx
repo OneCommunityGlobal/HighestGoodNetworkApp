@@ -293,9 +293,10 @@ function JobFormBuilder() {
             </select>
           </div>
         </div>
-        {console.log(role)}
+
         <h1 className={styles.jobformTitle}>JOB FORM BUILDER</h1>
-        {role === 'Owner' || role === 'Administrator' ? (
+
+        {(role === 'Owner' || role === 'Administrator') && (
           <div className={styles.customForm}>
             <p className={styles.jobformDesc}>
               Use this form to create and edit question sets for job applications. Choose a
