@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Container, Form, Button, Card, Alert, Spinner, Modal } from 'react-bootstrap';
 import styles from './BlueskyPostDetails.module.css';
+import PropTypes from 'prop-types';
 
 function formatDate(dateString) {
   const date = new Date(dateString);
@@ -23,16 +24,17 @@ function formatDate(dateString) {
     year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined,
   });
 }
+// ...existing code...
 
 function MediaDisplay({ media }) {
-  if (!media || media.length === 0) return null;
-
+  if (!Array.isArray(media) || media.length === 0) {
+    return null;
+  }
   return (
     <div className={`${styles['post-media']} mt-2`}>
       {media.map(item => {
         // Generate a unique key based on the media URL or thumb URL
         const mediaKey = item.url || item.thumb;
-
         if (item.type === 'image') {
           return (
             <div key={mediaKey} className={`${styles['image-container']} p-3`}>
@@ -112,6 +114,17 @@ function MediaDisplay({ media }) {
     </div>
   );
 }
+MediaDisplay.propTypes = {
+  media: PropTypes.arrayOf(
+    PropTypes.shape({
+      type: PropTypes.string.isRequired,
+      url: PropTypes.string,
+      thumb: PropTypes.string,
+      alt: PropTypes.string,
+      title: PropTypes.string,
+    }),
+  ),
+};
 
 function BlueskyPostDetails() {
   const [handle, setHandle] = useState('');
@@ -140,7 +153,7 @@ function BlueskyPostDetails() {
         setIsConnected(true);
         setHandle(result.handle || '');
         // Don't set password as it's not sent back from server
-        if (!status) setStatus('✅ Connected to Bluesky');
+        if (status === '') setStatus('✅ Connected to Bluesky');
       } else {
         setIsConnected(false);
         if (isConnected) setStatus('Session expired. Please reconnect.');
@@ -181,44 +194,33 @@ function BlueskyPostDetails() {
     setIsDragging(false);
 
     const { files } = e.dataTransfer;
-    if (files && files.length > 0) {
-      const file = files[0];
-      if (file.type.startsWith('image/')) {
-        const isGif = file.type === 'image/gif';
-        if (file.size > (isGif ? 5000000 : 1000000)) {
-          // 5MB for GIFs, 1MB for other images
-          setStatus(
-            `❌ ${isGif ? 'GIF' : 'Image'} size must be less than ${isGif ? '5MB' : '1MB'}`,
-          );
-          return;
-        }
-        setSelectedImage(file);
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setImagePreview(reader.result);
-        };
-        reader.readAsDataURL(file);
-      } else {
-        setStatus('❌ Only image files are allowed');
-      }
+    if (!files || files.length === 0) return;
+    const file = files[0];
+    handleImageFile(file);
+  };
+
+  const handleImageFile = file => {
+    if (!file.type.startsWith('image/')) {
+      setStatus('❌ Only image files are allowed');
+      return;
     }
+    const isGif = file.type === 'image/gif';
+    if (file.size > (isGif ? 5000000 : 1000000)) {
+      setStatus(`❌ ${isGif ? 'GIF' : 'Image'} size must be less than ${isGif ? '5MB' : '1MB'}`);
+      return;
+    }
+    setSelectedImage(file);
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result);
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleImageSelect = e => {
     const file = e.target.files[0];
     if (file) {
-      const isGif = file.type === 'image/gif';
-      if (file.size > (isGif ? 5000000 : 1000000)) {
-        // 5MB for GIFs, 1MB for other images
-        setStatus(`❌ ${isGif ? 'GIF' : 'Image'} size must be less than ${isGif ? '5MB' : '1MB'}`);
-        return;
-      }
-      setSelectedImage(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result);
-      };
-      reader.readAsDataURL(file);
+      handleImageFile(file);
     }
   };
 
@@ -419,7 +421,8 @@ function BlueskyPostDetails() {
 
   const viewPost = uri => {
     try {
-      if (!uri || !uri.startsWith('at://')) {
+      if (typeof uri !== 'string' || !uri.startsWith('at://')) {
+        setStatus('Invalid URI');
         return;
       }
 
@@ -428,6 +431,7 @@ function BlueskyPostDetails() {
 
       const didMatch = uri.match(/at:\/\/(did:[^/]+)/);
       if (!didMatch) {
+        setStatus('Invalid DID');
         return;
       }
 
@@ -435,7 +439,7 @@ function BlueskyPostDetails() {
       const url = `https://bsky.app/profile/${did}/post/${rkey}`;
       window.open(url, '_blank');
     } catch (error) {
-      setStatus(`${error.message}`);
+      setStatus(`View post error: ${error.message}`);
     }
   };
 
@@ -553,6 +557,8 @@ function BlueskyPostDetails() {
                   onClick={clearImage}
                   className="position-absolute"
                   style={{ top: '5px', right: '5px' }}
+                  aria-label="Remove image preview"
+                  tabIndex={0}
                 >
                   ✖ Remove
                 </Button>
@@ -594,7 +600,7 @@ function BlueskyPostDetails() {
                   <Card key={post.cid} className="mb-3">
                     <Card.Body>
                       <Card.Text>{post.text}</Card.Text>
-                      <MediaDisplay media={post.media} />
+                      <MediaDisplay media={post?.media} />
                       <div className="d-flex justify-content-between align-items-center text-muted small">
                         <div>
                           <span>
