@@ -35,8 +35,32 @@ function Announcements({ title, email: initialEmail }) {
   };
 
   const validateEmail = email => {
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return re.test(email);
+    if (typeof email !== 'string') {
+      return false;
+    }
+
+    const trimmedEmail = email.trim();
+    const atIndex = trimmedEmail.indexOf('@');
+    const lastAtIndex = trimmedEmail.lastIndexOf('@');
+
+    if (
+      atIndex <= 0 ||
+      atIndex !== lastAtIndex ||
+      atIndex === trimmedEmail.length - 1 ||
+      trimmedEmail.includes(' ')
+    ) {
+      return false;
+    }
+
+    const localPart = trimmedEmail.slice(0, atIndex);
+    const domainPart = trimmedEmail.slice(atIndex + 1);
+    const domainLabels = domainPart.split('.');
+
+    if (localPart === '' || domainLabels.length < 2 || domainLabels.some(label => label === '')) {
+      return false;
+    }
+
+    return true;
   };
 
   const handleEmailListChange = e => {
