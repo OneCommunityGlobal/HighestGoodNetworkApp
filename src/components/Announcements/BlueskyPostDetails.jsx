@@ -83,14 +83,6 @@ function UploadDropZone({
   onDrop,
   onFileChange,
 }) {
-  const openFilePicker = () => fileInputRef.current?.click();
-  const handleKeyDown = event => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      openFilePicker();
-    }
-  };
-
   return (
     <div
       ref={dropZoneRef}
@@ -99,11 +91,6 @@ function UploadDropZone({
       onDragOver={onDragOver}
       onDragLeave={onDragLeave}
       onDrop={onDrop}
-      onClick={openFilePicker}
-      onKeyDown={handleKeyDown}
-      role="button"
-      tabIndex={0}
-      aria-label="Upload an image by dragging a file here or choosing one from your device"
       style={{
         border: `2px dashed ${isDragging ? '#0d6efd' : '#dee2e6'}`,
         borderRadius: '4px',
@@ -120,9 +107,9 @@ function UploadDropZone({
           type="file"
           accept="image/*"
           onChange={onFileChange}
-          onClick={event => event.stopPropagation()}
           style={{ maxWidth: '300px' }}
           className="mb-2"
+          aria-label="Upload an image from your device"
         />
         <small className="text-muted">Max file size: 1MB (5MB for GIFs)</small>
       </div>
@@ -368,7 +355,11 @@ function BlueskyPostDetails() {
       );
     } catch (error) {
       setIsConnected(false);
-      setStatus(`${ERROR_PREFIX} Unable to verify the current Bluesky session.`);
+      const errorMessage =
+        error instanceof Error && error.message
+          ? error.message
+          : 'Unable to verify the current Bluesky session.';
+      setStatus(`${ERROR_PREFIX} ${errorMessage}`);
     }
   };
 
