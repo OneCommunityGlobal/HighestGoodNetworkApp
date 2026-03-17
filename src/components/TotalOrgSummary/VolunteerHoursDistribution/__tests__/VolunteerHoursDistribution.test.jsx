@@ -38,12 +38,12 @@ describe('VolunteerHoursDistribution wrapper', () => {
     // legend/list should render counts as well
     expect(screen.getByText('10-19.99 hrs (2)')).toBeInTheDocument();
 
-    // verify computeDistribution helper produces expected output
+    // verify computeDistribution now allocates hours to buckets so slices add up to total hours
     const computed = computeDistribution(hoursData, totalHoursData);
     expect(computed).toEqual({
       userData: [
-        { name: '10', value: 2, percentage: 40 },
-        { name: '20', value: 3, percentage: 60 },
+        { name: '10', value: 494, percentage: 40 },
+        { name: '20', value: 740, percentage: 60 },
       ],
       totalVolunteers: 5,
       totalHoursWorked: 1234,

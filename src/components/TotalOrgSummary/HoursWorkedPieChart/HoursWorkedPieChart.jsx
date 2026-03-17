@@ -76,7 +76,7 @@ export default function HoursWorkedPieChart({ userData, windowSize, colors, tota
               renderCustomizedLabel({
                 ...props,
                 totalHours: displayTotalHours,
-                title: 'TOTAL HOURS',
+                title: 'TOTAL HOURS WORKED',
               })
             }
             innerRadius={innerRadius}
@@ -87,7 +87,7 @@ export default function HoursWorkedPieChart({ userData, windowSize, colors, tota
             {Array.isArray(userData) &&
               userData.length > 0 &&
               userData.map((entry, index) => (
-                <Cell key={`cell-${entry.value}`} fill={colors[index % colors.length]} />
+                <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
               ))}
           </Pie>
           <Tooltip content={<CustomTooltip tooltipType="hoursDistribution" />} />

@@ -31,7 +31,7 @@ import '../Header/index.css';
 import styles from './TotalOrgSummary.module.css';
 import { clsx } from 'clsx';
 import VolunteerHoursDistribution, {
-  formatRangeLabel,
+  mergeHoursBuckets,
 } from './VolunteerHoursDistribution/VolunteerHoursDistribution';
 import AccordianWrapper from './AccordianWrapper/AccordianWrapper';
 import VolunteerStatus from './VolunteerStatus/VolunteerStatus';
@@ -695,14 +695,14 @@ function TotalOrgSummary(props) {
                   <div className="d-flex flex-column align-items-center justify-content-center">
                     <NumbersVolunteerWorked
                       isLoading={isLoading}
-                      data={volunteerStats?.volunteersOverAssignedTime}
+                      data={{
+                        count: mergeHoursBuckets(volunteerStats?.volunteerHoursStats).reduce(
+                          (sum, bucket) => sum + (Number(bucket?.count) || 0),
+                          0,
+                        ),
+                      }}
                       totalVolunteers={volunteerStats?.volunteerNumberStats?.totalVolunteers?.count}
-                      rangeText={
-                        volunteerStats?.volunteerHoursStats &&
-                        volunteerStats.volunteerHoursStats.length > 0
-                          ? formatRangeLabel(volunteerStats.volunteerHoursStats[0]._id)
-                          : '1+ hours'
-                      }
+                      rangeText="1+ hours"
                       darkMode={darkMode}
                     />
                   </div>
