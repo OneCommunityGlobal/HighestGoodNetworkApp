@@ -198,7 +198,9 @@ const TeamMemberTasks = React.memo(props => {
         .subtract(Number.parseInt(selectedPeriod), 'days')
         .format('YYYY-MM-DD');
 
-      const xDaysList = usersWithTimeEntries.filter(entry => moment(entry.dateOfWork).isAfter(xDaysAgo));
+      const xDaysList = usersWithTimeEntries.filter(entry =>
+        moment(entry.dateOfWork).isAfter(xDaysAgo),
+      );
       setTimeEntriesList(xDaysList);
     }
 
