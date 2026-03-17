@@ -84,8 +84,9 @@ function UploadDropZone({
   onFileChange,
 }) {
   return (
-    <div
+    <label
       ref={dropZoneRef}
+      htmlFor="bluesky-image-upload"
       className={`${styles['drop-zone']} mb-3 p-4 text-center ${isDragging ? styles.dragging : ''}`}
       onDragEnter={onDragEnter}
       onDragOver={onDragOver}
@@ -104,6 +105,7 @@ function UploadDropZone({
         <p className="mb-2">Drag and drop an image here, or</p>
         <Form.Control
           ref={fileInputRef}
+          id="bluesky-image-upload"
           type="file"
           accept="image/*"
           onChange={onFileChange}
@@ -113,7 +115,7 @@ function UploadDropZone({
         />
         <small className="text-muted">Max file size: 1MB (5MB for GIFs)</small>
       </div>
-    </div>
+    </label>
   );
 }
 
