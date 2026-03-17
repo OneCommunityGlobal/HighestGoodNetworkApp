@@ -1,7 +1,7 @@
 // Bluesky Post Details Component
 import { useState, useEffect, useRef } from 'react';
 import { Container, Form, Button, Card, Alert, Spinner, Modal } from 'react-bootstrap';
-import './BlueskyPostDetails.css';
+import styles from './BlueskyPostDetails.module.css';
 
 function formatDate(dateString) {
   const date = new Date(dateString);
@@ -28,24 +28,24 @@ function MediaDisplay({ media }) {
   if (!media || media.length === 0) return null;
 
   return (
-    <div className="post-media mt-2">
+    <div className={`${styles['post-media']} mt-2`}>
       {media.map(item => {
         // Generate a unique key based on the media URL or thumb URL
         const mediaKey = item.url || item.thumb;
 
         if (item.type === 'image') {
           return (
-            <div key={mediaKey} className="image-container p-3">
+            <div key={mediaKey} className={`${styles['image-container']} p-3`}>
               <button
                 type="button"
-                className="media-button"
+                className={styles['media-button']}
                 onClick={() => window.open(item.url, '_blank')}
                 aria-label={`View full size ${item.alt || 'post image'}`}
               >
                 <img
                   src={item.thumb}
                   alt={item.alt || 'Post image'}
-                  className="media-item"
+                  className={styles['media-item']}
                   loading="lazy"
                 />
               </button>
@@ -54,8 +54,13 @@ function MediaDisplay({ media }) {
         }
         if (item.type === 'video') {
           return (
-            <div key={mediaKey} className="video-container">
-              <video controls poster={item.thumb} className="media-item" preload="metadata">
+            <div key={mediaKey} className={styles['video-container']}>
+              <video
+                controls
+                poster={item.thumb}
+                className={styles['media-item']}
+                preload="metadata"
+              >
                 <source src={item.url} type="video/mp4" />
                 <track kind="captions" label="Captions" src="" default />
                 Your browser does not support the video tag.
@@ -66,17 +71,17 @@ function MediaDisplay({ media }) {
         }
         if (item.type === 'gif') {
           return (
-            <div key={mediaKey} className="gif-container" id={`gif-${mediaKey}`}>
+            <div key={mediaKey} className={styles['gif-container']} id={`gif-${mediaKey}`}>
               <div className="position-relative">
                 <button
                   type="button"
-                  className="media-button"
+                  className={styles['media-button']}
                   onClick={() => {
                     // Replace thumbnail with actual GIF on click
                     const img = document.createElement('img');
                     img.src = item.url;
                     img.alt = item.title || 'GIF';
-                    img.className = 'media-item';
+                    img.className = styles['media-item'];
                     const container = document.getElementById(`gif-${mediaKey}`);
                     if (container) {
                       container.innerHTML = '';
@@ -88,13 +93,13 @@ function MediaDisplay({ media }) {
                   <img
                     src={item.thumb || item.url}
                     alt={item.title || 'GIF'}
-                    className="media-item"
+                    className={styles['media-item']}
                     loading="lazy"
                   />
                 </button>
                 {item.thumb && (
-                  <div className="gif-overlay">
-                    <span className="gif-badge">GIF</span>
+                  <div className={styles['gif-overlay']}>
+                    <span className={styles['gif-badge']}>GIF</span>
                   </div>
                 )}
               </div>
@@ -449,7 +454,7 @@ function BlueskyPostDetails() {
   };
 
   return (
-    <Container className="bluesky-post-details">
+    <Container className={styles['bluesky-post-details']}>
       <h2 className="mb-4">🔵 Bluesky Manager</h2>
       {!isConnected ? (
         <Card className="p-3">
@@ -497,7 +502,9 @@ function BlueskyPostDetails() {
             {/* Drag & Drop Image Upload */}
             <div
               ref={dropZoneRef}
-              className={`drop-zone mb-3 p-4 text-center ${isDragging ? 'dragging' : ''}`}
+              className={`${styles['drop-zone']} mb-3 p-4 text-center ${
+                isDragging ? styles.dragging : ''
+              }`}
               onDragEnter={handleDragEnter}
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
@@ -652,14 +659,3 @@ function BlueskyPostDetails() {
 }
 
 export default BlueskyPostDetails;
-
-<style jsx>{`
-  .drop-zone.dragging {
-    transform: scale(1.02);
-  }
-
-  .drop-zone:hover {
-    border-color: #0d6efd !important;
-    background-color: rgba(13, 110, 253, 0.05);
-  }
-`}</style>;
