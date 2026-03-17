@@ -154,6 +154,27 @@ function HoursWorkList({ data, darkMode }) {
 // export HoursWorkList separately for testing
 export { HoursWorkList };
 
+// shared helper: derives normalizedHoursData, userData, and totals from raw API data
+function buildChartData(hoursData, totalHoursData) {
+  const normalizedHoursData = mergeHoursBuckets(hoursData);
+  const totalVolunteers = normalizedHoursData.reduce((total, cur) => total + (cur.count || 0), 0);
+  const totalHoursWorked = Number(totalHoursData?.current ?? totalHoursData?.count ?? 0);
+  const hoursByBucket = allocateRoundedHoursByCount(normalizedHoursData, totalHoursWorked);
+  const totalAllocatedHours = hoursByBucket.reduce(
+    (sum, bucket) => sum + (bucket.allocatedHours || 0),
+    0,
+  );
+  const userData = hoursByBucket.map(range => {
+    const value = range.allocatedHours || 0;
+    return {
+      name: range._id,
+      value,
+      percentage: totalAllocatedHours ? Math.round((value / totalAllocatedHours) * 100) : 0,
+    };
+  });
+  return { normalizedHoursData, userData, totalVolunteers, totalHoursWorked };
+}
+
 export default function VolunteerHoursDistribution({
   isLoading,
   darkMode,
@@ -189,28 +210,10 @@ export default function VolunteerHoursDistribution({
     );
   }
 
-  // total volunteers is sum of all merged bucket counts
-  const normalizedHoursData = mergeHoursBuckets(hoursData);
-  const totalVolunteers = normalizedHoursData.reduce((total, cur) => total + (cur.count || 0), 0);
-
-  // the pie chart center should show total hours worked (comes from totalHoursData.current)
-  const totalHoursWorked = Number(totalHoursData?.current ?? totalHoursData?.count ?? 0);
-
-  const hoursByBucket = allocateRoundedHoursByCount(normalizedHoursData, totalHoursWorked);
-  const totalAllocatedHours = hoursByBucket.reduce(
-    (sum, bucket) => sum + (bucket.allocatedHours || 0),
-    0,
+  const { normalizedHoursData, userData, totalHoursWorked } = buildChartData(
+    hoursData,
+    totalHoursData,
   );
-
-  const userData = hoursByBucket.map(range => {
-    const value = range.allocatedHours || 0;
-    return {
-      name: range._id,
-      value,
-      // percentage of hours in this bucket (rounded)
-      percentage: totalAllocatedHours ? Math.round((value / totalAllocatedHours) * 100) : 0,
-    };
-  });
 
   return (
     <div
@@ -231,22 +234,7 @@ export default function VolunteerHoursDistribution({
 
 // computeDistribution: pure helper to derive the chart payload from API data
 export function computeDistribution(hoursData, totalHoursData) {
-  const normalizedHoursData = mergeHoursBuckets(hoursData);
-  const totalVolunteers = normalizedHoursData.reduce((total, cur) => total + (cur.count || 0), 0);
-  const totalHoursWorked = Number(totalHoursData?.current ?? totalHoursData?.count ?? 0);
-  const hoursByBucket = allocateRoundedHoursByCount(normalizedHoursData, totalHoursWorked);
-  const totalAllocatedHours = hoursByBucket.reduce(
-    (sum, bucket) => sum + (bucket.allocatedHours || 0),
-    0,
-  );
-  const userData = hoursByBucket.map(range => {
-    const value = range.allocatedHours || 0;
-    return {
-      name: range._id,
-      value,
-      percentage: totalAllocatedHours ? Math.round((value / totalAllocatedHours) * 100) : 0,
-    };
-  });
+  const { userData, totalVolunteers, totalHoursWorked } = buildChartData(hoursData, totalHoursData);
   return { userData, totalVolunteers, totalHoursWorked };
 }
 
