@@ -1091,12 +1091,12 @@ const WeeklySummariesReport = props => {
           ) {
             return false;
           }
-        //   if (!isLastWeek) {
-        //     return false; // Skip inactive members unless their summary is from last week
-        //   }
-        // }
-        // If this user has an endDate, only include them when you're on their final week tab
-        // If this user has an endDate, only include them when you're on their final week tab
+          //   if (!isLastWeek) {
+          //     return false; // Skip inactive members unless their summary is from last week
+          //   }
+          // }
+          // If this user has an endDate, only include them when you're on their final week tab
+          // If this user has an endDate, only include them when you're on their final week tab
           if (summary.endDate) {
             if (summary.finalWeekIndex !== weekIndex) return false;
           }
@@ -1112,8 +1112,7 @@ const WeeklySummariesReport = props => {
             !selectedOverTime ||
             (summary.weeklycommittedHours > 0 &&
               hoursLogged > 0 &&
-              hoursLogged >=
-                summary.promisedHoursByWeek[navItems.indexOf(activeTab)] * 1.25);
+              hoursLogged >= summary.promisedHoursByWeek[navItems.indexOf(activeTab)] * 1.25);
 
           // Trophy logic
           const summarySubmissionDate = moment()

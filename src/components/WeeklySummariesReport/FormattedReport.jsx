@@ -80,7 +80,6 @@ const teamColorMap = {
   navy: '10 Hour Team',
 };
 
-
 function ListGroupItem({ children, darkMode }) {
   return <LGI className={`px-0 border-0 py-1 ${darkMode ? 'bg-yinmn-blue' : ''}`}>{children}</LGI>;
 }
