@@ -193,36 +193,54 @@ export function ProjectPieChart({ userData, windowSize, darkMode }) {
     setShowAllValues(!showAllValues);
   };
 
-  // Responsive circle size - smaller on mobile for more label space
+  // Responsive circle size - much smaller on mobile
   let circleSize = 30;
   if (windowSize <= 400) {
-    circleSize = 15; // Much smaller on mobile
+    circleSize = -30; // Very small on small mobile (outerRadius = 90)
+  } else if (windowSize <= 576) {
+    circleSize = -15; // Small on mobile (outerRadius = 105)
   } else if (windowSize <= 640) {
-    circleSize = 20;
+    circleSize = 0; // Medium on large mobile (outerRadius = 120)
   } else if (windowSize <= 1280) {
     circleSize = windowSize / 10 * 0.5;
   }
 
   // Responsive container dimensions - constrain on mobile
-  const containerWidth = windowSize <= 400 ? 320 : windowSize <= 640 ? 380 : 640;
-  const containerHeight = windowSize <= 400 ? 400 : windowSize <= 640 ? 460 : 640;
-  const containerMinHeight = 350;
+  const containerWidth = windowSize <= 400 ? 300 : windowSize <= 576 ? 340 : windowSize <= 640 ? 380 : 640;
+  const containerHeight = windowSize <= 400 ? 350 : windowSize <= 576 ? 400 : windowSize <= 640 ? 460 : 640;
+  const containerMinHeight = 280;
 
   // Text offset based on screen size - much smaller for mobile
-  const textOffset = windowSize <= 400 ? 35 : windowSize <= 500 ? 45 : windowSize <= 640 ? 60 : 85;
+  const textOffset = windowSize <= 400 ? 25 : windowSize <= 576 ? 35 : windowSize <= 640 ? 50 : 85;
   
   // Font size based on screen
   const fontSize = windowSize <= 400 ? 10 : windowSize <= 640 ? 11 : 13;
   const lineStrokeWidth = windowSize <= 400 ? 1 : 1.5;
 
+  // Inline styles for mobile responsiveness (replacing CSS media queries)
+  const buttonContainerStyle = {
+    position: 'absolute',
+    top: windowSize <= 400 ? '52%' : windowSize <= 576 ? '55%' : '60%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    zIndex: 10,
+    pointerEvents: 'auto',
+  };
+
+  const switchWrapperStyle = {
+    transform: windowSize <= 400 ? 'scale(0.75)' : windowSize <= 576 ? 'scale(0.85)' : 'scale(1)',
+  };
+
   return (
     <div className={`position-relative ${darkMode ? 'text-light' : ''} h-100`}>
-      <div className="button-container">
-        <TwoWayToggleSwitch
-          id={switchId}
-          isOn={showAllValues} 
-          handleToggle={toggleShowAllValues} 
-        />
+      <div style={buttonContainerStyle}>
+        <div style={switchWrapperStyle}>
+          <TwoWayToggleSwitch
+            id={switchId}
+            isOn={showAllValues} 
+            handleToggle={toggleShowAllValues} 
+          />
+        </div>
       </div>
       <ResponsiveContainer maxWidth={containerWidth} maxHeight={containerHeight} minWidth={280} minHeight={containerMinHeight}>
         <PieChart>
@@ -253,7 +271,7 @@ export function ProjectPieChart({ userData, windowSize, darkMode }) {
                     const centerY = cy;
                     
                     // Calculate available vertical space
-                    const availableHeight = windowSize <= 400 ? 320 : windowSize <= 640 ? 380 : 480;
+                    const availableHeight = windowSize <= 400 ? 280 : windowSize <= 576 ? 320 : windowSize <= 640 ? 380 : 480;
                     const topBound = centerY - availableHeight / 2;
                     const botBound = centerY + availableHeight / 2;
                     

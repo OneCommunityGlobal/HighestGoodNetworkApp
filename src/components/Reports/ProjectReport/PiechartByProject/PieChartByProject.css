@@ -53,3 +53,88 @@
 .dark-mode .switchContainer {
   color: white; /* Text in switch container in dark mode */
 }
+
+/* Mobile responsive styles */
+@media (max-width: 768px) {
+  .pie-chart-title {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .pie-chart-description {
+    flex-direction: column;
+    padding: 0 10px;
+  }
+  
+  .pie-chart-description label {
+    font-size: 14px;
+    padding-right: 0.5rem !important;
+  }
+  
+  .pie-chart-description p {
+    font-size: 13px;
+    margin-bottom: 0.25rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .pie-chart-title h4 {
+    font-size: 18px;
+  }
+  
+  .pie-chart-title h5 {
+    font-size: 14px;
+  }
+  
+  .pie-chart-description {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0 8px;
+  }
+  
+  .pie-chart-description label {
+    font-size: 12px;
+    display: block;
+    margin-bottom: 8px;
+  }
+  
+  .pie-chart-checkbox {
+    margin-left: 0;
+    transform: scale(1.1);
+  }
+  
+  .pie-chart-description p {
+    font-size: 11px;
+    margin-bottom: 0.2rem;
+  }
+  
+  /* Adjust toggle switch section for mobile */
+  .switchSection {
+    width: 100%;
+  }
+  
+  .switchContainer {
+    flex-direction: column !important;
+    gap: 8px;
+    padding: 10px 0;
+  }
+  
+  .switchContainer p {
+    font-size: 12px;
+    margin: 0;
+  }
+}
+
+@media (max-width: 400px) {
+  .pie-chart-title h4 {
+    font-size: 16px;
+  }
+  
+  .pie-chart-description label {
+    font-size: 11px;
+  }
+  
+  .pie-chart-description p {
+    font-size: 10px;
+  }
+}

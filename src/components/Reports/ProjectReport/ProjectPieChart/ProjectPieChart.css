@@ -7,3 +7,24 @@
   z-index: 10;
   pointer-events: auto;
 }
+
+/* Mobile responsive styles */
+@media (max-width: 576px) {
+  .button-container {
+    top: 55%;
+  }
+  
+  .button-container > div {
+    transform: scale(0.85);
+  }
+}
+
+@media (max-width: 400px) {
+  .button-container {
+    top: 52%;
+  }
+  
+  .button-container > div {
+    transform: scale(0.75);
+  }
+}
