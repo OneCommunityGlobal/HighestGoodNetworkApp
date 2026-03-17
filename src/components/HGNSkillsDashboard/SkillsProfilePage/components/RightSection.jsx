@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
-import ProfileDetails from './ProfileDetails';
-import Skills from './Skills';
-import RadarChart from './RadarChart';
-import FrontendSkills from './FrontendSkills';
+import styles from '../styles/RightSection.module.css';
+import AdditionalInfo from './AdditionalInfo';
 import BackendSkills from './BackendSkills';
 import DeploymentSkills from './DeploymentSkills';
+import FrontendSkills from './FrontendSkills';
+import ProfileDetails from './ProfileDetails';
+import RadarChart from './RadarChart';
+import Skills from './Skills';
 import SoftwarePractices from './SoftwarePractices';
-import AdditionalInfo from './AdditionalInfo';
-import styles from '../styles/RightSection.module.css';
 
 /* function RightSection({ profileData }) { */
 function RightSection() {
@@ -25,7 +25,7 @@ function RightSection() {
   const renderContent = () => {
     switch (selectedSkill) {
       case 'Dashboard':
-        return <RadarChart profileData={profileData} />;
+        return <RadarChart key={selectedSkill} profileData={profileData} />;
       case 'Frontend':
         return <FrontendSkills profileData={profileData} />;
       case 'Backend':
@@ -35,7 +35,7 @@ function RightSection() {
       case 'Software Practices':
         return <SoftwarePractices profileData={profileData} />;
       default:
-        return <RadarChart profileData={profileData} />;
+        return <RadarChart key={selectedSkill} profileData={profileData} />;
     }
   };
 

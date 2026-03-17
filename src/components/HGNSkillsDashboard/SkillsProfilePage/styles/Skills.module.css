@@ -33,6 +33,18 @@
   color: #168dc0;
 }
 
+@media (width <= 1100px) {
+  .skills {
+    width: 100%;
+    align-items: center;
+  }
+
+  .skills button {
+    width: 100%;
+    max-width: 460px;
+  }
+}
+
 @media (width <= 768px) {
   .skills {
     width: 100%;
@@ -61,5 +73,6 @@
 }
 
 :global(.dark-mode) .skills button.selected {
-  color: #8ab4f8;
+  color: #3ea0cb;
+  font-weight: 600;
 }
