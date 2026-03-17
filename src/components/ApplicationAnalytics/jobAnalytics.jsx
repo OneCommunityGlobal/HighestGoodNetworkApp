@@ -1,8 +1,8 @@
 import { useState, useMemo } from 'react';
 import { v4 as uuidv4 } from 'uuid';
+import { useSelector } from 'react-redux';
 import getJobAnalyticsData from './api';
 import styles from './jobAnalytics.module.css';
-import { useSelector } from 'react-redux';
 
 function JobAnalytics() {
   const [dateFilter, setDateFilter] = useState('all');
@@ -20,9 +20,7 @@ function JobAnalytics() {
 
         switch (dateFilter) {
           case 'weekly':
-            if (daysAgo <= 7) {
-              return true;
-            }
+            if (daysAgo <= 7) return true;
             return false;
           case 'monthly':
             return daysAgo <= 30;
@@ -59,53 +57,75 @@ function JobAnalytics() {
 
   const maxApplications = Math.max(...processedData.map(item => item.applications), 10);
 
+  const xAxisTicks = useMemo(() => {
+    const ticks = [0];
+    let value = 5;
+    while (value < maxApplications) {
+      ticks.push(value);
+      value += 5;
+    }
+    if (maxApplications > 0 && ticks[ticks.length - 1] !== maxApplications) {
+      ticks.push(maxApplications);
+    }
+    return ticks;
+  }, [maxApplications]);
+
   return (
-    <div className={`${darkMode ? styles.jobAnalyticsContainerDarkMode : ''}`}>
-      <div className={`${styles.jobAnalyticsContainer}`}>
-        <div className={`${styles.chartContainer}`}>
-          <h2 className={`${styles.chartTitle}`}>Least Popular Roles</h2>
-          <div className={`${styles.chartArea}`}>
+    <div className={darkMode ? styles.jobAnalyticsContainerDarkMode : ''}>
+      <div className={styles.jobAnalyticsContainer}>
+        <div className={styles.chartContainer}>
+          <h2 className={styles.chartTitle}>Least Popular Roles</h2>
+          <div
+            className={styles.chartArea}
+            style={
+              processedData.length > 0
+                ? { '--x-grid-divisions': String(Math.max(1, xAxisTicks.length - 1)) }
+                : undefined
+            }
+          >
             {processedData.length > 0 ? (
               <>
-                <div className={`${styles.gridLines}`} />
-                <div className={`${styles.yAxis}`}>
+                <div className={styles.gridLines} />
+                <div className={styles.yAxis}>
                   {processedData.map(item => (
-                    <div key={uuidv4()} className={`${styles.yAxisLabel}`}>
+                    <div key={uuidv4()} className={styles.yAxisLabel}>
                       {item.role}
                     </div>
                   ))}
                 </div>
-                <div className={`${styles.xAxis}`}>
-                  {[0, 5, 10, 15, 20, 25].map(tick => (
+                <div className={styles.xAxis}>
+                  {xAxisTicks.map(tick => (
                     <div
                       key={tick}
-                      className={`{${styles.xAxisTick}`}
-                      style={{ left: `${(tick / maxApplications) * 100}%` }}
+                      className={styles.xAxisTick}
+                      style={{
+                        left: `${(tick / maxApplications) * 100}%`,
+                        transform: 'translateX(-50%)',
+                      }}
                     >
-                      {tick <= maxApplications ? tick : ''}
+                      {tick}
                     </div>
                   ))}
                 </div>
-                <div className={`${styles.barsContainer}`}>
+                <div className={styles.barsContainer}>
                   {processedData.map((item, index) => (
                     <div
                       key={uuidv4()}
-                      className={`${styles.barRow}`}
+                      className={styles.barRow}
                       onMouseEnter={() => setHoveredBar(index)}
                       onMouseLeave={() => setHoveredBar(null)}
                     >
                       <div
-                        className={`${styles.bar}`}
+                        className={styles.bar}
                         style={{
                           width: `${(item.applications / maxApplications) * 100}%`,
                         }}
                       >
-                        <div className={`${styles.dataLabel}`}>{item.applications}</div>
+                        <div className={styles.dataLabel}>{item.applications}</div>
                       </div>
-
                       {hoveredBar === index && (
-                        <div className={`${styles.tooltip}`}>
-                          <div className={`${styles.tooltipTitle}`}>
+                        <div className={styles.tooltip}>
+                          <div className={styles.tooltipTitle}>
                             <strong>{item.role}</strong>
                           </div>
                           <div>Applications: {item.applications}</div>
@@ -114,15 +134,15 @@ function JobAnalytics() {
                       )}
                     </div>
                   ))}
-                  <div className={`${styles.xAxisLabel}`}>Applications</div>
                 </div>
+                <div className={styles.xAxisLabel}>Applications</div>
               </>
             ) : (
-              <div className={`${styles.noData}`}>No data available for the selected filters</div>
+              <div className={styles.noData}>No data available for the selected filters</div>
             )}
           </div>
           {processedData.length > 0 && (
-            <div className={`${styles.summaryInfo}`}>
+            <div className={styles.summaryInfo}>
               <div>
                 <strong>Showing:</strong> {processedData.length} role(s)
               </div>
@@ -137,15 +157,13 @@ function JobAnalytics() {
             </div>
           )}
         </div>
-        <div className={`${styles.filtersPanel}`}>
-          <div className={`${styles.filterGroup}`}>
-            <div className={`${styles.filterLabel}`}>Dates</div>
+        <div className={styles.filtersPanel}>
+          <div className={styles.filterGroup}>
+            <div className={styles.filterLabel}>Dates</div>
             <select
               value={dateFilter}
-              onChange={e => {
-                setDateFilter(e.target.value);
-              }}
-              className={`${styles.filterSelectJobAnalytics}`}
+              onChange={e => setDateFilter(e.target.value)}
+              className={styles.filterSelectJobAnalytics}
             >
               <option value="all">ALL</option>
               <option value="weekly">Last 7 Days</option>
@@ -153,14 +171,12 @@ function JobAnalytics() {
               <option value="yearly">Last Year</option>
             </select>
           </div>
-          <div className={`${styles.filterGroup}`}>
-            <div className={`${styles.filterLabel}`}>Role</div>
+          <div className={styles.filterGroup}>
+            <div className={styles.filterLabel}>Role</div>
             <select
               value={selectedRole}
-              onChange={e => {
-                setSelectedRole(e.target.value);
-              }}
-              className={`${styles.filterSelectJobAnalytics}`}
+              onChange={e => setSelectedRole(e.target.value)}
+              className={styles.filterSelectJobAnalytics}
             >
               {roles.map(role => (
                 <option key={role} value={role}>
