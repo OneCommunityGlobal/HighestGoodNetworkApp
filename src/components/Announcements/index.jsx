@@ -88,13 +88,15 @@ function Announcements({ title, email: initialEmail }) {
     if (file) {
       const reader = new FileReader();
       reader.onload = event => {
+        const result = event.target?.result;
+        if (typeof result !== 'string') {
+          toast.error('Error: Unable to read the uploaded image.');
+          return;
+        }
+
         if (tinymce.current) {
           const content = tinymce.current.getContent();
-          const imgSrc =
-            typeof event.target.result === 'string'
-              ? event.target.result
-              : String(event.target.result);
-          tinymce.current.setContent(content + `<img src="${imgSrc}" alt="Uploaded Image" />`);
+          tinymce.current.setContent(content + `<img src="${result}" alt="Uploaded Image" />`);
         }
         setIsFileUploaded(true);
       };
