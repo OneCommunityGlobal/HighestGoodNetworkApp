@@ -11,7 +11,6 @@ package-lock.json
 
 # misc
 .DS_Store
-.eslintcache
 
 # Environment files
 .env
