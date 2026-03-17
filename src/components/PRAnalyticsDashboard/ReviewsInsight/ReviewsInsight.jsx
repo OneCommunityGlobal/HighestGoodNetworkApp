@@ -4,6 +4,7 @@ import Select from 'react-select';
 import sharedStyles from './ReviewsInsight.module.css';
 import ActionDoneGraph from './ActionDoneGraph';
 import PRQualityGraph from './PRQualityGraph';
+import ReviewVolumeOverTimeChart from './ReviewVolumeOverTimeChart';
 import { fetchReviewsInsights } from '../../../actions/prAnalytics/reviewsInsightsAction';
 import { getAllTeamCode } from '../../../actions/allTeamsAction';
 
@@ -234,6 +235,14 @@ function ReviewsInsight() {
           />
         </div>
       )}
+
+      {/* Reviews Section - Always visible */}
+      <div className={`${styles.reviewsSection} ${darkMode ? styles.darkModeForeground : ''}`}>
+        <h2 className={`${styles.sectionTitle} ${darkMode ? styles.darkModeForeground : ''}`}>
+          Reviews
+        </h2>
+        <ReviewVolumeOverTimeChart />
+      </div>
     </div>
   );
 }

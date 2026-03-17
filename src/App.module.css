@@ -201,6 +201,18 @@ nav ul.navbar-nav li:last-child > div {
   color-scheme: dark;
 }
 
+/* Native date picker calendar popup dark mode support */
+input[type="date"].calendar-icon-dark,
+input.darkInput[type="date"] {
+  color-scheme: dark !important;
+}
+
+/* Ensure native calendar popup uses dark theme when parent is dark */
+.darkContainer input[type="date"],
+.chartContainer.darkContainer input[type="date"] {
+  color-scheme: dark !important;
+}
+
 .top {
   text-decoration: none;
   padding: 10px;
