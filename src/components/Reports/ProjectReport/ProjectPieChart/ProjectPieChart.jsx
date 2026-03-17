@@ -99,7 +99,7 @@ const generateRandomHexColor = () => {
   return hexColor;
 }
 
-const renderActiveShape = (props, darkMode, showAllValues, accumulatedValues) => {
+const renderActiveShape = (props, darkMode, showAllValues, accumulatedValues, windowSize) => {
   const hexColor = generateRandomHexColor()
   const RADIAN = Math.PI / 180;
   const { cx, cy, midAngle, innerRadius, outerRadius, startAngle, endAngle, fill, payload, percent, value } = props;
@@ -132,11 +132,11 @@ const renderActiveShape = (props, darkMode, showAllValues, accumulatedValues) =>
         </>
       ) : (
         <>
-        <text x={cx} y={cy} dy={-30} textAnchor="middle" fill={darkMode ? 'white' : fill}>
-          All Members
+        <text x={cx} y={cy} dy={windowSize <= 400 ? -20 : -25} textAnchor="middle" fill={darkMode ? 'white' : fill} fontSize={windowSize <= 400 ? (showAllValues ? 11 : 10) : (showAllValues ? 14 : 12)}>
+          {showAllValues ? 'All' : 'Selected'}
         </text>
-        <text x={cx} y={cy} dy={0} textAnchor="middle" fill={darkMode ? 'white' : fill}>
-          Total hrs: {payload.totalHoursCalculated?.toFixed(2) || 0}
+        <text x={cx} y={cy} dy={windowSize <= 400 ? -8 : -10} textAnchor="middle" fill={darkMode ? 'white' : fill} fontSize={windowSize <= 400 ? (showAllValues ? 9 : 8) : (showAllValues ? 12 : 10)}>
+          {showAllValues ? `${payload.totalHoursCalculated?.toFixed(0) || 0}h` : `${accumulatedValues?.toFixed(1) || 0}h`}
         </text>
         </>
       )}
@@ -193,42 +193,55 @@ export function ProjectPieChart({ userData, windowSize, darkMode }) {
     setShowAllValues(!showAllValues);
   };
 
-  // Responsive circle size - much smaller on mobile
+  // Responsive circle size - adjusted for mobile to prevent center text cutoff
   let circleSize = 30;
   if (windowSize <= 400) {
-    circleSize = -30; // Very small on small mobile (outerRadius = 90)
+    circleSize = -45; // Smaller pie on small mobile (outerRadius = 75, innerRadius = 15)
   } else if (windowSize <= 576) {
-    circleSize = -15; // Small on mobile (outerRadius = 105)
+    circleSize = -35; // Smaller pie on mobile (outerRadius = 85, innerRadius = 25)
   } else if (windowSize <= 640) {
-    circleSize = 0; // Medium on large mobile (outerRadius = 120)
+    circleSize = 0; // Medium on large mobile (outerRadius = 120, innerRadius = 60)
   } else if (windowSize <= 1280) {
     circleSize = windowSize / 10 * 0.5;
   }
 
   // Responsive container dimensions - constrain on mobile
-  const containerWidth = windowSize <= 400 ? 300 : windowSize <= 576 ? 340 : windowSize <= 640 ? 380 : 640;
-  const containerHeight = windowSize <= 400 ? 350 : windowSize <= 576 ? 400 : windowSize <= 640 ? 460 : 640;
+  const containerWidth = windowSize <= 400 ? 280 : windowSize <= 576 ? 320 : windowSize <= 640 ? 380 : 640;
+  const containerHeight = windowSize <= 400 ? 320 : windowSize <= 576 ? 380 : windowSize <= 640 ? 460 : 640;
   const containerMinHeight = 280;
 
   // Text offset based on screen size - much smaller for mobile
-  const textOffset = windowSize <= 400 ? 25 : windowSize <= 576 ? 35 : windowSize <= 640 ? 50 : 85;
+  // Reduced to prevent text from being cut off at container edges
+  const textOffset = windowSize <= 400 ? 10 : windowSize <= 576 ? 20 : windowSize <= 640 ? 50 : 85;
   
   // Font size based on screen
   const fontSize = windowSize <= 400 ? 10 : windowSize <= 640 ? 11 : 13;
   const lineStrokeWidth = windowSize <= 400 ? 1 : 1.5;
 
   // Inline styles for mobile responsiveness (replacing CSS media queries)
+  // Button should be centered in the pie chart (cx=50%, cy=50% of container)
   const buttonContainerStyle = {
     position: 'absolute',
-    top: windowSize <= 400 ? '52%' : windowSize <= 576 ? '55%' : '60%',
+    top: '50%', // Always center vertically in container
     left: '50%',
     transform: 'translate(-50%, -50%)',
     zIndex: 10,
     pointerEvents: 'auto',
   };
 
+  // Button scale: smaller when selected (showAllValues=false) to fit in smaller inner radius
+  const getSwitchScale = () => {
+    if (windowSize <= 400) {
+      return showAllValues ? 0.55 : 0.45;
+    } else if (windowSize <= 576) {
+      return showAllValues ? 0.65 : 0.55;
+    }
+    return 1;
+  };
+  
   const switchWrapperStyle = {
-    transform: windowSize <= 400 ? 'scale(0.75)' : windowSize <= 576 ? 'scale(0.85)' : 'scale(1)',
+    transform: `scale(${getSwitchScale()})`,
+    transition: 'transform 0.2s ease',
   };
 
   return (
@@ -246,7 +259,7 @@ export function ProjectPieChart({ userData, windowSize, darkMode }) {
         <PieChart>
           <Pie
             activeIndex={activeIndices}
-            activeShape={(props) => renderActiveShape(props, darkMode, showAllValues, accumulatedValues)}
+            activeShape={(props) => renderActiveShape(props, darkMode, showAllValues, accumulatedValues, windowSize)}
             data={aggregatedData}
             cx="50%"
             cy="50%"
@@ -299,10 +312,10 @@ export function ProjectPieChart({ userData, windowSize, darkMode }) {
                       // Generate text based on screen size - shorter for mobile
                       let text;
                       if (windowSize <= 400) {
-                        // Very small screens: minimal text
+                        // Very small screens: show only hours to prevent cutoff
                         text = d.isOthers 
                           ? d.name 
-                          : `${d.name.substring(0, 6)} ${d.value.toFixed(0)}h`;
+                          : `${d.value.toFixed(1)}h`;
                       } else if (windowSize <= 640) {
                         // Mobile: shorter text
                         text = d.isOthers

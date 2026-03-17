@@ -207,6 +207,11 @@ export function PieChartByProject({
 
   }, [mergedProjectUsersArray,showMembers])
 
+  // Detect screen size for responsive styling
+  const isMobile = windowSize.width <= 576;
+  const isTablet = windowSize.width <= 768 && windowSize.width > 576;
+  const isSmallMobile = windowSize.width <= 400;
+
   return (
     <div className={`${darkMode ? 'text-light' : ''} w-100`}>
       <div 
@@ -295,7 +300,7 @@ export function PieChartByProject({
         </div>)}
 
       </div>
-        {isChecked && (<div style={{ width: '100%', height: windowSize.width <= 400 ? '22rem' : windowSize.width <= 576 ? '26rem' : '32rem' }}>
+        {isChecked && (<div style={{ width: '100%', height: windowSize.width <= 400 ? '20rem' : windowSize.width <= 576 ? '24rem' : '32rem' }}>
         <ProjectPieChart userData={totalHours > 0 ? userData : noDataPlaceholder} windowSize={windowSize.width} darkMode={darkMode} />
       </div>)}
 
