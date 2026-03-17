@@ -4,9 +4,9 @@
   max-width: 700px;
   margin: 40px auto;
   padding: 30px;
-  background-color: #ffffff;
+  background-color: #fff;
   border-radius: 16px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 10px 25px rgb(0 0 0 / 8%);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   transition: all 0.3s ease;
 }
@@ -33,7 +33,7 @@
 .bluesky-post-details textarea:focus {
   outline: none;
   border-color: #409eff;
-  background-color: #ffffff;
+  background-color: #fff;
 }
 
 .bluesky-post-details button {
@@ -67,7 +67,7 @@
   aspect-ratio: 16 / 9;
   overflow: hidden;
   border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 10px rgb(0 0 0 / 8%);
   margin-bottom: 20px;
 }
 
@@ -93,18 +93,18 @@
   outline-offset: 2px;
 }
 
+.media-item {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .media-button .media-item {
   cursor: inherit;
 }
 
 .media-button:hover .media-item {
   transform: none;
-}
-
-.media-item {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
 }
 
 .video-container video {
@@ -124,10 +124,19 @@
 .gif-badge {
   display: inline-block;
   padding: 3px 8px;
-  background: rgba(0, 0, 0, 0.75);
+  background: rgb(0 0 0 / 75%);
   color: #fff;
   border-radius: 4px;
   font-size: 13px;
   font-weight: bold;
   letter-spacing: 0.5px;
+}
+
+.drop-zone.dragging {
+  transform: scale(1.02);
+}
+
+.drop-zone:hover {
+  border-color: #0d6efd !important;
+  background-color: rgb(13 110 253 / 5%);
 }
