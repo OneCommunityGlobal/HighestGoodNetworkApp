@@ -189,14 +189,14 @@ const TeamMemberTasks = React.memo(props => {
     handleOpenTaskNotificationModal();
   };
 
-  const getTimeEntriesForPeriod = async (selectedPeriod) => {
-    if(isNaN(parseInt(selectedPeriod))) {
+  const getTimeEntriesForPeriod = async selectedPeriod => {
+    if (Number.isNaN(Number.parseInt(selectedPeriod))) {
       setTimeEntriesList([]);
     } else {
-    const xDaysAgo = moment()
-      .tz('America/Los_Angeles')
-      .subtract(parseInt(selectedPeriod), 'days')
-      .format('YYYY-MM-DD');
+      const xDaysAgo = moment()
+        .tz('America/Los_Angeles')
+        .subtract(Number.parseInt(selectedPeriod), 'days')
+        .format('YYYY-MM-DD');
 
       const xDaysList = usersWithTimeEntries.filter(entry => moment(entry.dateOfWork).isAfter(xDaysAgo));
       setTimeEntriesList(xDaysList);
