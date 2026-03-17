@@ -23,24 +23,34 @@ function Announcements({ title, email: initialEmail }) {
   const [emailContent, setEmailContent] = useState('');
   const [emailList, setEmailList] = useState([]);
 
+  useEffect(() => {
+    setShowEditor(false);
+    setTimeout(() => setShowEditor(true), 0);
+  }, [darkMode]);
+
   const editorInit = {
     height: 500,
     menubar: false,
     plugins: 'lists link image code',
-    toolbar: 'bold italic underline | bullist numlist | link image | code'
+    toolbar: 'bold italic underline | bullist numlist | link image | code',
   };
 
-  const validateEmail = (email) => {
+  const validateEmail = email => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return re.test(email);
   };
 
-  const handleEmailListChange = (e) => {
+  const handleEmailListChange = e => {
     const value = e.target.value;
     setEmailTo(value);
-    setEmailList(value.split(',').map(email => email.trim()).filter(email => email));
+    setEmailList(
+      value
+        .split(',')
+        .map(email => email.trim())
+        .filter(email => email),
+    );
   };
-  const handleHeaderContentChange = (e) => setHeaderContent(e.target.value);
+  const handleHeaderContentChange = e => setHeaderContent(e.target.value);
 
   const handleSendEmails = () => {
     const htmlContent = `
@@ -74,48 +84,21 @@ function Announcements({ title, email: initialEmail }) {
     }
   };
 
-  const addImageToEmailContent = (e) => {
+  const addImageToEmailContent = e => {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = (event) => {
+      reader.onload = event => {
         if (tinymce.current) {
           const content = tinymce.current.getContent();
-          tinymce.current.setContent(content + `<img src="${event.target.result}" alt="Uploaded Image" />`);
+          tinymce.current.setContent(
+            content + `<img src="${event.target.result}" alt="Uploaded Image" />`,
+          );
         }
         setIsFileUploaded(true);
       };
       reader.readAsDataURL(file);
     }
-  };
-<<<<<<< HEAD
-=======
-
-    if (!isFileUploaded) {
-      toast.error('Error: Please upload a file.');
-      return;
-    }
-
-    const invalidEmails = emailList.filter(address => !validateEmail(address.trim()));
-
-    if (invalidEmails.length > 0) {
-      toast.error(`Error: Invalid email addresses: ${invalidEmails.join(', ')}`);
-      return;
-    }
-
-    dispatch(
-      sendEmail(emailList.join(','), title ? 'Anniversary congrats' : 'Weekly update', htmlContent),
-    );
-  };
-
-  const handleBroadcastEmails = () => {
-    const htmlContent = `
-      <div style="max-width: 900px; width: 100%; margin: auto;">
-      ${emailContent}      
-      </div>
-      `;
-    dispatch(broadcastEmailsToAll('Weekly Update', htmlContent));
->>>>>>> 10b5d7951 (Final commit before schedule_post feature)
   };
 
   return (
@@ -146,7 +129,7 @@ function Announcements({ title, email: initialEmail }) {
                 onEditorChange={content => {
                   setEmailContent(content);
                 }}
-                onInit={(evt, editor) => tinymce.current = editor}
+                onInit={(evt, editor) => (tinymce.current = editor)}
               />
             )}
             {title ? (
