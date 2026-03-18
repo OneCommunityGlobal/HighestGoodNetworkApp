@@ -237,7 +237,11 @@ function RadarChart({ profileData, compact = true, onSkillsDataReady }) {
       {
         label: 'Skills',
         data: skillsData.map(skill => skill.score),
-        backgroundColor: compact ? 'rgba(133,146,226,0.35)' : 'rgba(62,160,203,0.2)',
+        backgroundColor: darkMode
+          ? 'rgba(133,146,226,0.25)'
+          : compact
+          ? 'rgba(133,146,226,0.35)'
+          : 'rgba(62,160,203,0.2)',
         borderColor: compact ? 'rgba(110,125,215,0.9)' : 'rgba(62,160,203,1)',
         borderWidth: compact ? 2 : 3,
         pointBackgroundColor: compact ? 'rgba(110,125,215,0.95)' : 'rgba(62,160,203,1)',
@@ -314,7 +318,7 @@ function RadarChart({ profileData, compact = true, onSkillsDataReady }) {
   };
 
   return (
-    <div className={`${styles.radarChart} ${darkMode ? 'dark-mode' : ''}`}>
+    <div className={styles.radarChart}>
       <Radar data={chartData} options={chartOptions} />
     </div>
   );

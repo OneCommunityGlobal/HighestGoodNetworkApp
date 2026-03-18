@@ -50,19 +50,16 @@
   }
 }
 
-:global(.dark-mode) .leftSection {
-  color: #e5e7eb !important;
-}
-
 :global(.dark-mode) .leftSection .userName {
-  color: #1f2937 !important;
+  color: #f9fafb !important;
 }
 
 :global(.dark-mode) .leftSection .jobTitle {
-  color: #4b5563 !important;
+  color: #f9fafb !important;
 }
 
 :global(.dark-mode) .leftSection {
+  color: #e5e7eb !important;
   background: linear-gradient(135deg, #2a2f3e 0%, #1e2330 100%);
   border-color: #3a4a5a;
 }
