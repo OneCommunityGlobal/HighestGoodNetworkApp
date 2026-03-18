@@ -132,6 +132,18 @@ function WeeklyProjectSummary() {
   const [openSections, setOpenSections] = useState({});
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const darkMode = useSelector(state => state.theme.darkMode);
+  // Ensure the page is scrollable — some global CSS sets body/html overflow:hidden
+  useEffect(() => {
+    const prevBody = document.body.style.overflowY;
+    const prevHtml = document.documentElement.style.overflowY;
+    document.body.style.overflowY = 'auto';
+    document.documentElement.style.overflowY = 'auto';
+    return () => {
+      document.body.style.overflowY = prevBody;
+      document.documentElement.style.overflowY = prevHtml;
+    };
+  }, []);
+
   useEffect(() => {
     if (materials.length === 0) {
       dispatch(fetchAllMaterials());
