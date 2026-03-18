@@ -347,30 +347,42 @@ function ReviewVolumeOverTimeChart({ darkMode }) {
 
   const selectStyles = useMemo(
     () => ({
-      control: (provided, state) => ({
-        ...provided,
-        backgroundColor: darkMode ? '#020617' : '#ffffff',
-        borderColor: darkMode ? '#374151' : '#d1d5db',
-        color: darkMode ? '#e5e7eb' : '#111827',
-        minHeight: 36,
-        borderRadius: 8,
-        boxShadow: 'none',
-        '&:hover': {
-          borderColor: darkMode ? '#6b7280' : '#9ca3af',
-        },
-        // remove any white outline when focused
-        ...(state.isFocused
-          ? {
-              borderColor: darkMode ? '#3b82f6' : '#2563eb',
-              boxShadow: '0 0 0 1px rgba(37,99,235,0.6)',
-            }
-          : {}),
-      }),
-      menu: provided => ({
-        ...provided,
-        backgroundColor: darkMode ? '#020617' : '#ffffff',
-        borderColor: darkMode ? '#374151' : '#e5e7eb',
-      }),
+      control: (provided, state) => {
+        const isDark = darkMode;
+        const baseStyles = {
+          ...provided,
+          backgroundColor: isDark ? '#020617' : '#ffffff',
+          borderColor: isDark ? '#374151' : '#d1d5db',
+          color: isDark ? '#e5e7eb' : '#111827',
+          minHeight: 36,
+          borderRadius: 8,
+          boxShadow: 'none',
+          '&:hover': {
+            borderColor: isDark ? '#6b7280' : '#9ca3af',
+          },
+        };
+
+        if (!state.isFocused) {
+          return baseStyles;
+        }
+
+        return {
+          ...baseStyles,
+          borderColor: isDark ? '#3b82f6' : '#2563eb',
+          boxShadow: '0 0 0 1px rgba(37,99,235,0.6)',
+        };
+      },
+      menu: provided => {
+        const isDark = darkMode;
+        const backgroundColor = isDark ? '#020617' : '#ffffff';
+        const borderColor = isDark ? '#374151' : '#e5e7eb';
+
+        return {
+          ...provided,
+          backgroundColor,
+          borderColor,
+        };
+      },
       container: provided => ({
         ...provided,
         width: '100%',
