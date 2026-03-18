@@ -265,12 +265,15 @@ function parseSelectedDate(value, FORMAT) {
     return undefined;
   }
 }
+let datePickerCounter = 0;
 
 function DateInput({ id, ariaLabel, placeholder, value, onChange, disabled, darkMode }) {
   const FORMAT = 'MM/dd/yy';
   const [isOpen, setIsOpen] = React.useState(false);
 
-  const inputBgColor = disabled ? '#e9ecef' : darkMode ? '#1e2b4a' : 'white';
+const darkModeColor = darkMode ? '#1e2b4a' : 'white';
+const inputBgColor = disabled ? '#e9ecef' : darkModeColor;
+const popupShadow = darkMode ? '0 4px 12px rgba(0, 0, 0, 0.5)' : '0 2px 8px rgba(0,0,0,0.15)';
   
   const selectedDate = parseSelectedDate(value, FORMAT);
 
@@ -282,8 +285,8 @@ function DateInput({ id, ariaLabel, placeholder, value, onChange, disabled, dark
     }
   };
 
-  // Generate unique class names
-  const datePickerClass = `custom-datepicker-${Math.random().toString(36).substring(2, 11)}`;
+  // eslint-disable-next-line no-plusplus
+  const datePickerClass = `custom-datepicker-${++datePickerCounter}`;
 
   return (
     <div style={{ position: 'relative' }}>
@@ -312,9 +315,7 @@ function DateInput({ id, ariaLabel, placeholder, value, onChange, disabled, dark
             overflow: 'auto', 
             zIndex: 9999, 
             backgroundColor: darkMode ? '#1a2639' : 'white', 
-            boxShadow: darkMode 
-              ? '0 4px 12px rgba(0, 0, 0, 0.5)' 
-              : '0 2px 8px rgba(0,0,0,0.15)', 
+            boxShadow: popupShadow,
             borderRadius: '4px',
             border: darkMode ? '1px solid #2d3a5a' : 'none'
           }}
@@ -472,7 +473,6 @@ function AddTaskModal(props) {
   const [modal, setModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [newTaskNum, setNewTaskNum] = useState('1');
-  const [dateWarning, setDateWarning] = useState(false);
   const [hoursWarning, setHoursWarning] = useState(false);
   const [showReplicateConfirm, setShowReplicateConfirm] = useState(false);
   const [isReplicating, setIsReplicating] = useState(false);
@@ -633,22 +633,6 @@ function AddTaskModal(props) {
     setAssigned(true);
   };
 
-  const formatDate = (date, format, locale) => dateFnsFormat(date, format, { locale });
-
-  const parseDate = (str, format, locale) => {
-    // Allow empty string for partial typing
-    if (!str || str.trim() === '') return undefined;
-    
-    try {
-      const parsed = dateFnsParse(str, format, new Date(), { locale });
-      if (isValid(parsed)) {
-        return parsed;
-      }
-    } catch (error) {
-      // Return undefined for invalid dates while typing
-    }
-    return undefined;
-  };
 
   const validateDateFormat = (dateString) => {
     if (!dateString || dateString.trim() === '') return true;
@@ -746,22 +730,24 @@ function AddTaskModal(props) {
 
   // Validate date formats when dates change
   useEffect(() => {
-    if (startedDate) {
-      const isValidFormat = validateDateFormat(startedDate);
-      setStartDateFormatError(!isValidFormat);
-    } else {
-      setStartDateFormatError(false);
-    }
-  }, [startedDate]);
+  if (startedDate) {
+    const isValidFormat = validateDateFormat(startedDate);
+    setStartDateFormatError(!isValidFormat);
+  } else {
+    setStartDateFormatError(false);
+  }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [startedDate]);
 
-  useEffect(() => {
-    if (dueDate) {
-      const isValidFormat = validateDateFormat(dueDate);
-      setEndDateFormatError(!isValidFormat);
-    } else {
-      setEndDateFormatError(false);
-    }
-  }, [dueDate]);
+useEffect(() => {
+  if (dueDate) {
+    const isValidFormat = validateDateFormat(dueDate);
+    setEndDateFormatError(!isValidFormat);
+  } else {
+    setEndDateFormatError(false);
+  }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [dueDate]);
 
   const addLink = () => {
     setLinks([...links, link]);
@@ -863,6 +849,7 @@ function AddTaskModal(props) {
       setNewTaskNum(getNewNum());
     }
     // setNewTaskNum(getNewNum());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [modal, tasksList.length, props.taskId, props.level, props.taskNum]);
 
   useEffect(() => {
@@ -877,6 +864,7 @@ function AddTaskModal(props) {
     } else {
       clear();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [error, tasksList.length]);
 
   useEffect(() => {
@@ -895,6 +883,7 @@ function AddTaskModal(props) {
           // Fetch for this project whenever modal opens (or project changes)
           props.fetchAllMembers(props.projectId ?? '');
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
       }, [modal, props.projectId]);
 
   useEffect(() => {
@@ -908,6 +897,7 @@ function AddTaskModal(props) {
     if (!categoryKnownFromProjectById && !categoryKnownFromAllProjects) {
       props.getProjectDetail(props.projectId);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [modal, props.projectId, projectById, projectsList]);
 
   useEffect(() => {
