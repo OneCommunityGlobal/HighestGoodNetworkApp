@@ -29,10 +29,10 @@ function RightSection() {
           <div className={styles.dashboardWrapper}>
             <SkillSummaryCards skillsData={skillsData} />
 
-            <RadarChart 
+            <RadarChart
               key={selectedSkill}
-              profileData={profileData} 
-              onSkillsDataReady={setSkillsData} 
+              profileData={profileData}
+              onSkillsDataReady={setSkillsData}
             />
           </div>
         );

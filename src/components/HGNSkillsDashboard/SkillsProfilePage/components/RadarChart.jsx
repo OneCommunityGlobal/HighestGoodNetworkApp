@@ -288,7 +288,7 @@ function RadarChart({ profileData, compact = true, onSkillsDataReady }) {
 
         pointLabels: {
           font: {
-            size: function (context) {
+            size: function(context) {
               const w = context.chart.width;
               if (w < 340) return 8;
               if (w < 480) return 9;
@@ -299,14 +299,14 @@ function RadarChart({ profileData, compact = true, onSkillsDataReady }) {
           },
           color: darkMode ? '#ccc' : compact ? '#333' : '#222',
           padding: compact ? 10 : 15,
-          callback: function (value) {
+          callback: function(value) {
             if (window.innerWidth < 600 && value.length > 15) {
               return value.substring(0, 12) + '...';
             }
             return value;
           },
         },
-      }
+      },
     },
     plugins: {
       legend: { display: false },
