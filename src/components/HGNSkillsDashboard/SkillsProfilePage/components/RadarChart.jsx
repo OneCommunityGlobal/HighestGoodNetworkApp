@@ -1,15 +1,16 @@
-import { Radar } from 'react-chartjs-2';
-import { useSelector } from 'react-redux';
 import {
   Chart as ChartJS,
-  RadialLinearScale,
-  PointElement,
-  LineElement,
   Filler,
-  Tooltip,
   Legend,
+  LineElement,
+  PointElement,
+  RadialLinearScale,
+  Tooltip,
 } from 'chart.js';
-import { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import { useEffect, useState } from 'react';
+import { Radar } from 'react-chartjs-2';
+import { useSelector } from 'react-redux';
 import styles from '../styles/RadarChart.module.css';
 
 ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
@@ -246,16 +247,6 @@ function RadarChart({ profileData, compact = true }) {
     ],
   };
 
-  const customTooltipPlugin = {
-    id: 'customTooltip',
-    afterDraw: chart => {
-      const tooltip = chart.tooltip;
-      if (tooltip && tooltip.opacity === 0) {
-        return;
-      }
-    },
-  };
-
   const chartOptions = {
     responsive: true,
     maintainAspectRatio: true,
@@ -264,10 +255,18 @@ function RadarChart({ profileData, compact = true }) {
       r: {
         angleLines: {
           display: true,
-          color: compact ? 'rgba(0,0,0,0.08)' : 'rgba(0, 0, 0, 0.1)',
+          color: darkMode
+            ? 'rgba(255,255,255,0.15)'
+            : compact
+            ? 'rgba(0,0,0,0.08)'
+            : 'rgba(0,0,0,0.1)',
         },
         grid: {
-          color: compact ? 'rgba(0,0,0,0.08)' : 'rgba(0, 0, 0, 0.1)',
+          color: darkMode
+            ? 'rgba(255,255,255,0.15)'
+            : compact
+            ? 'rgba(0,0,0,0.08)'
+            : 'rgba(0,0,0,0.1)',
         },
         pointLabels: {
           font: {
@@ -281,7 +280,7 @@ function RadarChart({ profileData, compact = true }) {
             },
             weight: '500',
           },
-          color: compact ? '#555' : '#333',
+          color: darkMode ? '#ccc' : compact ? '#333' : '#222',
           padding: compact ? 10 : 15,
           callback: function(value, index) {
             // Truncate long labels on small screens
@@ -355,5 +354,16 @@ function RadarChart({ profileData, compact = true }) {
     </div>
   );
 }
+
+RadarChart.propTypes = {
+  profileData: PropTypes.shape({
+    skillInfo: PropTypes.shape({
+      general: PropTypes.object,
+      frontend: PropTypes.object,
+      backend: PropTypes.object,
+    }),
+  }),
+  compact: PropTypes.bool,
+};
 
 export default RadarChart;
