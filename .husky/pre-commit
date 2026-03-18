@@ -1,10 +1,14 @@
 #!/bin/sh
 # Load nvm if available
+# Try to load nvm (non-blocking)
 export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-# Use Node 20 if available (or install if needed)
-if [ -f .nvmrc ]; then
-  nvm use 20 2>/dev/null || nvm install 20 && nvm use 20
+
+if [ -s "$NVM_DIR/nvm.sh" ]; then
+  . "$NVM_DIR/nvm.sh"
+  nvm use >/dev/null 2>&1
+  echo "Using Node via nvm"
+else
+  echo "nvm not available, using system Node"
 fi
 
 echo ""
