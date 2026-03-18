@@ -14,9 +14,15 @@ import {
 import styles from './LossTrackingLineChart.module.css';
 
 const colors = {
-  2022: '#008080',
-  2023: '#ff69b4',
-  2024: '#ffd700',
+  '2022-Metal': '#008080',
+  '2022-Plastic': '#20b2aa',
+  '2022-Glass': '#48d1cc',
+  '2023-Metal': '#ff69b4',
+  '2023-Plastic': '#ff1493',
+  '2023-Glass': '#db7093',
+  '2024-Metal': '#ffd700',
+  '2024-Plastic': '#ffa500',
+  '2024-Glass': '#ff8c00',
 };
 
 const rawData = [
@@ -33,6 +39,42 @@ const rawData = [
     ],
   },
   {
+    year: 2022,
+    material: 'Plastic',
+    data: [
+      { date: '2022-01', month: 'Jan', value: 8 },
+      { date: '2022-02', month: 'Feb', value: 11 },
+      { date: '2022-03', month: 'Mar', value: 14 },
+      { date: '2022-04', month: 'Apr', value: 13 },
+      { date: '2022-05', month: 'May', value: 9 },
+      { date: '2022-06', month: 'Jun', value: 7 },
+    ],
+  },
+  {
+    year: 2022,
+    material: 'Glass',
+    data: [
+      { date: '2022-01', month: 'Jan', value: 6 },
+      { date: '2022-02', month: 'Feb', value: 9 },
+      { date: '2022-03', month: 'Mar', value: 12 },
+      { date: '2022-04', month: 'Apr', value: 11 },
+      { date: '2022-05', month: 'May', value: 8 },
+      { date: '2022-06', month: 'Jun', value: 5 },
+    ],
+  },
+  {
+    year: 2023,
+    material: 'Metal',
+    data: [
+      { date: '2023-01', month: 'Jan', value: 11 },
+      { date: '2023-02', month: 'Feb', value: 14 },
+      { date: '2023-03', month: 'Mar', value: 19 },
+      { date: '2023-04', month: 'Apr', value: 17 },
+      { date: '2023-05', month: 'May', value: 13 },
+      { date: '2023-06', month: 'Jun', value: 8 },
+    ],
+  },
+  {
     year: 2023,
     material: 'Plastic',
     data: [
@@ -42,6 +84,42 @@ const rawData = [
       { date: '2023-04', month: 'Apr', value: 14 },
       { date: '2023-05', month: 'May', value: 10 },
       { date: '2023-06', month: 'Jun', value: 6 },
+    ],
+  },
+  {
+    year: 2023,
+    material: 'Glass',
+    data: [
+      { date: '2023-01', month: 'Jan', value: 7 },
+      { date: '2023-02', month: 'Feb', value: 10 },
+      { date: '2023-03', month: 'Mar', value: 15 },
+      { date: '2023-04', month: 'Apr', value: 13 },
+      { date: '2023-05', month: 'May', value: 11 },
+      { date: '2023-06', month: 'Jun', value: 8 },
+    ],
+  },
+  {
+    year: 2024,
+    material: 'Metal',
+    data: [
+      { date: '2024-01', month: 'Jan', value: 13 },
+      { date: '2024-02', month: 'Feb', value: 17 },
+      { date: '2024-03', month: 'Mar', value: 16 },
+      { date: '2024-04', month: 'Apr', value: 15 },
+      { date: '2024-05', month: 'May', value: 13 },
+      { date: '2024-06', month: 'Jun', value: 10 },
+    ],
+  },
+  {
+    year: 2024,
+    material: 'Plastic',
+    data: [
+      { date: '2024-01', month: 'Jan', value: 9 },
+      { date: '2024-02', month: 'Feb', value: 13 },
+      { date: '2024-03', month: 'Mar', value: 12 },
+      { date: '2024-04', month: 'Apr', value: 11 },
+      { date: '2024-05', month: 'May', value: 10 },
+      { date: '2024-06', month: 'Jun', value: 8 },
     ],
   },
   {
@@ -57,7 +135,6 @@ const rawData = [
     ],
   },
 ];
-
 const DEFAULTS = { material: 'All', year: 'All', startDate: '', endDate: '' };
 
 export default function LossTrackingLineChart() {
@@ -123,20 +200,19 @@ export default function LossTrackingLineChart() {
     });
   }, [material, year]);
 
-  const mergedData = {};
-
-  filteredLines.forEach(line => {
-    line.data.forEach(({ date, month, value }) => {
-      const withinRange = (!startDate || date >= startDate) && (!endDate || date <= endDate);
-
-      if (withinRange) {
-        if (!mergedData[month]) mergedData[month] = { month };
-        mergedData[month][line.year] = value;
-      }
+  const chartData = useMemo(() => {
+    const merged = {};
+    filteredLines.forEach(line => {
+      line.data.forEach(({ date, month, value }) => {
+        const withinRange = (!startDate || date >= startDate) && (!endDate || date <= endDate);
+        if (withinRange) {
+          if (!merged[month]) merged[month] = { month };
+          merged[month][`${line.year}-${line.material}`] = value;
+        }
+      });
     });
-  });
-
-  const chartData = Object.values(mergedData);
+    return Object.values(merged);
+  }, [filteredLines, startDate, endDate]);
 
   const isDefaultFilters =
     material === DEFAULTS.material &&
@@ -144,6 +220,7 @@ export default function LossTrackingLineChart() {
     startDate === DEFAULTS.startDate &&
     endDate === DEFAULTS.endDate;
 
+  const isDateRangeValid = !startDate || !endDate || startDate <= endDate;
   const handleReset = () => {
     setMaterial(DEFAULTS.material);
     setYear(DEFAULTS.year);
@@ -194,6 +271,12 @@ export default function LossTrackingLineChart() {
           <button className={styles.resetBtn} onClick={handleReset} disabled={isDefaultFilters}>
             Reset Filters
           </button>
+
+          {!isDateRangeValid && (
+            <span className={styles.dateRangeError}>
+              Start date must be before or equal to end date.
+            </span>
+          )}
         </div>
 
         <div className={styles.chartWrapper}>
@@ -234,13 +317,14 @@ export default function LossTrackingLineChart() {
                 />
                 {filteredLines.map(line => (
                   <Line
-                    key={String(line.year)}
+                    key={`${line.year}-${line.material}`}
                     type="monotone"
-                    dataKey={line.year}
-                    stroke={colors[line.year]}
+                    dataKey={`${line.year}-${line.material}`}
+                    stroke={colors[`${line.year}-${line.material}`]}
                     strokeWidth={2}
                     dot={{ r: 3 }}
                     activeDot={{ r: 5 }}
+                    name={`${line.year} - ${line.material}`}
                   />
                 ))}
               </LineChart>

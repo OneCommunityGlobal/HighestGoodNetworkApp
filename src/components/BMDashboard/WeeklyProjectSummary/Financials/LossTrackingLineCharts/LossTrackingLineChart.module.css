@@ -159,6 +159,15 @@
   box-shadow: none;
 }
 
+/* Date range validation error — spans full grid width */
+.dateRangeError {
+  grid-column: 1 / -1;
+  color: #e53935;
+  font-size: 0.82rem;
+  font-weight: 500;
+  padding: 0.15rem 0.1rem;
+}
+
 /* Optional: on very narrow screens, make the button full width to match stacked inputs */
 @media (max-width: 768px) {
   .resetBtn { justify-self: stretch; }
