@@ -2419,10 +2419,13 @@ const WeeklySummariesReport = props => {
       <Row className={styles['mx-max-sm-0']}>
         <style>
           {`
-        .custom-select__input-container {
-          grid-template-columns: auto !important;
-        }
-      `}
+            .custom-select__input-container {
+              grid-template-columns: auto !important;
+            }
+            .list-group-item.bg-yinmn-blue {
+              background-color: #3d5a80 !important;
+            }
+          `}
         </style>
         <Col lg={{ size: 10, offset: 1 }}>
           <h3 className="mt-3 mb-5">
@@ -2714,46 +2717,38 @@ const WeeklySummariesReport = props => {
             className={`${styles.multiSelectFilter} text-dark ${darkMode ? 'dark-mode' : ''}`}
             styles={customStyles}
           />
-          <div className={`${styles.filterContainer}`}>
+          <div className={styles.filtersPanel}>
             {hasPermissionToFilter && (
-              <>
-                <div className={`${styles.filterStyle} ${styles.marginRight}`}>
-                  <span style={{ marginRight: '5px' }}>Filter by Special Colors: </span>
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px',
-                      marginTop: '2px',
-                    }}
-                  >
-                    {['purple', 'green', 'navy'].map(color => {
-                      const labelMap = {
-                        purple: 'Purple',
-                        green: 'Green',
-                        navy: 'Navy',
-                      };
-                      return (
-                        <div
-                          key={`${color}-toggle`}
-                          style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
-                        >
-                          <span className={styles.filterLabel}>{labelMap[color]}</span>
+              <div className={styles.filterRow}>
+                <div className={styles.specialColorsRow}>
+                  <span className={styles.filterGroupLabel}>Filter by Special Colors:</span>
+
+                  {['purple', 'green', 'navy'].map(color => {
+                    const labelMap = {
+                      purple: 'Purple',
+                      green: 'Green',
+                      navy: 'Navy',
+                    };
+
+                    return (
+                      <div key={color} className={styles.specialColorsItem}>
+                        <span className={styles.filterLabel}>{labelMap[color]}</span>
+                        <span className={styles.specialColorsToggleWrap}>
                           <SlideToggle
-                            key={`${color}-toggle`}
-                            className={styles.slideToggle}
+                            className={styles.specialColorsToggle}
                             color={color}
                             onChange={handleSpecialColorToggleChange}
                           />
-                        </div>
-                      );
-                    })}
-                  </div>
+                        </span>
+                      </div>
+                    );
+                  })}
                 </div>
 
                 {state.selectedCodes.length > 0 && (
-                  <div className={cn(styles.filterStyle, styles.filterMarginRight)}>
-                    <span className={styles.selectAllLabel}>Select All (Visible Users): </span>
+                  <div className={styles.filterGroup}>
+                    <span className={styles.filterGroupLabel}>Select All (Visible Users):</span>
+
                     <div className={styles.dotSelector}>
                       {['purple', 'green', 'navy'].map(color => (
                         <span
@@ -2767,34 +2762,31 @@ const WeeklySummariesReport = props => {
                             state.bulkSelectedColors[color] && styles.active,
                           )}
                           style={{
-                            display: 'inline-block',
-                            width: '15px',
-                            height: '15px',
-                            margin: '0 5px',
-                            borderRadius: '50%',
                             backgroundColor: state.bulkSelectedColors[color]
                               ? color
                               : 'transparent',
                             border: `3px solid ${color}`,
-                            cursor: 'pointer',
                           }}
                         />
                       ))}
                     </div>
                   </div>
                 )}
-              </>
+              </div>
             )}
+
+            <div className={styles.filterRow}>
+              <WeeklySummariesToggleFilter
+                state={state}
+                setState={setState}
+                hasPermissionToFilter={hasPermissionToFilter}
+                editable={true}
+                formId="report"
+                hasPermission={props.hasPermission}
+                darkMode={darkMode}
+              />
+            </div>
           </div>
-          <WeeklySummariesToggleFilter
-            state={state}
-            setState={setState}
-            hasPermissionToFilter={hasPermissionToFilter}
-            editable={true}
-            formId="report"
-            hasPermission={props.hasPermission}
-            darkMode={darkMode}
-          />
         </Col>
       </Row>
       <Row className={styles['mx-max-sm-0']}>

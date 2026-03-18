@@ -1,34 +1,36 @@
-import React, { useState, useRef } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faBell,
-  faCircle,
   faCheckCircle,
-  faTimesCircle,
-  faExpandArrowsAlt,
+  faCircle,
   faCompressArrowsAlt,
+  faExpandArrowsAlt,
+  faTimesCircle,
 } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import PropTypes from 'prop-types';
+import React, { useRef, useState } from 'react';
+import { Modal, ModalBody, ModalFooter, ModalHeader, Progress, Table } from 'reactstrap';
 import CopyToClipboard from '~/components/common/Clipboard/CopyToClipboard';
-import { Table, Progress, Modal, ModalHeader, ModalFooter, ModalBody } from 'reactstrap';
+import UserStateDisplay from '../UserState/UserStateDisplay';
 
+import moment from 'moment-timezone';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { getUserProfile } from '~/actions/userProfile.js';
+import Warning from '~/components/Warnings/Warnings';
 import hasPermission from '~/utils/permissions';
 import styles from './style.module.css';
-import { getUserProfile } from '~/actions/userProfile.js';
-import { toast } from 'react-toastify';
-import Warning from '~/components/Warnings/Warnings';
-import { useDispatch, useSelector } from 'react-redux';
-import moment from 'moment-timezone';
 
-import ReviewButton from './ReviewButton';
-import { getProgressColor, getProgressValue } from '../../utils/effortColors';
-import TeamMemberTaskIconsInfo from './TeamMemberTaskIconsInfo';
 import { showTimeOffRequestModal } from '../../actions/timeOffRequestAction';
+import * as messages from '../../constants/followUpConstants';
+import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 import GoogleDocIcon from '../common/GoogleDocIcon';
+import TaskChangeLogModal from './components/TaskChangeLogModal';
 import FollowupCheckButton from './FollowupCheckButton';
 import FollowUpInfoModal from './FollowUpInfoModal';
-import TaskChangeLogModal from './components/TaskChangeLogModal';
-import * as messages from '../../constants/followUpConstants';
+import ReviewButton from './ReviewButton';
+import TeamMemberTaskIconsInfo from './TeamMemberTaskIconsInfo';
 
 const NUM_TASKS_SHOW_TRUNCATE = 6;
 
@@ -509,15 +511,23 @@ const TeamMemberTask = React.memo(
                             }}
                             className={`${styles['team-clocks']} ${darkMode ? 'text-light' : ''}`}
                           >
-                            <u className={darkMode ? styles['dashboard-team-clocks'] : ''}>
-                              {user.weeklycommittedHours ? user.weeklycommittedHours : 0}
-                            </u>{' '}
-                            /
-                            <font color="green">
-                              {' '}
-                              {thisWeekHours ? thisWeekHours.toFixed(1) : 0}
-                            </font>{' '}
-                            /<font color="red"> {totalHoursRemaining.toFixed(1)}</font>
+                            <div style={{ display: 'block' }}>
+                              <u className={darkMode ? styles['dashboard-team-clocks'] : ''}>
+                                {user.weeklycommittedHours ? user.weeklycommittedHours : 0}
+                              </u>{' '}
+                              /
+                              <font color="green">
+                                {' '}
+                                {thisWeekHours ? thisWeekHours.toFixed(1) : 0}
+                              </font>{' '}
+                              /<font color="red"> {totalHoursRemaining.toFixed(1)}</font>
+                            </div>
+                            <div style={{ display: 'block', marginTop: '4px' }}>
+                              <UserStateDisplay
+                                userId={user.personId}
+                                canEdit={dispatch(hasPermission('manage_user_state_indicator'))}
+                              />
+                            </div>
                           </td>
                         </tr>
                       </tbody>
@@ -784,6 +794,22 @@ const TeamMemberTask = React.memo(
     );
   },
 );
+TeamMemberTask.propTypes = {
+  user: PropTypes.shape({
+    personId: PropTypes.string,
+    name: PropTypes.string,
+    role: PropTypes.string,
+    tasks: PropTypes.array,
+    totaltangibletime_hrs: PropTypes.number,
+    weeklycommittedHours: PropTypes.number,
+    weeklySummariesCount: PropTypes.number,
+    adminLinks: PropTypes.array,
+    timeOffFrom: PropTypes.string,
+    timeOffTill: PropTypes.string,
+  }).isRequired,
+  userRole: PropTypes.string.isRequired,
+  userId: PropTypes.string.isRequired,
+};
 
 TeamMemberTask.displayName = 'TeamMemberTask';
 
