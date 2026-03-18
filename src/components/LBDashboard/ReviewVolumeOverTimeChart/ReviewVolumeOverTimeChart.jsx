@@ -235,13 +235,43 @@ const RAW_REVIEWS = [
   },
 ];
 
-const ALL_MONTH_KEYS = Array.from(new Set(RAW_REVIEWS.map(r => r.monthKey))).sort();
+const ALL_MONTH_KEYS = Array.from(new Set(RAW_REVIEWS.map(r => r.monthKey))).sort((a, b) =>
+  a.localeCompare(b),
+);
 
-function aggregateData({ category, dateFilter, fromDate, toDate, villages, properties }) {
+function filterByDateRange(records, dateFilter, fromDate, toDate) {
   if (dateFilter === 'custom' && fromDate && toDate && fromDate > toDate) {
     return [];
   }
 
+  if (dateFilter === 'last6') {
+    const last6 = ALL_MONTH_KEYS.slice(-6);
+    const allowed = new Set(last6);
+    return records.filter(r => allowed.has(r.monthKey));
+  }
+
+  if (dateFilter === 'custom' && (fromDate || toDate)) {
+    return records.filter(r => {
+      const monthDate = new Date(`${r.monthKey}-01T00:00:00Z`);
+
+      if (fromDate) {
+        const firstOfFrom = new Date(fromDate.getFullYear(), fromDate.getMonth(), 1);
+        if (monthDate < firstOfFrom) return false;
+      }
+
+      if (toDate) {
+        const lastOfTo = new Date(toDate.getFullYear(), toDate.getMonth() + 1, 0);
+        if (monthDate > lastOfTo) return false;
+      }
+
+      return true;
+    });
+  }
+
+  return records;
+}
+
+function aggregateData({ category, dateFilter, fromDate, toDate, villages, properties }) {
   let filtered = RAW_REVIEWS.filter(r => r.category === category);
 
   if (villages.length && category === 'village') {
@@ -254,22 +284,7 @@ function aggregateData({ category, dateFilter, fromDate, toDate, villages, prope
     filtered = filtered.filter(r => allowed.has(r.property));
   }
 
-  if (dateFilter === 'last6') {
-    const last6 = ALL_MONTH_KEYS.slice(-6);
-    const allowed = new Set(last6);
-    filtered = filtered.filter(r => allowed.has(r.monthKey));
-  } else if (dateFilter === 'custom' && (fromDate || toDate)) {
-    filtered = filtered.filter(r => {
-      const monthDate = new Date(`${r.monthKey}-01T00:00:00Z`);
-      if (fromDate && monthDate < new Date(fromDate.getFullYear(), fromDate.getMonth(), 1)) {
-        return false;
-      }
-      if (toDate && monthDate > new Date(toDate.getFullYear(), toDate.getMonth() + 1, 0)) {
-        return false;
-      }
-      return true;
-    });
-  }
+  filtered = filterByDateRange(filtered, dateFilter, fromDate, toDate);
 
   const byMonth = new Map();
   filtered.forEach(r => {
@@ -361,17 +376,23 @@ function ReviewVolumeOverTimeChart({ darkMode }) {
         width: '100%',
         backgroundColor: 'transparent',
       }),
-      option: (provided, state) => ({
-        ...provided,
-        backgroundColor: state.isFocused
-          ? darkMode
+      option: (provided, state) => {
+        const isFocused = state.isFocused;
+        const isDark = darkMode;
+        const backgroundColor = isFocused
+          ? isDark
             ? '#111827'
             : '#e5e7eb'
-          : darkMode
+          : isDark
           ? '#020617'
-          : '#ffffff',
-        color: darkMode ? '#e5e7eb' : '#111827',
-      }),
+          : '#ffffff';
+
+        return {
+          ...provided,
+          backgroundColor,
+          color: isDark ? '#e5e7eb' : '#111827',
+        };
+      },
       singleValue: provided => ({
         ...provided,
         color: darkMode ? '#e5e7eb' : '#111827',
@@ -565,4 +586,3 @@ ReviewVolumeOverTimeChart.defaultProps = {
 };
 
 export default ReviewVolumeOverTimeChart;
-
