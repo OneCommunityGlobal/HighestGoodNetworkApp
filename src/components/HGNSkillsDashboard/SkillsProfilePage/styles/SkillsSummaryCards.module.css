@@ -59,3 +59,11 @@
   background: #2a2a2a;
   color: #fff;
 }
+
+:global(.dark-mode) .card .iconSuccess {
+  color: #22c55e !important;
+}
+
+:global(.dark-mode) .card .iconWarning {
+  color: #ef4444 !important;
+}
