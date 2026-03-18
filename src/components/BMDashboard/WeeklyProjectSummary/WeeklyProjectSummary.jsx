@@ -1,5 +1,5 @@
 /* eslint-disable import/no-unresolved */
-import { useEffect, useMemo, useState } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import html2canvas from 'html2canvas';
@@ -17,10 +17,15 @@ import ToolsHorizontalBarChart from './Tools/ToolsHorizontalBarChart';
 import ExpenseBarChart from './Financials/ExpenseBarChart';
 import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
 import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMaterialCostPerProject';
+import FinancialsTrackingCard from './ExpenditureChart/FinancialsTrackingCard';
+import EmbedInteractiveMap from '../InteractiveMap/EmbedInteractiveMap';
+import InteractiveMap from '../InteractiveMap/InteractiveMap';
 import styles from './WeeklyProjectSummary.module.css';
 import IssueCharts from '../Issues/openIssueCharts';
 import LossTrackingLineChart from './Financials/LossTrackingLineCharts/LossTrackingLineChart';
-import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
+import SupplierPerformanceGraph from './SupplierPerformanceGraph.jsx';
+import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords.jsx';
+import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
 
 const projectStatusButtons = [
   {
@@ -121,58 +126,12 @@ const projectStatusButtons = [
   },
 ];
 
-export function WeeklyProjectSummaryContent() {
-  const dispatch = useDispatch();
-  const materials = useSelector(state => state.materials?.materialslist || []);
-  const [openSections, setOpenSections] = useState({});
-
-  const getColorScheme = percentage => {
-    if (percentage === '-') return 'neutral';
-    if (percentage > 0) return 'positive';
-    if (percentage < 0) return 'negative';
-    return 'neutral';
-  };
-
-  const colorScheme = getColorScheme(monthOverMonth);
-
-  const titleClass = title.replace(/\s+/g, '-').toLowerCase();
-
-  return (
-    <div
-      className={`financial-card ${colorScheme} custom-box-shadow financial-card-background-${titleClass}`}
-      onMouseEnter={() => setShowTooltip(true)}
-      onMouseLeave={() => setShowTooltip(false)}
-    >
-      <div className="financial-card-title">{title}</div>
-      <div className={`financial-card-ellipse financial-card-ellipse-${titleClass}`} />
-      <div className="financial-card-value">{value === '-' ? '-' : value.toLocaleString()}</div>
-      <div className={`financial-card-month-over-month ${colorScheme}`}>
-        {monthOverMonth === '-'
-          ? '-'
-          : `${monthOverMonth > 0 ? '+' : ''}${monthOverMonth}% month over month`}
-      </div>
-
-      {/* Tooltip for Additional Info */}
-      {showTooltip && Object.keys(additionalInfo).length > 0 && (
-        <div className="financial-card-tooltip">
-          {Object.entries(additionalInfo).map(([key]) => (
-            <div key={key} className="financial-card-tooltip-item">
-              <span className="tooltip-key">{key}:</span>
-              <span className="tooltip-value">{value}</span>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
 function WeeklyProjectSummary() {
   const dispatch = useDispatch();
   const materials = useSelector(state => state.materials?.materialslist || []);
   const [openSections, setOpenSections] = useState({});
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const darkMode = useSelector(state => state.theme.darkMode);
-
   useEffect(() => {
     if (materials.length === 0) {
       dispatch(fetchAllMaterials());
@@ -185,12 +144,12 @@ function WeeklyProjectSummary() {
     return uniqueMaterials;
   }, [materials]);
 
-  const toggleSection = category => {
+  const toggleSection = useCallback(category => {
     setOpenSections(prev => ({
       ...prev,
       [category]: !prev[category],
     }));
-  };
+  }, []);
 
   const sections = useMemo(
     () => [
@@ -237,9 +196,9 @@ function WeeklyProjectSummary() {
       {
         title: 'Issues Breakdown',
         key: 'Issues Breakdown',
-        className: 'large',
+        className: 'full',
         content: (
-          <div className="weekly-project-summary-card normal-card">
+          <div className={`${styles.weeklyProjectSummaryCard} ${styles.fullCard}`}>
             <IssuesBreakdownChart />
           </div>
         ),
@@ -247,7 +206,7 @@ function WeeklyProjectSummary() {
       {
         title: 'Material Consumption',
         key: 'Material Consumption',
-        className: 'large',
+        className: 'full',
         content: [1, 2, 3].map((_, index) => {
           let content;
           if (index === 1) {
@@ -282,16 +241,20 @@ function WeeklyProjectSummary() {
         title: 'Tools and Equipment Tracking',
         key: 'Tools and Equipment Tracking',
         className: 'half',
-        content: (
-          <div className="weekly-project-summary-card normal-card tools-tracking-layout">
-            <div className="tools-donut-wrap">
-              <ToolStatusDonutChart />
-            </div>
-            <div className="weekly-project-summary-card normal-card" style={{ minHeight: '300px' }}>
-              <ToolsHorizontalBarChart darkMode={darkMode} />
-            </div>
-          </div>
-        ),
+        content: [
+          <div
+            key="donut-chart"
+            className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+          >
+            <ToolStatusDonutChart />
+          </div>,
+          <div
+            key="bar-chart"
+            className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+          >
+            <ToolsHorizontalBarChart darkMode={darkMode} />
+          </div>,
+        ],
       },
       {
         title: 'Lessons Learned',
@@ -331,18 +294,16 @@ function WeeklyProjectSummary() {
         ),
       },
       {
-        title: 'Global Distribution and Project Status',
+        title: 'Global Distribution and Project Status Overview',
         key: 'Global Distribution and Project Status',
-        className: 'half',
+        className: 'full',
         content: (
-          <>
-            <div className={`${styles.weeklyProjectSummaryCard} ${styles.wideCard}`}>
-              📊 Wide Card
-            </div>
-            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
-              📊 Normal Card
-            </div>
-          </>
+          <div
+            className={`${styles.weeklyProjectSummaryCard} ${styles.mapCard}`}
+            style={{ height: '500px', padding: '0' }}
+          >
+            <EmbedInteractiveMap />
+          </div>
         ),
       },
       {
@@ -356,7 +317,7 @@ function WeeklyProjectSummary() {
               key={uniqueId}
               className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
             >
-              {index === 1 ? <PaidLaborCost /> : '📊 Card'}
+              {index === 1 ? <PaidLaborCost /> : <DistributionLaborHours />}
             </div>
           );
         }),
@@ -365,40 +326,41 @@ function WeeklyProjectSummary() {
         title: 'Financials Tracking',
         key: 'Financials Tracking',
         className: 'full',
-        content: [1, 2, 3, 4].map((_, index) => {
-          const uniqueId = uuidv4();
-          return (
-            <div
-              key={uniqueId}
-              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
-            >
-              {(() => {
-                if (index === 2) return <CostPredictionChart projectId={1} />;
-                if (index === 3) return <ActualVsPlannedCost />;
-                return '📊 Card';
-              })()}
+        content: (
+          <div className={styles.financialsTrackingGrid}>
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+              <FinancialsTrackingCard />
             </div>
-          );
-        }),
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>📊 Card</div>
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+              <CostPredictionChart projectId={1} />
+            </div>
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+              <ActualVsPlannedCost />
+            </div>
+          </div>
+        ),
       },
     ],
     [quantityOfMaterialsUsedData, darkMode],
   );
 
-  const handleSaveAsPDF = async () => {
+  const handleSaveAsPDF = useCallback(async () => {
     const currentOpenSections = { ...openSections };
+    setIsGeneratingPDF(true);
 
     try {
+      // Open all sections for PDF capture
       const allSectionsOpen = {};
       sections.forEach(section => {
         allSectionsOpen[section.key] = true;
       });
       setOpenSections(allSectionsOpen);
 
-      // eslint-disable-next-line no-promise-executor-return
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Wait for sections to open and re-render
+      await new Promise(resolve => setTimeout(resolve, 800));
 
-      const contentElement = document.querySelector('.weekly-project-summary-container');
+      const contentElement = document.querySelector(`.${styles.weeklyProjectSummaryContainer}`);
       if (!contentElement) throw new Error('Weekly project summary container not found.');
 
       const pdfContainer = document.createElement('div');
@@ -409,23 +371,28 @@ function WeeklyProjectSummary() {
         backgroundColor: '#fff',
         position: 'absolute',
         left: '-9999px',
+        top: '0',
         boxSizing: 'border-box',
+        zIndex: '-9999',
       });
 
       const clonedContent = contentElement.cloneNode(true);
 
-      // Remove buttons and controls not needed in PDF
+      // Remove interactive elements for PDF
       clonedContent
-        .querySelectorAll(
-          'button, .weekly-project-summary-dropdown-icon, .no-print, .weekly-summary-header-controls',
-        )
+        .querySelectorAll('button, .weekly-project-summary-dropdown-icon, .no-print, iframe')
         .forEach(el => el.parentNode?.removeChild(el));
 
+      // Ensure charts are visible
       const styleElem = document.createElement('style');
       styleElem.textContent = `
-          img, svg {
+        img, svg, canvas {
+          max-width: 100% !important;
           height: auto !important;
           page-break-inside: avoid !important;
+        }
+        .${styles.weeklyProjectSummaryDashboardCategoryContent} {
+          display: block !important;
         }
       `;
 
@@ -436,24 +403,36 @@ function WeeklyProjectSummary() {
       const canvas = await html2canvas(pdfContainer, {
         scale: 2,
         useCORS: true,
-        backgroundColor: '#fff',
+        allowTaint: false,
+        backgroundColor: '#ffffff',
         windowWidth: pdfContainer.scrollWidth,
         windowHeight: pdfContainer.scrollHeight,
         logging: false,
+        onclone: clonedDoc => {
+          // Ensure all sections are visible in the cloned document
+          const sections = clonedDoc.querySelectorAll(
+            `.${styles.weeklyProjectSummaryDashboardCategoryContent}`,
+          );
+          sections.forEach(section => {
+            section.style.display = 'block';
+          });
+        },
       });
 
       if (!canvas) throw new Error('Failed to capture content as image.');
 
       const imgData = canvas.toDataURL('image/jpeg', 0.95);
 
-      const pdfWidth = 210;
+      const pdfWidth = 210; // A4 width in mm
       const imgHeight = (canvas.height * pdfWidth) / canvas.width;
 
-      // eslint-disable-next-line new-cap
+      // FIXED: Using Math.max() instead of ternary for better readability
+      const pdfHeight = Math.max(imgHeight, 297); // Min A4 height
+
       const pdf = new jsPDF({
-        orientation: 'portrait',
+        orientation: imgHeight > pdfWidth ? 'portrait' : 'landscape',
         unit: 'mm',
-        format: [pdfWidth, imgHeight],
+        format: [pdfWidth, pdfHeight],
       });
 
       pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, imgHeight);
@@ -461,21 +440,50 @@ function WeeklyProjectSummary() {
       const now = new Date();
       const fileName = `weekly-project-summary-${now.toISOString().slice(0, 10)}.pdf`;
 
-      // Save the PDF
       pdf.save(fileName);
 
       document.body.removeChild(pdfContainer);
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error('PDF generation failed:', err);
+      // eslint-disable-next-line no-alert
+      alert('Failed to generate PDF. Please try again.');
     } finally {
       setOpenSections(currentOpenSections);
+      setIsGeneratingPDF(false);
     }
-  };
+  }, [openSections, sections, styles]);
 
   return (
     <div className={`${styles.weeklyProjectSummaryContainer} ${darkMode ? styles.darkMode : ''}`}>
-      <WeeklyProjectSummaryHeader handleSaveAsPDF={handleSaveAsPDF} />
+      {/* Header Section - Now inline instead of seperate component */}
+      <div className={styles.weeklySummaryHeaderWrapper}>
+        <div className={styles.weeklySummaryHeaderContainer}>
+          <h1 className={styles.weeklySummaryHeaderTitle}>
+            Weekly Project Summary
+            <span className={styles.weeklySummaryHeaderSubtitle}>One Community</span>
+          </h1>
+          <div className={styles.weeklySummaryHeaderControls}>
+            <select aria-label="Select project">
+              <option value="">Select Project</option>
+              <option value="project1">Project Alpha</option>
+              <option value="project2">Project Beta</option>
+              <option value="project3">Project Gamma</option>
+              <option value="project4">Project Delta</option>
+            </select>
+            <button
+              className={styles.weeklySummaryShareBtn}
+              onClick={handleSaveAsPDF}
+              disabled={isGeneratingPDF}
+              type="button"
+            >
+              {isGeneratingPDF ? 'Generating PDF...' : 'Share PDF'}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Dashboard Content */}
       <div className={`${styles.weeklyProjectSummaryDashboardContainer}`}>
         <div className={`${styles.weeklyProjectSummaryDashboardGrid}`}>
           {sections.map(({ title, key, className, content }) => (
@@ -487,8 +495,11 @@ function WeeklyProjectSummary() {
                 type="button"
                 className={styles.weeklyProjectSummaryDashboardCategoryTitle}
                 onClick={() => toggleSection(key)}
+                aria-expanded={openSections[key]}
               >
-                {title} <span>{openSections[key] ? '∧' : '∨'}</span>
+                {title}
+                {/* FIXED: Added proper spacing with a space before the span */}
+                <span aria-hidden="true"> {openSections[key] ? '∧' : '∨'}</span>
               </button>
               {openSections[key] && (
                 <div className={`${styles.weeklyProjectSummaryDashboardCategoryContent}`}>

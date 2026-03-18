@@ -3,7 +3,7 @@ import React from 'react';
 import * as d3 from 'd3';
 
 import { Button, Modal } from 'react-bootstrap';
-import './PeopleReport/PeopleReport.css';
+import styles from './PeopleReport/PeopleReport.module.css';
 import { boxStyle, boxStyleDark } from '../../styles';
 
 function InfringementsViz({ infringements, fromDate, toDate, darkMode }) {
@@ -273,7 +273,7 @@ function InfringementsViz({ infringements, fromDate, toDate, darkMode }) {
       <Button onClick={handleModalShow} aria-expanded={graphVisible} style={darkMode ? boxStyleDark : boxStyle}>
         {graphVisible ? 'Hide Infringements Graph' : 'Show Infringements Graph'}
       </Button>
-      <div className={`kaitest ${darkMode ? 'bg-light mt-2' : ''}`} id="infplot" data-testid="infplot" />
+      <div className={`${styles.kaitest} ${darkMode ? 'bg-light mt-2' : ''}`} id="infplot" data-testid="infplot" />
 
       <Modal size="lg" show={modalVisible} onHide={handleModalClose}>
         <Modal.Header closeButton>
