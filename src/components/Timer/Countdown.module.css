@@ -55,12 +55,16 @@
 }
 
 .countdownCircle .content {
+  width: 74%;
+  max-width: 190px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 0.3rem;
   text-align: center;
+  box-sizing: border-box;
 }
 
 .countdownCircle .content > span {
@@ -71,37 +75,47 @@
 }
 
 .content .remainingTime {
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  gap: 0.2rem;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto 1fr;
+  place-items: center;
+  column-gap: 0.1rem;
   margin-top: 0.05rem;
+}
+
+.content .remainingTime > div {
+  min-width: 0;
+  width: 100%;
 }
 
 .content .timeDisplay {
-  min-width: 2.8rem;
+  width: 100%;
+  min-width: 0;
   font-weight: 800;
-  font-size: 2.5rem;
+  font-size: 1.7rem;
   line-height: 1;
   text-align: center;
+  white-space: nowrap;
 }
 
 .content .label {
-  margin-top: 0.25rem;
-  font-size: 0.72rem;
+  margin-top: 0.2rem;
+  font-size: 0.42rem;
   font-weight: 800;
   text-align: center;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  line-height: 1.1;
+  letter-spacing: 0.03em;
+  line-height: 1.05;
   opacity: 0.95;
+  white-space: nowrap;
 }
 
 .content .timeColon {
-  margin-top: 0.05rem;
-  font-size: 2rem;
+  font-size: 1.1rem;
   font-weight: 800;
   line-height: 1;
+  align-self: center;
+  width: auto;
 }
 
 .content .operators {
@@ -210,8 +224,8 @@
 
 .goal .numberWrapper {
   position: relative;
-  width: 3.6rem;
-  height: 3.4rem;
+  width: 4.2rem;
+  height: 4rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -229,8 +243,8 @@
   box-sizing: border-box;
   background-color: #f7f7f7 !important;
   color: #111 !important;
-  text-align: center;
-  font-size: 1.65rem;
+  text-align: center !important;
+  font-size: 1.8rem;
   font-weight: 800;
   line-height: 1;
   box-shadow: none !important;
@@ -239,8 +253,9 @@
 .bottom .timeColon {
   display: flex;
   align-items: center;
-  height: 3.4rem;
-  font-size: 1.85rem;
+  justify-content: center;
+  height: 4rem;
+  font-size: 2rem;
   font-weight: 800;
   line-height: 1;
   color: white;
@@ -266,6 +281,12 @@
 
 input[type='number'] {
   appearance: textfield;
+}
+
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+  margin: 0;
+  appearance: none;
 }
 
 .bottom .goal input:focus {

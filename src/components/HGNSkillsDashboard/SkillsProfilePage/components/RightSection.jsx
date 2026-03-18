@@ -5,11 +5,11 @@ import Skills from './Skills';
 import RadarChart from './RadarChart';
 import SkillSummaryCards from './SkillSummaryCards';
 import FrontendSkills from './FrontendSkills';
+import styles from '../styles/RightSection.module.css';
+import AdditionalInfo from './AdditionalInfo';
 import BackendSkills from './BackendSkills';
 import DeploymentSkills from './DeploymentSkills';
 import SoftwarePractices from './SoftwarePractices';
-import AdditionalInfo from './AdditionalInfo';
-import styles from '../styles/RightSection.module.css';
 
 function RightSection() {
   const profileData = useSelector(state => state.userSkills.profileData);
@@ -29,7 +29,11 @@ function RightSection() {
           <div className={styles.dashboardWrapper}>
             <SkillSummaryCards skillsData={skillsData} />
 
-            <RadarChart profileData={profileData} onSkillsDataReady={setSkillsData} />
+            <RadarChart 
+              key={selectedSkill}
+              profileData={profileData} 
+              onSkillsDataReady={setSkillsData} 
+            />
           </div>
         );
 
@@ -46,7 +50,7 @@ function RightSection() {
         return <SoftwarePractices profileData={profileData} />;
 
       default:
-        return <RadarChart profileData={profileData} />;
+        return <RadarChart key={selectedSkill} profileData={profileData} />;
     }
   };
 

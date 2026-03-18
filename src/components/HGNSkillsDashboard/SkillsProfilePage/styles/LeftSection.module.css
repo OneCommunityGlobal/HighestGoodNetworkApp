@@ -61,3 +61,8 @@
 :global(.dark-mode) .leftSection .jobTitle {
   color: #4b5563 !important;
 }
+
+:global(.dark-mode) .leftSection {
+  background: linear-gradient(135deg, #2a2f3e 0%, #1e2330 100%);
+  border-color: #3a4a5a;
+}

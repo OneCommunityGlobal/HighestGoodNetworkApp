@@ -1,15 +1,16 @@
-import { Radar } from 'react-chartjs-2';
-import { useSelector } from 'react-redux';
 import {
   Chart as ChartJS,
-  RadialLinearScale,
-  PointElement,
-  LineElement,
   Filler,
-  Tooltip,
   Legend,
+  LineElement,
+  PointElement,
+  RadialLinearScale,
+  Tooltip,
 } from 'chart.js';
-import { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import { useEffect, useState } from 'react';
+import { Radar } from 'react-chartjs-2';
+import { useSelector } from 'react-redux';
 import styles from '../styles/RadarChart.module.css';
 
 ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
@@ -260,28 +261,52 @@ function RadarChart({ profileData, compact = true, onSkillsDataReady }) {
       r: {
         suggestedMin: 0,
         suggestedMax: 10,
+
         ticks: {
           stepSize: 2,
           display: compact ? false : true,
           color: '#666',
           font: { size: 10 },
         },
+
         angleLines: {
           display: true,
-          color: compact ? 'rgba(0,0,0,0.08)' : 'rgba(0,0,0,0.1)',
+          color: darkMode
+            ? 'rgba(255,255,255,0.15)'
+            : compact
+            ? 'rgba(0,0,0,0.08)'
+            : 'rgba(0,0,0,0.1)',
         },
+
         grid: {
-          color: compact ? 'rgba(0,0,0,0.08)' : 'rgba(0,0,0,0.1)',
+          color: darkMode
+            ? 'rgba(255,255,255,0.15)'
+            : compact
+            ? 'rgba(0,0,0,0.08)'
+            : 'rgba(0,0,0,0.1)',
         },
+
         pointLabels: {
           font: {
-            size: 11,
+            size: function (context) {
+              const w = context.chart.width;
+              if (w < 340) return 8;
+              if (w < 480) return 9;
+              if (w < 640) return 10;
+              return 11;
+            },
             weight: '500',
           },
-          color: compact ? '#555' : '#333',
+          color: darkMode ? '#ccc' : compact ? '#333' : '#222',
           padding: compact ? 10 : 15,
+          callback: function (value) {
+            if (window.innerWidth < 600 && value.length > 15) {
+              return value.substring(0, 12) + '...';
+            }
+            return value;
+          },
         },
-      },
+      }
     },
     plugins: {
       legend: { display: false },
@@ -294,5 +319,16 @@ function RadarChart({ profileData, compact = true, onSkillsDataReady }) {
     </div>
   );
 }
+
+RadarChart.propTypes = {
+  profileData: PropTypes.shape({
+    skillInfo: PropTypes.shape({
+      general: PropTypes.object,
+      frontend: PropTypes.object,
+      backend: PropTypes.object,
+    }),
+  }),
+  compact: PropTypes.bool,
+};
 
 export default RadarChart;
