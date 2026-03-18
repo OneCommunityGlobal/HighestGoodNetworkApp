@@ -1,0 +1,137 @@
+.chartContainer {
+  position: relative;
+  width: 100%;
+  max-width: 960px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.04),
+    0 12px 30px rgba(2, 6, 23, 0.08);
+  display: flex;
+  flex-direction: column;
+}
+
+.dark {
+  background: #0f172a;
+  color: #e5e7eb;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.legendDots {
+  display: flex;
+  gap: 0.75rem;
+  font-size: 0.85rem;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.legendDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+}
+
+.legendPositive {
+  background: #22c55e;
+}
+
+.legendNeutral {
+  background: #9ca3af;
+}
+
+.legendNegative {
+  background: #ef4444;
+}
+
+.filters {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.darkFilters {
+  background: #020617;
+  border-color: #1f2937;
+}
+
+.filterGroup {
+  min-width: 180px;
+  flex: 1 1 0;
+}
+
+.filterLabel {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #4b5563;
+  margin-bottom: 0.25rem;
+}
+
+.select {
+  /* react-select outer container wrapper */
+  background-color: transparent;
+  border: none;
+  padding: 0;
+}
+
+.dateSelect {
+  width: 100%;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  padding: 0 0.5rem;
+  font-size: 0.9rem;
+  background-color: #ffffff;
+  color: #111827;
+}
+
+.darkDateSelect {
+  background-color: #020617;
+  border-color: #374151;
+  color: #e5e7eb;
+}
+
+.chartWrapper {
+  width: 100%;
+  height: 320px;
+}
+
+.emptyState {
+  display: grid;
+  place-items: center;
+  height: 240px;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+@media (max-width: 768px) {
+  .chartContainer {
+    margin: 1.25rem auto;
+    padding: 1.25rem;
+  }
+}
+
