@@ -253,26 +253,26 @@ const darkModeStyles = `
 }
 `;
 
+
+function parseSelectedDate(value, FORMAT) {
+  if (!value) return undefined;
+  try {
+    const date = value.includes('T') 
+      ? new Date(value) 
+      : dateFnsParse(value, FORMAT, new Date());
+    return isValid(date) ? date : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 function DateInput({ id, ariaLabel, placeholder, value, onChange, disabled, darkMode }) {
   const FORMAT = 'MM/dd/yy';
   const [isOpen, setIsOpen] = React.useState(false);
+
+  const inputBgColor = disabled ? '#e9ecef' : darkMode ? '#1e2b4a' : 'white';
   
-  // Parse the value properly
-  let selectedDate;
-  if (value) {
-    try {
-      if (value.includes('T')) {
-        selectedDate = new Date(value);
-      } else {
-        selectedDate = dateFnsParse(value, FORMAT, new Date());
-      }
-      if (!isValid(selectedDate)) {
-        selectedDate = undefined;
-      }
-    } catch (error) {
-      selectedDate = undefined;
-    }
-  }
+  const selectedDate = parseSelectedDate(value, FORMAT);
 
   const handleDaySelect = (date) => {
     if (date) {
@@ -283,7 +283,7 @@ function DateInput({ id, ariaLabel, placeholder, value, onChange, disabled, dark
   };
 
   // Generate unique class names
-  const datePickerClass = `custom-datepicker-${Math.random().toString(36).substr(2, 9)}`;
+  const datePickerClass = `custom-datepicker-${Math.random().toString(36).substring(2, 11)}`;
 
   return (
     <div style={{ position: 'relative' }}>
@@ -298,7 +298,7 @@ function DateInput({ id, ariaLabel, placeholder, value, onChange, disabled, dark
         className={`form-control ${datePickerClass}-input`}
         style={{ 
           cursor: disabled ? 'default' : 'pointer',
-          backgroundColor: disabled ? '#e9ecef' : (darkMode ? '#1e2b4a' : 'white'),
+          backgroundColor: inputBgColor,
           color: darkMode ? '#e0e0e0' : '#000',
           borderColor: darkMode ? '#2d3a5a' : '#ced4da',
         }}
@@ -357,6 +357,23 @@ function DateInput({ id, ariaLabel, placeholder, value, onChange, disabled, dark
     </div>
   );
 }
+
+DateInput.propTypes = {
+  id: PropTypes.string.isRequired,
+  ariaLabel: PropTypes.string.isRequired,
+  placeholder: PropTypes.string,
+  value: PropTypes.string,
+  onChange: PropTypes.func.isRequired,
+  disabled: PropTypes.bool,
+  darkMode: PropTypes.bool,
+};
+
+DateInput.defaultProps = {
+  placeholder: '',
+  value: '',
+  disabled: false,
+  darkMode: false,
+};
 
 const TINY_MCE_INIT_OPTIONS = {
   license_key: 'gpl',
@@ -1431,7 +1448,7 @@ function AddTaskModal(props) {
           {/* [RT] Confirmation modal */}
           <Modal isOpen={showReplicateConfirm} 
             toggle={closeConfirm} 
-            lassName={clsx(darkMode && 'text-light dark-mode')}
+            className={clsx(darkMode && 'text-light dark-mode')}
             contentClassName={clsx(darkMode && styles.confirmContentDark)}
             backdropClassName={clsx(darkMode && styles.confirmBackdropDark)}
             >
