@@ -234,7 +234,10 @@ export const addTeamMember = (teamId, userId) => {
   const teamMemberAddPromise = axios.post(ENDPOINTS.TEAM_USERS(teamId), requestData);
   return async dispatch => {
     teamMemberAddPromise.then(res => {
-      dispatch(teamMemberAddAction(res.data.newMember));
+      dispatch(teamMemberAddAction({
+        ...res.data.newMember, 
+        addDateTime: new Date().toISOString() //newMember data doesn't have the date - required to update the Date Added column
+      }));
     });
   };
 };

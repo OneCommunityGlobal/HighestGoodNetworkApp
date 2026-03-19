@@ -81,14 +81,18 @@ export function Team(props) {
 
   return (
     <tr className="teams__tr" id={`tr_${teamIdKey}`}>
-      <th className="teams__order--input" scope="row">
+      <th
+        className="teams__order--input"
+        scope="row"
+        style={{ textAlign: 'center', verticalAlign: 'middle' }}
+      >
         <div>{(props.index ?? 0) + 1}</div>
       </th>
       {/*  Wrap long names vertically */}
       <td className={headerStyles.teamNameCol}>
         {props.name} ({total} | {active} | {inactive})
       </td>
-      <td className="teams__active--input">
+      <td className="teams__active--input" style={{ textAlign: 'center', verticalAlign: 'middle' }}>
         <button
           data-testid="active-marker"
           type="button"
@@ -106,7 +110,7 @@ export function Team(props) {
         </button>
       </td>
 
-      <td className="centered-cell">
+      <td className="centered-cell" style={{ textAlign: 'center', verticalAlign: 'middle' }}>
         <button
           style={darkMode ? {} : boxStyle}
           type="button"
@@ -129,7 +133,9 @@ export function Team(props) {
 
       {(canDeleteTeam || canPutTeam) && (
         <td>
-          <span className="usermanagement-actions-cell">
+          <div
+            style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}
+          >
             <Button
               color="success"
               onClick={() => props.onEditTeam(props.name, teamIdRaw, props.active, props.teamCode)}
@@ -138,8 +144,6 @@ export function Team(props) {
             >
               Edit
             </Button>
-          </span>
-          <span className="usermanagement-actions-cell">
             <Button
               color="danger"
               onClick={() =>
@@ -150,7 +154,7 @@ export function Team(props) {
             >
               {DELETE}
             </Button>
-          </span>
+          </div>
         </td>
       )}
     </tr>

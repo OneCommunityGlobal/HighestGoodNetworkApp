@@ -252,7 +252,7 @@ class Teams extends React.PureComponent {
     }
 
     return (
-      <div className="table-responsive">
+      <div className="table-responsive mt-3">
         <table className={tableClass}>
           <thead>
             <TeamTableHeader
@@ -283,14 +283,13 @@ class Teams extends React.PureComponent {
       selectedTeamCode,
     } = this.state;
 
-    // prefer cache → snapshot → slice
-    const cachedNow = getCachedTeamMembers(String(selectedTeamId));
-    const sliceMembers = this.props.state?.teamsTeamMembers || [];
+    const sliceMembers = this.props.state?.teamsTeamMembers?.teamMembers || [];
     const members =
-      (Array.isArray(cachedNow) && cachedNow) ||
-      (Array.isArray(initialMembersForPopup) && initialMembersForPopup) ||
-      (Array.isArray(sliceMembers) && sliceMembers) ||
-      [];
+      sliceMembers.length > 0
+        ? sliceMembers
+        : Array.isArray(initialMembersForPopup)
+        ? initialMembersForPopup
+        : [];
 
     const selectedTeamData = Array.isArray(allTeams)
       ? allTeams.filter(team => team.teamName === selectedTeam)
