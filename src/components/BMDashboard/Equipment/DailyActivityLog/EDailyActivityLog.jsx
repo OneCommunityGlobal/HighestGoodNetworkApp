@@ -1,15 +1,19 @@
 import { useEffect, useMemo, useState } from 'react';
 import { connect, useDispatch, useSelector } from 'react-redux';
-import { Button, ButtonGroup, Table } from 'reactstrap';
 import Select from 'react-select';
+import { Button, ButtonGroup, Table } from 'reactstrap';
 
-import { fetchBMProjects } from '~/actions/bmdashboard/projectActions';
+import { getHeaderData } from '~/actions/authActions';
 import {
   fetchAllEquipments,
   updateMultipleEquipmentLogs,
 } from '~/actions/bmdashboard/equipmentActions';
-import { getHeaderData } from '~/actions/authActions';
+import { fetchBMProjects } from '~/actions/bmdashboard/projectActions';
 import { getUserProfile } from '~/actions/userProfile';
+import {
+  getBaseSelectStyles,
+  getToolPickerSelectStyles,
+} from '~/components/BMDashboard/shared/selectStyles';
 
 // Helper function to get today's date in YYYY-MM-DD format
 const getToday = () => {
@@ -75,7 +79,6 @@ function EDailyActivityLog(props) {
   const [selectedProject, setSelectedProject] = useState(null);
   const [date, setDate] = useState(getToday());
   const [logType, setLogType] = useState('check-in'); // 'check-in' | 'check-out'
-
   const [rows, setRows] = useState([]);
 
   useEffect(() => {
@@ -145,12 +148,15 @@ function EDailyActivityLog(props) {
     dispatch(updateMultipleEquipmentLogs(selectedProject.value, payload));
   };
 
+  // Memoise style objects so they are not recreated on every render
+  const projectSelectStyles = useMemo(() => getBaseSelectStyles(darkMode), [darkMode]);
+  const toolPickerStyles = useMemo(() => getToolPickerSelectStyles(darkMode), [darkMode]);
+
   return (
     <div
       className={`container-fluid ${darkMode ? 'bg-oxford-blue text-light' : ''}`}
       style={{ height: '100%' }}
     >
-      {/* Custom dark mode table row and header hover style: dark background, light text */}
       {darkMode && (
         <style>{`
           .dark-table-row:hover,
@@ -160,59 +166,25 @@ function EDailyActivityLog(props) {
             color: #fff !important;
             transition: background-color 0.2s;
           }
-          
-          /* Comprehensive dark mode date picker styling */
           .dark-date-input {
             background-color: #343a40 !important;
             color: #f8f9fa !important;
             border-color: #495057 !important;
           }
-          
           .dark-date-input::-webkit-calendar-picker-indicator {
             filter: invert(1);
             cursor: pointer;
-          }
-          
-          .dark-date-input::-webkit-datetime-edit {
-            color: #f8f9fa;
-          }
-          
-          .dark-date-input::-webkit-datetime-edit-fields-wrapper {
-            color: #f8f9fa;
-          }
-          
-          .dark-date-input::-webkit-datetime-edit-text {
-            color: #f8f9fa;
-          }
-          
-          .dark-date-input::-webkit-datetime-edit-month-field,
-          .dark-date-input::-webkit-datetime-edit-day-field,
-          .dark-date-input::-webkit-datetime-edit-year-field {
-            color: #f8f9fa;
-          }
-          
-          /* For Firefox */
-          .dark-date-input[type="date"] {
-            color-scheme: dark;
-          }
-          
-          /* For calendar dropdown - limited browser support */
-          .dark-date-input::-webkit-calendar-picker-indicator {
             background-color: #495057;
             border-radius: 4px;
             padding: 4px;
           }
-          
-          /* Make the calendar dropdown dark - this is limited to browsers that support it */
+          .dark-date-input[type="date"] { color-scheme: dark; }
           @supports (-webkit-appearance: none) or (-moz-appearance: none) {
-            .dark-date-input {
-              color-scheme: dark;
-            }
+            .dark-date-input { color-scheme: dark; }
           }
         `}</style>
       )}
 
-      {/* Also add light mode styles */}
       {!darkMode && (
         <style>{`
           .light-date-input {
@@ -220,14 +192,7 @@ function EDailyActivityLog(props) {
             color: #000 !important;
             border-color: #ced4da !important;
           }
-          
-          .light-date-input::-webkit-calendar-picker-indicator {
-            filter: invert(0);
-          }
-          
-          .light-date-input[type="date"] {
-            color-scheme: light;
-          }
+          .light-date-input[type="date"] { color-scheme: light; }
         `}</style>
       )}
 
@@ -237,11 +202,7 @@ function EDailyActivityLog(props) {
         {/* header */}
         <div className="row mb-3">
           <div className="col-md-3">
-            <label
-              className={`form-label fw-bold${darkMode ? ' text-light' : ''}`}
-              htmlFor="date"
-              style={darkMode ? { color: '#f8f9fa' } : {}}
-            >
+            <label className={`form-label fw-bold${darkMode ? ' text-light' : ''}`} htmlFor="date">
               Date
             </label>
             <input
@@ -253,11 +214,7 @@ function EDailyActivityLog(props) {
               onChange={e => setDate(e.target.value)}
               style={
                 darkMode
-                  ? {
-                      backgroundColor: '#343a40',
-                      color: '#f8f9fa',
-                      borderColor: '#495057',
-                    }
+                  ? { backgroundColor: '#343a40', color: '#f8f9fa', borderColor: '#495057' }
                   : {}
               }
             />
@@ -272,89 +229,22 @@ function EDailyActivityLog(props) {
             <label
               className={`form-label fw-bold${darkMode ? ' text-light' : ''}`}
               htmlFor="project-select"
-              style={darkMode ? { color: '#f8f9fa' } : {}}
             >
               Project
             </label>
             <Select
-              inputId="project-select" // associate label via inputId for react-select
+              inputId="project-select"
               value={selectedProject}
               onChange={setSelectedProject}
               options={bmProjects.map(p => ({ label: p.name, value: p._id }))}
               placeholder="Select project…"
               isClearable
-              styles={{
-                maxWidth: '150px',
-                control: base => ({
-                  ...base,
-                  backgroundColor: darkMode ? '#343a40' : '#fff',
-                  borderColor: darkMode ? '#495057' : '#ced4da',
-                  color: darkMode ? '#fff' : '#000',
-                  minHeight: 38,
-                  boxShadow: 'none',
-                }),
-                singleValue: base => ({
-                  ...base,
-                  color: darkMode ? '#fff' : '#000',
-                }),
-                input: base => ({
-                  ...base,
-                  color: darkMode ? '#fff' : '#000',
-                }),
-                placeholder: base => ({
-                  ...base,
-                  color: darkMode ? '#adb5bd' : '#6c757d',
-                }),
-                menu: base => ({
-                  ...base,
-                  backgroundColor: darkMode ? '#343a40' : '#fff',
-                  border: darkMode ? '1px solid #495057' : '1px solid #ced4da',
-                  zIndex: 10001,
-                  borderRadius: 8,
-                  marginTop: 2,
-                }),
-                menuList: base => ({
-                  ...base,
-                  maxHeight: 400,
-                  overflowY: 'auto',
-                  backgroundColor: darkMode ? '#343a40' : '#fff',
-                  color: darkMode ? '#fff' : '#000',
-                  padding: 0,
-                }),
-                option: (base, state) => ({
-                  ...base,
-                  backgroundColor: state.isSelected
-                    ? '#0d55b3'
-                    : state.isFocused
-                    ? darkMode
-                      ? '#495057'
-                      : '#f8f9fa'
-                    : darkMode
-                    ? '#343a40'
-                    : '#fff',
-                  color: state.isSelected ? '#fff' : darkMode ? '#fff' : '#000',
-                  fontSize: 13,
-                  padding: '10px 16px',
-                  cursor: 'pointer',
-                  '&:hover': {
-                    backgroundColor: state.isSelected
-                      ? '#0d55b3'
-                      : darkMode
-                      ? '#495057'
-                      : '#c4c8cbff',
-                    color: state.isSelected ? '#c4c8cbff' : darkMode ? '#fff' : '#000',
-                  },
-                }),
-              }}
+              styles={projectSelectStyles}
             />
           </div>
 
           <div className="col-md-4">
-            <p
-              className={`form-label fw-bold${darkMode ? ' text-light' : ''}`}
-              id="log-type-label"
-              style={darkMode ? { color: '#f8f9fa' } : {}}
-            >
+            <p className={`form-label fw-bold${darkMode ? ' text-light' : ''}`} id="log-type-label">
               Log Type
             </p>
             <ButtonGroup className="d-block" aria-labelledby="log-type-label">
@@ -377,7 +267,7 @@ function EDailyActivityLog(props) {
         {/* table */}
         <Table bordered responsive>
           <thead className={`${darkMode ? 'table-dark' : 'table-light'} align-middle`}>
-            <tr className={`${darkMode ? 'text-light' : 'text-dark'} `}>
+            <tr className={darkMode ? 'text-light' : 'text-dark'}>
               <th>Name</th>
               <th>Working</th>
               <th>Available</th>
@@ -390,7 +280,7 @@ function EDailyActivityLog(props) {
               <tr className={darkMode ? 'select-project-row dark-mode' : ''}>
                 <td
                   colSpan={5}
-                  className={`text-center py-3 ${darkMode ? 'text-light' : 'text-dark'} `}
+                  className={`text-center py-3 ${darkMode ? 'text-light' : 'text-dark'}`}
                 >
                   Select a project to load equipments.
                 </td>
@@ -398,7 +288,7 @@ function EDailyActivityLog(props) {
             )}
 
             {selectedProject && rows.length === 0 && (
-              <tr className={`${darkMode ? 'text-light' : 'text-dark'} `}>
+              <tr className={darkMode ? 'text-light' : 'text-dark'}>
                 <td colSpan={5} className="text-center py-3">
                   No equipments found for this project.
                 </td>
@@ -426,106 +316,7 @@ function EDailyActivityLog(props) {
                         onChange={sel => onToolSelect(idx, sel)}
                         placeholder={`Pick up to ${limit}…`}
                         menuPortalTarget={document.body}
-                        styles={{
-                          container: base => ({
-                            ...base,
-                            width: 300, // lock it to 300px
-                            minWidth: 300,
-                            maxWidth: 300,
-                          }),
-                          control: base => ({
-                            ...base,
-                            width: '100%', // fill the container
-                            overflow: 'hidden',
-                            whiteSpace: 'nowrap',
-                            backgroundColor: darkMode ? '#343a40' : '#fff',
-                            borderColor: darkMode ? '#495057' : '#ced4da',
-                            color: darkMode ? '#fff' : '#000',
-                          }),
-                          placeholder: base => ({
-                            ...base,
-                            color: darkMode ? '#adb5bd' : '#6c757d',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap',
-                          }),
-                          singleValue: base => ({
-                            ...base,
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap',
-                            color: darkMode ? '#fff' : '#000',
-                          }),
-                          multiValue: base => ({
-                            ...base,
-                            maxWidth: '60%',
-                            overflow: 'hidden',
-                            backgroundColor: darkMode ? '#495057' : '#e9ecef',
-                          }),
-                          multiValueLabel: base => ({
-                            ...base,
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap',
-                            color: darkMode ? '#fff' : '#000',
-                          }),
-                          multiValueRemove: base => ({
-                            ...base,
-                            color: darkMode ? '#fff' : '#000',
-                            '&:hover': {
-                              backgroundColor: darkMode ? '#6c757d' : '#dee2e6',
-                              color: darkMode ? '#fff' : '#000',
-                            },
-                          }),
-                          indicatorsContainer: base => ({
-                            ...base,
-                            flexWrap: 'nowrap',
-                          }),
-                          menu: base => ({
-                            ...base,
-                            width: 300,
-                            minWidth: 300,
-                            maxWidth: 300,
-                            zIndex: 9999,
-                            backgroundColor: darkMode ? '#343a40' : '#fff',
-                            border: darkMode ? '1px solid #495057' : '1px solid #ced4da',
-                            borderRadius: 8,
-                            marginTop: 2,
-                          }),
-                          menuList: base => ({
-                            ...base,
-                            maxHeight: 400,
-                            overflowY: 'auto',
-                            backgroundColor: darkMode ? '#343a40' : '#fff',
-                            color: darkMode ? '#fff' : '#000',
-                            padding: 0,
-                          }),
-                          option: (base, state) => ({
-                            ...base,
-                            backgroundColor: state.isSelected
-                              ? '#0d55b3'
-                              : state.isFocused
-                              ? darkMode
-                                ? '#495057'
-                                : '#f0f0f0'
-                              : darkMode
-                              ? '#343a40'
-                              : '#fff',
-                            color: state.isSelected ? '#fff' : darkMode ? '#fff' : '#000',
-                            fontSize: 13,
-                            padding: '10px 16px',
-                            cursor: 'pointer',
-                            '&:hover': {
-                              backgroundColor: state.isSelected
-                                ? '#0d55b3'
-                                : darkMode
-                                ? '#495057'
-                                : '#c4c8cbff',
-                              color: darkMode ? '#fff' : '#000',
-                            },
-                          }),
-                          menuPortal: base => ({ ...base, zIndex: 9999 }),
-                        }}
+                        styles={toolPickerStyles}
                       />
                     </td>
                   </tr>

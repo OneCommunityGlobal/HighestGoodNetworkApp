@@ -2,13 +2,13 @@ import axios from 'axios'; // Import axios
 // import React from 'react';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import thunk from 'redux-thunk';
 import { configureStore } from 'redux-mock-store';
+import thunk from 'redux-thunk';
 // import { Provider } from 'react-redux';
-import UserTableData from '../UserTableData';
+import { MemoryRouter } from 'react-router-dom';
 import { authMock, themeMock } from '../../../__tests__/mockStates';
 import { renderWithProvider } from '../../../__tests__/utils';
-import { MemoryRouter } from 'react-router-dom';
+import UserTableData from '../UserTableData';
 
 // Mock Axios requests
 vi.mock('axios');

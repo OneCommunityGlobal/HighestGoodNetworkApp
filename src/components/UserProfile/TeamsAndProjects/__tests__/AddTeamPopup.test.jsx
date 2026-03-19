@@ -1,14 +1,13 @@
-import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
-import AddTeamPopup from '../AddTeamPopup';
-import thunk from 'redux-thunk';
-import { configureStore } from 'redux-mock-store';
-import { Provider } from 'react-redux';
-import { postNewTeam, getAllUserTeams } from '~/actions/allTeamsAction';
-import { ADD_NEW_TEAM, RECEIVE_ALL_USER_TEAMS } from '~/constants/allTeamsConstants';
-import { toast } from 'react-toastify';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import axios from 'axios';
+import { Provider } from 'react-redux';
+import { toast } from 'react-toastify';
+import { configureStore } from 'redux-mock-store';
+import thunk from 'redux-thunk';
+import { getAllUserTeams, postNewTeam } from '~/actions/allTeamsAction';
+import { ADD_NEW_TEAM, RECEIVE_ALL_USER_TEAMS } from '~/constants/allTeamsConstants';
+import AddTeamPopup from '../AddTeamPopup';
 
 const userTeams = [
   {
