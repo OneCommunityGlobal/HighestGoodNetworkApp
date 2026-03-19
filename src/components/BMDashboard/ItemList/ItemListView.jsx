@@ -42,6 +42,7 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
   const [viewUpdate, setViewUpdate] = useState(false);
   const [isACOpen, setisACOpen] = useState(false); //Consumables Page
   const selectList = itemType === 'Consumables' ? consumableTypes : materialTypes;
+  const [rowToEdit, setRowtoEdit] = useState(null);
 
   useEffect(() => {
     if (items) setFilteredItems([...items]);
@@ -98,12 +99,18 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
       setisACOpen(true);
     }
   };
-  const handleEditClick = rowData => {
+  const handleEditClick = () => {
+    if (!selectedRow) return;
+    setRowtoEdit(selectedRow); // save for modal
     setisEditOpen(true);
+    setSelectedRow(null);
   };
 
-  const handleUpdateHistory = rowData => {
+  const handleUpdateHistory = () => {
+    if (!selectedRow) return;
+    setRowtoEdit(selectedRow);
     setViewUpdate(true);
+    setSelectedRow(null);
   };
 
   return (
@@ -191,14 +198,14 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
       </section>
       <section>
         <EditNameUnitModal
-          item={selectedRow}
+          item={rowToEdit}
           isOpen={isEditOpen}
           toggle={() => setisEditOpen(false)}
         />
       </section>
       <section>
         <ViewUpdateHistoryModal
-          item={selectedRow}
+          item={rowToEdit}
           isOpen={viewUpdate}
           toggle={() => setViewUpdate(false)}
         />
