@@ -452,7 +452,7 @@ export default (
         />
 
         <ProtectedRoute
-          path="/application-analytics"
+          path="/applicant-analytics"
           exact
           component={ApplicationAnalyticsContainer}
           fallback

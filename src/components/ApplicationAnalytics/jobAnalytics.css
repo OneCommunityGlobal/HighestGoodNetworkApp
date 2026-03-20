@@ -309,28 +309,32 @@ body:has(.ja.dark) {
 
 .dark .ja-filter select,
 .dark .ja-filter input[type="date"] {
-  background: var(--card);
+  background: var(--bg);
   color: var(--text);
   border-color: var(--border);
-}
-
-.dark .ja-filter select,
-.dark .ja-filter input[type="date"] {
-  background: var(--bg);
+  color-scheme: dark;
 }
 
 .ja-date-range {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 8px;
+}
+
+.ja-date-range input[type="date"] {
+  flex: 1 1 120px;
+  min-width: 0;
+  width: auto;
 }
 
 .ja-date-dash {
   opacity: 0.6;
+  flex-shrink: 0;
 }
 
 .ja-clear {
-  margin-left: auto;
+  flex: 0 0 auto;
   height: 32px;
   padding: 0 10px;
   background: transparent;
@@ -338,6 +342,7 @@ body:has(.ja.dark) {
   border: 1px solid var(--border);
   border-radius: 6px;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .ja-clear:hover {
