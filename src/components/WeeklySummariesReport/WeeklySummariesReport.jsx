@@ -696,7 +696,7 @@ const WeeklySummariesReport = props => {
       const badgeStatusCode = await fetchAllBadges();
       setPermissionState(prev => ({
         ...prev,
-        bioEditPermission: hasPermission('requestBio'),
+        bioEditPermission: hasPermission('putUserProfileImportantInfo'),
         canEditSummaryCount: hasPermission('putUserProfileImportantInfo'),
         codeEditPermission:
           hasPermission('editTeamCode') ||
@@ -2268,7 +2268,7 @@ const WeeklySummariesReport = props => {
         await props.fetchAllBadges();
         setPermissionState(prev => ({
           ...prev,
-          bioEditPermission: props.hasPermission('requestBio'),
+          bioEditPermission: props.hasPermission('putUserProfileImportantInfo'),
           // codeEditPermission: props.hasPermission('replaceTeamCodes'),
           // allow team‑code edits for specific roles or permissions
           codeEditPermission:
