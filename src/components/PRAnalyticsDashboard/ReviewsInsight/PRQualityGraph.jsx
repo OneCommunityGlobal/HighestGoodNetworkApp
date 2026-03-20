@@ -1,8 +1,12 @@
 import { Pie } from 'react-chartjs-2';
-import './ReviewsInsight.css';
+import sharedStyles from './ReviewsInsight.module.css';
 import { useSelector } from 'react-redux';
+import { Chart } from 'chart.js';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 
-function PRQualityGraph({ selectedTeams, qualityData }) {
+Chart.register(ChartDataLabels);
+
+function PRQualityGraph({ selectedTeams, qualityData, isDataViewActive }) {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   if (!selectedTeams || selectedTeams.length === 0) {
@@ -10,7 +14,7 @@ function PRQualityGraph({ selectedTeams, qualityData }) {
   }
 
   if (!qualityData || Object.keys(qualityData).length === 0) {
-    return <div className="no-data-ri">No data available for Quality Graph.</div>;
+    return <div className={sharedStyles.noData}>No data available for Quality Graph.</div>;
   }
 
   const isAllTeams = selectedTeams.some(team => team.value === 'All');
@@ -20,18 +24,24 @@ function PRQualityGraph({ selectedTeams, qualityData }) {
 
   const generateChartData = team => {
     const teamQualityData = qualityData[team] || {};
+
+    const counts = [
+      teamQualityData.NotApproved || 0,
+      teamQualityData.LowQuality || 0,
+      teamQualityData.Sufficient || 0,
+      teamQualityData.Exceptional || 0,
+    ];
+
+    const total = counts.reduce((sum, v) => sum + v, 0);
+    const values = isDataViewActive ? counts.map(v => (total ? (v / total) * 100 : 0)) : counts;
+
     return {
       labels: ['Not Approved', 'Low Quality', 'Sufficient', 'Exceptional'],
       datasets: [
         {
           label: `PR Quality Distribution for ${team}`,
-          data: [
-            teamQualityData.NotApproved || 0,
-            teamQualityData.LowQuality || 0,
-            teamQualityData.Sufficient || 0,
-            teamQualityData.Exceptional || 0,
-          ],
-          backgroundColor: ['#DC3545', '#FFC107', '#28A745', '#007BFF'],
+          data: values,
+          backgroundColor: ['#DC3545', '#FFC107', '#28A745', '#5940CB'],
           hoverOffset: 4,
         },
       ],
@@ -40,29 +50,53 @@ function PRQualityGraph({ selectedTeams, qualityData }) {
 
   const options = {
     responsive: true,
+    interaction: {
+      mode: 'dataset',
+    },
     plugins: {
       legend: {
         position: 'bottom',
         labels: {
-          font: {
-            size: 12,
-          },
-          color: !darkMode ? '#333' : '#fff',
+          font: { size: 12 },
+          color: darkMode ? '#fff' : '#333',
         },
       },
       tooltip: {
         enabled: true,
+        callbacks: {
+          label: ctx => (isDataViewActive ? `${ctx.raw.toFixed(1)}%` : ctx.raw),
+        },
+      },
+      datalabels: {
+        color: darkMode ? '#fff' : '#000',
+        font: { weight: 'bold', size: 11 },
+        formatter: value => {
+          if (!value) return '';
+          return isDataViewActive ? `${value}%` : value;
+        },
       },
     },
   };
 
   return (
-    <div className="ri-quality-graph">
-      <h2>PR Quality Distribution</h2>
-      <div className="ri-charts">
+    <div className={sharedStyles.riQualityGraph}>
+      <h2 className={`${sharedStyles.heading} ${darkMode ? sharedStyles.darkModeForeground : ''}`}>
+        PR Quality Distribution
+      </h2>
+
+      <div className={`${sharedStyles.riCharts}`}>
         {teamsToDisplay.map(team => (
-          <div key={team} className="ri-chart">
-            <h3>{team}</h3>
+          <div
+            key={team}
+            className={`${sharedStyles.riChart} ${darkMode ? sharedStyles.riChartDarkMode : ''}`}
+          >
+            <h3
+              className={`${sharedStyles.heading} ${
+                darkMode ? sharedStyles.darkModeForeground : ''
+              }`}
+            >
+              {team}
+            </h3>
             <Pie data={generateChartData(team)} options={options} />
           </div>
         ))}

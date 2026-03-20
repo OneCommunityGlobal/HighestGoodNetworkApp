@@ -14,7 +14,7 @@ import { useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEyeSlash, faEye } from '@fortawesome/free-solid-svg-icons';
 import { boxStyle, boxStyleDark } from '~/styles';
-import '../Header/DarkMode.css';
+import '../Header/index.css';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { ENDPOINTS } from '~/utils/URL';
@@ -79,7 +79,7 @@ export default function PasswordInputModal({
 
   const onSubmit = () => {
     setPasswordField('');
-    authorizeWeeklySummariesButton(passwordField);
+    authorizeWeeklySummariesButton();
   };
 
   return (
@@ -105,6 +105,7 @@ export default function PasswordInputModal({
               type={showPassword ? 'text' : 'password'}
               name="passwordField"
               id="passwordField"
+              autoComplete="current-password"
               value={passwordField}
               onChange={onChangeFunc}
               data-testid="password-input"

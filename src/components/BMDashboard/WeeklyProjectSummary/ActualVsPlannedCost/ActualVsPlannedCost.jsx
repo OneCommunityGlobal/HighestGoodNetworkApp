@@ -141,7 +141,7 @@ function ActualVsPlannedCost() {
         Actual vs Planned Costs
       </h2>
 
-      <div className={`${styles.selectorsContainer} ${darkMode ? 'dark-mode' : ''}`}>
+      <div className={styles.selectorsContainer}>
         <div className={styles.selectorGroup}>
           <label htmlFor="ActualVsPlannedCost-project-select">Project:</label>
           <select
