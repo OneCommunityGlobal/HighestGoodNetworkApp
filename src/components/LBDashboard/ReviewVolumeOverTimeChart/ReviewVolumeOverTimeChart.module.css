@@ -80,15 +80,19 @@
 .filterGroup {
   min-width: 180px;
   flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
 .filterLabel {
+  display: block;
   font-size: 0.8rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: #4b5563;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0;
 }
 
 .select {
@@ -113,6 +117,55 @@
   background-color: #020617;
   border-color: #374151;
   color: #e5e7eb;
+}
+
+.datePickerPopper {
+  z-index: 20;
+}
+
+.monthCalendar {
+  border: 1px solid #e5e7eb;
+}
+
+.monthCalendar :global(.react-datepicker__month-text) {
+  color: #111827;
+}
+
+.monthCalendar :global(.react-datepicker__month-text:hover),
+.monthCalendar :global(.react-datepicker__month-text--keyboard-selected),
+.monthCalendar :global(.react-datepicker__month-text--selected) {
+  background-color: #dbeafe !important;
+  color: #111827 !important;
+  opacity: 1 !important;
+}
+
+.darkMonthCalendar {
+  background-color: #111827;
+  border: 1px solid #374151;
+}
+
+.darkMonthCalendar :global(.react-datepicker__header) {
+  background-color: #1f2937;
+  border-bottom: 1px solid #374151;
+}
+
+.darkMonthCalendar :global(.react-datepicker__current-month),
+.darkMonthCalendar :global(.react-datepicker__navigation-icon::before),
+.darkMonthCalendar :global(.react-datepicker__month-text) {
+  color: #e5e7eb;
+}
+
+.darkMonthCalendar :global(.react-datepicker__month-text:hover),
+.darkMonthCalendar :global(.react-datepicker__month-text--keyboard-selected),
+.darkMonthCalendar :global(.react-datepicker__month-text--selected) {
+  background-color: #3b82f6 !important;
+  color: #ffffff !important;
+  opacity: 1 !important;
+}
+
+.darkMonthCalendar :global(.react-datepicker__month-text--disabled),
+.monthCalendar :global(.react-datepicker__month-text--disabled) {
+  opacity: 0.45;
 }
 
 .chartWrapper {

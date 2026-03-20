@@ -239,6 +239,12 @@ const ALL_MONTH_KEYS = Array.from(new Set(RAW_REVIEWS.map(r => r.monthKey))).sor
   a.localeCompare(b),
 );
 
+function toMonthKey(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  return `${year}-${month}`;
+}
+
 function filterByDateRange(records, dateFilter, fromDate, toDate) {
   if (dateFilter === 'custom' && fromDate && toDate && fromDate > toDate) {
     return [];
@@ -251,17 +257,16 @@ function filterByDateRange(records, dateFilter, fromDate, toDate) {
   }
 
   if (dateFilter === 'custom' && (fromDate || toDate)) {
-    return records.filter(r => {
-      const monthDate = new Date(`${r.monthKey}-01T00:00:00Z`);
+    const fromMonthKey = fromDate ? toMonthKey(fromDate) : null;
+    const toMonthKeyValue = toDate ? toMonthKey(toDate) : null;
 
-      if (fromDate) {
-        const firstOfFrom = new Date(fromDate.getFullYear(), fromDate.getMonth(), 1);
-        if (monthDate < firstOfFrom) return false;
+    return records.filter(r => {
+      if (fromMonthKey && r.monthKey < fromMonthKey) {
+        return false;
       }
 
-      if (toDate) {
-        const lastOfTo = new Date(toDate.getFullYear(), toDate.getMonth() + 1, 0);
-        if (monthDate > lastOfTo) return false;
+      if (toMonthKeyValue && r.monthKey > toMonthKeyValue) {
+        return false;
       }
 
       return true;
@@ -338,6 +343,20 @@ function ReviewVolumeOverTimeChart({ darkMode }) {
     if (value !== 'custom') {
       setCustomFrom(null);
       setCustomTo(null);
+    }
+  };
+
+  const handleFromMonthChange = date => {
+    setCustomFrom(date);
+    if (date && customTo && date > customTo) {
+      setCustomTo(date);
+    }
+  };
+
+  const handleToMonthChange = date => {
+    setCustomTo(date);
+    if (date && customFrom && date < customFrom) {
+      setCustomFrom(date);
     }
   };
 
@@ -477,11 +496,14 @@ function ReviewVolumeOverTimeChart({ darkMode }) {
               <DatePicker
                 id="fromMonth"
                 selected={customFrom}
-                onChange={date => setCustomFrom(date)}
+                onChange={handleFromMonthChange}
                 dateFormat="MMM yyyy"
                 showMonthYearPicker
                 className={dateSelectClass}
+                calendarClassName={darkMode ? styles.darkMonthCalendar : styles.monthCalendar}
+                popperClassName={styles.datePickerPopper}
                 placeholderText="Select month"
+                maxDate={customTo || undefined}
               />
             </div>
             <div className={styles.filterGroup}>
@@ -491,11 +513,14 @@ function ReviewVolumeOverTimeChart({ darkMode }) {
               <DatePicker
                 id="toMonth"
                 selected={customTo}
-                onChange={date => setCustomTo(date)}
+                onChange={handleToMonthChange}
                 dateFormat="MMM yyyy"
                 showMonthYearPicker
                 className={dateSelectClass}
+                calendarClassName={darkMode ? styles.darkMonthCalendar : styles.monthCalendar}
+                popperClassName={styles.datePickerPopper}
                 placeholderText="Select month"
+                minDate={customFrom || undefined}
               />
             </div>
           </>
