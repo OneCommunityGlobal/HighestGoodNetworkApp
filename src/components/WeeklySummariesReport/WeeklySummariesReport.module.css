@@ -105,10 +105,6 @@
   line-height: 20px;
   color: #bbb;
   font-weight: bold;
-  box-sizing: border-box;
-}
-
-.switchToggleInner::before {
   content: '';
 }
 
@@ -163,7 +159,6 @@
 }
 
 .copyIcon {
-  margin: 2px;
   cursor: pointer;
   margin: 2px;
 }
