@@ -36,8 +36,13 @@
 
 .filtersSection {
   display: grid;
-  grid-template-columns: repeat(5, minmax(150px, 1fr));
-  gap: 24px;
+  grid-template-columns: 
+    minmax(150px, 0.5fr)
+    minmax(150px, 0.5fr)
+    minmax(200px, 1fr)
+    minmax(150px, 0.5fr)
+    minmax(150px, 0.75fr);
+  gap: 20px;
   margin-bottom: 32px;
   align-items: end;
 }

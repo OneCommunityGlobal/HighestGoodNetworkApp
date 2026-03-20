@@ -44,10 +44,16 @@ function DatabaseDesign() {
         ]);
 
         if (typesResponse.data) {
-          setEventTypes(typesResponse.data.types || []);
+          const cleanedTypes = (typesResponse.data.types || []).filter(
+            type => type && type.trim() !== '',
+          );
+          setEventTypes(cleanedTypes);
         }
         if (locationsResponse.data) {
-          setEventLocations(locationsResponse.data.locations || []);
+          const cleanedLocations = (locationsResponse.data.locations || []).filter(
+            location => location && location.trim() !== '',
+          );
+          setEventLocations(cleanedLocations);
         }
 
         // Fetch events
