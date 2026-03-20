@@ -49,6 +49,9 @@ const TeamMemberTask = React.memo(
     onTimeOff,
     goingOnTimeOff,
     displayUser,
+    userStateCatalog,
+    userStateSelection,
+    canManageUserStateIndicator,
   }) => {
     const darkMode = useSelector(state => state.theme.darkMode);
     const taskCounts = useSelector(state => state.dashboard?.taskCounts ?? {});
@@ -525,7 +528,9 @@ const TeamMemberTask = React.memo(
                             <div style={{ display: 'block', marginTop: '4px' }}>
                               <UserStateDisplay
                                 userId={user.personId}
-                                canEdit={dispatch(hasPermission('manage_user_state_indicator'))}
+                                catalog={userStateCatalog}
+                                selectedFromParent={userStateSelection}
+                                canEdit={canManageUserStateIndicator}
                               />
                             </div>
                           </td>
@@ -809,6 +814,20 @@ TeamMemberTask.propTypes = {
   }).isRequired,
   userRole: PropTypes.string.isRequired,
   userId: PropTypes.string.isRequired,
+  displayUser: PropTypes.object,
+  userStateCatalog: PropTypes.arrayOf(
+    PropTypes.shape({
+      key: PropTypes.string,
+      label: PropTypes.string,
+    }),
+  ),
+  userStateSelection: PropTypes.arrayOf(
+    PropTypes.shape({
+      key: PropTypes.string,
+      selectedAt: PropTypes.string,
+    }),
+  ),
+  canManageUserStateIndicator: PropTypes.bool,
 };
 
 TeamMemberTask.displayName = 'TeamMemberTask';
