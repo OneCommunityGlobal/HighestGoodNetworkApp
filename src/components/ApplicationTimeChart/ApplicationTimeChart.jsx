@@ -9,6 +9,11 @@ function ApplicationTimeChart() {
 
   const rawData = getApplicationData();
 
+  const resetFilters = () => {
+    setDateFilter('all');
+    setSelectedRole('all');
+  };
+
   const processedData = useMemo(() => {
     let filtered = [...rawData];
 
@@ -139,7 +144,12 @@ function ApplicationTimeChart() {
               </div>
             </>
           ) : (
-            <div className={styles.noData}>No data available for the selected filters</div>
+            <div className={styles.noData}>
+              <p className={styles.noDataText}>No data available for the selected filters</p>
+              <button className={styles.resetButton} onClick={resetFilters}>
+                Reset Filters
+              </button>
+            </div>
           )}
         </div>
 
