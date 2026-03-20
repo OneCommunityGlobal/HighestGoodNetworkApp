@@ -8,7 +8,11 @@ import hasPermission from '~/utils/permissions';
 import { boxStyle, boxStyleDark } from '~/styles';
 import { DELETE } from '../../languages/en/ui';
 import { getTeamMembers } from '../../actions/allTeamsAction';
-import { fetchTeamMembersCached, getCachedTeamMembers } from './teamMembersCache';
+import {
+  fetchTeamMembersCached,
+  getCachedTeamMembers,
+  clearCachedTeamMembers,
+} from './teamMembersCache';
 
 function computeCounts(members, loading, localMembers) {
   const list = Array.isArray(members) ? members : [];
@@ -68,13 +72,16 @@ export function Team(props) {
 
   // Fire callback immediately (keeps tests & UX snappy), then refresh members
   const handleOpenMembers = () => {
+    clearCachedTeamMembers(teamIdKey);
+    setLocalMembers(null); // reset stale local state
     if (typeof props.onMembersClick === 'function') {
-      props.onMembersClick(teamIdRaw, props.name, props.teamCode);
+      props.onMembersClick(teamIdRaw, props.name, props.teamCode); // don't pass localMembers
     }
-
     setLoading(true);
     fetchTeamMembersCached(dispatch, getTeamMembers, teamIdKey)
-      .then(setLocalMembers)
+      .then(fresh => {
+        setLocalMembers(fresh);
+      })
       .catch(() => {})
       .finally(() => setLoading(false));
   };

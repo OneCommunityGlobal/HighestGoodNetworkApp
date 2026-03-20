@@ -75,7 +75,7 @@ export const TeamMembersPopup = React.memo(props => {
   const [searchText, setSearchText] = useState('');
   const [duplicateUserAlert, setDuplicateUserAlert] = useState(false);
   const [sortOrder, setSortOrder] = useState(0);
-  const [deletedPopup, setDeletedPopup] = useState(false);
+  // const [deletedPopup, setDeletedPopup] = useState(false);
   const [infoModal, setInfoModal] = useState(false);
 
   // Normalize members
@@ -169,11 +169,11 @@ export const TeamMembersPopup = React.memo(props => {
   }, [props.open]);
 
   const toggleInfoModal = () => setInfoModal(p => !p);
-  const closeDeletedPopup = () => setDeletedPopup(p => !p);
+  // const closeDeletedPopup = () => setDeletedPopup(p => !p);
 
   const handleDelete = id => {
     props.onDeleteClick(`${id}`);
-    setDeletedPopup(true);
+    // setDeletedPopup(true);
   };
 
   const closePopup = () => {
@@ -468,7 +468,7 @@ export const TeamMembersPopup = React.memo(props => {
         </ModalFooter>
       </Modal>
 
-      <Modal
+      {/* <Modal
         isOpen={deletedPopup}
         toggle={closeDeletedPopup}
         className={darkMode ? 'dark-mode text-light' : ''}
@@ -486,7 +486,7 @@ export const TeamMembersPopup = React.memo(props => {
             ocean is now one drop smaller.
           </p>
         </ModalBody>
-      </Modal>
+      </Modal> */}
     </Container>
   );
 });

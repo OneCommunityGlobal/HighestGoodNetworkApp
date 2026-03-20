@@ -80,6 +80,7 @@ import { postWarningByUserId, getSpecialWarnings } from '../../actions/warnings'
 import SetUpFinalDayPopUp from '../UserManagement/SetUpFinalDayPopUp';
 import { InactiveReason } from '../../utils/enums';
 import { activateUserAction, deactivateImmediatelyAction, scheduleDeactivationAction } from '../../actions/userLifecycleActions';
+import { clearCachedTeamMembers } from '../Teams/teamMembersCache';
 
 
 function UserProfile(props) { 
@@ -983,6 +984,8 @@ setUpdatedTasks(prev => {
 
   try {
     const result = await props.updateUserProfile(userProfileToUpdate);
+    clearCachedTeamMembers(); // clear all team caches on any profile save
+    console.log("Clearing cache from user profile!");
     if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
       await props.refreshToken(userProfile._id);
     }
