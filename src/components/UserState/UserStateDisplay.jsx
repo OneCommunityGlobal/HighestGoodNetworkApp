@@ -1,6 +1,6 @@
 import axios from 'axios';
 import PropTypes from 'prop-types';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ENDPOINTS } from '~/utils/URL';
 
@@ -252,36 +252,19 @@ function logError(context, error) {
   }
 }
 
-function UserStateDisplay({ userId, canEdit }) {
+function UserStateDisplay({ userId, catalog, selectedFromParent, canEdit }) {
   const darkMode = useSelector(state => state.theme.darkMode);
-  const [catalog, setCatalog] = useState([]);
-  const [selected, setSelected] = useState([]);
+  const [selected, setSelected] = useState(selectedFromParent || []);
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [newLabel, setNewLabel] = useState('');
   const [isAdding, setIsAdding] = useState(false);
   const [isReordering, setIsReordering] = useState(false);
 
-  const fetchData = useCallback(async () => {
-    try {
-      const [catalogRes, selectionRes] = await Promise.all([
-        axios.get(ENDPOINTS.USER_STATE_CATALOG),
-        axios.get(ENDPOINTS.USER_STATE_SELECTION(userId)),
-      ]);
-      setCatalog(catalogRes.data.items || []);
-      setSelected(selectionRes.data.stateIndicators || []);
-    } catch (fetchError) {
-      logError('fetchData', fetchError);
-      setCatalog([]);
-      setSelected([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [userId]);
-
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    setSelected(selectedFromParent || []);
+    setLoading(false);
+  }, [selectedFromParent]);
 
   const handleToggle = async key => {
     const isItemSelected = selected.some(s => s.key === key);
@@ -329,7 +312,6 @@ function UserStateDisplay({ userId, canEdit }) {
       });
     } catch (moveError) {
       logError('handleMoveUp', moveError);
-      fetchData();
     }
   };
 
@@ -345,7 +327,6 @@ function UserStateDisplay({ userId, canEdit }) {
       });
     } catch (moveError) {
       logError('handleMoveDown', moveError);
-      fetchData();
     }
   };
 
@@ -458,10 +439,24 @@ function UserStateDisplay({ userId, canEdit }) {
 
 UserStateDisplay.propTypes = {
   userId: PropTypes.string.isRequired,
+  catalog: PropTypes.arrayOf(
+    PropTypes.shape({
+      key: PropTypes.string,
+      label: PropTypes.string,
+    }),
+  ),
+  selectedFromParent: PropTypes.arrayOf(
+    PropTypes.shape({
+      key: PropTypes.string,
+      selectedAt: PropTypes.string,
+    }),
+  ),
   canEdit: PropTypes.bool,
 };
 
 UserStateDisplay.defaultProps = {
+  catalog: [],
+  selectedFromParent: [],
   canEdit: false,
 };
 
