@@ -22,50 +22,18 @@ function mergeRoleOptions(prev, rows) {
 function ApplicationTimeChart() {
   const [dateFilter, setDateFilter] = useState('all');
   const [selectedRole, setSelectedRole] = useState('all');
-  const [data, setData] = useState([]);
-  const [availableRoles, setAvailableRoles] = useState(['all']);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
-  // Get dark mode state from Redux
-  const darkMode = useSelector(state => state.theme?.darkMode || false);
+  const rawData = getApplicationData();
 
-  // Fetch available roles from backend
-  useEffect(() => {
-    const fetchRoles = async () => {
-      try {
-        // Construct roles endpoint URL: /api/analytics/application-time/roles
-        const baseUrl = ENDPOINTS.APPLICATION_TIME_DATA('', '', []);
-        const rolesUrl = baseUrl.split('?')[0] + '/roles';
-        const response = await httpService.get(rolesUrl);
-        if (response.data && response.data.data && Array.isArray(response.data.data)) {
-          const apiRoles = response.data.data.filter(Boolean).sort((a, b) => a.localeCompare(b));
-          setAvailableRoles(['all', ...apiRoles]);
-        } else if (response.data && response.data.success && Array.isArray(response.data.data)) {
-          const apiRoles = response.data.data.filter(Boolean).sort((a, b) => a.localeCompare(b));
-          setAvailableRoles(['all', ...apiRoles]);
-        } else {
-          setAvailableRoles(mergeRoleOptions(['all'], getAggregatedMockForChart()));
-        }
-      } catch (err) {
-        console.error('Error fetching available roles:', err);
-        setAvailableRoles(mergeRoleOptions(['all'], getAggregatedMockForChart()));
-      }
-    };
+  const resetFilters = () => {
+    setDateFilter('all');
+    setSelectedRole('all');
+  };
 
-    fetchRoles();
-  }, []);
+  const processedData = useMemo(() => {
+    let filtered = [...rawData];
 
-  // Fetch data from backend
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-
-        // Prepare query parameters
-        let startDate = null;
-        let endDate = null;
+    filtered = filtered.filter(item => item.timeToApply <= 30);
 
         if (dateFilter !== 'all') {
           const now = new Date();
@@ -280,8 +248,11 @@ function ApplicationTimeChart() {
               </div>
             </>
           ) : (
-            <div className={`${styles.noData} ${darkMode ? styles.darkMode : ''}`}>
-              No data available for the selected filters
+            <div className={styles.noData}>
+              <p className={styles.noDataText}>No data available for the selected filters</p>
+              <button className={styles.resetButton} onClick={resetFilters}>
+                Reset Filters
+              </button>
             </div>
           )}
         </div>
