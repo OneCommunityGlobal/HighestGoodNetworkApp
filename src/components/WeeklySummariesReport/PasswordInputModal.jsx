@@ -79,7 +79,7 @@ export default function PasswordInputModal({
 
   const onSubmit = () => {
     setPasswordField('');
-    authorizeWeeklySummariesButton(passwordField);
+    authorizeWeeklySummariesButton();
   };
 
   return (
@@ -105,6 +105,7 @@ export default function PasswordInputModal({
               type={showPassword ? 'text' : 'password'}
               name="passwordField"
               id="passwordField"
+              autoComplete="current-password"
               value={passwordField}
               onChange={onChangeFunc}
               data-testid="password-input"

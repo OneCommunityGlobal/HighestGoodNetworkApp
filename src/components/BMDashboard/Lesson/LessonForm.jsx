@@ -1,5 +1,5 @@
 /* eslint-disable testing-library/no-node-access */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Form, FormControl, Button } from 'react-bootstrap';
 import axios from 'axios';
 import { ENDPOINTS } from '~/utils/URL';
@@ -21,15 +21,13 @@ function LessonForm() {
   const dispatch = useDispatch();
   const history = useHistory();
   const { projectId } = useParams();
-
-  // Global state selectors
-  const darkMode = useSelector(state => state.theme.darkMode);
   const user = useSelector(state => state.auth.user);
   const userId = user ? user.userid : null;
   const roles = useSelector(state => state.role.roles);
   const projects = useSelector(state => state.bmProjects);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
-  // Local state for form inputs and UI controls
+  // Local state
   const [LessonFormtags, setLessonFormTags] = useState([]);
   const [permanentTags, setPermanentTags] = useState([]);
   const [tagInput, setTagInput] = useState('');
@@ -41,6 +39,13 @@ function LessonForm() {
   const [projectname, setProjectName] = useState(null);
   const [filteredTags, setFilteredTags] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [suppressInitialFocus, setSuppressInitialFocus] = useState(true);
+  const [hasUserFocused, setHasUserFocused] = useState(false);
+
+  const lessonTitleRef = useRef(null);
+  const lessonTextRef = useRef(null);
+  const formContainerRef = useRef(null);
+  const allowNextFocusRef = useRef(false);
 
   // Filter tags for autocomplete as user types
   const handleTagInput = e => {
@@ -109,6 +114,61 @@ function LessonForm() {
     dispatch(fetchBMProjects(projectId));
     dispatch(getAllRoles());
   }, [dispatch, projectId]);
+
+  // Focus and Selection management
+  useEffect(() => {
+    if (document.activeElement && document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+    const blurTargets = () => {
+      lessonTitleRef.current?.blur();
+      lessonTextRef.current?.blur();
+      if (document.activeElement && document.activeElement instanceof HTMLElement) {
+        document.activeElement.blur();
+      }
+    };
+    blurTargets();
+    const timer = setTimeout(blurTargets, 50);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    const clearInactiveSelection = () => {
+      const active = document.activeElement;
+      [lessonTitleRef.current, lessonTextRef.current].forEach(el => {
+        if (!el || el === active) return;
+        if (typeof el.setSelectionRange === 'function') {
+          el.setSelectionRange(0, 0);
+        }
+      });
+    };
+    document.addEventListener('selectionchange', clearInactiveSelection);
+    document.addEventListener('mouseup', clearInactiveSelection);
+    document.addEventListener('keyup', clearInactiveSelection);
+    return () => {
+      document.removeEventListener('selectionchange', clearInactiveSelection);
+      document.removeEventListener('mouseup', clearInactiveSelection);
+      document.removeEventListener('keyup', clearInactiveSelection);
+    };
+  }, []);
+
+  const blockInitialFocus = e => {
+    if (!suppressInitialFocus) return;
+    if (allowNextFocusRef.current) {
+      allowNextFocusRef.current = false;
+      setSuppressInitialFocus(false);
+      return;
+    }
+    const target = e.target;
+    if (target && typeof target.blur === 'function') {
+      target.blur();
+    }
+  };
+
+  const allowFocusOnUserAction = () => {
+    allowNextFocusRef.current = true;
+    setHasUserFocused(true);
+  };
 
   // Handle outside clicks to close the tag dropdown
   useEffect(() => {
@@ -192,6 +252,63 @@ function LessonForm() {
     setLessonTitleText(lessonformtitleinput);
   };
 
+  const clearOtherSelections = target => {
+    if (typeof window.getSelection === 'function') {
+      const selection = window.getSelection();
+      if (selection && selection.removeAllRanges) {
+        selection.removeAllRanges();
+      }
+    }
+    const refs = [lessonTitleRef.current, lessonTextRef.current];
+    refs.forEach(el => {
+      if (!el || el === target) return;
+      if (typeof el.setSelectionRange === 'function') {
+        const end = el.value ? el.value.length : 0;
+        el.setSelectionRange(end, end);
+      }
+    });
+  };
+
+  const clearSelectionGlobal = () => {
+    if (typeof window.getSelection === 'function') {
+      const selection = window.getSelection();
+      if (selection && selection.removeAllRanges) {
+        selection.removeAllRanges();
+      }
+    }
+    [lessonTitleRef.current, lessonTextRef.current].forEach(el => {
+      if (el && typeof el.setSelectionRange === 'function') {
+        el.setSelectionRange(0, 0);
+      }
+    });
+  };
+
+  const enforceDarkInputStyle = e => {
+    if (!darkMode) return;
+    const target = e.currentTarget;
+    clearOtherSelections(target);
+    target.style.setProperty('background-color', '#3A506B', 'important');
+    target.style.setProperty('color', '#ffffff', 'important');
+    target.style.setProperty('border-color', '#556B8D', 'important');
+    target.style.setProperty('box-shadow', '0 0 0 1000px #3A506B inset', 'important');
+    target.style.setProperty('-webkit-box-shadow', '0 0 0 1000px #3A506B inset', 'important');
+  };
+
+  const enforceDarkInputBlurStyle = e => {
+    if (!darkMode) return;
+    const target = e.currentTarget;
+    clearOtherSelections(target);
+    target.style.setProperty('background-color', '#3A506B', 'important');
+    target.style.setProperty('color', '#ffffff', 'important');
+    target.style.setProperty('border-color', '#556B8D', 'important');
+    target.style.setProperty('box-shadow', 'none', 'important');
+    target.style.setProperty('-webkit-box-shadow', 'none', 'important');
+    if (typeof target.setSelectionRange === 'function') {
+      const end = target.value ? target.value.length : 0;
+      target.setSelectionRange(end, end);
+    }
+  };
+
   // Compile form data and dispatch creation action
   const LessonFormSubmit = async e => {
     e.preventDefault();
@@ -223,8 +340,18 @@ function LessonForm() {
 
   return (
     <div className={`${styles.masterContainer} ${darkMode ? styles.darkModeMaster : ''}`}>
-      <div className={`${styles.formContainer} ${darkMode ? styles.darkModeForm : ''}`}>
-        <Form onSubmit={LessonFormSubmit}>
+      <div
+        ref={formContainerRef}
+        className={`${styles.formContainer} ${darkMode ? styles.darkModeForm : ''} ${
+          suppressInitialFocus ? styles.suppressInitialFocus : ''
+        } ${!hasUserFocused ? styles.noFocusShadow : ''}`}
+      >
+        <Form
+          onSubmit={LessonFormSubmit}
+          onFocusCapture={blockInitialFocus}
+          onMouseDownCapture={clearSelectionGlobal}
+          onTouchStartCapture={clearSelectionGlobal}
+        >
           <div className="WriteLessonAndTagDiv">
             {/* Title Input */}
             <Form.Group className="LessonFrom" controlId="exampleForm.ControlTextarea1">
@@ -234,11 +361,20 @@ function LessonForm() {
               <span className="red-asterisk">* </span>
               <Form.Control
                 required
+                ref={lessonTitleRef}
                 className={`LessonTitle ${darkMode ? styles.darkModeInput : ''}`}
                 type="text"
                 placeholder="Enter title here"
                 onChange={handleLessonTitleInput}
+                onFocus={enforceDarkInputStyle}
+                onBlur={enforceDarkInputBlurStyle}
+                onMouseDown={allowFocusOnUserAction}
+                onTouchStart={allowFocusOnUserAction}
+                onKeyDown={allowFocusOnUserAction}
+                tabIndex={suppressInitialFocus ? -1 : 0}
                 maxLength={40}
+                autoComplete="new-password"
+                name="lessonTitle"
               />
             </Form.Group>
 
@@ -250,6 +386,7 @@ function LessonForm() {
               <span className="red-asterisk">* </span>
               <Form.Control
                 required
+                ref={lessonTextRef}
                 className={`${styles.lessonPlaceholderText} ${
                   darkMode ? styles.darkModeInput : ''
                 }`}
@@ -257,6 +394,12 @@ function LessonForm() {
                 placeholder="Enter the lesson you learn..."
                 rows={10}
                 onChange={handleLessonInput}
+                onFocus={enforceDarkInputStyle}
+                onBlur={enforceDarkInputBlurStyle}
+                onMouseDown={allowFocusOnUserAction}
+                onTouchStart={allowFocusOnUserAction}
+                onKeyDown={allowFocusOnUserAction}
+                tabIndex={suppressInitialFocus ? -1 : 0}
               />
             </Form.Group>
 
@@ -271,7 +414,10 @@ function LessonForm() {
                   placeholder="Input tag for the lesson"
                   value={tagInput}
                   onChange={handleTagInput}
+                  onMouseDown={allowFocusOnUserAction}
+                  onTouchStart={allowFocusOnUserAction}
                   onKeyDown={e => {
+                    allowFocusOnUserAction();
                     if (e.key === 'Enter') {
                       addTag(e);
                     }
@@ -394,6 +540,7 @@ function LessonForm() {
               className={`${styles.lessonFormButtonCancel} ${
                 darkMode ? styles.darkModeBtnCancel : ''
               }`}
+              type="button"
               onClick={onHandleCancel}
             >
               Back
