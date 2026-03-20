@@ -6062,21 +6062,6 @@ dompurify@^2.5.4:
   resolved "https://registry.npmjs.org/dompurify/-/dompurify-2.5.8.tgz"
   integrity sha512-o1vSNgrmYMQObbSSvF/1brBYEQPHhV1+gsmrusO7/GXtp1T9rCS8cXFqVxK/9crT1jA6Ccv+5MTSjBNqr7Sovw==
 
-dompurify@^3.2.5, dompurify@^3.3.1:
-  version "3.3.1"
-  resolved "https://registry.npmjs.org/dompurify/-/dompurify-3.3.1.tgz"
-  integrity sha512-qkdCKzLNtrgPFP1Vo+98FRzJnBRGe4ffyCea9IwHB1fyxPOeNTHpLKYGd4Uk9xvNoH0ZoOjwZxNptyMwqrId1Q==
-dompurify@^3.2.5:
-  version "3.2.6"
-  resolved "https://registry.npmjs.org/dompurify/-/dompurify-3.2.6.tgz"
-  integrity sha512-/2GogDQlohXPZe6D6NOgQvXLPSYBqIWMnZ8zzOhn09REE4eyAzb+Hed3jhoM9OkuaJ8P6ZGTTVWQKAi8ieIzfQ==
-  optionalDependencies:
-    "@types/trusted-types" "^2.0.7"
-
-dompurify@^3.3.1:
-  version "3.3.1"
-  resolved "https://registry.yarnpkg.com/dompurify/-/dompurify-3.3.1.tgz#c7e1ddebfe3301eacd6c0c12a4af284936dbbb86"
-  integrity sha512-qkdCKzLNtrgPFP1Vo+98FRzJnBRGe4ffyCea9IwHB1fyxPOeNTHpLKYGd4Uk9xvNoH0ZoOjwZxNptyMwqrId1Q==
 dompurify@^3.3.1, dompurify@^3.3.2:
   version "3.3.2"
   resolved "https://registry.yarnpkg.com/dompurify/-/dompurify-3.3.2.tgz#58c515d0f8508b8749452a028aa589ad80b36325"
@@ -8570,13 +8555,6 @@ jspdf@^2.5.1:
     dompurify "^2.5.4"
     html2canvas "^1.0.0-rc.5"
 
-jspdf@^4.0.0:
-  version "4.1.0"
-  resolved "https://registry.npmjs.org/jspdf/-/jspdf-4.1.0.tgz"
-jspdf@^4.1.0:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/jspdf/-/jspdf-4.1.0.tgz#4fb476251c8751c996175cfaac02d30fdf8c7b7a"
-  integrity sha512-xd1d/XRkwqnsq6FP3zH1Q+Ejqn2ULIJeDZ+FTKpaabVpZREjsJKRJwuokTNgdqOU+fl55KgbvgZ1pRTSWCP2kQ==
 jspdf@^4.2.0:
   version "4.2.0"
   resolved "https://registry.npmjs.org/jspdf/-/jspdf-4.2.0.tgz"
