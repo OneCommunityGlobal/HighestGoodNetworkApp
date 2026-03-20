@@ -100,25 +100,6 @@ function JobFormBuilder() {
     setHasUnsavedChanges(changed);
   }, [formFields, newField, templateName, selectedTemplate, initialFormFields]);
 
-  // Clone field
-  const cloneField = async (field, index) => {
-    const clone = structuredClone(field);
-    const updated = [...formFields.slice(0, index + 1), clone, ...formFields.slice(index + 1)];
-    setFormFields(updated);
-
-    if (currentFormId) {
-      try {
-        await axios.post(ENDPOINTS.ADD_QUESTION(currentFormId), {
-          question: clone,
-          position: index + 1,
-        });
-        markAsSaved(updated);
-      } catch (error) {
-        console.error(error);
-      }
-    }
-  };
-
   // Move field
   const moveField = async (index, direction) => {
     const newIndex = direction === 'up' ? index - 1 : index + 1;
@@ -328,7 +309,6 @@ function JobFormBuilder() {
                     field={field}
                     index={index}
                     totalFields={formFields.length}
-                    onClone={cloneField}
                     onMove={moveField}
                     onDelete={deleteField}
                     onEdit={editField}
