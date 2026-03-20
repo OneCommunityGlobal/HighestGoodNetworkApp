@@ -310,6 +310,151 @@ function aggregateData({ category, dateFilter, fromDate, toDate, villages, prope
   return result;
 }
 
+function getSelectStyles(darkMode) {
+  return {
+    control: (provided, state) => {
+      const isDark = darkMode;
+      const baseStyles = {
+        ...provided,
+        backgroundColor: isDark ? '#020617' : '#ffffff',
+        borderColor: isDark ? '#374151' : '#d1d5db',
+        color: isDark ? '#e5e7eb' : '#111827',
+        minHeight: 36,
+        borderRadius: 8,
+        boxShadow: 'none',
+        '&:hover': {
+          borderColor: isDark ? '#6b7280' : '#9ca3af',
+        },
+      };
+
+      if (!state.isFocused) {
+        return baseStyles;
+      }
+
+      return {
+        ...baseStyles,
+        borderColor: isDark ? '#3b82f6' : '#2563eb',
+        boxShadow: '0 0 0 1px rgba(37,99,235,0.6)',
+      };
+    },
+    menu: provided => {
+      const isDark = darkMode;
+      const backgroundColor = isDark ? '#020617' : '#ffffff';
+      const borderColor = isDark ? '#374151' : '#e5e7eb';
+
+      return {
+        ...provided,
+        backgroundColor,
+        borderColor,
+      };
+    },
+    container: provided => ({
+      ...provided,
+      width: '100%',
+      backgroundColor: 'transparent',
+    }),
+    option: (provided, state) => {
+      const isFocused = state.isFocused;
+      const isDark = darkMode;
+      const backgroundColor = isFocused
+        ? isDark
+          ? '#111827'
+          : '#e5e7eb'
+        : isDark
+        ? '#020617'
+        : '#ffffff';
+
+      return {
+        ...provided,
+        backgroundColor,
+        color: isDark ? '#e5e7eb' : '#111827',
+      };
+    },
+    singleValue: provided => ({
+      ...provided,
+      color: darkMode ? '#e5e7eb' : '#111827',
+    }),
+    multiValue: provided => ({
+      ...provided,
+      backgroundColor: darkMode ? '#111827' : '#e5e7eb',
+    }),
+    multiValueLabel: provided => ({
+      ...provided,
+      color: darkMode ? '#e5e7eb' : '#111827',
+    }),
+    input: provided => ({
+      ...provided,
+      color: darkMode ? '#e5e7eb' : '#111827',
+    }),
+    placeholder: provided => ({
+      ...provided,
+      color: darkMode ? '#6b7280' : '#9ca3af',
+    }),
+  };
+}
+
+function CustomDateRangeFilters({
+  customFrom,
+  customTo,
+  handleFromMonthChange,
+  handleToMonthChange,
+  dateSelectClass,
+  darkMode,
+}) {
+  return (
+    <>
+      <div className={styles.filterGroup}>
+        <label className={styles.filterLabel} htmlFor="fromMonth">
+          From
+        </label>
+        <DatePicker
+          id="fromMonth"
+          selected={customFrom}
+          onChange={handleFromMonthChange}
+          dateFormat="MMM yyyy"
+          showMonthYearPicker
+          className={dateSelectClass}
+          calendarClassName={darkMode ? styles.darkMonthCalendar : styles.monthCalendar}
+          popperClassName={styles.datePickerPopper}
+          placeholderText="Select month"
+          maxDate={customTo || undefined}
+        />
+      </div>
+      <div className={styles.filterGroup}>
+        <label className={styles.filterLabel} htmlFor="toMonth">
+          To
+        </label>
+        <DatePicker
+          id="toMonth"
+          selected={customTo}
+          onChange={handleToMonthChange}
+          dateFormat="MMM yyyy"
+          showMonthYearPicker
+          className={dateSelectClass}
+          calendarClassName={darkMode ? styles.darkMonthCalendar : styles.monthCalendar}
+          popperClassName={styles.datePickerPopper}
+          placeholderText="Select month"
+          minDate={customFrom || undefined}
+        />
+      </div>
+    </>
+  );
+}
+
+CustomDateRangeFilters.propTypes = {
+  customFrom: PropTypes.instanceOf(Date),
+  customTo: PropTypes.instanceOf(Date),
+  handleFromMonthChange: PropTypes.func.isRequired,
+  handleToMonthChange: PropTypes.func.isRequired,
+  dateSelectClass: PropTypes.string.isRequired,
+  darkMode: PropTypes.bool.isRequired,
+};
+
+CustomDateRangeFilters.defaultProps = {
+  customFrom: null,
+  customTo: null,
+};
+
 function ReviewVolumeOverTimeChart({ darkMode }) {
   const [dateFilter, setDateFilter] = useState('all');
   const [customFrom, setCustomFrom] = useState(null); // Date | null
@@ -364,89 +509,7 @@ function ReviewVolumeOverTimeChart({ darkMode }) {
   const filtersClass = `${styles.filters} ${darkMode ? styles.darkFilters : ''}`;
   const dateSelectClass = `${styles.dateSelect} ${darkMode ? styles.darkDateSelect : ''}`;
 
-  const selectStyles = useMemo(
-    () => ({
-      control: (provided, state) => {
-        const isDark = darkMode;
-        const baseStyles = {
-          ...provided,
-          backgroundColor: isDark ? '#020617' : '#ffffff',
-          borderColor: isDark ? '#374151' : '#d1d5db',
-          color: isDark ? '#e5e7eb' : '#111827',
-          minHeight: 36,
-          borderRadius: 8,
-          boxShadow: 'none',
-          '&:hover': {
-            borderColor: isDark ? '#6b7280' : '#9ca3af',
-          },
-        };
-
-        if (!state.isFocused) {
-          return baseStyles;
-        }
-
-        return {
-          ...baseStyles,
-          borderColor: isDark ? '#3b82f6' : '#2563eb',
-          boxShadow: '0 0 0 1px rgba(37,99,235,0.6)',
-        };
-      },
-      menu: provided => {
-        const isDark = darkMode;
-        const backgroundColor = isDark ? '#020617' : '#ffffff';
-        const borderColor = isDark ? '#374151' : '#e5e7eb';
-
-        return {
-          ...provided,
-          backgroundColor,
-          borderColor,
-        };
-      },
-      container: provided => ({
-        ...provided,
-        width: '100%',
-        backgroundColor: 'transparent',
-      }),
-      option: (provided, state) => {
-        const isFocused = state.isFocused;
-        const isDark = darkMode;
-        const backgroundColor = isFocused
-          ? isDark
-            ? '#111827'
-            : '#e5e7eb'
-          : isDark
-          ? '#020617'
-          : '#ffffff';
-
-        return {
-          ...provided,
-          backgroundColor,
-          color: isDark ? '#e5e7eb' : '#111827',
-        };
-      },
-      singleValue: provided => ({
-        ...provided,
-        color: darkMode ? '#e5e7eb' : '#111827',
-      }),
-      multiValue: provided => ({
-        ...provided,
-        backgroundColor: darkMode ? '#111827' : '#e5e7eb',
-      }),
-      multiValueLabel: provided => ({
-        ...provided,
-        color: darkMode ? '#e5e7eb' : '#111827',
-      }),
-      input: provided => ({
-        ...provided,
-        color: darkMode ? '#e5e7eb' : '#111827',
-      }),
-      placeholder: provided => ({
-        ...provided,
-        color: darkMode ? '#6b7280' : '#9ca3af',
-      }),
-    }),
-    [darkMode],
-  );
+  const selectStyles = useMemo(() => getSelectStyles(darkMode), [darkMode]);
 
   return (
     <div className={containerClass}>
@@ -488,42 +551,14 @@ function ReviewVolumeOverTimeChart({ darkMode }) {
         </div>
 
         {dateFilter === 'custom' && (
-          <>
-            <div className={styles.filterGroup}>
-              <label className={styles.filterLabel} htmlFor="fromMonth">
-                From
-              </label>
-              <DatePicker
-                id="fromMonth"
-                selected={customFrom}
-                onChange={handleFromMonthChange}
-                dateFormat="MMM yyyy"
-                showMonthYearPicker
-                className={dateSelectClass}
-                calendarClassName={darkMode ? styles.darkMonthCalendar : styles.monthCalendar}
-                popperClassName={styles.datePickerPopper}
-                placeholderText="Select month"
-                maxDate={customTo || undefined}
-              />
-            </div>
-            <div className={styles.filterGroup}>
-              <label className={styles.filterLabel} htmlFor="toMonth">
-                To
-              </label>
-              <DatePicker
-                id="toMonth"
-                selected={customTo}
-                onChange={handleToMonthChange}
-                dateFormat="MMM yyyy"
-                showMonthYearPicker
-                className={dateSelectClass}
-                calendarClassName={darkMode ? styles.darkMonthCalendar : styles.monthCalendar}
-                popperClassName={styles.datePickerPopper}
-                placeholderText="Select month"
-                minDate={customFrom || undefined}
-              />
-            </div>
-          </>
+          <CustomDateRangeFilters
+            customFrom={customFrom}
+            customTo={customTo}
+            handleFromMonthChange={handleFromMonthChange}
+            handleToMonthChange={handleToMonthChange}
+            dateSelectClass={dateSelectClass}
+            darkMode={darkMode}
+          />
         )}
 
         <div className={styles.filterGroup}>
