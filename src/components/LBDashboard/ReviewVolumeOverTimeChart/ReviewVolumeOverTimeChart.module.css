@@ -158,7 +158,7 @@
 .darkMonthCalendar :global(.react-datepicker__month-text:hover),
 .darkMonthCalendar :global(.react-datepicker__month-text--keyboard-selected),
 .darkMonthCalendar :global(.react-datepicker__month-text--selected) {
-  background-color: #3b82f6 !important;
+  background-color: #1d4ed8 !important;
   color: #ffffff !important;
   opacity: 1 !important;
 }

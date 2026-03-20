@@ -356,13 +356,13 @@ function getSelectStyles(darkMode) {
     option: (provided, state) => {
       const isFocused = state.isFocused;
       const isDark = darkMode;
-      const backgroundColor = isFocused
-        ? isDark
-          ? '#111827'
-          : '#e5e7eb'
-        : isDark
-        ? '#020617'
-        : '#ffffff';
+      let backgroundColor = '#ffffff';
+      if (isDark) {
+        backgroundColor = '#020617';
+      }
+      if (isFocused) {
+        backgroundColor = isDark ? '#111827' : '#e5e7eb';
+      }
 
       return {
         ...provided,
@@ -392,6 +392,48 @@ function getSelectStyles(darkMode) {
     }),
   };
 }
+
+function ChartContent({ chartData, darkMode }) {
+  if (chartData.length === 0) {
+    return <div className={styles.emptyState}>No review activity for the selected filters.</div>;
+  }
+
+  return (
+    <div className={styles.chartWrapper}>
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart
+          data={chartData}
+          margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+          style={{ backgroundColor: darkMode ? '#020617' : '#ffffff' }}
+        >
+          <CartesianGrid strokeDasharray="3 3" vertical={false} />
+          <XAxis dataKey="monthLabel" />
+          <YAxis allowDecimals={false} />
+          <Tooltip
+            contentStyle={{
+              backgroundColor: darkMode ? '#020617' : '#ffffff',
+              borderColor: darkMode ? '#4b5563' : '#e5e7eb',
+              color: darkMode ? '#e5e7eb' : '#111827',
+            }}
+            itemStyle={{
+              color: darkMode ? '#e5e7eb' : '#111827',
+            }}
+            cursor={{ fill: darkMode ? 'rgba(148,163,184,0.25)' : 'rgba(148,163,184,0.15)' }}
+          />
+          <Legend />
+          <Bar dataKey="negative" stackId="volume" fill={NEGATIVE_COLOR} name="Negative" />
+          <Bar dataKey="neutral" stackId="volume" fill={NEUTRAL_COLOR} name="Neutral" />
+          <Bar dataKey="positive" stackId="volume" fill={POSITIVE_COLOR} name="Positive" />
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
+ChartContent.propTypes = {
+  chartData: PropTypes.arrayOf(PropTypes.object).isRequired,
+  darkMode: PropTypes.bool.isRequired,
+};
 
 function CustomDateRangeFilters({
   customFrom,
@@ -508,6 +550,13 @@ function ReviewVolumeOverTimeChart({ darkMode }) {
   const containerClass = `${styles.chartContainer} ${darkMode ? styles.dark : ''}`;
   const filtersClass = `${styles.filters} ${darkMode ? styles.darkFilters : ''}`;
   const dateSelectClass = `${styles.dateSelect} ${darkMode ? styles.darkDateSelect : ''}`;
+  const isVillageCategory = category === 'village';
+  const locationLabel = isVillageCategory ? 'Villages' : 'Properties';
+  const locationInputId = isVillageCategory ? 'villageSelect' : 'propertySelect';
+  const locationOptions = isVillageCategory ? VILLAGE_OPTIONS : PROPERTY_OPTIONS;
+  const selectedLocations = isVillageCategory ? selectedVillages : selectedProperties;
+  const handleLocationChange = isVillageCategory ? setSelectedVillages : setSelectedProperties;
+  const locationPlaceholder = isVillageCategory ? 'All villages' : 'All properties';
 
   const selectStyles = useMemo(() => getSelectStyles(darkMode), [darkMode]);
 
@@ -576,75 +625,23 @@ function ReviewVolumeOverTimeChart({ darkMode }) {
           />
         </div>
 
-        {category === 'village' && (
-          <div className={styles.filterGroup}>
-            <label className={styles.filterLabel} htmlFor="villageSelect">
-              Villages
-            </label>
-            <Select
-              inputId="villageSelect"
-              isMulti
-              options={VILLAGE_OPTIONS}
-              value={selectedVillages}
-              onChange={setSelectedVillages}
-              className={styles.select}
-              styles={selectStyles}
-              placeholder="All villages"
-            />
-          </div>
-        )}
-
-        {category === 'property' && (
-          <div className={styles.filterGroup}>
-            <label className={styles.filterLabel} htmlFor="propertySelect">
-              Properties
-            </label>
-            <Select
-              inputId="propertySelect"
-              isMulti
-              options={PROPERTY_OPTIONS}
-              value={selectedProperties}
-              onChange={setSelectedProperties}
-              className={styles.select}
-              styles={selectStyles}
-              placeholder="All properties"
-            />
-          </div>
-        )}
-      </div>
-
-      {chartData.length === 0 ? (
-        <div className={styles.emptyState}>No review activity for the selected filters.</div>
-      ) : (
-        <div className={styles.chartWrapper}>
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart
-              data={chartData}
-              margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
-              style={{ backgroundColor: darkMode ? '#020617' : '#ffffff' }}
-            >
-              <CartesianGrid strokeDasharray="3 3" vertical={false} />
-              <XAxis dataKey="monthLabel" />
-              <YAxis allowDecimals={false} />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: darkMode ? '#020617' : '#ffffff',
-                  borderColor: darkMode ? '#4b5563' : '#e5e7eb',
-                  color: darkMode ? '#e5e7eb' : '#111827',
-                }}
-                itemStyle={{
-                  color: darkMode ? '#e5e7eb' : '#111827',
-                }}
-                cursor={{ fill: darkMode ? 'rgba(148,163,184,0.25)' : 'rgba(148,163,184,0.15)' }}
-              />
-              <Legend />
-              <Bar dataKey="negative" stackId="volume" fill={NEGATIVE_COLOR} name="Negative" />
-              <Bar dataKey="neutral" stackId="volume" fill={NEUTRAL_COLOR} name="Neutral" />
-              <Bar dataKey="positive" stackId="volume" fill={POSITIVE_COLOR} name="Positive" />
-            </BarChart>
-          </ResponsiveContainer>
+        <div className={styles.filterGroup}>
+          <label className={styles.filterLabel} htmlFor={locationInputId}>
+            {locationLabel}
+          </label>
+          <Select
+            inputId={locationInputId}
+            isMulti
+            options={locationOptions}
+            value={selectedLocations}
+            onChange={handleLocationChange}
+            className={styles.select}
+            styles={selectStyles}
+            placeholder={locationPlaceholder}
+          />
         </div>
-      )}
+      </div>
+      <ChartContent chartData={chartData} darkMode={darkMode} />
     </div>
   );
 }
