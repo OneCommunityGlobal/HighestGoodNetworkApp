@@ -1,17 +1,3 @@
-/* ApplicationTimeChart.module.css */
-
-.pageContainer {
-  padding: 20px;
-  min-height: 100vh;
-  background-color: #f8f9fa;
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.pageContainer.darkMode {
-  background-color: #1B2A41;
-  color: #e0e0e0;
-}
-
 .container {
   display: flex;
   align-items: flex-start;
@@ -45,7 +31,7 @@
   flex: 1;
   border: 2px solid #4285f4;
   border-radius: 8px;
-  background-color: #ffffff;
+  background-color: #fff;
   padding: 20px;
   overflow: visible;
   transition: background-color 0.3s ease, border-color 0.3s ease;
@@ -60,7 +46,7 @@
   font-size: 20px;
   font-weight: 400;
   color: #5f6368;
-  margin: 0 0 30px 0;
+  margin: 0 0 30px;
   font-family: Arial, sans-serif;
   transition: color 0.3s ease;
 }
@@ -72,11 +58,7 @@
 .chartArea {
   min-height: 400px;
   position: relative;
-  padding-left: 140px;
-  /* Room for value labels placed to the right of each bar (not on the bar) */
-  padding-right: 108px;
-  padding-top: 20px;
-  padding-bottom: 40px;
+  padding: 20px 60px 40px 140px;
 }
 
 /* Responsive design for mobile */
@@ -98,10 +80,7 @@
 
 .grid {
   position: absolute;
-  left: 140px;
-  right: 108px;
-  top: 20px;
-  bottom: 40px;
+  inset: 20px 60px 40px 140px;
   background-image: linear-gradient(to right, #e0e0e0 1px, transparent 1px),
     linear-gradient(to bottom, #e0e0e0 1px, transparent 1px);
   opacity: 0.5;
@@ -130,9 +109,7 @@
 
 .yAxis {
   position: absolute;
-  left: 0;
-  top: 20px;
-  bottom: 40px;
+  inset: 20px auto 40px 0;
   width: 130px;
   display: flex;
   flex-direction: column;
@@ -176,9 +153,7 @@
 
 .xAxis {
   position: absolute;
-  left: 140px;
-  right: 108px;
-  bottom: 0;
+  inset: auto 60px 0 140px;
   height: 40px;
   border-top: 1px solid #9aa0a6;
   display: flex;
@@ -207,10 +182,7 @@
 
 .bars {
   position: absolute;
-  left: 140px;
-  right: 108px;
-  top: 20px;
-  bottom: 40px;
+  inset: 20px 60px 40px 140px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -233,9 +205,7 @@
 .barRow {
   display: flex;
   align-items: center;
-  padding-top: 10px;
-  padding-bottom: 10px;
-  overflow: visible;
+  padding: 10px 0;
 }
 
 .bar {
@@ -304,30 +274,32 @@
 
 .noData {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 16px;
   height: 400px;
+}
+
+.noDataText {
   color: #5f6368;
   font-size: 16px;
-  transition: color 0.3s ease;
+  margin: 0;
 }
 
-.noData.darkMode {
-  color: #e0e0e0;
+.resetButton {
+  padding: 8px 20px;
+  background-color: #4285f4;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
 }
 
-@media (max-width: 768px) {
-  .noData {
-    height: 300px;
-    font-size: 14px;
-  }
-}
-
-@media (max-width: 480px) {
-  .noData {
-    height: 250px;
-    font-size: 12px;
-  }
+.resetButton:hover {
+  background-color: #3367d6;
 }
 
 .summary {
@@ -377,19 +349,7 @@
   border: 1px solid #dadce0;
   border-radius: 4px;
   padding: 12px;
-  background-color: #ffffff;
-  transition: background-color 0.3s ease, border-color 0.3s ease;
-}
-
-.filterCard.darkMode {
-  background-color: #2c3e50;
-  border-color: #5a6c7d;
-}
-
-@media (max-width: 480px) {
-  .filterCard {
-    padding: 8px;
-  }
+  background-color: #fff;
 }
 
 .filterTitle {
@@ -417,130 +377,6 @@
   border: 1px solid #dadce0;
   border-radius: 4px;
   font-size: 14px;
-  background-color: #ffffff;
+  background-color: #fff;
   color: #3c4043;
-  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
-}
-
-.select.darkMode {
-  background-color: #34495e;
-  border-color: #5a6c7d;
-  color: #e0e0e0;
-}
-
-/* Native <option> is often white-on-white in dark mode without explicit colors */
-.select option {
-  background-color: #ffffff;
-  color: #3c4043;
-}
-
-.select.darkMode option {
-  background-color: #1e293b;
-  color: #f1f5f9;
-}
-
-@media (max-width: 480px) {
-  .select {
-    font-size: 12px;
-    padding: 3px 6px;
-  }
-}
-
-/* Responsive layout adjustments */
-@media (max-width: 1024px) {
-  .container {
-    max-width: 100%;
-  }
-}
-
-@media (max-width: 768px) {
-  .container {
-    flex-direction: column;
-    gap: 15px;
-    padding: 0;
-  }
-  
-  .chartCard {
-    order: 1;
-    padding: 15px;
-    width: 100%;
-  }
-  
-  .title {
-    font-size: 18px;
-    margin-bottom: 20px;
-  }
-  
-  .filters {
-    order: 2;
-    flex-direction: row;
-    justify-content: space-between;
-    min-width: auto;
-    width: 100%;
-    gap: 15px;
-  }
-  
-  .filterCard {
-    flex: 1;
-  }
-}
-
-@media (max-width: 480px) {
-  .container {
-    gap: 10px;
-  }
-  
-  .chartCard {
-    padding: 12px;
-  }
-  
-  .title {
-    font-size: 16px;
-    margin-bottom: 15px;
-  }
-  
-  .filters {
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  .filterCard {
-    width: 100%;
-  }
-}
-
-@media (max-width: 320px) {
-  .title {
-    font-size: 14px;
-  }
-  
-  .chartArea {
-    padding-left: 60px;
-    padding-right: 20px;
-    min-height: 200px;
-  }
-  
-  .yAxis {
-    width: 55px;
-  }
-  
-  .yAxisItem {
-    font-size: 9px;
-    padding-right: 3px;
-  }
-  
-  .bars {
-    left: 60px;
-    right: 20px;
-  }
-  
-  .grid {
-    left: 60px;
-    right: 20px;
-  }
-  
-  .xAxis {
-    left: 60px;
-    right: 20px;
-  }
 }
