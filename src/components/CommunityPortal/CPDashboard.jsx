@@ -1,5 +1,17 @@
-import { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, CardBody, Button, Input } from 'reactstrap';
+import { useState, useEffect, useRef } from 'react';
+import { useSelector } from 'react-redux';
+import {
+  Container,
+  Row,
+  Alert,
+  Col,
+  Card,
+  CardBody,
+  Button,
+  Input,
+  FormGroup,
+  Label,
+} from 'reactstrap';
 import { FaCalendarAlt, FaMapMarkerAlt, FaUserAlt, FaSearch, FaTimes } from 'react-icons/fa';
 import styles from './CPDashboard.module.css';
 import { ENDPOINTS } from '../../utils/URL';
@@ -31,12 +43,44 @@ const FixedRatioImage = ({ src, alt, fallback }) => (
   </div>
 );
 
+function isTomorrow(dateString) {
+  const input = new Date(dateString);
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const tomorrow = new Date(today);
+  tomorrow.setDate(today.getDate() + 1);
+
+  return input >= tomorrow && input < new Date(tomorrow.getTime() + 24 * 60 * 60 * 1000);
+}
+
+function isComingWeekend(dateString) {
+  const input = new Date(dateString);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const day = today.getDay();
+  const daysUntilSaturday = (6 - day + 7) % 7 || 7;
+  const saturday = new Date(today);
+  saturday.setDate(today.getDate() + daysUntilSaturday);
+  const sunday = new Date(saturday);
+  sunday.setDate(saturday.getDate() + 1);
+  sunday.setHours(23, 59, 59, 999);
+
+  return input >= saturday && input <= sunday;
+}
+
 export function CPDashboard() {
   const [events, setEvents] = useState([]);
   const [searchInput, setSearchInput] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedDate, setSelectedDate] = useState('');
+  const [onlineOnly, setOnlineOnly] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [dateFilter, setDateFilter] = useState('');
   const [error, setError] = useState(null);
+  const [failedLogos, setFailedLogos] = useState(new Set());
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [pagination, setPagination] = useState({
     currentPage: 1,
     totalPages: 5,
@@ -47,20 +91,28 @@ export function CPDashboard() {
   const FALLBACK_IMG =
     'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=600&q=60';
 
+  const normalizeOrganizer = organizer => {
+    if (!organizer || typeof organizer !== 'string') return null;
+    const trimmed = organizer.trim();
+    return trimmed.length > 0 ? trimmed : null;
+  };
+
+  const handleLogoError = eventId => {
+    setFailedLogos(prev => new Set([...prev, eventId]));
+  };
+
   useEffect(() => {
     const fetchEvents = async () => {
       setIsLoading(true);
 
       try {
         const response = await axios.get(ENDPOINTS.EVENTS);
-        console.log('Fetched events:', response.data.events);
         setEvents(response.data.events || []);
         setPagination(prev => ({
           ...prev,
           total: response.data.events?.length || 0,
         }));
       } catch (err) {
-        console.error('Here', err);
         setError('Failed to load events');
       } finally {
         setIsLoading(false);
@@ -70,14 +122,37 @@ export function CPDashboard() {
     fetchEvents();
   }, []);
 
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setSearchQuery(searchInput.trim());
+      setPagination(prev => ({ ...prev, currentPage: 1 }));
+    }, 300);
+
+    return () => clearTimeout(handler);
+  }, [searchInput]);
+
   const handleSearchClick = () => {
     const trimmed = searchInput.trim();
     setSearchQuery(trimmed);
     setPagination(prev => ({ ...prev, currentPage: 1 }));
   };
 
+  const BASE_HEIGHT = 36;
+
+  const autoGrow = el => {
+    if (!el) return;
+    el.style.height = `${BASE_HEIGHT}px`;
+    el.style.height = `${Math.min(el.scrollHeight, 120)}px`;
+  };
+
+  const searchRef = useRef(null);
+  useEffect(() => {
+    autoGrow(searchRef.current);
+  }, [searchInput]);
+
   const handleSearchKeyDown = e => {
     if (e.key === 'Enter') {
+      e.preventDefault();
       const trimmed = searchInput.trim();
       setSearchQuery(trimmed);
       setPagination(prev => ({ ...prev, currentPage: 1 }));
@@ -96,7 +171,40 @@ export function CPDashboard() {
     });
   };
 
+  const parseEventDate = dateString => {
+    if (!dateString) return null;
+
+    try {
+      const parsedDate = new Date(dateString);
+      if (!isNaN(parsedDate.getTime())) {
+        const year = parsedDate.getFullYear();
+        const month = String(parsedDate.getMonth() + 1).padStart(2, '0');
+        const day = String(parsedDate.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      }
+    } catch (err) {
+      console.error('Error parsing date:', err);
+    }
+    return null;
+  };
+
   const filteredEvents = events.filter(event => {
+    if (onlineOnly) {
+      const isOnlineEvent = event.location?.toLowerCase() === 'virtual';
+      if (!isOnlineEvent) return false;
+    }
+
+    if (dateFilter === 'tomorrow') {
+      if (!isTomorrow(event.date)) return false;
+    } else if (dateFilter === 'weekend') {
+      if (!isComingWeekend(event.date)) return false;
+    }
+
+    const eventDate = event.date ? parseEventDate(event.date) : null;
+    if (selectedDate && eventDate !== selectedDate) {
+      return false;
+    }
+
     if (!searchQuery) return true;
     const term = searchQuery.toLowerCase();
 
@@ -106,6 +214,10 @@ export function CPDashboard() {
       event.organizer?.toLowerCase().includes(term)
     );
   });
+
+  useEffect(() => {
+    setPagination(prev => ({ ...prev, currentPage: 1 }));
+  }, [searchQuery, selectedDate, onlineOnly, dateFilter]);
 
   const totalPages = Math.ceil(filteredEvents.length / pagination.limit) || 1;
 
@@ -121,7 +233,7 @@ export function CPDashboard() {
 
   if (isLoading) {
     return (
-      <Container className={styles['dashboard-container']}>
+      <Container className={styles.dashboardContainer}>
         <p>Loading events...</p>
       </Container>
     );
@@ -129,95 +241,199 @@ export function CPDashboard() {
 
   if (error) {
     return (
-      <Container className={styles['dashboard-container']}>
-        <p className={styles['error-text']}>{error}</p>
+      <Container className={styles.dashboardContainer}>
+        <p className={styles.errorText}>{error}</p>
       </Container>
     );
   }
 
-  return (
-    <Container className={styles['dashboard-container']}>
-      <header className={styles['dashboard-header']}>
-        <h1>All Events</h1>
+  let eventsContent;
 
-        <div className={styles['dashboard-controls']}>
-          <div className={styles['dashboard-search-container']}>
-            <Input
-              id="search"
-              type="search"
+  if (displayedEvents.length > 0) {
+    eventsContent = displayedEvents.map(event => (
+      <Col md={4} key={event.id} className={styles.eventCardCol}>
+        <Card className={styles.eventCard}>
+          <div className={styles.eventCardImgContainer}>
+            <FixedRatioImage src={event.image} alt={event.title} fallback={FALLBACK_IMG} />
+          </div>
+          <CardBody>
+            <h5 className={styles.eventTitle}>{event.title}</h5>
+            <p className={styles.eventDate}>
+              <FaCalendarAlt className={styles.eventIcon} /> {formatDate(event.date)}
+            </p>
+            <p className={styles.eventLocation}>
+              <FaMapMarkerAlt className={styles.eventIcon} /> {event.location || 'Location TBD'}
+            </p>
+            <p className={styles.eventOrganizer}>
+              {event.organizerLogo && !failedLogos.has(event._id) ? (
+                <img
+                  src={event.organizerLogo}
+                  alt={normalizeOrganizer(event.organizer) || 'Organizer'}
+                  className={styles.organizerLogo}
+                  onError={() => handleLogoError(event._id)}
+                  loading="lazy"
+                />
+              ) : (
+                <FaUserAlt className={styles.eventIcon} aria-hidden="true" />
+              )}{' '}
+              <span>{normalizeOrganizer(event.organizer) || 'Organizer TBD'}</span>
+            </p>
+          </CardBody>
+        </Card>
+      </Col>
+    ));
+  } else {
+    eventsContent = <div className={styles.noEvents}>No events available</div>;
+  }
+
+  return (
+    <Container className={styles.dashboardContainer}>
+      <header className={`${styles.dashboardHeader} ${darkMode ? styles.darkHeader : ''}`}>
+        <h1>All Events</h1>
+        <div>
+          <div
+            className={`${styles.dashboardSearchContainer} ${
+              darkMode ? styles.darkSearchContainer : ''
+            }`}
+          >
+            <textarea
+              ref={searchRef}
+              rows={1}
+              maxLength={100}
               placeholder="Search events..."
               value={searchInput}
               onChange={e => setSearchInput(e.target.value)}
               onKeyDown={handleSearchKeyDown}
-              className={styles['dashboard-search-input']}
+              className={`${styles.dashboardSearchTextarea} ${
+                darkMode ? styles.darkSearchTextarea : ''
+              }`}
             />
 
-            {searchInput && (
+            <div className={styles.dashboardSearchButtons}>
+              {searchInput && (
+                <button
+                  type="button"
+                  className={styles.dashboardClearBtn}
+                  onClick={() => {
+                    setSearchInput('');
+                    setSearchQuery('');
+                    setPagination(prev => ({ ...prev, currentPage: 1 }));
+                  }}
+                >
+                  <FaTimes />
+                </button>
+              )}
+
               <button
                 type="button"
-                className={styles['dashboard-clear-btn']}
-                onClick={() => {
-                  setSearchInput('');
-                  setSearchQuery('');
-                  setPagination(prev => ({ ...prev, currentPage: 1 }));
-                }}
+                className={styles.dashboardSearchIconBtn}
+                onClick={handleSearchClick}
+                aria-label="Search events"
               >
-                <FaTimes />
+                <FaSearch />
               </button>
-            )}
-
-            <button
-              type="button"
-              className={styles['dashboard-search-icon-btn']}
-              onClick={handleSearchClick}
-              aria-label="Search events"
-            >
-              <FaSearch />
-            </button>
+            </div>
           </div>
+          {searchInput.length >= 100 && (
+            <Alert className={styles.charCountWarning}>Max 100 characters</Alert>
+          )}
         </div>
       </header>
 
       <Row>
-        <Col md={3} className={styles['dashboard-sidebar']}>
-          <div className={styles['filter-section']}>
+        <Col md={3} className={`${styles.dashboardSidebar} ${darkMode ? styles.darkSidebar : ''}`}>
+          <div className={styles.filterSection}>
             <h4>Search Filters</h4>
-            <div className={styles['filter-section-divider']}>
-              <div className={styles['filter-item']}>
+            <div className={styles.filterSectionDivider}>
+              <div className={styles.filterItem}>
                 <label htmlFor="date-tomorrow"> Dates</label>
-                <div className={styles['filter-options-horizontal']}>
-                  <div>
-                    <Input type="radio" name="dates" /> Tomorrow
-                  </div>
-                  <div>
-                    <Input type="radio" name="dates" /> This Weekend
-                  </div>
+                <div className={styles.radioRow}>
+                  <FormGroup check className={styles.radioGroup + ' d-flex align-items-center'}>
+                    <Input
+                      id="date-tomorrow"
+                      type="radio"
+                      name="dates"
+                      checked={dateFilter === 'tomorrow'}
+                      onChange={() => setDateFilter('tomorrow')}
+                      className={styles.radioInput}
+                    />
+                    <Label
+                      htmlFor="date-tomorrow"
+                      check
+                      className={styles.radioLabel + ' ms-2 mb-0'}
+                    >
+                      Tomorrow
+                    </Label>
+                  </FormGroup>
+                  <FormGroup check className={styles.radioGroup + ' d-flex align-items-center'}>
+                    <Input
+                      id="date-weekend"
+                      type="radio"
+                      name="dates"
+                      checked={dateFilter === 'weekend'}
+                      onChange={() => setDateFilter('weekend')}
+                      className={styles.radioInput}
+                    />
+                    <Label
+                      htmlFor="date-weekend"
+                      check
+                      className={styles.radioLabel + ' ms-2 mb-0'}
+                    >
+                      This Weekend
+                    </Label>
+                  </FormGroup>
                 </div>
-                <Input type="date" placeholder="Ending After" className={styles['date-filter']} />
+                <Button
+                  color="primary"
+                  size="sm"
+                  onClick={() => {
+                    setDateFilter('');
+                    setSelectedDate('');
+                  }}
+                >
+                  Clear date filter
+                </Button>
+                <Input
+                  type="date"
+                  placeholder="Select Date"
+                  className={styles.dateFilter}
+                  value={selectedDate}
+                  onChange={e => setSelectedDate(e.target.value)}
+                  style={{ marginTop: '10px' }}
+                />
               </div>
 
-              <div className={styles['filter-item']}>
+              <div className={styles.filterItem}>
                 <label htmlFor="online-only">Online</label>
                 <div>
-                  <Input type="checkbox" /> Online Only
+                  <Input
+                    type="checkbox"
+                    id="online-only"
+                    checked={onlineOnly}
+                    onChange={e => {
+                      setOnlineOnly(e.target.checked);
+                      setPagination(prev => ({ ...prev, currentPage: 1 }));
+                    }}
+                  />{' '}
+                  Online Only
                 </div>
               </div>
 
-              <div className={styles['filter-item']}>
+              <div className={styles.filterItem}>
                 <label htmlFor="branches">Branches</label>
                 <Input type="select">
                   <option>Select branches</option>
                 </Input>
               </div>
 
-              <div className={styles['filter-item']}>
+              <div className={styles.filterItem}>
                 <label htmlFor="themes">Themes</label>
                 <Input type="select">
                   <option>Select themes</option>
                 </Input>
               </div>
 
-              <div className={styles['filter-item']}>
+              <div className={styles.filterItem}>
                 <label htmlFor="categories">Categories</label>
                 <Input type="select">
                   <option>Select categories</option>
@@ -227,44 +443,18 @@ export function CPDashboard() {
           </div>
         </Col>
 
-        <Col md={9} className={styles['dashboard-main']}>
-          <h2 className={styles['section-title']}>Events</h2>
+        <Col md={9} className={`${styles.dashboardMain} ${darkMode ? styles.darkMain : ''}`}>
+          <div className={styles.eventsHeader}>
+            <h2 className={styles.sectionTitle}>Events</h2>
+            <Button color="primary" className={styles.showPastEventsBtn}>
+              Show Past Events
+            </Button>
+          </div>
 
-          <Row>
-            {displayedEvents.length > 0 ? (
-              displayedEvents.map(event => (
-                <Col md={4} key={event.id} className={styles['event-card-col']}>
-                  <Card className={styles['event-card']}>
-                    <div className={styles['event-card-img-container']}>
-                      <FixedRatioImage
-                        src={event.image}
-                        alt={event.title}
-                        fallback={FALLBACK_IMG}
-                      />
-                    </div>
-                    <CardBody>
-                      <h5 className={styles['event-title']}>{event.title}</h5>
-                      <p className={styles['event-date']}>
-                        <FaCalendarAlt className={styles['event-icon']} /> {formatDate(event.date)}
-                      </p>
-                      <p className={styles['event-location']}>
-                        <FaMapMarkerAlt className={styles['event-icon']} /> {event.location}
-                      </p>
-                      <p className={styles['event-organizer']}>
-                        <FaUserAlt className={styles['event-icon']} /> {event.organizer}
-                      </p>
-                    </CardBody>
-                  </Card>
-                </Col>
-              ))
-            ) : (
-              <div className={styles['no-events']}>No events available</div>
-            )}
-          </Row>
+          <Row>{eventsContent}</Row>
 
-          {/* Simple pagination controls if needed */}
           {totalPages > 1 && (
-            <div className={styles['pagination-container']}>
+            <div className={styles.paginationContainer}>
               <Button
                 color="secondary"
                 disabled={pagination.currentPage === 1}
@@ -272,7 +462,7 @@ export function CPDashboard() {
               >
                 Previous
               </Button>
-              <span className={styles['pagination-info']}>
+              <span className={styles.paginationInfo}>
                 Page {pagination.currentPage} of {totalPages}
               </span>
               <Button
@@ -284,10 +474,6 @@ export function CPDashboard() {
               </Button>
             </div>
           )}
-
-          <div className={styles['dashboard-actions']}>
-            <Button color="primary">Show Past Events</Button>
-          </div>
         </Col>
       </Row>
     </Container>
