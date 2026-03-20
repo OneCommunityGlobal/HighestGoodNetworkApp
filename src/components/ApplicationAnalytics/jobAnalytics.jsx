@@ -18,7 +18,7 @@ function JobAnalytics() {
 
   // Roles list for the dropdown (includes "all")
   const roles = useMemo(() => {
-    const r = Array.from(new Set(rawData.map(r => r.role))).sort();
+    const r = Array.from(new Set(rawData.map(r => r.role))).sort((a, b) => a.localeCompare(b));
     return ['all', ...r];
   }, [rawData]);
 
@@ -95,9 +95,7 @@ function JobAnalytics() {
             </div>
           )}
 
-          {!showingCount ? (
-            <div className="ja-no-data">No data for the selected filters.</div>
-          ) : (
+          {showingCount ? (
             <>
               <div className="ja-chart">
                 <div className="ja-grid" aria-hidden="true" />
@@ -130,6 +128,8 @@ function JobAnalytics() {
               </div>
               <div className="ja-xaxis-label">Applications</div>
             </>
+          ) : (
+            <div className="ja-no-data">No data for the selected filters.</div>
           )}
 
           <div className="ja-footer">

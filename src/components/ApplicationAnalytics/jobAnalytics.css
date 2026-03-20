@@ -100,7 +100,7 @@ body:has(.ja.dark) {
 }
 .ja-warning {
   background: rgba(255, 193, 7, 0.12);
-  color: #8a6d3b;
+  color: #5c3d00;
   border: 1px solid rgba(255, 193, 7, 0.35);
   border-radius: 8px;
   padding: 8px 10px;
@@ -117,6 +117,8 @@ body:has(.ja.dark) {
 /* ---------- Bars ---------- */
 .ja-bars {
   overflow: hidden;            /* prevent any spill */
+  position: relative;
+  z-index: 2;
 }
 
 /* Grid overlay to mimic chart vertical grid lines */
@@ -244,12 +246,6 @@ body:has(.ja.dark) {
   height: 1px;
   background: var(--border);
   z-index: 3;
-}
-
-/* ensure bars render above the grid but beneath axis lines if needed */
-.ja-bars {
-  position: relative;
-  z-index: 2;
 }
 
 .ja-xaxis-label {
