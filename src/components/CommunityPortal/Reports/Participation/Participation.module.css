@@ -1,3 +1,61 @@
+
+.chartGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(280px, 1fr));
+  gap: 20px;
+  margin-top: 18px;
+}
+
+.chartCard {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 18px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.chartCardDark {
+  background: #1f2937;
+  color: #ffffff;
+}
+
+.chartTitle {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+
+.chartWrapper {
+  width: 100%;
+  height: 280px;
+}
+
+.exportIconButton {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sectionSubtext {
+  margin-top: 4px;
+  font-size: 14px;
+  color: #6b7280;
+}
+/* ---------- General Styling ---------- */
+.sectionSubtext {
+  margin-top: 4px;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.emptyStateCell {
+  text-align: center;
+  padding: 24px;
+  color: #6b7280;
+}
+
 /* ---------- General Styling ---------- */
 .body {
   font-family: 'Arial', sans-serif;

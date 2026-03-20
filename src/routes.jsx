@@ -358,6 +358,7 @@ export default (
             return <Timelog userId={userId} />;
           }}
         />
+        <ProtectedRoute path="/communityportal/reports/participation" exact component={EventParticipation} />
         <ProtectedRoute path="/peoplereport/:userId" component={PeopleReport} fallback />
         <ProtectedRoute path="/projectreport/:projectId" component={ProjectReport} fallback />
         <ProtectedRoute path="/teamreport/:teamId" component={TeamReport} fallback />
