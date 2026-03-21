@@ -64,25 +64,25 @@ function CPLogin(props) {
         message: validate.error.details[0].message,
       });
     }
-    const res = await dispatch(loginBMUser({ email: enteredEmail, password: enterPassword }));
+    const loginAction = loginBMUser({ email: enteredEmail, password: enterPassword });
+    if (typeof loginAction !== 'function') {
+      return setValidationError(null);
+    }
+    const res = await dispatch(loginAction);
     // server side error validation
-    if (res.statusText !== 'OK') {
-      if (res.status === 422) {
+    if (!res || res.statusText !== 'OK') {
+      if (res?.status === 422 && res?.data) {
         return setValidationError({
           label: res.data.label,
           message: res.data.message,
         });
       }
-      // TODO: add additional error handling
-      return setValidationError({
-        label: '',
-        message: '',
-      });
+      return setValidationError(null);
     }
     // initiate push to CP Dashboard if validated (ie received token)
     // The auth state will be updated by loginBMUser, which will trigger the useEffect
     // But also set hasAccess as a fallback
-    if (res.data && res.data.token) {
+    if (res?.data && res.data?.token) {
       setHasAccess(true);
       // Small delay to ensure auth state is updated
       setTimeout(() => {

@@ -2,11 +2,13 @@ import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import styles from './MyCases.module.css';
 import mockEvents from './mockData';
+import CreateEventModal from './CreateEventModal';
 
 function MyCases() {
   const [view, setView] = useState('card');
   const [filter, setFilter] = useState('all');
   const [expanded, setExpanded] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const isExporting =
     typeof document !== 'undefined' && document.documentElement?.dataset?.exporting === 'true'; // Sonar: prefer .dataset
@@ -81,9 +83,9 @@ function MyCases() {
           <span className={`${styles.eventTime} ${darkMode ? styles.eventTimeDark : ''}`}>
             {event.eventTime}
           </span>
-          <span className={`${styles.eventName} ${darkMode ? styles.eventNameDark : ''}`}>
+          <div className={`${styles.eventName} ${darkMode ? styles.eventNameDark : ''}`}>
             {event.eventName}
-          </span>
+          </div>
           <div className={`${styles.attendeesInfo} ${darkMode ? styles.attendeesInfoDark : ''}`}>
             <div className={styles.avatars}>
               <img
@@ -141,7 +143,7 @@ function MyCases() {
           Upcoming Events
         </h2>
         <div className={styles.headerActions}>
-          <div className={`view-switcher-global ${styles.viewSwitcher}`}>
+          <div className={`${styles.viewSwitcher} ${darkMode ? styles.viewSwitcherDarkMode : ''}`}>
             <button
               type="button"
               className={view === 'calendar' ? styles.active : ''}
@@ -164,9 +166,12 @@ function MyCases() {
               List
             </button>
           </div>
+
           <div className={`filter-wrapper-global ${styles.filterWrapper}`}>
             <select
-              className={styles.filterDropdown}
+              className={`${styles.filterDropdown} ${
+                darkMode ? styles.filterDropdownDarkMode : ''
+              }`}
               value={filter}
               onChange={e => setFilter(e.target.value)}
             >
@@ -176,7 +181,11 @@ function MyCases() {
               <option value="thisMonth">This Month</option>
             </select>
           </div>
-          <button type="button" className={`create-new-global ${styles.createNew}`}>
+          <button
+            type="button"
+            className={`${styles.createNew} ${darkMode ? styles.createNewDarkMode : ''}`}
+            onClick={() => setIsCreateModalOpen(true)}
+          >
             + Create New
           </button>
           {filteredEvents.length > 10 && !isExporting && (
@@ -190,11 +199,15 @@ function MyCases() {
           )}
         </div>
       </header>
-      <main className={styles.content}>
+      <main className={`${styles.content}`}>
         {view === 'card' && renderCardView()}
         {view === 'list' && renderListView()}
         {view === 'calendar' && renderCalendarView()}
       </main>
+      <CreateEventModal
+        isOpen={isCreateModalOpen}
+        toggle={() => setIsCreateModalOpen(!isCreateModalOpen)}
+      />
     </div>
   );
 }

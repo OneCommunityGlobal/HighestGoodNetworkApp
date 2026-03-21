@@ -1,11 +1,11 @@
 .leftSection {
-  padding: 8px 8px 24px 8px;
+  padding: 8px 8px 24px;
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+  background: linear-gradient(135deg, #fff 0%, #f1f5f9 100%);
   border: 1px solid #e5e7eb;
   border-radius: 8px;
 }
@@ -18,72 +18,74 @@
   margin-bottom: 15px;
 }
 
-.leftSection h1 {
+/* Username */
+.userName {
   margin: 5px 0;
-  color: #333;
-  word-wrap: break-word;
+  font-weight: 600;
+  color: #1f2937 !important;
+  text-shadow: none !important;
+  filter: none !important;
   overflow-wrap: break-word;
-  word-break: break-word;
+  word-break: break-all;
   max-width: 100%;
   hyphens: auto;
 }
 
-.leftSection h3 {
+/* Job title */
+.jobTitle {
   margin: 0;
   font-size: 20px;
-  color: #666;
+  color: #4b5563 !important;
+  text-shadow: none !important;
+  filter: none !important;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .leftSection {
     width: 100%;
     padding: 16px 10px 12px;
-    flex-direction: row;
+    flex-flow: row wrap;
     gap: 20px;
-    flex-wrap: wrap;
     justify-content: center;
   }
-  .leftSection h1 {
-    text-align: center;
-    font-size: 1.4rem;
-  }
-  .leftSection h3 {
-    text-align: center;
-    font-size: 1rem;
-  }
-  .profilePic {
-    width: 100px;
-    height: 100px;
+
+  .userName,
+  .jobTitle {
+    text-align: left;
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .leftSection {
     flex-direction: column;
     padding: 12px 8px;
     gap: 10px;
   }
-  .leftSection h1 {
+
+  .userName {
     font-size: 1.2rem;
   }
-  .leftSection h3 {
+
+  .jobTitle {
     font-size: 0.9rem;
   }
+
   .profilePic {
     width: 80px;
     height: 80px;
   }
 }
 
+:global(.dark-mode) .leftSection .userName {
+  color: #f9fafb !important;
+}
+
+:global(.dark-mode) .leftSection .jobTitle {
+  color: #f9fafb !important;
+}
+
 :global(.dark-mode) .leftSection {
-  background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
-  border-color: #4a5568;
-}
-
-:global(.dark-mode) .leftSection h1 {
-  color: #fff;
-}
-
-:global(.dark-mode) .leftSection h3 {
-  color: #cbd5e0;
+  color: #e5e7eb !important;
+  background: linear-gradient(135deg, #2a2f3e 0%, #1e2330 100%);
+  border-color: #3a4a5a;
 }

@@ -603,7 +603,7 @@ const generateAllTimeEntryItems = () => {
   const buildOptions = () => {
     const projectsObject = {};
     const options = [
-      <option className={timeLog['responsive-font-size']} value="all" key="TimeLogDefaultProjectOrTask">
+      <option className={`${timeLog.responsiveFontSize}`} value="all" key="TimeLogDefaultProjectOrTask">
         Select Project/Task (all)
       </option>,
     ];
@@ -645,7 +645,7 @@ const generateAllTimeEntryItems = () => {
 
       // Add project option
       options.push(
-        <option className={timeLog['responsive-font-size']} value={projectId} key={`TimeLog_${projectId}`}>
+        <option className={`${timeLog.responsiveFontSize}`} value={projectId} key={`TimeLog_${projectId}`}>
           {projectName}
         </option>,
       );
@@ -670,7 +670,7 @@ const generateAllTimeEntryItems = () => {
 
           // Add task option
           options.push(
-            <option className={timeLog['responsive-font-size']} value={taskId} key={`TimeLog_${taskId}`}>
+            <option className={`${timeLog.responsiveFontSize}`} value={taskId} key={`TimeLog_${taskId}`}>
               {`\u2003\u2003 ↳ ${taskName}`}
             </option>,
           );
@@ -798,7 +798,7 @@ return (
       {timeLogState.isTimeEntriesLoading ? (
         <LoadingSkeleton template="Timelog" />
       ) : (
-        <div className={`${!props.isDashboard ? `${timeLog['timelogPageContainer']}`: `ml-3 ${timeLog['min-width-100']}`}`}>
+        <div className={`${!props.isDashboard ? timeLog.timelogPageContainer : 'ml-3 min-width-100'}`}>
           {timeLogState.summary ? (
             <div className="my-2">
               <div id="weeklySum">
@@ -816,193 +816,216 @@ return (
                 <CardHeader
                   className={
                     darkMode
-                      ? `${timeLog['card-header-shadow-dark']} bg-space-cadet text-light ${timeLog['text-light']}`
-                      : `${timeLog['card-header-shadow']}`
+                    ? `${timeLog.cardHeaderShadowDark} bg-space-cadet text-light`
+                    : timeLog.cardHeaderShadow
                   }
                 >
-                  <Row style={{ minWidth: '100%' }} className="px-0 mx-0">
-                    <Col style={{ minWidth: '100%' }} className="px-0 mx-0">
-                      <CardTitle tag="h4">
-                        <div className="d-flex align-items-center">
-                          <span className={`${timeLog['taskboard-header-title']} mb-1 mr-2`}>
-                            Tasks and Timelogs
-                          </span>
-                          <EditableInfoModal
-                            areaName="TasksAndTimelogInfoPoint"
-                            areaTitle="Tasks and Timelogs"
-                            fontSize={24}
-                            isPermissionPage
-                            role={authUser.role} // Pass the 'role' prop to EditableInfoModal
-                            darkMode={darkMode}
-                          />
+                  <Row className="d-flex flex-nowrap align-items-center w-100 gx-0">
+                  {/* LEFT: title/subtitle takes remaining space */}
+                  <Col className="px-0 flex-grow-1" style={{ minWidth: 0 }}>
+                    <CardTitle tag="h4">
+                      <div className="d-flex align-items-center flex-wrap">
+                        <span className={`${timeLog.taskboardHeaderTitle} mb-1 mr-2`}>
+                          Tasks and Timelogs
+                        </span>
 
-                          <span className="mr-2" style={{ padding: '1px' }}>
-                            <ActiveCell
-                              isActive={displayUserProfile.isActive}
-                              user={displayUserProfile}
-                              onClick={() => {
-                                props.updateUserProfile({
+                        <EditableInfoModal
+                          areaName="TasksAndTimelogInfoPoint"
+                          areaTitle="Tasks and Timelogs"
+                          fontSize={24}
+                          isPermissionPage
+                          role={authUser.role}
+                          darkMode={darkMode}
+                        />
+
+                        <span className="mr-2" style={{ color: '#7cfc00', padding: '1px' }}>
+                        <ActiveCell
+                            isActive={displayUserProfile.isActive}
+                            endDate={displayUserProfile.endDate}
+                            reactivationDate={displayUserProfile.reactivationDate}
+                            canChange={canPutUserProfileImportantInfo} // or whatever permission should control this
+                            user={displayUserProfile}
+                            onClick={async () => {
+                              const newIsActive = !displayUserProfile.isActive;
+
+                              try {
+                                await props.updateUserProfile({
                                   ...displayUserProfile,
-                                  isActive: !displayUserProfile.isActive,
-                                  endDate:
-                                    !displayUserProfile.isActive === false
-                                      ? moment(new Date()).format('YYYY-MM-DD')
-                                      : undefined,
+                                  isActive: newIsActive,
+                                  endDate: newIsActive ? undefined : moment().format('YYYY-MM-DD'),
                                 });
-                              }}
-                            />
-                          </span>
-                          <ProfileNavDot
-                            userId={displayUserId}
-                            style={{ marginLeft: '2px', padding: '1px' }}
+
+                                await props.getUserProfile(displayUserId);
+                              } catch (e) {
+                                console.log(e);
+                                alert('Failed to update active status. Please try again.');
+                              }
+                            }}
                           />
-                        </div>
-                      </CardTitle>
-                      <CardSubtitle
-                        tag="h6"
-                        className={`${darkMode ? 'text-azure' : `text-muted ${timeLog['text-muted']} text-muted`} ${timeLog['responsive-font-size']}`}
+                        </span>
+
+                        <ProfileNavDot
+                          userId={displayUserId}
+                          style={{ marginLeft: '2px', padding: '1px' }}
+                        />
+                      </div>
+                    </CardTitle>
+
+                    <CardSubtitle
+                      tag="h6"
+                      className={`${
+                        darkMode ? 'text-azure' : `text-muted ${timeLog['text-muted']} text-muted`
+                      } ${timeLog['responsive-font-size']}`}
+                    >
+                      Viewing time entries logged in the last 3 weeks
+                    </CardSubtitle>
+                  </Col>
+
+                  {/* RIGHT: button stays compact and right-aligned (never becomes a big centered block) */}
+                  <Col className="px-0 d-flex justify-content-end flex-shrink-0">
+                    {isAuthUser ? (
+                      <div
+                        className={timeLog.tasksAndTimelogHeaderAddTimeDiv}
+                        style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}
                       >
-                        Viewing time entries logged in the last 3 weeks
-                      </CardSubtitle>
-                    </Col>
-                    <Col className="px-0">
-                      {isAuthUser ? (
-                        <div className={`${timeLog['tasks-and-timelog-header-add-time-div']} mt-2`}>
-                          <div>
-                            <div className={`${timeLog['followup-tooltip-container']}`}>
-                              
-                              <Button
-                                className="btn btn-success"
-                                onClick={toggle}
-                                style={darkMode ? boxStyleDark : boxStyle}
-                              >
-                                Add Intangible Time Entry
-                                <TooltipPortal
-                                darkMode={darkMode}
-                                  maxWidth={720}
-                                  trigger={<i className={`fa fa-info-circle ${timeLog['fa-info-circle']} ml-2`} aria-label="More info" />}
-                                >
-                                  {/* your same tooltip HTML goes here; keep the stopPropagation on links if you like */}
-                                  <div
-                                  style={{
-                                    fontSize: "14px",
-                                    lineHeight: "1.5",
-                                    textAlign: "left",
-                                    textColor: darkMode ? "#ffffff" : "#000000",
-                                  }}
-                                >
-                                  <p>
-                                    Clicking this button only allows for <strong>“Intangible Time”</strong> to be
-                                    added to your time log. You can manually log Intangible Time, but it does not
-                                    count towards your weekly time commitment.
-                                  </p>
-
-                                  <p>
-                                    <strong>“Tangible Time”</strong> is the default for logging time using the timer
-                                    at the top of the app. It represents all work done on assigned action items and
-                                    counts towards a person’s weekly volunteer time commitment.
-                                  </p>
-
-                                  <p>
-                                    The only way for a volunteer to log Tangible Time is by using the clock in/out
-                                    timer.
-                                  </p>
-
-                                  <p>
-                                    Intangible Time is almost always used only by the management team. It is used for
-                                    weekly Monday night management team calls, monthly management team reviews and
-                                    Welcome Team Calls, and non-action-item-related research, classes, and other
-                                    learning or meetings that benefit or relate to the project but are not tied to a
-                                    specific action item in the{" "}
-                                    <a
-                                      href="https://www.tinyurl.com/oc-os-wbs"
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      style={{ color: "#1d4ed8", textDecoration: "underline" }}
-                                    >
-                                      One Community Work Breakdown Structure
-                                    </a>.
-                                  </p>
-
-                                  <p>
-                                    Intangible Time may also be logged by a volunteer when in the field or for other
-                                    reasons when the timer was not able to be used. In these cases, the volunteer
-                                    will use this button to log time as “Intangible Time” and then request that an
-                                    Admin manually change the log from Intangible to Tangible.
-                                  </p>
-                                </div>
-
-                                </TooltipPortal>
-                              </Button>
-                            </div>
-                          </div>
-                        </div>
-                      ) : (
-                        !(
-                          viewingUser &&
-                          viewingUser.role === 'Owner' &&
-                          authUser.role !== 'Owner'
-                        ) &&
-                        canPutUserProfileImportantInfo && (
-                          <div className={`${timeLog['tasks-and-timelog-header-add-time-div']}`}>
-                            <div>
-                              <Button color="warning" onClick={toggle} style={boxStyle}>
-                                Add Time Entry {!isAuthUser && `for ${fullName}`}
-                              </Button>
-                            </div>
-                          </div>
-                        )
-                      )}
-                      <Modal
-                        isOpen={timeLogState.infoModal}
-                        toggle={openInfo}
-                        className={darkMode ? `text-light ${timeLog['text-light']}` : ''}
-                      >
-                        <ModalHeader className={darkMode ? 'bg-space-cadet' : ''}>Info</ModalHeader>
-                        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
-                          {timeLogState.information}
-                        </ModalBody>
-                        <ModalFooter className={darkMode ? 'bg-space-cadet' : ''}>
+                        <div className={timeLog.followupTooltipButton}>
                           <Button
-                            onClick={openInfo}
-                            color="primary"
-                            style={darkMode ? boxStyleDark : boxStyle}
+                            className="btn btn-success"
+                            onClick={toggle}
+                            style={{
+                              ...(darkMode ? boxStyleDark : boxStyle),
+                              whiteSpace: 'nowrap',
+                              alignSelf: 'flex-start',
+                            }}
                           >
-                            Close
+                            Add Intangible Time Entry
+                            <TooltipPortal
+                              darkMode={darkMode}
+                              maxWidth={720}
+                              trigger={
+                                <i
+                                  className={`fa fa-info-circle ${timeLog['fa-info-circle']} ml-2`}
+                                  aria-label="More info"
+                                />
+                              }
+                            >
+                              <div
+                                style={{
+                                  fontSize: '14px',
+                                  lineHeight: '1.5',
+                                  textAlign: 'left',
+                                  textColor: darkMode ? '#ffffff' : '#000000',
+                                }}
+                              >
+                                <p>
+                                  Clicking this button only allows for <strong>“Intangible Time”</strong> to be
+                                  added to your time log. You can manually log Intangible Time, but it does not
+                                  count towards your weekly time commitment.
+                                </p>
+
+                                <p>
+                                  <strong>“Tangible Time”</strong> is the default for logging time using the timer
+                                  at the top of the app. It represents all work done on assigned action items and
+                                  counts towards a person’s weekly volunteer time commitment.
+                                </p>
+
+                                <p>The only way for a volunteer to log Tangible Time is by using the clock in/out timer.</p>
+
+                                <p>
+                                  Intangible Time is almost always used only by the management team. It is used for
+                                  weekly Monday night management team calls, monthly management team reviews and
+                                  Welcome Team Calls, and non-action-item-related research, classes, and other
+                                  learning or meetings that benefit or relate to the project but are not tied to a
+                                  specific action item in the{' '}
+                                  <a
+                                    href="https://www.tinyurl.com/oc-os-wbs"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={{ color: '#1d4ed8', textDecoration: 'underline' }}
+                                  >
+                                    One Community Work Breakdown Structure
+                                  </a>
+                                  .
+                                </p>
+
+                                <p>
+                                  Intangible Time may also be logged by a volunteer when in the field or for other
+                                  reasons when the timer was not able to be used. In these cases, the volunteer
+                                  will use this button to log time as “Intangible Time” and then request that an
+                                  Admin manually change the log from Intangible to Tangible.
+                                </p>
+                              </div>
+                            </TooltipPortal>
                           </Button>
-                          <Button onClick={openInfo} color="secondary">
-                            Edit
-                          </Button>
-                        </ModalFooter>
-                      </Modal>
-                      {/* This TimeEntryForm is for adding intangible time throught the add intangible time enty button */}
-                      <TimeEntryForm
-                        from="TimeLog"
-                        edit={false}
-                        toggle={toggle}
-                        isOpen={timeLogState.timeEntryFormModal}
-                        data={intangibletimeEntryFormData}
-                        userProfile={displayUserProfile}
-                        roles={roles}
-                        maxHoursPerEntry={40}
-                      />
-                      <ReactTooltip id="registerTip" place="bottom" effect="solid">
-                        Click this icon to learn about the timelog.
-                      </ReactTooltip>
-                    </Col>
-                  </Row>
+                        </div>
+                      </div>
+                    ) : (
+                      !(
+                        viewingUser &&
+                        viewingUser.role === 'Owner' &&
+                        authUser.role !== 'Owner'
+                      ) &&
+                      canPutUserProfileImportantInfo && (
+                        <div className={timeLog.tasksAndTimelogHeaderAddTimeDiv}>
+                          <div>
+                            <Button color="warning" onClick={toggle} style={boxStyle}>
+                              Add Time Entry {!isAuthUser && `for ${fullName}`}
+                            </Button>
+                          </div>
+                        </div>
+                      )
+                    )}
+
+                    <Modal
+                      isOpen={timeLogState.infoModal}
+                      toggle={openInfo}
+                      className={darkMode ? `text-light ${timeLog['text-light']}` : ''}
+                    >
+                      <ModalHeader className={darkMode ? 'bg-space-cadet' : ''}>Info</ModalHeader>
+                      <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>{timeLogState.information}</ModalBody>
+                      <ModalFooter className={darkMode ? 'bg-space-cadet' : ''}>
+                        <Button onClick={openInfo} color="primary" style={darkMode ? boxStyleDark : boxStyle}>
+                          Close
+                        </Button>
+                        <Button onClick={openInfo} color="secondary">
+                          Edit
+                        </Button>
+                      </ModalFooter>
+                    </Modal>
+
+                    <TimeEntryForm
+                      from="TimeLog"
+                      edit={false}
+                      toggle={toggle}
+                      isOpen={timeLogState.timeEntryFormModal}
+                      data={intangibletimeEntryFormData}
+                      userProfile={displayUserProfile}
+                      roles={roles}
+                      maxHoursPerEntry={40}
+                    />
+
+                    <ReactTooltip id="registerTip" place="bottom" effect="solid">
+                      Click this icon to learn about the timelog.
+                    </ReactTooltip>
+                  </Col>
+                </Row>
                 </CardHeader>
                 <CardBody
                   className={
-                    darkMode ? `${timeLog['card-header-shadow-dark']} bg-space-cadet` : `${timeLog['card-header-shadow']}`
+                    darkMode ? `${timeLog.cardHeaderShadowDark} bg-space-cadet` : `${timeLog.cardHeaderShadow}`
                   }
                 >
-                  <Nav tabs className={`${timeLog['task-and-timelog-card-nav']} mb-1 ${timeLog['responsive-font-size']}`}>
+                  <Nav tabs className={`${timeLog.taskAndTimelogCardNav} mb-1 ${timeLog.responsiveFontSize}`}>
                     <NavItem>
                       <NavLink
-                        className={`${classnames({ active: timeLogState.activeTab === 0 })} ${
-                          darkMode ? 'dark-mode' : ''
-                        }`}
+                        className={classnames(
+                          timeLog.navLink,
+                          {
+                            [timeLog.darkMode]: darkMode && timeLogState.activeTab !== 0,
+                            [timeLog.activeLightMode]: !darkMode && timeLogState.activeTab === 0,
+                            [timeLog.activeDarkMode]: darkMode && timeLogState.activeTab === 0
+                          }
+                        )}
                         onClick={() => {
                           changeTab(0);
                         }}
@@ -1013,9 +1036,14 @@ return (
                       </NavLink>
                     </NavItem>
                     <NavLink
-                      className={`${classnames({ active: timeLogState.activeTab === 1 })} ${
-                        darkMode ? 'dark-mode' : ''
-                      }`}
+                      className={classnames(
+                        timeLog.navLink,
+                        {
+                          [timeLog.darkMode]: darkMode && timeLogState.activeTab !== 1,
+                          [timeLog.activeLightMode]: !darkMode && timeLogState.activeTab === 1,
+                          [timeLog.activeDarkMode]: darkMode && timeLogState.activeTab === 1
+                        }
+                      )}
                       onClick={() => {
                         changeTab(1);
                       }}
@@ -1027,9 +1055,14 @@ return (
 
                     <NavItem>
                       <NavLink
-                        className={`${classnames({ active: timeLogState.activeTab === 2 })} ${
-                          darkMode ? 'dark-mode' : ''
-                        }`}
+                        className={classnames(
+                          timeLog.navLink,
+                          {
+                            [timeLog.darkMode]: darkMode && timeLogState.activeTab !== 2,
+                            [timeLog.activeLightMode]: !darkMode && timeLogState.activeTab === 2,
+                            [timeLog.activeDarkMode]: darkMode && timeLogState.activeTab === 2
+                          }
+                        )}
                         onClick={() => {
                           changeTab(2);
                         }}
@@ -1041,9 +1074,14 @@ return (
                     </NavItem>
                     <NavItem>
                       <NavLink
-                        className={`${classnames({ active: timeLogState.activeTab === 3 })} ${
-                          darkMode ? 'dark-mode' : ''
-                        }`}
+                        className={classnames(
+                          timeLog.navLink,
+                          {
+                            [timeLog.darkMode]: darkMode && timeLogState.activeTab !== 3,
+                            [timeLog.activeLightMode]: !darkMode && timeLogState.activeTab === 3,
+                            [timeLog.activeDarkMode]: darkMode && timeLogState.activeTab === 3
+                          }
+                        )}
                         onClick={() => {
                           changeTab(3);
                         }}
@@ -1055,9 +1093,14 @@ return (
                     </NavItem>
                     <NavItem>
                       <NavLink
-                        className={`${classnames({ active: timeLogState.activeTab === 4 })} ${
-                          darkMode ? 'dark-mode' : ''
-                        }`}
+                        className={classnames(
+                          timeLog.navLink,
+                          {
+                            [timeLog.darkMode]: darkMode && timeLogState.activeTab !== 4,
+                            [timeLog.activeLightMode]: !darkMode && timeLogState.activeTab === 4,
+                            [timeLog.activeDarkMode]: darkMode && timeLogState.activeTab === 4
+                          }
+                        )}
                         onClick={() => {
                           changeTab(4);
                         }}
@@ -1069,9 +1112,14 @@ return (
                     </NavItem>
                     <NavItem>
                       <NavLink
-                        className={`${classnames({ active: timeLogState.activeTab === 5 })} ${
-                          darkMode ? 'dark-mode' : ''
-                        }`}
+                        className={classnames(
+                          timeLog.navLink,
+                          {
+                            [timeLog.darkMode]: darkMode && timeLogState.activeTab !== 5,
+                            [timeLog.activeLightMode]: !darkMode && timeLogState.activeTab === 5,
+                            [timeLog.activeDarkMode]: darkMode && timeLogState.activeTab === 5
+                          }
+                        )}
                         onClick={() => {
                           changeTab(5);
                         }}
@@ -1083,26 +1131,26 @@ return (
                     </NavItem>
                     <NavItem>
                       <NavLink
-                        className={`${classnames({ active: timeLogState.activeTab === 6 })} ${
-                          darkMode ? 'dark-mode' : ''
-                        }`}
-                        onClick={() => {
-                          changeTab(6);
-                        }}
+                        className={classnames(timeLog.navLink, {
+                          [timeLog.darkMode]: darkMode && timeLogState.activeTab !== 6,
+                          [timeLog.activeLightMode]: !darkMode && timeLogState.activeTab === 6,
+                          [timeLog.activeDarkMode]: darkMode && timeLogState.activeTab === 6
+                        })}
+                        onClick={() => changeTab(6)}
                         href="#"
                         to="#"
                       >
                         Timestamps
                       </NavLink>
                     </NavItem>
+
                     <NavItem>
                       <NavLink
-                        className={`${classnames({ active: timeLogState.activeTab === 7 })} ${
-                          darkMode ? 'dark-mode' : ''
-                        }`}
-                        onClick={() => {
-                          changeTab(7);
-                        }}
+                        className={classnames(timeLog.navLink, {
+                          [timeLog.activeLightMode]: !darkMode && timeLogState.activeTab === 7,
+                          [timeLog.activeDarkMode]: darkMode && timeLogState.activeTab === 7
+                        })}
+                        onClick={() => changeTab(7)}
                         href="#"
                         to="#"
                       >
@@ -1116,12 +1164,14 @@ return (
 
                   <TabContent
                     activeTab={timeLogState.activeTab}
-                    className={darkMode ? 'bg-space-cadet' : ''}
+                    className={
+                      darkMode ? styles.tabContentDark : styles.tabContentLight
+                    }
                   >
                     {renderViewingTimeEntriesFrom()}
                     {timeLogState.activeTab === 4 && (
                       <Form inline className="mb-2">
-                        <FormGroup className={`mr-2 ${timeLog['date-selector-form']}`}>
+                        <FormGroup className={`mr-2 ${timeLog.dateSelectorForm}`}>
                           <Label
                             for="fromDate"
                             className={`${timeLog['responsive-font-size']} mr-2 ml-1 ${
@@ -1166,7 +1216,7 @@ return (
                         <Button
                           color="primary"
                           onClick={handleSearch}
-                          className={`${timeLog['search-time-entries-btn']}`}
+                          className={`${timeLog.searchTimeEntriesBtn}`}
                           style={darkMode ? boxStyleDark : boxStyle}
                         >
                           Search
@@ -1185,9 +1235,8 @@ return (
                     )}
                     {timeLogState.activeTab === 0 ||
                     timeLogState.activeTab === 5 ||
-                    timeLogState.activeTab === 6 ||
-                    timeLogState.activeTab === 7 ? null : (
-                      <Form className={`mb-2 ${timeLog['responsive-font-size']}`}>
+                    timeLogState.activeTab === 6 ? null : (
+                      <Form className={`mb-2 ${timeLog.responsiveFontSize}`}>
                         <FormGroup>
                           <Label
                             htmlFor="projectSelected"

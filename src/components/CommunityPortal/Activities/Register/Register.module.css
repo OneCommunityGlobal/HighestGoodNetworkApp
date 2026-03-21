@@ -245,7 +245,8 @@
 }
 
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {
@@ -454,8 +455,12 @@
 
 /* Animations */
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes slideIn {
@@ -475,24 +480,24 @@
     flex-direction: column;
     gap: 20px;
   }
-  
+
   .leftColumn,
   .middleColumn,
   .rightColumn {
     flex: none;
     width: 100%;
   }
-  
+
   .detailsRow {
     flex-direction: column;
     align-items: flex-start;
     gap: 10px;
   }
-  
+
   .detailsRow p {
     min-width: auto;
   }
-  
+
   .middleColumn h1 {
     font-size: 1.5rem;
   }
@@ -502,15 +507,15 @@
   .mainContainer {
     padding: 10px;
   }
-  
+
   .registerContainer {
     padding: 15px;
   }
-  
+
   .eventImage {
     height: 200px;
   }
-  
+
   .registerButton {
     width: 100%;
     padding: 15px;

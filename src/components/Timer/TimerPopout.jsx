@@ -197,11 +197,11 @@ function TimerPopout({ authUser, darkMode, TimerComponent }) {
     <button
       type="button"
       onClick={openPopoutWindow}
-      className={styles.btnDiv}
+      className={styles.iconBtn}
       aria-label="Open timer in new window"
     >
       <FaExternalLinkAlt
-        className={cs(styles.transitionColor, styles.btn)}
+        className={styles.icon}
         fontSize="1.5rem"
         title="Open timer in new window"
       />

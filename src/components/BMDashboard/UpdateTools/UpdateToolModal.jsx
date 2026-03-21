@@ -9,7 +9,13 @@ function UpdateToolModal({ modal, setModal, record }) {
     };
 
     return (
-      <Modal isOpen={modal} size="md">
+      <Modal
+        isOpen={modal}
+        size="lg"
+        className={styles.darkBlueModal}
+        contentClassName={styles.darkBlueModalContent} // Add this
+        backdropClassName={styles.darkBlueBackdrop}
+      >
         <ModalHeader>Update Tool Form</ModalHeader>
         <ModalBody>
           <div className={`${styles.updateModalContainer}`}>Under Construction</div>
