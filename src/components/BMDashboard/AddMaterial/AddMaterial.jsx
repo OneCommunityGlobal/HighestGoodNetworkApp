@@ -49,6 +49,7 @@ export default function AddMaterialForm() {
   const [areaCode, setAreaCode] = useState('1');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [phoneValid, setPhoneValid] = useState(true);
+  const [showPhoneValidationError, setShowPhoneValidationError] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState([]); // log here for correct state snapshot (will show each render)
   const [errors, setErrors] = useState({});
   const history = useHistory();
@@ -198,6 +199,7 @@ export default function AddMaterialForm() {
         areaCode: `+${dialCode}`,
       }));
       setPhoneValid(true);
+      setShowPhoneValidationError(false);
       return;
     }
 
@@ -210,6 +212,7 @@ export default function AddMaterialForm() {
     // If no national number entered, consider it valid (optional field)
     if (!nationalNumber) {
       setPhoneValid(true);
+      setShowPhoneValidationError(false);
       return;
     }
 
@@ -233,10 +236,20 @@ export default function AddMaterialForm() {
     }
   };
 
+  const handlePhoneBlur = () => {
+    if (!formData.phoneNumber) {
+      setShowPhoneValidationError(false);
+      return;
+    }
+
+    setShowPhoneValidationError(!phoneValid);
+  };
+
   const handleSubmit = async event => {
     event.preventDefault();
     const validationErrors = validate(formData);
     if (!phoneValid) {
+      setShowPhoneValidationError(true);
       toast.error('Invalid phone number for the selected country');
       return;
     }
@@ -264,6 +277,7 @@ export default function AddMaterialForm() {
     setUploadedFiles([]);
     setAreaCode(1);
     setPhoneNumber('');
+    setShowPhoneValidationError(false);
     // }
     // TODO: validate form data
     // TODO: submit data to API
@@ -276,6 +290,7 @@ export default function AddMaterialForm() {
     setUploadedFiles([]);
     setAreaCode(1);
     setPhoneNumber('');
+    setShowPhoneValidationError(false);
   };
 
   const handleRemoveFile = index => {
@@ -529,11 +544,17 @@ export default function AddMaterialForm() {
                 onChange={(phone, countryData) => phoneChange('phoneNumber', phone, countryData)}
                 enableLongNumbers={false}
                 inputStyle={{ height: 'auto', width: '40%', fontSize: 'inherit' }}
+                inputProps={{ id: 'phone-number', onBlur: handlePhoneBlur }}
               />
-              {!phoneValid && formData.phoneNumber && (
-                <Label className={`${styles.materialFormError}`}>
+              {showPhoneValidationError && !phoneValid && formData.phoneNumber && (
+                <div
+                  className={`${styles.materialFormError} ${
+                    darkMode ? styles.materialFormErrorDark : ''
+                  }`}
+                  style={{ color: darkMode ? '#ff6b6b' : 'red' }}
+                >
                   Invalid phone number for the selected country
-                </Label>
+                </div>
               )}
             </div>
           </FormGroup>
