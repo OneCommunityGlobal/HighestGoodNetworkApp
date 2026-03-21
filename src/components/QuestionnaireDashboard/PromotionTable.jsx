@@ -1,27 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
+import { getPromotionEligibility, postPromotionEligibility } from '../../actions/promotionActions';
 import styles from './PromotionTable.module.css';
 
-const names = ['Alice', 'Bob', 'Charlie', 'Diana', 'Edward', 'Fiona', 'Grace'];
-
-function seededRandom(seed) {
-  let x = Math.sin(seed) * 10000;
-  return x - Math.floor(x);
-}
-
-const dummyMembers = Array.from({ length: 45 }, (_, i) => ({
-  id: i + 1,
-  reviewer: names[i % names.length],
-  hasMetWeekly: i % 2 === 0,
-  requiredPRs: 5,
-  totalReviews: Math.floor(seededRandom(i) * 10),
-  remainingWeeks: Math.max(0, 4 - Math.floor(seededRandom(i + 1) * 4)),
-  promote: i % 3 === 0,
-  isNew: i < 15,
-}));
-
-function MemberSection({ title, members, styles }) {
+function MemberSection({ title, members, onPromoteChange, styles }) {
   return (
     <>
       <tr className={styles['sectionHeader']}>
@@ -42,7 +25,8 @@ function MemberSection({ title, members, styles }) {
             <input
               className={styles['promoteCheckbox']}
               type="checkbox"
-              defaultChecked={user.promote}
+              checked={user.promote}
+              onChange={() => onPromoteChange(user.id)}
             />
           </td>
         </tr>
@@ -57,34 +41,38 @@ function PromotionTable() {
   const [reviewLoading, setReviewLoading] = useState(false);
   const [processingLoading, setProcessingLoading] = useState(false);
   const darkMode = useSelector(state => state.theme.darkMode);
+  const requestor = useSelector(state => state.auth.user);
+
+  const fetchEligibilityData = async () => {
+    try {
+      const data = await getPromotionEligibility();
+      setEligibilityData(data);
+    } catch (error) {
+      toast.error('Failed to fetch promotion eligibility data.');
+    }
+  };
 
   useEffect(() => {
     setLoading(true);
-    const timer = setTimeout(() => {
-      setEligibilityData(dummyMembers);
-      setLoading(false);
-    }, 500);
-    return () => clearTimeout(timer);
+    fetchEligibilityData().finally(() => setLoading(false));
   }, []);
+
+  const handlePromoteChange = memberId => {
+    setEligibilityData(prevData =>
+      prevData.map(member =>
+        member.id === memberId ? { ...member, promote: !member.promote } : member,
+      ),
+    );
+  };
 
   const handleReviewForThisWeek = async () => {
     setReviewLoading(true);
     try {
-      // Simulate API call to fetch weekly review data
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      // Refresh the table with current week's data
-      setEligibilityData(prevData =>
-        prevData.map(member => ({
-          ...member,
-          hasMetWeekly: Math.random() > 0.5, // Simulate data refresh
-        })),
-      );
-
+      // Fetch fresh eligibility data from the backend
+      await fetchEligibilityData();
       toast.success('Weekly review initiated. Table data refreshed.');
     } catch (error) {
       toast.error('Failed to initiate weekly review.');
-      console.error('Review error:', error);
     } finally {
       setReviewLoading(false);
     }
@@ -93,23 +81,24 @@ function PromotionTable() {
   const handleProcessPromotions = async () => {
     setProcessingLoading(true);
     try {
-      // Get selected members for promotion
-      const selectedMembers = eligibilityData.filter(m => m.promote);
+      // Get selected member IDs for promotion
+      const selectedMemberIds = eligibilityData.filter(m => m.promote).map(m => m.id);
 
-      if (selectedMembers.length === 0) {
+      if (selectedMemberIds.length === 0) {
         toast.warning('No members selected for promotion.');
         setProcessingLoading(false);
         return;
       }
 
-      // Simulate API call to process promotions
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Call the promote endpoint with selected member IDs
+      await postPromotionEligibility(selectedMemberIds, requestor?.userid);
 
-      // Show success message
-      toast.success(`Promotions processed successfully for ${selectedMembers.length} member(s).`);
+      // Refresh data after processing
+      await fetchEligibilityData();
+
+      toast.success(`Promotions processed successfully for ${selectedMemberIds.length} member(s).`);
     } catch (error) {
       toast.error('Failed to process promotions.');
-      console.error('Promotion error:', error);
     } finally {
       setProcessingLoading(false);
     }
@@ -158,8 +147,18 @@ function PromotionTable() {
             </tr>
           </thead>
           <tbody>
-            <MemberSection title="New Members" members={newMembers} styles={styles} />
-            <MemberSection title="Existing Members" members={existingMembers} styles={styles} />
+            <MemberSection
+              title="New Members"
+              members={newMembers}
+              onPromoteChange={handlePromoteChange}
+              styles={styles}
+            />
+            <MemberSection
+              title="Existing Members"
+              members={existingMembers}
+              onPromoteChange={handlePromoteChange}
+              styles={styles}
+            />
           </tbody>
         </table>
       </div>
