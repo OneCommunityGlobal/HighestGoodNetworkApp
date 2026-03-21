@@ -1,7 +1,7 @@
-import { useMemo, useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import getJobAnalyticsData from './api';
-import './jobAnalytics.css';
+import styles from './jobAnalytics.module.css';
 
 function JobAnalytics() {
   const { darkMode } = useSelector(state => state.theme);
@@ -12,8 +12,6 @@ function JobAnalytics() {
 
   // Role filter
   const [selectedRole, setSelectedRole] = useState('all');
-
-  // Data source: [{ role: string, timestamp: ISO string }, ...]
   const rawData = getJobAnalyticsData();
 
   // Roles list for the dropdown (includes "all")
@@ -83,36 +81,36 @@ function JobAnalytics() {
   }, [maxApplications]);
 
   return (
-    <div className={`ja ${darkMode ? 'dark' : ''}`} style={{ minHeight: '105vh' }}>
-      <div className="ja-main">
+    <div className={`${styles.ja} ${darkMode ? styles.dark : ''}`} style={{ minHeight: '105vh' }}>
+      <div className={styles.jaMain}>
         {/* Left: Chart card */}
-        <section className="ja-card">
-          <h2 className="ja-title">Least popular roles</h2>
+        <section className={styles.jaCard}>
+          <h2 className={styles.jaTitle}>Least popular roles</h2>
 
           {invalidRange && (
-            <div className="ja-warning" role="alert">
+            <div className={styles.jaWarning} role="alert">
               Start date cannot be after end date.
             </div>
           )}
 
           {showingCount ? (
             <>
-              <div className="ja-chart">
-                <div className="ja-grid" aria-hidden="true" />
-                <div className="ja-bars">
+              <div className={styles.jaChart}>
+                <div className={styles.jaGrid} aria-hidden="true" />
+                <div className={styles.jaBars}>
                   {chartData.map(row => {
                     const pct =
                       maxApplications > 0
                         ? Math.max(2, (row.applications / maxApplications) * 100)
                         : 0;
                     return (
-                      <div className="ja-row" key={row.role}>
-                        <div className="ja-label" title={row.role}>
+                      <div className={styles.jaRow} key={row.role}>
+                        <div className={styles.jaLabel} title={row.role}>
                           {row.role}
                         </div>
-                        <div className="ja-track">
-                          <div className="ja-bar" style={{ width: `${pct}%` }}>
-                            <span className="ja-value">{row.applications}</span>
+                        <div className={styles.jaTrack}>
+                          <div className={styles.jaBar} style={{ width: `${pct}%` }}>
+                            <span className={styles.jaValue}>{row.applications}</span>
                           </div>
                         </div>
                       </div>
@@ -121,18 +119,18 @@ function JobAnalytics() {
                 </div>
               </div>
 
-              <div className="ja-xaxis">
+              <div className={styles.jaXaxis}>
                 {ticks.map(t => (
                   <span key={t}>{t}</span>
                 ))}
               </div>
-              <div className="ja-xaxis-label">Applications</div>
+              <div className={styles.jaXaxisLabel}>Applications</div>
             </>
           ) : (
-            <div className="ja-no-data">No data for the selected filters.</div>
+            <div className={styles.jaNoData}>No data for the selected filters.</div>
           )}
 
-          <div className="ja-footer">
+          <div className={styles.jaFooter}>
             <div>
               <strong>Showing:</strong> {showingCount} role(s)
             </div>
@@ -148,17 +146,17 @@ function JobAnalytics() {
         </section>
 
         {/* Right: Filters */}
-        <aside className="ja-filters">
-          <div className="ja-filter">
-            <div className="ja-filter-label">Dates</div>
-            <div className="ja-date-range">
+        <aside className={styles.jaFilters}>
+          <div className={styles.jaFilter}>
+            <div className={styles.jaFilterLabel}>Dates</div>
+            <div className={styles.jaDateRange}>
               <input
                 type="date"
                 value={startDate}
                 onChange={e => setStartDate(e.target.value)}
                 aria-label="Start date"
               />
-              <span className="ja-date-dash">–</span>
+              <span className={styles.jaDateDash}>–</span>
               <input
                 type="date"
                 value={endDate}
@@ -168,7 +166,7 @@ function JobAnalytics() {
               {(startDate || endDate) && (
                 <button
                   type="button"
-                  className="ja-clear"
+                  className={styles.jaClear}
                   onClick={() => {
                     setStartDate('');
                     setEndDate('');
@@ -180,8 +178,8 @@ function JobAnalytics() {
             </div>
           </div>
 
-          <div className="ja-filter">
-            <div className="ja-filter-label">Role</div>
+          <div className={styles.jaFilter}>
+            <div className={styles.jaFilterLabel}>Role</div>
             <select
               value={selectedRole}
               onChange={e => setSelectedRole(e.target.value)}

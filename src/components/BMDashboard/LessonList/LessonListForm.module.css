@@ -1,46 +1,49 @@
-
-.formContainer{
-  
+.formContainer {
   .formControl {
-   max-width: unset !important;
-   font-size: small !important;
- } 
- .formLabel{
-  margin: 5px 0;
-  font-size: small;
+    max-width: unset !important;
+    font-size: small !important;
+  }
+
+  .formLabel {
+    margin: 5px 0;
+    font-size: small;
   }
 }
 
+/* ✅ merged duplicate .formControlDelete */
 .formControlDelete {
-  margin-left: 10px;
+  margin-left: 0;
   font-size: small !important;
   max-width: 100%;
+  width: 100%;
 }
 
+/* Tag delete button */
 .tag .deleteTag {
   margin-left: 10px;
   background-color: red;
-  
 }
 
-.mainContainer{
- display: flex;
- flex-direction: column;
- height: 100%;
-   padding-left: 10%;
-   padding-right: 10%;
-   padding-top: 5%;
-   padding-bottom: 1%;
+.mainContainer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding-left: 10%;
+  padding-right: 10%;
+  padding-top: 5%;
+  padding-bottom: 1%;
 }
-.lessonLabel{
-   font-size: larger !important;
-   font-weight: bold ;
+
+.lessonLabel {
+  font-size: larger !important;
+  font-weight: bold;
 }
-.formSelectContainer{
-   display: flex;
-   flex-direction: row;
-   justify-content: flex-start;
-   font-size: small;
+
+.formSelectContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  font-size: small;
 }
 
 .singleForm {
@@ -49,20 +52,21 @@
   text-align: center !important;
   margin-right: 40px;
   width: 200px;
-  
- 
 }
-.singleFormSelect {
-  background-color: #F2F2F266 !important;
 
+.singleFormSelect {
+  background-color: #f2f2f266 !important;
 }
 
 .tagContainer {
   display: flex;
   flex-wrap: wrap;
-  gap: 5px;
-  padding: 5px;
+  gap: 8px;
+  padding: 8px 0;
   margin-top: 10px;
+  min-height: 32px;
+  position: relative;
+  z-index: 1;
 }
 
 .deleteInputWrapper {
@@ -70,14 +74,10 @@
   flex: 1;
 }
 
-.formControlDelete {
-  width: 100%;
-  margin-left: 0;
-  font-size: small !important;
-}
-
+/* ✅ merged duplicate .tagsInputContainer */
 .tagsInputContainer {
   display: flex;
+  flex-direction: column;
   align-items: flex-start;
   gap: 10px;
 }
@@ -85,13 +85,28 @@
 .tag {
   display: inline-flex;
   align-items: center;
-  background-color: #F2F2F266;
-  border-radius: 5px;
-  padding: 2px 5px;
-  margin: 2px;
-  font-size: small;
-  gap: 5px;
-  min-height: 24px;
+  background-color: #e3f2fd;
+  border: 1px solid #90caf9;
+  border-radius: 16px;
+  padding: 4px 12px;
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+  gap: 6px;
+  min-height: 28px;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  color: #1976d2;
+  position: relative;
+}
+
+.tag span {
+  color: inherit;
+}
+
+.tag:hover {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
 }
 
 .tag .close {
@@ -99,16 +114,77 @@
   cursor: pointer;
 } 
 
-.tag .buttonClose {
-  background-color: #F2F2F266;
-  border-color: #F2F2F266;
-  color: black;
+.buttonClose {
+  background-color: transparent;
+  border: none;
+  color: #1976d2;
+  font-size: 20px;
+  font-weight: bold;
+  line-height: 1;
+  padding: 2px;
+  margin: 0;
+  margin-left: 6px;
+  cursor: pointer !important;
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  min-height: 22px;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  vertical-align: middle;
+  position: relative;
+  z-index: 100 !important;
+  pointer-events: auto !important;
+  -webkit-user-select: none;
+  user-select: none;
+  outline: none;
 }
 
-.tagsInputContainer {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+.buttonClose:hover {
+  background-color: rgba(25, 118, 210, 0.1);
+  color: #1565c0;
+}
+
+.buttonClose:active {
+  transform: scale(0.9);
+}
+
+/* Dark mode styles */
+.tagTextDark {
+  color: #ffffff;
+}
+
+.tagDark {
+  background-color: #3a506b;
+  border-color: #5a6b88;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  color: #ffffff;
+}
+
+.tagDark:hover {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  background-color: #4a5a77;
+}
+
+.tagDark span {
+  color: #ffffff;
+}
+
+.buttonCloseDark {
+  color: #ffffff !important;
+}
+
+.buttonCloseDark:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: #ffffff !important;
+}
+
+.tagContainerDark {
+  /* Dark mode container styles if needed */
 }
 
 .tagsWrapper {
@@ -117,29 +193,35 @@
   gap: 5px;
 }
 
-
 .tagDropdown {
   position: absolute;
   background: white;
   border: 1px solid #ccc;
+  border-radius: 4px;
   max-height: 200px;
   overflow-y: auto;
   z-index: 1000;
   width: 100%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  margin-top: 4px;
 }
 
 .tagDropdownItem {
-  padding: 8px;
+  padding: 8px 12px;
   cursor: pointer;
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  transition: background-color 0.2s ease;
 }
 
 .tagDropdownItem:hover {
   background-color: #f0f0f0;
 }
 
-  @media (max-width: 570px) {
-   .formSelectContainer {
-     flex-direction: column;
-   }
+@media (max-width: 570px) {
+  .formSelectContainer {
+    flex-direction: column;
   }
-
+}
