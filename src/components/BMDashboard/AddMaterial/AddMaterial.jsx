@@ -208,6 +208,7 @@ export default function AddMaterialForm() {
       [name]: phone,
       areaCode: `+${dialCode}`,
     }));
+    setShowPhoneValidationError(false);
 
     // If no national number entered, consider it valid (optional field)
     if (!nationalNumber) {
@@ -234,15 +235,6 @@ export default function AddMaterialForm() {
     } catch (error) {
       setPhoneValid(false);
     }
-  };
-
-  const handlePhoneBlur = () => {
-    if (!formData.phoneNumber) {
-      setShowPhoneValidationError(false);
-      return;
-    }
-
-    setShowPhoneValidationError(!phoneValid);
   };
 
   const handleSubmit = async event => {
@@ -544,7 +536,7 @@ export default function AddMaterialForm() {
                 onChange={(phone, countryData) => phoneChange('phoneNumber', phone, countryData)}
                 enableLongNumbers={false}
                 inputStyle={{ height: 'auto', width: '40%', fontSize: 'inherit' }}
-                inputProps={{ id: 'phone-number', onBlur: handlePhoneBlur }}
+                inputProps={{ id: 'phone-number' }}
               />
               {showPhoneValidationError && !phoneValid && formData.phoneNumber && (
                 <div
