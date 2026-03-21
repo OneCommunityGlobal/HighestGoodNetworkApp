@@ -4,16 +4,20 @@ import { Bar } from 'react-chartjs-2';
 import Select, { components } from 'react-select';
 import { fetchIssues } from '../../../actions/bmdashboard/issueChartActions';
 import 'chart.js/auto';
-import { Chart as ChartJS } from 'chart.js';
 import styles from './issueChart.module.css';
 
-function IssueChart() {
+function IssueChart({ variant = 'standalone', showTitle = true }) {
   const dispatch = useDispatch();
   const darkMode = useSelector(state => state.theme.darkMode);
   const { loading, issues, error } = useSelector(state => state.bmissuechart);
 
   const [filters, setFilters] = useState({ issueTypes: [], years: [] });
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 640);
+  const [isMobile, setIsMobile] = useState(
+    typeof window !== 'undefined' ? window.innerWidth <= 640 : false,
+  );
+
+  const isCardVariant = variant === 'card';
+
   const stripNumericSuffix = value => {
     const str = String(value);
     let end = str.length;
@@ -43,6 +47,7 @@ function IssueChart() {
             .map(year => parseInt(year, 10)),
         ),
       ].sort((a, b) => a - b);
+
       setFilters({ issueTypes: allIssueTypes, years: allYears });
     }
   }, [issues]);
@@ -69,6 +74,7 @@ function IssueChart() {
       const options = names
         .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
         .map(issue => ({ label: issue, value: issue }));
+
       return names.length > 1
         ? {
             label: `${base} (e.g., ${names.slice(0, 3).join(', ')}${
@@ -78,8 +84,6 @@ function IssueChart() {
           }
         : options[0];
     });
-
-    const issueTypes = groupedIssueTypes;
 
     const years = [
       ...new Set(
@@ -92,49 +96,50 @@ function IssueChart() {
       .map(year => ({ label: year.toString(), value: year }));
 
     return {
-      issueTypes,
+      issueTypes: groupedIssueTypes,
       years,
     };
   };
 
   const { issueTypes, years } = extractDropdownOptions();
+
   const flattenOptions = options =>
     options.flatMap(option => (option.options ? option.options : option));
+
   const flatIssueTypeOptions = flattenOptions(issueTypes);
-  const uniqueYears = years.filter(y => y.value !== 'All').map(y => y.value);
+  const uniqueYears = years.map(y => y.value);
 
   const generateColor = idx => `hsl(${(idx * 60) % 360}, 70%, 50%)`;
-  const yearColorMap = uniqueYears.reduce((acc, year, idx) => {
-    acc[year] = generateColor(idx);
-    return acc;
-  }, {});
+
+  const yearColorMap = useMemo(
+    () =>
+      uniqueYears.reduce((acc, year, idx) => {
+        acc[year] = generateColor(idx);
+        return acc;
+      }, {}),
+    [uniqueYears],
+  );
 
   const handleFilterChange = (selected, field) => {
-    const cleaned = selected
+    const cleaned = (selected || [])
       .filter(option => option?.value != null)
       .map(option => option.value)
       .filter(value => {
         const lower = String(value).toLowerCase();
         return lower !== '__all__' && lower !== 'select all' && lower !== 'all';
       });
-    setFilters({
-      ...filters,
+
+    setFilters(prev => ({
+      ...prev,
       [field]: cleaned,
-    });
+    }));
   };
 
   const handleSelectAll = field => {
-    setFilters({
-      ...filters,
+    setFilters(prev => ({
+      ...prev,
       [field]: field === 'issueTypes' ? Object.keys(issues || {}) : uniqueYears,
-    });
-  };
-
-  const handleClearField = field => {
-    setFilters({
-      ...filters,
-      [field]: [],
-    });
+    }));
   };
 
   const handleClearFilters = () => {
@@ -148,15 +153,19 @@ function IssueChart() {
     if (!issues || Object.keys(issues).length === 0) return { labels: [], datasets: [] };
 
     const getBase = name => stripNumericSuffix(name);
+
     const issueTypeKeys = Object.keys(issues || {}).sort((a, b) => {
       const aLower = String(a).toLowerCase();
       const bLower = String(b).toLowerCase();
       const aIsNull = aLower === 'null';
       const bIsNull = bLower === 'null';
+
       if (aIsNull && !bIsNull) return 1;
       if (!aIsNull && bIsNull) return -1;
+
       return aLower.localeCompare(bLower, undefined, { numeric: true });
     });
+
     const groupMap = issueTypeKeys.reduce((acc, type) => {
       const base = getBase(type);
       if (!acc[base]) acc[base] = [];
@@ -166,18 +175,22 @@ function IssueChart() {
 
     const selectedTypes = filters.issueTypes.length ? filters.issueTypes : issueTypeKeys;
     const selectedTypeSet = new Set(selectedTypes.map(t => String(t).toLowerCase()));
+
     const selectedBases = [...new Set(selectedTypes.map(getBase))].sort((a, b) => {
       const aLower = String(a).toLowerCase();
       const bLower = String(b).toLowerCase();
       const aIsNull = aLower === 'null';
       const bIsNull = bLower === 'null';
+
       if (aIsNull && !bIsNull) return 1;
       if (!aIsNull && bIsNull) return -1;
+
       return aLower.localeCompare(bLower, undefined, { numeric: true });
     });
-    const filteredYears = filters.years.length ? filters.years : uniqueYears;
 
+    const filteredYears = filters.years.length ? filters.years : uniqueYears;
     const labels = selectedBases;
+
     const datasets = filteredYears.map(year => ({
       label: year.toString(),
       data: labels.map(base =>
@@ -231,13 +244,13 @@ function IssueChart() {
     if (peak.value > 0 && peak.year && peak.issueType) {
       insightText = `${peak.issueType} issues peak in ${peak.year} (${peak.value}).`;
     } else {
-      insightText = `No issues found for the selected filters.`;
+      insightText = 'No issues found for the selected filters.';
     }
 
     return { totalByYear, topIssueTypeIndex, insightText };
   }, [chartData]);
 
-  const xAxisBackgroundPlugin = darkMode => ({
+  const xAxisBackgroundPlugin = dm => ({
     id: 'xAxisBackground',
     beforeDraw: chart => {
       const { ctx, chartArea, scales } = chart;
@@ -245,24 +258,17 @@ function IssueChart() {
       if (!xScale) return;
 
       ctx.save();
-
       const ticks = xScale.ticks.length;
 
       xScale.ticks.forEach((_, index) => {
-        // Shade ONLY alternate labels: one shaded, one normal
         if (index % 2 !== 0) return;
 
         const center = xScale.getPixelForTick(index);
-
         const left = index === 0 ? xScale.left : (xScale.getPixelForTick(index - 1) + center) / 2;
-
         const right =
           index === ticks - 1 ? xScale.right : (center + xScale.getPixelForTick(index + 1)) / 2;
 
-        ctx.fillStyle = darkMode
-          ? 'rgba(255,255,255,0.05)' // dark mode band
-          : 'rgba(0,0,0,0.08)'; // light mode band (more visible)
-
+        ctx.fillStyle = dm ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.08)';
         ctx.fillRect(left, chartArea.top, right - left, chartArea.bottom - chartArea.top);
       });
 
@@ -276,7 +282,7 @@ function IssueChart() {
       maintainAspectRatio: false,
       layout: {
         padding: {
-          bottom: 56,
+          bottom: isCardVariant ? 36 : 56,
         },
       },
       plugins: {
@@ -297,7 +303,7 @@ function IssueChart() {
           },
         },
         title: {
-          display: true,
+          display: !isCardVariant,
           text: 'Number of Issues Reported by Type',
           font: { size: 17 },
           color: darkMode ? '#cfd7e3' : '#232323',
@@ -310,15 +316,12 @@ function IssueChart() {
           titleColor: darkMode ? '#fff' : '#232323',
           bodyColor: darkMode ? '#fff' : '#232323',
           callbacks: {
-            title: items => {
-              return items?.[0]?.label ?? '';
-            },
+            title: items => items?.[0]?.label ?? '',
             label: ctx => {
               const year = ctx.dataset.label;
               const value = Number(ctx.raw) || 0;
               const total = chartAnalysis.totalByYear?.[year] ?? 0;
               const pct = total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
-
               return `${year}: ${value} (${pct}%)`;
             },
           },
@@ -412,13 +415,10 @@ function IssueChart() {
         },
       },
     }),
-    [darkMode, isMobile, chartAnalysis, chartData],
+    [darkMode, isMobile, chartAnalysis, chartData, isCardVariant],
   );
 
-  const chartPlugins = useMemo(() => [xAxisBackgroundPlugin(darkMode)], [
-    darkMode,
-    chartData.labels,
-  ]);
+  const chartPlugins = useMemo(() => [xAxisBackgroundPlugin(darkMode)], [darkMode]);
 
   const selectStyles = useMemo(
     () => ({
@@ -524,6 +524,7 @@ function IssueChart() {
       props.selectProps && typeof props.selectProps.onMenuClose === 'function'
         ? props.selectProps.onMenuClose
         : undefined;
+
     return (
       <components.MenuList {...props}>
         <div className={styles.filterMenuActions}>
@@ -542,6 +543,7 @@ function IssueChart() {
       </components.MenuList>
     );
   };
+
   FilterMenuList.displayName = 'IssueChartFilterMenuList';
 
   const activeFilterSummary = useMemo(() => {
@@ -549,143 +551,156 @@ function IssueChart() {
     const yearList = filters.years.length ? filters.years : uniqueYears;
     const range =
       yearList.length > 0 ? `${Math.min(...yearList)}–${Math.max(...yearList)}` : 'No years';
+
     return `${issueTypeCount} Issue Types | ${range}`;
   }, [filters.issueTypes, filters.years, issues, uniqueYears]);
+
+  const chartContent = (
+    <div
+      className={`${styles.issueChartEventContainer} ${
+        darkMode ? styles.issueChartEventContainerDark : ''
+      }`}
+      role="region"
+      aria-label="Issues bar chart"
+      style={
+        isCardVariant ? { padding: 0, margin: 0, boxShadow: 'none', background: 'transparent' } : {}
+      }
+    >
+      {showTitle && (
+        <h2
+          className={`${styles.issueChartEventTitle} ${
+            darkMode ? styles.issueChartEventTitleDark : ''
+          }`}
+          style={isCardVariant ? { marginTop: 0, marginBottom: 16 } : {}}
+        >
+          Issue Chart
+        </h2>
+      )}
+
+      <div
+        className={styles.selectContainer}
+        style={{ justifyContent: 'center', gap: '20px', flexWrap: 'wrap' }}
+      >
+        <div style={{ minWidth: 200 }}>
+          <label
+            htmlFor={`issue-type-select-${variant}`}
+            className={`${styles.issueChartLabel} ${darkMode ? styles.issueChartLabelDark : ''}`}
+            title="Issue types with similar names are grouped (e.g., Technical, Technical1, Technical2)"
+          >
+            Issue Type:
+          </label>
+          <Select
+            inputId={`issue-type-select-${variant}`}
+            className={`${styles.issueChartSelect} ${darkMode ? styles.issueChartSelectDark : ''}`}
+            isMulti
+            options={issueTypes}
+            onChange={selected => handleFilterChange(selected, 'issueTypes')}
+            value={flatIssueTypeOptions.filter(option => filters.issueTypes.includes(option.value))}
+            styles={selectStyles}
+            aria-label="Filter issues by type"
+            placeholder="Select issue types"
+            components={{ MenuList: FilterMenuList }}
+            filterField="issueTypes"
+          />
+        </div>
+
+        <div style={{ minWidth: 200 }}>
+          <label
+            htmlFor={`year-select-${variant}`}
+            className={`${styles.issueChartLabel} ${darkMode ? styles.issueChartLabelDark : ''}`}
+          >
+            Year:
+          </label>
+          <Select
+            inputId={`year-select-${variant}`}
+            className={`${styles.issueChartSelect} ${darkMode ? styles.issueChartSelectDark : ''}`}
+            isMulti
+            options={years}
+            onChange={selected => handleFilterChange(selected, 'years')}
+            value={years.filter(option => filters.years.includes(option.value))}
+            styles={selectStyles}
+            aria-label="Filter issues by year"
+            placeholder="Select years"
+            components={{ MenuList: FilterMenuList }}
+            filterField="years"
+          />
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+          <button
+            type="button"
+            onClick={handleClearFilters}
+            style={{
+              padding: '8px 16px',
+              backgroundColor: '#007FFF',
+              color: '#ffffff',
+              border: 'none',
+              borderRadius: '6px',
+              cursor: 'pointer',
+              fontWeight: 500,
+              height: '38px',
+            }}
+            aria-label="Clear all issue chart filters"
+          >
+            Clear Filters
+          </button>
+        </div>
+      </div>
+
+      {loading && <p>Loading...</p>}
+      {error && <p>Error: {error}</p>}
+
+      {!loading && !error && (
+        <div
+          className={`${styles.issueChartYearGroup} ${styles.issueTypeGroup} ${
+            darkMode ? styles.issueChartYearGroupDark : ''
+          }`}
+          style={{ marginTop: 24 }}
+        >
+          <div className={styles.activeFilterSummary}>{activeFilterSummary}</div>
+
+          <div
+            className={`${styles.chartWrapper} ${darkMode ? styles.chartWrapperDark : ''}`}
+            style={{
+              height: isCardVariant ? '460px' : '520px',
+              maxHeight: isCardVariant ? '460px' : '520px',
+              position: 'relative',
+              overflow: 'hidden',
+              paddingBottom: 50,
+            }}
+          >
+            <Bar
+              data={chartData}
+              options={chartOptions}
+              plugins={chartPlugins}
+              aria-labelledby="chart-title"
+            />
+            <p
+              style={{
+                marginTop: 10,
+                fontSize: 13,
+                opacity: 0.85,
+                textAlign: 'center',
+              }}
+            >
+              {chartAnalysis.insightText}
+            </p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
+  if (isCardVariant) {
+    return chartContent;
+  }
 
   return (
     <div
       className={darkMode ? 'bg-oxford-blue text-light dark' : ''}
       style={{ minHeight: '100vh' }}
     >
-      <div
-        className={`${styles.issueChartEventContainer} ${
-          darkMode ? styles.issueChartEventContainerDark : ''
-        }`}
-        role="region"
-        aria-label="Issues bar chart"
-      >
-        <h2
-          className={`${styles.issueChartEventTitle} ${
-            darkMode ? styles.issueChartEventTitleDark : ''
-          }`}
-        >
-          Issues Chart
-        </h2>
-        <div
-          className={styles.selectContainer}
-          style={{ justifyContent: 'center', gap: '20px', flexWrap: 'wrap' }}
-        >
-          <div style={{ minWidth: 200 }}>
-            <label
-              htmlFor="issue-type-select"
-              className={`${styles.issueChartLabel} ${darkMode ? styles.issueChartLabelDark : ''}`}
-              title="Issue types with similar names are grouped (e.g., Technical, Technical1, Technical2)"
-            >
-              Issue Type:
-            </label>
-            <Select
-              inputId="issue-type-select"
-              className={`${styles.issueChartSelect} ${
-                darkMode ? styles.issueChartSelectDark : ''
-              }`}
-              isMulti
-              options={issueTypes}
-              onChange={selected => handleFilterChange(selected, 'issueTypes')}
-              value={flatIssueTypeOptions.filter(option =>
-                filters.issueTypes.includes(option.value),
-              )}
-              styles={selectStyles}
-              aria-label="Filter issues by type"
-              placeholder="Select issue types"
-              components={{ MenuList: FilterMenuList }}
-              filterField="issueTypes"
-            />
-          </div>
-          <div style={{ minWidth: 200 }}>
-            <label
-              htmlFor="year-select"
-              className={`${styles.issueChartLabel} ${darkMode ? styles.issueChartLabelDark : ''}`}
-            >
-              Year:
-            </label>
-            <Select
-              inputId="year-select"
-              className={`${styles.issueChartSelect} ${
-                darkMode ? styles.issueChartSelectDark : ''
-              }`}
-              isMulti
-              options={years}
-              onChange={selected => handleFilterChange(selected, 'years')}
-              value={years.filter(option => filters.years.includes(option.value))}
-              styles={selectStyles}
-              aria-label="Filter issues by year"
-              placeholder="Select years"
-              components={{ MenuList: FilterMenuList }}
-              filterField="years"
-            />
-          </div>
-          <div style={{ display: 'flex', alignItems: 'flex-end' }}>
-            <button
-              type="button"
-              onClick={handleClearFilters}
-              style={{
-                padding: '8px 16px',
-                backgroundColor: '#007FFF',
-                color: '#ffffff',
-                border: 'none',
-                borderRadius: '6px',
-                cursor: 'pointer',
-                fontWeight: 500,
-                height: '38px',
-              }}
-              aria-label="Clear all issue chart filters"
-            >
-              Clear Filters
-            </button>
-          </div>
-        </div>
-
-        {loading && <p>Loading...</p>}
-        {error && <p>Error: {error}</p>}
-
-        {!loading && !error && (
-          <div
-            className={`${styles.issueChartYearGroup} ${styles.issueTypeGroup} ${
-              darkMode ? styles.issueChartYearGroupDark : ''
-            }`}
-            style={{ marginTop: 24 }}
-          >
-            <div className={styles.activeFilterSummary}>{activeFilterSummary}</div>
-            <div
-              className={`${styles.chartWrapper} ${darkMode ? styles.chartWrapperDark : ''}`}
-              style={{
-                height: '520px',
-                maxHeight: '520px',
-                position: 'relative',
-                overflow: 'hidden',
-                paddingBottom: 50,
-              }}
-            >
-              <Bar
-                data={chartData}
-                options={chartOptions}
-                plugins={chartPlugins}
-                aria-labelledby="chart-title"
-              />
-              <p
-                style={{
-                  marginTop: 10,
-                  fontSize: 13,
-                  opacity: 0.85,
-                  textAlign: 'center',
-                }}
-              >
-                {chartAnalysis.insightText}
-              </p>
-            </div>
-          </div>
-        )}
-      </div>
+      {chartContent}
     </div>
   );
 }
