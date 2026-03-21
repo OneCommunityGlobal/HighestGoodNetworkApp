@@ -87,6 +87,8 @@
   margin-top: 5px;
   font-size: 1rem;
   background: #fff;
+}
+
 /* Dark mode date input - style the calendar icon */
 .darkModeInput[type="date"]::-webkit-calendar-picker-indicator {
   filter: invert(1);
