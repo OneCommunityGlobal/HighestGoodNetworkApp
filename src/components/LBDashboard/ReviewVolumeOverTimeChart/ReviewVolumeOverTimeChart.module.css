@@ -20,8 +20,10 @@
 
 .header {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
+  gap: 0.75rem 1rem;
   margin-bottom: 1rem;
 }
 
@@ -29,18 +31,27 @@
   margin: 0;
   font-size: 1.25rem;
   font-weight: 700;
+  flex: 1 1 auto;
+  min-width: min(100%, 12rem);
 }
 
 .legendDots {
   display: flex;
-  gap: 0.75rem;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem 0.75rem;
   font-size: 0.85rem;
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .legendItem {
   display: flex;
   align-items: center;
   gap: 0.35rem;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .legendDot {
@@ -181,20 +192,27 @@
   color: #6b7280;
 }
 
+/* ~773px and similar tablet widths: title + legend on one row crushes the legend */
+@media (max-width: 900px) {
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .legendDots {
+    justify-content: flex-start;
+    align-self: flex-start;
+    max-width: 100%;
+  }
+}
+
 @media (max-width: 768px) {
   .chartContainer {
     margin: 1.25rem auto;
     padding: 1.25rem;
   }
 
-  .header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-  }
-
   .legendDots {
-    flex-wrap: wrap;
     font-size: 0.8rem;
   }
 
