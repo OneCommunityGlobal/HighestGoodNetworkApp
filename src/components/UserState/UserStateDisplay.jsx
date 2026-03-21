@@ -99,34 +99,28 @@ function EditPanel({
                   opacity: btnOpacity,
                   whiteSpace: 'nowrap',
                 }}
+              ></button>
+              <button
+                type="button"
+                aria-label={`Delete ${item.label}`}
+                onClick={e => {
+                  e.stopPropagation();
+                  onDeleteCatalogItem(item.key);
+                }}
+                style={{
+                  marginLeft: '2px',
+                  fontSize: '10px',
+                  fontWeight: 'bold',
+                  opacity: 0.7,
+                  cursor: 'pointer',
+                  lineHeight: 1,
+                  background: 'none',
+                  border: 'none',
+                  padding: 0,
+                  color: 'inherit',
+                }}
               >
-                {item.label}
-                {/* FIX 2: Small X to delete catalog item */}
-                <span
-                  role="button"
-                  tabIndex={0}
-                  aria-label={`Delete ${item.label}`}
-                  onClick={e => {
-                    e.stopPropagation();
-                    onDeleteCatalogItem(item.key);
-                  }}
-                  onKeyDown={e => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.stopPropagation();
-                      onDeleteCatalogItem(item.key);
-                    }
-                  }}
-                  style={{
-                    marginLeft: '2px',
-                    fontSize: '10px',
-                    fontWeight: 'bold',
-                    opacity: 0.7,
-                    cursor: 'pointer',
-                    lineHeight: 1,
-                  }}
-                >
-                  ×
-                </span>
+                ×
               </button>
               {isReordering && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
@@ -331,7 +325,7 @@ function UserStateDisplay({
       });
     } catch (toggleError) {
       logError('handleToggle', toggleError);
-      setSelected(selected); // revert
+      setSelected(prev => prev); // revert
       onSelectionChange(userId, selected);
     }
   };
@@ -512,19 +506,12 @@ function UserStateDisplay({
           >
             {formatDate(item.selectedAt)} {item.label}
             {canEdit && (
-              <span
-                role="button"
-                tabIndex={0}
+              <button
+                type="button"
                 aria-label={`Remove ${item.label}`}
                 onClick={e => {
                   e.stopPropagation();
                   handleToggle(item.key);
-                }}
-                onKeyDown={e => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.stopPropagation();
-                    handleToggle(item.key);
-                  }
                 }}
                 style={{
                   fontSize: '11px',
@@ -532,10 +519,14 @@ function UserStateDisplay({
                   opacity: 0.8,
                   cursor: 'pointer',
                   lineHeight: 1,
+                  background: 'none',
+                  border: 'none',
+                  padding: 0,
+                  color: 'inherit',
                 }}
               >
                 ×
-              </span>
+              </button>
             )}
           </button>
         );
