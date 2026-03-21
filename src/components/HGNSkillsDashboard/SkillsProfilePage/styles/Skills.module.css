@@ -36,14 +36,34 @@
 @media (max-width: 768px) {
   .skills {
     width: 100%;
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
     align-items: center;
+    justify-content: center;
+    gap: 8px;
   }
 
   .skills button {
+    width: auto;
+    max-width: none;
+    font-size: 14px;
+    padding: 8px 12px;
+  }
+  
+  .skills h3 {
     width: 100%;
-    max-width: 80%;
-    font-size: 14x;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .skills {
+    gap: 6px;
+  }
+  
+  .skills button {
+    font-size: 13px;
+    padding: 6px 10px;
   }
 }
 

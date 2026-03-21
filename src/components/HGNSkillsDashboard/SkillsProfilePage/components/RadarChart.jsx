@@ -264,10 +264,18 @@ function RadarChart({ profileData, compact = true }) {
       r: {
         angleLines: {
           display: true,
-          color: compact ? 'rgba(0,0,0,0.08)' : 'rgba(0, 0, 0, 0.1)',
+          color: darkMode
+            ? 'rgba(255,255,255,0.15)'
+            : compact
+            ? 'rgba(0,0,0,0.08)'
+            : 'rgba(0, 0, 0, 0.1)',
         },
         grid: {
-          color: compact ? 'rgba(0,0,0,0.08)' : 'rgba(0, 0, 0, 0.1)',
+          color: darkMode
+            ? 'rgba(255,255,255,0.15)'
+            : compact
+            ? 'rgba(0,0,0,0.08)'
+            : 'rgba(0, 0, 0, 0.1)',
         },
         pointLabels: {
           font: {
@@ -281,7 +289,7 @@ function RadarChart({ profileData, compact = true }) {
             },
             weight: '500',
           },
-          color: compact ? '#555' : '#333',
+          color: darkMode ? '#e2e8f0' : compact ? '#555' : '#333',
           padding: compact ? 10 : 15,
           callback: function(value, index) {
             // Truncate long labels on small screens
@@ -296,7 +304,7 @@ function RadarChart({ profileData, compact = true }) {
         ticks: {
           stepSize: 2,
           display: compact ? false : true,
-          color: '#666',
+          color: darkMode ? '#a0aec0' : '#666',
           font: {
             size: 10,
           },
