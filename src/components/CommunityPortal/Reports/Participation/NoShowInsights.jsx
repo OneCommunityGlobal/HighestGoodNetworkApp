@@ -1,123 +1,120 @@
-import { useState, useRef } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { ArrowUpDown, ArrowUp, ArrowDown, SquareArrowOutUpRight } from 'lucide-react';
+import { SquareArrowOutUpRight } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
+import {
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  Tooltip,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Legend,
+} from 'recharts';
 import mockEvents from './mockData';
 import styles from './Participation.module.css';
 
 function NoShowInsights() {
-  const [dateFilter, setDateFilter] = useState('All');
-  const [activeTab, setActiveTab] = useState('Event type');
-  const [sortOrder, setSortOrder] = useState('none');
   const darkMode = useSelector(state => state.theme.darkMode);
   const insightsRef = useRef(null);
+
+  const [dateFilter, setDateFilter] = useState('All');
   const [isExportOpen, setIsExportOpen] = useState(false);
   const [exportError, setExportError] = useState('');
   const [isExporting, setIsExporting] = useState(false);
 
+  const chartColors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'];
+
   const filterByDate = events => {
     const today = new Date();
+
     return events.filter(event => {
       const eventDate = new Date(event.eventDate);
+
       switch (dateFilter) {
         case 'Today':
           return eventDate.toDateString() === today.toDateString();
+
         case 'This Week': {
           const startOfWeek = new Date(today);
           startOfWeek.setDate(today.getDate() - today.getDay());
+          startOfWeek.setHours(0, 0, 0, 0);
+
           const endOfWeek = new Date(startOfWeek);
           endOfWeek.setDate(startOfWeek.getDate() + 6);
+          endOfWeek.setHours(23, 59, 59, 999);
+
           return eventDate >= startOfWeek && eventDate <= endOfWeek;
         }
+
         case 'This Month':
           return (
             eventDate.getMonth() === today.getMonth() &&
             eventDate.getFullYear() === today.getFullYear()
           );
+
         default:
           return true;
       }
     });
   };
 
-  const handleSortClick = () => {
-    setSortOrder(prev => {
-      if (prev === 'none' || prev === 'desc') return 'asc';
-      if (prev === 'asc') return 'desc';
-      return 'none';
-    });
-  };
-  const SortIcon = sortOrder === 'none' ? ArrowUpDown : sortOrder === 'asc' ? ArrowUp : ArrowDown;
+  const parsePercent = value => Number(String(value).replace('%', '').trim()) || 0;
 
-  const calculateStats = filteredEvents => {
+  const filteredEvents = useMemo(() => filterByDate(mockEvents), [dateFilter]);
+
+  const pieChartData = useMemo(() => {
+    const eventTypeMap = new Map();
+
+    filteredEvents.forEach(event => {
+      const currentCount = eventTypeMap.get(event.eventType) || 0;
+      eventTypeMap.set(event.eventType, currentCount + 1);
+    });
+
+    return Array.from(eventTypeMap.entries()).map(([name, value]) => ({
+      name,
+      value,
+    }));
+  }, [filteredEvents]);
+
+  const barChartData = useMemo(() => {
     const statsMap = new Map();
 
     filteredEvents.forEach(event => {
-      let key;
-      if (activeTab === 'Event type') key = event.eventType;
-      else if (activeTab === 'Time') key = event.eventTime.split(' ')[0];
-      else if (activeTab === 'Location') key = event.location;
+      const current = statsMap.get(event.eventType) || {
+        totalAttendance: 0,
+        totalNoShow: 0,
+        count: 0,
+      };
 
-      const percentage = parseInt(event.noShowRate, 10);
-
-      if (statsMap.has(key)) {
-        const existing = statsMap.get(key);
-        statsMap.set(key, {
-          totalPercentage: existing.totalPercentage + percentage,
-          count: existing.count + 1,
-        });
-      } else {
-        statsMap.set(key, { totalPercentage: percentage, count: 1 });
-      }
+      statsMap.set(event.eventType, {
+        totalAttendance: current.totalAttendance + (Number(event.attendees) || 0),
+        totalNoShow: current.totalNoShow + parsePercent(event.noShowRate),
+        count: current.count + 1,
+      });
     });
 
-    return Array.from(statsMap.entries()).map(([key, value]) => ({
-      label: key,
-      percentage: Math.round(value.totalPercentage / value.count),
+    return Array.from(statsMap.entries()).map(([eventType, data]) => ({
+      eventType,
+      averageAttendance: Math.round(data.totalAttendance / data.count),
+      averageNoShowRate: Math.round(data.totalNoShow / data.count),
     }));
-  };
-
-  const renderStats = () => {
-    const filteredEvents = filterByDate(mockEvents);
-    const stats = calculateStats(filteredEvents);
-    const finalStats =
-      sortOrder === 'none'
-        ? stats
-        : [...stats].sort((a, b) =>
-            sortOrder === 'asc' ? a.percentage - b.percentage : b.percentage - a.percentage,
-          );
-
-    return finalStats.map(item => (
-      <div key={item.label} className={styles.insightItem}>
-        <div className={`${styles.insightLabel} ${darkMode ? styles.insightLabelDark : ''}`}>
-          {item.label}
-        </div>
-        <div className={`${styles.insightBar}`}>
-          <div className={`${styles.insightFill}`} style={{ width: `${item.percentage}%` }} />
-        </div>
-        <div
-          className={`${styles.insightsPercentage} ${
-            darkMode ? styles.insightsPercentageDark : ''
-          }`}
-        >
-          {item.percentage}%
-        </div>
-      </div>
-    ));
-  };
+  }, [filteredEvents]);
 
   const buildPdfFromView = async () => {
     try {
-      if (typeof jsPDF === 'undefined' || typeof html2canvas === 'undefined') {
-        return;
-      }
+      if (typeof jsPDF === 'undefined' || typeof html2canvas === 'undefined') return;
       if (!insightsRef.current) return;
 
       const canvas = await html2canvas(insightsRef.current, {
         scale: 2,
         useCORS: true,
-        backgroundColor: darkMode ? '#1C2541' : null,
+        backgroundColor: darkMode ? '#1f2937' : '#ffffff',
       });
 
       const imgData = canvas.toDataURL('image/png');
@@ -125,13 +122,12 @@ function NoShowInsights() {
 
       const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
-
       const imgWidth = pageWidth;
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
       let y = 0;
-
       let remainingHeight = imgHeight;
+
       while (remainingHeight > 0) {
         pdf.addImage(imgData, 'PNG', 0, y, imgWidth, imgHeight);
         remainingHeight -= pageHeight;
@@ -141,9 +137,10 @@ function NoShowInsights() {
           y -= pageHeight;
         }
       }
+
       return pdf;
     } catch (pdfError) {
-      setExportError(pdfError?.message || 'Failed to share PDF.');
+      setExportError(pdfError?.message || 'Failed to export analytics.');
     } finally {
       setIsExporting(false);
     }
@@ -152,49 +149,21 @@ function NoShowInsights() {
   const getPdfFilename = () => {
     const now = new Date();
     const localDate = now.toLocaleDateString('en-CA');
-    const filename = `no-show-insights_${dateFilter}_${activeTab}_${localDate}.pdf`;
-    return filename.replace(/\s+/g, '_').toLowerCase();
+    return `event_engagement_insights_${dateFilter}_${localDate}`
+      .replace(/\s+/g, '_')
+      .toLowerCase();
   };
 
   const handleDownloadPdf = async () => {
     try {
       setIsExporting(true);
       setExportError('');
-      const pdf = await buildPdfFromView();
-      pdf.save(getPdfFilename());
-      setIsExportOpen(false);
-    } catch (e) {
-      setExportError(e?.message || 'Failed to download PDF.');
-    } finally {
-      setIsExporting(false);
-    }
-  };
-
-  const handleSharePdf = async () => {
-    try {
-      setIsExporting(true);
-      setExportError('');
 
       const pdf = await buildPdfFromView();
-      const blob = pdf.output('blob');
-      const file = new File([blob], getPdfFilename(), { type: 'application/pdf' });
-
-      if (!navigator.share || !navigator.canShare?.({ files: [file] })) {
-        setExportError(
-          'Sharing is not supported in this browser. Please download the PDF instead.',
-        );
-        return;
-      }
-
-      await navigator.share({
-        title: 'No-show rate insights',
-        text: `Insights (${dateFilter}, ${activeTab})`,
-        files: [file],
-      });
-
+      pdf?.save(`${getPdfFilename()}.pdf`);
       setIsExportOpen(false);
-    } catch (e) {
-      setExportError(e?.message || 'Failed to share PDF.');
+    } catch (error) {
+      setExportError(error?.message || 'Failed to download PDF.');
     } finally {
       setIsExporting(false);
     }
@@ -218,7 +187,7 @@ function NoShowInsights() {
             tabIndex={0}
           >
             <div className={styles.modalHeader}>
-              <h4 className={styles.modalTitle}>Export No-show Insights</h4>
+              <h4 className={styles.modalTitle}>Export Engagement Insights</h4>
               <button
                 type="button"
                 className={styles.modalClose}
@@ -233,9 +202,6 @@ function NoShowInsights() {
               <div className={styles.modalMeta}>
                 <div>
                   <strong>Filter:</strong> {dateFilter}
-                </div>
-                <div>
-                  <strong>View:</strong> {activeTab}
                 </div>
               </div>
 
@@ -252,28 +218,24 @@ function NoShowInsights() {
                 >
                   {isExporting ? 'Working…' : 'Download PDF'}
                 </button>
-
-                <button
-                  type="button"
-                  className={`${
-                    darkMode ? styles.exportOptionsButtonsDark : styles.exportOptionsButtons
-                  }`}
-                  onClick={handleSharePdf}
-                  disabled={isExporting}
-                >
-                  {isExporting ? 'Working…' : 'Share PDF'}
-                </button>
               </div>
             </div>
           </div>
         </div>
       )}
-      <div
+
+      <section
         ref={insightsRef}
         className={`${styles.insights} ${darkMode ? styles.insightsDark : ''}`}
       >
         <div className={`${styles.insightsHeader} ${darkMode ? styles.insightsHeaderDark : ''}`}>
-          <h3>No-show rate insights</h3>
+          <div>
+            <h3>Event engagement insights</h3>
+            <p className={styles.sectionSubtext}>
+              Visualize event type popularity and engagement performance across the selected time range.
+            </p>
+          </div>
+
           <div
             className={`${styles.insightsFilters} ${darkMode ? styles.insightsFiltersDark : ''}`}
           >
@@ -283,52 +245,65 @@ function NoShowInsights() {
               <option value="This Week">This Week</option>
               <option value="This Month">This Month</option>
             </select>
+
+            <button
+              type="button"
+              className={styles.exportIconButton}
+              onClick={() => {
+                setExportError('');
+                setIsExportOpen(true);
+              }}
+              aria-label="Export engagement insights"
+            >
+              <SquareArrowOutUpRight size={18} />
+            </button>
           </div>
         </div>
 
-        <div className={styles.insightsTabsContainer}>
-          <div className={`${styles.insightsTabs} ${darkMode ? styles.insightsTabsDarkMode : ''}`}>
-            {['Event type', 'Time', 'Location'].map(tab => (
-              <button
-                key={tab}
-                type="button"
-                className={`
-                ${styles.insightsTab} 
-                ${darkMode ? styles.insightsTabDarkMode : ''} 
-                ${
-                  activeTab === tab ? (darkMode ? styles.activeTabDarkMode : styles.activeTab) : ''
-                }`}
-                onClick={() => setActiveTab(tab)}
-              >
-                {tab}
-              </button>
-            ))}
-          </div>
-          <div className={styles.icons}>
-            <div className={styles.tooltipWrapper}>
-              <SortIcon onClick={handleSortClick} className={styles.sortIcon} />
-              <span className={styles.tooltip}>
-                {sortOrder === 'none'
-                  ? 'Default'
-                  : sortOrder === 'asc'
-                  ? 'Low → High'
-                  : 'High → Low'}
-              </span>
+        <div className={styles.chartGrid}>
+          <div className={`${styles.chartCard} ${darkMode ? styles.chartCardDark : ''}`}>
+            <h4 className={styles.chartTitle}>Event type popularity</h4>
+            <div className={styles.chartWrapper}>
+              <ResponsiveContainer width="100%" height={280}>
+                <PieChart>
+                  <Pie
+                    data={pieChartData}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={95}
+                    label
+                  >
+                    {pieChartData.map((entry, index) => (
+                      <Cell key={entry.name} fill={chartColors[index % chartColors.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
             </div>
-            <div className={styles.tooltipWrapper}>
-              <SquareArrowOutUpRight
-                onClick={() => {
-                  setExportError('');
-                  setIsExportOpen(true);
-                }}
-              />
-              <span className={styles.tooltip}>Export Data</span>
+          </div>
+
+          <div className={`${styles.chartCard} ${darkMode ? styles.chartCardDark : ''}`}>
+            <h4 className={styles.chartTitle}>Attendance and engagement by event type</h4>
+            <div className={styles.chartWrapper}>
+              <ResponsiveContainer width="100%" height={280}>
+                <BarChart data={barChartData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="eventType" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey="averageAttendance" name="Avg Attendance" fill="#3b82f6" />
+                  <Bar dataKey="averageNoShowRate" name="Avg No-show %" fill="#f59e0b" />
+                </BarChart>
+              </ResponsiveContainer>
             </div>
           </div>
         </div>
-
-        <div className={styles.insightsContent}>{renderStats()}</div>
-      </div>
+      </section>
     </>
   );
 }
