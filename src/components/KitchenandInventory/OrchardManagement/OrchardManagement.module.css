@@ -1,0 +1,22 @@
+.container{
+  padding: 24px;
+  min-height: 100vh;
+  background-color: var(--color-background, #f9fafb);
+  color: var(--color-text, #1f2937);
+}
+
+.header{
+  margin-bottom: 24px;
+}
+
+.title{
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 0 8px;
+}
+
+.subtitle{
+  font-size: 1rem;
+  margin: 0;
+  color: var(--color-text-secondary, #6b7280);
+}
