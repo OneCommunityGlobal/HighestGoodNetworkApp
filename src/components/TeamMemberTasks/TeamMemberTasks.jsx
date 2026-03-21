@@ -79,10 +79,12 @@ const TeamMemberTasks = React.memo(props => {
   useEffect(() => {
     if (teamList.length === 0) return;
     const userIds = teamList.map(u => u.personId);
-    axios
-      .post(ENDPOINTS.USER_STATE_SELECTIONS_BATCH, { userIds })
-      .then(res => setUserStateSelections(res.data.selections || {}))
-      .catch(() => setUserStateSelections({}));
+    const result = axios.post(ENDPOINTS.USER_STATE_SELECTIONS_BATCH, { userIds });
+    if (result && typeof result.then === 'function') {
+      result
+        .then(res => setUserStateSelections(res.data.selections || {}))
+        .catch(() => setUserStateSelections({}));
+    }
   }, [teamList]);
 
   // Keep width reactive without putting window.innerWidth in deps (which never triggers)
