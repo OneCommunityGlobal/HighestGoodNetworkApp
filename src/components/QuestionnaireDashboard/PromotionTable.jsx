@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
+import PropTypes from 'prop-types';
 import { getPromotionEligibility, postPromotionEligibility } from '../../actions/promotionActions';
 import styles from './PromotionTable.module.css';
 
@@ -35,6 +36,23 @@ function MemberSection({ title, members, onPromoteChange, styles }) {
   );
 }
 
+MemberSection.propTypes = {
+  title: PropTypes.string.isRequired,
+  members: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      reviewer: PropTypes.string,
+      hasMetWeekly: PropTypes.bool,
+      requiredPRs: PropTypes.number,
+      totalReviews: PropTypes.number,
+      remainingWeeks: PropTypes.number,
+      promote: PropTypes.bool,
+    }),
+  ).isRequired,
+  onPromoteChange: PropTypes.func.isRequired,
+  styles: PropTypes.objectOf(PropTypes.string).isRequired,
+};
+
 function PromotionTable() {
   const [eligibilityData, setEligibilityData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -44,17 +62,17 @@ function PromotionTable() {
   const requestor = useSelector(state => state.auth.user);
 
   const fetchEligibilityData = async () => {
-    try {
-      const data = await getPromotionEligibility();
-      setEligibilityData(data);
-    } catch (error) {
-      toast.error('Failed to fetch promotion eligibility data.');
-    }
+    const data = await getPromotionEligibility();
+    setEligibilityData(data);
   };
 
   useEffect(() => {
     setLoading(true);
-    fetchEligibilityData().finally(() => setLoading(false));
+    fetchEligibilityData()
+      .catch(() => {
+        toast.error('Failed to fetch promotion eligibility data.');
+      })
+      .finally(() => setLoading(false));
   }, []);
 
   const handlePromoteChange = memberId => {
@@ -71,7 +89,7 @@ function PromotionTable() {
       // Fetch fresh eligibility data from the backend
       await fetchEligibilityData();
       toast.success('Weekly review initiated. Table data refreshed.');
-    } catch (error) {
+    } catch {
       toast.error('Failed to initiate weekly review.');
     } finally {
       setReviewLoading(false);
@@ -97,7 +115,7 @@ function PromotionTable() {
       await fetchEligibilityData();
 
       toast.success(`Promotions processed successfully for ${selectedMemberIds.length} member(s).`);
-    } catch (error) {
+    } catch {
       toast.error('Failed to process promotions.');
     } finally {
       setProcessingLoading(false);
