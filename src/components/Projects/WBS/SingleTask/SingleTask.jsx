@@ -189,14 +189,15 @@ function SingleTask(props) {
                     </div>
                   </th>
 
-                  <th scope="row">{task.num}</th>
+                  <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                    {task.num}
+                  </td>
                   <td>{task.taskName}</td>
                   <td>{task.priority}</td>
                   <td>
                     {task?.resources &&
                       task.resources.map((elem, i) => {
-                        try {
-                          if (elem.profilePic) {
+                        if (elem.profilePic) {
                             return (
                               <a
                                 key={`res_${i}`}
@@ -222,10 +223,7 @@ function SingleTask(props) {
                               <span className="dot">{elem.name.substring(0, 2)}</span>
                             </a>
                           );
-                        } catch (err) {
-                          return null;
-                        }
-                      })}
+                        })}
                   </td>
                   <td>
                     {task.isAssigned ? (
