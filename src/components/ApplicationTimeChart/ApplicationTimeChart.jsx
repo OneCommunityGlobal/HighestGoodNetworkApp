@@ -250,7 +250,7 @@ function ApplicationTimeChart() {
           ) : (
             <div className={styles.noData}>
               <p className={styles.noDataText}>No data available for the selected filters</p>
-              <button className={styles.resetButton} onClick={resetFilters}>
+              <button className={styles.resetButton} onClick={resetFilters} type="button">
                 Reset Filters
               </button>
             </div>
@@ -304,6 +304,8 @@ function ApplicationTimeChart() {
                 {role === 'all' ? 'ALL' : role}
               </option>
             ))}
+            {/* empty state check */}
+            <option value="__empty_state__">-- No Matching Role --</option>
           </select>
         </div>
       </div>
