@@ -6,7 +6,8 @@
 }
 
 .dashboardContainer {
-  padding: 40px 10px;
+  padding: 40px 20px;
+  max-width: 1400px;
   margin: 0 auto;
   background: #fff;
   border-radius: 16px;
@@ -44,19 +45,8 @@
   margin: 0;
 }
 
-.dashboardControls {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-
-/* pill input */
-.dashboardSearchInput {
-  width: 100%;
-  border-radius: 999px;
-  border: none;
-  background: transparent;
-  box-sizing: border-box;
+.darkHeader {
+  background: #1b2a41;
 }
 
 /* clear X button */
@@ -72,7 +62,6 @@
   color: #1b3c55;
 }
 
-/* blue circular search button inside the bar */
 .dashboardSearchIconBtn {
   position: absolute;
   right: 1%;
@@ -169,7 +158,6 @@
   white-space: nowrap;
 }
 
-/* icon wrapper */
 .dashboardSearchButtons {
   position: absolute;
   right: 14px;
@@ -197,9 +185,25 @@
   background: #2b3e59;
 }
 
+.darkSidebar .filterItem input:not([type='checkbox']):not([type='radio']),
+.darkSidebar .filterItem select {
+  background-color: #34495e;
+  color: #fff;
+  border: 1px solid #4a6572;
+}
+
+.darkSidebar .filterItem label {
+  color: #ecf0f1;
+}
+
+.darkSidebar input[type="date"] {
+  color-scheme: dark;
+}
+
 .filterSection h4 {
   font-size: 1.8rem;
   color: #2c3e50;
+  margin-bottom: 20px;
   font-weight: 600;
 }
 
@@ -289,18 +293,27 @@
 .dashboardMain {
   width: 65%;
   border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .darkMain {
   background: #2b3e59;
 }
 
+.eventsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
 .sectionTitle {
   font-size: 2.2rem;
   color: #2c3e50;
-  margin-bottom: 30px;
+  margin-bottom: 0;
   font-weight: bold;
-  text-align: center;
+  text-align: left;
 }
 
 .sidebarTitle {
@@ -343,6 +356,11 @@
   box-shadow: 0 8px 20px rgb(0 0 0 / 20%);
 }
 
+.eventCard:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
 .eventCardImgContainer {
   width: 100%;
   overflow: hidden;
@@ -380,7 +398,17 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  margin: 8px 0;
+  margin: 5px 0;
+}
+
+.organizerLogo {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  background-color: #f0f0f0;
+  border: 1px solid #e0e0e0;
 }
 
 .eventIcon {
@@ -416,7 +444,6 @@
   gap: 12px;
 }
 
-/* Hide browser's built-in clear icon for search inputs */
 .dashboardSearchInput::-webkit-search-cancel-button,
 .dashboardSearchInput::-webkit-search-decoration,
 .dashboardSearchInput::-webkit-search-results-button,
