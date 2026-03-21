@@ -14,6 +14,7 @@ export default function ItemsTable({
   UpdateItemModal,
   dynamicColumns,
   darkMode = false,
+  itemType,
 }) {
   const [sortedData, setData] = useState(filteredItems);
   const [modal, setModal] = useState(false);
@@ -31,6 +32,13 @@ export default function ItemsTable({
     iconsToDisplay: faSort,
     sortOrder: 'default',
   });
+
+  const [boughtCol, setBoughtCol] = useState({ iconsToDisplay: faSort, sortOrder: 'default' });
+  const [usedCol, setUsedCol] = useState({ iconsToDisplay: faSort, sortOrder: 'default' });
+  const [availableCol, setAvailableCol] = useState({
+    iconsToDisplay: faSort,
+  });
+  const [wastedCol, setWastedCol] = useState({ iconsToDisplay: faSort, sortOrder: 'default' });
 
   useEffect(() => {
     setData(filteredItems);
@@ -63,6 +71,13 @@ export default function ItemsTable({
     setRecordType(type);
   };
 
+  const resetOtherDynamicColumns = active => {
+    if (active !== 'Bought') setBoughtCol({ iconsToDisplay: faSort, sortOrder: 'default' });
+    if (active !== 'Used') setUsedCol({ iconsToDisplay: faSort, sortOrder: 'default' });
+    if (active !== 'Available') setAvailableCol({ iconsToDisplay: faSort, sortOrder: 'default' });
+    if (active !== 'Wasted') setWastedCol({ iconsToDisplay: faSort, sortOrder: 'default' });
+  };
+
   const sortData = columnName => {
     const newSortedData = [...sortedData];
 
@@ -92,7 +107,53 @@ export default function ItemsTable({
       }
       setProjectNameCol({ iconsToDisplay: faSort, sortOrder: 'default' });
     }
+    // Sorting for Bought
+    if (columnName === 'Bought') {
+      if (boughtCol.sortOrder === 'default' || boughtCol.sortOrder === 'desc') {
+        newSortedData.sort((a, b) => (a.stockBought || 0) - (b.stockBought || 0));
+        setBoughtCol({ iconsToDisplay: faSortUp, sortOrder: 'asc' });
+      } else {
+        newSortedData.sort((a, b) => (b.stockBought || 0) - (a.stockBought || 0));
+        setBoughtCol({ iconsToDisplay: faSortDown, sortOrder: 'desc' });
+      }
+      resetOtherDynamicColumns('Bought');
+    }
 
+    // Sorting for Used
+    if (columnName === 'Used') {
+      if (usedCol.sortOrder === 'default' || usedCol.sortOrder === 'desc') {
+        newSortedData.sort((a, b) => (a.stockUsed || 0) - (b.stockUsed || 0));
+        setUsedCol({ iconsToDisplay: faSortUp, sortOrder: 'asc' });
+      } else {
+        newSortedData.sort((a, b) => (b.stockUsed || 0) - (a.stockUsed || 0));
+        setUsedCol({ iconsToDisplay: faSortDown, sortOrder: 'desc' });
+      }
+      resetOtherDynamicColumns('Used');
+    }
+
+    // Sorting for Available
+    if (columnName === 'Available') {
+      if (availableCol.sortOrder === 'default' || availableCol.sortOrder === 'desc') {
+        newSortedData.sort((a, b) => (a.stockAvailable || 0) - (b.stockAvailable || 0));
+        setAvailableCol({ iconsToDisplay: faSortUp, sortOrder: 'asc' });
+      } else {
+        newSortedData.sort((a, b) => (b.stockAvailable || 0) - (a.stockAvailable || 0));
+        setAvailableCol({ iconsToDisplay: faSortDown, sortOrder: 'desc' });
+      }
+      resetOtherDynamicColumns('Available');
+    }
+
+    // Sorting for Wasted
+    if (columnName === 'Wasted') {
+      if (wastedCol.sortOrder === 'default' || wastedCol.sortOrder === 'desc') {
+        newSortedData.sort((a, b) => (a.stockWasted || 0) - (b.stockWasted || 0));
+        setWastedCol({ iconsToDisplay: faSortUp, sortOrder: 'asc' });
+      } else {
+        newSortedData.sort((a, b) => (b.stockWasted || 0) - (a.stockWasted || 0));
+        setWastedCol({ iconsToDisplay: faSortDown, sortOrder: 'desc' });
+      }
+      resetOtherDynamicColumns('Wasted');
+    }
     setData(newSortedData);
   };
 
@@ -152,6 +213,7 @@ export default function ItemsTable({
         record={record}
         setRecord={setRecord}
         recordType={recordType}
+        itemType={itemType}
       />
 
       {showChartModal && chartProjectId && (
@@ -167,22 +229,42 @@ export default function ItemsTable({
         <Table className={darkMode ? styles.darkTable : ''} hover responsive>
           <thead>
             <tr>
-              <th onClick={() => sortData('ProjectName')} style={stickyHeaderStyle}>
-                Project <FontAwesomeIcon icon={projectNameCol.iconsToDisplay} />
-              </th>
-              <th onClick={() => sortData('InventoryItemType')} style={stickyHeaderStyle}>
-                Name <FontAwesomeIcon icon={inventoryItemTypeCol.iconsToDisplay} />
-              </th>
+              {selectedProject === 'all' ? (
+                <th onClick={() => sortData('ProjectName')} style={stickyHeaderStyle}>
+                  Project <FontAwesomeIcon icon={projectNameCol.iconsToDisplay} size="lg" />
+                </th>
+              ) : (
+                <th style={stickyHeaderStyle}>Project</th>
+              )}
+              {selectedItem === 'all' ? (
+                <th onClick={() => sortData('InventoryItemType')} style={stickyHeaderStyle}>
+                  Name <FontAwesomeIcon icon={inventoryItemTypeCol.iconsToDisplay} size="lg" />
+                </th>
+              ) : (
+                <th style={stickyHeaderStyle}>Name</th>
+              )}
               {dynamicColumns.map(({ label, key }) => {
+                const stateMap = {
+                  Bought: boughtCol,
+                  Used: usedCol,
+                  Available: availableCol,
+                  Wasted: wastedCol,
+                };
                 const isNumeric = [
                   'stockBought',
                   'stockUsed',
                   'stockAvailable',
                   'stockWasted',
                 ].includes(key);
+
                 return (
-                  <th key={label} style={isNumeric ? numericHeaderStyle : stickyHeaderStyle}>
-                    {label}
+                  <th
+                    key={label}
+                    onClick={() => sortData(label)}
+                    style={isNumeric ? numericHeaderStyle : stickyHeaderStyle}
+                  >
+                    {label}{' '}
+                    <FontAwesomeIcon icon={stateMap[label]?.iconsToDisplay || faSort} size="lg" />
                   </th>
                 );
               })}
