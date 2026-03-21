@@ -260,7 +260,7 @@ function WeeklyProjectSummary() {
         key: 'Lessons Learned',
         className: 'half',
         content: [
-          <MostFrequentKeywords key="frequent-tags-card" />,
+          <MostFrequentKeywords key="frequent-tags-card" darkMode={darkMode} />,
           <div key="injury-chart" className="weekly-project-summary-card normal-card">
             <InjuryCategoryBarChart />
           </div>,

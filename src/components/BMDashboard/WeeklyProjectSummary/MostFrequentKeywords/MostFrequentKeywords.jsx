@@ -1,12 +1,24 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
-import DatePicker from 'react-datepicker';
+import DatePicker, { CalendarContainer } from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import * as d3 from 'd3';
 import styles from './MostFrequentKeywords.module.css';
-import Select from 'react-select';
+import Select, { components as selectComponents } from 'react-select';
 import PropTypes from 'prop-types';
+
+const formatCalendarMonth = date =>
+  date.toLocaleString('en-US', {
+    month: 'long',
+    year: 'numeric',
+  });
+
+const DropdownIndicator = props => (
+  <selectComponents.DropdownIndicator {...props}>
+    <span className={styles.mfkChevron}>▾</span>
+  </selectComponents.DropdownIndicator>
+);
 
 function MostFrequentKeywords({ darkMode: propDarkMode }) {
   const svgRef = useRef();
@@ -25,6 +37,35 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
   const API_BASE = process.env.REACT_APP_APIENDPOINT;
   const reduxDarkMode = useSelector(state => state.theme.darkMode);
   const darkMode = propDarkMode !== undefined ? propDarkMode : reduxDarkMode;
+  const palette = darkMode
+    ? {
+        controlBg: '#243447',
+        controlBorder: '#475569',
+        controlBorderHover: '#64748b',
+        text: '#f8fafc',
+        mutedText: '#cbd5e1',
+        indicator: '#e2e8f0',
+        menuBg: '#243447',
+        optionBg: '#243447',
+        optionHoverBg: '#31465f',
+        optionSelectedBg: '#3b82f6',
+        groupHeading: '#94a3b8',
+        shadow: '0 10px 24px rgba(2, 6, 23, 0.45)',
+      }
+    : {
+        controlBg: '#ffffff',
+        controlBorder: '#d1d5db',
+        controlBorderHover: '#3b82f6',
+        text: '#0f172a',
+        mutedText: '#64748b',
+        indicator: '#475569',
+        menuBg: '#ffffff',
+        optionBg: '#ffffff',
+        optionHoverBg: '#e2e8f0',
+        optionSelectedBg: '#dbeafe',
+        groupHeading: '#475569',
+        shadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+      };
 
   // Get today's date for max date restriction
   const today = new Date();
@@ -863,44 +904,211 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
   };
 
   // Helper function to get control styles
-  const getControlStyles = base => ({
+  const getControlStyles = (base, state) => ({
     ...base,
-    backgroundColor: darkMode ? '#334155' : 'white',
-    borderColor: darkMode ? '#475569' : '#d1d5db',
-    minHeight: isMobile ? '24px' : '28px',
+    backgroundColor: palette.controlBg,
+    borderColor: state.isFocused ? '#60a5fa' : palette.controlBorder,
+    minHeight: '40px',
+    height: '40px',
     fontSize: isMobile ? '11px' : '12px',
+    borderRadius: '12px',
+    boxShadow: state.isFocused ? 'inset 0 0 0 1px #60a5fa' : 'none',
+    overflow: 'hidden',
+    alignItems: 'stretch',
+    '&:hover': {
+      borderColor: state.isFocused ? '#60a5fa' : palette.controlBorderHover,
+    },
+  });
+
+  const getValueContainerStyles = base => ({
+    ...base,
+    color: palette.text,
+    backgroundColor: palette.controlBg,
+    minHeight: '40px',
+    height: '40px',
+    padding: '0 14px',
+    borderRadius: '12px 0 0 12px',
+    display: 'flex',
+    alignItems: 'center',
+  });
+
+  const getInputStyles = base => ({
+    ...base,
+    color: palette.text,
+  });
+
+  const getPlaceholderStyles = base => ({
+    ...base,
+    color: palette.mutedText,
+  });
+
+  const getSingleValueStyles = base => ({
+    ...base,
+    color: palette.text,
+  });
+
+  const getIndicatorSeparatorStyles = base => ({
+    ...base,
+    backgroundColor: 'transparent',
+    width: 0,
+  });
+
+  const getIndicatorsContainerStyles = base => ({
+    ...base,
+    backgroundColor: palette.controlBg,
+    minHeight: '40px',
+    height: '40px',
+    width: '44px',
+    minWidth: '44px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: '0 12px 12px 0',
+    flexShrink: 0,
+  });
+
+  const getIndicatorStyles = base => ({
+    ...base,
+    color: palette.indicator,
+    backgroundColor: 'transparent',
+    padding: 0,
+    width: '44px',
+    height: '40px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    '&:hover': {
+      color: palette.text,
+      backgroundColor: 'transparent',
+    },
   });
 
   const getMenuStyles = base => ({
     ...base,
-    backgroundColor: darkMode ? '#1e293b' : 'white',
+    backgroundColor: palette.menuBg,
+    border: `1px solid ${palette.controlBorder}`,
+    boxShadow: palette.shadow,
+  });
+
+  const getMenuListStyles = base => ({
+    ...base,
+    backgroundColor: palette.menuBg,
   });
 
   const getOptionStyles = (base, state) => {
-    const backgroundColor = state.isFocused
-      ? darkMode
-        ? '#475569'
-        : '#e2e8f0'
-      : darkMode
-      ? '#1e293b'
-      : 'white';
+    let backgroundColor = palette.optionBg;
+
+    if (state.isSelected) {
+      backgroundColor = palette.optionSelectedBg;
+    } else if (state.isFocused) {
+      backgroundColor = palette.optionHoverBg;
+    }
 
     return {
       ...base,
       backgroundColor,
-      color: darkMode ? 'white' : 'black',
+      color: palette.text,
       fontSize: isMobile ? '10px' : '11px',
       padding: isMobile ? '3px 5px' : '4px 8px',
+      ':active': {
+        backgroundColor: palette.optionHoverBg,
+      },
     };
   };
 
   const getGroupHeadingStyles = base => ({
     ...base,
-    color: darkMode ? '#94a3b8' : '#475569',
+    color: palette.groupHeading,
+    backgroundColor: palette.menuBg,
     fontSize: isMobile ? '8px' : '9px',
     fontWeight: '600',
     padding: isMobile ? '2px 5px' : '3px 8px',
   });
+
+  const getNoOptionsMessageStyles = base => ({
+    ...base,
+    color: palette.mutedText,
+    backgroundColor: palette.menuBg,
+  });
+
+  const applyDarkCalendarTheme = useCallback(() => {
+    requestAnimationFrame(() => {
+      const poppers = Array.from(document.querySelectorAll('.react-datepicker-popper'));
+      const activePopper = poppers.find(popper => popper.offsetParent !== null) || poppers.at(-1);
+      if (!activePopper) return;
+
+      const datepicker = activePopper.querySelector('.react-datepicker');
+      const monthContainer = activePopper.querySelector('.react-datepicker__month-container');
+      const header = activePopper.querySelector('.react-datepicker__header');
+      const currentMonth = activePopper.querySelector('.react-datepicker__current-month');
+      const dayNames = activePopper.querySelectorAll('.react-datepicker__day-name');
+      const days = activePopper.querySelectorAll('.react-datepicker__day');
+
+      if (datepicker) {
+        datepicker.style.backgroundColor = '#0f172a';
+        datepicker.style.borderColor = '#334155';
+      }
+
+      if (monthContainer) {
+        monthContainer.style.backgroundColor = '#0f172a';
+      }
+
+      if (header) {
+        header.style.backgroundColor = '#1e293b';
+        header.style.borderBottomColor = '#334155';
+      }
+
+      if (currentMonth) {
+        currentMonth.style.color = '#f8fafc';
+      }
+
+      dayNames.forEach(dayName => {
+        dayName.style.color = '#e2e8f0';
+        dayName.style.backgroundColor = 'transparent';
+      });
+
+      days.forEach(day => {
+        if (!day.classList.contains('react-datepicker__day--selected')) {
+          day.style.color = '#f8fafc';
+          day.style.backgroundColor = 'transparent';
+        }
+      });
+    });
+  }, []);
+
+  const renderCalendarContainer = useCallback(
+    ({ className, children }) => (
+      <CalendarContainer className={className}>{children}</CalendarContainer>
+    ),
+    [],
+  );
+
+  const renderCalendarHeader = useCallback(
+    ({ date, decreaseMonth, increaseMonth, prevMonthButtonDisabled, nextMonthButtonDisabled }) => (
+      <div className={styles.mfkCalendarHeader}>
+        <button
+          type="button"
+          className={styles.mfkCalendarNav}
+          onClick={decreaseMonth}
+          disabled={prevMonthButtonDisabled}
+          aria-label="Previous Month"
+        >
+          ‹
+        </button>
+        <span className={styles.mfkCalendarTitle}>{formatCalendarMonth(date)}</span>
+        <button
+          type="button"
+          className={styles.mfkCalendarNav}
+          onClick={increaseMonth}
+          disabled={nextMonthButtonDisabled}
+          aria-label="Next Month"
+        >
+          ›
+        </button>
+      </div>
+    ),
+    [],
+  );
 
   return (
     <div
@@ -926,11 +1134,23 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
             placeholder={isMobile ? 'Select' : 'Choose'}
             isClearable
             isSearchable
+            components={{ DropdownIndicator }}
             styles={{
               control: getControlStyles,
+              valueContainer: getValueContainerStyles,
+              input: getInputStyles,
+              placeholder: getPlaceholderStyles,
+              singleValue: getSingleValueStyles,
+              indicatorSeparator: getIndicatorSeparatorStyles,
+              indicatorsContainer: getIndicatorsContainerStyles,
+              dropdownIndicator: getIndicatorStyles,
+              clearIndicator: getIndicatorStyles,
               menu: getMenuStyles,
+              menuList: getMenuListStyles,
               option: getOptionStyles,
               groupHeading: getGroupHeadingStyles,
+              noOptionsMessage: getNoOptionsMessageStyles,
+              loadingMessage: getNoOptionsMessageStyles,
             }}
           />
         </div>
@@ -942,12 +1162,16 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
             id="start-date"
             selected={startDate}
             onChange={handleStartDateChange}
-            className={styles.mfkDatepicker}
+            className={`${styles.mfkDatepicker} ${darkMode ? styles.mfkDatepickerDark : ''}`}
+            calendarClassName={darkMode ? 'mfk-dark-calendar' : ''}
+            popperClassName={darkMode ? 'mfk-dark-popper' : ''}
             placeholderText="Start"
             dateFormat={isMobile ? 'MM/dd/yyyy' : 'MM/dd/yy'}
-            isClearable
             maxDate={endDate || today}
             minDate={new Date('2023-01-01')}
+            calendarContainer={renderCalendarContainer}
+            onCalendarOpen={applyDarkCalendarTheme}
+            renderCustomHeader={darkMode ? renderCalendarHeader : undefined}
           />
         </div>
         <div className={styles.controlGroup}>
@@ -958,12 +1182,16 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
             id="end-date"
             selected={endDate}
             onChange={handleEndDateChange}
-            className={styles.mfkDatepicker}
+            className={`${styles.mfkDatepicker} ${darkMode ? styles.mfkDatepickerDark : ''}`}
+            calendarClassName={darkMode ? 'mfk-dark-calendar' : ''}
+            popperClassName={darkMode ? 'mfk-dark-popper' : ''}
             placeholderText="End"
             dateFormat={isMobile ? 'MM/dd/yyyy' : 'MM/dd/yy'}
-            isClearable
             minDate={startDate || new Date('2023-01-01')}
             maxDate={today}
+            calendarContainer={renderCalendarContainer}
+            onCalendarOpen={applyDarkCalendarTheme}
+            renderCustomHeader={darkMode ? renderCalendarHeader : undefined}
           />
         </div>
         {(startDate || endDate) && (
