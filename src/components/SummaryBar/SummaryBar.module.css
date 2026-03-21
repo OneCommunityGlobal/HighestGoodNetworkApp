@@ -72,6 +72,14 @@
   cursor: pointer;
 }
 
+.summary-incomplete {
+  cursor: pointer;
+}
+
+.summary-incomplete:hover .large_text_summary {
+  text-decoration: underline;
+}
+
 .redBackgroup {
   z-index: 1;
   bottom: 0;
@@ -260,6 +268,10 @@
     min-width: 20px;
     padding: 0;
   }
+}
+
+.bg--summary-purple {
+  background-color: #5b2aa6; 
 }
 
 .text-center {

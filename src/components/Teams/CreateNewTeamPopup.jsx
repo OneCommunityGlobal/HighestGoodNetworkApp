@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
 import { boxStyle, boxStyleDark } from '~/styles';
 import '../Header/index.css';
+const TEAM_NAME_MAX_LENGTH = 100;
 
 export const CreateNewTeamPopup = React.memo(props => {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -23,9 +24,12 @@ export const CreateNewTeamPopup = React.memo(props => {
 
   const handleTeamNameChange = e => {
     const teamName = e.target.value;
-    setNewName(teamName);
-    onValidation(true);
-    setTeamExists(allTeams.some(team => team.teamName.toLowerCase() === teamName.toLowerCase()));
+    // Only update if within character limit
+    if (teamName.length <= TEAM_NAME_MAX_LENGTH) {
+      setNewName(teamName);
+      onValidation(true);
+      setTeamExists(allTeams.some(team => team.teamName.toLowerCase() === teamName.toLowerCase()));
+    }
   };
 
   const handleSubmit = async () => {
@@ -60,9 +64,16 @@ export const CreateNewTeamPopup = React.memo(props => {
           placeholder="Please enter a new team name"
           value={newTeam}
           onChange={handleTeamNameChange}
+          maxLength={TEAM_NAME_MAX_LENGTH}
           className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
           required
         />
+        <small
+          className={darkMode ? 'text-light' : 'text-muted'}
+          style={{ display: 'block', marginTop: '0.25rem' }}
+        >
+          {newTeam.length}/{TEAM_NAME_MAX_LENGTH} characters
+        </small>
         {!isValidTeam && <Alert color="danger">Please enter a team name.</Alert>}
         {teamExists && !props.isEdit && (
           <Alert color="warning">
