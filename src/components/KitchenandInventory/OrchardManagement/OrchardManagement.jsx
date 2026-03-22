@@ -61,7 +61,7 @@ function OrchardManagement() {
       <div className={styles.header}>
         <h1 className={styles.title}>Orchard Management</h1>
         <p className={styles.subtitle}>
-          Manage fruit trees, bushes, and orchard maintenance schedules
+          Manage fruit trees, bushes, and orchard maintenance schedules.
         </p>
       </div>
 
@@ -78,16 +78,16 @@ function OrchardManagement() {
         <button type="button" className={`${styles.navButton} ${styles.activeNav}`}>
           Trees & Bushes
         </button>
-        <button type="button" className={`${styles.navButton}`}>
+        <button type="button" className={styles.navButton}>
           Orders
         </button>
-        <button type="button" className={`${styles.navButton}`}>
+        <button type="button" className={styles.navButton}>
           Planting Schedule
         </button>
-        <button type="button" className={`${styles.navButton}`}>
+        <button type="button" className={styles.navButton}>
           Trimming Schedule
         </button>
-        <button type="button" className={`${styles.navButton}`}>
+        <button type="button" className={styles.navButton}>
           Harvest Calendar
         </button>
       </div>
@@ -98,6 +98,7 @@ function OrchardManagement() {
             <h3 className={styles.inventoryTitle}>Orchard Inventory</h3>
             <p className={styles.inventorySubtitle}>All trees and bushes in the orchard</p>
           </div>
+
           <button type="button" className={styles.addButton}>
             + Add Tree/Bush
           </button>
@@ -126,6 +127,7 @@ function OrchardManagement() {
                   <p className={styles.detailLabel}>Planted</p>
                   <p className={styles.detailValue}>{item.plantedDate}</p>
                 </div>
+
                 <div>
                   <p className={styles.detailLabel}>Age</p>
                   <p className={styles.detailValue}>{calculateAgeInYears(item.plantedDate)}</p>
