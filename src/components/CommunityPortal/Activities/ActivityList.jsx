@@ -1,11 +1,18 @@
 // Activity List Component
 import { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useStore } from 'react-redux';
 import styles from './ActivityList.module.css';
 import { mockActivities } from './mockActivities';
 
 function ActivityList() {
-  const darkMode = useSelector(state => state.theme?.darkMode ?? false);
+  let darkMode = false;
+
+  try {
+    const store = useStore();
+    darkMode = store?.getState()?.theme?.darkMode ?? false;
+  } catch (e) {
+    darkMode = false;
+  }
 
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
