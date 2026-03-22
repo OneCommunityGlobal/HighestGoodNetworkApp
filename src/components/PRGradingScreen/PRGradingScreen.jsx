@@ -53,6 +53,56 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
     return { isValid: true, error: '' };
   };
 
+  const isBackendFrontendPair = value => value.includes('+');
+
+  /* ---------------- EXPORT CSV ---------------- */
+
+  const handleExportCSV = () => {
+    if (!reviewerData || reviewerData.length === 0) return;
+
+    const headers = [
+      'Reviewer Name',
+      'PRs Reviewed',
+      'PRs Needed',
+      'PR Numbers',
+      'Grades',
+      'Notes',
+    ];
+
+    const rows = filteredReviewers.map(reviewer => {
+      const prNumbers = reviewer.gradedPrs.map(pr => pr.prNumbers).join(' | ');
+      const grades = reviewer.gradedPrs.map(pr => pr.grade).join(' | ');
+
+      return [
+        `"${reviewer.reviewer}"`,
+        reviewer.gradedPrs.length,
+        reviewer.prsNeeded,
+        `"${prNumbers}"`,
+        `"${grades}"`,
+        reviewer.role ? `"${reviewer.role}"` : '',
+      ];
+    });
+
+    const csvContent = [headers, ...rows].map(row => row.join(',')).join('\n');
+
+    const blob = new Blob([csvContent], {
+      type: 'text/csv;charset=utf-8;',
+    });
+
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.href = url;
+
+    const start = teamData.dateRange.start.replace(/\//g, '-');
+    const end = teamData.dateRange.end.replace(/\//g, '-');
+
+    link.setAttribute('download', `weekly-pr-grading-${start}-to-${end}.csv`);
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   /* ---------------- ADD PR ---------------- */
 
   const handleAddNewClick = reviewerId => {
@@ -132,14 +182,24 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                     {teamData.teamName} - {teamData.dateRange.start} to {teamData.dateRange.end}
                   </div>
                 </div>
-                <Button
-                  variant={isFinalized ? 'secondary' : 'outline-dark'}
-                  disabled={isFinalized}
-                  onClick={handleFinalize}
-                  className={dm}
-                >
-                  {isFinalized ? 'Finalized' : 'Done'}
-                </Button>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <Button
+                    variant="outline-primary"
+                    onClick={handleExportCSV}
+                    className={darkMode ? styles['dark-mode'] : ''}
+                  >
+                    Export to CSV
+                  </Button>
+
+                  <Button
+                    variant={isFinalized ? 'secondary' : 'outline-dark'}
+                    disabled={isFinalized}
+                    onClick={handleFinalize}
+                    className={darkMode ? styles['dark-mode'] : ''}
+                  >
+                    {isFinalized ? 'Finalized' : 'Done'}
+                  </Button>
+                </div>
               </div>
             </Card.Header>
 

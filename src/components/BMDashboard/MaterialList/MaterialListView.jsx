@@ -110,7 +110,8 @@ function MaterialListView() {
           {searchTerm && (
             <InputGroupAddon addonType="append">
               <Button color="secondary" onClick={() => setSearchTerm('')}>
-                ×
+                <i className="fa fa-times" aria-hidden="true" style={{ marginRight: '5px' }}></i>{' '}
+                Clear
               </Button>
             </InputGroupAddon>
           )}

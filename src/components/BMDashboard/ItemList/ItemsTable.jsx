@@ -74,6 +74,7 @@ export default function ItemsTable({
         return;
       }
     }
+
     setModal(true);
     setRecord(data);
     setRecordType(type);
@@ -88,6 +89,7 @@ export default function ItemsTable({
 
   const sortData = columnName => {
     const newSortedData = [...sortedData];
+
     if (columnName === 'ProjectName') {
       if (projectNameCol.sortOrder === 'default' || projectNameCol.sortOrder === 'desc') {
         newSortedData.sort((a, b) => (a.project?.name || '').localeCompare(b.project?.name || ''));
@@ -96,6 +98,7 @@ export default function ItemsTable({
         newSortedData.sort((a, b) => (b.project?.name || '').localeCompare(a.project?.name || ''));
         setProjectNameCol({ iconsToDisplay: faSortDown, sortOrder: 'desc' });
       }
+      setInventoryItemTypeCol({ iconsToDisplay: faSort, sortOrder: 'default' });
     } else if (columnName === 'InventoryItemType') {
       if (
         inventoryItemTypeCol.sortOrder === 'default' ||
@@ -111,6 +114,7 @@ export default function ItemsTable({
         );
         setInventoryItemTypeCol({ iconsToDisplay: faSortDown, sortOrder: 'desc' });
       }
+      setProjectNameCol({ iconsToDisplay: faSort, sortOrder: 'default' });
     } else if (columnName === 'Bought') {
       newSortedData.sort((a, b) =>
         boughtCol.sortOrder === 'asc'
@@ -171,6 +175,7 @@ export default function ItemsTable({
 
   const numericHeaderStyle = { ...stickyHeaderStyle, textAlign: 'right', cursor: 'pointer' };
   const numericCellStyle = { textAlign: 'right', verticalAlign: 'middle' };
+
   const actionHeaderStyle = {
     ...stickyHeaderStyle,
     borderLeft: '2px solid #dee2e6',
@@ -190,6 +195,7 @@ export default function ItemsTable({
             type="button"
             className="btn btn-sm btn-link p-1"
             onClick={() => handleEditRecordsClick(el, type)}
+            aria-label="Edit Record"
             style={{ fontSize: '1.2em' }}
           >
             <BiPencil />
@@ -212,9 +218,11 @@ export default function ItemsTable({
         recordType={recordType}
         itemType={itemType}
       />
+
       {showChartModal && chartProjectId && (
         <MaterialUsageChart projectId={chartProjectId} toggle={() => setShowChartModal(false)} />
       )}
+
       <UpdateItemModal modal={updateModal} setModal={setUpdateModal} record={updateRecord} />
 
       {itemType === 'Materials' && summaryStats && <MaterialSummaryCards stats={summaryStats} />}
@@ -226,18 +234,26 @@ export default function ItemsTable({
         <Table className={darkMode ? styles.darkTable : ''} hover responsive>
           <thead>
             <tr>
-              <th
-                onClick={() => sortData('ProjectName')}
-                style={{ ...stickyHeaderStyle, cursor: 'pointer' }}
-              >
-                Project <FontAwesomeIcon icon={projectNameCol.iconsToDisplay} />
-              </th>
-              <th
-                onClick={() => sortData('InventoryItemType')}
-                style={{ ...stickyHeaderStyle, cursor: 'pointer' }}
-              >
-                Name <FontAwesomeIcon icon={inventoryItemTypeCol.iconsToDisplay} />
-              </th>
+              {selectedProject === 'all' ? (
+                <th
+                  onClick={() => sortData('ProjectName')}
+                  style={{ ...stickyHeaderStyle, cursor: 'pointer' }}
+                >
+                  Project <FontAwesomeIcon icon={projectNameCol.iconsToDisplay} size="lg" />
+                </th>
+              ) : (
+                <th style={stickyHeaderStyle}>Project</th>
+              )}
+              {selectedItem === 'all' ? (
+                <th
+                  onClick={() => sortData('InventoryItemType')}
+                  style={{ ...stickyHeaderStyle, cursor: 'pointer' }}
+                >
+                  Name <FontAwesomeIcon icon={inventoryItemTypeCol.iconsToDisplay} size="lg" />
+                </th>
+              ) : (
+                <th style={stickyHeaderStyle}>Name</th>
+              )}
               {dynamicColumns.map(({ label, key }) => {
                 const stateMap = {
                   Bought: boughtCol,
@@ -251,19 +267,27 @@ export default function ItemsTable({
                   'stockAvailable',
                   'stockWasted',
                 ].includes(key);
+
                 return (
                   <th
                     key={label}
                     onClick={() => sortData(label)}
                     style={isNumeric ? numericHeaderStyle : stickyHeaderStyle}
                   >
-                    {label} <FontAwesomeIcon icon={stateMap[label]?.iconsToDisplay || faSort} />
+                    {label}{' '}
+                    <FontAwesomeIcon icon={stateMap[label]?.iconsToDisplay || faSort} size="lg" />
                   </th>
                 );
               })}
-              <th style={actionHeaderStyle}>Usage Record</th>
-              <th style={stickyHeaderStyle}>Updates</th>
-              <th style={stickyHeaderStyle}>Purchases</th>
+              <th style={actionHeaderStyle} title="View usage history and charts">
+                Usage Record
+              </th>
+              <th style={stickyHeaderStyle} title="View history of manual updates">
+                Updates
+              </th>
+              <th style={stickyHeaderStyle} title="View procurement history">
+                Purchases
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -280,6 +304,7 @@ export default function ItemsTable({
                       'stockAvailable',
                       'stockWasted',
                     ].includes(key);
+
                     if (itemType === 'Materials' && key === 'stockAvailable') {
                       return (
                         <td

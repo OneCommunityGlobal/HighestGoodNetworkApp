@@ -77,20 +77,9 @@ export function ItemListView({
           style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginBottom: '20px' }}
         >
           {items && (
-            <div
-              className={`${styles.selectInput}`}
-              style={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                gap: '15px',
-                alignItems: 'center',
-                width: '100%',
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <label htmlFor="itemListTime" style={{ margin: 0 }}>
-                  Time:
-                </label>
+            <div className={`${styles.selectInput}`}>
+              <div className={`${styles.filterGroup}`}>
+                <label htmlFor="itemListTime">Time:</label>
                 <DatePicker
                   selected={selectedTime}
                   onChange={date => setSelectedTime(date)}
@@ -107,19 +96,29 @@ export function ItemListView({
                   }
                 />
               </div>
-              <SelectForm
-                items={items}
-                setSelectedProject={setSelectedProject}
-                setSelectedItem={setSelectedItem}
-              />
-              {/* <SelectItem
-                items={items}
-                selectedProject={selectedProject}
-                selectedItem={selectedItem}
-                setSelectedItem={setSelectedItem} 
-              /> */}
+
+              <div className={`${styles.filterGroup}`}>
+                <SelectForm
+                  items={items}
+                  setSelectedProject={setSelectedProject}
+                  setSelectedItem={setSelectedItem}
+                />
+              </div>
+
+              {itemType !== 'Materials' && (
+                <div className={`${styles.filterGroup}`}>
+                  <SelectItem
+                    items={items}
+                    selectedProject={selectedProject}
+                    selectedItem={selectedItem}
+                    setSelectedItem={setSelectedItem}
+                    label={itemType}
+                  />
+                </div>
+              )}
             </div>
           )}
+
           <div className={`${styles.buttonsRow}`}>
             <button type="button" className={`${styles.btnPrimary}`}>
               Add Material

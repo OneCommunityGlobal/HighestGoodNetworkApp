@@ -162,6 +162,7 @@ import CommunityCalendar from './components/CommunityPortal/Calendar/CommunityCa
 import KitchenandInventoryLogin from './components/KitchenandInventory/Login';
 import KIProtectedRoute from './components/common/KitchenandInventory/KIProtectedRoute';
 import KIDashboard from './components/KitchenandInventory/KIDashboard/KIDashboard';
+import KIINVENTORY from './components/KitchenandInventory/KIInventory/KIInventory';
 import KICalendar from './components/KitchenandInventory/KICalendar/KICalendar';
 
 // Education Portal
@@ -219,6 +220,9 @@ const PurchaseReusables = lazy(() =>
   import('./components/BMDashboard/PurchaseRequests/ReusablePurchaseRequest'),
 );
 const BMTimeLogCard = lazy(() => import('./components/BMDashboard/BMTimeLogger/BMTimeLogCard'));
+const ProjectTeams = lazy(() =>
+  import('./components/BMDashboard/Projects/ProjectTeams/ProjectTeams'),
+);
 const ProjectDetails = lazy(() =>
   import('./components/BMDashboard/Projects/ProjectDetails/ProjectDetails'),
 );
@@ -658,6 +662,11 @@ export default (
         />
         <BMProtectedRoute path="/bmdashboard/tools/purchase" fallback component={PurchaseTools} />
         <BMProtectedRoute
+          path="/bmdashboard/projects/:projectId/teams"
+          fallback
+          component={ProjectTeams}
+        />
+        <BMProtectedRoute
           path="/bmdashboard/projects/:projectId"
           fallback
           component={ProjectDetails}
@@ -761,6 +770,11 @@ export default (
         {/* ----- Community Calendar Routing ----- */}
         <CPProtectedRoute path="/communityportal/calendar" exact component={CommunityCalendar} />
         <CPProtectedRoute path="/communityportal/activities" exact component={ActivityList} />
+        <CPProtectedRoute
+          path="/communityportal/profile/:userId"
+          fallback
+          component={UserProfile}
+        />
         <CPProtectedRoute
           path="/communityportal/ActivityAttendance"
           exact
@@ -875,6 +889,7 @@ export default (
         {/* ----- END BM Dashboard Routing ----- */}
         {/* ----- Kitchen and Inventory Portal Routes ----- */}
         <KIProtectedRoute path="/kitchenandinventory" exact component={KIDashboard} />
+        <KIProtectedRoute path="/kitchenandinventory/inventory" exact component={KIINVENTORY} />
         <KIProtectedRoute path="/kitchenandinventory/calendar" exact component={KICalendar} />
         <Route path="/kitchenandinventory/login" exact component={KitchenandInventoryLogin} />
         {/* ----- End of Kitchen and Inventory Portal Routes ----- */}

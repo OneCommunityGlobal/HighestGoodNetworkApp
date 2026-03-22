@@ -149,7 +149,7 @@ function SingleTask(props) {
                 </tr>
               </thead>
               <tbody className={darkMode ? 'bg-yinmn-blue' : ''}>
-                <tr>
+                <tr style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                   <th scope="row">
                     <div className="d-flex flex-column align-items-center">
                       <EditTaskModal
@@ -169,7 +169,7 @@ function SingleTask(props) {
                           <Button
                             type="button"
                             size="sm"
-                            className="btn btn-danger mt-1 ml-2" 
+                            className="btn btn-danger mt-1 ml-2"
                             onClick={() => showUpDeleteModal()}
                           >
                             Delete
@@ -188,14 +188,16 @@ function SingleTask(props) {
                       )}
                     </div>
                   </th>
-                  <th scope="row" style={{ textAlign: 'center', verticalAlign: 'middle' }}>{task.num}</th>
+
+                  <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                    {task.num}
+                  </td>
                   <td>{task.taskName}</td>
                   <td>{task.priority}</td>
                   <td>
                     {task?.resources &&
                       task.resources.map((elem, i) => {
-                        try {
-                          if (elem.profilePic) {
+                        if (elem.profilePic) {
                             return (
                               <a
                                 key={`res_${i}`}
@@ -205,8 +207,7 @@ function SingleTask(props) {
                                 target="_blank"
                                 rel="noreferrer"
                               >
-                                {/* eslint-disable-next-line jsx-a11y/alt-text */}
-                                <img className="img-circle" src={elem.profilePic} />
+                                <img className="img-circle" src={elem.profilePic} alt="" />
                               </a>
                             );
                           }
@@ -222,9 +223,7 @@ function SingleTask(props) {
                               <span className="dot">{elem.name.substring(0, 2)}</span>
                             </a>
                           );
-
-                        } catch (err) { }
-                      })}
+                        })}
                   </td>
                   <td>
                     {task.isAssigned ? (
