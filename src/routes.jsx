@@ -884,7 +884,11 @@ export default (
         <KIProtectedRoute path="/kitchenandinventory" exact component={KIDashboard} />
         <KIProtectedRoute path="/kitchenandinventory/inventory" exact component={KIINVENTORY} />
         <KIProtectedRoute path="/kitchenandinventory/calendar" exact component={KICalendar} />
-        <Route path="/kitchenandinventory/orchardmanagement" exact component={OrchardManagement} />
+        <KIProtectedRoute
+          path="/kitchenandinventory/orchardmanagement"
+          exact
+          component={OrchardManagement}
+        />
         <Route path="/kitchenandinventory/login" exact component={KitchenandInventoryLogin} />
         {/* ----- End of Kitchen and Inventory Portal Routes ----- */}
         <Route path="/login" component={Login} />
