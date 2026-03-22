@@ -69,22 +69,25 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
         <span>
           {items && (
             <div className={`${styles.selectInput}`}>
-              <label htmlFor="itemListTime">Time:</label>
-              <DatePicker
-                selected={selectedTime}
-                onChange={date => setSelectedTime(date)}
-                showTimeSelect
-                timeFormat="HH:mm"
-                timeIntervals={15}
-                dateFormat="yyyy-MM-dd HH:mm:ss"
-                placeholderText="Select date and time"
-                inputId="itemListTime" // This is the key line
-                className={darkMode ? styles.darkDatePickerInput : styles.lightDatePickerInput}
-                calendarClassName={darkMode ? styles.darkDatePicker : styles.lightDatePicker}
-                popperClassName={
-                  darkMode ? styles.darkDatePickerPopper : styles.lightDatePickerPopper
-                }
-              />
+              {/* Wrap the Time label and Datepicker in a flex group */}
+              <div className={`${styles.filterGroup}`}>
+                <label htmlFor="itemListTime">Time:</label>
+                <DatePicker
+                  selected={selectedTime}
+                  onChange={date => setSelectedTime(date)}
+                  showTimeSelect
+                  timeFormat="HH:mm"
+                  timeIntervals={15}
+                  dateFormat="yyyy-MM-dd HH:mm:ss"
+                  placeholderText="Select date and time"
+                  inputId="itemListTime"
+                  className={darkMode ? styles.darkDatePickerInput : styles.lightDatePickerInput}
+                  calendarClassName={darkMode ? styles.darkDatePicker : styles.lightDatePicker}
+                  popperClassName={
+                    darkMode ? styles.darkDatePickerPopper : styles.lightDatePickerPopper
+                  }
+                />
+              </div>
               <SelectForm
                 items={items}
                 setSelectedProject={setSelectedProject}
@@ -95,6 +98,7 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
                 selectedProject={selectedProject}
                 selectedItem={selectedItem}
                 setSelectedItem={setSelectedItem}
+                label={itemType}
               />
             </div>
           )}

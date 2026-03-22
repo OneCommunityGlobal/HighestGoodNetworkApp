@@ -220,6 +220,9 @@ const PurchaseReusables = lazy(() =>
   import('./components/BMDashboard/PurchaseRequests/ReusablePurchaseRequest'),
 );
 const BMTimeLogCard = lazy(() => import('./components/BMDashboard/BMTimeLogger/BMTimeLogCard'));
+const ProjectTeams = lazy(() =>
+  import('./components/BMDashboard/Projects/ProjectTeams/ProjectTeams'),
+);
 const ProjectDetails = lazy(() =>
   import('./components/BMDashboard/Projects/ProjectDetails/ProjectDetails'),
 );
@@ -659,6 +662,11 @@ export default (
         />
         <BMProtectedRoute path="/bmdashboard/tools/purchase" fallback component={PurchaseTools} />
         <BMProtectedRoute
+          path="/bmdashboard/projects/:projectId/teams"
+          fallback
+          component={ProjectTeams}
+        />
+        <BMProtectedRoute
           path="/bmdashboard/projects/:projectId"
           fallback
           component={ProjectDetails}
@@ -762,6 +770,11 @@ export default (
         {/* ----- Community Calendar Routing ----- */}
         <CPProtectedRoute path="/communityportal/calendar" exact component={CommunityCalendar} />
         <CPProtectedRoute path="/communityportal/activities" exact component={ActivityList} />
+        <CPProtectedRoute
+          path="/communityportal/profile/:userId"
+          fallback
+          component={UserProfile}
+        />
         <CPProtectedRoute
           path="/communityportal/ActivityAttendance"
           exact
