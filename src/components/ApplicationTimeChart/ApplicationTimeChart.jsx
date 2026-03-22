@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import getApplicationData from './api';
 import styles from './ApplicationTimeChart.module.css';
@@ -6,6 +6,15 @@ import styles from './ApplicationTimeChart.module.css';
 function ApplicationTimeChart() {
   const [dateFilter, setDateFilter] = useState('all');
   const [selectedRole, setSelectedRole] = useState('all');
+  const [tooltip, setTooltip] = useState({
+    visible: false,
+    x: 0,
+    y: 0,
+    role: '',
+    avgTime: 0,
+    count: 0,
+  });
+  const chartAreaRef = useRef(null);
 
   const rawData = getApplicationData();
 
@@ -64,6 +73,46 @@ function ApplicationTimeChart() {
 
   const maxTime = Math.max(...processedData.map(item => item.avgTime), 10);
 
+  const handleMouseEnter = (e, item) => {
+    const chartRect = chartAreaRef.current?.getBoundingClientRect();
+    if (!chartRect) return;
+
+    const x = e.clientX - chartRect.left;
+    const y = e.clientY - chartRect.top;
+
+    setTooltip({
+      visible: true,
+      x,
+      y,
+      role: item.role,
+      avgTime: item.avgTime,
+      count: item.count,
+    });
+  };
+
+  const handleMouseMove = (e, item) => {
+    const chartRect = chartAreaRef.current?.getBoundingClientRect();
+    if (!chartRect) return;
+
+    const x = e.clientX - chartRect.left;
+    const y = e.clientY - chartRect.top;
+
+    setTooltip(prev => ({ ...prev, x, y }));
+  };
+
+  const handleMouseLeave = () => {
+    setTooltip(prev => ({ ...prev, visible: false }));
+  };
+
+  const TOOLTIP_WIDTH = 200;
+  const tooltipStyle = {
+    left:
+      tooltip.x + TOOLTIP_WIDTH + 20 > (chartAreaRef.current?.offsetWidth || 9999)
+        ? tooltip.x - TOOLTIP_WIDTH - 12
+        : tooltip.x + 12,
+    top: tooltip.y - 10,
+  };
+
   return (
     <div className={styles.container}>
       {/* Chart Container */}
@@ -73,7 +122,7 @@ function ApplicationTimeChart() {
         </h2>
 
         {/* Chart */}
-        <div className={styles.chartArea}>
+        <div className={styles.chartArea} ref={chartAreaRef}>
           {processedData.length > 0 ? (
             <>
               {/* Grid Lines */}
@@ -126,12 +175,31 @@ function ApplicationTimeChart() {
                     <div
                       className={styles.bar}
                       style={{ width: `${(item.avgTime / maxTime) * 100}%` }}
+                      onMouseEnter={e => handleMouseEnter(e, item)}
+                      onMouseMove={e => handleMouseMove(e, item)}
+                      onMouseLeave={handleMouseLeave}
                     >
                       <div className={styles.dataLabel}>{item.avgTime} min</div>
                     </div>
                   </div>
                 ))}
               </div>
+
+              {/* Tooltip */}
+              {tooltip.visible && (
+                <div className={styles.tooltip} style={tooltipStyle}>
+                  <div className={styles.tooltipRole}>{tooltip.role}</div>
+                  <div className={styles.tooltipDivider} />
+                  <div className={styles.tooltipRow}>
+                    <span className={styles.tooltipLabel}>Avg. Time</span>
+                    <span className={styles.tooltipValue}>{tooltip.avgTime} min</span>
+                  </div>
+                  <div className={styles.tooltipRow}>
+                    <span className={styles.tooltipLabel}>Applications</span>
+                    <span className={styles.tooltipValue}>{tooltip.count}</span>
+                  </div>
+                </div>
+              )}
 
               {/* X-axis Label */}
               <div className={styles.xAxisLabel}>
