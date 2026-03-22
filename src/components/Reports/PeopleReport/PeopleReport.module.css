@@ -253,6 +253,28 @@ body {
   }
 }
 
+.peopleReportTimeLogsWrapper.threeBoxes > .peopleReportTimeLogBlock {
+  flex: 0 1 calc((100% - 2rem) / 3); /* 3 per row */
+}
+
+/* Prevent wrapping weirdly at mid-screen sizes for 3-box layout */
+@media (max-width: 1488px) {
+  .peopleReportTimeLogsWrapper.threeBoxes > .peopleReportTimeLogBlock {
+    flex: 0 1 calc((100% - 2rem) / 3);
+  }
+}
+
+@media (max-width: 1155px) {
+  .peopleReportTimeLogsWrapper.threeBoxes {
+    justify-content: center;
+    gap: 1.5rem;
+  }
+  .peopleReportTimeLogsWrapper.threeBoxes > .peopleReportTimeLogBlock {
+    flex: 0 1 100%; /* Stack only on smaller screens */
+  }
+}
+
+
 .infringementContainer {
   display: flex;
   justify-content: center;

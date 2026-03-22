@@ -1,0 +1,116 @@
+.addToolForm {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.addToolForm label {
+  font-size: 0.9em;
+  font-weight: bold;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.addToolButtons {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 1rem auto 2rem;
+}
+
+.addToolButtons button {
+  flex: 1;
+  min-width: 120px;
+}
+
+.toolFormError {
+  font-weight: 500;
+  font-size: 12px !important;
+  color: red;
+  margin-top: 0.25rem;
+}
+
+.fieldRequired {
+  color: red;
+}
+
+@media screen and (max-width: 600px) {
+  .addToolButtons {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .addToolButtons button {
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 400px) {
+  .addToolForm {
+    padding: 0.5rem;
+  }
+
+  .addToolButtons {
+    gap: 0.5rem;
+  }
+}
+
+:global(.bg-oxford-blue) .addToolForm label {
+  color: #e9ecef;
+}
+
+:global(.bg-oxford-blue) .addToolForm :global(.form-control),
+:global(.bg-oxford-blue) .addToolForm :global(.custom-select) {
+  background-color: #2c3e50;
+  color: #e9ecef;
+  border-color: #495057;
+}
+
+:global(.bg-oxford-blue) .addToolForm select:global(.form-control) {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23e9ecef' d='M6 8.825a.5.5 0 0 1-.354-.146l-4-4a.5.5 0 1 1 .708-.708L6 7.617l3.646-3.646a.5.5 0 1 1 .708.708l-4 4A.5.5 0 0 1 6 8.825z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 12px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  padding-right: 2rem;
+}
+
+:global(.bg-oxford-blue) .addToolForm :global(.form-control)::placeholder {
+  color: #adb5bd;
+}
+
+:global(.bg-oxford-blue) .addToolForm :global(.form-control):focus,
+:global(.bg-oxford-blue) .addToolForm :global(.custom-select):focus {
+  background-color: #34495e;
+  color: #f8f9fa;
+  border-color: #5a9fd4;
+  box-shadow: 0 0 0 0.2rem rgba(90, 159, 212, 0.25);
+}
+
+:global(.bg-oxford-blue) .addToolForm :global(.form-control):disabled,
+:global(.bg-oxford-blue) .addToolForm :global(.custom-select):disabled {
+  background-color: #1e2d3d;
+  color: #6c757d;
+  border-color: #3a4a5c;
+  opacity: 1;
+}
+
+:global(.bg-oxford-blue) .addToolForm select:global(.form-control):disabled {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236c757d' d='M6 8.825a.5.5 0 0 1-.354-.146l-4-4a.5.5 0 1 1 .708-.708L6 7.617l3.646-3.646a.5.5 0 1 1 .708.708l-4 4A.5.5 0 0 1 6 8.825z'/%3E%3C/svg%3E");
+}
+
+:global(.bg-oxford-blue) .addToolForm select:global(.form-control) option {
+  background-color: #2c3e50;
+  color: #e9ecef;
+}
+
+:global(.bg-oxford-blue) .toolFormError {
+  color: #ff6b6b;
+}
+
+:global(.bg-oxford-blue) .fieldRequired {
+  color: #ff6b6b;
+}
