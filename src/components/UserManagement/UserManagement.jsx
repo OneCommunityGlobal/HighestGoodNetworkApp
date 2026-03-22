@@ -38,6 +38,7 @@ import ActiveInactiveConfirmationPopup from './ActiveInactiveConfirmationPopup';
 import SetUpFinalDayPopUp from './SetUpFinalDayPopUp';
 import LogTimeOffPopUp from './logTimeOffPopUp';
 import SetupNewUserPopup from './setupNewUserPopup';
+import PropTypes from 'prop-types';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
 import {
   scheduleDeactivationAction,
@@ -726,7 +727,7 @@ class UserManagement extends React.PureComponent {
             >
               <thead>
                 <UserTableHeader
-                  authRole={this.props.state.auth.user.role}
+                  authUser={this.props.state.auth.user}
                   roleSearchText={this.state.roleSearchText}
                   darkMode={darkMode}
                   editUser={this.props.state.userProfileEdit.editable}
@@ -735,6 +736,7 @@ class UserManagement extends React.PureComponent {
                   isMobile={this.state.isMobile}
                   mobileFontSize={this.state.mobileFontSize}
                   mobileWidth={this.state.mobileWidth}
+                  roles={this.props.state.role.roles}
                 />
                 <UserTableSearchHeader
                   onFirstNameSearch={this.onFirstNameSearch}
@@ -770,6 +772,10 @@ class UserManagement extends React.PureComponent {
     );
   }
 }
+
+UserManagement.propTypes = {
+  state: PropTypes.object,
+};
 
 const mapStateToProps = (state) => {
   return { state };

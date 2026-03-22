@@ -8,39 +8,58 @@
   transition: background 0.2s ease;
 }
 
+.highlightRowDarkMode {
+  background-color: #00bcd4;
+  border-left: 4px solid #e0f7fa;
+  transition: background 0.2s ease;
+}
+
 .highlightRow:hover {
   background-color: #b2ebf2;
 }
 
 .permissionChangeLogTable {
-  border-collapse: 'collapse';
+  border-collapse: collapse;
   width: 100%;
 }
 
-@media (max-width: 1290px) {
+.permissionsCell {
+  display: flex;
+  align-items: center;
+}
+
+.toggleButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-left: 10px;
+  color: inherit;
+}
+
+@media (width <= 1290px) {
   .permissionChangeLogTable {
     font-size: 12px;
   }
 }
 
-@media (max-width: 1010px) {
+@media (width <= 1010px) {
   .permissionChangeLogTable {
     font-size: 10px;
   }
 }
 
-.permissionChangeLogTable-Header {
+.permissionChangeLogTableHeader {
   background-color: #e3f0fb;
 }
 
-.permissionChangeLogTable-HeaderDark {
+.permissionChangeLogTableHeaderDark {
   background-color: #1c2541;
   border: 1px solid red;
 }
 
-.permissionChangeLogTable-Header,
-.permissionChangeLogTable-HeaderDark,
-.permissionChangeLogTable-Cell {
+.permissionChangeLogTableHeader,
+.permissionChangeLogTableHeaderDark,
+.permissionChangeLogTableCell {
   border: 1px solid #ddd;
   padding: 8px;
 }
@@ -56,10 +75,10 @@
 .permissionChangeLogTable-Button {
   padding: 5px 10px;
   margin: 0 5px;
-  color: #ffffff;
-  border: 'none';
+  color: #fff;
+  border: none;
   border-radius: 5px;
-  cursor: 'pointer';
+  cursor: pointer;
 }
 
 .paginationContainer {
@@ -81,7 +100,7 @@
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0px 6px;
+  padding: 0 6px;
   font-size: 20px;
   border-radius: 5px;
 }

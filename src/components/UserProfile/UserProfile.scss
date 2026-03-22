@@ -61,7 +61,6 @@
 
 .profile-head {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
   flex-wrap: wrap;
   gap: 4px;
@@ -104,6 +103,14 @@
   border-bottom: 2px solid #0062cc;
 }
 
+.nav-link.darkMode {
+  color: #007bff !important;
+}
+
+.nav-link.active.darkMode {
+  color: #495057 !important;
+}
+
 .profile-work p {
   font-size: 12px;
   color: #818182;
@@ -129,6 +136,10 @@
 .profile-tab p {
   font-weight: 600;
   color: #0062cc;
+}
+
+.profile-tab.tab-content.darkMode {
+  background-color: #1b2a41;
 }
 
 .profile-work {
@@ -176,7 +187,7 @@
   margin: auto;
 }
 
-@media only screen and (max-width: 991px) {
+@media only screen and (width <= 991px) {
   .profilePicture {
     max-width: 180px;
     max-height: 180px;
@@ -225,6 +236,7 @@
 .profile-functions-tablet {
   display: none;
 }
+
 /* Changed hover, focus and active class for the Stop Scheduler Button */
 #stopSchedulerButton {
   background-color: #ffc107;
@@ -234,6 +246,7 @@
     background-color: #ffcd39;
     border: #ffcd39;
   }
+
   &:active,
   &:focus {
     background-color: #997404;
@@ -244,6 +257,10 @@
 .user-profile-blue-square-time-off-section {
   display: flex;
   flex-direction: column;
+}
+
+.user-profile-blue-square-time-off-section.darkMode {
+  background-color: #1b2a41;
 }
 
 
@@ -281,7 +298,7 @@
   transform: translateX(-50%);
   border-width: 8px;
   border-style: solid;
-  border-color: transparent transparent black transparent;
+  border-color: transparent transparent black;
 }
 
 .Job-Email-CC-tooltip::before {
@@ -292,7 +309,7 @@
   transform: translateX(-50%);
   border-width: 8px;
   border-style: solid;
-  border-color: transparent transparent black transparent;
+  border-color: transparent transparent black;
 }
 
 .Blue-Square-Email-BCC-tooltip {
@@ -339,7 +356,7 @@
   visibility: visible;
 }
 
-@media only screen and (max-width: 1024px) {
+@media only screen and (width <= 1024px) {
   .profileContainer {
     justify-content: space-around;
     margin: 0;
@@ -374,7 +391,6 @@
     display: flex;
     margin: 4px 0;
     padding: 8px 0;
-
     font-weight: bold;
     text-decoration: none;
   }
@@ -390,21 +406,23 @@
   .whoSection {
     width: 250px;
   }
+
   .detailSection {
     width: 250px;
   }
 }
 
-@media only screen and (max-width: 767px) {
+@media only screen and (width <= 767px) {
   .emp-profile {
     margin-top: 0;
   }
 }
 
-@media only screen and (max-height: 650px) {
+@media only screen and (height <= 650px) {
   .whoSection {
     width: 240px;
   }
+  
   .detailSection {
     width: 240px;
   }
@@ -455,7 +473,7 @@ button.btn.btn-outline-primary {
 }
 
 /* Mobile & Tablet Layout */
-@media (max-width: 767px) { 
+@media (width <= 767px) { 
   #containerProfile {
     grid-template-columns: 1fr; /* Single-column layout */
     grid-template-rows: auto auto auto; /* Three stacked rows */
