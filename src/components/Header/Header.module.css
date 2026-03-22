@@ -352,3 +352,56 @@
     justify-content: center !important;
   }
 }
+
+/* ============================= */
+/* Added by Shreya - Final Safe Responsive Tweaks */
+/* ============================= */
+
+/* Allow grid items to shrink instead of overflowing */
+.headerRow > * {
+  min-width: 0; /* Added by Shreya */
+}
+
+/* Ensure right section (menu) wraps nicely if needed */
+.rightSection {
+  flex-wrap: wrap; /* Added by Shreya */
+}
+
+/* Improve menu wrapping behavior */
+.menuContainer {
+  flex-wrap: wrap; /* Added by Shreya */
+  gap: 6px;        /* Added by Shreya */
+}
+
+/* Prevent text from breaking layout */
+.navbar {
+  overflow: hidden; /* Added by Shreya */
+}
+
+/* Logo scaling (if present inside center section) */
+.centerSection img {
+  max-width: 140px; /* Added by Shreya */
+  height: auto;     /* Added by Shreya */
+}
+
+/* Slight adjustment for smaller screens */
+@media (max-width: 900px) {
+  .centerSection img {
+    max-width: 110px; /* Added by Shreya */
+  }
+
+  .menuContainer {
+    gap: 4px; /* Added by Shreya */
+  }
+}
+
+/* Very small screens */
+@media (max-width: 600px) {
+  .centerSection img {
+    max-width: 90px; /* Added by Shreya */
+  }
+
+  .menuContainer {
+    font-size: 12px; /* Added by Shreya */
+  }
+}
