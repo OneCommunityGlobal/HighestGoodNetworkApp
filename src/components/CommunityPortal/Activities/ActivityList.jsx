@@ -5,13 +5,7 @@ import styles from './ActivityList.module.css';
 import { mockActivities } from './mockActivities';
 
 function ActivityList() {
-  let darkMode = false;
-
-  try {
-    darkMode = useSelector(state => state.theme?.darkMode);
-  } catch (error) {
-    darkMode = false;
-  }
+  const darkMode = useSelector(state => state.theme?.darkMode ?? false);
 
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -42,7 +36,6 @@ function ActivityList() {
       try {
         setLoading(true);
         setError(null);
-
         throw new Error('API not implemented yet');
       } catch (err) {
         console.warn('Failed to fetch activities from API, using mock data:', err.message);
@@ -62,9 +55,7 @@ function ActivityList() {
     const uniqueLocations = [...new Set(activities.map(a => a.location))];
     const lowerInput = input.toLowerCase();
 
-    return uniqueLocations
-      .filter(loc => loc.toLowerCase().startsWith(lowerInput))
-      .slice(0, 10);
+    return uniqueLocations.filter(loc => loc.toLowerCase().startsWith(lowerInput)).slice(0, 10);
   };
 
   const handleFilterChange = e => {
@@ -115,9 +106,7 @@ function ActivityList() {
 
   return (
     <div className={`${styles.activityListContainer} ${darkMode ? 'bg-oxford-blue' : ''}`}>
-      <h1 className={`${styles.heading} ${darkMode ? 'text-light' : ''}`}>
-        Activity List
-      </h1>
+      <h1 className={`${styles.heading} ${darkMode ? 'text-light' : ''}`}>Activity List</h1>
 
       <div className={`${styles.filters} ${darkMode ? styles.darkModeFilters : ''}`}>
         <label className={darkMode ? 'text-light' : ''}>
@@ -177,18 +166,22 @@ function ActivityList() {
             />
 
             {showSuggestions && locationSuggestions.length > 0 && (
-              <div
-                className={`${styles.suggestions} ${
-                  darkMode ? styles.darkSuggestions : ''
-                }`}
-              >
+              <div className={`${styles.suggestions} ${darkMode ? styles.darkSuggestions : ''}`}>
                 {locationSuggestions.map((location, index) => (
                   <div
                     key={index}
+                    role="button"
+                    tabIndex={0}
                     className={styles.suggestionItem}
                     onMouseDown={e => {
                       e.preventDefault();
                       handleSuggestionClick(location);
+                    }}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        handleSuggestionClick(location);
+                      }
                     }}
                   >
                     {location}
@@ -219,9 +212,7 @@ function ActivityList() {
             {filteredActivities.map(activity => (
               <li
                 key={activity.id}
-                className={`${styles.activityItem} ${
-                  darkMode ? styles.darkModeItem : ''
-                }`}
+                className={`${styles.activityItem} ${darkMode ? styles.darkModeItem : ''}`}
               >
                 <strong>{activity.name}</strong>
                 <span>
