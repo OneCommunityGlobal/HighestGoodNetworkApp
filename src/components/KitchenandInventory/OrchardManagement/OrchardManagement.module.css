@@ -20,3 +20,91 @@
   margin: 0;
   color: var(--color-text-secondary, #6b7280);
 }
+
+.metricsGrid{
+  display: grid;
+  grid-template-columns: repeat(4, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.metricCards{
+  background: #ffffff;
+  border: 1px solid #dbe4d8;
+  border-radius: 12px;
+  padding: 18px;
+}
+
+.metricTitle{
+  margin: 0 0 10px;
+  font-size: 0.95rem;
+  color: #6b7280;
+}
+
+.metricValue{
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #2f6b3b;
+}
+
+.sectionNav{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.navButton{
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: #374151;
+  border-radius: 999px;
+  padding: 10px 16px;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.activeNav{
+  background: #e6f4e8;
+  border-color: #9ccc9c;
+  color: #2f6b3b;
+  font-weight: 600;
+}
+
+.inventorySection{
+  background: #ffffff;
+  border: 1px solid #dbe4d8;
+  border-radius: 16px;
+  padding: 20px;
+}
+
+.inventoryHeader{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.inventoryTitle{
+  margin: 0 0 4px;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.inventorySubtitle{
+  margin: 0;
+  color: #6b7280;
+}
+
+.addButton{
+  border: none;
+  background: #4f9d5d;
+  color: #ffffff;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
