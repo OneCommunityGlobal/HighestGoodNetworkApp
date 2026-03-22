@@ -136,6 +136,12 @@ function PermissionChangeLogTable({ changeLogs, darkMode, roleNamesToHighlight =
 
     return darkMode ? 'cyan' : 'blue';
   };
+  const getHighlightValue = highlight => {
+    if (!highlight) {
+      return '';
+    }
+    return darkMode ? styles.highlightRowDarkMode : styles.highlightRow;
+  };
 
   return (
     <>
@@ -219,7 +225,7 @@ function PermissionChangeLogTable({ changeLogs, darkMode, roleNamesToHighlight =
               const shouldHighlight = roleSet.has(normalize(nameValue));
 
               return (
-                <tr key={log._id} className={shouldHighlight ? styles.highlightRow : ''}>
+                <tr key={log._id} className={getHighlightValue(shouldHighlight)}>
                   <td className={styles.permissionChangeLogTableCell}>
                     {`${formatDate(log.logDateTime)} ${formattedAmPmTime(log.logDateTime)}`}
                   </td>
@@ -227,14 +233,20 @@ function PermissionChangeLogTable({ changeLogs, darkMode, roleNamesToHighlight =
                   <td
                     className={styles.permissionChangeLogTableCell}
                     style={{
-                      fontWeight: log?.individualName ? 'bold' : 'normal',
+                      fontWeight: log?.reason?.includes('Role') ? 'normal' : 'bold',
+                      color: log?.individualName ? '' : '#D30000',
                     }}
                   >
                     {log?.individualName ? formatName(log.individualName) : log.roleName}
                   </td>
 
-                  <td className={styles.permissionChangeLogTableCell}>
-                    {renderPermissions(log.permissions, log._id)}
+                  <td
+                    className={styles.permissionChangeLogTableCell}
+                    style={{
+                      color: getReasonTextColor(log?.reason),
+                    }}
+                  >
+                    {log?.reason ? renderRoleChange(log.reason) : 'Permissions changed.'}
                   </td>
 
                   <td className={styles.permissionChangeLogTableCell}>

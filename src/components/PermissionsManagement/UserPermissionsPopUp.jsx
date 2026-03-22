@@ -159,8 +159,12 @@ function UserPermissionsPopUp({
         ', ',
       )}`;
       setModalContent(description);
-      setinfoRoleModal(true);
+    } else {
+      setModalContent(
+        'This user has no modified permissions, so clicking reset to default will not change anything',
+      );
     }
+    setinfoRoleModal(true);
   };
 
   const toggleInfoRoleModal = () => {

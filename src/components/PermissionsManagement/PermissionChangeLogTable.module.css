@@ -8,6 +8,12 @@
   transition: background 0.2s ease;
 }
 
+.highlightRowDarkMode {
+  background-color: #00bcd4;
+  border-left: 4px solid #e0f7fa;
+  transition: background 0.2s ease;
+}
+
 .highlightRow:hover {
   background-color: #b2ebf2;
 }
