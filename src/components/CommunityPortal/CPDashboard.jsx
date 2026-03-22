@@ -15,6 +15,7 @@ import {
 import { FaCalendarAlt, FaMapMarkerAlt, FaUserAlt, FaSearch, FaTimes } from 'react-icons/fa';
 import styles from './CPDashboard.module.css';
 import { ENDPOINTS } from '../../utils/URL';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 
 const FixedRatioImage = ({ src, alt, fallback }) => (
@@ -251,35 +252,38 @@ export function CPDashboard() {
 
   if (displayedEvents.length > 0) {
     eventsContent = displayedEvents.map(event => (
-      <Col md={4} key={event.id} className={styles.eventCardCol}>
-        <Card className={styles.eventCard}>
-          <div className={styles.eventCardImgContainer}>
-            <FixedRatioImage src={event.image} alt={event.title} fallback={FALLBACK_IMG} />
-          </div>
-          <CardBody>
-            <h5 className={styles.eventTitle}>{event.title}</h5>
-            <p className={styles.eventDate}>
-              <FaCalendarAlt className={styles.eventIcon} /> {formatDate(event.date)}
-            </p>
-            <p className={styles.eventLocation}>
-              <FaMapMarkerAlt className={styles.eventIcon} /> {event.location || 'Location TBD'}
-            </p>
-            <p className={styles.eventOrganizer}>
-              {event.organizerLogo && !failedLogos.has(event._id) ? (
-                <img
-                  src={event.organizerLogo}
-                  alt={normalizeOrganizer(event.organizer) || 'Organizer'}
-                  className={styles.organizerLogo}
-                  onError={() => handleLogoError(event._id)}
-                  loading="lazy"
-                />
-              ) : (
-                <FaUserAlt className={styles.eventIcon} aria-hidden="true" />
-              )}{' '}
-              <span>{normalizeOrganizer(event.organizer) || 'Organizer TBD'}</span>
-            </p>
-          </CardBody>
-        </Card>
+      <Col md={4} key={event.id} className={`${styles.eventCardCol}`}>
+        <Link
+          className={styles.eventCardLink}
+          to={`/communityportal/Activities/Register/${event._id}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <Card className={`${styles.eventCard} ${darkMode ? styles.darkEventCard : ''}`}>
+            <div className={styles.eventCardImgContainer}>
+              <FixedRatioImage src={event.coverImage} alt={event.title} fallback={FALLBACK_IMG} />
+            </div>
+            <CardBody className={`${styles.eventCardBody} ${darkMode ? styles.darkEventCard : ''}`}>
+              <h5 className={styles.eventTitle}>{event.title}</h5>
+              <p className={styles.eventDate}>
+                <FaCalendarAlt
+                  className={`${darkMode ? styles.eventIconDark : styles.eventIcon}`}
+                />{' '}
+                {formatDate(event.date)}
+              </p>
+              <p className={styles.eventLocation}>
+                <FaMapMarkerAlt
+                  className={`${darkMode ? styles.eventIconDark : styles.eventIcon}`}
+                />{' '}
+                {event.location || 'Location TBD'}
+              </p>
+              <p className={styles.eventOrganizer}>
+                <FaUserAlt className={`${darkMode ? styles.eventIconDark : styles.eventIcon}`} />{' '}
+                {event.organizer || 'Organizer TBD'}
+              </p>
+            </CardBody>
+          </Card>
+        </Link>
       </Col>
     ));
   } else {
@@ -343,7 +347,7 @@ export function CPDashboard() {
       <Row>
         <Col md={3} className={`${styles.dashboardSidebar} ${darkMode ? styles.darkSidebar : ''}`}>
           <div className={styles.filterSection}>
-            <h4>Search Filters</h4>
+            <h4 className={styles.sidebarTitle}>Search Filters</h4>
             <div className={styles.filterSectionDivider}>
               <div className={styles.filterItem}>
                 <label htmlFor="date-tomorrow"> Dates</label>
@@ -443,13 +447,8 @@ export function CPDashboard() {
           </div>
         </Col>
 
-        <Col md={9} className={`${styles.dashboardMain} ${darkMode ? styles.darkMain : ''}`}>
-          <div className={styles.eventsHeader}>
-            <h2 className={styles.sectionTitle}>Events</h2>
-            <Button color="primary" className={styles.showPastEventsBtn}>
-              Show Past Events
-            </Button>
-          </div>
+        <Col md={9} className={`${styles.dashboardMain}`}>
+          <h2 className={styles.sectionTitle}>Events</h2>
 
           <Row>{eventsContent}</Row>
 

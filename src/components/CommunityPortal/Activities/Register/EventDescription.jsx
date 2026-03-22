@@ -1,57 +1,3 @@
-// import React, { useState } from 'react';
-
-// function DescriptionSection() {
-//   // State to manage active tab
-//   const [activeTab, setActiveTab] = useState('Description');
-
-//   // Mock data for the Description section
-//   const descriptionData = [
-//     'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-//     'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-//     'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
-//   ];
-
-//   return (
-//     <div className="p-4">
-//       {/* Header Tabs */}
-//       <div className="flex space-x-4 border-b-2 border-gray-300 mb-4">
-//         <button
-//           onClick={() => setActiveTab('Description')}
-//           className={`px-4 py-2 font-bold ${
-//             activeTab === 'Description'
-//               ? 'text-blue-500 border-b-2 border-blue-500'
-//               : 'text-gray-500'
-//           }`}
-//         >
-//           Description
-//         </button>
-//         <button className="px-4 py-2 font-bold text-gray-500" disabled>
-//           Participates
-//         </button>
-//         <button className="px-4 py-2 font-bold text-gray-500" disabled>
-//           Comments
-//         </button>
-//         <button className="px-4 py-2 font-bold text-gray-500" disabled>
-//           FAQs
-//         </button>
-//       </div>
-
-//       {/* Tab Content */}
-//       {activeTab === 'Description' && (
-//         <div>
-//           {descriptionData.map((item, index) => (
-//             <p key={index} className="mb-2 text-gray-700">
-//               {item}
-//             </p>
-//           ))}
-//         </div>
-//       )}
-//     </div>
-//   );
-// }
-
-// export default DescriptionSection;
-
 import { useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import styles from './DescriptionSection.module.css';
@@ -103,8 +49,8 @@ function DescriptionSection({ activity, registrants = [] }) {
 
   const participantEntries = useMemo(() => {
     const baseParticipants =
-      Array.isArray(activity?.participants) && activity.participants.length
-        ? activity.participants
+      Array.isArray(activity?.resources) && activity.resources.length
+        ? activity.resources
         : DEFAULT_TAB_CONTENT.Participates;
 
     const dynamicEntries = registrants
@@ -144,7 +90,7 @@ function DescriptionSection({ activity, registrants = [] }) {
         return true;
       })
       .map(({ label, isNew }) => ({ label, isNew }));
-  }, [activity?.participants, registrants]);
+  }, [activity?.resources, registrants]);
 
   const commentEntries = useMemo(() => {
     if (Array.isArray(activity?.comments) && activity.comments.length) {
