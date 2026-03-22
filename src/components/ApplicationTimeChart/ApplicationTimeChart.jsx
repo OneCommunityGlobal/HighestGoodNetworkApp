@@ -202,7 +202,7 @@ function ApplicationTimeChart() {
         </h2>
 
         {/* Chart */}
-        <div className={styles.chartArea}>
+        <div className={styles.chartArea} ref={chartAreaRef}>
           {processedData.length > 0 ? (
             <>
               {/* Grid Lines */}
@@ -265,6 +265,9 @@ function ApplicationTimeChart() {
                     <div
                       className={`${styles.bar} ${darkMode ? styles.darkMode : ''}`}
                       style={{ width: `${(item.avgTime / maxTime) * 100}%` }}
+                      onMouseEnter={e => handleMouseEnter(e, item)}
+                      onMouseMove={e => handleMouseMove(e, item)}
+                      onMouseLeave={handleMouseLeave}
                     >
                       <div className={`${styles.dataLabel} ${darkMode ? styles.darkMode : ''}`}>
                         {item.formattedTime || `${Math.round(item.avgTime * 10) / 10} min`}
@@ -273,6 +276,22 @@ function ApplicationTimeChart() {
                   </div>
                 ))}
               </div>
+
+              {/* Tooltip */}
+              {tooltip.visible && (
+                <div className={styles.tooltip} style={tooltipStyle}>
+                  <div className={styles.tooltipRole}>{tooltip.role}</div>
+                  <div className={styles.tooltipDivider} />
+                  <div className={styles.tooltipRow}>
+                    <span className={styles.tooltipLabel}>Avg. Time</span>
+                    <span className={styles.tooltipValue}>{tooltip.avgTime} min</span>
+                  </div>
+                  <div className={styles.tooltipRow}>
+                    <span className={styles.tooltipLabel}>Applications</span>
+                    <span className={styles.tooltipValue}>{tooltip.count}</span>
+                  </div>
+                </div>
+              )}
 
               {/* X-axis Label */}
               <div className={`${styles.xAxisLabel} ${darkMode ? styles.darkMode : ''}`}>
