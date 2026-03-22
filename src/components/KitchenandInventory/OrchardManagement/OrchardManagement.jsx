@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './OrchardManagement.module.css';
 
-const OrchardItems = [
+const orchardItems = [
   {
     id: 1,
     name: 'Apple Tree (Honeycrisp)',
@@ -40,13 +40,13 @@ const OrchardItems = [
 ];
 
 const summaryCards = [
-  { title: 'Total Trees & Bushes', values: 5 },
-  { title: 'Pending Orders', values: 2 },
-  { title: 'Trimming Tasks', values: 4 },
-  { title: 'Expected Harves', values: 6 },
+  { title: 'Total Trees & Bushes', value: 5 },
+  { title: 'Pending Orders', value: 2 },
+  { title: 'Trimming Tasks', value: 4 },
+  { title: 'Expected Harvests', value: 6 },
 ];
 
-function calculateAgeinYears(plantedDate) {
+function calculateAgeInYears(plantedDate) {
   const planted = new Date(plantedDate);
   const today = new Date();
   const diffTime = today - planted;
@@ -64,9 +64,10 @@ function OrchardManagement() {
           Manage fruit trees, bushes, and orchard maintenance schedules
         </p>
       </div>
+
       <div className={styles.metricsGrid}>
         {summaryCards.map(card => (
-          <div key={card.title} className={styles.metricCards}>
+          <div key={card.title} className={styles.metricCard}>
             <p className={styles.metricTitle}>{card.title}</p>
             <h2 className={styles.metricValue}>{card.value}</h2>
           </div>
@@ -90,15 +91,53 @@ function OrchardManagement() {
           Harvest Calendar
         </button>
       </div>
+
       <div className={styles.inventorySection}>
         <div className={styles.inventoryHeader}>
           <div>
             <h3 className={styles.inventoryTitle}>Orchard Inventory</h3>
             <p className={styles.inventorySubtitle}>All trees and bushes in the orchard</p>
+          </div>
+          <button type="button" className={styles.addButton}>
+            + Add Tree/Bush
+          </button>
         </div>
-        <button type="button" className={styles.addButton}>
-          + Add Tree/Bush
-        </button>
+
+        <div className={styles.cardGrid}>
+          {orchardItems.map(item => (
+            <div key={item.id} className={styles.orchardCard}>
+              <div className={styles.cardTopRow}>
+                <div>
+                  <h4 className={styles.cardTitle}>{item.name}</h4>
+                  <p className={styles.cardLocation}>{item.location}</p>
+                </div>
+
+                <span
+                  className={`${styles.conditionTag} ${
+                    item.condition === 'excellent' ? styles.excellent : styles.good
+                  }`}
+                >
+                  {item.condition}
+                </span>
+              </div>
+
+              <div className={styles.cardDetails}>
+                <div>
+                  <p className={styles.detailLabel}>Planted</p>
+                  <p className={styles.detailValue}>{item.plantedDate}</p>
+                </div>
+                <div>
+                  <p className={styles.detailLabel}>Age</p>
+                  <p className={styles.detailValue}>{calculateAgeInYears(item.plantedDate)}</p>
+                </div>
+              </div>
+
+              <button type="button" className={styles.detailsButton}>
+                View Details
+              </button>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

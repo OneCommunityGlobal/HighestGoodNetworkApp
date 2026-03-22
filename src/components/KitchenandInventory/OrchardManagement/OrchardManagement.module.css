@@ -28,8 +28,8 @@
   margin-bottom: 24px;
 }
 
-.metricCards{
-  background: #ffffff;
+.metricCard{
+  background: #fff;
   border: 1px solid #dbe4d8;
   border-radius: 12px;
   padding: 18px;
@@ -57,7 +57,7 @@
 
 .navButton{
   border: 1px solid #d1d5db;
-  background: #ffffff;
+  background: #fff;
   color: #374151;
   border-radius: 999px;
   padding: 10px 16px;
@@ -73,7 +73,7 @@
 }
 
 .inventorySection{
-  background: #ffffff;
+  background: #fff;
   border: 1px solid #dbe4d8;
   border-radius: 16px;
   padding: 20px;
@@ -101,10 +101,118 @@
 .addButton{
   border: none;
   background: #4f9d5d;
-  color: #ffffff;
+  color: #fff;
   padding: 10px 16px;
   border-radius: 8px;
   cursor: pointer;
   font-weight: 600;
 }
 
+.cardGrid{
+  display:grid;
+  grid-template-columns: repeat(2, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.orchardCard {
+  border: 1px solid #dbe4d8;
+  border-radius: 14px;
+  padding: 16px;
+  background: #fcfdfb;
+}
+
+.cardTopRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.cardTitle {
+  margin: 0 0 4px;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.cardLocation {
+  margin: 0;
+  color: #6b7280;
+  font-size: 0.92rem;
+}
+
+.conditionTag {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: lowercase;
+}
+
+.excellent {
+  background: #e8f7e9;
+  color: #2f7a38;
+}
+
+.good {
+  background: #eef2ff;
+  color: #4f46e5;
+}
+
+.cardDetails {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.detailLabel {
+  margin: 0 0 4px;
+  font-size: 0.82rem;
+  color: #6b7280;
+}
+
+.detailValue {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.detailsButton {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+@media (width <= 1024px) {
+  .metricsGrid {
+    grid-template-columns: repeat(2, minmax(180px, 1fr));
+  }
+
+  .cardGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (width <= 640px) {
+  .container {
+    padding: 16px;
+  }
+
+  .metricsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .inventoryHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .cardDetails {
+    grid-template-columns: 1fr;
+  }
+}
