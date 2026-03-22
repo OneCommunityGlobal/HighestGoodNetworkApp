@@ -22,6 +22,7 @@ import { OverlayTrigger, Popover } from 'react-bootstrap';
 import WarningModal from '../../Warnings/modals/WarningModal';
 import BlueSquareEmailCCPopup from '../BlueSquareEmailCCPopup';
 import CcUserList from './CCUserList';
+import PropTypes from 'prop-types';
 
 const UserProfileModal = props => {
   const {
@@ -188,14 +189,43 @@ const UserProfileModal = props => {
     });
   };
 
-  const handleSubmitWarning = () => {
+  const handleSubmitWarning = (warningData = warningSelections) => {
     setShowWarningSpinner(true);
-    handleLogWarning(warningSelections);
+    handleLogWarning(warningData);
     modifyBlueSquares(id, dateStamp, summary, 'delete');
     // setShowWarningSpinner(false);
   };
+
+  const handleLoggingBothWarnings = () => {
+    // Handling both case when both Blue Square warning trackers have 1 or 0 warning occurrences logged for a user
+    const updatedSelections = specialWarnings.reduce((acc, specialWarning) => {
+      acc[specialWarning.title] = { warn: 'Log Warning', color: 'blue' };
+      return acc;
+    }, {});
+
+    updatedSelections.bothTriggered = true;
+
+    const issueBlueSquare = Object.entries(updatedSelections)
+      .filter(([key]) => key !== 'bothTriggered' && key !== 'issueBlueSquare')
+      .reduce((acc, [warningTitle, selection]) => {
+        acc[warningTitle] = selection?.warn === 'Issue Blue Square';
+        return acc;
+      }, {});
+
+    const finalSelections = {
+      ...updatedSelections,
+      issueBlueSquare,
+    };
+
+    handleSubmitWarning(finalSelections);
+  };
+
   const handleToggleLogWarning = warningData => {
     if (warningData === 'both') {
+      if(specialWarnings[0].warnings.length <= 1 && specialWarnings[1].warnings.length <= 1) {
+        handleLoggingBothWarnings()
+        return
+      }
       setDisplayBothModal(true);
       setWarningType({
         specialWarnings,
@@ -745,6 +775,16 @@ const handleCcListUpdate = () => {
       />
     </>
   );
+};
+
+UserProfileModal.propTypes = {
+  specialWarnings: PropTypes.arrayOf(
+    PropTypes.shape({
+      title: PropTypes.string,
+      warnings: PropTypes.arrayOf(PropTypes.string),
+      abbreviation: PropTypes.string
+    })
+  ),
 };
 
 export default connect(null, { hasPermission })(UserProfileModal);
