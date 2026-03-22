@@ -17,6 +17,8 @@ function ActivityList() {
   });
   const [locationSuggestions, setLocationSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [dateError, setDateError] = useState('');
+  const todayDate = new Date().toISOString().split('T')[0];
 
   useEffect(() => {
     if (darkMode) {
@@ -79,6 +81,27 @@ function ActivityList() {
 
   const handleFilterChange = e => {
     const { name, value } = e.target;
+    if (name === 'date') {
+      if (value) {
+        // Split Date
+        const [year, month, day] = value.split('-').map(Number);
+        const selectedDate = new Date(year, month - 1, day);
+
+        //today's date without timezone
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        if (selectedDate < today) {
+          setDateError(
+            'Past Activity Date Lookup is not supported. Please select today or a future date',
+          );
+        } else {
+          setDateError('');
+        }
+      } else {
+        setDateError('');
+      }
+    }
     setFilter({ ...filter, [name]: value });
 
     // Update location suggestions when location input changes
@@ -112,6 +135,7 @@ function ActivityList() {
     });
     setLocationSuggestions([]);
     setShowSuggestions(false);
+    setDateError('');
   };
 
   return (
@@ -119,92 +143,98 @@ function ActivityList() {
       <h1 className={`${styles.heading} ${darkMode ? 'text-light' : ''}`}>Activity List</h1>
 
       <div className={`${styles.filters} ${darkMode ? styles.darkModeFilters : ''}`}>
-        <label className={darkMode ? 'text-light' : ''}>
-          Type:
-          <input
-            type="text"
-            name="type"
-            value={filter.type}
-            onChange={handleFilterChange}
-            placeholder="Enter type"
-            className={darkMode ? styles.darkModeInput : ''}
-          />
-        </label>
-
-        <label className={darkMode ? 'text-light' : ''}>
-          Date:
-          <input
-            type="date"
-            name="date"
-            value={filter.date}
-            onChange={handleFilterChange}
-            className={darkMode ? styles.darkModeInput : ''}
-          />
-        </label>
-
-        <label className={darkMode ? 'text-light' : ''}>
-          Location:
-          <div style={{ position: 'relative' }}>
+        <div className={styles.filterInputsRow}>
+          <label className={darkMode ? 'text-light' : ''}>
+            Type:
             <input
               type="text"
-              name="location"
-              value={filter.location}
+              name="type"
+              value={filter.type}
               onChange={handleFilterChange}
-              onFocus={() => {
-                if (filter.location) {
-                  const suggestions = getLocationSuggestions(filter.location);
-                  setLocationSuggestions(suggestions);
-                  setShowSuggestions(true);
-                }
-              }}
-              onBlur={() => {
-                // Delay to allow click on suggestion
-                setTimeout(() => setShowSuggestions(false), 200);
-              }}
-              placeholder="Enter location"
-              autoComplete="off"
+              placeholder="Enter type"
               className={darkMode ? styles.darkModeInput : ''}
             />
-            {showSuggestions && locationSuggestions.length > 0 && (
-              <div
-                className={`${styles.suggestions} ${darkMode ? styles.darkSuggestions : ''}`}
-                role="listbox"
-                aria-label="Location suggestions"
-              >
-                {locationSuggestions.map((location, index) => (
-                  <div
-                    key={index}
-                    className={styles.suggestionItem}
-                    role="option"
-                    tabIndex={0}
-                    aria-selected="false"
-                    onMouseDown={e => {
-                      e.preventDefault(); // Prevent blur from firing
-                      handleSuggestionClick(location);
-                    }}
-                    onKeyDown={e => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
+          </label>
+
+          <label className={darkMode ? 'text-light' : ''}>
+            Date:
+            <input
+              type="date"
+              name="date"
+              value={filter.date}
+              onChange={handleFilterChange}
+              min={todayDate}
+              className={darkMode ? styles.darkModeInput : ''}
+            />
+          </label>
+
+          <label className={darkMode ? 'text-light' : ''}>
+            Location:
+            <div style={{ position: 'relative' }}>
+              <input
+                type="text"
+                name="location"
+                value={filter.location}
+                onChange={handleFilterChange}
+                onFocus={() => {
+                  if (filter.location) {
+                    const suggestions = getLocationSuggestions(filter.location);
+                    setLocationSuggestions(suggestions);
+                    setShowSuggestions(true);
+                  }
+                }}
+                onBlur={() => {
+                  // Delay to allow click on suggestion
+                  setTimeout(() => setShowSuggestions(false), 200);
+                }}
+                placeholder="Enter location"
+                autoComplete="off"
+                className={darkMode ? styles.darkModeInput : ''}
+              />
+              {showSuggestions && locationSuggestions.length > 0 && (
+                <div
+                  className={`${styles.suggestions} ${darkMode ? styles.darkSuggestions : ''}`}
+                  role="listbox"
+                  aria-label="Location suggestions"
+                >
+                  {locationSuggestions.map((location, index) => (
+                    <div
+                      key={index}
+                      className={styles.suggestionItem}
+                      role="option"
+                      tabIndex={0}
+                      aria-selected="false"
+                      onMouseDown={e => {
+                        e.preventDefault(); // Prevent blur from firing
                         handleSuggestionClick(location);
-                      }
-                    }}
-                  >
-                    {location}
-                  </div>
-                ))}
-              </div>
-            )}
+                      }}
+                      onKeyDown={e => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          handleSuggestionClick(location);
+                        }
+                      }}
+                    >
+                      {location}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </label>
+          <div className={styles.clearButtonWrapper}>
+            <button
+              type="button"
+              onClick={handleClearFilters}
+              disabled={!filter.type && !filter.date && !filter.location}
+              className={styles.clearButton}
+            >
+              Clear All
+            </button>
           </div>
-        </label>
-        <div className={styles.clearButtonWrapper}>
-          <button
-            type="button"
-            onClick={handleClearFilters}
-            disabled={!filter.type && !filter.date && !filter.location}
-            className={styles.clearButton}
-          >
-            Clear All
-          </button>
+        </div>
+        <div className={styles.errorContainer}>
+          {dateError && <p className={styles.errorMessage}>{dateError}</p>}
         </div>
       </div>
       <div className={`${styles.activityList} ${darkMode ? styles.darkModeList : ''}`}>
