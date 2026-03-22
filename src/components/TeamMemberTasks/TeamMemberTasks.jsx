@@ -1,35 +1,33 @@
 // TeamMemberTasks.jsx
-import React, { Fragment, useEffect, useState, useCallback } from 'react';
-import hasPermission from '~/utils/permissions';
 import { faClock } from '@fortawesome/free-solid-svg-icons';
-import { Table, Row, Col } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { fetchTeamMembersTask, deleteTaskNotification } from '~/actions/task';
-import { useDispatch, useSelector, connect } from 'react-redux';
-import { MultiSelect } from 'react-multi-select-component';
-import SkeletonLoading from '../common/SkeletonLoading';
-import { TaskDifferenceModal } from './components/TaskDifferenceModal';
-import styles from './style.module.css';
-import TaskCompletedModal from './components/TaskCompletedModal';
-import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
 import axios from 'axios';
 import moment from 'moment';
-import TeamMemberTask from './TeamMemberTask';
-import TimeEntry from '../Timelog/TimeEntry';
-import { hrsFilterBtnColorMap } from '~/constants/colors';
+import React, { Fragment, useCallback, useEffect, useState } from 'react';
+import { MultiSelect } from 'react-multi-select-component';
+import { connect, useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
+import { Col, Row, Table } from 'reactstrap';
+import { deleteTaskNotification, fetchTeamMembersTask } from '~/actions/task';
+import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
+import { hrsFilterBtnColorMap } from '~/constants/colors';
 import { fetchAllFollowUps } from '../../actions/followUpActions';
+import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
+import SkeletonLoading from '../common/SkeletonLoading';
+import TimeEntry from '../Timelog/TimeEntry';
 import { fetchTeamMembersTaskSuccess } from './actions';
+import TaskCompletedModal from './components/TaskCompletedModal';
+import { TaskDifferenceModal } from './components/TaskDifferenceModal';
+import styles from './style.module.css';
+import TeamMemberTask from './TeamMemberTask';
 
-import { ENDPOINTS } from '~/utils/URL';
 import { FaCalendarAlt, FaClock } from 'react-icons/fa';
+import { ENDPOINTS } from '~/utils/URL';
 
 const TeamMemberTasks = React.memo(props => {
   const {
     authUser,
     displayUser,
-    isLoading,
     usersWithTasks,
     usersWithTimeEntries,
     darkMode,
@@ -51,9 +49,6 @@ const TeamMemberTasks = React.memo(props => {
   const [isTimeFilterActive, setIsTimeFilterActive] = useState(false);
   const [taskModalOption, setTaskModalOption] = useState('');
   const [showWhoHasTimeOff, setShowWhoHasTimeOff] = useState(true);
-  const [userStateCatalog, setUserStateCatalog] = useState([]);
-  const [userStateSelectionsByUserId, setUserStateSelectionsByUserId] = useState({});
-  const [canManageUserStateIndicator, setCanManageUserStateIndicator] = useState(false);
 
   const userOnTimeOff = useSelector(state => state.timeOffRequests.onTimeOff);
   const userGoingOnTimeOff = useSelector(state => state.timeOffRequests.goingOnTimeOff);
@@ -70,6 +65,28 @@ const TeamMemberTasks = React.memo(props => {
   const [, setInnerWidth] = useState();
   const [controlUseEfffect] = useState(false);
 
+  const [userStateCatalog, setUserStateCatalog] = useState([]);
+  const [userStateSelections, setUserStateSelections] = useState({});
+
+  useEffect(() => {
+    axios
+      .get(ENDPOINTS.USER_STATE_CATALOG)
+      .then(res => setUserStateCatalog(res.data.items || []))
+      .catch(() => setUserStateCatalog([]));
+  }, []);
+
+  // Fetch all selections in ONE call once teamList is ready
+  useEffect(() => {
+    if (teamList.length === 0) return;
+    const userIds = teamList.map(u => u.personId);
+    const result = axios.post(ENDPOINTS.USER_STATE_SELECTIONS_BATCH, { userIds });
+    if (result && typeof result.then === 'function') {
+      result
+        .then(res => setUserStateSelections(res.data.selections || {}))
+        .catch(() => setUserStateSelections({}));
+    }
+  }, [teamList]);
+
   // Keep width reactive without putting window.innerWidth in deps (which never triggers)
   useEffect(() => {
     const handleResize = () => setInnerWidth(window.innerWidth);
@@ -79,10 +96,6 @@ const TeamMemberTasks = React.memo(props => {
   }, []);
 
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    setCanManageUserStateIndicator(dispatch(hasPermission('manage_user_state_indicator')));
-  }, [dispatch]);
 
   useEffect(() => {
     dispatch(getAllTimeOffRequests());
@@ -103,16 +116,6 @@ const TeamMemberTasks = React.memo(props => {
       toast.error('Failed to update task');
     }
   };
-
-  const fetchUserStateCatalog = useCallback(async () => {
-    try {
-      const res = await axios.get(ENDPOINTS.USER_STATE_CATALOG);
-      setUserStateCatalog(res.data.items || []);
-    } catch (error) {
-      toast.error('Failed to fetch user state catalog');
-      setUserStateCatalog([]);
-    }
-  }, []);
 
   const onUpdateTask = useCallback(
     (taskId, updatedTask) => {
@@ -283,10 +286,6 @@ const TeamMemberTasks = React.memo(props => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filteredUserTeamIds]);
 
-  useEffect(() => {
-    fetchUserStateCatalog();
-  }, [fetchUserStateCatalog]);
-
   const renderTeamsList = async team => {
     if (!team) {
       if (usersWithTasks.length > 0) {
@@ -311,44 +310,6 @@ const TeamMemberTasks = React.memo(props => {
       setTeamList(usersTask);
     }
   };
-
-  const fetchUserStateSelections = useCallback(async users => {
-    if (!users || users.length === 0) {
-      setUserStateSelectionsByUserId({});
-      return;
-    }
-
-    const BATCH_SIZE = 20;
-    const selectionMap = {};
-
-    try {
-      for (let i = 0; i < users.length; i += BATCH_SIZE) {
-        const batch = users.slice(i, i + BATCH_SIZE);
-
-        const results = await Promise.allSettled(
-          batch.map(user =>
-            axios.get(ENDPOINTS.USER_STATE_SELECTION(user.personId)).then(res => ({
-              userId: user.personId,
-              stateIndicators: res.data.stateIndicators || [],
-            })),
-          ),
-        );
-
-        results.forEach(result => {
-          if (result.status === 'fulfilled') {
-            selectionMap[result.value.userId] = result.value.stateIndicators;
-          }
-        });
-
-        setUserStateSelectionsByUserId(prev => ({
-          ...prev,
-          ...selectionMap,
-        }));
-      }
-    } catch (error) {
-      toast.error('Failed to fetch user state selections');
-    }
-  }, []);
 
   const filteredTeamRoles = teams => {
     const roles = {};
@@ -432,15 +393,6 @@ const TeamMemberTasks = React.memo(props => {
     };
     initialFetching();
   }, [dispatch, displayUser]);
-
-  useEffect(() => {
-    if (teamList.length > 0) {
-      setUserStateSelectionsByUserId({});
-      fetchUserStateSelections(teamList);
-    } else {
-      setUserStateSelectionsByUserId({});
-    }
-  }, [teamList, fetchUserStateSelections]);
 
   useEffect(() => {
     if (clickedToShowModal) setMarkAsDoneModal(true);
@@ -841,8 +793,11 @@ const TeamMemberTasks = React.memo(props => {
                         goingOnTimeOff={userGoingOnTimeOff[user.personId]}
                         displayUser={displayUser}
                         userStateCatalog={userStateCatalog}
-                        userStateSelection={userStateSelectionsByUserId[user.personId] || []}
-                        canManageUserStateIndicator={canManageUserStateIndicator}
+                        onCatalogChange={setUserStateCatalog}
+                        userStateSelection={userStateSelections[user.personId] || []}
+                        onSelectionChange={(uid, updated) =>
+                          setUserStateSelections(prev => ({ ...prev, [uid]: updated }))
+                        }
                       />
                     );
                   }
@@ -870,8 +825,11 @@ const TeamMemberTasks = React.memo(props => {
                         onTimeOff={userOnTimeOff[user.personId]}
                         goingOnTimeOff={userGoingOnTimeOff[user.personId]}
                         userStateCatalog={userStateCatalog}
-                        userStateSelection={userStateSelectionsByUserId[user.personId] || []}
-                        canManageUserStateIndicator={canManageUserStateIndicator}
+                        onCatalogChange={setUserStateCatalog}
+                        userStateSelection={userStateSelections[user.personId] || []}
+                        onSelectionChange={(uid, updated) =>
+                          setUserStateSelections(prev => ({ ...prev, [uid]: updated }))
+                        }
                       />
 
                       {timeEntriesList.length > 0 &&

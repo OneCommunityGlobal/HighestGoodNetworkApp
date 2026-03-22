@@ -27,6 +27,22 @@ export default function SelectItem({
           ),
         ];
       }
+    } else if (label === 'Consumables') {
+      // --- FIX: Added logic for Consumables ---
+      if (selectedProject === 'all') {
+        // Uses the 'name' field we flattened in the parent component
+        itemSet = [...new Set(items.filter(m => m.name && m.name !== 'N/A').map(m => m.name))];
+      } else {
+        itemSet = [
+          ...new Set(
+            items
+              .filter(
+                mat => mat.project?.name === selectedProject && mat.name && mat.name !== 'N/A',
+              )
+              .map(m => m.name),
+          ),
+        ];
+      }
     } else if (label === 'Tool Status') {
       itemSet = ['Using', 'Available', 'Under Maintenance'];
     } else if (label === 'Condition') {
