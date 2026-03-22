@@ -12,6 +12,7 @@ import {
   FormGroup,
   Label,
 } from 'reactstrap';
+import Select from 'react-select';
 import { FaCalendarAlt, FaMapMarkerAlt, FaUserAlt, FaSearch, FaTimes } from 'react-icons/fa';
 import styles from './CPDashboard.module.css';
 import { ENDPOINTS } from '../../utils/URL';
@@ -81,6 +82,9 @@ export function CPDashboard() {
   const [error, setError] = useState(null);
   const [failedLogos, setFailedLogos] = useState(new Set());
   const darkMode = useSelector(state => state.theme.darkMode);
+  const branchOptions = [{ value: '', label: 'Select branches', isDisabled: true }];
+  const themeOptions = [{ value: '', label: 'Select themes', isDisabled: true }];
+  const categoryOptions = [{ value: '', label: 'Select categories', isDisabled: true }];
   const [pagination, setPagination] = useState({
     currentPage: 1,
     totalPages: 5,
@@ -421,23 +425,41 @@ export function CPDashboard() {
 
               <div className={styles.filterItem}>
                 <label htmlFor="branches">Branches</label>
-                <Input type="select">
-                  <option>Select branches</option>
-                </Input>
+                <Select
+                  inputId="branches"
+                  classNamePrefix="cp-dashboard-filter"
+                  options={branchOptions}
+                  placeholder="Select branches"
+                  isSearchable={false}
+                  menuShouldBlockScroll={false}
+                  menuPlacement="auto"
+                />
               </div>
 
               <div className={styles.filterItem}>
                 <label htmlFor="themes">Themes</label>
-                <Input type="select">
-                  <option>Select themes</option>
-                </Input>
+                <Select
+                  inputId="themes"
+                  classNamePrefix="cp-dashboard-filter"
+                  options={themeOptions}
+                  placeholder="Select themes"
+                  isSearchable={false}
+                  menuShouldBlockScroll={false}
+                  menuPlacement="auto"
+                />
               </div>
 
               <div className={styles.filterItem}>
                 <label htmlFor="categories">Categories</label>
-                <Input type="select">
-                  <option>Select categories</option>
-                </Input>
+                <Select
+                  inputId="categories"
+                  classNamePrefix="cp-dashboard-filter"
+                  options={categoryOptions}
+                  placeholder="Select categories"
+                  isSearchable={false}
+                  menuShouldBlockScroll={false}
+                  menuPlacement="auto"
+                />
               </div>
             </div>
           </div>
