@@ -12,18 +12,20 @@ export const ENDPOINTS = {
   USER_PROFILE_UPDATE: `${APIEndpoint}/userprofile/update`,
   ADD_BLUE_SQUARE: userId => `${APIEndpoint}/userprofile/${userId}/addInfringement`,
 
-  TOP_CONVERTED: (limit, startDate, endDate) =>
-    `${APIEndpoint}/job-analytics/top-converted?limit=${limit}${
+  TOP_CONVERTED: (limit, startDate, endDate) => {
+    const dateParams =
       startDate && endDate
         ? `&startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`
-        : ''
-    }`,
-  LEAST_CONVERTED: (limit, startDate, endDate) =>
-    `${APIEndpoint}/job-analytics/least-converted?limit=${limit}${
+        : '';
+    return `${APIEndpoint}/job-analytics/top-converted?limit=${limit}${dateParams}`;
+  },
+  LEAST_CONVERTED: (limit, startDate, endDate) => {
+    const dateParams =
       startDate && endDate
         ? `&startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`
-        : ''
-    }`,
+        : '';
+    return `${APIEndpoint}/job-analytics/least-converted?limit=${limit}${dateParams}`;
+  },
 
   MODIFY_BLUE_SQUARE: (userId, blueSquareId) =>
     `${APIEndpoint}/userprofile/${userId}/infringements/${blueSquareId}`,
@@ -465,6 +467,7 @@ export const ENDPOINTS = {
 
   // event endpoint
   EVENTS: `${APIEndpoint}/events`,
+  EVENT_BY_ID: id => `${APIEndpoint}/events/${id}`,
   EVENT_TYPES: `${APIEndpoint}/events/types`,
   EVENT_LOCATIONS: `${APIEndpoint}/events/locations`,
   EVENT_ATTENDANCE_STATS: `${APIEndpoint}/events/attendance/stats`,

@@ -182,10 +182,6 @@ import StudentTasks from './components/EductionPortal/StudentTasks/StudentTasks'
 import TaskDetails from './components/EductionPortal/StudentTasks/TaskDetails';
 
 import PRReviewTeamAnalytics from './components/HGNPRDashboard/PRReviewTeamAnalytics';
-import PRDashboardOverview from './components/HGNPRDashboard/PRDashboardOverview';
-import PRDashboardPromotionEligibility from './components/HGNPRDashboard/PRDashboardPromotionEligibility';
-import PRDashboardTopReviewedPRs from './components/HGNPRDashboard/PRDashboardTopReviewedPRs';
-import PRDashboardDetails from './components/HGNPRDashboard/PRDashboardDetails';
 import PromotionEligibility from './components/HGNPRDashboard/PromotionEligibility';
 import PRPromotionsPage from './components/PRPromotions/PRPromotionsPage';
 import ReviewersStackedBarChart from './components/HGNPRDashboard/ReviewersStackedBarChart/ReviewersStackedBarChart';
@@ -879,6 +875,11 @@ export default (
           component={ResourceUsage}
         />
         <CPProtectedRoute
+          path="/communityportal/activity/:activityid"
+          exact
+          component={ActivityAgenda}
+        />
+        <CPProtectedRoute
           path="/communityportal/database/design"
           exact
           component={DatabaseDesign}
@@ -988,18 +989,10 @@ export default (
           component={PRGradingDashboard}
           fallback
         />
-        <ProtectedRoute path="/pr-dashboard/overview" exact component={PRDashboardOverview} />
-        <ProtectedRoute
-          path="/pr-dashboard/promotion-eligibility"
-          exact
-          component={PRDashboardPromotionEligibility}
-        />
-        <ProtectedRoute
-          path="/pr-dashboard/top-reviewed-prs"
-          exact
-          component={PRDashboardTopReviewedPRs}
-        />
-        <ProtectedRoute path="/pr-dashboard/details" exact component={PRDashboardDetails} />
+        <ProtectedRoute path="/pr-dashboard/overview" exact component={PRDashboard} />
+        <ProtectedRoute path="/pr-dashboard/promotion-eligibility" exact component={PRDashboard} />
+        <ProtectedRoute path="/pr-dashboard/top-reviewed-prs" exact component={PRDashboard} />
+        <ProtectedRoute path="/pr-dashboard/details" exact component={PRDashboard} />
         <Route path="*" component={NotFoundPage} />
       </Switch>
     </>
