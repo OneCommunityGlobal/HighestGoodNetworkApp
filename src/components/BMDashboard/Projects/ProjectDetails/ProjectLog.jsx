@@ -249,7 +249,8 @@ function ProjectLog({ projectId, darkMode }) {
                 onClick={() => handleSort('todaysHrs')}
                 style={{ cursor: 'pointer', whiteSpace: 'nowrap' }}
               >
-                Today's Hrs <FontAwesomeIcon icon={getSortIcon('todaysHrs')} className="ml-1" />
+                Today&apos;s Hrs{' '}
+                <FontAwesomeIcon icon={getSortIcon('todaysHrs')} className="ml-1" />
               </th>
             </tr>
             <tr>
