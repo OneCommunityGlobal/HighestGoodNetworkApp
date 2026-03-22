@@ -126,9 +126,7 @@
 
 .yAxis {
   position: absolute;
-  left: 0;
-  top: 20px;
-  bottom: 40px;
+  inset: 20px auto 40px 0;
   width: 130px;
   display: flex;
   flex-direction: column;
