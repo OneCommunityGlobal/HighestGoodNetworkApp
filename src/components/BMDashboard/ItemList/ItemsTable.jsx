@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Table, Button, Badge } from 'reactstrap';
 import { BiPencil } from 'react-icons/bi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSortDown, faSort, faSortUp } from '@fortawesome/free-solid-svg-icons';
 import RecordsModal from './RecordsModal';
 import MaterialUsageChart from '../MaterialUsage/MaterialUsageChart';
+import MaterialSummaryCards from '../MaterialList/MaterialSummaryCards';
 import styles from './ItemListView.module.css';
 
 export default function ItemsTable({
@@ -32,11 +33,11 @@ export default function ItemsTable({
     iconsToDisplay: faSort,
     sortOrder: 'default',
   });
-
   const [boughtCol, setBoughtCol] = useState({ iconsToDisplay: faSort, sortOrder: 'default' });
   const [usedCol, setUsedCol] = useState({ iconsToDisplay: faSort, sortOrder: 'default' });
   const [availableCol, setAvailableCol] = useState({
     iconsToDisplay: faSort,
+    sortOrder: 'default',
   });
   const [wastedCol, setWastedCol] = useState({ iconsToDisplay: faSort, sortOrder: 'default' });
 
@@ -48,6 +49,14 @@ export default function ItemsTable({
     setInventoryItemTypeCol({ iconsToDisplay: faSort, sortOrder: 'default' });
     setProjectNameCol({ iconsToDisplay: faSort, sortOrder: 'default' });
   }, [selectedProject, selectedItem]);
+
+  const summaryStats = useMemo(() => {
+    if (itemType !== 'Materials') return null;
+    const activeMaterials = sortedData.length;
+    const lowStockCount = sortedData.filter(m => m.isLowStock).length;
+    const totalWasted = sortedData.reduce((acc, m) => acc + (Number(m.stockWasted) || 0), 0);
+    return { activeMaterials, lowStockCount, totalWasted: totalWasted.toFixed(2) };
+  }, [sortedData, itemType]);
 
   const handleEditRecordsClick = (selectedEl, type) => {
     if (type === 'Update') {
@@ -85,7 +94,7 @@ export default function ItemsTable({
       if (projectNameCol.sortOrder === 'default' || projectNameCol.sortOrder === 'desc') {
         newSortedData.sort((a, b) => (a.project?.name || '').localeCompare(b.project?.name || ''));
         setProjectNameCol({ iconsToDisplay: faSortUp, sortOrder: 'asc' });
-      } else if (projectNameCol.sortOrder === 'asc') {
+      } else {
         newSortedData.sort((a, b) => (b.project?.name || '').localeCompare(a.project?.name || ''));
         setProjectNameCol({ iconsToDisplay: faSortDown, sortOrder: 'desc' });
       }
@@ -99,67 +108,61 @@ export default function ItemsTable({
           (a.itemType?.name || '').localeCompare(b.itemType?.name || ''),
         );
         setInventoryItemTypeCol({ iconsToDisplay: faSortUp, sortOrder: 'asc' });
-      } else if (inventoryItemTypeCol.sortOrder === 'asc') {
+      } else {
         newSortedData.sort((a, b) =>
           (b.itemType?.name || '').localeCompare(a.itemType?.name || ''),
         );
         setInventoryItemTypeCol({ iconsToDisplay: faSortDown, sortOrder: 'desc' });
       }
       setProjectNameCol({ iconsToDisplay: faSort, sortOrder: 'default' });
-    }
-    // Sorting for Bought
-    if (columnName === 'Bought') {
-      if (boughtCol.sortOrder === 'default' || boughtCol.sortOrder === 'desc') {
-        newSortedData.sort((a, b) => (a.stockBought || 0) - (b.stockBought || 0));
-        setBoughtCol({ iconsToDisplay: faSortUp, sortOrder: 'asc' });
-      } else {
-        newSortedData.sort((a, b) => (b.stockBought || 0) - (a.stockBought || 0));
-        setBoughtCol({ iconsToDisplay: faSortDown, sortOrder: 'desc' });
-      }
+    } else if (columnName === 'Bought') {
+      newSortedData.sort((a, b) =>
+        boughtCol.sortOrder === 'asc'
+          ? b.stockBought - a.stockBought
+          : a.stockBought - b.stockBought,
+      );
+      setBoughtCol({
+        iconsToDisplay: boughtCol.sortOrder === 'asc' ? faSortDown : faSortUp,
+        sortOrder: boughtCol.sortOrder === 'asc' ? 'desc' : 'asc',
+      });
       resetOtherDynamicColumns('Bought');
-    }
-
-    // Sorting for Used
-    if (columnName === 'Used') {
-      if (usedCol.sortOrder === 'default' || usedCol.sortOrder === 'desc') {
-        newSortedData.sort((a, b) => (a.stockUsed || 0) - (b.stockUsed || 0));
-        setUsedCol({ iconsToDisplay: faSortUp, sortOrder: 'asc' });
-      } else {
-        newSortedData.sort((a, b) => (b.stockUsed || 0) - (a.stockUsed || 0));
-        setUsedCol({ iconsToDisplay: faSortDown, sortOrder: 'desc' });
-      }
+    } else if (columnName === 'Used') {
+      newSortedData.sort((a, b) =>
+        usedCol.sortOrder === 'asc' ? b.stockUsed - a.stockUsed : a.stockUsed - b.stockUsed,
+      );
+      setUsedCol({
+        iconsToDisplay: usedCol.sortOrder === 'asc' ? faSortDown : faSortUp,
+        sortOrder: usedCol.sortOrder === 'asc' ? 'desc' : 'asc',
+      });
       resetOtherDynamicColumns('Used');
-    }
-
-    // Sorting for Available
-    if (columnName === 'Available') {
-      if (availableCol.sortOrder === 'default' || availableCol.sortOrder === 'desc') {
-        newSortedData.sort((a, b) => (a.stockAvailable || 0) - (b.stockAvailable || 0));
-        setAvailableCol({ iconsToDisplay: faSortUp, sortOrder: 'asc' });
-      } else {
-        newSortedData.sort((a, b) => (b.stockAvailable || 0) - (a.stockAvailable || 0));
-        setAvailableCol({ iconsToDisplay: faSortDown, sortOrder: 'desc' });
-      }
+    } else if (columnName === 'Available') {
+      newSortedData.sort((a, b) =>
+        availableCol.sortOrder === 'asc'
+          ? b.stockAvailable - a.stockAvailable
+          : a.stockAvailable - b.stockAvailable,
+      );
+      setAvailableCol({
+        iconsToDisplay: availableCol.sortOrder === 'asc' ? faSortDown : faSortUp,
+        sortOrder: availableCol.sortOrder === 'asc' ? 'desc' : 'asc',
+      });
       resetOtherDynamicColumns('Available');
-    }
-
-    // Sorting for Wasted
-    if (columnName === 'Wasted') {
-      if (wastedCol.sortOrder === 'default' || wastedCol.sortOrder === 'desc') {
-        newSortedData.sort((a, b) => (a.stockWasted || 0) - (b.stockWasted || 0));
-        setWastedCol({ iconsToDisplay: faSortUp, sortOrder: 'asc' });
-      } else {
-        newSortedData.sort((a, b) => (b.stockWasted || 0) - (a.stockWasted || 0));
-        setWastedCol({ iconsToDisplay: faSortDown, sortOrder: 'desc' });
-      }
+    } else if (columnName === 'Wasted') {
+      newSortedData.sort((a, b) =>
+        wastedCol.sortOrder === 'asc'
+          ? b.stockWasted - a.stockWasted
+          : a.stockWasted - b.stockWasted,
+      );
+      setWastedCol({
+        iconsToDisplay: wastedCol.sortOrder === 'asc' ? faSortDown : faSortUp,
+        sortOrder: wastedCol.sortOrder === 'asc' ? 'desc' : 'asc',
+      });
       resetOtherDynamicColumns('Wasted');
     }
     setData(newSortedData);
   };
 
-  const getNestedValue = (obj, path) => {
-    return path.split('.').reduce((acc, part) => (acc ? acc[part] : null), obj);
-  };
+  const getNestedValue = (obj, path) =>
+    path.split('.').reduce((acc, part) => (acc ? acc[part] : null), obj);
 
   const stickyHeaderStyle = {
     position: 'sticky',
@@ -170,7 +173,7 @@ export default function ItemsTable({
     verticalAlign: 'middle',
   };
 
-  const numericHeaderStyle = { ...stickyHeaderStyle, textAlign: 'right' };
+  const numericHeaderStyle = { ...stickyHeaderStyle, textAlign: 'right', cursor: 'pointer' };
   const numericCellStyle = { textAlign: 'right', verticalAlign: 'middle' };
 
   const actionHeaderStyle = {
@@ -222,6 +225,8 @@ export default function ItemsTable({
 
       <UpdateItemModal modal={updateModal} setModal={setUpdateModal} record={updateRecord} />
 
+      {itemType === 'Materials' && summaryStats && <MaterialSummaryCards stats={summaryStats} />}
+
       <div
         className={`${styles.itemsTableContainer} ${darkMode ? styles.darkTableWrapper : ''}`}
         style={{ maxHeight: '75vh', overflowY: 'auto', position: 'relative' }}
@@ -230,14 +235,20 @@ export default function ItemsTable({
           <thead>
             <tr>
               {selectedProject === 'all' ? (
-                <th onClick={() => sortData('ProjectName')} style={stickyHeaderStyle}>
+                <th
+                  onClick={() => sortData('ProjectName')}
+                  style={{ ...stickyHeaderStyle, cursor: 'pointer' }}
+                >
                   Project <FontAwesomeIcon icon={projectNameCol.iconsToDisplay} size="lg" />
                 </th>
               ) : (
                 <th style={stickyHeaderStyle}>Project</th>
               )}
               {selectedItem === 'all' ? (
-                <th onClick={() => sortData('InventoryItemType')} style={stickyHeaderStyle}>
+                <th
+                  onClick={() => sortData('InventoryItemType')}
+                  style={{ ...stickyHeaderStyle, cursor: 'pointer' }}
+                >
                   Name <FontAwesomeIcon icon={inventoryItemTypeCol.iconsToDisplay} size="lg" />
                 </th>
               ) : (
@@ -281,66 +292,77 @@ export default function ItemsTable({
           </thead>
           <tbody>
             {sortedData && sortedData.length > 0 ? (
-              sortedData.map(el => {
-                return (
-                  <tr key={el._id}>
-                    <td style={{ verticalAlign: 'middle' }}>{el.project?.name}</td>
-                    <td style={{ verticalAlign: 'middle' }}>{el.itemType?.name}</td>
+              sortedData.map(el => (
+                <tr key={el._id}>
+                  <td style={{ verticalAlign: 'middle' }}>{el.project?.name}</td>
+                  <td style={{ verticalAlign: 'middle' }}>{el.itemType?.name}</td>
+                  {dynamicColumns.map(({ label, key }) => {
+                    const value = getNestedValue(el, key);
+                    const isNumeric = [
+                      'stockBought',
+                      'stockUsed',
+                      'stockAvailable',
+                      'stockWasted',
+                    ].includes(key);
 
-                    {dynamicColumns.map(({ label, key }) => {
-                      const value = getNestedValue(el, key);
-                      const isNumeric = [
-                        'stockBought',
-                        'stockUsed',
-                        'stockAvailable',
-                        'stockWasted',
-                      ].includes(key);
-
-                      if (key === 'stockAvailable') {
-                        const isLowStock = Number(value) < 10;
-                        return (
-                          <td key={label} style={numericCellStyle}>
-                            {isLowStock && (
-                              <Badge
-                                color="danger"
-                                pill
-                                className="mr-2"
-                                style={{ marginRight: '8px' }}
-                              >
-                                Low
-                              </Badge>
-                            )}
-                            {value}
-                          </td>
-                        );
-                      }
-
+                    if (itemType === 'Materials' && key === 'stockAvailable') {
                       return (
                         <td
                           key={label}
-                          style={isNumeric ? numericCellStyle : { verticalAlign: 'middle' }}
+                          style={
+                            el.isLowStock
+                              ? { ...numericCellStyle, backgroundColor: 'rgba(220, 53, 69, 0.1)' }
+                              : numericCellStyle
+                          }
+                        >
+                          {el.isLowStock && (
+                            <Badge color="danger" pill className="mr-2">
+                              Low
+                            </Badge>
+                          )}
+                          {value}
+                        </td>
+                      );
+                    }
+                    if (itemType === 'Materials' && key === 'wastePct') {
+                      const wasteNum = parseFloat(value);
+                      return (
+                        <td
+                          key={label}
+                          style={
+                            wasteNum > 15
+                              ? { ...numericCellStyle, color: '#dc3545', fontWeight: 'bold' }
+                              : numericCellStyle
+                          }
                         >
                           {value}
                         </td>
                       );
-                    })}
-
-                    {renderActionCell(el, 'UsageRecord', actionCellStyle, true)}
-                    {renderActionCell(
-                      el,
-                      'Update',
-                      { textAlign: 'center', verticalAlign: 'middle' },
-                      true,
-                    )}
-                    {renderActionCell(
-                      el,
-                      'Purchase',
-                      { textAlign: 'center', verticalAlign: 'middle' },
-                      false,
-                    )}
-                  </tr>
-                );
-              })
+                    }
+                    return (
+                      <td
+                        key={label}
+                        style={isNumeric ? numericCellStyle : { verticalAlign: 'middle' }}
+                      >
+                        {value}
+                      </td>
+                    );
+                  })}
+                  {renderActionCell(el, 'UsageRecord', actionCellStyle, true)}
+                  {renderActionCell(
+                    el,
+                    'Update',
+                    { textAlign: 'center', verticalAlign: 'middle' },
+                    true,
+                  )}
+                  {renderActionCell(
+                    el,
+                    'Purchase',
+                    { textAlign: 'center', verticalAlign: 'middle' },
+                    false,
+                  )}
+                </tr>
+              ))
             ) : (
               <tr>
                 <td colSpan={11} style={{ textAlign: 'center' }}>

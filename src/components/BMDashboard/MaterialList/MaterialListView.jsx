@@ -1,6 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Container, Row, Col, Input, Button, InputGroup, InputGroupAddon } from 'reactstrap';
+import {
+  Container,
+  Input,
+  Button,
+  InputGroup,
+  InputGroupAddon,
+  FormGroup,
+  Label,
+} from 'reactstrap';
 import { fetchAllMaterials, resetMaterialUpdate } from '~/actions/bmdashboard/materialsActions';
 import ItemListView from '../ItemList/ItemListView';
 import UpdateMaterialModal from '../UpdateMaterials/UpdateMaterialModal';
@@ -11,18 +19,8 @@ function MaterialListView() {
   const errors = useSelector(state => state.errors);
   const postMaterialUpdateResult = useSelector(state => state.materials.updateMaterials);
 
-  // Search State
   const [searchTerm, setSearchTerm] = useState('');
-
-  // Data Transformation
-  const transformedMaterials =
-    materials?.map(material => ({
-      ...material,
-      'product id': material._id,
-      projectName: material.project?.name || 'N/A',
-      name: material.itemType?.name || 'Unnamed Material',
-      unit: material.itemType?.unit || '',
-    })) || [];
+  const [showOnlyLowStock, setShowOnlyLowStock] = useState(false);
 
   useEffect(() => {
     dispatch(fetchAllMaterials());
@@ -37,77 +35,88 @@ function MaterialListView() {
     }
   }, [postMaterialUpdateResult, dispatch]);
 
-  const handleSearch = e => {
-    setSearchTerm(e.target.value);
-  };
+  const transformedMaterials = useMemo(() => {
+    return (materials || []).map(material => {
+      const bought = material.stockBought || 0;
+      const available = material.stockAvailable || 0;
+      const wasted = material.stockWasted || 0;
+      const isLowStock = bought > 0 && available < 0.2 * bought;
+      const wastePercentage = bought > 0 ? ((wasted / bought) * 100).toFixed(2) : '0.00';
 
-  const handleClearSearch = () => {
-    setSearchTerm('');
-  };
+      return {
+        ...material,
+        id: material._id,
+        'product id': material._id,
+        projectName: material.project?.name || 'N/A',
+        name: material.itemType?.name || 'Unnamed Material',
+        unit: material.itemType?.unit || '',
+        wastePct: `${wastePercentage}%`,
+        isLowStock,
+      };
+    });
+  }, [materials]);
 
-  // Filter Logic
-  const filteredMaterials = transformedMaterials.filter(item => {
-    if (!searchTerm) return true;
-    const lowerTerm = searchTerm.toLowerCase();
-
-    return (
-      item.name.toLowerCase().includes(lowerTerm) ||
-      item['product id'].toLowerCase().includes(lowerTerm) ||
-      item.projectName.toLowerCase().includes(lowerTerm) ||
-      item.unit.toLowerCase().includes(lowerTerm)
-    );
-  });
-
-  const itemType = 'Materials';
+  const filteredMaterials = useMemo(() => {
+    return transformedMaterials.filter(item => {
+      if (showOnlyLowStock && !item.isLowStock) return false;
+      if (!searchTerm) return true;
+      const lowerTerm = searchTerm.toLowerCase();
+      return (
+        item.name.toLowerCase().includes(lowerTerm) ||
+        item['product id'].toLowerCase().includes(lowerTerm) ||
+        item.projectName.toLowerCase().includes(lowerTerm) ||
+        item.unit.toLowerCase().includes(lowerTerm)
+      );
+    });
+  }, [transformedMaterials, searchTerm, showOnlyLowStock]);
 
   const dynamicColumns = [
     { label: 'Project', key: 'projectName' },
     { label: 'PID', key: 'product id' },
-    { label: 'Measurement', key: 'itemType.unit' },
+    { label: 'Unit', key: 'unit' },
     { label: 'Bought', key: 'stockBought' },
     { label: 'Used', key: 'stockUsed' },
     { label: 'Available', key: 'stockAvailable' },
     { label: 'Wasted', key: 'stockWasted' },
-    { label: 'Hold', key: 'stockHold' },
+    { label: 'Waste %', key: 'wastePct' },
   ];
 
   return (
-    <Container fluid className="p-0">
-      {/* SEARCH BAR ROW */}
-      <Row className="mb-3 mt-3 d-flex justify-content-end align-items-center">
-        <Col xs="auto" className="d-flex align-items-center">
-          <span className="mr-2" style={{ fontWeight: 'bold', fontSize: '1.1em' }}>
-            Search:
-          </span>
-          <InputGroup style={{ width: '350px' }}>
-            <Input
-              type="text"
-              placeholder="Material, PID, Unit, Project..."
-              value={searchTerm}
-              onChange={handleSearch}
-              style={{
-                borderTopRightRadius: searchTerm ? '0' : '4px',
-                borderBottomRightRadius: searchTerm ? '0' : '4px',
-              }}
-            />
-            {searchTerm && (
-              <InputGroupAddon addonType="append">
-                <Button color="secondary" onClick={handleClearSearch}>
-                  <i className="fa fa-times" aria-hidden="true"></i> Clear
-                </Button>
-              </InputGroupAddon>
-            )}
-          </InputGroup>
-        </Col>
-      </Row>
-
+    <Container fluid className="p-0 mt-3">
       <ItemListView
-        itemType={itemType}
+        itemType="Materials"
         items={filteredMaterials}
         errors={errors}
         UpdateItemModal={UpdateMaterialModal}
         dynamicColumns={dynamicColumns}
-      />
+      >
+        <FormGroup check className="m-0 d-flex align-items-center">
+          <Label check style={{ fontWeight: '600', cursor: 'pointer', margin: 0 }}>
+            <Input
+              type="checkbox"
+              checked={showOnlyLowStock}
+              onChange={() => setShowOnlyLowStock(!showOnlyLowStock)}
+            />{' '}
+            Show only low-stock materials
+          </Label>
+        </FormGroup>
+        <InputGroup style={{ width: '350px' }}>
+          <Input
+            type="text"
+            placeholder="Search Material, PID, Unit..."
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+          />
+          {searchTerm && (
+            <InputGroupAddon addonType="append">
+              <Button color="secondary" onClick={() => setSearchTerm('')}>
+                <i className="fa fa-times" aria-hidden="true" style={{ marginRight: '5px' }}></i>{' '}
+                Clear
+              </Button>
+            </InputGroupAddon>
+          )}
+        </InputGroup>
+      </ItemListView>
     </Container>
   );
 }
