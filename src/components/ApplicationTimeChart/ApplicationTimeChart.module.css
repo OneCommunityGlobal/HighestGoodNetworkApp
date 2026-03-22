@@ -163,19 +163,8 @@
 /* ── Vertical grid lines ─────────────────────────────────────────── */
 .atcGrid {
   position: absolute;
-  inset: 0 0 0 var(--atc-label-col);
-  background-image: linear-gradient(to right, var(--atc-grid) 1px, transparent 1px);
-  background-size: 20% 100%;
-  pointer-events: none;
-  z-index: 0;
-  opacity: 0.6;
-}
-
-/* ── Bars list ───────────────────────────────────────────────────── */
-.atcBars {
-  position: relative;
-  z-index: 1;
-  flex: 1;
+  inset: 20px auto 40px 0;
+  width: 130px;
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;

@@ -165,46 +165,76 @@ function ApplicationTimeChart() {
             Comparing the Average Time Taken to Fill an Application by Role
           </h2>
 
-          {showEmptyState ? (
-            /* ── Empty state ── */
-            <div className={styles.atcEmpty}>
-              <p className={styles.atcEmptyText}>No data available for the selected filters</p>
-              <button
-                className={styles.atcResetBtn}
-                onClick={resetFilters}
-                aria-label="Reset all filters"
-              >
-                Reset Filters
-              </button>
-            </div>
-          ) : (
-            /* ── Chart ── */
+        {/* Chart */}
+        <div className={styles.chartArea} ref={chartAreaRef}>
+          {processedData.length > 0 ? (
             <>
-              {/* Chart rows: y-labels + bars */}
-              <div className={styles.atcChart}>
-                {/* Vertical grid lines behind bars */}
-                <div className={styles.atcGrid} aria-hidden="true" />
+              {/* Grid Lines */}
+              <div
+                className={`${styles.grid} ${darkMode ? styles.darkMode : ''}`}
+                style={{
+                  backgroundSize: `${100 / 6}% ${100 / processedData.length}%`,
+                }}
+              />
 
-                <div className={styles.atcBars}>
-                  {processedData.map(item => {
-                    const pct = (item.avgTime / (xTickCount * 5)) * 100;
-                    return (
-                      <div key={item.role} className={styles.atcRow}>
-                        {/* Role label */}
-                        <div className={styles.atcLabel} title={item.role}>
-                          {item.role}
-                        </div>
-                        {/* Bar track */}
-                        <div className={styles.atcTrack}>
-                          <div className={styles.atcBar} style={{ width: `${pct}%` }}>
-                            <span
-                              className={styles.atcBarValue}
-                              data-outside={pct < 20 ? 'true' : 'false'}
-                            >
-                              {item.formattedTime}
-                            </span>
-                          </div>
-                        </div>
+              {/* Y-axis (Roles) */}
+              <div className={styles.yAxis}>
+                {processedData.map(item => (
+                  <div
+                    key={uuidv4()}
+                    className={`${styles.yAxisItem} ${darkMode ? styles.darkMode : ''}`}
+                    style={{ height: `${100 / processedData.length}%` }}
+                  >
+                    {item.role}
+                  </div>
+                ))}
+              </div>
+
+              {/* X-axis */}
+              <div className={`${styles.xAxis} ${darkMode ? styles.darkMode : ''}`}>
+                {(() => {
+                  // Generate dynamic ticks based on maxTime
+                  const tickCount = 6;
+                  const ticks = [];
+                  for (let i = 0; i <= tickCount; i++) {
+                    const tickValue = Math.round(((maxTime * i) / tickCount) * 10) / 10;
+                    ticks.push(tickValue);
+                  }
+                  return ticks.map(tick => (
+                    <div
+                      key={tick}
+                      className={darkMode ? styles.darkMode : ''}
+                      style={{
+                        position: 'absolute',
+                        left: `${(tick / maxTime) * 100}%`,
+                        fontSize: '12px',
+                        color: darkMode ? '#e0e0e0' : '#5f6368',
+                        transform: 'translateX(-50%)',
+                      }}
+                    >
+                      {tick}
+                    </div>
+                  ));
+                })()}
+              </div>
+
+              {/* Bars */}
+              <div className={styles.bars}>
+                {processedData.map(item => (
+                  <div
+                    key={uuidv4()}
+                    className={styles.barRow}
+                    style={{ height: `${100 / processedData.length}%` }}
+                  >
+                    <div
+                      className={`${styles.bar} ${darkMode ? styles.darkMode : ''}`}
+                      style={{ width: `${(item.avgTime / maxTime) * 100}%` }}
+                      onMouseEnter={e => handleMouseEnter(e, item)}
+                      onMouseMove={e => handleMouseMove(e, item)}
+                      onMouseLeave={handleMouseLeave}
+                    >
+                      <div className={`${styles.dataLabel} ${darkMode ? styles.darkMode : ''}`}>
+                        {item.formattedTime || `${Math.round(item.avgTime * 10) / 10} min`}
                       </div>
                     );
                   })}
@@ -218,8 +248,24 @@ function ApplicationTimeChart() {
                 ))}
               </div>
 
-              {/* X-axis label */}
-              <div className={styles.atcXaxisLabel}>
+              {/* Tooltip */}
+              {tooltip.visible && (
+                <div className={styles.tooltip} style={tooltipStyle}>
+                  <div className={styles.tooltipRole}>{tooltip.role}</div>
+                  <div className={styles.tooltipDivider} />
+                  <div className={styles.tooltipRow}>
+                    <span className={styles.tooltipLabel}>Avg. Time</span>
+                    <span className={styles.tooltipValue}>{tooltip.avgTime} min</span>
+                  </div>
+                  <div className={styles.tooltipRow}>
+                    <span className={styles.tooltipLabel}>Applications</span>
+                    <span className={styles.tooltipValue}>{tooltip.count}</span>
+                  </div>
+                </div>
+              )}
+
+              {/* X-axis Label */}
+              <div className={`${styles.xAxisLabel} ${darkMode ? styles.darkMode : ''}`}>
                 Average Time taken to fill application (in minutes)
               </div>
 
