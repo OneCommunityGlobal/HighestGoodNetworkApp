@@ -170,11 +170,11 @@
 }
 
 .cardChange.changePositive {
-  color: #10b981;
+  color: #10b981 !important;
 }
 
 .cardChange.changeNegative {
-  color: #ef4444;
+  color: #ef4444 !important;
 }
 
 .changeIcon {
@@ -303,17 +303,17 @@
 }
 
 .darkPanel .trendPositive {
-  color: #6ee7b7;
+  color: #6ee7b7 !important;
   font-weight: 600;
 }
 
 .trendNegative {
-  color: #ef4444;
+  color: #ef4444 !important;
   font-weight: 600;
 }
 
 .darkPanel .trendNegative {
-  color: #fca5a5;
+  color: #fca5a5 !important;
   font-weight: 600;
 }
 

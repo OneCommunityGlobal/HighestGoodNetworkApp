@@ -1,5 +1,5 @@
-.messageContainer {
-  display: flex;
+.message-container {
+  /* display: flex; */
   align-items: center;
   justify-content: center;
   width: 100%;
@@ -37,7 +37,7 @@
 
 .iconWrapper {
   flex: 0 0 auto;
-  display: flex;
+  /* display: flex; */
   align-items: center;
   justify-content: center;
   flex-direction: column;
@@ -64,6 +64,50 @@
 .modalBody {
   display: flex;
   flex-direction: column;
+}
+
+.ownerHistorySmallColumn {
+  max-width: 150px;
+  word-wrap: break-word;
+}
+
+.ownerHistoryTable {
+  border-collapse: collapse;
+}
+
+.ownerHistoryTable th, .ownerHistoryTable td {
+  border-bottom: 1px solid #858585 !important;
+}
+
+.showInTablet {
+  display: none;
+}
+
+@media (max-width: 990px) {
+  .ownerHistorySmallColumn {
+    max-width: 100%;
+    word-wrap: break-word;
+  }
+  .ownerHistoryTable thead {
+    display: none;
+  }
+  .ownerHistoryTable .table,
+  .ownerHistoryTable tbody,
+  .ownerHistoryTable tr,
+  .ownerHistoryTable td {
+    display: block;
+    width: 100%;
+    text-align: left !important;
+  }
+  .ownerHistoryTable th, .ownerHistoryTable td {
+    border-bottom: none !important;
+  }
+  .ownerHistoryTable tr {
+    border-bottom: 1px solid #858585 !important;
+  }
+  .showInTablet {
+    display: block;
+  }
 }
 
 @media (max-width: 768px) {

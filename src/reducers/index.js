@@ -1,3 +1,4 @@
+/* eslint-disable import/no-named-as-default */
 import { teamMemberTasksReducer } from '~/components/TeamMemberTasks/reducer';
 import { taskEditSuggestionsReducer } from '~/components/TaskEditSuggestions/reducer';
 import { userProfileByIdReducer, userTaskByIdReducer } from './userProfileByIdReducer';
@@ -19,6 +20,7 @@ import { allUserTeamsReducer } from './allTeamsReducer';
 import { teamByIdReducer } from './teamByIdReducer';
 import { errorsReducer } from './errorsReducer';
 import { timeEntriesReducer } from './timeEntriesReducer';
+// eslint-disable-next-line import/no-named-as-default
 import timelogTrackingReducer from './timelogTrackingReducer';
 import wbsReducer from './wbsReducer';
 import { taskReducer } from './allTasksReducer';
@@ -100,6 +102,15 @@ import reviewsInsightReducer from './prAnalytics/reviewsInsightReducer';
 import { hoursPledgedReducer } from './jobAnalytics/hoursPledgedReducer';
 import { studentTasksReducer } from './studentTasksReducer';
 
+// Education Dashboard Reducers
+import { studentReducer } from './studentProfileReducer';
+import { atomReducer } from './educationPortal/atomReducer';
+import { weeklySummariesFiltersApi } from '../actions/weeklySummariesFilterAction';
+import browseLessonPlanReducer from './educationPortal/broweLPReducer';
+
+// Kitchen and Inventory Management
+import { kiCalendarApi } from '../actions/kiCalendarAction';
+
 const localReducers = {
   auth: authReducer,
   allUserProfiles: allUserProfilesReducer,
@@ -135,6 +146,7 @@ const localReducers = {
   allUsersTimeEntries: allUsersTimeEntriesReducer,
   allUserProfilesBasicInfo: allUserProfilesBasicInfoReducer,
   projectById: projectByIdReducer,
+  [weeklySummariesFiltersApi.reducerPath]: weeklySummariesFiltersApi.reducer,
 
   // bm dashboard
   materials: materialsReducer,
@@ -182,6 +194,15 @@ const localReducers = {
   // student tasks
   studentTasks: studentTasksReducer,
   jobApplication: jobApplicationReducer,
+
+  // education portal
+  atom: atomReducer,
+
+  // education portal
+  browseLessonPlan: browseLessonPlanReducer,
+
+  // Kitchen and Inventory Management
+  [kiCalendarApi.reducerPath]: kiCalendarApi.reducer,
 };
 
 const sessionReducers = {
@@ -199,6 +220,7 @@ const sessionReducers = {
   timelogTracking: timelogTrackingReducer,
   teamMemberTasks: teamMemberTasksReducer,
   warning: warningsByUserIdReducer,
+  student: studentReducer,
 };
 
 export { localReducers, sessionReducers };
