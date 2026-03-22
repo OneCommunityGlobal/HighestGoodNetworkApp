@@ -164,6 +164,7 @@ import KIProtectedRoute from './components/common/KitchenandInventory/KIProtecte
 import KIDashboard from './components/KitchenandInventory/KIDashboard/KIDashboard';
 import KIINVENTORY from './components/KitchenandInventory/KIInventory/KIInventory';
 import KICalendar from './components/KitchenandInventory/KICalendar/KICalendar';
+import OrchardManagement from './components/KitchenandInventory/OrchardManagement/OrchardManagement';
 
 // Education Portal
 import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
@@ -883,6 +884,7 @@ export default (
         <KIProtectedRoute path="/kitchenandinventory" exact component={KIDashboard} />
         <KIProtectedRoute path="/kitchenandinventory/inventory" exact component={KIINVENTORY} />
         <KIProtectedRoute path="/kitchenandinventory/calendar" exact component={KICalendar} />
+        <Route path="/kitchenandinventory/orchardmanagement" exact component={OrchardManagement} />
         <Route path="/kitchenandinventory/login" exact component={KitchenandInventoryLogin} />
         {/* ----- End of Kitchen and Inventory Portal Routes ----- */}
         <Route path="/login" component={Login} />
