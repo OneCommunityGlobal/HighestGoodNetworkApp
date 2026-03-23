@@ -252,33 +252,34 @@ export default function ResourceUsage() {
           <div className={`${styles.insightsSection} ${darkMode ? 'bg-space-cadet text-light' : ''}`}>
             <div className={styles.insightsHeader}>
               <h2>Insights</h2>
-                    <Dropdown>
-                      <Dropdown.Toggle className={styles.customDropdown}>
-                        {insightsTimePeriod}
-                      </Dropdown.Toggle>
-                      <Dropdown.Menu>
-                        <Dropdown.Item onClick={() => setInsightsTimePeriod('This Week')}>
-                          This Week
-                        </Dropdown.Item>
-                        <Dropdown.Item onClick={() => setInsightsTimePeriod('Last Week')}>
-                          Last Week
-                        </Dropdown.Item>
-                        <Dropdown.Item onClick={() => setInsightsTimePeriod('This Month')}>
-                          This Month
-                        </Dropdown.Item>
-                      </Dropdown.Menu>
-                    </Dropdown>
+              <Dropdown>
+                <Dropdown.Toggle className={styles.customDropdown}>
+                  {insightsTimePeriod}
+                </Dropdown.Toggle>
+                <Dropdown.Menu>
+                  <Dropdown.Item onClick={() => setInsightsTimePeriod('This Week')}>
+                    This Week
+                  </Dropdown.Item>
+                  <Dropdown.Item onClick={() => setInsightsTimePeriod('Last Week')}>
+                    Last Week
+                  </Dropdown.Item>
+                  <Dropdown.Item onClick={() => setInsightsTimePeriod('This Month')}>
+                    This Month
+                  </Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
+            </div>
+
+            <div className={styles.insightsGrid}>
+              {insights.map((insight, idx) => (
+                <div
+                  key={idx}
+                  className={`${styles.insightCard} ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}
+                >
+                  {/* Tooltip description */}
+                  <div className={styles.insightTooltip}>
+                    {insightDefinitions[insight.title]}
                   </div>
-        <div className={styles.insightsGrid}>
-          {insights.map((insight, idx) => (
-            <div
-              key={idx}
-              className={`${styles.insightCard} ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}
-            >
-              {/* Tooltip description */}
-              <div className={styles.insightTooltip}>
-                {insightDefinitions[insight.title]}
-              </div>
 
               <div
                 className={styles.insightTitle}
