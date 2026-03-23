@@ -109,6 +109,12 @@ function StudentRow({ img, name, time, id, onViewDetails }) {
           className={styles.studentName}
           title="View more details"
           onClick={onViewDetails}
+          onKeyDown={e => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              onViewDetails();
+            }
+          }}
           role="button"
           tabIndex={0}
         >
@@ -147,9 +153,15 @@ function StudentDetailPanel({ student, onClose }) {
     <div className={styles['student-detail-overlay']}>
       <div className={styles['student-detail-panel']}>
         <h3>Student Details</h3>
-        <p><strong>Name:</strong> {student.name}</p>
-        <p><strong>ID:</strong> {student.id}</p>
-        <p><strong>Check-in Time:</strong> {student.time}</p>
+        <p>
+          <strong>Name:</strong> {student.name}
+        </p>
+        <p>
+          <strong>ID:</strong> {student.id}
+        </p>
+        <p>
+          <strong>Check-in Time:</strong> {student.time}
+        </p>
 
         <button type="button" className={styles['close-panel-btn']} onClick={onClose}>
           Close
@@ -238,21 +250,56 @@ function ActivityAttendance() {
   const registeredNoShows = 15;
   const communityVisitors = 19;
 
-  const { attendingMembers, totalAttendees, participationPercentage } =
-    deriveAttendanceMetrics({
-      totalCommunityMembers,
-      registeredMembers,
-      registeredNoShows,
-      communityVisitors,
-    });
+  const { attendingMembers, totalAttendees, participationPercentage } = deriveAttendanceMetrics({
+    totalCommunityMembers,
+    registeredMembers,
+    registeredNoShows,
+    communityVisitors,
+  });
 
   const statsData = [
-    { id: uuidv4(), title: 'Total Community Members', value: totalCommunityMembers, colorClass: 'statGreen', definition: 'Total number of people who live in the community.' },
-    { id: uuidv4(), title: 'Registered Members', value: registeredMembers, colorClass: 'statBlue', definition: 'Community members who registered.' },
-    { id: uuidv4(), title: 'Registered No-Shows', value: registeredNoShows, colorClass: 'statRed', definition: 'Registered members who didn’t attend.' },
-    { id: uuidv4(), title: 'Attending Members', value: attendingMembers, colorClass: 'statBlue', definition: 'Members who attended.' },
-    { id: uuidv4(), title: 'Community Visitors', value: communityVisitors, colorClass: 'statOrange', definition: 'Visitors attending.' },
-    { id: uuidv4(), title: 'Total Attendees', value: totalAttendees, colorClass: 'statDarkGreen', definition: 'Total attendees.' },
+    {
+      id: uuidv4(),
+      title: 'Total Community Members',
+      value: totalCommunityMembers,
+      colorClass: 'statGreen',
+      definition: 'Total number of people who live in the community.',
+    },
+    {
+      id: uuidv4(),
+      title: 'Registered Members',
+      value: registeredMembers,
+      colorClass: 'statBlue',
+      definition: 'Community members who registered.',
+    },
+    {
+      id: uuidv4(),
+      title: 'Registered No-Shows',
+      value: registeredNoShows,
+      colorClass: 'statRed',
+      definition: 'Registered members who didn’t attend.',
+    },
+    {
+      id: uuidv4(),
+      title: 'Attending Members',
+      value: attendingMembers,
+      colorClass: 'statBlue',
+      definition: 'Members who attended.',
+    },
+    {
+      id: uuidv4(),
+      title: 'Community Visitors',
+      value: communityVisitors,
+      colorClass: 'statOrange',
+      definition: 'Visitors attending.',
+    },
+    {
+      id: uuidv4(),
+      title: 'Total Attendees',
+      value: totalAttendees,
+      colorClass: 'statDarkGreen',
+      definition: 'Total attendees.',
+    },
   ];
 
   const students = [
@@ -263,7 +310,11 @@ function ActivityAttendance() {
   ];
 
   return (
-    <div className={`${styles.activityAttendancePage} ${darkMode ? styles.activityAttendanceDarkMode : ''}`}>
+    <div
+      className={`${styles.activityAttendancePage} ${
+        darkMode ? styles.activityAttendanceDarkMode : ''
+      }`}
+    >
       <div className={styles.dashboardContainer}>
         <div className={styles.dashboardTitle}>
           <div className={styles.titleText}>
