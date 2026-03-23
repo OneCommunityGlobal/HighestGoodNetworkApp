@@ -18,12 +18,14 @@ function JobFormBuilder() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
 
-  const [newField, setNewField] = useState({
+  const initialNewField = {
     questionText: '',
     questionType: 'textbox',
-    options: [], // For checkbox, radio, and dropdown input types
+    options: [],
     visible: true,
-  });
+  };
+
+  const [newField, setNewField] = useState(initialNewField);
 
   // Dynamic Form ID Management
   const [currentFormId, setCurrentFormId] = useState(null);
@@ -77,6 +79,16 @@ function JobFormBuilder() {
   const [editingQuestion, setEditingQuestion] = useState(null);
   const [editingIndex, setEditingIndex] = useState(null);
 
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [initialFormFields, setInitialFormFields] = useState([]);
+  const [templateName, setTemplateName] = useState('');
+  const [selectedTemplate, setSelectedTemplate] = useState('');
+
+  const markAsSaved = fields => {
+    setInitialFormFields(structuredClone(fields));
+    setHasUnsavedChanges(false);
+  };
+
   // Auto-load existing form on component mount
   useEffect(() => {
     const loadFirstAvailableForm = async () => {
@@ -90,6 +102,8 @@ function JobFormBuilder() {
           setCurrentFormId(formId);
           setFormFields(firstForm.questions || []);
           setJobTitle(firstForm.title || 'Please Choose an option');
+          markAsSaved(firstForm.questions || []);
+          setNewField(initialNewField);
 
           console.log('Auto-loaded form:', formId);
         }
@@ -100,6 +114,17 @@ function JobFormBuilder() {
 
     loadFirstAvailableForm();
   }, []);
+
+  // Detect unsaved changes
+  useEffect(() => {
+    const changed =
+      JSON.stringify(formFields) !== JSON.stringify(initialFormFields) ||
+      JSON.stringify(newField) !== JSON.stringify(initialNewField) ||
+      templateName !== '' ||
+      selectedTemplate !== '';
+
+    setHasUnsavedChanges(changed);
+  }, [formFields, newField, templateName, selectedTemplate, initialFormFields]);
 
   // CRUD Functions with Dynamic Form ID
   const cloneField = async (field, index) => {
@@ -120,6 +145,7 @@ function JobFormBuilder() {
           question: clonedField,
           position: index + 1,
         });
+        markAsSaved(newFields);
       } catch (error) {
         console.error('Error cloning question on server:', error);
       }
@@ -145,6 +171,7 @@ function JobFormBuilder() {
             fromIndex: index,
             toIndex: newIndex,
           });
+          markAsSaved(newFields);
         } catch (error) {
           console.error('Error reordering questions on server:', error);
         }
@@ -162,6 +189,7 @@ function JobFormBuilder() {
     if (currentFormId) {
       try {
         await axios.delete(ENDPOINTS.DELETE_QUESTION(currentFormId, index));
+        markAsSaved(newFields);
         console.log('Question deleted successfully');
       } catch (error) {
         console.error('Error deleting question on server:', error);
@@ -203,6 +231,7 @@ function JobFormBuilder() {
     if (currentFormId) {
       try {
         await axios.put(ENDPOINTS.UPDATE_QUESTION(currentFormId, editingIndex), updatedField);
+        markAsSaved(updatedFields);
         console.log('Question updated successfully');
       } catch (error) {
         console.error('Error updating question on server:', error);
@@ -263,6 +292,7 @@ function JobFormBuilder() {
           question: newField,
           position: formFields.length,
         });
+        markAsSaved(updatedFields);
       } catch (error) {
         console.error('Error adding question to server:', error);
       }
@@ -344,7 +374,13 @@ function JobFormBuilder() {
             <QuestionSetManager
               formFields={formFields}
               setFormFields={setFormFields}
-              onImportQuestions={importQuestions}
+              onImportQuestions={fields => {
+                importQuestions(fields);
+                markAsSaved(fields);
+              }}
+              onTemplateSaved={() => {
+                markAsSaved(formFields);
+              }}
               darkMode={darkMode}
             />
             <form>
@@ -355,7 +391,6 @@ function JobFormBuilder() {
                     index={index}
                     className={styles.formDivCheckbox}
                     totalFields={formFields.length}
-                    onClone={cloneField}
                     onMove={moveField}
                     onDelete={deleteField}
                     onEdit={editField}

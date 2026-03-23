@@ -1,6 +1,13 @@
+.teamCardWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+}
+
 .teamCardContainer {
   width: 580px;
-  height: 449px;
   display: flex;
   flex-direction: column;
   border-radius: 20px;
@@ -18,8 +25,8 @@
 
 .teamCardTitle {
   display: flex;
-  align-items: center; /* This will vertically align the icon and text */
-  gap: 8px; /* This adds some space between the icon and the text */
+  align-items: center;
+  gap: 8px;
   color: #6e6e6e;
   font-family: Inter, sans-serif;
   font-size: 24px;
@@ -36,16 +43,77 @@
   color: #6e6e6e;
 }
 
+/* ── Bulk Action Bar ── */
+.bulkActionBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  margin: 0 0 8px;
+  border: 1px solid #adb5bd;
+  border-radius: 8px;
+  background: transparent;
+}
+
+.selectedCount {
+  font-size: 14px;
+  font-weight: 500;
+  color: inherit;
+}
+
+.bulkButtons {
+  display: flex;
+  gap: 8px;
+}
+
+.bulkBtn {
+  padding: 7px 14px;
+  border: none;
+  border-radius: 4px;
+  background: #07f;
+  color: #fff;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.bulkBtn:disabled {
+  background: #adb5bd;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.bulkBtn:hover:not(:disabled) {
+  background: #0056b3;
+}
+
+/* ── Member Row ── */
 .teamMemberRow {
   padding: 12px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+
+.teamMemberRowSelected {
+  background: rgb(0 123 255 / 8%);
+}
+
+.memberCheckbox {
+  width: 18px;
+  height: 18px;
+  margin-right: 12px;
+  cursor: pointer;
+  accent-color: #07f;
+  flex-shrink: 0;
 }
 
 .teamMemberInfo {
   display: flex;
   align-items: center;
+  flex: 1;
 }
 
 .teamMemberName {
@@ -83,7 +151,7 @@
 }
 
 .scoreRed {
-  color: #ff0000;
+  color: #f00;
 }
 
 .showMoreLink {
@@ -105,4 +173,117 @@
   width: 580px;
   display: flex;
   justify-content: space-evenly;
+}
+
+.iconLink {
+  display: inline-flex;
+  align-items: center;
+  color: inherit;
+  text-decoration: none;
+  border-radius: 4px;
+  outline-offset: 2px;
+}
+
+.iconLink:focus-visible {
+  outline: 2px solid #06c;
+}
+
+.iconDisabled {
+  display: inline-flex;
+  align-items: center;
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.pageWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+}
+
+/* ── Confirmation Modal ── */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgb(0 0 0 / 50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: #fff;
+  border-radius: 8px;
+  padding: 28px 32px;
+  width: 380px;
+  max-width: 90%;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 40%);
+  text-align: center;
+}
+
+.modalTitle {
+  margin: 0 0 12px;
+  font-size: 1.2rem;
+  font-family: Inter, sans-serif;
+  color: #000;
+}
+
+.modalText {
+  font-size: 15px;
+  margin-bottom: 24px;
+  font-family: Inter, sans-serif;
+  color: #333;
+}
+
+.modalActions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.confirmBtn {
+  padding: 9px 20px;
+  background: #07f;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.confirmBtn:hover {
+  background: #0056b3;
+}
+
+.cancelBtn {
+  padding: 9px 20px;
+  background: #6c757d;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.cancelBtn:hover {
+  background: #5a6268;
+}
+
+@media (prefers-color-scheme: dark) {
+  .modal {
+    background: #2b2b2b;
+  }
+
+  .modalTitle {
+    color: #fff;
+  }
+
+  .modalText {
+    color: #ccc;
+  }
 }
