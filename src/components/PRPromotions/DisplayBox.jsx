@@ -45,16 +45,15 @@ export default function DisplayBox({ onClose, darkMode = false }) {
     setCheckedItems(new Array(mockPromotionData.length).fill(!allChecked));
   };
 
-  const popupClass = `${styles.popup} ${darkMode ? styles['popup-dark'] : ''}`;
-
   return (
     <div className={styles.overlay}>
-      <div className={popupClass}>
+      <div className={`${styles.popup} ${darkMode ? styles['popup-dark'] : ''}`}>
         <h2
           className={`${styles['popup-heading']} ${darkMode ? styles['popup-heading-dark'] : ''}`}
         >
           Are you sure you want to promote these PR reviewers?
         </h2>
+
         <table className={`${styles['popup-table']} ${darkMode ? styles['popup-table-dark'] : ''}`}>
           <thead>
             <tr>
@@ -100,6 +99,7 @@ export default function DisplayBox({ onClose, darkMode = false }) {
             ))}
           </tbody>
         </table>
+
         <div className={styles['button-row']}>
           <button type="button" className={styles.button} onClick={onClose}>
             Cancel

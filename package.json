@@ -145,6 +145,7 @@
     "lint": "eslint \"**/*.{js,jsx}\"",
     "lint:fix": "eslint --fix \"**/*.{js,jsx}\"",
     "lint:css": "stylelint \"**/*.{css,scss,sass}\"",
+    "lint:css:fix": "stylelint --fix \"**/*.{css,scss,sass}\"",
     "prepare": "husky install"
   },
   "browserslist": [
@@ -206,13 +207,15 @@
     "vite": "^6.3.5",
     "vitest": "^3.2.0"
   },
-  "lint-staged": {
-    "*.{js,jsx,ts,tsx}": [
-      "eslint --fix",
-      "prettier --write"
-    ],
-    "**/*.{css,scss,sass}": "stylelint"
-  },
+ "lint-staged": {
+  "*.{js,jsx,ts,tsx}": [
+    "eslint --fix",
+    "prettier --write"
+  ],
+  "**/*.{css,scss,sass}": [
+    "cmd /c npm run lint:css:fix --"
+  ]
+},
   "optionalDependencies": {
     "@rollup/rollup-darwin-arm64": "^4.54.0"
   }
