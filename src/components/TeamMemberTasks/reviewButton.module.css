@@ -1,16 +1,22 @@
 .reviewBtn {
   width: auto;
-  height: auto; /* Allow the height to adjust based on content */
-  white-space: normal; /* Allow content to wrap within the button */
-   overflow: hidden; /*Hide any overflowing content  */
+  height: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  overflow: visible;
+  word-break: normal;
+  overflow-wrap: normal;
+  min-width: 140px;
+  flex: 0 0 auto;
   z-index: 1000;
   position: relative;
-  /* size */
-  --bs-btn-font-size: 12px;
-  --bs-btn-padding-y: 8px;   /* 0.25rem */
-  --bs-btn-padding-x: 8px;   /* 0.5rem */
+  font-size: 12px;
 
-  /* extras you want */
+  --bs-btn-padding-y: 8px;
+  --bs-btn-padding-x: 8px;
+  
   font-weight: 600;
   align-self: flex-start;
   background-color: #c9d6c6 !important;
@@ -19,22 +25,22 @@
 }
 
 .review-button-dropdown {
-  max-height: 240px;       
+  max-height: 240px;
   overflow-y: auto;
-  z-index: 9999;   
+  z-index: 9999;
 }
 
-.reviewBtn-dropdown-wrapper{
-  display: 'inline-flex';
-  align-items: 'center';
-  margin-top: 6;
-  font-size: 1px !important;
-  font-size: 14px !important;
+.reviewBtn-dropdown-wrapper {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 6px;
+  font-size: 12px;
   font-weight: 500;
   line-height: 20px;
   padding: 6px 14px !important;
   min-width: 140px;
   height: auto !important;
+  white-space: nowrap;
 }
 
 .edit-link-btn {
@@ -46,59 +52,69 @@
   justify-content: center;
 }
 
-@media screen and (max-width: 1307px) and (min-width: 1152px) {
+/* stylelint wants "context" range notation: (width <= Xpx) instead of (max-width: Xpx) */
+@media screen and (width <= 1307px) and (width >= 1152px) {
   .reviewBtn {
     padding: 5px !important;
     font-size: 0.75rem !important;
   }
-  .review-button-dropdown{
+
+  .review-button-dropdown {
     max-height: 200px;
   }
+
   .edit-link-btn {
     padding: 5px !important;
     font-size: 0.65rem !important;
   }
 }
 
-@media screen and (max-width: 1151px) and (min-width: 992px) {
+@media screen and (width <= 1151px) and (width >= 992px) {
   .reviewBtn {
     padding: 2px !important;
     font-size: 0.65rem !important;
   }
-  .review-button-dropdown{
+
+  .review-button-dropdown {
     max-height: 150px;
-    width: 100%
+    width: 100%;
   }
-  .edit-link-btn {
-    padding: 2px !important;
-    font-size: 0.65rem !important;
-  }
-}
-@media screen and (max-width: 991px) {
-  .reviewBtn {
-    padding: 2px !important;
-    font-size: 0.65rem !important;
-    width: 100%
-  }
-  .review-button-dropdown{
-    max-height: 150px;
-    width: 100%
-  }
+
   .edit-link-btn {
     padding: 2px !important;
     font-size: 0.65rem !important;
   }
 }
 
-@media screen and (max-width: 480px) {
+@media screen and (width <= 991px) {
+  .reviewBtn {
+    padding: 2px !important;
+    font-size: 0.65rem !important;
+    width: auto;
+  }
+
+  .review-button-dropdown {
+    max-height: 150px;
+    width: 100%;
+  }
+
+  .edit-link-btn {
+    padding: 2px !important;
+    font-size: 0.65rem !important;
+  }
+}
+
+@media screen and (width <= 480px) {
   .reviewBtn {
     padding: 2px !important;
     font-size: 0.65rem !important;
   }
-  .review-button-dropdown{
+
+  .review-button-dropdown {
     max-height: 120px;
-    width: 100%
+    width: 100%;
   }
+
   .edit-link-btn {
     padding: 2px !important;
     font-size: 0.65rem !important;

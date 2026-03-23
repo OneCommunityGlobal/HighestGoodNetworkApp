@@ -1,12 +1,9 @@
 import { Bar } from 'react-chartjs-2';
+import PropTypes from 'prop-types';
 import sharedStyles from './ReviewsInsight.module.css';
 import { useSelector } from 'react-redux';
-import { Chart } from 'chart.js';
-import ChartDataLabels from 'chartjs-plugin-datalabels';
 
-Chart.register(ChartDataLabels);
-
-function ActionDoneGraph({ selectedTeams, teamData }) {
+function ActionDoneGraph({ selectedTeams, teamData, orderedTeamIds }) {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   if (!selectedTeams || selectedTeams.length === 0) {
@@ -18,7 +15,7 @@ function ActionDoneGraph({ selectedTeams, teamData }) {
   }
 
   const isAllTeams = selectedTeams.some(team => team.value === 'All');
-  const teamsToDisplay = isAllTeams ? Object.keys(teamData) : selectedTeams.map(team => team.value);
+  const teamsToDisplay = isAllTeams ? orderedTeamIds : selectedTeams.map(team => team.value);
 
   const data = {
     labels: teamsToDisplay,
@@ -100,12 +97,45 @@ function ActionDoneGraph({ selectedTeams, teamData }) {
 
   return (
     <div className={sharedStyles.riActionDoneGraph}>
-      <h2>PR: Action Done</h2>
+      <h2>
+        PR: Action Done &nbsp;
+        <span className={sharedStyles.tooltip}>
+          <i className="fa fa-info-circle fa-sm" aria-hidden="true"></i>
+          <span className={`${sharedStyles.tooltipText} ${darkMode ? 'darkMode' : ''} `}>
+            Approved: PR was approved without blocking changes <br />
+            <br />
+            Changes Requested: Reviewer requested changes before approval <br />
+            <br />
+            Commented: Reviewer left comments but did not approve or request changes
+          </span>
+        </span>
+      </h2>
       <div className={sharedStyles.riGraph}>
         <Bar data={data} options={options} />
       </div>
     </div>
   );
 }
+
+ActionDoneGraph.propTypes = {
+  selectedTeams: PropTypes.arrayOf(
+    PropTypes.shape({
+      value: PropTypes.string,
+      label: PropTypes.string,
+    }),
+  ),
+  teamData: PropTypes.objectOf(
+    PropTypes.shape({
+      actionSummary: PropTypes.objectOf(PropTypes.number),
+    }),
+  ),
+  orderedTeamIds: PropTypes.arrayOf(PropTypes.string),
+};
+
+ActionDoneGraph.defaultProps = {
+  selectedTeams: [],
+  teamData: {},
+  orderedTeamIds: [],
+};
 
 export default ActionDoneGraph;
