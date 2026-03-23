@@ -177,7 +177,10 @@ export default function PopularEvents() {
       >
         {filteredData.map(event => (
           <div key={event.id} className={styles['stat-item']}>
-            <div className={`${styles['stat-label']} ${darkMode ? 'text-light' : ''}`}>
+            <div
+              data-testid="stat-label"
+              className={`${styles['stat-label']} ${darkMode ? 'text-light' : ''}`}
+            >
               {event.type}
             </div>
 
@@ -193,7 +196,9 @@ export default function PopularEvents() {
             </div>
 
             <div className={`${styles['stat-value']} ${darkMode ? 'text-light' : ''}`}>
-              {`${calculatePercentage(event.attended, event.enrolled)}% (${event.attended}/${event.enrolled})`}
+              {`${calculatePercentage(event.attended, event.enrolled)}% (${event.attended}/${
+                event.enrolled
+              })`}
             </div>
           </div>
         ))}
@@ -229,9 +234,7 @@ export default function PopularEvents() {
               }`}
             >
               <div className={styles['summary-title']}>Most Popular Event</div>
-              <div className={styles['summary-value']}>
-                {mostPopularEvent?.type || 'N/A'}
-              </div>
+              <div className={styles['summary-value']}>{mostPopularEvent?.type || 'N/A'}</div>
             </div>
 
             <div
@@ -240,9 +243,7 @@ export default function PopularEvents() {
               }`}
             >
               <div className={styles['summary-title']}>Least Popular Event</div>
-              <div className={styles['summary-value']}>
-                {leastPopularEvent?.type || 'N/A'}
-              </div>
+              <div className={styles['summary-value']}>{leastPopularEvent?.type || 'N/A'}</div>
             </div>
           </>
         )}
