@@ -10,7 +10,7 @@ import {
 } from 'reactstrap';
 import BadgeImage from '~/components/Badge/BadgeImage';
 import { boxStyle, boxStyleDark } from '../../styles';
-import '../Badge/BadgeReport.css';
+import '../Badge/BadgeReport.module.css';
 import './BadgeSummaryPreview.css';
 
 function BadgeSummaryPreview({ badges, darkMode, personalBestMaxHrs }) {

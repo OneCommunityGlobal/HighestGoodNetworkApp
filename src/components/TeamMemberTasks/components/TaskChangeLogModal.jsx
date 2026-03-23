@@ -13,7 +13,7 @@ import moment from 'moment-timezone';
 import axios from 'axios';
 import { boxStyleDark, boxStyle } from '../../../styles';
 import { ENDPOINTS } from '../../../utils/URL';
-import '../../Header/DarkMode.css';
+import '../../Header/index.css';
 
 function TaskChangeLogModal({ isOpen, toggle, task, darkMode }) {
   const [changeLogs, setChangeLogs] = useState([]);
