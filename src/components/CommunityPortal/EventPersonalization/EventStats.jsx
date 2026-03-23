@@ -186,6 +186,7 @@ export default function PopularEvents() {
 
             <div className={styles['stat-bar']}>
               <div
+                data-testid="stat-bar-inner"
                 className={`${styles.bar} ${
                   styles[getBarColor(calculatePercentage(event.attended, event.enrolled))]
                 }`}
