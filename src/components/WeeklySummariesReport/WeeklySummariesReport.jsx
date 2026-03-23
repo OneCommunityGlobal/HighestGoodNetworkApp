@@ -2,86 +2,86 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import { useEffect, useState } from 'react';
+import axios from 'axios';
+import moment from 'moment';
+import 'moment-timezone';
 import PropTypes from 'prop-types';
+import { useEffect, useState } from 'react';
+import { MultiSelect } from 'react-multi-select-component';
 import { connect } from 'react-redux';
+import Select, { components } from 'react-select';
 import { toast } from 'react-toastify';
+import ReactTooltip from 'react-tooltip';
 import {
   Alert,
-  Container,
-  Row,
+  Button,
+  ButtonDropdown,
   Col,
-  TabContent,
-  TabPane,
+  Container,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
+  Input,
   Nav,
   NavItem,
   NavLink,
-  Button,
-  Input,
+  Row,
   Spinner,
-  ButtonDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
+  TabContent,
+  TabPane,
 } from 'reactstrap';
-import ReactTooltip from 'react-tooltip';
-import { MultiSelect } from 'react-multi-select-component';
-import Select, { components } from 'react-select';
-import moment from 'moment';
 import { boxStyle, boxStyleDark } from '~/styles';
-import 'moment-timezone';
-import axios from 'axios';
 
-import { ENDPOINTS } from '~/utils/URL';
 import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
-import { getAllUserTeams, getAllTeamCode } from '../../actions/allTeamsAction';
-import TeamChart from './TeamChart';
-import SkeletonLoading from '../common/SkeletonLoading';
-import { getWeeklySummariesReport } from '../../actions/weeklySummariesReport';
+import { ENDPOINTS } from '~/utils/URL';
+import { getAllTeamCode, getAllUserTeams } from '../../actions/allTeamsAction';
 import {
   updateOneSummaryReport,
-  updateSummaryReportFromServerAction,
   updateSummaryReport,
+  updateSummaryReportFromServerAction,
 } from '../../actions/weeklySummaries';
+import { getWeeklySummariesReport } from '../../actions/weeklySummariesReport';
+import SkeletonLoading from '../common/SkeletonLoading';
+import TeamChart from './TeamChart';
 
 import {
-  getSavedFilters,
   createSavedFilter,
   deleteSavedFilter,
+  getSavedFilters,
   updateSavedFilter,
-  updateSavedFiltersForTeamCodeChange,
   updateSavedFiltersForIndividualTeamCodeChange,
+  updateSavedFiltersForTeamCodeChange,
 } from '../../actions/savedFilterActions';
 
 import 'react-toastify/dist/ReactToastify.css';
-import WeeklySummaryRecipientsPopup from './WeeklySummaryRecepientsPopup';
+import { fetchAllBadges } from '../../actions/badgeManagement';
+import { getInfoCollections } from '../../actions/information';
+import { setTeamCodes } from '../../actions/teamCodes';
+import { showTrophyIcon } from '../../utils/anniversaryPermissions';
+import hasPermission from '../../utils/permissions';
+import CreateFilterModal from './components/CreateFilterModal';
+import SelectFilterModal from './components/SelectFilterModal';
+import UpdateFilterModal from './components/UpdateFilterModal';
 import FormattedReport from './FormattedReport';
 import GeneratePdfReport from './GeneratePdfReport';
-import hasPermission from '../../utils/permissions';
-import { getInfoCollections } from '../../actions/information';
-import { fetchAllBadges } from '../../actions/badgeManagement';
 import PasswordInputModal from './PasswordInputModal';
-import { showTrophyIcon } from '../../utils/anniversaryPermissions';
 import SelectTeamPieChart from './SelectTeamPieChart';
-import { setTeamCodes } from '../../actions/teamCodes';
-import CreateFilterModal from './components/CreateFilterModal';
-import UpdateFilterModal from './components/UpdateFilterModal';
-import SelectFilterModal from './components/SelectFilterModal';
 import styles from './WeeklySummariesReport.module.css';
+import WeeklySummaryRecipientsPopup from './WeeklySummaryRecepientsPopup';
 // Keeping this block commented intentionally for future reference
 // import { setField, toggleField, removeItemFromField, setChildField } from '~/utils/stateHelper';
 import { setField } from '~/utils/stateHelper';
 import WeeklySummariesToggleFilter from './components/WeeklySummariesToggleFilter';
 // Keeping this block commented intentionally for future reference —
-import { SlideToggle } from './components';
 import cn from 'classnames';
+import { getCustomStyles } from '~/utils/reactSelectStyles'; //  Import Styles
 import {
-  useGetWeeklySummariesFiltersQuery,
   useDeleteWeeklySummariesFilterMutation,
+  useGetWeeklySummariesFiltersQuery,
   useUpdateFiltersWithIndividualCodesChangeMutation,
   useUpdateFiltersWithReplacedTeamCodesMutation,
 } from '../../actions/weeklySummariesFilterAction';
-import { getCustomStyles } from '~/utils/reactSelectStyles'; //  Import Styles
+import { SlideToggle } from './components';
 
 const navItems = ['This Week', 'Last Week', 'Week Before Last', 'Three Weeks Ago'];
 const fullCodeRegex = /^.{5,7}$/;
@@ -295,6 +295,70 @@ const CustomMenuList = props => {
 //     tableData: teamCodeGroup,
 //   };
 // };
+
+const SaveIndicator = props => {
+  const { selectProps } = props;
+
+  if (!selectProps.showFilterButtons) return null;
+
+  return (
+    <button
+      type="button"
+      onMouseDown={e => {
+        e.preventDefault();
+        e.stopPropagation();
+      }}
+      onClick={e => {
+        e.preventDefault();
+        e.stopPropagation();
+        selectProps.onSaveFilter?.();
+      }}
+      title="Save current filter"
+      aria-label="Save current filter"
+      className={`${styles.indicatorActionBtn} ${styles.saveIndicatorBtn}`}
+    >
+      <i className="fa fa-save" />
+    </button>
+  );
+};
+
+const ClearSelectionIndicator = props => {
+  const { selectProps } = props;
+
+  if (!selectProps.showFilterButtons) return null;
+
+  return (
+    <button
+      type="button"
+      onMouseDown={e => {
+        e.preventDefault();
+        e.stopPropagation();
+      }}
+      onClick={e => {
+        e.preventDefault();
+        e.stopPropagation();
+        selectProps.onClearSelection?.();
+      }}
+      title="Clear selection"
+      aria-label="Clear selection"
+      className={`${styles.indicatorActionBtn} ${styles.clearIndicatorBtn}`}
+    >
+      <i className="fa fa-times" />
+    </button>
+  );
+};
+
+const CustomIndicatorsContainer = props => {
+  const { children } = props;
+
+  return (
+    <components.IndicatorsContainer {...props}>
+      {children}
+      <SaveIndicator {...props} />
+      <ClearSelectionIndicator {...props} />
+    </components.IndicatorsContainer>
+  );
+};
 
 /* eslint-disable react/function-component-definition */
 const WeeklySummariesReport = props => {
@@ -1027,18 +1091,30 @@ const WeeklySummariesReport = props => {
           ) {
             return false;
           }
+          //   if (!isLastWeek) {
+          //     return false; // Skip inactive members unless their summary is from last week
+          //   }
+          // }
+          // If this user has an endDate, only include them when you're on their final week tab
+          // If this user has an endDate, only include them when you're on their final week tab
+          if (summary.endDate) {
+            if (summary.finalWeekIndex !== weekIndex) return false;
+          }
+
           const isMeetCriteria =
             summary.totalTangibleHrs > 80 &&
             summary.daysInTeam > 60 &&
             summary.bioPosted !== 'posted';
+
           const isBio = !selectedBioStatus || isMeetCriteria;
+
           const isOverHours =
             !selectedOverTime ||
             (summary.weeklycommittedHours > 0 &&
               hoursLogged > 0 &&
-              hoursLogged >= summary.promisedHoursByWeek[navItems.indexOf(activeTab)]);
+              hoursLogged >= summary.promisedHoursByWeek[navItems.indexOf(activeTab)] * 1.25);
 
-          // Add trophy filter logic
+          // Trophy logic
           const summarySubmissionDate = moment()
             .tz('America/Los_Angeles')
             .endOf('week')
@@ -1049,26 +1125,20 @@ const WeeklySummariesReport = props => {
             !selectedTrophies ||
             showTrophyIcon(summarySubmissionDate, summary?.startDate?.split('T')[0]);
 
-          // keeping this block commented out for future reference
-          // Add special color filter logic
-          // const matchesSpecialColor =
-          //   activeFilterColors.length === 0 || activeFilterColors.includes(summary.filterColor);
-          // const matchesSpecialColor =
-          //   // activeFilterColors.length === 0 ||
-          //   // activeFilterColors.some(color => summary.filterColor?.includes?.(color));
-          //   activeFilterColors.length === 0 || activeFilterColors.includes(summary.filterColor); // old one
-
           const matchesSpecialColor =
             activeFilterColors.length === 0 ||
-            activeFilterColors.some(color => summary.filterColor?.includes(color));
+            activeFilterColors.some(color => summary.filterColor?.includes?.(color));
 
-          // Filtered by Team Code and Extra Members
+          // Team + Extra Member filters
           const isInSelectedCode = selectedCodesArray.includes(summary.teamCode);
           const isInSelectedExtraMember = selectedExtraMembersArray.includes(summary._id);
+
           const noFilterSelected =
             selectedCodesArray.length === 0 && selectedExtraMembersArray.length === 0;
 
+          // Logged hours range filter
           let matchesLoggedHoursRange = true;
+
           if (selectedLoggedHoursRange && selectedLoggedHoursRange.length > 0) {
             matchesLoggedHoursRange = selectedLoggedHoursRange.some(range => {
               switch (range.value) {
@@ -1087,6 +1157,7 @@ const WeeklySummariesReport = props => {
               }
             });
           }
+
           return (
             (noFilterSelected || isInSelectedCode || isInSelectedExtraMember) &&
             (selectedColorsArray.length === 0 ||
@@ -1210,9 +1281,17 @@ const WeeklySummariesReport = props => {
         structuredTeamTableData.push({ team: 'Extra Members', color, members });
       }
 
-      chartData.sort();
+      chartData.sort((a, b) => (b.value ?? 0) - (a.value ?? 0) || a.name.localeCompare(b.name));
       temptotal = chartData.reduce((acc, entry) => acc + entry.value, 0);
-      structuredTeamTableData.sort();
+      const teamSortKey = team => {
+        if (team === 'Extra Members') return 'zzzz_extra_members';
+        if (team === 'noCodeLabel') return 'zzzz_no_code';
+        return team ?? '';
+      };
+
+      structuredTeamTableData.sort((a, b) =>
+        teamSortKey(a.team).localeCompare(teamSortKey(b.team)),
+      );
       // const selectedTeamCodes = selectedCodes.map(e => e.value);
       const selectedTeamCodes = Array.isArray(selectedCodes)
         ? selectedCodes.map(e => e.value)
@@ -1606,9 +1685,8 @@ const WeeklySummariesReport = props => {
           props.getSavedFilters();
         }, 1000);
       }
-      return null;
     } catch (error) {
-      return null;
+      // no return needed
     }
   };
 
@@ -1735,6 +1813,8 @@ const WeeklySummariesReport = props => {
             _ids: updatedSummaries.filter(s => s.teamCode === replaceCode).map(s => s._id),
           });
 
+        props.setTeamCodes(updatedTeamCodes);
+
         const updatedSelectedCodes = selectedCodes
           .filter(code => !oldTeamCodes.includes(code.value) && code.value !== replaceCode)
           .concat({
@@ -1788,6 +1868,10 @@ const WeeklySummariesReport = props => {
         setState(prev => ({
           ...prev,
           summaries: updatedSummaries,
+          summariesByTab: {
+            ...prev.summariesByTab,
+            [prev.activeTab]: updatedSummaries,
+          },
           teamCodes: updatedTeamCodes,
           selectedCodes: updatedSelectedCodes,
           replaceCode: '',
@@ -2292,6 +2376,12 @@ const WeeklySummariesReport = props => {
     };
   }, [state.activeTab]);
 
+  useEffect(() => {
+    if (!Array.isArray(state.teamCodes)) return;
+
+    props.setTeamCodes(state.teamCodes);
+  }, [state.teamCodes, props.setTeamCodes]);
+
   const { role, darkMode } = props;
   const { error } = props;
   const hasPermissionToFilter = role === 'Owner' || role === 'Administrator';
@@ -2336,10 +2426,13 @@ const WeeklySummariesReport = props => {
       <Row className={styles['mx-max-sm-0']}>
         <style>
           {`
-        .custom-select__input-container {
-          grid-template-columns: auto !important;
-        }
-      `}
+            .custom-select__input-container {
+              grid-template-columns: auto !important;
+            }
+            .list-group-item.bg-yinmn-blue {
+              background-color: #3d5a80 !important;
+            }
+          `}
         </style>
         <Col lg={{ size: 10, offset: 1 }}>
           <h3 className="mt-3 mb-5">
@@ -2493,8 +2586,7 @@ const WeeklySummariesReport = props => {
           </div>
 
           <div>
-            {/* MultiSelect with Save/Delete Buttons */}
-            <div style={{ position: 'relative' }}>
+            <div className={styles.teamCodeSelectRow}>
               {state.teamCodeWarningUsers.length > 0 && (
                 <>
                   <i
@@ -2503,12 +2595,10 @@ const WeeklySummariesReport = props => {
                     data-placement="top"
                     data-for="teamCodeWarningTooltip"
                     style={{
-                      position: 'absolute',
-                      left: '-25px',
-                      top: '50%',
-                      transform: 'translateY(-50%)',
                       fontSize: '20px',
                       cursor: 'pointer',
+                      marginRight: '8px',
+                      alignSelf: 'center',
                     }}
                   />
                   <ReactTooltip id="teamCodeWarningTooltip" place="top" effect="solid">
@@ -2516,56 +2606,42 @@ const WeeklySummariesReport = props => {
                   </ReactTooltip>
                 </>
               )}
-              <Select
-                isMulti
-                isSearchable
-                closeMenuOnSelect={false}
-                hideSelectedOptions={false}
-                blurInputOnSelect={false}
-                options={state.teamCodes.map(item => {
-                  const [code, count] = item.label.split(' (');
-                  return {
-                    ...item,
-                    label: `${code.padEnd(10, ' ')} (${count}`,
-                  };
-                })}
-                value={state.selectedCodes}
-                onChange={handleSelectCodeChange}
-                components={{
-                  Option: CheckboxOption,
-                  MenuList: CustomMenuList,
-                }}
-                placeholder="Search and select team codes..."
-                classNamePrefix="custom-select"
-                className={`custom-select-container ${darkMode ? 'dark-mode' : ''} ${
-                  state.teamCodeWarningUsers.length > 0 ? 'warning-border' : ''
-                }`}
-                styles={customStyles}
-              />
 
-              {/* Save/Delete Buttons - only visible when codes are selected */}
-              {state.selectedCodes.length > 0 && permissionState.canManageFilter && (
-                <div className={styles['filter-save-buttons']}>
-                  <button
-                    type="button"
-                    className={`${styles['filter-save-btn']} ${styles.save}`}
-                    onClick={() => setCreateFilterModalOpen(true)}
-                    title="Save current filter"
-                    aria-label="Save current filter"
-                  >
-                    <i className="fa fa-save" />
-                  </button>
-                  <button
-                    type="button"
-                    className={`${styles['filter-save-btn']} ${styles.clear}`}
-                    onClick={() => handleSelectCodeChange([])}
-                    title="Clear selection"
-                    aria-label="Clear selection"
-                  >
-                    <i className="fa fa-times" />
-                  </button>
-                </div>
-              )}
+              <div className={styles.teamCodeSelect}>
+                <Select
+                  isMulti
+                  isSearchable
+                  isClearable
+                  closeMenuOnSelect={false}
+                  hideSelectedOptions={false}
+                  blurInputOnSelect={false}
+                  options={state.teamCodes.map(item => {
+                    const [code, count] = item.label.split(' (');
+                    return {
+                      ...item,
+                      label: `${code.padEnd(10, ' ')} (${count}`,
+                    };
+                  })}
+                  value={state.selectedCodes}
+                  onChange={handleSelectCodeChange}
+                  components={{
+                    Option: CheckboxOption,
+                    MenuList: CustomMenuList,
+                    IndicatorsContainer: CustomIndicatorsContainer,
+                  }}
+                  showFilterButtons={
+                    state.selectedCodes.length > 0 && permissionState.canManageFilter
+                  }
+                  onSaveFilter={() => setCreateFilterModalOpen(true)}
+                  onClearSelection={() => handleSelectCodeChange([])}
+                  placeholder="Search and select team codes..."
+                  classNamePrefix="custom-select"
+                  className={`custom-select-container ${darkMode ? 'dark-mode' : ''} ${
+                    state.teamCodeWarningUsers.length > 0 ? 'warning-border' : ''
+                  }`}
+                  styles={customStyles}
+                />
+              </div>
             </div>
           </div>
 
@@ -2648,46 +2724,38 @@ const WeeklySummariesReport = props => {
             className={`${styles.multiSelectFilter} text-dark ${darkMode ? 'dark-mode' : ''}`}
             styles={customStyles}
           />
-          <div className={`${styles.filterContainer}`}>
+          <div className={styles.filtersPanel}>
             {hasPermissionToFilter && (
-              <>
-                <div className={`${styles.filterStyle} ${styles.marginRight}`}>
-                  <span style={{ marginRight: '5px' }}>Filter by Special Colors: </span>
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px',
-                      marginTop: '2px',
-                    }}
-                  >
-                    {['purple', 'green', 'navy'].map(color => {
-                      const labelMap = {
-                        purple: 'Purple',
-                        green: 'Green',
-                        navy: 'Navy',
-                      };
-                      return (
-                        <div
-                          key={`${color}-toggle`}
-                          style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
-                        >
-                          <span className={styles.filterLabel}>{labelMap[color]}</span>
+              <div className={styles.filterRow}>
+                <div className={styles.specialColorsRow}>
+                  <span className={styles.filterGroupLabel}>Filter by Special Colors:</span>
+
+                  {['purple', 'green', 'navy'].map(color => {
+                    const labelMap = {
+                      purple: 'Purple',
+                      green: 'Green',
+                      navy: 'Navy',
+                    };
+
+                    return (
+                      <div key={color} className={styles.specialColorsItem}>
+                        <span className={styles.filterLabel}>{labelMap[color]}</span>
+                        <span className={styles.specialColorsToggleWrap}>
                           <SlideToggle
-                            key={`${color}-toggle`}
-                            className={styles.slideToggle}
+                            className={styles.specialColorsToggle}
                             color={color}
                             onChange={handleSpecialColorToggleChange}
                           />
-                        </div>
-                      );
-                    })}
-                  </div>
+                        </span>
+                      </div>
+                    );
+                  })}
                 </div>
 
                 {state.selectedCodes.length > 0 && (
-                  <div className={cn(styles.filterStyle, styles.filterMarginRight)}>
-                    <span className={styles.selectAllLabel}>Select All (Visible Users): </span>
+                  <div className={styles.filterGroup}>
+                    <span className={styles.filterGroupLabel}>Select All (Visible Users):</span>
+
                     <div className={styles.dotSelector}>
                       {['purple', 'green', 'navy'].map(color => (
                         <span
@@ -2701,33 +2769,31 @@ const WeeklySummariesReport = props => {
                             state.bulkSelectedColors[color] && styles.active,
                           )}
                           style={{
-                            display: 'inline-block',
-                            width: '15px',
-                            height: '15px',
-                            margin: '0 5px',
-                            borderRadius: '50%',
                             backgroundColor: state.bulkSelectedColors[color]
                               ? color
                               : 'transparent',
                             border: `3px solid ${color}`,
-                            cursor: 'pointer',
                           }}
                         />
                       ))}
                     </div>
                   </div>
                 )}
-              </>
+              </div>
             )}
+
+            <div className={styles.filterRow}>
+              <WeeklySummariesToggleFilter
+                state={state}
+                setState={setState}
+                hasPermissionToFilter={hasPermissionToFilter}
+                editable={true}
+                formId="report"
+                hasPermission={props.hasPermission}
+                darkMode={darkMode}
+              />
+            </div>
           </div>
-          <WeeklySummariesToggleFilter
-            state={state}
-            setState={setState}
-            hasPermissionToFilter={hasPermissionToFilter}
-            editable={true}
-            formId="report"
-            darkMode={darkMode}
-          />
         </Col>
       </Row>
       <Row className={styles['mx-max-sm-0']}>

@@ -43,7 +43,7 @@ export class Login extends Form {
         }
       }
     }
-    if (prevProps.errors.email !== this.props.errors.email) {
+    if (prevProps.errors !== this.props.errors) {
       this.setState({ errors: this.props.errors });
     }
   }
@@ -80,7 +80,13 @@ export class Login extends Form {
             darkMode,
           })}
           <div>
-            {this.renderButton({ label: 'Submit', darkMode })}
+            {this.renderButton({
+              name: 'submit',
+              id: 'submit',
+              label: 'Submit',
+              type: 'submit',
+              darkMode,
+            })}
             <Link to="forgotpassword">
               <span
                 style={{
