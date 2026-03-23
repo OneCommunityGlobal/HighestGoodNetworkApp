@@ -129,9 +129,7 @@
   },
   "resolutions": {
     "react": "18.3.1",
-    "react-dom": "18.3.1",
-    "mdn-data": "2.12.2",
-    "ansi-escapes": "7.1.1"
+    "react-dom": "18.3.1"
   },
   "packageManager": "yarn@1.22.22",
   "scripts": {
