@@ -696,7 +696,7 @@ const WeeklySummariesReport = props => {
       const badgeStatusCode = await fetchAllBadges();
       setPermissionState(prev => ({
         ...prev,
-        bioEditPermission: hasPermission('requestBio'),
+        bioEditPermission: hasPermission('putUserProfileImportantInfo'),
         canEditSummaryCount: hasPermission('putUserProfileImportantInfo'),
         codeEditPermission:
           hasPermission('editTeamCode') ||
@@ -1091,18 +1091,30 @@ const WeeklySummariesReport = props => {
           ) {
             return false;
           }
+          //   if (!isLastWeek) {
+          //     return false; // Skip inactive members unless their summary is from last week
+          //   }
+          // }
+          // If this user has an endDate, only include them when you're on their final week tab
+          // If this user has an endDate, only include them when you're on their final week tab
+          if (summary.endDate) {
+            if (summary.finalWeekIndex !== weekIndex) return false;
+          }
+
           const isMeetCriteria =
             summary.totalTangibleHrs > 80 &&
             summary.daysInTeam > 60 &&
             summary.bioPosted !== 'posted';
+
           const isBio = !selectedBioStatus || isMeetCriteria;
+
           const isOverHours =
             !selectedOverTime ||
             (summary.weeklycommittedHours > 0 &&
               hoursLogged > 0 &&
-              hoursLogged >= summary.promisedHoursByWeek[navItems.indexOf(activeTab)]);
+              hoursLogged >= summary.promisedHoursByWeek[navItems.indexOf(activeTab)] * 1.25);
 
-          // Add trophy filter logic
+          // Trophy logic
           const summarySubmissionDate = moment()
             .tz('America/Los_Angeles')
             .endOf('week')
@@ -1113,26 +1125,20 @@ const WeeklySummariesReport = props => {
             !selectedTrophies ||
             showTrophyIcon(summarySubmissionDate, summary?.startDate?.split('T')[0]);
 
-          // keeping this block commented out for future reference
-          // Add special color filter logic
-          // const matchesSpecialColor =
-          //   activeFilterColors.length === 0 || activeFilterColors.includes(summary.filterColor);
-          // const matchesSpecialColor =
-          //   // activeFilterColors.length === 0 ||
-          //   // activeFilterColors.some(color => summary.filterColor?.includes?.(color));
-          //   activeFilterColors.length === 0 || activeFilterColors.includes(summary.filterColor); // old one
-
           const matchesSpecialColor =
             activeFilterColors.length === 0 ||
-            activeFilterColors.some(color => summary.filterColor?.includes(color));
+            activeFilterColors.some(color => summary.filterColor?.includes?.(color));
 
-          // Filtered by Team Code and Extra Members
+          // Team + Extra Member filters
           const isInSelectedCode = selectedCodesArray.includes(summary.teamCode);
           const isInSelectedExtraMember = selectedExtraMembersArray.includes(summary._id);
+
           const noFilterSelected =
             selectedCodesArray.length === 0 && selectedExtraMembersArray.length === 0;
 
+          // Logged hours range filter
           let matchesLoggedHoursRange = true;
+
           if (selectedLoggedHoursRange && selectedLoggedHoursRange.length > 0) {
             matchesLoggedHoursRange = selectedLoggedHoursRange.some(range => {
               switch (range.value) {
@@ -1151,6 +1157,7 @@ const WeeklySummariesReport = props => {
               }
             });
           }
+
           return (
             (noFilterSelected || isInSelectedCode || isInSelectedExtraMember) &&
             (selectedColorsArray.length === 0 ||
@@ -2261,7 +2268,7 @@ const WeeklySummariesReport = props => {
         await props.fetchAllBadges();
         setPermissionState(prev => ({
           ...prev,
-          bioEditPermission: props.hasPermission('requestBio'),
+          bioEditPermission: props.hasPermission('putUserProfileImportantInfo'),
           // codeEditPermission: props.hasPermission('replaceTeamCodes'),
           // allow team‑code edits for specific roles or permissions
           codeEditPermission:
