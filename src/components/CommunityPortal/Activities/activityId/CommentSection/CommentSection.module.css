@@ -1,35 +1,35 @@
-.activity-comment-text {
+.commentText {
   flex: 1;
   background-color: #f4f4f4;
   padding: 10px;
   border-radius: 6px;
 }
 
-.activity-comment-footer {
+.commentFooter {
   font-size: 12px;
   color: gray;
   margin-top: 5px;
 }
 
-.activity-comment {
+.comment {
   display: flex;
   align-items: flex-start;
   gap: 10px;
 }
 
-.activity-comments-section {
+.commentsSection {
   margin-top: 20px;
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
-.activity-comment-user {
+.commentUser {
   display: flex;
   gap: 5px;
 }
 
-.activity-icon {
+.icon {
   width: 30px;
   height: 30px;
   border-radius: 50%;
@@ -48,13 +48,32 @@
 }
 
 @media (max-width: 800px) {
-  .activity-comment {
+  .comment {
     flex-direction: column;
     gap: 5px;
   }
 
-  .activity-comments-section {
+  .commentsSection {
     gap: 10px;
     padding: 15px;
   }
+}
+
+/* Dark mode (body.dark-mode from theme) */
+:global(body.dark-mode) .commentsSection {
+  color: #e0e0e0;
+}
+
+:global(body.dark-mode) .commentText {
+  background-color: #2a3a57;
+  color: #e0e0e0;
+  border: 1px solid #3b4a66;
+}
+
+:global(body.dark-mode) .commentFooter {
+  color: #b0b0b0;
+}
+
+:global(body.dark-mode) .commentFooter span {
+  color: #b0b0b0;
 }

@@ -839,18 +839,27 @@ return (
                         />
 
                         <span className="mr-2" style={{ color: '#7cfc00', padding: '1px' }}>
-                          <ActiveCell
+                        <ActiveCell
                             isActive={displayUserProfile.isActive}
+                            endDate={displayUserProfile.endDate}
+                            reactivationDate={displayUserProfile.reactivationDate}
+                            canChange={canPutUserProfileImportantInfo} // or whatever permission should control this
                             user={displayUserProfile}
-                            onClick={() => {
-                              props.updateUserProfile({
-                                ...displayUserProfile,
-                                isActive: !displayUserProfile.isActive,
-                                endDate:
-                                  !displayUserProfile.isActive === false
-                                    ? moment(new Date()).format('YYYY-MM-DD')
-                                    : undefined,
-                              });
+                            onClick={async () => {
+                              const newIsActive = !displayUserProfile.isActive;
+
+                              try {
+                                await props.updateUserProfile({
+                                  ...displayUserProfile,
+                                  isActive: newIsActive,
+                                  endDate: newIsActive ? undefined : moment().format('YYYY-MM-DD'),
+                                });
+
+                                await props.getUserProfile(displayUserId);
+                              } catch (e) {
+                                console.log(e);
+                                alert('Failed to update active status. Please try again.');
+                              }
                             }}
                           />
                         </span>

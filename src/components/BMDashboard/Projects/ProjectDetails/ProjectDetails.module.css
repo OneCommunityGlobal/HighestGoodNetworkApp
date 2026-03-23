@@ -203,6 +203,41 @@
   overflow: hidden;
 }
 
+/* Dark mode styles for project dashboard */
+.project-details-dark .card.cards-container {
+  background-color: #374151;
+  color: #E5E7EB;
+  border: 1px solid #4B5563;
+}
+
+.project-details-dark .card.cards-container h2 {
+  color: #60A5FA;
+}
+
+.project-details-dark .single-card {
+  background-color: #4B5563;
+  border: 1px solid #6B7280;
+  color: #E5E7EB;
+}
+
+.project-details-dark .single-card:hover {
+  box-shadow: 0 20px 20px 0 rgba(0, 0, 0, 0.4), 0 6px 20px 0 rgba(0, 0, 0, 0.4);
+}
+
+.project-details-dark .single-card__info {
+  background-color: #92400E;
+  color: #FEF3C7;
+}
+
+.project-details-dark .project-log {
+  background-color: #374151;
+  color: #E5E7EB;
+}
+
+.project-details-dark .project-log thead {
+  background-color: #4B5563;
+}
+
 .cards-container__header {
   font-size: 1em;
   font-weight: bold;
@@ -319,6 +354,16 @@
   .project-log :global(th) {
     font-size: 0.6em;
   }
+}
+
+ul.log-bar__btn-group {
+  padding: 0px;
+}
+
+.dark-table-header th {
+  background-color: #1b2a41 !important;
+  color: #ffffff !important;
+  border-bottom: 1px solid #4f5f76;
 }
 
 .log-bar__section ul,

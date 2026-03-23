@@ -12,6 +12,7 @@ function QuestionSetManager({
   formFields,
   setFormFields,
   onImportQuestions,
+  onTemplateSaved,
   darkMode,
   onTemplateSaved,
   templateName,
@@ -357,8 +358,13 @@ function QuestionSetManager({
             onClick={loadTemplate}
             className={styles.loadTemplateButton}
             disabled={isLoading || !selectedTemplate}
+            style={{ position: 'relative' }}
           >
             {isLoading ? 'Loading...' : 'Clone with Template'}
+            {/* tooltip for clone */}
+            <span className={styles.tooltip}>
+              Create a copy of this template to modify without changing the original
+            </span>
           </button>
 
           <button
@@ -366,8 +372,11 @@ function QuestionSetManager({
             onClick={appendTemplate}
             className={styles.appendTemplateButton}
             disabled={isLoading || !selectedTemplate}
+            style={{ position: 'relative' }}
           >
             {isLoading ? 'Appending...' : 'Append Template'}
+            {/* Tooltip for append */}
+            <span className={styles.tooltip}>Add additional fields to this existing template.</span>
           </button>
 
           <button
@@ -375,8 +384,11 @@ function QuestionSetManager({
             onClick={deleteTemplate}
             className={styles.deleteTemplateButton}
             disabled={isLoading || !selectedTemplate}
+            style={{ position: 'relative' }}
           >
             {isLoading ? 'Deleting...' : 'Delete Template'}
+            {/* Tooltip for delete */}
+            <span className={styles.tooltip}>Permanently remove this template.</span>
           </button>
         </div>
       </div>
@@ -412,8 +424,8 @@ QuestionSetManager.propTypes = {
   ).isRequired,
   setFormFields: PropTypes.func.isRequired,
   onImportQuestions: PropTypes.func.isRequired,
-  darkMode: PropTypes.bool,
   onTemplateSaved: PropTypes.func,
+  darkMode: PropTypes.bool,
   templateName: PropTypes.string,
   setTemplateName: PropTypes.func,
   selectedTemplate: PropTypes.string,

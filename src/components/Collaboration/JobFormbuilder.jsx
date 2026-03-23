@@ -43,6 +43,11 @@ function JobFormBuilder() {
 
   const jobPositions = ['Software Developer', 'Project Manager', 'Analyst'];
 
+  const markAsSaved = fields => {
+    setInitialFormFields(structuredClone(fields));
+    setHasUnsavedChanges(false);
+  };
+
   // Reset builder after template is saved
   const resetBuilderState = () => {
     setFormFields([]);
@@ -80,13 +85,10 @@ function JobFormBuilder() {
 
           setCurrentFormId(id);
           setFormFields(form.questions || []);
-          setInitialFormFields(form.questions || []);
-
+          markAsSaved(form.questions || []);
           setNewField(initialNewField);
-          setHasUnsavedChanges(false);
         }
       } catch (error) {
-        // still allowed logging
         console.error(error);
       }
     };
@@ -105,25 +107,6 @@ function JobFormBuilder() {
     setHasUnsavedChanges(changed);
   }, [formFields, newField, templateName, selectedTemplate, initialFormFields]);
 
-  // Clone field
-  const cloneField = async (field, index) => {
-    const clone = structuredClone(field);
-
-    const updated = [...formFields.slice(0, index + 1), clone, ...formFields.slice(index + 1)];
-    setFormFields(updated);
-
-    if (currentFormId) {
-      try {
-        await axios.post(ENDPOINTS.ADD_QUESTION(currentFormId), {
-          question: clone,
-          position: index + 1,
-        });
-      } catch (error) {
-        console.error(error);
-      }
-    }
-  };
-
   // Move field
   const moveField = async (index, direction) => {
     const newIndex = direction === 'up' ? index - 1 : index + 1;
@@ -139,6 +122,7 @@ function JobFormBuilder() {
           fromIndex: index,
           toIndex: newIndex,
         });
+        markAsSaved(updated);
       } catch (error) {
         console.error(error);
       }
@@ -154,6 +138,7 @@ function JobFormBuilder() {
     if (currentFormId) {
       try {
         await axios.delete(ENDPOINTS.DELETE_QUESTION(currentFormId, index));
+        markAsSaved(updated);
       } catch (error) {
         console.error(error);
       }
@@ -194,6 +179,7 @@ function JobFormBuilder() {
           ENDPOINTS.UPDATE_QUESTION(currentFormId, editingIndex),
           updated[editingIndex],
         );
+        markAsSaved(updated);
       } catch (error) {
         console.error(error);
       }
@@ -243,6 +229,7 @@ function JobFormBuilder() {
           question: newField,
           position: formFields.length,
         });
+        markAsSaved(updated);
       } catch (error) {
         console.error(error);
       }
@@ -295,20 +282,26 @@ function JobFormBuilder() {
           </div>
         </div>
 
-        <h1 className={styles.jobformTitle}>FORM CREATION</h1>
+        <h1 className={styles.jobformTitle}>JOB FORM BUILDER</h1>
 
         {(role === 'Owner' || role === 'Administrator') && (
           <div className={styles.customForm}>
             <p className={styles.jobformDesc}>
-              Fill the form with questions about a specific position you want to create an ad for.
-              The default questions will automatically appear and are already selected. You can pick
-              and choose them with the checkbox.
+              Use this form to create and edit question sets for job applications. Choose a
+              position, then customize the form by adding, removing, or rearranging fields before
+              saving your template.
             </p>
 
             <QuestionSetManager
               formFields={formFields}
               setFormFields={setFormFields}
-              onImportQuestions={setFormFields}
+              onImportQuestions={fields => {
+                setFormFields(fields);
+                markAsSaved(fields);
+              }}
+              onTemplateSaved={() => {
+                markAsSaved(formFields);
+              }}
               darkMode={darkMode}
               templateName={templateName}
               setTemplateName={setTemplateName}
@@ -324,7 +317,6 @@ function JobFormBuilder() {
                     field={field}
                     index={index}
                     totalFields={formFields.length}
-                    onClone={cloneField}
                     onMove={moveField}
                     onDelete={deleteField}
                     onEdit={editField}
