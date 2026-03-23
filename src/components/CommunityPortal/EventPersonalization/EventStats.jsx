@@ -207,6 +207,7 @@ export default function PopularEvents() {
       {/* Summary */}
       <div className={styles['event-summary']}>
         <div
+          data-testid="summary-total-events"
           className={`${styles['summary-item']} ${
             darkMode ? 'bg-yinmn-blue text-light box-shadow-dark' : 'box-shadow-light'
           }`}
@@ -216,6 +217,7 @@ export default function PopularEvents() {
         </div>
 
         <div
+          data-testid="summary-total-enrollments"
           className={`${styles['summary-item']} ${
             darkMode ? 'bg-yinmn-blue text-light box-shadow-dark' : 'box-shadow-light'
           }`}
@@ -229,6 +231,7 @@ export default function PopularEvents() {
         {filteredData.length > 0 && (
           <>
             <div
+              data-testid="summary-most"
               className={`${styles['summary-item']} ${
                 darkMode ? 'bg-yinmn-blue text-light box-shadow-dark' : 'box-shadow-light'
               }`}
@@ -238,6 +241,7 @@ export default function PopularEvents() {
             </div>
 
             <div
+              data-testid="summary-least"
               className={`${styles['summary-item']} ${
                 darkMode ? 'bg-yinmn-blue text-light box-shadow-dark' : 'box-shadow-light'
               }`}
