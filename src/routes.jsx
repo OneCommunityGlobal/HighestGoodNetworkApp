@@ -272,6 +272,9 @@ const SuggestedJobsListBuilder = lazy(() => import('./components/Collaboration/S
 const ProcessingLandingPage = lazy(() =>
   import('./components/KitchenInterfaces/Processing/ProcessingLandingPage'),
 );
+const AnimalManagement = lazy(() =>
+  import('./components/KitchenInterfaces/Production/AnimalManagement/AnimalManagement'),
+);
 export default (
   <Switch>
     {/* ----- LB Dashboard Routing Starts----- */}
@@ -353,6 +356,11 @@ export default (
         <ProtectedRoute
           path="/kitchenandinventory/processing"
           component={ProcessingLandingPage}
+          fallback
+        />
+        <ProtectedRoute
+          path="/kitchenandinventory/animalmanagement"
+          component={AnimalManagement}
           fallback
         />
         <ProtectedRoute path="/dashboard/:userId" exact component={Dashboard} />
