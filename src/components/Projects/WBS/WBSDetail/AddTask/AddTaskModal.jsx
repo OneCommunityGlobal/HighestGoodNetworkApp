@@ -132,6 +132,22 @@ const darkModeStyles = `
   .dark-mode .tox-tbtn--enabled {
     background-color: #3b82f6 !important;
   }
+  
+  .dark-mode .tox .tox-tbtn svg {
+    fill: #fff !important;
+  }
+
+  .dark-mode .tox .tox-tbtn:hover svg {
+    fill: #fff !important;
+  }
+
+  .dark-mode .tox .tox-tbtn--enabled svg {
+    fill: #fff !important;
+  }
+
+  .dark-mode .tox .tox-split-button svg {
+    fill: #fff !important;
+  }
 
   .dark-mode .tox-statusbar {
     background-color: #1a2639 !important;
@@ -233,6 +249,10 @@ const darkModeStyles = `
   .dark-mode .rdp button {
     color: #fff !important;
   }
+
+  .dark-mode .rdp-head_cell {
+    color: #fff !important;
+  }
   
     /* Add this after the .tox-statusbar styles */
   .dark-mode .tox .tox-tbtn--select {
@@ -251,6 +271,10 @@ const darkModeStyles = `
 .dark-mode .tox .tox-collection__item--active {
   background-color: #3b82f6 !important;
 }
+
+.dark-mode .tox-tbtn--enabled {
+    background-color: #3b82f6 !important;
+  }
 `;
 
 
@@ -331,12 +355,23 @@ const popupShadow = darkMode ? '0 4px 12px rgba(0, 0, 0, 0.5)' : '0 2px 8px rgba
               background-color: ${darkMode ? '#1a2639' : 'white'} !important;
               color: ${darkMode ? '#fff' : '#000'} !important;
             }
+
+            .${datePickerClass}-popup .rdp-head_cell {
+              background-color: #2d3a5a !important;
+              color: #fff !important;
+            }
           `}</style>
           
           <DayPicker 
             mode="single"
             selected={selectedDate}
             onSelect={handleDaySelect}
+            styles={{
+              head_cell: { color: darkMode ? '#fff' : '#000' },
+              caption_label: { color: darkMode ? '#fff' : '#000' },
+              nav_button: { color: darkMode ? '#fff' : '#000' },
+              day: { color: darkMode ? '#fff' : '#000' },
+            }}
           />
           
           <button
@@ -376,19 +411,20 @@ DateInput.defaultProps = {
   darkMode: false,
 };
 
-const TINY_MCE_INIT_OPTIONS = {
+const getTinyMCEOptions = (darkMode) => ({
   license_key: 'gpl',
   menubar: false,
   plugins: 'advlist autolink autoresize lists link charmap table help',
   toolbar:
-    'bold italic  underline numlist   |  removeformat link bullist  outdent indent |\
-                    styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
-                    subscript superscript charmap  | help',
+    'bold italic underline numlist | removeformat link bullist outdent indent |\
+    styleselect fontsizeselect | table | strikethrough forecolor backcolor |\
+    subscript superscript charmap | help',
   branding: false,
   min_height: 280,
   max_height: 300,
   autoresize_bottom_margin: 1,
-};
+  ...(darkMode && { skin: 'oxide-dark', content_css: 'dark' }),
+});
 
 function AddTaskModal(props) {
   /*
@@ -645,7 +681,7 @@ function AddTaskModal(props) {
     try {
       const parsed = dateFnsParse(dateString, FORMAT, new Date());
       return isValid(parsed);
-    } catch (error) {
+    } catch {
       return false;
     }
   };
@@ -1329,7 +1365,7 @@ useEffect(() => {
                   <Editor
                     tinymceScriptSrc="/tinymce/tinymce.min.js"
                     licenseKey="gpl"
-                    init={TINY_MCE_INIT_OPTIONS}
+                    init={getTinyMCEOptions(darkMode)}
                     name="why-info"
                     className="why-info form-control"
                     value={whyInfo}
@@ -1343,7 +1379,7 @@ useEffect(() => {
                   <Editor
                     tinymceScriptSrc="/tinymce/tinymce.min.js"
                     licenseKey="gpl"
-                    init={TINY_MCE_INIT_OPTIONS}
+                    init={getTinyMCEOptions(darkMode)}
                     name="intent-info"
                     className="intent-info form-control"
                     value={intentInfo}
@@ -1357,7 +1393,7 @@ useEffect(() => {
                   <Editor
                     tinymceScriptSrc="/tinymce/tinymce.min.js"
                     licenseKey="gpl"
-                    init={TINY_MCE_INIT_OPTIONS}
+                    init={getTinyMCEOptions(darkMode)}
                     name="endstate-info"
                     className="endstate-info form-control"
                     value={endstateInfo}
