@@ -29,16 +29,21 @@
 /* the check icon sits inside the box */
 .team-task-progress-follow-up-check {
   position: absolute;
-  inset: 3px;                 /* top/right/bottom/left: 0 */
+  inset: 3px; /* top/right/bottom/left: 0 */
   display: grid;
-  place-items: center;      /* centers the icon */
+  place-items: center; /* centers the icon */
   font-size: 12px;
   color: green;
-  pointer-events: none;     /* clicks go to the input */
+  pointer-events: none; /* clicks go to the input */
 }
 
 /* mobile sizing to match your old media rule */
 @media (max-width: 480px) {
-  .followup-box { width: 15px; height: 15px; }
-  .team-task-progress-follow-up-check { font-size: 10px; }
+  .followup-box {
+    width: 15px;
+    height: 15px;
+  }
+  .team-task-progress-follow-up-check {
+    font-size: 10px;
+  }
 }

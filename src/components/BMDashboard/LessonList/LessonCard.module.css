@@ -190,6 +190,8 @@
 
 .editableLessonSummary.error {
   border: 1px solid red;
+  background-color: #fff0f0;
+  color: #a00;
 }
 
 @media (max-width: 768px) {
@@ -207,13 +209,6 @@
   .lessonCardFooterItems {
     justify-content: flex-start;
   }
-}
-
-validation-error {
-  color: red;
-  font-size: small;
-  display: block;
-  margin-bottom: 10px;
 }
 
 @media (max-width: 570px) {
