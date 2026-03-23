@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { toast } from 'react-toastify';
 import { Button, Input, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
+import { ENDPOINTS } from '../../utils/URL';
 import styles from './FeedbackModal.module.css';
 
 function FeedbackModal({ authUser }) {
@@ -31,9 +32,7 @@ function FeedbackModal({ authUser }) {
       try {
         const userId = authUser?.userid || 'test-user-id';
 
-        const response = await axios.get(
-          `http://localhost:4500/api/helprequest/check-modal/${userId}`,
-        );
+        const response = await axios.get(ENDPOINTS.HELP_REQUEST_CHECK_MODAL(userId));
 
         if (response.data.shouldShow) {
           setIsOpen(true);
@@ -51,7 +50,7 @@ function FeedbackModal({ authUser }) {
   useEffect(() => {
     const fetchTeamMembers = async () => {
       try {
-        const response = await axios.get('http://localhost:4500/api/hgnform/ranked');
+        const response = await axios.get(ENDPOINTS.HGN_FORM_RANKED);
         setAllTeamMembers(response.data || []);
         setLoading(false);
       } catch (error) {
@@ -70,7 +69,7 @@ function FeedbackModal({ authUser }) {
     try {
       const userId = authUser?.userid || 'test-user-id';
 
-      await axios.post('http://localhost:4500/api/feedback/close-permanently', { userId });
+      await axios.post(ENDPOINTS.FEEDBACK_CLOSE_PERMANENTLY, { userId });
       toast.success('This modal will not appear again.');
       setIsOpen(false);
     } catch (error) {
@@ -107,7 +106,7 @@ function FeedbackModal({ authUser }) {
     };
 
     try {
-      await axios.post('http://localhost:4500/api/feedback/submit', feedbackData);
+      await axios.post(ENDPOINTS.FEEDBACK_SUBMIT, feedbackData);
       toast.success('Thank you for your feedback!');
       setIsOpen(false);
     } catch (error) {
