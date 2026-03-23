@@ -99,34 +99,34 @@ export default function ResourceUsage() {
   const badgeRefs = useRef([]);
 
   useEffect(() => {
-  badgeRefs.current.forEach(badge => {
-    if (badge) {
-      badge.style.setProperty('color', '#000', 'important');
-    }
-  });
-}, [insights]);
+    badgeRefs.current.forEach(badge => {
+      if (badge) {
+        badge.style.setProperty('color', '#000', 'important');
+      }
+    });
+  }, [insights]);
 
-useEffect(() => {
-  const resourceTypeKey = resourceType.toLowerCase();
-  const filteredData = filterDataByDate(allData[resourceTypeKey], timePeriod);
-  setData(filteredData);
-}, [resourceType, timePeriod, allData]);
+  useEffect(() => {
+    const resourceTypeKey = resourceType.toLowerCase();
+    const filteredData = filterDataByDate(allData[resourceTypeKey], timePeriod);
+    setData(filteredData);
+  }, [resourceType, timePeriod, allData]);
 
   useEffect(() => {
     setInsights(allInsights[insightsTimePeriod]);
   }, [insightsTimePeriod]);
 
   return (
-<div
-  data-testid="resource-usage-container"
-  className={`${styles.resourceUsageContainer} ${
-    darkMode ? 'dark-mode bg-oxford-blue text-light' : ''
-  }`}
->
-  {/* LEFT SECTION */}
-  <div className={`${styles.chartSection} ${darkMode ? 'bg-space-cadet' : ''}`}>
-    <div className={styles.headerSection}>
-      <h1>Resources usage</h1>
+    <div
+      data-testid="resource-usage-container"
+      className={`${styles.resourceUsageContainer} ${
+        darkMode ? 'dark-mode bg-oxford-blue text-light' : ''
+      }`}
+    >
+      {/* LEFT SECTION */}
+      <div className={`${styles.chartSection} ${darkMode ? 'bg-space-cadet' : ''}`}>
+        <div className={styles.headerSection}>
+          <h1>Resources usage</h1>
 
           <div className={styles.filters}>
             <Dropdown>
@@ -155,75 +155,75 @@ useEffect(() => {
 
         {/* CHART */}
         <div className={styles.chartContainer}>
-  <div className={styles.yAxisLabel} style={{ color: darkMode ? '#ffffff' : '#666' }}>
-    Amount
-  </div>
+          <div className={styles.yAxisLabel} style={{ color: darkMode ? '#ffffff' : '#666' }}>
+            Amount
+          </div>
 
-  {data && data.length > 0 ? (
-    <ResponsiveContainer width="100%" height="100%">
-      <BarChart data={data} margin={{ top: 20, right: 30, left: 30, bottom: 80 }}>
-        <CartesianGrid
-          strokeDasharray="3 3"
-          stroke={darkMode ? '#3A506B' : '#eee'}
-          vertical={false}
-        />
+          {data && data.length > 0 ? (
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={data} margin={{ top: 20, right: 30, left: 30, bottom: 80 }}>
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke={darkMode ? '#3A506B' : '#eee'}
+                  vertical={false}
+                />
 
-        <XAxis
-          dataKey="name"
-          axisLine={false}
-          tickLine={false}
-          tick={{
-            fill: darkMode ? '#ffffff' : '#666',
-            fontWeight: 700,
-            fontSize: 12,
-          }}
-        />
+                <XAxis
+                  dataKey="name"
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{
+                    fill: darkMode ? '#ffffff' : '#666',
+                    fontWeight: 700,
+                    fontSize: 12,
+                  }}
+                />
 
-        <YAxis
-          axisLine={false}
-          tickLine={false}
-          tick={{
-            fill: darkMode ? '#ffffff' : '#666',
-            fontWeight: 700,
-            fontSize: 12,
-          }}
-        />
+                <YAxis
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{
+                    fill: darkMode ? '#ffffff' : '#666',
+                    fontWeight: 700,
+                    fontSize: 12,
+                  }}
+                />
 
-        <Tooltip content={<CustomTooltip darkMode={darkMode} />} />
+                <Tooltip content={<CustomTooltip darkMode={darkMode} />} />
 
-        <Legend
-          align="right"
-          verticalAlign="top"
-          iconType="circle"
-          iconSize={8}
-          wrapperStyle={{
-            color: darkMode ? '#ffffff' : '#666',
-          }}
-        />
+                <Legend
+                  align="right"
+                  verticalAlign="top"
+                  iconType="circle"
+                  iconSize={8}
+                  wrapperStyle={{
+                    color: darkMode ? '#ffffff' : '#666',
+                  }}
+                />
 
-        <Bar dataKey="returned" stackId="a" fill="#22c55e" radius={[4, 4, 0, 0]} />
-        <Bar dataKey="loaned" stackId="a" fill="#fca5a5" radius={[4, 4, 0, 0]} />
-      </BarChart>
-    </ResponsiveContainer>
-  ) : (
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100%',
-      }}
-    >
-      <p>No data available for the selected time period and resource type.</p>
-    </div>
-  )}
-</div>
-</div>
+                <Bar dataKey="returned" stackId="a" fill="#22c55e" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="loaned" stackId="a" fill="#fca5a5" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          ) : (
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100%',
+              }}
+            >
+              <p>No data available for the selected time period and resource type.</p>
+            </div>
+          )}
+        </div>
+      </div>
 
-{/* RIGHT SECTION */}
-<div className={`${styles.insightsSection} ${darkMode ? 'bg-space-cadet text-light' : ''}`}>
-  <div className={styles.insightsHeader}>
-    <h2>Insights</h2>
+      {/* RIGHT SECTION */}
+      <div className={`${styles.insightsSection} ${darkMode ? 'bg-space-cadet text-light' : ''}`}>
+        <div className={styles.insightsHeader}>
+          <h2>Insights</h2>
 
           <Dropdown>
             <Dropdown.Toggle className={styles.customDropdown}>
@@ -242,24 +242,24 @@ useEffect(() => {
             </Dropdown.Menu>
           </Dropdown>
         </div>
-<div className={styles.insightsGrid}>
-  {insights.map((insight, idx) => (
-    <div
-      key={idx}
-      className={`${styles.insightCard} ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}
-    >
-      <div className={styles.insightTitle}>{insight.title}</div>
-      <div
-        ref={el => (badgeRefs.current[idx] = el)}
-        className={`${styles.insightBadge} ${darkMode ? 'text-dark' : ''}`}
-        style={{ backgroundColor: insight.color }}
-      >
-        {insight.value}
+        <div className={styles.insightsGrid}>
+          {insights.map((insight, idx) => (
+            <div
+              key={idx}
+              className={`${styles.insightCard} ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}
+            >
+              <div className={styles.insightTitle}>{insight.title}</div>
+              <div
+                ref={el => (badgeRefs.current[idx] = el)}
+                className={`${styles.insightBadge} ${darkMode ? 'text-dark' : ''}`}
+                style={{ backgroundColor: insight.color }}
+              >
+                {insight.value}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
-  ))}
-</div>
-</div>
-</div>
   );
 }
