@@ -1019,3 +1019,45 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/* ===== Dark mode fixes ===== */
+
+.participationLandingPageDark :global(button) {
+  color: #ffffff !important;
+}
+
+.participationLandingPageDark :global(.btn),
+.participationLandingPageDark :global(.btn-light),
+.participationLandingPageDark :global(.btn-outline-secondary) {
+  color: #ffffff !important;
+  background-color: #3a506b !important;
+  border-color: #3a506b !important;
+}
+
+.participationLandingPageDark :global(.btn-primary),
+.participationLandingPageDark :global(.active) {
+  color: #ffffff !important;
+}
+
+.trackingContainerDark .trackingFilters select {
+  background-color: #3A506B;
+  color: #ffffff;
+  border: 1px solid #3A506B;
+}
+
+.insightsDark .insightsFilters select {
+  background-color: #3A506B;
+  color: #ffffff;
+  border: 1px solid #3A506B;
+}
+
+.insightsDark .insightsTab {
+  background-color: #3A506B;
+  color: #ffffff;
+  border-right: 1px solid #555;
+}
+
+.insightsDark .insightsTab.activeTab {
+  background-color: #007bff;
+  color: #ffffff;
+}
