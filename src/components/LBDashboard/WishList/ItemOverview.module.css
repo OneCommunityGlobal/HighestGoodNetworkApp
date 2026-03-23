@@ -64,6 +64,7 @@
   justify-content: flex-end;
   align-items: center;
   width: 100%;
+  padding: 1rem 0 0;
 }
 
 .item__navbar-right h2 {
@@ -200,7 +201,7 @@ p {
 }
 
 .item__form button {
-  background: #13ae5c;
+  background: #006b32;
   color: white;
   padding: 10px;
   border-radius: 10px;
@@ -306,6 +307,7 @@ p {
   }
   .item__navbar-right {
     justify-content: space-between;
+    padding: 1rem 0 0;
   }
   .item__navbar-right h2 {
     font-family: sans-serif;

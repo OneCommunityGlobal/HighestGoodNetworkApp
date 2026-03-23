@@ -1,52 +1,58 @@
 .message-container {
-  /* display: flex; */
+  display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
   min-width: 0;
   z-index: 10;
   gap: 8px;
-}
-
-.inputs:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-}
-
-.ownerMessageImg {
-  max-width: 100%;
-  width: auto;
-  height: 50px;
-  object-fit: contain;
-  border-radius: 4px;
-  flex-shrink: 1;
-  min-width: 0;
+  flex-wrap: nowrap;
 }
 
 .message {
-  font-style: italic;
-  color: white;
-  margin: 0;
-  text-align: center;
-  max-width: 100%;
+  flex: 1 1 auto;
   min-width: 0;
-  white-space: normal;
+  margin: 0;
   overflow: hidden;
+  color: white;
+  text-align: center;
   text-overflow: ellipsis;
+  white-space: nowrap;
+  font-style: italic;
 }
 
 .iconWrapper {
+  display: flex;
   flex: 0 0 auto;
-  /* display: flex; */
+  flex-direction: row;
   align-items: center;
   justify-content: center;
-  flex-direction: column;
-  padding: 0rem;
+  gap: 6px;
+  margin-left: 0;
+  padding: 0;
   border-radius: 4px;
-  margin-left: 0rem;
+}
+
+.inputs:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.ownerMessageImg {
+  width: auto;
+  max-width: 100%;
+  min-width: 0;
+  height: 50px;
+  flex-shrink: 1;
+  object-fit: contain;
+  border-radius: 4px;
 }
 
 .ownerMessageButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
   border: none;
   background: none;
 }
@@ -66,19 +72,70 @@
   flex-direction: column;
 }
 
-@media (max-width: 768px) {
+.ownerHistorySmallColumn {
+  max-width: 150px;
+  overflow-wrap: break-word;
+}
+
+.ownerHistoryTable {
+  border-collapse: collapse;
+}
+
+.ownerHistoryTable th,
+.ownerHistoryTable td {
+  border-bottom: 1px solid #858585 !important;
+}
+
+.showInTablet {
+  display: none;
+}
+
+@media (width <= 990px) {
+  .ownerHistorySmallColumn {
+    max-width: 100%;
+    overflow-wrap: break-word;
+  }
+
+  .ownerHistoryTable thead {
+    display: none;
+  }
+
+  .ownerHistoryTable .table,
+  .ownerHistoryTable tbody,
+  .ownerHistoryTable tr,
+  .ownerHistoryTable td {
+    display: block;
+    width: 100%;
+    text-align: left !important;
+  }
+
+  .ownerHistoryTable th,
+  .ownerHistoryTable td {
+    border-bottom: none !important;
+  }
+
+  .ownerHistoryTable tr {
+    border-bottom: 1px solid #858585 !important;
+  }
+
+  .showInTablet {
+    display: block;
+  }
+}
+
+@media (width <= 768px) {
   .ownerMessageImg {
     height: 36px;
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .ownerMessageImg {
     height: 28px;
   }
 }
 
-@media (max-width: 1400px) {
+@media (width <= 1400px) {
   .messageContainer {
     align-items: center;
     justify-content: center;
@@ -102,16 +159,16 @@
   }
 
   .ownerMessageButton img {
-    width: 24px !important;
-    height: 24px !important;
-    min-width: 24px !important;
-    min-height: 24px !important;
-    display: block !important;
     position: relative !important;
+    display: block !important;
+    width: 24px !important;
+    min-width: 24px !important;
+    height: 24px !important;
+    min-height: 24px !important;
     transform: none !important;
     transform-origin: 0 0 !important;
+    object-fit: contain !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
-    object-fit: contain !important;
   }
 }

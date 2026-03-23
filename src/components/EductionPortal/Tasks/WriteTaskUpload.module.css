@@ -3,7 +3,9 @@
   --row-h: 58px;
   --radius: 14px;
   --border: #e8e8e8;
+  --danger: #e02424; /* vivid red */
   --muted: #9aa0a6;
+  --danger: #e02424; /* vivid red */
 }
 
 /* Layout */
@@ -388,10 +390,6 @@
     grid-template-columns: 1fr;
     gap: 16px;
   }
-}
-/* brand danger */
-:root {
-  --danger: #e02424; /* vivid red */
 }
 
 /* red error block between textarea and link input */
