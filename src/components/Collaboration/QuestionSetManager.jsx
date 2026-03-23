@@ -14,7 +14,6 @@ function QuestionSetManager({
   onImportQuestions,
   onTemplateSaved,
   darkMode,
-  onTemplateSaved,
   templateName,
   setTemplateName,
   selectedTemplate,

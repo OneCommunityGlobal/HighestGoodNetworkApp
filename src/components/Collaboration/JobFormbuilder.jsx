@@ -301,13 +301,13 @@ function JobFormBuilder() {
               }}
               onTemplateSaved={() => {
                 markAsSaved(formFields);
+                resetBuilderState();
               }}
               darkMode={darkMode}
               templateName={templateName}
               setTemplateName={setTemplateName}
               selectedTemplate={selectedTemplate}
               setSelectedTemplate={setSelectedTemplate}
-              onTemplateSaved={resetBuilderState}
             />
 
             <form>
