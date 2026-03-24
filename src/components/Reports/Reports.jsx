@@ -6,7 +6,6 @@ import moment from 'moment-timezone';
 import { Component } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
 import './index.css';
-import projectsImage from './images/Projects.svg';
 import { connect } from 'react-redux';
 import { Button, Container } from 'reactstrap';
 import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
