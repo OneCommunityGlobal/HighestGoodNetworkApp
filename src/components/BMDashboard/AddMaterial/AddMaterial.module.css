@@ -2,7 +2,7 @@
   width: 100%;
 }
 
-.addMaterialForm Label{
+.addMaterialForm label{
 font-size: .8em;
 }
 
@@ -77,11 +77,15 @@ font-size: .8em;
   justify-content: flex-start;
 }
 
+.materialFormErrorDark {
+  color: #ff6b6b !important;
+}
+
 .fieldRequired{
   color: red;
 }
 
-@media screen and (max-width: 640px) {
+@media screen and (width <= 640px) {
   .addMaterialFlexGroup {
     display: block;
   }
@@ -99,6 +103,7 @@ font-size: .8em;
   border: 1px solid #ccc;
   border-radius: 20px;
   background-color: #fff;
+  background-color: #fff;
   transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 
@@ -108,7 +113,7 @@ font-size: .8em;
 }
 
 
-@media screen and (max-width: 800px) {
+@media screen and (width <= 800px) {
   .addMaterialContainer {
     width: 95%;
   }
@@ -120,12 +125,15 @@ font-size: .8em;
   padding: 15px;
   margin-bottom: 15px;
 }
+
 .navigationOptions .optionContainer:hover {
   background-color: #f8f9fa;
 }
+
 .navigationOptions h5 {
   margin-bottom: 8px;
 }
+
 .navigationOptions p {
   margin-bottom: 15px;
   font-size: 0.9rem;
@@ -135,6 +143,7 @@ font-size: .8em;
 }
 
 /* ================== DARK MODE STYLES ================== */
+
 /* Only styles for elements with hardcoded light colors not covered by global BMDashboard styles */
 
 /* Main container - has hardcoded white background */
@@ -270,6 +279,7 @@ font-size: .8em;
 }
 
 :global(.bm-dashboard-dark) .addMaterialForm :global(.react-tel-input) :global(.arrow.up) {
+  border-bottom-color: #fff !important;
   border-bottom-color: #fff !important;
   border-top-color: transparent !important;
 }

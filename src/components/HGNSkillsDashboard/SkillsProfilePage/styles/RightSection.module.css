@@ -40,3 +40,10 @@ h3 {
 :global(.dark-mode) h3 {
   color: #fff;
 }
+
+.dashboardWrapper{
+  display:flex;
+  flex-direction:column;
+  gap:20px;
+  width:100%;
+}

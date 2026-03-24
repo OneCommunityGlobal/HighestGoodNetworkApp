@@ -19,7 +19,14 @@ import EditNameUnitModal from './EditNameUnitModal';
 import ViewUpdateHistoryModal from './ViewUpdateHistoryModal';
 import AddConsumableModal from '../AddConsumable/AddConsumableModal';
 
-export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamicColumns }) {
+export function ItemListView({
+  itemType,
+  items,
+  errors,
+  UpdateItemModal,
+  dynamicColumns,
+  children,
+}) {
   const [filteredItems, setFilteredItems] = useState(items);
   const [selectedProject, setSelectedProject] = useState('all');
   const [selectedItem, setSelectedItem] = useState('all');
@@ -117,7 +124,9 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
     <main className={`${styles.itemsListContainer} ${darkMode ? styles.darkMode : ''}`}>
       <h3>{itemType}</h3>
       <section>
-        <span>
+        <div
+          style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginBottom: '20px' }}
+        >
           {items && (
             <div className={`${styles.dropdownRow}`}>
               <Form>
@@ -150,15 +159,19 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
                 setSelectedCondition={setSelectedCondition}
                 setSelectedToolStatus={setSelectedToolStatus}
               />
-              <SelectItem
-                items={selectList}
-                selectedItem={selectedItem}
-                selectedProject={selectedProject}
-                setSelectedItem={setSelectedItem}
-                label={itemType}
-              />
+
+              {itemType !== 'Materials' && (
+                <SelectItem
+                  items={selectList}
+                  selectedItem={selectedItem}
+                  selectedProject={selectedProject}
+                  setSelectedItem={setSelectedItem}
+                  label={itemType}
+                />
+              )}
             </div>
           )}
+
           <div className={`${styles.buttonsRow}`}>
             <button type="button" className={`${styles.btnPrimary}`} onClick={openAddModal}>
               Add {itemType}
@@ -170,7 +183,7 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
               View Update History
             </button>
           </div>
-        </span>
+        </div>
 
         <UpdateHistoryModal
           isOpen={updateHistoryModalOpen}
@@ -178,6 +191,25 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
           itemType={itemType}
           selectedProject={selectedProject}
         />
+
+        {children && (
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '15px',
+              flexWrap: 'wrap',
+              gap: '15px',
+              backgroundColor: darkMode ? '#2d2d2d' : '#f8f9fa',
+              padding: '12px 15px',
+              borderRadius: '6px',
+              border: darkMode ? '1px solid #444' : '1px solid #dee2e6',
+            }}
+          >
+            {children}
+          </div>
+        )}
 
         {filteredItems && (
           <ItemsTable
@@ -246,10 +278,12 @@ ItemListView.propTypes = {
       key: PropTypes.string.isRequired,
     }),
   ).isRequired,
+  children: PropTypes.node,
 };
 
 ItemListView.defaultProps = {
   errors: {},
+  children: null,
 };
 
 export default ItemListView;
