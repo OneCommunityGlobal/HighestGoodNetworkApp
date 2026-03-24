@@ -125,6 +125,18 @@ function Timer({ authUser, darkMode, isPopout }) {
 
   const sendJsonMessageNoQueue = useCallback(msg => sendJsonMessage(msg, false), [sendMessage]);
 
+  const previewDuration = moment.duration(remaining);
+  const previewHoursDisplay = Math.floor(previewDuration.asHours()).toString();
+  const previewMinutesDisplay = previewDuration
+    .minutes()
+    .toString()
+    .padStart(2, '0');
+  const previewSecondsDisplay = previewDuration
+    .seconds()
+    .toString()
+    .padStart(2, '0');
+  const previewTimeDisplay = `${previewHoursDisplay}:${previewMinutesDisplay}:${previewSecondsDisplay}`;
+
   // Enhanced function to clear submitted time with better logging
   const clearSubmittedTime = useCallback(() => {
     console.log(' Clearing submitted time - Timer reset or user change detected');
@@ -913,7 +925,7 @@ function Timer({ authUser, darkMode, isPopout }) {
             className={css.preview}
             onClick={toggleTimer}
           >
-            {moment.utc(remaining).format('HH:mm:ss')}
+            {previewTimeDisplay}
           </button>
         ) : (
           <div className={css.disconnected}>Disconnected</div>
