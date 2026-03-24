@@ -8,7 +8,11 @@ import hasPermission from '~/utils/permissions';
 import { boxStyle, boxStyleDark } from '~/styles';
 import { DELETE } from '../../languages/en/ui';
 import { getTeamMembers } from '../../actions/allTeamsAction';
-import { fetchTeamMembersCached, getCachedTeamMembers } from './teamMembersCache';
+import {
+  fetchTeamMembersCached,
+  getCachedTeamMembers,
+  clearCachedTeamMembers,
+} from './teamMembersCache';
 
 function computeCounts(members, loading, localMembers) {
   const list = Array.isArray(members) ? members : [];
@@ -68,27 +72,34 @@ export function Team(props) {
 
   // Fire callback immediately (keeps tests & UX snappy), then refresh members
   const handleOpenMembers = () => {
+    clearCachedTeamMembers(teamIdKey);
+    setLocalMembers(null); // reset stale local state
     if (typeof props.onMembersClick === 'function') {
-      props.onMembersClick(teamIdRaw, props.name, props.teamCode);
+      props.onMembersClick(teamIdRaw, props.name, props.teamCode); // don't pass localMembers
     }
-
     setLoading(true);
     fetchTeamMembersCached(dispatch, getTeamMembers, teamIdKey)
-      .then(setLocalMembers)
+      .then(fresh => {
+        setLocalMembers(fresh);
+      })
       .catch(() => {})
       .finally(() => setLoading(false));
   };
 
   return (
     <tr className="teams__tr" id={`tr_${teamIdKey}`}>
-      <th className="teams__order--input" scope="row">
+      <th
+        className="teams__order--input"
+        scope="row"
+        style={{ textAlign: 'center', verticalAlign: 'middle' }}
+      >
         <div>{(props.index ?? 0) + 1}</div>
       </th>
       {/*  Wrap long names vertically */}
       <td className={headerStyles.teamNameCol}>
         {props.name} ({total} | {active} | {inactive})
       </td>
-      <td className="teams__active--input">
+      <td className="teams__active--input" style={{ textAlign: 'center', verticalAlign: 'middle' }}>
         <button
           data-testid="active-marker"
           type="button"
@@ -106,7 +117,7 @@ export function Team(props) {
         </button>
       </td>
 
-      <td className="centered-cell">
+      <td className="centered-cell" style={{ textAlign: 'center', verticalAlign: 'middle' }}>
         <button
           style={darkMode ? {} : boxStyle}
           type="button"
@@ -129,7 +140,9 @@ export function Team(props) {
 
       {(canDeleteTeam || canPutTeam) && (
         <td>
-          <span className="usermanagement-actions-cell">
+          <div
+            style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}
+          >
             <Button
               color="success"
               onClick={() => props.onEditTeam(props.name, teamIdRaw, props.active, props.teamCode)}
@@ -138,8 +151,6 @@ export function Team(props) {
             >
               Edit
             </Button>
-          </span>
-          <span className="usermanagement-actions-cell">
             <Button
               color="danger"
               onClick={() =>
@@ -150,7 +161,7 @@ export function Team(props) {
             >
               {DELETE}
             </Button>
-          </span>
+          </div>
         </td>
       )}
     </tr>
