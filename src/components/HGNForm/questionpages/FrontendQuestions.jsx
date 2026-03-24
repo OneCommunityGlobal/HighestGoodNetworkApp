@@ -138,7 +138,7 @@ function FrontendQuestions() {
           const fieldName = fieldNameMap[index] || `frontend_Question_${index}`;
 
           return (
-            <div className="frontend-backend" key={question._id || index}>
+            <div className={`${styles.frontendBackend}`} key={question._id || index}>
               <div className={`${styles.questionContainer}`}>
                 {editingIndex === index && isOwner ? (
                   <div
