@@ -29,7 +29,6 @@ import CreateNewTeamPopup from './CreateNewTeamPopup';
 import DeleteTeamPopup from './DeleteTeamPopup';
 import TeamStatusPopup from './TeamStatusPopup';
 import isEqual from 'lodash/isEqual';
-import { getCachedTeamMembers } from './teamMembersCache';
 
 // constants
 const FILTER_ALL = 'all';
@@ -470,10 +469,6 @@ class Teams extends React.PureComponent {
     if (res.status === 200) toast.success('Status Updated Successfully');
     else toast.error(res);
     this.setState({ teamStatusPopupOpen: false, deleteTeamPopupOpen: false });
-  };
-
-  onDeleteTeamMember = deletedUserId => {
-    this.props.deleteTeamMember(this.state.selectedTeamId, deletedUserId);
   };
 
   toggleTeamNameSort = () => {
