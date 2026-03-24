@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styles from './OrchardManagement.module.css';
+import { GiFruitTree } from 'react-icons/gi';
 
 const orchardItems = [
   {
@@ -46,6 +47,14 @@ const summaryCards = [
   { title: 'Expected Harvests', value: 6 },
 ];
 
+const sectionTabs = [
+  'Trees & Bushes',
+  'Orders',
+  'Planting Schedule',
+  'Trimming Schedule',
+  'Harvest Schedule',
+];
+
 function calculateAgeInYears(plantedDate) {
   const planted = new Date(plantedDate);
   const today = new Date();
@@ -56,6 +65,7 @@ function calculateAgeInYears(plantedDate) {
 }
 
 function OrchardManagement() {
+  const [activeSection, setActiveSection] = useState('Trees & Bushes');
   return (
     <div className={styles.container}>
       <div className={styles.header}>
@@ -75,72 +85,79 @@ function OrchardManagement() {
       </div>
 
       <div className={styles.sectionNav}>
-        <button type="button" className={`${styles.navButton} ${styles.activeNav}`}>
-          Trees & Bushes
-        </button>
-        <button type="button" className={styles.navButton}>
-          Orders
-        </button>
-        <button type="button" className={styles.navButton}>
-          Planting Schedule
-        </button>
-        <button type="button" className={styles.navButton}>
-          Trimming Schedule
-        </button>
-        <button type="button" className={styles.navButton}>
-          Harvest Calendar
-        </button>
+        {sectionTabs.map(tab => (
+          <button
+            key={tab}
+            type="button"
+            className={`${styles.navButton} ${activeSection === tab ? styles.activeNav : ''}`}
+            onClick={() => setActiveSection(tab)}
+          >
+            {tab}
+          </button>
+        ))}
       </div>
+      {activeSection === 'Trees & Bushes' ? (
+        <div className={styles.inventorySection}>
+          <div className={styles.inventoryHeader}>
+            <div>
+              <h3 className={styles.inventoryTitle}>Orchard Inventory</h3>
+              <p className={styles.inventorySubtitle}>All trees and bushes in the orchard</p>
+            </div>
 
-      <div className={styles.inventorySection}>
-        <div className={styles.inventoryHeader}>
-          <div>
-            <h3 className={styles.inventoryTitle}>Orchard Inventory</h3>
-            <p className={styles.inventorySubtitle}>All trees and bushes in the orchard</p>
+            <button type="button" className={styles.addButton}>
+              + Add Tree/Bush
+            </button>
           </div>
 
-          <button type="button" className={styles.addButton}>
-            + Add Tree/Bush
-          </button>
-        </div>
+          <div className={styles.cardGrid}>
+            {orchardItems.map(item => (
+              <div key={item.id} className={styles.orchardCard}>
+                <div className={styles.cardTopRow}>
+                  <div className={styles.cardHeaderLeft}>
+                    <div className={styles.iconWrapper}>
+                      <GiFruitTree className={styles.treeIcon} />
+                    </div>
 
-        <div className={styles.cardGrid}>
-          {orchardItems.map(item => (
-            <div key={item.id} className={styles.orchardCard}>
-              <div className={styles.cardTopRow}>
-                <div>
-                  <h4 className={styles.cardTitle}>{item.name}</h4>
-                  <p className={styles.cardLocation}>{item.location}</p>
+                    <div>
+                      <h4 className={styles.cardTitle}>{item.name}</h4>
+                      <p className={styles.cardLocation}>{item.location}</p>
+                    </div>
+                  </div>
+
+                  <span
+                    className={`${styles.conditionTag} ${
+                      item.condition === 'excellent' ? styles.excellent : styles.good
+                    }`}
+                  >
+                    {item.condition}
+                  </span>
                 </div>
 
-                <span
-                  className={`${styles.conditionTag} ${
-                    item.condition === 'excellent' ? styles.excellent : styles.good
-                  }`}
-                >
-                  {item.condition}
-                </span>
+                <div className={styles.cardDetails}>
+                  <div>
+                    <p className={styles.detailLabel}>Planted</p>
+                    <p className={styles.detailValue}>{item.plantedDate}</p>
+                  </div>
+
+                  <div>
+                    <p className={styles.detailLabel}>Age</p>
+                    <p className={styles.detailValue}>{calculateAgeInYears(item.plantedDate)}</p>
+                  </div>
+                </div>
+
+                <button type="button" className={styles.detailsButton}>
+                  View Details
+                </button>
               </div>
-
-              <div className={styles.cardDetails}>
-                <div>
-                  <p className={styles.detailLabel}>Planted</p>
-                  <p className={styles.detailValue}>{item.plantedDate}</p>
-                </div>
-
-                <div>
-                  <p className={styles.detailLabel}>Age</p>
-                  <p className={styles.detailValue}>{calculateAgeInYears(item.plantedDate)}</p>
-                </div>
-              </div>
-
-              <button type="button" className={styles.detailsButton}>
-                View Details
-              </button>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className={styles.placeholderSection}>
+          <h3 className={styles.placeholderTitle}>{activeSection}</h3>
+          <p className={styles.placeholderText}>This section is not implemented yet.</p>
+        </div>
+      )}
     </div>
   );
 }

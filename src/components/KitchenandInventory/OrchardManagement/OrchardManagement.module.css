@@ -51,23 +51,30 @@
 .sectionNav{
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 24px;
+  gap: 8px;
+  margin-bottom: 20px;
 }
 
 .navButton{
   border: 1px solid #d1d5db;
   background: #fff;
-  color: #374151;
+  color: #2f3b52;
   border-radius: 999px;
-  padding: 10px 16px;
+  padding: 8px 18px;
   cursor: pointer;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  line-height: 1.2;
+  transition: all 0.2s ease;
+}
+
+.navButton:hover{
+  background: #e8f3e8;
 }
 
 .activeNav{
-  background: #e6f4e8;
-  border-color: #9ccc9c;
+  background: #e8f3e8;
+  border-color: #9acb9a;
   color: #2f6b3b;
   font-weight: 600;
 }
@@ -108,6 +115,10 @@
   font-weight: 600;
 }
 
+.addButton:hover{
+  background: #3f844d
+}
+
 .cardGrid{
   display:grid;
   grid-template-columns: repeat(2, minmax(280px, 1fr));
@@ -127,6 +138,38 @@
   align-items: flex-start;
   gap: 12px;
   margin-bottom: 18px;
+}
+
+.cardHeaderLeft {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.iconWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: #eef8ee;
+  border: 1px solid #cfe7cf;
+  flex-shrink: 0;
+}
+
+.treeIcon {
+  font-size: 0.95rem;
+  color: #4f9d5d;
+}
+
+:global(.dark-mode) .iconWrapper {
+  background-color: #193d31;
+  border-color: #2f6b3b;
+}
+
+:global(.dark-mode) .treeIcon {
+  color: #86efac;
 }
 
 .cardTitle {
@@ -152,11 +195,13 @@
 .excellent {
   background: #e8f7e9;
   color: #2f7a38;
+  border: 1px solid #9acb9a;
 }
 
 .good {
   background: #eef2ff;
   color: #4f46e5;
+    border: 1px solid #c7d2fe;
 }
 
 .cardDetails {
@@ -188,6 +233,30 @@
   font-weight: 600;
 }
 
+.detailsButton:hover {
+  background: #f8fafc
+}
+
+.placeholderSection {
+  background: #fff;
+  border: 1px solid #dbe4d8;
+  border-radius: 16px;
+  padding: 32px 20px;
+}
+
+.placeholderTitle {
+  margin: 0 0 8px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.placeholderText {
+  margin: 0;
+  color: #6b7280;
+  font-size: 0.95rem;
+}
+
 @media (width <= 1024px) {
   .metricsGrid {
     grid-template-columns: repeat(2, minmax(180px, 1fr));
@@ -215,4 +284,72 @@
   .cardDetails {
     grid-template-columns: 1fr;
   }
+}
+
+:global(.dark-mode) .container {
+  background-color: #1c1c1c;
+  color: #f3f4f6;
+}
+
+:global(.dark-mode) .subtitle,
+:global(.dark-mode) .metricTitle,
+:global(.dark-mode) .inventorySubtitle,
+:global(.dark-mode) .cardLocation,
+:global(.dark-mode) .detailLabel,
+:global(.dark-mode) .placeholderText {
+  color: #b5bac5;
+}
+
+:global(.dark-mode) .metricCard,
+:global(.dark-mode) .inventorySection,
+:global(.dark-mode) .orchardCard,
+:global(.dark-mode) .navButton,
+:global(.dark-mode) .detailsButton,
+:global(.dark-mode) .placeholderSection {
+  background-color: #2f4157;
+  border-color: #3a506b;
+  color: #f3f4f6;
+}
+
+:global(.dark-mode) .activeNav {
+  background-color: #193d31;
+  border-color: #2f6b3b;
+  color: #d1fae5;
+}
+
+:global(.dark-mode) .metricValue {
+  color: #86efac;
+}
+
+:global(.dark-mode) .inventoryTitle,
+:global(.dark-mode) .cardTitle,
+:global(.dark-mode) .placeholderTitle,
+:global(.dark-mode) .detailValue {
+  color: #f3f4f6;
+}
+
+:global(.dark-mode) .addButton {
+  background-color: #2f6b3b;
+  color: #fff;
+}
+
+:global(.dark-mode) .addButton:hover {
+  background-color: #24542f;
+}
+
+:global(.dark-mode) .navButton:hover,
+:global(.dark-mode) .detailsButton:hover {
+  background-color: #3a506b;
+}
+
+:global(.dark-mode) .excellent {
+  background-color: #193d31;
+  color: #86efac;
+  border-color: #2f6b3b;
+}
+
+:global(.dark-mode) .good {
+  background-color: #312e81;
+  color: #c7d2fe;
+  border-color: #4f46e5;
 }
