@@ -196,16 +196,14 @@ function ActivityList() {
             )}
           </div>
         </label>
-        <div className={styles.clearButtonWrapper}>
-          <button
-            type="button"
-            onClick={handleClearFilters}
-            disabled={!filter.type && !filter.date && !filter.location}
-            className={styles.clearButton}
-          >
-            Clear All
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={handleClearFilters}
+          disabled={!filter.type && !filter.date && !filter.location}
+          className={`${styles.clearButton} ${darkMode ? styles.darkClearButton : ''}`}
+        >
+          Clear All
+        </button>
       </div>
       <div className={`${styles.activityList} ${darkMode ? styles.darkModeList : ''}`}>
         {loading ? (

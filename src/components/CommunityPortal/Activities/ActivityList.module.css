@@ -79,6 +79,16 @@
   color-scheme: dark;
 }
 
+.filters select {
+  padding: 10px;
+  height: 48px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  margin-top: 5px;
+  font-size: 1rem;
+  background: #fff;
+}
+
 /* Dark mode date input - style the calendar icon */
 .darkModeInput[type="date"]::-webkit-calendar-picker-indicator {
   filter: invert(1);
@@ -169,6 +179,11 @@
   border-radius: 0;
 }
 
+.activityList.darkActivityList li strong {
+  color: #00f3ff;
+  font-size: 1.2rem;
+}
+
 .activityList li:hover {
   transform: translateY(-3px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -204,6 +219,23 @@
   color: #6b7280;
   font-size: 1.1rem;
   margin: 20px 0;
+}
+
+.clearButton {
+  background: #e5e7eb;
+  color: #1f2937;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 10px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.clearButton.darkClearButton {
+  background: #0f172a;
+  color: #e2e8f0;
+  border: 1px solid #475569;
 }
 
 /* Autocomplete Suggestions Dropdown */
