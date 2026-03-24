@@ -48,6 +48,50 @@
   color: #2f6b3b;
 }
 
+.metricCardTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.metricIcon {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.greenIcon {
+  color: #4f9d5d;
+}
+
+.blueIcon {
+  color: #4f46e5;
+}
+
+.purpleIcon {
+  color: #9333ea;
+}
+
+.orangeIcon {
+  color: #d97706;
+}
+
+:global(.dark-mode) .greenIcon {
+  color: #86efac;
+}
+
+:global(.dark-mode) .blueIcon {
+  color: #a5b4fc;
+}
+
+:global(.dark-mode) .purpleIcon {
+  color: #d8b4fe;
+}
+
+:global(.dark-mode) .orangeIcon {
+  color: #fdba74;
+}
+
 .sectionNav{
   display: flex;
   flex-wrap: wrap;
@@ -126,10 +170,16 @@
 }
 
 .orchardCard {
-  border: 1px solid #dbe4d8;
+  border: 3px solid #dbe4d8;
   border-radius: 14px;
   padding: 16px;
   background: #fcfdfb;
+}
+
+.orchardCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 118px rgb(0 0 0 / 8%);
+  border-color: #b9d7bd;
 }
 
 .cardTopRow {
@@ -287,7 +337,7 @@
 }
 
 :global(.dark-mode) .container {
-  background-color: #1c1c1c;
+  background-color: #1b2a41;
   color: #f3f4f6;
 }
 

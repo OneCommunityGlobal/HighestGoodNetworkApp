@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import styles from './OrchardManagement.module.css';
 import { GiFruitTree } from 'react-icons/gi';
+import { HiOutlineShoppingCart } from 'react-icons/hi';
+import { PiScissorsLight, PiLeafLight } from 'react-icons/pi';
 
 const orchardItems = [
   {
@@ -41,10 +43,10 @@ const orchardItems = [
 ];
 
 const summaryCards = [
-  { title: 'Total Trees & Bushes', value: 5 },
-  { title: 'Pending Orders', value: 2 },
-  { title: 'Trimming Tasks', value: 4 },
-  { title: 'Expected Harvests', value: 6 },
+  { title: 'Total Trees & Bushes', value: 5, icon: GiFruitTree, iconClass: styles.greenIcon },
+  { title: 'Pending Orders', value: 2, icon: HiOutlineShoppingCart, iconClass: styles.blueIcon },
+  { title: 'Trimming Tasks', value: 4, icon: PiScissorsLight, iconClass: styles.purpleIcon },
+  { title: 'Expected Harvests', value: 6, icon: PiLeafLight, iconClass: styles.orangeIcon },
 ];
 
 const sectionTabs = [
@@ -76,12 +78,19 @@ function OrchardManagement() {
       </div>
 
       <div className={styles.metricsGrid}>
-        {summaryCards.map(card => (
-          <div key={card.title} className={styles.metricCard}>
-            <p className={styles.metricTitle}>{card.title}</p>
-            <h2 className={styles.metricValue}>{card.value}</h2>
-          </div>
-        ))}
+        {summaryCards.map(card => {
+          const Icon = card.icon;
+
+          return (
+            <div key={card.title} className={styles.metricCard}>
+              <div className={styles.metricCardTop}>
+                <p className={styles.metricTitle}>{card.title}</p>
+                <Icon className={`${styles.metricIcon} ${card.iconClass}`} />
+              </div>
+              <h2 className={styles.metricValue}>{card.value}</h2>
+            </div>
+          );
+        })}
       </div>
 
       <div className={styles.sectionNav}>
@@ -155,7 +164,6 @@ function OrchardManagement() {
       ) : (
         <div className={styles.placeholderSection}>
           <h3 className={styles.placeholderTitle}>{activeSection}</h3>
-          <p className={styles.placeholderText}>This section is not implemented yet.</p>
         </div>
       )}
     </div>
