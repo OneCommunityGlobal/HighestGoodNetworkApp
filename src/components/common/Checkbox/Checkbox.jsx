@@ -9,11 +9,12 @@ export const Checkbox = ({
   wrapperClassname,
   backgroundColorCN,
   textColorCN,
+  darkMode,
 }) => {
   return (
     <div
       data-testid="checkbox-wrapper"
-      className={`${styles.checkboxWrapper} ${wrapperClassname} ${backgroundColorCN}`}
+      className={`${darkMode ? styles.checkboxWrapperDark : styles.checkboxWrapper} ${wrapperClassname || ''} ${backgroundColorCN || ''}`}
     >
       <input
         className={`${styles.checkboxInput}`}
@@ -23,7 +24,7 @@ export const Checkbox = ({
         checked={value}
         onChange={onChange}
       />
-      <label className={`${styles.checkboxLabel} ${textColorCN}`} htmlFor={id}>
+      <label className={`${styles.checkboxLabel} ${darkMode ? styles.checkboxLabelDark : ''} ${textColorCN || ''}`} htmlFor={id}>
         {label}
       </label>
     </div>

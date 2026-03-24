@@ -41,6 +41,7 @@ function TableFilter({
   EndDate,
   UpdateStartDate,
   UpdateEndDate,
+  darkMode,
 }) {
   const taskPriority = ['Primary', 'Secondary', 'Tertiary'];
   const taskStatus = ['Paused', 'Complete', 'Active'];
@@ -118,6 +119,7 @@ function TableFilter({
         id="active"
         wrapperClassname="table-filter-item"
         label="Active"
+        darkMode={darkMode}
       />
       <Checkbox
         value={taskAssign}
@@ -128,6 +130,7 @@ function TableFilter({
         id="assign"
         wrapperClassname="table-filter-item"
         label="Assign"
+        darkMode={darkMode}
       />
     </div>
   );
