@@ -151,12 +151,14 @@ function LBLogin(props) {
                 <Label for="password">Password</Label>
                 <InputGroup>
                   <Input
+                    data-testid="password-input"
                     id="password"
                     name="password"
                     type={showPassword ? 'text' : 'password'}
                     value={enteredPassword}
                     onChange={handleChange}
                     invalid={touched.password && !!fieldErrors.password}
+                    aria-label="Password"
                     aria-invalid={touched.password && !!fieldErrors.password}
                     aria-describedby={
                       touched.password && fieldErrors.password ? 'password-error' : undefined

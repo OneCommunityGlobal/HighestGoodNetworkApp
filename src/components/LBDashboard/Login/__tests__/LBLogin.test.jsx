@@ -74,7 +74,7 @@ describe('LBLogin component', () => {
     fireEvent.change(screen.getByLabelText(/email/i), {
       target: { value: 'test@gmail.com' },
     });
-    fireEvent.change(screen.getByLabelText(/password/i), {
+    fireEvent.change(screen.getByTestId('password-input'), {
       target: { value: 'Test12345' },
     });
     fireEvent.click(screen.getByRole('button', { name: /login/i }));
