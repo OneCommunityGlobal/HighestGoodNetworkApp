@@ -57,6 +57,7 @@ import {
   VIEW_PROFILE,
   WEEKLY_SUMMARIES_REPORT,
   WELCOME,
+  BM_DASHBOARD
 } from '../../languages/en/ui';
 import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import PermissionWatcher from '../Auth/PermissionWatcher';
@@ -407,6 +408,9 @@ export function Header(props) {
   if (location.pathname === '/login') return null;
 
   const viewingUser = JSON.parse(window.sessionStorage.getItem('viewingUser'));
+
+  const showBMDashboard = location.pathname.startsWith('/bmdashboard');
+
   return (
     <div className={`${styles.headerWrapper}`} data-testid="header">
       <Navbar className={`py-3 ${styles.navbar}`} color="dark" dark expand="xl">
@@ -503,6 +507,13 @@ export function Header(props) {
                   </NavLink>
                 </NavItem>
 
+                {showBMDashboard && (<NavItem>
+                  <NavLink tag={Link} to="/bmdashboard" disabled={headerDisabled}>
+                    <span>{BM_DASHBOARD}</span>
+                  </NavLink>
+                </NavItem>
+                )}
+  
                 <NavItem>
                   <NavLink tag={Link} to="/timelog#currentWeek" disabled={headerDisabled}>
                     <span>{TIMELOG}</span>
