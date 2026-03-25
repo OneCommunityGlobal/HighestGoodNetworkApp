@@ -231,6 +231,8 @@ function RadarChart({ profileData, compact = true, onSkillsDataReady }) {
     );
   }
 
+  const { general = {}, frontend = {}, backend = {} } = profileData?.skillInfo || {};
+
   const chartData = {
     labels: skillsData.map(skill => (compact ? skill.shortLabel || skill.label : skill.label)),
     datasets: [
@@ -257,6 +259,16 @@ function RadarChart({ profileData, compact = true, onSkillsDataReady }) {
     ],
   };
 
+  const customTooltipPlugin = {
+    id: 'customTooltip',
+    afterDraw: chart => {
+      const tooltip = chart.tooltip;
+      if (tooltip && tooltip.opacity === 0) {
+        return;
+      }
+    },
+  };
+
   const chartOptions = {
     responsive: true,
     maintainAspectRatio: true,
@@ -275,19 +287,11 @@ function RadarChart({ profileData, compact = true, onSkillsDataReady }) {
 
         angleLines: {
           display: true,
-          color: darkMode
-            ? 'rgba(255,255,255,0.15)'
-            : compact
-            ? 'rgba(0,0,0,0.08)'
-            : 'rgba(0,0,0,0.1)',
+          color: compact ? 'rgba(0,0,0,0.08)' : 'rgba(0, 0, 0, 0.1)',
         },
 
         grid: {
-          color: darkMode
-            ? 'rgba(255,255,255,0.15)'
-            : compact
-            ? 'rgba(0,0,0,0.08)'
-            : 'rgba(0,0,0,0.1)',
+          color: compact ? 'rgba(0,0,0,0.08)' : 'rgba(0, 0, 0, 0.1)',
         },
 
         pointLabels: {
@@ -301,7 +305,7 @@ function RadarChart({ profileData, compact = true, onSkillsDataReady }) {
             },
             weight: '500',
           },
-          color: darkMode ? '#ccc' : compact ? '#333' : '#222',
+          color: compact ? '#555' : '#333',
           padding: compact ? 10 : 15,
           callback: function(value) {
             if (window.innerWidth < 600 && value.length > 15) {

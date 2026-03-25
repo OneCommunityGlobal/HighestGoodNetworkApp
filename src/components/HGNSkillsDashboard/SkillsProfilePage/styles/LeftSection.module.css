@@ -1,13 +1,12 @@
-.leftSection {
-  padding: 8px 8px 24px;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  background: linear-gradient(135deg, #fff 0%, #f1f5f9 100%);
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
+.leftSection h1 {
+  margin: 5px 0;
+  color: #111827;
+}
+
+.leftSection h3 {
+  margin: 0;
+  font-size: 20px;
+  color: #1f2933;
 }
 
 .profilePic {
