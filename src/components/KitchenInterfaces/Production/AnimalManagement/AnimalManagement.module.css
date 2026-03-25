@@ -417,3 +417,29 @@
   gap: 10px;
   margin-top: 25px;
 }
+
+/* Dark Mode status badges */
+.dark-mode .status-ordered {
+  background: #343a40 !important;
+  color: #f8f9fa !important;
+}
+
+.dark-mode .status-shipped {
+  background: #1864ab !important;
+  color: #e7f5ff !important;
+}
+
+.dark-mode .status-delivered {
+  background: #2b8a3e !important;
+  color: #ebfbee !important;
+}
+
+.dark-mode .status-scheduled {
+  background: #5f3dc4 !important;
+  color: #f3f0ff !important;
+}
+
+.dark-mode .status-confirmed {
+  background: #868e96 !important;
+  color: #212529 !important;
+}
