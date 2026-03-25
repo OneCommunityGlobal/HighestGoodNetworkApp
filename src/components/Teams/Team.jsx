@@ -108,7 +108,7 @@ export function Team(props) {
               props.onStatusClick(props.name, teamIdRaw, props.active, props.teamCode);
             }
           }}
-          // style={boxStyle}
+          style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
           aria-label={`Change status for team ${props.name}`}
         >
           <div className={props.active ? 'isActive' : 'isNotActive'}>

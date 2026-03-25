@@ -18,7 +18,7 @@ export function TeamTableSearchPanelBase(props) {
   }, []);
   return (
     <div className="input-group" id="new_team">
-      <div className="input-group-prepend" style={{ marginLeft: '10px' }}>
+      <div className="input-group-prepend">
         <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
           {SEARCH}
         </span>
