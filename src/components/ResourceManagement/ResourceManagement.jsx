@@ -284,185 +284,181 @@ function ResourceManagement() {
       date: 'Feb 2, 2024',
     },
   ]);
-const [filteredResources, setFilteredResources] = useState(resources);
-const [isModalOpen, setIsModalOpen] = useState(false);
-const [selectedIds, setSelectedIds] = useState(new Set());
+  const [filteredResources, setFilteredResources] = useState(resources);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedIds, setSelectedIds] = useState(new Set());
 
-useEffect(() => {
-  setFilteredResources(resources);
-}, [resources]);
-
-const handleSearch = searchTerm => {
-  if (!searchTerm.trim()) {
+  useEffect(() => {
     setFilteredResources(resources);
-    return;
-  }
+  }, [resources]);
 
-  const filtered = resources.filter(
-    resource =>
-      resource.user.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      resource.facilities.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      resource.materials.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      resource.date.toLowerCase().includes(searchTerm.toLowerCase()),
-  );
-  setFilteredResources(filtered);
-};
+  const handleSearch = searchTerm => {
+    if (!searchTerm.trim()) {
+      setFilteredResources(resources);
+      return;
+    }
 
-const handleAddLog = newLog => {
-  const newResource = {
-    id: resources.length + 1,
-    ...newLog,
-    date: 'Just now',
+    const filtered = resources.filter(
+      resource =>
+        resource.user.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        resource.facilities.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        resource.materials.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        resource.date.toLowerCase().includes(searchTerm.toLowerCase()),
+    );
+    setFilteredResources(filtered);
   };
-  setResources(prev => [newResource, ...prev]);
-};
 
-/* -------------------- EXPORT LOGIC -------------------- */
+  const handleAddLog = newLog => {
+    const newResource = {
+      id: resources.length + 1,
+      ...newLog,
+      date: 'Just now',
+    };
+    setResources(prev => [newResource, ...prev]);
+  };
 
-const columns = [
-  { key: 'user', label: 'User' },
-  { key: 'timeDuration', label: 'Time/Duration' },
-  { key: 'facilities', label: 'Facilities' },
-  { key: 'materials', label: 'Materials' },
-  { key: 'date', label: 'Date' },
-];
+  /* -------------------- EXPORT LOGIC -------------------- */
 
-const toggleSelect = id => {
-  setSelectedIds(prev => {
-    const updated = new Set(prev);
-    updated.has(id) ? updated.delete(id) : updated.add(id);
-    return updated;
-  });
-};
+  const columns = [
+    { key: 'user', label: 'User' },
+    { key: 'timeDuration', label: 'Time/Duration' },
+    { key: 'facilities', label: 'Facilities' },
+    { key: 'materials', label: 'Materials' },
+    { key: 'date', label: 'Date' },
+  ];
 
-const getExportRows = () =>
-  selectedIds.size > 0
-    ? filteredResources.filter(r => selectedIds.has(r.id))
-    : filteredResources;
-
-const exportCSV = rows => {
-  const header = columns.map(col => col.label).join(',');
-  const body = rows
-    .map(row => columns.map(col => `"${row[col.key] ?? ''}"`).join(','))
-    .join('\n');
-
-  const blob = new Blob([`${header}\n${body}`], {
-    type: 'text/csv;charset=utf-8;',
-  });
-
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = `used-resources_${new Date().toISOString().slice(0, 10)}.csv`;
-  link.click();
-  URL.revokeObjectURL(url);
-};
-
-const exportXLSX = rows => {
-  const formattedRows = rows.map(row => {
-    const obj = {};
-    columns.forEach(col => {
-      obj[col.label] = row[col.key];
+  const toggleSelect = id => {
+    setSelectedIds(prev => {
+      const updated = new Set(prev);
+      updated.has(id) ? updated.delete(id) : updated.add(id);
+      return updated;
     });
-    return obj;
-  });
+  };
 
-  const worksheet = XLSX.utils.json_to_sheet(formattedRows);
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, 'Used Resources');
+  const getExportRows = () =>
+    selectedIds.size > 0 ? filteredResources.filter(r => selectedIds.has(r.id)) : filteredResources;
 
-  XLSX.writeFile(workbook, `used-resources_${new Date().toISOString().slice(0, 10)}.xlsx`);
-};
+  const exportCSV = rows => {
+    const header = columns.map(col => col.label).join(',');
+    const body = rows
+      .map(row => columns.map(col => `"${row[col.key] ?? ''}"`).join(','))
+      .join('\n');
 
-const handleExport = format => {
-  const rows = getExportRows();
-  if (!rows.length) return;
-  format === 'csv' ? exportCSV(rows) : exportXLSX(rows);
-};
+    const blob = new Blob([`${header}\n${body}`], {
+      type: 'text/csv;charset=utf-8;',
+    });
 
-/* ----------------------------------------------------- */
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `used-resources_${new Date().toISOString().slice(0, 10)}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
 
-return (
-  <div className={`${darkMode ? styles.darkMode : ''}`}>
-    <div className={styles.resourceManagementDashboard}>
-      <div className={styles.dashboardTitle}>
-        <h2>Used Resources</h2>
-        <div className={styles.actionButtons}>
-          <button
-            type="button"
-            className={styles.addLogButton}
-            onClick={() => setIsModalOpen(true)}
-          >
-            Add New Log
-          </button>
+  const exportXLSX = rows => {
+    const formattedRows = rows.map(row => {
+      const obj = {};
+      columns.forEach(col => {
+        obj[col.label] = row[col.key];
+      });
+      return obj;
+    });
 
-          <button
-            type="button"
-            className={styles.addLogButton}
-            onClick={() => handleExport('csv')}
-          >
-            Export CSV
-          </button>
+    const worksheet = XLSX.utils.json_to_sheet(formattedRows);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Used Resources');
 
-          <button
-            type="button"
-            className={styles.addLogButton}
-            onClick={() => handleExport('xlsx')}
-          >
-            Export XLSX
-          </button>
-        </div>
-      </div>
+    XLSX.writeFile(workbook, `used-resources_${new Date().toISOString().slice(0, 10)}.xlsx`);
+  };
 
-      <SearchBar onSearch={handleSearch} />
+  const handleExport = format => {
+    const rows = getExportRows();
+    if (!rows.length) return;
+    format === 'csv' ? exportCSV(rows) : exportXLSX(rows);
+  };
 
-      <div className={styles.resourceList}>
-  <div className={styles.resourceHeading}>
-    <div className={styles.checkboxContainer}>
-      <input
-        type="checkbox"
-        checked={selectedIds.size === filteredResources.length}
-        onChange={e =>
-          setSelectedIds(
-            e.target.checked
-              ? new Set(filteredResources.map(r => r.id))
-              : new Set(),
-          )
-        }
-      />
-    </div>
+  /* ----------------------------------------------------- */
 
-    <div className={styles.resourceHeadingItem}>User</div>
-    <div className={styles.resourceHeadingItem}>Time/Duration</div>
-    <div className={styles.resourceHeadingItem}>Facilities</div>
-    <div className={styles.resourceHeadingItem}>Materials</div>
-    <div className={styles.resourceHeadingItem}>Date</div>
-  </div>
+  return (
+    <div className={`${darkMode ? styles.darkMode : ''}`}>
+      <div className={styles.resourceManagementDashboard}>
+        <div className={styles.dashboardTitle}>
+          <h2>Used Resources</h2>
+          <div className={styles.actionButtons}>
+            <button
+              type="button"
+              className={styles.addLogButton}
+              onClick={() => setIsModalOpen(true)}
+            >
+              Add New Log
+            </button>
 
-  {filteredResources.map(resource => (
-    <div key={resource.id}>
-      <div className={styles.resourceItem}>
-        <div className={styles.checkboxContainer}>
-          <input
-            type="checkbox"
-            checked={selectedIds.has(resource.id)}
-            onChange={() => toggleSelect(resource.id)}
-          />
+            <button
+              type="button"
+              className={styles.addLogButton}
+              onClick={() => handleExport('csv')}
+            >
+              Export CSV
+            </button>
+
+            <button
+              type="button"
+              className={styles.addLogButton}
+              onClick={() => handleExport('xlsx')}
+            >
+              Export XLSX
+            </button>
+          </div>
         </div>
 
-        <div className={styles.resourceItemDetail}>{resource.user}</div>
-        <div className={styles.resourceItemDetail}>{resource.timeDuration}</div>
-        <div className={styles.resourceItemDetail}>{resource.facilities}</div>
-        <div className={styles.resourceItemDetail}>{resource.materials}</div>
-        <div className={styles.resourceItemDetail}>
-          <span className={styles.calendarIcon}>📅</span> {resource.date}
-        </div>
-      </div>
+        <SearchBar onSearch={handleSearch} />
 
-      <hr className={styles.lineSperator} />
-    </div>
-  ))}
-</div>
+        <div className={styles.resourceList}>
+          <div className={styles.resourceHeading}>
+            <div className={styles.checkboxContainer}>
+              <input
+                type="checkbox"
+                checked={selectedIds.size === filteredResources.length}
+                onChange={e =>
+                  setSelectedIds(
+                    e.target.checked ? new Set(filteredResources.map(r => r.id)) : new Set(),
+                  )
+                }
+              />
+            </div>
+
+            <div className={styles.resourceHeadingItem}>User</div>
+            <div className={styles.resourceHeadingItem}>Time/Duration</div>
+            <div className={styles.resourceHeadingItem}>Facilities</div>
+            <div className={styles.resourceHeadingItem}>Materials</div>
+            <div className={styles.resourceHeadingItem}>Date</div>
+          </div>
+
+          {filteredResources.map(resource => (
+            <div key={resource.id}>
+              <div className={styles.resourceItem}>
+                <div className={styles.checkboxContainer}>
+                  <input
+                    type="checkbox"
+                    checked={selectedIds.has(resource.id)}
+                    onChange={() => toggleSelect(resource.id)}
+                  />
+                </div>
+
+                <div className={styles.resourceItemDetail}>{resource.user}</div>
+                <div className={styles.resourceItemDetail}>{resource.timeDuration}</div>
+                <div className={styles.resourceItemDetail}>{resource.facilities}</div>
+                <div className={styles.resourceItemDetail}>{resource.materials}</div>
+                <div className={styles.resourceItemDetail}>
+                  <span className={styles.calendarIcon}>📅</span> {resource.date}
+                </div>
+              </div>
+
+              <hr className={styles.lineSperator} />
+            </div>
+          ))}
+        </div>
 
         <div className={`${styles.rmPagination}`}>
           <button type="button" className={`${styles.arrowButton}`}>
