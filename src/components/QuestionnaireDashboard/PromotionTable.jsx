@@ -19,8 +19,16 @@ function MemberSection({ title, members, onPromoteChange, styles: sectionStyles,
           <tr key={user.id}>
             <td />
             <td>{user.reviewer}</td>
-            <td className={user.hasMetWeekly ? sectionStyles['statusMet'] : sectionStyles['statusNotMet']}>
-              <span className={sectionStyles['statusIcon']}>{user.hasMetWeekly ? '✓' : '✗'}</span>
+            <td
+              className={
+                user.hasMetWeekly
+                  ? sectionStyles['statusMet']
+                  : sectionStyles['statusNotMet']
+              }
+            >
+              <span className={sectionStyles['statusIcon']}>
+                {user.hasMetWeekly ? '✓' : '✗'}
+              </span>
               {user.hasMetWeekly ? 'Has Met' : 'Has not Met'}
             </td>
             <td>{user.requiredPRs}</td>
@@ -33,7 +41,11 @@ function MemberSection({ title, members, onPromoteChange, styles: sectionStyles,
                 checked={user.promote}
                 onChange={() => onPromoteChange(user.id)}
                 disabled={isDisabled}
-                title={!canModify ? 'Only Administrators and Owners can modify selections' : ''}
+                title={
+                  !canModify
+                    ? 'Only Administrators and Owners can modify selections'
+                    : ''
+                }
               />
             </td>
           </tr>
@@ -158,7 +170,11 @@ function PromotionTable() {
             className={`${styles.btn} ${styles['btnPrimary']}`}
             onClick={handleReviewForThisWeek}
             disabled={reviewLoading || loading || !canModifyPromotion}
-            title={!canModifyPromotion ? 'Only Administrators and Owners can perform this action' : ''}
+            title={
+              !canModifyPromotion
+                ? 'Only Administrators and Owners can perform this action'
+                : ''
+            }
           >
             {reviewLoading ? 'Reviewing...' : 'Review for This Week'}
           </button>
@@ -167,7 +183,11 @@ function PromotionTable() {
             className={`${styles.btn} ${styles['btnSecondary']}`}
             onClick={handleProcessPromotions}
             disabled={processingLoading || loading || !canModifyPromotion}
-            title={!canModifyPromotion ? 'Only Administrators and Owners can process promotions' : ''}
+            title={
+              !canModifyPromotion
+                ? 'Only Administrators and Owners can process promotions'
+                : ''
+            }
           >
             {processingLoading ? 'Processing...' : 'Process Promotions'}
           </button>
