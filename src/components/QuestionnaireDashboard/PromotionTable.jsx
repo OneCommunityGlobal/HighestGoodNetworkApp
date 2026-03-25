@@ -21,14 +21,10 @@ function MemberSection({ title, members, onPromoteChange, styles: sectionStyles,
             <td>{user.reviewer}</td>
             <td
               className={
-                user.hasMetWeekly
-                  ? sectionStyles['statusMet']
-                  : sectionStyles['statusNotMet']
+                user.hasMetWeekly ? sectionStyles['statusMet'] : sectionStyles['statusNotMet']
               }
             >
-              <span className={sectionStyles['statusIcon']}>
-                {user.hasMetWeekly ? '✓' : '✗'}
-              </span>
+              <span className={sectionStyles['statusIcon']}>{user.hasMetWeekly ? '✓' : '✗'}</span>
               {user.hasMetWeekly ? 'Has Met' : 'Has not Met'}
             </td>
             <td>{user.requiredPRs}</td>
@@ -41,11 +37,7 @@ function MemberSection({ title, members, onPromoteChange, styles: sectionStyles,
                 checked={user.promote}
                 onChange={() => onPromoteChange(user.id)}
                 disabled={isDisabled}
-                title={
-                  !canModify
-                    ? 'Only Administrators and Owners can modify selections'
-                    : ''
-                }
+                title={!canModify ? 'Only Administrators and Owners can modify selections' : ''}
               />
             </td>
           </tr>
@@ -171,9 +163,7 @@ function PromotionTable() {
             onClick={handleReviewForThisWeek}
             disabled={reviewLoading || loading || !canModifyPromotion}
             title={
-              !canModifyPromotion
-                ? 'Only Administrators and Owners can perform this action'
-                : ''
+              !canModifyPromotion ? 'Only Administrators and Owners can perform this action' : ''
             }
           >
             {reviewLoading ? 'Reviewing...' : 'Review for This Week'}
@@ -184,9 +174,7 @@ function PromotionTable() {
             onClick={handleProcessPromotions}
             disabled={processingLoading || loading || !canModifyPromotion}
             title={
-              !canModifyPromotion
-                ? 'Only Administrators and Owners can process promotions'
-                : ''
+              !canModifyPromotion ? 'Only Administrators and Owners can process promotions' : ''
             }
           >
             {processingLoading ? 'Processing...' : 'Process Promotions'}
