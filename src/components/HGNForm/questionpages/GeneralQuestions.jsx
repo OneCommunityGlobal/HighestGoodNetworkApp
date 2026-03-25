@@ -455,7 +455,7 @@ function GeneralQuestions() {
           />
         </div>
 
-        <div className="manager">
+        <div className={`${styles.manager}`}>
           {renderEditableQuestion(4)}
           <div className={`${styles.standupRadio}`}>
             <input
@@ -497,7 +497,7 @@ function GeneralQuestions() {
           </div>
         </div>
 
-        <div className="combined_frontend_backend">
+        <div className={`${styles.combinedFrontendBackend}`}>
           {renderEditableQuestion(5)}
           <div className={`${styles.radioRating}`}>
             {Array.from({ length: 10 }, (_, i) => (
@@ -539,7 +539,7 @@ function GeneralQuestions() {
           </div>
         </div> */}
 
-        <div className="mern_skills">
+        <div className={`${styles.mernSkills}`}>
           {renderEditableQuestion(6)}
           <div className={`${styles.radioRating}`}>
             {Array.from({ length: 10 }, (_, i) => (
@@ -561,7 +561,7 @@ function GeneralQuestions() {
           </div>
         </div>
 
-        <div className="leadership_skills">
+        <div className={`${styles.leadershipSkills}`}>
           {renderEditableQuestion(7)}
           <div className={`${styles.radioRating}`}>
             {Array.from({ length: 10 }, (_, i) => (
@@ -583,7 +583,7 @@ function GeneralQuestions() {
           </div>
         </div>
 
-        <div className="leadership_experience">
+        <div className={`${styles.leadershipExperience}`}>
           {renderEditableQuestion(8)}
           <div className={`${styles.radioRating}`}>
             {Array.from({ length: 10 }, (_, i) => (
@@ -605,7 +605,7 @@ function GeneralQuestions() {
           </div>
         </div>
 
-        <div className="preferences">
+        <div className={`${styles.preferences}`}>
           {renderEditableQuestion(9)}
           <div className={`${styles.preferencesCheckbox}`}>
             {[
@@ -636,11 +636,11 @@ function GeneralQuestions() {
           )}
         </div>
 
-        <div className="availability">
+        <div className={`${styles.availability}`}>
           {renderEditableQuestion(10)}
           <div className={`${styles.availabilitySelector}`}>
             <div className={`${styles.availabilityGrid}`}>
-              <div className="corner-cell" />
+              <div className={`${styles.cornerCell}`} />
               {times.map(time => (
                 <div
                   key={`time-${time}`}
