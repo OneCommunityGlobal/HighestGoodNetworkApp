@@ -275,8 +275,12 @@ function InfoForm() {
 =======
             style={{ color: '#2f5061', margin: '0 5px' }}
             htmlFor="sameAsName"
+<<<<<<< HEAD
             className={`${getFontColor(darkMode)}`}
 >>>>>>> f4bb365f3 (add dark mode to infoForm.jsx)
+=======
+            className={`${styles.slackLabel}${getFontColor(darkMode)}`}
+>>>>>>> ab102efe7 (Update Slack label class for styling consistency)
           >
             Yes, my Slack handle is my first and last name <span style={{ color: 'red' }}>*</span>
           </label>
