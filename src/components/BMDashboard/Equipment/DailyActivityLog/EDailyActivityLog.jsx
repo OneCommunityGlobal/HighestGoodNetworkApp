@@ -138,6 +138,9 @@ function EDailyActivityLog(props) {
   const [logType, setLogType] = useState('check-in'); // 'check-in' | 'check-out'
 
   const [rows, setRows] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [toastMessage, setToastMessage] = useState(null);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   useEffect(() => {
     dispatch(fetchBMProjects());
@@ -145,7 +148,8 @@ function EDailyActivityLog(props) {
 
   useEffect(() => {
     if (selectedProject?.value) {
-      dispatch(fetchAllEquipments(selectedProject.value));
+      setIsLoading(true);
+      dispatch(fetchAllEquipments(selectedProject.value)).finally(() => setIsLoading(false));
     }
   }, [selectedProject, dispatch]);
 
@@ -189,6 +193,9 @@ function EDailyActivityLog(props) {
   };
 
   const handleSubmit = () => {
+    setShowConfirm(true);
+  };
+  const confirmSubmit = () => {
     const payload = rows.flatMap(r =>
       r.selectedNumbers.map(() => ({
         equipmentId: r.id,
@@ -202,6 +209,8 @@ function EDailyActivityLog(props) {
     );
 
     dispatch(updateMultipleEquipmentLogs(selectedProject.value, payload));
+    setShowConfirm(false);
+    setToastMessage('Entry recorded.');
   };
 
   const projectSelectStyles = getSelectStyles(darkMode, false);
@@ -275,12 +284,36 @@ function EDailyActivityLog(props) {
 
       <div className="container">
         <h4 className="mb-4 pt-3">Daily Equipment Log</h4>
+        {showConfirm && (
+          <div
+            className="alert alert-warning d-flex justify-content-between align-items-center"
+            style={
+              darkMode
+                ? {
+                    backgroundColor: 'rgba(255, 193, 7, 0.18)',
+                    borderColor: 'rgba(255, 193, 7, 0.35)',
+                    color: '#f8f9fa',
+                  }
+                : undefined
+            }
+          >
+            <span>Are you sure? This will update equipment availability.</span>
+            <div className="d-flex gap-2">
+              <Button size="sm" color="secondary" onClick={() => setShowConfirm(false)}>
+                Cancel
+              </Button>
+              <Button size="sm" color="danger" onClick={confirmSubmit}>
+                Confirm
+              </Button>
+            </div>
+          </div>
+        )}
 
         {/* Header Row */}
-        <div className="row mb-3 align-items-end">
+        <div className="row mb-3 align-items-start">
           <div className="col-md-3">
             <label
-              className={`form-label fw-bold${darkMode ? ' text-light' : ''}`}
+              className={`form-label fw-bold ${darkMode ? 'text-light' : 'text-dark'}`}
               htmlFor="date"
               style={darkMode ? { color: '#f8f9fa' } : {}}
             >
@@ -312,7 +345,7 @@ function EDailyActivityLog(props) {
 
           <div className="col-md-5">
             <label
-              className={`form-label fw-bold${darkMode ? ' text-light' : ''}`}
+              className={`form-label fw-bold ${darkMode ? 'text-light' : 'text-dark'}`}
               htmlFor="project-select"
               style={darkMode ? { color: '#f8f9fa' } : {}}
             >
@@ -331,7 +364,7 @@ function EDailyActivityLog(props) {
 
           <div className="col-md-4">
             <div
-              className={`form-label fw-bold mb-2 ${darkMode ? 'text-light' : ''}`}
+              className={`form-label fw-bold ${darkMode ? 'text-light' : 'text-dark'}`}
               id="log-type-label"
               style={darkMode ? { color: '#f8f9fa' } : {}}
             >

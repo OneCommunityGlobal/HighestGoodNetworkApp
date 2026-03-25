@@ -10,7 +10,8 @@
 
 .team-member-tasks {
   background-color: white;
-  overflow: visible; 
+  overflow: hidden;
+  max-width: 100%;
 }
 
 .truncateTasksBtn {
@@ -68,7 +69,7 @@
 
 .task_table-container {
   width: 100%;
-  overflow: auto;
+  overflow: hidden auto;
   -webkit-overflow-scrolling: touch;
 }
 
@@ -246,15 +247,12 @@
 }
 
 .team-clocks {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  display: table-cell;
   text-align: center;
-  vertical-align: middle !important;
-  gap: 4px;
-  width: 50%;
-  white-space: nowrap;
+  vertical-align: top;
+  padding-left: 10px !important;
 }
+
 
 .team-member-tasks-number {
   display: inline-block;

@@ -25,18 +25,15 @@ function ApplicantVolunteerRatio() {
     const fetchAllRoles = async () => {
       try {
         const response = await getAllApplicantVolunteerRatios({});
-        const apiData = response.data;
-
+        const apiData = response?.data ?? [];
         const uniqueRoles = [...new Set(apiData.map(item => item.role))];
         const roleOptions = uniqueRoles.map(role => ({ label: role, value: role }));
-
         setAllRoles(roleOptions);
         setSelectedRoles(roleOptions);
       } catch (err) {
         setError('Failed to load roles. Please try again.');
       }
     };
-
     fetchAllRoles();
   }, []);
 
@@ -56,10 +53,8 @@ function ApplicantVolunteerRatio() {
         setData([]);
         return;
       }
-
       try {
         setLoading(true);
-
         const filters = {};
         if (startDate) filters.startDate = startDate.toISOString().split('T')[0];
         if (endDate) filters.endDate = endDate.toISOString().split('T')[0];
@@ -68,8 +63,7 @@ function ApplicantVolunteerRatio() {
         }
 
         const response = await getAllApplicantVolunteerRatios(filters);
-        const apiData = response.data;
-
+        const apiData = response?.data ?? [];
         const transformedData = apiData.map(item => ({
           role: item.role,
           applicants: item.totalApplicants,
@@ -83,7 +77,6 @@ function ApplicantVolunteerRatio() {
         setLoading(false);
       }
     };
-
     fetchFilteredData();
   }, [startDate, endDate, selectedRoles]);
 
