@@ -18,15 +18,15 @@ import {
   fetchLongestOpenIssues,
   setProjectFilter,
 } from '../../../actions/bmdashboard/issueChartActions';
-import './issueCharts.css';
+import styles from './issueChart.module.css';
 
 function IssueCharts() {
   const dispatch = useDispatch();
   const { issues, loading, error, selectedProjects } = useSelector(state => state.bmissuechart);
   const projects = useSelector(state => state.bmProjects);
   const darkMode = useSelector(state => state.theme.darkMode);
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
+  const [startDate, setStartDate] = useState();
+  const [endDate, setEndDate] = useState();
   const chartContainerRef = useRef(null);
   const [containerWidth, setContainerWidth] = useState(window.innerWidth);
 
@@ -58,7 +58,7 @@ function IssueCharts() {
       }
     }
     window.addEventListener('resize', handleResize);
-    handleResize(); // Initial set
+    handleResize();
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
@@ -88,16 +88,63 @@ function IssueCharts() {
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <div className={`issue-chart-container ${darkMode ? 'dark' : ''}`}>
-      <h2>Longest Open Issues</h2>
+    <div
+      className={`${styles.issueChartEventContainer} ${
+        darkMode ? styles.issueChartEventContainerDark : ''
+      }`}
+    >
+      <h2
+        className={`${styles.issueChartEventTitle} ${
+          darkMode ? styles.issueChartEventTitleDark : ''
+        }`}
+      >
+        Longest Open Issues
+      </h2>
 
-      <div className="filters-container">
-        <div className="filter">
-          <label className="issue-chart-label" htmlFor="start-date">
-            Date Range:
-          </label>
-          <div className="date-range-picker">
+      <div className={`${styles.filtersContainer}`}>
+        <div className={`${styles.filter}`}>
+          <label htmlFor="start-date">Date Range:</label>
+
+          <div className={`${styles.dateRangePicker} ${darkMode ? styles.darkDatePicker : ''}`}>
             <DatePicker
+              renderCustomHeader={({ date, decreaseMonth, increaseMonth }) => (
+                <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+                  <button
+                    onClick={decreaseMonth}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      color: darkMode ? 'white' : 'black',
+                      fontSize: '16px',
+                    }}
+                  >
+                    ◀
+                  </button>
+
+                  <span
+                    style={{ flex: 1, textAlign: 'center', fontWeight: 'bold', fontSize: '16px' }}
+                  >
+                    {date.toLocaleString('default', {
+                      month: 'long',
+                      year: 'numeric',
+                    })}
+                  </span>
+
+                  <button
+                    onClick={increaseMonth}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      color: darkMode ? 'white' : 'black',
+                      fontSize: '16px',
+                    }}
+                  >
+                    ▶
+                  </button>
+                </div>
+              )}
               id="start-date"
               selected={startDate}
               onChange={date => setStartDate(date)}
@@ -107,10 +154,37 @@ function IssueCharts() {
               maxDate={endDate}
               placeholderText="Start Date"
               isClearable
-              className="filter-select"
+              className={`${styles.filterSelect} ${darkMode ? styles.filterSelectDark : ''}`}
             />
+
             <span>to</span>
+
             <DatePicker
+              renderCustomHeader={({ date, decreaseMonth, increaseMonth }) => (
+                <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+                  <button
+                    onClick={decreaseMonth}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      color: darkMode ? 'white' : 'black',
+                      fontSize: '16px',
+                    }}
+                  >
+                    ◀
+                  </button>
+
+                  <span
+                    style={{ flex: 1, textAlign: 'center', fontWeight: 'bold', fontSize: '16px' }}
+                  >
+                    {date.toLocaleString('default', {
+                      month: 'long',
+                      year: 'numeric',
+                    })}
+                  </span>
+                </div>
+              )}
               selected={endDate}
               onChange={date => setEndDate(date)}
               selectsEnd
@@ -120,31 +194,33 @@ function IssueCharts() {
               maxDate={new Date()}
               placeholderText="End Date"
               isClearable
-              className="filter-select"
+              className={`${styles.filterSelect} ${darkMode ? styles.filterSelectDark : ''}`}
             />
           </div>
         </div>
 
-        <div className="filter">
-          <label className="issue-chart-label" htmlFor="start-date">
-            Projects:
-          </label>
+        <div className={`${styles.filter}`}>
+          <label htmlFor="selectProjectsDropdown">Projects:</label>
+
           <Select
-            id="start-date"
             isMulti
+            id="selectProjectsDropdown"
             options={projectOptions}
             onChange={handleProjectChange}
             value={projectOptions.filter(option => (selectedProjects ?? []).includes(option.value))}
-            className="filter-select"
-            classNamePrefix="select"
+            classNamePrefix={darkMode ? 'loiSelectDark' : 'loiSelect'}
+            className={`${styles.multiSelect} ${darkMode ? styles.multiSelectDark : ''}`}
           />
         </div>
       </div>
 
-      <div className="chart-container" ref={chartContainerRef}>
+      <div
+        className={`${styles.chartContainer} ${darkMode ? styles.chartContainerDark : ''}`}
+        ref={chartContainerRef}
+      >
         {!issues || issues.length === 0 ? (
-          <div className="no-data-message">
-            <div className="no-data-content">
+          <div className={`${styles.noDataMessage} ${darkMode ? styles.noDataMessageDark : ''}`}>
+            <div className={`${styles.noDataContent} ${darkMode ? styles.noDataContentDark : ''}`}>
               <h3>No Open Issues Found</h3>
               <p>There are currently no open issues matching your selected criteria.</p>
               <p>Try adjusting your date range or project filters to see more results.</p>
@@ -173,7 +249,7 @@ function IssueCharts() {
                   dataKey="durationOpen"
                   position="right"
                   formatter={v => `${v} mo`}
-                  className="recharts-label"
+                  className={`${darkMode ? styles.rechartsLabelDark : styles.rechartsLabel}`}
                 />
               </Bar>
             </BarChart>

@@ -1,28 +1,151 @@
-/* issueChart.module.css */
+:global(.loiSelectDark__control) {
+  background-color: #1e293b !important;
+  border: 1px solid #334155 !important;
+  border-radius: 8px !important;
+}
+
+:global(.loiSelectDark__menu) {
+  background-color: #1e293b !important;
+}
+
+:global(.loiSelectDark__multi-value),
+:global(.loiSelectDark__multi-value__label),
+:global(.loiSelectDark__option--is-focused) {
+  background-color: #334155 !important;
+  color: #fff !important;
+}
+
+
+:global(.loiSelect__control) {
+  background-color: #fff !important;
+  border: 1px solid #334155 !important;
+  border-radius: 8px !important;
+}
+
+:global(.loiSelect__menu) {
+  background-color: #fff !important;
+}
+
+:global(.loiSelect__multi-value),
+:global(.loiSelect__option--is-focused) {
+  background-color: #ccd1dc !important;
+}
+
+:global(.react-datepicker__month-container){
+  padding: 10px;
+}
+
+.darkDatePicker :global(.react-datepicker__month-container),
+.darkDatePicker :global(.react-datepicker__header),
+.darkDatePicker :global(.react-datepicker__day-name), 
+.darkDatePicker :global(.react-datepicker__current-month), 
+.darkDatePicker :global(.react-datepicker__day),
+.darkDatePicker :global(.react-datepicker__month-text),
+.darkDatePicker :global(.react-datepicker__year-text){
+  background-color: #1e293b !important;
+  color: #fff !important;
+}
+
+.darkDatePicker :global(.react-datepicker__day:hover),
+.darkDatePicker :global(.react-datepicker__month-text:hover),
+.darkDatePicker :global(.react-datepicker__year-text:hover) {
+  background-color: #334155 !important;
+}
+
+:global(.react-datepicker__month-container),
+:global(.react-datepicker__header),
+:global(.react-datepicker__day-name), 
+:global(.react-datepicker__current-month), 
+:global(.react-datepicker__day),
+:global(.react-datepicker__month-text),
+:global(.react-datepicker__year-text){
+  background-color: #f0f0f0 !important;
+  color: #1e293b !important;
+}
+
+:global(.react-datepicker__day:hover),
+:global(.react-datepicker__month-text:hover),
+:global(.react-datepicker__year-text:hover) {
+  background-color: #ccd1dc !important;
+}
+
+:global(.react-datepicker__day.react-datepicker__day--selected){
+  background-color: #007bff !important;
+}
+
+:global(.react-datepicker__day.react-datepicker__day--today) {
+  text-decoration: underline !important;
+}
 
 .issueChartEventContainer {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 20px;
-  background: #f9f9f9;
+  max-width: 1000px;
+  padding: 32px;
   border-radius: 8px;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .issueChartEventContainerDark {
-  background: #121212;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.9);
+  background: #2B3E59;
   color: #ccd1dc;
 }
 
 .issueChartEventTitle {
   text-align: center;
   font-size: 24px;
-  color: #333;
+  color: var(--text-color);
 }
 
 .issueChartEventTitleDark {
   color: #fff;
+}
+
+.dateRangePicker {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.rangeSeparator {
+  font-size: 14px;
+  opacity: 0.7;
+  color: #94a3b8;
+}
+
+.filtersContainer{
+  display: flex;
+  padding: 25px 0px;
+  gap: 15px;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.filter {
+    flex: 1;
+    min-width: 280px;
+}
+
+.filter label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: var(--text-color);
+}
+
+.filterSelect {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 14px;
+  color: var(--text-color);
+}
+
+.filterSelectDark{
+  background: #1E293B;
+  border: 1px solid #334155;
+}
+
+.multiSelect{
+  width: 100%;
+  font-size: 14px;
+  color: var(--text-color);
 }
 
 .chartWrapper {
@@ -33,18 +156,58 @@
 }
 
 .chartWrapperDark {
-  background: #1e1e1e;
   box-shadow: 0 0 15px rgba(0,0,0,0.9);
   color: #ccd1dc;
 }
 
+.chartContainer {
+  width: 100%;
+  height: 400px;
+  border-radius: 8px;
+  background-color: var(--card-bg) !important;
+  color: var(--text-color) !important;
+}
+
+.chartContainerDark {
+  background-color: var(--card-bg) !important;
+  color: var(--text-color) !important;
+}
+
+.noDataMessage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  color: #666;
+}
+
+.noDataMessageDark {
+  background: #22272D;
+  color: #999;
+}
+
+.noDataContent {
+  text-align: center;
+  padding: 40px 20px;
+  max-width: 400px;
+}
+
 .issueChartLabel {
   font-size: 16px;
-  color: #555;
+  color: var(--text-color) !important;
 }
 
 .issueChartLabelDark {
-  color: #fff;
+  color: var(--text-color) !important;
+}
+
+.rechartsLabel{
+  color: #232323
+}
+
+.rechartsLabelDark{
+  color: #fff
 }
 
 .issueChartSelect {
