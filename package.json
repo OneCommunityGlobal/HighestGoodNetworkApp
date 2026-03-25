@@ -10,6 +10,7 @@
   "dependencies": {
     "@ant-design/charts": "^2.6.4",
     "@ant-design/icons": "^6.0.1",
+    "@babel/plugin-proposal-logical-assignment-operators": "^7.20.7",
     "@babel/runtime": "^7.27.6",
     "@babel/runtime-corejs3": "^7.27.6",
     "@changey/react-leaflet-markercluster": "^4.0.0-rc1",
