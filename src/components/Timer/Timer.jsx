@@ -41,8 +41,8 @@ function Timer({ authUser, darkMode, isPopout }) {
     protocols: localStorage.getItem(config.tokenKey),
     onOpen: () => setCustomReadyState(ReadyState.OPEN),
     onClose: () => setCustomReadyState(ReadyState.CLOSED),
-    onError: error => {
-      throw new Error('WebSocket Error:', error);
+    onError: () => {
+      setCustomReadyState(ReadyState.CLOSED);
     },
   };
 
@@ -124,6 +124,18 @@ function Timer({ authUser, darkMode, isPopout }) {
   const logMinutes = timeToLog.minutes();
 
   const sendJsonMessageNoQueue = useCallback(msg => sendJsonMessage(msg, false), [sendMessage]);
+
+  const previewDuration = moment.duration(remaining);
+  const previewHoursDisplay = Math.floor(previewDuration.asHours()).toString();
+  const previewMinutesDisplay = previewDuration
+    .minutes()
+    .toString()
+    .padStart(2, '0');
+  const previewSecondsDisplay = previewDuration
+    .seconds()
+    .toString()
+    .padStart(2, '0');
+  const previewTimeDisplay = `${previewHoursDisplay}:${previewMinutesDisplay}:${previewSecondsDisplay}`;
 
   // Enhanced function to clear submitted time with better logging
   const clearSubmittedTime = useCallback(() => {
@@ -521,9 +533,7 @@ function Timer({ authUser, darkMode, isPopout }) {
     }
     // Handle explicit week close pause action messages
     if (lastJsonMessage && lastJsonMessage.action === 'WEEK_CLOSE_PAUSE') {
-      if (running) {
-        handleWeekEndPause();
-      }
+      handleWeekEndPause();
       return; // Exit early to prevent other modal logic
     }
 
@@ -541,7 +551,7 @@ function Timer({ authUser, darkMode, isPopout }) {
     // Show inactivity or time-over modals based on message state
     setInacModal(forcedPauseLJM);
     setTimeIsOverModalIsOpen(chimingLJM && (customReadyState === ReadyState.OPEN || !weekEndModal));
-  }, [lastJsonMessage, customReadyState, running, message, weekEndModal]);
+  }, [lastJsonMessage, customReadyState, weekEndModal]);
 
   // This useEffect is to make sure that the WS connection is maintained by sending a heartbeat every 60 seconds
   useEffect(() => {
@@ -915,7 +925,7 @@ function Timer({ authUser, darkMode, isPopout }) {
             className={css.preview}
             onClick={toggleTimer}
           >
-            {moment.utc(remaining).format('HH:mm:ss')}
+            {previewTimeDisplay}
           </button>
         ) : (
           <div className={css.disconnected}>Disconnected</div>

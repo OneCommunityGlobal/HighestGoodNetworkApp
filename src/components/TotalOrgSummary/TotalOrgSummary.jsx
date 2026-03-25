@@ -117,7 +117,7 @@ function TotalOrgSummary(props) {
   const [isLoading, setIsLoading] = useState(true);
   const [dateRangeDropdownOpen, setDateRangeDropdownOpen] = useState(false);
   const [comparisonDropdownOpen, setComparisonDropdownOpen] = useState(false);
-  const [selectedDateRange, setSelectedDateRange] = useState('Current Week');
+  const [selectedDateRange, setSelectedDateRange] = useState('Previous Week');
   const [selectedComparison, setSelectedComparison] = useState('No Comparison');
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [startDate, setStartDate] = useState(null);
