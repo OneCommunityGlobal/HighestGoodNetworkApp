@@ -125,11 +125,11 @@ function AdditionalInfo() {
 >>>>>>> 5113d38dc (convert css to module css and add dark mode styling to component)
       <div className={styles.workExpInfoBox}>
         <h3> Work Experience and Additional Info: </h3>
-        <button type="button" className="edit-button" onClick={handleEditSave}>
+        <button type="button" className={styles.editButton} onClick={handleEditSave}>
           {isEditing ? 'Save' : 'Edit'}
         </button>
       </div>
-      <hr className="horizontal-separator" />
+      <hr className={styles.horizontalSeparator} />
       {!!questions &&
         questions
           .slice(0, 3)
