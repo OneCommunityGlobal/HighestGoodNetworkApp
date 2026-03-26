@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
-import { Spinner } from 'reactstrap';
+// import httpService from '../../../../services/httpService';
 import { getProjectExpenditure } from './mockExpenditureData';
 import styles from './ExpenditureChart.module.css';
 import { getTooltipStyles } from '../../../../utils/bmChartStyles';
@@ -11,22 +11,18 @@ const COLORS = ['#6777EF', '#A0CD61', '#F5CD4B'];
 const CATEGORIES = ['Labor', 'Equipment', 'Materials'];
 
 function normalizeData(data) {
-  const normalized = CATEGORIES.map(cat => {
+  return CATEGORIES.map(cat => {
     const found = data.find(d => d.category === cat);
     return found || { category: cat, amount: 0 };
   });
-  // Check if all amounts are zero for "No Data" check
-  const hasData = normalized.some(d => d.amount > 0);
-  return { normalized, hasData };
 }
 
-// ... (renderCustomLabel remains the same) ...
 const renderCustomLabel = ({ cx, cy, midAngle, outerRadius, percent, name }) => {
   const RADIAN = Math.PI / 180;
   const radius = outerRadius * 0.6;
   const x = cx + radius * Math.cos(-midAngle * RADIAN);
   const y = cy + radius * Math.sin(-midAngle * RADIAN);
-  if (percent === 0) return null; // Don't show labels for 0%
+
   return (
     <text
       x={x}
@@ -53,12 +49,18 @@ function ExpenditureChart({ projectId }) {
     const fetchData = async () => {
       if (!projectId) return;
       setLoading(true);
+      setError(null);
       try {
-        // Simulating delay for feedback (Requirement #1)
-        await new Promise(resolve => setTimeout(resolve, 400));
+        // Using mock data
         const data = getProjectExpenditure(projectId);
         setActual(data.actual);
         setPlanned(data.planned);
+        // Original API call (commented out for mock data)
+        // const res = await httpService.get(
+        //   `${process.env.REACT_APP_APIENDPOINT}/bm/expenditure/${projectId}/pie`,
+        // );
+        // setActual(res.data.actual);
+        // setPlanned(res.data.planned);
       } catch (err) {
         setError('Failed to load expenditure data');
       } finally {
@@ -68,75 +70,57 @@ function ExpenditureChart({ projectId }) {
     fetchData();
   }, [projectId]);
 
-  const renderChart = (rawItems, title) => {
-    const { normalized, hasData } = normalizeData(rawItems);
-
-    return (
-      <div
-        className={styles.expenditureChartCard}
-        style={{ position: 'relative', minHeight: '300px' }}
-      >
-        <h4 className={styles.expenditureChartTitle}>{title}</h4>
-
-        {!hasData ? (
-          /* Graceful Reset / No Data State (Requirement #3) */
-          <div
-            style={{
-              height: '280px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#999',
-              fontSize: '0.9rem',
-            }}
-          >
-            No {title.toLowerCase()} recorded.
-          </div>
-        ) : (
-          <PieChart width={280} height={280}>
-            <Pie
-              data={normalized}
-              dataKey="amount"
-              nameKey="category"
-              cx="50%"
-              cy="50%"
-              outerRadius={100}
-              label={renderCustomLabel}
-              labelLine={false}
-              stroke="none"
-            >
-              {normalized.map((entry, index) => (
-                <Cell key={entry.category} fill={COLORS[index % COLORS.length]} />
-              ))}
-            </Pie>
-            <Tooltip {...getTooltipStyles(darkMode)} />
-            <Legend layout="horizontal" verticalAlign="bottom" align="center" iconSize={10} />
-          </PieChart>
-        )}
-      </div>
-    );
-  };
+  const renderChart = (data, title) => (
+    <div className={styles.expenditureChartCard}>
+      <h4 className={styles.expenditureChartTitle}>{title}</h4>
+      <PieChart width={280} height={280}>
+        <Pie
+          data={data}
+          dataKey="amount"
+          nameKey="category"
+          cx="50%"
+          cy="50%"
+          outerRadius={120}
+          label={renderCustomLabel}
+          labelLine={false}
+          stroke="none"
+        >
+          {data.map((entry, index) => (
+            <Cell key={entry.category || index} fill={COLORS[index % COLORS.length]} />
+          ))}
+        </Pie>
+        <Tooltip
+          {...getTooltipStyles(darkMode)}
+          itemStyle={{ color: darkMode ? '#e0e0e0' : '#333' }}
+        />
+        <Legend
+          layout="horizontal"
+          verticalAlign="bottom"
+          align="center"
+          height={20}
+          wrapperStyle={{
+            color: darkMode ? '#e0e0e0' : '#333',
+          }}
+          iconSize={10}
+        />
+      </PieChart>
+    </div>
+  );
 
   if (loading)
-    return (
-      <div
-        className={styles.expenditureChartWrapper}
-        style={{ justifyContent: 'center', padding: '50px' }}
-      >
-        <Spinner color="primary" />{' '}
-        <span style={{ marginLeft: '10px' }}>Loading Financials...</span>
-      </div>
-    );
-
+    return <div className={styles.expenditureChartLoading}>Loading expenditure data...</div>;
   if (error) return <div className={styles.expenditureChartError}>{error}</div>;
 
   return (
     <div className={styles.expenditureChartWrapper}>
-      {renderChart(actual, 'Actual Expenditure')}
-      {renderChart(planned, 'Planned Expenditure')}
+      {renderChart(normalizeData(actual), 'Actual Expenditure')}
+      {renderChart(normalizeData(planned), 'Planned Expenditure')}
     </div>
   );
 }
 
-ExpenditureChart.propTypes = { projectId: PropTypes.string.isRequired };
+ExpenditureChart.propTypes = {
+  projectId: PropTypes.string.isRequired,
+};
+
 export default ExpenditureChart;
