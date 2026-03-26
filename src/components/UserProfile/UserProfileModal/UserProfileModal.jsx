@@ -266,6 +266,47 @@ const UserProfileModal = props => {
   const boxStyling = darkMode ? boxStyleDark : boxStyle;
   const fontColor = darkMode ? 'text-light' : '';
 
+  // Helper component to render blue square metadata (manual assignment and edit history)
+  const BlueSquareMetadata = ({ blueSquareData }) => {
+    const hasManualAssignment = blueSquareData?.manullyAssigned;
+    const hasEditHistory = blueSquareData?.editedBy && blueSquareData.editedBy.length > 0;
+    
+    if (!hasManualAssignment && !hasEditHistory) return null;
+
+    return (
+      <>
+        {hasManualAssignment && (
+          <FormGroup>
+            <Label className={fontColor} for="manullyAssigned">
+              <strong>Manual Assignment</strong>
+            </Label>
+            <div className={fontColor}>
+              {blueSquareData?.manullyAssignedBy?.firstName && blueSquareData?.manullyAssignedBy?.lastName
+                ? `${blueSquareData.manullyAssignedBy.firstName} ${blueSquareData.manullyAssignedBy.lastName}`
+                : 'Admin User'}
+            </div>
+          </FormGroup>
+        )}
+        
+        {hasEditHistory && (
+          <FormGroup>
+            <div style={{ textAlign: 'right', fontSize: '0.9em', color: darkMode ? '#ccc' : '#666' }}>
+              <strong>Edited By</strong>{' '}
+              {blueSquareData.editedBy[blueSquareData.editedBy.length - 1].firstName}{' '}
+              {blueSquareData.editedBy[blueSquareData.editedBy.length - 1].lastName}
+              {blueSquareData.editedBy[blueSquareData.editedBy.length - 1].date && (
+                <span>
+                  {' '}
+                  {new Date(blueSquareData.editedBy[blueSquareData.editedBy.length - 1].date).toLocaleDateString()}
+                </span>
+              )}
+            </div>
+          </FormGroup>
+        )}
+      </>
+    );
+  };
+
   const [ccModalOpen, setCcModalOpen] = useState(false);
   const allUsers = useSelector(state => state.allUserProfiles?.userProfiles) || [];
   const currentUser = allUsers.find(u => u._id === userProfile._id) || userProfile;
@@ -537,6 +578,9 @@ const UserProfileModal = props => {
                 </Label>
               </FormGroup>
 
+              {/* Display Manual Assignment and Edit History */}
+              <BlueSquareMetadata blueSquareData={blueSquare[0]} />
+
               <FormGroup>
                 <Label className={fontColor} for="report">
                   Summary
@@ -573,6 +617,9 @@ const UserProfileModal = props => {
                   <span>{blueSquare[0]?.createdDate}</span>
                 </Label>
               </FormGroup>
+
+              {/* Display Manual Assignment and Edit History */}
+              <BlueSquareMetadata blueSquareData={blueSquare[0]} />
 
               <FormGroup>
                 <Label className={fontColor} for="description">
