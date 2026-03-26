@@ -132,7 +132,7 @@ function InjuryChartForm({ dark = false }) {
     return Array.from(byProject.values()).sort((a, b) => a.project.localeCompare(b.project));
   }, [raw, projectId, department, projectNameById, SEVERITIES]);
 
-  const containerClass = `p-4 rounded shadow-sm ${dark ? 'bg-dark text-light' : 'bg-white'}`;
+  const containerClass = `p-4 rounded shadow-sm ${dark ? styles.wrapperDark : styles.lightBackground}`;
 
   if (loading) {
     return (
@@ -145,7 +145,7 @@ function InjuryChartForm({ dark = false }) {
   return (
     <div className="p-3">
       <div
-        className={`mb-4 p-3 rounded shadow-sm ${dark ? 'bg-secondary text-light' : 'bg-white'}`}
+        className={`mb-4 p-3 rounded shadow-sm ${dark ? styles.wrapperDark : styles.lightBackground}`}
       >
         <div className="row g-3 align-items-end">
           <div className="col-md-5">
@@ -238,7 +238,7 @@ function InjuryChartForm({ dark = false }) {
       {!error && chartData.length === 0 && (
         <div
           className={`text-center p-5 rounded shadow-sm ${
-            dark ? 'bg-secondary text-light' : 'bg-white'
+            dark ? styles.wrapperDark : styles.lightBackground
           }`}
         >
           <p className="mb-0">No injury data available for the selected criteria.</p>
