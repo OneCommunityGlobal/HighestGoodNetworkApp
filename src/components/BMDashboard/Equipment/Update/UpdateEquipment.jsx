@@ -8,7 +8,7 @@ import Radio from '~/components/common/Radio';
 import DragAndDrop from '~/components/common/DragAndDrop/DragAndDrop';
 import Image from '~/components/common/Image/Image';
 import styles from './UpdateEquipment.module.css';
-import '../../BMDashboard.css';
+import styles1 from '../../BMDashboard.module.css';
 
 export default function UpdateEquipment() {
   const history = useHistory();
@@ -51,11 +51,11 @@ export default function UpdateEquipment() {
   };
 
   return (
-    <Container className="inv-form-page-container">
+    <Container className={`${styles1.invFormPageContainer}`}>
       <CheckTypesModal modal={modal} setModal={setModal} type="Equipments" />
       <Row>
         <Col md={12}>
-          <header className="bm-dashboard__header text-center">
+          <header className={`${styles1.bmDashboardHeader} text-center`}>
             <h1>Update Tool or Equipment Status</h1>
           </header>
         </Col>
@@ -73,7 +73,7 @@ export default function UpdateEquipment() {
           </Col>
         </Row>
       )}
-      <Form className="inv-form">
+      <Form className={`${styles1.invForm}`}>
         <FormGroup className="background-from-db">
           <Row form>
             <Col md={4}>
@@ -297,10 +297,10 @@ export default function UpdateEquipment() {
         </FormGroup>
 
         <FormGroup>
-          <div className="inv-form-btn-group">
+          <div className={`${styles1.invFormBtnGroup}`}>
             <Button
               color="secondary"
-              className="bm-dashboard__button btn btn-secondary"
+              className={`${styles1.bmDashboardButton} btn btn-secondary`}
               onClick={handleCancel}
             >
               Cancel

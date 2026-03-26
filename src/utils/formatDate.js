@@ -1,6 +1,7 @@
 import moment from 'moment-timezone';
 
-const LA_TIME_ZONE = 'America/Los_Angeles';
+export const COMPANY_TZ = 'America/Los_Angeles';
+
 /**
  *
  * @param {*} date
@@ -16,18 +17,36 @@ export const formatDateAndTime = date => moment(date).format('MMM-DD-YY, h:mm:ss
  */
 export const formatDate = date =>
   moment(date)
-    .tz(LA_TIME_ZONE)
+    .tz(COMPANY_TZ)
     .startOf('day')
     .format('MMM-DD-YY');
-export const formatDateLocal = (val) => {
+
+export const formatDateLocal = val => {
   if (!val) return '';
   // Strict ISO parse to avoid fallback warnings
-  return moment(val, moment.ISO_8601, true).local().format('MMM DD, YYYY');
+  return moment(val, moment.ISO_8601, true)
+    .local()
+    .format('MMM DD, YYYY');
 };
-export const formatDateUtcYYYYMMDD = (val) => {
+
+export const formatDateUtcYYYYMMDD = val => {
   if (!val) return '';
   // Always return YYYY-MM-DD for <input type="date">
-  return moment(val, moment.ISO_8601, true).utc().format('YYYY-MM-DD');
+  return moment(val, moment.ISO_8601, true)
+    .utc()
+    .format('YYYY-MM-DD');
+};
+
+export const formatDateCompany = (val) => {
+  if (!val) return '';
+  return moment.tz(val, COMPANY_TZ).format('MMM DD, YYYY');
+};
+
+export const formatDateTimeLocal = (val) => {
+  if (!val) return '';
+  return moment(val, moment.ISO_8601, true)
+    .local()
+    .format('MMM DD, YYYY, HH:mm');
 };
 
 /**
@@ -37,8 +56,9 @@ export const formatDateUtcYYYYMMDD = (val) => {
  */
 export const formatDateYYYYMMDD = date =>
   moment(date)
-    .tz(LA_TIME_ZONE)
+    .tz(COMPANY_TZ)
     .format('YYYY-MM-DD');
+
 /**
  *
  * @param {*} date UTC timestamp string
@@ -46,8 +66,9 @@ export const formatDateYYYYMMDD = date =>
  */
 export const formatDateMMDDYYYY = date =>
   moment(date)
-    .tz(LA_TIME_ZONE)
+    .tz(COMPANY_TZ)
     .format('MM/DD/YYYY');
+
 // converts time to AM/PM format. E.g., '2023-09-21T07:08:09-07:00' becomes '7:08:09 AM'.
 export const formattedAmPmTime = date => moment(date).format('h:mm:ss A');
 export const formatCreatedDate = date => moment(date).format('MM/DD');
@@ -65,7 +86,7 @@ export const getDayOfWeekStringFromUTC = utcTs =>
 export const CREATED_DATE_CRITERIA = '2022-01-01';
 
 /**
- *
+ * carlos: converts YYYY-MM-DD to MM/DD/YY
  * @param {String} dateStr date string in YYYY-MM-DD format
  * @returns {String} formatted date in MM/DD/YY
  */
@@ -74,4 +95,21 @@ export const formatYYYYMMDDToMMDDYY = dateStr => {
   const [year, month, day] = dateStr.split("-");
   const shortYear = year.slice(-2);
   return `${month}/${day}/${shortYear}`;
-}
+};
+
+/**
+ * development: Converts a UTC timestamp to a formatted string in the user's
+ * specific profile timezone.
+ *
+ * @param {string} utcDate - The UTC date string (e.g., "2025-08-28T03:04:50.054Z")
+ * @param {string} timeZone - The user's timezone from their profile (e.g., "America/Los_Angeles")
+ * @returns {string} Formatted date and time (e.g., "Aug 27, 2025, 8:04 PM")
+ */
+export const formatByTimeZone = (utcDate, timeZone) => {
+  if (!utcDate || !timeZone) {
+    return 'Invalid Date';
+  }
+  return moment(utcDate)
+    .tz(timeZone)
+    .format('MMM DD, YYYY, h:mm A');
+};

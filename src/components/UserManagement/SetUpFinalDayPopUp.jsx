@@ -3,12 +3,12 @@ import React, { useState, useEffect, useRef } from 'react';
 // import { useSelector } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
 import { boxStyleDark, boxStyle } from '../../styles';
-import '../Header/DarkMode.css';
+import '../Header/index.css';
 /**
  * Modal popup to show the user profile in create mode
  */
 const SetUpFinalDayPopUpComponent = ({ open, onClose, onSave, darkMode }) => {
-  const [finalDayDate, onDateChange] = useState(Date.now());
+  const [finalDayDate, onDateChange] = useState(moment().add(1, 'day').format('YYYY-MM-DD'));
   const [dateError, setDateError] = useState(false);
 
   const closePopup = () => {
@@ -16,11 +16,14 @@ const SetUpFinalDayPopUpComponent = ({ open, onClose, onSave, darkMode }) => {
   };
 
   const deactiveUser = () => {
-    if (moment().isBefore(moment(finalDayDate))) {
-      onSave(finalDayDate); // Pass the selected date to the parent component
-    } else {
+    const picked = moment(finalDayDate, 'YYYY-MM-DD', true);
+    if (!picked.isValid() || picked.isSameOrBefore(moment(), 'day')) {
       setDateError(true);
+      return;
     }
+    // Critical: store end-of-day so it stays the SAME calendar day in all timezones.
+    const finalDayEndOfDayISO = picked.endOf('day').toISOString();
+    onSave(finalDayEndOfDayISO);
   };
   const inputRef = useRef(null);
 
@@ -38,7 +41,7 @@ useEffect(() => {
       className={darkMode ? 'text-light dark-mode' : ''}
     >
       <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={closePopup}>
-        Set Your Final Day
+        Set User&apos;s Final Day
       </ModalHeader>
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <Input
@@ -48,6 +51,7 @@ useEffect(() => {
           name="inactiveDate"
           id="inactiveDate"
           value={finalDayDate}
+          min={moment().add(1, 'day').format('YYYY-MM-DD')}
           onChange={event => {
             setDateError(false);
             onDateChange(event.target.value);
