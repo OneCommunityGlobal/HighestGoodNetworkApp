@@ -547,6 +547,8 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
             className={`${styles.input} ${styles.select}`}
             value={selectedRole}
             onChange={e => setSelectedRole(e.target.value)}
+            aria-label="Filter by role"
+            disabled={loading}
           >
             {ROLE_OPTIONS.map(roleOption => (
               <option key={roleOption} value={roleOption}>
@@ -560,6 +562,7 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
             className={`${styles.btn} ${styles.btnPrimary}`}
             onClick={handleResetAndRefresh}
             disabled={loading}
+            style={{ whiteSpace: 'nowrap' }}
           >
             <RefreshCw className={loading ? styles.spin : ''} size={16} />
             <span>Refresh</span>
