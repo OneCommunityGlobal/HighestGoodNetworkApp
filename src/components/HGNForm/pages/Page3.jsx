@@ -14,10 +14,11 @@ function Page3() {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+const darkClass = darkMode ? styles.bgOxfordBlue : ''; 
 
   return (
-    <div className={`${styles.hgnform} ${darkMode ? 'bg-oxford-blue' : ''}`}>
-      <Banner />
+     <div className={`${styles.hgnform} ${darkClass}`}> 
+   <Banner />
       <QuestionnaireHeader ref={headerRef} />
       <FrontendQuestions />
       <Progress progressValue={16.67 * 3} />
