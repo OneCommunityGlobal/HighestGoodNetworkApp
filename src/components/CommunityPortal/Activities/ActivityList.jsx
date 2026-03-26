@@ -1,12 +1,19 @@
 // Activity List Component
 import { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useStore } from 'react-redux';
 import styles from './ActivityList.module.css';
 import { mockActivities } from './mockActivities';
-// import { useHistory } from 'react-router-dom';
 
 function ActivityList() {
-  const darkMode = useSelector(state => state.theme.darkMode);
+  let darkMode = false;
+
+  try {
+    const store = useStore();
+    darkMode = store?.getState()?.theme?.darkMode ?? false;
+  } catch (e) {
+    darkMode = false;
+  }
+
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -17,6 +24,7 @@ function ActivityList() {
   });
   const [locationSuggestions, setLocationSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [sortOrder, setSortOrder] = useState('earliest');
 
   useEffect(() => {
     if (darkMode) {
@@ -35,22 +43,10 @@ function ActivityList() {
       try {
         setLoading(true);
         setError(null);
-
-        // TODO: Replace with actual API endpoint
-        // const response = await fetch('/api/activities');
-        // if (!response.ok) {
-        //   throw new Error('Failed to fetch activities');
-        // }
-        // const data = await response.json();
-        // setActivities(data);
-
-        // Simulating API call - remove this when real API is available
-        // For now, we'll use mock data directly
         throw new Error('API not implemented yet');
       } catch (err) {
         console.warn('Failed to fetch activities from API, using mock data:', err.message);
         setError(err.message);
-        // Fallback to mock data
         setActivities(mockActivities);
       } finally {
         setLoading(false);
@@ -60,28 +56,19 @@ function ActivityList() {
     fetchActivities();
   }, []);
 
-  // Get location suggestions with STRICT prefix-based matching only
   const getLocationSuggestions = input => {
-    if (!input.trim()) {
-      return [];
-    }
+    if (!input.trim()) return [];
 
-    // Get unique locations
     const uniqueLocations = [...new Set(activities.map(a => a.location))];
     const lowerInput = input.toLowerCase();
 
-    // ONLY return locations that START with the input (prefix matching)
-    const prefixMatches = uniqueLocations.filter(loc => loc.toLowerCase().startsWith(lowerInput));
-
-    // Limit to top 10 results
-    return prefixMatches.slice(0, 10);
+    return uniqueLocations.filter(loc => loc.toLowerCase().startsWith(lowerInput)).slice(0, 10);
   };
 
   const handleFilterChange = e => {
     const { name, value } = e.target;
     setFilter({ ...filter, [name]: value });
 
-    // Update location suggestions when location input changes
     if (name === 'location') {
       const suggestions = getLocationSuggestions(value);
       setLocationSuggestions(suggestions);
@@ -89,14 +76,9 @@ function ActivityList() {
     }
   };
 
-  const filteredActivities = activities.filter(activity => {
-    return (
-      (!filter.type || activity.type === filter.type) &&
-      (!filter.date || activity.date === filter.date) &&
-      (!filter.location ||
-        activity.location.toLowerCase().startsWith(filter.location.toLowerCase()))
-    );
-  });
+  const handleSortChange = e => {
+    setSortOrder(e.target.value);
+  };
 
   const handleSuggestionClick = location => {
     setFilter({ ...filter, location });
@@ -113,6 +95,21 @@ function ActivityList() {
     setLocationSuggestions([]);
     setShowSuggestions(false);
   };
+
+  const filteredActivities = activities
+    .filter(activity => {
+      return (
+        (!filter.type || activity.type === filter.type) &&
+        (!filter.date || activity.date === filter.date) &&
+        (!filter.location ||
+          activity.location.toLowerCase().startsWith(filter.location.toLowerCase()))
+      );
+    })
+    .sort((a, b) => {
+      const dateA = new Date(a.date);
+      const dateB = new Date(b.date);
+      return sortOrder === 'earliest' ? dateA - dateB : dateB - dateA;
+    });
 
   return (
     <div className={`${styles.activityListContainer} ${darkMode ? 'bg-oxford-blue' : ''}`}>
@@ -143,6 +140,18 @@ function ActivityList() {
         </label>
 
         <label className={darkMode ? 'text-light' : ''}>
+          Sort By:
+          <select
+            value={sortOrder}
+            onChange={handleSortChange}
+            className={darkMode ? styles.darkModeInput : ''}
+          >
+            <option value="earliest">Start Time: Earliest to Latest</option>
+            <option value="latest">Start Time: Latest to Earliest</option>
+          </select>
+        </label>
+
+        <label className={darkMode ? 'text-light' : ''}>
           Location:
           <div style={{ position: 'relative' }}>
             <input
@@ -157,29 +166,22 @@ function ActivityList() {
                   setShowSuggestions(true);
                 }
               }}
-              onBlur={() => {
-                // Delay to allow click on suggestion
-                setTimeout(() => setShowSuggestions(false), 200);
-              }}
+              onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
               placeholder="Enter location"
               autoComplete="off"
               className={darkMode ? styles.darkModeInput : ''}
             />
+
             {showSuggestions && locationSuggestions.length > 0 && (
-              <div
-                className={`${styles.suggestions} ${darkMode ? styles.darkSuggestions : ''}`}
-                role="listbox"
-                aria-label="Location suggestions"
-              >
+              <div className={`${styles.suggestions} ${darkMode ? styles.darkSuggestions : ''}`}>
                 {locationSuggestions.map((location, index) => (
                   <div
                     key={index}
-                    className={styles.suggestionItem}
-                    role="option"
+                    role="button"
                     tabIndex={0}
-                    aria-selected="false"
+                    className={styles.suggestionItem}
                     onMouseDown={e => {
-                      e.preventDefault(); // Prevent blur from firing
+                      e.preventDefault();
                       handleSuggestionClick(location);
                     }}
                     onKeyDown={e => {
@@ -196,6 +198,7 @@ function ActivityList() {
             )}
           </div>
         </label>
+
         <div className={styles.clearButtonWrapper}>
           <button
             type="button"
@@ -207,15 +210,21 @@ function ActivityList() {
           </button>
         </div>
       </div>
+
       <div className={`${styles.activityList} ${darkMode ? styles.darkModeList : ''}`}>
         {loading ? (
           <p className={darkMode ? 'text-light' : ''}>Loading activities...</p>
         ) : filteredActivities.length > 0 ? (
           <ul>
             {filteredActivities.map(activity => (
-              <li key={activity.id} className={darkMode ? styles.darkModeItem : ''}>
-                <strong>{activity.name}</strong> - {activity.type} - {activity.date} -{' '}
-                {activity.location}
+              <li
+                key={activity.id}
+                className={`${styles.activityItem} ${darkMode ? styles.darkModeItem : ''}`}
+              >
+                <strong>{activity.name}</strong>
+                <span>
+                  {activity.type} – {activity.date} – {activity.location}
+                </span>
               </li>
             ))}
           </ul>
