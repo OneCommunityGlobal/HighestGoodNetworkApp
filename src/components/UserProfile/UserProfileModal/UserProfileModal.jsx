@@ -349,7 +349,7 @@ const UserProfileModal = props => {
           <>
             <FormGroup>
               <Label className={fontColor} for="date">Date</Label>
-              <Input type="date" name="date" id="date" value={dateStamp} onChange={handleChange} />
+              <Input type="date" name="date" id="date" value={dateStamp} onChange={handleChange} style={darkMode ? { backgroundColor: '#2d3748', color: '#fff', borderColor: '#4a5568', colorScheme: 'dark' } : {}} />
             </FormGroup>
 
             <FormGroup hidden={summaryFieldView}>
@@ -358,13 +358,14 @@ const UserProfileModal = props => {
                 id="asignment"
                 readOnly
                 value={`Assigned by ${firstName} ${getLastInitial(lastName)} ${formatYYYYMMDDToMMDDYY(dateStamp)}:`}
+                style={darkMode ? { backgroundColor: '#2d3748', color: '#fff', borderColor: '#4a5568' } : {}}
               />
               <Input
                 type="textarea"
                 id="summary"
                 onChange={handleChange}
                 value={summary}
-                style={{ minHeight: '200px', overflow: 'hidden'}}
+                style={{ minHeight: '200px', overflow: 'hidden', ...(darkMode ? { backgroundColor: '#2d3748', color: '#fff', borderColor: '#4a5568' } : {}) }}
                 onInput={e => adjustTextareaHeight(e.target)}
               />
             </FormGroup>
@@ -375,7 +376,7 @@ const UserProfileModal = props => {
           <>
             <FormGroup>
               <Label className={fontColor} for="date">Date:</Label>
-              {canEditInfringements ? <Input type="date" onChange={e => setDateStamp(e.target.value)} value={dateStamp} />
+              {canEditInfringements ? <Input type="date" onChange={e => setDateStamp(e.target.value)} value={dateStamp} style={darkMode ? { backgroundColor: '#2d3748', color: '#fff', borderColor: '#4a5568', colorScheme: 'dark' } : {}} />
               : <span> {blueSquare[0]?.date}</span>}
             </FormGroup>
             <FormGroup>
@@ -390,13 +391,13 @@ const UserProfileModal = props => {
                 id="asignment"
                 readOnly
                 value={`Assigned by ${firstName} ${getLastInitial(lastName)} ${formatYYYYMMDDToMMDDYY(dateStamp)}:`}
+                style={darkMode ? { backgroundColor: '#2d3748', color: '#fff', borderColor: '#4a5568' } : {}}
               />
               {canEditInfringements ? <Input
-                type="textarea"
                 id="summary"
                 onChange={handleChange}
                 value={summary}
-                style={{ minHeight: '200px', overflow: 'hidden'}} // 4x taller than usual
+                style={{ minHeight: '200px', overflow: 'hidden', ...(darkMode ? { backgroundColor: '#2d3748', color: '#fff', borderColor: '#4a5568' } : {}) }}
                 onInput={e => adjustTextareaHeight(e.target)} // auto-adjust height
               />
               :<p>{blueSquare[0]?.description}</p>}
@@ -420,8 +421,8 @@ const UserProfileModal = props => {
             </FormGroup>
             <FormGroup>
               <Label className={fontColor} for="description">Summary</Label>
-              <p>{`Assigned by ${firstName} ${getLastInitial(lastName)} ${formatYYYYMMDDToMMDDYY(dateStamp)}:`}</p>
-              <p className={fontColor}>{blueSquare[0]?.description}</p>
+              <p className={fontColor} style={darkMode ? { color: '#fff' } : {}}>{`Assigned by ${firstName} ${getLastInitial(lastName)} ${formatYYYYMMDDToMMDDYY(dateStamp)}:`}</p>
+              <p className={fontColor} style={darkMode ? { color: '#fff' } : {}}>{blueSquare[0]?.description}</p>
             </FormGroup>
           </>
         )}
