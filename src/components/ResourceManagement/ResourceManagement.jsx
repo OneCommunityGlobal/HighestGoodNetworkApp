@@ -1,42 +1,36 @@
-import { useState, useEffect } from 'react';
-import styles from './ResourceManagement.module.css';
+import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import styles from './ResourceManagement.module.css';
 
-function SearchBar({ onSearch }) {
+function SearchBar({ searchTerm, onSearch, onClear }) {
   const darkMode = useSelector(state => state.theme.darkMode);
-  const [searchTerm, setSearchTerm] = useState('');
 
-  const handleSearch = () => {
-    onSearch(searchTerm);
-  };
-
-  const handleKeyPress = e => {
-    if (e.key === 'Enter') {
-      handleSearch();
-    }
+  const handleChange = e => {
+    onSearch(e.target.value);
   };
 
   return (
-    <div className={`${darkMode ? styles.darkMode : ''}`}>
-      <div className={`${styles.searchBarContainer}`}>
-        <div className={`${styles.searchBarContainerLeft}`}>
-          <span className={`${styles.iconAdd}`}>+</span>
-          <span className={`${styles.iconLines}`}>=</span>
-          <span className={`${styles.iconToggle}`}>⇅</span>
-        </div>
-        <div className={`${styles.searchBarContainerRight}`}>
-          <input
-            type="text"
-            className={`${styles.searchInput}`}
-            placeholder="Search"
-            value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
-            onKeyPress={handleKeyPress}
-          />
-          <button type="button" className={`${styles.searchButton}`} onClick={handleSearch}>
-            Search
-          </button>
-        </div>
+    <div className={`${styles.searchBarContainer} ${darkMode ? styles.dark : styles.light}`}>
+      <div className={styles.searchBarLeft}>
+        <span>+</span>
+        <span>=</span>
+        <span>⇅</span>
+      </div>
+
+      <div className={styles.searchBarRight}>
+        <input
+          type="text"
+          placeholder="Search"
+          value={searchTerm}
+          onChange={handleChange}
+          className={styles.searchInput}
+        />
+        <button type="button" className={styles.searchButton} onClick={() => onSearch(searchTerm)}>
+          Search
+        </button>
+        <button type="button" className={styles.clearButton} onClick={onClear}>
+          Clear
+        </button>
       </div>
     </div>
   );
@@ -44,13 +38,27 @@ function SearchBar({ onSearch }) {
 
 function AddLogModal({ isOpen, onClose, onAdd }) {
   const darkMode = useSelector(state => state.theme.darkMode);
+
   const [formData, setFormData] = useState({
     user: '',
     timeDuration: '',
     facilities: '',
     materials: '',
+    date: '',
   });
-  const [validationError, setValidationError] = useState('');
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleEsc = e => {
+      if (e.key === 'Escape') onClose();
+    };
+
+    document.addEventListener('keydown', handleEsc);
+    return () => document.removeEventListener('keydown', handleEsc);
+  }, [isOpen, onClose]);
+
+  if (!isOpen) return null;
 
   const handleChange = e => {
     const { name, value } = e.target;
@@ -58,142 +66,129 @@ function AddLogModal({ isOpen, onClose, onAdd }) {
       ...prev,
       [name]: value,
     }));
-    // Clear validation error when user starts typing
-    if (validationError) {
-      setValidationError('');
-    }
   };
 
   const handleSubmit = e => {
     e.preventDefault();
-    if (formData.user && formData.timeDuration && formData.facilities && formData.materials) {
-      onAdd(formData);
-      setFormData({
-        user: '',
-        timeDuration: '',
-        facilities: '',
-        materials: '',
-      });
-      setValidationError('');
-      onClose();
-    } else {
-      setValidationError('Please fill in all fields');
+
+    if (
+      !formData.user.trim() ||
+      !formData.timeDuration.trim() ||
+      !formData.facilities.trim() ||
+      !formData.materials.trim()
+    ) {
+      return;
     }
+
+    onAdd({
+      user: formData.user,
+      timeDuration: formData.timeDuration,
+      facilities: formData.facilities,
+      materials: formData.materials,
+      date: formData.date.trim() || 'Just now',
+    });
+
+    setFormData({
+      user: '',
+      timeDuration: '',
+      facilities: '',
+      materials: '',
+      date: '',
+    });
+
+    onClose();
   };
-
-  const handleOverlayClick = e => {
-    // Only close if clicking directly on the overlay, not its children
-    if (e.target === e.currentTarget) {
-      onClose();
-    }
-  };
-
-  const handleOverlayKeyDown = e => {
-    if (e.key === 'Escape') {
-      onClose();
-    }
-  };
-
-  useEffect(() => {
-    const handleEscKey = e => {
-      if (e.key === 'Escape' && isOpen) {
-        onClose();
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener('keydown', handleEscKey);
-    }
-
-    return () => {
-      document.removeEventListener('keydown', handleEscKey);
-    };
-  }, [isOpen, onClose]);
-
-  if (!isOpen) return null;
 
   return (
-    <div className={`${darkMode ? styles.darkMode : ''}`}>
-      <div
-        className={`${styles.modalOverlay}`}
-        onClick={handleOverlayClick}
-        onKeyDown={handleOverlayKeyDown}
-        role="button"
-        tabIndex={0}
-        aria-label="Close modal"
-      >
-        <div
-          className={`${styles.modalContent}`}
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="modal-title"
-        >
-          <div className={`${styles.modalHeader}`}>
-            <h3 id="modal-title">Add New Log</h3>
-            <button type="button" className={`${styles.closeButton}`} onClick={onClose}>
-              ×
+    <div
+      className={styles.modalOverlay}
+      onClick={handleOverlayClick}
+      onKeyDown={e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          handleOverlayClick(e);
+        }
+      }}
+      role="button"
+      tabIndex={0}
+    >
+      <div className={`${styles.modalContent} ${darkMode ? styles.dark : styles.light}`}>
+        <div className={styles.modalHeader}>
+          <h3>Add New Log</h3>
+          <button type="button" className={styles.modalCloseButton} onClick={onClose}>
+            ×
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className={styles.modalForm}>
+          <div className={styles.formGroup}>
+            <label htmlFor="user">User</label>
+            <input
+              id="user"
+              type="text"
+              name="user"
+              value={formData.user}
+              onChange={handleChange}
+              placeholder="Enter user name"
+            />
+          </div>
+
+          <div className={styles.formGroup}>
+            <label htmlFor="timeDuration">Time/Duration</label>
+            <input
+              id="timeDuration"
+              type="text"
+              name="timeDuration"
+              value={formData.timeDuration}
+              onChange={handleChange}
+              placeholder="Ex: 02:32:56"
+            />
+          </div>
+
+          <div className={styles.formGroup}>
+            <label htmlFor="facilities">Facilities</label>
+            <input
+              id="facilities"
+              type="text"
+              name="facilities"
+              value={formData.facilities}
+              onChange={handleChange}
+              placeholder="Enter facility"
+            />
+          </div>
+
+          <div className={styles.formGroup}>
+            <label htmlFor="materials">Materials</label>
+            <input
+              id="materials"
+              type="text"
+              name="materials"
+              value={formData.materials}
+              onChange={handleChange}
+              placeholder="Enter materials"
+            />
+          </div>
+
+          <div className={styles.formGroup}>
+            <label htmlFor="date">Date</label>
+            <input
+              id="date"
+              type="text"
+              name="date"
+              value={formData.date}
+              onChange={handleChange}
+              placeholder="Ex: Just now"
+            />
+          </div>
+
+          <div className={styles.modalActions}>
+            <button type="button" className={styles.cancelButton} onClick={onClose}>
+              Cancel
+            </button>
+            <button type="submit" className={styles.submitButton}>
+              Add Log
             </button>
           </div>
-          {validationError && (
-            <div className={`${styles.errorMessage}`} role="alert">
-              {validationError}
-            </div>
-          )}
-          <form onSubmit={handleSubmit}>
-            <div className={`${styles.formGroup}`}>
-              <label htmlFor="user">User:</label>
-              <input
-                id="user"
-                type="text"
-                name="user"
-                value={formData.user}
-                onChange={handleChange}
-                placeholder="First Last"
-              />
-            </div>
-            <div className={`${styles.formGroup}`}>
-              <label htmlFor="timeDuration">Time/Duration:</label>
-              <input
-                id="timeDuration"
-                type="text"
-                name="timeDuration"
-                value={formData.timeDuration}
-                onChange={handleChange}
-                placeholder="00:00:00"
-              />
-            </div>
-            <div className={`${styles.formGroup}`}>
-              <label htmlFor="facilities">Facilities:</label>
-              <input
-                id="facilities"
-                type="text"
-                name="facilities"
-                value={formData.facilities}
-                onChange={handleChange}
-                placeholder="e.g., Landing Page"
-              />
-            </div>
-            <div className={`${styles.formGroup}`}>
-              <label htmlFor="materials">Materials:</label>
-              <input
-                id="materials"
-                type="text"
-                name="materials"
-                value={formData.materials}
-                onChange={handleChange}
-                placeholder="e.g., Location"
-              />
-            </div>
-            <div className={`${styles.modalActions}`}>
-              <button type="button" className={`${styles.cancelButton}`} onClick={onClose}>
-                Cancel
-              </button>
-              <button type="submit" className={`${styles.submitButton}`}>
-                Add Log
-              </button>
-            </div>
-          </form>
-        </div>
+        </form>
       </div>
     </div>
   );
@@ -201,9 +196,26 @@ function AddLogModal({ isOpen, onClose, onAdd }) {
 
 function ResourceManagement() {
   const darkMode = useSelector(state => state.theme.darkMode);
+
   const [resources, setResources] = useState([
     {
       id: 1,
+      user: 'Last nams',
+      timeDuration: '2:23:00',
+      facilities: 'Home Page',
+      materials: 'New york',
+      date: 'Just now',
+    },
+    {
+      id: 2,
+      user: 'Shreya Kullu',
+      timeDuration: '12:12:12',
+      facilities: 'website',
+      materials: '???',
+      date: 'Just now',
+    },
+    {
+      id: 3,
       user: 'First Last',
       timeDuration: '02:32:56',
       facilities: 'Landing Page',
@@ -211,7 +223,7 @@ function ResourceManagement() {
       date: 'Just now',
     },
     {
-      id: 2,
+      id: 4,
       user: 'First Last',
       timeDuration: '02:32:56',
       facilities: 'CRM Admin pages',
@@ -219,7 +231,7 @@ function ResourceManagement() {
       date: 'A minute ago',
     },
     {
-      id: 3,
+      id: 5,
       user: 'First Last',
       timeDuration: '02:32:56',
       facilities: 'Client Project',
@@ -227,7 +239,7 @@ function ResourceManagement() {
       date: '1 hour ago',
     },
     {
-      id: 4,
+      id: 6,
       user: 'First Last',
       timeDuration: '02:32:56',
       facilities: 'Admin Dashboard',
@@ -235,155 +247,103 @@ function ResourceManagement() {
       date: 'Yesterday',
     },
     {
-      id: 5,
+      id: 7,
       user: 'First Last',
       timeDuration: '02:32:56',
       facilities: 'App Landing page',
       materials: 'Nest Lane Olivette',
       date: 'Feb 2, 2024',
     },
-    {
-      id: 6,
-      user: 'First Last',
-      timeDuration: '02:32:56',
-      facilities: 'Landing Page',
-      materials: 'Meadow Lane Oakland',
-      date: 'Just now',
-    },
-    {
-      id: 7,
-      user: 'First Last',
-      timeDuration: '02:32:56',
-      facilities: 'CRM Admin Pages',
-      materials: 'Larry San Francisco',
-      date: 'A minute ago',
-    },
-    {
-      id: 8,
-      user: 'First Last',
-      timeDuration: '02:32:56',
-      facilities: 'Client Project',
-      materials: 'Bagwell Avenue Ocala',
-      date: '1 hour ago',
-    },
-    {
-      id: 9,
-      user: 'First Last',
-      timeDuration: '02:32:56',
-      facilities: 'Admin Dashboard',
-      materials: 'Washburn Baton Rouge',
-      date: 'Yesterday',
-    },
-    {
-      id: 10,
-      user: 'First Last',
-      timeDuration: '02:32:56',
-      facilities: 'App Landing Page',
-      materials: 'Nest Lane Olivette',
-      date: 'Feb 2, 2024',
-    },
   ]);
 
   const [filteredResources, setFilteredResources] = useState(resources);
+  const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    setFilteredResources(resources);
-  }, [resources]);
-
-  const handleSearch = searchTerm => {
     if (!searchTerm.trim()) {
       setFilteredResources(resources);
       return;
     }
 
+    const lower = searchTerm.toLowerCase();
+
     const filtered = resources.filter(
       resource =>
-        resource.user.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        resource.facilities.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        resource.materials.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        resource.date.toLowerCase().includes(searchTerm.toLowerCase()),
+        resource.user.toLowerCase().includes(lower) ||
+        resource.timeDuration.toLowerCase().includes(lower) ||
+        resource.facilities.toLowerCase().includes(lower) ||
+        resource.materials.toLowerCase().includes(lower) ||
+        resource.date.toLowerCase().includes(lower),
     );
+
     setFilteredResources(filtered);
+  }, [searchTerm, resources]);
+
+  const handleSearch = term => {
+    setSearchTerm(term);
+  };
+
+  const handleClear = () => {
+    setSearchTerm('');
+    setFilteredResources(resources);
   };
 
   const handleAddLog = newLog => {
-    const newResource = {
-      id: resources.length + 1,
-      ...newLog,
-      date: 'Just now',
-    };
-    setResources(prev => [newResource, ...prev]);
+    setResources(prev => [
+      {
+        id: Date.now(),
+        ...newLog,
+      },
+      ...prev,
+    ]);
   };
 
   return (
-    <div className={`${darkMode ? styles.darkMode : ''}`}>
-      <div className={`${styles.resourceManagementDashboard}`}>
-        <div className={`${styles.dashboardTitle}`}>
-          <h2>Used Resources</h2>
-          <button
-            type="button"
-            className={`${styles.addLogButton}`}
-            onClick={() => setIsModalOpen(true)}
-          >
-            Add New Log
-          </button>
+    <div className={`${styles.page} ${darkMode ? styles.dark : styles.light}`}>
+      <div className={styles.headerRow}>
+        <h2 className={styles.title}>Used Resources</h2>
+        <button className={styles.addLogButton} onClick={() => setIsModalOpen(true)}>
+          Add New Log
+        </button>
+      </div>
+
+      <SearchBar searchTerm={searchTerm} onSearch={handleSearch} onClear={handleClear} />
+
+      <div className={styles.tableWrapper}>
+        <div className={styles.tableHeader}>
+          <div className={styles.checkboxCol}>
+            <input type="checkbox" />
+          </div>
+          <div>User</div>
+          <div>Time/Duration</div>
+          <div>Facilities</div>
+          <div>Materials</div>
+          <div>Date</div>
         </div>
 
-        <SearchBar onSearch={handleSearch} />
-
-        <div className={`${styles.resourceList}`}>
-          <div className={`${styles.resourceHeading}`}>
-            <div className={`${styles.checkboxContainer}`}>
+        {filteredResources.map(resource => (
+          <div key={resource.id} className={styles.tableRow}>
+            <div className={styles.checkboxCol}>
               <input type="checkbox" />
             </div>
-            <div className={`${styles.resourceHeadingItem}`}>User</div>
-            <div className={`${styles.resourceHeadingItem}`}>Time/Duration</div>
-            <div className={`${styles.resourceHeadingItem}`}>Facilities</div>
-            <div className={`${styles.resourceHeadingItem}`}>Materials</div>
-            <div className={`${styles.resourceHeadingItem}`}>Date</div>
-          </div>
-          <hr className={`${styles.lineSperator}`} />
-
-          {filteredResources.map(resource => (
-            <div key={resource.id}>
-              <div className={`${styles.resourceItem}`}>
-                <div className={`${styles.checkboxContainer}`}>
-                  <input type="checkbox" />
-                </div>
-                <div className={`${styles.resourceItemDetail}`}>{resource.user}</div>
-                <div className={`${styles.resourceItemDetail}`}>{resource.timeDuration}</div>
-                <div className={`${styles.resourceItemDetail}`}>{resource.facilities}</div>
-                <div className={`${styles.resourceItemDetail}`}>{resource.materials}</div>
-                <div className={`${styles.resourceItemDetail}`}>
-                  <span className={`${styles.calendarIcon}`}>📅</span> {resource.date}
-                </div>
-              </div>
-              <hr className={`${styles.lineSperator}`} />
+            <div className={styles.cell}>{resource.user}</div>
+            <div className={styles.cell}>{resource.timeDuration}</div>
+            <div className={styles.cell}>{resource.facilities}</div>
+            <div className={styles.cell}>{resource.materials}</div>
+            <div className={`${styles.cell} ${styles.dateCell}`}>
+              <span className={styles.dateIcon}>🗓️</span>
+              <span>{resource.date}</span>
             </div>
-          ))}
-        </div>
-
-        <div className={`${styles.rmPagination}`}>
-          <button type="button" className={`${styles.arrowButton}`}>
-            ←
-          </button>
-          <button type="button">1</button>
-          <button type="button">2</button>
-          <button type="button">3</button>
-          <button type="button">4</button>
-          <button type="button">5</button>
-          <button type="button" className={`${styles.arrowButton}`}>
-            →
-          </button>
-        </div>
-
-        <AddLogModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          onAdd={handleAddLog}
-        />
+          </div>
+        ))}
       </div>
+
+      <AddLogModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onAdd={handleAddLog}
+      />
     </div>
   );
 }
