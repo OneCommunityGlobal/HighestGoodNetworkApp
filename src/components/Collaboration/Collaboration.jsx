@@ -19,6 +19,8 @@ function Collaboration() {
   const [categories, setCategories] = useState([]);
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const [summaries, setSummaries] = useState(null);
+  const [positions, setPositions] = useState([]);
+  const [selectedPosition, setSelectedPosition] = useState('');
 
   // Modal
   const [selectedJob, setSelectedJob] = useState(null);
@@ -38,7 +40,8 @@ function Collaboration() {
       const url =
         `${ApiEndpoint}/jobs` +
         `?search=${encodeURIComponent(searchTerm || '')}` +
-        `&category=${encodeURIComponent(categoriesSelected.join(',') || '')}`;
+        `&category=${encodeURIComponent(categoriesSelected.join(',') || '')}` +
+        `&position=${encodeURIComponent(selectedPosition || '')}`;
 
       const res = await fetch(url);
       const data = await res.json();
@@ -55,25 +58,26 @@ function Collaboration() {
   };
 
   /* ================= FETCH CATEGORIES ================= */
-  const fetchCategories = async () => {
+  const fetchPositions = async () => {
     try {
-      const res = await fetch(`${ApiEndpoint}/jobs/categories`);
+      const res = await fetch(`${ApiEndpoint}/jobs/positions`);
       const data = await res.json();
-      setCategories((data.categories || []).sort());
+
+      setPositions((data.positions || []).sort((a, b) => a.localeCompare(b)));
     } catch {
-      toast.error('Error fetching categories');
+      toast.error('Error fetching positions');
     }
   };
 
   /* ================= EFFECTS ================= */
   useEffect(() => {
-    fetchCategories();
+    fetchPositions();
   }, []);
 
   useEffect(() => {
     setCurrentPage(1);
     fetchJobs();
-  }, [searchTerm, categoriesSelected]);
+  }, [searchTerm, categoriesSelected, selectedPosition]);
 
   useEffect(() => {
     const start = (currentPage - 1) * ADS_PER_PAGE;
@@ -97,6 +101,7 @@ function Collaboration() {
     setCategoriesSelected([]);
     setSearchTerm('');
     setQuery('');
+    setSelectedPosition('');
     setCurrentPage(1);
   };
 
@@ -169,30 +174,26 @@ function Collaboration() {
             <button className="btn btn-secondary">Go</button>
           </form>
 
-          <button
-            type="button"
-            onClick={() => setShowCategoryDropdown(p => !p)}
-            aria-expanded={showCategoryDropdown}
-          >
-            Select Categories ▼
+          <button type="button" onClick={() => setShowCategoryDropdown(p => !p)}>
+            Select From Positions ▼
           </button>
 
           {/* CATEGORY DROPDOWN */}
           {showCategoryDropdown && (
             <div className={styles.jobSelect}>
-              {categories.map(cat => (
-                <label key={cat} className={styles.dropdownItem}>
-                  <input
-                    type="checkbox"
-                    checked={categoriesSelected.includes(cat)}
-                    onChange={() =>
-                      setCategoriesSelected(prev =>
-                        prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat],
-                      )
-                    }
-                  />
-                  {cat}
-                </label>
+              {positions.map(pos => (
+                <button
+                  key={pos}
+                  type="button"
+                  className={styles.dropdownItem}
+                  onClick={() => {
+                    setSelectedPosition(pos);
+                    setShowCategoryDropdown(false);
+                    setCurrentPage(1);
+                  }}
+                >
+                  {pos}
+                </button>
               ))}
             </div>
           )}
@@ -211,8 +212,8 @@ function Collaboration() {
           <p>
             {searchTerm
               ? `Listing results for '${searchTerm}'`
-              : categoriesSelected.length
-              ? 'Listing results for selected categories'
+              : selectedPosition
+              ? `Listing results for '${selectedPosition}'`
               : 'Listing all job ads.'}
           </p>
           <button className="btn btn-secondary" onClick={handleShowSummaries}>
@@ -221,13 +222,14 @@ function Collaboration() {
         </div>
 
         {/* FILTER CHIPS */}
-        {categoriesSelected.length > 0 && (
+        {(categoriesSelected.length > 0 || selectedPosition) && (
           <div className={styles.jobQueries}>
             {categoriesSelected.map(cat => (
               <span key={cat} className={styles.chip}>
                 {cat}
               </span>
             ))}
+            {selectedPosition && <span className={styles.chip}>{selectedPosition}</span>}
             <button className={styles.clearAllButton} onClick={handleClearAllFilters}>
               Clear All
             </button>
