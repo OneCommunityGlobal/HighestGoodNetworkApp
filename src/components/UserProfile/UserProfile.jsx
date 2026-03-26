@@ -781,6 +781,9 @@ setUpdatedTasks(prev => {
           //   .toISOString()
           //   .split('T')[0],
           createdDate: moment().format('YYYY-MM-DD'),
+          // Track manual assignment - note: backend uses 'manullyAssigned' (typo in field name)
+          manullyAssigned: true,
+          manullyAssignedBy: requestorId,
         };
         setModalTitle('Blue Square');
         axios
@@ -825,6 +828,7 @@ setUpdatedTasks(prev => {
         .put(ENDPOINTS.MODIFY_BLUE_SQUARE(userProfile._id, id), {
           dateStamp,
           summary,
+          editedBy: requestorId,
         })
         .catch(error => {
           toast.error('Failed to update Blue Square!');
