@@ -42,7 +42,7 @@ export const JobsHitsApplicationsChart = () => {
     }
   }, [loading, error, data]);
 
-  const CustomYAxisNames = ({ x, y, payload }) => {
+  const CustomYAxisNames = ({ x, y, payload, darkMode }) => {
     const text = payload.value;
     const extractedRole = text
       .split('-')
@@ -50,7 +50,7 @@ export const JobsHitsApplicationsChart = () => {
       .trim();
     return (
       <g transform={`translate(${x},${y})`}>
-        <text x={0} y={0} textAnchor="end" fill="#666" fontSize={12}>
+        <text x={0} y={0} textAnchor="end" fill={darkMode ? '#ffffff' : '#000000'} fontSize={12}>
           <title>{text}</title>
           {extractedRole.length > 35 ? `${extractedRole.slice(0, 32)}...` : extractedRole}
         </text>
@@ -115,7 +115,7 @@ export const JobsHitsApplicationsChart = () => {
                 startDate={startDate}
                 endDate={endDate}
                 placeholderText="Start Date"
-                className={`${styles.datePicker} ${darkMode ? styles.bgYinmnBlue : ''}`}
+                className={`${styles.datePicker} ${darkMode ? styles.bgSpaceCadet : ''}`}
               />
             </div>
             <div className={styles.endDate}>
@@ -133,7 +133,7 @@ export const JobsHitsApplicationsChart = () => {
                 startDate={startDate}
                 endDate={endDate}
                 placeholderText="End Date"
-                className={styles.datePicker}
+                className={`${styles.datePicker} ${darkMode ? styles.bgSpaceCadet : ''}`}
               />
             </div>
           </div>
@@ -148,8 +148,66 @@ export const JobsHitsApplicationsChart = () => {
                 isMulti
                 options={roleOptions}
                 onChange={setSelectedRoles}
-                placeholder="Select Roles"
                 className={styles.roleSelector}
+                styles={{
+                  control: base => ({
+                    ...base,
+                    backgroundColor: darkMode ? '#1C2541' : 'white',
+                    color: darkMode ? 'white' : 'black',
+                    borderColor: darkMode ? '#3A506B' : base.borderColor,
+                  }),
+
+                  menu: base => ({
+                    ...base,
+                    backgroundColor: darkMode ? '#1C2541' : 'white',
+                  }),
+
+                  option: (base, state) => ({
+                    ...base,
+                    backgroundColor: darkMode
+                      ? state.isFocused
+                        ? '#3A506B' // hover color (FIX)
+                        : '#1C2541'
+                      : state.isFocused
+                      ? '#eee'
+                      : 'white',
+                    color: darkMode ? 'white' : 'black', // FIX: always readable
+                  }),
+
+                  multiValue: base => ({
+                    ...base,
+                    backgroundColor: darkMode ? '#3A506B' : base.backgroundColor,
+                  }),
+
+                  multiValueLabel: base => ({
+                    ...base,
+                    color: 'white', // FIX: text inside selected tags
+                  }),
+
+                  multiValueRemove: base => ({
+                    ...base,
+                    color: 'white',
+                    ':hover': {
+                      backgroundColor: '#5BC0BE',
+                      color: 'black',
+                    },
+                  }),
+
+                  singleValue: base => ({
+                    ...base,
+                    color: darkMode ? 'white' : 'black',
+                  }),
+
+                  input: base => ({
+                    ...base,
+                    color: darkMode ? 'white' : 'black',
+                  }),
+
+                  placeholder: base => ({
+                    ...base,
+                    color: darkMode ? '#ccc' : '#666',
+                  }),
+                }}
               />
             </div>
           </div>
@@ -187,38 +245,59 @@ export const JobsHitsApplicationsChart = () => {
                 />
                 <XAxis
                   type="number"
+                  tick={{ fill: darkMode ? '#ffffff' : '#000000' }}
                   label={{
                     value: 'Number of Hits/Applications',
                     position: 'bottom',
                     style: {
-                      fill: darkMode ? styles.colorWhite : '',
+                      fill: darkMode ? '#ffffff' : '#000000',
                     },
                   }}
                 />
                 <YAxis
                   type="category"
                   dataKey="role"
+                  width={200}
                   label={{
                     value: 'Roles',
                     position: 'bottom',
                     style: {
-                      fill: darkMode ? styles.colorWhite : '',
+                      fill: darkMode ? '#ffffff' : '#000000',
                     },
                   }}
-                  width={200}
-                  tick={<CustomYAxisNames />}
+                  tick={<CustomYAxisNames darkMode={darkMode} />}
                 />
-                <Tooltip cursor={{ fill: 'transparent' }} />
+                <Tooltip
+                  cursor={{ fill: 'transparent' }}
+                  contentStyle={{
+                    backgroundColor: darkMode ? '#1C2541' : '#fff',
+                    border: darkMode ? '1px solid #3A506B' : '1px solid #ccc',
+                    color: darkMode ? '#fff' : '#000',
+                  }}
+                  itemStyle={{
+                    color: darkMode ? '#fff' : '#000',
+                  }}
+                  labelStyle={{
+                    color: darkMode ? '#fff' : '#000',
+                  }}
+                />
                 <Legend verticalAlign="top" align="center" />
 
                 {data.length > 7 && (
                   <Brush
                     dataKey="role"
                     height={20}
-                    stroke="#8884d8"
+                    // stroke={darkMode ? '#5BC0BE' : '#8884d8'} // border/line
                     startIndex={0}
                     endIndex={7}
                     y={480}
+                    travellerWidth={10}
+                    tickFormatter={value => value}
+                    fill={darkMode ? '#1C2541' : '#fff'}
+                    traveller={{
+                      stroke: darkMode ? '#5BC0BE' : '#8884d8',
+                      fill: darkMode ? '#5BC0BE' : '#8884d8',
+                    }}
                   />
                 )}
               </BarChart>
