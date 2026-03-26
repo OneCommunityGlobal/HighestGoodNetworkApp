@@ -32,9 +32,14 @@ function Page5() {
     window.scrollTo(0, 0);
   }, []);
 
+  const darkClass = darkMode ? styles.bgOxfordBlue : '';
   return (
+<<<<<<< HEAD
     <div className={`${styles.hgnform} ${darkMode ? 'bg-oxford-blue' : ''}`}>
 >>>>>>> 9e2264a47 (add dark mode styling to page 5)
+=======
+   <div className={`${styles.hgnform} ${darkClass}`}> 
+>>>>>>> 21ac975cb (Refactor dark mode class assignment in Page5)
       <Banner />
       <FollowupQuestions />
       <Progress progressValue={16.67 * 5} />
