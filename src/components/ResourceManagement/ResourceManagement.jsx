@@ -47,6 +47,12 @@ function AddLogModal({ isOpen, onClose, onAdd }) {
     date: '',
   });
 
+  const handleOverlayClick = e => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
   useEffect(() => {
     if (!isOpen) return;
 
@@ -104,7 +110,7 @@ function AddLogModal({ isOpen, onClose, onAdd }) {
       className={styles.modalOverlay}
       onClick={handleOverlayClick}
       onKeyDown={e => {
-        if (e.key === 'Enter' || e.key === ' ') {
+        if ((e.key === 'Enter' || e.key === ' ') && e.target === e.currentTarget) {
           handleOverlayClick(e);
         }
       }}
@@ -303,7 +309,7 @@ function ResourceManagement() {
     <div className={`${styles.page} ${darkMode ? styles.dark : styles.light}`}>
       <div className={styles.headerRow}>
         <h2 className={styles.title}>Used Resources</h2>
-        <button className={styles.addLogButton} onClick={() => setIsModalOpen(true)}>
+        <button type="button" className={styles.addLogButton} onClick={() => setIsModalOpen(true)}>
           Add New Log
         </button>
       </div>
