@@ -140,7 +140,7 @@ function InjuryChartForm({ dark }) {
             </FormGroup>
           </div>
 
-          <div className="ol-md-4">
+          <div className="col-md-4">
             <FormGroup>
               <Label className={dark ? styles.wrapperDark : ''}>Start Date</Label>
               <DatePicker
