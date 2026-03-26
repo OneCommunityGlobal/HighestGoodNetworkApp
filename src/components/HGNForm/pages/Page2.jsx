@@ -33,9 +33,15 @@ function Page2() {
     window.scrollTo(0, 0);
   }, []);
 
+  const darkClass = darkMode ? styles.bgOxfordBlue : '';
+
   return (
+<<<<<<< HEAD
     <div className={`${styles.hgnform} ${darkMode ? 'bg-oxford-blue' : ''}`}>
 >>>>>>> d9c2c36e0 (add dark mode styling to page2)
+=======
+    <div className={`${styles.hgnform} ${darkClass}`}>
+>>>>>>> 35b30e481 (Refactor Page2 component for dark mode styling)
       <Banner />
       <QuestionnaireInfo />
       <Progress progressValue={16.67 * 2} />
