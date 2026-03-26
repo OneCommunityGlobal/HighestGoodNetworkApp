@@ -41,6 +41,7 @@ function Page1() {
     window.scrollTo(0, 0);
   }, []);
 
+<<<<<<< HEAD
   useEffect(() => {
     let mounted = true;
 
@@ -95,6 +96,12 @@ function Page1() {
 =======
     <div className={`${styles.hgnform} ${darkMode ? 'bg-oxford-blue' : ''}`}>
 >>>>>>> a2dce1bdb (add dark mode for questionnaire)
+=======
+  const darkClass = darkMode ? styles.bgOxfordBlue : '';
+
+  return (
+    <div className={`${styles.hgnform} ${darkClass}`}>
+>>>>>>> 8517600dd (Refactor dark mode class assignment in Page1.jsx)
       <Banner />
       <QuestionnaireInfo />
       <InfoForm />
