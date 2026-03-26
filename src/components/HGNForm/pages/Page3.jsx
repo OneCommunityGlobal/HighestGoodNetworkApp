@@ -32,12 +32,20 @@ function Page3() {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+const darkClass = darkMode ? styles.bgOxfordBlue : ''; 
 
   return (
+<<<<<<< HEAD
     <div className={`${styles.hgnform} ${darkMode ? 'bg-oxford-blue' : ''}`}>
 >>>>>>> 611be96be (add dark mode styling to page3)
       <Banner />
       <QuestionnaireInfo />
+=======
+     <div className={`${styles.hgnform} ${darkClass}`}> 
+   <Banner />
+      <QuestionnaireHeader ref={headerRef} />
+      <FrontendQuestions />
+>>>>>>> d7fef0715 (Refactor dark mode class assignment in Page3)
       <Progress progressValue={16.67 * 3} />
       <FrontendQuestions />
     </div>
