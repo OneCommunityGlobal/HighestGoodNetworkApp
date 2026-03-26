@@ -199,7 +199,8 @@
   background: #fff;
   padding: 2rem 2.5rem 2rem 2rem;
   border-radius: 16px;
-  max-width: 420px;
+  max-width: 860px;
+  width: min(860px, calc(100vw - 48px));
   min-width: 320px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.32);
   display: flex;
@@ -237,6 +238,112 @@
   color: #222;
   font-size: 1em;
   line-height: 1.5;
+}
+
+/* Job description modal layout (collaboration job forms) */
+.jobDescHeader {
+  width: 100%;
+}
+
+.jobDescTitle {
+  font-size: 44px;
+  line-height: 1.05;
+  margin: 0 0 10px;
+  color: #0b1324;
+  letter-spacing: -0.02em;
+}
+
+.jobDescTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0 0 14px;
+}
+
+.tagPill {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid #d7deea;
+  background: #f6f8fc;
+  color: #24324c;
+}
+
+.tagPillStrong {
+  border-color: #cfe3ff;
+  background: #e9f2ff;
+  color: #0b3b84;
+}
+
+.jobDescBody {
+  width: 100%;
+  margin-top: 6px;
+}
+
+.jobDescBody a {
+  color: #1a5fb4;
+}
+
+.jobDescSectionTitle {
+  font-weight: 700;
+  font-size: 18px;
+  margin: 18px 0 10px;
+  color: #0b1324;
+}
+
+.jobDescText {
+  font-size: 16px;
+  color: #1d2a44;
+  line-height: 1.65;
+  white-space: pre-line;
+}
+
+.jobDescFooter {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 22px;
+}
+
+.gotItBtn {
+  background: #1a73e8;
+  border: 0;
+  border-radius: 8px;
+  color: #fff;
+  padding: 10px 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.gotItBtn:hover {
+  background: #155dc0;
+}
+
+/* Dark mode: native date input — white calendar icon (WebKit/Blink) */
+.darkMode input[type='date'],
+.darkMode .dateInput {
+  color-scheme: dark;
+}
+
+.darkMode input[type='date']::-webkit-calendar-picker-indicator,
+.darkMode .dateInput::-webkit-calendar-picker-indicator {
+  /* Force a light/white glyph on dark inputs (invert alone can stay too dim) */
+  filter: brightness(0) invert(1);
+  opacity: 1;
+  cursor: pointer;
+  width: 1.15rem;
+  height: 1.15rem;
+}
+
+/* Firefox: calendar icon in date inputs */
+.darkMode input[type='date']::-moz-calendar-picker-indicator,
+.darkMode .dateInput::-moz-calendar-picker-indicator {
+  filter: brightness(0) invert(1);
+  opacity: 1;
+  cursor: pointer;
 }
 
 .resumeLabel {
@@ -343,8 +450,8 @@
 }
 
 .darkMode .popupContent {
-  background: #225163;
-  color: #f1f1f1;
+  background: #0b1324;
+  color: #e5e7eb;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7);
 }
 
@@ -363,6 +470,40 @@
 
 .darkMode .popupContent p {
   color: #e0e0e0;
+}
+
+/* Dark mode: job description modal (new layout) */
+.darkMode .jobDescTitle {
+  color: #f8fafc;
+}
+
+.darkMode .jobDescSectionTitle {
+  color: #e2e8f0;
+}
+
+.darkMode .jobDescText {
+  color: #cbd5e1;
+}
+
+.darkMode .tagPill {
+  border-color: rgba(148, 163, 184, 0.35);
+  background: rgba(148, 163, 184, 0.12);
+  color: #e2e8f0;
+}
+
+.darkMode .tagPillStrong {
+  border-color: rgba(56, 189, 248, 0.35);
+  background: rgba(56, 189, 248, 0.14);
+  color: #e0f2fe;
+}
+
+.darkMode .gotItBtn {
+  background: #1a73e8;
+  color: #ffffff;
+}
+
+.darkMode .gotItBtn:hover {
+  background: #155dc0;
 }
 
 .darkMode a {
