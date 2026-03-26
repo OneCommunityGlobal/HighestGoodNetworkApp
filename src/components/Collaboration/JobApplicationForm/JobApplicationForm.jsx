@@ -238,9 +238,15 @@ function JobApplicationForm() {
 
                 <div className={styles.jobDescBody}>
                   <div className={styles.jobDescSectionTitle}>About the role</div>
-                  <div className={styles.jobDescText}>{getJobDescriptionForModal(filteredForm)}</div>
+                  <div className={styles.jobDescText}>
+                    {getJobDescriptionForModal(filteredForm)}
+                  </div>
                   <div className={styles.jobDescFooter}>
-                    <button type="button" className={styles.gotItBtn} onClick={handleCloseDescription}>
+                    <button
+                      type="button"
+                      className={styles.gotItBtn}
+                      onClick={handleCloseDescription}
+                    >
                       Got it
                     </button>
                   </div>
