@@ -31,10 +31,15 @@ function Page4() {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-
+  
+  const darkClass = darkMode ? styles.bgOxfordBlue : ''; 
   return (
+<<<<<<< HEAD
     <div className={`${styles.hgnform} ${darkMode ? 'bg-oxford-blue' : ''}`}>
 >>>>>>> 85f9e9e48 (add dark mode styling to page 4)
+=======
+    <div className={`${styles.hgnform} ${darkClass}`}> 
+>>>>>>> 107496894 (Refactor dark mode class assignment in Page4)
       <Banner />
       <BackendQuestions />
       <Progress progressValue={16.67 * 4} />
