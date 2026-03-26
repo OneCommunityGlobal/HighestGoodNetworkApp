@@ -39,6 +39,9 @@ beforeEach(() => {
 });
 
 vi.mock('axios');
+import axios from 'axios';
+axios.get = vi.fn().mockResolvedValue({ data: { firstName: 'Test', lastName: 'User' } });
+
 const modifyBlueSquares=vi.fn()
 const closeModal=vi.fn()
 const updateLink=vi.fn()
