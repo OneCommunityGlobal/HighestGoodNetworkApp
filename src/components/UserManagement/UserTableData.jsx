@@ -50,6 +50,12 @@ const UserTableDataComponent = props => {
   const history = useHistory();
   const { roles } = useSelector(state => state.role);
 
+
+  const formatDateForInput = date => {
+    if (!date) return '';
+    return new Date(date).toISOString().split('T')[0];
+  };
+
   const [formData, updateFormData] = useState({
     firstName: props.user.firstName,
     lastName: props.user.lastName,
@@ -58,8 +64,8 @@ const UserTableDataComponent = props => {
     jobTitle: props.user.jobTitle,
     email: props.user.email,
     weeklycommittedHours: props.user.weeklycommittedHours,
-    startDate: formatDate(props.user.startDate) || '',
-    endDate: formatDate(props.user.endDate) || '',
+    startDate: formatDateForInput(props.user.startDate),
+    endDate: formatDateForInput(props.user.endDate),
   });
 
   const joinTimeStamp = date => `${String(date).slice(0, 10)}T12:00:00.000Z`;
@@ -112,8 +118,8 @@ const UserTableDataComponent = props => {
       jobTitle: props.user.jobTitle,
       email: props.user.email,
       weeklycommittedHours: props.user.weeklycommittedHours,
-      startDate: formatDate(props.user.startDate),
-      endDate: formatDate(props.user.endDate),
+      startDate: formatDateForInput(props.user.startDate),
+      endDate: formatDateForInput(props.user.endDate),
     });
   }, [props.user]);
 
@@ -539,9 +545,19 @@ const UserTableDataComponent = props => {
       </td>
 
       {/* START DATE */}
-      <td>
+      <td className={styles.emailCell}>
         {editUser?.startDate ? (
-          <span>{props.user.startDate ? formatDateLocal(props.user.startDate) : 'N/A'}</span>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            <span>{props.user.startDate ? formatDateLocal(props.user.startDate) : 'N/A'}</span>
+            <FontAwesomeIcon
+              className={styles.userManagementCellControl}
+              icon={faCopy}
+              onClick={() => {
+                navigator.clipboard.writeText(props.user.startDate ? formatDateLocal(props.user.startDate) : 'N/A');
+                toast.success('Start Date Copied!');
+              }}
+            />
+          </div>
         ) : (
           <input
             type="date"
@@ -556,7 +572,6 @@ const UserTableDataComponent = props => {
           />
         )}
       </td>
-
       {/* END DATE */}
       <td className={styles.emailCell}>
         {editUser?.endDate ? (
