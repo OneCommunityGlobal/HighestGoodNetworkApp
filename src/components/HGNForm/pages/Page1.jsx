@@ -22,8 +22,10 @@ function Page1() {
     window.scrollTo(0, 0);
   }, []);
 
+  const darkClass = darkMode ? styles.bgOxfordBlue : '';
+
   return (
-    <div className={`${styles.hgnform} ${darkMode ? 'bg-oxford-blue' : ''}`}>
+    <div className={`${styles.hgnform} ${darkClass}`}>
       <Banner />
       <QuestionnaireInfo />
       <InfoForm />
