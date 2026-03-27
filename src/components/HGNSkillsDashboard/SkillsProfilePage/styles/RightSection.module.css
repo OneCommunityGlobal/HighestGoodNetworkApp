@@ -40,3 +40,27 @@ h3 {
 :global(.dark-mode) h3 {
   color: #fff;
 }
+
+/* Dark variants applied via module classes */
+.rightSectionDark {
+  background-color: #181818;
+  color: #e6e6e6;
+}
+
+.skillsAndChartDark {
+  background-color: #1f1f1f;
+  border-color: #2a2a2a;
+}
+
+/* Optional: headings/buttons inside right section in dark */
+.rightSectionDark h3,
+.rightSectionDark h4 {
+  color: #f0f0f0;
+}
+
+.dashboardWrapper{
+  display:flex;
+  flex-direction:column;
+  gap:20px;
+  width:100%;
+}
