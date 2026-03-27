@@ -94,11 +94,12 @@
   color: #586069;
 }
 
-.statusMet {
+/* Status colors for Weekly Requirements */
+.promotionTable td.statusMet {
   color: #22863a;
 }
 
-.statusNotMet {
+.promotionTable td.statusNotMet {
   color: #cb2431;
 }
 
@@ -183,6 +184,15 @@
 
 [data-theme='dark'] .promotionTable tbody tr:hover td.statusNotMet {
   color: #f85149;
+}
+
+/* Dark mode status colors - higher specificity to override td color */
+[data-theme='dark'] .promotionTable td.statusMet {
+  color: #53d06e !important;
+}
+
+[data-theme='dark'] .promotionTable td.statusNotMet {
+  color: #fa7970 !important;
 }
 
 [data-theme='dark'] .statusMet {
