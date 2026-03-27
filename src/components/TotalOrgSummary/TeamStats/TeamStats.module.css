@@ -1,0 +1,33 @@
+.team-stats-active-members-dropdown {
+  border: 1px solid #e0e0e0;
+  border-radius: 5px;
+  margin: 0 0.3rem;
+  font-size: 1.2em;
+  color: #111827 !important;
+  -webkit-text-fill-color: #111827 !important;
+}
+
+.team-stats-active-members-dropdown option {
+  color: #111827;
+  background-color: #ffffff;
+}
+
+.dark-mode .team-stats-active-members-dropdown {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+.dark-mode .team-stats-active-members-dropdown option {
+  color: #ffffff;
+  background-color: #111827;
+}
+
+.dropdown-dark {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+.dropdown-light {
+  color: #111827 !important;
+  -webkit-text-fill-color: #111827 !important;
+}

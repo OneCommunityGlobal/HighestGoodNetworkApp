@@ -3,7 +3,7 @@ import { ENDPOINTS } from '~/utils/URL';
 import axios from 'axios';
 import Loading from '~/components/common/Loading';
 import TeamStatsBarChart from './TeamStatsBarChart';
-import './TeamStats.css';
+import './TeamStats.module.css';
 
 const activeMembersMinimumDropDownOptions = [2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30];
 
@@ -17,7 +17,7 @@ function TeamStats({ isLoading, usersInTeamStats, endDate, darkMode }) {
   const selectStyle = {
     backgroundColor: darkMode ? '#111827' : '#ffffff',
     color: darkMode ? '#f8fafc' : '#111827',
-    WebkitTextFillColor: darkMode ? '#f8fafc' : '#111827', // ✅ helps if global CSS forces colors
+    WebkitTextFillColor: darkMode ? '#f8fafc' : '#111827',
     border: darkMode ? '1px solid rgba(255,255,255,0.25)' : '1px solid #e0e0e0',
     borderRadius: 5,
     padding: '2px 8px',
@@ -77,7 +77,7 @@ function TeamStats({ isLoading, usersInTeamStats, endDate, darkMode }) {
   ];
 
   function handleActiveMembersMinimumChange(event) {
-    const selectedActiveMembersMinimum = event.target.value;
+    const selectedActiveMembersMinimum = Number(event.target.value);
     if (!selectedActiveMembersMinimum) return;
     setActiveMembersMinimum(selectedActiveMembersMinimum);
   }
@@ -95,9 +95,12 @@ function TeamStats({ isLoading, usersInTeamStats, endDate, darkMode }) {
               <select
                 onChange={handleActiveMembersMinimumChange}
                 value={activeMembersMinimum}
-                className="team-stats-active-members-dropdown"
+                className={`team-stats-active-members-dropdown ${
+                  darkMode ? 'dropdown-dark' : 'dropdown-light'
+                }`}
                 style={selectStyle}
               >
+                {' '}
                 {activeMembersMinimumDropDownOptions.map(activeMembersMinimumOption => (
                   <option
                     key={`${activeMembersMinimumOption}-dropdown`}
