@@ -193,17 +193,6 @@
   color-scheme: dark;
 }
 
-
-/* .darkSidebar :global(.react-datepicker-wrapper input) {
-  background-color: #000000;
-  color: #ffffff;
-  border: 2px solid #4da3ff;
-} */
-
-.darkSidebar :global(.react-datepicker-wrapper input::placeholder) {
-  color: #ffffff;
-}
-
 .filterSection h4 {
   font-size: 1.8rem;
   color: #2c3e50;
@@ -429,11 +418,6 @@
   font-size: 1rem;
   transition: all 0.3s ease;
 }
-/* .darkSidebar .dateFilterContainer :global(input) {
-  background-color: #000000;
-  color: #ffffff;
-  border: 1px solid #4a6572;
-} */
 
 .darkSidebar :global(.react-datepicker__input-container input) {
   background-color: #000000 !important;

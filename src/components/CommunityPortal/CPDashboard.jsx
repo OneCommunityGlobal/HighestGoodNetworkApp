@@ -81,7 +81,6 @@ export function CPDashboard() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedDate, setSelectedDate] = useState('');
   const [onlineOnly, setOnlineOnly] = useState(false);
-  const [dateError, setDateError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [dateFilter, setDateFilter] = useState('');
   const [error, setError] = useState(null);
@@ -103,7 +102,6 @@ export function CPDashboard() {
       setSelectedDate('');
       return;
     }
-    setDateError('');
     setSelectedDate(date);
   };
 
@@ -449,26 +447,6 @@ export function CPDashboard() {
                     />
                   </div>
                 </div>
-
-                {/* <Button
-                  color="primary"
-                  size="sm"
-                  onClick={() => {
-                    setDateFilter('');
-                    setSelectedDate('');
-                  }}
-                >
-                  Clear date filter
-                </Button>
-
-                <Input
-                  type="date"
-                  placeholder="Select Date"
-                  className={styles.dateFilter}
-                  value={selectedDate}
-                  onChange={e => setSelectedDate(e.target.value)}
-                  style={{ marginTop: '10px' }}
-                /> */}
               </div>
 
               <div className={styles.filterItem}>
