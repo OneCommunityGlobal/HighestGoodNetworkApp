@@ -163,8 +163,9 @@ import CommunityCalendar from './components/CommunityPortal/Calendar/CommunityCa
 import KitchenandInventoryLogin from './components/KitchenandInventory/Login';
 import KIProtectedRoute from './components/common/KitchenandInventory/KIProtectedRoute';
 import KIDashboard from './components/KitchenandInventory/KIDashboard/KIDashboard';
-import KIINVENTORY from './components/KitchenandInventory/KIInventory/KIInventory';
-import KICalendar from './components/KitchenandInventory/KICalendar/KICalendar';
+import RecipesLandingPage from "./components/KitchenandInventory/Recipes";
+import KIINVENTORY from "./components/KitchenandInventory/KIInventory/KIInventory";
+import KICalendar from "./components/KitchenandInventory/KICalendar/KICalendar";
 
 // Education Portal
 import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
@@ -904,6 +905,7 @@ export default (
         <KIProtectedRoute path="/kitchenandinventory/inventory" exact component={KIINVENTORY} />
         <KIProtectedRoute path="/kitchenandinventory/calendar" exact component={KICalendar} />
         <Route path="/kitchenandinventory/login" exact component={KitchenandInventoryLogin} />
+        <Route path="/kitchenandinventory/recipes" exact component={RecipesLandingPage} />
         {/* ----- End of Kitchen and Inventory Portal Routes ----- */}
         <Route path="/login" component={Login} />
         <Route path="/forgotpassword" component={ForgotPassword} />
