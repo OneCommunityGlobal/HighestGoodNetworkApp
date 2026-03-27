@@ -899,7 +899,6 @@ export default (
           exact
           render={() => <Activity initialTab="FAQs" />}
         />
-        <CPProtectedRoute path="/communityportal/activity/:activityId" exact component={Activity} />
         {/* <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} /> */}
         {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
         {/* <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} /> */}
