@@ -517,6 +517,9 @@ export function Header(props) {
                       }`}
                       disabled={headerDisabled}
                     >
+                      <DropdownItem tag={Link} to="/bmdashboard/inventorytypes" className={fontColor}>
+                        All Inventory Types
+                      </DropdownItem>
                       <DropdownItem tag={Link} to="/bmdashboard/materials/add" className={fontColor}>
                         Add Material
                       </DropdownItem>
