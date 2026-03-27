@@ -253,10 +253,6 @@
   margin-bottom: 8px;
 }
 
-.dateFilter {
-  margin-top: 10px;
-}
-
 .dateFilter:focus {
   border-color: #2c3e50;
   box-shadow: 0 0 5px rgba(44, 62, 80, 0.4);
@@ -438,6 +434,7 @@
   color: red;
   margin-top: 5px;
 }
+
 
 .paginationContainer {
   margin-top: 20px;
