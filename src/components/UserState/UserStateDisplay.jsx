@@ -1,6 +1,6 @@
 import axios from 'axios';
 import PropTypes from 'prop-types';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ENDPOINTS } from '~/utils/URL';
 
@@ -37,6 +37,7 @@ function EditPanel({
   onNewLabelChange,
   onSetIsAdding,
   onSetIsReordering,
+  onDeleteCatalogItem,
   onClose,
 }) {
   const panelBorder = darkMode ? '#4a6a9c' : '#b0c4de';
@@ -50,16 +51,25 @@ function EditPanel({
   return (
     <div
       style={{
+        position: 'absolute',
+        left: 0,
+        right: 'auto',
+        zIndex: 999,
         marginTop: '8px',
         padding: '10px',
         border: `1px solid ${panelBorder}`,
         borderRadius: '8px',
         background: panelBg,
+        minWidth: '260px',
+        maxWidth: '320px',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
       }}
     >
       <div style={{ marginBottom: '8px', fontSize: '12px', fontWeight: 600, color: titleColor }}>
         Select State:
       </div>
+
+      {/* FIX 1: Catalog options horizontal with flex wrap */}
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '8px' }}>
         {catalog.map((item, idx) => {
           const isItemSelected = selected.some(s => s.key === item.key);
@@ -74,8 +84,10 @@ function EditPanel({
                 type="button"
                 onClick={() => onToggle(item.key)}
                 style={{
-                  display: 'inline-block',
-                  padding: '4px 12px',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  padding: '4px 10px',
                   borderRadius: '20px',
                   fontSize: '12px',
                   fontWeight: '600',
@@ -85,9 +97,32 @@ function EditPanel({
                   border: `2px solid ${bg}`,
                   boxShadow: btnShadow,
                   opacity: btnOpacity,
+                  whiteSpace: 'nowrap',
                 }}
               >
                 {item.label}
+              </button>
+              <button
+                type="button"
+                aria-label={`Delete ${item.label}`}
+                onClick={e => {
+                  e.stopPropagation();
+                  onDeleteCatalogItem(item.key);
+                }}
+                style={{
+                  marginLeft: '2px',
+                  fontSize: '10px',
+                  fontWeight: 'bold',
+                  opacity: 0.7,
+                  cursor: 'pointer',
+                  lineHeight: 1,
+                  background: 'none',
+                  border: 'none',
+                  padding: 0,
+                  color: 'inherit',
+                }}
+              >
+                ×
               </button>
               {isReordering && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
@@ -125,8 +160,17 @@ function EditPanel({
           );
         })}
       </div>
+
       {isAdding && (
-        <div style={{ display: 'flex', gap: '6px', marginBottom: '8px', alignItems: 'center' }}>
+        <div
+          style={{
+            display: 'flex',
+            gap: '6px',
+            marginBottom: '8px',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+          }}
+        >
           <input
             type="text"
             value={newLabel}
@@ -140,7 +184,7 @@ function EditPanel({
               border: `1px solid ${panelBorder}`,
               background: darkMode ? '#1e2d4a' : '#fff',
               color: darkMode ? '#cdd9f5' : '#1a3a6b',
-              width: '180px',
+              width: '160px',
             }}
             onKeyDown={e => e.key === 'Enter' && onAddNew()}
           />
@@ -176,6 +220,7 @@ function EditPanel({
           </button>
         </div>
       )}
+
       <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
         <button
           type="button"
@@ -242,6 +287,7 @@ EditPanel.propTypes = {
   onNewLabelChange: PropTypes.func.isRequired,
   onSetIsAdding: PropTypes.func.isRequired,
   onSetIsReordering: PropTypes.func.isRequired,
+  onDeleteCatalogItem: PropTypes.func.isRequired,
   onClose: PropTypes.func.isRequired,
 };
 
@@ -252,19 +298,20 @@ function logError(context, error) {
   }
 }
 
-function UserStateDisplay({ userId, catalog, selectedFromParent, canEdit }) {
+function UserStateDisplay({
+  userId,
+  canEdit,
+  catalog,
+  onCatalogChange,
+  initialSelected,
+  onSelectionChange,
+}) {
   const darkMode = useSelector(state => state.theme.darkMode);
-  const [selected, setSelected] = useState(selectedFromParent || []);
+  const [selected, setSelected] = useState(initialSelected || []);
   const [isEditing, setIsEditing] = useState(false);
-  const [loading, setLoading] = useState(true);
   const [newLabel, setNewLabel] = useState('');
   const [isAdding, setIsAdding] = useState(false);
   const [isReordering, setIsReordering] = useState(false);
-
-  useEffect(() => {
-    setSelected(selectedFromParent || []);
-    setLoading(false);
-  }, [selectedFromParent]);
 
   const handleToggle = async key => {
     const isItemSelected = selected.some(s => s.key === key);
@@ -272,6 +319,7 @@ function UserStateDisplay({ userId, catalog, selectedFromParent, canEdit }) {
       ? selected.filter(s => s.key !== key)
       : [...selected, { key, selectedAt: new Date().toISOString() }];
     setSelected(updated);
+    onSelectionChange(userId, updated);
     try {
       await axios.put(ENDPOINTS.USER_STATE_SELECTION(userId), {
         selectedKeys: updated.map(s => s.key),
@@ -279,7 +327,8 @@ function UserStateDisplay({ userId, catalog, selectedFromParent, canEdit }) {
       });
     } catch (toggleError) {
       logError('handleToggle', toggleError);
-      setSelected(prev => prev);
+      setSelected(prev => prev); // revert
+      onSelectionChange(userId, selected);
     }
   };
 
@@ -291,7 +340,7 @@ function UserStateDisplay({ userId, catalog, selectedFromParent, canEdit }) {
         label: trimmed,
         requestor: { role: 'Owner' },
       });
-      setCatalog(prev => [...prev, res.data.item]);
+      onCatalogChange(prev => [...prev, res.data.item]);
       setNewLabel('');
       setIsAdding(false);
     } catch (addError) {
@@ -300,11 +349,24 @@ function UserStateDisplay({ userId, catalog, selectedFromParent, canEdit }) {
     }
   };
 
+  const handleDeleteCatalogItem = async key => {
+    onCatalogChange(prev => prev.filter(c => c.key !== key));
+    setSelected(prev => prev.filter(s => s.key !== key));
+    try {
+      await axios.patch(ENDPOINTS.USER_STATE_CATALOG_ITEM(key), {
+        isActive: false,
+        requestor: { role: 'Owner' },
+      });
+    } catch (deleteError) {
+      logError('handleDeleteCatalogItem', deleteError);
+    }
+  };
+
   const handleMoveUp = async idx => {
     if (idx === 0) return;
     const reordered = [...catalog];
     [reordered[idx - 1], reordered[idx]] = [reordered[idx], reordered[idx - 1]];
-    setCatalog(reordered);
+    onCatalogChange(reordered);
     try {
       await axios.put(ENDPOINTS.USER_STATE_CATALOG_REORDER, {
         orderedKeys: reordered.map(c => c.key),
@@ -319,7 +381,7 @@ function UserStateDisplay({ userId, catalog, selectedFromParent, canEdit }) {
     if (idx === catalog.length - 1) return;
     const reordered = [...catalog];
     [reordered[idx], reordered[idx + 1]] = [reordered[idx + 1], reordered[idx]];
-    setCatalog(reordered);
+    onCatalogChange(reordered);
     try {
       await axios.put(ENDPOINTS.USER_STATE_CATALOG_REORDER, {
         orderedKeys: reordered.map(c => c.key),
@@ -339,9 +401,7 @@ function UserStateDisplay({ userId, catalog, selectedFromParent, canEdit }) {
   const handleToggleReordering = newVal => {
     const next = Boolean(newVal);
     setIsReordering(next);
-    if (next) {
-      setIsAdding(false);
-    }
+    if (next) setIsAdding(false);
   };
 
   const editPanelProps = {
@@ -358,15 +418,21 @@ function UserStateDisplay({ userId, catalog, selectedFromParent, canEdit }) {
     onNewLabelChange: setNewLabel,
     onSetIsAdding: setIsAdding,
     onSetIsReordering: handleToggleReordering,
+    onDeleteCatalogItem: handleDeleteCatalogItem,
     onClose: handleClose,
   };
-
-  if (loading) return null;
 
   if (selected.length === 0) {
     if (!canEdit) return null;
     return (
-      <div style={{ marginTop: '6px' }}>
+      <div
+        style={{
+          marginTop: '6px',
+          position: 'relative',
+          display: 'flex',
+          justifyContent: 'center',
+        }}
+      >
         <button
           type="button"
           onClick={() => setIsEditing(true)}
@@ -395,7 +461,19 @@ function UserStateDisplay({ userId, catalog, selectedFromParent, canEdit }) {
     });
 
   return (
-    <div style={{ marginTop: '6px' }}>
+    /* FIX 3 & 4: badges horizontal, wrap, no overflow */
+    <div
+      style={{
+        marginTop: '6px',
+        display: 'flex',
+        flexWrap: 'wrap',
+        gap: '4px',
+        maxWidth: '100%',
+        overflow: 'visible',
+        position: 'relative',
+        justifyContent: 'center',
+      }}
+    >
       {selectedItems.map(item => {
         const { bg, text } = getStateColor(item.key, darkMode);
         return (
@@ -404,12 +482,12 @@ function UserStateDisplay({ userId, catalog, selectedFromParent, canEdit }) {
             type="button"
             title="This is the user's state. Ask an Admin to change it for you if you feel it is not accurate"
             style={{
-              display: 'inline-block',
-              marginRight: '6px',
-              marginBottom: '4px',
-              padding: '4px 12px',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '4px',
+              padding: '3px 8px 3px 10px',
               borderRadius: '20px',
-              fontSize: '12px',
+              fontSize: '11px',
               fontWeight: '600',
               background: bg,
               color: text,
@@ -417,6 +495,7 @@ function UserStateDisplay({ userId, catalog, selectedFromParent, canEdit }) {
               cursor: canEdit ? 'pointer' : 'default',
               letterSpacing: '0.3px',
               border: 'none',
+              whiteSpace: 'nowrap',
             }}
             onClick={
               canEdit
@@ -428,6 +507,29 @@ function UserStateDisplay({ userId, catalog, selectedFromParent, canEdit }) {
             }
           >
             {formatDate(item.selectedAt)} {item.label}
+            {canEdit && (
+              <button
+                type="button"
+                aria-label={`Remove ${item.label}`}
+                onClick={e => {
+                  e.stopPropagation();
+                  handleToggle(item.key);
+                }}
+                style={{
+                  fontSize: '11px',
+                  fontWeight: 'bold',
+                  opacity: 0.8,
+                  cursor: 'pointer',
+                  lineHeight: 1,
+                  background: 'none',
+                  border: 'none',
+                  padding: 0,
+                  color: 'inherit',
+                }}
+              >
+                ×
+              </button>
+            )}
           </button>
         );
       })}
@@ -439,25 +541,19 @@ function UserStateDisplay({ userId, catalog, selectedFromParent, canEdit }) {
 
 UserStateDisplay.propTypes = {
   userId: PropTypes.string.isRequired,
-  catalog: PropTypes.arrayOf(
-    PropTypes.shape({
-      key: PropTypes.string,
-      label: PropTypes.string,
-    }),
-  ),
-  selectedFromParent: PropTypes.arrayOf(
-    PropTypes.shape({
-      key: PropTypes.string,
-      selectedAt: PropTypes.string,
-    }),
-  ),
   canEdit: PropTypes.bool,
+  catalog: PropTypes.arrayOf(PropTypes.shape({ key: PropTypes.string, label: PropTypes.string })),
+  onCatalogChange: PropTypes.func,
+  initialSelected: PropTypes.arrayOf(PropTypes.shape({ key: PropTypes.string })),
+  onSelectionChange: PropTypes.func,
 };
 
 UserStateDisplay.defaultProps = {
-  catalog: [],
-  selectedFromParent: [],
   canEdit: false,
+  catalog: [],
+  onCatalogChange: () => {},
+  initialSelected: [],
+  onSelectionChange: () => {},
 };
 
 export default UserStateDisplay;

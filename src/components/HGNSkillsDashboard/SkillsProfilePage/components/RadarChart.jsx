@@ -266,28 +266,25 @@ function RadarChart({ profileData, compact = true, onSkillsDataReady }) {
         suggestedMin: 0,
         suggestedMax: 10,
 
-        ticks: {
-          stepSize: 2,
-          display: compact ? false : true,
-          color: '#666',
-          font: { size: 10 },
-        },
-
         angleLines: {
           display: true,
           color: darkMode
-            ? 'rgba(255,255,255,0.15)'
+            ? compact
+              ? 'rgba(255,255,255,0.12)'
+              : 'rgba(255,255,255,0.16)'
             : compact
             ? 'rgba(0,0,0,0.08)'
-            : 'rgba(0,0,0,0.1)',
+            : 'rgba(0,0,0,0.10)',
         },
 
         grid: {
           color: darkMode
-            ? 'rgba(255,255,255,0.15)'
+            ? compact
+              ? 'rgba(255,255,255,0.12)'
+              : 'rgba(255,255,255,0.16)'
             : compact
             ? 'rgba(0,0,0,0.08)'
-            : 'rgba(0,0,0,0.1)',
+            : 'rgba(0,0,0,0.10)',
         },
 
         pointLabels: {
@@ -301,7 +298,7 @@ function RadarChart({ profileData, compact = true, onSkillsDataReady }) {
             },
             weight: '500',
           },
-          color: darkMode ? '#ccc' : compact ? '#333' : '#222',
+          color: darkMode ? '#e6e6e6' : compact ? '#555' : '#333',
           padding: compact ? 10 : 15,
           callback: function(value) {
             if (window.innerWidth < 600 && value.length > 15) {
@@ -310,15 +307,53 @@ function RadarChart({ profileData, compact = true, onSkillsDataReady }) {
             return value;
           },
         },
+        ticks: {
+          stepSize: 2,
+          display: compact ? false : true,
+          color: darkMode ? '#dcdcdc' : '#666',
+          font: { size: 10 },
+          backdropColor: darkMode ? '#1f1f1f' : '#ffffff',
+          showLabelBackdrop: true,
+        },
       },
     },
     plugins: {
       legend: { display: false },
+      tooltip: {
+        enabled: true,
+        backgroundColor: darkMode ? 'rgba(29, 31, 34, 0.95)' : '#ffffff',
+        titleColor: darkMode ? '#e6e6e6' : '#333',
+        bodyColor: darkMode ? '#e6e6e6' : '#333',
+        borderColor: darkMode ? 'rgba(100, 149, 237, 0.8)' : 'rgba(62, 160, 203, 1)',
+        borderWidth: 2,
+        cornerRadius: 8,
+        displayColors: false,
+        titleFont: { size: 14, weight: 'bold' },
+        bodyFont: { size: 12 },
+        padding: 12,
+        callbacks: {
+          title: function(context) {
+            const index = context[0].dataIndex;
+            return skillsData[index].label;
+          },
+          label: function(context) {
+            const score = context.parsed.r;
+            const index = context.dataIndex;
+            const description = skillsData[index].description;
+            return [`Score: ${score}/10`, '', description];
+          },
+        },
+        filter: function(tooltipItem) {
+          return tooltipItem.parsed.r > 0;
+        },
+      },
     },
+    interaction: { intersect: false, mode: 'point' },
+    animation: { duration: 1000, easing: 'easeInOutQuart' },
   };
 
   return (
-    <div className={styles.radarChart}>
+    <div className={`${styles.radarChart} ${darkMode ? styles.dark : ''}`}>
       <Radar data={chartData} options={chartOptions} />
     </div>
   );

@@ -428,7 +428,9 @@ export const ENDPOINTS = {
   // User State Indicator endpoints
   USER_STATE_CATALOG: `${APIEndpoint}/userstate/catalog`,
   USER_STATE_CATALOG_REORDER: `${APIEndpoint}/userstate/catalog/reorder`,
+  USER_STATE_CATALOG_ITEM: key => `${APIEndpoint}/userstate/catalog/${key}`,
   USER_STATE_SELECTION: userId => `${APIEndpoint}/userstate/selection/${userId}`,
+  USER_STATE_SELECTIONS_BATCH: `${APIEndpoint}/userstate/selections/batch`,
 
   CREATE_JOB_FORM: `${APIEndpoint}/jobforms`,
   UPDATE_JOB_FORM: `${APIEndpoint}/jobforms`,
@@ -576,6 +578,7 @@ export const ENDPOINTS = {
     return url;
   },
 
+  HGN_FORM_RESPONSES: () => `${APIEndpoint}/hgnform`,
   // Kitchen and Inventory Management endpoints
   KI_CALENDAR_EVENTS: (month, year) => `${APIEndpoint}/kitchenandinventory/calendar?month=${month}&year=${year}`,
 
