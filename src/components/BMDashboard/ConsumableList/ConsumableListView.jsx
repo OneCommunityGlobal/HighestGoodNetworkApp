@@ -3,6 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchAllConsumables } from '../../../actions/bmdashboard/consumableActions';
 import ItemListView from '../ItemList/ItemListView';
 import UpdateConsumableModal from '../UpdateConsumables/UpdateConsumableModal';
+import { Link } from 'react-router-dom';
+import styles from '../InventoryTypesList/TypesList.module.css';
 
 function ConsumableListView() {
   const dispatch = useDispatch();
@@ -50,13 +52,19 @@ function ConsumableListView() {
   ];
 
   return (
-    <ItemListView
-      itemType={itemTypeLabel}
-      items={transformedConsumables}
-      errors={errors}
-      UpdateItemModal={UpdateConsumableModal}
-      dynamicColumns={dynamicColumns}
-    />
+    <>
+      <Link to="/bmdashboard/inventorytypes" className={styles.backLink}>
+        All Inventory Types
+      </Link>
+
+      <ItemListView
+        itemType={itemTypeLabel}
+        items={transformedConsumables}
+        errors={errors}
+        UpdateItemModal={UpdateConsumableModal}
+        dynamicColumns={dynamicColumns}
+      />
+    </>
   );
 }
 
