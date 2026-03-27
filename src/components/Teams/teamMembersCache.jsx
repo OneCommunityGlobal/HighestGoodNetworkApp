@@ -30,7 +30,7 @@ export function isTeamMembersResolved(teamId) {
   return resolved.has(teamId);
 }
 
-export function invalidateTeamMembersCache(teamId) {
+export function clearCachedTeamMembers(teamId) {
   resolved.delete(String(teamId));
   pending.delete(String(teamId));
 }

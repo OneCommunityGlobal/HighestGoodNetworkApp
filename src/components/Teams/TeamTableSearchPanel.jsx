@@ -19,24 +19,11 @@ export function TeamTableSearchPanelBase(props) {
   }, []);
   return (
     <div className="input-group" id="new_team">
-      {canPostTeam && (
-        <button
-          type="button"
-          className="btn btn-info"
-          onClick={() => {
-            props.onCreateNewTeamClick();
-          }}
-          style={darkMode ? boxStyleDark : boxStyle}
-        >
-          {CREATE_NEW_TEAM}
-        </button>
-      )}
       <div className="input-group-prepend" style={{ marginLeft: '10px' }}>
         <span className={`input-group-text ${darkMode ? styles.searchLabelDark : ''}`}>
           {SEARCH}
         </span>
       </div>
-
       <input
         ref={inputRef}
         type="text"
@@ -48,6 +35,18 @@ export function TeamTableSearchPanelBase(props) {
           props.onSearch(e.target.value);
         }}
       />
+      {canPostTeam && (
+        <button
+          type="button"
+          className="btn btn-info ml-2"
+          onClick={() => {
+            props.onCreateNewTeamClick();
+          }}
+          style={darkMode ? boxStyleDark : boxStyle}
+        >
+          {CREATE_NEW_TEAM}
+        </button>
+      )}
     </div>
   );
 }
