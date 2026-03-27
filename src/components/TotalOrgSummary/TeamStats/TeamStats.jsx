@@ -3,7 +3,7 @@ import { ENDPOINTS } from '~/utils/URL';
 import axios from 'axios';
 import Loading from '~/components/common/Loading';
 import TeamStatsBarChart from './TeamStatsBarChart';
-import './TeamStats.module.css';
+import styles from './TeamStats.module.css';
 
 const activeMembersMinimumDropDownOptions = [2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30];
 
@@ -13,22 +13,6 @@ function TeamStats({ isLoading, usersInTeamStats, endDate, darkMode }) {
   );
   const [teamsWithActiveMembers, setTeamsWithActiveMembers] = useState(null);
   const [teamsStatsFetchingError, setTeamsStatsFetchingError] = useState(null);
-
-  const selectStyle = {
-    backgroundColor: darkMode ? '#111827' : '#ffffff',
-    color: darkMode ? '#f8fafc' : '#111827',
-    WebkitTextFillColor: darkMode ? '#f8fafc' : '#111827',
-    border: darkMode ? '1px solid rgba(255,255,255,0.25)' : '1px solid #e0e0e0',
-    borderRadius: 5,
-    padding: '2px 8px',
-    margin: '0 0.3rem',
-    fontSize: '1.05em',
-  };
-
-  const optionStyle = {
-    backgroundColor: darkMode ? '#111827' : '#ffffff',
-    color: darkMode ? '#f8fafc' : '#111827',
-  };
 
   useEffect(() => {
     const fetchTeamsData = async () => {
@@ -43,7 +27,7 @@ function TeamStats({ isLoading, usersInTeamStats, endDate, darkMode }) {
       }
     };
     fetchTeamsData();
-  }, [activeMembersMinimum]);
+  }, [activeMembersMinimum, endDate]);
 
   if (isLoading) {
     return (
@@ -86,8 +70,8 @@ function TeamStats({ isLoading, usersInTeamStats, endDate, darkMode }) {
     <div>
       <TeamStatsBarChart data={data} yAxisLabel="name" />
       {teamsWithActiveMembers && (
-        <div className="team-stats-active-members">
-          <div className="team-stats-bar-chart-summary">
+        <div className={styles.teamStatsActiveMembers}>
+          <div className={styles.teamStatsBarChartSummary}>
             <span>
               {`${teamsWithActiveMembers.count} ${
                 teamsWithActiveMembers.count === 1 ? 'team' : 'teams'
@@ -95,17 +79,14 @@ function TeamStats({ isLoading, usersInTeamStats, endDate, darkMode }) {
               <select
                 onChange={handleActiveMembersMinimumChange}
                 value={activeMembersMinimum}
-                className={`team-stats-active-members-dropdown ${
-                  darkMode ? 'dropdown-dark' : 'dropdown-light'
+                className={`${styles.teamStatsActiveMembersDropdown} ${
+                  darkMode ? styles.dropdownDark : styles.dropdownLight
                 }`}
-                style={selectStyle}
               >
-                {' '}
                 {activeMembersMinimumDropDownOptions.map(activeMembersMinimumOption => (
                   <option
                     key={`${activeMembersMinimumOption}-dropdown`}
                     value={activeMembersMinimumOption}
-                    style={optionStyle}
                   >
                     {activeMembersMinimumOption}
                   </option>

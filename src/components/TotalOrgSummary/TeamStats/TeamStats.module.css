@@ -1,33 +1,47 @@
-.team-stats-active-members-dropdown {
+.teamStatsActiveMembers {
+  margin-top: 1rem;
+}
+
+.teamStatsBarChartSummary {
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+}
+
+.teamStatsActiveMembersDropdown {
   border: 1px solid #e0e0e0;
   border-radius: 5px;
   margin: 0 0.3rem;
-  font-size: 1.2em;
-  color: #111827 !important;
-  -webkit-text-fill-color: #111827 !important;
+  font-size: 1.05em;
+  padding: 2px 28px 2px 8px;
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 12px;
+  cursor: pointer;
 }
 
-.team-stats-active-members-dropdown option {
+.teamStatsActiveMembersDropdown:focus {
+  outline: none;
+}
+
+.dropdownDark {
+  background-color: #111827 !important;
+  color: #f8fafc !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+}
+
+.dropdownLight {
+  background-color: #ffffff !important;
+  color: #111827 !important;
+  border: 1px solid #e0e0e0 !important;
+}
+
+.teamStatsActiveMembersDropdown option {
   color: #111827;
   background-color: #ffffff;
 }
 
-.dark-mode .team-stats-active-members-dropdown {
-  color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff !important;
-}
-
-.dark-mode .team-stats-active-members-dropdown option {
-  color: #ffffff;
+.dropdownDark option {
+  color: #f8fafc;
   background-color: #111827;
-}
-
-.dropdown-dark {
-  color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff !important;
-}
-
-.dropdown-light {
-  color: #111827 !important;
-  -webkit-text-fill-color: #111827 !important;
 }
