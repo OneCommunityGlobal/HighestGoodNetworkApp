@@ -35,6 +35,7 @@ import HeaderRenderer from './components/Header/HeaderRenderer';
 import Announcements from './components/Announcements';
 import JobCCDashboard from './components/JobCCDashboard/JobCCDashboard';
 import WeeklyProjectSummary from './components/BMDashboard/WeeklyProjectSummary/WeeklyProjectSummary';
+import TotalOrgSummaryEmail from './components/TotalOrgSummary/WeeklySummaryEmail/TotalOrgSummaryEmail';
 import LessonForm from './components/BMDashboard/Lesson/LessonForm';
 import LessonList from './components/BMDashboard/LessonList/LessonListForm';
 import AddEquipmentType from './components/BMDashboard/Equipment/Add/AddEquipmentType';
@@ -73,7 +74,7 @@ import TSAFormPage5 from './components/TSAForm/pages/TSAFormPage5';
 import TSAFormPage6 from './components/TSAForm/pages/TSAFormPage6';
 import TSAFormPage7 from './components/TSAForm/pages/TSAFormPage7';
 import TSAFormPage8 from './components/TSAForm/pages/TSAFormPage8';
-import DisplayTeamMemberDetails from './components/HGNForm/TopCommunityMembers/TopCommunityMembers';
+import PlannedCostDonutChart from './components/PlannedCostDonutChart';
 import HelpPage from './components/LandingPage/HelpPage';
 import TeamCard from './components/HGNHelpSkillsDashboard/TeamCard/TeamCard';
 import LandingPage from './components/HGNHelpSkillsDashboard/LandingPage';
@@ -133,6 +134,9 @@ import CheckTypes from './components/BMDashboard/shared/CheckTypes';
 import AttendanceNoShow from './components/AttendanceSystem/AttendanceNoShowCharts.jsx';
 import LessonsLearntChart from './components/BMDashboard/LessonsLearnt/LessonsLearntChart';
 import UtilizationChart from './components/BMDashboard/UtilizationChart/UtilizationChart';
+import CostPredictionPage from './components/BMDashboard/CostPrediction/CostPredictionPage';
+//import MostSusceptibleTools from './components/MostSusceptible/toolBreakdownChart';
+
 import RentalChart from './components/BMDashboard/RentalChart/RentalChart';
 import ReturnedLateChart from './components/BMDashboard/RentalChart/ReturnedLateChart';
 import CreateNewTeam from './components/BMDashboard/Team/CreateNewTeam/CreateNewTeam';
@@ -158,11 +162,15 @@ import CommunityCalendar from './components/CommunityPortal/Calendar/CommunityCa
 import KitchenandInventoryLogin from './components/KitchenandInventory/Login';
 import KIProtectedRoute from './components/common/KitchenandInventory/KIProtectedRoute';
 import KIDashboard from './components/KitchenandInventory/KIDashboard/KIDashboard';
+import KICalendar from './components/KitchenandInventory/KICalendar/KICalendar';
+
 // Education Portal
 import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
 import EPLogin from './components/EductionPortal/Login';
 import BrowseLessonPlan from './components/EductionPortal/BrowseLessonPlan/BrowseLP';
 import EPDashboard from './components/EductionPortal';
+
+import StudentProfilePage from './components/EductionPortal/StudentProfile/StudentProfilePage';
 import AssignAtoms from './components/EductionPortal/AssignAtoms/AssignAtoms';
 import ReportDownloadButton from './components/EductionPortal/AnalyticsDashboard/ReportDownloadButton';
 import GroupList from './components/EductionPortal/GroupList/GroupList';
@@ -171,6 +179,7 @@ import InsightWidget from './components/EductionPortal/AnalyticsDashboard/Insigh
 import StudentDashboard from './components/EductionPortal/StudentTasks/StudentDashboard';
 import StudentTasks from './components/EductionPortal/StudentTasks/StudentTasks';
 import TaskDetails from './components/EductionPortal/StudentTasks/TaskDetails';
+
 import PRReviewTeamAnalytics from './components/HGNPRDashboard/PRReviewTeamAnalytics';
 import PRDashboardOverview from './components/HGNPRDashboard/PRDashboardOverview';
 import PRDashboardPromotionEligibility from './components/HGNPRDashboard/PRDashboardPromotionEligibility';
@@ -555,6 +564,21 @@ export default (
           routePermissions={RoutePermissions.weeklySummariesReport}
         />
         <ProtectedRoute
+          path="/TotalOrgSummaryEmail"
+          exact
+          component={TotalOrgSummaryEmail}
+          fallback
+          allowedRoles={[
+            UserRole.Administrator,
+            UserRole.Manager,
+            UserRole.CoreTeam,
+            UserRole.Owner,
+            UserRole.Mentor,
+          ]}
+          // setting permission as Weeklysummariesreport for now. Later it will be changed to weeklyVolunteerSummary. - H
+          routePermissions={RoutePermissions.weeklySummariesReport}
+        />
+        <ProtectedRoute
           path="/job-notification-dashboard"
           exact
           component={JobCCDashboard}
@@ -615,7 +639,7 @@ export default (
         <Route path="/bmdashboard/login" component={BMLogin} />
         <Route path="/LessonsLearntChart" component={LessonsLearntChart} />
         <Route path="/UtilizationChart" component={UtilizationChart} />
-        <Route path="/mostsusceptibletoolschart" component={SimpleToolChart} />
+        <BMProtectedRoute path="/mostsusceptibletoolschart" component={SimpleToolChart} />
         <Route path="/projectglobaldistribution" component={ProjectsGlobalDistribution} />
         <BMProtectedRoute
           path="/bmdashboard/materials/purchase"
@@ -662,6 +686,8 @@ export default (
           fallback
           component={PurchaseConsumable}
         />
+
+        <BMProtectedRoute path="/bmdashboard/cost-prediction" component={CostPredictionPage} />
         <BMProtectedRoute path="/bmdashboard/rentalchart" component={RentalChart} />
         <BMProtectedRoute path="/bmdashboard/returned-late-chart" component={ReturnedLateChart} />
         <BMProtectedRoute path="/bmdashboard/inventory/types" component={CheckTypes} />
@@ -781,12 +807,12 @@ export default (
           component={ActivityComments}
         />
         <CPProtectedRoute
-          path="/communityportal/activity/:activityId/resourcesusage"
+          path="/communityportal/activity/:activityId/Resources"
           exact
           component={ResourcesUsage}
         />
         <CPProtectedRoute
-          path="/communityportal/activity/:activityId/resources"
+          path="/communityportal/activity/:activityId/ResourceManagement"
           exact
           component={ResourceManagement}
           fallback
@@ -811,6 +837,11 @@ export default (
         <LBProtectedRoute path="/lbdashboard/bidding" exact component={BiddingHomepage} />
         {/* Good Education  Portal Routes */}
         <EPProtectedRoute path="/educationportal" exact component={EPDashboard} />
+        <Route path="/educationportal/login" component={EPLogin} />
+        <EPProtectedRoute path="/educationportal/tasks/upload" exact component={WriteTaskUpload} />
+        <EPProtectedRoute path="/student/profile" exact component={StudentProfilePage} />
+        {/* PR Analytics Dashboard */}
+        <Route path="/pull-request-analytics/reviews-insight" component={ReviewsInsight} />
         <EPProtectedRoute
           path="/educationportal/evaluation-results"
           exact
@@ -849,6 +880,7 @@ export default (
         {/* ----- END BM Dashboard Routing ----- */}
         {/* ----- Kitchen and Inventory Portal Routes ----- */}
         <KIProtectedRoute path="/kitchenandinventory" exact component={KIDashboard} />
+        <KIProtectedRoute path="/kitchenandinventory/calendar" exact component={KICalendar} />
         <Route path="/kitchenandinventory/login" exact component={KitchenandInventoryLogin} />
         {/* ----- End of Kitchen and Inventory Portal Routes ----- */}
         <Route path="/login" component={Login} />
@@ -881,6 +913,7 @@ export default (
         <ProtectedRoute path="/hgnform/page5" exact component={Page5} />
         <ProtectedRoute path="/hgnform/page6" exact component={Page6} />
         <ProtectedRoute path="/hgn/profile/skills" exact component={UserSkillsProfile} />
+        <ProtectedRoute path="/hgn-skills/profile" exact component={UserSkillsProfile} />
         <ProtectedRoute
           path="/hgn/profile/skills/:userId?"
           exact
@@ -889,7 +922,6 @@ export default (
           allowedRoles={[UserRole.Administrator, UserRole.CoreTeam, UserRole.Owner]}
           routePermissions={RoutePermissions.accessHgnSkillsDashboard}
         />
-        {/* Alternative route for HGN Skills Profile */}
         <ProtectedRoute
           path="/hgn-skills/profile/:userId?"
           exact
@@ -898,7 +930,6 @@ export default (
           allowedRoles={[UserRole.Administrator, UserRole.CoreTeam, UserRole.Owner]}
           routePermissions={RoutePermissions.accessHgnSkillsDashboard}
         />
-        <ProtectedRoute path="/topcommunitymembers" exact component={DisplayTeamMemberDetails} />
         <ProtectedRoute path="/tsaformpage1" exact component={TSAFormPage1} />
         <ProtectedRoute path="/tsaformpage2" exact component={TSAFormPage2} />
         <ProtectedRoute path="/tsaformpage3" exact component={TSAFormPage3} />
@@ -925,6 +956,7 @@ export default (
           exact
           component={PromotionEligibility}
         />
+        <ProtectedRoute path="/planned-costs" exact component={PlannedCostDonutChart} />
         <ProtectedRoute
           path="/pr-team-analytics/reviewers-stacked-bar-chart"
           exact
