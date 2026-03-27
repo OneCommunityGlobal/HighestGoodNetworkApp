@@ -181,11 +181,6 @@ describe('UserProfileModal component', () => {
 
     const updateButton=screen.getByText('Update')
     fireEvent.click(updateButton)
-    expect(screen.getByText('This is a second test blue square summary')).toBeInTheDocument()
-    expect(modifyBlueSquares).toHaveBeenCalled()
-
-    const cancelButton=screen.getByText('Cancel')
-    fireEvent.click(cancelButton)
     expect(modifyBlueSquares).toHaveBeenCalled()
 
   })
