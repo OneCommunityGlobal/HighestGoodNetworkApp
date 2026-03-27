@@ -3,6 +3,7 @@ import useTheme from '../../../../hooks/useTheme';
 import EquipmentsTable from './EquipmentsTable';
 import EquipmentsInputs from './EquipmentsInputs';
 import styles from './Equipments.module.css';
+import { Link } from 'react-router-dom';
 
 function EquipmentList() {
   const [equipment, setEquipment] = useState({ label: 'All Equipments', value: '0' });
@@ -12,25 +13,30 @@ function EquipmentList() {
   useTheme();
 
   return (
-    <div className={`${styles.PageViewContainer}`}>
-      <div className={`${styles.Page}`}>
-        <div className={`${styles.Box}`}>
-          <div className={`${styles.BuildingTitle}`}>EQUIPMENTS</div>
-          <EquipmentsInputs
-            equipment={equipment}
-            setEquipment={setEquipment}
-            project={project}
-            setProject={setProject}
-          />
-          <EquipmentsTable
-            equipment={equipment}
-            setEquipment={setEquipment}
-            project={project}
-            setProject={setProject}
-          />
+    <>
+      <Link to="/bmdashboard/inventorytypes" className={styles.backLink}>
+        All Inventory Types
+      </Link>
+      <div className={`${styles.PageViewContainer}`}>
+        <div className={`${styles.Page}`}>
+          <div className={`${styles.Box}`}>
+            <div className={`${styles.BuildingTitle}`}>EQUIPMENTS</div>
+            <EquipmentsInputs
+              equipment={equipment}
+              setEquipment={setEquipment}
+              project={project}
+              setProject={setProject}
+            />
+            <EquipmentsTable
+              equipment={equipment}
+              setEquipment={setEquipment}
+              project={project}
+              setProject={setProject}
+            />
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 
