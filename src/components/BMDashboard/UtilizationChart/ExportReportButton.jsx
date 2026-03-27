@@ -6,10 +6,10 @@ import { EXPORT_FORMATS } from './constants';
 import styles from './UtilizationChart.module.css';
 
 function ExportReportButton({ tool, project, startDate, endDate }) {
-  const [exporting, setExporting] = useState(false);
+  const [exportingFormat, setExportingFormat] = useState(null);
 
   const handleExport = async format => {
-    setExporting(true);
+    setExportingFormat(format);
     try {
       const params = {
         format,
@@ -39,7 +39,7 @@ function ExportReportButton({ tool, project, startDate, endDate }) {
     } catch {
       toast.error(`Failed to export ${format.toUpperCase()} report.`);
     } finally {
-      setExporting(false);
+      setExportingFormat(null);
     }
   };
 
@@ -50,19 +50,19 @@ function ExportReportButton({ tool, project, startDate, endDate }) {
         type="button"
         className={styles.exportButton}
         onClick={() => handleExport(EXPORT_FORMATS.PDF)}
-        disabled={exporting}
+        disabled={exportingFormat !== null}
         aria-label="Export as PDF"
       >
-        {exporting ? 'Exporting...' : 'PDF'}
+        {exportingFormat === EXPORT_FORMATS.PDF ? 'Exporting...' : 'PDF'}
       </button>
       <button
         type="button"
         className={styles.exportButton}
         onClick={() => handleExport(EXPORT_FORMATS.CSV)}
-        disabled={exporting}
+        disabled={exportingFormat !== null}
         aria-label="Export as CSV"
       >
-        CSV
+        {exportingFormat === EXPORT_FORMATS.CSV ? 'Exporting...' : 'CSV'}
       </button>
     </div>
   );

@@ -101,6 +101,13 @@ function UtilizationChart() {
     toolsData,
   ]);
 
+  const chartAnnouncement = useMemo(() => {
+    if (chartLoading) return 'Loading utilization data.';
+    if (chartError) return `Error: ${chartError}`;
+    if (toolsData.length === 0) return 'No utilization data available.';
+    return `Chart updated. Showing ${toolsData.length} tool types.`;
+  }, [chartLoading, chartError, toolsData]);
+
   const chartData = useMemo(
     () => ({
       labels: toolsData.map(tool => tool.name),
@@ -177,7 +184,11 @@ function UtilizationChart() {
               return tool?.forecast ? `\u2192 ${tool.forecast.predictedRate}%` : '';
             }
             const tool = toolsData[context.dataIndex];
-            return tool ? `${tool.downtime} hrs` : '';
+            if (!tool) return '';
+            const classLabel = tool.classification?.label || '';
+            return classLabel
+              ? `${tool.downtime} hrs \u00B7 ${classLabel}`
+              : `${tool.downtime} hrs`;
           },
         },
         tooltip: {
@@ -284,11 +295,7 @@ function UtilizationChart() {
         </button>
       </div>
 
-      <ForecastModeToggle
-        value={forecastMode}
-        onChange={handleForecastModeChange}
-        darkMode={darkMode}
-      />
+      <ForecastModeToggle value={forecastMode} onChange={handleForecastModeChange} />
 
       {forecastMode === FORECAST_MODES.FORECAST_FULL && warningMessage && (
         <div className={styles.warningBanner} role="alert">
@@ -318,8 +325,17 @@ function UtilizationChart() {
       )}
 
       {!chartLoading && !chartError && toolsData.length > 0 && (
-        <Bar data={chartData} options={options} plugins={[trafficLightPlugin]} />
+        <div
+          role="img"
+          aria-label={`Horizontal bar chart showing utilization rates for ${toolsData.length} tool types`}
+        >
+          <Bar data={chartData} options={options} plugins={[trafficLightPlugin]} />
+        </div>
       )}
+
+      <div aria-live="polite" className={styles.srOnly}>
+        {chartAnnouncement}
+      </div>
 
       {!insightsLoading && !insightsError && (
         <div className={styles.insightsPanelsGrid}>
