@@ -892,12 +892,7 @@ export default (
         <CPProtectedRoute
           path="/communityportal/activity/:activityid/comments"
           exact
-          render={() => <Activity initialTab="FAQs" />}
-        />
-        <CPProtectedRoute
-          path="/communityportal/activity/:activityid/Comments"
-          exact
-          render={() => <Activity initialTab="FAQs" />}
+          render={() => <ActivityFeedback initialTab="FAQs" />}
         />
         {/* <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} /> */}
         {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
