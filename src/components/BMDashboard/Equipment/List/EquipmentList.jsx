@@ -4,6 +4,7 @@ import EquipmentsTable from './EquipmentsTable';
 import EquipmentsInputs from './EquipmentsInputs';
 import styles from './Equipments.module.css';
 import { Link } from 'react-router-dom';
+import stylesList from '../../InventoryTypesList/TypesList.module.css';
 
 function EquipmentList() {
   const [equipment, setEquipment] = useState({ label: 'All Equipments', value: '0' });
@@ -14,7 +15,7 @@ function EquipmentList() {
 
   return (
     <>
-      <Link to="/bmdashboard/inventorytypes" className={styles.backLink}>
+      <Link to="/bmdashboard/inventorytypes" className={stylesList.backLink}>
         All Inventory Types
       </Link>
       <div className={`${styles.PageViewContainer}`}>
