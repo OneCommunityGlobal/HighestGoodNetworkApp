@@ -163,7 +163,27 @@
 .darkMonthCalendar :global(.react-datepicker__current-month),
 .darkMonthCalendar :global(.react-datepicker__navigation-icon::before),
 .darkMonthCalendar :global(.react-datepicker__month-text) {
-  color: #e5e7eb;
+  color: #f8fafc !important;
+}
+
+/* Month-year picker header: make year text/arrow high contrast in dark mode */
+.darkMonthCalendar :global(.react-datepicker__year-read-view),
+.darkMonthCalendar :global(.react-datepicker__year-read-view--selected-year),
+.darkMonthCalendar :global(.react-datepicker__year-dropdown-container),
+.darkMonthCalendar :global(.react-datepicker__month-read-view),
+.darkMonthCalendar :global(.react-datepicker__month-read-view--selected-month) {
+  color: #f8fafc !important;
+}
+
+.darkMonthCalendar :global(.react-datepicker__year-read-view--down-arrow),
+.darkMonthCalendar :global(.react-datepicker__month-read-view--down-arrow) {
+  border-top-color: #f8fafc !important;
+}
+
+/* Force all header text (including bare spans) to white in dark mode */
+.darkMonthCalendar :global(.react-datepicker__header),
+.darkMonthCalendar :global(.react-datepicker__header span) {
+  color: #f8fafc !important;
 }
 
 .darkMonthCalendar :global(.react-datepicker__month-text:hover),
