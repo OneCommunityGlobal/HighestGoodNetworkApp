@@ -163,7 +163,10 @@ export default function SocialMediaComposer({ platform }) {
   const loadScheduledPosts = async () => {
     setIsLoadingScheduled(true);
     try {
-      const response = await fetch(api.getScheduled());
+      const token = localStorage.getItem('token');
+      const response = await fetch(api.getScheduled(), {
+        headers: { ...(token && { Authorization: token }) },
+      });
       if (response.ok) {
         const data = await response.json();
         setScheduledPosts(data || []);
@@ -180,7 +183,10 @@ export default function SocialMediaComposer({ platform }) {
   const loadPostHistory = async () => {
     setIsLoadingHistory(true);
     try {
-      const response = await fetch(api.getHistory());
+      const token = localStorage.getItem('token');
+      const response = await fetch(api.getHistory(), {
+        headers: { ...(token && { Authorization: token }) },
+      });
       if (response.ok) {
         const data = await response.json();
         // X wraps results in { posts, total }; Mastodon returns an array
@@ -298,9 +304,10 @@ export default function SocialMediaComposer({ platform }) {
         selectedPlatforms,
       );
 
+      const token = localStorage.getItem('token');
       const response = await fetch(url, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...(token && { Authorization: token }) },
         body: JSON.stringify(body),
       });
 
@@ -350,9 +357,14 @@ export default function SocialMediaComposer({ platform }) {
 
     setIsPosting(true);
     try {
+      const token = localStorage.getItem('token');
+
       // If editing, delete the old version first
       if (editingPostId) {
-        await fetch(api.deleteSchedule(editingPostId), { method: 'DELETE' });
+        await fetch(api.deleteSchedule(editingPostId), {
+          method: 'DELETE',
+          headers: { ...(token && { Authorization: token }) },
+        });
       }
 
       const { url, body } = api.schedule(
@@ -365,7 +377,7 @@ export default function SocialMediaComposer({ platform }) {
 
       const response = await fetch(url, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...(token && { Authorization: token }) },
         body: JSON.stringify(body),
       });
 
@@ -437,8 +449,10 @@ export default function SocialMediaComposer({ platform }) {
   const handleDeleteScheduled = async (postId, skipConfirmation = false) => {
     const performDelete = async () => {
       try {
+        const token = localStorage.getItem('token');
         const response = await fetch(api.deleteSchedule(postId), {
           method: 'DELETE',
+          headers: { ...(token && { Authorization: token }) },
         });
         if (response.ok) {
           toast.success('Scheduled post deleted!');
@@ -487,9 +501,10 @@ export default function SocialMediaComposer({ platform }) {
           );
         }
 
+        const token = localStorage.getItem('token');
         const response = await fetch(req.url, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', ...(token && { Authorization: token }) },
           body: JSON.stringify(req.body),
         });
 
