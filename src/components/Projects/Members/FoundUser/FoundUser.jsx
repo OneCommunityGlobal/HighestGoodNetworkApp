@@ -17,9 +17,11 @@ const FoundUser = props => {
           <div>{props.index + 1}</div>
         </th>
         <td className="foundUsers__order">
-          <a href={`/userprofile/${props.uid}`} className={darkMode ? 'text-azure' : ''}>{props.firstName + ' ' + props.lastName}</a>
+          {props.fullName}
         </td>
-        <td className="foundUsers__email">{props.email}</td>
+        <td className="foundUsers__email">
+          {props.email}
+        </td>
         <td className="foundUsers__assign">
           {props.assigned ? (
             <span className="text-success">Assigned</span>
@@ -27,19 +29,8 @@ const FoundUser = props => {
             <button
               className="btn btn-outline-primary btn-sm"
               type="button"
-              onClick={async e => {
-                await props.assignProject(
-                  props.projectId,
-                  props.uid,
-                  'Assign',
-                  props.firstName,
-                  props.lastName,
-                  props.isActive,
-                );
-                // Optionally, trigger a refresh or update local state if needed
-                // e.g., props.onAssigned && props.onAssigned(props.uid);
-              }}
               style={darkMode ? {} : boxStyle}
+              disabled
             >
               <i className="fa fa-plus" aria-hidden="true"></i>
             </button>

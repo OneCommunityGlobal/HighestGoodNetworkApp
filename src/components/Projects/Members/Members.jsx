@@ -23,6 +23,8 @@ import { boxStyle, boxStyleDark } from '~/styles';
 import ToggleSwitch from '~/components/UserProfile/UserProfileEdit/ToggleSwitch';
 import Loading from '~/components/common/Loading';
 import { getProjectDetail } from '~/actions/project';
+import axios from 'axios';
+import { ENDPOINTS } from '~/utils/URL';
 
 const Members = props => {
   const darkMode = props.state.theme.darkMode;
@@ -34,6 +36,37 @@ const Members = props => {
   const [searchText, setSearchText] = useState('');
 
   const [isLoading, setIsLoading] = useState(true);
+
+  const [allProfiles, setAllProfiles] = useState([]);
+
+  useEffect(() => {
+    axios.get(ENDPOINTS.USER_PROFILES)
+      .then(response => {
+        setAllProfiles(response.data || []);
+      })
+      .catch(() => {
+        setAllProfiles([]);
+      });
+  }, []);
+
+  const filteredUsers = searchText.trim()
+    ? allProfiles
+        .filter(user => {
+          const search = searchText.trim().toLowerCase();
+          return (
+            (user.firstName && user.firstName.toLowerCase().includes(search)) ||
+            (user.lastName && user.lastName.toLowerCase().includes(search)) ||
+            (user.email && user.email.toLowerCase().includes(search))
+          );
+        })
+        .map(user => ({
+          fullName: `${user.firstName || ''} ${user.lastName || ''}`.trim(),
+          email: user.email,
+          assigned: false,
+          _id: user._id,
+        }))
+        .filter(user => !!user.email)
+    : [];
 
   const canAssignProjectToUsers = props.hasPermission('assignProjectToUsers');
   const canUnassignUserInProject = props.hasPermission('unassignUserInProject');
@@ -237,13 +270,11 @@ const Members = props => {
             </div>
           ) : null}
 
-          {showFindUserList && props.state.projectMembers.foundUsers.length > 0 ? (
+          {showFindUserList && filteredUsers.length > 0 && (
             <table className={`table table-bordered table-responsive-sm ${darkMode ? 'text-light' : ''}`}>
               <thead>
                 <tr className={darkMode ? 'bg-space-cadet' : ''}>
-                  <th scope="col" id="foundUsers__order">
-                    #
-                  </th>
+                  <th scope="col" id="foundUsers__order">#</th>
                   <th scope="col">Name</th>
                   <th scope="col">Email</th>
                   {canAssignProjectToUsers ? (
@@ -262,25 +293,21 @@ const Members = props => {
                 </tr>
               </thead>
               <tbody>
-                {props.state.projectMembers.foundUsers
-                  .filter(user => !showActiveMembersOnly || user.isActive)
-                  .map((user, i) => (
-                    <FoundUser
-                      index={i}
-                      key={user._id}
-                      projectId={projectId}
-                      uid={user._id}
-                      email={user.email}
-                      firstName={user.firstName}
-                      lastName={user.lastName}
-                      isActive={user.isActive}
-                      assigned={user.assigned}
-                      darkMode={darkMode}
-                    />
-                  ))}
+                {filteredUsers.map((user, i) => (
+                  <FoundUser
+                    index={i}
+                    key={user._id || i}
+                    projectId={projectId}
+                    uid={user._id}
+                    fullName={user.fullName}
+                    email={user.email}
+                    assigned={user.assigned}
+                    darkMode={darkMode}
+                  />
+                ))}
               </tbody>
             </table>
-          ) : null}
+          )}
 
           <ToggleSwitch
             switchType="active_members"
