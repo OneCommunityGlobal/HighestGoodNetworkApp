@@ -184,13 +184,6 @@ export default function AnniversaryCelebrated({ isLoading, data, darkMode }) {
           placeholder="Search by name"
           value={search}
           onChange={e => setSearch(e.target.value)}
-          //style={{
-          //  margin: '10px 0',
-          //  padding: '5px 10px',
-          //  borderRadius: '5px',
-          //  border: '1px solid gray',
-          //  width: '60%',
-          //}}
           style={searchInputStyle}
         />
         <button onClick={exportData} className="btn btn-secondary">
