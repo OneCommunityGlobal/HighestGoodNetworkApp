@@ -21,7 +21,9 @@ function Page6() {
     window.scrollTo(0, 0);
   }, []);
 
+  const darkClass = darkMode ? styles.bgOxfordBlue : ''; 
   return (
+<<<<<<< HEAD
 <<<<<<< HEAD
     <div
       className={`${containerStyles['container-hgnform-wrapper']} ${
@@ -31,6 +33,9 @@ function Page6() {
 =======
     <div className={`${styles.hgnform} ${darkMode ? 'bg-oxford-blue' : ''}`}>
 >>>>>>> 8b0d5c684 (add dark mode styling to page6)
+=======
+    <div className={`${styles.hgnform} ${darkClass}`}> 
+>>>>>>> b0297b0b0 (Refactor dark mode class assignment in Page6)
       <Banner />
       <ThankYou />
       <Progress progressValue={100} />
