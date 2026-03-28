@@ -6,6 +6,10 @@ import { updateYearsOfExperience } from '../../../../actions/userSkillsActions';
 import styles from '../styles/ProfileDetails.module.css';
 import { getFontColor } from '../../../../styles';
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 888a88a77 (Refactor ProfileDetails to use Redux for profileData)
 function ProfileDetails() {
   const profileData = useSelector(state => state.userSkills.profileData);
 <<<<<<< HEAD
