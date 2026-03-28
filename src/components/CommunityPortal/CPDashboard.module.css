@@ -427,4 +427,14 @@
 .darkSearchContainer .dashboardClearBtn,
 .darkSearchContainer .dashboardSearchIconBtn {
   color: #ffffff;
+
+}
+
+/*event count text */
+.event-count-text {
+  text-align: center;
+  font-size: 0.95rem;
+  color: #6c757d;
+  margin-top: -10px;
+  margin-bottom: 20px;
 }
