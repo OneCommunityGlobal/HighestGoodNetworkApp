@@ -449,17 +449,9 @@ export default function CommunityCalendar() {
       )}
       <header className={calendarClasses.header}>
         <h1>Community Calendar</h1>
-        <div className={calendarClasses.filters}>
-          <select
-            value={calendarView}
-            onChange={e => setCalendarView(e.target.value)}
-            className={styles.viewSelector}
-          >
-            <option value="month">Day View (Month)</option>
-            <option value="week">Week View (Time Grid)</option>
-            <option value="year">Month View (Year)</option>
-            <option value="decade">Year View (Decade)</option>
-          </select>
+        <div
+          className={`${calendarClasses.filters} ${darkMode ? styles.calendarFiltersDarkMode : ''}`}
+        >
           <select value={filter.type} onChange={handleFilterChange('type')}>
             <option value="all">All Types</option>
             {uniqueFilterValues.types.map(t => (
