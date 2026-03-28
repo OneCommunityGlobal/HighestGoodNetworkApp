@@ -1,8 +1,15 @@
 import { useEffect, useState } from 'react';
 import Select from 'react-select';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import axios from 'axios';
 import { ENDPOINTS } from '../../../../utils/URL';
+import {
+  toYMD,
+  getSelectStyles,
+  getDatePickerStyles,
+} from '../../../../utils/bmdashboard/chartUtils';
 import styles from './ToolsHorizontalBarChart.module.css';
 
 // No mock data - use real backend data only
@@ -42,8 +49,8 @@ function ToolsHorizontalBarChart({ darkMode }) {
   const startDate12MonthsAgo = new Date(currentDate.getFullYear() - 1, currentDate.getMonth(), 1);
   const endOfCurrentMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
 
-  const [startDate, setStartDate] = useState(startDate12MonthsAgo.toISOString().split('T')[0]);
-  const [endDate, setEndDate] = useState(endOfCurrentMonth.toISOString().split('T')[0]);
+  const [startDate, setStartDate] = useState(startDate12MonthsAgo);
+  const [endDate, setEndDate] = useState(endOfCurrentMonth);
 
   // Date range logging removed for production
 
@@ -97,7 +104,7 @@ function ToolsHorizontalBarChart({ darkMode }) {
 
         // 2. Fetch filtered dataset
         const toolsResponse = await axios.get(
-          ENDPOINTS.TOOLS_AVAILABILITY_BY_PROJECT(projectId, startDate, endDate),
+          ENDPOINTS.TOOLS_AVAILABILITY_BY_PROJECT(projectId, toYMD(startDate), toYMD(endDate)),
         );
 
         const toolsDataFiltered = toolsResponse.data;
@@ -163,20 +170,12 @@ function ToolsHorizontalBarChart({ darkMode }) {
     setSelectedProject(selectedOption);
   };
 
-  const handleStartDateChange = e => {
-    setStartDate(e.target.value);
-  };
-
-  const handleEndDateChange = e => {
-    setEndDate(e.target.value);
-  };
-
   const handleClearDates = () => {
     const currentDate = new Date();
     const startDate12MonthsAgo = new Date(currentDate.getFullYear() - 1, currentDate.getMonth(), 1);
     const endOfCurrentMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
-    setStartDate(startDate12MonthsAgo.toISOString().split('T')[0]);
-    setEndDate(endOfCurrentMonth.toISOString().split('T')[0]);
+    setStartDate(startDate12MonthsAgo);
+    setEndDate(endOfCurrentMonth);
   };
 
   if (loading) {
@@ -197,68 +196,38 @@ function ToolsHorizontalBarChart({ darkMode }) {
     );
   }
 
-  const darkSelectStyles = {
-    control: base => ({
-      ...base,
-      backgroundColor: '#2c3344',
-      borderColor: '#364156',
-      minHeight: '32px',
-      fontSize: '12px',
-    }),
-    menu: base => ({
-      ...base,
-      backgroundColor: '#2c3344',
-      fontSize: '12px',
-    }),
-    option: (base, state) => ({
-      ...base,
-      backgroundColor: state.isFocused ? '#364156' : '#2c3344',
-      color: '#e0e0e0',
-      fontSize: '12px',
-    }),
-    multiValue: base => ({
-      ...base,
-      backgroundColor: '#364156',
-    }),
-    multiValueLabel: base => ({
-      ...base,
-      color: '#e0e0e0',
-      fontSize: '12px',
-    }),
-    placeholder: base => ({
-      ...base,
-      color: '#aaaaaa',
-      fontSize: '12px',
-    }),
-  };
-
-  const lightSelectStyles = {
-    control: base => ({
-      ...base,
-      minHeight: '32px',
-      fontSize: '12px',
-    }),
-    menu: base => ({
-      ...base,
-      fontSize: '12px',
-    }),
-    option: base => ({
-      ...base,
-      fontSize: '12px',
-    }),
-    multiValue: base => ({
-      ...base,
-      backgroundColor: '#e6e6e6',
-    }),
-    multiValueLabel: base => ({
-      ...base,
-      fontSize: '12px',
-    }),
-    placeholder: base => ({
-      ...base,
-      fontSize: '12px',
-    }),
-  };
+  const selectStyles = getSelectStyles(darkMode, {
+    minHeight: 32,
+    fontSize: 12,
+    controlOverrides: darkMode
+      ? {
+          backgroundColor: '#2c3344',
+          borderColor: '#364156',
+        }
+      : {},
+    optionOverrides: darkMode
+      ? {
+          color: '#e0e0e0',
+        }
+      : {},
+    multiValueOverrides: darkMode
+      ? {
+          backgroundColor: '#364156',
+        }
+      : {
+          backgroundColor: '#e6e6e6',
+        },
+    multiValueLabelOverrides: darkMode
+      ? {
+          color: '#e0e0e0',
+        }
+      : {},
+    placeholderOverrides: darkMode
+      ? {
+          color: '#aaaaaa',
+        }
+      : {},
+  });
 
   return (
     <div
@@ -268,26 +237,26 @@ function ToolsHorizontalBarChart({ darkMode }) {
     >
       <h4 className={styles['tools-horizontal-bar-chart-title']}>Tools by Availability</h4>
 
-      {/* Filters Section */}
-      <div className={styles['tools-horizontal-bar-chart-filter-group']}>
-        <label htmlFor="tool-select">Tool(s)</label>
-        <Select
-          id="tool-select"
-          className={styles['tools-horizontal-bar-chart-tool-select']}
-          classNamePrefix="select"
-          value={selectedTools}
-          onChange={handleToolChange}
-          options={allTools}
-          placeholder="Select tools"
-          isMulti={true}
-          isClearable={true}
-          isDisabled={allTools.length === 0}
-          closeMenuOnSelect={false}
-          styles={darkMode ? darkSelectStyles : lightSelectStyles}
-        />
-      </div>
-
+      {/* Filters Section - 2x2 Grid */}
       <div className={styles['tools-horizontal-bar-chart-filters']}>
+        <div className={styles['tools-horizontal-bar-chart-filter-group']}>
+          <label htmlFor="tool-select">Tool(s)</label>
+          <Select
+            id="tool-select"
+            className={styles['tools-horizontal-bar-chart-tool-select']}
+            classNamePrefix="select"
+            value={selectedTools}
+            onChange={handleToolChange}
+            options={allTools}
+            placeholder="Select tools"
+            isMulti={true}
+            isClearable={true}
+            isDisabled={allTools.length === 0}
+            closeMenuOnSelect={false}
+            styles={selectStyles}
+          />
+        </div>
+
         <div className={styles['tools-horizontal-bar-chart-filter-group']}>
           <label htmlFor="project-select">Project</label>
           <Select
@@ -300,87 +269,47 @@ function ToolsHorizontalBarChart({ darkMode }) {
             placeholder="Select a project"
             isClearable={false}
             isDisabled={allProjects.length === 0}
-            styles={
-              darkMode
-                ? {
-                    control: baseStyles => ({
-                      ...baseStyles,
-                      backgroundColor: '#2c3344',
-                      borderColor: '#364156',
-                      minHeight: '32px',
-                      fontSize: '12px',
-                    }),
-                    menu: baseStyles => ({
-                      ...baseStyles,
-                      backgroundColor: '#2c3344',
-                      fontSize: '12px',
-                    }),
-                    option: (baseStyles, state) => ({
-                      ...baseStyles,
-                      backgroundColor: state.isFocused ? '#364156' : '#2c3344',
-                      color: '#e0e0e0',
-                      fontSize: '12px',
-                    }),
-                    singleValue: baseStyles => ({
-                      ...baseStyles,
-                      color: '#e0e0e0',
-                      fontSize: '12px',
-                    }),
-                    placeholder: baseStyles => ({
-                      ...baseStyles,
-                      color: '#aaaaaa',
-                      fontSize: '12px',
-                    }),
-                  }
-                : {
-                    control: baseStyles => ({
-                      ...baseStyles,
-                      minHeight: '32px',
-                      fontSize: '12px',
-                    }),
-                    menu: baseStyles => ({
-                      ...baseStyles,
-                      fontSize: '12px',
-                    }),
-                    option: baseStyles => ({
-                      ...baseStyles,
-                      fontSize: '12px',
-                    }),
-                    singleValue: baseStyles => ({
-                      ...baseStyles,
-                      fontSize: '12px',
-                    }),
-                    placeholder: baseStyles => ({
-                      ...baseStyles,
-                      fontSize: '12px',
-                    }),
-                  }
-            }
+            styles={selectStyles}
           />
         </div>
 
         <div className={styles['tools-horizontal-bar-chart-filter-group']}>
-          <label htmlFor="start-date-picker">Date Range</label>
-          <div className={styles['tools-horizontal-bar-chart-date-picker-group']}>
-            <input
+          <label htmlFor="start-date-picker">Start Date</label>
+          <div className={styles['date-picker-wrapper']}>
+            <DatePicker
               id="start-date-picker"
-              type="date"
-              className={styles['tools-horizontal-bar-chart-date-picker']}
-              value={startDate}
-              onChange={handleStartDateChange}
-              placeholder="Start date"
-              aria-label="Start date"
+              selected={startDate}
+              onChange={setStartDate}
+              selectsStart
+              startDate={startDate}
+              endDate={endDate}
+              maxDate={endDate || undefined}
+              placeholderText="Start date"
+              className={styles['tools-date-picker']}
+              wrapperClassName={styles['tools-date-picker-wrapper']}
+              style={getDatePickerStyles(darkMode)}
             />
-            <span>to</span>
-            <input
-              id="end-date-picker"
-              type="date"
-              className={styles['tools-horizontal-bar-chart-date-picker']}
-              value={endDate}
-              onChange={handleEndDateChange}
-              placeholder="End date"
-              aria-label="End date"
-            />
+          </div>
+        </div>
+
+        <div className={styles['tools-horizontal-bar-chart-filter-group']}>
+          <label htmlFor="end-date-picker">End Date</label>
+          <div className={styles['tools-horizontal-bar-chart-date-picker-group']}>
+            <div className={styles['date-picker-wrapper']}>
+              <DatePicker
+                id="end-date-picker"
+                selected={endDate}
+                onChange={setEndDate}
+                selectsEnd
+                startDate={startDate}
+                endDate={endDate}
+                minDate={startDate || undefined}
+                placeholderText="End date"
+                className={styles['tools-date-picker']}
+                wrapperClassName={styles['tools-date-picker-wrapper']}
+                style={getDatePickerStyles(darkMode)}
+              />
+            </div>
             <button
               type="button"
               className={styles['tools-horizontal-bar-chart-clear-dates-btn']}

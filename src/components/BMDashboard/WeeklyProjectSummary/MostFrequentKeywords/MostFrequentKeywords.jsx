@@ -920,11 +920,15 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
             inputId="data-select"
             className={styles.mfkSelect}
             classNamePrefix="data-select"
-            options={getDropdownOptions()}
-            value={selectedOption}
-            onChange={handleOptionChange}
-            placeholder={isMobile ? 'Select' : 'Choose'}
-            isClearable
+            options={projects.map(p => ({
+              label: p.projectName,
+              value: p._id,
+            }))}
+            value={projects
+              .map(p => ({ label: p.projectName, value: p._id }))
+              .find(opt => opt.value === selectedProject)}
+            onChange={selected => setSelectedProject(selected?.value || '')}
+            placeholder="Select a project..."
             isSearchable
             styles={{
               control: getControlStyles,
