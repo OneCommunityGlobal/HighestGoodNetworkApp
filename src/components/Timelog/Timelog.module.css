@@ -1,34 +1,53 @@
-.date-block {
+/* Timelog.module.css */
+
+.dateBlock {
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
 }
 
-.card-body-shadow {
+.cardBodyShadow {
   box-shadow: 2px 2px 4px 1px lightgray;
 }
 
-.card-header-shadow {
+.cardHeaderShadow {
   box-shadow: 2px 2px 4px 1px lightgray;
   margin-bottom: 1px;
 }
 
-.card-body-shadow-dark {
-  box-shadow: 2px 2px 4px 1px black;
+/* icon-only buttons (edit/delete) */
+.iconBtn {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  line-height: 0;
+  box-shadow: none;
 }
 
-.card-header-shadow-dark {
-  box-shadow: 2px 2px 4px 1px black;
-  margin-bottom: 1px;
+.iconBtn:focus,
+.iconBtn:focus-visible,
+.iconBtn:active {
+  outline: none;
+  box-shadow: none;
 }
 
-.time-entry-container {
+.cardBodyShadowDark {
+  box-shadow: 2px 2px 4px 1px #000 !important;
+}
+
+.cardHeaderShadowDark {
+  box-shadow: 2px 2px 4px 1px #000 !important;
+  margin-bottom: 1px !important;
+}
+
+.timeEntryContainer {
   display: flex;
   flex-direction: column;
 }
 
-.notes-section {
+.notesSection {
   flex: 1;
   margin-bottom: 13px;
   overflow-wrap: break-word;
@@ -43,49 +62,49 @@
   position: absolute;
 }
 
-.red .progress-bar {
+.red .progressBar {
   background-color: red;
 }
 
-.orange .progress-bar {
+.orange .progressBar {
   background-color: orange;
 }
 
-.green .progress-bar {
+.green .progressBar {
   background-color: green;
 }
 
-.blue .progress-bar {
+.blue .progressBar {
   background-color: blue;
 }
 
-.indigo .progress-bar {
-  background-color: #000066;
+.indigo .progressBar {
+  background-color: #006;
 }
 
-.violet .progress-bar {
-  background-color: #990099;
+.violet .progressBar {
+  background-color: #909;
 }
 
-.purple .progress-bar {
-  background-color: #660099;
+.purple .progressBar {
+  background-color: #609;
 }
 
-.navbar-border {
+.navbarBorder {
   border-radius: 5px;
-  border: 1px solid rgba(0, 0, 0, 0.125);
+  border: 1px solid #00000020; /* ~12.5% */
 }
 
-.tab-pane {
+.tabPane {
   width: 100%;
 }
 
-.search-time-entries-btn {
+.searchTimeEntriesBtn {
   margin-left: 6px;
-  margin-top: 0px;
+  margin-top: 0;
 }
 
-.min-width-100 {
+.minWidth100 {
   min-width: 100%;
 }
 
@@ -94,74 +113,122 @@
   padding: 0 17%;
 }
 
-:global(.active.dark-mode.nav-link) {
-  background-color: #1C1C1C !important;
+.navLink {
+  color: #007bff;
+  background-color: transparent;
+  border: 1px solid transparent;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-block;
+  text-decoration: none;
+}
+
+.activeLightMode {
+  color: #495057 !important;
+  background-color: #fff !important;
+  border-color: #dee2e6 #dee2e6 #fff !important;
+}
+
+.tabContentLight {
+  margin-top: -4px !important;
+  background-color: #fff !important;
+  border: 1px solid transparent !important;
+  border-color: #fff #dee2e6 #dee2e6 !important;
+}
+
+.tabContentDark {
+  margin-top: -4px !important;
+  background-color: #1c2541 !important;
+  border: 1px solid transparent !important;
+  border-color: #1c1c1c #dee2e6 #dee2e6 !important;
+}
+
+/* Dark mode default for inactive tabs */
+.darkMode {
+  background-color: #2b3e59;
+  color: #007bff;
+}
+
+/* Active tab in light mode */
+.active {
+  background-color: #e0e0e0;
+  color: #000;
+}
+
+/* Active + Dark Mode combination */
+.activeDarkMode {
+  background-color: #1c1c1c !important;
   color: #fff !important;
   border-bottom: 0 !important;
+  border-color: #dee2e6 #dee2e6 #fff !important;
 }
 
-.notes-text-light p{
-  color: #fff; /* White text for dark mode */
+.notesTextLight p {
+  color: #fff;
 }
+
 .text-dark {
-  color: #000 !important; /* Force black text */
+  color: #000 !important;
 }
 
-/* Hotfix: Prevent red color for project name and notes in Timelog */
-.notes-section, .notes-section *:not(a),
-.text-success, .text-light, .text-muted, .dark-text-info, .dark-text-muted {
-  color: #222 !important;
-}
-
-.notes-text-light, .notes-text-light *, .dark-text-info, .dark-text-muted {
+.notes-text-light,
+.notes-text-light * {
   color: #f1f1f1 !important;
 }
 
-/* Hotfix: Make "Viewing time Entries from" text white in dark mode */
+.notes-section,
+.notes-section *:not(a),
+.text-success,
+.text-light,
+.text-muted,
+.dark-text-info,
+.dark-text-muted {
+  color: #222 !important;
+}
+
 .bg-oxford-blue .text-dark {
   color: #fff !important;
 }
 
-
-@media screen and (max-width: 1400px) and (min-width: 1100px) {
+@media screen and (width <= 1400px) and (width >= 1100px) {
   .timelogPageContainer {
     padding: 0 10%;
   }
 }
 
-@media screen and (max-width: 1100px) and (min-width: 800px) {
+@media screen and (width <= 1100px) and (width >= 800px) {
   .timelogPageContainer {
     padding: 0 9%;
     margin-left: 15px;
   }
 }
 
-@media screen and (max-width: 800px) {
+@media screen and (width <= 800px) {
   .timelogPageContainer {
     padding: 0 8%;
     margin-left: 15px;
   }
 }
 
-@media screen and (max-width: 575px) and (min-width: 399px) {
-  .search-time-entries-btn {
+@media screen and (width <= 575px) and (width >= 399px) {
+  .searchTimeEntriesBtn {
     margin-top: 15px;
   }
 }
 
-@media (max-width: 544px) {
-  .tab-pane {
+@media (width <= 544px) {
+  .tabPane {
     max-height: 1000px;
     overflow-y: scroll;
     width: 100%;
   }
-
-  /* 
-  .right-padding-temp-fix {
-    padding-right: 0px !important;
-  } */
 }
 
+/* NOTE:
+   stylelint 'selector-id-pattern' complains about #projectSelected.
+   If you cannot rename the id in JSX, keep these rules and disable selector-id-pattern in .stylelintrc.
+*/
 #projectSelected {
   max-width: 100%;
 }
@@ -172,130 +239,168 @@
   text-overflow: ellipsis;
 }
 
-.right-padding-temp-fix {
-  padding-right: 0px !important;
+.rightPaddingTempFix {
+  padding-right: 0 !important;
 }
 
 .button {
   margin-left: 10px;
-  /* Add space between buttons */
   padding: 5px 10px;
-  /* Add padding to the buttons */
-  border: curved;
+  border: 1px solid #ccc;
   border-radius: 5px;
   cursor: pointer;
   font-weight: bold;
 }
 
-.edit-button {
-  background-color: blue;
-  /* Blue for the Edit button */
+.editButton {
+  background-color: blue !important;
   color: white;
 }
 
-.save-button {
+.saveButton {
   background-color: green;
-  /* Green for the Save button */
   color: white;
 }
 
-.cancel-button {
+.cancelButton {
   background-color: red;
-  /* Red for the Cancel button */
   color: white;
 }
 
-.edit-textarea {
+.editTextarea {
   min-height: 150px;
   resize: vertical;
 }
 
+.pausedUser {
+  color: red !important;
+}
+
 .activeUser {
-  color: lawngreen;
+  color: lawngreen !important;
+}
+
+.activeUser i {
+  color: lawngreen !important;
+}
+
+.scheduledUser {
+  color: orange !important;
+}
+
+.scheduledUser i {
+  color: orange !important;
 }
 
 .notActiveUser {
-  color: #dee2e6;
+  color: #dee2e6 !important;
 }
 
+.notActiveUser i {
+  color: #dee2e6 !important;
+}
 
-.custom-text-alignment {
+.customTextAlignment {
   text-align: center;
 }
 
+.tasksAndTimelogHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
 
-.tasks-and-timelog-header-row {
-  display: grid;
-  grid-template-columns: auto auto;
+.tasksAndTimelogHeaderAddTimeDiv {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.taskboardHeaderTitle {
+  font-size: 1.8rem;
+  margin: 0;
+  line-height: 1;
+  display: flex;
   align-items: center;
 }
 
-.tasks-and-timelog-header-add-time-div {
-  float: right;
-}
-
-.taskboard-header-title {
-  font-size: 1.8rem;
-}
-
-@media screen and (max-width: 1240px) {
-  .tasks-and-timelog-header-row {
+@media screen and (width <= 1240px) {
+  .tasksAndTimelogHeaderRow {
     display: grid;
     grid-template-columns: 1fr;
     grid-template-rows: auto auto;
   }
 
-  .tasks-and-timelog-header-add-time-div {
+  .tasksAndTimelogHeaderAddTimeDiv {
     float: none;
     margin-top: 10px;
   }
 
-  .task-and-timelog-card-nav {
-    font-size: .9rem;
+  .taskAndTimelogCardNav {
+    font-size: 0.9rem;
   }
 }
 
-@media (min-width: 992px) {
-  .custom-text-alignment {
+@media (width >= 992px) {
+  .customTextAlignment {
     text-align: right;
   }
 }
 
-
-.container-timelog-wrapper {
+.containerTimelogWrapper {
   min-height: 100%;
   min-width: 100%;
 }
 
-@media only screen and (max-width: 544px) {
-  .responsive-font-size {
+@media only screen and (width <= 544px) {
+  .responsiveFontSize {
     font-size: 0.75rem !important;
   }
 }
 
-@media only screen and (max-width: 575px) {
-  .date-selector-form {
+@media only screen and (width <= 575px) {
+  .dateSelectorForm {
     margin-left: 5px;
   }
 }
 
 /* Ensure the button content (text + icon) is aligned horizontally */
-.followup-button {
+.followupButton {
   display: flex;
   align-items: center;
   gap: 8px;
-  /* Maintain spacing between text and icon */
 }
 
 /* Adjust the icon position to ensure it stays on the right */
-.followup-tooltip-button {
+.followupTooltipButton {
   display: inline-flex;
   align-items: center;
 }
 
 /* Keep the icon aligned within the button */
-.fa-info-circle {
+.customStyle {
   font-size: 14px;
   margin-left: 5px;
-  /* Add spacing between text and icon */
+}
+
+.highlightGreen {
+  color: #7cfc00 !important;
+  padding: 1px;
+}
+
+span.activeUser i.fa-circle {
+  color: lawngreen !important;
+}
+
+span.notActiveUser i.fa-circle {
+  color: #dee2e6 !important;
+}
+
+span.scheduledUser i.fa-circle {
+  color: orange !important;
+}
+
+span.pausedUser i.fa-circle {
+  color: red !important;
 }

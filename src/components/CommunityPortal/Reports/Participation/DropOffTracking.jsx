@@ -54,7 +54,7 @@ function DropOffTracking() {
     >
       <div className={`${styles.trackingHeader} ${darkMode ? styles.trackingHeaderDark : ''}`}>
         <h3>Drop-off and no-show rate tracking</h3>
-        <div className={styles.trackingFilters}>
+        <div className={`${styles.trackingFilters} ${darkMode ? styles.trackingFiltersDark : ''}`}>
           <select value={selectedEvent} onChange={e => setSelectedEvent(e.target.value)}>
             <option value="All Events">All Events</option>
             <option value="Yoga Class">Yoga Class</option>
@@ -112,8 +112,8 @@ function DropOffTracking() {
             {filteredEvents.map(event => (
               <tr key={event.id}>
                 <td>{event.eventName}</td>
-                <td className={styles.trackingRateGreen}>{event.noShowRate}</td>
-                <td className={styles.trackingRateRed}>{event.dropOffRate}</td>
+                <td className={`${styles.trackingRateGreen}`}>{event.noShowRate}</td>
+                <td className={`${styles.trackingRateRed}`}>{event.dropOffRate}</td>
                 <td>{event.attendees}</td>
               </tr>
             ))}

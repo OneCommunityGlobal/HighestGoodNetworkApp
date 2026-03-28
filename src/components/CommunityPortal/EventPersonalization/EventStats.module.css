@@ -1,3 +1,4 @@
+/* Container */
 .popularEventsContainer {
   max-height: 100%;
   margin: 0 auto;
@@ -14,6 +15,7 @@
   min-height: 100%;
 }
 
+/* Header */
 .pEHeaderContainer {
   display: flex;
   justify-content: space-between;
@@ -25,8 +27,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  color: #1C2541;
   margin-bottom: 10px;
+  color: #ffffff;
 }
 
 .popularEventsHeader {
@@ -39,9 +41,9 @@
   font-size: 1.5rem;
   color: #ffffff;
   margin: 0;
-  background-color: #1C2541;
 }
 
+/* Filters */
 .pEfilters {
   display: flex;
   gap: 10px;
@@ -50,10 +52,10 @@
 .pEfiltersDark {
   display: flex;
   gap: 10px;
-  background-color: #1C2541;
 }
 
-.pEfilters select {
+/* Standardized select styling from Development */
+.selectBase {
   padding: 6px 10px;
   font-size: 14px;
   border: 1px solid #ccc;
@@ -63,17 +65,14 @@
   color: #333;
 }
 
-.pEfiltersDark select {
-  padding: 6px 10px;
-  font-size: 14px;
+.pEfiltersDark select, 
+.pEfiltersDark .selectBase {
   border: 1px solid #555;
-  border-radius: 5px;
-  cursor: pointer;
   background-color: #3A506B;
   color: #ffffff;
 }
 
-/* Y-Axis Definition Label */
+/* Y-Axis Note (Your Feature) */
 .pEYAxisLabel {
   background-color: #f5f5f5;
   border-left: 4px solid #1976d2;
@@ -85,9 +84,6 @@
 .pEYAxisLabelDark {
   background-color: #2c3e50;
   border-left: 4px solid #3a9bdc;
-  padding: 12px 15px;
-  margin: 15px 0;
-  border-radius: 4px;
 }
 
 .pEYAxisText {
@@ -98,12 +94,10 @@
 }
 
 .pEYAxisTextDark {
-  margin: 0;
-  font-size: 13px;
   color: #e0e0e0;
-  line-height: 1.5;
 }
 
+/* Stats Section */
 .pEStats {
   display: flex;
   flex-direction: column;
@@ -111,16 +105,12 @@
   border-radius: 8px;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
   padding: 30px;
+  background-color: white;
 }
 
 .pEStatsDark {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  border-radius: 8px;
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 30px;
   background-color: #1C2541;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
 }
 
 .pEStatItem {
@@ -138,29 +128,17 @@
   min-width: 150px;
 }
 
-.pEStatLabelWithTrendDark {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-width: 150px;
-}
-
 .pEStatLabel {
-  flex: 1;
   font-size: 14px;
   font-weight: bold;
   color: #333;
 }
 
 .pEStatLabelDark {
-  flex: 1;
-  font-size: 14px;
-  font-weight: bold;
   color: #ffffff;
 }
 
-/* Trend Indicators */
+/* Trend Indicators (Your Feature) */
 .pETrendIndicator {
   font-size: 18px;
   font-weight: bold;
@@ -168,18 +146,11 @@
   text-align: center;
 }
 
-.pETrendUp {
-  color: #4caf50;
-}
+.pETrendUp { color: #4caf50; }
+.pETrendDown { color: #f44336; }
+.pETrendStable { color: #ff9800; }
 
-.pETrendDown {
-  color: #f44336;
-}
-
-.pETrendStable {
-  color: #ff9800;
-}
-
+/* Progress Bars */
 .pEStatBar {
   flex: 3;
   background: #f0f0f0;
@@ -201,17 +172,9 @@
   transition: width 0.5s ease-in-out;
 }
 
-.pEBarGreen {
-  background-color: #4caf50;
-}
-
-.pEBarOrange {
-  background-color: #ff9800;
-}
-
-.pEBarRed {
-  background-color: #f44336;
-}
+.pEBarGreen { background-color: #4caf50; }
+.pEBarOrange { background-color: #ff9800; }
+.pEBarRed { background-color: #f44336; }
 
 .pEStatValue {
   flex: 0 0 auto;
@@ -223,22 +186,15 @@
 }
 
 .pEStatValueDark {
-  flex: 0 0 auto;
-  text-align: right;
-  font-size: 14px;
-  font-weight: bold;
   color: #ffffff;
-  min-width: 90px;
 }
 
+/* Summary Grid */
 .pEEventSummary {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 10px;
-  max-height: 80px;
   margin-top: 20px;
-  border-radius: 8px;
-  text-align: center;
   padding-bottom: 20px;
 }
 
@@ -251,62 +207,36 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  max-height: 90px;
   min-height: 80px;
-  overflow: hidden;
-  text-align: center;
 }
 
 .pESummaryItemDark {
   background: #3A506B;
-  padding: 12px;
-  border-radius: 8px;
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  max-height: 90px;
-  min-height: 80px;
-  overflow: hidden;
-  text-align: center;
 }
 
 .pESummaryTitle {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: bold;
-  text-align: center;
-  white-space: normal;
-  word-wrap: break-word;
-  max-width: 90%;
   color: #777;
+  text-align: center;
 }
 
 .pESummaryTitleDark {
-  font-size: 14px;
-  font-weight: bold;
-  text-align: center;
-  white-space: normal;
-  word-wrap: break-word;
-  max-width: 90%;
-  color: #ffffff;
+  color: #e0e0e0;
 }
 
 .pESummaryValue {
-  font-size: 14px;
+  font-size: 16px;
   font-weight: bold;
   color: #000;
   margin-top: 4px;
 }
 
 .pESummaryValueDark {
-  font-size: 14px;
-  font-weight: bold;
   color: #ffffff;
-  margin-top: 4px;
 }
 
-/* Responsive Design */
+/* Responsive Queries */
 @media (max-width: 768px) {
   .pEHeaderContainer {
     flex-direction: column;
@@ -332,7 +262,7 @@
   .pEEventSummary {
     grid-template-columns: 1fr;
   }
-
+  
   .pEfilters select {
     min-width: 100%;
   }
