@@ -3,7 +3,7 @@ import styles from '../styles/LeftSection.module.css';
 import profilePic from './profile.jpg';
 import { getFontColor } from '../../../../styles';
 
-/* function LeftSection({ profileData }) { */
+
 function LeftSection() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const profileData = useSelector(state => state.userSkills.profileData);
