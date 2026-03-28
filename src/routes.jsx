@@ -3,6 +3,7 @@ import { Route, Switch, Redirect } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AutoUpdate from './components/AutoUpdate';
+import AnimalManagement from './components/KitchenandInventory/AnimalManagement';
 import TaskEditSuggestions from './components/TaskEditSuggestions/TaskEditSuggestions';
 import RoutePermissions from './utils/routePermissions';
 import hasPermission from './utils/permissions';
@@ -883,6 +884,11 @@ export default (
         <KIProtectedRoute path="/kitchenandinventory" exact component={KIDashboard} />
         <KIProtectedRoute path="/kitchenandinventory/inventory" exact component={KIINVENTORY} />
         <KIProtectedRoute path="/kitchenandinventory/calendar" exact component={KICalendar} />
+        <KIProtectedRoute
+          path="/kitchenandinventory/animalmanagement"
+          exact
+          component={AnimalManagement}
+        />
         <Route path="/kitchenandinventory/login" exact component={KitchenandInventoryLogin} />
         {/* ----- End of Kitchen and Inventory Portal Routes ----- */}
         <Route path="/login" component={Login} />
