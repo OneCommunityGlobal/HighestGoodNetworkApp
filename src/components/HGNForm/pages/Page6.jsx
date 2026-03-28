@@ -11,7 +11,7 @@ function Page6() {
 =======
 import { useSelector } from 'react-redux';
 import styles from '../styles/hgnform.module.css';
-import { getBoxStyling, getFontColor } from '../../../styles';
+
 
 function Page6() {
   const darkMode = useSelector(state => state.theme.darkMode);
