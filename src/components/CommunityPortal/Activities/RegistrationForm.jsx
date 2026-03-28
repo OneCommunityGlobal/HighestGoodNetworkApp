@@ -1,70 +1,90 @@
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import styles from './styles.module.css';
+import styles from './Activitiesstyles.module.css';
 
 function RegistrationForm() {
+  const darkMode = useSelector(state => state.theme?.darkMode);
   const [eventType, setEventType] = useState('');
   const [location, setLocation] = useState('');
   const [name, setName] = useState('');
   const [eventDate, setEventDate] = useState('');
+  const [showValidation, setShowValidation] = useState(false);
+  const isFormComplete = Boolean(name && eventType && location && eventDate);
 
   const handleSubmit = e => {
     e.preventDefault();
+    if (!isFormComplete) {
+      setShowValidation(true);
+      return;
+    }
     toast(
       `Name of Register: ${name}, Event Type: ${eventType}, Location: ${location}, Event Date: ${eventDate}`,
+      {
+        className: `${styles.registrationToast} ${darkMode ? styles.darkmode : ''}`,
+        progressClassName: `${styles.registrationToastProgress} ${darkMode ? styles.darkmode : ''}`,
+      },
     );
   };
 
   return (
-    <form className={`${styles.registrationForm}`} onSubmit={handleSubmit}>
-      <h2 className={`${styles.headerTitle}`}>Event Registrations</h2>
+    <form
+      className={`${styles.registrationForm} ${darkMode ? styles.darkmode : ''}`}
+      onSubmit={handleSubmit}
+    >
+      <h3>Event Registrations</h3>
 
-      <div className={`${styles.registrationformField}`}>
-        <label htmlFor="name">Name of Registrant</label>
+      <div className={`${styles.formFields}`}>
         <input
-          id="name"
           type="text"
+          placeholder="Registrant name"
           value={name}
           onChange={e => setName(e.target.value)}
-          placeholder="Enter your name"
+          className={`${showValidation && !name ? styles.inputError : ''}`}
+          aria-invalid={showValidation && !name}
         />
-      </div>
 
-      <div className={`${styles.registrationformField}`}>
-        <label htmlFor="eventType">Event Type</label>
-        <select id="eventType" value={eventType} onChange={e => setEventType(e.target.value)}>
-          <option value="">Select Event Type</option>
-          <option value="conference">Conference</option>
-          <option value="workshop">Workshop</option>
-          <option value="webinar">Webinar</option>
-        </select>
-      </div>
+        <div className={`${styles.inlineRow}`}>
+          <select
+            value={eventType}
+            onChange={e => setEventType(e.target.value)}
+            className={`${showValidation && !eventType ? styles.inputError : ''}`}
+            aria-invalid={showValidation && !eventType}
+          >
+            <option value="">Event type</option>
+            <option value="conference">Conference</option>
+            <option value="workshop">Workshop</option>
+            <option value="webinar">Webinar</option>
+          </select>
 
-      <div className={`${styles.registrationformField}`}>
-        <label htmlFor="location">Location</label>
-        <select id="location" value={location} onChange={e => setLocation(e.target.value)}>
-          <option value="">Select Location</option>
-          <option value="ny">New York</option>
-          <option value="sf">San Francisco</option>
-          <option value="la">Los Angeles</option>
-        </select>
-      </div>
+          <select
+            value={location}
+            onChange={e => setLocation(e.target.value)}
+            className={`${showValidation && !location ? styles.inputError : ''}`}
+            aria-invalid={showValidation && !location}
+          >
+            <option value="">Location</option>
+            <option value="ny">New York</option>
+            <option value="sf">San Francisco</option>
+            <option value="la">Los Angeles</option>
+          </select>
+        </div>
 
-      <div className={`${styles.registrationformField}`}>
-        <label htmlFor="eventDate">Event Date</label>
-        <input
-          id="eventDate"
-          type="date"
-          value={eventDate}
-          onChange={e => setEventDate(e.target.value)}
-          placeholder="Select Event Date"
-        />
-      </div>
+        <div className={`${styles.bottomRow}`}>
+          <input
+            type="date"
+            value={eventDate}
+            onChange={e => setEventDate(e.target.value)}
+            className={`${showValidation && !eventDate ? styles.inputError : ''}`}
+            aria-invalid={showValidation && !eventDate}
+          />
 
-      <button type="submit" className={`${styles.submitbtn}`}>
-        Submit
-      </button>
+          <button type="submit" className={`${styles.submitbtn}`}>
+            Register
+          </button>
+        </div>
+      </div>
     </form>
   );
 }
