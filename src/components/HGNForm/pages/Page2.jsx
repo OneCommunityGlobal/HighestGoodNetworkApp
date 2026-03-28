@@ -23,7 +23,7 @@ function Page2() {
 =======
 import styles from '../styles/hgnform.module.css';
 import { useSelector } from 'react-redux';
-import { getBoxStyling, getFontColor } from '../../../styles';
+
 
 function Page2() {
   const darkMode = useSelector(state => state.theme.darkMode);
