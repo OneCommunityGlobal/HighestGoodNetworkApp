@@ -1,6 +1,7 @@
 import moment from 'moment-timezone';
 
 export const COMPANY_TZ = 'America/Los_Angeles';
+
 /**
  *
  * @param {*} date
@@ -19,6 +20,7 @@ export const formatDate = date =>
     .tz(COMPANY_TZ)
     .startOf('day')
     .format('MMM-DD-YY');
+
 export const formatDateLocal = val => {
   if (!val) return '';
   // Strict ISO parse to avoid fallback warnings
@@ -26,6 +28,7 @@ export const formatDateLocal = val => {
     .local()
     .format('MMM DD, YYYY');
 };
+
 export const formatDateUtcYYYYMMDD = val => {
   if (!val) return '';
   // Always return YYYY-MM-DD for <input type="date">
@@ -41,7 +44,6 @@ export const formatDateCompany = (val) => {
 
 export const formatDateTimeLocal = (val) => {
   if (!val) return '';
-
   return moment(val, moment.ISO_8601, true)
     .local()
     .format('MMM DD, YYYY, HH:mm');
@@ -56,6 +58,7 @@ export const formatDateYYYYMMDD = date =>
   moment(date)
     .tz(COMPANY_TZ)
     .format('YYYY-MM-DD');
+
 /**
  *
  * @param {*} date UTC timestamp string
@@ -65,6 +68,7 @@ export const formatDateMMDDYYYY = date =>
   moment(date)
     .tz(COMPANY_TZ)
     .format('MM/DD/YYYY');
+
 // converts time to AM/PM format. E.g., '2023-09-21T07:08:09-07:00' becomes '7:08:09 AM'.
 export const formattedAmPmTime = date => moment(date).format('h:mm:ss A');
 export const formatCreatedDate = date => moment(date).format('MM/DD');
@@ -82,7 +86,19 @@ export const getDayOfWeekStringFromUTC = utcTs =>
 export const CREATED_DATE_CRITERIA = '2022-01-01';
 
 /**
- * Converts a UTC timestamp to a formatted string in the user's
+ * carlos: converts YYYY-MM-DD to MM/DD/YY
+ * @param {String} dateStr date string in YYYY-MM-DD format
+ * @returns {String} formatted date in MM/DD/YY
+ */
+export const formatYYYYMMDDToMMDDYY = dateStr => {
+  if (!dateStr) return '';
+  const [year, month, day] = dateStr.split("-");
+  const shortYear = year.slice(-2);
+  return `${month}/${day}/${shortYear}`;
+};
+
+/**
+ * development: Converts a UTC timestamp to a formatted string in the user's
  * specific profile timezone.
  *
  * @param {string} utcDate - The UTC date string (e.g., "2025-08-28T03:04:50.054Z")
@@ -93,7 +109,6 @@ export const formatByTimeZone = (utcDate, timeZone) => {
   if (!utcDate || !timeZone) {
     return 'Invalid Date';
   }
-
   return moment(utcDate)
     .tz(timeZone)
     .format('MMM DD, YYYY, h:mm A');
