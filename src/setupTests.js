@@ -40,22 +40,45 @@ vi.mock('axios', () => {
 
 vi.mock('msw', () => ({
   rest: {
-    get:     vi.fn(),
-    post:    vi.fn(),
-    patch:   vi.fn(),
-    put:     vi.fn(),
-    delete:  vi.fn(),
+    get: vi.fn(),
+    post: vi.fn(),
+    patch: vi.fn(),
+    put: vi.fn(),
+    delete: vi.fn(),
     options: vi.fn(),
   },
 }))
 
 vi.mock('msw/node', () => ({
   setupServer: () => ({
-    listen: () => {},
-    resetHandlers: () => {},
-    close: () => {},
+    listen: () => { },
+    resetHandlers: () => { },
+    close: () => { },
   }),
 }));
+
+const createStorageMock = () => {
+  let store = {};
+  return {
+    getItem: key => (key in store ? store[key] : null),
+    setItem: (key, value) => {
+      store[key] = value !== undefined && value !== null ? String(value) : '';
+    },
+    removeItem: key => {
+      delete store[key];
+    },
+    clear: () => {
+      store = {};
+    },
+    key: index => Object.keys(store)[index] || null,
+    get length() {
+      return Object.keys(store).length;
+    },
+  };
+};
+
+globalThis.localStorage = createStorageMock();
+globalThis.sessionStorage = createStorageMock();
 
 // Mock react-toastify
 vi.mock('react-toastify', () => {
@@ -131,3 +154,11 @@ afterAll(() => {
     console.error = originalConsoleError;
   }
 });
+
+class ResizeObserver {
+  observe() { return undefined; }      // noop
+  unobserve() { return undefined; }    // noop
+  disconnect() { return undefined; }   // noop
+}
+
+global.ResizeObserver = ResizeObserver;
