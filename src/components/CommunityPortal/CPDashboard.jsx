@@ -81,6 +81,7 @@ export function CPDashboard() {
   const [isLoading, setIsLoading] = useState(false);
   const [dateFilter, setDateFilter] = useState('');
   const [error, setError] = useState(null);
+  const [selectedDate, setSelectedDate] = useState('');
   const [failedLogos, setFailedLogos] = useState(new Set());
   const darkMode = useSelector(state => state.theme.darkMode);
   const [pagination, setPagination] = useState({
@@ -200,6 +201,16 @@ export function CPDashboard() {
       if (!isOnlineEvent) return false;
     }
 
+    // Filter by specific date if one is selected
+    if (selectedDate) {
+      const eventDate = new Date(event.date);
+      const filterDate = new Date(selectedDate);
+      eventDate.setHours(0, 0, 0, 0);
+      filterDate.setHours(0, 0, 0, 0);
+      if (eventDate.getTime() !== filterDate.getTime()) return false;
+    }
+
+    // Filter by date filter
     if (dateFilter === 'tomorrow') {
       if (!isTomorrow(event.date)) return false;
     } else if (dateFilter === 'weekend') {
@@ -407,25 +418,27 @@ export function CPDashboard() {
                     </Label>
                   </FormGroup>
                 </div>
-
-                <Button
-                  color="primary"
-                  size="sm"
-                  onClick={() => {
-                    setDateFilter('');
-                    setSelectedDate('');
-                  }}
-                >
-                  Clear date filter
-                </Button>
-
+                <div className={styles.dashboardActions}>
+                  <Button
+                    color="primary"
+                    onClick={() => {
+                      setDateFilter('');
+                      setSelectedDate('');
+                      setPagination(prev => ({ ...prev, currentPage: 1 }));
+                    }}
+                  >
+                    Clear date filter
+                  </Button>
+                </div>
                 <Input
                   type="date"
-                  placeholder="Select Date"
-                  className={styles.dateFilter}
+                  placeholder="Ending After"
+                  className={styles['date-filter']}
                   value={selectedDate}
-                  onChange={e => setSelectedDate(e.target.value)}
-                  style={{ marginTop: '10px' }}
+                  onChange={e => {
+                    setSelectedDate(e.target.value);
+                    setPagination(prev => ({ ...prev, currentPage: 1 }));
+                  }}
                 />
               </div>
 
