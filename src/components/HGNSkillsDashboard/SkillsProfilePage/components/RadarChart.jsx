@@ -5,7 +5,11 @@ import { Chart, Radar } from 'react-chartjs-2';
 >>>>>>> ae1908b9d (add dark mode styling to RadarChart component)
 =======
 import { Radar } from 'react-chartjs-2';
+<<<<<<< HEAD
 >>>>>>> 47c2f6ce9 (fix accidental code additions)
+=======
+import PropTypes from 'prop-types';
+>>>>>>> d0531d57c (Add PropTypes and defaultProps to RadarChart component)
 import {
   Chart as ChartJS,
   Filler,
@@ -252,6 +256,11 @@ function RadarChart({ profileData }) {
   const backend = skillInfo.backend || {};
 >>>>>>> ae1908b9d (add dark mode styling to RadarChart component)
 
+<<<<<<< HEAD
+=======
+
+  // Generate chart data dynamically
+>>>>>>> d0531d57c (Add PropTypes and defaultProps to RadarChart component)
   const chartData = {
     labels: skillsData.map(skill => (compact ? skill.shortLabel || skill.label : skill.label)),
     datasets: [
@@ -422,6 +431,7 @@ function RadarChart({ profileData }) {
   );
 }
 
+<<<<<<< HEAD
 RadarChart.propTypes = {
   profileData: PropTypes.shape({
     skillInfo: PropTypes.shape({
@@ -431,6 +441,20 @@ RadarChart.propTypes = {
     }),
   }),
   compact: PropTypes.bool,
+=======
+RadarChart.propTypes ={
+  profileData :PropTypes.shape({
+  skillInfo: PropTypes.shape({
+    general:PropTypes.object,
+    frontend:PropTypes.object,
+    backend:PropTypes.object,
+  }),
+  }),
+};
+
+RadarChart.defaultProps={
+profileData:{},
+>>>>>>> d0531d57c (Add PropTypes and defaultProps to RadarChart component)
 };
 
 export default RadarChart;
