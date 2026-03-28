@@ -19,7 +19,7 @@ import {
   fetchLongestOpenIssues,
   setProjectFilter,
 } from '../../../actions/bmdashboard/issueChartActions';
-import { CustomDateComponent } from './customDateComponent';
+import { CustomDateComponent } from './CustomDateComponent';
 import styles from './issueCharts.module.css';
 
 /* ---------- helpers ---------- */
