@@ -396,6 +396,10 @@ function JobFormBuilder() {
                 resetBuilderState();
               }}
               darkMode={darkMode}
+              templateName={templateName}
+              setTemplateName={setTemplateName}
+              selectedTemplate={selectedTemplate}
+              setSelectedTemplate={setSelectedTemplate}
             />
             <form>
               {formFields.map((field, index) => (
