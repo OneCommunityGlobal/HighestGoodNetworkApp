@@ -35,6 +35,20 @@ const CATEGORY_OPTIONS = [
   { value: 'property', label: 'By Property' },
 ];
 
+function hashString(str) {
+  let h = 0;
+  for (let i = 0; i < str.length; i += 1) {
+    h = (Math.imul(31, h) + str.charCodeAt(i)) | 0;
+  }
+  return h >>> 0;
+}
+
+/** Deterministic 0..1 from seed + salt (stable across renders, changes when filters change). */
+function unitNoise(seed, salt) {
+  const n = hashString(`${seed}\0${salt}`);
+  return (n % 10000) / 10000;
+}
+
 // Generate X-axis labels based on time unit and date range
 function getTimeAxisLabels(timeUnit, startDate, endDate) {
   const start = moment(startDate);
@@ -55,6 +69,18 @@ function getTimeAxisLabels(timeUnit, startDate, endDate) {
       weekNum += 1;
       current.add(1, 'week');
     }
+  } else if (timeUnit === 'last6months') {
+    let current = end.clone().startOf('month').subtract(5, 'month');
+    for (let k = 0; k < 6; k += 1) {
+      labels.push(current.format('MMM YYYY'));
+      current.add(1, 'month');
+    }
+  } else if (timeUnit === 'year') {
+    let current = end.clone().startOf('month').subtract(11, 'month');
+    for (let k = 0; k < 12; k += 1) {
+      labels.push(current.format('MMM YYYY'));
+      current.add(1, 'month');
+    }
   } else {
     let current = start.clone().startOf('month');
     while (current.isSameOrBefore(end, 'month')) {
@@ -66,14 +92,40 @@ function getTimeAxisLabels(timeUnit, startDate, endDate) {
   return labels;
 }
 
-// Generate mock chart data (WIP - replace with API when backend is ready)
-function generateMockData(timeUnit, startDate, endDate) {
+function buildFilterKey(category, selectedVillages, selectedProperties) {
+  const villagePart = (selectedVillages || [])
+    .map(v => String(v.value))
+    .sort()
+    .join(',');
+  const propertyPart = (selectedProperties || [])
+    .map(p => String(p.value))
+    .sort()
+    .join(',');
+  return `${category}|v:${villagePart}|p:${propertyPart}`;
+}
+
+// Generate mock chart data (replace with API when backend is ready)
+function generateMockData(timeUnit, startDate, endDate, filterKey) {
   const labels = getTimeAxisLabels(timeUnit, startDate, endDate);
-  return labels.map((label, i) => ({
-    time: label,
-    cancellationRate: Math.round(5 + Math.sin(i * 0.5) * 8 + Math.random() * 5),
-    vacancyRate: Math.round(15 + Math.cos(i * 0.3) * 10 + Math.random() * 8),
-  }));
+  const rangeKey = `${moment(startDate).format('YYYY-MM-DD')}|${moment(endDate).format('YYYY-MM-DD')}`;
+  const baseSeed = hashString(`${timeUnit}|${rangeKey}|${filterKey}`);
+
+  return labels.map((label, i) => {
+    const rowSeed = baseSeed + i * 7919 + hashString(label);
+    const cancelWave = Math.sin(i * 0.5 + baseSeed * 0.001) * 8;
+    const vacancyWave = Math.cos(i * 0.3 + baseSeed * 0.002) * 10;
+    const cancelJitter = unitNoise(rowSeed, 'c') * 12;
+    const vacancyJitter = unitNoise(rowSeed, 'v') * 14;
+    return {
+      time: label,
+      cancellationRate: Math.round(
+        Math.max(0, Math.min(55, 5 + cancelWave + cancelJitter)),
+      ),
+      vacancyRate: Math.round(
+        Math.max(0, Math.min(55, 12 + vacancyWave + vacancyJitter)),
+      ),
+    };
+  });
 }
 
 const customSelectStyles = darkMode => ({
@@ -159,9 +211,15 @@ function CancellationImpactOnVacancy({ darkMode }) {
     setPropertyOptions(props);
   }, []);
 
-  const chartData = useMemo(() => {
-    return generateMockData(timeUnit, startDate, endDate);
-  }, [timeUnit, startDate, endDate]);
+  const filterKey = useMemo(
+    () => buildFilterKey(category, selectedVillages, selectedProperties),
+    [category, selectedVillages, selectedProperties],
+  );
+
+  const chartData = useMemo(
+    () => generateMockData(timeUnit, startDate, endDate, filterKey),
+    [timeUnit, startDate, endDate, filterKey],
+  );
 
   const xAxisLabel = useMemo(() => {
     if (timeUnit === 'week') return 'Days';
