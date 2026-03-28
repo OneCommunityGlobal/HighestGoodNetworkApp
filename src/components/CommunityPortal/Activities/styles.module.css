@@ -107,6 +107,21 @@
   margin-top: 10px;
 }
 
+.resourceStats .arrow {
+  font-size: 1rem;
+  margin-right: 5px;
+}
+
+.resourceStats p {
+  margin: 0;
+}
+
+.resourceStats p:last-child {
+  color: grey;
+  font-size: 0.7rem;
+  margin-left: 5px;
+}
+
 .arrow.up {
   color: green;
 }
@@ -115,6 +130,14 @@
   color: red;
 }
 
+/* Resource Monitoring Title */
+.resourceMonitoring .resourceTitle {
+  font-weight: bold;
+  color: grey;
+  text-align: left;
+  font-size: 1.2rem;
+  margin-bottom: 5px;
+}
 
 .registrationForm,
 .filters {
@@ -158,12 +181,16 @@
 }
 
 .createNewBtn {
+  padding: 8px 20px;
   background-color: #28a745;
-  color: #fff;
+  color: white;
   border: none;
   border-radius: 5px;
-  padding: 8px 20px;
   cursor: pointer;
+}
+
+.createNewBtn:hover {
+  background-color: #218838;
 }
 
 .myEventsTable {
@@ -177,11 +204,12 @@
   padding: 8px;
   text-align: left;
 }
+
 .status {
-  font-weight: bold;
   padding: 5px;
   border-radius: 5px;
   color: white;
+  font-weight: bold;
 }
 .active {
   color: green;
@@ -221,17 +249,24 @@
   font-size: 1.5em;
 }
 
-.status.active {
+.myEvent .status {
+  padding: 5px;
+  border-radius: 5px;
+  color: white;
+  font-weight: bold;
+}
+
+.myEvent .status.active {
   background-color: rgb(200, 240, 200);
   color: green;
 }
 
-.status.closed {
+.myEvent .status.closed {
   background-color: rgb(191, 191, 238);
   color: purple;
 }
 
-.status.cancelled {
+.myEvent .status.cancelled {
   background-color: rgb(239, 170, 170);
   color: red;
 }
@@ -302,26 +337,21 @@
 
 /* Resource Monitoring */
 
+
+
 .resourceValue {
   font-weight: bold;
   color: black;
   font-size: 1rem;
 }
 
-.resourceStats .arrow {
-  font-size: 1rem;
-  margin-right: 5px;
+.resourceMonitoring .resourceStats {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
 }
 
-.resourceStats p {
-  margin: 0;
-}
 
-.resourceStats p:last-child {
-  color: grey;
-  font-size: 0.7rem;
-  margin-left: 5px;
-}
 
 /* My Events toggle button */
 .viewToggle button {
@@ -366,9 +396,16 @@
   background-color: #0056b3;
 }
 
-.createNewBtn:hover {
-  background-color: #218838;
+.myEvent .createNewBtn {
+  padding: 8px 20px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
+
+
 
 .registerinfo {
   display: flex;
