@@ -41,9 +41,7 @@ const parseHexColor = color => {
 
 const channelToLinear = c => {
   const normalized = c / 255;
-  return normalized <= 0.03928
-    ? normalized / 12.92
-    : ((normalized + 0.055) / 1.055) ** 2.4;
+  return normalized <= 0.03928 ? normalized / 12.92 : ((normalized + 0.055) / 1.055) ** 2.4;
 };
 
 const relativeLuminance = ({ r, g, b }) =>
@@ -75,13 +73,34 @@ export const renderCenterLabel = ({ darkMode, isMobile, totalHours }) => {
 
   return (
     <>
-      <text x="50%" y="50%" dy={-26} textAnchor="middle" fill={centerFill} fontSize={isMobile ? 16 : 20}>
+      <text
+        x="50%"
+        y="50%"
+        dy={-26}
+        textAnchor="middle"
+        fill={centerFill}
+        fontSize={isMobile ? 16 : 20}
+      >
         TOTAL HOURS
       </text>
-      <text x="50%" y="50%" dy={-6} textAnchor="middle" fill={centerFill} fontSize={isMobile ? 16 : 20}>
+      <text
+        x="50%"
+        y="50%"
+        dy={-6}
+        textAnchor="middle"
+        fill={centerFill}
+        fontSize={isMobile ? 16 : 20}
+      >
         WORKED
       </text>
-      <text x="50%" y="50%" dy={28} textAnchor="middle" fill={centerFill} fontSize={centerValueFontSize}>
+      <text
+        x="50%"
+        y="50%"
+        dy={28}
+        textAnchor="middle"
+        fill={centerFill}
+        fontSize={centerValueFontSize}
+      >
         {totalText}
       </text>
     </>
@@ -109,7 +128,7 @@ const renderCustomizedLabel = ({
 
   // Thin wedges cannot fit two long lines; use adaptive compact labels.
   const hideAllLabels = percent < 0.005; // < 0.5%
-  const isTinySlice = percent < 0.025;   // < 2.5%
+  const isTinySlice = percent < 0.025; // < 2.5%
   const useCompactLabel = percent < 0.1; // < 10%
   const canShowPercent = percent >= 0.1; // >= 10% has room for percentage
   // Keep small-slice labels centered in each wedge band for better visual alignment.
@@ -129,7 +148,7 @@ const renderCustomizedLabel = ({
 
   const valueFontSize = isMobile ? 11 : 12;
   const percentFontSize = isMobile ? 8 : 9;
-  const valueY = y - (isMobile ? 7 : 9);   // More breathing room above
+  const valueY = y - (isMobile ? 7 : 9); // More breathing room above
   const percentY = y + (isMobile ? 7 : 9); // More breathing room below
   const chartLabelValue = formatChartLabelValue(value);
 
@@ -184,7 +203,13 @@ const renderCustomizedLabel = ({
 
 import CustomTooltip from '../../CustomTooltip';
 
-export default function HoursWorkedPieChart({ userData, windowSize, colors, totalHours = 0, darkMode = false }) {
+export default function HoursWorkedPieChart({
+  userData,
+  windowSize,
+  colors,
+  totalHours = 0,
+  darkMode = false,
+}) {
   let innerRadius = 80;
   let outerRadius = 160;
   if (windowSize.width <= 650) {
