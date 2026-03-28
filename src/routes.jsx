@@ -643,7 +643,11 @@ export default (
         {/* ----- BEGIN BM Dashboard Routing ----- */}
         <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
         <Route path="/bmdashboard/login" component={BMLogin} />
-        <Route path="/LessonsLearntChart" component={LessonsLearntChart} />
+        <BMProtectedRoute
+          path="/bmdashboard/lessons-learnt-chart"
+          fallback
+          component={LessonsLearntChart}
+        />
         <Route path="/UtilizationChart" component={UtilizationChart} />
         <BMProtectedRoute path="/mostsusceptibletoolschart" component={SimpleToolChart} />
         <Route path="/projectglobaldistribution" component={ProjectsGlobalDistribution} />
