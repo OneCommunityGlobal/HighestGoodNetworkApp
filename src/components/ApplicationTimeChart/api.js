@@ -20,8 +20,8 @@ const getApplicationData = async (startDate, endDate, roles) => {
   }
 };
 
-// Mock data fallback function
-const getMockData = () => {
+// Mock data fallback function (exported for chart UI when API returns 404)
+export const getMockData = () => {
   const sampleData = [
     {
       role: 'Software Developer',
@@ -91,5 +91,28 @@ const getMockData = () => {
   ];
   return sampleData;
 };
+
+function aggregateMockByRole(rows) {
+  const byRole = new Map();
+  rows.forEach(r => {
+    if (!r.role) return;
+    if (!byRole.has(r.role)) byRole.set(r.role, { sum: 0, n: 0 });
+    const o = byRole.get(r.role);
+    o.sum += Number(r.timeToApply) || 0;
+    o.n += 1;
+  });
+  return Array.from(byRole.entries()).map(([role, { sum, n }]) => {
+    const avg = n ? Math.round((sum / n) * 10) / 10 : 0;
+    return {
+      role,
+      timeToApplyMinutes: avg,
+      totalApplications: n,
+      timeToApplyFormatted: `${avg} min`,
+    };
+  });
+}
+
+/** Shape expected by ApplicationTimeChart after a successful API call */
+export const getAggregatedMockForChart = () => aggregateMockByRole(getMockData());
 
 export default getApplicationData;

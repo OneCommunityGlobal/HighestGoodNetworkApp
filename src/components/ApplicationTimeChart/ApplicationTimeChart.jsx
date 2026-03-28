@@ -3,7 +3,21 @@ import { useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import { ENDPOINTS } from '../../utils/URL';
 import httpService from '../../services/httpService';
+import { getAggregatedMockForChart } from './api';
 import styles from './ApplicationTimeChart.module.css';
+
+function uniqueRolesFromRows(rows) {
+  return [...new Set((rows || []).map(r => r?.role).filter(Boolean))].sort((a, b) =>
+    a.localeCompare(b),
+  );
+}
+
+function mergeRoleOptions(prev, rows) {
+  const fromData = uniqueRolesFromRows(rows);
+  const fromPrev = prev.filter(r => r !== 'all');
+  const combined = new Set([...fromPrev, ...fromData]);
+  return ['all', ...Array.from(combined).sort((a, b) => a.localeCompare(b))];
+}
 
 function ApplicationTimeChart() {
   const [dateFilter, setDateFilter] = useState('all');
@@ -25,13 +39,17 @@ function ApplicationTimeChart() {
         const rolesUrl = baseUrl.split('?')[0] + '/roles';
         const response = await httpService.get(rolesUrl);
         if (response.data && response.data.data && Array.isArray(response.data.data)) {
-          setAvailableRoles(['all', ...response.data.data.sort()]);
+          const apiRoles = response.data.data.filter(Boolean).sort((a, b) => a.localeCompare(b));
+          setAvailableRoles(['all', ...apiRoles]);
         } else if (response.data && response.data.success && Array.isArray(response.data.data)) {
-          setAvailableRoles(['all', ...response.data.data.sort()]);
+          const apiRoles = response.data.data.filter(Boolean).sort((a, b) => a.localeCompare(b));
+          setAvailableRoles(['all', ...apiRoles]);
+        } else {
+          setAvailableRoles(mergeRoleOptions(['all'], getAggregatedMockForChart()));
         }
       } catch (err) {
         console.error('Error fetching available roles:', err);
-        // Keep default 'all' option on error
+        setAvailableRoles(mergeRoleOptions(['all'], getAggregatedMockForChart()));
       }
     };
 
@@ -81,10 +99,13 @@ function ApplicationTimeChart() {
 
         // Backend returns { data: [], message: "", summary: {} }
         if (response.data && response.data.data && Array.isArray(response.data.data)) {
-          setData(response.data.data);
+          const rows = response.data.data;
+          setData(rows);
+          setAvailableRoles(prev => mergeRoleOptions(prev, rows));
         } else if (response.data && Array.isArray(response.data)) {
-          // Fallback for direct array response
-          setData(response.data);
+          const rows = response.data;
+          setData(rows);
+          setAvailableRoles(prev => mergeRoleOptions(prev, rows));
         } else {
           console.error('Backend returned unexpected data format:', response.data);
           setError('Unexpected data format from server');
@@ -92,8 +113,16 @@ function ApplicationTimeChart() {
         }
       } catch (err) {
         console.error('Error fetching application time data:', err);
-        setError(err.message || 'Failed to fetch data from server');
-        setData([]);
+        const status = err?.response?.status;
+        if (status === 404) {
+          const rows = getAggregatedMockForChart();
+          setData(rows);
+          setAvailableRoles(prev => mergeRoleOptions(prev, rows));
+          setError(null);
+        } else {
+          setError(err.message || 'Failed to fetch data from server');
+          setData([]);
+        }
       } finally {
         setLoading(false);
       }
@@ -103,16 +132,20 @@ function ApplicationTimeChart() {
   }, [dateFilter, selectedRole]);
 
   const processedData = useMemo(() => {
-    // Backend already filters outliers and applies date/role filters
-    // Backend returns data in format: { role, timeToApplyMinutes, timeToApplyFormatted, totalApplications }
-    // The data is already aggregated by role with average times
+    // Backend may return all roles even when `roles` query is set; mock data is always full set.
+    // Apply Role filter here so the chart always matches the dropdown.
     if (!Array.isArray(data) || data.length === 0) {
       return [];
     }
 
+    let rows = data;
+    if (selectedRole !== 'all') {
+      rows = data.filter(item => item && item.role === selectedRole);
+    }
+
     // Map backend response to chart data format
     // Backend returns timeToApplyMinutes (average time in minutes)
-    const chartData = data
+    const chartData = rows
       .map(item => ({
         role: item.role,
         avgTime: item.timeToApplyMinutes || (item.timeToApply ? item.timeToApply / 60 : 0),
@@ -124,7 +157,7 @@ function ApplicationTimeChart() {
       .sort((a, b) => b.avgTime - a.avgTime); // Sort highest to lowest (most time-consuming first)
 
     return chartData;
-  }, [data]);
+  }, [data, selectedRole]);
 
   const maxTime = Math.max(...processedData.map(item => item.avgTime), 10);
 
