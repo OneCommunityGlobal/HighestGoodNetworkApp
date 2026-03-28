@@ -8,7 +8,7 @@ import { toast } from 'react-toastify';
 import { setformData } from '~/actions/hgnFormAction';
 import { Spinner } from 'reactstrap';
 import styles from '../styles/FrontendBackendQuestions.module.css';
-import { getBoxStyling, getFontColor } from '../../../styles';
+
 
 function FrontendQuestions() {
   const navigate = useHistory();
