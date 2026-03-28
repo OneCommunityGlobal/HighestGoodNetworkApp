@@ -2,7 +2,7 @@ import { forwardRef } from 'react';
 import { useSelector } from 'react-redux';
 import styles from '../styles/QuestionnaireInfo.module.css';
 import { useSelector } from 'react-redux';
-import { getBoxStyling, getFontColor } from '../../../styles';
+
 
 const QuestionnaireHeader = forwardRef((props, ref) => {
   const darkMode = useSelector(state => state.theme.darkMode);
