@@ -5,6 +5,7 @@
   border-radius: 15px;
   background-color: #fff;
 <<<<<<< HEAD
+<<<<<<< HEAD
   box-shadow: 0 4px 8px rgb(0 0 0 / 10%);
 }
 
@@ -16,6 +17,9 @@
 =======
   /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
 >>>>>>> a2dce1bdb (add dark mode for questionnaire)
+=======
+ 
+>>>>>>> a09e974eb (Remove box-shadow comment from QuestionnaireInfo styles)
 }
 
 .questionnaireInfo h1 {
