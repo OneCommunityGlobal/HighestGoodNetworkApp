@@ -51,10 +51,15 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
 
   const { taskHours, projectHours } = data;
 
-  const taskPercentage = taskHours.submittedToCommittedHoursPercentage ?? 0;
-  const projectPercentage = projectHours.submittedToCommittedHoursPercentage ?? 0;
-  const taskChangePercentage = taskHours.comparisonPercentage ?? 0;
-  const projectChangePercentage = projectHours.comparisonPercentage ?? 0;
+  const normalizePercentage = value => {
+    const raw = value ?? 0;
+    return raw > 1 ? raw : raw * 100;
+  };
+
+  const taskPercentage = normalizePercentage(taskHours.submittedToCommittedHoursPercentage);
+  const projectPercentage = normalizePercentage(projectHours.submittedToCommittedHoursPercentage);
+  const taskChangePercentage = normalizePercentage(taskHours.comparisonPercentage);
+  const projectChangePercentage = normalizePercentage(projectHours.comparisonPercentage);
   const stats = [
     {
       name: 'Tasks',
@@ -77,22 +82,19 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
   const chartData = stats.map(item => ({
     name: item.name,
     amount: item.amount,
-    percentage: `${(item.percentage * 100).toFixed(2)}%`,
-    change:
-      item.change > 0
-        ? `+${(item.change * 100).toFixed(0)}%`
-        : `${(item.change * 100).toFixed(0)}%`,
+    percentage: `${item.percentage.toFixed(2)}%`,
+    change: item.change > 0 ? `+${item.change.toFixed(0)}%` : `${item.change.toFixed(0)}%`,
     fontcolor: item.change >= 0 ? greenColor : 'red',
     color: ['rgba(76,75,245,255)', 'rgba(0,175,244,255)'],
   }));
   const projectBarInfo = {
     ifcompare: projectChangePercentage !== undefined && projectChangePercentage !== null,
     amount: projectHours.count,
-    percentage: `${(projectPercentage * 100).toFixed(2)}%`,
+    percentage: `${projectPercentage.toFixed(2)}%`,
     change:
       projectChangePercentage > 0
-        ? `+${(projectChangePercentage * 100).toFixed(0)}%`
-        : `${(projectChangePercentage * 100).toFixed(0)}%`,
+        ? `+${projectChangePercentage.toFixed(0)}%`
+        : `${projectChangePercentage.toFixed(0)}%`,
     fontcolor: projectChangePercentage >= 0 ? greenColor : 'red',
   };
   const renderCustomizedLabel = props => {
@@ -193,28 +195,30 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
             justifyItems: 'center',
           }}
         >
-          <span style={{ maxWidth: 200 }}>
-            {`${data.hoursSubmittedToTasksPercentage *
-              100}% of Total Tangible Hours Submitted to Tasks`}
-          </span>
           {(() => {
-            const percentage = data.hoursSubmittedToTasksComparisonPercentage;
-
-            if (percentage === undefined || percentage === null) {
+            const raw = data.hoursSubmittedToTasksPercentage ?? 0;
+            const normalized = raw > 1 ? raw : raw * 100;
+            const formatted = `${normalized.toFixed(1)}%`;
+            return `${formatted} of Total Tangible Hours Submitted to Tasks`;
+          })()}
+          {(() => {
+            const raw = data.hoursSubmittedToTasksComparisonPercentage;
+            if (raw === undefined || raw === null) {
               // No comparison → hide metrics
               return null;
             }
-            const isPositive = percentage >= 0;
+            const normalized = raw > 1 ? raw : raw * 100;
+            const isPositive = normalized >= 0;
             let color;
             if (isPositive) {
               color = darkMode ? 'lightgreen' : 'green';
             } else {
               color = 'red';
             }
-            const value = isPositive
-              ? `+${(percentage * 100).toFixed(0)}%`
-              : `${(percentage * 100).toFixed(0)}%`;
-            return <span style={{ color, marginLeft: 8, fontSize: '12px' }}>{value}</span>;
+            const formatted = isPositive
+              ? `+${normalized.toFixed(0)}%`
+              : `${normalized.toFixed(0)}%`;
+            return <span style={{ color, marginLeft: 8, fontSize: '12px' }}>{formatted}</span>;
           })()}
         </div>
       </div>
@@ -227,6 +231,33 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
           darkMode={darkMode}
           yAxisLabel="Hours"
         />
+      </div>
+
+      {/* Distribution Label */}
+      <div style={{ textAlign: 'center', marginTop: 12, marginBottom: 8 }}>
+        <div
+          style={{
+            fontSize: '12px',
+            fontWeight: 600,
+            color: darkMode ? '#e0e0e0' : '#333',
+            letterSpacing: '0.3px',
+          }}
+        >
+          {(() => {
+            const taskCount = taskHours.count || 0;
+            const projectCount = projectHours.count || 0;
+            const totalCount = taskCount + projectCount;
+
+            if (totalCount === 0) {
+              return 'No data available';
+            }
+
+            const taskPercent = ((taskCount / totalCount) * 100).toFixed(1);
+            const projectPercent = ((projectCount / totalCount) * 100).toFixed(1);
+
+            return `${taskPercent}% Tasks (${taskCount}) | ${projectPercent}% Projects (${projectCount}) (Total = 100%)`;
+          })()}
+        </div>
       </div>
     </div>
   );
