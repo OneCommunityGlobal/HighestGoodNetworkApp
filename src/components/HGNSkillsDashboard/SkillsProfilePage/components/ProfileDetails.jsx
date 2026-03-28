@@ -2,7 +2,7 @@ import { useSelector } from 'react-redux';
 import styles from '../styles/ProfileDetails.module.css';
 import { getFontColor } from '../../../../styles';
 
-// function ProfileDetails({ profileData }) {
+
 function ProfileDetails() {
   const profileData = useSelector(state => state.userSkills.profileData);
   const darkMode = useSelector(state => state.theme.darkMode);
