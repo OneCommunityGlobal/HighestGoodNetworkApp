@@ -19,6 +19,7 @@ import {
   fetchLongestOpenIssues,
   setProjectFilter,
 } from '../../../actions/bmdashboard/issueChartActions';
+import { CustomDateComponent } from './customDateComponent';
 import styles from './issueCharts.module.css';
 
 /* ---------- helpers ---------- */
@@ -275,45 +276,8 @@ function IssueCharts() {
           <div className={styles.dateRangePicker}>
             <div className={styles.dateRangePickerStart}>
               <DatePicker
-                renderCustomHeader={({ date, decreaseMonth, increaseMonth }) => (
-                  <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
-                    <button
-                      onClick={decreaseMonth}
-                      style={{
-                        background: 'none',
-                        border: 'none',
-                        cursor: 'pointer',
-                        color: darkMode ? 'white' : 'black',
-                        fontSize: '16px',
-                        marginLeft: '10px',
-                      }}
-                    >
-                      ◀
-                    </button>
-
-                    <span
-                      style={{ flex: 1, textAlign: 'center', fontWeight: 'bold', fontSize: '16px' }}
-                    >
-                      {date.toLocaleString('default', {
-                        month: 'long',
-                        year: 'numeric',
-                      })}
-                    </span>
-
-                    <button
-                      onClick={increaseMonth}
-                      style={{
-                        background: 'none',
-                        border: 'none',
-                        cursor: 'pointer',
-                        color: darkMode ? 'white' : 'black',
-                        fontSize: '16px',
-                        marginRight: '10px',
-                      }}
-                    >
-                      ▶
-                    </button>
-                  </div>
+                renderCustomHeader={props => (
+                  <CustomDateComponent {...props} darkMode={darkMode} isStartDate={true} />
                 )}
                 id="start-date"
                 selected={startDate}
@@ -331,31 +295,8 @@ function IssueCharts() {
             <span className={styles.dateRangeSeparator}>to</span>
             <div className={styles.dateRangePickerEnd}>
               <DatePicker
-                renderCustomHeader={({ date, decreaseMonth, increaseMonth }) => (
-                  <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
-                    <button
-                      onClick={decreaseMonth}
-                      style={{
-                        background: 'none',
-                        border: 'none',
-                        cursor: 'pointer',
-                        color: darkMode ? 'white' : 'black',
-                        fontSize: '16px',
-                        marginLeft: '10px',
-                      }}
-                    >
-                      ◀
-                    </button>
-
-                    <span
-                      style={{ flex: 1, textAlign: 'center', fontWeight: 'bold', fontSize: '16px' }}
-                    >
-                      {date.toLocaleString('default', {
-                        month: 'long',
-                        year: 'numeric',
-                      })}
-                    </span>
-                  </div>
+                renderCustomHeader={props => (
+                  <CustomDateComponent {...props} darkMode={darkMode} isStartDate={false} />
                 )}
                 selected={endDate}
                 onChange={date => setEndDate(date)}
@@ -497,7 +438,6 @@ function IssueCharts() {
                 formatter={value => `${value} months`}
                 labelFormatter={label => `Issue: ${label}`}
               />
-
               <Bar dataKey="durationOpen" barSize={22} isAnimationActive={false}>
                 {chartData.map((entry, index) => (
                   <Cell key={index} fill={projectColorMap[entry.projectId] || '#94a3b8'} />
