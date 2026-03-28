@@ -19,7 +19,7 @@ function FrontendQuestions() {
   const [newVolunteer, setNewVolunteer] = useState(formData);
   const dispatch = useDispatch();
   const location = useLocation();
-  const { isOwner } = location.state;
+  const { isOwner } = location.state ||{};
 
   const [editingIndex, setEditingIndex] = useState(null);
   const [editedText, setEditedText] = useState('');
@@ -45,7 +45,7 @@ function FrontendQuestions() {
     };
 
     fetchQuestions();
-  }, [ENDPOINTS.HGN_FORM_GET_QUESTION]);
+  }, []);
 
   const handleNext = e => {
     e.preventDefault();
@@ -54,7 +54,7 @@ function FrontendQuestions() {
   };
 
   const handleBack = () => {
-    navigate.goBack('/hgnform/page2');
+    navigate.goBack();
   };
 
   const handleRadioChange = e => {
@@ -65,7 +65,7 @@ function FrontendQuestions() {
   // Handle edit button click to start editing a question
   const handleEditClick = index => {
     setEditingIndex(index);
-    setEditedText(questions[index].text); // Set the current question text to be edited
+    setEditedText(questions[index]?.text || ''); // Set the current question text to be edited
   };
 
   // Save edited question
@@ -91,8 +91,9 @@ function FrontendQuestions() {
 
   const searchQuestion = (page, qno) => {
     const questiontext = questions.find(question => question.page === page && question.qno === qno);
-    return questiontext.text;
+    return questiontext?questiontext.text : '';
   };
+
 
   // Mapping question keys to structured field names
   const fieldNameMap = [
@@ -191,7 +192,7 @@ function FrontendQuestions() {
                       id={`${fieldName}_${i + 1}`}
                       value={i + 1}
                       onChange={handleRadioChange}
-                      checked={newVolunteer[fieldName] === (i + 1).toString()}
+                      checked={newVolunteer[fieldName] === String(i + 1)}
                       required
                     />
                   </div>
