@@ -1,134 +1,183 @@
+/* === Container === */
 .etdContainer {
-  padding: 24px;
-  font-family: Arial, sans-serif;
+  padding: 20px 40px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
+/* Title & Subtitle */
 .etdTitle {
   font-size: 28px;
   font-weight: 700;
-  margin-bottom: 6px;
+  margin-bottom: 10px;
+  color: #222;
 }
 
 .etdSubtitle {
   font-size: 16px;
-  color: #555;
-  margin-bottom: 24px;
+  color: #666;
+  margin-bottom: 25px;
 }
 
+/* === Table Wrapper === */
 .etdTableWrapper {
+  margin-top: 20px;
   overflow-x: auto;
-  border-radius: 12px;
-  border: 1px solid #e3e3e3;
+  border-radius: 10px;
+  border: 1px solid #e2e2e2;
+  box-shadow: 0px 2px 5px rgba(0,0,0,0.05);
 }
 
+/* === Table === */
 .etdTable {
   width: 100%;
   border-collapse: collapse;
   background: #fff;
 }
 
-.etdThead {
-  background: #f2f6fc;
+.etdTable thead {
+  background: #f5f6f8;
 }
 
-.etdTh {
-  padding: 12px;
+.etdTable thead th {
+  padding: 14px;
   text-align: left;
   font-weight: 600;
   color: #333;
-  border-bottom: 1px solid #d9d9d9;
+  font-size: 14px;
+  border-bottom: 1px solid #ddd;
 }
 
-.etdRow:nth-child(even) {
-  background-color: #fafafa;
-}
-
-.etdTd {
-  padding: 12px;
-  vertical-align: top;
+.etdTable tbody tr {
   border-bottom: 1px solid #eee;
 }
 
-.etdSubtext {
-  font-size: 13px;
-  color: #666;
-  margin-top: 2px;
+.etdTable tbody tr:hover {
+  background-color: #fafafa;
 }
 
-/* Certification item */
+.etdTable tbody td {
+  padding: 14px;
+  font-size: 14px;
+  color: #444;
+  vertical-align: top;
+}
+
+/* Subtext (email under name) */
+.etdSubtext {
+  font-size: 12px;
+  color: #777;
+  margin-top: 3px;
+}
+
+/* === Certification Item === */
 .etdCertItem {
   margin-bottom: 6px;
 }
 
 .etdCertName {
+  font-weight: 500;
+}
+
+/* Status Color Tags */
+.etdCertStatus {
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 12px;
   font-weight: 600;
 }
 
+/* Green = Completed / active */
+.etdStatus_active,
+.etdStatus_Completed {
+  background: #e6f8ec;
+  color: #1a8b3c;
+}
 
-/* Action Button */
+/* Yellow = In progress */
+.etdStatus_inprogress,
+.etdStatus_InProgress {
+  background: #fff5d9;
+  color: #d19900;
+}
+
+/* Gray = Not started */
+.etdStatus_NotStarted,
+.etdStatus_notstarted {
+  background: #f0f0f0;
+  color: #666;
+}
+
+/* === Action Button === */
 .etdActionButton {
-  background: #4a6cff;
+  background: #007bff;
   color: white;
-  border: none;
   padding: 8px 14px;
   font-size: 14px;
-  border-radius: 8px;
+  border: none;
+  border-radius: 6px;
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: 0.2s ease;
 }
 
 .etdActionButton:hover {
-  background: #3958e0;
+  background: #0069d9;
 }
 
-/* Base status styling */
-.etdCertStatus {
-  font-weight: 600;
-  padding: 4px 10px;
-  border-radius: 6px;
-  text-transform: capitalize;
-  font-size: 13px;
-  display: inline-block;
+.etdActionButton:active {
+  background: #005bb5;
 }
 
-/* 🟢 Completed */
-.etdStatus_Completed {
-  background: #e9f8ef;
-  color: #218838;
-  border: 1px solid #b6e7c5;
+/* === Loader & Error === */
+.loader {
+  margin-top: 50px;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 500;
 }
 
-/* 🟡 In Progress */
-.etdStatus_InProgress {
-  background: #fff8e6;
-  color: #d89a00;
-  border: 1px solid #ffe7a3;
+.error {
+  margin-top: 20px;
+  color: #d60000;
+  font-size: 16px;
+  text-align: center;
 }
 
-/* 🔴 Not Started */
-.etdStatus_NotStarted {
-  background: #ffeaea;
-  color: #c82333;
-  border: 1px solid #f5b7b7;
+/* Responsive */
+@media (max-width: 768px) {
+  .etdContainer {
+    padding: 15px;
+  }
+
+  .etdTable thead {
+    display: none;
+  }
+
+  .etdTable tbody tr {
+    display: block;
+    margin-bottom: 12px;
+    background: #fff;
+    padding: 12px;
+    border-radius: 8px;
+  }
+
+  .etdTable tbody td {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+  }
+
+  .etdTable tbody td strong {
+    display: block;
+  }
 }
 
-/* 🟢 Active */
-.etdStatus_Active {
-  background: #e5f4ff;
-  color: #1a73e8;
-  border: 1px solid #b3dcff;
+.etdStatus_expired {
+  background: #f8d7da;
+  color: #842029;
 }
 
-/* 🔥 Expired */
-.etdStatus_Expired {
-  background: #ffe4e4;
-  color: #b91c1c;
-  border: 1px solid #fbb;
-}
-
-/* 🟠 Revoked */
-.etdStatus_Revoked {
-  background: #fff4e6;
-  color: #d87b17;
-  border: 1px solid #f7d1a6;
+.etdStatus_revoked {
+  background: #f0f0f0;
+  color: #666;
 }
