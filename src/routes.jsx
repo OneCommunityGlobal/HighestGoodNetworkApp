@@ -4,6 +4,8 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ApplicantsChart from './components/ApplicantsChart';
 import EducationExperienceDonutChart from './components/EducationExperienceDonutChart/EducationExperienceDonutChart';
+//import the ToolsbreakdownPage Component
+import ToolsBreakdownPage from './components/HorizontalBar/ToolsBreakdownPage';
 import AutoUpdate from './components/AutoUpdate';
 import TaskEditSuggestions from './components/TaskEditSuggestions/TaskEditSuggestions';
 import RoutePermissions from './utils/routePermissions';
@@ -355,6 +357,8 @@ export default (
         <Route path="/logattendance" component={AttendanceNoShow} />
         <ProtectedRoute path="/project/members/:projectId" fallback component={Members} />
         <ProtectedRoute path="/timelog/" exact render={() => <Timelog userId={null} />} />
+        {/* New route for ToolsBreakdownPage */}
+        <ProtectedRoute path="/tools-breakdown" exact component={ToolsBreakdownPage} />
         <ProtectedRoute
           path="/timelog/:userId"
           exact
