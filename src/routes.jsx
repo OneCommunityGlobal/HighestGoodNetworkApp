@@ -172,6 +172,7 @@ import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
 import EPLogin from './components/EductionPortal/Login';
 import BrowseLessonPlan from './components/EductionPortal/BrowseLessonPlan/BrowseLP';
 import EPDashboard from './components/EductionPortal';
+import TaskSubmissions from './components/EductionPortal/Educators/TaskSubmissions';
 
 import StudentProfilePage from './components/EductionPortal/StudentProfile/StudentProfilePage';
 import AssignAtoms from './components/EductionPortal/AssignAtoms/AssignAtoms';
@@ -850,6 +851,12 @@ export default (
         <EPProtectedRoute path="/educationportal" exact component={EPDashboard} />
         <Route path="/educationportal/login" component={EPLogin} />
         <EPProtectedRoute path="/educationportal/tasks/upload" exact component={WriteTaskUpload} />
+        <EPProtectedRoute
+          path="/educationportal/educator/task-submissions"
+          exact
+          component={TaskSubmissions}
+        />
+
         <EPProtectedRoute path="/student/profile" exact component={StudentProfilePage} />
         {/* PR Analytics Dashboard */}
         <Route path="/pull-request-analytics/reviews-insight" component={ReviewsInsight} />
