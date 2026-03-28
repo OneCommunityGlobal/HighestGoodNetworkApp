@@ -62,8 +62,20 @@ export default function UserSkillsProfile() {
           throw new Error('User ID not found in token.');
         }
 
+<<<<<<< HEAD
         const url = ENDPOINTS.SKILLS_PROFILE(effectiveUserId);
         const response = await httpService.get(url);
+=======
+        const response = await axios.get(
+          `http://localhost:4500/api/skills/profile/${effectiveUserId}`,
+          {
+            headers: {
+              Authorization: `${token}`,
+            },
+          },
+        );
+       
+>>>>>>> 4a69d0ad3 (Clean up UserSkillsProfile.jsx by removing console log)
 
         const { data } = response;
         if (!data) throw new Error('Failed to fetch profile data');
