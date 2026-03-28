@@ -423,9 +423,31 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
 
       // Calculate bubble radii
       const radii = tags.map((_, i) => getBubbleSize(counts[i], counts));
+      const maxBubbleRadius = Math.max(...radii, sizes.minBubbleSize);
+      const horizontalPadding = sizes.padding + maxBubbleRadius + 8;
+      const topPadding = sizes.padding + maxBubbleRadius * 0.75 + 12;
+      const bottomPadding =
+        sizes.padding + maxBubbleRadius * 1.15 + sizes.countFontSize + centerSize * 0.5 + 28;
 
-      // Fixed radius for consistent spacing
-      const radius = Math.min(width, height) * (isMobile ? 0.26 : 0.24);
+      // Keep the orbit inside the visible area with room for labels and the center text.
+      const availableOrbitX = Math.max(0, width / 2 - horizontalPadding);
+      const availableOrbitY = Math.max(
+        0,
+        Math.min(centerY - topPadding, height - bottomPadding - centerY),
+      );
+      const idealRadius = Math.min(
+        Math.min(width, height) * (isMobile ? 0.2 : 0.17),
+        availableOrbitX,
+        availableOrbitY,
+      );
+      const minRequiredRadius = centerSize + maxBubbleRadius + (isMobile ? 6 : 10);
+      const radius =
+        idealRadius > 0
+          ? Math.max(
+              Math.min(Math.max(idealRadius, minRequiredRadius), availableOrbitX, availableOrbitY),
+              0,
+            )
+          : 0;
 
       const positions = [];
 
@@ -440,7 +462,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
         const distFromCenter = calculateDistance(x, y, centerX, centerY);
         const minCenterDist = centerSize + r + (isMobile ? 8 : 12);
 
-        if (distFromCenter < minCenterDist) {
+        if (distFromCenter < minCenterDist && distFromCenter > 0) {
           const scale = minCenterDist / distFromCenter;
           x = centerX + (x - centerX) * scale;
           y = centerY + (y - centerY) * scale;
@@ -448,7 +470,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
 
         // Keep within bounds
         x = Math.max(sizes.padding + r, Math.min(width - sizes.padding - r, x));
-        y = Math.max(sizes.padding + r * 0.6, Math.min(height - sizes.padding - r * 0.6, y));
+        y = Math.max(topPadding, Math.min(height - bottomPadding, y));
 
         positions.push({
           x,
@@ -827,9 +849,11 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
     const width = dimensions.width;
     const height = dimensions.height;
     const centerX = width / 2;
-    const centerY = height / 2;
-
     const sizes = getResponsiveSizes();
+    const centerY = Math.max(
+      sizes.centerSize + 56,
+      Math.min(height * (isMobile ? 0.37 : 0.35), height - (sizes.centerSize + 96)),
+    );
 
     // Draw center circle
     drawCenterCircle(svg, centerX, centerY, sizes);

@@ -260,8 +260,17 @@ function WeeklyProjectSummary() {
         key: 'Lessons Learned',
         className: 'half',
         content: [
-          <MostFrequentKeywords key="frequent-tags-card" darkMode={darkMode} />,
-          <div key="injury-chart" className="weekly-project-summary-card normal-card">
+          <div
+            key="frequent-tags-card"
+            className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+            style={{ minHeight: '520px', height: 'auto', overflow: 'visible' }}
+          >
+            <MostFrequentKeywords darkMode={darkMode} />
+          </div>,
+          <div
+            key="injury-chart"
+            className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+          >
             <InjuryCategoryBarChart />
           </div>,
         ],
