@@ -39,7 +39,7 @@ let id = 1;
 for (let month = 0; month < 12; month++) {
   for (let week = 0; week < 4; week++) {
     for (let t = 0; t < eventTypes.length; t++) {
-      const eventDate = new Date(2025, month, 1 + week * 7 + t);
+      const eventDate = new Date(new Date().getFullYear(), month, 1 + week * 7 + t);
       mockEvents.push({
         id: id++,
         eventType: eventTypes[t],
@@ -56,7 +56,7 @@ for (let month = 0; month < 12; month++) {
 }
 
 const today = new Date();
-for (let t = 0; t < 3; t++) {
+for (let t = 0; t < 6; t++) {
   const eventDate = new Date(today);
   eventDate.setHours(10 + t * 2, 0, 0, 0);
   mockEvents.push({
