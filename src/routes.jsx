@@ -638,7 +638,7 @@ export default (
           exact
           component={AnalyticsDashboard}
           fallback
-          // allowedRoles={[UserRole.Administrator, UserRole.Owner]}
+          allowedRoles={[UserRole.Administrator, UserRole.Owner]}
         />
         {/* ----- BEGIN BM Dashboard Routing ----- */}
         <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
