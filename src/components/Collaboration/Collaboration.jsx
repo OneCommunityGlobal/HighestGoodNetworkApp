@@ -43,7 +43,7 @@ function Collaboration() {
       const url =
         `${ApiEndpoint}/jobs` +
         `?search=${encodeURIComponent(searchTerm || '')}` +
-        `&category=${encodeURIComponent(selectedCategory || '')}`;
+        `&category=${encodeURIComponent(JSON.stringify(categoriesSelected))}`;
 
       const res = await fetch(url);
       const data = await res.json();
@@ -144,7 +144,9 @@ function Collaboration() {
   const handleShowSummaries = async () => {
     try {
       const res = await fetch(
-        `${ApiEndpoint}/jobs/summaries?search=${searchTerm}&category=${selectedCategory}`,
+        `${ApiEndpoint}/jobs/summaries?search=${searchTerm}&category=${encodeURIComponent(
+          JSON.stringify(categoriesSelected),
+        )}`,
       );
       setSummaries(await res.json());
     } catch {
