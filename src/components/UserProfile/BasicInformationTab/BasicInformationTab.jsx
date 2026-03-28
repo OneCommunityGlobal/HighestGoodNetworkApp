@@ -900,6 +900,7 @@ const BasicInformationTab = props => {
           </Label>
           {canEdit && canEditStatus && (
             <PauseAndResumeButton
+              hasPermission={props.hasPermission}
               setUserProfile={setUserProfile}
               loadUserProfile={loadUserProfile}
               isBigBtn={true}
@@ -955,6 +956,7 @@ const BasicInformationTab = props => {
         &nbsp;
         {canEdit && canEditStatus && (
           <PauseAndResumeButton
+            hasPermission={props.hasPermission}
             setUserProfile={setUserProfile}
             loadUserProfile={loadUserProfile}
             isBigBtn={true}
