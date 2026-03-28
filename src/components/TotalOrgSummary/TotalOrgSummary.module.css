@@ -188,6 +188,30 @@
   fill: #fff !important;
 }
 
+/* Explicit overrides for Volunteer Hours Distribution slice labels.
+   These must win over global forced-white chart text rules above. */
+.containerTotalOrgWrapper:global(.bg-oxford-blue)
+  .componentContainer
+  :global(.hours-distribution-label-dark),
+.containerTotalOrgWrapper:global(.bg-oxford-blue)
+  .componentContainer
+  :global(.hours-distribution-label-dark)
+  tspan {
+  fill: #111111 !important;
+  color: #111111 !important;
+}
+
+.containerTotalOrgWrapper:global(.bg-oxford-blue)
+  .componentContainer
+  :global(.hours-distribution-label-light),
+.containerTotalOrgWrapper:global(.bg-oxford-blue)
+  .componentContainer
+  :global(.hours-distribution-label-light)
+  tspan {
+  fill: #ffffff !important;
+  color: #ffffff !important;
+}
+
 .containerTotalOrgWrapper.bg-oxford-blue h3 {
   color: #fff;
 }

@@ -221,7 +221,7 @@ export default function VolunteerHoursDistribution({
       style={{ gap: '20px' }}
     >
       <HoursWorkedPieChart
-        darkmode={darkMode}
+        darkMode={darkMode}
         windowSize={windowSize}
         userData={userData}
         totalHours={totalHoursWorked}

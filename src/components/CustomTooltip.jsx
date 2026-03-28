@@ -1,6 +1,25 @@
 // Universal Custom Tooltip with dark mode support and all values
 import React from 'react';
 
+const formatNumber = value => {
+  if (!Number.isFinite(value)) return '0';
+  return new Intl.NumberFormat('en-US').format(Math.round(value));
+};
+
+const formatCompactNumber = value => {
+  if (!Number.isFinite(value)) return '0';
+  const rounded = Math.round(value);
+  if (Math.abs(rounded) >= 10000) {
+    const inThousands = rounded / 1000;
+    if (Math.abs(inThousands) < 10) {
+      const oneDecimal = Number(inThousands.toFixed(1));
+      return `${oneDecimal}k`;
+    }
+    return `${Math.round(inThousands)}k`;
+  }
+  return formatNumber(rounded);
+};
+
 const getIsDarkMode = () => {
   if (typeof window === 'undefined' || !window.matchMedia) return false;
   return window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -11,7 +30,7 @@ const getTooltipData = (payload, label) => {
   return {
     name: data._id || data.name || label || '',
     percentage: data.percentage,
-    volunteerCount: data.value,
+    hoursValue: data.value,
     totalHours: data.totalHours !== undefined ? data.totalHours : data.value,
     change: data.change,
   };
@@ -21,13 +40,18 @@ function CustomTooltip({ active, payload, label, tooltipType }) {
   if (!active || !payload || !payload.length) return null;
 
   const isDarkMode = getIsDarkMode();
-  const { name, percentage, volunteerCount, totalHours, change } = getTooltipData(payload, label);
+  const { name, percentage, hoursValue, totalHours, change } = getTooltipData(payload, label);
   const textColor = isDarkMode ? '#fff' : '#222';
 
   const renderMainValue = () => {
-    if (tooltipType === 'hoursDistribution' && volunteerCount !== undefined) {
+    if (tooltipType === 'hoursDistribution' && hoursValue !== undefined) {
+      const exactHours = formatNumber(hoursValue);
+      const compactHours = formatCompactNumber(hoursValue);
+      const showCompactAndExact = compactHours.toLowerCase().includes('k');
       return (
-        <div style={{ color: textColor, fontWeight: 'bold' }}>Volunteers: {volunteerCount}</div>
+        <div style={{ color: textColor, fontWeight: 'bold' }}>
+          Hours: {showCompactAndExact ? `${compactHours} (${exactHours})` : exactHours}
+        </div>
       );
     }
 
@@ -58,7 +82,7 @@ function CustomTooltip({ active, payload, label, tooltipType }) {
       <div style={{ fontWeight: 'bold', marginBottom: 4, color: textColor }}>{name}</div>
       {renderMainValue()}
       {percentage !== undefined && (
-        <div style={{ color: isDarkMode ? '#90cdf4' : '#444' }}>Percentage: {percentage}</div>
+        <div style={{ color: isDarkMode ? '#90cdf4' : '#444' }}>Percentage: {percentage}%</div>
       )}
       {renderChange()}
     </div>
