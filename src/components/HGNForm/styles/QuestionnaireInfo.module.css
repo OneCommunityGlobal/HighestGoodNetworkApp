@@ -7,6 +7,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   box-shadow: 0 4px 8px rgb(0 0 0 / 10%);
 }
 
@@ -24,6 +25,9 @@
 =======
  /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
 >>>>>>> 428f1c16f (Comment out box-shadow in QuestionnaireInfo styles)
+=======
+
+>>>>>>> cb80f72d8 (Remove commented box-shadow from QuestionnaireInfo styles)
 }
 
 .questionnaireInfo h1 {
