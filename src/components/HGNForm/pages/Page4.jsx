@@ -5,7 +5,7 @@ import BackendQuestions from '../questionpages/BackendQuestions';
 import Progress from '../questionpages/Progress';
 import { useSelector } from 'react-redux';
 import styles from '../styles/hgnform.module.css';
-import { getBoxStyling, getFontColor } from '../../../styles';
+
 
 function Page4() {
   const headerRef = useRef(null);
