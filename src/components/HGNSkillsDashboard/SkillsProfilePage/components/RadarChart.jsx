@@ -1,4 +1,5 @@
 import { Radar } from 'react-chartjs-2';
+import PropTypes from 'prop-types';
 import {
   Chart as ChartJS,
   RadialLinearScale,
@@ -53,6 +54,7 @@ function RadarChart({ profileData }) {
   const frontend = skillInfo.frontend || {};
   const backend = skillInfo.backend || {};
 
+
   // Generate chart data dynamically
   const chartData = {
     labels: SKILL_MAPPINGS.map(skill => skill.label),
@@ -98,5 +100,19 @@ function RadarChart({ profileData }) {
     </div>
   );
 }
+
+RadarChart.propTypes ={
+  profileData :PropTypes.shape({
+  skillInfo: PropTypes.shape({
+    general:PropTypes.object,
+    frontend:PropTypes.object,
+    backend:PropTypes.object,
+  }),
+  }),
+};
+
+RadarChart.defaultProps={
+profileData:{},
+};
 
 export default RadarChart;
