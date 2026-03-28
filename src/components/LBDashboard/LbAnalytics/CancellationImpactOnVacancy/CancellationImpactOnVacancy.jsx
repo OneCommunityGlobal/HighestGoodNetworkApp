@@ -173,12 +173,8 @@ function CancellationImpactOnVacancy({ darkMode }) {
     <div className={`${styles.container} ${darkMode ? styles.darkContainer : ''}`}>
       <div className={styles.header}>
         <h3 className={`${styles.title} ${darkMode ? styles.darkTitle : ''}`}>
-          Vacancy Rate and Cancellation Rate{' '}
-          <span className={styles.wipTag}>(WIP Veda Charitha Bellam)</span>
+          Vacancy Rate and Cancellation Rate
         </h3>
-        <p className={`${styles.subtitle} ${darkMode ? styles.darkSubtitle : ''}`}>
-          Highlights whether cancellations drive empty nights and seasonal/pattern-based spikes. Guides price improvements.
-        </p>
       </div>
 
       <div className={`${styles.filters} ${darkMode ? styles.darkFilters : ''}`}>
