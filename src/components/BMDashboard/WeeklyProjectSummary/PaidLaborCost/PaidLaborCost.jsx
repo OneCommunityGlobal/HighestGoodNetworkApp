@@ -322,7 +322,7 @@ export default function PaidLaborCost() {
       ) : (
         <>
           {/* Filter Row */}
-          <div className={styles.paidLaborCostFilters}>
+          <div className={`${styles.paidLaborCostFilters} ${darkMode ? styles.darkMode : ''}`}>
             {/* Task Filter */}
             <div className={styles.paidLaborCostFilterGroup}>
               <label className={styles.paidLaborCostFilterLabel} htmlFor="task-filter">
@@ -373,7 +373,6 @@ export default function PaidLaborCost() {
                 value={dateMode}
                 onChange={e => {
                   setDateMode(e.target.value);
-                  // Reset date range when the date filter changes
                   setDateRange({ startDate: null, endDate: null });
                 }}
                 className={styles.paidLaborCostFilterSelect}
@@ -387,7 +386,7 @@ export default function PaidLaborCost() {
             </div>
           </div>
 
-          {/* Our Custom DateRangePicker shown in CUSTOM mode - replacing Airbnb DateRangePicker */}
+          {/* Our Custom DateRangePicker shown in CUSTOM mode */}
           {dateMode === 'CUSTOM' && (
             <div className={styles.paidLaborCostDaterangeRow}>
               <PaidLaborCostDatePicker
