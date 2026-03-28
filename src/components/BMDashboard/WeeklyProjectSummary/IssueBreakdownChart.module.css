@@ -81,14 +81,30 @@
    Responsive adjustments
    =========================== */
 
+/* Responsive design */
+@media (max-width: 768px) {
+  .container {
+    padding: 20px;
+  }
+
 /* Tablets */
 @media (max-width: 1024px) {
   .heading {
     font-size: 28px;
   }
 
+  .legend {
+    gap: 16px;
+    padding: 12px;
+  }
+
   .legendLabel {
     font-size: 18px;
+  }
+
+  .legendBox {
+    width: 18px;
+    height: 18px;
   }
 
   .chartContainer {
@@ -135,6 +151,16 @@
     width: 100%;
   }
 
+  .heading {
+    font-weight: 700;
+  }
+
+  .legendLabel {
+    font-weight: 600;
+  }
+
+  .legendBox {
+    border: 1px solid currentColor;
   /* Reduce label size and opacity instead of hiding */
   :global(.recharts-label-list text) {
     font-size: 8px;
@@ -184,6 +210,7 @@
   flex-direction: column;
 }
 
+/* Consistent spacing between label and input */
 
 /* Ensure date inputs behave same as dropdowns */
 :global(.filter .react-datepicker-wrapper) {
@@ -197,4 +224,4 @@
 
 :global(.filter .injurySelect__control) {
   width: 100%;
-}
+}}}

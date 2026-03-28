@@ -17,7 +17,7 @@
 
 .pageWrapper {
   min-height: 100vh;
-  background-color: #f5f5f5; /* Light mode page background */
+  background-color: #f5f5f5;
   width: 100%;
   padding: 0;
   margin: 0;
@@ -139,15 +139,13 @@
   font-weight: bold;
   line-height: 1.2;
   margin: auto 0;
-  /* margin-bottom: 10px; */
 }
 
 /* Container for Options (Checkbox/Radio/Dropdown) */
 .fieldOptions {
   display: flex;
-  flex-direction: column; /* Stack options vertically by default */
+  flex-direction: column;
   margin: 1px;
-  /* gap: 10px;  */
 }
 
 .fieldOptions input,
@@ -157,7 +155,7 @@
 
 /* Individual Option Item */
 .optionItem {
-  display: flex; /* Align checkbox and label on the same line */
+  display: flex;
   align-items: flex-start;
   margin: 0;
   gap: 10px;
@@ -172,7 +170,7 @@
 
 .optionItem input[type='checkbox'],
 .optionItem input[type='radio'] {
-  margin: 0; /* Ensure no extra margins around inputs */
+  margin: 0;
   background-color: black;
   width: 1em;
   height: 1em;
@@ -197,7 +195,7 @@
   transition: background-color 0.3s;
 }
 
-.addFieldButton,
+.addFieldButton:hover,
 .addOptionButton:hover {
   background-color: #45a049;
 }
@@ -206,17 +204,16 @@
 .jobSubmitButton {
   display: block;
   width: 100%;
-  /* max-width: 300px; */
-  padding: 10px;
+  padding: 16px;
   text-align: center;
   margin-top: 20px;
-  margin-left:auto;
-  margin-right:auto;
+  margin-left: auto;
+  margin-right: auto;
   background-color: #4caf50;
   color: white;
   border: none;
-  font-size: 16px;
-  border-radius: 5px;
+  font-size: 18px;
+  border-radius: 6px;
   cursor: pointer;
   transition: background-color 0.3s;
 }
@@ -225,36 +222,36 @@
   background-color: #45a049;
 }
 
-/* Dark mode styles following your collaboration component pattern */
+/* Dark mode styles */
 .darkMode {
-  background-color: #1B2A41;
+  background-color: #1b2a41;
   color: #f1f1f1;
 }
 
 .darkMode .formBuilderContainer {
-  background-color: #1B2A41;
+  background-color: #1b2a41;
   margin-top: 0;
 }
 
 .darkMode .jobformNavbar {
-  background-color: #1C2541;
+  background-color: #1c2541;
   box-shadow: 2px 2px 4px 1px black;
 }
 
 .darkMode .customForm {
-  background-color: #1B2A41;
+  background-color: #1b2a41;
 }
 
 .darkMode .newFieldSection {
-  background-color: #1B2A41;
+  background-color: #1b2a41;
 }
 
 .darkMode .jobformInput,
 .darkMode .jobformTextarea,
 .darkMode .jobformSelect {
-  background-color: #1C1C1C;
+  background-color: #1c1c1c;
   color: #f1f1f1;
-  border: 1px solid #444;
+  border: 1px solid #444444;
 }
 
 .darkMode .jobformInput::placeholder {
@@ -284,7 +281,7 @@
 
 .darkMode .formDiv {
   background: linear-gradient(135deg, #23272a, #181a1b);
-  border-color: #333;
+  border-color: #333333;
   border-radius: 5px;
   margin-bottom: 10px;
   padding: 10px;
@@ -305,25 +302,25 @@
 .darkMode .addFieldButton,
 .darkMode .addOptionButton,
 .darkMode .jobSubmitButton {
-  background-color: #333;
+  background-color: #333333;
   color: #f1f1f1;
-  border: 1px solid #444;
+  border: 1px solid #444444;
 }
 
 .darkMode .addFieldButton:hover,
 .darkMode .addOptionButton:hover,
 .darkMode .jobSubmitButton:hover {
-  background-color: #555;
+  background-color: #555555;
 }
 
 .darkMode .goButton {
-  background-color: #333;
+  background-color: #333333;
   color: #f1f1f1;
-  border: 1px solid #444;
+  border: 1px solid #444444;
 }
 
 .darkMode .goButton:hover {
-  background-color: #555;
+  background-color: #555555;
 }
 
 .darkMode .optionsList h4 {
@@ -339,4 +336,42 @@
 
 .darkMode .jobformTitle {
   color: white;
+}
+
+/* Preview label (text-style) above save button */
+.previewSection {
+  margin-top: 20px;
+  margin-bottom: 8px;
+}
+
+.previewTextButton {
+  display: inline-block;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  font-size: 18px;
+  font-weight: 400;
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: left;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.08);
+}
+
+.previewTextButton:hover {
+  background-color: #45a049;
+  text-decoration: none;
+}
+
+.saveSection {
+  margin-top: 12px;
+}
+
+.darkMode .previewTextButton {
+  background-color: #2e7d32;
+  color: #f1f1f1;
+}
+
+.darkMode .previewTextButton:hover {
+  background-color: #27692b;
 }
