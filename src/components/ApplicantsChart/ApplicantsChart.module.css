@@ -91,6 +91,11 @@
   color: #9ca3af !important;
   opacity: 1 !important;
 }
+.disabledDay {
+  color: #9ca3af !important;      /* gray */
+  pointer-events: none;
+  cursor: not-allowed;
+}
 
 :global(.text-light) :global(.hgn-datepicker-dark):focus,
 :global(.text-light) :global(.hgn-datepicker-dark):focus input,
@@ -133,7 +138,7 @@
   color: #9ca3af !important;
   opacity: 1 !important;
 }
-
+ 
 /* Dark mode styles for recharts surface */
 :global(.bg-oxford-blue) :global(.recharts-surface) {
   background-color: #1b2a41 !important;

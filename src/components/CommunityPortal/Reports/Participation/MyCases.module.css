@@ -38,7 +38,8 @@
 }
 
 .myCasesPageDark .headerActions {
-  gap: 20px; /* more room between dropdowns/buttons */
+  gap: 20px;
+  /* more room between dropdowns/buttons */
 }
 
 .sectionTitle {
@@ -65,7 +66,8 @@
 /* ---------- View Switcher ---------- */
 .viewSwitcher {
   display: flex;
-  gap: 12px; /* clean space between buttons */
+  gap: 12px;
+  /* clean space between buttons */
 }
 
 .viewSwitcher button,
@@ -110,6 +112,7 @@
   border-color: #3b82f6;
 }
 
+
 .filterWrapper {
   margin: 10px 0;
 }
@@ -120,6 +123,12 @@
   border: 1px solid #ccc;
   border-radius: 4px;
   cursor: pointer;
+}
+
+.myCasesPageDark .filterDropdown {
+  background-color: #3A506B;
+  color: #ffffff;
+  border: 1px solid #555;
 }
 
 /* Hover and focus effects for the dropdown */
@@ -167,6 +176,13 @@
   color: #f1f5f9; /* light text */
   padding: 8px 16px;
   cursor: pointer;
+}
+
+.myCasesPageDark .createNew {
+  background-color: #3A506B;
+  /* Matches other dark elements */
+  color: #ffffff;
+  border: 1px solid #555;
 }
 
 .content {
@@ -234,6 +250,32 @@
   color: #9b59b6;
 }
 
+
+.caseCardDark .eventBadge {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #e2e8f0;
+}
+
+.caseCardDark .eventBadge[data-type='Yoga Class'] {
+  background-color: rgba(40, 167, 69, 0.2);
+  color: #8fd19e;
+}
+
+.caseCardDark .eventBadge[data-type='Cooking Workshop'] {
+  background-color: rgba(231, 76, 60, 0.2);
+  color: #f1948a;
+}
+
+.caseCardDark .eventBadge[data-type='Dance Class'] {
+  background-color: rgba(243, 156, 18, 0.2);
+  color: #f7dc6f;
+}
+
+.caseCardDark .eventBadge[data-type='Fitness Bootcamp'] {
+  background-color: rgba(155, 89, 182, 0.2);
+  color: #d2b4de;
+}
+
 .eventTime {
   font-size: 14px;
   color: #555;
@@ -242,7 +284,7 @@
 
 .eventTimeDark {
   font-size: 14px;
-  color: #ffffff;
+  color: #ffffff !important;
   margin-bottom: 10px;
 }
 
@@ -257,7 +299,7 @@
   font-size: 16px;
   font-weight: bold;
   margin-bottom: 15px;
-  color: #ffffff;
+  color: #ffffff !important;
 }
 
 .attendeesInfo {
@@ -270,7 +312,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  color: #ffffff;
+  color: #ffffff !important;
 }
 
 .avatars img {
@@ -288,7 +330,7 @@
 
 .attendeesCountDark {
   font-size: 14px;
-  color: #ffffff;
+  color: #ffffff !important;
 }
 
 .rates {
@@ -381,7 +423,8 @@
 /* ---------- Expanded scroll area ---------- */
 .caseCards.expanded,
 .caseList.expanded {
-  max-height: 500px; /* enough space to show ~30 events */
+  max-height: 500px;
+  /* enough space to show ~30 events */
   overflow-y: auto;
   padding-right: 8px;
 }
