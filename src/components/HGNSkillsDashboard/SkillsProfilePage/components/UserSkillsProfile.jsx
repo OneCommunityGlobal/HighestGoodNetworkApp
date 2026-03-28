@@ -43,7 +43,7 @@ function UserSkillsProfile() {
             },
           },
         );
-        // console.log('Profile Data:', response.data);
+       
 
         const { data } = response;
         if (!data) throw new Error('Failed to fetch profile data');
