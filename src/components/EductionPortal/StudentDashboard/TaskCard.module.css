@@ -382,3 +382,181 @@
     width: 100%;
   }
 }
+
+/* Dark Mode Styles - Using global dark-mode class for consistency across builds */
+:global(.dark-mode) .taskCard {
+  background-color: #2d2d2d;
+  border-color: #404040;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+:global(.dark-mode) .taskCard:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+}
+
+:global(.dark-mode) .statusBadge {
+  background-color: #404040;
+  color: #d1d5db;
+}
+
+:global(.dark-mode) .commentsBadge {
+  background-color: #7c2d12;
+  color: #fed7aa;
+}
+
+:global(.dark-mode) .hoursMetBadge {
+  background-color: #1a4d2e;
+  color: #bbf7d0;
+}
+
+:global(.dark-mode) .pendingBadge {
+  background-color: #404040;
+  color: #d1d5db;
+}
+
+:global(.dark-mode) .completedBadge {
+  background-color: #1a4d2e;
+  color: #86efac;
+}
+
+:global(.dark-mode) .taskTitle {
+  color: #ffffff;
+}
+
+:global(.dark-mode) .taskSubtitle {
+  color: #9ca3af;
+}
+
+:global(.dark-mode) .timeInfo {
+  color: #9ca3af;
+}
+
+:global(.dark-mode) .progressInfo {
+  color: #d1d5db;
+}
+
+:global(.dark-mode) .progressBar {
+  background-color: #404040;
+}
+
+:global(.dark-mode) .progressFill {
+  background-color: #60a5fa;
+}
+
+:global(.dark-mode) .clockButton {
+  background-color: #2d2d2d;
+  border-color: #404040;
+  color: #9ca3af;
+}
+
+:global(.dark-mode) .clockButton:hover {
+  background-color: #363636;
+  border-color: #525252;
+  color: #d1d5db;
+}
+
+:global(.dark-mode) .markDoneButton {
+  background-color: #2563eb;
+  color: #ffffff;
+}
+
+:global(.dark-mode) .markDoneButton:hover:not(.disabled) {
+  background-color: #1d4ed8;
+}
+
+:global(.dark-mode) .markDoneButton.disabled {
+  background-color: #404040;
+  color: #6b7280;
+}
+
+:global(.dark-mode) .completedButton {
+  background-color: #10b981;
+  color: #ffffff;
+}
+
+:global(.dark-mode) .intermediateTasksSection {
+  border-top-color: #404040;
+}
+
+:global(.dark-mode) .toggleIntermediateButton {
+  color: #60a5fa;
+}
+
+:global(.dark-mode) .toggleIntermediateButton:hover {
+  color: #93c5fd;
+  background-color: #1e3a5f;
+}
+
+:global(.dark-mode) .noIntermediateTasks {
+  color: #9ca3af;
+}
+
+:global(.dark-mode) .intermediateTaskItem {
+  background-color: #252525;
+  border-color: #404040;
+}
+
+:global(.dark-mode) .intermediateTaskItem:hover {
+  background-color: #2a2a2a;
+}
+
+:global(.dark-mode) .intermediateTaskTitle {
+  color: #ffffff;
+}
+
+:global(.dark-mode) .intermediateTaskDescription {
+  color: #9ca3af;
+}
+
+:global(.dark-mode) .subTaskProgressBar {
+  background-color: #404040;
+}
+
+:global(.dark-mode) .subTaskProgressFill {
+  background-color: #10b981;
+}
+
+:global(.dark-mode) .subTaskProgressText {
+  color: #9ca3af;
+}
+
+:global(.dark-mode) .intermediateTaskMeta {
+  color: #9ca3af;
+}
+
+:global(.dark-mode) .intermediateTaskHours {
+  color: #d1d5db;
+}
+
+:global(.dark-mode) .intermediateTaskStatus {
+  background-color: #404040;
+  color: #d1d5db;
+}
+
+:global(.dark-mode) .intermediateTaskStatus.statuscompleted {
+  background-color: #1a4d2e;
+  color: #86efac;
+}
+
+:global(.dark-mode) .intermediateTaskStatus.statuspending {
+  background-color: #4a3a1a;
+  color: #fbbf24;
+}
+
+:global(.dark-mode) .markIntermediateDoneButton {
+  background-color: #2d2d2d;
+  border-color: #404040;
+  color: #10b981;
+}
+
+:global(.dark-mode) .markIntermediateDoneButton:hover:not(.disabled) {
+  background-color: #10b981;
+  border-color: #10b981;
+  color: #ffffff;
+}
+
+:global(.dark-mode) .markIntermediateDoneButton.disabled {
+  background-color: #252525;
+  border-color: #363636;
+  color: #525252;
+}

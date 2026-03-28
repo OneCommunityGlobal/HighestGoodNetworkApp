@@ -11,6 +11,7 @@ export default function SelectItem({
   selectedCondition,
   setSelectedCondition,
   label,
+  isDarkMode,
 }) {
   let itemSet = [];
   if (items?.length) {
@@ -23,6 +24,22 @@ export default function SelectItem({
             items
               .filter(mat => mat.project?.name === selectedProject && mat.itemType?.name)
               .map(m => m.itemType.name),
+          ),
+        ];
+      }
+    } else if (label === 'Consumables') {
+      // --- FIX: Added logic for Consumables ---
+      if (selectedProject === 'all') {
+        // Uses the 'name' field we flattened in the parent component
+        itemSet = [...new Set(items.filter(m => m.name && m.name !== 'N/A').map(m => m.name))];
+      } else {
+        itemSet = [
+          ...new Set(
+            items
+              .filter(
+                mat => mat.project?.name === selectedProject && mat.name && mat.name !== 'N/A',
+              )
+              .map(m => m.name),
           ),
         ];
       }
@@ -43,15 +60,19 @@ export default function SelectItem({
     }
   }
 
+  const darkStyle = isDarkMode
+    ? { backgroundColor: '#1e293b', color: '#e5e7eb', borderColor: '#334155' }
+    : undefined;
+
   return (
     <Form>
       <FormGroup className={styles.selectInput}>
-        <Label htmlFor="select-material">{label ? `${label}:` : 'Material:'}</Label>
+        <Label htmlFor="select-item">{label}:</Label>
 
-        <Input
+        <select
           id="select-item"
           name="select-item"
-          type="select"
+          className={styles.filterSelect}
           value={
             label === 'Condition'
               ? selectedCondition
@@ -61,13 +82,9 @@ export default function SelectItem({
           }
           onChange={e => {
             const val = e.target.value;
-            if (label === 'Tool Status') {
-              setSelectedToolStatus(val);
-            } else if (label === 'Condition') {
-              setSelectedCondition(val);
-            } else {
-              setSelectedItem(val);
-            }
+            if (label === 'Tool Status') setSelectedToolStatus(val);
+            else if (label === 'Condition') setSelectedCondition(val);
+            else setSelectedItem(val);
           }}
           disabled={!itemSet.length}
         >
@@ -76,16 +93,16 @@ export default function SelectItem({
               <option value="all" key="all-option">
                 All
               </option>
-              {itemSet.map(itemName => (
-                <option key={`item-${itemName}`} value={itemName}>
-                  {itemName}
+              {itemSet.map(item => (
+                <option key={`item-${item}`} value={item}>
+                  {item}
                 </option>
               ))}
             </>
           ) : (
             <option key="no-data">No data</option>
           )}
-        </Input>
+        </select>
       </FormGroup>
     </Form>
   );

@@ -190,6 +190,7 @@
   transition: all 0.2s ease;
   overflow: hidden;
   padding: 4px;
+  color: #1a202c;
 }
 
 .reactCalendarDarkMode :global(.react-calendar__tile) {
@@ -240,6 +241,12 @@
   transition: all 0.2s ease;
 }
 
+/* Ensure event items are readable in dark mode */
+.reactCalendarDarkMode .eventItem {
+  color: #ffffff;
+  font-weight: 600;
+}
+
 .reactCalendar .eventItem.statusNew {
   background-color: #b5f5b3;
   color: #1b5e20;
@@ -258,6 +265,27 @@
 .reactCalendar .eventItem.statusFull {
   background-color: #ffcdd2;
   color: #b71c1c;
+}
+
+/* Dark mode event item colors - use darker backgrounds with white text for better contrast */
+.reactCalendarDarkMode .eventItem.statusNew {
+  background-color: #2d5016;
+  color: #b5f5b3;
+}
+
+.reactCalendarDarkMode .eventItem.statusNeedsAttendees {
+  background-color: #1e3a5f;
+  color: #c7dfff;
+}
+
+.reactCalendarDarkMode .eventItem.statusFillingFast {
+  background-color: #5a3d0a;
+  color: #ffe3b3;
+}
+
+.reactCalendarDarkMode .eventItem.statusFull {
+  background-color: #5a1a1a;
+  color: #ffcdd2;
 }
 
 .reactCalendar .eventItem:hover {
@@ -323,6 +351,27 @@
   background-color: transparent !important;
 }
 
+/* Ensure today's date is visible in light mode */
+.reactCalendar :global(.react-calendar__tile--now) {
+  background-color: #fff3cd !important;
+  color: #856404;
+}
+
+.reactCalendar :global(.react-calendar__tile--now) :global(abbr),
+.reactCalendar :global(.react-calendar__tile--now) {
+  color: #856404 !important;
+}
+
+.reactCalendarDarkMode :global(.react-calendar__tile--now) {
+  background-color: #3d4a5c !important;
+  color: #fff;
+}
+
+.reactCalendarDarkMode :global(.react-calendar__tile--now) :global(abbr),
+.reactCalendarDarkMode :global(.react-calendar__tile--now) {
+  color: #fff !important;
+}
+
 .hasEvents {
   background: #f0f8ff;
 }
@@ -347,8 +396,12 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .eventModal {
@@ -365,14 +418,21 @@
 }
 
 @keyframes slideIn {
-  from { opacity: 0; transform: translateY(-20px) scale(0.95); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .eventModalDark {
   background: #1a202c;
   color: #e2e8f0;
   border: 1px solid #4a5568;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
 }
 
 .modalHeader {

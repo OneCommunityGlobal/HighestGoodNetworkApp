@@ -2,10 +2,10 @@
   padding: 2rem;
   max-width: 1000px;
   margin: 0 auto;
-  background-color: var(--bg-color, #ffffff);
+  background-color: var(--bg-color, #fff);
   color: var(--text-color, #333);
   border-radius: 10px;
-  box-shadow: var(--shadow, 0 2px 10px rgba(0, 0, 0, 0.1));
+  box-shadow: var(--shadow, 0 2px 10px rgb(0 0 0 / 10%));
   min-height: 100vh;
 }
 
@@ -34,7 +34,7 @@
 
 .select,
 .datepickerWrapper {
-  background-color: var(--input-bg, #ffffff);
+  background-color: var(--input-bg, #fff);
   color: var(--text-color, #333);
 }
 
@@ -44,9 +44,54 @@
   border-color: var(--focus-border-color, #3b82f6);
 }
 
+/* Force light dropdown in light mode (override any global dark select/option styles) */
+.utilizationChartContainer:not(.darkMode) .select {
+  background-color: #fff !important;
+  color: #000 !important;
+  border-color: #ccc !important;
+}
+
+.utilizationChartContainer:not(.darkMode) .select option {
+  background-color: #fff !important;
+  color: #000 !important;
+}
+
+.datepickerWrapper::placeholder {
+  color: #999;
+}
+
+/* Force light calendar when app is in light mode (datepicker renders in portal, so scope by body) */
+:global(body:not(.dark-mode)) :global(.react-datepicker) {
+  background-color: #fff;
+  color: #333;
+  border: 1px solid #ccc;
+}
+
+:global(body:not(.dark-mode)) :global(.react-datepicker__header) {
+  background-color: #f0f0f0;
+  border-bottom: 1px solid #ccc;
+}
+
+:global(body:not(.dark-mode)) :global(.react-datepicker__current-month),
+:global(body:not(.dark-mode)) :global(.react-datepicker__day-name),
+:global(body:not(.dark-mode)) :global(.react-datepicker__day) {
+  color: #333;
+}
+
+:global(body:not(.dark-mode)) :global(.react-datepicker__day:hover) {
+  background-color: #f0f0f0;
+}
+
+:global(body:not(.dark-mode)) :global(.react-datepicker__day--selected),
+:global(body:not(.dark-mode)) :global(.react-datepicker__day--in-selecting-range),
+:global(body:not(.dark-mode)) :global(.react-datepicker__day--in-range) {
+  background-color: #3b82f6;
+  color: #f0f0f0 !important;
+}
+
 .button {
-  background-color: var(--button-bg, #a0e7e5);
-  color: var(--button-text, #000);
+  background-color: var(--button-bg, #000);
+  color: var(--button-text, #fff);
   border: none;
   cursor: pointer;
   transition: background-color 0.3s ease;
@@ -54,7 +99,7 @@
 }
 
 .button:hover {
-  background-color: var(--button-hover, #72d6d3);
+  background-color: var(--button-hover, #333);
 }
 
 .utilizationChartError {
@@ -65,14 +110,47 @@
 /* ============ DARK MODE ============ */
 .utilizationChartContainer.darkMode {
   --bg-color: #1b2a41;
-  --text-color: #ffffff;
-  --title-color: #ffffff;
+  --text-color: #fff;
+  --title-color: #fff;
   --input-bg: #3a506b;
   --border-color: #4a5a77;
   --focus-border-color: #e8a71c;
   --button-bg: #e8a71c;
   --button-text: #000;
   --button-hover: #f5b13a;
-  --shadow: 0 2px 10px rgba(255, 255, 255, 0.1);
+  --shadow: 0 2px 10px rgb(255 255 255 / 10%);
   --error-color: #ff6b6b;
+}
+
+.utilizationChartContainer.darkMode .datepickerWrapper::placeholder {
+  color: #fff;
+}
+
+/* React-DatePicker Dark Mode Dropdown Styling */
+.utilizationChartContainer.darkMode :global(.react-datepicker) {
+  background-color: #333;
+  color: #e0e0e0;
+  border: 1px solid #555;
+}
+
+.utilizationChartContainer.darkMode :global(.react-datepicker__header) {
+  background-color: #444;
+  border-bottom: 1px solid #555;
+}
+
+.utilizationChartContainer.darkMode :global(.react-datepicker__current-month),
+.utilizationChartContainer.darkMode :global(.react-datepicker__day-name),
+.utilizationChartContainer.darkMode :global(.react-datepicker__day) {
+  color: #e0e0e0;
+}
+
+.utilizationChartContainer.darkMode :global(.react-datepicker__day:hover) {
+  background-color: #555;
+}
+
+.utilizationChartContainer.darkMode :global(.react-datepicker__day--selected),
+.utilizationChartContainer.darkMode :global(.react-datepicker__day--in-selecting-range),
+.utilizationChartContainer.darkMode :global(.react-datepicker__day--in-range) {
+  background-color: #e8a71c;
+  color: #000;
 }

@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-
+import { useHistory } from 'react-router-dom';
 import { fetchInvTypeByType } from '~/actions/bmdashboard/invTypeActions';
 import { fetchInvUnits } from '~/actions/bmdashboard/invUnitActions';
-import { Accordion, Card } from 'react-bootstrap';
+import { Accordion, Card, Button } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
@@ -15,12 +15,17 @@ import styles from './TypesList.module.css';
 
 export function InventoryTypesList(props) {
   const { invUnits, errors, dispatch } = props;
+  const history = useHistory();
 
   // NOTE: depend on redux action implementation
   const categories = ['Materials', 'Consumables', 'Equipments', 'Reusables', 'Tools'];
 
   const [isError, setIsError] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
+
+  const handleBack = () => {
+    history.goBack();
+  };
 
   // dispatch inventory type fetch action on load
   useEffect(() => {
@@ -94,10 +99,9 @@ export function InventoryTypesList(props) {
       </Accordion>
 
       <div className={`${styles.buttonContainer}`}>
-        {/* NOTE: should redirect to the Equipment/Tool List Page, which is not implemented yet */}
-        <a href="#back-to-previous" target="_blank" id="back-to-previous" role="button">
+        <Button variant="primary" className={`${styles.backButton}`} onClick={handleBack}>
           Back to previous list page
-        </a>
+        </Button>
       </div>
     </div>
   );

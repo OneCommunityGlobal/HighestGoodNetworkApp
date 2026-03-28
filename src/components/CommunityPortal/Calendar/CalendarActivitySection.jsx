@@ -29,7 +29,15 @@ function CalendarActivitySection() {
     },
   ];
 
-  const darkMode = useSelector(state => state.theme.darkMode);
+  const formatDate = date => {
+    if (!date) return '';
+    return date.toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  };
 
   const getSortedActivities = () => {
     const activitiesCopy = [...calendarActivities];
