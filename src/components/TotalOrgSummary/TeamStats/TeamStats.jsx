@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ENDPOINTS } from '~/utils/URL';
 import axios from 'axios';
 import Loading from '~/components/common/Loading';
@@ -13,12 +13,16 @@ function TeamStats({ isLoading, usersInTeamStats, endDate, darkMode }) {
   );
   const [teamsWithActiveMembers, setTeamsWithActiveMembers] = useState(null);
   const [teamsStatsFetchingError, setTeamsStatsFetchingError] = useState(null);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  const isDarkMode =
+    typeof darkMode === 'boolean' ? darkMode : document.body.classList.contains('dark-mode');
 
   useEffect(() => {
     const fetchTeamsData = async () => {
       try {
         const url = ENDPOINTS.VOLUNTEER_ROLES_TEAM_STATS(endDate, activeMembersMinimum);
-        // NEED TO ABSTRACT THIS TO ITS OWN REDUX REDUCER
         const response = await axios.get(url);
         const { data } = response;
         setTeamsWithActiveMembers(data.teamsWithActiveMembers);
@@ -26,8 +30,20 @@ function TeamStats({ isLoading, usersInTeamStats, endDate, darkMode }) {
         setTeamsStatsFetchingError(error);
       }
     };
+
     fetchTeamsData();
   }, [activeMembersMinimum, endDate]);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   if (isLoading) {
     return (
@@ -60,10 +76,21 @@ function TeamStats({ isLoading, usersInTeamStats, endDate, darkMode }) {
     },
   ];
 
-  function handleActiveMembersMinimumChange(event) {
-    const selectedActiveMembersMinimum = Number(event.target.value);
-    if (!selectedActiveMembersMinimum) return;
-    setActiveMembersMinimum(selectedActiveMembersMinimum);
+  const buttonStyle = {
+    backgroundColor: isDarkMode ? '#111827' : '#ffffff',
+    color: isDarkMode ? '#f8fafc' : '#111827',
+    border: isDarkMode ? '1px solid rgba(255, 255, 255, 0.20)' : '1px solid #c7c7c7',
+  };
+
+  const menuStyle = {
+    backgroundColor: isDarkMode ? '#111827' : '#ffffff',
+    color: isDarkMode ? '#f8fafc' : '#111827',
+    border: isDarkMode ? '1px solid rgba(255, 255, 255, 0.20)' : '1px solid #c7c7c7',
+  };
+
+  function handleOptionSelect(value) {
+    setActiveMembersMinimum(value);
+    setIsDropdownOpen(false);
   }
 
   return (
@@ -72,28 +99,53 @@ function TeamStats({ isLoading, usersInTeamStats, endDate, darkMode }) {
       {teamsWithActiveMembers && (
         <div className={styles.teamStatsActiveMembers}>
           <div className={styles.teamStatsBarChartSummary}>
-            <span>
+            <div className={styles.teamStatsSummaryText}>
               {`${teamsWithActiveMembers.count} ${
                 teamsWithActiveMembers.count === 1 ? 'team' : 'teams'
               } with`}
-              <select
-                onChange={handleActiveMembersMinimumChange}
-                value={activeMembersMinimum}
-                className={`${styles.teamStatsActiveMembersDropdown} ${
-                  darkMode ? styles.dropdownDark : styles.dropdownLight
-                }`}
-              >
-                {activeMembersMinimumDropDownOptions.map(activeMembersMinimumOption => (
-                  <option
-                    key={`${activeMembersMinimumOption}-dropdown`}
-                    value={activeMembersMinimumOption}
-                  >
-                    {activeMembersMinimumOption}
-                  </option>
-                ))}
-              </select>
+              <div ref={dropdownRef} className={styles.customDropdown}>
+                <button
+                  type="button"
+                  className={styles.dropdownButton}
+                  style={buttonStyle}
+                  onClick={() => setIsDropdownOpen(prev => !prev)}
+                >
+                  <span>{activeMembersMinimum}</span>
+                  <span
+                    className={`${styles.dropdownArrow} ${
+                      isDropdownOpen ? styles.dropdownArrowOpen : ''
+                    }`}
+                  />
+                </button>
+
+                {isDropdownOpen && (
+                  <ul className={styles.dropdownMenu} style={menuStyle}>
+                    {activeMembersMinimumDropDownOptions.map(option => (
+                      <li key={option}>
+                        <button
+                          type="button"
+                          className={styles.dropdownItem}
+                          style={{
+                            color: isDarkMode ? '#f8fafc' : '#111827',
+                            backgroundColor:
+                              option === activeMembersMinimum
+                                ? isDarkMode
+                                  ? 'rgba(255, 255, 255, 0.10)'
+                                  : '#f3f4f6'
+                                : 'transparent',
+                            fontWeight: option === activeMembersMinimum ? 700 : 400,
+                          }}
+                          onClick={() => handleOptionSelect(option)}
+                        >
+                          {option}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
               + active members
-            </span>
+            </div>
           </div>
         </div>
       )}

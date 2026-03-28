@@ -8,40 +8,86 @@
   font-weight: 600;
 }
 
-.teamStatsActiveMembersDropdown {
-  border: 1px solid #e0e0e0;
-  border-radius: 5px;
+.teamStatsSummaryText {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  flex-wrap: wrap;
+}
+
+.customDropdown {
+  position: relative;
+  display: inline-block;
   margin: 0 0.3rem;
-  font-size: 1.05em;
-  padding: 2px 28px 2px 8px;
-  background-repeat: no-repeat;
-  background-position: right 8px center;
-  background-size: 12px;
+}
+
+.dropdownButton {
+  min-width: 72px;
+  height: 32px;
+  padding: 0 0.7rem;
+  border-radius: 5px;
+  font-size: 1em;
+  font-family: inherit;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
   cursor: pointer;
-}
-
-.teamStatsActiveMembersDropdown:focus {
+  box-sizing: border-box;
+  vertical-align: middle;
   outline: none;
+  box-shadow: none;
+  appearance: none;
+  background-image: none;
 }
 
-.dropdownDark {
-  background-color: #111827 !important;
-  color: #f8fafc !important;
-  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+.dropdownButton:focus {
+  outline: none;
+  box-shadow: none;
 }
 
-.dropdownLight {
-  background-color: #ffffff !important;
-  color: #111827 !important;
-  border: 1px solid #e0e0e0 !important;
+.dropdownArrow {
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid currentcolor;
+  border-bottom: 2px solid currentcolor;
+  transform: rotate(45deg) translateY(-1px);
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
 }
 
-.teamStatsActiveMembersDropdown option {
-  color: #111827;
-  background-color: #ffffff;
+.dropdownArrowOpen {
+  transform: rotate(-135deg) translateY(-1px);
 }
 
-.dropdownDark option {
-  color: #f8fafc;
-  background-color: #111827;
+.dropdownMenu {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 0;
+  min-width: 100%;
+  margin: 0;
+  padding: 0.3rem 0;
+  list-style: none;
+  border-radius: 6px;
+  z-index: 999;
+  max-height: 180px;
+  overflow-y: auto;
+  box-sizing: border-box;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.dropdownMenu::-webkit-scrollbar {
+  display: none; 
+}
+
+.dropdownItem {
+  width: 100%;
+  padding: 0.45rem 0.7rem;
+  text-align: left;
+  border: none;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
 }
