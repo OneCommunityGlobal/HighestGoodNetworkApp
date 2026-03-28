@@ -6,6 +6,8 @@ import CalendarActivitySection from './CalendarActivitySection';
 import styles from './CommunityCalendar.module.css';
 import axios from 'axios';
 import { ENDPOINTS } from '../../../utils/URL';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faClock, faLocationDot, faTag, faCircleCheck } from '@fortawesome/free-solid-svg-icons';
 
 const STATUSES = ['New', 'Needs Attendees', 'Filling Fast', 'Full Event'];
 const EVENT_TYPES = ['Workshop', 'Meetup', 'Lecture', 'Social'];
@@ -36,7 +38,6 @@ export default function CommunityCalendar() {
         setEvents(response.data.events || []);
       } catch (err) {
         setError('Failed to load events');
-        console.error('Error fetching calendar events:', err);
       } finally {
         setIsLoading(false);
       }
@@ -46,15 +47,38 @@ export default function CommunityCalendar() {
 
   const mappedEvents = useMemo(() => {
     return events.map(event => {
-      const eventDate = new Date(event.date);
-      const timeString = eventDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const eventDateTime = new Date(event.startTime);
+      const timeString = new Intl.DateTimeFormat('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      }).format(eventDateTime);
+
+      const eventEndTime = new Date(event.endTime);
+      const endTimeString = new Intl.DateTimeFormat('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      }).format(eventEndTime);
+
+      const eventDate = new Date(
+        new Intl.DateTimeFormat('en-US', {
+          timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+        }).format(eventDateTime),
+      );
 
       return {
         ...event,
         date: eventDate,
         type: event.type || 'General',
         status: event.status || 'New',
-        time: event.time || timeString,
+        time: timeString,
+        endTime: endTimeString,
         description: event.description || `Join us for ${event.title}`,
         // Ensure location is present or default
         location: event.location || 'Online',
@@ -548,10 +572,35 @@ export default function CommunityCalendar() {
                             <div>
                               <h3>{event.title}</h3>
                               <div className={styles.selectedEventMeta}>
-                                <span>{event.time}</span>
-                                <span>{event.location}</span>
-                                <span>{event.type}</span>
-                                <span>{event.status}</span>
+                                <ul className={styles.selectedEventMeta}>
+                                  <li className={styles.metaItem}>
+                                    <FontAwesomeIcon icon={faClock} className={styles.metaIcon} />
+                                    <span>
+                                      {event.time} - {event.endTime}
+                                    </span>
+                                  </li>
+
+                                  <li className={styles.metaItem}>
+                                    <FontAwesomeIcon
+                                      icon={faLocationDot}
+                                      className={styles.metaIcon}
+                                    />
+                                    <span>{event.location}</span>
+                                  </li>
+
+                                  <li className={styles.metaItem}>
+                                    <FontAwesomeIcon icon={faTag} className={styles.metaIcon} />
+                                    <span>{event.type}</span>
+                                  </li>
+
+                                  <li className={styles.metaItem}>
+                                    <FontAwesomeIcon
+                                      icon={faCircleCheck}
+                                      className={styles.metaIcon}
+                                    />
+                                    <span>{event.status}</span>
+                                  </li>
+                                </ul>
                               </div>
                             </div>
                             <button
@@ -640,7 +689,7 @@ export default function CommunityCalendar() {
                   ['Type', selectedEvent.type],
                   ['Location', selectedEvent.location],
                   ['Date', selectedEvent.date.toLocaleDateString()],
-                  ['Time', selectedEvent.time],
+                  ['Time', `${selectedEvent.time} - ${selectedEvent.endTime}`],
                 ].map(([label, value]) => (
                   <div key={label} className={styles.detailItem}>
                     <span className={styles.detailLabel}>{label}:</span>
