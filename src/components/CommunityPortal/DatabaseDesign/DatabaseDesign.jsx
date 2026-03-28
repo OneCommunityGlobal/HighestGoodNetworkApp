@@ -550,8 +550,7 @@ return (
                   )}
 
                   <div className={styles.eventActions}>
-                    {currentAttendees >= capacity ||
-                    alreadyJoined ? (
+                    {currentAttendees >= capacity || alreadyJoined ? (
                       <button
                         onClick={() =>
                           alreadyJoined
