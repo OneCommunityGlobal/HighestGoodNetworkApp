@@ -3,6 +3,10 @@ import styles from '../styles/LeftSection.module.css';
 import profilePic from './profile.jpg';
 import { getFontColor } from '../../../../styles';
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> acd37622a (Refactor LeftSection component to remove props)
 function LeftSection() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const profileData = useSelector(state => state.userSkills.profileData);
