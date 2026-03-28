@@ -469,7 +469,7 @@ function DatabaseDesign() {
                   )}
 
                   <div className={styles.eventActions}>
-                    {event.status === 'Full' || event.waitlistEnabled ? (
+                    {currentAttendees >= capacity || alreadyJoined ? (
                       <button
                         onClick={() =>
                           alreadyJoined
@@ -477,10 +477,7 @@ function DatabaseDesign() {
                             : handleJoinWaitlist(event._id || event.id)
                         }
                         className={styles.actionButton}
-                        disabled={
-                          actionLoading[`waitlist-${event._id || event.id}`] ||
-                          (!userId && !alreadyJoined)
-                        }
+                        disabled={actionLoading[`waitlist-${event._id || event.id}`] || !userId}
                       >
                         {actionLoading[`waitlist-${event._id || event.id}`] ? (
                           <>
