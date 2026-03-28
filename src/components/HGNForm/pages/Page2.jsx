@@ -5,7 +5,7 @@ import QuestionnaireHeader from '../questionpages/QuestionnaireHeader';
 import GeneralQuestions from '../questionpages/GeneralQuestions';
 import styles from '../styles/hgnform.module.css';
 import { useSelector } from 'react-redux';
-import { getBoxStyling, getFontColor } from '../../../styles';
+
 
 function Page2() {
   const darkMode = useSelector(state => state.theme.darkMode);
