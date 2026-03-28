@@ -1,17 +1,17 @@
-import { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { toast } from 'react-toastify';
-import { useHistory, useParams, useLocation } from 'react-router-dom';
+import jwtDecode from 'jwt-decode';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useHistory, useLocation, useParams } from 'react-router-dom';
 import { ClipLoader } from 'react-spinners';
+import { toast } from 'react-toastify';
+import config from '~/config.json';
 import httpService from '~/services/httpService';
 import { ENDPOINTS } from '~/utils/URL';
+import styles from '../styles/UserSkillsProfile.module.css';
 import LeftSection from './LeftSection';
 import RightSection from './RightSection';
-import styles from '../styles/UserSkillsProfile.module.css';
-import jwtDecode from 'jwt-decode';
-import config from '~/config.json';
 
-function UserSkillsProfile() {
+export default function UserSkillsProfile() {
   const { userId: routeUserId } = useParams();
   const dispatch = useDispatch();
   const [profileData, setProfileData] = useState(null);
@@ -19,7 +19,7 @@ function UserSkillsProfile() {
   const [error, setError] = useState(null);
   const history = useHistory();
   const location = useLocation();
-  const darkMode = useSelector(state => state.theme.darkMode);
+  const darkMode = useSelector(state => state?.theme?.darkMode);
 
   // Fetch data from backend on component mount
   useEffect(() => {
@@ -80,7 +80,10 @@ function UserSkillsProfile() {
         }
 
         // Send data to Redux store
-        dispatch({ type: 'SET_USER_SKILLS_PROFILE_DATA', payload: data });
+        dispatch({
+          type: 'SET_USER_SKILLS_PROFILE_DATA',
+          payload: { ...data, loggedInUserId: decodedUserId },
+        });
 
         setProfileData(data);
         setLoading(false);
@@ -136,13 +139,10 @@ function UserSkillsProfile() {
 
   return (
     <div className={`${styles.userProfileHome} ${darkMode ? 'dark-mode' : ''}`}>
-      <div className={`${styles.dashboardContainer}`}>
+      <div className={styles.dashboardContainer}>
         <LeftSection />
-        <div className={`${styles.verticalSeparator}`} />
         <RightSection />
       </div>
     </div>
   );
 }
-
-export default UserSkillsProfile;

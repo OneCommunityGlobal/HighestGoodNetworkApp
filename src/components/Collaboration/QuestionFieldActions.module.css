@@ -15,7 +15,9 @@
   gap: 5px;
 }
 
-.cloneButton, .moveButton, .deleteButton {
+.cloneButton,
+.moveButton,
+.deleteButton {
   padding: 3px 8px;
   border: none;
   border-radius: 3px;
@@ -46,7 +48,7 @@ button:disabled {
 
 button:not(:disabled):hover {
   opacity: 0.8;
-} 
+}
 
 .editButton {
   background-color: #2196f3;
@@ -62,4 +64,3 @@ button:not(:disabled):hover {
 .editButton:hover {
   opacity: 0.8;
 }
-

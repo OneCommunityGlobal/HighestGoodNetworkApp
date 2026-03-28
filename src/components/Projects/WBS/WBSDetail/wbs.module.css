@@ -35,6 +35,23 @@
   z-index: -50;
   opacity: 0.1;
 }
+
+:global(.tox-tinymce-aux) {
+  z-index: 1000 !important;
+  position: absolute !important; 
+  pointer-events: none !important;
+  height: 0px !important; 
+  overflow: visible !important;
+}
+
+:global(.tox-tinymce-aux .tox-pop),
+:global(.tox-tinymce-aux .tox-menu),
+:global(.tox-tinymce-aux .tox-toolbar__overflow),
+:global(.tox-tinymce-aux .tox-tooltip) {
+  pointer-events: auto !important;
+  z-index: 1060 !important;
+}
+
 .load {
   position: relative;
 }

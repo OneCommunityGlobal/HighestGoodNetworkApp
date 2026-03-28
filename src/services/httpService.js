@@ -9,7 +9,7 @@ if (axios.defaults && axios.defaults.headers && axios.defaults.headers.post) {
 if (axios.interceptors && axios.interceptors.response && axios.interceptors.response.use) {
   axios.interceptors.response.use(null, error => {
     if (!(error.response && error.response.status >= 400 && error.response.status <= 500)) {
-      logService.log(error);
+      logService.logError(error);
       toast.error('An unexpected error occurred.');
     }
     return Promise.reject(error);
