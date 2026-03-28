@@ -4,6 +4,8 @@
   background-color: var(--bg-color);
   color: var(--text-color);
   transition: background-color 0.3s ease, color 0.3s ease;
+  /* Prevents fixed scroll-to-top button from obscuring bottom content */
+  padding-bottom: 80px;
 }
 
 .weeklyProjectSummaryContainer html,
@@ -377,6 +379,14 @@
   transition: all 0.3s ease;
 }
 
+/* ---------------- MATERIAL CONSUMPTION GRID ---------------- */
+.materialConsumptionGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  width: 100%;
+}
+
 /* ---------------- TOOLS TRACKING LAYOUT ---------------- */
 .toolsTrackingLayout {
   display: grid;
@@ -680,6 +690,13 @@
   }
 }
 
+/* Tablet Screens — collapse Material Consumption chart grid to single column for readability */
+@media (max-width: 1080px) {
+  .materialConsumptionGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* Small Screens */
 @media (max-width: 768px) {
   .weeklySummaryHeaderContainer {
@@ -740,6 +757,10 @@
     min-height: 500px;
   }
   
+  .materialConsumptionGrid {
+    grid-template-columns: 1fr;
+  }
+
   .toolsTrackingLayout {
     grid-template-columns: 1fr;
   }
