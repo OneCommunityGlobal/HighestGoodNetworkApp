@@ -23,6 +23,49 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 // are not affected by the datalabels plugin by default.
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
+const PROJECT_COLORS = [
+  { background: 'rgba(37, 99, 235, 0.82)', border: '#1d4ed8' },
+  { background: 'rgba(5, 150, 105, 0.82)', border: '#047857' },
+  { background: 'rgba(217, 119, 6, 0.82)', border: '#b45309' },
+  { background: 'rgba(220, 38, 38, 0.82)', border: '#b91c1c' },
+  { background: 'rgba(124, 58, 237, 0.82)', border: '#7c3aed' },
+  { background: 'rgba(8, 145, 178, 0.82)', border: '#0e7490' },
+  { background: 'rgba(190, 24, 93, 0.82)', border: '#be185d' },
+  { background: 'rgba(101, 163, 13, 0.82)', border: '#4d7c0f' },
+];
+
+const DARK_PROJECT_COLORS = [
+  { background: 'rgba(96, 165, 250, 0.88)', border: '#bfdbfe' },
+  { background: 'rgba(52, 211, 153, 0.88)', border: '#a7f3d0' },
+  { background: 'rgba(251, 191, 36, 0.88)', border: '#fde68a' },
+  { background: 'rgba(248, 113, 113, 0.88)', border: '#fecaca' },
+  { background: 'rgba(167, 139, 250, 0.88)', border: '#ddd6fe' },
+  { background: 'rgba(34, 211, 238, 0.88)', border: '#a5f3fc' },
+  { background: 'rgba(244, 114, 182, 0.88)', border: '#fbcfe8' },
+  { background: 'rgba(163, 230, 53, 0.88)', border: '#d9f99d' },
+];
+
+function getProjectColor(index, darkMode) {
+  const palette = darkMode ? DARK_PROJECT_COLORS : PROJECT_COLORS;
+  return palette[index % palette.length];
+}
+
+function getArrayPayload(payload) {
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload?.data)) return payload.data;
+  if (Array.isArray(payload?.results)) return payload.results;
+  return [];
+}
+
+function getRequestErrorMessage(error, fallbackMessage) {
+  return (
+    error?.response?.data?.error ||
+    error?.response?.data?.message ||
+    error?.message ||
+    fallbackMessage
+  );
+}
+
 export default function ReturnedLateChart() {
   const chartRef = useRef(null);
   const [loading, setLoading] = useState(true);
@@ -42,6 +85,11 @@ export default function ReturnedLateChart() {
   const [detailLoading, setDetailLoading] = useState(false);
   const darkMode = useSelector(state => state.theme.darkMode);
   const [sortOption, setSortOption] = useState('DESC');
+  const isMultiProjectView = selectedProject === 'All';
+  const maxChartValue = Math.max(
+    0,
+    ...chartData.datasets.flatMap(dataset => dataset.data.filter(value => value != null)),
+  );
 
   const sortToolsData = data => {
     const sorted = [...data];
@@ -66,32 +114,43 @@ export default function ReturnedLateChart() {
     const fetchInitial = async () => {
       try {
         setLoading(true);
-        try {
-          const projectsRes = await axios.get(ENDPOINTS.BM_TOOLS_RETURNED_LATE_PROJECTS, {
-            headers: {
-              Authorization: localStorage.getItem('token'),
-            },
-          });
-          if (projectsRes.data && projectsRes.data.success) {
-            const projects = projectsRes.data.data || [];
-            setAvailableProjects(projects);
-          }
-          const toolsRes = await axios.get(ENDPOINTS.BM_TOOLS_RETURNED_LATE, {
-            headers: {
-              Authorization: localStorage.getItem('token'),
-            },
-          });
-          if (toolsRes.data && toolsRes.data.success && toolsRes.data.data) {
-            const data = toolsRes.data.data || [];
-            setRawToolsData(data);
-            const tools = Array.from(new Set(data.map(d => d.toolName))).filter(Boolean);
-            setAvailableTools(tools.map(t => ({ label: t, value: t })));
-          }
-        } catch (e) {
-          setError('Failed to fetch initial data');
+        const headers = {
+          Authorization: localStorage.getItem('token'),
+        };
+        const [projectsResult, toolsResult] = await Promise.allSettled([
+          axios.get(ENDPOINTS.BM_TOOLS_RETURNED_LATE_PROJECTS, { headers }),
+          axios.get(ENDPOINTS.BM_TOOLS_RETURNED_LATE, { headers }),
+        ]);
+
+        let didLoadAnyData = false;
+
+        if (projectsResult.status === 'fulfilled') {
+          const projects = getArrayPayload(projectsResult.value.data);
+          setAvailableProjects(projects);
+          didLoadAnyData = didLoadAnyData || projects.length > 0;
+        }
+
+        if (toolsResult.status === 'fulfilled') {
+          const data = getArrayPayload(toolsResult.value.data);
+          const tools = Array.from(new Set(data.map(d => d.toolName))).filter(Boolean);
+          setAvailableTools(tools.map(t => ({ label: t, value: t })));
+          didLoadAnyData = didLoadAnyData || data.length > 0;
+        }
+
+        if (!didLoadAnyData) {
+          const projectError =
+            projectsResult.status === 'rejected'
+              ? getRequestErrorMessage(projectsResult.reason, 'Failed to load projects')
+              : null;
+          const toolsError =
+            toolsResult.status === 'rejected'
+              ? getRequestErrorMessage(toolsResult.reason, 'Failed to load chart data')
+              : null;
+
+          setError(projectError || toolsError || 'Failed to fetch initial data');
         }
       } catch (e) {
-        setError('Error loading dashboard data');
+        setError(getRequestErrorMessage(e, 'Error loading dashboard data'));
       } finally {
         setLoading(false);
       }
@@ -122,24 +181,92 @@ export default function ReturnedLateChart() {
             Authorization: localStorage.getItem('token'),
           },
         });
-        const data = (res.data && (res.data.data || res.data)) || [];
+        const data = getArrayPayload(res.data);
         const normalized = data.map(item => ({
           toolName: item.toolName || item.toolNameName || item.name || '',
           percentLate: Number(item.percentLate || item.percent || item.value || 0),
+          projectId: item.projectId || '',
+          projectName: item.projectName || '',
+          totalReturns: Number(item.totalReturns || 0),
+          lateReturns: Number(item.lateReturns || 0),
         }));
+        setRawToolsData(normalized);
 
         const sortedData = sortToolsData(normalized);
+        const uniqueToolNames = [...new Set(sortedData.map(item => item.toolName))];
+        const projectNameById = availableProjects.reduce((acc, project) => {
+          acc[project.projectId] = project.projectName;
+          return acc;
+        }, {});
 
-        setChartData({
-          labels: sortedData.map(item => item.toolName),
-          datasets: [
-            {
-              label: '% Returned Late',
-              data: sortedData.map(item => item.percentLate),
-              backgroundColor: 'rgba(53,162,235,0.7)',
-            },
-          ],
-        });
+        if (selectedProject === 'All') {
+          const projectNames = [
+            ...new Map(
+              sortedData
+                .filter(item => item.projectId)
+                .map(item => [
+                  item.projectId,
+                  item.projectName || projectNameById[item.projectId] || 'Unknown Project',
+                ]),
+            ).entries(),
+          ];
+
+          const datasets = projectNames.length
+            ? projectNames.map(([projectId, projectName], index) => {
+                const projectColor = getProjectColor(index, darkMode);
+                const projectDataMap = sortedData
+                  .filter(item => item.projectId === projectId)
+                  .reduce((acc, item) => {
+                    acc[item.toolName] = item.percentLate;
+                    return acc;
+                  }, {});
+
+                return {
+                  label: projectName,
+                  projectId,
+                  data: uniqueToolNames.map(toolName => projectDataMap[toolName] ?? null),
+                  backgroundColor: projectColor.background,
+                  borderColor: projectColor.border,
+                  borderWidth: 1,
+                };
+              })
+            : [
+                {
+                  label: '% Returned Late',
+                  projectId: '',
+                  data: uniqueToolNames.map(
+                    toolName =>
+                      sortedData.find(item => item.toolName === toolName)?.percentLate ?? 0,
+                  ),
+                  backgroundColor: getProjectColor(0, darkMode).background,
+                  borderColor: getProjectColor(0, darkMode).border,
+                  borderWidth: 1,
+                },
+              ];
+
+          setChartData({
+            labels: uniqueToolNames,
+            datasets,
+          });
+        } else {
+          setChartData({
+            labels: uniqueToolNames,
+            datasets: [
+              {
+                label:
+                  availableProjects.find(project => project.projectId === selectedProject)
+                    ?.projectName || '% Returned Late',
+                projectId: selectedProject,
+                data: uniqueToolNames.map(
+                  toolName => sortedData.find(item => item.toolName === toolName)?.percentLate ?? 0,
+                ),
+                backgroundColor: getProjectColor(0, darkMode).background,
+                borderColor: getProjectColor(0, darkMode).border,
+                borderWidth: 1,
+              },
+            ],
+          });
+        }
       } catch (err) {
         const errorMessage =
           err.response?.data?.error ||
@@ -152,21 +279,24 @@ export default function ReturnedLateChart() {
       }
     };
     fetchData();
-  }, [selectedProject, dateRange, selectedTools, sortOption]);
+  }, [availableProjects, darkMode, selectedProject, dateRange, selectedTools, sortOption]);
 
   const handleBarClick = useCallback(
     (event, elements) => {
       if (!elements || !elements.length) return;
 
-      const index = elements[0].index;
+      const { index, datasetIndex } = elements[0];
       const toolName = chartData.labels[index];
-
-      const toolDetail = rawToolsData.find(t => t.toolName === toolName);
+      const dataset = chartData.datasets[datasetIndex];
+      const projectId = dataset?.projectId || '';
+      const toolDetail = rawToolsData.find(
+        t => t.toolName === toolName && (!projectId || t.projectId === projectId),
+      );
 
       setSelectedToolDetail(toolDetail || null);
       setDetailOpen(true);
     },
-    [chartData.labels, rawToolsData],
+    [chartData.datasets, chartData.labels, rawToolsData],
   );
 
   const options = useMemo(() => {
@@ -181,7 +311,19 @@ export default function ReturnedLateChart() {
         intersect: true,
       },
       plugins: {
-        legend: { display: false },
+        legend: {
+          display: isMultiProjectView && chartData.datasets.length > 1,
+          position: 'top',
+          align: 'end',
+          labels: {
+            color: textColor,
+            usePointStyle: true,
+            pointStyle: 'rectRounded',
+            boxWidth: 14,
+            boxHeight: 14,
+            padding: 16,
+          },
+        },
         title: {
           display: false,
         },
@@ -195,9 +337,24 @@ export default function ReturnedLateChart() {
         },
         tooltip: {
           callbacks: {
+            title(tooltipItems) {
+              return tooltipItems[0]?.label || '';
+            },
             label(context) {
               const v = context.parsed.y;
-              return `${v}%`;
+              const label = context.dataset.label;
+              return `${label}: ${v}%`;
+            },
+            afterLabel(context) {
+              const toolDetail = rawToolsData.find(
+                item =>
+                  item.toolName === context.label &&
+                  (!context.dataset.projectId || item.projectId === context.dataset.projectId),
+              );
+
+              if (!toolDetail) return '';
+
+              return `Late ${toolDetail.lateReturns} / ${toolDetail.totalReturns} returns`;
             },
           },
         },
@@ -226,11 +383,11 @@ export default function ReturnedLateChart() {
             color: textColor,
             callback: v => `${v}%`,
           },
-          max: Math.max(...(chartData.datasets[0]?.data || [0])) * 1.15,
+          max: maxChartValue > 0 ? maxChartValue * 1.15 : 100,
         },
       },
     };
-  }, [chartData, darkMode, handleBarClick]);
+  }, [chartData, darkMode, handleBarClick, isMultiProjectView, maxChartValue, rawToolsData]);
 
   const handleProjectChange = e => setSelectedProject(e.target.value);
   const handleStartDateChange = date =>
@@ -244,7 +401,14 @@ export default function ReturnedLateChart() {
 
   return (
     <div className={`${styles['returned-late-chart']} ${isOxfordBlue}`}>
-      <h1 className={darkMode ? 'text-white' : ''}>Percent of Tools Returned Late</h1>
+      <div className={styles['returned-late-header-row']}>
+        <h1 className={darkMode ? 'text-white' : ''}>Percent of Tools Returned Late</h1>
+        {isMultiProjectView && chartData.datasets.length > 1 && (
+          <p className={`${styles['returned-late-legend-hint']} ${darkMode ? 'text-white' : ''}`}>
+            Click legend items to show or hide project bars.
+          </p>
+        )}
+      </div>
       <div className={styles['returned-late-filters']}>
         <div className={styles['returned-late-filter-group']}>
           <label
@@ -388,8 +552,13 @@ export default function ReturnedLateChart() {
             {!detailLoading && selectedToolDetail && !selectedToolDetail.error && (
               <>
                 <h3>{selectedToolDetail.toolName}</h3>
-                <p>Total Checkouts: {selectedToolDetail.totalCheckouts ?? '—'}</p>
+                {selectedToolDetail.projectName && <p>Project: {selectedToolDetail.projectName}</p>}
+                <p>Total Returns: {selectedToolDetail.totalReturns ?? '—'}</p>
                 <p>Late Returns: {selectedToolDetail.percentLate}%</p>
+                <p>
+                  Return Summary: {selectedToolDetail.lateReturns ?? 0} /{' '}
+                  {selectedToolDetail.totalReturns ?? 0}
+                </p>
                 <p>
                   Average Delay:{' '}
                   {selectedToolDetail.avgDelayDays != null

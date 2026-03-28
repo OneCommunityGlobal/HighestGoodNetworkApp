@@ -2,11 +2,26 @@
   padding: 20px;
 }
 
+.returned-late-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
 .returned-late-chart h1 {
   margin-bottom: 20px;
   color: #333;
   font-size: 24px;
   font-weight: bold;
+}
+
+.returned-late-legend-hint {
+  margin: 4px 0 20px;
+  color: #475569;
+  font-size: 14px;
+  font-weight: 500;
 }
 
 .returned-late-filters {
@@ -83,7 +98,7 @@
 .returned-late-detail-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.25);
+  background: rgb(0 0 0 / 25%);
    z-index: 2147483646;
 }
 
@@ -95,14 +110,14 @@
   height: 100vh;
   padding: 20px;
   z-index: 2147483647;
-  box-shadow: -4px 0 10px rgba(0, 0, 0, 0.4);
-  background: #ffffff;
-  color: #111111;
+  box-shadow: -4px 0 10px rgb(0 0 0 / 40%);
+  background: #fff;
+  color: #111;
 }
 
 .dark-panel {
   background: #0b2545;
-  color: #ffffff;
+  color: #fff;
 }
 
 .returned-late-detail-close {
@@ -113,68 +128,84 @@
   cursor: pointer;
   color: inherit;
 }
+
 :global(html.dark-mode) .returned-late-chart h1,
 :global(body.dark-mode) .returned-late-chart h1 {
-  color: #ffffff;
+  color: #fff;
+}
+
+:global(html.dark-mode) .returned-late-legend-hint,
+:global(body.dark-mode) .returned-late-legend-hint {
+  color: #cbd5e1;
 }
 
 :global(html.dark-mode) .returned-late-filter-label,
 :global(body.dark-mode) .returned-late-filter-label {
-  color: #ffffff;
+  color: #fff;
 }
 
 :global(html.dark-mode) .returned-late-project-select,
 :global(body.dark-mode) .returned-late-project-select {
   background-color: #1e293b;
-  color: #ffffff;
+  color: #fff;
   border: 1px solid #475569;
 }
 
 :global(html.dark-mode) .returned-late-project-select option,
 :global(body.dark-mode) .returned-late-project-select option {
   background-color: #1e293b;
-  color: #ffffff;
+  color: #fff;
 }
 
 :global(html.dark-mode) .returned-late-date-picker,
 :global(body.dark-mode) .returned-late-date-picker {
   background-color: #1e293b;
-  color: #ffffff;
+  color: #fff;
   border: 1px solid #475569;
 }
 
 :global(html.dark-mode) .returned-late-tools-select :global(.dropdown-container),
 :global(body.dark-mode) .returned-late-tools-select :global(.dropdown-container) {
   background-color: #1e293b;
-  color: #ffffff;
+  color: #fff;
   border: 1px solid #475569;
 }
 
 :global(html.dark-mode) .returned-late-tools-select :global(.dropdown-heading),
 :global(body.dark-mode) .returned-late-tools-select :global(.dropdown-heading) {
-  color: #ffffff;
+  color: #fff;
 }
 
 :global(html.dark-mode) .returned-late-tools-select :global(.select-panel),
 :global(body.dark-mode) .returned-late-tools-select :global(.select-panel) {
   background-color: #1e293b;
-  color: #ffffff;
+  color: #fff;
   border: 1px solid #475569;
 }
 
 :global(html.dark-mode) .returned-late-tools-select :global(.select-panel) :global(input),
 :global(body.dark-mode) .returned-late-tools-select :global(.select-panel) :global(input) {
   background-color: #0f172a;
-  color: #ffffff;
+  color: #fff;
   border: 1px solid #475569;
 }
 
 :global(html.dark-mode) .returned-late-tools-select :global(.select-item),
 :global(body.dark-mode) .returned-late-tools-select :global(.select-item) {
-  color: #ffffff;
+  color: #fff;
 }
 
 :global(html.dark-mode) .returned-late-tools-select :global(.select-item:hover),
 :global(body.dark-mode) .returned-late-tools-select :global(.select-item:hover) {
   background-color: #243b64;
+}
+
+@media screen and (width <= 768px) {
+  .returned-late-chart h1 {
+    margin-bottom: 8px;
+  }
+
+  .returned-late-legend-hint {
+    margin-top: 0;
+  }
 }
