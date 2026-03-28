@@ -23,7 +23,7 @@ function Page3() {
 =======
 import { useSelector } from 'react-redux';
 import styles from '../styles/hgnform.module.css';
-import { getBoxStyling, getFontColor } from '../../../styles';
+
 
 function Page3() {
   const headerRef = useRef(null);
