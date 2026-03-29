@@ -296,7 +296,7 @@ class Teams extends React.PureComponent {
           members={members}
           fetching={membersFetching}
           onDeleteClick={this.onDeleteTeamMember}
-          usersdata={this.props.state?.allUserProfiles || []}
+          usersdata={this.props.state?.allUserProfiles?.userProfiles || []}
           onAddUser={this.onAddUser}
           teamData={selectedTeamData}
           onUpdateTeamMemberVisibility={this.onUpdateTeamMemberVisibility}
@@ -344,8 +344,10 @@ class Teams extends React.PureComponent {
     toast.success('Member added successfully!');
   };
 
-  onUpdateTeamMemberVisibility = (userId, visibility) => {
-    this.props.updateTeamMemeberVisibility(this.state.selectedTeamId, userId, visibility);
+  onUpdateTeamMemberVisibility = async (userId, visibility) => {
+    await this.props.updateTeamMemeberVisibility(this.state.selectedTeamId, userId, visibility);
+    const freshMembers = await this.props.getTeamMembers(this.state.selectedTeamId);
+    this.setState({ selectedTeamMembers: freshMembers || [] });
   };
 
   // NOTE: Team component calls (id, name, code) and we open immediately
@@ -501,8 +503,15 @@ Teams.propTypes = {
     theme: PropTypes.shape({
       darkMode: PropTypes.bool,
     }),
-    teamsTeamMembers: PropTypes.array,
-    allUserProfiles: PropTypes.array,
+    teamsTeamMembers: PropTypes.shape({
+      teamMembers: PropTypes.array,
+      fetching: PropTypes.bool,
+      fetched: PropTypes.bool,
+      status: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    }),
+    allUserProfiles: PropTypes.shape({
+      userProfiles: PropTypes.array,
+    }),
   }).isRequired,
 
   // actions (all required by usage)
