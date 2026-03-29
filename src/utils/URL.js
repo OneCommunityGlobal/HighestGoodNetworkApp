@@ -582,6 +582,11 @@ export const ENDPOINTS = {
   // Kitchen and Inventory Management endpoints
   KI_CALENDAR_EVENTS: (month, year) => `${APIEndpoint}/kitchenandinventory/calendar?month=${month}&year=${year}`,
 
+  //PM Dashboard Certification endpoints
+  PM_EDUCATOR_CERTIFICATIONS: ()=> `${APIEndpoint}/pm/educators/certifications`,
+  PM_CERTIFICATIONS: () => `${APIEndpoint}/pm/certifications`,
+  PM_ASSIGN_CERTIFICATIONS: (educatorId) => `${APIEndpoint}/pm/educators/${encodeURIComponent(educatorId)}/certifications` 
+
 };
 
 export const ApiEndpoint = APIEndpoint;

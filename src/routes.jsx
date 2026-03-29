@@ -275,6 +275,8 @@ const EnhancedPopularityTimelineChart = lazy(() =>
 );
 // PR Analytics Dashboard
 import ReviewsInsight from './components/PRAnalyticsDashboard/ReviewsInsight/ReviewsInsight';
+import EducatorTrainingDashboard from './components/EductionPortal/ProjectManager/EducatorTrainingDashboard';
+
 import ProjectsGlobalDistribution from './components/ProjectsGlobalDistribution/ProjectsGlobalDistribution';
 const JobAnalyticsPage = lazy(() =>
   import('./components/Reports/HitsAndApplicationRatio/JobAnalyticsPage'),
@@ -850,6 +852,13 @@ export default (
         <EPProtectedRoute path="/educationportal" exact component={EPDashboard} />
         <Route path="/educationportal/login" component={EPLogin} />
         <EPProtectedRoute path="/educationportal/tasks/upload" exact component={WriteTaskUpload} />
+        <EPProtectedRoute
+          path="/educationportal/pm/dashboard/training"
+          exact
+          component={EducatorTrainingDashboard}
+        />
+        <CPProtectedRoute
+          path="/communityportal/reports/event/personalization"
         <EPProtectedRoute path="/student/profile" exact component={StudentProfilePage} />
         {/* PR Analytics Dashboard */}
         <Route path="/pull-request-analytics/reviews-insight" component={ReviewsInsight} />
