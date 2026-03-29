@@ -74,7 +74,7 @@ import { setField } from '~/utils/stateHelper';
 import WeeklySummariesToggleFilter from './components/WeeklySummariesToggleFilter';
 // Keeping this block commented intentionally for future reference —
 import cn from 'classnames';
-import { getCustomStyles } from '~/utils/reactSelectStyles'; //  Import Styles
+import { getCustomStyles } from '~/utils/reactSelectStyles';
 import {
   useDeleteWeeklySummariesFilterMutation,
   useGetWeeklySummariesFiltersQuery,
@@ -136,9 +136,9 @@ const initialState = {
   replaceCodeLoading: false,
   allRoleInfo: [],
   teamCodeWarningUsers: [],
-  loadedTabs: [navItems[1]], // Initialize with default tab
-  summariesByTab: {}, // Store tab-specific data
-  tabsLoading: { [navItems[1]]: false }, // Track loading state per tab
+  loadedTabs: [navItems[1]],
+  summariesByTab: {},
+  tabsLoading: { [navItems[1]]: false },
   formattedReportLoading: false,
   loadTrophies: false,
   selectedSpecialColors: {
@@ -155,7 +155,6 @@ const initialState = {
     green: false,
     navy: false,
   },
-  // Saved filters functionality
   saveFilterModalOpen: false,
 };
 
@@ -174,7 +173,7 @@ const CheckboxOption = props => {
       <input
         type="checkbox"
         checked={props.isSelected}
-        onChange={() => null} // react-select handles selection internally
+        onChange={() => null}
         style={{ marginRight: 8 }}
       />
       <label style={{ fontWeight: 'bold' }}>{props.label}</label>
@@ -182,7 +181,6 @@ const CheckboxOption = props => {
   );
 };
 
-// Custom MenuList with "Select All / Deselect All" header
 const CustomMenuList = props => {
   const { children, selectProps } = props;
   const allSelected = (selectProps.value?.length || 0) === (selectProps.options?.length || 0);
@@ -217,84 +215,6 @@ const CustomMenuList = props => {
     </components.MenuList>
   );
 };
-
-// Keeping this block commented for future reference
-// Helper: Process raw summaries into State Data (Team Codes, Colors, Tables)
-// -----------------------------------------------------------------------------
-// const processDashboardData = summaries => {
-//   // 1. Sort Summaries (Alphabetical)
-//   const sortedSummaries = [...summaries].sort((a, b) =>
-//     `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`),
-//   );
-//   // 2. Process Filters & Promises
-//   const processedSummaries = sortedSummaries.map(summary => {
-//     // Calculate Promised Hours
-//     const promisedHoursByWeek = getWeekDates().map(weekDate =>
-//       getPromisedHours(weekDate.toDate, summary.weeklycommittedHoursHistory || []),
-//     );
-//     // Clean Filter Colors
-//     let filterColor = [];
-//     if (Array.isArray(summary.filterColor)) {
-//       filterColor = summary.filterColor
-//         .filter(c => typeof c === 'string')
-//         .map(c => c.toLowerCase());
-//     } else if (typeof summary.filterColor === 'string') {
-//       try {
-//         const parsed = JSON.parse(summary.filterColor);
-//         if (Array.isArray(parsed)) {
-//           filterColor = parsed.filter(c => typeof c === 'string').map(c => c.toLowerCase());
-//         } else {
-//           filterColor = [parsed.toLowerCase()];
-//         }
-//       } catch {
-//         filterColor = [summary.filterColor.toLowerCase()];
-//       }
-//     }
-//     return { ...summary, promisedHoursByWeek, filterColor };
-//   });
-//   // 3. Generate Team Codes & Table Data
-//   const teamCodeGroup = {};
-//   const teamCodes = [];
-//   const colorOptionGroup = new Set();
-//   const colorOptions = [];
-//   processedSummaries.forEach(summary => {
-//     const code = summary.teamCode || 'noCodeLabel';
-//     // Group by Code
-//     if (!teamCodeGroup[code]) teamCodeGroup[code] = [];
-//     teamCodeGroup[code].push(summary);
-//     // Collect Colors
-//     if (summary.weeklySummaryOption) colorOptionGroup.add(summary.weeklySummaryOption);
-//   });
-//   // 4. Build Team Code Options
-//   Object.keys(teamCodeGroup).forEach(code => {
-//     if (code !== 'noCodeLabel') {
-//       teamCodes.push({
-//         value: code,
-//         label: `${code} (${teamCodeGroup[code].length})`,
-//         _ids: teamCodeGroup[code].map(item => item._id),
-//       });
-//     }
-//   });
-//   // Add "No Code" Option
-//   const noCodeCount = teamCodeGroup.noCodeLabel?.length || 0;
-//   teamCodes.sort((a, b) => a.label.localeCompare(b.label));
-//   teamCodes.push({
-//     value: '',
-//     label: `Select All With NO Code (${noCodeCount})`,
-//     _ids: teamCodeGroup.noCodeLabel?.map(item => item._id) || [],
-//   });
-//   // 5. Build Color Options
-//   colorOptionGroup.forEach(option => {
-//     colorOptions.push({ value: option, label: option });
-//   });
-//   colorOptions.sort((a, b) => a.label.localeCompare(b.label));
-//   return {
-//     summaries: processedSummaries,
-//     teamCodes,
-//     colorOptions,
-//     tableData: teamCodeGroup,
-//   };
-// };
 
 const SaveIndicator = props => {
   const { selectProps } = props;
@@ -367,7 +287,6 @@ const WeeklySummariesReport = props => {
   const [state, setState] = useState(initialState);
   const [permissionState, setPermissionState] = useState(intialPermissionState);
 
-  // Create filters including toggle and extra members
   const [createFilterModalOpen, setCreateFilterModalOpen] = useState(false);
   const [updateFilterModalOpen, setUpdateFilterModalOpen] = useState(false);
   const [selectFilterModalOpen, setSelectFilterModalOpen] = useState(false);
@@ -377,7 +296,7 @@ const WeeklySummariesReport = props => {
   const toggleCreateFilterModal = () => setCreateFilterModalOpen(prev => !prev);
   const toggleUpdateFilterModal = () => setUpdateFilterModalOpen(prev => !prev);
   const toggleSelectFilterModal = () => setSelectFilterModalOpen(prev => !prev);
-  // Filters state
+
   const {
     data: filterChoices = [],
     isLoading: filtersLoading,
@@ -390,7 +309,6 @@ const WeeklySummariesReport = props => {
   const [updateFilterWithReplacedTeamCodes] = useUpdateFiltersWithReplacedTeamCodesMutation();
 
   useEffect(() => {
-    // Update local state whenever allBadgeData prop changes
     if (props.allBadgeData && props.allBadgeData.length > 0) {
       setState(prevState => ({
         ...prevState,
@@ -399,23 +317,7 @@ const WeeklySummariesReport = props => {
     }
   }, [props.allBadgeData]);
 
-  // Saved filters functionality
   const [currentAppliedFilter, setCurrentAppliedFilter] = useState(null);
-
-  // Misc functionalities
-  /**
-   * Sort the summaries in alphabetixal order
-   * @param {*} summaries
-   * @returns
-   */
-
-  // Keeping this block commented for future reference
-  // const alphabetize = summaries => {
-  //   const temp = [...summaries];
-  //   return temp.sort((a, b) =>
-  //     `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`),
-  //   );
-  // };
 
   const processRawSummaries = (rawSummaries, activeTab) => {
     const summariesCopy = JSON.parse(JSON.stringify(rawSummaries || []));
@@ -519,8 +421,6 @@ const WeeklySummariesReport = props => {
   };
 
   const doesSummaryBelongToWeek = (startDateStr, endDateStr, weekIndex) => {
-    // keeping this block commented for future reference
-    // weekIndex: 0 = This Week, 1 = Last Week, 2 = Week Before Last, 3 = Three Weeks Ago
     const weekStartLA = moment()
       .tz('America/Los_Angeles')
       .startOf('week')
@@ -536,57 +436,32 @@ const WeeklySummariesReport = props => {
     const summaryStart = new Date(startDateStr);
     const summaryEnd = new Date(endDateStr);
 
-    // keep if it overlaps that week
     return summaryStart <= weekEndLA && summaryEnd >= weekStartLA;
   };
 
-  /**
-   * Get the roleNames
-   * @param {*} summaries
-   * @returns
-   */
   const getAllRoles = summaries => {
     const roleNames = summaries.map(summary => `${summary.role}Info`);
     const uniqueRoleNames = [...new Set(roleNames)];
     return uniqueRoleNames;
   };
 
-  /**
-   * This function calculates the hours promised by a user by a given end date of the week.
-   * It goes through the user's committed hours history and returns the last committed hour value that is less than or equal to the given date.
-   * If there's no such record in the history, it returns 10 (default value).
-   * If the history does not exist at all, it returns -1.
-   *
-   * @param {string} weekToDateX - The end date of the week in question. It should be a string that can be parsed into a Date object.
-   * @param {Array<Object>} weeklycommittedHoursHistory - An array of user's committed hours history records. Each record should be an object that contains at least the properties 'dateChanged' (a string that can be parsed into a Date object) and 'hours' (a number).
-   *
-   * @returns {number} The hours promised by the user by the given end date.
-   */
   const getPromisedHours = (weekToDateX, weeklycommittedHoursHistory) => {
-    // 0. Edge case: If the history doesnt even exist
-    // only happens if the user is created without the backend changes
     if (!weeklycommittedHoursHistory) {
       return -1;
     }
-    // 1. Edge case: If there is none, return 10 (the default value of weeklyComHours)
     if (weeklycommittedHoursHistory.length === 0) {
       return 10;
     }
 
     const weekToDateReformat = new Date(weekToDateX).setHours(23, 59, 59, 999);
-    // 2. Iterate weeklycommittedHoursHistory from the last index (-1) to the beginning
+
     for (let i = weeklycommittedHoursHistory.length - 1; i >= 0; i -= 1) {
       const historyDateX = new Date(weeklycommittedHoursHistory[i].dateChanged);
-      // console.log(`${weekToDateX} >= ${historyDateX} is ${weekToDateX >= historyDateX}`);
-      // As soon as the weekToDate is greater or equal than current history date
       if (weekToDateReformat >= historyDateX) {
-        // return the promised hour
         return weeklycommittedHoursHistory[i].hours;
       }
     }
 
-    // 3. at this date when the week ends, the person has not even join the team
-    // so it promised 0 hours
     return 0;
   };
 
@@ -603,7 +478,6 @@ const WeeklySummariesReport = props => {
               (info.visibility === '1' &&
                 (props.role === 'Owner' || props.role === 'Administrator')) ||
               (info.visibility === '2' && props.role !== 'Volunteer');
-            // eslint-disable-next-line no-param-reassign
             info.CanRead = visible;
             allRoleInfo.push(info);
           }
@@ -619,80 +493,6 @@ const WeeklySummariesReport = props => {
     }
   };
 
-  // keeping this block commented for future reference
-  // const fetchFilters = async () => {
-  //   // Get all filters
-  //   let filterList = [];
-  //   try {
-  //     const filterResponse = await axios.get(ENDPOINTS.WEEKLY_SUMMARIES_FILTERS);
-  //     if (filterResponse.status < 200 || filterResponse.status >= 300) {
-  //       toast.error(`API request to get filter list failed with status ${filterResponse.status}`);
-  //     } else {
-  //       filterList = filterResponse.data;
-  //     }
-  //   } catch (e) {
-  //     toast.error(`API request to get filter list failed with error ${e}`);
-  //   }
-  //   const updatedFilterChoices = [];
-  //   filterList.forEach(filter => {
-  //     updatedFilterChoices.push({
-  //       label: filter.filterName,
-  //       value: filter._id,
-  //       filterData: {
-  //         filterName: filter.filterName,
-  //         selectedCodes: new Set(filter.selectedCodes),
-  //         selectedColors: new Set(filter.selectedColors),
-  //         selectedExtraMembers: new Set(filter.selectedExtraMembers),
-  //         selectedTrophies: filter.selectedTrophies,
-  //         selectedSpecialColors: filter.selectedSpecialColors,
-  //         selectedBioStatus: filter.selectedBioStatus,
-  //         selectedOverTime: filter.selectedOverTime,
-  //       },
-  //     });
-  //   });
-  //   setState(prevState => ({
-  //     ...prevState,
-  //     filterChoices: [...updatedFilterChoices],
-  //   }));
-  // };
-  // const fetchFilters = async () => {
-  //   // Get all filters
-  //   let filterList = [];
-  //   try {
-  //     const filterResponse = await axios.get(ENDPOINTS.WEEKLY_SUMMARIES_FILTERS);
-  //     if (filterResponse.status < 200 || filterResponse.status >= 300) {
-  //       toast.error(`API request to get filter list failed with status ${filterResponse.status}`);
-  //     } else {
-  //       filterList = filterResponse.data;
-  //     }
-  //   } catch (e) {
-  //     toast.error(`API request to get filter list failed with error ${e}`);
-  //   }
-  //   const updatedFilterChoices = [];
-  //   filterList.forEach(filter => {
-  //     updatedFilterChoices.push({
-  //       label: filter.filterName,
-  //       value: filter._id,
-  //       filterData: {
-  //         filterName: filter.filterName,
-  //         selectedCodes: new Set(filter.selectedCodes),
-  //         selectedColors: new Set(filter.selectedColors),
-  //         selectedExtraMembers: new Set(filter.selectedExtraMembers),
-  //         selectedTrophies: filter.selectedTrophies,
-  //         selectedSpecialColors: filter.selectedSpecialColors,
-  //         selectedBioStatus: filter.selectedBioStatus,
-  //         selectedOverTime: filter.selectedOverTime,
-  //       },
-  //     });
-  //   });
-  //   setState(prevState => ({
-  //     ...prevState,
-  //     filterChoices: [...updatedFilterChoices],
-  //   }));
-  // };
-
-  // Keeping this block commented intentionally for future reference —
-  // Initial data loading
   const createIntialSummaries = async () => {
     try {
       const { fetchAllBadges, hasPermission, auth, setTeamCodes } = props;
@@ -836,7 +636,6 @@ const WeeklySummariesReport = props => {
   };
 
   const updateMembersFromUnselectedTeam = () => {
-    // Add all selected member in a Set
     const selectedMemberSet = new Set();
     state.selectedCodes.forEach(code => {
       if (code.value === '') return;
@@ -848,7 +647,6 @@ const WeeklySummariesReport = props => {
       }
     });
 
-    // Filter members from unselected set
     const newMembersFromUnselectedTeam = [];
     state.summaries.forEach(summary => {
       if (!selectedMemberSet.has(summary._id)) {
@@ -862,14 +660,12 @@ const WeeklySummariesReport = props => {
     setState(prev => ({
       ...prev,
       membersFromUnselectedTeam: newMembersFromUnselectedTeam,
-      // Remove individuals that is in selected team
       selectedExtraMembers: prev.selectedExtraMembers.filter(
         member => !selectedMemberSet.has(member.value),
       ),
     }));
   };
 
-  // Update members of membersFromUnselectedTeam dropdown
   useEffect(() => {
     updateMembersFromUnselectedTeam();
   }, [state.selectedCodes, state.summaries]);
@@ -902,7 +698,6 @@ const WeeklySummariesReport = props => {
     setField(setState, 'isValidPwd', booleanVal);
   };
 
-  // Authorization for the weeklySummary Recipients is required once
   const setAuthpassword = authPass => {
     setField(setState, 'weeklyRecipientAuthPass', authPass);
   };
@@ -917,11 +712,9 @@ const WeeklySummariesReport = props => {
   };
 
   const isLastWeekReport = (startDateStr, endDateStr) => {
-    // Parse the summary’s start and end dates
     const summaryStart = new Date(startDateStr);
     const summaryEnd = new Date(endDateStr);
 
-    // Use the user's timezone: America/Los_Angeles
     const weekStartLA = moment()
       .tz('America/Los_Angeles')
       .startOf('week')
@@ -933,7 +726,6 @@ const WeeklySummariesReport = props => {
       .subtract(1, 'week')
       .toDate();
 
-    // Check if the summary overlaps any portion of last week
     return summaryStart <= weekEndLA && summaryEnd >= weekStartLA;
   };
 
@@ -947,24 +739,11 @@ const WeeklySummariesReport = props => {
         selectedOverTime,
         selectedBioStatus,
         selectedTrophies,
-        // tableData,
         COLORS,
         selectedSpecialColors,
         selectedExtraMembers,
       } = state;
 
-      // eslint-disable-next-line no-console
-      // console.log('🔍 filterWeeklySummaries called with:', {
-      //   summariesLength: summaries?.length,
-      //   selectedCodesLength: selectedCodes?.length,
-      //   selectedSpecialColors,
-      // });
-      // console.log('filterWeeklySummaries state:', {
-      //   summariesLength: summaries?.length,
-      //   tableDataExists: !!tableData,
-      //   selectedCodesLength: selectedCodes?.length,
-      //   selectedColorsLength: selectedColors?.length,
-      // });
       const chartData = [];
       let temptotal = 0;
       const structuredTeamTableData = [];
@@ -984,25 +763,6 @@ const WeeklySummariesReport = props => {
           const { activeTab } = state;
           const hoursLogged = (summary.totalSeconds[navItems.indexOf(activeTab)] || 0) / 3600;
 
-          // 🛑 Adding this block at the very top inside the filter
-          // if (summary?.isActive === false) {
-          //   const lastWeekStart = moment()
-          //     .tz('America/Los_Angeles')
-          //     .startOf('week')
-          //     .subtract(1, 'week')
-          //     .toDate();
-          //   const lastWeekEnd = moment()
-          //     .tz('America/Los_Angeles')
-          //     .endOf('week')
-          //     .subtract(1, 'week')
-          //     .toDate();
-          //   const summaryStart = new Date(summary.startDate);
-          //   const summaryEnd = new Date(summary.endDate);
-          //   const isLastWeek = summaryStart <= lastWeekEnd && summaryEnd >= lastWeekStart;
-          //   if (!isLastWeek) {
-          //     return false; // Skip inactive members unless their summary is from last week
-          //   }
-          // }
           if (!shouldIncludeSummaryForWeek(summary, weekIndex)) {
             return false;
           }
@@ -1020,7 +780,6 @@ const WeeklySummariesReport = props => {
               hoursLogged > 0 &&
               hoursLogged >= summary.promisedHoursByWeek[navItems.indexOf(activeTab)] * 1.25);
 
-          // Trophy logic
           const summarySubmissionDate = moment()
             .tz('America/Los_Angeles')
             .endOf('week')
@@ -1035,14 +794,12 @@ const WeeklySummariesReport = props => {
             activeFilterColors.length === 0 ||
             activeFilterColors.some(color => summary.filterColor?.includes?.(color));
 
-          // Team + Extra Member filters
           const isInSelectedCode = selectedCodesArray.includes(summary.teamCode);
           const isInSelectedExtraMember = selectedExtraMembersArray.includes(summary._id);
 
           const noFilterSelected =
             selectedCodesArray.length === 0 && selectedExtraMembersArray.length === 0;
 
-          // Logged hours range filter
           let matchesLoggedHoursRange = true;
 
           if (selectedLoggedHoursRange && selectedLoggedHoursRange.length > 0) {
@@ -1076,7 +833,6 @@ const WeeklySummariesReport = props => {
           );
         });
 
-      // Use Dict and Set for quick access
       const filteredTeamDict = {};
       const filteredIdSet = new Set();
       filteredTeamDict[''] = [];
@@ -1093,7 +849,6 @@ const WeeklySummariesReport = props => {
         filteredIdSet.add(summary._id);
       });
 
-      // Get chartData and structuredTeamTableData
       if (selectedCodes[0]?.value === '' || selectedCodes.length >= 52) {
         if (selectedCodes.length >= 52) {
           selectedCodes.forEach(code => {
@@ -1101,10 +856,8 @@ const WeeklySummariesReport = props => {
             chartData.push({
               name: code.label,
               value: code.value in filteredTeamDict ? filteredTeamDict[code.value].length : 0,
-              // value: temp.filter(summary => summary.teamCode === code.value).length,
             });
             const team = filteredTeamDict[code.value];
-            // const team = tableData[code.value];
             const index = selectedCodesArray.indexOf(code.value);
             const color = COLORS[index % COLORS.length];
             const members = [];
@@ -1121,9 +874,7 @@ const WeeklySummariesReport = props => {
           chartData.push({
             name: 'All With NO Code',
             value: '' in filteredTeamDict ? filteredTeamDict[''].length : 0,
-            // value: temp.filter(summary => summary.teamCode === '').length,
           });
-          // const team = tableData.noCodeLabel;
           const team = filteredTeamDict[''];
           const index = selectedCodesArray.indexOf('noCodeLabel');
           const color = COLORS[index % COLORS.length];
@@ -1140,14 +891,12 @@ const WeeklySummariesReport = props => {
       } else {
         selectedCodes.forEach(code => {
           const val = code.value in filteredTeamDict ? filteredTeamDict[code.value].length : 0;
-          // const val = temp.filter(summary => summary.teamCode === code.value).length;
           if (val > 0) {
             chartData.push({
               name: code.label,
               value: val,
             });
           }
-          // const team = tableData[code.value];
           const team = filteredTeamDict[code.value];
           const index = selectedCodesArray.indexOf(code.value);
           const color = COLORS[index % COLORS.length];
@@ -1165,7 +914,6 @@ const WeeklySummariesReport = props => {
         });
       }
 
-      // Add Extra Members data to chartData and structuredTeamTableData
       if (selectedExtraMembersArray.length > 0) {
         const color = COLORS[selectedCodesArray.length % COLORS.length];
         const members = [];
@@ -1198,7 +946,7 @@ const WeeklySummariesReport = props => {
       structuredTeamTableData.sort((a, b) =>
         teamSortKey(a.team).localeCompare(teamSortKey(b.team)),
       );
-      // const selectedTeamCodes = selectedCodes.map(e => e.value);
+
       const selectedTeamCodes = Array.isArray(selectedCodes)
         ? selectedCodes.map(e => e.value)
         : selectedCodes
@@ -1206,7 +954,6 @@ const WeeklySummariesReport = props => {
         : [];
       if (selectedTeamCodes.includes('a-BCC')) {
         const filtered = temp.filter(u => u.teamCode === 'a-BCC');
-        // eslint-disable-next-line no-console
         console.log(`✅ Filtered summaries for teamCode "a-BCC" (${filtered.length})`, filtered);
       }
       setState(prev => ({
@@ -1222,39 +969,62 @@ const WeeklySummariesReport = props => {
     }
   };
 
-  /**
-   * Refresh the current tab data
-   */
+  const buildProcessedSummariesState = (prevState, rawSummaries, activeTab) => {
+    const processedData = processRawSummaries(rawSummaries, activeTab);
+    const { summaries: summariesCopy, teamCodes, colorOptions, tableData } = processedData;
+
+    return {
+      ...prevState,
+      summaries: summariesCopy,
+      filteredSummaries: summariesCopy,
+      teamCodes,
+      colorOptions,
+      tableData,
+      badges: props.allBadgeData || prevState.badges,
+      summariesByTab: {
+        ...prevState.summariesByTab,
+        [activeTab]: summariesCopy,
+      },
+    };
+  };
+
+  const buildEmptySummariesState = (prevState, activeTab) => ({
+    ...prevState,
+    summaries: [],
+    filteredSummaries: [],
+    teamCodes: [],
+    colorOptions: [],
+    tableData: {},
+    summariesByTab: {
+      ...prevState.summariesByTab,
+      [activeTab]: [],
+    },
+  });
+
+  const fetchWeeklySummariesForTab = async activeTab => {
+    const weekIndex = navItems.indexOf(activeTab);
+
+    const response = await axios.get(ENDPOINTS.WEEKLY_SUMMARIES_REPORT(), {
+      params: { week: weekIndex, forceRefresh: true, _ts: Date.now() },
+      headers: { 'Cache-Control': 'no-cache', Pragma: 'no-cache' },
+    });
+
+    return Array.isArray(response?.data) ? response.data : [];
+  };
+
   const refreshCurrentTab = async () => {
     const { activeTab } = state;
     setState(prev => ({ ...prev, refreshing: true }));
 
     try {
-      const weekIndex = navItems.indexOf(activeTab);
-      const response = await axios.get(ENDPOINTS.WEEKLY_SUMMARIES_REPORT(), {
-        params: { week: weekIndex, forceRefresh: true, _ts: Date.now() },
-        headers: { 'Cache-Control': 'no-cache', Pragma: 'no-cache' },
-      });
+      const rawSummaries = await fetchWeeklySummariesForTab(activeTab);
 
-      if (response.status === 200) {
-        const processedData = processRawSummaries(response.data, activeTab);
-        const { summaries: summariesCopy, teamCodes, colorOptions, tableData } = processedData;
-
-        setState(prevState => ({
-          ...prevState,
-          refreshing: false,
-          summaries: summariesCopy,
-          filteredSummaries: summariesCopy,
-          teamCodes,
-          colorOptions,
-          tableData,
-          badges: props.allBadgeData || prevState.badges,
-          summariesByTab: {
-            ...prevState.summariesByTab,
-            [activeTab]: summariesCopy,
-          },
-        }));
-      }
+      setState(prevState => ({
+        ...(rawSummaries.length > 0
+          ? buildProcessedSummariesState(prevState, rawSummaries, activeTab)
+          : buildEmptySummariesState(prevState, activeTab)),
+        refreshing: false,
+      }));
     } catch (error) {
       setState(prevState => ({
         ...prevState,
@@ -1262,191 +1032,55 @@ const WeeklySummariesReport = props => {
       }));
     }
   };
-  /**
-   * Handle tab switching
-   */
+
   const toggleTab = tab => {
     const { activeTab } = state;
 
-    if (activeTab !== tab) {
-      // Switch to the new tab immediately, showing loading state
+    if (activeTab === tab) return;
+
+    setState(prevState => ({
+      ...prevState,
+      activeTab: tab,
+      tabsLoading: {
+        ...prevState.tabsLoading,
+        [tab]: true,
+      },
+    }));
+
+    sessionStorage.setItem('tabSelection', tab);
+
+    if (state.summariesByTab[tab]) {
       setState(prevState => ({
-        ...prevState,
-        activeTab: tab,
+        ...buildProcessedSummariesState(prevState, prevState.summariesByTab[tab], tab),
         tabsLoading: {
           ...prevState.tabsLoading,
-          [tab]: true,
+          [tab]: false,
         },
       }));
-
-      // Save in session storage
-      sessionStorage.setItem('tabSelection', tab);
-
-      const weekIndex = navItems.indexOf(tab);
-
-      // Always refetch for "Last Week" so late submissions show up
-      const shouldForceFetch = tab === 'Last Week';
-
-      if (!shouldForceFetch && state.summariesByTab[tab] && state.summariesByTab[tab].length > 0) {
-        // use cache
-        setState(prevState => ({
-          ...prevState,
-          summaries: prevState.summariesByTab[tab],
-          filteredSummaries: prevState.summariesByTab[tab],
-          badges: props.allBadgeData || prevState.badges,
-          tabsLoading: {
-            ...prevState.tabsLoading,
-            [tab]: false,
-          },
-        }));
-      } else {
-        // fetch fresh
-        props
-          .getWeeklySummariesReport(weekIndex)
-          .then(res => {
-            if (res && res.data) {
-              // keeping this block commented for future reference
-              // let summariesCopy = [...res.data];
-              // summariesCopy = alphabetize(summariesCopy);
-              // summariesCopy = summariesCopy.map(summary => {
-              //   const promisedHoursByWeek = weekDates.map(weekDate =>
-              //     getPromisedHours(weekDate.toDate, summary.weeklycommittedHoursHistory || []),
-              //   );
-              //   // Keeping this block commented intentionally for future reference —
-              //   // const filterColor = summary.filterColor || null;
-              //   // return { ...summary, promisedHoursByWeek, filterColor }; old working code
-              //   let filterColor = [];
-              //   if (Array.isArray(summary.filterColor)) {
-              //     filterColor = summary.filterColor;
-              //   } else if (typeof summary.filterColor === 'string') {
-              //     filterColor = [summary.filterColor];
-              //   }
-              //   return {
-              //     ...summary,
-              //     promisedHoursByWeek,
-              //     filterColor,
-              //   };
-              // });
-              const processedData = processRawSummaries(res.data, tab);
-              const {
-                summaries: summariesCopy,
-                teamCodes,
-                colorOptions,
-                tableData,
-              } = processedData;
-
-              setState(prevState => ({
-                ...prevState,
-                summaries: summariesCopy,
-                filteredSummaries: summariesCopy,
-                teamCodes,
-                colorOptions,
-                tableData,
-                badges: props.allBadgeData || prevState.badges,
-                loadedTabs: [...new Set([...prevState.loadedTabs, tab])],
-                summariesByTab: {
-                  ...prevState.summariesByTab,
-                  [tab]: summariesCopy,
-                },
-                tabsLoading: {
-                  ...prevState.tabsLoading,
-                  [tab]: false,
-                },
-              }));
-            } else {
-              const processedData = processRawSummaries(prevState.summariesByTab[tab], tab);
-              const {
-                summaries: summariesCopy,
-                teamCodes,
-                colorOptions,
-                tableData,
-              } = processedData;
-
-              setState(prevState => ({
-                ...prevState,
-                summaries: summariesCopy,
-                filteredSummaries: summariesCopy,
-                teamCodes,
-                colorOptions,
-                tableData,
-                badges: props.allBadgeData || prevState.badges,
-                tabsLoading: {
-                  ...prevState.tabsLoading,
-                  [tab]: false,
-                },
-              }));
-            }
-          })
-          .catch(() => {
-            setState(prevState => ({
-              ...prevState,
-              tabsLoading: {
-                ...prevState.tabsLoading,
-                [tab]: false,
-              },
-            }));
-          });
-      }
     }
   };
-  // Keeping this block commented intentionally for future reference —
-  // const handleSelectCodeChange = event => {
-  //   setState(prev => ({
-  //     ...prev,
-  //     selectedCodes: event,
-  //   }));
-  // }; // old working code
+
   const handleSelectCodeChange = event => {
     const selectedValues = event.map(e => e.value);
 
-    // Keeping this block commented intentionally for future reference —
-    // Filter summaries based on selected codes
-    // const selectedSummaries = state.summaries.filter(summary =>
-    //   selectedValues.includes(summary.teamCode),
-    // );
-    // Count how many users have each color selected
-    // const colorStates = ['purple', 'green', 'navy'].reduce((acc, color) => {
-    //   const allHaveColor =
-    //     selectedSummaries.length > 0 &&
-    //     selectedSummaries.every(summary => summary.filterColor?.includes?.(color));
-    //   acc[color] = allHaveColor;
-    //   return acc;
-    // }, {});
-
     setState(prev => {
-      // Move selected codes to the front of the dropdown list
       const reorderedTeamCodes = [
-        ...prev.teamCodes.filter(code => selectedValues.includes(code.value)), // selected first
-        ...prev.teamCodes.filter(code => !selectedValues.includes(code.value)), // then the rest
+        ...prev.teamCodes.filter(code => selectedValues.includes(code.value)),
+        ...prev.teamCodes.filter(code => !selectedValues.includes(code.value)),
       ];
 
       return {
         ...prev,
         selectedCodes: event,
         teamCodes: reorderedTeamCodes,
-        bulkSelectedColors: { purple: false, green: false, navy: false }, // always reset on team change
+        bulkSelectedColors: { purple: false, green: false, navy: false },
       };
     });
 
-    // Clear current applied filter if selection is cleared
     if (currentAppliedFilter && event.length === 0) {
       setCurrentAppliedFilter(null);
     }
   };
-
-  // keeping this block commented out for future use
-  // const handleOverHoursToggleChange = () => {
-  //   setState(prev => ({
-  //     ...prev,
-  //     selectedOverTime: !prev.selectedOverTime,
-  //   }));
-  // };
-  // const handleBioStatusToggleChange = () => {
-  //   setState(prev => ({
-  //     ...prev,
-  //     selectedBioStatus: !prev.selectedBioStatus,
-  //   }));
-  // };
 
   const handleChartStatusToggleChange = () => {
     setState(prevState => ({
@@ -1532,62 +1166,18 @@ const WeeklySummariesReport = props => {
 
   const handleDeleteFilter = async filter => {
     try {
-      const res = await deleteFilter({
+      await deleteFilter({
         id: filter.value,
-      }).unwrap(); // unwrap = throw exception if error
+      }).unwrap();
 
       toast.success(`Successfully deleted filter ${filter.label}`);
-      // Clear current applied filter if it was deleted
       if (currentAppliedFilter && currentAppliedFilter._id === filter.value) {
         setCurrentAppliedFilter(null);
       }
-      //   // Refresh the saved filters list
-      //   props.getSavedFilters();
-      // }
     } catch (error) {
       toast.error(`Failed to delete filter. Error: ${JSON.stringify(error)}`);
     }
   };
-  // keeping this block commented for future reference
-  // const handleOpenSaveFilterModal = () => {
-  //   // If no current filter is applied, always create a new filter
-  //   if (!currentAppliedFilter) {
-  //     setState(prevState => ({
-  //       ...prevState,
-  //       saveFilterModalOpen: true,
-  //     }));
-  //     return;
-  //   }
-  //   // If there's a current filter applied, always show modification modal
-  //   // regardless of whether the selection has changed or not
-  //   setShowModificationModal(true);
-  // };
-  // const handleCloseSaveFilterModal = () => {
-  //   setState(prevState => ({
-  //     ...prevState,
-  //     saveFilterModalOpen: false,
-  //   }));
-  // };
-  // const handleCloseModificationModal = () => {
-  //   setShowModificationModal(false);
-  // };
-  // const passwordInputModalToggle = () => {
-  //   try {
-  //     return (
-  //       <PasswordInputModal
-  //         open={state.passwordModalOpen}
-  //         onClose={onpasswordModalClose}
-  //         checkForValidPwd={checkForValidPwd}
-  //         isValidPwd={state.isValidPwd}
-  //         setSummaryRecepientsPopup={setSummaryRecepientsPopup}
-  //         setAuthpassword={setAuthpassword}
-  //         authEmailWeeklySummaryRecipient={props.authEmailWeeklySummaryRecipient}
-  //       />
-  //     );
-  //   } catch (error) {
-  //     return null;
-  //   }
-  // };
 
   const handleAllTeamCodeReplace = async () => {
     try {
@@ -1690,20 +1280,16 @@ const WeeklySummariesReport = props => {
           updatedTableData[code] = updatedSummaries.filter(s => s.teamCode === code);
         });
 
-        // Update big filters
         try {
-          const res = await updateFilterWithReplacedTeamCodes({
+          await updateFilterWithReplacedTeamCodes({
             oldTeamCodes,
             newTeamCode: replaceCode,
-          }).unwrap(); // unwrap = throw exception if error
+          }).unwrap();
 
           toast.success(`Successfully replace codes in all filters`);
         } catch (error) {
           toast.error(`Failed to replace codes in filters. Status ${error.status}`);
         }
-
-        // Update saved filters for team code only in the database with the new team code
-        // await props.updateSavedFiltersForTeamCodeChange(oldTeamCodes, replaceCode);
 
         setState(prev => ({
           ...prev,
@@ -1757,14 +1343,6 @@ const WeeklySummariesReport = props => {
     }
   };
 
-  // Keeping the block commented for future reference
-  // const handleTrophyToggleChange = () => {
-  //   setState(prevState => ({
-  //     ...prevState,
-  //     selectedTrophies: !prevState.selectedTrophies,
-  //   }));
-  // };
-
   const handleSpecialColorToggleChange = (color, isEnabled) => {
     setState(prevState => ({
       ...prevState,
@@ -1777,18 +1355,15 @@ const WeeklySummariesReport = props => {
 
   const handleSpecialColorDotClick = async (userId, color) => {
     try {
-      // Logging inputs and the current state
       console.log('handleSpecialColorDotClick called with:', { userId, color });
-      console.log('Current state.summaries (first 5):', state.summaries?.slice(0, 5)); // Logging the array that is being used
+      console.log('Current state.summaries (first 5):', state.summaries?.slice(0, 5));
 
-      // *** ADDING THE CHECK FOR VALID SUMMARIES ARRAY ***
       if (!Array.isArray(state.summaries)) {
         console.error('❌ Cannot update: state.summaries is not an array!');
         toast.error('Data is not ready. Please wait a moment and try again.');
         return;
       }
-      // *******************************************
-      // Step 1: Updating local summaries state
+
       const updatedSummaries = state.summaries.map(summary => {
         if (summary._id !== userId) return { ...summary };
 
@@ -1804,14 +1379,13 @@ const WeeklySummariesReport = props => {
 
       const updatedUser = updatedSummaries.find(u => u._id === userId);
 
-      // *** ADDING LOG AND CHECK FOR updatedUser ***
       console.log('Result of find:', updatedUser);
       if (!updatedUser) {
         console.error(`❌ Could not find user with ID ${userId} in updatedSummaries.`);
         toast.error('Could not find user data to update. Please refresh.');
-        return; // let's Stop if user wasn't found
+        return;
       }
-      // ***************************************
+
       setState(prev => ({
         ...prev,
         summaries: updatedSummaries,
@@ -1821,10 +1395,8 @@ const WeeklySummariesReport = props => {
         },
       }));
 
-      // Step 2: Preparing the full payload to send to backend
-      const currentRequestorId = props.auth?.user?.userid; // Use 'userid'
+      const currentRequestorId = props.auth?.user?.userid;
       if (!currentRequestorId) {
-        // ... (keeping the existing guard clause for requestorId) ...
         return;
       }
 
@@ -1843,42 +1415,20 @@ const WeeklySummariesReport = props => {
           permissions: props.auth?.user?.permissions,
           email: props.auth?.user?.email,
         },
-        // optional defaults
         timeOffFrom: updatedUser.timeOffFrom || null,
         timeOffTill: updatedUser.timeOffTill || null,
       };
       console.log('User ID for requestor:', currentRequestorId);
       const payloadToSend = fullPayload;
       console.log('SENDING PAYLOAD:', JSON.stringify(payloadToSend, null, 2));
-      // Step 3: Calling the Redux action
-      // const res = await props.updateOneSummaryReport(userId, fullPayload);
+
       try {
-        // Adding try...catch here for better error details
         const res = await props.updateOneSummaryReport(userId, payloadToSend);
         console.log('✅ Successfully updated user on backend:', res.data);
       } catch (err) {
-        // Logging the specific error from the update action
         console.error('❌ Update action failed:', err.response?.data || err.message || err);
-        // Existing toast message can stay here too
         toast.error('Failed to update filterColor. Please try again.');
       }
-
-      // Step 4: Optionally, forcing refetch latest summaries from backend
-      // const currentWeekIndex = navItems.indexOf(state.activeTab);
-      // const freshSummariesRes = await axios.get(
-      //   `/api/reports/weeklysummaries?week=${currentWeekIndex}&forceRefresh=true`,
-      // );
-      // const freshSummaries = Array.isArray(freshSummariesRes.data) ? freshSummariesRes.data : [];
-
-      // Keeping this block commented intentionally for future reference —
-      // setState(prev => ({
-      //   ...prev,
-      //   summaries: freshSummaries,
-      //   summariesByTab: {
-      //     ...prev.summariesByTab,
-      //     [state.activeTab]: freshSummaries,
-      //   },
-      // }));
     } catch (err) {
       console.error('❌ Failed to update filterColor:', err);
       toast.error('Failed to update filterColor. Please try again.');
@@ -1887,7 +1437,6 @@ const WeeklySummariesReport = props => {
 
   const handleBulkDotClick = async color => {
     try {
-      // 1. Validation
       if (
         !state?.selectedCodes ||
         (Array.isArray(state.selectedCodes) && state.selectedCodes.length === 0)
@@ -1908,7 +1457,6 @@ const WeeklySummariesReport = props => {
 
       const selectedTeamCodesSet = new Set(selectedTeamCodes);
 
-      // 2. Find Users
       const matchingUsers = Array.isArray(state.summaries)
         ? state.summaries.filter(user => user && selectedTeamCodesSet.has(user.teamCode))
         : [];
@@ -1918,7 +1466,6 @@ const WeeklySummariesReport = props => {
         return;
       }
 
-      // 3. UI Update
       setState(prev => ({
         ...prev,
         bulkSelectedColors: {
@@ -1932,7 +1479,6 @@ const WeeklySummariesReport = props => {
       let successCount = 0;
       let failCount = 0;
 
-      // 4. Process Updates
       const updatePromises = matchingUsers.map(user => {
         if (!user?._id) {
           failCount++;
@@ -1959,7 +1505,6 @@ const WeeklySummariesReport = props => {
             successCount++;
             const newColors = res?.data?.filterColor || [color];
 
-            // 🟢 Refactored: Uses external helper to avoid deep nesting
             setState(prev => ({
               ...prev,
               summaries: updateUserInList(prev.summaries, user._id, newColors),
@@ -2054,75 +1599,60 @@ const WeeklySummariesReport = props => {
     setCurrentAppliedFilter(selectedFilter);
   };
 
-  // Setup effect hooks for initial data load
   useEffect(() => {
     let isMounted = true;
 
-    if (state.summariesByTab[state.activeTab] && state.summariesByTab[state.activeTab].length > 0) {
-      const processedData = processRawSummaries(
-        state.summariesByTab[state.activeTab],
-        state.activeTab,
-      );
-      const { summaries: summariesCopy, teamCodes, colorOptions, tableData } = processedData;
+    const loadTabData = async () => {
+      const activeTab = state.activeTab;
 
-      setState(prev => ({
-        ...prev,
-        summaries: summariesCopy,
-        filteredSummaries: summariesCopy,
-        teamCodes,
-        colorOptions,
-        tableData,
-      }));
-      return;
-    }
+      if (state.summariesByTab[activeTab]) {
+        setState(prevState => ({
+          ...buildProcessedSummariesState(
+            prevState,
+            prevState.summariesByTab[activeTab],
+            activeTab,
+          ),
+          tabsLoading: {
+            ...prevState.tabsLoading,
+            [activeTab]: false,
+          },
+        }));
+        return;
+      }
 
-    const weekIndex = navItems.indexOf(state.activeTab);
-    setState(prev => ({ ...prev, loading: true }));
+      setState(prev => ({ ...prev, loading: true }));
 
-    axios
-      .get(ENDPOINTS.WEEKLY_SUMMARIES_REPORT(), {
-        params: { week: weekIndex, forceRefresh: true, _ts: Date.now() },
-        headers: { 'Cache-Control': 'no-cache', Pragma: 'no-cache' },
-      })
-      .then(res => {
+      try {
+        const rawSummaries = await fetchWeeklySummariesForTab(activeTab);
+
         if (!isMounted) return;
-        const rawSummaries = Array.isArray(res?.data) ? res.data : [];
 
-        if (rawSummaries.length > 0) {
-          const processedData = processRawSummaries(rawSummaries, state.activeTab);
-          const { summaries: summariesCopy, teamCodes, colorOptions, tableData } = processedData;
-
-          setState(prev => ({
-            ...prev,
-            loading: false,
-            summaries: summariesCopy,
-            filteredSummaries: summariesCopy,
-            teamCodes,
-            colorOptions,
-            tableData,
-            summariesByTab: {
-              ...prev.summariesByTab,
-              [state.activeTab]: summariesCopy,
-            },
-          }));
-        } else {
-          setState(prev => ({
-            ...prev,
-            loading: false,
-            summaries: [],
-            filteredSummaries: [],
-            teamCodes: [],
-            colorOptions: [],
-            tableData: {},
-            summariesByTab: { ...prev.summariesByTab, [state.activeTab]: [] },
-          }));
-        }
-      })
-      .catch(err => {
+        setState(prevState => ({
+          ...(rawSummaries.length > 0
+            ? buildProcessedSummariesState(prevState, rawSummaries, activeTab)
+            : buildEmptySummariesState(prevState, activeTab)),
+          loading: false,
+          tabsLoading: {
+            ...prevState.tabsLoading,
+            [activeTab]: false,
+          },
+        }));
+      } catch (err) {
         if (!isMounted) return;
-        console.error(`❌ Failed to fetch data`, err);
-        setState(prev => ({ ...prev, loading: false }));
-      });
+
+        console.error('❌ Failed to fetch data', err);
+        setState(prevState => ({
+          ...prevState,
+          loading: false,
+          tabsLoading: {
+            ...prevState.tabsLoading,
+            [activeTab]: false,
+          },
+        }));
+      }
+    };
+
+    loadTabData();
 
     return () => {
       isMounted = false;
@@ -2133,15 +1663,13 @@ const WeeklySummariesReport = props => {
     if (state.loading !== loading) {
       setState(prev => ({
         ...prev,
-        loading, // sync the prop 'loading' to local state only if it's different
+        loading,
       }));
     }
   }, [loading, state.loading]);
 
   useEffect(() => {
     if (state.summaries && state.summaries.length > 0) {
-      // eslint-disable-next-line no-console
-      // console.log('Summaries before filtering:', state.summaries);
       filterWeeklySummaries();
     }
   }, [
@@ -2158,105 +1686,31 @@ const WeeklySummariesReport = props => {
   ]);
 
   useEffect(() => {
-    // On mount: fetch all badges before deriving permissions
     const fetchInitialPermissions = async () => {
       try {
-        // Fetch all badges first so we can derive up‑to‑date permissions
         await props.fetchAllBadges();
         setPermissionState(prev => ({
           ...prev,
           bioEditPermission: props.hasPermission('putUserProfileImportantInfo'),
-          // codeEditPermission: props.hasPermission('replaceTeamCodes'),
-          // allow team‑code edits for specific roles or permissions
           codeEditPermission:
             props.hasPermission('editTeamCode') ||
             props.auth?.user?.role === 'Owner' ||
             props.auth?.user?.role === 'Administrator',
-          // Permit editing of summary hour counts if the user has that badge
           canEditSummaryCount: props.hasPermission('editSummaryHoursCount'),
-          // Show bio highlights only to users with that permission
           canSeeBioHighlight: props.hasPermission('highlightEligibleBios'),
-          // Show badges if user has permission and badges loaded successfully
           hasSeeBadgePermission: props.hasPermission('seeBadges'),
         }));
       } catch (error) {
-        // log failure fetching badges or permissions
-        // eslint-disable-next-line no-console
         console.error('Failed to fetch badges or permissions', error);
       }
     };
 
     fetchInitialPermissions();
-
-    // Load saved filters when component mounts
     props.getSavedFilters();
   }, []);
 
-  // 🟢 CONSOLIDATED useEffect for Tab Changes
-  // This replaces the duplicate one. It handles caching AND fresh fetching using the helper.
-  useEffect(() => {
-    let isMounted = true;
-
-    if (state.summariesByTab[state.activeTab] && state.summariesByTab[state.activeTab].length > 0) {
-      setState(prev => ({
-        ...prev,
-        summaries: state.summariesByTab[state.activeTab],
-      }));
-      return;
-    }
-
-    const weekIndex = navItems.indexOf(state.activeTab);
-    setState(prev => ({ ...prev, loading: true }));
-
-    axios
-      .get(ENDPOINTS.WEEKLY_SUMMARIES_REPORT(), {
-        params: { week: weekIndex, forceRefresh: true, _ts: Date.now() },
-        headers: { 'Cache-Control': 'no-cache', Pragma: 'no-cache' },
-      })
-      .then(res => {
-        if (!isMounted) return;
-        const rawSummaries = Array.isArray(res?.data) ? res.data : [];
-
-        if (rawSummaries.length > 0) {
-          // Use the helper to process everything uniformly
-          const processedData = processRawSummaries(rawSummaries);
-          const { summaries: summariesCopy, teamCodes, colorOptions, tableData } = processedData;
-
-          setState(prev => ({
-            ...prev,
-            loading: false,
-            summaries: summariesCopy,
-            teamCodes,
-            colorOptions,
-            tableData,
-            summariesByTab: {
-              ...prev.summariesByTab,
-              [state.activeTab]: summariesCopy,
-            },
-          }));
-        } else {
-          setState(prev => ({
-            ...prev,
-            loading: false,
-            summaries: [],
-            summariesByTab: { ...prev.summariesByTab, [state.activeTab]: [] },
-          }));
-        }
-      })
-      .catch(err => {
-        if (!isMounted) return;
-        console.error(`❌ Failed to fetch data`, err);
-        setState(prev => ({ ...prev, loading: false }));
-      });
-
-    return () => {
-      isMounted = false;
-    };
-  }, [state.activeTab]);
-
   useEffect(() => {
     if (!Array.isArray(state.teamCodes)) return;
-
     props.setTeamCodes(state.teamCodes);
   }, [state.teamCodes, props.setTeamCodes]);
 
@@ -2322,7 +1776,7 @@ const WeeklySummariesReport = props => {
                 role={role}
                 fontSize={24}
                 isPermissionPage
-                className="p-2" // Add Bootstrap padding class to the EditableInfoModal
+                className="p-2"
                 darkMode={darkMode}
               />
             </div>
@@ -2524,7 +1978,6 @@ const WeeklySummariesReport = props => {
           </div>
 
           {hasPermissionToFilter && <></>}
-          {/* Saved Filter Buttons List */}
           {filterChoices && filterChoices.length > 0 && (
             <div
               style={{
@@ -2951,7 +2404,7 @@ const mapDispatchToProps = dispatch => ({
     dispatch(updateSavedFiltersForIndividualTeamCodeChange(oldTeamCode, newTeamCode, userId)),
   updateOneSummaryReport: (userId, updatedField) =>
     dispatch(updateOneSummaryReport(userId, updatedField)),
-  updateSummaryReport: payload => dispatch(updateSummaryReport(payload)), // ✅ added
+  updateSummaryReport: payload => dispatch(updateSummaryReport(payload)),
   updateSummaryReportFromServerAction: user => dispatch(updateSummaryReportFromServerAction(user)),
 });
 
