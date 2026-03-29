@@ -135,6 +135,7 @@ import CheckTypes from './components/BMDashboard/shared/CheckTypes';
 import AttendanceNoShow from './components/AttendanceSystem/AttendanceNoShowCharts.jsx';
 import LessonsLearntChart from './components/BMDashboard/LessonsLearnt/LessonsLearntChart';
 import UtilizationChart from './components/BMDashboard/UtilizationChart/UtilizationChart';
+import InjuriesDonutChart from './components/InjuriesAnalytics/InjuriesDonutChart';
 import CostPredictionPage from './components/BMDashboard/CostPrediction/CostPredictionPage';
 //import MostSusceptibleTools from './components/MostSusceptible/toolBreakdownChart';
 
@@ -600,6 +601,7 @@ export default (
           fallback
         />
         <ProtectedRoute path="/analytics/months-pledged" component={MonthsPledgedChart} fallback />
+        <ProtectedRoute path="/analytics/injuries" component={InjuriesDonutChart} fallback />
         <ProtectedRoute
           path="/jobanalytics"
           exact
