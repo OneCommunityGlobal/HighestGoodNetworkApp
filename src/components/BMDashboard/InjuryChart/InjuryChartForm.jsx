@@ -27,14 +27,10 @@ function InjuryChartForm({ dark }) {
   // Chart type toggle state
   const [chartType, setChartType] = useState('line'); // 'bar' or 'line'
   const dispatch = useDispatch();
-  const bmProjects = useSelector(state => state.bmProjects || []);
+  const bmProjects = useSelector((state) => state.bmProjects || []);
   // Form state
   const [projectId, setProjectId] = useState('all');
-  const [startDate, setStartDate] = useState(
-    moment()
-      .subtract(6, 'months')
-      .toDate(),
-  );
+  const [startDate, setStartDate] = useState(moment().subtract(6, 'months').toDate());
   const [endDate, setEndDate] = useState(new Date());
 
   // Chart state
@@ -44,13 +40,13 @@ function InjuryChartForm({ dark }) {
 
   // Load projects on mount
   useEffect(() => {
-    dispatch(fetchBMProjects()).catch(err => {
+    dispatch(fetchBMProjects()).catch((err) => {
       toast.error(`Failed to load projects: ${err.message}`);
     });
   }, [dispatch]);
 
   // Transform API data to chart format
-  const transformData = data => {
+  const transformData = (data) => {
     if (!data || !data.months || !Array.isArray(data.months)) {
       return [];
     }
@@ -91,16 +87,16 @@ function InjuryChartForm({ dark }) {
   }, [projectId, startDate, endDate]);
 
   // Handle project change
-  const handleProjectChange = e => {
+  const handleProjectChange = (e) => {
     setProjectId(e.target.value);
   };
 
   // Handle date changes
-  const handleStartDateChange = date => {
+  const handleStartDateChange = (date) => {
     setStartDate(date);
   };
 
-  const handleEndDateChange = date => {
+  const handleEndDateChange = (date) => {
     setEndDate(date);
   };
 
@@ -120,18 +116,18 @@ function InjuryChartForm({ dark }) {
       {/* Filter Form */}
       <div
         className={`${styles.filterForm} mb-4 p-3  ${
-          dark ? styles.wrapperDark : 'bg-white'
+          dark ? styles.wrapperDark : styles.lightBackground
         } rounded shadow-sm`}
       >
         <div className="row g-3">
           <div className="col-md-4">
             <FormGroup>
-              <Label for="project" className={dark ? styles.wrapperDark : ''}>
+              <Label for="project" htmlFor="project" className={dark ? styles.wrapperDark : ''}>
                 Project
               </Label>
               <Input id="project" type="select" value={projectId} onChange={handleProjectChange}>
                 <option value="all">All Projects</option>
-                {bmProjects.map(project => (
+                {bmProjects.map((project) => (
                   <option key={project._id} value={project._id}>
                     {project.name}
                   </option>
@@ -140,7 +136,7 @@ function InjuryChartForm({ dark }) {
             </FormGroup>
           </div>
 
-          <div className="ol-md-4">
+          <div className="col-md-4">
             <FormGroup>
               <Label className={dark ? styles.wrapperDark : ''}>Start Date</Label>
               <DatePicker
@@ -184,7 +180,7 @@ function InjuryChartForm({ dark }) {
       {!error && chartData && chartData.length > 0 && (
         <div
           className={`${styles.injuryChartContainer} ${
-            dark ? styles.wrapperDark : 'bg-white'
+            dark ? styles.wrapperDark : styles.lightBackground
           } p-4 rounded shadow-sm`}
         >
           <div className="d-flex justify-content-end mb-2">
@@ -276,7 +272,9 @@ function InjuryChartForm({ dark }) {
 
       {/* No Data Display */}
       {!error && !loading && (!chartData || chartData.length === 0) && (
-        <div className="text-center p-5 bg-white rounded shadow-sm">
+        <div
+          className={`text-center p-5 rounded shadow-sm ${dark ? styles.wrapperDark : styles.lightBackground}`}
+        >
           <p className="text-muted">No injury data available for the selected criteria.</p>
         </div>
       )}
