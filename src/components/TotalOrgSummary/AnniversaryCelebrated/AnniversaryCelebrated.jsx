@@ -110,6 +110,14 @@ export default function AnniversaryCelebrated({ isLoading, data, darkMode }) {
   const filterUsers = users =>
     users.filter(u => `${u.firstName} ${u.lastName}`.toLowerCase().includes(search.toLowerCase()));
 
+  const usersFilteredSixMonthsData = filterUsers(sixMonthsData.users).map(item =>
+    getAnniversaryListItem(item, 6),
+  );
+
+  const usersFilteredOneYearData = filterUsers(oneYearData.users).map(item =>
+    getAnniversaryListItem(item, 12),
+  );
+
   return (
     <div className="mt-3">
       {/* Comparison percentages with counts */}
@@ -169,8 +177,16 @@ export default function AnniversaryCelebrated({ isLoading, data, darkMode }) {
 
       {/* List of anniversaries */}
       <ul className="w-90 overflow-auto" style={{ maxHeight: '410px' }}>
-        {filterUsers(sixMonthsData.users).map(item => getAnniversaryListItem(item, 6))}
-        {filterUsers(oneYearData.users).map(item => getAnniversaryListItem(item, 12))}
+        {usersFilteredSixMonthsData.length === 0 && usersFilteredOneYearData.length === 0 ? (
+          <p className="text-center" style={{ color: darkMode ? '#fff' : '#000' }}>
+            No anniversaries found
+          </p>
+        ) : (
+          <>
+            {usersFilteredSixMonthsData}
+            {usersFilteredOneYearData}
+          </>
+        )}
       </ul>
     </div>
   );
