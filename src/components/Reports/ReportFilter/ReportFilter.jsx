@@ -1,4 +1,7 @@
+import PropTypes from 'prop-types';
 import { Component } from 'react';
+import { Button } from 'reactstrap';
+import { boxStyle, boxStyleDark } from '~/styles';
 import ReportTableSearchPanel from '../ReportTableSearchPanel';
 
 class ReportFilter extends Component {
@@ -32,14 +35,16 @@ class ReportFilter extends Component {
   }
 
   render() {
+    const { darkMode } = this.props;
     return (
-      <div>
+       <div style={{ color: darkMode ? '#fff' : 'inherit' }}>
         <div>
-          <button type="button" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: 'blue', textDecoration: 'underline' }}>
+          <button type="button" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: '#007bff', textDecoration: 'none' }}>
             Select a Filter
           </button>
         </div>
-        <div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ color: darkMode ? '#fff' : 'inherit' }}>
           <input
             name="radio"
             type="radio"
@@ -77,16 +82,47 @@ class ReportFilter extends Component {
           />
           10+ hours
         </div>
+        <Button
+            onClick={() => window.location.reload()}
+            color="danger"
+            style={darkMode ? boxStyleDark : boxStyle}
+          >
+            Clear All
+        </Button>
+        </div>
         <div className="mt-4">
           <ReportTableSearchPanel
             onSearch={this.onWildCardSearch}
             wildCardSearchText={this.props.wildCardSearchText}
             onCreateNewTeamClick={this.props.onCreateNewTeamShow}
+            onScrollToResults={this.props.scrollToResults}
+            onSearchClick={this.props.onSearchClick}
           />
         </div>
       </div>
     );
   }
 }
+ReportFilter.propTypes = {
+  darkMode: PropTypes.bool,
+  filterStatus: PropTypes.string,
+  setFilterStatus: PropTypes.func,
+  onWildCardSearch: PropTypes.func,
+  wildCardSearchText: PropTypes.string,
+  onCreateNewTeamShow: PropTypes.func,
+  scrollToResults: PropTypes.func,
+  onSearchClick: PropTypes.func,
+};
+
+ReportFilter.defaultProps = {
+  darkMode: false,
+  filterStatus: 'all',
+  setFilterStatus: () => {},
+  onWildCardSearch: () => {},
+  wildCardSearchText: '',
+  onCreateNewTeamShow: () => {},
+  scrollToResults: () => {},
+  onSearchClick: () => {},
+};
 
 export default ReportFilter;

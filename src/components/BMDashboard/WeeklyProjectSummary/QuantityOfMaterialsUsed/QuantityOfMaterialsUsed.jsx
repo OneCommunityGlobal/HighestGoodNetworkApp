@@ -17,10 +17,10 @@ import {
   LineController,
 } from 'chart.js';
 import { useSelector } from 'react-redux';
-import './QuantityOfMaterialsUsed.css';
 import ReactTooltip from 'react-tooltip';
 import { Info, Repeat } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
+import styles from './QuantityOfMaterialsUsed.module.css';
 
 ChartJS.register(
   BarElement,
@@ -82,6 +82,87 @@ function QuantityOfMaterialsUsed({ data }) {
   const [showModal, setShowModal] = useState(false);
 
   const [isSmallScreen, setIsSmallScreen] = useState(false);
+
+  const selectStyles = useMemo(
+    () => ({
+      control: base => ({
+        ...base,
+        backgroundColor: darkMode ? '#22272e' : '#fff',
+        borderColor: darkMode ? '#375071' : '#ccc',
+        color: darkMode ? '#fff' : '#232323',
+        minHeight: 38,
+        boxShadow: 'none',
+        borderRadius: 8,
+      }),
+      menu: base => ({
+        ...base,
+        backgroundColor: darkMode ? '#22272e' : '#fff',
+        fontSize: 12,
+        zIndex: 10001,
+        borderRadius: 8,
+        marginTop: 2,
+        color: darkMode ? '#fff' : '#232323',
+      }),
+      menuList: base => ({
+        ...base,
+        maxHeight: 400,
+        overflowY: 'auto',
+        backgroundColor: darkMode ? '#22272e' : '#fff',
+        color: darkMode ? '#fff' : '#232323',
+        padding: 0,
+      }),
+      option: (base, state) => ({
+        ...base,
+        backgroundColor: state.isSelected
+          ? '#0d55b3'
+          : state.isFocused
+          ? '#0d55b3'
+          : darkMode
+          ? '#22272e'
+          : '#fff',
+        color: state.isSelected ? '#fff' : darkMode ? '#fff' : '#232323',
+        fontSize: 13,
+        padding: '10px 16px',
+        cursor: 'pointer',
+      }),
+      multiValue: base => ({
+        ...base,
+        backgroundColor: darkMode ? '#375071' : '#e2e7ee',
+        borderRadius: 6,
+        fontSize: 12,
+        marginRight: 4,
+      }),
+      multiValueLabel: base => ({
+        ...base,
+        color: darkMode ? '#fff' : '#333',
+        fontSize: 12,
+        padding: '2px 6px',
+      }),
+      multiValueRemove: base => ({
+        ...base,
+        color: darkMode ? '#fff' : '#333',
+        ':hover': {
+          backgroundColor: darkMode ? '#0d55b3' : '#e2e7ee',
+          color: '#fff',
+        },
+        borderRadius: 4,
+        padding: 2,
+      }),
+      singleValue: base => ({
+        ...base,
+        color: darkMode ? '#fff' : base.color,
+      }),
+      input: base => ({
+        ...base,
+        color: darkMode ? '#fff' : base.color,
+      }),
+      placeholder: base => ({
+        ...base,
+        color: darkMode ? '#fff' : base.color,
+      }),
+    }),
+    [darkMode],
+  );
 
   useEffect(() => {
     const handleResize = () => {
@@ -558,12 +639,14 @@ function QuantityOfMaterialsUsed({ data }) {
       className={`weekly-project-summary-card normal-card ${darkMode ? 'dark-mode' : ''}`}
       style={{ position: 'relative' }}
     >
-      <div className="chart-title-container">
-        <h2 className="quantity-of-materials-used-chart-title">Quantity of Materials Used</h2>
+      <div className={`${styles.chartTitleContainer}`}>
+        <h2 className={`${styles.quantityOfMaterialsUsedChartTitle}`}>
+          Quantity of Materials Used
+        </h2>
 
         <button
           type="button"
-          className="quantity-of-materials-used-chart-info-button"
+          className={`${styles.quantityOfMaterialsUsedChartInfoButton}`}
           data-tip
           data-for="materials-info"
           aria-label="Chart Info"
@@ -576,7 +659,7 @@ function QuantityOfMaterialsUsed({ data }) {
         id="materials-info"
         place="left"
         effect="solid"
-        className="quantity-of-materials-used-chart-tooltip"
+        className={`${styles.quantityOfMaterialsUsedChartTooltip}`}
         clickable
         event="click"
         globalEventOff="click"
@@ -592,7 +675,8 @@ function QuantityOfMaterialsUsed({ data }) {
           </li>
           <li>Hover over bars or dots to view exact quantities.</li>
           <li>
-            <strong>Click on a bar</strong> to view detailed usage:
+            <strong className={darkMode ? 'text-light' : ''}>Click on a bar </strong> to view
+            detailed usage:
             <ul style={{ paddingLeft: '16px' }}>
               <li>Usage timeline (date-wise quantity)</li>
               <li>Project where it was used the most</li>
@@ -616,20 +700,22 @@ function QuantityOfMaterialsUsed({ data }) {
             Legend colors match chart bars. Dots are color-coded based on change:
             <ul style={{ paddingLeft: '16px' }}>
               <li>
-                <strong>Red</strong> – Increase in usage
+                <strong className={darkMode ? 'text-light' : ''}>Red</strong> – Increase in usage
               </li>
               <li>
-                <strong>Green</strong> – Decrease in usage
+                <strong className={darkMode ? 'text-light' : ''}>Green</strong> – Decrease in usage
               </li>
               <li>
-                <strong>Gray</strong> – No change
+                <strong className={darkMode ? 'text-light' : ''}>Gray</strong> – No change
               </li>
             </ul>
           </li>
           <li>Scrollbars only appear when content overflows, maintaining a clean layout.</li>
         </ul>
       </ReactTooltip>
-      <div className="quantity-of-materials-used-dropdown dropdown-container quantity-of-materials-used-card">
+      <div
+        className={`quantity-of-materials-used-dropdown ${styles.dropdownContainer} ${styles.quantityOfMaterialsUsedCard}`}
+      >
         <Select
           isMulti
           isSearchable
@@ -638,13 +724,14 @@ function QuantityOfMaterialsUsed({ data }) {
           onChange={selectedOptions =>
             setSelectedMaterials(selectedOptions.map(({ value }) => value))
           }
-          placeholder="All Materials"
+          placeholder="All Materials testing"
           classNamePrefix="custom-select"
-          className="quantity-of-materials-used-dropdown-item dropdown-item custom-scrollbar multi-select"
+          className={`quantity-of-materials-used-dropdown-item ${styles.dropdownItem} custom-scrollbar ${styles.multiSelect}`}
           menuPosition="fixed"
           menuPlacement={isSmallScreen ? 'top' : 'auto'}
           closeMenuOnSelect={false}
           hideSelectedOptions={false}
+          styles={selectStyles}
         />
 
         <Select
@@ -653,8 +740,9 @@ function QuantityOfMaterialsUsed({ data }) {
           placeholder="Organization"
           menuPlacement={isSmallScreen ? 'top' : 'auto'}
           classNamePrefix="custom-select"
-          className="quantity-of-materials-used-dropdown-item dropdown-item"
+          className={`quantity-of-materials-used-dropdown-item ${styles.dropdownItem}`}
           // isDisabled
+          styles={selectStyles}
         />
         <Select
           options={dateOptions}
@@ -668,12 +756,13 @@ function QuantityOfMaterialsUsed({ data }) {
           }}
           placeholder="Date"
           classNamePrefix="custom-select"
-          className="quantity-of-materials-used-dropdown-item dropdown-item"
+          className={`quantity-of-materials-used-dropdown-item ${styles.dropdownItem}`}
+          styles={selectStyles}
         />
       </div>
 
       {selectedDate === 'Custom' && (
-        <div className="quantity-of-material-used-date-picker-container">
+        <div className={`${styles.quantityOfMaterialUsedDatePickerContainer}`}>
           <DatePicker
             selected={dateRangeOne[0]}
             onChange={dates => {
@@ -691,7 +780,7 @@ function QuantityOfMaterialsUsed({ data }) {
             maxDate={new Date()}
             dateFormat="MM/dd/yy - MM/dd/yy"
             placeholderText="Select Date Range one"
-            className="quantity-of-material-used-custom-date-picker"
+            className={`${styles.quantityOfMaterialUsedCustomDatePicker}`}
             disabledKeyboardNavigation
             calendarStartDay={1}
             shouldCloseOnSelect={false}
@@ -708,7 +797,7 @@ function QuantityOfMaterialsUsed({ data }) {
           />
           <button
             type="button"
-            className="quantity-of-materials-used-swap-dates-button"
+            className={`${styles.quantityOfMaterialsUsedSwapDatesButton}`}
             onClick={() => {
               const newRangeOne = [...dateRangeTwo];
               const newRangeTwo = [...dateRangeOne];
@@ -736,7 +825,7 @@ function QuantityOfMaterialsUsed({ data }) {
             maxDate={new Date()}
             dateFormat="MM/dd/yy - MM/dd/yy"
             placeholderText="Select Date Range two"
-            className="quantity-of-material-used-custom-date-picker"
+            className={`${styles.quantityOfMaterialUsedCustomDatePicker}`}
             disabledKeyboardNavigation
             calendarStartDay={1}
             shouldCloseOnSelect={false}
@@ -755,13 +844,13 @@ function QuantityOfMaterialsUsed({ data }) {
       )}
 
       <div
-        className="quantity-of-materials-used-chart-container"
+        className={`${styles.quantityOfMaterialsUsedChartContainer}`}
         ref={chartContainerRef}
         onScroll={handleScroll}
       >
         {chartData ? (
           <div
-            className="quantity-of-materials-used-chart-inner-scrollable"
+            className={`${styles.quantityOfMaterialsUsedChartInnerScrollable}`}
             style={{
               minWidth: `${chartData.labels.length * barWidth}px`,
             }}
@@ -856,12 +945,12 @@ function QuantityOfMaterialsUsed({ data }) {
       {/* Fixed legend below label */}
       {chartData && chartData.labels && visibleRange && (
         <div
-          className="quantity-of-materials-used-custom-legend-container"
+          className={`${styles.quantityOfMaterialsUsedCustomLegendContainer}`}
           style={{
             color: 'var(--text-color)',
           }}
         >
-          <strong>
+          <strong className={darkMode ? 'text-light' : ''}>
             Visible Top {Math.min(10, visibleRange[1] - visibleRange[0])} of {selectedDate}:{' '}
           </strong>
           {chartData.datasets[0].data
@@ -879,9 +968,9 @@ function QuantityOfMaterialsUsed({ data }) {
             .sort((a, b) => b.usage - a.usage)
             .slice(0, 10)
             .map(({ name, color }, index) => (
-              <span key={uuidv4()} className="quantity-of-materials-used-legend-item">
+              <span key={uuidv4()} className={`${styles.quantityOfMaterialsUsedLegendItem}`}>
                 <span
-                  className="quantity-of-materials-used-legend-dot"
+                  className={`${styles.quantityOfMaterialsUsedLegendDot}`}
                   style={{
                     backgroundColor: color,
                     display: 'inline-block',
@@ -898,16 +987,16 @@ function QuantityOfMaterialsUsed({ data }) {
         </div>
       )}
       {showModal && selectedMaterialName && (
-        <div className="quantity-modal-overlay">
-          <div className="quantity-modal-content">
-            <div className="quantity-modal-header">
-              <h3 className="quantity-modal-heading">
+        <div className={`${styles.quantityModalOverlay}`}>
+          <div className={`${styles.quantityModalContent}`}>
+            <div className={`${styles.quantityModalHeader}`}>
+              <h3 className={`${styles.quantityModalHeading}`}>
                 <span>{selectedMaterialName} – Usage Details</span>
               </h3>
               <button
                 type="button"
                 onClick={() => setShowModal(false)}
-                className="quantity-modal-close-button"
+                className={`${styles.quantityModalCloseButton}`}
               >
                 Close
               </button>
@@ -919,19 +1008,25 @@ function QuantityOfMaterialsUsed({ data }) {
 
               return (
                 <>
-                  <p>
-                    <strong>Highest Usage in:</strong> {details.project}
+                  <p className={darkMode ? 'text-light' : ''}>
+                    <strong className={darkMode ? 'text-light' : ''}>Highest Usage in:</strong>{' '}
+                    {details.project}
                   </p>
-                  <p>
-                    <strong>Total Quantity:</strong> {details.total}
+                  <p className={darkMode ? 'text-light' : ''}>
+                    <strong className={darkMode ? 'text-light' : ''}>Total Quantity:</strong>{' '}
+                    {details.total}
                   </p>
 
-                  <h4 className="quantity-modal-subheading">📅 Usage Timeline</h4>
-                  <div className="quantity-modal-timeline">
+                  <h4 className={`${styles.quantityModalSubheading}`}>📅 Usage Timeline</h4>
+                  <div className={`${styles.quantityModalTimeline}`}>
                     {details.timeline.map(item => (
-                      <div key={uuidv4()} className="timeline-row">
-                        <span className="timeline-date">{item.date}</span>
-                        <span className="timeline-qty">{item.quantity}</span>
+                      <div key={uuidv4()} className={`${styles.timelineRow}`}>
+                        <span className={`${styles.timelineDate} ${darkMode ? ' text-light' : ''}`}>
+                          {item.date}
+                        </span>
+                        <span className={`${styles.timelineQty} ${darkMode ? ' text-light' : ''}`}>
+                          {item.quantity}
+                        </span>
                       </div>
                     ))}
                   </div>

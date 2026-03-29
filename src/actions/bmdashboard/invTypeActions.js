@@ -14,6 +14,12 @@ import GET_MATERIAL_TYPES, {
   GET_CONSUMABLE_TYPES,
   GET_REUSABLE_TYPES,
   GET_EQUIPMENT_TYPES,
+  ADD_INVENTORY_TYPE_SUCCESS,
+  ADD_INVENTORY_TYPE_ERROR,
+  UPDATE_INVENTORY_TYPE_SUCCESS,
+  UPDATE_INVENTORY_TYPE_ERROR,
+  DELETE_INVENTORY_TYPE_SUCCESS,
+  DELETE_INVENTORY_TYPE_ERROR,
 } from '../../constants/bmdashboard/inventoryTypeConstants';
 import {
   POST_TOOLS_LOG,
@@ -21,7 +27,7 @@ import {
   RESET_POST_TOOLS_LOG,
 } from '../../constants/bmdashboard/toolsConstants';
 import { GET_ERRORS } from '../../constants/errors';
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 
 export const setConsumableTypes = payload => {
   return {
@@ -300,5 +306,71 @@ export const setPostErrorToolsLog = payload => {
 export const resetPostToolsLog = () => {
   return {
     type: RESET_POST_TOOLS_LOG,
+  };
+};
+
+// ============ Generic Inventory Type CRUD Actions ============
+
+/**
+ * Add a new inventory type
+ * @param {Object} payload - { name, description, category }
+ * @param {string} category - The category (Materials, Consumables, Equipments, Reusables, Tools)
+ */
+export const addInventoryType = (payload, category) => {
+  return async dispatch => {
+    try {
+      const res = await axios.post(ENDPOINTS.BM_INVTYPE_ROOT, { ...payload, category });
+      dispatch({ type: ADD_INVENTORY_TYPE_SUCCESS, payload: res.data });
+      // Refresh the list for this category
+      dispatch(fetchInvTypeByType(category));
+      return { success: true, data: res.data };
+    } catch (err) {
+      const errorMsg = err.response?.data?.message || err.response?.data || 'Failed to add inventory type';
+      dispatch({ type: ADD_INVENTORY_TYPE_ERROR, payload: errorMsg });
+      return { success: false, error: errorMsg };
+    }
+  };
+};
+
+/**
+ * Update an existing inventory type
+ * @param {string} typeId - The ID of the inventory type
+ * @param {Object} payload - { name, description }
+ * @param {string} category - The category to refresh after update
+ */
+export const updateInventoryType = (typeId, payload, category) => {
+  return async dispatch => {
+    try {
+      const res = await axios.put(ENDPOINTS.BM_INVTYPE_BY_ID(typeId), payload);
+      dispatch({ type: UPDATE_INVENTORY_TYPE_SUCCESS, payload: res.data });
+      // Refresh the list for this category
+      dispatch(fetchInvTypeByType(category));
+      return { success: true, data: res.data };
+    } catch (err) {
+      const errorMsg = err.response?.data?.message || err.response?.data || 'Failed to update inventory type';
+      dispatch({ type: UPDATE_INVENTORY_TYPE_ERROR, payload: errorMsg });
+      return { success: false, error: errorMsg };
+    }
+  };
+};
+
+/**
+ * Delete an inventory type
+ * @param {string} typeId - The ID of the inventory type
+ * @param {string} category - The category to refresh after delete
+ */
+export const deleteInventoryType = (typeId, category) => {
+  return async dispatch => {
+    try {
+      await axios.delete(ENDPOINTS.BM_INVTYPE_BY_ID(typeId));
+      dispatch({ type: DELETE_INVENTORY_TYPE_SUCCESS, payload: typeId });
+      // Refresh the list for this category
+      dispatch(fetchInvTypeByType(category));
+      return { success: true };
+    } catch (err) {
+      const errorMsg = err.response?.data?.message || err.response?.data || 'Failed to delete inventory type';
+      dispatch({ type: DELETE_INVENTORY_TYPE_ERROR, payload: errorMsg });
+      return { success: false, error: errorMsg };
+    }
   };
 };

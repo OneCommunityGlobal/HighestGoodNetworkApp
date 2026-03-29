@@ -13,11 +13,11 @@ import {
 import { useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEyeSlash, faEye } from '@fortawesome/free-solid-svg-icons';
-import { boxStyle, boxStyleDark } from 'styles';
-import '../Header/DarkMode.css';
+import { boxStyle, boxStyleDark } from '~/styles';
+import '../Header/index.css';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import {
   authorizeWeeklySummaries,
   authorizeWeeklySummariesReportError,
@@ -79,7 +79,7 @@ export default function PasswordInputModal({
 
   const onSubmit = () => {
     setPasswordField('');
-    authorizeWeeklySummariesButton(passwordField);
+    authorizeWeeklySummariesButton();
   };
 
   return (
@@ -87,7 +87,6 @@ export default function PasswordInputModal({
       <Modal
         isOpen={open}
         toggle={onClose}
-        autoFocus={false}
         size="md"
         className={darkMode ? 'text-light dark-mode' : ''}
       >
@@ -103,10 +102,10 @@ export default function PasswordInputModal({
           )}
           <FormGroup>
             <Input
-              autoFocus
               type={showPassword ? 'text' : 'password'}
               name="passwordField"
               id="passwordField"
+              autoComplete="current-password"
               value={passwordField}
               onChange={onChangeFunc}
               data-testid="password-input"
