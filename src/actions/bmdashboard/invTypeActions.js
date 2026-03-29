@@ -9,6 +9,8 @@ import GET_MATERIAL_TYPES, {
   POST_BUILDING_TOOL_INVENTORY_TYPE,
   POST_ERROR_BUILDING_TOOL_INVENTORY_TYPE,
   RESET_POST_BUILDING_TOOL_INVENTORY_TYPE,
+  POST_BUILDING_REUSABLE_INVENTORY_TYPE,
+  POST_ERROR_BUILDING_REUSABLE_INVENTORY_TYPE,
   GET_INV_BY_TYPE,
   GET_TOOL_TYPES,
   GET_CONSUMABLE_TYPES,
@@ -131,6 +133,20 @@ export const setPostBuildingToolTypeResult = payload => {
   };
 };
 
+export const setPostBuildingReusableTypeResult = payload => {
+  return {
+    type: POST_BUILDING_REUSABLE_INVENTORY_TYPE,
+    payload,
+  };
+};
+
+export const setPostErrorBuildingReusableTypeResult = payload => {
+  return {
+    type: POST_ERROR_BUILDING_REUSABLE_INVENTORY_TYPE,
+    payload,
+  };
+};
+
 export const setPostErrorBuildingInventoryTypeResult = payload => {
   return {
     type: POST_ERROR_BUILDING_MATERIAL_INVENTORY_TYPE,
@@ -195,10 +211,11 @@ export const fetchToolTypes = () => {
 export const fetchInvTypeByType = type => {
   const url = ENDPOINTS.BM_INVTYPE_TYPE(type);
   return async dispatch => {
-    axios
+    return axios
       .get(url)
       .then(res => {
         dispatch(setInvTypesByType({ type, data: res.data }));
+        return res;
       })
       .catch(err => {
         dispatch(setErrors(err));
@@ -208,10 +225,11 @@ export const fetchInvTypeByType = type => {
 
 export const postBuildingConsumableType = payload => {
   return async dispatch => {
-    axios
+    return axios
       .post(ENDPOINTS.BM_CONSUMABLES, payload)
       .then(res => {
         dispatch(setPostBuildingConsumableTypeResult(res.data));
+        return res;
       })
       .catch(err => {
         dispatch(
@@ -219,16 +237,18 @@ export const postBuildingConsumableType = payload => {
             JSON.stringify(err.response.data) || 'Sorry! Some error occurred!',
           ),
         );
+        throw err;
       });
   };
 };
 
 export const postBuildingToolType = payload => {
   return async dispatch => {
-    axios
+    return axios
       .post(ENDPOINTS.BM_TOOLS, payload)
       .then(res => {
         dispatch(setPostBuildingToolTypeResult(res.data));
+        return res;
       })
       .catch(err => {
         dispatch(
@@ -236,16 +256,37 @@ export const postBuildingToolType = payload => {
             JSON.stringify(err.response.data) || 'Sorry! Some error occurred!',
           ),
         );
+        throw err;
+      });
+  };
+};
+
+export const postBuildingReusableType = payload => {
+  return async dispatch => {
+    return axios
+      .post(ENDPOINTS.BM_REUSABLE_TYPE, payload)
+      .then(res => {
+        dispatch(setPostBuildingReusableTypeResult(res.data));
+        return res;
+      })
+      .catch(err => {
+        dispatch(
+          setPostErrorBuildingReusableTypeResult(
+            JSON.stringify(err.response?.data) || 'Sorry! Some error occurred!',
+          ),
+        );
+        throw err;
       });
   };
 };
 
 export const postBuildingInventoryType = payload => {
   return async dispatch => {
-    axios
+    return axios
       .post(ENDPOINTS.BM_MATERIAL_TYPE, payload)
       .then(res => {
         dispatch(setPostBuildingInventoryTypeResult(res.data));
+        return res;
       })
       .catch(err => {
         dispatch(
@@ -253,6 +294,7 @@ export const postBuildingInventoryType = payload => {
             JSON.stringify(err.response.data) || 'Sorry! Some error occurred!',
           ),
         );
+        throw err;
       });
   };
 };

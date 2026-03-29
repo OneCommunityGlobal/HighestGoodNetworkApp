@@ -20,6 +20,7 @@ import axios from 'axios';
 import {
   postBuildingInventoryType,
   postBuildingToolType,
+  postBuildingReusableType,
   postBuildingConsumableType,
   fetchInvTypeByType,
 } from '~/actions/bmdashboard/invTypeActions';
@@ -227,15 +228,22 @@ function AddEditInvTypeFullModal({ isOpen, toggle, category, mode = 'add', itemT
           fuel: formData.fuel,
         };
         response = await axios.put(ENDPOINTS.BM_INVTYPE_BY_ID(itemType._id), payload);
-      } else if (category === 'Tools' || category === 'Reusables') {
+      } else if (category === 'Tools') {
         const payload = {
           ...formData,
-          category: category === 'Tools' ? 'Tool' : 'Reusable',
+          category: 'Tool',
           images: imageURL[0] || itemType?.images || '',
           totalPriceWithShipping,
         };
-        // Try tool-specific endpoint first, fallback to generic
         response = await axios.put(ENDPOINTS.BM_TOOL_BY_ID(itemType._id), payload);
+      } else if (category === 'Reusables') {
+        const payload = {
+          ...formData,
+          category: 'Reusable',
+          images: imageURL[0] || itemType?.images || '',
+          totalPriceWithShipping,
+        };
+        response = await axios.put(ENDPOINTS.BM_INVTYPE_BY_ID(itemType._id), payload);
       } else {
         // Materials, Consumables
         const payload = {
@@ -249,7 +257,7 @@ function AddEditInvTypeFullModal({ isOpen, toggle, category, mode = 'add', itemT
 
       if (response.status === 200) {
         toast.success(`${getCategoryLabel()} type updated successfully!`);
-        dispatch(fetchInvTypeByType(category));
+        await dispatch(fetchInvTypeByType(category));
         toggle();
       }
     } catch (err) {
@@ -282,17 +290,29 @@ function AddEditInvTypeFullModal({ isOpen, toggle, category, mode = 'add', itemT
         } else {
           toast.error(`Error: ${result.status} ${result.statusText}`);
         }
-      } else if (category === 'Tools' || category === 'Reusables') {
+      } else if (category === 'Tools') {
         const payload = {
           ...formData,
-          category: category === 'Tools' ? 'Tool' : 'Reusable',
+          category: 'Tool',
           images: imageURL[0] || '',
           totalPriceWithShipping,
           createdBy: userId,
         };
-        dispatch(postBuildingToolType(payload));
-        toast.success(`${getCategoryLabel()} type added successfully!`);
-        dispatch(fetchInvTypeByType(category));
+        await dispatch(postBuildingToolType(payload));
+        toast.success('Tool type added successfully!');
+        await dispatch(fetchInvTypeByType(category));
+        toggle();
+      } else if (category === 'Reusables') {
+        const payload = {
+          ...formData,
+          category: 'Reusable',
+          images: imageURL[0] || '',
+          totalPriceWithShipping,
+          createdBy: userId,
+        };
+        await dispatch(postBuildingReusableType(payload));
+        toast.success('Reusable type added successfully!');
+        await dispatch(fetchInvTypeByType(category));
         toggle();
       } else if (category === 'Consumables') {
         const payload = {
@@ -302,12 +322,11 @@ function AddEditInvTypeFullModal({ isOpen, toggle, category, mode = 'add', itemT
           totalPriceWithShipping,
           createdBy: userId,
         };
-        dispatch(postBuildingConsumableType(payload));
+        await dispatch(postBuildingConsumableType(payload));
         toast.success('Consumable type added successfully!');
-        dispatch(fetchInvTypeByType(category));
+        await dispatch(fetchInvTypeByType(category));
         toggle();
       } else {
-        // Materials
         const payload = {
           ...formData,
           category: 'Material',
@@ -315,9 +334,9 @@ function AddEditInvTypeFullModal({ isOpen, toggle, category, mode = 'add', itemT
           totalPriceWithShipping,
           createdBy: userId,
         };
-        dispatch(postBuildingInventoryType(payload));
+        await dispatch(postBuildingInventoryType(payload));
         toast.success('Material type added successfully!');
-        dispatch(fetchInvTypeByType(category));
+        await dispatch(fetchInvTypeByType(category));
         toggle();
       }
     } catch {
