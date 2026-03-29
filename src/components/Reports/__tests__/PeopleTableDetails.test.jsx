@@ -193,13 +193,14 @@ describe('PeopleTableDetails component', () => {
     render(<PeopleTableDetails taskData={tasks} />);
 
     const allButtons = screen.getAllByRole('button');
+    // Find the button by its content (the "1+" text indicating more resources)
     const toggleButton = allButtons.find(button =>
-      button.classList.contains('resourceMoreToggle')
+      button.textContent.includes('+')
     );
     expect(toggleButton).toBeInTheDocument();
 
     // eslint-disable-next-line testing-library/no-node-access
-    const extraDiv = toggleButton.parentElement.querySelector('.extra');
+    const extraDiv = document.getElementById(tasks[0]._id);
     expect(extraDiv).toBeInTheDocument();
 
     fireEvent.click(toggleButton);

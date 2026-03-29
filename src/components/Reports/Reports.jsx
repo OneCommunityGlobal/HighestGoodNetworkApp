@@ -5,6 +5,7 @@
 import moment from 'moment-timezone';
 import { Component } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
+import './index.css';
 import { connect } from 'react-redux';
 import { Button, Container } from 'reactstrap';
 import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
@@ -25,7 +26,7 @@ import LostTimeHistory from './LostTime/LostTimeHistory';
 import PeopleTable from './PeopleTable';
 import ProjectTable from './ProjectTable';
 import ReportFilter from './ReportFilter/ReportFilter';
-import './reportsPage.css';
+import './reportsPage.module.css';
 import TeamTable from './TeamTable';
 import TotalContributorsReport from './TotalReport/TotalContributorsReport';
 import TotalPeopleReport from './TotalReport/TotalPeopleReport';
@@ -564,7 +565,7 @@ endDate: moment()
               </div>
             </h2>
             <div>
-              <p >Select a Category</p>
+              <p>Select a Category</p>
             </div>
             <div className='report-container-data'>
               <div className='data-container' style={this.state.showCharts ? {width: '50%'} : {width: '100%'}}>
