@@ -99,7 +99,9 @@ function EditPanel({
                   opacity: btnOpacity,
                   whiteSpace: 'nowrap',
                 }}
-              ></button>
+              >
+                {item.label}
+              </button>
               <button
                 type="button"
                 aria-label={`Delete ${item.label}`}

@@ -2180,12 +2180,19 @@ const WeeklySummariesReport = props => {
 
   const applyFilter = selectedFilter => {
     const filter = selectedFilter.filterData;
-    const selectedCodesChoice = state.teamCodes.filter(code =>
-      filter.selectedCodes.has(code.value),
-    );
+
+    const savedCodeValues = Array.isArray(filter.selectedCodes)
+      ? filter.selectedCodes
+      : Array.from(filter.selectedCodes || []);
+
+    const selectedCodesChoice = savedCodeValues
+      .map(savedCodeValue => state.teamCodes.find(code => code.value === savedCodeValue))
+      .filter(Boolean);
+
     const selectedColorsChoice = state.colorOptions.filter(color =>
       filter.selectedColors.has(color.value),
     );
+
     const selectedExtraMembersChoice = state.summaries
       .filter(summary => filter.selectedExtraMembers.has(summary._id))
       .map(summary => ({
