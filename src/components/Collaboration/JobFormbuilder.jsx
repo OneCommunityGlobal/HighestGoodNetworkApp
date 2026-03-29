@@ -563,11 +563,6 @@ function JobFormBuilder() {
                 onCancel={handleCancelEdit}
               />
             )}
-            <div className={styles.saveSection}>
-              <button type="submit" className={styles.jobSubmitButton} onClick={handleSubmit}>
-                Save Form
-              </button>
-            </div>
           </div>
         ) : null}
         <FormPreviewModal
