@@ -2130,7 +2130,7 @@ const WeeklySummariesReport = props => {
         </Col>
       </Row>
       <Row className={styles['mx-max-sm-0']}>
-        <Col lg={{ size: 5, offset: 1 }} md={{ size: 6 }} xs={{ size: 12 }}>
+        <Col lg={{ size: 5, offset: 1 }} md={{ size: 6 }} xs={{ size: 12 }} className="mb-3">
           <div>Select Extra Members</div>
           <MultiSelect
             className={`${styles['report-multi-select-filter']} ${styles.textDark} 
