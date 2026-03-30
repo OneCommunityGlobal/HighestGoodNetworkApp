@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
 import classnames from 'classnames';
 import SocialMediaComposer from './SocialMediaComposer';
+import TruthSocialAutoPoster from '../AutoPoster/TruthSocialAutoPoster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faEnvelope,
@@ -130,19 +131,23 @@ function Announcements({ title, email: initialEmail }) {
           </TabPane>
 
           <TabPane tabId="video">
-            <SocialMediaComposer platform="video" />
+            <SocialMediaComposer platform="video" darkMode={darkMode} />
           </TabPane>
 
           <TabPane tabId="article">
-            <SocialMediaComposer platform="article" />
+            <SocialMediaComposer platform="article" darkMode={darkMode} />
           </TabPane>
 
           <TabPane tabId="photo">
-            <SocialMediaComposer platform="photo" />
+            <SocialMediaComposer platform="photo" darkMode={darkMode} />
           </TabPane>
 
           <TabPane tabId="weeklyreport">
-            <SocialMediaComposer platform="weeklyreport" />
+            <SocialMediaComposer platform="weeklyreport" darkMode={darkMode} />
+          </TabPane>
+
+          <TabPane tabId="truthsocial">
+            <TruthSocialAutoPoster darkMode={darkMode} />
           </TabPane>
 
           {[
@@ -172,7 +177,7 @@ function Announcements({ title, email: initialEmail }) {
               platform === 'slashdot' ? SlashdotAutoPoster : SocialMediaComposer;
             return (
               <TabPane tabId={platform} key={platform}>
-                <PlatformComposer platform={platform} />
+                <PlatformComposer platform={platform} darkMode={darkMode} />
               </TabPane>
             );
           })}
