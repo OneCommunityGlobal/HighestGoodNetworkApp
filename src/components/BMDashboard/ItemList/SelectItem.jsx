@@ -1,4 +1,4 @@
-import { Form, FormGroup, Label, Input } from 'reactstrap';
+import { Form, FormGroup, Label } from 'reactstrap';
 import styles from './ItemListView.module.css';
 
 export default function SelectItem({
@@ -28,9 +28,7 @@ export default function SelectItem({
         ];
       }
     } else if (label === 'Consumables') {
-      // --- FIX: Added logic for Consumables ---
       if (selectedProject === 'all') {
-        // Uses the 'name' field we flattened in the parent component
         itemSet = [...new Set(items.filter(m => m.name && m.name !== 'N/A').map(m => m.name))];
       } else {
         itemSet = [
@@ -60,19 +58,14 @@ export default function SelectItem({
     }
   }
 
-  const darkStyle = isDarkMode
-    ? { backgroundColor: '#1e293b', color: '#e5e7eb', borderColor: '#334155' }
-    : undefined;
-
   return (
     <Form>
       <FormGroup className={styles.selectInput}>
         <Label htmlFor="select-item">{label}:</Label>
-
         <select
           id="select-item"
           name="select-item"
-          className={styles.filterSelect}
+          className={`${styles.filterSelect} ${isDarkMode ? styles.darkTheme : styles.lightTheme}`}
           value={
             label === 'Condition'
               ? selectedCondition
