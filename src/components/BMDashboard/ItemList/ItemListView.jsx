@@ -59,7 +59,11 @@ export function ItemListView({
 
   if (isError) {
     return (
-      <main className={`${styles.itemsListContainer} ${darkMode ? styles.darkMode : ''}`}>
+      <main
+        className={`${styles.itemsListContainer} ${darkMode ? styles.darkMode : ''} ${
+          darkMode ? styles.darkTheme : styles.lightTheme
+        }`}
+      >
         <h2>
           {itemType}
           {' List'}
@@ -70,7 +74,11 @@ export function ItemListView({
   }
 
   return (
-    <main className={`${styles.itemsListContainer} ${darkMode ? styles.darkMode : ''}`}>
+    <main
+      className={`${styles.itemsListContainer} ${darkMode ? styles.darkMode : ''} ${
+        darkMode ? styles.darkTheme : styles.lightTheme
+      }`}
+    >
       <h3>{itemType}</h3>
       <section>
         <div
@@ -102,6 +110,7 @@ export function ItemListView({
                   items={items}
                   setSelectedProject={setSelectedProject}
                   setSelectedItem={setSelectedItem}
+                  darkMode={darkMode}
                 />
               </div>
 
@@ -113,6 +122,7 @@ export function ItemListView({
                     selectedItem={selectedItem}
                     setSelectedItem={setSelectedItem}
                     label={itemType}
+                    isDarkMode={darkMode}
                   />
                 </div>
               )}

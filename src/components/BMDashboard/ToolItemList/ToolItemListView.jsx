@@ -1,6 +1,7 @@
 // ToolItemListView.jsx
 
 import { useState, useEffect, useMemo } from 'react';
+import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import BMError from '../shared/BMError';
 import SelectForm from '../ItemList/SelectForm';
@@ -9,7 +10,6 @@ import ToolItemsTable from './ToolItemsTable';
 import styles from './ToolItemListView.module.css';
 import { ToolFiltersProvider, useToolFilters } from '../Tools/ToolFiltersContext';
 
-// Same logic as ToolItemsTable for Using / Available
 const isItemUsing = item =>
   Array.isArray(item.itemType?.using) && item.itemType.using.includes(item._id);
 
@@ -19,51 +19,21 @@ const isItemAvailable = item =>
   item.condition !== 'Lost' &&
   item.condition !== 'Needs Replacing';
 
-// helper to normalize many possible truthy / falsy formats
 const toBool = raw => {
   if (typeof raw === 'boolean') return raw;
   if (typeof raw === 'number') return raw !== 0;
-
   if (typeof raw === 'string') {
     const v = raw.trim().toLowerCase();
     if (['yes', 'y', 'true', 't', '1'].includes(v)) return true;
     if (['no', 'n', 'false', 'f', '0'].includes(v)) return false;
   }
-  return undefined; // unknown
+  return undefined;
 };
 
 function ToolItemListViewInner({ itemType, items, errors = {}, UpdateItemModal, dynamicColumns }) {
   const [filteredItems, setFilteredItems] = useState(items || []);
   const [isError, setIsError] = useState(false);
-
-  // theme state
-  const [isDarkMode, setIsDarkMode] = useState(false);
-
-  // read dark / light from body class
-  useEffect(() => {
-    if (typeof document === 'undefined') return;
-
-    const checkDark = () => {
-      const className = document.body.className || '';
-      // treat ANY body class that contains "dark" (case-insensitive) as dark-mode
-      return /dark/i.test(className);
-    };
-
-    // initial value
-    setIsDarkMode(checkDark());
-
-    // watch for body class changes when the user toggles theme
-    const observer = new MutationObserver(() => {
-      setIsDarkMode(checkDark());
-    });
-
-    observer.observe(document.body, {
-      attributes: true,
-      attributeFilter: ['class'],
-    });
-
-    return () => observer.disconnect();
-  }, []);
+  const isDarkMode = useSelector(state => state.theme.darkMode);
 
   const { filters, setFilters } = useToolFilters();
   const {
@@ -81,7 +51,6 @@ function ToolItemListViewInner({ itemType, items, errors = {}, UpdateItemModal, 
     setIsError(Object.entries(errors).length > 0);
   }, [errors]);
 
-  // Compute list of unique conditions for dropdown
   const conditionOptions = useMemo(() => {
     if (!Array.isArray(items)) return [];
     return [...new Set(items.map(i => i.condition).filter(Boolean))].sort((a, b) =>
@@ -93,29 +62,24 @@ function ToolItemListViewInner({ itemType, items, errors = {}, UpdateItemModal, 
     if (!items) return [];
     let data = [...items];
 
-    // 1) Project filter
     if (selectedProject !== 'all') {
       data = data.filter(item => item.project?.name === selectedProject);
     }
 
-    // 2) Tool type filter
     if (selectedItem !== 'all') {
       data = data.filter(item => item.itemType?.name === selectedItem);
     }
 
-    // 3) Available filter
     if (availableFilter !== 'all') {
       const wantAvailable = availableFilter === 'yes';
       data = data.filter(item => isItemAvailable(item) === wantAvailable);
     }
 
-    // 4) Using filter
     if (usingFilter !== 'all') {
       const wantUsing = usingFilter === 'yes';
       data = data.filter(item => isItemUsing(item) === wantUsing);
     }
 
-    // 4.5) Tool Status (from upstream requirement)
     if (toolStatusFilter && toolStatusFilter !== 'all') {
       data = data.filter(item => {
         if (toolStatusFilter === 'using') return isItemUsing(item);
@@ -131,12 +95,10 @@ function ToolItemListViewInner({ itemType, items, errors = {}, UpdateItemModal, 
       });
     }
 
-    // 4.6) Condition (from upstream requirement)
     if (conditionFilter && conditionFilter !== 'all') {
       data = data.filter(item => item.condition === conditionFilter);
     }
 
-    // 5) Search
     if (searchTerm.trim()) {
       const term = searchTerm.toLowerCase();
       data = data.filter(item => {
@@ -151,7 +113,6 @@ function ToolItemListViewInner({ itemType, items, errors = {}, UpdateItemModal, 
       });
     }
 
-    // 6) Sorting (your existing switch)
     if (sortConfig?.key) {
       const { key, direction } = sortConfig;
       const mult = direction === 'asc' ? 1 : -1;
@@ -241,6 +202,7 @@ function ToolItemListViewInner({ itemType, items, errors = {}, UpdateItemModal, 
   }
 
   const themeClass = isDarkMode ? styles.darkTheme : styles.lightTheme;
+  const selectClass = styles.filterSelect;
 
   return (
     <main className={`${styles.itemsListContainer} ${themeClass}`}>
@@ -248,7 +210,6 @@ function ToolItemListViewInner({ itemType, items, errors = {}, UpdateItemModal, 
       <section>
         {items && (
           <div className={styles.filtersRow}>
-            {/* Row 1: Project + Tool */}
             <div className={styles.projectToolColumn}>
               <div className={styles.filterGroup}>
                 <SelectForm
@@ -257,7 +218,7 @@ function ToolItemListViewInner({ itemType, items, errors = {}, UpdateItemModal, 
                   selectedItem={selectedItem}
                   setSelectedProject={value => updateFilter({ selectedProject: value })}
                   setSelectedItem={value => updateFilter({ selectedItem: value })}
-                  isDarkMode={isDarkMode}
+                  darkMode={isDarkMode}
                 />
               </div>
 
@@ -273,7 +234,6 @@ function ToolItemListViewInner({ itemType, items, errors = {}, UpdateItemModal, 
               </div>
             </div>
 
-            {/* Row 2: Available / Using / Tool Status / Condition / Search */}
             <div className={styles.availSearchColumn}>
               <div className={styles.availSearchRow}>
                 <div className={styles.availUsingGroup}>
@@ -283,7 +243,7 @@ function ToolItemListViewInner({ itemType, items, errors = {}, UpdateItemModal, 
                     </label>
                     <select
                       id="available-filter"
-                      className={styles.filterSelect}
+                      className={selectClass}
                       value={availableFilter}
                       onChange={e => updateFilter({ availableFilter: e.target.value })}
                     >
@@ -299,7 +259,7 @@ function ToolItemListViewInner({ itemType, items, errors = {}, UpdateItemModal, 
                     </label>
                     <select
                       id="using-filter"
-                      className={styles.filterSelect}
+                      className={selectClass}
                       value={usingFilter}
                       onChange={e => updateFilter({ usingFilter: e.target.value })}
                     >
@@ -315,7 +275,7 @@ function ToolItemListViewInner({ itemType, items, errors = {}, UpdateItemModal, 
                     </label>
                     <select
                       id="tool-status-filter"
-                      className={styles.filterSelect}
+                      className={selectClass}
                       value={toolStatusFilter || 'all'}
                       onChange={e => updateFilter({ toolStatusFilter: e.target.value })}
                     >
@@ -332,7 +292,7 @@ function ToolItemListViewInner({ itemType, items, errors = {}, UpdateItemModal, 
                     </label>
                     <select
                       id="condition-filter"
-                      className={styles.filterSelect}
+                      className={selectClass}
                       value={conditionFilter || 'all'}
                       onChange={e => updateFilter({ conditionFilter: e.target.value })}
                     >
