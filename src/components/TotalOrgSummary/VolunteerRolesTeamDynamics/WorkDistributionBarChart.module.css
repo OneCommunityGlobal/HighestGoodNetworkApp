@@ -56,12 +56,12 @@
 .tooltip {
   position: absolute;
   padding: 8px;
-  background: rgba(255, 255, 255, 0.95);
+  background: rgb(255 255 255 / 95%);
   border: 1px solid #ddd;
   border-radius: 4px;
   pointer-events: none;
   font-size: 12px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
 }
 
 /* Dark mode styles */
@@ -70,13 +70,13 @@
 }
 
 .darkMode .tooltip {
-  background: rgba(28, 37, 65, 0.95);
+  background: rgb(28 37 65 / 95%);
   border-color: #2f4157;
   color: #e0e0e0;
 }
 
 /* Responsive adjustments */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .chartContainer {
     height: 300px;
   }

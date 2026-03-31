@@ -102,6 +102,9 @@
   width: 50%;
   height: 22px;
   padding: 0;
+  line-height: 20px;
+  color: #bbb;
+  font-weight: bold;
   content: '';
 }
 
@@ -113,7 +116,10 @@
   background-color: #bbb;
 }
 
-.switchToggleInner::after {
+.switch-toggle-inner::after {
+  content: '';
+  padding-right: 2px;
+  text-align: right;
   background-color: white;
 }
 
@@ -138,7 +144,7 @@
 }
 
 .switchToggle:checked + .switchToggleLabel .switchToggleSwitch {
-  right: 4px;
+  right: 0;
   background: white;
 }
 
@@ -153,8 +159,8 @@
 }
 
 .copyIcon {
-  margin: 2px;
   cursor: pointer;
+  margin: 2px;
 }
 
 .filterContainer {
@@ -173,6 +179,7 @@
   display: flex;
   align-items: center;
   font-size: 0.7em;
+  margin-bottom: 8px;
 }
 
 .marginRight {
@@ -611,7 +618,6 @@
 
 .filterGroupLabel {
   margin: 0;
-  font-size: 18px;
   font-weight: 400;
   line-height: 1.2;
   white-space: nowrap;

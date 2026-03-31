@@ -6,7 +6,7 @@
   display: block;
 }
 
-@media (max-width: 1024px) {
+@media (width <= 1024px) {
   .desktop {
     display: none;
   }
@@ -42,7 +42,7 @@ th[data-testid='desktop-earned-dates'] {
 }
 
 /* Adjust layout for smaller screens */
-@media (max-width: 1024px) {
+@media (width <= 1024px) {
   th[data-testid='desktop-earned-dates'] {
     display: table-cell; /* adjust width or alignment here */
   }
@@ -91,7 +91,7 @@ th[data-testid='desktop-earned-dates'] {
   z-index: 10;
 }
 
-@media screen and (max-width: 991px) {
+@media screen and (width <= 991px) {
   .badge_dropdown {
     max-height: 250px;
     width: 100%;

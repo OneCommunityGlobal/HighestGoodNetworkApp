@@ -30,14 +30,14 @@
   align-items: center;
   cursor: pointer;
   appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
+  appearance: none;
+  appearance: none;
   min-width: 120px;
 }
 
 .duration-filter-select:focus {
   border: 2px solid #052c65;
-  box-shadow: 0 0 0 3px rgba(5, 44, 101, 0.1);
+  box-shadow: 0 0 0 3px rgb(5 44 101 / 10%);
 }
 
 .duration-filter-select:hover {
@@ -60,76 +60,88 @@
   transform: translateY(-50%) scale(1.1);
 }
 
-@media (max-width: 900px) {
+@media (width <= 900px) {
   .duration-filter-label {
     font-size: 0.95rem;
   }
+
   .duration-filter-select {
     font-size: 0.95rem;
     padding: 0.25rem 1.8rem 0.25rem 0.4rem;
     border-radius: 5px;
     min-width: 100px;
   }
+
   .duration-filter {
     gap: 0.4rem;
   }
+
   .duration-filter-icon {
     font-size: 0.75rem;
     right: 0.4rem;
   }
 }
 
-@media (max-width: 600px) {
+@media (width <= 600px) {
   .duration-filter-label {
     font-size: 0.85rem;
   }
+
   .duration-filter-select {
     font-size: 0.85rem;
     padding: 0.18rem 1.5rem 0.18rem 0.3rem;
     border-radius: 4px;
     min-width: 80px;
   }
+
   .duration-filter {
     gap: 0.3rem;
   }
+
   .duration-filter-icon {
     font-size: 0.7rem;
     right: 0.3rem;
   }
 }
 
-@media (max-width: 400px) {
+@media (width <= 400px) {
   .duration-filter-label {
     font-size: 0.7rem;
   }
+
   .duration-filter-select {
     font-size: 0.7rem;
     padding: 0.1rem 1.2rem 0.1rem 0.2rem;
     border-radius: 3px;
     min-width: 60px;
   }
+
   .duration-filter {
     gap: 0.18rem;
   }
+
   .duration-filter-icon {
     font-size: 0.6rem;
     right: 0.2rem;
   }
 }
 
-@media (max-width: 300px) {
+@media (width <= 300px) {
   .duration-filter-label {
     font-size: 0.5rem;
   }
+
   .duration-filter-select {
     font-size: 0.5rem;
     padding: 0.05rem 1rem 0.05rem 0.1rem;
     border-radius: 2px;
     min-width: 50px;
   }
+
   .duration-filter {
     gap: 0.08rem;
   }
+
   .duration-filter-icon {
     font-size: 0.5rem;
     right: 0.1rem;

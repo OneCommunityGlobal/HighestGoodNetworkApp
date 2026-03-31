@@ -3,7 +3,7 @@
   font-family: inherit;
   padding: 10px;
   border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 5%);
 
 }
 
@@ -78,6 +78,7 @@
   max-width: 600px;
   margin: 0 auto;
 }
+
 /* Date Picker */
 
 .paid-labor-cost-custom-date-range-picker {
@@ -91,9 +92,12 @@
 
 .paid-labor-cost-date-range-input {
   /* display: flex; */
+
   /* justify-content: space-between; */
   margin-top: 3px;
+
   /* padding: 2px 4px; */
+
   /* border: 1px solid #ddd; */
   transition: border-color 0.2s;
   flex: 1;
@@ -134,7 +138,7 @@
   max-width: 95vw;
   background-color: white;
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
   z-index: 999;
   overflow: hidden;
   box-sizing: border-box;
@@ -257,12 +261,13 @@
   color: #666;
 }
 
-@media screen and (max-width: 1130px) {
+@media screen and (width <= 1130px) {
   .paid-labor-cost-custom-date-range-picker {
     max-width: 100%;
     min-width: auto;
     flex: 1 1 100%;
   }
+
   .paid-labor-cost-date-range-calendar {
     left: 50%;
     transform: translateX(-50%);
@@ -314,7 +319,7 @@
 
 .dark-mode .paid-labor-cost-date-range-calendar {
   background-color: var(--card-bg);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 30%);
 }
 
 .dark-mode .paid-labor-cost-calendar-header {
@@ -363,7 +368,7 @@
 }
 
 .dark-mode .paid-labor-cost-day.in-range {
-  background-color: rgba(232, 167, 28, 0.2); /* var(--button-bg) with opacity */
+  background-color: rgb(232 167 28 / 20%); /* var(--button-bg) with opacity */
 }
 
 .dark-mode .paid-labor-cost-day.disabled {
@@ -449,7 +454,7 @@
   border: 1px solid #ccc;
   border-radius: 4px;
   padding: 0.25rem;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 10%);
   font-size: 0.75rem;
   color: #333;
   z-index: 100;
@@ -466,10 +471,10 @@
   right: 10px;
   border-width: 5px;
   border-style: solid;
-  border-color: transparent transparent #fff transparent;
+  border-color: transparent transparent #fff;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   /* Stack filters & inputs vertically when screen narrows */
   .paid-labor-cost-input-wrapper {
     flex-direction: column;
@@ -489,7 +494,7 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .paid-labor-cost-input-wrapper {
     margin-bottom: 0.5rem;
   }

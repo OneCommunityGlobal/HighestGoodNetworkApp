@@ -213,6 +213,7 @@ describe('TeamMemberTasks component', () => {
       theme,
       timeOffRequests,
       infoCollections: { loading: false },
+      role: rolesMock,
     });
     const { container } = render(
       <Provider store={testStore}>

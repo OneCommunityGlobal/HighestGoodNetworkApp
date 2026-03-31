@@ -3,7 +3,7 @@
   padding: 15px;
   border-radius: 5px;
   margin-bottom: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
 }
 
 .questionSetManager h3 {
@@ -47,7 +47,8 @@
 .saveTemplateButton,
 .loadTemplateButton,
 .appendTemplateButton,
-.deleteTemplateButton {
+.deleteTemplateButton,
+.clearTemplateButton {
   padding: 8px 12px;
   border: none;
   border-radius: 4px;
@@ -74,6 +75,24 @@
   background-color: #1976d2;
 }
 
+.clearTemplateButton {
+  background-color: rgb(100 100 100 / 30%);
+  color: #666;
+  border: 2px solid #999;
+}
+
+.clearTemplateButton:hover:not(:disabled) {
+  background-color: #555;
+  color: white;
+}
+
+.clearTemplateButton:disabled {
+  background-color: rgb(200 200 200 / 30%);
+  color: #999;
+  border: 2px solid #ddd;
+  cursor: not-allowed;
+}
+
 .appendTemplateButton {
   background-color: #ff9800;
   color: white;
@@ -92,7 +111,7 @@
   background-color: #d32f2f;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .templateActions {
     flex-direction: column;
     align-items: stretch;
@@ -103,6 +122,7 @@
     flex-direction: column;
   }
 }
+
 .questionSetManager.darkMode {
   background: linear-gradient(135deg, #23272a, #181a1b);
   color: #f1f1f1;
@@ -149,4 +169,34 @@
 
 .questionSetManager.darkMode .errorMessage {
   color: #ff6b6b;
+}
+
+/* Tooltip styles */
+.tooltip {
+  visibility: hidden;
+  min-width: 260px;
+  max-width: 320px;
+  background: #2d3748;
+  color: #fff;
+  text-align: center;
+  border-radius: 8px;
+  padding: 14px 18px;
+  position: absolute;
+  z-index: 20;
+  font-size: 15px;
+  font-weight: 500;
+  box-shadow: 0 4px 16px rgb(0 0 0 / 18%);
+  bottom: 120%; /* Show above the button */
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+  white-space: pre-line;
+}
+
+button:hover .tooltip,
+button:focus .tooltip {
+  visibility: visible;
+  opacity: 1;
 }

@@ -8,7 +8,7 @@
   width: 100%;
   padding: 8px 16px;
   text-align: left;
-  background-color: #ffffff;
+  background-color: #fff;
   border: 1px solid #d1d5db;
   border-radius: 6px;
   cursor: pointer;
@@ -32,15 +32,15 @@
   z-index: 10;
   width: 100%;
   margin-top: 4px;
-  background-color: #ffffff;
+  background-color: #fff;
   border: 1px solid #d1d5db;
   border-radius: 6px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgb(0 0 0 / 10%);
 }
 
 .dropdownButton:hover {
   background-color: #3b82f6;
-  color: #ffffff;
+  color: #fff;
 }
 
 .dropdownItem {
@@ -56,7 +56,7 @@
 
 .dropdownItem:hover {
   background-color: #3b82f6;
-  color: #ffffff;
+  color: #fff;
 }
 
 /* Dark Mode Styles */
@@ -74,12 +74,12 @@
 .darkMode .dropdownMenu {
   background-color: #1f2937;
   border-color: #4b5563;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 4px 6px rgb(0 0 0 / 40%);
 }
 
 .darkMode .dropdownButton:hover {
   background-color: #2563eb;
-  color: #ffffff;
+  color: #fff;
 }
 
 .darkMode .dropdownItem {
@@ -88,5 +88,5 @@
 
 .darkMode .dropdownItem:hover {
   background-color: #2563eb;
-  color: #ffffff;
+  color: #fff;
 }

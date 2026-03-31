@@ -11,7 +11,7 @@
     margin: 1rem auto;
   }
   
-  @media screen and (max-width: 800px) {
+  @media screen and (width <= 800px) {
     .purchaseToolContainer {
       width: 95%;
     }

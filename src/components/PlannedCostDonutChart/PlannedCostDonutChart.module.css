@@ -1,6 +1,6 @@
 .planned-cost-container {
   padding: 2rem;
-  background: #ffffff;
+  background: #fff;
   border-radius: 0;
   box-shadow: none;
   margin: 0;
@@ -15,7 +15,7 @@
 .planned-cost-container.dark-mode {
   background: #2d3748;
   color: #e2e8f0;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 6px rgb(0 0 0 / 30%);
 }
 
 .chart-title {
@@ -73,7 +73,7 @@
   padding-right: 2.5rem;
   font-size: 1rem;
   transition: border-color 0.3s ease;
-  background: #ffffff;
+  background: #fff;
   color: #2d3748;
 }
 
@@ -83,7 +83,7 @@
 
 .dropdown-search-input:focus {
   border-color: #4299e1;
-  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+  box-shadow: 0 0 0 3px rgb(66 153 225 / 10%);
   outline: none;
 }
 
@@ -109,7 +109,7 @@
 .dark-mode .dropdown-search-input:-webkit-autofill,
 .dark-mode .dropdown-search-input:-webkit-autofill:hover,
 .dark-mode .dropdown-search-input:-webkit-autofill:focus {
-  -webkit-box-shadow: 0 0 0 1000px #4a5568 inset !important;
+  box-shadow: 0 0 0 1000px #4a5568 inset !important;
   -webkit-text-fill-color: #e2e8f0 !important;
   transition: background-color 5000s ease-in-out 0s;
 }
@@ -140,18 +140,18 @@
   right: 0;
   max-height: 250px;
   overflow-y: auto;
-  background: #ffffff;
+  background: #fff;
   border: 2px solid #e2e8f0;
   border-top: none;
   border-radius: 0 0 6px 6px;
   z-index: 1000;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
 }
 
 .dark-mode .dropdown-options {
   background: #2d3748;
   border-color: #718096;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 40%);
 }
 
 .dropdown-option {
@@ -346,22 +346,22 @@
 
 /* Tooltip styling */
 .planned-cost-tooltip {
-  background: rgba(0, 0, 0, 0.9);
+  background: rgb(0 0 0 / 90%);
   color: white;
   padding: 0.75rem;
   border-radius: 6px;
   font-size: 0.9rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 6px rgb(0 0 0 / 30%);
 }
 
 .tooltip-category {
   font-weight: 600;
-  margin: 0 0 0.5rem 0;
-  color: #ffffff;
+  margin: 0 0 0.5rem;
+  color: #fff;
 }
 
 .tooltip-cost {
-  margin: 0 0 0.25rem 0;
+  margin: 0 0 0.25rem;
   color: #e2e8f0;
 }
 
@@ -401,7 +401,7 @@ html, body {
 }
 
 /* Responsive design */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .planned-cost-container {
     padding: 1rem;
     margin: 0.5rem 0;
@@ -436,7 +436,7 @@ html, body {
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .planned-cost-container {
     padding: 0.75rem;
   }
@@ -462,6 +462,7 @@ html, body {
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);

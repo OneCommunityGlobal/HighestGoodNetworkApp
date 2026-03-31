@@ -10,7 +10,7 @@
 .userCollaborationContainer {
   width: 90%;
   margin: 0 auto;
-  background-color: #ffffff;
+  background-color: #fff;
   border-radius: 10px;
   padding-bottom: 24px;
 }
@@ -82,12 +82,12 @@
   top: 100%;
   right: 12px;
   margin-top: 6px;
-  background-color: #ffffff;
+  background-color: #fff;
   padding: 8px 12px;
   border-radius: 6px;
   border: 1px solid #ccc;
   z-index: 1500;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 10px rgb(0 0 0 / 15%);
   animation: fadeInDropdown 0.12s ease-in-out;
 }
 
@@ -96,6 +96,7 @@
     opacity: 0;
     transform: translateY(-3px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -165,7 +166,7 @@
 }
 
 .jobAd {
-  background: #ffffff;
+  background: #fff;
   border-radius: 12px;
   border: 1px solid #ddd;
   padding: 14px;
@@ -176,7 +177,7 @@
 
 .jobAd:hover {
   transform: translateY(-5px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 6px 12px rgb(0 0 0 / 20%);
 }
 
 .jobAd img {
@@ -216,7 +217,7 @@
   padding: 6px 12px;
   border-radius: 6px;
   border: 1px solid #ccc;
-  background-color: #ffffff;
+  background-color: #fff;
   cursor: pointer;
 }
 
@@ -295,7 +296,7 @@
 .modalOverlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
+  background: rgb(0 0 0 / 55%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -304,12 +305,12 @@
 
 .modal {
   position: relative;
-  background-color: #ffffff;
+  background-color: #fff;
   border-radius: 10px;
   padding: 28px;
   max-width: 520px;
   width: 90%;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 10px 30px rgb(0 0 0 / 35%);
 }
 
 /* ================= DARK MODE – MODAL ================= */

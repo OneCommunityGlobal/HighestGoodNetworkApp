@@ -18,7 +18,7 @@
 /* Read-only div styling */
 .readOnlyDiv {
   padding: 10px 12px;
-  background-color: #ffffff !important;
+  background-color: #fff !important;
   border-radius: 6px;
   border: 1px solid #ced4da !important;
   color: #212529 !important;
@@ -39,7 +39,7 @@
   object-fit: cover;
   border-radius: 4px;
   border: 2px solid #dee2e6 !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
 }
 
 /* For larger square images - using a different class name */
@@ -49,7 +49,7 @@
   object-fit: cover;
   border-radius: 8px;
   border: 2px solid #dee2e6 !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
 }
 
 /* Confirmation text - consolidated single declaration */
@@ -80,8 +80,8 @@
 /* Custom select styling to prevent double arrows */
 .custom-select {
   appearance: none !important;
-  -webkit-appearance: none !important;
-  -moz-appearance: none !important;
+  appearance: none !important;
+  appearance: none !important;
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e") !important;
   background-repeat: no-repeat !important;
   background-position: right 0.75rem center !important;
@@ -100,14 +100,14 @@
 @media (prefers-color-scheme: dark) {
   .readOnlyDiv {
     background-color: #2d2d2d !important;
-    border-color: #444444 !important;
+    border-color: #444 !important;
     color: #e9ecef !important;
   }
   
   .squareImage,
   .largeSquareImage {
-    border-color: #444444 !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    border-color: #444 !important;
+    box-shadow: 0 2px 8px rgb(0 0 0 / 30%);
   }
   
   .updateConfirmText {
@@ -123,21 +123,21 @@
   /* Dark mode overrides with improved contrast ratios */
   :global(.dark-mode) .form-control {
     background-color: #2d2d2d !important;
-    border-color: #666666 !important; /* Improved contrast */
-    color: #ffffff !important; /* Improved contrast */
+    border-color: #666 !important; /* Improved contrast */
+    color: #fff !important; /* Improved contrast */
   }
   
   :global(.dark-mode) .form-control:focus {
     background-color: #2d2d2d !important;
     border-color: #0dcaf0 !important;
-    color: #ffffff !important;
-    box-shadow: 0 0 0 0.25rem rgba(13, 202, 240, 0.25) !important;
+    color: #fff !important;
+    box-shadow: 0 0 0 0.25rem rgb(13 202 240 / 25%) !important;
   }
   
   :global(.dark-mode) .alert {
     background-color: #1a2a3a !important;
     border-color: #0dcaf0 !important;
-    color: #ffffff !important; /* Improved contrast */
+    color: #fff !important; /* Improved contrast */
   }
   
   :global(.dark-mode) .alert-info {
@@ -167,24 +167,24 @@
   :global(.dark-mode) .btn-primary {
     background-color: #0dcaf0 !important;
     border-color: #0dcaf0 !important;
-    color: #000000 !important; /* High contrast */
+    color: #000 !important; /* High contrast */
   }
   
   :global(.dark-mode) .btn-secondary {
-    background-color: #555555 !important; /* Improved contrast */
-    border-color: #555555 !important;
-    color: #ffffff !important; /* High contrast */
+    background-color: #555 !important; /* Improved contrast */
+    border-color: #555 !important;
+    color: #fff !important; /* High contrast */
   }
   
   :global(.dark-mode) .btn-danger {
     background-color: #c82333 !important; /* Improved contrast */
     border-color: #c82333 !important;
-    color: #ffffff !important; /* High contrast */
+    color: #fff !important; /* High contrast */
   }
   
   :global(.dark-mode) .badge {
     background-color: #0dcaf0 !important;
-    color: #000000 !important; /* High contrast */
+    color: #000 !important; /* High contrast */
   }
   
   :global(.dark-mode) .text-muted {
@@ -192,7 +192,7 @@
   }
   
   :global(.dark-mode) .border {
-    border-color: #666666 !important; /* Improved contrast */
+    border-color: #666 !important; /* Improved contrast */
   }
   
   :global(.dark-mode) h1,
@@ -201,7 +201,7 @@
   :global(.dark-mode) h4,
   :global(.dark-mode) h5,
   :global(.dark-mode) h6 {
-    color: #ffffff !important; /* High contrast */
+    color: #fff !important; /* High contrast */
   }
   
   /* Remove any extra arrow from reactstrap */
@@ -225,7 +225,7 @@
 }
 
 :global(.dark-mode) .form-check-label {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 /* Improve placeholder contrast */

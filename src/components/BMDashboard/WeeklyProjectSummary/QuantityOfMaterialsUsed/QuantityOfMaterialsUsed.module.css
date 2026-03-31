@@ -16,8 +16,7 @@
 /* Chart Container */
 .quantityOfMaterialsUsedChartContainer {
   width: 100%;
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow: auto hidden;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
   scrollbar-color: transparent transparent;
@@ -90,6 +89,7 @@ div.weeklyProjectSummaryCard.normalCard .dropdownItem {
   background-color: var(--card-bg) !important;
   color: var(--text-color) !important;
 }
+
 /* Ensure selected dropdown option is highlighted */
 .quantityOfMaterialsUsedCard .customSelect_option-IsSelected {
   background-color: var(--button-hover) !important;
@@ -142,6 +142,7 @@ div.weeklyProjectSummaryCard.normalCard .dropdownItem {
 .quantityOfMaterialsUsedCard .customSelect_valueContainer:hover::-webkit-scrollbar-thumb {
   background: #666;
 }
+
 .quantityOfMaterialsUsedCard .multiSelect .customSelect_valueContainer {
   max-width: 75%;
 }
@@ -161,7 +162,7 @@ div.weeklyProjectSummaryCard.normalCard .dropdownItem {
 .quantityOfMaterialsUsedCard .customSelect_multiValue_label {
   font-size: 8px;
   padding: 0 4px;
-  color: #0066cc;
+  color: #06c;
 }
 
 /* Multi-Value Remove Button */
@@ -188,7 +189,6 @@ div.weeklyProjectSummaryCard.normalCard .dropdownItem {
   top: 50%;
   transform: translateY(-50%);
   background-color: white;
-  z-index: 3;
   z-index: 5;
 }
 
@@ -326,7 +326,7 @@ div.weeklyProjectSummaryCard.normalCard .dropdownItem {
 }
 
 /* Adjust Drop downs on medium size screens */
-@media (max-width: 1200px) {
+@media (width <= 1200px) {
   div.weeklyProjectSummaryCard.normalCard .dropdownContainer {
     flex-direction: column !important;
     align-items: center !important;
@@ -349,7 +349,7 @@ div.weeklyProjectSummaryCard.normalCard .dropdownItem {
 .quantityModalOverlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgb(0 0 0 / 50%);
   z-index: 1000;
   display: flex;
   align-items: center;
@@ -365,7 +365,7 @@ div.weeklyProjectSummaryCard.normalCard .dropdownItem {
   width: 90%;
   max-height: 80vh;
   overflow-y: auto;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 20px rgb(0 0 0 / 30%);
   animation: modalFadeIn 0.25s ease;
 }
 
@@ -394,6 +394,7 @@ div.weeklyProjectSummaryCard.normalCard .dropdownItem {
   cursor: pointer;
   transition: background 0.2s ease;
 }
+
 .quantityModalCloseButton:hover {
   background: var(--button-secondary-hover, #555);
 }
@@ -433,6 +434,7 @@ div.weeklyProjectSummaryCard.normalCard .dropdownItem {
     transform: scale(0.96);
     opacity: 0;
   }
+
   to {
     transform: scale(1);
     opacity: 1;

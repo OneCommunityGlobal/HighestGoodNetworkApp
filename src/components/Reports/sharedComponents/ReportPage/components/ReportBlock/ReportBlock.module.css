@@ -10,6 +10,7 @@
   overflow: auto;
   border-radius: 12px;
   margin: 2px;
+
   /* allow content inside the block to shrink inside grid/flex containers
    so wide children don't force the parent to overflow unexpectedly */
   min-width: 20px;

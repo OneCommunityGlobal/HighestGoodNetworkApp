@@ -1,4 +1,4 @@
-  .addTeamForm Label{
+  .addTeamForm label{
   font-size: .8em;
   }
 
@@ -12,7 +12,7 @@
     flex: 1; /* Ensure buttons share equal width */
   }
   
-  @media screen and (max-width: 800px) {
+  @media screen and (width <= 800px) {
     .addTeamButtons {
       gap: 0.5rem; /* Reduce gap for smaller screens */
     }
@@ -33,17 +33,17 @@
     background-color: #e7e7e7;
   }
   
-  .addTeamButtons Button:active {
+  .addTeamButtons button:active {
     background-color: #e7e7e7;
   }
   
-  .addTeamButtons Button.outline {
+  .addTeamButtons button.outline {
     background-color: transparent;
     border-color: #ccc; 
     color: #333; 
   }
   
-  .addTeamButtons Button.outline:hover {
+  .addTeamButtons button.outline:hover {
     background-color: #f1f1f1; 
     border-color: #bbb;
   }
@@ -93,32 +93,29 @@
     gap: 10px;
   }
   
-  @media screen and (max-width: 800px) {
+  @media screen and (width <= 800px) {
     .selectContainer {
       flex-direction: column; /* Stack items vertically on small screens */
       align-items: stretch; /* Make items take full width */
     }
   
     .selectContainer .memberDropdown,
-    .selectContainer Button {
+    .selectContainer button {
       width: 100%; /* Full width for dropdown and button */
     }
 
-    .selectContainer Button {
+    .selectContainer button {
       max-width: 300px; /* Prevent it from growing too large */
       min-width: 150px; /* Prevent it from shrinking too small */
     }
   }
   
-  .addTeamContainer Button{
+  .addTeamContainer button{
     flex-shrink: 0;
-    padding: 8px 12px;
     font-size: 1rem;
     cursor: pointer;
     color: white;
     background-color: #f49441;
-    border: none;
-    border-radius: 4px;
     transition: background-color 0.3s ease, transform 0.2s ease;
     border-radius: 10px; 
     padding: 0.5rem; 
@@ -126,12 +123,12 @@
     width: 15%;
   }
   
-  .addTeamContainer Button:hover {
+  .addTeamContainer button:hover {
     background-color: #d97a32;
     transform: scale(1.05);
   }
   
-  .addTeamContainer Button:disabled {
+  .addTeamContainer button:disabled {
     background-color: #ccc;
     color: #666;
     cursor: not-allowed;
@@ -146,7 +143,7 @@
     border: 1px solid #ccc; 
   }
 
-  @media screen and (max-width: 800px) {
+  @media screen and (width <= 800px) {
     .addTeamContainer {
       width: 95%;
     }

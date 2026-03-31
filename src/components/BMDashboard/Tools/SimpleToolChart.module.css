@@ -7,7 +7,7 @@
   --color-azure: #007bff;
 
   /* Standard UI Colors */
-  --bg-light: #ffffff;
+  --bg-light: #fff;
   --text-light: #232323;
   --text-dark: #e5e5e5;
   --border-light: #d1d5db;
@@ -21,6 +21,7 @@
   min-width: 100%;
   padding: 24px;
   box-sizing: border-box;
+
   /* Light mode defaults */
   background-color: var(--bg-light);
   color: var(--text-light);
@@ -38,7 +39,7 @@
   font-size: 24px;
   font-weight: bold;
   text-align: center;
-  margin: 0 0 24px 0;
+  margin: 0 0 24px;
   color: inherit;
 }
 
@@ -104,7 +105,7 @@
 .inputField:focus,
 .datePickerButton:focus {
   border-color: var(--color-azure);
-  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+  box-shadow: 0 0 0 2px rgb(0 123 255 / 25%);
 }
 
 /* --- Date Picker Wrapper --- */
@@ -127,7 +128,7 @@
   width: 100%;
   background-color: var(--bg-light);
   border: 1px solid var(--border-light);
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 10%), 0 4px 6px -2px rgb(0 0 0 / 5%);
   border-radius: 8px;
   padding: 16px;
   box-sizing: border-box;
@@ -198,7 +199,7 @@
 .lightCalendar {
   font-family: inherit;
   border: 1px solid var(--border-light) !important;
-  background-color: #ffffff !important;
+  background-color: #fff !important;
   color: #333 !important;
 }
 
