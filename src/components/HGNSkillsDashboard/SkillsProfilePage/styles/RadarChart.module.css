@@ -10,27 +10,20 @@
   width: 100%;
 }
 
-.radarChart canvas {
-  width: 100% !important;
-  height: auto !important;
-  max-width: 720px;
-  max-height: 640px;
-}
-
-@media (max-width: 1100px) {
-  .radarChart {
-    padding: 12px 0;
-  }
-
-  .radarChart canvas {
-    max-height: 540px;
-  }
+.radarChart.compact {
+  padding: 8px;
+  background: transparent;
+  box-shadow: none;
+  border: none;
+  min-height: auto;
+  align-items: stretch;
 }
 
 .chartTitle {
   text-align: center;
   margin-bottom: 20px;
   color: #333;
+  padding: 12px 16px;
 }
 
 .chartTitle h4 {
@@ -38,7 +31,7 @@
   font-size: 24px;
   font-weight: 600;
   margin-bottom: 8px;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  text-shadow: 0 1px 2px rgb(0 0 0 / 10%);
 }
 
 .chartTitle p {
@@ -61,7 +54,7 @@
 .chartContainer canvas {
   width: 100% !important;
   height: 100% !important;
-  filter: drop-shadow(0 2px 8px rgba(62, 160, 203, 0.15));
+  filter: drop-shadow(0 2px 8px rgb(62 160 203 / 15%));
 }
 
 .chartLegend {
@@ -84,10 +77,10 @@
 .legendColor {
   width: 18px;
   height: 18px;
-  background: linear-gradient(135deg, rgba(62, 160, 203, 0.8) 0%, rgba(62, 160, 203, 0.6) 100%);
-  border: 2px solid rgba(62, 160, 203, 1);
+  background: linear-gradient(135deg, rgb(62 160 203 / 80%) 0%, rgb(62 160 203 / 60%) 100%);
+  border: 2px solid rgb(62 160 203 / 100%);
   border-radius: 50%;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
 }
 
 /* Loading state */
@@ -99,7 +92,7 @@
 .loadingSpinner {
   width: 40px;
   height: 40px;
-  border: 4px solid rgba(62, 160, 203, 0.2);
+  border: 4px solid rgb(62 160 203 / 20%);
   border-left: 4px solid #3ea0cb;
   border-radius: 50%;
   animation: spin 1s linear infinite;
@@ -128,7 +121,7 @@
 }
 
 /* Responsive breakpoints */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .radarChart {
     padding: 10px 0;
   }
@@ -138,12 +131,40 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .radarChart canvas {
     max-height: 380px;
   }
 }
 
-:global(.dark-mode) .radarChart canvas {
-  filter: invert(1) hue-rotate(180deg);
+/* High DPI displays */
+@media (resolution >= 192dpi) {
+  .chartContainer canvas {
+    image-rendering: crisp-edges;
+  }
+}
+
+/* Dark theme support (optional) */
+.dark {
+  background: #1f1f1f;
+  border-color: #2a2a2a;
+  box-shadow: none;
+}
+
+.dark .chartTitle h4 {
+  color: #e6e6e6;
+}
+
+.dark .chartTitle p {
+  color: #bfbfbf;
+}
+
+.dark .legendItem {
+  color: #e2e8f0;
+}
+
+:global(.dark-mode) .radarChart {
+  background: linear-gradient(145deg, #2a2f3e 0%, #1e2330 100%);
+  border-color: rgb(62 160 203 / 30%);
+  box-shadow: 0 4px 20px rgb(0 0 0 / 30%);
 }

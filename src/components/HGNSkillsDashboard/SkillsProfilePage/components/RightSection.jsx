@@ -13,7 +13,7 @@ import SoftwarePractices from './SoftwarePractices';
 
 function RightSection() {
   const profileData = useSelector(state => state.userSkills.profileData);
-  const darkMode = useSelector(state => state.theme.darkMode);
+  const darkMode = useSelector(s => s?.theme?.darkMode);
 
   const [selectedSkill, setSelectedSkill] = useState('Dashboard');
   const [skillsData, setSkillsData] = useState([]);
@@ -55,10 +55,9 @@ function RightSection() {
   };
 
   return (
-    <div className={`${styles.rightSection} ${darkMode ? styles['dark-mode'] : ''}`}>
+    <section className={`${styles.rightSection} ${darkMode ? styles.rightSectionDark : ''}`}>
       <ProfileDetails profileData={profileData} />
-
-      <div className={`${styles.skillsAndChart}`}>
+      <div className={`${styles.skillsAndChart} ${darkMode ? styles.skillsAndChartDark : ''}`}>
         <Skills selectedSkill={selectedSkill} onSkillClick={handleSkillClick} />
         {renderContent()}
       </div>
@@ -66,7 +65,7 @@ function RightSection() {
       <div className="workExperience-and-additionalInfo">
         <AdditionalInfo profileData={profileData} />
       </div>
-    </div>
+    </section>
   );
 }
 
