@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react';
 import { boxStyle, boxStyleDark } from '../../styles';
 import { toast } from 'react-toastify';
-import { sendEmail } from '../../actions/sendEmails';
+import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
 import BlueskyPostDetails from './BlueskyPostDetails';
 import BlueskyIcon from '../../assets/images/BlueskyIcon.svg';
 
@@ -99,6 +99,11 @@ function Announcements({ title, email: initialEmail }) {
     );
   };
 
+  const handleBroadcastEmails = () => {
+    const htmlContent = `<div style="max-width:900px;width:100%;margin:auto;">${emailContent}</div>`;
+    dispatch(broadcastEmailsToAll('Weekly Update', htmlContent));
+  };
+
   const addHeaderToEmailContent = () => {
     if (tinymce.current && headerContent) {
       const content = tinymce.current.getContent();
@@ -130,16 +135,55 @@ function Announcements({ title, email: initialEmail }) {
 
   return (
     <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{ minHeight: '100%' }}>
-      {/* Bluesky Header */}
-      <div className="bluesky-header">
+      {/* Bluesky Header Toggle */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          padding: '8px 16px',
+          background: darkMode ? '#1a2035' : '#f0f4ff',
+          borderBottom: `2px solid ${showBluesky ? '#0085ff' : 'transparent'}`,
+          marginBottom: '16px',
+        }}
+      >
         <button
           type="button"
-          className="bluesky-header-button"
           onClick={() => setShowBluesky(prev => !prev)}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '8px 20px',
+            background: showBluesky ? '#0085ff' : 'transparent',
+            color: showBluesky ? '#fff' : darkMode ? '#a0aec0' : '#4a5568',
+            border: `2px solid ${showBluesky ? '#0085ff' : '#cbd5e0'}`,
+            borderRadius: '24px',
+            fontWeight: '600',
+            fontSize: '14px',
+            cursor: 'pointer',
+            transition: 'all 0.2s ease',
+          }}
+          aria-pressed={showBluesky}
         >
-          <img src={BlueskyIcon} alt="Bluesky" className="bluesky-icon" />
-          <span className="bluesky-label">Bluesky Manager</span>
+          <img
+            src={BlueskyIcon}
+            alt="Bluesky"
+            style={{
+              width: '20px',
+              height: '20px',
+              filter: showBluesky ? 'brightness(100)' : 'none',
+            }}
+          />
+          <span>Bluesky Manager</span>
         </button>
+        {showBluesky && (
+          <span
+            style={{ fontSize: '13px', color: darkMode ? '#a0aec0' : '#718096', marginLeft: '4px' }}
+          >
+            — post to Bluesky
+          </span>
+        )}
       </div>
 
       {!showBluesky && (

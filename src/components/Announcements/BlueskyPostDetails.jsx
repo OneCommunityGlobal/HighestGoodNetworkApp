@@ -36,31 +36,54 @@ function getStatusVariant(status) {
   return 'info';
 }
 
+const CHAR_LIMIT = 300;
+
 function ConnectionCard({ handle, appPassword, onHandleChange, onPasswordChange, onConnect }) {
   return (
-    <Card className="p-3">
-      <h4>Connect to Bluesky</h4>
-      <Form>
-        <Form.Group className="mb-3">
-          <Form.Control
-            type="text"
-            placeholder="Your handle (e.g. linh.bsky.social)"
-            value={handle}
-            onChange={onHandleChange}
-          />
-        </Form.Group>
-        <Form.Group className="mb-3">
-          <Form.Control
-            type="password"
-            placeholder="App Password"
-            value={appPassword}
-            onChange={onPasswordChange}
-          />
-        </Form.Group>
-        <Button variant="primary" onClick={onConnect}>
-          Connect
-        </Button>
-      </Form>
+    <Card className={`overflow-hidden border-0 ${styles['connection-card']}`}>
+      <div className={styles['brand-header']}>
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 2C6.477 2 2 6.477 2 12c0 5.522 4.477 10 10 10s10-4.478 10-10c0-5.523-4.477-10-10-10zm0 3c1.516 0 2.917.423 4.11 1.155L6.155 16.11A7.002 7.002 0 0 1 5 12c0-3.866 3.134-7 7-7zm0 14a6.97 6.97 0 0 1-4.11-1.155l9.955-9.955A6.97 6.97 0 0 1 19 12c0 3.866-3.134 7-7 7z" />
+        </svg>
+        <span>Connect to Bluesky</span>
+      </div>
+      <div className="p-4">
+        <Form>
+          <Form.Group className="mb-3">
+            <Form.Label className={styles['form-label']}>Handle</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="username.bsky.social"
+              value={handle}
+              onChange={onHandleChange}
+              className={styles['form-input']}
+            />
+          </Form.Group>
+          <Form.Group className="mb-4">
+            <Form.Label className={styles['form-label']}>App Password</Form.Label>
+            <Form.Control
+              type="password"
+              placeholder="xxxx-xxxx-xxxx-xxxx"
+              value={appPassword}
+              onChange={onPasswordChange}
+              className={styles['form-input']}
+            />
+            <Form.Text>
+              <a
+                href="https://bsky.app/settings/app-passwords"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles['hint-link']}
+              >
+                Create an App Password at bsky.app/settings/app-passwords
+              </a>
+            </Form.Text>
+          </Form.Group>
+          <Button className={styles['bluesky-btn-primary']} onClick={onConnect}>
+            Connect to Bluesky
+          </Button>
+        </Form>
+      </div>
     </Card>
   );
 }
@@ -236,10 +259,13 @@ MediaDisplay.propTypes = {
 
 function PostsCard({ posts, isLoading, deletingPost, onRefresh, onViewPost, onDeletePost }) {
   return (
-    <Card className="p-3">
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h4 className="mb-0">Your Posts</h4>
-        <Button variant="success" onClick={onRefresh} disabled={isLoading}>
+    <Card className={`border-0 ${styles['posts-card']}`}>
+      <div className="d-flex justify-content-between align-items-center mb-3 px-4 pt-4">
+        <h5 className={`mb-0 ${styles['section-title']}`}>
+          Your Posts
+          {posts.length > 0 && <span className={styles['post-count']}>{posts.length}</span>}
+        </h5>
+        <Button className={styles['refresh-btn']} onClick={onRefresh} disabled={isLoading}>
           {isLoading ? (
             <>
               <Spinner
@@ -248,56 +274,63 @@ function PostsCard({ posts, isLoading, deletingPost, onRefresh, onViewPost, onDe
                 size="sm"
                 role="status"
                 aria-hidden="true"
-                className="me-2"
+                className="me-1"
               />
-              Refreshing...
+              Refreshing…
             </>
           ) : (
-            'Refresh'
+            '↻ Refresh'
           )}
         </Button>
       </div>
-      {posts.length > 0 ? (
-        <div>
-          {posts.map(post => (
-            <Card key={post.cid} className="mb-3">
-              <Card.Body>
-                <Card.Text>{post.text}</Card.Text>
+      <div className="px-4 pb-4">
+        {posts.length > 0 ? (
+          posts.map(post => (
+            <div key={post.cid} className={styles['post-item']}>
+              <div className={styles['post-avatar']}>
+                <span>🦋</span>
+              </div>
+              <div className={styles['post-body']}>
+                <p className={styles['post-text']}>{post.text}</p>
                 <MediaDisplay media={post?.media} />
-                <div className="d-flex justify-content-between align-items-center text-muted small">
-                  <div>
-                    <span>
-                      Likes {post.likeCount} | Reposts {post.repostCount}
-                    </span>
-                    <span className="ms-2">| {formatDate(post.createdAt)}</span>
-                  </div>
-                  <div className="d-flex gap-2">
-                    <Button
-                      variant="outline-primary"
-                      size="sm"
+                <div className={styles['post-meta']}>
+                  <span className={styles['post-stat']}>
+                    <span aria-label="likes">❤️</span> {post.likeCount ?? 0}
+                  </span>
+                  <span className={styles['post-stat']}>
+                    <span aria-label="reposts">🔁</span> {post.repostCount ?? 0}
+                  </span>
+                  <span className={styles['post-time']}>{formatDate(post.createdAt)}</span>
+                  <div className={styles['post-actions']}>
+                    <button
+                      type="button"
+                      className={styles['action-btn-view']}
                       onClick={() => onViewPost(post.uri)}
                     >
-                      View
-                    </Button>
-                    <Button
-                      variant="outline-danger"
-                      size="sm"
+                      View ↗
+                    </button>
+                    <button
+                      type="button"
+                      className={styles['action-btn-delete']}
                       onClick={() => onDeletePost(post.uri)}
                       disabled={deletingPost !== null}
                     >
-                      {deletingPost === post.uri ? 'Deleting...' : 'Delete'}
-                    </Button>
+                      {deletingPost === post.uri ? 'Deleting…' : 'Delete'}
+                    </button>
                   </div>
                 </div>
-              </Card.Body>
-            </Card>
-          ))}
-        </div>
-      ) : (
-        <Alert variant="light" className="text-center mb-0">
-          {isLoading ? 'Loading posts...' : 'No posts yet'}
-        </Alert>
-      )}
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className={styles['empty-state']}>
+            <span className={styles['empty-icon']}>🦋</span>
+            <p className="mb-0">
+              {isLoading ? 'Loading posts…' : 'No posts yet. Create your first post!'}
+            </p>
+          </div>
+        )}
+      </div>
     </Card>
   );
 }
@@ -655,68 +688,107 @@ function BlueskyPostDetails() {
     window.open(url, '_blank', 'noopener,noreferrer');
   };
 
-  const canPost = isConnected && (postText.trim() !== '' || selectedImage !== null);
+  const charsLeft = CHAR_LIMIT - postText.length;
+  const charsPercent = Math.min((postText.length / CHAR_LIMIT) * 100, 100);
+  const charColor = charsLeft < 0 ? '#e53e3e' : charsLeft <= 20 ? '#ed8936' : '#0085ff';
+  const canPost =
+    isConnected && (postText.trim() !== '' || selectedImage !== null) && charsLeft >= 0;
 
   return (
     <Container className={styles['bluesky-post-details']}>
-      <h2 className="mb-4">Bluesky Manager</h2>
+      {/* Status alert — shown at top */}
+      {status !== '' && (
+        <Alert
+          variant={getStatusVariant(status)}
+          className={`mb-4 ${styles['status-alert']}`}
+          dismissible
+          onClose={() => setStatus('')}
+        >
+          {status.replace(/^\[(OK|ERROR|INFO)\]\s*/, '')}
+        </Alert>
+      )}
+
       {isConnected ? (
         <>
-          <Card className="mb-4 p-3">
-            <div className="d-flex justify-content-between align-items-center mb-3">
-              <h4 className="mb-0">Create a New Post</h4>
-              <Button variant="danger" onClick={disconnectFromBluesky}>
-                Disconnect
-              </Button>
+          {/* Connected header bar */}
+          <div className={styles['connected-bar']}>
+            <div className={styles['connected-badge']}>
+              <span className={styles['connected-dot']} />
+              <span>@{handle}</span>
             </div>
-            <Form.Group className="mb-3">
+            <button
+              type="button"
+              className={styles['disconnect-btn']}
+              onClick={disconnectFromBluesky}
+            >
+              Disconnect
+            </button>
+          </div>
+
+          {/* Composer card */}
+          <Card className={`border-0 mb-4 ${styles['composer-card']}`}>
+            <div className="p-4">
+              <h5 className={styles['section-title']}>Create a Post</h5>
               <Form.Control
                 as="textarea"
-                rows={3}
+                rows={4}
                 value={postText}
                 onChange={event => setPostText(event.target.value)}
                 placeholder="What's on your mind?"
+                className={styles['composer-textarea']}
+                maxLength={CHAR_LIMIT + 50}
               />
-            </Form.Group>
-            <UploadDropZone
-              dropZoneRef={dropZoneRef}
-              fileInputRef={fileInputRef}
-              isDragging={isDragging}
-              onDragEnter={handleDragEnter}
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
-              onDrop={handleDrop}
-              onFileChange={handleImageSelect}
-            />
-            {imagePreview && (
-              <div className="mb-3 position-relative">
-                <img
-                  src={imagePreview}
-                  alt="Preview"
-                  style={{
-                    maxWidth: '200px',
-                    maxHeight: '200px',
-                    objectFit: 'contain',
-                    border: '1px solid #dee2e6',
-                    borderRadius: '4px',
-                  }}
-                />
-                <Button
-                  variant="outline-danger"
-                  size="sm"
-                  onClick={clearImage}
-                  className="position-absolute"
-                  style={{ top: '5px', right: '5px' }}
-                  aria-label="Remove image preview"
-                >
-                  Remove
-                </Button>
+              {/* Character counter */}
+              <div className={styles['char-counter']}>
+                <div className={styles['char-bar-track']}>
+                  <div
+                    className={styles['char-bar-fill']}
+                    style={{ width: `${charsPercent}%`, background: charColor }}
+                  />
+                </div>
+                <span style={{ color: charColor, fontWeight: charsLeft <= 20 ? '700' : '400' }}>
+                  {charsLeft < 0 ? `${Math.abs(charsLeft)} over limit` : `${charsLeft} remaining`}
+                </span>
               </div>
-            )}
-            <Button variant="primary" onClick={createPost} disabled={!canPost}>
-              Post
-            </Button>
+
+              <UploadDropZone
+                dropZoneRef={dropZoneRef}
+                fileInputRef={fileInputRef}
+                isDragging={isDragging}
+                onDragEnter={handleDragEnter}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                onFileChange={handleImageSelect}
+              />
+
+              {imagePreview && (
+                <div className={`mb-3 ${styles['image-preview-wrap']}`}>
+                  <img src={imagePreview} alt="Preview" className={styles['image-preview']} />
+                  <button
+                    type="button"
+                    className={styles['remove-image-btn']}
+                    onClick={clearImage}
+                    aria-label="Remove image"
+                  >
+                    ✕
+                  </button>
+                </div>
+              )}
+
+              <div className={styles['composer-footer']}>
+                <button
+                  type="button"
+                  className={styles['bluesky-btn-primary']}
+                  onClick={createPost}
+                  disabled={!canPost}
+                >
+                  Post to Bluesky
+                </button>
+              </div>
+            </div>
           </Card>
+
           <PostsCard
             posts={posts}
             isLoading={isLoading}
@@ -735,13 +807,9 @@ function BlueskyPostDetails() {
           onConnect={connectToBluesky}
         />
       )}
-      {status !== '' && (
-        <Alert variant={getStatusVariant(status)} className="mt-3">
-          {status}
-        </Alert>
-      )}
+
       <Modal show={showDeleteModal} onHide={cancelDelete} centered>
-        <Modal.Header closeButton>
+        <Modal.Header closeButton className={styles['modal-header']}>
           <Modal.Title>Delete Post</Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -752,7 +820,7 @@ function BlueskyPostDetails() {
             Cancel
           </Button>
           <Button variant="danger" onClick={confirmDelete} disabled={deletingPost !== null}>
-            {deletingPost ? 'Deleting...' : 'Delete'}
+            {deletingPost ? 'Deleting…' : 'Delete'}
           </Button>
         </Modal.Footer>
       </Modal>
