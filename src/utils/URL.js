@@ -425,6 +425,12 @@ export const ENDPOINTS = {
   SKILLS_PROFILE_UPDATE_YEARS_OF_EXPERIENCE: userId => `${APIEndpoint}/skills/profile/updateYearsOfExperience/${userId}`,
   // HGN Skills Dashboard
   SKILLS_PROFILE: userId => `${APIEndpoint}/skills/profile/${userId}`,
+  // User State Indicator endpoints
+  USER_STATE_CATALOG: `${APIEndpoint}/userstate/catalog`,
+  USER_STATE_CATALOG_REORDER: `${APIEndpoint}/userstate/catalog/reorder`,
+  USER_STATE_CATALOG_ITEM: key => `${APIEndpoint}/userstate/catalog/${key}`,
+  USER_STATE_SELECTION: userId => `${APIEndpoint}/userstate/selection/${userId}`,
+  USER_STATE_SELECTIONS_BATCH: `${APIEndpoint}/userstate/selections/batch`,
 
   CREATE_JOB_FORM: `${APIEndpoint}/jobforms`,
   UPDATE_JOB_FORM: `${APIEndpoint}/jobforms`,
@@ -550,6 +556,7 @@ export const ENDPOINTS = {
 
   //pull requests analysis
   PR_REVIEWS_INSIGHTS: `${APIEndpoint}/analytics/pr-review-insights`,
+  PR_GRADING_CONFIG: `${APIEndpoint}/pr-grading-config`,
 
   // Education Portal endpoints
   STUDENT_PROFILE: `${APIEndpoint}/student/profile`,
@@ -570,6 +577,11 @@ export const ENDPOINTS = {
     if (endDate) url += `&endDate=${encodeURIComponent(endDate)}`;
     return url;
   },
+
+  HGN_FORM_RESPONSES: () => `${APIEndpoint}/hgnform`,
+  // Kitchen and Inventory Management endpoints
+  KI_CALENDAR_EVENTS: (month, year) => `${APIEndpoint}/kitchenandinventory/calendar?month=${month}&year=${year}`,
+
 };
 
 export const ApiEndpoint = APIEndpoint;

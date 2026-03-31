@@ -65,7 +65,7 @@
     "html2canvas": "^1.4.1",
     "jest": "^30.2.0",
     "jquery": "^3.7.1",
-    "jspdf": "^4.2.0",
+    "jspdf": "^4.2.1",
     "jwt-decode": "^2.2.0",
     "leaflet": "^1.9.4",
     "leaflet.heat": "^0.2.0",
@@ -130,9 +130,7 @@
   },
   "resolutions": {
     "react": "18.3.1",
-    "react-dom": "18.3.1",
-    "mdn-data": "2.12.2",
-    "ansi-escapes": "7.1.1"
+    "react-dom": "18.3.1"
   },
   "packageManager": "yarn@1.22.22",
   "scripts": {
