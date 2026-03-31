@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import { Redirect, useHistory, useLocation } from 'react-router-dom';
 import {
   Form,
@@ -31,6 +31,7 @@ function LBLogin(props) {
   const [capsLockOn, setCapsLockOn] = useState(false);
 
   const prevLocation = location?.state?.from || { pathname: '/lbdashboard' };
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   useEffect(() => {
     if (auth.user.access && auth.user.access.canAccessCPPortal) {
@@ -110,13 +111,13 @@ function LBLogin(props) {
   }
 
   return (
-    <div className={styles.authPage}>
+    <div className={`${styles.authPage} ${darkMode ? styles.darkMode : ''}`}>
       <div className={styles.logoContainer}>
         <img src={logo} alt="One Community Logo" />
       </div>
-      <div className={styles.formContainer}>
+      <div className={`${styles.formContainer}`}>
         <div className={styles.formTop} />
-        <div className={styles.formMain}>
+        <div className={`${styles.formMain} ${darkMode ? styles.dark : ''}`}>
           <h2>Log In To Listing and Biding Portal</h2>
           <p>Enter your credentials to access the Listing and Biding Portal Dashboard</p>
           <p>Note: You must use your Production/Main credentials for this login.</p>
@@ -142,6 +143,7 @@ function LBLogin(props) {
                   invalid={touched.email && !!fieldErrors.email}
                   aria-invalid={touched.email && !!fieldErrors.email}
                   aria-describedby={touched.email && fieldErrors.email ? 'email-error' : undefined}
+                  className={`${darkMode ? 'darkInput' : ''}`}
                 />
                 {touched.email && fieldErrors.email && (
                   <FormFeedback id="email-error">{fieldErrors.email}</FormFeedback>
@@ -176,6 +178,7 @@ function LBLogin(props) {
                     onKeyDown={e => {
                       if (e.key === 'Enter' || e.key === ' ') setShowPassword(prev => !prev);
                     }}
+                    className={`${darkMode ? styles.dark1 : ''}`}
                   >
                     <i className={showPassword ? 'fa fa-eye-slash' : 'fa fa-eye'} />
                   </InputGroupText>
