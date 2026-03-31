@@ -1,0 +1,405 @@
+.container{
+  padding: 24px;
+  min-height: 100vh;
+  background-color: var(--color-background, #f9fafb);
+  color: var(--color-text, #1f2937);
+}
+
+.header{
+  margin-bottom: 24px;
+}
+
+.title{
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 0 8px;
+}
+
+.subtitle{
+  font-size: 1rem;
+  margin: 0;
+  color: var(--color-text-secondary, #6b7280);
+}
+
+.metricsGrid{
+  display: grid;
+  grid-template-columns: repeat(4, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.metricCard{
+  background: #fff;
+  border: 1px solid #dbe4d8;
+  border-radius: 12px;
+  padding: 18px;
+}
+
+.metricTitle{
+  margin: 0 0 10px;
+  font-size: 0.95rem;
+  color: #6b7280;
+}
+
+.metricValue{
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #2f6b3b;
+}
+
+.metricCardTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.metricIcon {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.greenIcon {
+  color: #4f9d5d;
+}
+
+.blueIcon {
+  color: #4f46e5;
+}
+
+.purpleIcon {
+  color: #9333ea;
+}
+
+.orangeIcon {
+  color: #d97706;
+}
+
+:global(.dark-mode) .greenIcon {
+  color: #86efac;
+}
+
+:global(.dark-mode) .blueIcon {
+  color: #a5b4fc;
+}
+
+:global(.dark-mode) .purpleIcon {
+  color: #d8b4fe;
+}
+
+:global(.dark-mode) .orangeIcon {
+  color: #fdba74;
+}
+
+.sectionNav{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.navButton{
+  border: 1px solid #d1d5db;
+  background: #fff;
+  color: #2f3b52;
+  border-radius: 999px;
+  padding: 8px 18px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  line-height: 1.2;
+  transition: all 0.2s ease;
+}
+
+.navButton:hover{
+  background: #e8f3e8;
+}
+
+.activeNav{
+  background: #e8f3e8;
+  border-color: #9acb9a;
+  color: #2f6b3b;
+  font-weight: 600;
+}
+
+.inventorySection{
+  background: #fff;
+  border: 1px solid #dbe4d8;
+  border-radius: 16px;
+  padding: 20px;
+}
+
+.inventoryHeader{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.inventoryTitle{
+  margin: 0 0 4px;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.inventorySubtitle{
+  margin: 0;
+  color: #6b7280;
+}
+
+.addButton{
+  border: none;
+  background: #2f6b3b;
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.addButton:hover{
+  background: #3f844d
+}
+
+.cardGrid{
+  display:grid;
+  grid-template-columns: repeat(2, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.orchardCard {
+  border: 3px solid #dbe4d8;
+  border-radius: 14px;
+  padding: 16px;
+  background: #fcfdfb;
+}
+
+.orchardCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 118px rgb(0 0 0 / 8%);
+  border-color: #b9d7bd;
+}
+
+.cardTopRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.cardHeaderLeft {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.iconWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: #eef8ee;
+  border: 1px solid #cfe7cf;
+  flex-shrink: 0;
+}
+
+.treeIcon {
+  font-size: 0.95rem;
+  color: #4f9d5d;
+}
+
+:global(.dark-mode) .iconWrapper {
+  background-color: #193d31;
+  border-color: #2f6b3b;
+}
+
+:global(.dark-mode) .treeIcon {
+  color: #86efac;
+}
+
+.cardTitle {
+  margin: 0 0 4px;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.cardLocation {
+  margin: 0;
+  color: #6b7280;
+  font-size: 0.92rem;
+}
+
+.conditionTag {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: lowercase;
+}
+
+.excellent {
+  background: #e8f7e9;
+  color: #2f7a38;
+  border: 1px solid #9acb9a;
+}
+
+.good {
+  background: #eef2ff;
+  color: #4f46e5;
+    border: 1px solid #c7d2fe;
+}
+
+.cardDetails {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.detailLabel {
+  margin: 0 0 4px;
+  font-size: 0.82rem;
+  color: #6b7280;
+}
+
+.detailValue {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.detailsButton {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.detailsButton:hover {
+  background: #f8fafc
+}
+
+.placeholderSection {
+  background: #fff;
+  border: 1px solid #dbe4d8;
+  border-radius: 16px;
+  padding: 32px 20px;
+}
+
+.placeholderTitle {
+  margin: 0 0 8px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.placeholderText {
+  margin: 0;
+  color: #6b7280;
+  font-size: 0.95rem;
+}
+
+@media (width <= 1024px) {
+  .metricsGrid {
+    grid-template-columns: repeat(2, minmax(180px, 1fr));
+  }
+
+  .cardGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (width <= 640px) {
+  .container {
+    padding: 16px;
+  }
+
+  .metricsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .inventoryHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .cardDetails {
+    grid-template-columns: 1fr;
+  }
+}
+
+:global(.dark-mode) .container {
+  background-color: #1b2a41;
+  color: #f3f4f6;
+}
+
+:global(.dark-mode) .subtitle,
+:global(.dark-mode) .metricTitle,
+:global(.dark-mode) .inventorySubtitle,
+:global(.dark-mode) .cardLocation,
+:global(.dark-mode) .detailLabel,
+:global(.dark-mode) .placeholderText {
+  color: #b5bac5;
+}
+
+:global(.dark-mode) .metricCard,
+:global(.dark-mode) .inventorySection,
+:global(.dark-mode) .orchardCard,
+:global(.dark-mode) .navButton,
+:global(.dark-mode) .detailsButton,
+:global(.dark-mode) .placeholderSection {
+  background-color: #2f4157;
+  border-color: #3a506b;
+  color: #f3f4f6;
+}
+
+:global(.dark-mode) .activeNav {
+  background-color: #193d31;
+  border-color: #2f6b3b;
+  color: #d1fae5;
+}
+
+:global(.dark-mode) .metricValue {
+  color: #86efac;
+}
+
+:global(.dark-mode) .inventoryTitle,
+:global(.dark-mode) .cardTitle,
+:global(.dark-mode) .placeholderTitle,
+:global(.dark-mode) .detailValue {
+  color: #f3f4f6;
+}
+
+:global(.dark-mode) .addButton {
+  background-color: #2f6b3b;
+  color: #fff;
+}
+
+:global(.dark-mode) .addButton:hover {
+  background-color: #24542f;
+}
+
+:global(.dark-mode) .navButton:hover,
+:global(.dark-mode) .detailsButton:hover {
+  background-color: #3a506b;
+}
+
+:global(.dark-mode) .excellent {
+  background-color: #193d31;
+  color: #86efac;
+  border-color: #2f6b3b;
+}
+
+:global(.dark-mode) .good {
+  background-color: #312e81;
+  color: #c7d2fe;
+  border-color: #4f46e5;
+}

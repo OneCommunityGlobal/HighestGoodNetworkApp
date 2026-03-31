@@ -13,6 +13,7 @@ import {
 import hasPermission from '~/utils/permissions';
 import { boxStyle, boxStyleDark } from '~/styles';
 import '../Header/index.css';
+import styles from './TeamMembersPopup.module.css';
 import moment from 'moment';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons';
@@ -215,7 +216,7 @@ export const TeamMembersPopup = React.memo(props => {
   const toggleOrder = useCallback(() => setSortOrder(pre => (pre === -1 ? 1 : pre - 1)), []);
 
   const emptyState = (
-    <tr>
+    <tr className={darkMode ? styles.noHover : ''}>
       <td colSpan={canAssignTeamToUsers ? 6 : 5} className="empty-data-message">
         There are no users on this team.
       </td>
@@ -251,7 +252,7 @@ export const TeamMembersPopup = React.memo(props => {
     );
 
     return (
-      <tr key={`${props.selectedTeamName}-${uid}`}>
+      <tr key={`${props.selectedTeamName}-${uid}`} className={darkMode ? styles.darkModeRow : ''}>
         <td style={{ verticalAlign: 'middle', textAlign: 'center' }}>
           <div className={isActiveDot ? 'isActive' : 'isNotActive'}>
             <i className="fa fa-circle" aria-hidden="true" />
@@ -513,13 +514,6 @@ TeamMembersPopup.propTypes = {
   onClose: PropTypes.func.isRequired,
   onAddUser: PropTypes.func.isRequired,
   onUpdateTeamMemberVisibility: PropTypes.func.isRequired,
-};
-
-TeamMembersPopup.defaultProps = {
-  members: [],
-  teamData: [],
-  usersdata: [],
-  fetching: false,
 };
 
 export default TeamMembersPopup;
