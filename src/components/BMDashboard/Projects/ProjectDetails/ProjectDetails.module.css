@@ -37,7 +37,7 @@
   margin: 2em auto;
   padding: 1em 2em;
   width: 95%;
-  color: #333;
+  color: #333333;
 }
 
 .log-bar {
@@ -46,7 +46,7 @@
 
 .log-bar-dark {
   background-color: #1b2a41;
-  color: #fff;
+  color: #ffffff;
 }
 
 .log-bar__section {
@@ -59,15 +59,15 @@
 .project-log :global(h2) {
   font-size: 1em;
   font-weight: bold;
-  color: #333;
+  color: #333333;
   text-align: center;
 }
 
 .log-bar-dark .log-bar__section h2,
 .log-bar-dark .card.cards-container h2,
 .log-bar-dark .project-log h2 {
-  color: #fff !important;
-  text-shadow: 0 1px 2px rgb(0 0 0 / 50%);
+  color: #ffffff !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 /* Button Group Layout */
@@ -87,14 +87,14 @@
   border-radius: 10px;
   margin: 0.1em;
   width: auto;
-  color: #fff !important;
+  color: #ffffff !important;
   font-weight: 500;
 }
 
 .button:hover {
   outline: auto;
   filter: brightness(130%);
-  color: #fff !important;
+  color: #ffffff !important;
 }
 
 /* Button Colors */
@@ -136,7 +136,7 @@
 }
 
 /* Responsive Alignment */
-@media (width >= 550px) {
+@media (min-width: 550px) {
   .log-bar,
   .log-bar-dark {
     flex-direction: column;
@@ -157,10 +157,11 @@
   }
 }
 
-@media (width >= 880px) {
+@media (min-width: 880px) {
   .log-bar,
   .log-bar-dark {
-    flex-flow: row wrap;
+    flex-direction: row;
+    flex-wrap: wrap;
     justify-content: center;
     align-items: flex-start;
     margin: 2em;
@@ -168,7 +169,8 @@
 
   .log-bar-dark {
     display: flex;
-    flex-flow: row wrap;
+    flex-direction: row;
+    flex-wrap: wrap;
     justify-content: center;
     margin: 2em;
   }
@@ -219,7 +221,7 @@
 }
 
 .project-details-dark .single-card:hover {
-  box-shadow: 0 20px 20px 0 rgb(0 0 0 / 40%), 0 6px 20px 0 rgb(0 0 0 / 40%);
+  box-shadow: 0 20px 20px 0 rgba(0, 0, 0, 0.4), 0 6px 20px 0 rgba(0, 0, 0, 0.4);
 }
 
 .project-details-dark .single-card__info {
@@ -239,7 +241,7 @@
 .cards-container__header {
   font-size: 1em;
   font-weight: bold;
-  color: #333;
+  color: #333333;
   margin-bottom: 1em;
 }
 
@@ -268,7 +270,7 @@
   justify-content: center;
   align-items: center;
   overflow: hidden;
-  background-color: #fff;
+  background-color: #ffffff;
   border-radius: 5px 5px 0 0;
 }
 
@@ -278,13 +280,13 @@
   object-fit: cover;
   image-rendering: auto;
   filter: none;
-  filter: none;
+  -webkit-filter: none;
   backface-visibility: hidden;
   transform: translateZ(0);
 }
 
 .single-card:hover {
-  box-shadow: 0 20px 20px 0 rgb(0 0 0 / 20%), 0 6px 20px 0 rgb(0 0 0 / 20%);
+  box-shadow: 0 20px 20px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2);
   transform: translate3d(0.5px, 0.5px, 0.5px);
 }
 
@@ -307,7 +309,7 @@
 }
 
 /* Card Sizing */
-@media (width >= 992px) {
+@media (min-width: 992px) {
   .single-card {
     width: calc(33.333% - 20px);
     max-width: 180px;
@@ -315,7 +317,7 @@
   }
 }
 
-@media (width >= 576px) and (width <= 991px) {
+@media (min-width: 576px) and (max-width: 991px) {
   .single-card {
     width: calc(50% - 15px);
     max-width: 180px;
@@ -323,7 +325,7 @@
   }
 }
 
-@media (width <= 575px) {
+@media (max-width: 575px) {
   .single-card {
     width: 90%;
     max-width: 180px;
@@ -347,7 +349,7 @@
   background-color: transparent;
 }
 
-@media (width <= 768px) {
+@media (max-width: 768px) {
   .project-log :global(td),
   .project-log :global(th) {
     font-size: 0.6em;
@@ -355,12 +357,12 @@
 }
 
 ul.log-bar__btn-group {
-  padding: 0;
+  padding: 0px;
 }
 
 .dark-table-header th {
   background-color: #1b2a41 !important;
-  color: #fff !important;
+  color: #ffffff !important;
   border-bottom: 1px solid #4f5f76;
 }
 

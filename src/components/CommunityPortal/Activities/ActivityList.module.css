@@ -8,7 +8,7 @@
 
 /* Dark mode follows Dashboard pattern using bg-oxford-blue */
 .activityListContainer:global(.bg-oxford-blue) {
-  color: #fff;
+  color: #ffffff;
   padding-bottom: 40px;
 }
 
@@ -22,7 +22,7 @@
 
 /* Dark mode heading */
 .activityListContainer:global(.bg-oxford-blue) .heading {
-  color: #fff !important;
+  color: #ffffff !important;
 }
 
 /* Body background helper */
@@ -30,7 +30,7 @@
 :global(.activity-list-dark-body #root),
 :global(.activity-list-dark-body .App) {
   background-color: #1b2a41 !important;
-  color: #fff !important;
+  color: #ffffff !important;
 }
 
 .filters {
@@ -42,7 +42,7 @@
   padding: 10px;
   background: #fff;
   border-radius: 8px;
-  box-shadow: 0 4px 6px rgb(0 0 0 / 10%);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .darkModeFilters {
@@ -67,13 +67,13 @@
   margin-top: 5px;
   font-size: 1rem;
   transition: all 0.3s ease;
-  background-color: #fff;
+  background-color: #ffffff;
   color: #333;
 }
 
 .darkModeInput {
   background-color: #1e2a3a !important;
-  color: #fff !important;
+  color: #ffffff !important;
   border: 1px solid #3a4a5c !important;
   color-scheme: dark;
 }
@@ -86,12 +86,12 @@
 .filters input:focus {
   outline: none;
   border-color: #3b82f6;
-  box-shadow: 0 0 8px rgb(59 130 246 / 30%);
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
 }
 
 .darkModeInput:focus {
   border-color: #5c9ce6 !important;
-  box-shadow: 0 0 8px rgb(92 156 230 / 50%) !important;
+  box-shadow: 0 0 8px rgba(92, 156, 230, 0.5) !important;
 }
 
 .darkModeInput::placeholder {
@@ -102,7 +102,7 @@
 .clearButton {
   padding: 10px 20px;
   background-color: #ef4444;
-  color: #fff;
+  color: #ffffff;
   border: none;
   border-radius: 6px;
   font-size: 1rem;
@@ -113,7 +113,7 @@
 .clearButton:hover:not(:disabled) {
   background-color: #dc2626;
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgb(239 68 68 / 30%);
+  box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
 }
 
 .clearButton:disabled {
@@ -125,10 +125,10 @@
 .activityList {
   max-width: 900px;
   margin: 0 auto;
-  background: #fff;
+  background: #ffffff;
   padding: 30px;
   border-radius: 12px;
-  box-shadow: 0 6px 12px rgb(0 0 0 / 10%);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
 }
 
 .darkModeList {
@@ -158,13 +158,13 @@
 .darkModeItem {
   background-color: #1e2a3a !important;
   border: 1px solid #3a4a5c !important;
-  color: #fff !important;
+  color: #ffffff !important;
   border-radius: 0;
 }
 
 .activityList li:hover {
   transform: translateY(-3px);
-  box-shadow: 0 4px 8px rgb(0 0 0 / 10%);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .darkModeItem:hover {
@@ -202,13 +202,13 @@
   top: 100%;
   left: 0;
   right: 0;
-  background: #fff;
+  background: #ffffff;
   border: 1px solid #d1d5db;
   border-radius: 6px;
   margin-top: 4px;
   max-height: 250px;
   overflow-y: auto;
-  box-shadow: 0 4px 6px rgb(0 0 0 / 10%);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   z-index: 1000;
 }
 
@@ -237,7 +237,7 @@
 }
 
 /* Responsive */
-@media (width <= 768px) {
+@media (max-width: 768px) {
   .filters {
     flex-direction: column;
     align-items: center;

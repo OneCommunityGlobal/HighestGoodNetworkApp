@@ -3,8 +3,11 @@
 /* Modal Overlay */
 .modalOverlay {
   position: fixed;
-  inset: 0;
-  background-color: rgb(0 0 0 / 50%);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -16,7 +19,7 @@
 .modalContainer {
   background-color: white;
   border-radius: 10px;
-  box-shadow: 0 8px 24px rgb(0 0 0 / 15%);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
   display: flex;
   flex-direction: column;
   max-width: 750px;
@@ -60,7 +63,7 @@
 }
 
 .modalCloseBtn:hover {
-  background-color: rgb(255 255 255 / 20%);
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
 /* Modal Content */
@@ -83,7 +86,7 @@
   text-align: center;
   color: #333;
   font-weight: bold;
-  margin: 0 0 10px;
+  margin: 0 0 10px 0;
   font-size: 20px;
 }
 
@@ -91,7 +94,7 @@
   text-align: center;
   color: #666;
   font-size: 14px;
-  margin: 0 0 20px;
+  margin: 0 0 20px 0;
   font-style: italic;
 }
 
@@ -269,7 +272,7 @@
 }
 
 /* Responsive Design */
-@media (width <= 768px) {
+@media (max-width: 768px) {
   .modalContainer {
     max-width: 95%;
     max-height: 95vh;

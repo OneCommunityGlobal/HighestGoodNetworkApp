@@ -48,7 +48,7 @@
   background: #d7ecff;
   color: #0d6efd;
   border-color: #99c8ff;
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 60%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
 }
 
 .slashdot-autoposter.dark .slashdot-subtab {
@@ -68,7 +68,7 @@
   border: 1px solid #d6dde7;
   border-radius: 12px;
   padding: 20px 22px;
-  box-shadow: 0 10px 24px rgb(15 37 80 / 8%);
+  box-shadow: 0 10px 24px rgba(15, 37, 80, 0.08);
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -80,7 +80,7 @@
 
 .slashdot-card.invalid {
   border-color: #d9534f;
-  box-shadow: 0 0 0 1px rgb(217 83 79 / 18%);
+  box-shadow: 0 0 0 1px rgba(217, 83, 79, 0.18);
 }
 
 .slashdot-autoposter.dark .slashdot-card.invalid {
@@ -114,7 +114,6 @@
 .slashdot-autoposter.dark .slashdot-field__meta {
   color: #9aa9c6;
 }
-
 .slashdot-field__required {
   color: #d9534f;
   margin-left: 4px;
@@ -123,7 +122,6 @@
 .slashdot-autoposter.dark .slashdot-field__required {
   color: #ff9384;
 }
-
 .slashdot-field__input {
   width: 100%;
   border: 1px solid #c7d1e5;
@@ -143,14 +141,13 @@
 
 .slashdot-field__input--invalid {
   border-color: #d9534f;
-  box-shadow: 0 0 0 1px rgb(217 83 79 / 20%);
+  box-shadow: 0 0 0 1px rgba(217, 83, 79, 0.2);
 }
 
 .slashdot-autoposter.dark .slashdot-field__input--invalid {
   border-color: #ff9384;
-  box-shadow: 0 0 0 1px rgb(255 147 132 / 30%);
+  box-shadow: 0 0 0 1px rgba(255, 147, 132, 0.3);
 }
-
 .slashdot-field__textarea {
   resize: vertical;
   min-height: 110px;
@@ -204,7 +201,7 @@
 }
 
 .slashdot-autoposter.dark .slashdot-chip {
-  background: rgb(13 110 253 / 22%);
+  background: rgba(13, 110, 253, 0.22);
   color: #cfe0ff;
 }
 
@@ -254,7 +251,7 @@
 
 .slashdot-preview__body {
   white-space: pre-wrap;
-  font-family: SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
+  font-family: 'SFMono-Regular', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
     monospace;
   background: #f8f9fb;
   border: 1px solid #d6dde7;
@@ -368,12 +365,12 @@
 
 .slashdot-saved__item--active {
   border-color: #0d6efd;
-  box-shadow: 0 0 0 1px rgb(13 110 253 / 24%);
+  box-shadow: 0 0 0 1px rgba(13, 110, 253, 0.24);
 }
 
 .slashdot-autoposter.dark .slashdot-saved__item--active {
   border-color: #4785ff;
-  box-shadow: 0 0 0 1px rgb(71 133 255 / 32%);
+  box-shadow: 0 0 0 1px rgba(71, 133, 255, 0.32);
 }
 
 .slashdot-saved__header {
@@ -419,13 +416,13 @@
   gap: 10px;
 }
 
-@media (width <= 960px) {
+@media (max-width: 960px) {
   .slashdot-scheduler__grid {
     grid-template-columns: 1fr;
   }
 }
 
-@media (width <= 640px) {
+@media (max-width: 640px) {
   .slashdot-autoposter {
     gap: 18px;
   }

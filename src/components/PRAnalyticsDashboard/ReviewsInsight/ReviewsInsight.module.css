@@ -1,14 +1,14 @@
 .reviewsInsightContainer {
   padding: 20px 20px 60px;
   font-family: Arial, sans-serif;
-  background-color: #fff;
-  color: #000;
+  background-color: #ffffff;
+  color: #000000;
   min-height: 100vh;
   transition: background-color 0.3s, color 0.3s;
 }
 
 .heading {
-  color: #000;
+  color: #000000;
   text-align: center;
 }
 
@@ -22,7 +22,7 @@
 
 /* Headings */
 .reviewsInsightContainer h1 {
-  color: #000;
+  color: #000000;
 }
 
 .darkMode h1 {
@@ -71,7 +71,7 @@
 
 /* Select */
 .riFilterItem :global(.react-select__control) {
-  background-color: #fff;
+  background-color: #ffffff;
   border: none;
   box-shadow: 2px 2px 4px 1px black;
 }
@@ -183,7 +183,7 @@
 }
 
 .riActionDoneGraph h2 {
-  color: #000;
+  color: #000000;
   text-align: center;
   width: 100%;
   margin-bottom: 10px;
@@ -201,7 +201,7 @@
 }
 
 .riQualityGraph h2 {
-  color: #000;
+  color: #000000;
   text-align: center;
   width: 100%;
   margin-bottom: 10px;
@@ -224,8 +224,8 @@
   border: 1px solid #ccc;
   padding: 10px;
   border-radius: 5px;
-  background-color: #fff;
-  color: #000;
+  background-color: #ffffff;
+  color: #000000;
   transition: background-color 0.3s, color 0.3s;
 }
 
@@ -243,8 +243,8 @@
   height: 100%;
   border-radius: 5px;
   text-align: center;
-  background-color: #fff;
-  color: #000;
+  background-color: #ffffff;
+  color: #000000;
   transition: background-color 0.3s, color 0.3s;
 }
 
@@ -258,7 +258,6 @@
 .riGraph canvas {
   height: 100% !important;
 }
-
 .riLoading {
   text-align: center;
   font-size: 18px;
@@ -290,10 +289,9 @@
   width: max-content;            
   max-width: 90vw;        
   white-space: normal;       
-  overflow-wrap: break-word;     
+  word-wrap: break-word;     
   text-align: left;
   }
-
 /* Arrow */
 .tooltipText::after {
   content: "";
@@ -301,12 +299,12 @@
   left: 50%;
   top:99%;
   transform: translateX(-50%);
+  
   border-width: 6px;
   border-style: solid;
-  border-color: #1c2541 transparent transparent;
+  border-color: #1c2541 transparent transparent transparent;
   z-index: 11;
 }
-
 .tooltip:hover .tooltipText {
   visibility: visible;
 }
@@ -316,21 +314,18 @@
 }
 
 /* Responsive */
-@media screen and (width <= 1080px) {
+@media screen and (max-width: 1080px) {
   .tooltipText{
     max-width: 200px;  
     left: -150%; 
   }
-
   .tooltipText::after {
     left: 78%; 
   }
-
   .riGraphs {
     flex-direction: column;
     gap: 5px;
   }
-
   .riActionDoneGraph {
     width: 100% !important;
     height: 500px;

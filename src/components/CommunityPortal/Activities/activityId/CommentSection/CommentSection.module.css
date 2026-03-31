@@ -44,10 +44,10 @@
 }
 
 .blue {
-  background-color: #36f;
+  background-color: #3366ff;
 }
 
-@media (width <= 800px) {
+@media (max-width: 800px) {
   .comment {
     flex-direction: column;
     gap: 5px;
