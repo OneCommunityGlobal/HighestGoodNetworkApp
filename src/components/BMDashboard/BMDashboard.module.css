@@ -417,7 +417,6 @@
 .bm-dashboard-light img {
   image-rendering: auto !important;
   filter: none !important;
-  filter: none !important;
   backface-visibility: hidden !important;
   transform: translateZ(0) !important;
   -webkit-font-smoothing: antialiased !important;

@@ -112,8 +112,6 @@ button.descriptionItem_button:hover {
 /* Hide native select arrow to prevent double-chevron; use single custom arrow */
 .editableField select {
   appearance: none !important;
-  appearance: none !important;
-  appearance: none !important;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='%23495057'%3E%3Cpath d='M6 8L1 3h10z'/%3E%3C/svg%3E") !important;
   background-repeat: no-repeat !important;
   background-position: right 0.75rem center !important;
@@ -227,8 +225,6 @@ button.descriptionItem_button:hover {
 :global(body.bm-dashboard-dark) .editableField select,
 :global(body.dark-mode) .editableFieldInput,
 :global(body.bm-dashboard-dark) .editableFieldInput {
-  appearance: none;
-  appearance: none;
   appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='%23e0eaf5'%3E%3Cpath d='M6 8L1 3h10z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;

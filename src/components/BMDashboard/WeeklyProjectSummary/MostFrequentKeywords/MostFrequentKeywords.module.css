@@ -92,18 +92,6 @@
   text-align: left;
 }
 
-.mfkDatepicker::input-placeholder {
-  text-align: left;
-}
-
-.mfkDatepicker::placeholder {
-  text-align: left;
-}
-
-.mfkDatepicker:input-placeholder {
-  text-align: left;
-}
-
 .clearButton {
   background: none;
   border: 1px solid var(--border-color, #d1d5db);

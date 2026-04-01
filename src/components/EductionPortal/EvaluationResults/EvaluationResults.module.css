@@ -872,7 +872,6 @@
     margin-bottom: 0;
     min-width: 0;
     overflow-wrap: break-word;
-    overflow-wrap: break-word;
     height: fit-content;
     display: flex;
     flex-direction: column;
@@ -1094,7 +1093,6 @@
     border-radius: 0.5rem;
     min-width: 0;
     overflow-wrap: break-word;
-    overflow-wrap: break-word;
     display: flex;
     flex-direction: column;
     width: 100%;
@@ -1106,14 +1104,12 @@
     margin-bottom: 0.75rem;
     line-height: 1.3;
     overflow-wrap: break-word;
-    overflow-wrap: break-word;
     flex-wrap: wrap;
   }
 
   .feedbackText {
     font-size: 0.9rem;
     line-height: 1.5;
-    overflow-wrap: break-word;
     overflow-wrap: break-word;
   }
 
@@ -1180,7 +1176,6 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  overflow-wrap: break-word;
   overflow-wrap: break-word;
   line-height: 1.3;
   flex-wrap: wrap;

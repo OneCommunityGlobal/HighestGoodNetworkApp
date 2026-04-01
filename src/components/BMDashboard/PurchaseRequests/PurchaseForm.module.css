@@ -115,8 +115,6 @@
 :global(body.dark-mode) .purchaseRequestContainer select,
 :global(body.bm-dashboard-dark) .purchaseRequestContainer select {
   appearance: none;
-  appearance: none;
-  appearance: none;
 }
 
 

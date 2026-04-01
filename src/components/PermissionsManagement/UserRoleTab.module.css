@@ -12,8 +12,6 @@
 }
 
 .userRoleTabBackBtn {
-  appearance: button;
-  appearance: button;
   appearance: auto;
   text-decoration: none;
   color: white;
@@ -205,10 +203,6 @@
   cursor: pointer;
   margin-left: 10px;
   color: inherit;
-}
-
-.permissionLabel {
-  /* Add styles if needed */
 }
 
 @media only screen and (width <= 683px) {

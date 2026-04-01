@@ -91,7 +91,6 @@
 
 .containerTotalOrgWrapper *:not(script, style) {
   overflow-wrap: break-word;
-  overflow-wrap: break-word;
 }
 
 /* Unified dark mode background */
@@ -506,7 +505,6 @@
     font-size: 24px;
     width: 100% !important;
     max-width: 100% !important;
-    overflow-wrap: break-word;
     overflow-wrap: break-word;
   }
 

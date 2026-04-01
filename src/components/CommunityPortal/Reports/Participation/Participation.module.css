@@ -655,7 +655,7 @@
 /* ---------- PDF/Print helpers ---------- */
 .pageBreakBefore { break-before: page; break-before: always; }
 .pageBreakAfter  { break-after: page;  break-after: always; }
-.avoidBreak       { break-inside: avoid; break-inside: avoid; }
+.avoidBreak       { break-inside: avoid; }
 
 /* Use :global for data attributes and print styles */
 :global(html[data-exporting="true"]) .caseCards:global(.expanded),
@@ -774,11 +774,9 @@
   /* Avoid breaking elements */
   :global(.tracking-table-global) tr {
     break-inside: avoid;
-    break-inside: avoid;
   }
 
   .insightItem {
-    break-inside: avoid;
     break-inside: avoid;
   }
 
