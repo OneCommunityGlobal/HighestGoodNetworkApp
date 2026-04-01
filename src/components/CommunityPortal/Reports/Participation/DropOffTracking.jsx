@@ -79,7 +79,8 @@ function DropOffTracking() {
             </span>
           </p>
           <p className={styles.trackingRateValue}>
-            +5% <span>since Last week</span>
+            <span className={styles.trackingRateValuePositive}>+5%</span>{' '}
+            <span>since Last week</span>
           </p>
         </div>
         <div className={`${styles.trackingRate} ${darkMode ? styles.trackingRateDark : ''}`}>
@@ -89,7 +90,10 @@ function DropOffTracking() {
             </span>
           </p>
           <p className={styles.trackingRateValue}>
-            +5% <span>since Last week</span>
+            <span className={styles.trackingRateValueNegative}>
+              <b>-5%</b>
+            </span>{' '}
+            <span>since Last week</span>
           </p>
         </div>
       </div>
