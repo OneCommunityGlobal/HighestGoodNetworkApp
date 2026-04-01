@@ -128,27 +128,27 @@ button.sendButton:hover {
     padding: 20px;
     box-sizing: border-box; /* Ensures padding is included in width */
   }
-  
+
   .editor {
     width: 100%;
     margin-right: 0;
     margin-bottom: 20px;
   }
-  
+
   .emails {
     width: 100%;
     margin-top: 20px;
     padding: 20px 12px; /* Adjust padding for smaller screens */
     box-sizing: border-box; /* Ensures padding is included in width */
   }
-  
+
   .sendButton {
     width: 100%;
     margin-bottom: 10px;
     padding: 12px; /* Ensures padding is consistent */
     box-sizing: border-box; /* Ensures padding is included in width */
   }
-  
+
   .inputTextForAnnouncement,
   :global(textarea) {
     width: 100%;
@@ -180,7 +180,7 @@ button.sendButton:hover {
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
   margin-right: 4px;
-  
+
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
@@ -270,16 +270,12 @@ button.sendButton:hover {
 }
 
 .tabGrid.dark > .navItem .tabNavItem {
-  box-shadow:
-    -2px 0 6px rgba(0,0,0,0.25),
-     2px 0 6px rgba(0,0,0,0.25);
+  box-shadow: -2px 0 6px rgba(0, 0, 0, 0.25), 2px 0 6px rgba(0, 0, 0, 0.25);
 }
 
-.tabGrid.dark > .navItem:nth-child(-n+12) .tabNavItem {
-  box-shadow:
-    -2px 0 6px rgba(0,0,0,0.25),
-     2px 0 6px rgba(0,0,0,0.25),
-     0 6px 6px rgba(0,0,0,0.35);
+.tabGrid.dark > .navItem:nth-child(-n + 12) .tabNavItem {
+  box-shadow: -2px 0 6px rgba(0, 0, 0, 0.25), 2px 0 6px rgba(0, 0, 0, 0.25),
+    0 6px 6px rgba(0, 0, 0, 0.35);
 }
 
 .tabGrid.dark::-webkit-scrollbar-track {
@@ -363,70 +359,118 @@ button.sendButton:hover {
 }
 
 @media (max-width: 1024px) {
-  .tabGrid { 
+  .tabGrid {
     grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
     grid-template-columns: repeat(auto, minmax(110px, 120px));
   }
 }
 
 @media (max-width: 700px) {
-  .tabGrid { 
+  .tabGrid {
     grid-template-columns: repeat(auto, minmax(95px, 100px));
   }
-  
-  .tabGrid .navLink.tabNavItem { 
-    min-height: 64px; 
+
+  .tabGrid .navLink.tabNavItem {
+    min-height: 64px;
   }
 }
 
 @media (max-width: 460px) {
-  .tabLabel { 
-    display: none; 
-  }
-  
-  .tabIcon { 
-    width: 32px; 
-    height: 32px; 
+  .tabLabel {
+    display: none;
   }
 
-  .tabGrid { 
+  .tabIcon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .tabGrid {
     grid-template-columns: repeat(auto, minmax(70px, 80px));
   }
-  
+
   .tabGrid > .navItem {
     min-width: 70px;
   }
 }
 
-.tabGrid > .navItem:nth-child(n+2):nth-child(-n+12),
-.tabGrid > .navItem:nth-child(n+13):not(:nth-child(13)) {
+.tabGrid > .navItem:nth-child(n + 2):nth-child(-n + 12),
+.tabGrid > .navItem:nth-child(n + 13):not(:nth-child(13)) {
   margin-left: -20px;
 }
 
-.tabGrid > .navItem:nth-child(1)  { z-index: 12; }
-.tabGrid > .navItem:nth-child(2)  { z-index: 11; }
-.tabGrid > .navItem:nth-child(3)  { z-index: 10; }
-.tabGrid > .navItem:nth-child(4)  { z-index: 9; }
-.tabGrid > .navItem:nth-child(5)  { z-index: 8; }
-.tabGrid > .navItem:nth-child(6)  { z-index: 7; }
-.tabGrid > .navItem:nth-child(7)  { z-index: 6; }
-.tabGrid > .navItem:nth-child(8)  { z-index: 5; }
-.tabGrid > .navItem:nth-child(9)  { z-index: 4; }
-.tabGrid > .navItem:nth-child(10) { z-index: 3; }
-.tabGrid > .navItem:nth-child(11) { z-index: 2; }
-.tabGrid > .navItem:nth-child(12) { z-index: 1; }
-.tabGrid > .navItem:nth-child(13) { z-index: 24; }
-.tabGrid > .navItem:nth-child(14) { z-index: 23; }
-.tabGrid > .navItem:nth-child(15) { z-index: 22; }
-.tabGrid > .navItem:nth-child(16) { z-index: 21; }
-.tabGrid > .navItem:nth-child(17) { z-index: 20; }
-.tabGrid > .navItem:nth-child(18) { z-index: 19; }
-.tabGrid > .navItem:nth-child(19) { z-index: 18; }
-.tabGrid > .navItem:nth-child(20) { z-index: 17; }
-.tabGrid > .navItem:nth-child(21) { z-index: 16; }
-.tabGrid > .navItem:nth-child(22) { z-index: 15; }
-.tabGrid > .navItem:nth-child(23) { z-index: 14; }
-.tabGrid > .navItem:nth-child(24) { z-index: 13; }
+.tabGrid > .navItem:nth-child(1) {
+  z-index: 12;
+}
+.tabGrid > .navItem:nth-child(2) {
+  z-index: 11;
+}
+.tabGrid > .navItem:nth-child(3) {
+  z-index: 10;
+}
+.tabGrid > .navItem:nth-child(4) {
+  z-index: 9;
+}
+.tabGrid > .navItem:nth-child(5) {
+  z-index: 8;
+}
+.tabGrid > .navItem:nth-child(6) {
+  z-index: 7;
+}
+.tabGrid > .navItem:nth-child(7) {
+  z-index: 6;
+}
+.tabGrid > .navItem:nth-child(8) {
+  z-index: 5;
+}
+.tabGrid > .navItem:nth-child(9) {
+  z-index: 4;
+}
+.tabGrid > .navItem:nth-child(10) {
+  z-index: 3;
+}
+.tabGrid > .navItem:nth-child(11) {
+  z-index: 2;
+}
+.tabGrid > .navItem:nth-child(12) {
+  z-index: 1;
+}
+.tabGrid > .navItem:nth-child(13) {
+  z-index: 24;
+}
+.tabGrid > .navItem:nth-child(14) {
+  z-index: 23;
+}
+.tabGrid > .navItem:nth-child(15) {
+  z-index: 22;
+}
+.tabGrid > .navItem:nth-child(16) {
+  z-index: 21;
+}
+.tabGrid > .navItem:nth-child(17) {
+  z-index: 20;
+}
+.tabGrid > .navItem:nth-child(18) {
+  z-index: 19;
+}
+.tabGrid > .navItem:nth-child(19) {
+  z-index: 18;
+}
+.tabGrid > .navItem:nth-child(20) {
+  z-index: 17;
+}
+.tabGrid > .navItem:nth-child(21) {
+  z-index: 16;
+}
+.tabGrid > .navItem:nth-child(22) {
+  z-index: 15;
+}
+.tabGrid > .navItem:nth-child(23) {
+  z-index: 14;
+}
+.tabGrid > .navItem:nth-child(24) {
+  z-index: 13;
+}
 
 .tabGrid .tabNavItem:hover,
 .tabGrid .tabNavItem.active {
@@ -436,14 +480,10 @@ button.sendButton:hover {
 
 .tabGrid > .navItem .tabNavItem {
   /* left + right only */
-  box-shadow:
-    -2px 0 6px rgba(0,0,0,0.12),
-     2px 0 6px rgba(0,0,0,0.12);
+  box-shadow: -2px 0 6px rgba(0, 0, 0, 0.12), 2px 0 6px rgba(0, 0, 0, 0.12);
 }
 
-.tabGrid > .navItem:nth-child(-n+12) .tabNavItem {
-  box-shadow:
-    -2px 0 6px rgba(0,0,0,0.12),
-     2px 0 6px rgba(0,0,0,0.12),
-     0 6px 6px rgba(0,0,0,0.20);
+.tabGrid > .navItem:nth-child(-n + 12) .tabNavItem {
+  box-shadow: -2px 0 6px rgba(0, 0, 0, 0.12), 2px 0 6px rgba(0, 0, 0, 0.12),
+    0 6px 6px rgba(0, 0, 0, 0.2);
 }

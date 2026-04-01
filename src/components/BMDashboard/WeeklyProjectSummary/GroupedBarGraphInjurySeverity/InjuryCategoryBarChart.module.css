@@ -103,7 +103,6 @@
 }
 
 
-
 /* DatePicker input: keep same dark background + white text */
 
 /* Selected value text → BLACK in dark mode */
@@ -128,7 +127,6 @@
   width: 100%;
 }
 
-
 :global(.filter .react-datepicker__input-container input) {
   width: 180px;
   max-width: 180px;
@@ -139,9 +137,6 @@
 }
 
 
-:global(.darkMode .injurySelect__multi-value__label) {
-  color: #000000 !important;
-}
 
 /* Ensure input text while typing is also black */
 :global(.darkMode .injurySelect__input-container),
