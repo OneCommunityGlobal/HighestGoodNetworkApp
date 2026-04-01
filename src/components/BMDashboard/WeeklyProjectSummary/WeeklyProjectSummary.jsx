@@ -22,6 +22,7 @@ import EmbedInteractiveMap from '../InteractiveMap/EmbedInteractiveMap';
 import InteractiveMap from '../InteractiveMap/InteractiveMap';
 import styles from './WeeklyProjectSummary.module.css';
 import IssueCharts from '../Issues/openIssueCharts';
+import LossTrackingLineChart from './Financials/LossTrackingLineCharts/LossTrackingLineChart';
 import SupplierPerformanceGraph from './SupplierPerformanceGraph.jsx';
 import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords.jsx';
 import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
@@ -131,6 +132,18 @@ function WeeklyProjectSummary() {
   const [openSections, setOpenSections] = useState({});
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const darkMode = useSelector(state => state.theme.darkMode);
+  // Ensure the page is scrollable — some global CSS sets body/html overflow:hidden
+  useEffect(() => {
+    const prevBody = document.body.style.overflowY;
+    const prevHtml = document.documentElement.style.overflowY;
+    document.body.style.overflowY = 'auto';
+    document.documentElement.style.overflowY = 'auto';
+    return () => {
+      document.body.style.overflowY = prevBody;
+      document.documentElement.style.overflowY = prevHtml;
+    };
+  }, []);
+
   useEffect(() => {
     if (materials.length === 0) {
       dispatch(fetchAllMaterials());
@@ -285,9 +298,11 @@ function WeeklyProjectSummary() {
       {
         title: 'Loss Tracking',
         key: 'Loss Tracking',
-        className: 'small',
+        className: 'large',
         content: (
-          <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>📊 Card</div>
+          <div className="weekly-project-summary-card financial-big">
+            <LossTrackingLineChart />
+          </div>
         ),
       },
       {
@@ -441,7 +456,9 @@ function WeeklyProjectSummary() {
 
       document.body.removeChild(pdfContainer);
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.error('PDF generation failed:', err);
+      // eslint-disable-next-line no-alert
       alert('Failed to generate PDF. Please try again.');
     } finally {
       setOpenSections(currentOpenSections);

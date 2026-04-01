@@ -1,19 +1,21 @@
 html {
   overflow-x: hidden;
+  overflow-y: auto !important;
 }
 
 body {
   display: grid;
   grid-template-columns: auto 0px;
+  overflow-y: auto !important;
 }
 button {
   border: none;
   background-color: transparent;
 }
 #root {
-  height: 100%;
+  min-height: 100%;
   overflow-x: auto;
-  overflow-y: hidden;
+  overflow-y: auto;
   /* background-color: var(--background-color); */
   background-color: #ffffff;
 }
