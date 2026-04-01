@@ -134,8 +134,6 @@
 /* Clickable body as a button (a11y-compliant) – neutralize native styles */
 .cardMainButton {
   appearance: none;
-  appearance: none;
-  appearance: none;
   background: transparent;
   border: 0;
   padding: 0;

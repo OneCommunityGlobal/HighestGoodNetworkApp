@@ -889,7 +889,7 @@
 /* Default team styles - keep chip same as others, only change tag color */
 .accessManagementModal .defaultBadge {
     background-color: #ff6b35;
-    color: #fff;
+    color: #111827;
     font-size: 0.65rem;
     padding: 1px 4px;
     border-radius: 3px;
@@ -909,7 +909,7 @@
 /* Dark mode default team styles */
 .accessManagementModal.darkMode .defaultBadge {
     background-color: #ff8c42;
-    color: #fff;
+    color: #111827;
 }
 
 .accessManagementModal.darkMode .defaultTooltip {

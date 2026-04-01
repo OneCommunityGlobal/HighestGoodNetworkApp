@@ -557,13 +557,13 @@
 }
 
 .mfkContainer.darkMode :global(.react-datepicker__day--selected) {
-  background-color: #3b82f6 !important;
+  background-color: #1d4ed8 !important;
   color: #fff !important;
   box-shadow: 0 2px 4px rgb(59 130 246 / 50%) !important;
 }
 
 .mfkContainer.darkMode :global(.react-datepicker__day--selected:hover) {
-  background-color: #2563eb !important;
+  background-color: #1e40af !important;
 }
 
 .mfkContainer.darkMode :global(.react-datepicker__day--keyboard-selected) {
