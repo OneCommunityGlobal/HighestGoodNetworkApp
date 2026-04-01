@@ -17,7 +17,9 @@ const FoundUser = props => {
           <div>{props.index + 1}</div>
         </th>
         <td className="foundUsers__order">
-          {props.fullName}
+          <a href={`/userprofile/${props.uid}`}>
+            {props.fullName}
+          </a>
         </td>
         <td className="foundUsers__email">
           {props.email}
@@ -30,7 +32,7 @@ const FoundUser = props => {
               className="btn btn-outline-primary btn-sm"
               type="button"
               style={darkMode ? {} : boxStyle}
-              disabled
+              onClick={() => props.assignProject(props.projectId, props.uid, 'Assign', props.firstName, props.lastName, 'true')}
             >
               <i className="fa fa-plus" aria-hidden="true"></i>
             </button>
