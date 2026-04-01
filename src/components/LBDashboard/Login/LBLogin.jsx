@@ -111,13 +111,13 @@ function LBLogin(props) {
   }
 
   return (
-    <div className={`${styles.authPage} ${darkMode ? styles.darkMode : ''}`}>
+    <div className={`${styles.authPage} ${darkMode ? styles.darkPage : ''}`}>
       <div className={styles.logoContainer}>
         <img src={logo} alt="One Community Logo" />
       </div>
       <div className={`${styles.formContainer}`}>
         <div className={styles.formTop} />
-        <div className={`${styles.formMain} ${darkMode ? styles.dark : ''}`}>
+        <div className={`${styles.formMain} ${darkMode ? styles.darkMain : ''}`}>
           <h2>Log In To Listing and Biding Portal</h2>
           <p>Enter your credentials to access the Listing and Biding Portal Dashboard</p>
           <p>Note: You must use your Production/Main credentials for this login.</p>
@@ -143,10 +143,12 @@ function LBLogin(props) {
                   invalid={touched.email && !!fieldErrors.email}
                   aria-invalid={touched.email && !!fieldErrors.email}
                   aria-describedby={touched.email && fieldErrors.email ? 'email-error' : undefined}
-                  className={`${darkMode ? 'darkInput' : ''}`}
+                  className={`${darkMode ? styles.darkMail : ''}`}
                 />
                 {touched.email && fieldErrors.email && (
-                  <FormFeedback id="email-error">{fieldErrors.email}</FormFeedback>
+                  <FormFeedback className="error" id="email-error">
+                    {fieldErrors.email}
+                  </FormFeedback>
                 )}
               </FormGroup>
               <FormGroup className="pswd">
@@ -178,14 +180,14 @@ function LBLogin(props) {
                     onKeyDown={e => {
                       if (e.key === 'Enter' || e.key === ' ') setShowPassword(prev => !prev);
                     }}
-                    className={`${darkMode ? styles.dark1 : ''}`}
+                    className={`${darkMode ? styles.darkPswd : ''}`}
                   >
                     <i className={showPassword ? 'fa fa-eye-slash' : 'fa fa-eye'} />
                   </InputGroupText>
                 </InputGroup>
                 {capsLockOn && <span className={styles.capsMsg}> &nbsp; Caps Lock is ON</span>}
                 {touched.password && fieldErrors.password && (
-                  <FormFeedback id="password-error" className="d-block">
+                  <FormFeedback id="password-error" className="d-block error">
                     {fieldErrors.password}
                   </FormFeedback>
                 )}

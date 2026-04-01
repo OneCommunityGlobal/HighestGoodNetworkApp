@@ -144,15 +144,15 @@
   float: right;
 }
 
-.darkMode{
+.darkPage{
   background-color: #1b2a41;
 }
 
-.dark {
+.darkMain {
   background-color: #203844 !important;
 }
 
-.dark1{
+.darkPswd{
   background-color: #1a1a1a !important ;
   border-color:  #404040 !important;
 }
@@ -167,9 +167,18 @@
   border-color: #218838 !important;
 }
 
-:global(.darkInput:-webkit-autofill),
- :global(.darkInput:-webkit-autofill:hover),
- :global(.darkInput:-webkit-autofill:focus),
- :global(.darkInput:-webkit-autofill:active) {
-  -webkit-text-fill-color:#fff !important;
+:global(body.dark-mode .error), :global(.dashboard-dark .error){
+  color: #dc3545 !important;
+}
+
+.darkMail:-webkit-autofill,
+.darkMail:-webkit-autofill:hover,
+.darkMail:-webkit-autofill:focus,
+.darkMail:-webkit-autofill:active {
+  /* stylelint-disable-next-line property-no-vendor-prefix */
+  -webkit-box-shadow: 0 0 0 1000px #1a1a1a inset !important; /* do-not remove this rule as its for background */
+  -webkit-text-fill-color: #fff !important;
+  caret-color: #fff;
+  border: 1px solid #888 !important;
+  transition: background-color 5000s ease-in-out 0s;
 }
