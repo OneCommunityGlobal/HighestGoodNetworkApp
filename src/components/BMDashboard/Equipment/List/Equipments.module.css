@@ -284,7 +284,7 @@ body.dark-mode table .btn:hover,
 body.bm-dashboard-dark table button:hover,
 body.bm-dashboard-dark table .btn:hover {
   background-color: #4dabf7 !important;
-  color: #fff !important;
+  color: #0f172a !important;
   border-color: #4dabf7 !important;
 }
 
@@ -303,7 +303,7 @@ body.bm-dashboard-dark .btn-outline-primary:hover,
 body.bm-dashboard-dark .btn-outline-primary:focus,
 body.bm-dashboard-dark .btn-outline-primary:active {
   background-color: #4dabf7 !important;
-  color: #fff !important;
+  color: #0f172a !important;
   border-color: #4dabf7 !important;
 }
 

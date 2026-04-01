@@ -405,7 +405,7 @@
   padding: 10px 20px;
   border-radius: 6px;
   border: none;
-  background: #3b82f6;
+  background: #1d4ed8;
   color: #fff;
   cursor: pointer;
   font-weight: 500;
@@ -413,7 +413,7 @@
 }
 
 .retryButton:hover {
-  background: #2563eb;
+  background: #1e40af;
 }
 
 .darkMode .retryButton {
