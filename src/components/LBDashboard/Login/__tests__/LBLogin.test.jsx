@@ -20,6 +20,7 @@ beforeEach(() => {
         access: { canAccessCPPortal: true },
       },
     },
+    theme: { darkMode: false },
   });
 });
 
