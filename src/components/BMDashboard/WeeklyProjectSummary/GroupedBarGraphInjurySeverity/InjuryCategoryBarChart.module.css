@@ -97,7 +97,7 @@
 }
 
 :global(.darkMode .injury-select__option--is-focused) {
-  background-color: rgb(255 255 255 / 12%) !important;
+  background-color: #334155 !important;
   color: #fff !important;
 }
 

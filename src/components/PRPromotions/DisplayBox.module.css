@@ -216,5 +216,5 @@
 :global(body.dark-mode) .popup-table-dark .pr-count-badge.color-6,
 :global(body.bm-dashboard-dark) .popup-table-dark .pr-count-badge.color-6 {
   color: #fff !important;
-  background-color: #F00 !important;
+  background-color: #b00000 !important;
 }

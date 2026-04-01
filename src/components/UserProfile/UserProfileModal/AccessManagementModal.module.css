@@ -838,8 +838,8 @@
 }
 
 .accessManagementModal .chipSelected {
-    background-color: #005ec2;
-    border-color: #005ec2;
+    background-color: #004a9a;
+    border-color: #004a9a;
     color: #fff;
 }
 
@@ -909,7 +909,7 @@
 /* Dark mode default team styles */
 .accessManagementModal.darkMode .defaultBadge {
     background-color: #ff8c42;
-    color: #111827;
+    color: #000;
 }
 
 .accessManagementModal.darkMode .defaultTooltip {

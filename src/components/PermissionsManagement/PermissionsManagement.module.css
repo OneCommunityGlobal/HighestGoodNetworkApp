@@ -92,7 +92,6 @@
   padding-bottom: 5px;
   padding-top: 5px;
   overflow-wrap: break-word;
-  overflow-wrap: break-word;
   max-width: 100%;
 }
 
@@ -228,7 +227,6 @@
   border-top: 1px solid #ccc;
   text-align: center;
   margin-bottom: 10px;
-  overflow-wrap: break-word;
   overflow-wrap: break-word;
 }
 
