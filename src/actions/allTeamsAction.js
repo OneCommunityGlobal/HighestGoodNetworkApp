@@ -182,7 +182,7 @@ export const deleteTeam = teamId => {
  * updating the team status
  */
 export const updateTeam = (teamName, teamId, isActive, teamCode) => {
-  const requestData = { teamName, isActive, teamCode };
+  const requestData = { teamName, isActive, teamCode: teamCode || '' };
   const url = ENDPOINTS.TEAM_DATA(teamId);
   return async dispatch => {
     try {
@@ -236,10 +236,12 @@ export const addTeamMember = (teamId, userId) => {
   const requestData = { userId, operation: 'Assign' };
   return async dispatch => {
     const res = await axios.post(ENDPOINTS.TEAM_USERS(teamId), requestData);
-    dispatch(teamMemberAddAction({
-      ...res.data.newMember,
-      addDateTime: new Date().toISOString() //newMember data doesn't have the date - required to update the Date Added column
-    }));
+    dispatch(
+      teamMemberAddAction({
+        ...res.data.newMember,
+        addDateTime: new Date().toISOString(), //newMember data doesn't have the date - required to update the Date Added column
+      }),
+    );
     return res.data; // return so caller can await
   };
 };
@@ -249,7 +251,7 @@ export const updateTeamMemeberVisibility = (teamId, userId, visibility) => {
   const updateVisibilityPromise = axios.put(ENDPOINTS.TEAM, updateData);
 
   return async dispatch => {
-    updateVisibilityPromise
+    return updateVisibilityPromise
       .then(() => {
         dispatch(updateVisibilityAction(visibility, userId, teamId));
       })
