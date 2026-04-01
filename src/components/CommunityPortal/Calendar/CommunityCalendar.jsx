@@ -12,6 +12,19 @@ const EVENT_TYPES = ['Workshop', 'Meetup', 'Lecture', 'Social'];
 const LOCATIONS = ['Community Hall', 'Online', 'Park', 'Library'];
 const TIMES = ['10:00 AM', '2:00 PM', '6:00 PM', '8:00 PM'];
 
+const normalizeStatus = status => {
+  if (!status) return 'New';
+
+  const s = status.toLowerCase();
+
+  if (s.includes('need')) return 'Needs Attendees';
+  if (s.includes('fill')) return 'Filling Fast';
+  if (s.includes('full')) return 'Full Event';
+  if (s.includes('new')) return 'New';
+
+  return 'New';
+};
+
 export default function CommunityCalendar() {
   const [events, setEvents] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -33,14 +46,23 @@ export default function CommunityCalendar() {
       setIsLoading(true);
       try {
         const response = await axios.get(ENDPOINTS.EVENTS);
-        setEvents(response.data.events || []);
+
+        const apiEvents = response.data.events;
+
+        if (!apiEvents || apiEvents.length === 0) {
+          console.warn('API returned empty → using mock events');
+          setEvents(MOCK_EVENTS);
+        } else {
+          setEvents(apiEvents);
+        }
       } catch (err) {
-        setError('Failed to load events');
-        console.error('Error fetching calendar events:', err);
+        console.warn('API failed → using mock events');
+        setEvents(MOCK_EVENTS);
       } finally {
         setIsLoading(false);
       }
     };
+
     fetchEvents();
   }, []);
 
@@ -53,7 +75,7 @@ export default function CommunityCalendar() {
         ...event,
         date: eventDate,
         type: event.type || 'General',
-        status: event.status || 'New',
+        status: normalizeStatus(event.status),
         time: event.time || timeString,
         description: event.description || `Join us for ${event.title}`,
         // Ensure location is present or default
@@ -193,6 +215,14 @@ export default function CommunityCalendar() {
     'Full Event': 'statusFull',
   };
 
+  const statusIconMap = {
+    New: '⭐',
+    'Needs Attendees': '🙋',
+    'Filling Fast': '⚡',
+    'Full Event': '⛔',
+    Full: '⛔',
+  };
+
   function WeeklyTimeGrid({ events, selectedDate, onEventClick, darkMode }) {
     const hours = Array.from({ length: 24 }, (_, i) => i);
 
@@ -306,7 +336,7 @@ export default function CommunityCalendar() {
       return (
         <div className={styles.tileEvents}>
           {visible.map(e => {
-            const statusKey = statusMap[e.status];
+            const statusKey = statusMap[e.status] || 'statusNew';
             return (
               <button
                 key={e.id}
@@ -318,7 +348,12 @@ export default function CommunityCalendar() {
                 }}
                 title={e.title}
               >
-                {e.title}
+                <span className={styles.eventContent}>
+                  <span className={styles.eventIcon} aria-label={e.status} title={e.status}>
+                    {statusIconMap[e.status] || '⭐'}
+                  </span>
+                  <span className={styles.eventTitleText}>{e.title}</span>
+                </span>
               </button>
             );
           })}
@@ -551,7 +586,9 @@ export default function CommunityCalendar() {
                                 <span>{event.time}</span>
                                 <span>{event.location}</span>
                                 <span>{event.type}</span>
-                                <span>{event.status}</span>
+                                <span className={styles.statusInline}>
+                                  {statusIconMap[event.status] || ''} {event.status}
+                                </span>
                               </div>
                             </div>
                             <button
@@ -590,11 +627,16 @@ export default function CommunityCalendar() {
               <button
                 key={e.id}
                 type="button"
-                className={`${styles.eventItem} ${styles[statusMap[e.status]]}`}
+                className={`${styles.eventItem} ${styles[statusMap[e.status]] || styles.statusNew}`}
                 onClick={() => handleEventClick(e)}
                 title={e.title}
               >
-                {e.title}
+                <span className={styles.eventContent}>
+                  <span className={styles.eventIcon} aria-label={e.status} title={e.status}>
+                    {statusIconMap[e.status] || '⭐'}
+                  </span>
+                  <span className={styles.eventTitleText}>{e.title}</span>
+                </span>
               </button>
             ))}
           </div>
