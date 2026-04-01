@@ -150,7 +150,6 @@ export function ItemListView({
                   />
                 </FormGroup>
               </Form>
-
               <SelectForm
                 items={items}
                 selectedProject={selectedProject}
@@ -160,15 +159,13 @@ export function ItemListView({
                 setSelectedToolStatus={setSelectedToolStatus}
               />
 
-              {itemType !== 'Materials' && (
-                <SelectItem
-                  items={selectList}
-                  selectedItem={selectedItem}
-                  selectedProject={selectedProject}
-                  setSelectedItem={setSelectedItem}
-                  label={itemType}
-                />
-              )}
+              <SelectItem
+                items={selectList}
+                selectedItem={selectedItem}
+                selectedProject={selectedProject}
+                setSelectedItem={setSelectedItem}
+                label={itemType}
+              />
             </div>
           )}
 

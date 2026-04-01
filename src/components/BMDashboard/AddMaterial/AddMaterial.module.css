@@ -49,15 +49,15 @@ font-size: .8em;
   padding-left: 1em;
   margin-top: 1em;
   transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.addMaterialCreatedby div{
-  width: 50%;
+  gap: 6px;
+  flex-wrap: wrap;
 }
 
 .createdby{
   text-align: end;
   padding-right: 1em;
+  word-break: break-all;
+  overflow-wrap: anywhere;
 }
 
 .filePreviewContainer{
@@ -332,4 +332,9 @@ font-size: .8em;
 :global(body.dark-mode:not(.no-global-theme) select.form-control),
 :global(body.bm-dashboard-dark:not(.no-global-theme) select.form-control){
   background-image: none !important;
+}
+
+:global(.bm-dashboard-dark select){
+  background-color: #2e5061;
+  border: none;
 }

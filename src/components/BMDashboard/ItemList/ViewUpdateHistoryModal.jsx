@@ -12,6 +12,7 @@ export default function ViewUpdateHistoryModal({ item, isOpen, toggle }) {
 
   const itemTypeObj = item?.itemType ?? null;
   const hasInvalidItem = !itemTypeObj;
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   // Fetch history when modal opens
   useEffect(() => {
@@ -44,7 +45,7 @@ export default function ViewUpdateHistoryModal({ item, isOpen, toggle }) {
           'Please select a valid row for viewing history'
         ) : (
           <div className={styles.historyTable}>
-            <Table>
+            <Table className={darkMode ? styles.darkTable : ''}>
               <thead>
                 <tr>
                   <th>Date</th>
