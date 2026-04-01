@@ -19,6 +19,7 @@
 .notFoundImage {
   max-width: 100%;
   height: auto;
+
   /* margin-bottom:-20px; */
 }
 
@@ -52,21 +53,21 @@
   background-color: #121212;
 }
 
-@media (max-width: 1039px) {
+@media (width <= 1039px) {
   .notFoundContent {
     margin-top: 20rem;
   }
 }
 
-@media (max-width: 1200px) {
+@media (width <= 1200px) {
   .notFoundContent {
     width: 92%;
   }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .notFoundContent {
-    margin-top: 0rem;
+    margin-top: 0;
   }
 
   .notFoundText h1 {

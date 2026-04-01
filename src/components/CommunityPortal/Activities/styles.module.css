@@ -20,7 +20,7 @@
 }
 
 .resourceTitle {
-  color: rgb(12, 11, 11); 
+  color: rgb(12 11 11); 
   font-weight: bold;
   margin-bottom: 10px;
   width: 100%;            
@@ -37,7 +37,7 @@
 }
 
 .resourceMonitoring h2 {
-  color: rgb(12, 11, 11);
+  color: rgb(12 11 11);
 }
 
 .header,
@@ -211,9 +211,11 @@
   color: white;
   font-weight: bold;
 }
+
 .active {
   color: green;
 }
+
 .closed {
   color: red;
 }
@@ -257,17 +259,17 @@
 }
 
 .myEvent .status.active {
-  background-color: rgb(200, 240, 200);
+  background-color: rgb(200 240 200);
   color: green;
 }
 
 .myEvent .status.closed {
-  background-color: rgb(191, 191, 238);
+  background-color: rgb(191 191 238);
   color: purple;
 }
 
 .myEvent .status.cancelled {
-  background-color: rgb(239, 170, 170);
+  background-color: rgb(239 170 170);
   color: red;
 }
 
@@ -298,7 +300,7 @@
   background-color: white;
   padding: 20px;
   border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 10px rgb(0 0 0 / 10%);
   font-family: Arial, sans-serif;
 }
 

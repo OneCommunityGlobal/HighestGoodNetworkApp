@@ -46,7 +46,7 @@
   width: 80%;
   padding: 16px;
   background: var(--section-bg);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
   border-radius: 8px;
   transition: all 0.3s ease;
   min-height: 80px;
@@ -87,8 +87,6 @@
   color: var(--text-color);
   transition: all 0.3s ease;
   appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
   background-repeat: no-repeat;
   background-position: right 8px center;
@@ -142,7 +140,7 @@
 
 .weeklySummaryShareBtn:focus {
   outline: none;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+  box-shadow: 0 0 0 2px rgb(59 130 246 / 50%);
 }
 
 .weeklySummaryShareBtn:disabled {
@@ -190,11 +188,11 @@
 
 .darkMode .weeklyProjectSummaryCard {
   background: var(--card-bg);
-  box-shadow: 0 2px 5px rgba(255, 255, 255, 0.1);
+  box-shadow: 0 2px 5px rgb(255 255 255 / 10%);
 }
 
 .weeklyProjectSummaryCard :global(.container) {
-  background: #ffffff !important;
+  background: #fff !important;
   width: 100% !important;
   height: 100% !important;
   padding: 0 !important;
@@ -222,7 +220,7 @@
 }
 
 .weeklyProjectSummaryCard :global(.recharts-bar-rectangle) {
-  shape-rendering: geometricPrecision !important;
+  shape-rendering: geometricprecision !important;
 }
 
 .weeklyProjectSummaryCard :global(.recharts-cartesian-axis-tick-value) {
@@ -247,7 +245,7 @@
   padding: 0;
   background: white;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
   overflow: hidden;
   margin-bottom: 20px;
 }
@@ -421,12 +419,12 @@
 
 /* ---------------- LIGHT MODE VARIABLES ---------------- */
 :root {
-  --bg-color: #ffffff;
-  --text-color: #000000;
-  --text-secondary: #666666;
-  --card-bg: #ffffff;
-  --card-shadow: rgba(0, 0, 0, 0.1);
-  --section-bg: #ffffff;
+  --bg-color: #fff;
+  --text-color: #000;
+  --text-secondary: #666;
+  --card-bg: #fff;
+  --card-shadow: rgb(0 0 0 / 10%);
+  --section-bg: #fff;
   --section-title-bg: #f8fafc;
   --section-title-hover: #f1f5f9;
   --button-bg: black;
@@ -434,18 +432,18 @@
   --border-color: #e5e7eb;
   --pos-color: #15803d;
   --neg-color: #b91c1c;
-  --neutral-change: rgba(0, 0, 0, 0.65);
-  --card-elev: rgba(0, 0, 0, 0.15);
-  --card-elev-hover: rgba(0, 0, 0, 0.18);
+  --neutral-change: rgb(0 0 0 / 65%);
+  --card-elev: rgb(0 0 0 / 15%);
+  --card-elev-hover: rgb(0 0 0 / 18%);
 }
 
 /* ---------------- DARK MODE VARIABLES ---------------- */
 .darkMode {
   --bg-color: #1b2a41;
-  --text-color: #ffffff;
+  --text-color: #fff;
   --text-secondary: #94a3b8;
   --card-bg: #2b3e59;
-  --card-shadow: rgba(255, 255, 255, 0.1);
+  --card-shadow: rgb(255 255 255 / 10%);
   --section-bg: #253342;
   --section-title-bg: #2d4059;
   --section-title-hover: #3a506b;
@@ -455,13 +453,13 @@
   --focus-border-color: #e8a71c;
   --pos-color: #22c55e;
   --neg-color: #ef4444;
-  --neutral-change: rgba(255, 255, 255, 0.75);
-  --card-elev: rgba(0, 0, 0, 0.45);
-  --card-elev-hover: rgba(0, 0, 0, 0.6);
+  --neutral-change: rgb(255 255 255 / 75%);
+  --card-elev: rgb(0 0 0 / 45%);
+  --card-elev-hover: rgb(0 0 0 / 60%);
 }
 
 .darkMode .weeklyProjectSummaryDashboardCategoryTitle {
-  color: #ffffff;
+  color: #fff;
   background: #2d4059;
 }
 
@@ -471,7 +469,7 @@
 
 .darkMode .weeklyProjectSummaryDashboardCategoryContent {
   background-color: var(--section-bg);
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  border-top: 1px solid rgb(255 255 255 / 20%);
 }
 
 .darkMode .weeklySummaryHeaderContainer {
@@ -490,7 +488,7 @@
 .darkMode .statusCard {
   background: var(--card-bg) !important;
   color: var(--text-color) !important;
-  border-color: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgb(255 255 255 / 10%) !important;
 }
 
 .darkMode .weeklyCardTitle,
@@ -505,7 +503,7 @@
   overflow-y: auto !important;
   padding-right: 15px !important;
   scrollbar-width: thin;
-  scrollbar-color: rgba(0, 0, 0, 0.3) rgba(0, 0, 0, 0.1);
+  scrollbar-color: rgb(0 0 0 / 30%) rgb(0 0 0 / 10%);
 }
 
 .quantityOfMaterialsUsedChartTooltip::-webkit-scrollbar {
@@ -513,21 +511,21 @@
 }
 
 .quantityOfMaterialsUsedChartTooltip::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.1);
+  background: rgb(0 0 0 / 10%);
   border-radius: 4px;
 }
 
 .quantityOfMaterialsUsedChartTooltip::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.3);
+  background: rgb(0 0 0 / 30%);
   border-radius: 4px;
 }
 
 .darkMode .quantityOfMaterialsUsedChartTooltip::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgb(255 255 255 / 10%);
 }
 
 .darkMode .quantityOfMaterialsUsedChartTooltip::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.3);
+  background: rgb(255 255 255 / 30%);
 }
 
 /* Animation */
@@ -536,6 +534,7 @@
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -553,9 +552,9 @@
   max-width: 284px;
   height: 190px;
   text-align: center;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 8px rgb(0 0 0 / 15%);
   padding: 20px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  border: 1px solid rgb(0 0 0 / 10%);
   position: relative;
   transition: all 0.3s ease;
 }
@@ -580,7 +579,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 5px rgb(0 0 0 / 15%);
   margin: 12px 0;
   transition: all 0.3s ease;
 }
@@ -620,7 +619,7 @@
 /* ---------------- RESPONSIVE BREAKPOINTS ---------------- */
 
 /* Large Screens */
-@media (min-width: 1400px) {
+@media (width >= 1400px) {
   .lessonsLearnedGrid {
     min-height: 650px;
   }
@@ -630,7 +629,7 @@
   }
 }
 
-@media (max-width: 1399px) and (min-width: 1200px) {
+@media (width <= 1399px) and (width >= 1200px) {
   .lessonsLearnedGrid {
     min-height: 600px;
   }
@@ -640,7 +639,7 @@
   }
 }
 
-@media (max-width: 1199px) and (min-width: 992px) {
+@media (width <= 1199px) and (width >= 992px) {
   .lessonsLearnedGrid {
     min-height: 550px;
     gap: 20px;
@@ -651,7 +650,7 @@
   }
 }
 
-@media (max-width: 991px) and (min-width: 769px) {
+@media (width <= 991px) and (width >= 769px) {
   .lessonsLearnedGrid {
     min-height: 500px;
     gap: 16px;
@@ -663,7 +662,7 @@
 }
 
 /* Medium Screens */
-@media (max-width: 1024px) {
+@media (width <= 1024px) {
   .weeklySummaryHeaderContainer {
     flex-direction: column;
     align-items: center;
@@ -681,7 +680,7 @@
 }
 
 /* Small Screens */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .weeklySummaryHeaderContainer {
     flex-direction: column;
     align-items: center;
@@ -766,7 +765,7 @@
 }
 
 /* Extra Small Screens */
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .lessonsCard {
     min-height: 450px;
   }
@@ -787,31 +786,31 @@
 }
 
 /* Status Grid Responsive */
-@media (min-width: 1600px) {
+@media (width >= 1600px) {
   .projectStatusGrid {
     grid-template-columns: repeat(6, 1fr);
   }
 }
 
-@media (max-width: 1400px) {
+@media (width <= 1400px) {
   .projectStatusGrid {
     grid-template-columns: repeat(4, 1fr);
   }
 }
 
-@media (max-width: 1024px) {
+@media (width <= 1024px) {
   .projectStatusGrid {
     grid-template-columns: repeat(3, 1fr);
   }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .projectStatusGrid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
-@media (max-width: 576px) {
+@media (width <= 576px) {
   .projectStatusGrid {
     grid-template-columns: repeat(1, 1fr);
   }
@@ -844,14 +843,13 @@
 }
 
 .darkMode .lessonsCard {
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 6px rgb(0 0 0 / 30%);
 }
 
 /* Print styles */
 @media print {
   .weeklyProjectSummaryCard {
     break-inside: avoid;
-    page-break-inside: avoid;
   }
   
   .weeklyProjectSummaryCard :global(.container) {
@@ -865,7 +863,6 @@
   .laborTimeGrid,
   .financialsTrackingGrid {
     break-inside: avoid;
-    page-break-inside: avoid;
   }
   
   .weeklySummaryShareBtn,

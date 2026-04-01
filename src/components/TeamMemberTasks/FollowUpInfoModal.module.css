@@ -7,21 +7,15 @@
   border: 0 !important;
   padding: 0 !important;
   margin: 0 !important;
-
   box-shadow: none !important;
   outline: none !important;
-
-  -webkit-appearance: none;
   appearance: none;
-
   line-height: 1;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
   width: 18px;
   height: 18px;
-
   cursor: pointer;
 }
 
@@ -32,7 +26,7 @@
 }
 
 .followup-info-modal-button:focus-visible {
-  outline: 2px solid rgba(0, 123, 255, 0.4);
+  outline: 2px solid rgb(0 123 255 / 40%);
   outline-offset: 2px;
 }
 
@@ -46,17 +40,13 @@
 .fu-tooltip {
   position: fixed;
   z-index: 3000;
-
   width: 440px;    
   max-width: 440px;
-
   padding: 15px;
   border-radius: 6px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-
+  box-shadow: 0 8px 24px rgb(0 0 0 / 35%);
   max-height: 70vh;
   overflow: auto;
-
   white-space: normal;
   text-align: left;
 }
@@ -79,7 +69,7 @@
   margin-bottom: 0;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .fu-tooltip {
     width: 90vw;
     max-width: 90vw;

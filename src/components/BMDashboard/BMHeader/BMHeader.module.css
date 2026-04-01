@@ -41,7 +41,7 @@
   margin-right: 3rem;
 }
 
-@media (max-width: 1500px) {
+@media (width <= 1500px) {
   .dashboardTextLink {
     font-size: 14px;
   }
@@ -51,7 +51,7 @@
   }
 }
 
-@media (max-width: 1400px) {
+@media (width <= 1400px) {
   .timerMessageSection {
     display: flex;
     width: 0;

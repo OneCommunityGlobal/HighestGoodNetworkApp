@@ -17,8 +17,9 @@ import {
 import { faFacebook, faLinkedin, faMedium } from '@fortawesome/free-brands-svg-icons';
 import ReactTooltip from 'react-tooltip';
 
-import EmailPanel from './platforms/email'; // ← new
+import EmailPanel from './platforms/email';
 import SlashdotAutoPoster from './platforms/slashdot';
+import BlueskyPostDetails from './BlueskyPostDetails';
 
 function Announcements({ title, email: initialEmail }) {
   const [activeTab, setActiveTab] = useState('email');
@@ -150,6 +151,11 @@ function Announcements({ title, email: initialEmail }) {
             <TruthSocialAutoPoster darkMode={darkMode} />
           </TabPane>
 
+          {/* Bluesky uses the dedicated BlueskyPostDetails component */}
+          <TabPane tabId="bluesky">
+            <BlueskyPostDetails />
+          </TabPane>
+
           {[
             'x',
             'facebook',
@@ -158,7 +164,6 @@ function Announcements({ title, email: initialEmail }) {
             'instagram',
             'threads',
             'mastodon',
-            'bluesky',
             'youtube',
             'reddit',
             'tumblr',

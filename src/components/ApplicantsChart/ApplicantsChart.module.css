@@ -23,21 +23,21 @@
 
 .text-light .hgn-datepicker-dark-calendar .react-datepicker__day:hover {
   background-color: #374151 !important;
-  color: #ffffff !important;
+  color: #fff !important;
   border-radius: 0 !important;
 }
 
 .text-light .hgn-datepicker-dark-calendar .react-datepicker__day--selected,
 .text-light .hgn-datepicker-dark-calendar .react-datepicker__day--keyboard-selected {
   background-color: #2563eb !important;
-  color: #ffffff !important;
+  color: #fff !important;
   border-radius: 0 !important;
 }
 
 .text-light .hgn-datepicker-dark-calendar .react-datepicker__day--in-range,
 .text-light .hgn-datepicker-dark-calendar .react-datepicker__day--in-selecting-range {
   background-color: #1e3a8a !important;
-  color: #ffffff !important;
+  color: #fff !important;
   border-radius: 0 !important;
 }
 
@@ -91,6 +91,7 @@
   color: #9ca3af !important;
   opacity: 1 !important;
 }
+
 .disabledDay {
   color: #9ca3af !important;      /* gray */
   pointer-events: none;
@@ -154,42 +155,42 @@
 
 /* Custom tooltip styles - ensure text is always visible */
 .customTooltip {
-  background-color: #ffffff !important;
-  color: #000000 !important;
+  background-color: #fff !important;
+  color: #000 !important;
 }
 
 .customTooltip * {
-  color: #000000 !important;
+  color: #000 !important;
 }
 
 .tooltipAgeGroup {
-  color: #000000 !important;
+  color: #000 !important;
   font-weight: 600 !important;
 }
 
 .tooltipApplicants {
-  color: #000000 !important;
+  color: #000 !important;
 }
 
 .tooltipApplicants strong {
-  color: #000000 !important;
+  color: #000 !important;
   font-weight: 700 !important;
 }
 
 .tooltipChange {
-  color: #000000 !important;
+  color: #000 !important;
 }
 
 /* Global tooltip styles to override any parent dark mode styles */
 :global(.recharts-tooltip-wrapper) .customTooltip,
 :global(.recharts-tooltip-wrapper) .customTooltip * {
-  color: #000000 !important;
-  background-color: #ffffff !important;
+  color: #000 !important;
+  background-color: #fff !important;
 }
 
 /* Override text-light class for tooltip */
 :global(.text-light) :global(.recharts-tooltip-wrapper) .customTooltip,
 :global(.text-light) :global(.recharts-tooltip-wrapper) .customTooltip * {
-  color: #000000 !important;
-  background-color: #ffffff !important;
+  color: #000 !important;
+  background-color: #fff !important;
 }

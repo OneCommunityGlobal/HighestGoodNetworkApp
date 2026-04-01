@@ -62,7 +62,7 @@
   padding: 10px 14px;
   border-radius: 8px;
   border: 1px solid #cbd5e5;
-  background: #ffffff;
+  background: #fff;
   color: #0f172a;
   font-size: 0.95rem;
   cursor: pointer;
@@ -85,17 +85,17 @@
 }
 
 .eventCard {
-  background: #ffffff;
+  background: #fff;
   border-radius: 12px;
   padding: 20px;
   border: 1px solid #e2e8f0;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .eventCard:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
 }
 
 .darkMode .eventCard {
@@ -104,7 +104,7 @@
 }
 
 .darkMode .eventCard:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 30%);
 }
 
 .virtualEvent {
@@ -325,7 +325,7 @@
   border-radius: 6px;
   border: none;
   background: #3b82f6;
-  color: #ffffff;
+  color: #fff;
   font-size: 0.85rem;
   font-weight: 500;
   cursor: pointer;
@@ -385,6 +385,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -404,15 +405,15 @@
   padding: 10px 20px;
   border-radius: 6px;
   border: none;
-  background: #3b82f6;
-  color: #ffffff;
+  background: #1d4ed8;
+  color: #fff;
   cursor: pointer;
   font-weight: 500;
   transition: background 0.2s;
 }
 
 .retryButton:hover {
-  background: #2563eb;
+  background: #1e40af;
 }
 
 .darkMode .retryButton {
@@ -446,7 +447,7 @@
   border-radius: 4px;
   border: none;
   background: #dc2626;
-  color: #ffffff;
+  color: #fff;
   cursor: pointer;
   font-size: 0.85rem;
   font-weight: 500;
@@ -468,7 +469,7 @@
   padding: 10px 16px;
   border-radius: 6px;
   border: 1px solid #cbd5e5;
-  background: #ffffff;
+  background: #fff;
   color: #475569;
   cursor: pointer;
   font-size: 0.9rem;
@@ -515,7 +516,7 @@
   color: #94a3b8;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .page {
     padding: 16px;
   }

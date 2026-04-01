@@ -113,5 +113,5 @@
 :global(.report-page-wrapper.bg-oxford-blue .tableHeader thead tr td),
 :global(.report-page-wrapper.bg-oxford-blue .tableHeader thead tr th),
 :global(.report-page-wrapper.bg-oxford-blue .tableHeader thead tr strong) {
-  color: #ffffff !important;
+  color: #fff !important;
 }

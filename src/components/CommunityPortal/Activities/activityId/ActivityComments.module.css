@@ -4,11 +4,12 @@
   display: flex;
   background: #fff;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 4%);
   padding: 32px;
   margin-bottom: 24px;
   gap: 32px;
 }
+
 .eventImage {
   width: 160px;
   height: 160px;
@@ -22,14 +23,17 @@
   color: #444;
   margin-bottom: 8px;
 }
+
 .eventDetails {
   flex: 1;
 }
+
 .eventTitle {
   font-size: 2rem;
   font-weight: 600;
   margin-bottom: 8px;
 }
+
 .eventMeta {
   display: flex;
   gap: 24px;
@@ -37,39 +41,46 @@
   font-size: 1rem;
   color: #444;
 }
+
 .eventMetaItem {
   color: #444;
 }
+
 .eventStatus {
   color: #1bbf5c;
   font-weight: 500;
   margin-left: 12px;
 }
+
 .eventAvatars {
   display: flex;
   align-items: center;
   gap: 4px;
   margin-top: 8px;
 }
+
 .avatar {
   width: 32px;
   height: 32px;
   border-radius: 50%;
   border: 2px solid #fff;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 8%);
 }
+
 .calendar {
   min-width: 220px;
   background: #fafafa;
   border-radius: 8px;
   padding: 16px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 4%);
 }
+
 .tabs {
   display: flex;
   border-bottom: 2px solid #eee;
   margin-bottom: 16px;
 }
+
 .tab {
   background: none;
   border: none;
@@ -81,15 +92,18 @@
   border-bottom: 2px solid transparent;
   transition: border-color 0.2s;
 }
+
 .tabActive {
   border-bottom: 2px solid #1976d2;
   color: #1976d2;
 }
+
 .commentTabs {
   display: flex;
   gap: 8px;
   margin-bottom: 16px;
 }
+
 .commentTabBtn {
   background: none;
   border: none;
@@ -102,16 +116,19 @@
   border-bottom: 2px solid transparent;
   transition: border-color 0.2s;
 }
+
 .commentTabBtnActive {
   border-bottom: 2px solid #1976d2;
   color: #1976d2;
 }
+
 .commentHeaderRow {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 12px;
 }
+
 .commentCount {
   font-size: 1.2rem;
   font-weight: 500;
@@ -121,6 +138,7 @@
   color: #888;
   font-weight: 400;
 }
+
 .sortBtn {
   background: none;
   border: none;
@@ -131,12 +149,14 @@
   align-items: center;
   gap: 4px;
 }
+
 .commentBox {
   display: flex;
   align-items: flex-start;
   gap: 12px;
   margin-bottom: 16px;
 }
+
 .commentProfilePic {
   width: 40px;
   height: 40px;
@@ -144,6 +164,7 @@
   object-fit: cover;
   border: 2px solid #eee;
 }
+
 .commentInput {
   flex: 1;
   border-radius: 8px;
@@ -152,6 +173,7 @@
   font-size: 1rem;
   resize: none;
 }
+
 .postBtn {
   background: #1976d2;
   color: #fff;
@@ -163,50 +185,60 @@
   cursor: pointer;
   transition: background 0.2s;
 }
+
 .postBtn:hover {
   background: #115293;
 }
+
 .commentsList {
   display: flex;
   flex-direction: column;
   gap: 16px;
   margin-bottom: 16px;
 }
+
 .commentItem {
   background: #fafafa;
   border-radius: 8px;
   padding: 16px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 4%);
 }
+
 .commentTopRow {
   display: flex;
   align-items: center;
   gap: 12px;
   margin-bottom: 4px;
 }
+
 .commentName {
   font-weight: 500;
   color: #222;
 }
+
 .commentTimestamp {
   color: #888;
   font-size: 0.95rem;
 }
+
 .commentVisibility {
   margin-left: auto;
   color: #1976d2;
   font-size: 0.95rem;
   font-weight: 500;
 }
+
 .commentText {
   margin-bottom: 8px;
   color: #444;
   font-size: 1rem;
 }
+
 .commentActionsRow {
   display: flex;
   gap: 8px;
 }
+
 .upvoteBtn,
 .downvoteBtn,
 .replyBtn {
@@ -219,11 +251,13 @@
   border-radius: 6px;
   transition: background 0.2s;
 }
+
 .upvoteBtn:hover,
 .downvoteBtn:hover,
 .replyBtn:hover {
   background: #e3eafc;
 }
+
 .loadMoreBtn {
   background: #eee;
   color: #444;
@@ -235,6 +269,7 @@
   cursor: pointer;
   transition: background 0.2s;
 }
+
 .loadMoreBtn:hover {
   background: #ddd;
 }
@@ -248,17 +283,17 @@
 :global(body.bm-dashboard-dark) .commentItem {
   background: #2e5061 !important;
   border: 1px solid #3a506b;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 :global(body.dark-mode) .commentItem .commentName,
 :global(body.bm-dashboard-dark) .commentItem .commentName {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 :global(body.dark-mode) .commentItem .commentText,
 :global(body.bm-dashboard-dark) .commentItem .commentText {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 :global(body.dark-mode) .commentItem .commentTimestamp,
@@ -379,7 +414,7 @@
 :global(body.bm-dashboard-dark) .commentInput {
   background-color: #2e5061 !important;
   border: 1px solid #3a506b !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 :global(body.dark-mode) .commentInput::placeholder,
@@ -392,14 +427,14 @@
 :global(body.bm-dashboard-dark) .replyFormContainer {
   background-color: #2e5061 !important;
   border: 1px solid #3a506b !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 :global(body.dark-mode) .replyTextarea,
 :global(body.bm-dashboard-dark) .replyTextarea {
   background-color: #2e5061 !important;
   border: 1px solid #3a506b !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 :global(body.dark-mode) .replyTextarea::placeholder,
@@ -412,12 +447,12 @@
 :global(body.bm-dashboard-dark) .replyCard {
   background-color: #2e5061 !important;
   border: 1px solid #3a506b !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 :global(body.dark-mode) .replyCardName,
 :global(body.bm-dashboard-dark) .replyCardName {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 :global(body.dark-mode) .replyCardTimestamp,
@@ -427,7 +462,7 @@
 
 :global(body.dark-mode) .replyCardText,
 :global(body.bm-dashboard-dark) .replyCardText {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 /* ============================================
@@ -457,7 +492,7 @@
 :global(body.bm-dashboard-dark) .feedbackSelect {
   background-color: #2e5061 !important;
   border: 1px solid #3a506b !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 :global(body.dark-mode) .feedbackSearchInput::placeholder,
@@ -506,15 +541,15 @@
 
 :global(body.dark-mode) .sortBtn:hover,
 :global(body.bm-dashboard-dark) .sortBtn:hover {
-  color: #ffffff !important;
-  background-color: rgba(58, 80, 107, 0.3) !important;
+  color: #fff !important;
+  background-color: rgb(58 80 107 / 30%) !important;
 }
 
 /* Post Button - Dark Mode */
 :global(body.dark-mode) .postBtn,
 :global(body.bm-dashboard-dark) .postBtn {
   background: #3a506b !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 :global(body.dark-mode) .postBtn:hover,
@@ -538,15 +573,15 @@
 :global(body.bm-dashboard-dark) .upvoteBtn:hover,
 :global(body.bm-dashboard-dark) .downvoteBtn:hover,
 :global(body.bm-dashboard-dark) .replyBtn:hover {
-  background: rgba(58, 80, 107, 0.5) !important;
-  color: #ffffff !important;
+  background: rgb(58 80 107 / 50%) !important;
+  color: #fff !important;
 }
 
 /* Load More Button - Dark Mode */
 :global(body.dark-mode) .loadMoreBtn,
 :global(body.bm-dashboard-dark) .loadMoreBtn {
   background: #3a506b !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 :global(body.dark-mode) .loadMoreBtn:hover,
@@ -565,7 +600,7 @@
 :global(body.dark-mode) .replySubmitBtn,
 :global(body.bm-dashboard-dark) .replySubmitBtn {
   background-color: #3a506b !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 :global(body.dark-mode) .replySubmitBtn:hover,
@@ -577,7 +612,7 @@
 :global(body.dark-mode) .replyCancelBtn,
 :global(body.bm-dashboard-dark) .replyCancelBtn {
   background-color: #2e5061 !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 :global(body.dark-mode) .replyCancelBtn:hover,
@@ -588,7 +623,7 @@
 /* Comment Count - Dark Mode */
 :global(body.dark-mode) .commentCount,
 :global(body.bm-dashboard-dark) .commentCount {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 :global(body.dark-mode) .commentCountNumber,
@@ -610,18 +645,18 @@
 :global(body.dark-mode) .eventCard,
 :global(body.bm-dashboard-dark) .eventCard {
   background: #2e5061 !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 :global(body.dark-mode) .eventImage,
 :global(body.bm-dashboard-dark) .eventImage {
   background: #3a506b !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 :global(body.dark-mode) .eventTitle,
 :global(body.bm-dashboard-dark) .eventTitle {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 :global(body.dark-mode) .eventMeta,
@@ -648,7 +683,7 @@
 :global(body.dark-mode) .calendar,
 :global(body.bm-dashboard-dark) .calendar {
   background: #2e5061 !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 .calendarHeader {
@@ -712,7 +747,7 @@
 :global(body.dark-mode) .calendarNavBtn,
 :global(body.bm-dashboard-dark) .calendarNavBtn {
   border: 1px solid #3a506b !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 :global(body.dark-mode) .calendarNavBtn:hover,
@@ -723,7 +758,7 @@
 
 :global(body.dark-mode) .calendarMonth,
 :global(body.bm-dashboard-dark) .calendarMonth {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 :global(body.dark-mode) .calendarWeekday,
@@ -733,17 +768,17 @@
 
 :global(body.dark-mode) .calendarDayBtn,
 :global(body.bm-dashboard-dark) .calendarDayBtn {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 :global(body.dark-mode) .calendarDayBtn:hover,
 :global(body.bm-dashboard-dark) .calendarDayBtn:hover {
-  background: rgba(58, 80, 107, 0.3) !important;
+  background: rgb(58 80 107 / 30%) !important;
 }
 
 :global(body.dark-mode) .calendarDayDot,
 :global(body.bm-dashboard-dark) .calendarDayDot {
-  background-color: #ffffff !important;
+  background-color: #fff !important;
 }
 
 /* Feedback Stats Section */
@@ -850,7 +885,7 @@
 :global(body.dark-mode) .feedbackStats,
 :global(body.bm-dashboard-dark) .feedbackStats {
   background: #2e5061 !important;
-  color: #ffffff !important;
+  color: #fff !important;
   border: 1px solid #3a506b !important;
 }
 
@@ -871,7 +906,7 @@
 
 :global(body.dark-mode) .feedbackStatsCount,
 :global(body.bm-dashboard-dark) .feedbackStatsCount {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 :global(body.dark-mode) .feedbackRatingLabel,
@@ -901,7 +936,7 @@
 
 :global(body.dark-mode) .feedbackEmpty h3,
 :global(body.bm-dashboard-dark) .feedbackEmpty h3 {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 :global(body.dark-mode) .feedbackEmpty p,

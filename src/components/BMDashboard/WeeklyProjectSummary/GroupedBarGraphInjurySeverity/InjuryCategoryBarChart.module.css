@@ -8,26 +8,28 @@
 }
 
 :global(.darkMode .injurySelect__single-value) {
-  color: #ffffff !important;
+  color: #fff !important;
   opacity: 1 !important;
 }
 
 /* FORCE FILTER LABEL VISIBILITY IN DARK MODE (PROJECTS, SEVERITIES, START/END DATE) */
 :global(.darkMode .filter label) {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 /* Explicit fix for Start Date / End Date labels rendered by DatePicker */
 :global(.darkMode label[for="start-date"]),
 :global(.darkMode label[for="end-date"]) {
-  color: #ffffff !important;
+  color: #fff !important;
 }
+
 :global(.darkMode .react-datepicker__input-container input) {
   background-color: #2b3e59 !important;
   border: 1px solid grey;
   border-radius: 2px;
-  color: #ffffff !important;
+  color: #fff !important;
 }
+
 /* ================= LABEL VISIBILITY FIX ================= */
 :global(.darkMode .injury-filter label) {
   color: #f3f4f6; /* greyish white, NOT pure white */
@@ -36,6 +38,7 @@
 }
 
 /* ================= DATE INPUT DARK MODE FIX ================= */
+
 /* :global(.darkMode .injury-date-input) {
   background-color: #2b3e59 !important; 
   color: #f3f4f6 !important;
@@ -49,6 +52,7 @@
   background-color: #2b3e59 !important;
   color: #f3f4f6 !important;
 } */
+
 /* ---- HOTFIX: react-select classNamePrefix is `injury-select` (with a hyphen), so we must target those global classes ---- */
 
 :global(.darkMode .injury-select__control) {
@@ -62,23 +66,23 @@
 :global(.darkMode .injury-select__input),
 :global(.darkMode .injury-select__multi-value__label),
 :global(.darkMode .injury-select__placeholder) {
-  color: #ffffff !important;
+  color: #fff !important;
   opacity: 1 !important;
 }
 
 /* Ensure selected value is clearly visible in the control */
 :global(.darkMode .injury-select__value-container),
 :global(.darkMode .injury-select__value-container--has-value) {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 /* Multi-select chip background + text */
 :global(.darkMode .injury-select__multi-value) {
-  background-color: rgba(255, 255, 255, 0.12) !important;
+  background-color: rgb(255 255 255 / 12%) !important;
 }
 
 :global(.darkMode .injury-select__multi-value__remove) {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 /* Menu options */
@@ -93,13 +97,13 @@
 }
 
 :global(.darkMode .injury-select__option--is-focused) {
-  background-color: rgba(255, 255, 255, 0.12) !important;
-  color: #ffffff !important;
+  background-color: #334155 !important;
+  color: #fff !important;
 }
 
 :global(.darkMode .injury-select__option--is-selected) {
-  background-color: rgba(255, 255, 255, 0.2) !important;
-  color: #ffffff !important;
+  background-color: #1d4ed8 !important;
+  color: #fff !important;
 }
 
 
@@ -108,9 +112,10 @@
 /* Selected value text → BLACK in dark mode */
 :global(.darkMode .injury-select__single-value),
 :global(.darkMode .injury-select__multi-value__label) {
-  color: #000000 !important;
+  color: #000 !important;
   opacity: 1 !important;
 }
+
 /* Ensure filter blocks always stack label + input vertically */
 :global(.filter) {
   display: flex;
@@ -141,9 +146,10 @@
 /* Ensure input text while typing is also black */
 :global(.darkMode .injurySelect__input-container),
 :global(.darkMode .injurySelect__input) {
-  color: #000000 !important;
+  color: #000 !important;
 }
+
 /* Recharts default tick text selector (X axis) */
 :global(.darkMode .recharts-xAxis .recharts-cartesian-axis-tick-value) {
-  fill: #ffffff !important;
+  fill: #fff !important;
 }
