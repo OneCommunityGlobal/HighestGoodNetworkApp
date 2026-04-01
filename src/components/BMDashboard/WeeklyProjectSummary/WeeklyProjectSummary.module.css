@@ -87,8 +87,6 @@
   color: var(--text-color);
   transition: all 0.3s ease;
   appearance: none;
-  appearance: none;
-  appearance: none;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
   background-repeat: no-repeat;
   background-position: right 8px center;
@@ -852,7 +850,6 @@
 @media print {
   .weeklyProjectSummaryCard {
     break-inside: avoid;
-    break-inside: avoid;
   }
   
   .weeklyProjectSummaryCard :global(.container) {
@@ -865,7 +862,6 @@
   .financialsGrid,
   .laborTimeGrid,
   .financialsTrackingGrid {
-    break-inside: avoid;
     break-inside: avoid;
   }
   

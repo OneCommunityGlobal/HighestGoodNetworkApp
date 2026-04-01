@@ -838,14 +838,14 @@
 }
 
 .accessManagementModal .chipSelected {
-    background-color: #007bff;
-    border-color: #007bff;
+    background-color: #005ec2;
+    border-color: #005ec2;
     color: #fff;
 }
 
 .accessManagementModal .chipSelected:hover {
-    background-color: #0056b3;
-    border-color: #0056b3;
+    background-color: #004a9a;
+    border-color: #004a9a;
 }
 
 /* Dark mode styles for GitHub selection */

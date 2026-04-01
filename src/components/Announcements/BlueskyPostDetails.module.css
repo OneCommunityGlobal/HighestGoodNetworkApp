@@ -215,7 +215,7 @@
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: #e53e3e;
+  background: #c53030;
   color: #fff;
   border: none;
   font-size: 11px;
@@ -228,7 +228,7 @@
 }
 
 .remove-image-btn:hover {
-  background: #c53030;
+  background: #9b2c2c;
 }
 
 .composer-footer {
@@ -266,7 +266,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: #0085ff;
+  background: #005ec2;
   color: #fff;
   border-radius: 12px;
   font-size: 11px;
@@ -296,7 +296,7 @@
 }
 
 .refresh-btn:hover:not(:disabled) {
-  background: #0085ff;
+  background: #005ec2;
   color: #fff;
 }
 
@@ -380,7 +380,7 @@
 }
 
 .action-btn-view:hover {
-  background: #0085ff;
+  background: #005ec2;
   color: #fff;
 }
 

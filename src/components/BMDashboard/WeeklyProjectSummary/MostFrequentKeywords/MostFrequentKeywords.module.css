@@ -583,7 +583,7 @@
 
 .mfkContainer.darkMode :global(.react-datepicker__day--range-start),
 .mfkContainer.darkMode :global(.react-datepicker__day--range-end) {
-  background-color: #3b82f6 !important;
+  background-color: #1d4ed8 !important;
   color: #fff !important;
   box-shadow: 0 2px 4px rgb(59 130 246 / 50%) !important;
 }
