@@ -696,24 +696,9 @@ export default (
         />
         <Route path="/lbdashboard/bidoverview" exact component={LBBidOverview} />
         <LBProtectedRoute path="/lbdashboard/bidding" exact component={BiddingHomepage} />
-        <CPProtectedRoute
-          path="/communityportal/reports/participation"
-          exact
-          component={EventParticipation}
-        />
         <EPProtectedRoute path="/educationportal" exact component={EPDashboard} />
         <Route path="/educationportal/login" component={EPLogin} />
         <EPProtectedRoute path="/educationportal/tasks/upload" exact component={WriteTaskUpload} />
-        <CPProtectedRoute
-          path="/communityportal/reports/event/personalization"
-          exact
-          component={EventStats}
-        />
-        <CPProtectedRoute
-          path="/communityportal/reports/participation"
-          exact
-          component={EventParticipation}
-        />
         <CPProtectedRoute
           path="/communityportal/reports/resourceusage"
           exact
@@ -728,10 +713,6 @@ export default (
         <Route path="/kitchenandinventory/orders" component={OrdersPage} />
         <Route path="/kitchenandinventory/gardenmanagement" component={GardenManagementPage} />
         <Route path="/kitchenandinventory/orchardmanagement" component={OrchardManagementPage} />
-        <Route
-          path="/kitchenandinventory/dashboard/foodcategories"
-          component={FoodCategoriesChart}
-        />
         <ProtectedRoute path="/jobformbuilder" fallback component={JobFormBuilder} />
         <Route path="/suggestedjobslist" component={SuggestedJobsList} />
         <ProtectedRoute path="/infoCollections" component={EditableInfoModal} />
