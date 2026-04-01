@@ -17,7 +17,7 @@ function formatDateInput(date) {
 function startOfWeekMonday(date) {
   const d = toDateOnly(date);
   const day = d.getDay();
-  const diff = day === 0 ? -6 : 1 - day; 
+  const diff = day === 0 ? -6 : 1 - day;
   d.setDate(d.getDate() + diff);
   return d;
 }
@@ -70,22 +70,16 @@ export function validateRange(startStr, endStr) {
 }
 
 export function getDefaultWeeklyRange() {
-  const today = new Date();
-  const end = endOfWeekMondayStart(today);
-  const start = new Date(end);
-  start.setDate(start.getDate() - (8 * 7 - 1));
-  return {
-    start: formatDateInput(start),
-    end: formatDateInput(end),
-    weeks: 8,
-  };
+  return getLastNWeeksRange(8);
 }
 
 export function getLastNWeeksRange(weeks) {
   const today = new Date();
   const end = endOfWeekMondayStart(today);
-  const start = new Date(end);
-  start.setDate(start.getDate() - (weeks * 7 - 1));
+  const endStartOfWeek = startOfWeekMonday(end);
+  const start = new Date(endStartOfWeek);
+  start.setDate(start.getDate() - (weeks - 1) * 7);
+
   return {
     start: formatDateInput(start),
     end: formatDateInput(end),
