@@ -25,7 +25,7 @@ import IssueCharts from '../Issues/openIssueCharts';
 import SupplierPerformanceGraph from './SupplierPerformanceGraph.jsx';
 import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords.jsx';
 import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
-import FinancialStatButtons from './FinancialStatButtons';
+import FinancialStatButtons from './Financials/FinancialStatButtons';
 
 const projectStatusButtons = [
   {
