@@ -1,0 +1,92 @@
+.dropdownWrapper {
+  position: relative;
+  width: 100%;
+  margin-top: 30px;
+}
+
+.dropdownButton {
+  width: 100%;
+  padding: 8px 16px;
+  text-align: left;
+  background-color: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+}
+
+.arrow {
+  transition: transform 0.2s;
+}
+
+.arrowOpen {
+  transform: rotate(180deg);
+  transition: transform 0.2s;
+}
+
+.dropdownMenu {
+  position: absolute;
+  z-index: 10;
+  width: 100%;
+  margin-top: 4px;
+  background-color: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.dropdownButton:hover {
+  background-color: #3b82f6;
+  color: #ffffff;
+}
+
+.dropdownItem {
+  width: 100%;
+  padding: 8px 16px;
+  text-align: left;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.dropdownItem:hover {
+  background-color: #3b82f6;
+  color: #ffffff;
+}
+
+/* Dark Mode Styles */
+.darkMode .dropdownButton {
+  background-color: #1f2937;
+  border-color: #4b5563;
+  color: #f3f4f6;
+}
+
+.darkMode .arrow,
+.darkMode .arrowOpen {
+  color: #d1d5db;
+}
+
+.darkMode .dropdownMenu {
+  background-color: #1f2937;
+  border-color: #4b5563;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+}
+
+.darkMode .dropdownButton:hover {
+  background-color: #2563eb;
+  color: #ffffff;
+}
+
+.darkMode .dropdownItem {
+  color: #f3f4f6;
+}
+
+.darkMode .dropdownItem:hover {
+  background-color: #2563eb;
+  color: #ffffff;
+}
