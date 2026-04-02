@@ -443,3 +443,217 @@
   background: #868e96 !important;
   color: #212529 !important;
 }
+
+/* ─── Feed Management: Two-column split ─── */
+.feed-split-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+@media (max-width: 768px) {
+  .feed-split-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.feed-panel {
+  border: 1px solid #e1e8e2;
+  border-radius: 12px;
+  padding: 22px;
+  background: white;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.feed-panel-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.panel-icon-green {
+  color: #52b788;
+  font-size: 18px;
+  margin-top: 3px;
+}
+
+.panel-icon-blue {
+  color: #4a90e2;
+  font-size: 18px;
+  margin-top: 3px;
+}
+
+.panel-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #222;
+  margin: 0 0 2px 0;
+}
+
+.panel-subtitle {
+  font-size: 12px;
+  color: #888;
+  margin: 0;
+}
+
+/* ─── Inventory rows ─── */
+.feed-inventory-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  flex: 1;
+}
+
+.inventory-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.inventory-row:last-child {
+  border-bottom: none;
+}
+
+.inventory-row-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.inventory-row-name {
+  font-weight: 600;
+  font-size: 14px;
+  color: #222;
+}
+
+.inventory-row-detail {
+  font-size: 12px;
+  color: #888;
+}
+
+/* ─── Bottom action buttons ─── */
+.btn-add-row {
+  width: 100%;
+  margin-top: 16px;
+  padding: 10px;
+  background: none;
+  border: 1px dashed #ccc;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #555;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.btn-add-row:hover {
+  border-color: #52b788;
+  color: #2b8a3e;
+  background: #f8fdf9;
+}
+
+.btn-order-feed {
+  width: 100%;
+  margin-top: 20px;
+  padding: 13px;
+  background: #52b788;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.btn-order-feed:hover {
+  background: #40a070;
+}
+
+.order-row-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 4px;
+}
+
+/* ─── Dark mode: Feed split layout ─── */
+.dark-mode .feed-panel {
+  background: #242526;
+  border-color: #3a3b3c;
+}
+
+.dark-mode .panel-title {
+  color: #e4e6eb;
+}
+
+.dark-mode .inventory-row {
+  border-bottom-color: #3a3b3c;
+}
+
+.dark-mode .inventory-row-name {
+  color: #e4e6eb;
+}
+
+.dark-mode .inventory-row-detail {
+  color: #888;
+}
+
+.dark-mode .btn-add-row {
+  border-color: #4a4b4c;
+  color: #b0b3b8;
+  background: none;
+}
+
+.dark-mode .btn-add-row:hover {
+  border-color: #52b788;
+  color: #52b788;
+  background: #1a2e22;
+}
+
+/* Good / Warning badges */
+.status-good {
+  background: #ebfbee;
+  color: #2b8a3e;
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status-warning {
+  background: #fff3bf;
+  color: #e67700;
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.dark-mode .status-good {
+  background: #1a3d22 !important;
+  color: #8ce99a !important;
+}
+
+.dark-mode .status-warning {
+  background: #3d2e00 !important;
+  color: #ffd43b !important;
+}
+
