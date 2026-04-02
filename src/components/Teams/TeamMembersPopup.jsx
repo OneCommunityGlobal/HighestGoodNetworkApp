@@ -187,15 +187,16 @@ export const TeamMembersPopup = React.memo(props => {
     setDuplicateUserAlert(false);
   };
 
-  // avoid negated condition
-  const onAddUser = () => {
+  const onAddUser = async () => {
     if (selectedUser) {
       const isDuplicate = validation.some(x => x?._id === selectedUser._id);
       if (isDuplicate) {
         setSearchText('');
         setDuplicateUserAlert(true);
       } else {
-        props.onAddUser(selectedUser);
+        setisLoading(true);
+        await props.onAddUser(selectedUser);
+        setisLoading(false);
         setSearchText('');
         setDuplicateUserAlert(false);
       }
