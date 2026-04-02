@@ -26,6 +26,7 @@ const MonthsPledgedChart = () => {
   const [loading, setLoading] = useState(false);
   const [allRoles, setAllRoles] = useState([]);
   const [error, setError] = useState('');
+  const [hoveredRole, setHoveredRole] = useState(null);
 
   const fetchData = async () => {
     setError('');
@@ -279,6 +280,10 @@ const MonthsPledgedChart = () => {
                 <Tooltip
                   content={({ payload, label, active }) => {
                     if (active && payload && payload.length) {
+                      // This line ensures highlight state stays active
+                      // even when hovering the empty grey extension
+                      setHoveredRole(label);
+
                       return (
                         <div
                           style={{
@@ -297,12 +302,53 @@ const MonthsPledgedChart = () => {
                     return null;
                   }}
                 />
-                <Bar dataKey="avgMonthsPledged" fill={barColor} barSize={30} radius={[0, 4, 4, 0]}>
+
+                <Bar
+                  dataKey="avgMonthsPledged"
+                  fill={barColor}
+                  barSize={30}
+                  radius={[0, 4, 4, 0]}
+                  onMouseEnter={data => setHoveredRole(data.role)}
+                  onMouseLeave={() => setHoveredRole(null)}
+                >
                   <LabelList
                     dataKey="avgMonthsPledged"
                     position="right"
-                    formatter={value => `${value.toFixed(1)}`}
-                    className={styles['months-pledged-chart__bar-label']}
+                    content={props => {
+                      const { x, y, value, index, viewBox } = props;
+
+                      // Real bar width from Recharts
+                      const barLeft = viewBox?.x ?? x;
+                      const barWidth = viewBox?.width ?? 0;
+
+                      // Compute right edge of the bar
+                      const labelX = barLeft + barWidth + 6;
+                      const labelY = y + 15; // vertical centering
+
+                      const role = data[index].role;
+                      const isHovered = hoveredRole === role;
+
+                      const labelColor = darkMode
+                        ? isHovered
+                          ? '#000000' // hovered bar in dark mode → black
+                          : '#E0E0E0' // normal dark mode
+                        : '#000000'; // light mode always black
+
+                      return (
+                        <text
+                          x={labelX}
+                          y={labelY}
+                          fill={labelColor}
+                          fontSize={12}
+                          fontWeight={600}
+                          dominantBaseline="middle"
+                          textAnchor="start"
+                          style={{ pointerEvents: 'none' }} // ensures tooltip hover doesn’t break
+                        >
+                          {value.toFixed(1)}
+                        </text>
+                      );
+                    }}
                   />
                 </Bar>
               </BarChart>

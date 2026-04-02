@@ -1,34 +1,88 @@
-/* All styles are component-scoped with fu-* to avoid affecting other icons */
+.fu-trigger {
+  display: inline-block;
+}
 
-/* Trigger/button */
-.fu-trigger { display: inline-block; }
-.fu-btn { background: transparent; border: 0; padding: 0; line-height: 1; cursor: pointer; }
-.fu-btn-icon { font-size: 16px; pointer-events: none; }
+.followup-info-modal-button {
+  background: transparent !important;
+  border: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
 
-/* Portal tooltip */
+  box-shadow: none !important;
+  outline: none !important;
+
+  -webkit-appearance: none;
+  appearance: none;
+
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 18px;
+  height: 18px;
+
+  cursor: pointer;
+}
+
+.followup-info-modal-button:focus,
+.followup-info-modal-button:active {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.followup-info-modal-button:focus-visible {
+  outline: 2px solid rgba(0, 123, 255, 0.4);
+  outline-offset: 2px;
+}
+
+.fu-btn-icon {
+  font-size: 16px;
+  pointer-events: none;
+  position: relative;
+  top: 1px;
+}
+
 .fu-tooltip {
-  position: fixed;              /* not clipped by ancestors */
-  z-index: 3000;                /* above tables/modals */
-  width: 640px;                 /* desktop width; clamped by max-width inline */
+  position: fixed;
+  z-index: 3000;
+
+  width: 440px;    
+  max-width: 440px;
+
   padding: 15px;
   border-radius: 6px;
-  box-shadow: 0 8px 24px rgba(0,0,0,.35);
-  max-height: 70vh;             /* scroll internally if long */
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+
+  max-height: 70vh;
   overflow: auto;
-  white-space: normal;          /* wrap long text */
+
+  white-space: normal;
   text-align: left;
 }
 
-.fu--dark { background: #2d3748; color: #fff; }
-.fu--light { background: #fff; color: #111; }
+.fu--dark {
+  background: #2d3748;
+  color: #fff;
+}
 
-.fu-tooltip .mb-3 { margin-bottom: 12px; }
-.fu-tooltip .mb-3:last-child { margin-bottom: 0; }
+.fu--light {
+  background: #fff;
+  color: #111;
+}
+
+.fu-tooltip :global(.mb-3) {
+  margin-bottom: 12px;
+}
+
+.fu-tooltip :global(.mb-3:last-child) {
+  margin-bottom: 0;
+}
 
 @media (max-width: 768px) {
   .fu-tooltip {
     width: 90vw;
+    max-width: 90vw;
     max-height: 50vh;
   }
 }
-/* ===== Generic “i” tooltip used elsewhere (not the follow-up one) ===== */

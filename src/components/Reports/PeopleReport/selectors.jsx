@@ -36,35 +36,39 @@ export const peopleTasksPieChartViewData = (state) => {
     e => (e.personId ?? e.userId) === userId
   );
 
-  const completedUserEntries = allUserEntries.filter(e => e.isActive === false);
+  const completedUserEntries = allUserEntries.filter(e => e.isActive === true);
 
   const projectHours = {};
+  const projectNames = {};
+
   allUserEntries.forEach(entry => {
-    const { projectId } = entry;
-    if (!projectId) return;
+    const { projectId, taskId, projectName } = entry;
+    if (!projectId || taskId) return;
     const time = (entry.hours || 0) + (entry.minutes || 0) / 60;
     projectHours[projectId] = (projectHours[projectId] || 0) + time;
+    if (projectName) projectNames[projectId] = projectName;
   });
 
-  const hoursLoggedToProjectsOnly = (userProjects?.projects || []).map(project => ({
-    projectId: project.projectId,
-    projectName: project.projectName,
-    totalTime: projectHours[project.projectId] || 0,
-  }));
+  const hoursLoggedToProjectsOnly = Object.entries(projectHours).map(([projectId, totalTime]) => {
+    const project = (userProjects?.projects || []).find(p => p.projectId === projectId);
+    return {
+      projectId,
+      projectName: project?.projectName || projectNames[projectId] || `Unknown (${projectId.slice(-6)})`,
+      totalTime,
+    };
+  });
+
+  const userTasks = state.userTask?.tasks || [];
 
   const taskHours = {};
-  completedUserEntries.forEach(entry => {
-    if (entry.wbsId == null) return;
-    const taskKey = entry.wbsId;
-    const taskName = entry.taskName || 'Unnamed Task';
+  allUserEntries.forEach(entry => {
+    if (entry.taskId == null) return;
+    const taskKey = entry.taskId;
+    const taskName = entry.taskName || `Task in "${entry.projectName || 'Unknown Project'}"`;
     const time = (entry.hours || 0) + (entry.minutes || 0) / 60;
 
     if (!taskHours[taskKey]) {
-      taskHours[taskKey] = {
-        totalTime: 0,
-        projectId: entry.projectId,
-        taskName,
-      };
+      taskHours[taskKey] = { totalTime: 0, projectId: entry.projectId, taskName };
     }
     taskHours[taskKey].totalTime += time;
   });
