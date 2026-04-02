@@ -128,22 +128,34 @@ describe('Collaboration Component', () => {
     expect(btn).toBeDisabled();
   });
 
-  test('position dropdown works after category selection', async () => {
+  test('can select a position after selecting category', async () => {
     render(<Collaboration />);
 
-    // Select category first
-    fireEvent.click(screen.getByRole('button', { name: /select categories/i }));
-    fireEvent.click(await screen.findByText('Engineering'));
+    // Wait for categories to load
+    await waitFor(() => {
+      expect(screen.getByText('Select Categories ▼')).toBeInTheDocument();
+    });
+
+    // Open category dropdown
+    fireEvent.click(screen.getByText('Select Categories ▼'));
+
+    // Select category
+    const category = await screen.findByText('Engineering');
+    fireEvent.click(category);
+
+    // Now position button becomes enabled
+    const positionButton = screen.getByRole('button', { name: /select positions/i });
+    expect(positionButton).not.toBeDisabled();
 
     // Open position dropdown
-    fireEvent.click(screen.getByRole('button', { name: /select positions/i }));
+    fireEvent.click(positionButton);
 
+    // Select position
     const position = await screen.findByText('Frontend Engineer');
     fireEvent.click(position);
 
-    await waitFor(() => {
-      expect(screen.getAllByText('Frontend Engineer').length).toBeGreaterThan(0);
-    });
+    // Assert it shows up (button label updates)
+    expect(screen.getByText('Frontend Engineer')).toBeInTheDocument();
   });
 
   /* ================= PAGINATION ================= */
