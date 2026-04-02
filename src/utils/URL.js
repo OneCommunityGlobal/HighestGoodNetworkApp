@@ -347,6 +347,9 @@ export const ENDPOINTS = {
   BM_TOOL_AVAILABILITY: (toolId = '', projectId = '') =>
     `${APIEndpoint}/tools/availability?toolId=${toolId}&projectId=${projectId}`,
   BM_LOG_TOOLS: `${APIEndpoint}/bm/tools/log`,
+  BM_TOOL_UTILIZATION: `${APIEndpoint}/tools/utilization`,
+  BM_TOOL_UTILIZATION_INSIGHTS: `${APIEndpoint}/tools/utilization/insights`,
+  BM_TOOL_UTILIZATION_EXPORT: `${APIEndpoint}/tools/utilization/export`,
   BM_EQUIPMENT_BY_ID: singleEquipmentId => `${APIEndpoint}/bm/equipment/${singleEquipmentId}`,
   BM_EQUIPMENT_STATUS_UPDATE: (equipmentId) => `${APIEndpoint}/bm/equipment/${equipmentId}/status`,
   BM_EQUIPMENTS: `${APIEndpoint}/bm/equipments`,
