@@ -286,6 +286,8 @@ export const ENDPOINTS = {
 
   GET_TOTAL_COUNTRY_COUNT: () => `${APIEndpoint}/getTotalCountryCount`,
   
+  ANALYTICS_AVAILABLE_ROLES: () => `${APIEndpoint}/analytics/roles`,
+
   // Country Application Map Chart endpoints
   COUNTRY_APPLICATION_DATA: (params = {}) => {
     let url = `${APIEndpoint}/analytics/country-applications`;
@@ -294,7 +296,8 @@ export const ENDPOINTS = {
     if (params.roles && params.roles.length > 0) {
       queryParams.append('roles', params.roles.join(','));
     }
-    if (params.timeFrame && params.timeFrame !== 'ALL') {
+    // Include ALL so the API uses filter=all; omit timeFrame when startDate/endDate define the range
+    if (params.timeFrame) {
       queryParams.append('timeFrame', params.timeFrame);
     }
     if (params.startDate) {

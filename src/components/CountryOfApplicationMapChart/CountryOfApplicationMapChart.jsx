@@ -1,9 +1,19 @@
 /* eslint-disable */
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import { ComposableMap, Geographies, Geography } from 'react-simple-maps';
 import { useSelector } from 'react-redux';
 import countryApplicationService from '../../services/countryApplicationService';
 import styles from './CountryOfApplicationMapChart.module.css';
+
+function toYyyyMmDd(date) {
+  if (!date) return '';
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
 
 // World map topojson URL - using reliable TopoJSON source
 const geoUrl = 'https://unpkg.com/world-atlas@2.0.2/countries-110m.json';
@@ -21,8 +31,8 @@ function CountryOfApplicationMapChart() {
   // State management
   const [dateFilter, setDateFilter] = useState('ALL');
   const [selectedRole, setSelectedRole] = useState('ALL');
-  const [customStartDate, setCustomStartDate] = useState('');
-  const [customEndDate, setCustomEndDate] = useState('');
+  const [customStartDate, setCustomStartDate] = useState(null);
+  const [customEndDate, setCustomEndDate] = useState(null);
   const [hoveredCountry, setHoveredCountry] = useState(null);
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
   const [mapError, setMapError] = useState(null);
@@ -49,13 +59,32 @@ function CountryOfApplicationMapChart() {
 
           const params = {
             roles: selectedRole !== 'ALL' ? [selectedRole] : [],
-            timeFrame: dateFilter,
-            startDate: customStartDate,
-            endDate: customEndDate,
-            customDateRange: dateFilter === 'CUSTOM' && customStartDate && customEndDate,
           };
 
-          const response = await countryApplicationService.getCountryApplicationData(params);
+          if (dateFilter === 'ALL') {
+            params.timeFrame = 'ALL';
+          } else if (dateFilter === 'CUSTOM') {
+            params.startDate = toYyyyMmDd(customStartDate);
+            params.endDate = toYyyyMmDd(customEndDate);
+            params.customDateRange = !!(customStartDate && customEndDate);
+          } else {
+            const end = new Date();
+            const start = new Date();
+            if (dateFilter === 'WEEK') {
+              start.setDate(end.getDate() - 7);
+            } else if (dateFilter === 'MONTH') {
+              start.setDate(end.getDate() - 30);
+            } else if (dateFilter === 'YEAR') {
+              start.setDate(end.getDate() - 365);
+            }
+            params.startDate = start.toISOString().slice(0, 10);
+            params.endDate = end.toISOString().slice(0, 10);
+          }
+
+          const [response, rolesPayload] = await Promise.all([
+            countryApplicationService.getCountryApplicationData(params),
+            countryApplicationService.getAvailableRoles(),
+          ]);
 
           console.log('📦 Backend response:', response);
           console.log(
@@ -97,16 +126,20 @@ function CountryOfApplicationMapChart() {
           console.log('🔍 Applied Filters:', {
             timeFrame: dateFilter,
             role: selectedRole,
-            dates: dateFilter === 'CUSTOM' ? `${customStartDate} to ${customEndDate}` : 'N/A',
+            dates:
+              dateFilter === 'CUSTOM'
+                ? `${toYyyyMmDd(customStartDate)} to ${toYyyyMmDd(customEndDate)}`
+                : 'N/A',
           });
 
           setLastFetchTime(new Date().toLocaleTimeString());
 
-          // Set roles from API if available
-          if (response.availableRoles) {
+          const rolesFromApi = rolesPayload?.data;
+          if (Array.isArray(rolesFromApi) && rolesFromApi.length > 0) {
+            setAvailableRoles(rolesFromApi);
+          } else if (response.availableRoles) {
             setAvailableRoles(response.availableRoles);
           } else {
-            // Use default roles if API doesn't provide them
             setAvailableRoles([
               'Software Developer',
               'Project Manager',
@@ -155,21 +188,8 @@ function CountryOfApplicationMapChart() {
     fetchData();
   }, [dateFilter, selectedRole, customStartDate, customEndDate]);
 
-  // Process data based on filters
-  const processedData = useMemo(() => {
-    let filteredData = [...applicationData];
-
-    // Apply role filter if a specific role is selected
-    if (selectedRole !== 'ALL') {
-      // In real implementation, this would filter based on actual role data from backend
-      filteredData = filteredData.map(country => ({
-        ...country,
-        applications: Math.floor(country.applications * (0.7 + Math.random() * 0.6)),
-      }));
-    }
-
-    return filteredData;
-  }, [selectedRole, applicationData]);
+  // Role and time filters are applied server-side; no client-side random scaling
+  const processedData = useMemo(() => applicationData, [applicationData]);
 
   // Calculate color scale with softer pastel greens
   const colorScale = useCallback(
@@ -214,8 +234,8 @@ function CountryOfApplicationMapChart() {
   const handleDateFilterChange = useCallback(value => {
     setDateFilter(value);
     if (value !== 'CUSTOM') {
-      setCustomStartDate('');
-      setCustomEndDate('');
+      setCustomStartDate(null);
+      setCustomEndDate(null);
     }
   }, []);
 
@@ -350,20 +370,30 @@ function CountryOfApplicationMapChart() {
 
           {dateFilter === 'CUSTOM' && (
             <div className={styles.customDateInputs}>
-              <input
-                type="date"
-                value={customStartDate}
-                onChange={e => setCustomStartDate(e.target.value)}
+              <DatePicker
+                selected={customStartDate}
+                onChange={setCustomStartDate}
+                placeholderText="Start Date"
+                isClearable
+                showIcon
+                dateFormat="yyyy-MM-dd"
+                maxDate={customEndDate || undefined}
                 className={styles.dateInput}
-                placeholder="Start Date"
+                calendarClassName={darkMode ? styles.datePickerCalendarDark : undefined}
+                popperClassName={styles.datePickerPopper}
               />
               <span className={styles.dateSeparator}>to</span>
-              <input
-                type="date"
-                value={customEndDate}
-                onChange={e => setCustomEndDate(e.target.value)}
+              <DatePicker
+                selected={customEndDate}
+                onChange={setCustomEndDate}
+                placeholderText="End Date"
+                isClearable
+                showIcon
+                dateFormat="yyyy-MM-dd"
+                minDate={customStartDate || undefined}
                 className={styles.dateInput}
-                placeholder="End Date"
+                calendarClassName={darkMode ? styles.datePickerCalendarDark : undefined}
+                popperClassName={styles.datePickerPopper}
               />
             </div>
           )}

@@ -15,12 +15,33 @@ export const countryApplicationService = {
    * @param {boolean} params.customDateRange - Whether custom date range is used
    * @returns {Promise} API response with country data
    */
+  async getAvailableRoles() {
+    try {
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+      const response = await axios.get(ENDPOINTS.ANALYTICS_AVAILABLE_ROLES(), {
+        headers: token ? { Authorization: token } : {},
+      });
+      return response.data;
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Error fetching analytics roles:', error);
+      return null;
+    }
+  },
+
   async getCountryApplicationData(params = {}) {
     try {
       // Prepare parameters for the API call
       const cleanParams = {
         roles: params.roles && params.roles.length > 0 ? params.roles : undefined,
-        timeFrame: params.timeFrame && params.timeFrame !== 'ALL' ? params.timeFrame : undefined,
+        // ALL must be sent explicitly; otherwise the API defaults to weekly. When startDate+endDate
+        // are set (rolling windows or custom), do not send timeFrame — the API uses the date range.
+        timeFrame: (() => {
+          if (params.startDate && params.endDate) return undefined;
+          if (params.timeFrame === 'ALL') return 'ALL';
+          if (params.timeFrame && params.timeFrame !== 'ALL') return params.timeFrame;
+          return undefined;
+        })(),
         startDate: params.startDate ? params.startDate : undefined,
         endDate: params.endDate ? params.endDate : undefined,
         customDateRange: params.customDateRange ? true : undefined,
@@ -31,10 +52,9 @@ export const countryApplicationService = {
         key => cleanParams[key] === undefined && delete cleanParams[key],
       );
 
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
       const response = await axios.get(ENDPOINTS.COUNTRY_APPLICATION_DATA(cleanParams), {
-        headers: {
-          Authorization: localStorage.getItem('token'),
-        },
+        headers: token ? { Authorization: token } : {},
       });
 
       return response.data;
