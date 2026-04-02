@@ -133,7 +133,6 @@
   },
   "packageManager": "yarn@1.22.22",
   "scripts": {
-    "prestart": "npm run test",
     "postinstall": "node ./postinstall.js",
     "start": "vite",
     "build": "vite build",
@@ -217,4 +216,3 @@
     "@rollup/rollup-darwin-arm64": "^4.54.0"
   }
 }
-

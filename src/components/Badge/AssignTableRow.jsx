@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import PropTypes from 'prop-types';
 import { Card, CardBody, CardImg, CardText, Popover, CustomInput } from 'reactstrap';
 import { connect, useDispatch, useSelector } from 'react-redux';
 import { addSelectBadge, removeSelectBadge } from '../../actions/badgeManagement';
@@ -82,6 +83,18 @@ function AssignTableRow(props) {
     </tr>
   );
 }
+
+AssignTableRow.propTypes = {
+  badge: PropTypes.shape({
+    _id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    imageUrl: PropTypes.string,
+    badgeName: PropTypes.string,
+    description: PropTypes.string,
+  }),
+  index: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  selectedBadges: PropTypes.array,
+  propExistBadges: PropTypes.array,
+};
 
 const mapDispatchToProps = dispatch => ({
   addSelectBadge: badgeId => dispatch(addSelectBadge(badgeId)),
