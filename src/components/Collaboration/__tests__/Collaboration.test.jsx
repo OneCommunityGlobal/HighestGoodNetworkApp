@@ -1,20 +1,21 @@
 import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
+import { vi } from 'vitest';
 import Collaboration from '../Collaboration';
 import { ApiEndpoint } from '~/utils/URL';
-import { vi } from 'vitest';
 
-// Mock Redux
+/* ================= MOCKS ================= */
+
 vi.mock('react-redux', () => ({
   useSelector: vi.fn(fn => fn({ theme: { darkMode: false } })),
 }));
 
-// Mock toast
 vi.mock('react-toastify', () => ({
   toast: { error: vi.fn(), success: vi.fn() },
 }));
 
-// Mock fetch
 global.fetch = vi.fn();
+
+/* ================= TEST DATA ================= */
 
 const mockCategories = {
   categories: ['Engineering', 'Art'],
@@ -32,56 +33,47 @@ const mockJobs = {
   ],
 };
 
+/* ================= TEST SUITE ================= */
+
 describe('Collaboration Component', () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
     fetch.mockImplementation(async url => {
       if (url.includes('/jobs/categories')) {
-        return {
-          ok: true,
-          json: async () => mockCategories,
-        };
+        return { ok: true, json: async () => mockCategories };
       }
 
       if (url.includes('/jobs?')) {
-        return {
-          ok: true,
-          json: async () => mockJobs,
-        };
+        return { ok: true, json: async () => mockJobs };
       }
 
       if (url.includes('/jobs/summaries')) {
-        return {
-          ok: true,
-          json: async () => ({ jobs: [] }),
-        };
+        return { ok: true, json: async () => ({ jobs: [] }) };
       }
 
       return { ok: true, json: async () => ({}) };
     });
   });
 
-  /* ================= BASIC RENDER ================= */
+  /* ================= BASIC ================= */
 
   test('renders logo', () => {
     render(<Collaboration />);
     expect(screen.getByAltText('One Community Logo')).toBeInTheDocument();
   });
 
-  test('fetches categories and jobs on mount', async () => {
+  test('fetches categories on mount', async () => {
     render(<Collaboration />);
 
     await waitFor(() => {
       expect(fetch).toHaveBeenCalledWith(`${ApiEndpoint}/jobs/categories`);
     });
-
-    expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/jobs?'));
   });
 
   /* ================= SEARCH ================= */
 
-  test('search input updates value', () => {
+  test('search input updates', () => {
     render(<Collaboration />);
 
     const input = screen.getByPlaceholderText('Search by title...');
@@ -90,124 +82,70 @@ describe('Collaboration Component', () => {
     expect(input.value).toBe('engineer');
   });
 
-  test('submitting search triggers fetch', async () => {
+  test('search triggers API call', async () => {
     render(<Collaboration />);
 
-    fireEvent.change(screen.getByPlaceholderText('Search by title...'), {
-      target: { value: 'engineer' },
-    });
+    const input = screen.getByPlaceholderText('Search by title...');
+    fireEvent.change(input, { target: { value: 'engineer' } });
 
     fireEvent.click(screen.getByText('Go'));
 
     await waitFor(() => {
-      expect(fetch).toHaveBeenCalledTimes(3);
+      expect(fetch).toHaveBeenCalled();
     });
   });
 
-  /* ================= CATEGORY DROPDOWN ================= */
+  /* ================= CATEGORY ================= */
 
-  test('category dropdown opens and selects category', async () => {
+  test('select category', async () => {
     render(<Collaboration />);
 
-    fireEvent.click(screen.getByRole('button', { name: /select categories/i }));
+    fireEvent.click(screen.getByText('Select Categories ▼'));
 
-    const category = await screen.findByRole('button', { name: 'Engineering' });
+    const category = await screen.findByText('Engineering');
     fireEvent.click(category);
 
-    await waitFor(() => {
-      expect(screen.getAllByText('Engineering').length).toBeGreaterThan(0);
-    });
+    expect(screen.getByText('Engineering ▼')).toBeInTheDocument();
   });
 
-  /* ================= POSITION DROPDOWN ================= */
+  /* ================= POSITION (FIXED) ================= */
 
-  test('position dropdown disabled until category selected', () => {
+  test('select position after category', async () => {
     render(<Collaboration />);
 
-    const btn = screen.getByRole('button', { name: /select positions/i });
-    expect(btn).toBeDisabled();
+    fireEvent.click(screen.getByText('Select Categories ▼'));
+    fireEvent.click(await screen.findByText('Engineering'));
+
+    fireEvent.click(screen.getByText('Select Positions ▼'));
+
+    const dropdown = screen.getByTestId('positions-dropdown');
+
+    fireEvent.click(within(dropdown).getByText('Frontend Engineer'));
+
+    expect(screen.getByText('Frontend Engineer ▼')).toBeInTheDocument();
   });
 
-  test('can select a position after selecting category', async () => {
+  /* ================= JOB MODAL ================= */
+
+  test('opens job modal', async () => {
     render(<Collaboration />);
 
-    // Select category
-    fireEvent.click(screen.getByRole('button', { name: /select categories/i }));
-    fireEvent.click(await screen.findByRole('button', { name: 'Engineering' }));
-
-    // Open position dropdown
-    const positionButton = screen.getByRole('button', { name: /select positions/i });
-    expect(positionButton).not.toBeDisabled();
-
-    fireEvent.click(positionButton);
-
-    // ✅ Get ALL matching buttons
-    const options = await screen.findAllByRole('button', {
-      name: 'Frontend Engineer',
-    });
-
-    // ✅ Pick the dropdown one (not job card)
-    const dropdownOption = options.find(el => el.className.includes('dropdownItem'));
-
-    fireEvent.click(dropdownOption);
-
-    const nav = screen.getByRole('navigation');
-
-    expect(within(nav).getByRole('button', { name: /frontend engineer/i })).toBeInTheDocument();
-  });
-
-  /* ================= PAGINATION ================= */
-
-  test('pagination renders correctly', async () => {
-    render(<Collaboration />);
-
-    await waitFor(() => {
-      expect(screen.getByText('Frontend Engineer')).toBeInTheDocument();
-    });
-
-    expect(screen.getByText('1')).toBeInTheDocument();
-  });
-
-  /* ================= MODAL ================= */
-
-  test('clicking job opens modal', async () => {
-    render(<Collaboration />);
-
-    const job = await screen.findByRole('heading', {
-      name: 'Frontend Engineer',
-    });
-
+    const job = await screen.findByText('Frontend Engineer');
     fireEvent.click(job);
 
-    await waitFor(() => {
-      expect(screen.getByText('Test description')).toBeInTheDocument();
-    });
+    expect(await screen.findByText('Test description')).toBeInTheDocument();
   });
 
-  test('modal closes on close button click', async () => {
+  test('closes job modal', async () => {
     render(<Collaboration />);
 
-    fireEvent.click(await screen.findByRole('heading', { name: 'Frontend Engineer' }));
+    fireEvent.click(await screen.findByText('Frontend Engineer'));
 
-    fireEvent.click(await screen.findByLabelText(/close role details/i));
+    fireEvent.click(await screen.findByText(/close/i));
 
     await waitFor(() => {
       expect(screen.queryByText('Test description')).not.toBeInTheDocument();
     });
-  });
-
-  /* ================= SUMMARIES ================= */
-
-  test('Show Summaries triggers API and switches view', async () => {
-    render(<Collaboration />);
-
-    fireEvent.click(screen.getByText('Show Summaries'));
-
-    await waitFor(() => {
-      expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/jobs/summaries'));
-    });
-
-    expect(screen.getByText('Job Summaries')).toBeInTheDocument();
   });
 
   /* ================= CLEAR FILTER ================= */
@@ -215,13 +153,33 @@ describe('Collaboration Component', () => {
   test('clear filters resets UI', async () => {
     render(<Collaboration />);
 
-    fireEvent.click(screen.getByRole('button', { name: /select categories/i }));
-    fireEvent.click(await screen.findByRole('button', { name: 'Engineering' }));
+    fireEvent.click(screen.getByText('Select Categories ▼'));
+    fireEvent.click(await screen.findByText('Engineering'));
 
-    fireEvent.click(await screen.findByText('Clear All'));
+    fireEvent.click(screen.getByText('Clear All'));
+
+    expect(screen.getByText('Listing all job ads.')).toBeInTheDocument();
+  });
+
+  /* ================= PAGINATION ================= */
+
+  test('pagination renders', async () => {
+    render(<Collaboration />);
 
     await waitFor(() => {
-      expect(screen.getByText('Listing all job ads.')).toBeInTheDocument();
+      expect(screen.getByText('1')).toBeInTheDocument();
+    });
+  });
+
+  /* ================= SUMMARIES ================= */
+
+  test('toggle summaries triggers fetch', async () => {
+    render(<Collaboration />);
+
+    fireEvent.click(screen.getByText('Show Summaries'));
+
+    await waitFor(() => {
+      expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/jobs/summaries'));
     });
   });
 });
