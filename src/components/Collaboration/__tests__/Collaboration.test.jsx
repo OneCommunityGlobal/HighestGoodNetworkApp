@@ -60,9 +60,9 @@ describe('Collaboration Component', () => {
     const input = screen.getByPlaceholderText(/search by title/i);
     fireEvent.change(input, { target: { value: 'React' } });
 
-    // FIX: Instead of .closest('form'), we find the button by its role/text
-    // This adheres to testing-library/no-node-access
-    const goButton = screen.getByRole('button', { name: /go/i });
+    // FIX: Using exact string 'Go' instead of regex /go/i to avoid
+    // matching 'Select Categories' and adhering to no-node-access
+    const goButton = screen.getByRole('button', { name: 'Go' });
     fireEvent.click(goButton);
 
     // Verify that the search parameter was included in at least one fetch call
