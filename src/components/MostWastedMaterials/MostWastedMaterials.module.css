@@ -1,0 +1,170 @@
+.mostWastedMaterialsContainer {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  width: 100%;
+  background-color: #fff;
+  box-sizing: border-box;
+  padding-bottom: 80px;
+  height: 100vh;
+}
+
+.mostWastedMaterialsHeader {
+  margin-bottom: 24px;
+}
+
+.headerTitle {
+  font-size: 30px;
+  font-weight: 500;
+  color: #111827;
+}
+
+.mostWastedMaterialsCard {
+  background-color: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  padding: 24px;
+  margin-bottom: 32px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.mostWastedMaterialsFilter {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+
+.mostWastedMaterialsFilterItem {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 200px;
+}
+
+.filterLabel {
+  font-weight: 500;
+  font-size: 14px;
+  color: #374151;
+}
+
+.dateFilterGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.dateLabel {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.dateInput {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.actionButtons {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.actionButton {
+  padding: 8px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background-color: #ffffff;
+  color: #374151;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.actionButton:hover {
+  background-color: #f3f4f6;
+}
+
+.chartWrapper {
+  background-color: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  margin-bottom: 100px;
+  padding: 14px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  height: 500px;
+}
+
+.chartContainer {
+  width: 100%;
+  height: 100%;
+}
+
+.chartGrid {
+  stroke: #e5e7eb;
+}
+
+/* Dark Mode Styles */
+.darkMode .mostWastedMaterialsContainer {
+  background-color: #1b2a41;
+}
+
+.darkMode .headerTitle {
+  color: #f9fafb;
+}
+
+.darkMode .mostWastedMaterialsCard {
+  background-color: #1f2937;
+  border-color: #374151;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.darkMode .filterLabel {
+  color: #d1d5db;
+}
+
+.darkMode .dateLabel {
+  color: #9ca3af;
+}
+
+.darkMode .dateInput {
+  background-color: #374151;
+  border-color: #4b5563;
+  color: #f3f4f6;
+  color-scheme: dark;
+}
+
+.darkMode .actionButton {
+  background-color: #374151;
+  border-color: #4b5563;
+  color: #f3f4f6;
+}
+
+.darkMode .actionButton:hover {
+  background-color: #4b5563;
+}
+
+.darkMode .chartWrapper {
+  background-color: #1f2937;
+  border-color: #374151;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.darkMode .chartGrid {
+  stroke: #374151;
+}
+
+.darkMode :global(.recharts-bar-rectangle) {
+  fill: #3b82f6;
+}
+
+.darkMode :global(.recharts-bar-rectangle:hover) {
+  fill: #93c5fd !important;
+}
+
+.darkMode :global(.recharts-label-list) text {
+  fill: #ffffff;
+}
