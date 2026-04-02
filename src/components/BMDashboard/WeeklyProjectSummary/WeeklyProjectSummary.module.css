@@ -517,14 +517,14 @@
 }
 
 .financialGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1.5rem;
-  justify-items: center; /* prevent full-width stretch */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .financialGrid {
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    flex-direction: column;
   }
 }

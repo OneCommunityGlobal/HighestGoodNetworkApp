@@ -277,31 +277,11 @@ function WeeklyProjectSummary() {
         className: 'large',
         content: (
           <div className={`${styles.financialGrid}`}>
-            {financialData.map(card => (
-              <div
-                key={card.id}
-                className={`${styles.weeklyProjectSummaryCard} ${styles.financialCard}`}
-                style={{ backgroundColor: card.bgColor }}
-              >
-                <div className={`${styles.weeklyCardTitle}`} style={{ color: card.textColor }}>
-                  {card.title}
-                </div>
-                <div
-                  className={`${styles.weeklyStatusButton}`}
-                  style={{ backgroundColor: card.ovalColor }}
-                >
-                  <span className={`${styles.weeklyStatusValue}`}>
-                    {card.value === '-' ? '-' : card.value.toLocaleString()}
-                  </span>
-                </div>
-                <div className={`${styles.weeklyCardValue}`} style={{ color: card.textColor }}>
-                  {card.value === '-' ? '-' : card.value.toLocaleString()}
-                </div>
-              </div>
-            ))}
-
             <div className="weekly-project-summary-card financial-small financial-chart">
-              <ExpenseBarChart />
+              <FinancialStatButtons darkMode={darkMode} />
+            </div>
+            <div className="weekly-project-summary-card financial-small financial-chart">
+              <ExpenseBarChart darkMode={darkMode} />
             </div>
           </div>
         ),
