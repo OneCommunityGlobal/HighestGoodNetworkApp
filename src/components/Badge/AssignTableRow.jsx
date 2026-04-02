@@ -35,7 +35,7 @@ function AssignTableRow(props) {
     if (props.propExistBadges?.includes(badgeId)) {
       dispatch(addSelectBadge(badgeId));
     }
-  }, [badge._id, dispatch]);
+  }, [badgeId, dispatch, props.propExistBadges]);
 
   const isSelected = selectedBadges.includes(badgeId);
   // eslint-disable-next-line no-console
@@ -76,6 +76,7 @@ function AssignTableRow(props) {
           id={domId}
           onChange={handleCheckBoxChange}
           checked={isSelected}
+          className="cursor-pointer"
         />
       </td>
     </tr>
