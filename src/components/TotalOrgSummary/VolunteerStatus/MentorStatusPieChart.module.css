@@ -1,0 +1,119 @@
+.mentorStatusContainer {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  height: 100%;
+  gap: 12px;
+}
+
+.mentorStatusChart {
+  position: relative;
+  width: min(320px, 100%);
+  max-width: 320px;
+  aspect-ratio: 1 / 1;
+  overflow: visible;
+  /* Enable container queries to scale font-size based on chart container width */
+  container-type: inline-size;
+}
+
+.mentorStatusCenter {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.mentorStatusHeading {
+  color: #828282;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  transform: translateY(6px);
+  width: 100%;
+  text-align: center;
+  /* Scale font-size based on chart container width (not viewport width) */
+  /* At 280px container: 0.95rem, At 320px container: 1.2rem */
+  /* Uses container query width units (cqw): 1cqw = 1% of container width */
+  /* Percentage-based scaling: ~5.43-6% of container width */
+  font-size: clamp(0.95rem, 5.71cqw, 1.2rem);
+}
+
+.mentorCount {
+  color: #6c6c6c;
+  font-weight: 800;
+  line-height: 1.18;
+  margin-top: -10px;
+  /* Scale font-size based on chart container width (not viewport width) */
+  /* At 280px container: 1.35rem, At 320px container: 1.8rem */
+  /* Uses container query width units (cqw): 1cqw = 1% of container width */
+  /* Percentage-based scaling: ~7.71-9% of container width */
+  font-size: clamp(1.35rem, 8.36cqw, 1.8rem);
+}
+
+.mentorPercentageChange {
+  font-weight: 600;
+}
+
+.mentorStatusLabels {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  margin-top: 48px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  overflow-x: visible;
+  padding: 0 20px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.mentorStatusLabel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  /* Responsive font-size: scales from 0.875rem at 1200px to 0.95rem at 1920px - INCREASES with screen size */
+  font-size: clamp(0.875rem, calc(0.75rem + 0.01042vw), 0.95rem);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.mentorStatusColor {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+}
+
+:global(.bg-oxford-blue) .mentorStatusHeading {
+  color: #f1f5ff;
+}
+
+:global(.bg-oxford-blue) .mentorCount {
+  color: #ffffff;
+}
+
+@media (max-width: 768px) {
+  .mentorStatusChart {
+    width: min(280px, 100%);
+  }
+
+  .mentorStatusLabels {
+    gap: 12px;
+  }
+}
+
+@media (min-width: 768px) {
+  .mentorStatusChart {
+    max-width: 280px;
+  }
+}

@@ -16,7 +16,7 @@ import { addTitle, editTitle } from '../../../actions/title';
 import AssignProjectField from './AssignProjectField';
 import AssignTeamField from './AssignTeamField';
 import AssignTeamCodeField from './AssignTeamCodeField';
-import '../../Header/DarkMode.css';
+import '../../Header/index.css';
 
 // ---- helpers ---------------------------------------------------------------
 
@@ -49,7 +49,6 @@ function AddNewTitleModal({
   QSTTeamCodes,
 }) {
   const darkMode = useSelector(state => state.theme.darkMode);
-  const teamCodes = useSelector(state => state.teamCodes?.teamCodes || []);
 
   // ------------------------- state -----------------------------------------
 
@@ -112,12 +111,15 @@ function AddNewTitleModal({
 
   // live teamCode validity (using QSTTeamCodes list)
   useEffect(() => {
+    const codeValue = (titleData.teamCode || '').trim();
+  
     setIsValidTeamCode(
-      titleData.teamCode === '' ||
+      codeValue === '' ||
         (Array.isArray(QSTTeamCodes) &&
-          QSTTeamCodes.some(code => code?.value === titleData.teamCode))
+          QSTTeamCodes.some(code => code?.value === codeValue))
     );
   }, [titleData.teamCode, QSTTeamCodes]);
+  
 
   // ----------------- canonical lists for validation ------------------------
 
@@ -126,10 +128,10 @@ function AddNewTitleModal({
     ? teamsData
     : (teamsData && Array.isArray(teamsData.allTeams) ? teamsData.allTeams : []);
 
-  let existTeamCodes = new Set(
-    (Array.isArray(teamsData?.allTeamCode?.distinctTeamCodes)
-      ? teamsData.allTeamCode.distinctTeamCodes
-      : [])
+  const existTeamCodes = new Set(
+    (Array.isArray(QSTTeamCodes) ? QSTTeamCodes : [])
+      .map(code => code?.value)
+      .filter(Boolean)
   );
 
   const existTeamName = new Set(
@@ -161,7 +163,10 @@ function AddNewTitleModal({
 
   const selectTeamCode = teamCode => {
     onSelectTeamCode(teamCode);
-    setTitleData(prev => ({ ...prev, teamCode }));
+    setTitleData(prev => ({
+      ...prev,
+      teamCode: teamCode || '',
+    }));
   };
 
   const cleanProjectAssign = () => {
@@ -238,10 +243,16 @@ function AddNewTitleModal({
   // ------------------- submit ----------------------------------------------
 
   const confirmOnClick = () => {
-    // validate team name (no-op if empty/optional)
     if (!onTeamNameValidation(titleData.teamAssiged)) return;
 
-    // normalize team and build payload
+    const teamCodeValue = (titleData.teamCode || '').trim();
+
+    if (teamCodeValue && !isValidTeamCode) {
+      setWarningMessage({ title: 'Error', content: 'Please select a valid Team Code' });
+      setShowMessage(true);
+      return;
+    }
+
     const safeTeams = allTeamsArray;
     const team = normalizeTeam(titleData.teamAssiged, safeTeams);
 
@@ -250,17 +261,19 @@ function AddNewTitleModal({
       titleName: titleData.titleName?.trim() || '',
       titleCode: titleData.titleCode?.trim() || '',
       mediaFolder: titleData.mediaFolder?.trim() || '',
-      teamCode: titleData.teamCode?.trim() || '',
+      teamCode: teamCodeValue,
       projectAssigned: titleData.projectAssigned || '',
     };
-
+  
     if (team && team._id) {
-      payload.teamAssiged = team;        // {_id, teamName}
-      payload.teamName = team.teamName;  // some endpoints check this flat prop
+      payload.teamAssiged = team;
+      payload.teamName = team.teamName;
     }
-
+  
     const run = editMode ? editTitle : addTitle;
-
+  
+    console.log('Title update payload:', payload); // <--- use this once to inspect
+  
     run(payload)
       .then(resp => {
         if (resp.status !== 200) {
@@ -273,12 +286,12 @@ function AddNewTitleModal({
         }
       })
       .catch(e => {
-        // eslint-disable-next-line no-console
         console.log(e);
         setWarningMessage({ title: 'Error', content: 'Unexpected error' });
         setShowMessage(true);
       });
   };
+  
 
   // ------------------- render ----------------------------------------------
 
