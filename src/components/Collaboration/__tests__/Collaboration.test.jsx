@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import Collaboration from '../Collaboration';
 import { ApiEndpoint } from '~/utils/URL';
 import { vi } from 'vitest';
@@ -100,7 +100,7 @@ describe('Collaboration Component', () => {
     fireEvent.click(screen.getByText('Go'));
 
     await waitFor(() => {
-      expect(fetch).toHaveBeenCalledTimes(3); // categories + initial jobs + search
+      expect(fetch).toHaveBeenCalledTimes(3);
     });
   });
 
@@ -111,7 +111,7 @@ describe('Collaboration Component', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /select categories/i }));
 
-    const category = await screen.findByText('Engineering');
+    const category = await screen.findByRole('button', { name: 'Engineering' });
     fireEvent.click(category);
 
     await waitFor(() => {
@@ -131,30 +131,26 @@ describe('Collaboration Component', () => {
   test('can select a position after selecting category', async () => {
     render(<Collaboration />);
 
-    // Wait for categories to load
-    await waitFor(() => {
-      expect(screen.getByText('Select Categories ▼')).toBeInTheDocument();
-    });
-
-    // Open category dropdown
-    fireEvent.click(screen.getByText('Select Categories ▼'));
-
     // Select category
-    const category = await screen.findByText('Engineering');
-    fireEvent.click(category);
+    fireEvent.click(screen.getByRole('button', { name: /select categories/i }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Engineering' }));
 
-    // Now position button becomes enabled
+    // Open position dropdown
     const positionButton = screen.getByRole('button', { name: /select positions/i });
     expect(positionButton).not.toBeDisabled();
 
-    // Open position dropdown
     fireEvent.click(positionButton);
 
-    // Select position
-    const position = await screen.findByText('Frontend Engineer');
-    fireEvent.click(position);
+    // ✅ Get ALL matching buttons
+    const options = await screen.findAllByRole('button', {
+      name: 'Frontend Engineer',
+    });
 
-    // Assert it shows up (button label updates)
+    // ✅ Pick the dropdown one (not job card)
+    const dropdownOption = options.find(el => el.className.includes('dropdownItem'));
+
+    fireEvent.click(dropdownOption);
+
     expect(screen.getByText('Frontend Engineer')).toBeInTheDocument();
   });
 
@@ -175,7 +171,10 @@ describe('Collaboration Component', () => {
   test('clicking job opens modal', async () => {
     render(<Collaboration />);
 
-    const job = await screen.findByText('Frontend Engineer');
+    const job = await screen.findByRole('heading', {
+      name: 'Frontend Engineer',
+    });
+
     fireEvent.click(job);
 
     await waitFor(() => {
@@ -186,7 +185,7 @@ describe('Collaboration Component', () => {
   test('modal closes on close button click', async () => {
     render(<Collaboration />);
 
-    fireEvent.click(await screen.findByText('Frontend Engineer'));
+    fireEvent.click(await screen.findByRole('heading', { name: 'Frontend Engineer' }));
 
     fireEvent.click(await screen.findByLabelText(/close role details/i));
 
@@ -214,11 +213,9 @@ describe('Collaboration Component', () => {
   test('clear filters resets UI', async () => {
     render(<Collaboration />);
 
-    // Select category
     fireEvent.click(screen.getByRole('button', { name: /select categories/i }));
-    fireEvent.click(await screen.findByText('Engineering'));
+    fireEvent.click(await screen.findByRole('button', { name: 'Engineering' }));
 
-    // Clear filters
     fireEvent.click(await screen.findByText('Clear All'));
 
     await waitFor(() => {
