@@ -1,14 +1,13 @@
 .AdditionalInfoBox {
   display: flex;
   flex-direction: column;
-  border:2px solid black;
+  border: 2px solid black;
   margin: 20px;
   padding: 20px;
 }
-.workExpInfoBox{
+.workExpInfoBox {
   display: flex;
   flex-direction: row;
- 
 }
 
 .question-and-response-box {
@@ -18,18 +17,16 @@
 }
 
 .question-box {
- display: flex;
- color: #2f5061;
+  display: flex;
+  color: #2f5061;
   font-size: 1.1em;
-  
- 
 }
 .question-and-response-box textarea {
-   height: 150px; 
-   margin: 5px 10px;  
+  height: 150px;
+  margin: 5px 10px;
   background-color: #e6f5f3;
 }
-.question-and-response-box input[type="text"] {
+.question-and-response-box input[type='text'] {
   width: 40%;
   padding: 10px;
   border: 1px solid #ccc;
@@ -39,26 +36,24 @@
 }
 
 .question-and-response-box p {
-    line-height: 1.2;
+  line-height: 1.2;
   text-align: left;
   margin-left: 10px;
   margin-right: 30px;
   margin-bottom: 0;
 }
 .outlined-box {
-  border:rgb(28, 36, 36);
+  border: rgb(28, 36, 36);
   display: flex;
   flex-direction: column;
-  
 }
 
 .custom-list {
   list-style-type: none;
-  padding-left: 0%; 
-
+  padding-left: 0%;
 }
 .custom-list li:before {
-  content:"-";
+  content: '-';
   margin-right: 0rem;
 }
 
@@ -75,7 +70,6 @@
   }
 }
 
-
 :global(.dark-mode) .AdditionalInfoBox {
   border-color: #fff;
   color: #fff;
@@ -86,7 +80,7 @@
 }
 
 :global(.dark-mode) .question-and-response-box textarea,
-:global(.dark-mode) .question-and-response-box input[type="text"] {
+:global(.dark-mode) .question-and-response-box input[type='text'] {
   background-color: #333;
   color: #fff;
   border-color: #555;
