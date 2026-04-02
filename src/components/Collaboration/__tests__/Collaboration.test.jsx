@@ -151,7 +151,9 @@ describe('Collaboration Component', () => {
 
     fireEvent.click(dropdownOption);
 
-    expect(screen.getByRole('button', { name: /frontend engineer/i })).toBeInTheDocument();
+    const nav = screen.getByRole('navigation');
+
+    expect(within(nav).getByRole('button', { name: /frontend engineer/i })).toBeInTheDocument();
   });
 
   /* ================= PAGINATION ================= */
