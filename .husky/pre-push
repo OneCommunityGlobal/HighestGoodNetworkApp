@@ -17,6 +17,7 @@ echo "🧹 Running lint before push..."
 npm run lint
 lint_status=$?
 
+
 # Block push if either fails
 if [ $test_status -ne 0 ] || [ $lint_status -ne 0 ]; then
   echo "❌ Push blocked: Lint or test failed."
