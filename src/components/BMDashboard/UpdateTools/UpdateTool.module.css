@@ -1,86 +1,64 @@
 .updateToolContainer {
-  padding: 0% !important;
-
+    padding: 0% !important;
 }
 
 .updateToolPage {
-  background-color: #E8F4F9;
-  width: 100%;
-  height: auto;
-  margin: 0px;
-  padding: 1rem 2rem;
-  font-size: 15px;
+    background-color: #E8F4F9;
+    width: 100%;
+    height: auto;
+    padding: 1rem 2rem;
+    font-size: 15px;
 }
 
 .updateTool {
-  background-color: white;
-  border-radius: 1rem;
-  padding: 1.5rem;
-  height: auto;
+    background-color: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    height: auto;
 }
 
-.toolImage {
-  height: 10rem;
-  width: 10rem;
-  margin-bottom: 1rem;
-}
-
-.toolFormField {
-  margin-bottom: .5rem;
-}
-
+/* Form Styles */
 .toolFormLabel {
-  font-weight: 500;
-  font-size: 15px;
-  color: #1C8BCC;
-  display: flex;
-  justify-content: flex-start;
+    font-weight: 500;
+    font-size: 15px;
+    color: #1C8BCC;
+    display: flex;
+    justify-content: flex-start;
 }
 
 .toolFormError {
-  font-weight: 500;
-  font-size: 11px !important;
-  color: red;
-  display: flex;
-  justify-content: flex-start;
+    font-weight: 500;
+    font-size: 11px !important;
+    color: red;
+    display: flex;
+    justify-content: flex-start;
 }
 
-.toolFormTableError {
-  font-weight: 500;
-  font-size: 11px !important;
-  color: red;
-}
-
-.toolFormErrorClr {
-  color: red;
-}
-
-.toolFormValue {
-  font-weight: 400;
-  font-size: 15px;
-  display: flex;
-  justify-content: flex-start;
-}
-
-.toolButtonOutline {
-  color: #2E5061 !important;
-}
-
-.toolButtonOutline:hover {
-  background-color: #2E5061 !important;
-  color: white !important
-}
-
-.toolButtonBg {
-  background-color: #2E5061 !important
-}
-
-.toolButtonBg:hover {
-  background-color: white !important;
-  color: #2E5061 !important;
-}
-
+/* Modal Content Logic - Final Clean Version */
 .updateModalContainer {
-  overflow-y: scroll;
-  height: 75vh;
+    height: auto;
+}
+
+/* Force specific modal colors to override index.css specificity */
+:global(body.dark-mode) .darkBlueModalContent {
+    background-color: #1b2a41 !important;
+    border: 1px solid #2e3d55 !important;
+}
+
+:global(body.dark-mode) .darkBlueModalContent :global(.modal-body),
+:global(body.dark-mode) .darkBlueModalContent :global(.modal-header),
+:global(body.dark-mode) .darkBlueModalContent :global(.modal-footer) {
+    background-color: #1b2a41 !important;
+    border-color: #2e3d55 !important;
+}
+
+/* Table styling within modal */
+.darkBlueModalContent :global(.table) :global(thead) :global(th) {
+    background-color: #1b2a41 !important;
+    border-bottom: 2px solid #2e3d55 !important;
+}
+
+
+.darkBlueBackdrop {
+    background-color: rgba(0, 0, 0, 0.5) !important;
 }

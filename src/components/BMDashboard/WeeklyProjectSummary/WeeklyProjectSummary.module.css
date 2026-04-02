@@ -3,6 +3,7 @@
   min-height: 100vh;
   background-color: var(--bg-color);
   color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .weeklyProjectSummaryContainer html,
@@ -22,6 +23,11 @@
 
 .weeklyProjectSummaryHeaderWrapper {
   background-color: var(--bg-color) !important;
+  transition: background-color 0.3s ease;
+}
+
+.weeklyProjectSummaryContainer * {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
 /* ---------------- HEADER ---------------- */
@@ -29,9 +35,9 @@
   display: flex;
   justify-content: center;
   width: 100%;
+  background-color: var(--bg-color);
 }
 
-/* Header Container */
 .weeklySummaryHeaderContainer {
   display: flex;
   flex-wrap: wrap;
@@ -42,33 +48,58 @@
   background: var(--section-bg);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
+  transition: all 0.3s ease;
+  min-height: 80px;
 }
 
-/* Title */
 .weeklySummaryHeaderTitle {
   padding-top: 5px;
   color: var(--text-color);
   font-size: x-large;
   text-align: center;
   flex-wrap: wrap;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-/* Header Controls */
+.weeklySummaryHeaderSubtitle {
+  font-size: 14px;
+  opacity: 0.7;
+  font-weight: normal;
+}
+
 .weeklySummaryHeaderControls {
   display: flex;
   gap: 10px;
   align-items: center;
+  flex-wrap: wrap;
 }
 
-/* Dropdown Styling */
+/* Fix for select dropdown arrows */
 .weeklySummaryHeaderControls select {
-  padding: 8px 12px;
+  padding: 8px 32px 8px 12px;
   border: 1px solid var(--border-color, #ccc);
   border-radius: 6px;
   min-width: 200px;
   font-size: 14px;
   background: var(--section-bg);
   color: var(--text-color);
+  transition: all 0.3s ease;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 16px;
+}
+
+.darkMode .weeklySummaryHeaderControls select {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+  background-color: var(--card-bg) !important;
+  color: var(--text-color) !important;
+  border-color: var(--card-shadow) !important;
 }
 
 .weeklySummaryHeaderControls select:focus {
@@ -76,12 +107,16 @@
   border-color: var(--focus-border-color, #3b82f6);
 }
 
-/* Dropdown Hover */
 .weeklySummaryHeaderControls select:hover {
   background-color: var(--section-title-hover) !important;
 }
 
-/* Share Button */
+.darkMode select option {
+  background-color: var(--card-bg);
+  color: var(--text-color);
+}
+
+/* Share PDF Button - Fixed */
 .weeklySummaryShareBtn {
   background-color: var(--button-bg) !important;
   color: white;
@@ -89,10 +124,30 @@
   white-space: nowrap;
   border-radius: 8px !important;
   transition: background 0.2s ease-in-out;
+  padding: 8px 16px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 100px;
+  font-size: 14px;
+  line-height: 1.5;
 }
 
 .weeklySummaryShareBtn:hover {
   background-color: var(--button-hover) !important;
+}
+
+.weeklySummaryShareBtn:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+}
+
+.weeklySummaryShareBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 /* ---------------- DASHBOARD ---------------- */
@@ -103,7 +158,6 @@
   gap: 15px;
 }
 
-/* .weeklyProjectSummaryDashboardSection options */
 .full {
   grid-column: span 4;
 }
@@ -121,18 +175,62 @@
 }
 
 /* ---------------- CARDS ---------------- */
-
 .weeklyProjectSummaryCard {
-  background: var(--card-bg);
   padding: 10px;
   border-radius: 6px;
   text-align: center;
   box-shadow: 0 2px 5px var(--card-shadow);
+  transition: all 0.3s ease;
+  background: var(--card-bg);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .darkMode .weeklyProjectSummaryCard {
   background: var(--card-bg);
   box-shadow: 0 2px 5px rgba(255, 255, 255, 0.1);
+}
+
+.weeklyProjectSummaryCard :global(.container) {
+  background: #ffffff !important;
+  width: 100% !important;
+  height: 100% !important;
+  padding: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.darkMode .weeklyProjectSummaryCard :global(.container) {
+  background: #1e293b !important;
+}
+
+.weeklyProjectSummaryCard :global(.recharts-wrapper) {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.weeklyProjectSummaryCard :global(.recharts-surface) {
+  overflow: visible !important;
+}
+
+.weeklyProjectSummaryCard :global(.chartContainer) {
+  flex: 1;
+  min-height: 280px;
+  position: relative;
+}
+
+.weeklyProjectSummaryCard :global(.recharts-bar-rectangle) {
+  shape-rendering: geometricPrecision !important;
+}
+
+.weeklyProjectSummaryCard :global(.recharts-cartesian-axis-tick-value) {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+}
+
+.weeklyProjectSummaryCard :global(.recharts-cartesian-grid-horizontal line) {
+  stroke-dasharray: 3 3 !important;
 }
 
 .financialSmall {
@@ -141,7 +239,6 @@
   margin-top: 20px;
   grid-column: span 1;
 }
-
 
 .weekly-project-summary-card.financial-big {
   grid-column: span 4;
@@ -160,7 +257,6 @@
   margin: 0;
   font-weight: normal;
   font-size: 24px;
-
 }
 
 .fullCard {
@@ -182,7 +278,8 @@
 
 .normalCard {
   width: 100%;
-  min-height: 250px;
+  min-height: 300px;
+  padding: 15px;
 }
 
 .mapCard {
@@ -190,13 +287,31 @@
   min-height: 500px;
   border-radius: 8px;
   overflow: hidden;
+  grid-column: span 4;
 }
 
+/* ---------------- DASHBOARD SECTIONS ---------------- */
 .weeklyProjectSummaryDashboardSection {
   background: var(--section-bg);
   border-radius: 8px;
   padding: 10px;
   box-shadow: 0 2px 4px var(--card-shadow);
+  transition: all 0.3s ease;
+}
+
+/* Fix for double arrows - ensure no pseudo-elements add extra arrows */
+.weeklyProjectSummaryDashboardCategoryTitle::before,
+.weeklyProjectSummaryDashboardCategoryTitle::after {
+  display: none !important;
+  content: none !important;
+}
+
+/* Ensure the button only shows our arrow span */
+.weeklyProjectSummaryDashboardCategoryTitle span {
+  display: inline-block;
+  margin-left: 8px;
+  font-size: 16px;
+  font-weight: bold;
 }
 
 .weeklyProjectSummaryDashboardCategoryTitle {
@@ -209,6 +324,10 @@
   justify-content: space-between;
   align-items: center;
   color: var(--text-color);
+  border: none;
+  width: 100%;
+  transition: all 0.3s ease;
+  font-weight: 600;
 }
 
 .weeklyProjectSummaryDashboardCategoryTitle:hover {
@@ -216,16 +335,18 @@
 }
 
 .weeklyProjectSummaryDashboardCategoryContent {
-  padding: 15px;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
+  padding: 20px;
+  width: 100%;
   border-top: 1px solid var(--card-shadow);
   animation: fadeIn 0.3s ease-in-out;
   background: var(--section-bg);
+  transition: all 0.3s ease;
 }
 
-/* Adjust grid columns based on section size */
+.weeklyProjectSummaryDashboardCategoryContent > * {
+  width: 100%;
+}
+
 .weeklyProjectSummaryDashboardSection.half .weeklyProjectSummaryDashboardCategoryContent {
   grid-template-columns: repeat(2, 1fr);
 }
@@ -234,23 +355,95 @@
   grid-template-columns: 1fr;
 }
 
-/* ---------------- DARK MODE VARIABLES ---------------- */
+/* ---------------- LESSONS LEARNED SECTION ---------------- */
+.lessonsLearnedGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  width: 100%;
+  align-items: stretch;
+  min-height: 600px;
+}
+
+.lessonsCard {
+  min-height: 600px;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px var(--card-shadow);
+  transition: all 0.3s ease;
+}
+
+/* ---------------- TOOLS TRACKING LAYOUT ---------------- */
+.toolsTrackingLayout {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  width: 100%;
+}
+
+.toolsDonutWrap {
+  grid-column: span 1;
+  min-height: 300px;
+}
+
+/* ---------------- FINANCIALS GRID ---------------- */
+.financialsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 15px;
+  width: 100%;
+}
+
+.financialsGrid .financialBig {
+  grid-column: span 4;
+  min-height: 400px;
+}
+
+/* ---------------- LABOR TIME GRID ---------------- */
+.laborTimeGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  width: 100%;
+}
+
+/* ---------------- FINANCIALS TRACKING GRID ---------------- */
+.financialsTrackingGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 15px;
+  width: 100%;
+}
+
+/* ---------------- LIGHT MODE VARIABLES ---------------- */
 :root {
   --bg-color: #ffffff;
   --text-color: #000000;
-  --card-bg: #fafafa;
+  --text-secondary: #666666;
+  --card-bg: #ffffff;
   --card-shadow: rgba(0, 0, 0, 0.1);
-  --section-bg: white;
-  --section-title-bg: white;
-  --section-title-hover: #e0e0e0;
+  --section-bg: #ffffff;
+  --section-title-bg: #f8fafc;
+  --section-title-hover: #f1f5f9;
   --button-bg: black;
   --button-hover: #333;
+  --border-color: #e5e7eb;
+  --pos-color: #15803d;
+  --neg-color: #b91c1c;
+  --neutral-change: rgba(0, 0, 0, 0.65);
+  --card-elev: rgba(0, 0, 0, 0.15);
+  --card-elev-hover: rgba(0, 0, 0, 0.18);
 }
 
-/* ---------------- DARK MODE STYLES ---------------- */
+/* ---------------- DARK MODE VARIABLES ---------------- */
 .darkMode {
   --bg-color: #1b2a41;
   --text-color: #ffffff;
+  --text-secondary: #94a3b8;
   --card-bg: #2b3e59;
   --card-shadow: rgba(255, 255, 255, 0.1);
   --section-bg: #253342;
@@ -260,6 +453,11 @@
   --button-hover: #f5b13a;
   --border-color: #4a5a77;
   --focus-border-color: #e8a71c;
+  --pos-color: #22c55e;
+  --neg-color: #ef4444;
+  --neutral-change: rgba(255, 255, 255, 0.75);
+  --card-elev: rgba(0, 0, 0, 0.45);
+  --card-elev-hover: rgba(0, 0, 0, 0.6);
 }
 
 .darkMode .weeklyProjectSummaryDashboardCategoryTitle {
@@ -281,17 +479,35 @@
   color: var(--text-color);
 }
 
-/* First, set a max-height and make it scrollable */
+.darkMode .weeklySummaryShareBtn {
+  background-color: var(--button-bg) !important;
+}
+
+.darkMode .weeklySummaryShareBtn:hover {
+  background-color: var(--button-hover) !important;
+}
+
+.darkMode .statusCard {
+  background: var(--card-bg) !important;
+  color: var(--text-color) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.darkMode .weeklyCardTitle,
+.darkMode .weeklyStatusValue,
+.darkMode .weekly-status-change {
+  color: var(--text-color) !important;
+}
+
+/* Tooltip styles */
 .quantityOfMaterialsUsedChartTooltip {
-  max-height: 80vh !important; /* Limit to 80% of viewport height */
-  overflow-y: auto !important; /* Enable vertical scrolling */
-  padding-right: 15px !important; /* Add some padding for the scrollbar */
-  /* Support for Firefox */
+  max-height: 80vh !important;
+  overflow-y: auto !important;
+  padding-right: 15px !important;
   scrollbar-width: thin;
   scrollbar-color: rgba(0, 0, 0, 0.3) rgba(0, 0, 0, 0.1);
 }
 
-/* Style the scrollbar for better visibility - Webkit browsers */
 .quantityOfMaterialsUsedChartTooltip::-webkit-scrollbar {
   width: 8px;
 }
@@ -306,7 +522,6 @@
   border-radius: 4px;
 }
 
-/* Additional adjustments for dark mode if needed */
 .darkMode .quantityOfMaterialsUsedChartTooltip::-webkit-scrollbar-track {
   background: rgba(255, 255, 255, 0.1);
 }
@@ -315,65 +530,15 @@
   background: rgba(255, 255, 255, 0.3);
 }
 
-.darkMode .quantityOfMaterialsUsedChartTooltip {
-  scrollbar-color: rgba(255, 255, 255, 0.3) rgba(255, 255, 255, 0.1);
-}
-/* ---------------- RESPONSIVE DESIGN ---------------- */
-
-/* Medium Screens - Wrap Items */
-@media (max-width: 1024px) {
-  .weeklySummaryHeaderContainer {
-    flex-direction: column;
-    align-items: center;
+/* Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
   }
-
-  .weeklySummaryHeaderControls {
-    flex-wrap: wrap;
-    justify-content: center;
-    width: 100%;
-  }
-
-  .weeklyProjectSummaryDashboardGrid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-/* Small Screens - Make Dropdowns Vertical */
-@media (max-width: 768px) {
-  .weeklySummaryHeaderContainer {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .weeklySummaryHeaderControls {
-    flex-direction: column;
-    gap: 10px;
-    width: 100%;
-  }
-
-  /* Make Dropdowns Full Width */
-  .weeklySummaryHeaderControls select {
-    width: 100%;
-  }
-
-  /* Make Button Full Width */
-  .weeklySummaryShareBtn {
-    width: 100%;
-  }
-
-  .weeklyProjectSummaryDashboardGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .weeklyProjectSummaryDashboardSection.full,
-  .weeklyProjectSummaryDashboardSection.large,
-  .weeklyProjectSummaryDashboardSection.half,
-  .weeklyProjectSummaryDashboardSection.small {
-    grid-column: span 1;
-  }
-
-  .projectStatusGrid {
-    grid-template-columns: 1fr;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -392,6 +557,7 @@
   padding: 20px;
   border: 1px solid rgba(0, 0, 0, 0.1);
   position: relative;
+  transition: all 0.3s ease;
 }
 
 /* ---------------- RESPONSIVE GRID LAYOUT ---------------- */
@@ -416,21 +582,211 @@
   justify-content: center;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
   margin: 12px 0;
+  transition: all 0.3s ease;
 }
 
 .weeklyCardTitle {
   color: #000;
   font-size: clamp(14px, 1.4vw, 18px);
   font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.darkMode .weeklyCardTitle {
+  color: var(--text-color) !important;
 }
 
 .weeklyStatusValue {
   color: #000;
   font-size: 40px;
   font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.darkMode .weeklyStatusValue {
+  color: var(--text-color) !important;
+}
+
+.weekly-status-change {
+  transition: color 0.3s ease;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.darkMode .weekly-status-change {
+  color: var(--text-color) !important;
 }
 
 /* ---------------- RESPONSIVE BREAKPOINTS ---------------- */
+
+/* Large Screens */
+@media (min-width: 1400px) {
+  .lessonsLearnedGrid {
+    min-height: 650px;
+  }
+  
+  .lessonsCard {
+    min-height: 650px;
+  }
+}
+
+@media (max-width: 1399px) and (min-width: 1200px) {
+  .lessonsLearnedGrid {
+    min-height: 600px;
+  }
+  
+  .lessonsCard {
+    min-height: 600px;
+  }
+}
+
+@media (max-width: 1199px) and (min-width: 992px) {
+  .lessonsLearnedGrid {
+    min-height: 550px;
+    gap: 20px;
+  }
+  
+  .lessonsCard {
+    min-height: 550px;
+  }
+}
+
+@media (max-width: 991px) and (min-width: 769px) {
+  .lessonsLearnedGrid {
+    min-height: 500px;
+    gap: 16px;
+  }
+  
+  .lessonsCard {
+    min-height: 500px;
+  }
+}
+
+/* Medium Screens */
+@media (max-width: 1024px) {
+  .weeklySummaryHeaderContainer {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .weeklySummaryHeaderControls {
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .weeklyProjectSummaryDashboardGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Small Screens */
+@media (max-width: 768px) {
+  .weeklySummaryHeaderContainer {
+    flex-direction: column;
+    align-items: center;
+    width: 95%;
+  }
+
+  .weeklySummaryHeaderControls {
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .weeklySummaryHeaderControls select {
+    width: 100%;
+  }
+
+  .weeklySummaryShareBtn {
+    width: 100%;
+    margin-top: 5px;
+  }
+
+  .weeklyProjectSummaryDashboardGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .weeklyProjectSummaryDashboardSection.full,
+  .weeklyProjectSummaryDashboardSection.large,
+  .weeklyProjectSummaryDashboardSection.half,
+  .weeklyProjectSummaryDashboardSection.small {
+    grid-column: span 1;
+  }
+
+  .projectStatusGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .weeklyProjectSummaryDashboardSection.half .weeklyProjectSummaryDashboardCategoryContent {
+    grid-template-columns: 1fr;
+  }
+  
+  .weeklyProjectSummaryCard :global(.chartContainer) {
+    min-height: 240px;
+  }
+  
+  .normalCard {
+    min-height: 280px;
+  }
+
+  .lessonsLearnedGrid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    min-height: auto;
+  }
+  
+  .lessonsCard {
+    min-height: 500px;
+  }
+  
+  .toolsTrackingLayout {
+    grid-template-columns: 1fr;
+  }
+  
+  .toolsDonutWrap {
+    grid-column: span 1;
+  }
+  
+  .financialsGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .financialsGrid .financialBig {
+    grid-column: span 1;
+  }
+  
+  .laborTimeGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .financialsTrackingGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Extra Small Screens */
+@media (max-width: 480px) {
+  .lessonsCard {
+    min-height: 450px;
+  }
+  
+  .weeklyProjectSummaryCard :global(.chartContainer) {
+    min-height: 220px;
+  }
+  
+  .normalCard {
+    min-height: 260px;
+  }
+  
+  .weeklySummaryHeaderTitle {
+    font-size: large;
+    flex-direction: column;
+    gap: 5px;
+  }
+}
+
+/* Status Grid Responsive */
 @media (min-width: 1600px) {
   .projectStatusGrid {
     grid-template-columns: repeat(6, 1fr);
@@ -458,5 +814,62 @@
 @media (max-width: 576px) {
   .projectStatusGrid {
     grid-template-columns: repeat(1, 1fr);
+  }
+  
+  .weeklyProjectSummaryCard :global(.chartContainer) {
+    min-height: 220px;
+  }
+  
+  .normalCard {
+    min-height: 260px;
+  }
+}
+
+/* Dark mode fixes */
+.darkMode .weeklyProjectSummaryContainer {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+.darkMode .weeklyProjectSummaryDashboardContainer {
+  background-color: var(--bg-color);
+}
+
+.darkMode .weeklyProjectSummaryDashboardSection {
+  background: var(--section-bg);
+}
+
+.darkMode * {
+  color: inherit;
+}
+
+.darkMode .lessonsCard {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Print styles */
+@media print {
+  .weeklyProjectSummaryCard {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  
+  .weeklyProjectSummaryCard :global(.container) {
+    box-shadow: none;
+    border: 1px solid #ddd;
+  }
+  
+  .lessonsLearnedGrid,
+  .toolsTrackingLayout,
+  .financialsGrid,
+  .laborTimeGrid,
+  .financialsTrackingGrid {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  
+  .weeklySummaryShareBtn,
+  .weeklySummaryHeaderControls select {
+    display: none;
   }
 }
