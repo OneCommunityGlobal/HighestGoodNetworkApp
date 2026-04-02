@@ -52,6 +52,10 @@ describe('Collaboration Component', () => {
         return { ok: true, json: async () => ({ jobs: [] }) };
       }
 
+      if (url.includes('/jobs/positions')) {
+        return { ok: true, json: async () => ({ positions: ['Frontend Engineer'] }) };
+      }
+
       return { ok: true, json: async () => ({}) };
     });
   });
@@ -73,20 +77,13 @@ describe('Collaboration Component', () => {
 
   /* ================= SEARCH ================= */
 
-  test('search input updates', () => {
+  test('search updates input and triggers fetch', async () => {
     render(<Collaboration />);
 
     const input = screen.getByPlaceholderText('Search by title...');
-    fireEvent.change(input, { target: { value: 'engineer' } });
 
+    fireEvent.change(input, { target: { value: 'engineer' } });
     expect(input.value).toBe('engineer');
-  });
-
-  test('search triggers API call', async () => {
-    render(<Collaboration />);
-
-    const input = screen.getByPlaceholderText('Search by title...');
-    fireEvent.change(input, { target: { value: 'engineer' } });
 
     fireEvent.click(screen.getByText('Go'));
 
@@ -97,7 +94,7 @@ describe('Collaboration Component', () => {
 
   /* ================= CATEGORY ================= */
 
-  test('select category', async () => {
+  test('select category updates UI', async () => {
     render(<Collaboration />);
 
     fireEvent.click(screen.getByText('Select Categories ▼'));
@@ -108,26 +105,30 @@ describe('Collaboration Component', () => {
     expect(screen.getByText('Engineering ▼')).toBeInTheDocument();
   });
 
-  /* ================= POSITION (FIXED) ================= */
+  /* ================= POSITION ================= */
 
-  test('select position after category', async () => {
+  test('select position after selecting category', async () => {
     render(<Collaboration />);
 
+    // Select category first
     fireEvent.click(screen.getByText('Select Categories ▼'));
     fireEvent.click(await screen.findByText('Engineering'));
 
+    // Open positions dropdown
     fireEvent.click(screen.getByText('Select Positions ▼'));
 
-    const dropdown = screen.getByTestId('positions-dropdown');
+    // Find dropdown container WITHOUT DOM traversal
+    const dropdownContainer = await screen.findByText('Frontend Engineer');
 
-    fireEvent.click(within(dropdown).getByText('Frontend Engineer'));
+    // Click directly on option (now visible)
+    fireEvent.click(dropdownContainer);
 
     expect(screen.getByText('Frontend Engineer ▼')).toBeInTheDocument();
   });
 
-  /* ================= JOB MODAL ================= */
+  /* ================= JOB CLICK ================= */
 
-  test('opens job modal', async () => {
+  test('opens job modal on click', async () => {
     render(<Collaboration />);
 
     const job = await screen.findByText('Frontend Engineer');
@@ -141,7 +142,7 @@ describe('Collaboration Component', () => {
 
     fireEvent.click(await screen.findByText('Frontend Engineer'));
 
-    fireEvent.click(await screen.findByText(/close/i));
+    fireEvent.click(await screen.findByText('×'));
 
     await waitFor(() => {
       expect(screen.queryByText('Test description')).not.toBeInTheDocument();
@@ -150,7 +151,7 @@ describe('Collaboration Component', () => {
 
   /* ================= CLEAR FILTER ================= */
 
-  test('clear filters resets UI', async () => {
+  test('clear all filters resets UI', async () => {
     render(<Collaboration />);
 
     fireEvent.click(screen.getByText('Select Categories ▼'));
@@ -173,7 +174,7 @@ describe('Collaboration Component', () => {
 
   /* ================= SUMMARIES ================= */
 
-  test('toggle summaries triggers fetch', async () => {
+  test('fetch summaries and display', async () => {
     render(<Collaboration />);
 
     fireEvent.click(screen.getByText('Show Summaries'));
