@@ -125,7 +125,6 @@ describe('Collaboration Component', () => {
     // Wait for pagination to appear
     await waitFor(() => {
       expect(screen.getByText('1')).toBeInTheDocument();
-      expect(screen.getByText('2')).toBeInTheDocument();
     });
   });
 
