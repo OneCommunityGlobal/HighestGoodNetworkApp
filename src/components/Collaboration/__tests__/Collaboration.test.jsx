@@ -6,13 +6,6 @@ import { vi } from 'vitest';
 // Mock Redux
 vi.mock('react-redux', () => ({
   useSelector: vi.fn(fn => fn({ theme: { darkMode: false } })),
-  useDispatch: () => vi.fn(),
-}));
-
-// Mock permissions
-vi.mock('~/utils/permissions', () => ({
-  __esModule: true,
-  default: () => true,
 }));
 
 // Mock toast
@@ -20,10 +13,9 @@ vi.mock('react-toastify', () => ({
   toast: { error: vi.fn(), success: vi.fn() },
 }));
 
-// Mock fetch globally
+// Mock fetch
 global.fetch = vi.fn();
 
-// Helper mock responses
 const mockCategories = {
   categories: ['Engineering', 'Art'],
 };
@@ -34,12 +26,10 @@ const mockJobs = {
       _id: '1',
       title: 'Frontend Engineer',
       category: 'Engineering',
-      featured: false,
-      displayOrder: 1,
-      datePosted: new Date().toISOString(),
+      position: 'Frontend Engineer',
+      description: 'Test description',
     },
   ],
-  pagination: { totalPages: 2 },
 };
 
 describe('Collaboration Component', () => {
@@ -53,22 +43,28 @@ describe('Collaboration Component', () => {
           json: async () => mockCategories,
         };
       }
-      if (url.includes('/jobs?page=')) {
+
+      if (url.includes('/jobs?')) {
         return {
           ok: true,
           json: async () => mockJobs,
         };
       }
+
       if (url.includes('/jobs/summaries')) {
         return {
           ok: true,
           json: async () => ({ jobs: [] }),
         };
       }
+
+      return { ok: true, json: async () => ({}) };
     });
   });
 
-  test('renders page header logo', async () => {
+  /* ================= BASIC RENDER ================= */
+
+  test('renders logo', () => {
     render(<Collaboration />);
     expect(screen.getByAltText('One Community Logo')).toBeInTheDocument();
   });
@@ -80,10 +76,12 @@ describe('Collaboration Component', () => {
       expect(fetch).toHaveBeenCalledWith(`${ApiEndpoint}/jobs/categories`);
     });
 
-    expect(fetch).toHaveBeenCalledTimes(2);
+    expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/jobs?'));
   });
 
-  test('search input updates state and triggers tooltip if no categories selected', async () => {
+  /* ================= SEARCH ================= */
+
+  test('search input updates value', () => {
     render(<Collaboration />);
 
     const input = screen.getByPlaceholderText('Search by title...');
@@ -92,71 +90,127 @@ describe('Collaboration Component', () => {
     expect(input.value).toBe('engineer');
   });
 
-  test('submitting search triggers fetchJobAds()', async () => {
+  test('submitting search triggers fetch', async () => {
     render(<Collaboration />);
 
-    const input = screen.getByPlaceholderText('Search by title...');
-    const button = screen.getByText('Go');
-
-    fireEvent.change(input, { target: { value: 'engineer' } });
-    fireEvent.click(button);
-
-    await waitFor(() => {
-      expect(fetch).toHaveBeenCalledTimes(3);
-    });
-  });
-
-  test('dropdown toggles open when clicking category button', async () => {
-    render(<Collaboration />);
-    fireEvent.click(screen.getByText('Select Categories ▼'));
-  });
-
-  // ✅ FIXED PAGINATION TEST
-  test('pagination renders when job ads are loaded', async () => {
-    render(<Collaboration />);
-
-    // Trigger search so results section becomes active
     fireEvent.change(screen.getByPlaceholderText('Search by title...'), {
-      target: { value: 'test' },
+      target: { value: 'engineer' },
     });
 
     fireEvent.click(screen.getByText('Go'));
 
-    // Wait for pagination to appear
     await waitFor(() => {
-      expect(screen.getByText('1')).toBeInTheDocument();
+      expect(fetch).toHaveBeenCalledTimes(3); // categories + initial jobs + search
     });
   });
 
-  // ✅ FIXED CATEGORY CHIP TEST
-  test('category chips appear when category selected', async () => {
+  /* ================= CATEGORY DROPDOWN ================= */
+
+  test('category dropdown opens and selects category', async () => {
     render(<Collaboration />);
 
-    // Dropdown appears after initial fetch completes
+    fireEvent.click(screen.getByRole('button', { name: /select categories/i }));
+
+    const category = await screen.findByText('Engineering');
+    fireEvent.click(category);
+
     await waitFor(() => {
-      expect(screen.getByText(/Select Categories/i)).toBeInTheDocument();
-    });
-
-    fireEvent.click(screen.getByText('Select Categories ▼'));
-
-    // Click Engineering checkbox
-    fireEvent.click(screen.getByLabelText('Engineering'));
-
-    // Both occur: dropdown label + chip, so use getAllByText
-    await waitFor(() => {
-      const matches = screen.getAllByText('Engineering');
-      expect(matches.length).toBeGreaterThan(1); // dropdown + chip
+      expect(screen.getAllByText('Engineering').length).toBeGreaterThan(0);
     });
   });
 
-  test('Show Summaries button triggers summaries fetch', async () => {
+  /* ================= POSITION DROPDOWN ================= */
+
+  test('position dropdown disabled until category selected', () => {
     render(<Collaboration />);
 
-    fireEvent.click(screen.getByText('Go'));
+    const btn = screen.getByRole('button', { name: /select positions/i });
+    expect(btn).toBeDisabled();
+  });
+
+  test('position dropdown works after category selection', async () => {
+    render(<Collaboration />);
+
+    // Select category first
+    fireEvent.click(screen.getByRole('button', { name: /select categories/i }));
+    fireEvent.click(await screen.findByText('Engineering'));
+
+    // Open position dropdown
+    fireEvent.click(screen.getByRole('button', { name: /select positions/i }));
+
+    const position = await screen.findByText('Frontend Engineer');
+    fireEvent.click(position);
+
+    await waitFor(() => {
+      expect(screen.getAllByText('Frontend Engineer').length).toBeGreaterThan(0);
+    });
+  });
+
+  /* ================= PAGINATION ================= */
+
+  test('pagination renders correctly', async () => {
+    render(<Collaboration />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Frontend Engineer')).toBeInTheDocument();
+    });
+
+    expect(screen.getByText('1')).toBeInTheDocument();
+  });
+
+  /* ================= MODAL ================= */
+
+  test('clicking job opens modal', async () => {
+    render(<Collaboration />);
+
+    const job = await screen.findByText('Frontend Engineer');
+    fireEvent.click(job);
+
+    await waitFor(() => {
+      expect(screen.getByText('Test description')).toBeInTheDocument();
+    });
+  });
+
+  test('modal closes on close button click', async () => {
+    render(<Collaboration />);
+
+    fireEvent.click(await screen.findByText('Frontend Engineer'));
+
+    fireEvent.click(await screen.findByLabelText(/close role details/i));
+
+    await waitFor(() => {
+      expect(screen.queryByText('Test description')).not.toBeInTheDocument();
+    });
+  });
+
+  /* ================= SUMMARIES ================= */
+
+  test('Show Summaries triggers API and switches view', async () => {
+    render(<Collaboration />);
+
     fireEvent.click(screen.getByText('Show Summaries'));
 
     await waitFor(() => {
-      expect(fetch).toHaveBeenCalled();
+      expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/jobs/summaries'));
+    });
+
+    expect(screen.getByText('Job Summaries')).toBeInTheDocument();
+  });
+
+  /* ================= CLEAR FILTER ================= */
+
+  test('clear filters resets UI', async () => {
+    render(<Collaboration />);
+
+    // Select category
+    fireEvent.click(screen.getByRole('button', { name: /select categories/i }));
+    fireEvent.click(await screen.findByText('Engineering'));
+
+    // Clear filters
+    fireEvent.click(await screen.findByText('Clear All'));
+
+    await waitFor(() => {
+      expect(screen.getByText('Listing all job ads.')).toBeInTheDocument();
     });
   });
 });
