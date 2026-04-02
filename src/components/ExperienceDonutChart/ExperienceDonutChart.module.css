@@ -16,6 +16,23 @@
   height: 40px;
 }
 
+.filter-input {
+  padding: 0.4rem 0.8rem;
+  border: 2px solid #d1d5db;
+  border-radius: 8px;
+  background-color: #fff;
+  color: #0f172a;
+  color-scheme: light;
+}
+
+/* Dark mode calendar fix */
+.experience-donut-chart-dark-mode .filter-input {
+  background-color: #1e293b;
+  color: #f1f5f9;
+  border-color: #475569;
+  color-scheme: dark;
+}
+
 .multi-select-wrapper {
   position: relative;
   width: 150px;
@@ -23,6 +40,7 @@
 
 .multi-select-input {
   width: 100%;
+  height: 40px;
   padding: 0.4rem 0.8rem;
   border: 2px solid #d1d5db;
   border-radius: 8px;
@@ -31,6 +49,14 @@
   align-items: center;
   justify-content: space-between;
   background-color: #fff;
+  color: #0f172a; 
+  box-sizing: border-box;
+}
+
+.experience-donut-chart-dark-mode .multi-select-input {
+  background-color: #fff;
+  color: #0f172a !important;
+  border-color: #475569;
 }
 
 .multi-select-options {

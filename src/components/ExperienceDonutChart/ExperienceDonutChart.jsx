@@ -166,8 +166,9 @@ export default function ExperienceDonutChart() {
 
   return (
     <div
-      className={`${styles['experience-donut-chart']} ${darkMode &&
-        styles['experience-donut-chart-dark-mode']}`}
+      className={`${styles['experience-donut-chart']} ${
+        darkMode ? styles['experience-donut-chart-dark-mode'] : ''
+      }`}
     >
       <h2>Applicants by Experience</h2>
 
