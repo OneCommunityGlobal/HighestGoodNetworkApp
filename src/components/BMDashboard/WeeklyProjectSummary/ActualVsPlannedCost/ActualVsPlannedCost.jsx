@@ -22,6 +22,7 @@ function ActualVsPlannedCost() {
   const projects = useSelector(state => state.bmProjects) || [];
   const darkMode = useSelector(state => state.theme.darkMode);
 
+  // Persisted filters
   const [selectedProject, setSelectedProject] = useState(
     () => localStorage.getItem('bm_avsp_project') || '',
   );
@@ -29,9 +30,9 @@ function ActualVsPlannedCost() {
     () => localStorage.getItem('bm_avsp_category') || 'Overall',
   );
 
+  // Component state
   const [breakdown, setBreakdown] = useState([]);
   const [totals, setTotals] = useState({ actual: 0, planned: 0 });
-
   const [loading, setLoading] = useState(false);
   const [isFiltering, setIsFiltering] = useState(false);
 
@@ -40,6 +41,7 @@ function ActualVsPlannedCost() {
     [projects, selectedProject],
   );
 
+  // Sync filters to local storage
   useEffect(() => {
     if (selectedProject) {
       localStorage.setItem('bm_avsp_project', selectedProject);
@@ -51,12 +53,14 @@ function ActualVsPlannedCost() {
     dispatch(fetchBMProjects());
   }, [dispatch]);
 
+  // Default to first project if none selected
   useEffect(() => {
     if (!selectedProject && projects.length > 0) {
       setSelectedProject(projects[0]._id);
     }
   }, [projects, selectedProject]);
 
+  // Filter transition effect
   useEffect(() => {
     setIsFiltering(true);
     const timeout = setTimeout(() => {
@@ -65,6 +69,7 @@ function ActualVsPlannedCost() {
     return () => clearTimeout(timeout);
   }, [selectedProject, selectedCategory]);
 
+  // Fetch project expenses
   useEffect(() => {
     if (selectedProject) {
       setLoading(true);
@@ -91,6 +96,7 @@ function ActualVsPlannedCost() {
     }
   }, [selectedProject]);
 
+  // Derived chart data
   const categories = ['Overall', ...new Set(breakdown.map(d => d.category))];
   const chartData =
     selectedCategory === 'Overall'
