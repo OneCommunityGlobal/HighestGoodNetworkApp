@@ -499,18 +499,18 @@ function ResourceManagement() {
           >
             →
           </button>
-
-          <AddLogModal
-            isOpen={isModalOpen}
-            onClose={() => setIsModalOpen(false)}
-            onAdd={handleAddLog}
-          />
         </div>
-      </div>
 
-      <div className={styles.recordCount}>
-        Showing {totalItems === 0 ? 0 : startIndex + 1}–{Math.min(endIndex, totalItems)} of{' '}
-        {totalItems}
+        <div className={styles.recordCount}>
+          Showing {totalItems === 0 ? 0 : startIndex + 1}–{Math.min(endIndex, totalItems)} of{' '}
+          {totalItems}
+        </div>
+
+        <AddLogModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onAdd={handleAddLog}
+        />
       </div>
     </div>
   );
