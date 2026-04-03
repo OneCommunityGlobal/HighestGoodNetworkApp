@@ -88,12 +88,24 @@ const store = mockStore({
 
 vi.mock('axios');
 
+beforeEach(() => {
+  axios.get.mockResolvedValue({
+    status: 200,
+    data: { items: [] },
+  });
+  axios.post.mockResolvedValue({
+    status: 200,
+    data: { selections: {} },
+  });
+});
+
 describe('TeamMemberTasks component', () => {
   it('renders without crashing', () => {
     axios.get.mockResolvedValue({
       status: 200,
       data: '',
     });
+    axios.post.mockResolvedValue({ status: 200, data: { selections: {} } });
     render(
       <Provider store={store}>
         <MemoryRouter>
