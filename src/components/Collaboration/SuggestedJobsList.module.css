@@ -133,13 +133,13 @@
   border: 1px solid #ccc;
   padding: 30px 25px;
   border-radius: 12px;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   flex: 0 1 350px;
   transition: transform 0.3s, box-shadow 0.3s;
-  margin-bottom: 30px;
+  margin-bottom: 0;
 }
 
 .jobAd:hover {
@@ -150,7 +150,7 @@
 .jobRoleName {
   font-size: 2rem;
   font-weight: bold;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
   text-align: center;
   color: #0069d9;
 }
@@ -158,9 +158,10 @@
 .jobDetails {
   font-size: 1.1rem;
   color: #555;
-  line-height: 1.6;
-  margin-bottom: 1.5rem;
+  line-height: 1.5;
+  margin-bottom: 1rem;
   text-align: center;
+  flex-grow: 1;
 }
 
 .jobRequirements h4 {
@@ -181,11 +182,11 @@
 .applyNowBtn {
   background-color: #007bff;
   color: white;
-  padding: 0.75rem 1.5rem;
+  padding: 0.5rem 1rem;
   border: none;
   cursor: pointer;
-  font-size: 1.1rem;
-  border-radius: 6px;
+  font-size: 1rem;
+  border-radius: 4px;
   text-align: center;
   align-self: center;
   width: fit-content;
@@ -202,6 +203,8 @@
   justify-content: center;
   gap: 30px;
   margin: 0 auto;
+  max-width: 1200px;
+  padding: 0 20px;
 }
 
 .categoryIcon {
