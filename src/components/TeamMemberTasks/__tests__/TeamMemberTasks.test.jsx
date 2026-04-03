@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import thunk from 'redux-thunk';
 import { configureStore } from 'redux-mock-store';
@@ -237,7 +237,7 @@ describe('TeamMemberTasks component', () => {
 
     expect(screen.getAllByTestId('team-member-tasks-row')).not.toHaveLength(0);
   });
-  it('check if the skeleton loading html elements are not shown when isLoading is false', () => {
+  it('check if the skeleton loading html elements are not shown when isLoading is false', async () => {
     axios.get.mockResolvedValue({
       status: 200,
       data: '',
@@ -250,7 +250,9 @@ describe('TeamMemberTasks component', () => {
         </MemoryRouter>
       </Provider>,
     );
-    expect(screen.queryAllByTestId('team-member-tasks-row')).toHaveLength(0);
+    await waitFor(() => {
+      expect(screen.queryAllByTestId('team-member-tasks-row')).toHaveLength(0);
+    });
   });
   it('check if class names does not include color when dark mode is false', () => {
     axios.get.mockResolvedValue({
