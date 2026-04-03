@@ -21,10 +21,12 @@ import FinancialsTrackingCard from './ExpenditureChart/FinancialsTrackingCard';
 import EmbedInteractiveMap from '../InteractiveMap/EmbedInteractiveMap';
 import InteractiveMap from '../InteractiveMap/InteractiveMap';
 import styles from './WeeklyProjectSummary.module.css';
+import IssueList from '../Issues/IssuesList';
 import IssueCharts from '../Issues/openIssueCharts';
-import SupplierPerformanceGraph from './SupplierPerformanceGraph.jsx';
-import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords.jsx';
+import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
 import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
+import MaterialStockOutRiskIndicator from './MaterialStockOutRiskIndicator/MaterialStockOutRiskIndicator';
+import SupplierPerformanceGraph from './SupplierPerformanceGraph.jsx';
 
 const projectStatusButtons = [
   {
@@ -231,9 +233,14 @@ function WeeklyProjectSummary() {
         key: 'Issue Tracking',
         className: 'full',
         content: (
-          <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
-            <IssueCharts />
-          </div>
+          <>
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+              <IssueList />
+            </div>
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+              <IssueCharts />
+            </div>
+          </>
         ),
       },
       {
@@ -441,7 +448,9 @@ function WeeklyProjectSummary() {
 
       document.body.removeChild(pdfContainer);
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.error('PDF generation failed:', err);
+      // eslint-disable-next-line no-alert
       alert('Failed to generate PDF. Please try again.');
     } finally {
       setOpenSections(currentOpenSections);
