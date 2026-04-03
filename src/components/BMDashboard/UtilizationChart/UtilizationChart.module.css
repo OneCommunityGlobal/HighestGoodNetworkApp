@@ -102,6 +102,43 @@
   background-color: var(--button-hover, #333);
 }
 
+/* Compare toggle - ON state */
+.activeButton {
+  background-color: #4caf50 !important;
+  color: #fff !important;
+  border: none;
+}
+
+.activeButton:hover {
+  background-color: #43a047 !important;
+}
+
+/* Compare toggle - OFF state */
+.inactiveButton {
+  background-color: var(--button-bg, #000);
+  color: var(--button-text, #fff);
+}
+
+/* Comparison mode hint note */
+.comparisonNote {
+  text-align: center;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+  color: var(--text-color, #555);
+}
+
+.legendUp {
+  color: #4caf50;
+  font-weight: 600;
+  margin-left: 0.5rem;
+}
+
+.legendDown {
+  color: #f44336;
+  font-weight: 600;
+  margin-left: 0.5rem;
+}
+
 .utilizationChartError {
   color: var(--error-color, red);
   text-align: center;
@@ -124,6 +161,10 @@
 
 .utilizationChartContainer.darkMode .datepickerWrapper::placeholder {
   color: #fff;
+}
+
+.utilizationChartContainer.darkMode .comparisonNote {
+  color: #ccc;
 }
 
 /* React-DatePicker Dark Mode Dropdown Styling */

@@ -1,6 +1,6 @@
 /* eslint-disable */
 /* prettier-ignore */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Tooltip, Title } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 import DatePicker from 'react-datepicker';
@@ -15,6 +15,7 @@ ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Title, ChartDa
 
 function UtilizationChart() {
   const [toolsData, setToolsData] = useState([]);
+  const [previousToolsData, setPreviousToolsData] = useState([]);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [toolFilter, setToolFilter] = useState('ALL');
@@ -22,9 +23,30 @@ function UtilizationChart() {
   const [error, setError] = useState(null);
   const [toolTypes, setToolTypes] = useState([]);
   const [projects, setProjects] = useState([]);
+  const [comparisonMode, setComparisonMode] = useState(false);
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const fetchChartData = async () => {
+  //mock data to test compare functionality.
+  const getMockPreviousData = data => {
+    return data.map(tool => ({
+      ...tool,
+      utilizationRate: Math.max(0, tool.utilizationRate + Math.floor(Math.random() * 21) - 15), // ±10% random
+      downtime: Math.round(tool.downtime * (0.85 + Math.random() * 0.3)), // ±15% random
+    }));
+  };
+
+  // Compute previous period date range based on current selection
+  const getPreviousPeriod = () => {
+    const end = endDate ? new Date(endDate) : new Date();
+    const start = startDate ? new Date(startDate) : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    const duration = end - start;
+    return {
+      prevStart: new Date(start - duration),
+      prevEnd: new Date(start),
+    };
+  };
+
+  const fetchChartData = async (currentComparisonMode = comparisonMode) => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_APIENDPOINT}/tools/utilization`, {
         params: {
@@ -38,6 +60,28 @@ function UtilizationChart() {
         },
       });
       setToolsData(response.data);
+
+      if (currentComparisonMode) {
+        const { prevStart, prevEnd } = getPreviousPeriod();
+        const prevResponse = await axios.get(
+          `${process.env.REACT_APP_APIENDPOINT}/tools/utilization`,
+          {
+            params: {
+              startDate: prevStart,
+              endDate: prevEnd,
+              tool: toolFilter,
+              project: projectFilter,
+            },
+            headers: {
+              Authorization: localStorage.getItem('token'),
+            },
+          },
+        );
+        //setPreviousToolsData(prevResponse.data);   //uncomment for real response from BE
+        setPreviousToolsData(getMockPreviousData(response.data));
+      } else {
+        setPreviousToolsData([]);
+      }
     } catch (err) {
       setError('Failed to load utilization data.');
     }
@@ -73,6 +117,13 @@ function UtilizationChart() {
     fetchChartData();
   };
 
+  // Auto-fetch when comparison mode is toggled
+  const handleComparisonToggle = () => {
+    const newMode = !comparisonMode;
+    setComparisonMode(newMode);
+    fetchChartData(newMode);
+  };
+
   const chartData = {
     labels: toolsData.map(tool => tool.name),
     datasets: [
@@ -93,22 +144,58 @@ function UtilizationChart() {
         labels: { color: darkMode ? '#ffffff' : '#333' },
       },
       datalabels: {
-        color: darkMode ? '#ffffff' : '#333',
+        color: context => {
+          if (!comparisonMode || !previousToolsData.length) {
+            return darkMode ? '#ffffff' : '#333';
+          }
+          const tool = toolsData[context.dataIndex];
+          const prev = previousToolsData.find(p => p.name === tool.name);
+          if (!prev) return darkMode ? '#ffffff' : '#333';
+          return tool.utilizationRate >= prev.utilizationRate ? '#4caf50' : '#f44336';
+        },
         anchor: 'end',
         align: 'end',
-        font: {
-          size: 12,
-        },
+        font: { size: 12 },
         formatter: (_, context) => {
           const tool = toolsData[context.dataIndex];
-          return `${tool.downtime} hrs`;
+          const baseLabel = `${tool.downtime} hrs`;
+
+          if (!comparisonMode || !previousToolsData.length) return baseLabel;
+
+          const prev = previousToolsData.find(p => p.name === tool.name);
+          if (!prev) return baseLabel;
+
+          const delta = tool.utilizationRate - prev.utilizationRate;
+          const arrow = delta >= 0 ? '↑' : '↓';
+          return `${baseLabel}  ${arrow} ${Math.abs(delta)}%`;
         },
       },
       tooltip: {
         callbacks: {
+          title: context => {
+            const tool = toolsData[context[0].dataIndex];
+            return tool.name;
+          },
           label: context => {
             const tool = toolsData[context.dataIndex];
-            return `Utilization: ${tool.utilizationRate}%, Downtime: ${tool.downtime} hrs, Tool count: ${tool.count}`;
+            const lines = [
+              `Utilization: ${tool.utilizationRate}%`,
+              `Downtime: ${tool.downtime} hrs`,
+              `Count: ${tool.count ?? 'N/A'} tool(s)`,
+            ];
+
+            if (comparisonMode && previousToolsData.length) {
+              const prev = previousToolsData.find(p => p.name === tool.name);
+              if (prev) {
+                const delta = tool.utilizationRate - prev.utilizationRate;
+                const arrow = delta >= 0 ? '↑' : '↓';
+                lines.push(
+                  `vs Previous: ${arrow} ${Math.abs(delta)}% (was ${prev.utilizationRate}%)`,
+                );
+              }
+            }
+
+            return lines;
           },
         },
         footerColor: 'white',
@@ -190,7 +277,25 @@ function UtilizationChart() {
             <button onClick={handleApplyClick} className={styles.button}>
               Apply
             </button>
+
+            <button
+              onClick={handleComparisonToggle}
+              className={`${styles.button} ${
+                comparisonMode ? styles.activeButton : styles.inactiveButton
+              }`}
+            >
+              Compare: {comparisonMode ? 'ON' : 'OFF'}
+            </button>
           </div>
+
+          {comparisonMode && (
+            <p className={styles.comparisonNote}>
+              Showing comparison with previous {startDate && endDate ? 'selected' : '30-day'}{' '}
+              period.
+              <span className={styles.legendUp}> ↑ Improved</span>
+              <span className={styles.legendDown}> ↓ Declined</span>
+            </p>
+          )}
 
           <Bar data={chartData} options={options} />
         </>
