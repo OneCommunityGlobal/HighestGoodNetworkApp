@@ -718,8 +718,7 @@ class UserManagement extends React.PureComponent {
             handleSetupHistoryPopup={this.handleSetupHistoryPopup}
             darkMode={darkMode}
           />
-
-          <div className="table-responsive" id="user-management-table">
+          <div className={`table-responsive ${styles.userManagementTable}`}>
             <Table
               className={`table table-bordered ${styles.noWrap} ${
                 darkMode ? 'text-light bg-yinmn-blue' : ''
@@ -781,8 +780,8 @@ const mapDispatchToProps = (dispatch) => ({
   getAllUserProfile: () => dispatch(getAllUserProfile()),
   deleteUser: (...args) => dispatch(deleteUser(...args)),
   getAllTimeOffRequests: () => dispatch(getAllTimeOffRequests()),
-  enableEditUserInfo: () => dispatch(enableEditUserInfo()),
-  disableEditUserInfo: () => dispatch(disableEditUserInfo()),
+  enableEditUserInfo: (value) => dispatch(enableEditUserInfo(value)),
+  disableEditUserInfo: (value) => dispatch(disableEditUserInfo(value)),
   getAllRoles: () => dispatch(getAllRoles()),
 });
 
