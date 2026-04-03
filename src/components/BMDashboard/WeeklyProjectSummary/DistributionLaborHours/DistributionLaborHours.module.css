@@ -32,35 +32,37 @@
   margin-bottom: 16px;
 }
 
-.filters label {
+.filterLabel {
   display: flex;
   flex-direction: column;
   font-size: 0.9rem;
 }
 
-/* Dark mode: make filter labels readable */
-:global(.dark) .filters label,
-:global(.dark-mode) .filters label,
-:global([data-theme='dark']) .filters label {
-  color: #ffffff;
+.distributionSelect {
+  background-color: var(--input-bg, #fff);
+  color: var(--text-color, #000);
+  border: 1px solid var(--border-color, #ccc);
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 0.875rem;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
 }
 
-/* Dark mode: style inputs/selects (including date picker) */
-:global(.dark) .filters input,
-:global(.dark-mode) .filters input,
-:global([data-theme='dark']) .filters input,
-:global(.dark) .filters select,
-:global(.dark-mode) .filters select,
-:global([data-theme='dark']) .filters select {
-  background-color: #1f2937;
-  color: #f9fafb;
-  border: 1px solid #374151;
+.distributionSelect:focus {
+  border-color: var(--focus-border-color, #3b82f6);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
 }
 
-:global(.dark) .filters input[type='date'],
-:global(.dark-mode) .filters input[type='date'],
-:global([data-theme='dark']) .filters input[type='date'] {
-  color-scheme: dark;
+/* DatePicker wrapper */
+.datePickerWrapper {
+  width: 100%;
+}
+
+.distributionDatePickerWrapper {
+  width: 100%;
 }
 
 .chartWrapper {
@@ -166,7 +168,200 @@
     gap: 10px;
   }
 
-  .filters label {
+  .filterLabel {
     width: 100%;
   }
+}
+
+/* ============ DARK MODE ============ */
+.container.darkMode {
+  --bg-color: #2b3e59;
+  --text-color: #ffffff;
+  --title-color: #ffffff;
+  --label-color: #e0e0e0;
+  --input-bg: #3a506b;
+  --border-color: #4a5a77;
+  --focus-border-color: #e8a71c;
+  --tooltip-bg: #1b2a41;
+  --button-bg: #3a506b;
+  --button-border: #4a5a77;
+  --button-text: #ffffff;
+  --button-hover-bg: #495b7a;
+  --shadow: 0 1px 3px rgba(255, 255, 255, 0.1);
+}
+
+.container.darkMode .filterLabel {
+  color: #fff;
+}
+
+.container.darkMode .button {
+  background-color: var(--button-bg, #3a506b);
+  border-color: var(--button-border, #4a5a77);
+  color: var(--button-text, #ffffff);
+}
+
+.container.darkMode .button:hover {
+  background-color: var(--button-hover-bg, #495b7a);
+  border-color: var(--button-hover-bg, #495b7a);
+}
+
+/* High specificity selectors for dark mode select dropdowns */
+:global(body.dark-mode) .container.darkMode .distributionSelect,
+:global(body.bm-dashboard-dark) .container.darkMode .distributionSelect,
+.container.darkMode .distributionSelect {
+  background-color: #2b3344 !important;
+  color: #fff !important;
+  border-color: #3a506b !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m1 6 7 7 7-7'/%3e%3c/svg%3e") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 0.75rem center !important;
+  background-size: 16px 12px !important;
+  padding-right: 2.25rem !important;
+}
+
+:global(body.dark-mode) .container.darkMode .distributionSelect:focus,
+:global(body.bm-dashboard-dark) .container.darkMode .distributionSelect:focus,
+.container.darkMode .distributionSelect:focus {
+  background-color: #2b3344 !important;
+  border-color: #4a6072 !important;
+  color: #fff !important;
+  box-shadow: 0 0 0 2px rgba(74, 96, 114, 0.25) !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m1 6 7 7 7-7'/%3e%3c/svg%3e") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 0.75rem center !important;
+  background-size: 16px 12px !important;
+  padding-right: 2.25rem !important;
+}
+
+:global(body.dark-mode) .container.darkMode .distributionSelect option,
+:global(body.bm-dashboard-dark) .container.darkMode .distributionSelect option,
+.container.darkMode .distributionSelect option {
+  background-color: #2b3344 !important;
+  color: #fff !important;
+}
+
+/* High specificity selectors for DatePicker inputs - targeting all possible selectors */
+:global(body.dark-mode) .container.darkMode .datePickerWrapper .distributionDatePickerWrapper .react-datepicker__input-container input,
+:global(body.bm-dashboard-dark) .container.darkMode .datePickerWrapper .distributionDatePickerWrapper .react-datepicker__input-container input,
+:global(body.dark-mode) .container.darkMode .datePickerWrapper .react-datepicker-wrapper .react-datepicker__input-container input,
+:global(body.bm-dashboard-dark) .container.darkMode .datePickerWrapper .react-datepicker-wrapper .react-datepicker__input-container input,
+:global(body.dark-mode) .darkMode .container .datePickerWrapper .distributionDatePickerWrapper .react-datepicker__input-container input,
+:global(body.bm-dashboard-dark) .darkMode .container .datePickerWrapper .distributionDatePickerWrapper .react-datepicker__input-container input,
+:global(body.dark-mode) .darkMode .container .datePickerWrapper .react-datepicker-wrapper .react-datepicker__input-container input,
+:global(body.bm-dashboard-dark) .darkMode .container .datePickerWrapper .react-datepicker-wrapper .react-datepicker__input-container input,
+:global(body.dark-mode) .darkMode .datePickerWrapper .distributionDatePickerWrapper .react-datepicker__input-container input,
+:global(body.bm-dashboard-dark) .darkMode .datePickerWrapper .distributionDatePickerWrapper .react-datepicker__input-container input,
+:global(body.dark-mode) .darkMode .datePickerWrapper .react-datepicker__input-container input,
+:global(body.bm-dashboard-dark) .darkMode .datePickerWrapper .react-datepicker__input-container input,
+:global(body.dark-mode) .darkMode .distributionDatePickerWrapper .react-datepicker__input-container input,
+:global(body.bm-dashboard-dark) .darkMode .distributionDatePickerWrapper .react-datepicker__input-container input,
+:global(body.dark-mode) .darkMode .react-datepicker-wrapper .react-datepicker__input-container input,
+:global(body.bm-dashboard-dark) .darkMode .react-datepicker-wrapper .react-datepicker__input-container input,
+:global(body.dark-mode) .darkMode .react-datepicker__input-container input,
+:global(body.bm-dashboard-dark) .darkMode .react-datepicker__input-container input,
+.container.darkMode .datePickerWrapper .distributionDatePickerWrapper .react-datepicker__input-container input,
+.container.darkMode .datePickerWrapper .react-datepicker-wrapper .react-datepicker__input-container input,
+.darkMode .container .datePickerWrapper .distributionDatePickerWrapper .react-datepicker__input-container input,
+.darkMode .container .datePickerWrapper .react-datepicker-wrapper .react-datepicker__input-container input,
+.darkMode .datePickerWrapper .distributionDatePickerWrapper .react-datepicker__input-container input,
+.darkMode .datePickerWrapper .react-datepicker__input-container input,
+.darkMode .distributionDatePickerWrapper .react-datepicker__input-container input,
+.darkMode .react-datepicker-wrapper .react-datepicker__input-container input,
+.darkMode .react-datepicker__input-container input {
+  background-color: #2b3344 !important;
+  color: #fff !important;
+  border: 1px solid #3a506b !important;
+  padding: 0.5rem !important;
+  border-radius: 4px !important;
+  width: 100% !important;
+}
+
+/* Target input elements directly within the wrapper */
+:global(body.dark-mode) .container.darkMode .datePickerWrapper .distributionDatePickerWrapper input,
+:global(body.bm-dashboard-dark) .container.darkMode .datePickerWrapper .distributionDatePickerWrapper input,
+:global(body.dark-mode) .darkMode .container .datePickerWrapper .distributionDatePickerWrapper input,
+:global(body.bm-dashboard-dark) .darkMode .container .datePickerWrapper .distributionDatePickerWrapper input,
+:global(body.dark-mode) .darkMode .datePickerWrapper .distributionDatePickerWrapper input,
+:global(body.bm-dashboard-dark) .darkMode .datePickerWrapper .distributionDatePickerWrapper input,
+:global(body.dark-mode) .darkMode .distributionDatePickerWrapper input,
+:global(body.bm-dashboard-dark) .darkMode .distributionDatePickerWrapper input,
+.container.darkMode .datePickerWrapper .distributionDatePickerWrapper input,
+.darkMode .container .datePickerWrapper .distributionDatePickerWrapper input,
+.darkMode .datePickerWrapper .distributionDatePickerWrapper input,
+.darkMode .distributionDatePickerWrapper input {
+  background-color: #2b3344 !important;
+  color: #fff !important;
+  border: 1px solid #3a506b !important;
+  padding: 0.5rem !important;
+  border-radius: 4px !important;
+  width: 100% !important;
+}
+
+/* Target inputs with react-datepicker-ignore-onclickoutside class */
+:global(body.dark-mode) .container.darkMode .datePickerWrapper .distributionDatePickerWrapper input.react-datepicker-ignore-onclickoutside,
+:global(body.bm-dashboard-dark) .container.darkMode .datePickerWrapper .distributionDatePickerWrapper input.react-datepicker-ignore-onclickoutside,
+:global(body.dark-mode) .darkMode .container .datePickerWrapper .distributionDatePickerWrapper input.react-datepicker-ignore-onclickoutside,
+:global(body.bm-dashboard-dark) .darkMode .container .datePickerWrapper .distributionDatePickerWrapper input.react-datepicker-ignore-onclickoutside,
+:global(body.dark-mode) .darkMode .datePickerWrapper .distributionDatePickerWrapper input.react-datepicker-ignore-onclickoutside,
+:global(body.bm-dashboard-dark) .darkMode .datePickerWrapper .distributionDatePickerWrapper input.react-datepicker-ignore-onclickoutside,
+.container.darkMode .datePickerWrapper .distributionDatePickerWrapper input.react-datepicker-ignore-onclickoutside,
+.darkMode .container .datePickerWrapper .distributionDatePickerWrapper input.react-datepicker-ignore-onclickoutside,
+.darkMode .datePickerWrapper .distributionDatePickerWrapper input.react-datepicker-ignore-onclickoutside {
+  background-color: #2b3344 !important;
+  color: #fff !important;
+  border: 1px solid #3a506b !important;
+  padding: 0.5rem !important;
+  border-radius: 4px !important;
+  width: 100% !important;
+}
+
+/* Placeholder styles for dark mode */
+:global(body.dark-mode) .container.darkMode .datePickerWrapper .distributionDatePickerWrapper .react-datepicker__input-container input::placeholder,
+:global(body.bm-dashboard-dark) .container.darkMode .datePickerWrapper .distributionDatePickerWrapper .react-datepicker__input-container input::placeholder,
+:global(body.dark-mode) .darkMode .container .datePickerWrapper .distributionDatePickerWrapper .react-datepicker__input-container input::placeholder,
+:global(body.bm-dashboard-dark) .darkMode .container .datePickerWrapper .distributionDatePickerWrapper .react-datepicker__input-container input::placeholder,
+:global(body.dark-mode) .darkMode .datePickerWrapper .distributionDatePickerWrapper .react-datepicker__input-container input::placeholder,
+:global(body.bm-dashboard-dark) .darkMode .datePickerWrapper .distributionDatePickerWrapper .react-datepicker__input-container input::placeholder,
+:global(body.dark-mode) .darkMode .datePickerWrapper .react-datepicker__input-container input::placeholder,
+:global(body.bm-dashboard-dark) .darkMode .datePickerWrapper .react-datepicker__input-container input::placeholder,
+:global(body.dark-mode) .darkMode .distributionDatePickerWrapper input::placeholder,
+:global(body.bm-dashboard-dark) .darkMode .distributionDatePickerWrapper input::placeholder,
+.container.darkMode .datePickerWrapper .distributionDatePickerWrapper .react-datepicker__input-container input::placeholder,
+.darkMode .container .datePickerWrapper .distributionDatePickerWrapper .react-datepicker__input-container input::placeholder,
+.darkMode .datePickerWrapper .distributionDatePickerWrapper .react-datepicker__input-container input::placeholder,
+.darkMode .distributionDatePickerWrapper input::placeholder {
+  color: #cbd5e0 !important;
+}
+
+/* Light mode styles for DatePicker inputs */
+.container .datePickerWrapper .distributionDatePickerWrapper .react-datepicker__input-container input,
+.container .datePickerWrapper .react-datepicker-wrapper .react-datepicker__input-container input,
+.datePickerWrapper .distributionDatePickerWrapper .react-datepicker__input-container input,
+.datePickerWrapper .react-datepicker__input-container input,
+.distributionDatePickerWrapper .react-datepicker__input-container input,
+.react-datepicker-wrapper .react-datepicker__input-container input,
+.react-datepicker__input-container input {
+  background-color: #fff !important;
+  color: #000 !important;
+  border: 1px solid #ccc !important;
+  padding: 0.5rem !important;
+  border-radius: 4px !important;
+  width: 100% !important;
+}
+
+.container .datePickerWrapper .distributionDatePickerWrapper input,
+.datePickerWrapper .distributionDatePickerWrapper input,
+.distributionDatePickerWrapper input {
+  background-color: #fff !important;
+  color: #000 !important;
+  border: 1px solid #ccc !important;
+  padding: 0.5rem !important;
+  border-radius: 4px !important;
+  width: 100% !important;
 }

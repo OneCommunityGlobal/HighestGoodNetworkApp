@@ -13,7 +13,7 @@ import {
 import Select from 'react-select';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import styles from './InjuryCategoryBarChart.module.css';
+import './InjuryCategoryBarChart.module.css';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   fetchInjuryData,
@@ -21,14 +21,7 @@ import {
   fetchInjuryTypes,
   fetchInjuryProjects,
 } from '../../../../actions/bmdashboard/injuryActions';
-
-// YYYY-MM-DD (no tz shift)
-const toYMD = d =>
-  d instanceof Date && !isNaN(d)
-    ? `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(
-        d.getDate(),
-      ).padStart(2, '0')}`
-    : '';
+import { toYMD } from '../../../../utils/bmdashboard/chartUtils';
 
 function InjuryCategoryBarChart() {
   const dispatch = useDispatch();
@@ -147,6 +140,7 @@ function InjuryCategoryBarChart() {
         control: base => ({
           ...base,
           backgroundColor: '#2b3e59',
+          borderColor: '#4a5568',
           color: 'white',
         }),
         menu: base => ({
@@ -167,6 +161,30 @@ function InjuryCategoryBarChart() {
           },
         }),
         singleValue: base => ({
+          ...base,
+          color: 'white',
+        }),
+        multiValue: base => ({
+          ...base,
+          backgroundColor: '#3a506b',
+        }),
+        multiValueLabel: base => ({
+          ...base,
+          color: 'white',
+        }),
+        multiValueRemove: base => ({
+          ...base,
+          color: 'white',
+          ':hover': {
+            backgroundColor: '#5a7082',
+            color: 'white',
+          },
+        }),
+        placeholder: base => ({
+          ...base,
+          color: '#cbd5e0',
+        }),
+        input: base => ({
           ...base,
           color: 'white',
         }),
