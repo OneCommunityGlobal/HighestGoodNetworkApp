@@ -282,28 +282,84 @@ function ResourceManagement() {
       materials: 'Nest Lane Olivette',
       date: 'Feb 2, 2024',
     },
+    {
+      id: 11,
+      user: 'First Last',
+      timeDuration: '02:30:00',
+      facilities: 'Landing Page',
+      materials: 'Meadow Lane Oakland',
+      date: '2026-01-30T18:00:00.000Z',
+    },
+    {
+      id: 12,
+      user: 'Test Last',
+      timeDuration: '02:20:00',
+      facilities: 'CRM Admin pages',
+      materials: 'Larry San Francisco',
+      date: '2026-01-30T17:59:00.000Z',
+    },
+    {
+      id: 13,
+      user: 'Lorem ipsum',
+      timeDuration: '03:00:00',
+      facilities: 'Client Project',
+      materials: 'Bagwell Avenue Ocala',
+      date: '2026-01-30T17:00:00.000Z',
+    },
+    {
+      id: 14,
+      user: 'Dolor Sit',
+      timeDuration: '02:45:00',
+      facilities: 'Admin Dashboard',
+      materials: 'Washburn Baton Rouge',
+      date: '2026-01-29T17:00:00.000Z',
+    },
+    {
+      id: 15,
+      user: 'Elit Quisque',
+      timeDuration: '03:30:00',
+      facilities: 'App Landing page',
+      materials: 'Nest Lane Olivette',
+      date: '2025-02-02T17:00:00.000Z',
+    },
+    {
+      id: 16,
+      user: 'Elit Quisque',
+      timeDuration: '03:30:00',
+      facilities: 'App Landing page',
+      materials: 'Nest Lane Olivette',
+      date: '2025-02-02T17:00:00.000Z',
+    },
   ]);
 
   const [filteredResources, setFilteredResources] = useState(resources);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   useEffect(() => {
+    localStorage.setItem('resourceSearch', searchTerm);
+    setCurrentPage(1);
     setFilteredResources(resources);
   }, [resources]);
 
-  const handleSearch = searchTerm => {
-    if (!searchTerm.trim()) {
+  const handleSearch = term => {
+    setSearchTerm(term);
+
+    if (!term.trim()) {
       setFilteredResources(resources);
       return;
     }
 
     const filtered = resources.filter(
       resource =>
-        resource.user.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        resource.facilities.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        resource.materials.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        resource.date.toLowerCase().includes(searchTerm.toLowerCase()),
+        resource.user.toLowerCase().includes(term.toLowerCase()) ||
+        resource.facilities.toLowerCase().includes(term.toLowerCase()) ||
+        resource.materials.toLowerCase().includes(term.toLowerCase()) ||
+        resource.date.toLowerCase().includes(term.toLowerCase()),
     );
+
     setFilteredResources(filtered);
   };
 
@@ -315,6 +371,36 @@ function ResourceManagement() {
     };
     setResources(prev => [newResource, ...prev]);
   };
+
+  const totalItems = filteredResources.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+
+  const currentResources = filteredResources.slice(startIndex, endIndex);
+
+  const goToPage = page => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
+
+  const nextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(prev => prev + 1);
+    }
+  };
+
+  const prevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(prev => prev - 1);
+    }
+  };
+
+  console.log('totalItems:', totalItems);
+  console.log('itemsPerPage:', itemsPerPage);
+  console.log('totalPages:', totalPages);
 
   return (
     <div className={`${darkMode ? styles.darkMode : ''}`}>
@@ -328,6 +414,23 @@ function ResourceManagement() {
           >
             Add New Log
           </button>
+        </div>
+
+        <div className={styles.itemsPerPage}>
+          <label htmlFor="rowsPerPage">Rows per page:</label>
+          <select
+            id="rowsPerPage"
+            value={itemsPerPage}
+            onChange={e => {
+              setItemsPerPage(Number(e.target.value));
+              setCurrentPage(1);
+            }}
+          >
+            <option value={10}>10</option>
+            <option value={25}>25</option>
+            <option value={50}>50</option>
+            <option value={100}>100</option>
+          </select>
         </div>
 
         <SearchBar onSearch={handleSearch} />
@@ -345,7 +448,7 @@ function ResourceManagement() {
           </div>
           <hr className={`${styles.lineSperator}`} />
 
-          {filteredResources.map(resource => (
+          {currentResources.map(resource => (
             <div key={resource.id}>
               <div className={`${styles.resourceItem}`}>
                 <div className={`${styles.checkboxContainer}`}>
@@ -364,18 +467,43 @@ function ResourceManagement() {
           ))}
         </div>
 
-        <div className={`${styles.rmPagination}`}>
-          <button type="button" className={`${styles.arrowButton}`}>
+        <div className={styles.rmPagination}>
+          <button
+            type="button"
+            className={styles.arrowButton}
+            onClick={prevPage}
+            disabled={currentPage === 1}
+          >
             ←
           </button>
-          <button type="button">1</button>
-          <button type="button">2</button>
-          <button type="button">3</button>
-          <button type="button">4</button>
-          <button type="button">5</button>
-          <button type="button" className={`${styles.arrowButton}`}>
+
+          {Array.from({ length: totalPages }, (_, index) => {
+            const page = index + 1;
+            return (
+              <button
+                key={page}
+                type="button"
+                onClick={() => goToPage(page)}
+                className={currentPage === page ? styles.activePage : ''}
+              >
+                {page}
+              </button>
+            );
+          })}
+
+          <button
+            type="button"
+            className={styles.arrowButton}
+            onClick={nextPage}
+            disabled={currentPage === totalPages}
+          >
             →
           </button>
+        </div>
+
+        <div className={styles.recordCount}>
+          Showing {totalItems === 0 ? 0 : startIndex + 1}–{Math.min(endIndex, totalItems)} of{' '}
+          {totalItems}
         </div>
 
         <AddLogModal
