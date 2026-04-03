@@ -105,7 +105,7 @@ function Page1() {
       <Banner />
       <QuestionnaireInfo />
       <InfoForm />
-      <Progress progressValue={16.67 * 1} />
+      <Progress progressValue={16.67} />
     </div>
   );
 }
