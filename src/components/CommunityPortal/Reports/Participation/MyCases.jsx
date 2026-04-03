@@ -3,6 +3,8 @@ import { useSelector } from 'react-redux';
 import styles from './MyCases.module.css';
 import mockEvents from './mockData';
 import CreateEventModal from './CreateEventModal';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUsers } from '@fortawesome/free-solid-svg-icons';
 
 function MyCases() {
   const [view, setView] = useState('card');
@@ -99,7 +101,12 @@ function MyCases() {
             </div>
             <span
               className={`${styles.attendeesCount} ${darkMode ? styles.attendeesCountDark : ''}`}
-            >{`+${event.attendees}`}</span>
+              title="Number of members who attended this event"
+              data-tooltip="Members Attended"
+            >
+              <FontAwesomeIcon icon={faUsers} className="me-2" />
+              {`+${event.attendees}`} Attendees{' '}
+            </span>
           </div>
         </div>
       ))}
@@ -122,7 +129,13 @@ function MyCases() {
           <span className={styles.eventType}>{event.eventType}</span>
           <span className={styles.eventTime}>{event.eventTime}</span>
           <span className={styles.eventName}>{event.eventName}</span>
-          <span className={styles.attendeesCount}>{`+${event.attendees}`}</span>
+          <span
+            className={styles.attendeesCount}
+            title="Number of members who attended this event"
+            data-tooltip="Members Attended"
+          >
+            <FontAwesomeIcon icon={faUsers} className="me-2" /> {`+${event.attendees}`} Attendees
+          </span>
         </li>
       ))}
     </ul>
