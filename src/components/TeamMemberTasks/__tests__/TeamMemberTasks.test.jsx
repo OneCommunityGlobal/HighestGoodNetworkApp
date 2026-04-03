@@ -250,7 +250,7 @@ describe('TeamMemberTasks component', () => {
         </MemoryRouter>
       </Provider>,
     );
-    expect(screen.queryByTestId('team-member-tasks-row')).not.toBeInTheDocument();
+    expect(screen.queryAllByTestId('team-member-tasks-row')).toHaveLength(0);
   });
   it('check if class names does not include color when dark mode is false', () => {
     axios.get.mockResolvedValue({
