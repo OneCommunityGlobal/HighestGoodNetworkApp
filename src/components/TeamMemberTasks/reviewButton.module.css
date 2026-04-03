@@ -12,8 +12,8 @@
   flex: 0 0 auto;
   z-index: 1000;
   position: relative;
+  font-size: 12px;
 
-  --bs-btn-font-size: 12px;
   --bs-btn-padding-y: 8px;
   --bs-btn-padding-x: 8px;
   
@@ -34,7 +34,7 @@
   display: inline-flex;
   align-items: center;
   margin-top: 6px;
-  font-size: 14px !important;
+  font-size: 12px;
   font-weight: 500;
   line-height: 20px;
   padding: 6px 14px !important;
