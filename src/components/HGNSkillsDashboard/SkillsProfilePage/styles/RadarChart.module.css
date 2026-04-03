@@ -14,7 +14,7 @@
 }
 
 .radarChart.compact {
-  padding: 0;
+  padding: 8px;
   background: transparent;
   box-shadow: none;
   border: none;
@@ -26,6 +26,7 @@
   text-align: center;
   margin-bottom: 20px;
   color: #333;
+  padding: 12px 16px;
 }
 
 .chartTitle h4 {
@@ -185,6 +186,25 @@
   .chartContainer canvas {
     image-rendering: crisp-edges;
   }
+}
+
+/* Dark theme support (optional) */
+.dark {
+  background: #1f1f1f;
+  border-color: #2a2a2a;
+  box-shadow: none;
+}
+
+.dark .chartTitle h4 {
+  color: #e6e6e6;
+}
+
+.dark .chartTitle p {
+  color: #bfbfbf;
+}
+
+.dark .legendItem {
+  color: #e2e8f0;
 }
 
 :global(.dark-mode) .radarChart {
