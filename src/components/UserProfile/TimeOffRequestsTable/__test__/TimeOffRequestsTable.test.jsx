@@ -59,9 +59,9 @@ describe('TimeOffRequestsTable Component', () => {
   it('should open modal when clicking on the icon', () => {
     render(<TimeOffRequestsTable requests={mockRequests} openModal={mockOpenModal} darkMode={false} />);
     // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
-    const icon = document.querySelector('.user-profile-time-off-div-table-entry-icon svg');
+    const icon = document.querySelector('svg');
     // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
-    fireEvent.click(icon.closest('div'));
+    fireEvent.click(icon.parentElement);
     expect(mockOpenModal).toHaveBeenCalled();
   });
 });
