@@ -251,4 +251,21 @@
   .activityList {
     padding: 20px;
   }
+
+  .activityList li {
+    flex-direction: column;
+    padding: 10px;
+  }
+}
+
+.pagination{
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+.activePage{
+  font-weight: bold;
+  text-decoration: underline;
 }

@@ -2,6 +2,8 @@
 import { useState, useEffect } from 'react';
 import { useSelector, useStore } from 'react-redux';
 import styles from './ActivityList.module.css';
+import { Button } from 'reactstrap';
+// import { useHistory } from 'react-router-dom';
 import { mockActivities } from './mockActivities';
 
 function ActivityList() {
@@ -25,6 +27,9 @@ function ActivityList() {
   const [locationSuggestions, setLocationSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [sortOrder, setSortOrder] = useState('earliest');
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     if (darkMode) {
@@ -96,6 +101,10 @@ function ActivityList() {
     setShowSuggestions(false);
   };
 
+  const totalPages = Math.ceil(filteredActivities.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+
+  const paginatedActivities = filteredActivities.slice(startIndex, startIndex + itemsPerPage);
   const filteredActivities = activities
     .filter(activity => {
       return (
@@ -211,20 +220,13 @@ function ActivityList() {
         </div>
       </div>
 
-      <div className={`${styles.activityList} ${darkMode ? styles.darkModeList : ''}`}>
-        {loading ? (
-          <p className={darkMode ? 'text-light' : ''}>Loading activities...</p>
-        ) : filteredActivities.length > 0 ? (
+      <div className={`${styles.activityList} ${darkMode ? styles.darkActivityList : ''}`}>
+        {paginatedActivities.length > 0 ? (
           <ul>
-            {filteredActivities.map(activity => (
-              <li
-                key={activity.id}
-                className={`${styles.activityItem} ${darkMode ? styles.darkModeItem : ''}`}
-              >
-                <strong>{activity.name}</strong>
-                <span>
-                  {activity.type} – {activity.date} – {activity.location}
-                </span>
+            {paginatedActivities.map(activity => (
+              <li key={activity.id}>
+                <strong>{activity.name}</strong> - {activity.type} - {activity.date} -{' '}
+                {activity.location}
               </li>
             ))}
           </ul>
@@ -232,6 +234,26 @@ function ActivityList() {
           <p className={darkMode ? 'text-light' : ''}>No activities found</p>
         )}
       </div>
+
+      {totalPages > 1 && (
+        <div className={styles.pagination}>
+          <Button onClick={() => setCurrentPage(p => p - 1)} disabled={currentPage === 1}>
+            Prev
+          </Button>
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+            <Button
+              key={page}
+              onClick={() => setCurrentPage(page)}
+              className={page === currentPage ? styles.activePage : ''}
+            >
+              {page}
+            </Button>
+          ))}
+          <Button onClick={() => setCurrentPage(p => p + 1)} disabled={currentPage === totalPages}>
+            Next
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
