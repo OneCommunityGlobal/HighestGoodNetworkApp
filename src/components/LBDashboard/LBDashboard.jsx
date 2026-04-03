@@ -18,6 +18,7 @@ import {
 
 import DemandOverTime from './LbAnalytics/DemandOverTime/DemandOverTime';
 import ReviewWordCloud from './ReviewWordCloud/ReviewWordCloud';
+import CancellationImpactOnVacancy from './LbAnalytics/CancellationImpactOnVacancy/CancellationImpactOnVacancy';
 import SentimentBreakdownDonutChart from './SentimentBreakdownDonutChart/SentimentBreakdownDonutChart';
 import { CompareBarGraph } from './BarGraphs/CompareGraphs';
 
@@ -501,6 +502,14 @@ export function LBDashboard() {
                 { label: 'Properties', value: 'ALL' },
               ]}
             />
+          </Col>
+        </Row>
+      </AnalysisSection>
+
+      <AnalysisSection title="Vacancy Rate and Cancellation Rate" darkMode={darkMode}>
+        <Row>
+          <Col>
+            <CancellationImpactOnVacancy darkMode={darkMode} />
           </Col>
         </Row>
       </AnalysisSection>
