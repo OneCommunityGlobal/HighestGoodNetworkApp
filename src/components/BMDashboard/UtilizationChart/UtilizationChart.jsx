@@ -108,7 +108,7 @@ function UtilizationChart() {
         callbacks: {
           label: context => {
             const tool = toolsData[context.dataIndex];
-            return `Utilization: ${tool.utilizationRate}%, Downtime: ${tool.downtime} hrs`;
+            return `Utilization: ${tool.utilizationRate}%, Downtime: ${tool.downtime} hrs, Tool count: ${tool.count}`;
           },
         },
         footerColor: 'white',
