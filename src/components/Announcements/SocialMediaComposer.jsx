@@ -3,7 +3,7 @@ import { toast } from 'react-toastify';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import CharacterCounter from './CharacterCounter';
 import ConfirmationModal from './ConfirmationModal';
-import './SocialMediaComposer.module.css';
+import './SocialMediaComposer.css';
 
 const PREFS_KEY = 'mastodon_composer_prefs';
 
@@ -58,16 +58,16 @@ const platformAPI = {
 
   x: {
     postNow: content => ({
-      url: '/api/x/post',
+      url: '/x/post',
       body: { content },
     }),
     schedule: (content, _image, _altText, scheduledTime) => ({
-      url: '/api/x/schedule',
+      url: '/x/schedule',
       body: { content, scheduledAt: scheduledTime },
     }),
-    deleteSchedule: id => `/api/x/schedule/${id}`,
-    getScheduled: () => '/api/x/schedule',
-    getHistory: () => '/api/x/history?limit=20',
+    deleteSchedule: id => `/x/schedule/${id}`,
+    getScheduled: () => '/x/schedule',
+    getHistory: () => '/x/history?limit=20',
     // X model stores fields at top level
     parseScheduledText: post => post.content || 'No content',
     parseScheduledImage: () => null, // media support comes later
@@ -282,6 +282,21 @@ export default function SocialMediaComposer({ platform }) {
     setPreviewOpen(false);
   };
 
+  const copyAndOpenX = async content => {
+    try {
+      await navigator.clipboard.writeText(content);
+    } catch {
+      // clipboard may fail in non-HTTPS contexts; continue anyway
+    }
+    window.open(
+      `https://x.com/intent/tweet?text=${encodeURIComponent(content)}`,
+      '_blank',
+    );
+    toast.success('Content copied to clipboard! X is opening — paste and post.', {
+      autoClose: 5000,
+    });
+  };
+
   // Post Now (platform-routed)
   const handlePostNow = async () => {
     if (!postContent.trim()) {
@@ -312,11 +327,15 @@ export default function SocialMediaComposer({ platform }) {
       });
 
       if (response.ok) {
-        let message = `Successfully posted to ${platform}!`;
-        if (selectedPlatforms.length > 0) {
-          message += ` (Selected for: ${selectedPlatforms.join(', ')})`;
+        if (platform === 'x') {
+          await copyAndOpenX(postContent.trim());
+        } else {
+          let message = `Successfully posted to ${platform}!`;
+          if (selectedPlatforms.length > 0) {
+            message += ` (Selected for: ${selectedPlatforms.join(', ')})`;
+          }
+          toast.success(message, { autoClose: 5000 });
         }
-        toast.success(message, { autoClose: 5000 });
         clearComposer();
         if (activeSubTab === 'history') {
           loadPostHistory();
@@ -484,22 +503,28 @@ export default function SocialMediaComposer({ platform }) {
     const performPost = async () => {
       try {
         const content = api.parseScheduledText(post);
-        let req;
 
         if (platform === 'x') {
-          req = api.postNow(content);
-        } else {
-          // Mastodon path - preserve original image/alt handling
-          const postData = JSON.parse(post.postData);
-          req = api.postNow(
-            postData.status,
-            postData.local_media_base64
-              ? { base64: postData.local_media_base64.replace(/^data:image\/\w+;base64,/, '') }
-              : null,
-            postData.mediaAltText,
-            [],
-          );
+          await copyAndOpenX(content);
+          const token = localStorage.getItem('token');
+          await fetch(`/api/x/schedule/${post._id}/mark-posted`, {
+            method: 'PATCH',
+            headers: { ...(token && { Authorization: token }) },
+          });
+          loadScheduledPosts();
+          return;
         }
+
+        // Mastodon path - preserve original image/alt handling
+        const postData = JSON.parse(post.postData);
+        const req = api.postNow(
+          postData.status,
+          postData.local_media_base64
+            ? { base64: postData.local_media_base64.replace(/^data:image\/\w+;base64,/, '') }
+            : null,
+          postData.mediaAltText,
+          [],
+        );
 
         const token = localStorage.getItem('token');
         const response = await fetch(req.url, {
@@ -525,13 +550,52 @@ export default function SocialMediaComposer({ platform }) {
     } else {
       showModal({
         title: 'Post Immediately',
-        message: `This will post immediately to ${platform} and remove it from your scheduled posts. Continue?`,
+        message:
+          platform === 'x'
+            ? 'This will copy the content to your clipboard and open X. The post will be marked as completed.'
+            : `This will post immediately to ${platform} and remove it from your scheduled posts. Continue?`,
         onConfirm: performPost,
-        confirmText: 'Post Now',
+        confirmText: platform === 'x' ? 'Copy & Open X' : 'Post Now',
         confirmColor: 'success',
         showDontShowAgain: true,
         preferenceKey: 'confirmPostNow',
       });
+    }
+  };
+
+  const handleMarkAsPosted = async postId => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`/api/x/schedule/${postId}/mark-posted`, {
+        method: 'PATCH',
+        headers: { ...(token && { Authorization: token }) },
+      });
+      if (response.ok) {
+        toast.success('Post marked as posted!');
+        loadScheduledPosts();
+      } else {
+        toast.error('Failed to mark post as posted.');
+      }
+    } catch (err) {
+      toast.error('Error marking post as posted.');
+    }
+  };
+
+  const handleSkipPost = async postId => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`/api/x/schedule/${postId}/skip`, {
+        method: 'PATCH',
+        headers: { ...(token && { Authorization: token }) },
+      });
+      if (response.ok) {
+        toast.success('Post skipped.');
+        loadScheduledPosts();
+      } else {
+        toast.error('Failed to skip post.');
+      }
+    } catch (err) {
+      toast.error('Error skipping post.');
     }
   };
 
@@ -585,6 +649,23 @@ export default function SocialMediaComposer({ platform }) {
           </button>
         ))}
       </div>
+
+      {platform === 'x' && (
+        <div
+          style={{
+            padding: '0.75rem 1rem',
+            background: '#fff3cd',
+            border: '1px solid #ffc107',
+            borderRadius: '6px',
+            marginBottom: '1rem',
+            fontSize: '0.9rem',
+            color: '#856404',
+          }}
+        >
+          Auto-posting to X is not currently supported. Compose your posts here and post them
+          manually with just a few clicks.
+        </div>
+      )}
 
       {activeSubTab === 'composer' && (
         <div className="composer-content">
@@ -694,7 +775,7 @@ export default function SocialMediaComposer({ platform }) {
               disabled={isPosting}
               className="btn btn-primary"
             >
-              {isPosting ? 'Posting…' : 'Post Now'}
+              {isPosting ? 'Posting…' : platform === 'x' ? 'Copy & Post to X' : 'Post Now'}
             </button>
             <button
               type="button"
@@ -774,41 +855,105 @@ export default function SocialMediaComposer({ platform }) {
                 const postText = api.parseScheduledText(post);
                 const imageBase64 = api.parseScheduledImage(post);
                 const time = api.parseScheduledTime(post);
+                const isX = platform === 'x';
+                const xStatus = isX ? post.status : null;
+
+                const cardStyle =
+                  isX && xStatus === 'ready'
+                    ? { border: '2px solid #ffc107', background: '#fff8e1' }
+                    : isX && xStatus === 'posted'
+                    ? { opacity: 0.7, background: '#e8f5e9' }
+                    : isX && xStatus === 'skipped'
+                    ? { opacity: 0.5, background: '#f5f5f5' }
+                    : {};
+
+                const xStatusBadge =
+                  xStatus === 'ready'
+                    ? { bg: '#ffc107', color: '#333', text: '⏰ Ready to Post' }
+                    : xStatus === 'pending'
+                    ? { bg: '#2196f3', color: '#fff', text: '🕐 Pending' }
+                    : xStatus === 'posted'
+                    ? { bg: '#4caf50', color: '#fff', text: '✓ Posted' }
+                    : xStatus === 'skipped'
+                    ? { bg: '#9e9e9e', color: '#fff', text: '— Skipped' }
+                    : null;
 
                 return (
-                  <div key={post._id} className="post-card">
+                  <div key={post._id} className="post-card" style={cardStyle}>
                     <div className="post-card-content">
                       <p className="post-text">{postText}</p>
                       <p className="post-meta">📅 {formatScheduledTime(time)}</p>
+                      {isX && xStatusBadge && (
+                        <span
+                          style={{
+                            display: 'inline-block',
+                            padding: '2px 8px',
+                            borderRadius: '4px',
+                            fontSize: '0.75rem',
+                            fontWeight: 'bold',
+                            marginTop: '0.25rem',
+                            background: xStatusBadge.bg,
+                            color: xStatusBadge.color,
+                          }}
+                        >
+                          {xStatusBadge.text}
+                        </span>
+                      )}
                       {imageBase64 && (
                         <img src={imageBase64} alt="Post thumbnail" className="post-thumbnail" />
                       )}
                     </div>
                     <div className="post-card-actions">
-                      <button
-                        type="button"
-                        onClick={() => handleEditScheduled(post)}
-                        className="action-btn edit"
-                        title="Edit"
-                      >
-                        ✏️
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handlePostScheduledNow(post)}
-                        className="action-btn success"
-                        title="Post now"
-                      >
-                        ✔
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteScheduled(post._id)}
-                        className="action-btn danger"
-                        title="Delete"
-                      >
-                        ✕
-                      </button>
+                      {(!isX || xStatus === 'pending' || xStatus === 'ready') && (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => handleEditScheduled(post)}
+                            className="action-btn edit"
+                            title="Edit"
+                          >
+                            ✏️
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handlePostScheduledNow(post)}
+                            className="action-btn success"
+                            title={isX ? 'Copy & post to X' : 'Post now'}
+                          >
+                            ✔
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteScheduled(post._id)}
+                            className="action-btn danger"
+                            title="Delete"
+                          >
+                            ✕
+                          </button>
+                        </>
+                      )}
+                      {isX && (xStatus === 'pending' || xStatus === 'ready') && (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => handleMarkAsPosted(post._id)}
+                            title="Mark as already posted"
+                            style={{ color: '#4caf50' }}
+                            className="action-btn"
+                          >
+                            ✓
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleSkipPost(post._id)}
+                            title="Skip this post"
+                            style={{ color: '#9e9e9e' }}
+                            className="action-btn"
+                          >
+                            ⊘
+                          </button>
+                        </>
+                      )}
                     </div>
                   </div>
                 );
@@ -849,17 +994,10 @@ export default function SocialMediaComposer({ platform }) {
                       {/* X stats */}
                       {platform === 'x' && (
                         <div className="post-stats">
-                          <span
-                            className={`status-badge ${
-                              post.status === 'posted' ? 'success' : 'error'
-                            }`}
-                          >
-                            {post.status === 'posted' ? '✓ Posted' : '✕ Failed'}
-                          </span>
-                          <span className="source-badge">{post.source}</span>
-                          {post.errorMessage && (
-                            <span className="error-detail" title={post.errorMessage}>
-                              ⚠ {post.errorMessage}
+                          <span className="status-badge success">✓ Posted</span>
+                          {post.postedAt && (
+                            <span style={{ fontSize: '0.8rem', color: '#666' }}>
+                              Posted {formatScheduledTime(post.postedAt)}
                             </span>
                           )}
                         </div>
@@ -890,16 +1028,7 @@ export default function SocialMediaComposer({ platform }) {
                           View on Mastodon →
                         </a>
                       )}
-                      {platform === 'x' && post.xPostId && (
-                        <a
-                          href={`https://x.com/i/status/${post.xPostId}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="post-link"
-                        >
-                          View on X →
-                        </a>
-                      )}
+                      {/* No direct link to X post — content was posted manually */}
                     </div>
                   </div>
                 );
@@ -1057,7 +1186,7 @@ export default function SocialMediaComposer({ platform }) {
             </Button>
           ) : (
             <Button color="primary" onClick={handlePostNow} disabled={isPosting}>
-              {isPosting ? 'Posting...' : 'Post Now'}
+              {isPosting ? 'Posting...' : platform === 'x' ? 'Copy & Post to X' : 'Post Now'}
             </Button>
           )}
         </ModalFooter>
