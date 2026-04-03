@@ -207,49 +207,100 @@ export function PieChartByProject({
 
   }, [mergedProjectUsersArray,showMembers])
 
+  // Detect screen size for responsive styling
+  const isMobile = windowSize.width <= 576;
+  const isTablet = windowSize.width <= 768 && windowSize.width > 576;
+  const isSmallMobile = windowSize.width <= 400;
+
   return (
     <div className={`${darkMode ? 'text-light' : ''} w-100`}>
-      <div className={`${darkMode ? 'text-light' : ''} pie-chart-title w-100`}><h4>Pie Charts</h4></div>
+      <div 
+        className={`${darkMode ? 'text-light' : ''} w-100`}
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          overflow: 'auto',
+          flexDirection: isTablet ? 'column' : 'row',
+          width: '100%',
+          marginBottom: '16px',
+          padding: 0,
+          backgroundColor: 'transparent',
+          marginTop: '15px',
+        }}
+      >
+        <h4 style={{ fontSize: isSmallMobile ? '16px' : isMobile ? '18px' : 'inherit' }}>Pie Charts</h4>
+      </div>
       <div><h5>{projectName}</h5></div>
-      <div className="pie-chart-description">
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: isMobile ? 'flex-start' : 'center',
+          overflow: 'auto',
+          flexDirection: isTablet ? 'column' : 'row',
+          width: '100%',
+          marginBottom: '16px',
+          padding: isTablet ? '0 10px' : 0,
+          backgroundColor: 'transparent',
+        }}
+      >
         <div>
         <label
           className={darkMode ? 'text-light' : ''}
-          style={{paddingRight: '1rem' }}
+          style={{
+            paddingRight: isMobile ? '0.5rem' : '1rem',
+            fontSize: isSmallMobile ? '11px' : isMobile ? '12px' : '14px',
+            display: isMobile ? 'block' : 'inline',
+            marginBottom: isMobile ? '8px' : 0,
+          }}
         >
             {isChecked ? 'All-Time Total Hours by All Member (Hide PieChart)' : 'All-Time Total Hours by Member (Show PieChart)'}
         </label>
           <input
             type="checkbox"
-            className="pie-chart-checkbox"
+            style={{
+              marginLeft: isMobile ? 0 : '8px',
+              transform: isMobile ? 'scale(1.1)' : 'none',
+            }}
             checked={isChecked}
             onChange={handleShowPieChart}
           />
         </div>
 
         {isChecked && ( <div style={{textAlign:'left', margin:'auto'}}>
-        <p style={{textAlign:'center'}}>{showMembers === null ? 'All members' : ''}</p>
-        <div className={style.switchSection}>
-        <div style={{ wordBreak: 'keep-all', color: darkMode ? 'white' : ''}}
-          className={`d-flex flex-row align-items-center justify-content-between ${style.switchContainer}`}>
-          <p className={darkMode ? 'text-light' : 'blue'}>Inactive Members</p>
+        <p className={darkMode ? 'text-light' : 'blue'} style={{textAlign:'center'}}>{showMembers === null ? 'All members' : ''}</p>
+        <div style={{ width: '100%' }}>
+        <div 
+          style={{ 
+            wordBreak: 'keep-all', 
+            color: darkMode ? 'white' : '',
+            flexDirection: isMobile ? 'column' : 'row',
+            gap: isMobile ? '8px' : 0,
+            padding: isMobile ? '10px 0' : 0,
+          }}
+          className={`d-flex align-items-center justify-content-between ${style.switchContainer}`}>
+          <p className={darkMode ? 'text-light' : 'blue'} style={{ fontSize: isMobile ? '12px' : 'inherit', margin: isMobile ? 0 : 'inherit' }}>Inactive Members</p>
           <div className="pr-2">
             <TriMembersStateToggleSwitch
               value={showMembers}
               onChange={handleShowMembersChange}
             />
           </div>
-          <p className={darkMode ? 'text-light' : 'green'}>Active Members</p>
+          <p className={darkMode ? 'text-light' : 'green'} style={{ fontSize: isMobile ? '12px' : 'inherit', margin: isMobile ? 0 : 'inherit' }}>Active Members</p>
         </div>
         </div>
-          <p style={{fontWeight:'bold'}}>Total Active Members:  {activeData.length}  <span> - Hrs Applied: { globalactiveHours.toFixed(2) } </span> </p>
-          <p style={{fontWeight:'bold'}}>Total Inactive Members: {inactiveData.length} <span> - Hrs Applied: { globalInactiveHours.toFixed(2) } </span> </p>
-          <p style={{fontWeight:'bold'}}>Total Applied Hours: {totalHours.toFixed(2)} </p>
-          <p style={{fontWeight:'bold'}}>Total Members:  {mergedProjectUsersArray.length}</p>
+          <p className={darkMode ? 'text-light' : 'blue'} style={{ fontWeight: 'bold', fontSize: isSmallMobile ? '10px' : isMobile ? '11px' : '13px', marginBottom: isMobile ? '0.2rem' : '0.25rem' }}>
+            Total Active Members: {activeData.length}
+            <span> - Hrs Applied: {globalactiveHours.toFixed(2)}</span>
+          </p>
+          <p className={darkMode ? 'text-light' : 'blue'} style={{fontWeight:'bold', fontSize: isSmallMobile ? '10px' : isMobile ? '11px' : '13px', marginBottom: isMobile ? '0.2rem' : '0.25rem'}}>Total Inactive Members: {inactiveData.length} <span> - Hrs Applied: { globalInactiveHours.toFixed(2) } </span> </p>
+          <p className={darkMode ? 'text-light' : 'blue'} style={{fontWeight:'bold', fontSize: isSmallMobile ? '10px' : isMobile ? '11px' : '13px', marginBottom: isMobile ? '0.2rem' : '0.25rem'}}>Total Applied Hours: {totalHours.toFixed(2)} </p>
+          <p className={darkMode ? 'text-light' : 'blue'} style={{fontWeight:'bold', fontSize: isSmallMobile ? '10px' : isMobile ? '11px' : '13px', marginBottom: isMobile ? '0.2rem' : '0.25rem'}}>Total Members:  {mergedProjectUsersArray.length}</p>
         </div>)}
 
       </div>
-        {isChecked && (<div style={{ width: '100%', height: '32rem' }}>
+        {isChecked && (<div style={{ width: '100%', height: windowSize.width <= 400 ? '20rem' : windowSize.width <= 576 ? '24rem' : '32rem' }}>
         <ProjectPieChart userData={totalHours > 0 ? userData : noDataPlaceholder} windowSize={windowSize.width} darkMode={darkMode} />
       </div>)}
 
