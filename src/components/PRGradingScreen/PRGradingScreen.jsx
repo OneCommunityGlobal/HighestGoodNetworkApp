@@ -58,9 +58,10 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
     const trimmed = inputValue.trim();
 
     // Duplicate check
+    const normalize = str => str.replace(/\s/g, '').toLowerCase();
     const reviewer = reviewerData.find(r => r.id === reviewerId);
     const isDuplicate = reviewer?.gradedPrs.some(
-      pr => pr.prNumbers.replace(/\s/g, '') === trimmed.replace(/\s/g, ''),
+      pr => normalize(pr.prNumbers) === normalize(trimmed),
     );
 
     if (isDuplicate) {
