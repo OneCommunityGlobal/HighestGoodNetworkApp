@@ -1,34 +1,29 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
-import {
-  Container,
-  Row,
-  Col,
-  Card,
-  CardBody,
-  CardHeader,
-  Form,
-  FormGroup,
-  Label,
-  Input,
-  Button,
-  Badge,
-  Alert,
-  Nav,
-  NavItem,
-  NavLink,
-  TabContent,
-  TabPane,
-} from 'reactstrap';
 import { toast } from 'react-toastify';
 import { ENDPOINTS } from '~/utils/URL';
 import { hasPermissionSimple } from '~/utils/permissions';
 import QuestionSetManager from './QuestionSetManager';
 import QuestionSetEditor from './QuestionSetEditor';
+import { JOB_FORM_POSITION_OPTIONS } from './jobFormPositions';
+import jb from '../Collaboration/JobFormBuilder.module.css';
+import styles from './EnhancedJobFormBuilder.module.css';
+import OneCommunityImage from '../Collaboration/One-Community-Horizontal-Homepage-Header-980x140px-2.png';
+
+const QUESTION_TYPES = [
+  { value: 'textbox', label: 'Short text' },
+  { value: 'textarea', label: 'Long text' },
+  { value: 'checkbox', label: 'Checkboxes' },
+  { value: 'radio', label: 'Multiple choice' },
+  { value: 'dropdown', label: 'Dropdown' },
+  { value: 'date', label: 'Date' },
+];
+
+const RESPONSE_PLACEHOLDER = 'type your response here';
 
 const EnhancedJobFormBuilder = () => {
-  const [activeTab, setActiveTab] = useState('form');
+  const proceedRef = useRef(null);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -58,8 +53,15 @@ const EnhancedJobFormBuilder = () => {
   const [showQuestionSetEditor, setShowQuestionSetEditor] = useState(false);
   const [editingQuestionSet, setEditingQuestionSet] = useState(null);
   const [newGeneralLink, setNewGeneralLink] = useState({ title: '', url: '', description: '' });
+  const [showAdvanced, setShowAdvanced] = useState(false);
+
+  const [draftQuestionText, setDraftQuestionText] = useState('');
+  const [draftQuestionType, setDraftQuestionType] = useState('textbox');
+  const [draftOption, setDraftOption] = useState('');
+  const [draftOptions, setDraftOptions] = useState([]);
 
   const { auth } = useSelector(state => state);
+  const darkMode = useSelector(state => state.theme?.darkMode);
   const userPermissions = auth?.user?.permissions?.frontPermissions || [];
   const userRole = auth?.user?.role;
 
@@ -76,7 +78,6 @@ const EnhancedJobFormBuilder = () => {
   ];
 
   useEffect(() => {
-    // Load existing form if available
     loadFirstAvailableForm();
   }, []);
 
@@ -91,7 +92,11 @@ const EnhancedJobFormBuilder = () => {
       includeAvailability: true,
     },
     jobLinks: form.jobLinks || { specificJobLink: '', generalLinks: [] },
-    questions: form.questions || [],
+    questions: (form.questions || []).map(q => ({
+      ...q,
+      visible: q.visible !== false,
+      placeholder: q.placeholder || RESPONSE_PLACEHOLDER,
+    })),
     questionSets: form.questionSets || [],
     settings: form.settings || {
       allowDuplicateSubmissions: false,
@@ -123,24 +128,18 @@ const EnhancedJobFormBuilder = () => {
         setFormData(formatFormData(firstForm));
       }
     } catch (error) {
-      // Error loading forms - could be logged to error reporting service
       toast.error('Failed to load forms');
     }
   };
 
-  const canManageForms = () => {
-    return hasPermissionSimple(userPermissions, 'manageJobForms') || userRole === 'Owner';
-  };
+  const canManageForms = () =>
+    hasPermissionSimple(userPermissions, 'manageJobForms') || userRole === 'Owner';
 
-  const canCreateQuestionSets = () => {
-    return hasPermissionSimple(userPermissions, 'createFormQuestions') || userRole === 'Owner';
-  };
+  const canCreateQuestionSets = () =>
+    hasPermissionSimple(userPermissions, 'createFormQuestions') || userRole === 'Owner';
 
   const handleFormChange = (field, value) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value,
-    }));
+    setFormData(prev => ({ ...prev, [field]: value }));
   };
 
   const handleNestedFormChange = (parent, field, value) => {
@@ -158,12 +157,10 @@ const EnhancedJobFormBuilder = () => {
       toast.error('Title and URL are required for general links');
       return;
     }
-
     if (formData.jobLinks.generalLinks.length >= 5) {
       toast.error('Maximum 5 general links allowed');
       return;
     }
-
     setFormData(prev => ({
       ...prev,
       jobLinks: {
@@ -171,7 +168,6 @@ const EnhancedJobFormBuilder = () => {
         generalLinks: [...prev.jobLinks.generalLinks, newGeneralLink],
       },
     }));
-
     setNewGeneralLink({ title: '', url: '', description: '' });
     toast.success('General link added');
   };
@@ -192,12 +188,10 @@ const EnhancedJobFormBuilder = () => {
       toast.error('You do not have permission to manage job forms');
       return;
     }
-
     if (!formData.title.trim()) {
-      toast.error('Form title is required');
+      toast.error('Enter a job title or select a position');
       return;
     }
-
     try {
       const requestData = {
         ...formData,
@@ -206,7 +200,6 @@ const EnhancedJobFormBuilder = () => {
           role: userRole,
         },
       };
-
       let response;
       if (currentFormId) {
         requestData.formId = currentFormId;
@@ -215,13 +208,11 @@ const EnhancedJobFormBuilder = () => {
         response = await axios.post(ENDPOINTS.CREATE_JOB_FORM, requestData);
         setCurrentFormId(response.data.form._id);
       }
-
       toast.success('Form saved successfully');
       if (response?.data?.form?._id) {
         await loadFormById(response.data.form._id);
       }
     } catch (error) {
-      // Error saving form - could be logged to error reporting service
       toast.error('Failed to save form');
     }
   };
@@ -251,514 +242,618 @@ const EnhancedJobFormBuilder = () => {
       },
     });
     setCurrentFormId(null);
-    toast.info('New form created. Remember to save it.');
+    setDraftQuestionText('');
+    setDraftOptions([]);
+    toast.info('New form started. Save when ready.');
   };
 
   const handleQuestionSetSaved = () => {
-    // Refresh the form or handle as needed
     setShowQuestionSetEditor(false);
     setEditingQuestionSet(null);
   };
 
+  const toggleQuestionVisible = index => {
+    setFormData(prev => {
+      const questions = [...prev.questions];
+      const q = questions[index];
+      const isShown = q.visible !== false;
+      questions[index] = { ...q, visible: !isShown };
+      return { ...prev, questions };
+    });
+  };
+
+  const removeQuestion = index => {
+    setFormData(prev => ({
+      ...prev,
+      questions: prev.questions.filter((_, i) => i !== index),
+    }));
+  };
+
+  const addDraftOption = () => {
+    if (!draftOption.trim()) return;
+    setDraftOptions(prev => [...prev, draftOption.trim()]);
+    setDraftOption('');
+  };
+
+  const addCustomQuestion = () => {
+    const text = draftQuestionText.trim() || 'Untitled Question';
+    const needsOptions = ['checkbox', 'radio', 'dropdown'].includes(draftQuestionType);
+    if (needsOptions && draftOptions.length === 0) {
+      toast.error('Add at least one option for this question type');
+      return;
+    }
+    setFormData(prev => ({
+      ...prev,
+      questions: [
+        ...prev.questions,
+        {
+          questionText: text,
+          questionType: draftQuestionType,
+          visible: true,
+          isRequired: false,
+          options: needsOptions ? [...draftOptions] : [],
+          placeholder: RESPONSE_PLACEHOLDER,
+        },
+      ],
+    }));
+    setDraftQuestionText('');
+    setDraftQuestionType('textbox');
+    setDraftOptions([]);
+    setDraftOption('');
+    toast.success('Question added');
+  };
+
+  const positionSelectValue = JOB_FORM_POSITION_OPTIONS.includes(formData.title)
+    ? formData.title
+    : '';
+
+  const dm = v => (darkMode ? v : '');
+  const darkField = darkMode ? styles.responsePlaceholderDark : '';
+
+  const renderQuestionPreview = (q, index) => {
+    const ph = q.placeholder || RESPONSE_PLACEHOLDER;
+    const inputCls = `${jb.jobformInput} ${styles.responsePlaceholder} ${darkField}`.trim();
+
+    switch (q.questionType) {
+      case 'textarea':
+        return (
+          <textarea
+            readOnly
+            className={`${jb.jobformTextarea} ${styles.textareaPreview} ${darkField}`.trim()}
+            placeholder={ph}
+          />
+        );
+      case 'date':
+        return <input readOnly type="date" className={inputCls} />;
+      case 'dropdown':
+        return (
+          <select className={`${jb.jobformSelect} ${darkField}`.trim()} disabled>
+            <option value="">{ph}</option>
+            {(q.options || []).map(opt => (
+              <option key={opt} value={opt}>
+                {opt}
+              </option>
+            ))}
+          </select>
+        );
+      case 'checkbox':
+      case 'radio':
+        return (
+          <div className={jb.fieldOptions}>
+            {(q.options || []).map(opt => (
+              <div key={opt} className={jb.optionItem}>
+                <input
+                  type={q.questionType}
+                  disabled
+                  className={darkMode ? styles.darkChoiceInput : undefined}
+                />
+                <span className={jb.jbformLabel}>{opt}</span>
+              </div>
+            ))}
+          </div>
+        );
+      default:
+        return <input readOnly type="text" className={inputCls} placeholder={ph} />;
+    }
+  };
+
+  const scrollToProceed = () => {
+    proceedRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  };
+
   return (
-    <Container fluid className="enhanced-job-form-builder">
-      <Row>
-        <Col>
-          <Card>
-            <CardHeader>
-              <Row className="align-items-center">
-                <Col>
-                  <h4 className="mb-0">Job Application Form Builder</h4>
-                  <small className="text-muted">
-                    Create and manage job application forms with reusable question sets
-                  </small>
-                </Col>
-                <Col xs="auto">
-                  {canManageForms() && (
-                    <>
-                      <Button
-                        color="outline-primary"
-                        onClick={handleCreateNewForm}
-                        className="mr-2"
-                      >
-                        New Form
-                      </Button>
-                      <Button color="primary" onClick={handleSaveForm}>
-                        Save Form
-                      </Button>
-                    </>
-                  )}
-                </Col>
-              </Row>
-            </CardHeader>
-            <CardBody>
-              {!canManageForms() && (
-                <Alert color="warning">
-                  You do not have permission to manage job forms. Contact an administrator to get
-                  the required permissions.
-                </Alert>
+    <div
+      className={`${jb.pageWrapper} ${darkMode ? jb.darkMode : ''}`}
+      style={darkMode ? { colorScheme: 'dark' } : undefined}
+    >
+      <div className={jb.formBuilderContainer}>
+        <img
+          src={OneCommunityImage}
+          alt="One Community"
+          className={jb.oneCommunityGlobalImg}
+          id="onecommunity-image"
+        />
+
+        <div className={jb.jobformNavbar}>
+          <div className={styles.navbarLeft}>
+            <input
+              type="text"
+              placeholder="Enter Job Title"
+              className={jb.jobformInput}
+              value={formData.title}
+              onChange={e => handleFormChange('title', e.target.value)}
+              disabled={!canManageForms()}
+            />
+            <button type="button" className={styles.goButton} onClick={scrollToProceed}>
+              Go
+            </button>
+          </div>
+          <div>
+            <select
+              className={`${jb.jobformSelect} ${styles.selectPosition}`}
+              value={positionSelectValue}
+              onChange={e => {
+                const v = e.target.value;
+                if (v) handleFormChange('title', v);
+              }}
+              disabled={!canManageForms()}
+            >
+              <option value="">Select a Position</option>
+              {JOB_FORM_POSITION_OPTIONS.map(pos => (
+                <option key={pos} value={pos}>
+                  {pos}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <h1 className={jb.jobformTitle}>FORM CREATION</h1>
+
+        {!canManageForms() ? (
+          <div className={jb.customForm}>
+            <div className="alert alert-warning" role="alert">
+              You do not have permission to manage job forms. Ask an Owner to grant job form
+              permissions in Permissions Management.
+            </div>
+          </div>
+        ) : (
+          <div className={jb.customForm}>
+            <p className={jb.jobformDesc}>
+              Fill the form with questions about a specific position you want to create an ad for.
+              The default questions will automatically appear and are already selected. You can pick
+              and choose them with the checkbox.
+            </p>
+
+            <div className={`${styles.toolbar} ${darkMode ? styles.darkToolbar : ''}`}>
+              <button type="button" onClick={handleCreateNewForm}>
+                New form
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowQuestionSetManager(true)}
+                disabled={!currentFormId}
+                title={!currentFormId ? 'Save the form first to import question sets' : ''}
+              >
+                Import from question sets
+              </button>
+              {canCreateQuestionSets() && (
+                <button type="button" onClick={() => setShowQuestionSetEditor(true)}>
+                  Create question set
+                </button>
               )}
+              <button type="button" onClick={() => setShowAdvanced(a => !a)}>
+                {showAdvanced ? 'Hide' : 'Job links, category & settings'}
+              </button>
+            </div>
 
-              <Nav tabs>
-                <NavItem>
-                  <NavLink
-                    className={activeTab === 'form' ? 'active' : ''}
-                    onClick={() => setActiveTab('form')}
-                  >
-                    Form Settings
-                  </NavLink>
-                </NavItem>
-                <NavItem>
-                  <NavLink
-                    className={activeTab === 'fields' ? 'active' : ''}
-                    onClick={() => setActiveTab('fields')}
-                  >
-                    Fixed Fields
-                  </NavLink>
-                </NavItem>
-                <NavItem>
-                  <NavLink
-                    className={activeTab === 'links' ? 'active' : ''}
-                    onClick={() => setActiveTab('links')}
-                  >
-                    Job Links
-                  </NavLink>
-                </NavItem>
-                <NavItem>
-                  <NavLink
-                    className={activeTab === 'questions' ? 'active' : ''}
-                    onClick={() => setActiveTab('questions')}
-                  >
-                    Questions ({formData.questions.length})
-                  </NavLink>
-                </NavItem>
-                <NavItem>
-                  <NavLink
-                    className={activeTab === 'settings' ? 'active' : ''}
-                    onClick={() => setActiveTab('settings')}
-                  >
-                    Settings
-                  </NavLink>
-                </NavItem>
-              </Nav>
+            <div className={styles.positionField}>
+              <label className={`${jb.jbformLabel} ${dm(styles.darkText)}`}>
+                Position the form is for
+              </label>
+              <input
+                type="text"
+                className={jb.jobformInput}
+                value={formData.title}
+                onChange={e => handleFormChange('title', e.target.value)}
+                placeholder="Position title"
+              />
+            </div>
 
-              <TabContent activeTab={activeTab} className="mt-3">
-                <TabPane tabId="form">
-                  <Row>
-                    <Col md={8}>
-                      <FormGroup>
-                        <Label for="formTitle">Form Title *</Label>
-                        <Input
-                          type="text"
-                          id="formTitle"
-                          value={formData.title}
-                          onChange={e => handleFormChange('title', e.target.value)}
-                          placeholder="Enter form title..."
-                          disabled={!canManageForms()}
-                        />
-                      </FormGroup>
-                    </Col>
-                    <Col md={4}>
-                      <FormGroup>
-                        <Label for="formCategory">Category</Label>
-                        <Input
-                          type="select"
-                          id="formCategory"
-                          value={formData.category}
-                          onChange={e => handleFormChange('category', e.target.value)}
-                          disabled={!canManageForms()}
-                        >
-                          {categories.map(category => (
-                            <option key={category} value={category}>
-                              {category}
-                            </option>
-                          ))}
-                        </Input>
-                      </FormGroup>
-                    </Col>
-                  </Row>
-
-                  <FormGroup>
-                    <Label for="formDescription">Description</Label>
-                    <Input
-                      type="textarea"
-                      id="formDescription"
-                      value={formData.description}
-                      onChange={e => handleFormChange('description', e.target.value)}
-                      placeholder="Describe this job application form..."
-                      rows="3"
-                      disabled={!canManageForms()}
-                    />
-                  </FormGroup>
-                </TabPane>
-
-                <TabPane tabId="fields">
-                  <p className="text-muted mb-3">
-                    Configure which standard fields should appear in all forms of this type.
-                  </p>
-
-                  <Row>
-                    <Col md={6}>
-                      <FormGroup check>
-                        <Label check>
-                          <Input
-                            type="checkbox"
-                            checked={formData.fixedFields.includePersonalInfo}
-                            onChange={e =>
-                              handleNestedFormChange(
-                                'fixedFields',
-                                'includePersonalInfo',
-                                e.target.checked,
-                              )
-                            }
-                            disabled={!canManageForms()}
-                          />
-                          Personal Information (Name, Email, Phone)
-                        </Label>
-                      </FormGroup>
-
-                      <FormGroup check>
-                        <Label check>
-                          <Input
-                            type="checkbox"
-                            checked={formData.fixedFields.includeBasicInfo}
-                            onChange={e =>
-                              handleNestedFormChange(
-                                'fixedFields',
-                                'includeBasicInfo',
-                                e.target.checked,
-                              )
-                            }
-                            disabled={!canManageForms()}
-                          />
-                          Basic Information (Title, Location)
-                        </Label>
-                      </FormGroup>
-                    </Col>
-                    <Col md={6}>
-                      <FormGroup check>
-                        <Label check>
-                          <Input
-                            type="checkbox"
-                            checked={formData.fixedFields.includeExperience}
-                            onChange={e =>
-                              handleNestedFormChange(
-                                'fixedFields',
-                                'includeExperience',
-                                e.target.checked,
-                              )
-                            }
-                            disabled={!canManageForms()}
-                          />
-                          Experience Level
-                        </Label>
-                      </FormGroup>
-
-                      <FormGroup check>
-                        <Label check>
-                          <Input
-                            type="checkbox"
-                            checked={formData.fixedFields.includeAvailability}
-                            onChange={e =>
-                              handleNestedFormChange(
-                                'fixedFields',
-                                'includeAvailability',
-                                e.target.checked,
-                              )
-                            }
-                            disabled={!canManageForms()}
-                          />
-                          Availability (Start Date, Hours/Week)
-                        </Label>
-                      </FormGroup>
-                    </Col>
-                  </Row>
-                </TabPane>
-
-                <TabPane tabId="links">
-                  <FormGroup>
-                    <Label for="specificJobLink">Specific Job Advertisement Link</Label>
-                    <Input
-                      type="url"
-                      id="specificJobLink"
-                      value={formData.jobLinks.specificJobLink}
-                      onChange={e =>
-                        handleNestedFormChange('jobLinks', 'specificJobLink', e.target.value)
-                      }
-                      placeholder="https://example.com/job-posting"
-                      disabled={!canManageForms()}
-                    />
-                    <small className="text-muted">
-                      Link to the specific job posting for this form (optional)
-                    </small>
-                  </FormGroup>
-
-                  <hr />
-
-                  <div className="d-flex justify-content-between align-items-center mb-3">
-                    <div>
-                      <h6 className="mb-0">General Job Links</h6>
-                      <small className="text-muted">
-                        Add 2-5 general links for applicants when no specific job link is available
-                      </small>
+            <div className={styles.fixedGroup}>
+              <div className={styles.fixedGroupHeader}>
+                <input
+                  type="checkbox"
+                  checked={formData.fixedFields.includePersonalInfo}
+                  onChange={e =>
+                    handleNestedFormChange('fixedFields', 'includePersonalInfo', e.target.checked)
+                  }
+                />
+                <span className={dm(styles.darkText)}>Name, email & role</span>
+              </div>
+              {formData.fixedFields.includePersonalInfo && (
+                <div className={styles.fixedGrid}>
+                  <div>
+                    <div className={`${styles.fixedCellLabel} ${dm(styles.darkText)}`}>name</div>
+                    <div className={styles.fixedCell}>
+                      <input
+                        readOnly
+                        tabIndex={-1}
+                        className={`${jb.jobformInput} ${styles.fixedCellInput}`}
+                      />
                     </div>
                   </div>
-
-                  {formData.jobLinks.generalLinks.length > 0 && (
-                    <div className="mb-3">
-                      {formData.jobLinks.generalLinks.map((link, index) => (
-                        <Card key={index} className="mb-2">
-                          <CardBody className="py-2">
-                            <Row className="align-items-center">
-                              <Col>
-                                <div>
-                                  <strong>{link.title}</strong>
-                                  <br />
-                                  <small className="text-muted">{link.url}</small>
-                                  {link.description && (
-                                    <>
-                                      <br />
-                                      <small>{link.description}</small>
-                                    </>
-                                  )}
-                                </div>
-                              </Col>
-                              <Col xs="auto">
-                                <Button
-                                  size="sm"
-                                  color="danger"
-                                  onClick={() => removeGeneralLink(index)}
-                                  disabled={!canManageForms()}
-                                >
-                                  Remove
-                                </Button>
-                              </Col>
-                            </Row>
-                          </CardBody>
-                        </Card>
-                      ))}
-                    </div>
-                  )}
-
-                  {canManageForms() && formData.jobLinks.generalLinks.length < 5 && (
-                    <Card>
-                      <CardBody>
-                        <h6>Add General Link</h6>
-                        <Row>
-                          <Col md={4}>
-                            <FormGroup>
-                              <Label for="linkTitle">Title *</Label>
-                              <Input
-                                type="text"
-                                id="linkTitle"
-                                value={newGeneralLink.title}
-                                onChange={e =>
-                                  setNewGeneralLink(prev => ({ ...prev, title: e.target.value }))
-                                }
-                                placeholder="e.g. Careers Page"
-                              />
-                            </FormGroup>
-                          </Col>
-                          <Col md={4}>
-                            <FormGroup>
-                              <Label for="linkUrl">URL *</Label>
-                              <Input
-                                type="url"
-                                id="linkUrl"
-                                value={newGeneralLink.url}
-                                onChange={e =>
-                                  setNewGeneralLink(prev => ({ ...prev, url: e.target.value }))
-                                }
-                                placeholder="https://example.com"
-                              />
-                            </FormGroup>
-                          </Col>
-                          <Col md={4}>
-                            <FormGroup>
-                              <Label for="linkDescription">Description</Label>
-                              <Input
-                                type="text"
-                                id="linkDescription"
-                                value={newGeneralLink.description}
-                                onChange={e =>
-                                  setNewGeneralLink(prev => ({
-                                    ...prev,
-                                    description: e.target.value,
-                                  }))
-                                }
-                                placeholder="Brief description"
-                              />
-                            </FormGroup>
-                          </Col>
-                        </Row>
-                        <Button color="primary" onClick={addGeneralLink}>
-                          Add Link
-                        </Button>
-                      </CardBody>
-                    </Card>
-                  )}
-                </TabPane>
-
-                <TabPane tabId="questions">
-                  <div className="d-flex justify-content-between align-items-center mb-3">
-                    <div>
-                      <h6 className="mb-0">Form Questions</h6>
-                      <small className="text-muted">Manage custom questions for this form</small>
-                    </div>
-                    <div>
-                      <Button
-                        color="outline-primary"
-                        onClick={() => setShowQuestionSetManager(true)}
-                        className="mr-2"
-                        disabled={!currentFormId}
-                      >
-                        Import from Question Sets
-                      </Button>
-                      {canCreateQuestionSets() && (
-                        <Button color="success" onClick={() => setShowQuestionSetEditor(true)}>
-                          Create Question Set
-                        </Button>
-                      )}
+                  <div>
+                    <div className={`${styles.fixedCellLabel} ${dm(styles.darkText)}`}>email</div>
+                    <div className={styles.fixedCell}>
+                      <input
+                        readOnly
+                        tabIndex={-1}
+                        className={`${jb.jobformInput} ${styles.fixedCellInput}`}
+                      />
                     </div>
                   </div>
-
-                  {!currentFormId && (
-                    <Alert color="info">
-                      Please save your form first before managing questions.
-                    </Alert>
-                  )}
-
-                  {formData.questions.length === 0 ? (
-                    <Alert color="secondary">
-                      No custom questions added yet. Use &quot;Import from Question Sets&quot; to
-                      add questions from reusable question sets.
-                    </Alert>
-                  ) : (
-                    <div>
-                      {formData.questions.map((question, index) => (
-                        <Card key={index} className="mb-2">
-                          <CardBody className="py-2">
-                            <Row className="align-items-center">
-                              <Col>
-                                <div>
-                                  <strong>Q{index + 1}:</strong> {question.questionText}
-                                </div>
-                                <small className="text-muted">
-                                  Type: {question.questionType}
-                                  {question.isRequired && (
-                                    <Badge color="warning" className="ml-2">
-                                      Required
-                                    </Badge>
-                                  )}
-                                  {question.fromQuestionSet && (
-                                    <Badge color="info" className="ml-2">
-                                      From Question Set
-                                    </Badge>
-                                  )}
-                                </small>
-                              </Col>
-                            </Row>
-                          </CardBody>
-                        </Card>
-                      ))}
+                  <div>
+                    <div className={`${styles.fixedCellLabel} ${dm(styles.darkText)}`}>
+                      Company &amp; Position
                     </div>
+                    <div className={styles.fixedCell}>
+                      <input
+                        readOnly
+                        tabIndex={-1}
+                        className={`${jb.jobformInput} ${styles.fixedCellInput}`}
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className={styles.fixedGroup}>
+              <div className={styles.fixedGroupHeader}>
+                <input
+                  type="checkbox"
+                  checked={formData.fixedFields.includeBasicInfo}
+                  onChange={e =>
+                    handleNestedFormChange('fixedFields', 'includeBasicInfo', e.target.checked)
+                  }
+                />
+                <span className={dm(styles.darkText)}>Location, phone &amp; web</span>
+              </div>
+              {formData.fixedFields.includeBasicInfo && (
+                <div className={styles.fixedGrid}>
+                  <div>
+                    <div className={`${styles.fixedCellLabel} ${dm(styles.darkText)}`}>
+                      Location &amp; Timezone
+                    </div>
+                    <div className={styles.fixedCell}>
+                      <input
+                        readOnly
+                        tabIndex={-1}
+                        className={`${jb.jobformInput} ${styles.fixedCellInput}`}
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <div className={`${styles.fixedCellLabel} ${dm(styles.darkText)}`}>
+                      Phone Number
+                    </div>
+                    <div className={styles.fixedCell}>
+                      <input
+                        readOnly
+                        tabIndex={-1}
+                        className={`${jb.jobformInput} ${styles.fixedCellInput}`}
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <div className={`${styles.fixedCellLabel} ${dm(styles.darkText)}`}>
+                      Primary Website/ Social
+                    </div>
+                    <div className={styles.fixedCell}>
+                      <input
+                        readOnly
+                        tabIndex={-1}
+                        className={`${jb.jobformInput} ${styles.fixedCellInput}`}
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className={styles.fixedGroup}>
+              <div className={styles.fixedGroupHeader}>
+                <input
+                  type="checkbox"
+                  checked={formData.fixedFields.includeExperience}
+                  onChange={e =>
+                    handleNestedFormChange('fixedFields', 'includeExperience', e.target.checked)
+                  }
+                />
+                <span className={dm(styles.darkText)}>Skills &amp; motivation (long text)</span>
+              </div>
+              {formData.fixedFields.includeExperience && (
+                <textarea
+                  readOnly
+                  className={`${jb.jobformTextarea} ${styles.responsePlaceholder} ${darkField}`.trim()}
+                  placeholder={RESPONSE_PLACEHOLDER}
+                />
+              )}
+            </div>
+
+            <div className={styles.fixedGroup}>
+              <div className={styles.fixedGroupHeader}>
+                <input
+                  type="checkbox"
+                  checked={formData.fixedFields.includeAvailability}
+                  onChange={e =>
+                    handleNestedFormChange('fixedFields', 'includeAvailability', e.target.checked)
+                  }
+                />
+                <span className={dm(styles.darkText)}>Availability (hours &amp; duration)</span>
+              </div>
+              {formData.fixedFields.includeAvailability && (
+                <div className={styles.fixedGrid}>
+                  <div>
+                    <div className={`${styles.fixedCellLabel} ${dm(styles.darkText)}`}>
+                      Hours per week
+                    </div>
+                    <div className={styles.fixedCell}>
+                      <input
+                        readOnly
+                        tabIndex={-1}
+                        className={`${jb.jobformInput} ${styles.fixedCellInput}`}
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <div className={`${styles.fixedCellLabel} ${dm(styles.darkText)}`}>
+                      How long you wish to volunteer
+                    </div>
+                    <div className={styles.fixedCell}>
+                      <input
+                        readOnly
+                        tabIndex={-1}
+                        className={`${jb.jobformInput} ${styles.fixedCellInput}`}
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <div className={`${styles.fixedCellLabel} ${dm(styles.darkText)}`}>
+                      Desired start date
+                    </div>
+                    <div className={styles.fixedCell}>
+                      <input
+                        readOnly
+                        type="date"
+                        tabIndex={-1}
+                        className={`${jb.jobformInput} ${styles.fixedCellInput}`}
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {formData.questions.map((q, index) => (
+              <div
+                key={`${index}-${q.questionText}`}
+                className={`${styles.questionBlock} ${darkMode ? styles.questionBlockDark : ''}`}
+              >
+                <input
+                  type="checkbox"
+                  className={styles.questionCheckbox}
+                  checked={q.visible !== false}
+                  onChange={() => toggleQuestionVisible(index)}
+                  aria-label={`Include question: ${q.questionText}`}
+                />
+                <div className={styles.questionBody}>
+                  <label className={`${styles.questionLabel} ${dm(styles.darkText)}`}>
+                    {q.questionText}
+                  </label>
+                  {renderQuestionPreview(q, index)}
+                  <button
+                    type="button"
+                    className={styles.removeQuestion}
+                    onClick={() => removeQuestion(index)}
+                  >
+                    Remove
+                  </button>
+                </div>
+              </div>
+            ))}
+
+            <div className={`${jb.newFieldSection} ${styles.addQuestionSection}`}>
+              <div
+                className={`${styles.addQuestionRow} ${darkMode ? styles.addQuestionRowDark : ''}`}
+              >
+                <input
+                  type="text"
+                  placeholder="Untitled Question"
+                  value={draftQuestionText}
+                  onChange={e => setDraftQuestionText(e.target.value)}
+                />
+                <select
+                  value={draftQuestionType}
+                  onChange={e => setDraftQuestionType(e.target.value)}
+                  aria-label="Question type"
+                >
+                  {QUESTION_TYPES.map(t => (
+                    <option key={t.value} value={t.value}>
+                      {t.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              {['checkbox', 'radio', 'dropdown'].includes(draftQuestionType) && (
+                <>
+                  <div
+                    className={`${styles.optionDraftRow} ${darkMode ? styles.optionDraftRowDark : ''}`}
+                  >
+                    <input
+                      type="text"
+                      value={draftOption}
+                      onChange={e => setDraftOption(e.target.value)}
+                      placeholder="Add an option"
+                    />
+                    <button type="button" className={jb.addOptionButton} onClick={addDraftOption}>
+                      Add option
+                    </button>
+                  </div>
+                  {draftOptions.length > 0 && (
+                    <ul className={`small mb-2 ${dm(styles.darkText)}`}>
+                      {draftOptions.map(opt => (
+                        <li key={opt}>{opt}</li>
+                      ))}
+                    </ul>
                   )}
-                </TabPane>
+                </>
+              )}
+              <div className={styles.addPlusWrap}>
+                <button
+                  type="button"
+                  className={styles.addPlusButton}
+                  onClick={addCustomQuestion}
+                  aria-label="Add question"
+                >
+                  +
+                </button>
+              </div>
+            </div>
 
-                <TabPane tabId="settings">
-                  <h6>Form Behavior Settings</h6>
+            {showAdvanced && (
+              <div className={`${styles.advancedPanel} ${darkMode ? styles.darkAdvanced : ''}`}>
+                <h6>Description</h6>
+                <textarea
+                  className={jb.jobformTextarea}
+                  rows={2}
+                  value={formData.description}
+                  onChange={e => handleFormChange('description', e.target.value)}
+                  placeholder="Optional description"
+                />
+                <h6>Category</h6>
+                <select
+                  className={jb.jobformSelect}
+                  value={formData.category}
+                  onChange={e => handleFormChange('category', e.target.value)}
+                >
+                  {categories.map(c => (
+                    <option key={c} value={c}>
+                      {c}
+                    </option>
+                  ))}
+                </select>
+                <h6 className="mt-3">Job ad link (optional)</h6>
+                <input
+                  type="url"
+                  className={jb.jobformInput}
+                  value={formData.jobLinks.specificJobLink}
+                  onChange={e =>
+                    handleNestedFormChange('jobLinks', 'specificJobLink', e.target.value)
+                  }
+                  placeholder="https://..."
+                />
+                <h6 className="mt-3">General links (up to 5)</h6>
+                {formData.jobLinks.generalLinks.map((link, i) => (
+                  <div key={i} className="d-flex align-items-center gap-2 mb-1">
+                    <span className="small">
+                      {link.title} — {link.url}
+                    </span>
+                    <button type="button" className="btn btn-sm btn-outline-danger" onClick={() => removeGeneralLink(i)}>
+                      Remove
+                    </button>
+                  </div>
+                ))}
+                {formData.jobLinks.generalLinks.length < 5 && (
+                  <div className="row g-2 mt-1">
+                    <div className="col-md-4">
+                      <input
+                        className={jb.jobformInput}
+                        placeholder="Title"
+                        value={newGeneralLink.title}
+                        onChange={e => setNewGeneralLink(p => ({ ...p, title: e.target.value }))}
+                      />
+                    </div>
+                    <div className="col-md-4">
+                      <input
+                        className={jb.jobformInput}
+                        placeholder="URL"
+                        value={newGeneralLink.url}
+                        onChange={e => setNewGeneralLink(p => ({ ...p, url: e.target.value }))}
+                      />
+                    </div>
+                    <div className="col-md-4">
+                      <button type="button" className={jb.addOptionButton} onClick={addGeneralLink}>
+                        Add link
+                      </button>
+                    </div>
+                  </div>
+                )}
+                <h6 className="mt-3">Form behavior</h6>
+                <label className="d-block">
+                  <input
+                    type="checkbox"
+                    checked={formData.settings.allowDuplicateSubmissions}
+                    onChange={e =>
+                      handleNestedFormChange(
+                        'settings',
+                        'allowDuplicateSubmissions',
+                        e.target.checked,
+                      )
+                    }
+                  />{' '}
+                  Allow duplicate submissions
+                </label>
+                <label className="d-block">
+                  <input
+                    type="checkbox"
+                    checked={formData.settings.requireLogin}
+                    onChange={e =>
+                      handleNestedFormChange('settings', 'requireLogin', e.target.checked)
+                    }
+                  />{' '}
+                  Require login
+                </label>
+                <label className="d-block">
+                  <input
+                    type="checkbox"
+                    checked={formData.settings.autoSaveProgress}
+                    onChange={e =>
+                      handleNestedFormChange('settings', 'autoSaveProgress', e.target.checked)
+                    }
+                  />{' '}
+                  Auto-save progress
+                </label>
+                <label className="d-block">
+                  <input
+                    type="checkbox"
+                    checked={formData.settings.showProgressBar}
+                    onChange={e =>
+                      handleNestedFormChange('settings', 'showProgressBar', e.target.checked)
+                    }
+                  />{' '}
+                  Show progress bar
+                </label>
+              </div>
+            )}
 
-                  <Row>
-                    <Col md={6}>
-                      <FormGroup check>
-                        <Label check>
-                          <Input
-                            type="checkbox"
-                            checked={formData.settings.allowDuplicateSubmissions}
-                            onChange={e =>
-                              handleNestedFormChange(
-                                'settings',
-                                'allowDuplicateSubmissions',
-                                e.target.checked,
-                              )
-                            }
-                            disabled={!canManageForms()}
-                          />
-                          Allow duplicate submissions
-                        </Label>
-                      </FormGroup>
+            <div ref={proceedRef} className={styles.proceedRow}>
+              <button type="button" className={styles.proceedButton} onClick={handleSaveForm}>
+                Proceed to submit with details
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
 
-                      <FormGroup check>
-                        <Label check>
-                          <Input
-                            type="checkbox"
-                            checked={formData.settings.requireLogin}
-                            onChange={e =>
-                              handleNestedFormChange('settings', 'requireLogin', e.target.checked)
-                            }
-                            disabled={!canManageForms()}
-                          />
-                          Require user login
-                        </Label>
-                      </FormGroup>
-                    </Col>
-                    <Col md={6}>
-                      <FormGroup check>
-                        <Label check>
-                          <Input
-                            type="checkbox"
-                            checked={formData.settings.autoSaveProgress}
-                            onChange={e =>
-                              handleNestedFormChange(
-                                'settings',
-                                'autoSaveProgress',
-                                e.target.checked,
-                              )
-                            }
-                            disabled={!canManageForms()}
-                          />
-                          Auto-save progress
-                        </Label>
-                      </FormGroup>
-
-                      <FormGroup check>
-                        <Label check>
-                          <Input
-                            type="checkbox"
-                            checked={formData.settings.showProgressBar}
-                            onChange={e =>
-                              handleNestedFormChange(
-                                'settings',
-                                'showProgressBar',
-                                e.target.checked,
-                              )
-                            }
-                            disabled={!canManageForms()}
-                          />
-                          Show progress bar
-                        </Label>
-                      </FormGroup>
-                    </Col>
-                  </Row>
-                </TabPane>
-              </TabContent>
-            </CardBody>
-          </Card>
-        </Col>
-      </Row>
-
-      {/* Question Set Manager Modal */}
       <QuestionSetManager
         isOpen={showQuestionSetManager}
         toggle={() => setShowQuestionSetManager(false)}
         currentFormId={currentFormId}
         onQuestionSetSelect={() => {
-          // Refresh form data after import
-          if (currentFormId) {
-            loadFormById(currentFormId);
-          } else {
-            loadFirstAvailableForm();
-          }
+          if (currentFormId) loadFormById(currentFormId);
+          else loadFirstAvailableForm();
         }}
         onCreateQuestionSet={() => {
           setEditingQuestionSet(null);
@@ -770,19 +865,16 @@ const EnhancedJobFormBuilder = () => {
         }}
       />
 
-      {/* Question Set Editor Modal */}
       <QuestionSetEditor
         isOpen={showQuestionSetEditor}
         toggle={() => setShowQuestionSetEditor(false)}
         questionSet={editingQuestionSet}
-        onSave={savedQuestionSet => {
+        onSave={() => {
           handleQuestionSetSaved();
-          if (currentFormId) {
-            loadFormById(currentFormId);
-          }
+          if (currentFormId) loadFormById(currentFormId);
         }}
       />
-    </Container>
+    </div>
   );
 };
 
