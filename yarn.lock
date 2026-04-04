@@ -4226,16 +4226,9 @@ ajv@^8.0.0, ajv@^8.0.1, ajv@^8.18.0, ajv@^8.9.0:
     json-schema-traverse "^1.0.0"
     require-from-string "^2.0.2"
 
-ansi-escapes@^4.3.2:
-  version "4.3.2"
-  resolved "https://registry.npmjs.org/ansi-escapes/-/ansi-escapes-4.3.2.tgz"
-  integrity sha512-gKXj5ALrKWQLsYG9jlTRmR/xKluxHV+Z9QEwNIgCfM1/uwPMCuzVVnh5mwTd+OuBZcwSIMbqssNWRm1lE51QaQ==
-  dependencies:
-    type-fest "^0.21.3"
-
-ansi-escapes@^7.0.0:
+ansi-escapes@7.1.1, ansi-escapes@^4.3.2, ansi-escapes@^7.0.0:
   version "7.1.1"
-  resolved "https://registry.npmjs.org/ansi-escapes/-/ansi-escapes-7.1.1.tgz"
+  resolved "https://registry.yarnpkg.com/ansi-escapes/-/ansi-escapes-7.1.1.tgz#fdd39427a7e5a26233e48a8b4366351629ffea1b"
   integrity sha512-Zhl0ErHcSRUaVfGUeUdDuLgpkEo8KIFjB4Y9uAc46ScOpdDiU1Dbyplh7qWJeJ/ZHpbyMSM26+X3BySgnIz40Q==
   dependencies:
     environment "^1.0.0"
@@ -11791,11 +11784,6 @@ type-fest@^0.20.2:
   version "0.20.2"
   resolved "https://registry.npmjs.org/type-fest/-/type-fest-0.20.2.tgz"
   integrity sha512-Ne+eE4r0/iWnpAxD852z3A+N0Bt5RN//NjJwRd2VFHEmrywxf5vsZlh4R6lixl6B+wz/8d+maTSAkN1FIkI3LQ==
-
-type-fest@^0.21.3:
-  version "0.21.3"
-  resolved "https://registry.npmjs.org/type-fest/-/type-fest-0.21.3.tgz"
-  integrity sha512-t0rzBq87m3fVcduHDUFhKmyyX+9eo6WQjZvf51Ea/M0Q7+T374Jp1aUiyUl0GKxp8M/OETVHSDvmkyPgvX+X2w==
 
 type-fest@^4.26.1:
   version "4.41.0"

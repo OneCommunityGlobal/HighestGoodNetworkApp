@@ -1,0 +1,8 @@
+.tableResponsive {
+  overflow-x: auto;
+}
+
+.permission-change-log-table {
+  border-collapse: 'collapse';
+  width: 100%;
+}

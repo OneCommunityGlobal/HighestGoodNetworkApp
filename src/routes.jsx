@@ -209,6 +209,9 @@ import MaterialUtilizationChart from './components/MaterialUtilization/MaterialU
 // Social Architecture
 
 import JobApplicationForm from './components/Collaboration/JobApplicationForm/JobApplicationForm';
+// Education Portal
+import LessonPlanBuilder from './components/EductionPortal/LessonPlans/LessonPlanBuilder';
+
 // Social Architecture
 const ResourceManagement = lazy(() => import('./components/ResourceManagement/ResourceManagement'));
 const RequestResources = lazy(() => import('./components/SocialArchitecture/RequestResources'));
@@ -697,7 +700,6 @@ export default (
           fallback
           component={PurchaseConsumable}
         />
-
         <BMProtectedRoute path="/bmdashboard/cost-prediction" component={CostPredictionPage} />
         <BMProtectedRoute path="/bmdashboard/rentalchart" component={RentalChart} />
         <BMProtectedRoute path="/bmdashboard/returned-late-chart" component={ReturnedLateChart} />
@@ -852,7 +854,8 @@ export default (
         <EPProtectedRoute path="/educationportal/tasks/upload" exact component={WriteTaskUpload} />
         <EPProtectedRoute path="/student/profile" exact component={StudentProfilePage} />
         {/* PR Analytics Dashboard */}
-        <Route path="/pull-request-analytics/reviews-insight" component={ReviewsInsight} />
+        <Route path="/pull-request-analytics/reviews-insight" component={ReviewsInsight} />{' '}
+        <EPProtectedRoute path="/educationportal/LessonPlans" exact component={LessonPlanBuilder} />
         <EPProtectedRoute
           path="/educationportal/evaluation-results"
           exact
