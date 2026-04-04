@@ -200,7 +200,10 @@ export default function ExperienceDonutChart() {
               }
             }}
           >
-            {selectedRoles.length === 0 ? 'All Roles' : `${selectedRoles.length} selected`}
+            <span className={selectedRoles.length === 0 ? styles['placeholder-text'] : ''}>
+              {selectedRoles.length === 0 ? 'All Roles' : `${selectedRoles.length} selected`}
+            </span>
+
             <span style={{ marginLeft: 'auto' }}>▾</span>
           </div>
           {dropdownOpen && (

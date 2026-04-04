@@ -54,9 +54,13 @@
 }
 
 .experience-donut-chart-dark-mode .multi-select-input {
-  background-color: #fff;
-  color: #0f172a !important;
+  background-color: #1e293b;
+  color: #f1f5f9 !important;
   border-color: #475569;
+}
+
+.placeholder-text {
+  opacity: 0.7;
 }
 
 .multi-select-options {
@@ -85,9 +89,25 @@
   background-color: #f3f4f6;
 }
 
-/* Preserve black text even in dark mode */
-.experience-donut-chart-dark-mode .multi-select-wrapper .multi-select-option span {
-  color: #0f172a !important;
+/* Dark mode dropdown background */
+.experience-donut-chart-dark-mode .multi-select-options {
+  background-color: #1e293b;
+  border-color: #475569;
+}
+
+/* Dropdown option text → white */
+.experience-donut-chart-dark-mode .multi-select-option span {
+  color: #f1f5f9 !important;
+}
+
+/* Checkbox alignment (optional) */
+.experience-donut-chart-dark-mode .multi-select-option input {
+  accent-color: #3b82f6;
+}
+
+/* Hover effect in dark mode */
+.experience-donut-chart-dark-mode .multi-select-option:hover {
+  background-color: #334155;
 }
 
 .experience-donut-chart-dark-mode h2 {
