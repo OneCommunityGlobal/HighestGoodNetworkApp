@@ -10,13 +10,15 @@ export default function SelectItem({
 }) {
   let itemSet = [];
   if (items.length) {
-    if (selectedProject === 'all') itemSet = [...new Set(items.map(m => m.itemType?.name))];
-    else
+    if (selectedProject === 'all') {
+      itemSet = [...new Set(items.map(m => m.itemType?.name))];
+    } else {
       itemSet = [
         ...new Set(
           items.filter(mat => mat.project?.name === selectedProject).map(m => m.itemType?.name),
         ),
       ];
+    }
   }
 
   return (
@@ -39,13 +41,11 @@ export default function SelectItem({
           {items.length ? (
             <>
               <option value="all">All</option>
-              {itemSet.map(name => {
-                return (
-                  <option key={name} value={name}>
-                    {name}
-                  </option>
-                );
-              })}
+              {itemSet.map(name => (
+                <option key={name} value={name}>
+                  {name}
+                </option>
+              ))}
             </>
           ) : (
             <option>No data</option>

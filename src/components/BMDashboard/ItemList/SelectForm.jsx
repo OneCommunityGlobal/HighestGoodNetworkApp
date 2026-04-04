@@ -15,13 +15,9 @@ export default function SelectForm({ items, setSelectedProject, setSelectedItem 
   };
 
   return (
-    <Form className="" style={{}}>
-      <FormGroup className="select_input" style={{}}>
-        <Label
-          htmlFor="select-project"
-          className=""
-          style={{ color: darkMode ? 'white' : 'inherit' }}
-        >
+    <Form>
+      <FormGroup className="select_input">
+        <Label htmlFor="select-project" style={{ color: darkMode ? 'white' : 'inherit' }}>
           Project:
         </Label>
         <Input
@@ -30,31 +26,21 @@ export default function SelectForm({ items, setSelectedProject, setSelectedItem 
           type="select"
           onChange={handleChange}
           disabled={!items.length}
-          className=""
           style={{ color: darkMode ? 'white' : 'inherit' }}
         >
           {items.length ? (
             <>
-              <option value="all" className="" style={{ color: darkMode ? 'white' : 'inherit' }}>
+              <option value="all" style={{ color: darkMode ? 'white' : 'inherit' }}>
                 All
               </option>
-              {projectsSet.map(name => {
-                return (
-                  <option
-                    key={name}
-                    value={name}
-                    className=""
-                    style={{ color: darkMode ? 'white' : 'inherit' }}
-                  >
-                    {name}
-                  </option>
-                );
-              })}
+              {projectsSet.map(name => (
+                <option key={name} value={name} style={{ color: darkMode ? 'white' : 'inherit' }}>
+                  {name}
+                </option>
+              ))}
             </>
           ) : (
-            <option className="" style={{ color: darkMode ? 'white' : 'inherit' }}>
-              No data
-            </option>
+            <option style={{ color: darkMode ? 'white' : 'inherit' }}>No data</option>
           )}
         </Input>
       </FormGroup>

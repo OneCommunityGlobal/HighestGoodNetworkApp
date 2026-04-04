@@ -6,10 +6,16 @@ import BMError from '../shared/BMError';
 import SelectForm from './SelectForm';
 import SelectItem from './SelectItem';
 import ItemsTable from './ItemsTable';
-
 import styles from './ItemListView.module.css';
 
-export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamicColumns }) {
+export function ItemListView({
+  itemType,
+  items,
+  errors,
+  UpdateItemModal,
+  dynamicColumns,
+  children,
+}) {
   const darkMode = useSelector(state => state.theme.darkMode);
   const [filteredItems, setFilteredItems] = useState(items);
   const [selectedProject, setSelectedProject] = useState('all');
@@ -68,18 +74,20 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
                 items={items}
                 setSelectedProject={setSelectedProject}
                 setSelectedItem={setSelectedItem}
-                darkMode={darkMode}
               />
               <SelectItem
                 items={items}
                 selectedProject={selectedProject}
                 selectedItem={selectedItem}
                 setSelectedItem={setSelectedItem}
+                label={itemType === 'Materials' ? 'Material' : itemType}
                 darkMode={darkMode}
               />
             </>
           )}
         </span>
+
+        {children}
 
         {filteredItems && (
           <ItemsTable
@@ -89,6 +97,7 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
             UpdateItemModal={UpdateItemModal}
             dynamicColumns={dynamicColumns}
             darkMode={darkMode}
+            itemType={itemType}
           />
         )}
       </section>
@@ -97,19 +106,29 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
 }
 
 ItemListView.propTypes = {
+  itemType: PropTypes.string.isRequired,
   items: PropTypes.arrayOf(
     PropTypes.shape({
-      id: PropTypes.number.isRequired,
+      id: PropTypes.number,
       name: PropTypes.string,
     }),
   ).isRequired,
   errors: PropTypes.shape({
     message: PropTypes.string,
   }),
+  UpdateItemModal: PropTypes.elementType.isRequired,
+  dynamicColumns: PropTypes.arrayOf(
+    PropTypes.shape({
+      label: PropTypes.string.isRequired,
+      key: PropTypes.string.isRequired,
+    }),
+  ).isRequired,
+  children: PropTypes.node,
 };
 
 ItemListView.defaultProps = {
   errors: {},
+  children: null,
 };
 
 export default ItemListView;

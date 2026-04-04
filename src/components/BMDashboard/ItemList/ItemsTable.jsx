@@ -11,7 +11,8 @@ export default function ItemsTable({
   filteredItems,
   UpdateItemModal,
   dynamicColumns,
-  darkMode,
+  darkMode = false,
+  itemType,
 }) {
   const [sortedData, setData] = useState(filteredItems);
   const [modal, setModal] = useState(false);
@@ -83,9 +84,8 @@ export default function ItemsTable({
     setData(newSortedData);
   };
 
-  const getNestedValue = (obj, path) => {
-    return path.split('.').reduce((acc, part) => (acc ? acc[part] : null), obj);
-  };
+  const getNestedValue = (obj, path) =>
+    path.split('.').reduce((acc, part) => (acc ? acc[part] : null), obj);
 
   return (
     <>
@@ -95,6 +95,7 @@ export default function ItemsTable({
         record={record}
         setRecord={setRecord}
         recordType={recordType}
+        itemType={itemType}
       />
       <UpdateItemModal modal={updateModal} setModal={setUpdateModal} record={updateRecord} />
       {darkMode && (
@@ -111,7 +112,7 @@ export default function ItemsTable({
             }
 
             .dark-mode .items_table_container .table tbody tr:hover {
-              background-color: #1C2541 !important; /* Space Cadet on hover */
+              background-color: #1C2541 !important;
             }
           `}
         </style>
@@ -181,7 +182,7 @@ export default function ItemsTable({
                   Name
                 </th>
               )}
-              {dynamicColumns.map(({ label }) => (
+              {dynamicColumns.map(({ label, key }) => (
                 <th
                   className={darkMode ? 'dark-th' : ''}
                   style={
@@ -222,30 +223,34 @@ export default function ItemsTable({
             style={darkMode ? { backgroundColor: '#3A506B', color: '#ffffff' } : {}}
           >
             {sortedData && sortedData.length > 0 ? (
-              sortedData.map(el => {
-                return (
-                  <tr
-                    key={el._id}
-                    className={darkMode ? 'dark-row' : ''}
-                    style={
-                      darkMode ? { backgroundColor: '#3A506B', borderBottom: '1px solid #333' } : {}
-                    }
-                  >
-                    <td style={darkMode ? { color: '#ffffff' } : {}}>{el.project?.name}</td>
-                    <td style={darkMode ? { color: '#ffffff' } : {}}>{el.itemType?.name}</td>
-                    {dynamicColumns.map(({ label, key }) => (
-                      <td key={label} style={darkMode ? { color: '#ffffff' } : {}}>
-                        {getNestedValue(el, key)}
-                      </td>
-                    ))}
-                    <td className="items_cell">
+              sortedData.map(el => (
+                <tr
+                  key={el._id}
+                  className={darkMode ? 'dark-row' : ''}
+                  style={
+                    darkMode ? { backgroundColor: '#3A506B', borderBottom: '1px solid #333' } : {}
+                  }
+                >
+                  <td style={darkMode ? { color: '#ffffff' } : {}}>{el.project?.name}</td>
+                  <td style={darkMode ? { color: '#ffffff' } : {}}>{el.itemType?.name}</td>
+                  {dynamicColumns.map(({ label, key }) => (
+                    <td key={label} style={darkMode ? { color: '#ffffff' } : {}}>
+                      {getNestedValue(el, key)}
+                    </td>
+                  ))}
+                  <td className="items_cell">
+                    <div
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '10px',
+                        flexWrap: 'nowrap',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
                       <button
                         type="button"
-                        style={
-                          darkMode
-                            ? { color: '#4a90e2', marginRight: '10px' }
-                            : { marginRight: '10px' }
-                        }
+                        style={darkMode ? { color: '#4a90e2' } : {}}
                         onClick={() => handleEditRecordsClick(el, 'Update')}
                         aria-label="Edit Record"
                       >
@@ -260,21 +265,21 @@ export default function ItemsTable({
                       >
                         View
                       </Button>
-                    </td>
-                    <td>
-                      <Button
-                        color="primary"
-                        outline={!darkMode}
-                        style={darkMode ? { borderColor: '#4a90e2', color: '#ffffff' } : {}}
-                        size="sm"
-                        onClick={() => handleViewRecordsClick(el, 'Purchase')}
-                      >
-                        View
-                      </Button>
-                    </td>
-                  </tr>
-                );
-              })
+                    </div>
+                  </td>
+                  <td>
+                    <Button
+                      color="primary"
+                      outline={!darkMode}
+                      style={darkMode ? { borderColor: '#4a90e2', color: '#ffffff' } : {}}
+                      size="sm"
+                      onClick={() => handleViewRecordsClick(el, 'Purchase')}
+                    >
+                      View
+                    </Button>
+                  </td>
+                </tr>
+              ))
             ) : (
               <tr>
                 <td colSpan={11} style={{ textAlign: 'center' }}>
