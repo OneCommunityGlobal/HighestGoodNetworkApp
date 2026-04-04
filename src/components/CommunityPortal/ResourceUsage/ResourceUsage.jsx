@@ -45,28 +45,68 @@ const allData = {
 
 const allInsights = {
   'This Week': [
-    { title: 'Most waste event type', value: 'Kids event', color: '#dcfce7' },
-    { title: 'Most vulnerable materials', value: 'Flower', color: '#f3e8ff' },
-    { title: 'Top rated venues', value: 'Kevin building', color: '#dcfce7' },
-    { title: 'Lowest rated venues', value: 'Community centers', color: '#ffe4e6' },
-    { title: 'Highest cost venues/hr', value: 'Kevin building', color: '#dcfce7' },
-    { title: 'Most vulnerable equipment', value: 'Chair', color: '#ffe4e6' },
+    { title: 'Most waste event type', value: 'Kids event', color: '#b0d9cb', textColor: '#1a5c3a' },
+    { title: 'Most vulnerable materials', value: 'Flower', color: '#c3b8e8', textColor: '#4a2f8a' },
+    { title: 'Top rated venues', value: 'Kevin building', color: '#b0d9cb', textColor: '#1a5c3a' },
+    {
+      title: 'Lowest rated venues',
+      value: 'Community centers',
+      color: '#fdcdb6',
+      textColor: '#8b1a2a',
+    },
+    {
+      title: 'Highest cost venues/hr',
+      value: 'Kevin building',
+      color: '#b0d9cb',
+      textColor: '#1a5c3a',
+    },
+    { title: 'Most vulnerable equipment', value: 'Chair', color: '#fdcdb6', textColor: '#8b1a2a' },
   ],
   'Last Week': [
-    { title: 'Most waste event type', value: 'Sports event', color: '#dcfce7' },
-    { title: 'Most vulnerable materials', value: 'Paper', color: '#f3e8ff' },
-    { title: 'Top rated venues', value: 'Sports center', color: '#dcfce7' },
-    { title: 'Lowest rated venues', value: 'Old hall', color: '#ffe4e6' },
-    { title: 'Highest cost venues/hr', value: 'Sports center', color: '#dcfce7' },
-    { title: 'Most vulnerable equipment', value: 'Table', color: '#ffe4e6' },
+    {
+      title: 'Most waste event type',
+      value: 'Sports event',
+      color: '#b0d9cb',
+      textColor: '#1a5c3a',
+    },
+    { title: 'Most vulnerable materials', value: 'Paper', color: '#c3b8e8', textColor: '#4a2f8a' },
+    { title: 'Top rated venues', value: 'Sports center', color: '#b0d9cb', textColor: '#1a5c3a' },
+    { title: 'Lowest rated venues', value: 'Old hall', color: '#fdcdb6', textColor: '#8b1a2a' },
+    {
+      title: 'Highest cost venues/hr',
+      value: 'Sports center',
+      color: '#b0d9cb',
+      textColor: '#1a5c3a',
+    },
+    { title: 'Most vulnerable equipment', value: 'Table', color: '#fdcdb6', textColor: '#8b1a2a' },
   ],
   'This Month': [
-    { title: 'Most waste event type', value: 'Community event', color: '#dcfce7' },
-    { title: 'Most vulnerable materials', value: 'Plastic', color: '#f3e8ff' },
-    { title: 'Top rated venues', value: 'Community hall', color: '#dcfce7' },
-    { title: 'Lowest rated venues', value: 'Small rooms', color: '#ffe4e6' },
-    { title: 'Highest cost venues/hr', value: 'Community hall', color: '#dcfce7' },
-    { title: 'Most vulnerable equipment', value: 'Microphone', color: '#ffe4e6' },
+    {
+      title: 'Most waste event type',
+      value: 'Community event',
+      color: '#b0d9cb',
+      textColor: '#1a5c3a',
+    },
+    {
+      title: 'Most vulnerable materials',
+      value: 'Plastic',
+      color: '#c3b8e8',
+      textColor: '#4a2f8a',
+    },
+    { title: 'Top rated venues', value: 'Community hall', color: '#b0d9cb', textColor: '#1a5c3a' },
+    { title: 'Lowest rated venues', value: 'Small rooms', color: '#fdcdb6', textColor: '#8b1a2a' },
+    {
+      title: 'Highest cost venues/hr',
+      value: 'Community hall',
+      color: '#b0d9cb',
+      textColor: '#1a5c3a',
+    },
+    {
+      title: 'Most vulnerable equipment',
+      value: 'Microphone',
+      color: '#fdcdb6',
+      textColor: '#8b1a2a',
+    },
   ],
 };
 
@@ -255,14 +295,14 @@ export default function ResourceUsage() {
               <div
                 className={styles.insightTitle}
                 title={insightDefinitions[insight.title]}
-                style={{ color: darkMode ? '#342d2dff' : '#6b7280', fontWeight: 600 }}
+                style={darkMode ? { color: '#e5e7eb', fontWeight: 600 } : { fontWeight: 600 }}
               >
                 {insight.title}
               </div>
 
               <div
-                className={`${styles.insightBadge} ${darkMode ? 'text-dark' : ''}`}
-                style={{ backgroundColor: insight.color }}
+                className={styles.insightBadge}
+                style={{ backgroundColor: insight.color, color: insight.textColor }}
               >
                 {insight.value}
               </div>

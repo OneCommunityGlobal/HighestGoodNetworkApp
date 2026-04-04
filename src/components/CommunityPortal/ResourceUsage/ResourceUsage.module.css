@@ -57,10 +57,11 @@
 
 .insightCard {
   position: relative;
-  padding: 1rem;
-  border-radius: 0.75rem;
-  background-color: #f9fafb;
-  border: 1px solid #e5e7eb;
+  padding: 1rem 1.25rem;
+  border-radius: 1.5rem;
+  background-color: #fff;
+  border: 1px solid #f3f4f6;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 8%), 0 4px 12px rgb(0 0 0 / 6%);
   cursor: help;
   overflow: hidden;
 }
@@ -77,7 +78,7 @@
 .insightMeta {
   margin-top: 0.5rem;
   font-size: 0.75rem;
-  color: #6b7280;
+  color: #9ca3af !important;
 }
 
 /* Tooltip */
@@ -148,16 +149,11 @@
 
 /* BADGE */
 .insightBadge {
-  padding: 0.25rem 0.75rem;
-  border-radius: 1rem;
-  font-size: 0.875rem;
+  display: inline-block;
+  padding: 0.375rem 0.875rem;
+  border-radius: 0.5rem;
+  font-size: 0.8125rem;
   font-weight: 600;
-  color: #111827;
-}
-
-
-.insightCard .insightBadge {
-  color: #111827 !important;
 }
 
 .insightCard:hover .insightTooltip {
