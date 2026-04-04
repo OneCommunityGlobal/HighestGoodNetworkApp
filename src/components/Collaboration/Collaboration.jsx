@@ -113,6 +113,10 @@ function Collaboration() {
     }
   };
 
+  const handleReorderJobs = () => {
+    toast.info('Reorder functionality coming soon!');
+  };
+
   /* ================= SUMMARIES VIEW ================= */
   if (summaries) {
     return (
@@ -167,6 +171,9 @@ function Collaboration() {
               onChange={e => setQuery(e.target.value)}
             />
             <button className="btn btn-secondary">Go</button>
+            <button className="btn btn-secondary" onClick={handleReorderJobs}>
+              Reorder Jobs
+            </button>
           </form>
 
           <button
@@ -176,7 +183,6 @@ function Collaboration() {
           >
             Select Categories ▼
           </button>
-
           {/* CATEGORY DROPDOWN */}
           {showCategoryDropdown && (
             <div className={styles.jobSelect}>
