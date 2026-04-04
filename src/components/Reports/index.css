@@ -19,6 +19,11 @@
   overflow-x: hidden;
 }
 
+/* Dark mode: Reports page background */
+.container-component-wrapper.bg-oxford-blue {
+  background-color: #1b2a41;
+}
+
 .data-container {
   width: 50%;
 }
@@ -31,6 +36,11 @@
   background-color: #faf7fc;
   margin: 0 auto;
   padding: 0 16px;
+}
+
+/* Dark mode: category section background */
+.category-data-container.bg-oxford-blue {
+  background-color: #1b2a41;
 }
 
 @media screen and (max-width: 1200px) {
