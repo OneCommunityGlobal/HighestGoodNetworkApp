@@ -4,10 +4,7 @@ import moment from 'moment';
 import { useDispatch, useSelector } from 'react-redux';
 import styles from './RecordsModal.module.css';
 import { approvePurchase, rejectPurchase } from '../../../actions/bmdashboard/materialsActions';
-import {
-  approveConsumablePurchase,
-  rejectConsumablePurchase,
-} from '../../../actions/bmdashboard/consumableActions';
+import * as consumableActions from '../../../actions/bmdashboard/consumableActions';
 
 const ALLOWED_ROLES = ['Owner', 'Administrator'];
 
@@ -59,7 +56,7 @@ export function Record({ record, recordType, setRecord, itemType }) {
     setLoadingId(purchaseId);
     try {
       const action = isConsumable
-        ? approveConsumablePurchase(purchaseId, quantity)
+        ? consumableActions.approveConsumablePurchase(purchaseId, quantity)
         : approvePurchase(purchaseId, quantity);
       const response = await dispatch(action);
 
@@ -83,7 +80,7 @@ export function Record({ record, recordType, setRecord, itemType }) {
     setLoadingId(purchaseId);
     try {
       const action = isConsumable
-        ? rejectConsumablePurchase(purchaseId)
+        ? consumableActions.rejectConsumablePurchase(purchaseId)
         : rejectPurchase(purchaseId);
       const response = await dispatch(action);
 
