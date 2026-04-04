@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import {
   Bar,
   BarChart,
@@ -10,58 +11,87 @@ import {
   Tooltip,
   Legend,
 } from 'recharts';
+import styles from './EventPopularity.module.css';
 
 // Sample data
 const eventTypeData = [
-  { name: 'Event Type 1', registered: 75 },
-  { name: 'Event Type 2', registered: 60 },
-  { name: 'Event Type 3', registered: 55 },
-  { name: 'Event Type 4', registered: 50 },
-  { name: 'Event Type 5', registered: 45 },
-  { name: 'Event Type 6', registered: 40 },
+  { name: 'Community Volunteer Day', registered: 75 },
+  { name: 'Skill Development Workshop', registered: 60 },
+  { name: 'Networking Mixer', registered: 55 },
+  { name: 'Environmental Cleanup', registered: 50 },
+  { name: 'Youth Membership Program', registered: 45 },
+  { name: 'Cultural Exchange Event', registered: 40 },
 ];
 
 const timeData = [
-  { time: '9:00', registered: 8, attended: 12 },
-  { time: '11:00', registered: 15, attended: 18 },
-  { time: '13:00', registered: 20, attended: 25 },
-  { time: '15:00', registered: 25, attended: 30 },
-  { time: '17:00', registered: 18, attended: 20 },
-  { time: '19:00', registered: 10, attended: 15 },
-  { time: '21:00', registered: 5, attended: 8 },
+  { time: '9:00 AM', registered: 8, attended: 12 },
+  { time: '11:00 AM', registered: 15, attended: 18 },
+  { time: '1:00 PM', registered: 20, attended: 25 },
+  { time: '3:00 PM', registered: 25, attended: 30 },
+  { time: '5:00 PM', registered: 18, attended: 20 },
+  { time: '7:00 PM', registered: 10, attended: 15 },
+  { time: '9:00 PM', registered: 5, attended: 8 },
 ];
 
 const participationCards = [
   {
-    title: '5+',
-    subtitle: 'Repeated participation',
+    title: '5+ Events',
+    subtitle: 'Highly Engaged Members',
+    description: 'Users who attended 5 or more events',
     trend: '-10%',
     trendType: 'negative',
     participants: 3,
   },
   {
-    title: '2+',
-    subtitle: 'Repeated participation',
+    title: '2-4 Events',
+    subtitle: 'Regular Participants',
+    description: 'Users who attended 2 to 4 events',
     trend: '+25%',
     trendType: 'positive',
     participants: 3,
   },
   {
-    title: '<1',
-    subtitle: 'Repeated participation',
+    title: '1 Event',
+    subtitle: 'New/One-Time Attendees',
+    description: 'First-time or one-time participants',
     trend: '-5%',
     trendType: 'negative',
     participants: 3,
   },
   {
-    title: '420',
-    subtitle: 'Total Members',
+    title: '420 Users',
+    subtitle: 'Total Active Members',
+    description: 'Total users with at least one event attendance',
     trend: '+20%',
     trendType: 'positive',
   },
 ];
 
+const InfoTooltip = ({ text, children }) => {
+  const [showToolTip, setShowTooltip] = useState(false);
+
+  return (
+    <div
+      className={styles.infotooltipHover}
+      onMouseEnter={() => setShowTooltip(true)}
+      onMouseLeave={() => setShowTooltip(false)}
+    >
+      {children}
+      {showToolTip && (
+        <div className={styles.infotooltipheading}>
+          {text}
+          <div className={styles.infotooltiptext}></div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 export default function EventDashboard() {
+  const currentDate = new Date();
+  const thirtyDaysAgo = new Date(currentDate.getTime() - 30 * 24 * 60 * 60 * 1000);
+  const dateRangeLabel = `${thirtyDaysAgo.toLocaleDateString()} - ${currentDate.toLocaleDateString()}`;
+
   return (
     <div
       style={{
@@ -71,16 +101,42 @@ export default function EventDashboard() {
         fontFamily: 'Arial, sans-serif',
       }}
     >
-      <h1
+      <div
         style={{
-          fontSize: '24px',
-          fontWeight: 'bold',
-          marginBottom: '20px',
-          textAlign: 'center',
+          marginBottom: '30px',
         }}
       >
-        Event Attendance Trend
-      </h1>
+        <h1
+          style={{
+            fontSize: '24px',
+            fontWeight: 'bold',
+            marginBottom: '10px',
+            textAlign: 'center',
+          }}
+        >
+          Event Attendance Dashboard
+        </h1>
+        <div
+          style={{
+            textAlign: 'center',
+            fontSize: '14px',
+            color: '#666',
+            marginBottom: '5px',
+          }}
+        >
+          <strong>Time Period:</strong> Last 30 days ({dateRangeLabel})
+        </div>
+        <div
+          style={{
+            textAlign: 'center',
+            fontSize: '13px',
+            color: '#999',
+          }}
+        >
+          All metrics below reflect data from the selected time period
+        </div>
+      </div>
+
       <div
         style={{
           display: 'grid',
@@ -97,14 +153,44 @@ export default function EventDashboard() {
             padding: '20px',
           }}
         >
-          <h2
+          <div
             style={{
-              fontSize: '18px',
-              marginBottom: '15px',
+              display: 'flex',
+              alignItems: 'center',
+              marginBottom: '20px',
             }}
           >
-            Event Registration Trend (Type)
-          </h2>
+            <h2
+              style={{
+                fontSize: '18px',
+                fontWeight: '600',
+                margin: 0,
+                marginRight: '8px',
+              }}
+            >
+              Event Registration by Type
+            </h2>
+            <InfoTooltip text="Total users who registered (signed up) for each event type">
+              <span
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '18px',
+                  height: '18px',
+                  background: '#4A90E2',
+                  color: 'white',
+                  borderRadius: '50%',
+                  fontSize: '12px',
+                  fontWeight: 'bold',
+                  cursor: 'help',
+                }}
+              >
+                ?
+              </span>
+            </InfoTooltip>
+          </div>
+
           <div
             style={{
               marginBottom: '20px',
@@ -114,13 +200,15 @@ export default function EventDashboard() {
               style={{
                 display: 'flex',
                 justifyContent: 'space-between',
-                fontSize: '14px',
-                color: '#666',
-                marginBottom: '10px',
+                fontSize: '12px',
+                color: '#999',
+                marginBottom: '12px',
+                fontWeight: '600',
+                textTransform: 'uppercase',
               }}
             >
               <span>Event Name</span>
-              <span>Registered Members</span>
+              <span>Registered Users</span>
             </div>
             {eventTypeData.map(event => (
               <div
@@ -128,15 +216,16 @@ export default function EventDashboard() {
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  marginBottom: '10px',
+                  marginBottom: '14px',
                 }}
               >
                 <span
                   style={{
-                    width: '100px',
+                    width: '140px',
                     marginRight: '10px',
-                    fontSize: '14px',
-                    color: '#666',
+                    fontSize: '13px',
+                    color: '#333',
+                    fontWeight: '500',
                   }}
                 >
                   {event.name}
@@ -144,9 +233,9 @@ export default function EventDashboard() {
                 <div
                   style={{
                     flexGrow: 1,
-                    height: '8px',
-                    background: '#e0e0e0',
-                    borderRadius: '4px',
+                    height: '10px',
+                    background: '#e8e8e8',
+                    borderRadius: '5px',
                     overflow: 'hidden',
                   }}
                 >
@@ -160,12 +249,15 @@ export default function EventDashboard() {
                 </div>
                 <span
                   style={{
-                    marginLeft: '10px',
-                    fontSize: '14px',
-                    color: '#666',
+                    marginLeft: '12px',
+                    fontSize: '13px',
+                    color: '#333',
+                    fontWeight: '600',
+                    minWidth: '35px',
+                    textAlign: 'right',
                   }}
                 >
-                  {event.registered}
+                  {event.registered} users
                 </span>
               </div>
             ))}
@@ -179,24 +271,48 @@ export default function EventDashboard() {
             }}
           >
             {[
-              { title: '325', subtitle: 'Total Registered Members', isPrimary: true },
-              { title: 'Event Type 1', subtitle: 'Most Popular Event Type' },
-              { title: 'Event Type 6', subtitle: 'Least Popular Event Type' },
-            ].map(card => (
+              {
+                title: '325 Users',
+                subtitle: 'Total Registrations',
+                isPrimary: true,
+                description: 'Total users who registered across all event types',
+              },
+              {
+                title: 'Community Volunteer Day',
+                subtitle: 'Most Popular',
+                description: 'Event type with highest registrations',
+              },
+              {
+                title: 'Cultural Exchange Event',
+                subtitle: 'Least Popular',
+                description: 'Event type with lowest registrations',
+              },
+            ].map((card, idx) => (
               <div
-                key={card}
+                key={idx}
                 style={{
-                  background: '#f5f5f5',
-                  borderRadius: '4px',
-                  padding: '10px',
+                  background: '#f9f9f9',
+                  borderRadius: '6px',
+                  padding: '12px',
                   textAlign: 'center',
+                  border: '1px solid #f0f0f0',
                 }}
               >
-                <h3 style={card.isPrimary ? { color: '#4A90E2' } : {}}>{card.title}</h3>
+                <h3
+                  style={{
+                    fontSize: card.isPrimary ? '16px' : '14px',
+                    fontWeight: card.isPrimary ? '700' : '600',
+                    color: card.isPrimary ? '#4A90E2' : '#333',
+                    margin: '0 0 4px 0',
+                  }}
+                >
+                  {card.title}
+                </h3>
                 <p
                   style={{
-                    fontSize: '12px',
-                    color: '#666',
+                    fontSize: '11px',
+                    color: '#999',
+                    margin: '4px 0',
                   }}
                 >
                   {card.subtitle}
@@ -215,28 +331,70 @@ export default function EventDashboard() {
             padding: '20px',
           }}
         >
-          <h2
+          <div
             style={{
-              fontSize: '18px',
-              marginBottom: '15px',
+              display: 'flex',
+              alignItems: 'center',
+              marginBottom: '20px',
             }}
           >
-            Event Registration Trend (Time)
-          </h2>
+            <h2
+              style={{
+                fontSize: '18px',
+                fontWeight: '600',
+                margin: 0,
+                marginRight: '8px',
+              }}
+            >
+              Event Attendance by Time Slot
+            </h2>
+            <InfoTooltip text="Registered = sign-ups | Attended = actual participants who showed up">
+              <span
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '18px',
+                  height: '18px',
+                  background: '#4A90E2',
+                  color: 'white',
+                  borderRadius: '50%',
+                  fontSize: '12px',
+                  fontWeight: 'bold',
+                  cursor: 'help',
+                }}
+              >
+                ?
+              </span>
+            </InfoTooltip>
+          </div>
+
           <div
             style={{
               marginBottom: '20px',
             }}
           >
-            <ResponsiveContainer width="100%" height={200}>
+            <ResponsiveContainer width="100%" height={250}>
               <BarChart data={timeData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="time" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="registered" name="Registered Users" fill="#4A90E2" />
-                <Bar dataKey="attended" name="Attended Users" fill="#82B7FF" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                <XAxis dataKey="time" interval={0} angle={-35} textAnchor="end" height={60} />
+                <YAxis label={{ value: 'Number of Users', angle: -90, position: 'insideLeft' }} />
+                <Tooltip
+                  formatter={value => `${value} users`}
+                  contentStyle={{
+                    background: '#333',
+                    border: 'none',
+                    borderRadius: '4px',
+                    color: '#fff',
+                  }}
+                />
+                <Legend
+                  wrapperStyle={{
+                    paddingTop: '20px',
+                  }}
+                />
+                <Bar dataKey="registered" name="Registered Users (Sign-ups)" fill="#4A90E2" />
+                <Bar dataKey="attended" name="Attended Users (Show-ups)" fill="#82B7FF" />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -248,48 +406,62 @@ export default function EventDashboard() {
               gap: '10px',
             }}
           >
-            {participationCards.map(card => (
+            {participationCards.map((card, idx) => (
               <div
-                key={card}
+                key={idx}
                 style={{
-                  background: '#f5f5f5',
-                  borderRadius: '4px',
-                  padding: '10px',
+                  background: '#f9f9f9',
+                  borderRadius: '6px',
+                  padding: '12px',
+                  border: '1px solid #f0f0f0',
+                  position: 'relative',
                 }}
               >
                 <div
                   style={{
                     display: 'flex',
                     justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginBottom: '5px',
+                    alignItems: 'flex-start',
+                    marginBottom: '6px',
                   }}
                 >
                   <h3
                     style={{
-                      fontSize: '18px',
+                      fontSize: '15px',
+                      fontWeight: '700',
                       margin: 0,
+                      color: '#333',
                     }}
                   >
                     {card.title}
                   </h3>
-                  <button
-                    type="button"
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      cursor: 'pointer',
-                      fontSize: '16px',
-                    }}
-                  >
-                    <span style={{ fontSize: '16px' }}>&#9654;</span>
-                  </button>
+                  <InfoTooltip text={card.description}>
+                    <span
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: '16px',
+                        height: '16px',
+                        background: '#ddd',
+                        color: '#666',
+                        borderRadius: '50%',
+                        fontSize: '11px',
+                        fontWeight: 'bold',
+                        cursor: 'help',
+                        flexShrink: 0,
+                      }}
+                    >
+                      ?
+                    </span>
+                  </InfoTooltip>
                 </div>
                 <p
                   style={{
-                    fontSize: '12px',
-                    color: '#666',
-                    margin: '5px 0',
+                    fontSize: '11px',
+                    color: '#999',
+                    margin: '0 0 6px 0',
+                    fontWeight: '500',
                   }}
                 >
                   {card.subtitle}
@@ -298,33 +470,36 @@ export default function EventDashboard() {
                   <div
                     style={{
                       fontSize: '12px',
-                      marginTop: '5px',
+                      marginTop: '6px',
+                      color: '#666',
                     }}
                   >
-                    <span style={{ fontSize: '16px' }}>&#128101;</span> +{card.participants}
+                    <span style={{ fontSize: '14px' }}>👥</span> {card.participants} users
                   </div>
                 )}
                 <p
                   style={{
                     fontSize: '12px',
                     fontWeight: 'bold',
-                    color: card.trendType === 'positive' ? 'green' : 'red',
+                    color: card.trendType === 'positive' ? '#27ae60' : '#e74c3c',
+                    margin: '6px 0 0 0',
                   }}
                 >
-                  {card.trend} Monthly
+                  {card.trend} vs last month
                 </p>
               </div>
             ))}
           </div>
         </div>
       </div>
+
       <style>{`
         @media (max-width: 768px) {
           div {
             grid-template-columns: 1fr !important;
           }
-          div > div:last-child > div:last-child {
-            grid-template-columns: repeat(2, 1fr) !important;
+          div > div:nth-child(2) {
+            grid-template-columns: 1fr !important;
           }
         }
       `}</style>
