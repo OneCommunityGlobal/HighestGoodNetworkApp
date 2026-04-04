@@ -8,6 +8,32 @@ import { useSelector } from 'react-redux';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+/** Shown for every role when API text is missing or only a placeholder (e.g. "desc …"). */
+const GENERIC_ROLE_DESCRIPTION = `One Community is a nonprofit focused on sustainability and open collaboration. Volunteers work remotely with teammates in different time zones, contribute to shared goals, and stay aligned using tools like Slack and Zoom.
+
+We look for reliable, self-motivated people who want to grow their skills while supporting a mission-driven project. Every open role follows that same volunteer structure: specific tasks depend on the position title, but clear communication, quality of work, and teamwork apply to everyone on the team.`;
+
+function normalizeApiJobDescription(raw, title) {
+  if (raw == null) return '';
+  let s = String(raw).trim();
+  if (!s) return '';
+  s = s.replace(/^desc\s*:?\s*/i, '').trim();
+  if (!s) return '';
+  const t = String(title || '')
+    .trim()
+    .toLowerCase();
+  const sl = s.toLowerCase();
+  if (t && (sl === t || sl === `desc ${t}`)) return '';
+  if (t && sl.replace(/\s+/g, ' ') === t.replace(/\s+/g, ' ')) return '';
+  return s;
+}
+
+function getJobDescriptionForModal(form) {
+  const extra = normalizeApiJobDescription(form?.description, form?.title);
+  if (!extra) return GENERIC_ROLE_DESCRIPTION;
+  return `${GENERIC_ROLE_DESCRIPTION}\n\nAdditional details:\n${extra}`;
+}
+
 function JobApplicationForm() {
   const [forms, setForms] = useState([]);
   const [selectedJob, setSelectedJob] = useState('');
@@ -90,6 +116,16 @@ function JobApplicationForm() {
 
   const handleCloseDescription = () => {
     setShowDescription(false);
+  };
+
+  const getCategoryFromRole = roleTitle => {
+    const t = String(roleTitle || '').toLowerCase();
+    if (/(engineer|developer|software|frontend|back ?end|full ?stack|devops|qa|test)/.test(t))
+      return 'Engineering';
+    if (/(design|ux|ui|graphic|visual)/.test(t)) return 'Design';
+    if (/(marketing|social|seo|content|copywriter|communications)/.test(t)) return 'Marketing';
+    if (/(finance|account|bookkeep|budget)/.test(t)) return 'Finance';
+    return 'General';
   };
 
   const handleResumeChange = e => {
@@ -190,8 +226,31 @@ function JobApplicationForm() {
                 >
                   &times;
                 </button>
-                <h2>{filteredForm.title}</h2>
-                <p>{filteredForm.description || 'No description available.'}</p>
+                <div className={styles.jobDescHeader}>
+                  <div className={styles.jobDescTitle}>{filteredForm.title}</div>
+                  <div className={styles.jobDescTags}>
+                    <span className={`${styles.tagPill} ${styles.tagPillStrong}`}>
+                      {getCategoryFromRole(filteredForm.title)}
+                    </span>
+                    <span className={styles.tagPill}>Remote</span>
+                  </div>
+                </div>
+
+                <div className={styles.jobDescBody}>
+                  <div className={styles.jobDescSectionTitle}>About the role</div>
+                  <div className={styles.jobDescText}>
+                    {getJobDescriptionForModal(filteredForm)}
+                  </div>
+                  <div className={styles.jobDescFooter}>
+                    <button
+                      type="button"
+                      className={styles.gotItBtn}
+                      onClick={handleCloseDescription}
+                    >
+                      Got it
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           )}
