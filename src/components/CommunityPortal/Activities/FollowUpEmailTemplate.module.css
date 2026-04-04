@@ -32,20 +32,24 @@
   height: auto;
 }
 
-.emailTemplateContainer h2 {
+.h2 {
   text-align: left;
   color: #333;
 }
 
-.emailTemplateContainerDark h2 {
+.emailTemplateContainerDark .h2 {
   color: #ffffff !important;
 }
 
-.emailTemplateContainer p {
+.p {
   font-size: 16px;
   color: #555;
   margin: 5px 0;
   line-height: 1.3;
+}
+
+.emailTemplateContainerDark .p {
+  color: #ffffff !important;
 }
 
 /* BUTTON — LIGHT MODE */
@@ -95,11 +99,11 @@
 }
 
 /* LIST */
-.emailTemplateContainer ul {
+.ul {
   padding-left: 20px;
 }
 
-.emailTemplateContainer ul li {
+.ul li {
   margin-bottom: 5px;
 }
 
@@ -121,15 +125,15 @@
   transition: color 0.3s ease;
 }
 
-.socialIconLinkedin:hover {
+.linkedin:hover {
   color: #0077b5;
 }
 
-.socialIconInstagram:hover {
+.instagram:hover {
   color: #e4405f;
 }
 
-.socialIconFacebook:hover {
+.facebook:hover {
   color: #07a3db;
 }
 
