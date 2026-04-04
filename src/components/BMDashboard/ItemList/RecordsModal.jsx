@@ -4,7 +4,7 @@ import moment from 'moment';
 import { useDispatch, useSelector } from 'react-redux';
 import styles from './RecordsModal.module.css';
 import { approvePurchase, rejectPurchase } from '../../../actions/bmdashboard/materialsActions';
-import * as consumableActions from '../../../actions/bmdashboard/consumableActions';
+import consumableActions from '../../../actions/bmdashboard/consumableActions';
 
 const ALLOWED_ROLES = ['Owner', 'Administrator'];
 
