@@ -1,54 +1,92 @@
 // Universal Custom Tooltip with dark mode support and all values
 import React from 'react';
 
-function CustomTooltip({ active, payload, label, yAxisLabel }) {
-  let isDarkMode = false;
-  if (typeof window !== 'undefined' && window.matchMedia) {
-    isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+const formatNumber = value => {
+  if (!Number.isFinite(value)) return '0';
+  return new Intl.NumberFormat('en-US').format(Math.round(value));
+};
+
+const formatCompactNumber = value => {
+  if (!Number.isFinite(value)) return '0';
+  const rounded = Math.round(value);
+  if (Math.abs(rounded) >= 10000) {
+    const inThousands = rounded / 1000;
+    if (Math.abs(inThousands) < 10) {
+      const oneDecimal = Number(inThousands.toFixed(1));
+      return `${oneDecimal}k`;
+    }
+    return `${Math.round(inThousands)}k`;
   }
-  if (active && payload && payload.length) {
-    const data = payload[0].payload || {};
-    // For WorkDistributionBarChart: show name, Total Hours, and percentage
-    const name = data._id || data.name || label || '';
-    const totalHours = data.totalHours !== undefined ? data.totalHours : data.value;
-    const percentage = data.percentage;
-    return (
-      <div
-        style={{
-          backgroundColor: isDarkMode ? '#222' : 'white',
-          color: isDarkMode ? '#90cdf4' : '#222',
-          border: '1px solid #ccc',
-          padding: '10px 20px',
-          borderRadius: '6px',
-          minWidth: 120,
-        }}
-      >
-        <div style={{ fontWeight: 'bold', marginBottom: 4, color: isDarkMode ? '#fff' : '#222' }}>
-          {name}
+  return formatNumber(rounded);
+};
+
+const getIsDarkMode = () => {
+  if (typeof window === 'undefined' || !window.matchMedia) return false;
+  return window.matchMedia('(prefers-color-scheme: dark)').matches;
+};
+
+const getTooltipData = (payload, label) => {
+  const data = (payload && payload[0] && payload[0].payload) || {};
+  return {
+    name: data._id || data.name || label || '',
+    percentage: data.percentage,
+    hoursValue: data.value,
+    totalHours: data.totalHours !== undefined ? data.totalHours : data.value,
+    change: data.change,
+  };
+};
+
+function CustomTooltip({ active, payload, label, tooltipType }) {
+  if (!active || !payload || !payload.length) return null;
+
+  const isDarkMode = getIsDarkMode();
+  const { name, percentage, hoursValue, totalHours, change } = getTooltipData(payload, label);
+  const textColor = isDarkMode ? '#fff' : '#222';
+
+  const renderMainValue = () => {
+    if (tooltipType === 'hoursDistribution' && hoursValue !== undefined) {
+      const exactHours = formatNumber(hoursValue);
+      const compactHours = formatCompactNumber(hoursValue);
+      const showCompactAndExact = compactHours.toLowerCase().includes('k');
+      return (
+        <div style={{ color: textColor, fontWeight: 'bold' }}>
+          Hours: {showCompactAndExact ? `${compactHours} (${exactHours})` : exactHours}
         </div>
-        {totalHours !== undefined && (
-          <div style={{ color: isDarkMode ? '#fff' : '#222', fontWeight: 'bold' }}>
-            Total Hours: {totalHours}
-          </div>
-        )}
-        {percentage !== undefined && (
-          <div style={{ color: isDarkMode ? '#90cdf4' : '#444' }}>Percentage: {percentage}</div>
-        )}
-        {/* For other charts, fallback to value, change, etc. */}
-        {data.change !== undefined && (
-          <div
-            style={{
-              color: data.change < 0 ? 'red' : isDarkMode ? 'lightgreen' : 'green',
-              fontWeight: 'bold',
-            }}
-          >
-            Change: {data.change}
-          </div>
-        )}
-      </div>
-    );
-  }
-  return null;
+      );
+    }
+
+    if (totalHours !== undefined) {
+      return <div style={{ color: textColor, fontWeight: 'bold' }}>Total Hours: {totalHours}</div>;
+    }
+
+    return null;
+  };
+
+  const renderChange = () => {
+    if (change === undefined) return null;
+    const changeColor = change < 0 ? 'red' : isDarkMode ? 'lightgreen' : 'green';
+    return <div style={{ color: changeColor, fontWeight: 'bold' }}>Change: {change}</div>;
+  };
+
+  return (
+    <div
+      style={{
+        backgroundColor: isDarkMode ? '#222' : 'white',
+        color: isDarkMode ? '#90cdf4' : '#222',
+        border: '1px solid #ccc',
+        padding: '10px 20px',
+        borderRadius: '6px',
+        minWidth: 120,
+      }}
+    >
+      <div style={{ fontWeight: 'bold', marginBottom: 4, color: textColor }}>{name}</div>
+      {renderMainValue()}
+      {percentage !== undefined && (
+        <div style={{ color: isDarkMode ? '#90cdf4' : '#444' }}>Percentage: {percentage}%</div>
+      )}
+      {renderChange()}
+    </div>
+  );
 }
 
 export default CustomTooltip;
