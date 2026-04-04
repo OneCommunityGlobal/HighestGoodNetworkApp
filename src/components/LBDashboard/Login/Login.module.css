@@ -75,11 +75,14 @@
 }
 
 .loginForm input {
-  margin-bottom: 15px;
-  padding: 5px 10px 5px 10px;
+  padding: 5px 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
   font-size: 14px;
+}
+
+.loginForm :global(.form-group) {
+  margin-bottom: 15px;
 }
 
 .loginForm button {
@@ -107,4 +110,26 @@
   margin-top: -10px;
   margin-bottom: 10px;
   width: 100%;
+}
+
+.passwordGroup {
+  width: 100%;
+}
+
+.passwordInput {
+  border-right: 0 !important;
+}
+
+.eyeIcon {
+  background: #fff !important;
+  border: 1px solid #ccc !important;
+  border-left: 0 !important;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 0 14px !important;
+}
+
+.eyeIcon * {
+  pointer-events: none;
 }

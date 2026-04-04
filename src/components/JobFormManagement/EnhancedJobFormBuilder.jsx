@@ -116,8 +116,9 @@ const EnhancedJobFormBuilder = () => {
   const loadFirstAvailableForm = async () => {
     try {
       const response = await axios.get(ENDPOINTS.GET_ALL_JOB_FORMS);
-      if (response.data && response.data.length > 0) {
-        const firstForm = response.data[0];
+      const forms = response.data?.forms ?? (Array.isArray(response.data) ? response.data : []);
+      if (forms.length > 0) {
+        const firstForm = forms[0];
         setCurrentFormId(firstForm._id);
         setFormData(formatFormData(firstForm));
       }

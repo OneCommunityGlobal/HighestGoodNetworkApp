@@ -1,6 +1,5 @@
 /* eslint-disable no-alert */
 /* eslint-disable no-console */
-// eslint-disable-next-line no-alert
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
@@ -12,21 +11,35 @@ import OneCommunityImage from './One-Community-Horizontal-Homepage-Header-980x14
 import QuestionSetManager from './QuestionSetManager';
 import QuestionFieldActions from './QuestionFieldActions';
 import QuestionEditModal from './QuestionEditModal';
+import FormPreviewModal from './FormPreviewModal';
 
 function JobFormBuilder() {
   const { auth } = useSelector(state => state);
   const userPermissions = auth?.user?.permissions?.frontPermissions || [];
   const userRole = auth?.user?.role;
+  const darkMode = useSelector(state => state.theme.darkMode);
+
+  const canManageJobForms = () =>
+    hasPermissionSimple(userPermissions, 'manageJobForms') || userRole === 'Owner';
   const [formFields, setFormFields] = useState([]);
+  const [initialFormFields, setInitialFormFields] = useState([]);
+  const [templateName, setTemplateName] = useState('');
+  const [selectedTemplate, setSelectedTemplate] = useState('');
+  const [currentFormId, setCurrentFormId] = useState(null);
+  const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [newField, setNewField] = useState({
     questionText: '',
     questionType: 'textbox',
-    options: [], // For checkbox, radio, and dropdown input types
+    options: [],
     visible: true,
   });
 
-  // Dynamic Form ID Management
-  const [currentFormId, setCurrentFormId] = useState(null);
+  const initialNewField = {
+    questionText: '',
+    questionType: 'textbox',
+    options: [],
+    visible: true,
+  };
 
   const [jobTitle, setJobTitle] = useState('Please Choose an option');
   const jobPositions = [
@@ -76,20 +89,41 @@ function JobFormBuilder() {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editingQuestion, setEditingQuestion] = useState(null);
   const [editingIndex, setEditingIndex] = useState(null);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+
+  const markAsSaved = fields => {
+    setInitialFormFields(structuredClone(fields));
+    setHasUnsavedChanges(false);
+  };
+
+  // Reset builder after template is saved
+  const resetBuilderState = () => {
+    setFormFields([]);
+    setNewField({
+      questionText: '',
+      questionType: 'textbox',
+      options: [],
+      visible: true,
+    });
+    setNewOption('');
+  };
 
   // Auto-load existing form on component mount
   useEffect(() => {
     const loadFirstAvailableForm = async () => {
       try {
         const response = await axios.get(ENDPOINTS.GET_ALL_JOB_FORMS);
+        const forms = response.data?.forms ?? (Array.isArray(response.data) ? response.data : []);
 
-        if (response.data && response.data.length > 0) {
-          const firstForm = response.data[0];
+        if (forms.length > 0) {
+          const firstForm = forms[0];
           const formId = firstForm._id || firstForm.id;
 
           setCurrentFormId(formId);
           setFormFields(firstForm.questions || []);
           setJobTitle(firstForm.title || 'Please Choose an option');
+          markAsSaved(firstForm.questions || []);
+          setNewField(initialNewField);
 
           console.log('Auto-loaded form:', formId);
         }
@@ -101,13 +135,16 @@ function JobFormBuilder() {
     loadFirstAvailableForm();
   }, []);
 
-  // const ensureFormExists = async () => {
-  //   if (!currentFormId) {
-  //     console.warn('No form ID available for this operation');
-  //     return false;
-  //   }
-  //   return true;
-  // };
+  // Detect unsaved changes
+  useEffect(() => {
+    const changed =
+      JSON.stringify(formFields) !== JSON.stringify(initialFormFields) ||
+      JSON.stringify(newField) !== JSON.stringify(initialNewField) ||
+      templateName !== '' ||
+      selectedTemplate !== '';
+
+    setHasUnsavedChanges(changed);
+  }, [formFields, newField, templateName, selectedTemplate, initialFormFields]);
 
   // CRUD Functions with Dynamic Form ID
   const cloneField = async (field, index) => {
@@ -128,6 +165,7 @@ function JobFormBuilder() {
           question: clonedField,
           position: index + 1,
         });
+        markAsSaved(newFields);
       } catch (error) {
         console.error('Error cloning question on server:', error);
       }
@@ -153,6 +191,7 @@ function JobFormBuilder() {
             fromIndex: index,
             toIndex: newIndex,
           });
+          markAsSaved(newFields);
         } catch (error) {
           console.error('Error reordering questions on server:', error);
         }
@@ -170,6 +209,7 @@ function JobFormBuilder() {
     if (currentFormId) {
       try {
         await axios.delete(ENDPOINTS.DELETE_QUESTION(currentFormId, index));
+        markAsSaved(newFields);
         console.log('Question deleted successfully');
       } catch (error) {
         console.error('Error deleting question on server:', error);
@@ -211,6 +251,7 @@ function JobFormBuilder() {
     if (currentFormId) {
       try {
         await axios.put(ENDPOINTS.UPDATE_QUESTION(currentFormId, editingIndex), updatedField);
+        markAsSaved(updatedFields);
         console.log('Question updated successfully');
       } catch (error) {
         console.error('Error updating question on server:', error);
@@ -271,6 +312,7 @@ function JobFormBuilder() {
           question: newField,
           position: formFields.length,
         });
+        markAsSaved(updatedFields);
       } catch (error) {
         console.error('Error adding question to server:', error);
       }
@@ -280,11 +322,10 @@ function JobFormBuilder() {
   };
 
   const changeVisiblity = (event, field) => {
-    const updatedFields = formFields.map(
-      item =>
-        item.questionText === field.questionText && item.questionType === field.questionType
-          ? { ...item, visible: event.target.checked } // Return the updated item
-          : item, // Return the unchanged item
+    const updatedFields = formFields.map(item =>
+      item.questionText === field.questionText && item.questionType === field.questionType
+        ? { ...item, visible: event.target.checked }
+        : item,
     );
     setFormFields(updatedFields);
   };
@@ -315,212 +356,244 @@ function JobFormBuilder() {
   };
 
   return (
-    <div className={styles.formBuilderContainer}>
-      <img
-        src={OneCommunityImage}
-        alt="One Community Logo"
-        id="onecommunity-image"
-        className={styles.oneCommunityGlobalImg}
-      />
-      <div className={styles.jobformNavbar}>
-        <div>
-          <input placeholder="Enter Job Title" className={styles.jobformInput} />
-          <button type="button" className={styles.goButton}>
-            Go
-          </button>
-        </div>
-        <div>
-          <select
-            value={jobTitle}
-            onChange={q => setJobTitle(q.target.value)}
-            className={styles.jobformSelect}
-          >
-            <option value="Please Choose an option">Please Choose an Option</option>
-            {jobPositions.map(e => (
-              <option key={uuidv4()} value={e}>
-                {e}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-      <h1 className={styles.jobformTitle}>FORM CREATION</h1>
-
-      {hasPermissionSimple(userPermissions, 'manageJobForms') || userRole === 'Owner' ? (
-        <div className={styles.customForm}>
-          <p className={styles.jobformDesc}>
-            Fill the form with questions about a specific position you want to create an ad for. The
-            default questions will automatically appear and are alredy selected. You can pick and
-            choose them with the checkbox.
-          </p>
-          <QuestionSetManager
-            formFields={formFields}
-            setFormFields={setFormFields}
-            onImportQuestions={importQuestions}
-          />
-          <form>
-            {formFields.map((field, index) => (
-              <div className={styles.formDiv} key={uuidv4()}>
-                <QuestionFieldActions
-                  field={field}
-                  index={index}
-                  className={styles.formDivCheckbox}
-                  totalFields={formFields.length}
-                  onClone={cloneField}
-                  onMove={moveField}
-                  onDelete={deleteField}
-                  onEdit={editField}
-                  visible={field.visible}
-                  onVisibilityChange={event => changeVisiblity(event, field)}
-                />
-                <div key={uuidv4()} className={styles.formField}>
-                  <label className={`${styles.fieldLabel} ${styles.jbformLabel}`}>
-                    {field.questionText}
-                  </label>
-                  <div className={styles.fieldOptions}>
-                    {field.questionType === 'textbox' && (
-                      <input
-                        type="text"
-                        placeholder="Enter Text here"
-                        className={styles.jobformInput}
-                      />
-                    )}
-                    {field.questionType === 'date' && (
-                      <input type="date" placeholder="Enter date" className={styles.jobformInput} />
-                    )}
-                    {field.questionType === 'textarea' && (
-                      <textarea className={styles.jobformTextarea} />
-                    )}
-                    {['checkbox', 'radio'].includes(field.questionType) &&
-                      field.options.map(option => (
-                        <div key={uuidv4()} className={styles.optionItem}>
-                          <input
-                            type={field.questionType}
-                            name={`field-${index}`}
-                            className={styles.jobformInput}
-                          />
-                          <label className={styles.jbformLabel}>{option}</label>
-                        </div>
-                      ))}
-                    {field.questionType === 'dropdown' && (
-                      <select className={styles.jobformSelect}>
-                        {field.options.map(option => (
-                          <option key={uuidv4()} value={option}>
-                            {option}
-                          </option>
-                        ))}
-                      </select>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </form>
-          <div className={styles.newFieldSection}>
-            <div>
-              <label className={styles.jbformLabel}>
-                Field Label:
-                <input
-                  type="text"
-                  value={newField.questionText}
-                  onChange={e => {
-                    e.persist();
-                    setNewField(prev => ({ ...prev, questionText: e.target.value }));
-                  }}
-                  placeholder="Enter Field Label"
-                  className={styles.jobformInput}
-                />
-              </label>
-            </div>
-            <div>
-              <label className={styles.jbformLabel}>
-                Input Type:
-                <select
-                  value={newField.questionType}
-                  className={styles.jobformSelect}
-                  onChange={e => {
-                    e.persist();
-                    setNewField(prev => ({
-                      ...prev,
-                      questionType: e.target.value,
-                      options: [],
-                    }));
-                  }}
-                >
-                  <option value="textbox">TextBox</option>
-                  <option value="textarea">Textarea</option>
-                  <option value="checkbox">Checkbox</option>
-                  <option value="radio">Radio</option>
-                  <option value="dropdown">Dropdown</option>
-                  <option value="date">Date</option>
-                </select>
-              </label>
-            </div>
-
-            {/* Options Section */}
-            {['checkbox', 'radio', 'dropdown'].includes(newField.questionType) && (
-              <div className={styles.optionsSection}>
-                <label className={styles.jbformLabel}>
-                  Add Option:
-                  <input
-                    type="text"
-                    value={newOption}
-                    onChange={e => setNewOption(e.target.value)}
-                    className={styles.jobformInput}
-                    placeholder="Enter an option"
-                  />
-                </label>
-                <button type="button" onClick={handleAddOption} className={styles.addOptionButton}>
-                  Add Option
-                </button>
-                <div className={styles.optionsList}>
-                  <h4>Options:</h4>
-                  {newField.options.map(option => (
-                    <div key={uuidv4()} className={styles.optionItem}>
-                      {option}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            <button type="button" onClick={handleAddField} className={styles.addFieldButton}>
-              Add Field
+    <div className={`${styles.pageWrapper} ${darkMode ? styles.darkMode : ''}`}>
+      <div className={styles.formBuilderContainer}>
+        <img
+          src={OneCommunityImage}
+          alt="One Community Logo"
+          id="onecommunity-image"
+          className={styles.oneCommunityGlobalImg}
+        />
+        <div className={styles.jobformNavbar}>
+          <div>
+            <input placeholder="Enter Job Title" className={styles.jobformInput} />
+            <button type="button" className={styles.goButton}>
+              Go
             </button>
           </div>
-          <button type="submit" className={styles.jobSubmitButton} onClick={handleSubmit}>
-            Proceed to Submit with Details
-          </button>
-          {editModalOpen && editingQuestion && (
-            <QuestionEditModal
-              question={editingQuestion}
-              onSave={handleSaveEditedQuestion}
-              onCancel={handleCancelEdit}
-            />
-          )}
-        </div>
-      ) : (
-        <div className={styles.customForm}>
-          <div className="alert alert-warning" role="alert">
-            <h4 className="alert-heading">Access Restricted</h4>
-            <p>
-              You do not have permission to manage job application forms. Contact an administrator
-              to request the following permissions:
-            </p>
-            <ul className="mb-0">
-              <li>
-                <strong>Manage Job Forms</strong> - Create, edit, and manage job application forms
-              </li>
-              <li>
-                <strong>Create Form Questions</strong> - Create reusable question sets
-              </li>
-              <li>
-                <strong>Edit Form Questions</strong> - Modify existing questions and forms
-              </li>
-            </ul>
+          <div>
+            <select
+              value={jobTitle}
+              onChange={q => setJobTitle(q.target.value)}
+              className={styles.jobformSelect}
+            >
+              <option value="Please Choose an option">Please Choose an Option</option>
+              {jobPositions.map(e => (
+                <option key={uuidv4()} value={e}>
+                  {e}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
-      )}
+        <h1 className={styles.jobformTitle}>FORM CREATION</h1>
+        {canManageJobForms() ? (
+          <div className={styles.customForm}>
+            <p className={styles.jobformDesc}>
+              Fill the form with questions about a specific position you want to create an ad for.
+              The default questions will automatically appear and are alredy selected. You can pick
+              and choose them with the checkbox.
+            </p>
+            <QuestionSetManager
+              formFields={formFields}
+              setFormFields={setFormFields}
+              onImportQuestions={fields => {
+                importQuestions(fields);
+                markAsSaved(fields);
+              }}
+              onTemplateSaved={() => {
+                markAsSaved(formFields);
+                resetBuilderState();
+              }}
+              darkMode={darkMode}
+              templateName={templateName}
+              setTemplateName={setTemplateName}
+              selectedTemplate={selectedTemplate}
+              setSelectedTemplate={setSelectedTemplate}
+            />
+            <form>
+              {formFields.map((field, index) => (
+                <div className={styles.formDiv} key={uuidv4()}>
+                  <QuestionFieldActions
+                    field={field}
+                    index={index}
+                    className={styles.formDivCheckbox}
+                    totalFields={formFields.length}
+                    onMove={moveField}
+                    onDelete={deleteField}
+                    onEdit={editField}
+                    visible={field.visible}
+                    onVisibilityChange={event => changeVisiblity(event, field)}
+                  />
+                  <div className={styles.formField} key={uuidv4()}>
+                    <label className={`${styles.fieldLabel} ${styles.jbformLabel}`}>
+                      {field.questionText}
+                    </label>
+                    <div className={styles.fieldOptions}>
+                      {field.questionType === 'textbox' && (
+                        <input
+                          type="text"
+                          placeholder="Enter Text here"
+                          className={styles.jobformInput}
+                        />
+                      )}
+                      {field.questionType === 'date' && (
+                        <input
+                          type="date"
+                          placeholder="Enter date"
+                          className={styles.jobformInput}
+                        />
+                      )}
+                      {field.questionType === 'textarea' && (
+                        <textarea className={styles.jobformTextarea} />
+                      )}
+                      {['checkbox', 'radio'].includes(field.questionType) &&
+                        field.options.map(option => (
+                          <div key={uuidv4()} className={styles.optionItem}>
+                            <input
+                              type={field.questionType}
+                              name={`field-${index}`}
+                              className={styles.jobformInput}
+                            />
+                            <label className={styles.jbformLabel}>{option}</label>
+                          </div>
+                        ))}
+                      {field.questionType === 'dropdown' && (
+                        <select className={styles.jobformSelect}>
+                          {field.options.map(option => (
+                            <option key={uuidv4()} value={option}>
+                              {option}
+                            </option>
+                          ))}
+                        </select>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </form>
+
+            <div className={styles.newFieldSection}>
+              <div>
+                <label className={styles.jbformLabel}>
+                  Field Label:
+                  <input
+                    type="text"
+                    value={newField.questionText}
+                    onChange={e => {
+                      e.persist();
+                      setNewField(prev => ({ ...prev, questionText: e.target.value }));
+                    }}
+                    placeholder="Enter Field Label"
+                    className={styles.jobformInput}
+                  />
+                </label>
+              </div>
+              <div>
+                <label className={styles.jbformLabel}>
+                  Input Type:
+                  <select
+                    value={newField.questionType}
+                    className={styles.jobformSelect}
+                    onChange={e => {
+                      e.persist();
+                      setNewField(prev => ({
+                        ...prev,
+                        questionType: e.target.value,
+                        options: [],
+                      }));
+                    }}
+                  >
+                    <option value="textbox">TextBox</option>
+                    <option value="textarea">Textarea</option>
+                    <option value="checkbox">Checkbox</option>
+                    <option value="radio">Radio</option>
+                    <option value="dropdown">Dropdown</option>
+                    <option value="date">Date</option>
+                  </select>
+                </label>
+              </div>
+
+              {/* Options Section */}
+              {['checkbox', 'radio', 'dropdown'].includes(newField.questionType) && (
+                <div className={styles.optionsSection}>
+                  <label className={styles.jbformLabel}>
+                    Add Option:
+                    <input
+                      type="text"
+                      value={newOption}
+                      onChange={e => setNewOption(e.target.value)}
+                      className={styles.jobformInput}
+                      placeholder="Enter an option"
+                    />
+                  </label>
+                  <button
+                    type="button"
+                    onClick={handleAddOption}
+                    className={styles.addOptionButton}
+                  >
+                    Add Option
+                  </button>
+                  <div className={styles.optionsList}>
+                    <h4>Options:</h4>
+                    {newField.options.map(option => (
+                      <div key={uuidv4()} className={styles.optionItem}>
+                        {option}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <button type="button" onClick={handleAddField} className={styles.addFieldButton}>
+                Add Field
+              </button>
+            </div>
+
+            <div className={styles.previewSection}>
+              <button
+                type="button"
+                className={styles.previewTextButton}
+                onClick={() => setShowPreviewModal(true)}
+              >
+                Preview Form
+              </button>
+            </div>
+
+            <div className={styles.saveSection}>
+              <button type="submit" className={styles.jobSubmitButton} onClick={handleSubmit}>
+                Save Form
+              </button>
+            </div>
+
+            {editModalOpen && editingQuestion && (
+              <QuestionEditModal
+                question={editingQuestion}
+                onSave={handleSaveEditedQuestion}
+                onCancel={handleCancelEdit}
+              />
+            )}
+          </div>
+        ) : (
+          <div className={styles.customForm}>
+            <div className="alert alert-warning" role="alert">
+              <h4 className="alert-heading">Access restricted</h4>
+              <p>
+                You do not have permission to manage job application forms. An Owner can grant
+                &quot;Manage Job Forms&quot; or related job form permissions in Permissions
+                Management.
+              </p>
+            </div>
+          </div>
+        )}
+        <FormPreviewModal
+          isOpen={showPreviewModal}
+          onClose={() => setShowPreviewModal(false)}
+          formFields={formFields}
+          jobTitle={jobTitle}
+          darkMode={darkMode}
+        />
+      </div>
     </div>
   );
 }
