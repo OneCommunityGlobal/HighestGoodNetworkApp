@@ -32,6 +32,7 @@ describe('PauseAndResumeButton', () => {
         isBigBtn
         userProfile={{ ...userProfileMock, isActive: true }}
         loadUserProfile={loadUserProfile}
+        hasPermission={() => true}
       />
     );
 
@@ -46,6 +47,7 @@ describe('PauseAndResumeButton', () => {
         isBigBtn
         userProfile={{ ...userProfileMock, isActive: true }}
         loadUserProfile={loadUserProfile}
+        hasPermission={() => true}
       />
     );
 
@@ -64,6 +66,7 @@ describe('PauseAndResumeButton', () => {
         isBigBtn
         userProfile={{ ...userProfileMock, isActive: true }}
         loadUserProfile={loadUserProfile}
+        hasPermission={() => true}
       />
     );
 
@@ -95,6 +98,7 @@ describe('PauseAndResumeButton', () => {
         isBigBtn
         userProfile={{ ...userProfileMock, isActive: false }}
         loadUserProfile={loadUserProfile}
+        hasPermission={() => true}
       />
     );
 
@@ -108,5 +112,18 @@ describe('PauseAndResumeButton', () => {
         screen.getByRole('button', { name: PAUSE })
       ).toBeInTheDocument();
     });
+  });
+  it('does not render when user lacks interactWithPauseUserButton permission', () => {
+  renderWithProvider(
+    <PauseAndResumeButton
+      isBigBtn
+      userProfile={{ ...userProfileMock, isActive: true }}
+      loadUserProfile={loadUserProfile}
+      hasPermission={() => false}
+    />
+  );
+
+  expect(screen.queryByRole('button', { name: PAUSE })).not.toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: RESUME })).not.toBeInTheDocument(); 
   });
 });
