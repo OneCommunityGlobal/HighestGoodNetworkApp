@@ -537,10 +537,10 @@ export const ENDPOINTS = {
 
     const qs = params.length ? `?${params.join('&')}` : '';
 
-    return `${APIEndpoint.replace('/api', '')}/job-analytics${qs}`;
+    return `${APIEndpoint}/job-analytics${qs}`;
   },
 
-  JOB_ANALYTICS_ROLES: `${APIEndpoint.replace('/api', '')}/job-analytics/roles`,
+  JOB_ANALYTICS_ROLES: `${APIEndpoint}/job-analytics/roles`,
 
   // pr dashboard endpoints
   PROMOTION_ELIGIBILITY: `${APIEndpoint}/promotion-eligibility`,
