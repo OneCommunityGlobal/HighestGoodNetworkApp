@@ -36,7 +36,7 @@ export default defineConfig(({ mode }) => {
     plugins: [
       react({
         babel: {
-          plugins: ['@babel/plugin-proposal-logical-assignment-operators'],
+          plugins: ['@babel/plugin-transform-logical-assignment-operators'],
         },
       }),
     ],
