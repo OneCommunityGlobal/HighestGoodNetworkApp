@@ -1,0 +1,799 @@
+/* ==========================================================================
+   EMAIL TEMPLATE EDITOR - ENHANCED STYLING WITH HORIZONTAL BUTTONS
+   ========================================================================== */
+
+/* Base Container */
+.email-template-editor {
+  width: 100%;
+  margin: 0;
+  background: transparent;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* Template Editor Content Layout */
+.email-template-editor .template-editor-content {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0;
+}
+
+/* ==========================================================================
+   COMPACT HEADER WITH HORIZONTAL BUTTONS
+   ========================================================================== */
+
+.email-template-editor .editor-header {
+  background: transparent;
+  padding: 1rem 0;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.email-template-editor .header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.email-template-editor .template-name-field {
+  flex: 1;
+  min-width: 300px;
+}
+
+.email-template-editor .template-name-field input {
+  font-size: 1.1rem;
+  font-weight: 600;
+  padding: 0.75rem 1rem;
+  border: 2px solid #dee2e6;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  background: white;
+  color: #495057;
+  width: 100%;
+}
+
+.email-template-editor .template-name-field input:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.15);
+  outline: none;
+}
+
+.email-template-editor .template-name-field input::placeholder {
+  color: #9ca3af;
+  font-style: italic;
+}
+
+/* Action Buttons Container - HORIZONTAL LAYOUT */
+.email-template-editor .action-buttons-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-shrink: 0;
+  flex-wrap: nowrap;
+}
+
+/* Unsaved Changes Indicator */
+.email-template-editor .unsaved-changes-indicator {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.email-template-editor .unsaved-changes-indicator small {
+  font-weight: 500;
+  color: #856404;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+/* Action Buttons - SIDE BY SIDE */
+.email-template-editor .action-buttons {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+  flex-wrap: nowrap;
+}
+
+.email-template-editor .action-buttons .btn {
+  font-weight: 500;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  min-width: auto;
+}
+
+.email-template-editor .action-buttons .btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.email-template-editor .action-buttons .btn:active {
+  transform: translateY(0);
+}
+
+/* Loading state styling */
+.email-template-editor .loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 3rem 2rem;
+  color: #6c757d;
+  min-height: 200px;
+}
+
+.email-template-editor .loading-state .spinner-border {
+  width: 2.5rem;
+  height: 2.5rem;
+  margin-bottom: 1rem;
+  border-width: 0.3rem;
+}
+
+/* Error state styling */
+.email-template-editor .error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 3rem 2rem;
+  color: #dc3545;
+  min-height: 200px;
+}
+
+.email-template-editor .error-state h5 {
+  color: #dc3545;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.email-template-editor .retry-button {
+  font-weight: 500;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.375rem;
+  transition: all 0.15s ease-in-out;
+}
+
+.email-template-editor .retry-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.email-template-editor .retry-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ==========================================================================
+   BASIC INFORMATION SECTION
+   ========================================================================== */
+
+.email-template-editor .basic-info-section {
+  background: transparent;
+  padding: 0;
+  margin-bottom: 1.5rem;
+}
+
+.email-template-editor .basic-info-section .form-group {
+  margin-bottom: 1rem;
+}
+
+.email-template-editor .form-label {
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.5rem;
+  display: block;
+  font-size: 0.875rem;
+}
+
+.email-template-editor .form-control {
+  border-radius: 0.375rem;
+  border: 1px solid #d1d5db;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  transition: all 0.15s ease-in-out;
+  background-color: #ffffff;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.email-template-editor .form-control:focus {
+  border-color: #3b82f6;
+  outline: 0;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  background-color: #ffffff;
+}
+
+.email-template-editor .form-control::placeholder {
+  color: #9ca3af;
+  font-style: italic;
+}
+
+/* ==========================================================================
+   VARIABLES SECTION
+   ========================================================================== */
+
+.email-template-editor .variables-section {
+  margin-bottom: 1.5rem;
+  padding: 1.25rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.email-template-editor .variables-header {
+  margin-bottom: 0.75rem;
+}
+
+.email-template-editor .variables-header h5 {
+  color: #374151;
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+  display: flex;
+  align-items: center;
+}
+
+.email-template-editor .variables-header .btn {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-weight: 500;
+  transition: all 0.15s ease-in-out;
+  white-space: nowrap;
+}
+
+.email-template-editor .variables-header .btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Template Variable Count Badge */
+.email-template-editor .template-variable-count {
+  font-weight: 600;
+  border-radius: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  transition: all 0.2s ease-in-out;
+  font-size: 0.75rem !important;
+}
+
+.email-template-editor .template-variable-count.light-mode {
+  background-color: #f8f9fa;
+  color: #495057;
+  border: 1px solid #dee2e6;
+}
+
+.email-template-editor .template-variable-count.dark-mode {
+  background-color: #374151;
+  color: #e5e7eb;
+  border: 1px solid #4b5563;
+}
+
+.email-template-editor .template-variable-count:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Auto Extract Button */
+.email-template-editor .btn-auto-extract {
+  white-space: nowrap;
+  min-width: auto;
+  transition: all 0.2s ease-in-out;
+  font-weight: 500;
+  border-radius: 6px;
+}
+
+.email-template-editor .btn-auto-extract:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.email-template-editor .btn-auto-extract:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Variables Chips - Enhanced with Type Badges */
+.email-template-editor .variables-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+  padding: 0.5rem;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.email-template-editor .variable-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  border: 1.5px solid #dee2e6;
+  border-radius: 20px;
+  padding: 8px 12px;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  white-space: nowrap;
+}
+
+.email-template-editor .variable-chip:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  border-color: #007bff;
+  transform: translateY(-2px);
+  background: #f8f9fa;
+}
+
+.email-template-editor .variable-code {
+  font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+  background: #e9ecef;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  color: #495057;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.email-template-editor .variable-type-badge {
+  font-size: 0.7rem !important;
+  font-weight: 600;
+  padding: 4px 8px !important;
+  border-radius: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  background: #6c757d !important;
+  color: white !important;
+}
+
+.email-template-editor .chip-action-btn {
+  padding: 0.25rem 0.4rem !important;
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  border: none !important;
+  line-height: 1;
+}
+
+.email-template-editor .chip-action-btn:hover {
+  transform: scale(1.1);
+}
+
+/* Empty variables state */
+.email-template-editor .empty-variables-state {
+  margin-top: 0.5rem;
+  padding: 1rem;
+}
+
+.email-template-editor .empty-variables-state .border {
+  border-color: #e9ecef !important;
+  background-color: white;
+  transition: all 0.2s ease-in-out;
+  border-radius: 0.375rem;
+  padding: 1rem;
+}
+
+.email-template-editor .empty-variables-state .border:hover {
+  border-color: #dee2e6 !important;
+  background-color: #f8f9fa;
+}
+
+.email-template-editor .empty-variables-state h6 {
+  font-size: 0.95rem;
+  letter-spacing: 0.025em;
+}
+
+.email-template-editor .empty-variables-state p {
+  line-height: 1.5;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.email-template-editor .empty-variables-state strong {
+  color: #495057;
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   CONTENT SECTION
+   ========================================================================== */
+
+.email-template-editor .content-section {
+  background: transparent;
+  padding: 0;
+}
+
+.email-template-editor .content-section .form-group {
+  margin-bottom: 0;
+}
+
+.email-template-editor .editor-container {
+  position: relative;
+}
+
+.email-template-editor .editor-container .form-label {
+  margin-bottom: 0.75rem;
+}
+
+/* ==========================================================================
+   DARK MODE SUPPORT
+   ========================================================================== */
+
+/* Dark Mode - Editor Header */
+.email-template-management.dark-mode .email-template-editor .editor-header {
+  border-bottom-color: #374151;
+}
+
+/* Dark Mode - Template Name Field */
+.email-template-management.dark-mode .email-template-editor .template-name-field input {
+  background: #2d3748;
+  border-color: #4a5568;
+  color: #e2e8f0;
+}
+
+.email-template-management.dark-mode .email-template-editor .template-name-field input:focus {
+  border-color: #63b3ed;
+  box-shadow: 0 0 0 0.25rem rgba(99, 179, 237, 0.15);
+}
+
+.email-template-management.dark-mode .email-template-editor .template-name-field input::placeholder {
+  color: #6b7280;
+}
+
+/* Dark Mode - Unsaved Changes Indicator */
+.email-template-management.dark-mode .email-template-editor .unsaved-changes-indicator {
+  background: rgba(255, 193, 7, 0.2);
+  border-color: #ffc107;
+}
+
+.email-template-management.dark-mode .email-template-editor .unsaved-changes-indicator small {
+  color: #ffc107;
+}
+
+/* Dark Mode - Action Buttons */
+.email-template-management.dark-mode .email-template-editor .action-buttons .btn-outline-secondary {
+  background: #2d3748;
+  color: #e2e8f0;
+  border-color: #4a5568;
+}
+
+.email-template-management.dark-mode .email-template-editor .action-buttons .btn-outline-secondary:hover {
+  background: #4a5568;
+  color: #e2e8f0;
+}
+
+.email-template-management.dark-mode .email-template-editor .action-buttons .btn-primary {
+  background: #3182ce;
+  border-color: #3182ce;
+}
+
+.email-template-management.dark-mode .email-template-editor .action-buttons .btn-primary:hover {
+  background: #2c5aa0;
+  border-color: #2c5aa0;
+}
+
+.email-template-management.dark-mode .email-template-editor .action-buttons .btn-secondary {
+  background: #4a5568;
+  border-color: #718096;
+  color: #e2e8f0;
+}
+
+.email-template-management.dark-mode .email-template-editor .action-buttons .btn-secondary:hover {
+  background: #718096;
+  color: #e2e8f0;
+}
+
+/* Dark Mode - Form Labels */
+.email-template-management.dark-mode .email-template-editor .form-label,
+.email-template-management.dark-mode .email-template-editor .variables-header h5 {
+  color: #e5e7eb;
+}
+
+/* Dark Mode - Variables Section */
+.email-template-management.dark-mode .email-template-editor .variables-section {
+  background: #1a202c;
+  border-color: #2d3748;
+}
+
+/* Dark Mode - Variable Chips */
+.email-template-management.dark-mode .email-template-editor .variable-chip {
+  background: #2d3748;
+  border-color: #4a5568;
+  color: #e2e8f0;
+}
+
+.email-template-management.dark-mode .email-template-editor .variable-chip:hover {
+  background: #374151;
+  border-color: #63b3ed;
+}
+
+.email-template-management.dark-mode .email-template-editor .variable-code {
+  background: #4a5568;
+  color: #f8f9fa;
+  border-color: #718096;
+}
+
+.email-template-management.dark-mode .email-template-editor .variable-type-badge {
+  background: #4a5568 !important;
+  color: #e2e8f0 !important;
+}
+
+/* Dark Mode - Empty Variables State */
+.email-template-management.dark-mode .email-template-editor .empty-variables-state .border {
+  border-color: #4a5568 !important;
+  background: #2d3748;
+}
+
+.email-template-management.dark-mode .email-template-editor .empty-variables-state .border:hover {
+  border-color: #4a5568 !important;
+  background: #374151;
+}
+
+.email-template-management.dark-mode .email-template-editor .empty-variables-state h6 {
+  color: #a0aec0;
+}
+
+.email-template-management.dark-mode .email-template-editor .empty-variables-state p {
+  color: #718096;
+}
+
+.email-template-management.dark-mode .email-template-editor .empty-variables-state strong {
+  color: #e2e8f0;
+}
+
+/* Dark Mode - Loading State */
+.email-template-management.dark-mode .email-template-editor .loading-state {
+  color: #9ca3af;
+}
+
+/* Dark Mode - Form Controls */
+.email-template-management.dark-mode .email-template-editor .form-control,
+.email-template-management.dark-mode .email-template-editor .form-select {
+  background-color: #1f2937;
+  border-color: #374151;
+  color: #e5e7eb;
+}
+
+.email-template-management.dark-mode .email-template-editor .form-control:focus,
+.email-template-management.dark-mode .email-template-editor .form-select:focus {
+  border-color: #60a5fa;
+  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+  background-color: #1f2937;
+}
+
+.email-template-management.dark-mode .email-template-editor .form-control::placeholder {
+  color: #6b7280;
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN - MOBILE FIRST
+   ========================================================================== */
+
+/* Extra Small Devices (phones, 576px and down) */
+@media (max-width: 575.98px) {
+  .email-template-editor .editor-header {
+    padding: 0.75rem 0;
+    margin-bottom: 0.5rem;
+  }
+
+  .email-template-editor .header-container {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .email-template-editor .template-name-field {
+    max-width: none;
+    min-width: auto;
+  }
+
+  .email-template-editor .action-buttons-container {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .email-template-editor .unsaved-changes-indicator {
+    order: -1;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .email-template-editor .action-buttons {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .email-template-editor .action-buttons .btn {
+    flex: 1;
+    min-width: calc(50% - 0.25rem);
+  }
+
+  .email-template-editor .basic-info-section {
+    margin-bottom: 1rem;
+  }
+
+  .email-template-editor .variables-section {
+    margin-bottom: 1rem;
+  }
+
+  .email-template-editor .variables-header {
+    margin-bottom: 0.5rem;
+  }
+
+  .email-template-editor .variables-header .d-flex {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: stretch !important;
+  }
+
+  .email-template-editor .variables-chips {
+    gap: 0.375rem;
+  }
+
+  .email-template-editor .loading-state {
+    padding: 2rem 1rem;
+  }
+
+  .email-template-editor .variable-chip {
+    padding: 0.25rem 0.5rem;
+    gap: 0.25rem;
+  }
+
+  .email-template-editor .chip-action-btn {
+    width: 18px;
+    height: 18px;
+    font-size: 0.625rem;
+  }
+
+  .email-template-editor .form-label {
+    font-size: 0.8125rem;
+  }
+
+  .email-template-editor .form-control {
+    padding: 0.5rem;
+    font-size: 0.8125rem;
+  }
+
+  .email-template-editor .btn-auto-extract {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.8rem;
+  }
+}
+
+/* Small Devices (landscape phones, 576px and up) */
+@media (min-width: 576px) and (max-width: 767.98px) {
+  .email-template-editor .header-container {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .email-template-editor .template-name-field {
+    width: 100%;
+  }
+
+  .email-template-editor .action-buttons-container {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .email-template-editor .action-buttons {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+}
+
+/* Medium Devices (tablets, 768px and up) */
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .email-template-editor .header-container {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .email-template-editor .template-name-field {
+    width: 100%;
+  }
+
+  .email-template-editor .action-buttons-container {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .email-template-editor .action-buttons {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+}
+
+/* Large Devices (desktops, 992px and up) */
+@media (min-width: 992px) {
+  .email-template-editor .template-editor-content {
+    padding: 0;
+  }
+
+  .email-template-editor .header-container {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .email-template-editor .template-name-field {
+    flex: 1;
+    max-width: 400px;
+    min-width: 250px;
+  }
+
+  .email-template-editor .action-buttons-container {
+    flex-shrink: 0;
+    flex-direction: row;
+  }
+
+  .email-template-editor .action-buttons {
+    flex-wrap: nowrap;
+  }
+}
+
+/* ==========================================================================
+   UTILITY CLASSES
+   ========================================================================== */
+
+.email-template-editor .text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.email-template-editor .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ==========================================================================
+   LEGACY SUPPORT & FALLBACKS
+   ========================================================================== */
+
+/* Ensure proper spacing in all browsers */
+.email-template-editor * {
+  box-sizing: border-box;
+}
+
+/* Fix for Safari flexbox bugs */
+.email-template-editor .d-flex {
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  align-items: center;
+}

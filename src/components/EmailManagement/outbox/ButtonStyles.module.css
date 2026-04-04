@@ -1,0 +1,247 @@
+/* ==========================================================================
+   EMAIL OUTBOX BUTTON STYLES - TEMPLATE MANAGEMENT STYLE
+   ========================================================================== */
+
+/* Base button container */
+.action-buttons {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+/* Base button styling */
+.action-buttons .btn {
+    min-width: 32px;
+    min-height: 32px;
+    padding: 0.375rem 0.75rem;
+    margin: 0;
+    font-size: 0.8rem;
+    border-radius: 0.375rem;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    white-space: nowrap;
+}
+
+.action-buttons .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.action-buttons .btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Refresh button - Blue */
+.action-buttons .btn-outline-primary,
+.action-buttons button[color='outline-primary'],
+.action-buttons button.btn-outline-primary {
+    background-color: #007bff !important;
+    color: #ffffff !important;
+    border: 1px solid #007bff !important;
+}
+
+.action-buttons .btn-outline-primary:hover,
+.action-buttons button[color='outline-primary']:hover,
+.action-buttons button.btn-outline-primary:hover {
+    background-color: #0056b3 !important;
+    border-color: #0056b3 !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3) !important;
+}
+
+/* Auto Refresh button - Green */
+.action-buttons .btn-success,
+.action-buttons button[color='success'],
+.action-buttons button.btn-success {
+    background-color: #28a745 !important;
+    color: #ffffff !important;
+    border: 1px solid #28a745 !important;
+}
+
+.action-buttons .btn-success:hover,
+.action-buttons button[color='success']:hover,
+.action-buttons button.btn-success:hover {
+    background-color: #1e7e34 !important;
+    border-color: #1e7e34 !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3) !important;
+}
+
+/* Auto Refresh button (inactive) - Gray */
+.action-buttons .btn-outline-secondary,
+.action-buttons button[color='outline-secondary'],
+.action-buttons button.btn-outline-secondary {
+    background-color: #6c757d !important;
+    color: #ffffff !important;
+    border: 1px solid #6c757d !important;
+}
+
+.action-buttons .btn-outline-secondary:hover,
+.action-buttons button[color='outline-secondary']:hover,
+.action-buttons button.btn-outline-secondary:hover {
+    background-color: #545b62 !important;
+    border-color: #545b62 !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3) !important;
+}
+
+/* Filter button - Purple */
+.action-buttons .btn-outline-secondary.filter-btn {
+    background-color: #6f42c1 !important;
+    color: #ffffff !important;
+    border: 1px solid #6f42c1 !important;
+}
+
+.action-buttons .btn-outline-secondary.filter-btn:hover {
+    background-color: #5a32a3 !important;
+    border-color: #5a32a3 !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(111, 66, 193, 0.3) !important;
+}
+
+/* Enhanced button styling for specific classes */
+.action-btn.refresh-btn {
+    background-color: #007bff !important;
+    border-color: #007bff !important;
+    color: #ffffff !important;
+}
+
+.action-btn.refresh-btn:hover {
+    background-color: #0056b3 !important;
+    border-color: #0056b3 !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3) !important;
+}
+
+.action-btn.auto-refresh-btn {
+    background-color: #28a745 !important;
+    border-color: #28a745 !important;
+    color: #ffffff !important;
+}
+
+.action-btn.auto-refresh-btn:hover {
+    background-color: #1e7e34 !important;
+    border-color: #1e7e34 !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3) !important;
+}
+
+.action-btn.filter-btn {
+    background-color: #6f42c1 !important;
+    border-color: #6f42c1 !important;
+    color: #ffffff !important;
+}
+
+.action-btn.filter-btn:hover {
+    background-color: #5a32a3 !important;
+    border-color: #5a32a3 !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(111, 66, 193, 0.3) !important;
+}
+
+/* Dark mode support */
+[data-theme="dark"] .action-buttons .btn,
+.dark-mode .action-buttons .btn,
+body.dark .action-buttons .btn {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .action-buttons .btn:hover,
+.dark-mode .action-buttons .btn:hover,
+body.dark .action-buttons .btn:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .action-buttons .btn {
+        border: 2px solid currentColor !important;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .action-buttons .btn {
+        transition: none;
+    }
+
+    .action-buttons .btn:hover {
+        transform: none;
+    }
+}
+
+/* ==========================================================================
+   INLINE FILTERS MODAL STYLES
+   ========================================================================== */
+
+.inline-filters-modal {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 1050;
+    min-width: 300px;
+    max-width: 350px;
+    animation: slideInFromRight 0.2s ease-out;
+}
+
+@keyframes slideInFromRight {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.inline-filters-modal .card {
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    border: none;
+}
+
+.inline-filters-modal .card-header {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    border: none;
+}
+
+.inline-filters-modal .form-label-sm {
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: #495057;
+}
+
+.inline-filters-modal .form-control-sm {
+    font-size: 0.875rem;
+    padding: 0.375rem 0.5rem;
+}
+
+.inline-filters-modal .btn-sm {
+    font-size: 0.875rem;
+    padding: 0.375rem 0.75rem;
+}
+
+/* Dark mode support for inline filters */
+[data-theme="dark"] .inline-filters-modal .form-label-sm,
+.dark-mode .inline-filters-modal .form-label-sm,
+body.dark .inline-filters-modal .form-label-sm {
+    color: #e5e7eb;
+}
+
+[data-theme="dark"] .inline-filters-modal .card,
+.dark-mode .inline-filters-modal .card,
+body.dark .inline-filters-modal .card {
+    background-color: #1f2937;
+    border-color: #374151;
+}
+

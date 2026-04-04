@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
-import CharacterCounter from './CharacterCounter';
-import ConfirmationModal from './ConfirmationModal';
+import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
+import CharacterCounter from '../../CharacterCounter';
+import ConfirmationModal from '../../ConfirmationModal';
 import './SocialMediaComposer.module.css';
 
 const PREFS_KEY = 'mastodon_composer_prefs';

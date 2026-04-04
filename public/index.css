@@ -1,18 +1,41 @@
+html {
+  min-height: 100vh !important;
+}
+
+body {
+  min-height: 100vh !important;
+}
+body.dark-mode,
+body.dark-mode #root {
+  background-color: #1a1d23 !important;
+}
+
+body:not(.dark-mode),
+body:not(.dark-mode) #root {
+  background-color: #ffffff !important;
+}
+
+body.bm-dashboard-dark {
+  background-color: #1a1d23 !important;
+  color: #ffffff !important;
+  min-height: 100vh !important;
+}
+
+
 /* public/index.css */
 
 /* Global Dark Mode Styles */
 body.dark-mode,
 body.bm-dashboard-dark {
-  background-color: #1b2a41 !important;
+  background-color: #1a1d23 !important;
   color: #ffffff !important;
 }
 
 body.dark-mode #root,
 body.bm-dashboard-dark #root {
-  background-color: #1b2a41 !important;
+  background-color: #1a1d23 !important;
   color: #ffffff !important;
 }
-
 /* Enhanced text visibility for dark mode */
 body.dark-mode *,
 body.bm-dashboard-dark * {
@@ -336,3 +359,18 @@ body.bm-dashboard-dark .page-item.active .page-link {
   .container-fluid::-webkit-scrollbar {
     display: none;
   }
+
+  /* TinyMCE "Get all features" button - force dark text */
+.tox-promotion-link,
+.tox-promotion a {
+  color: #000000 !important;
+  background-color: #f0f0f0 !important;
+  padding: 4px 8px !important;
+  border-radius: 4px !important;
+}
+
+body.dark-mode .tox-promotion-link,
+body.dark-mode .tox-promotion a {
+  color: #ffffff !important;
+  background-color: #374151 !important;
+}
