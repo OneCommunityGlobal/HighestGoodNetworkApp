@@ -1,13 +1,13 @@
-import { Form, FormGroup, Label, Input } from 'reactstrap';
+import { Form, FormGroup, Label } from 'reactstrap';
 import styles from './ItemListView.module.css';
 
 export default function SelectForm({
   items,
   setSelectedProject,
   setSelectedItem,
-  selectedProject, // optional (controlled)
-  selectedItem, // optional (controlled)
-  darkStyle,
+  selectedProject,
+  selectedItem,
+  darkMode,
 }) {
   let projectsSet = [];
   if (items.length) {
@@ -16,7 +16,6 @@ export default function SelectForm({
 
   const handleChange = event => {
     const newProject = event.target.value;
-
     const toolsForNewProject =
       newProject === 'all'
         ? [...new Set(items.map(m => m.itemType?.name).filter(Boolean))]
@@ -29,17 +28,14 @@ export default function SelectForm({
           ];
 
     if (typeof setSelectedItem === 'function') {
-      // If controlled, only reset tool if invalid under new project
       if (typeof selectedItem !== 'undefined') {
         if (selectedItem !== 'all' && !toolsForNewProject.includes(selectedItem)) {
           setSelectedItem('all');
         }
       } else {
-        // Backwards compatibility (uncontrolled)
         setSelectedItem('all');
       }
     }
-
     setSelectedProject(newProject);
   };
 
@@ -52,7 +48,7 @@ export default function SelectForm({
         <select
           id="select-project"
           name="select-project"
-          className={styles.filterSelect}
+          className={`${styles.filterSelect} ${darkMode ? styles.darkTheme : styles.lightTheme}`}
           onChange={handleChange}
           disabled={!items.length}
           value={isControlled ? selectedProject : undefined}

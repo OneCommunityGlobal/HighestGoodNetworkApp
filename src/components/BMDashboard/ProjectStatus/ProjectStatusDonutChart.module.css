@@ -1,12 +1,12 @@
 .container {
   width: 100%;
   margin-top: 20px;
-  background: #ffffff;
+  background: #fff;
   color: #111827;
   padding: 20px;
   border-radius: 12px;
   position: relative;
-  border: 1px solid rgba(0, 0, 0, 0.12);
+  border: 1px solid rgb(0 0 0 / 12%);
 }
 
 .title {
@@ -25,7 +25,7 @@
 
 .applyBtn {
   background: #4285f4;
-  color: white;
+  color: #fff;
   padding: 8px 16px;
   border-radius: 6px;
   border: none;
@@ -57,7 +57,25 @@
   margin-bottom: 10px;
 }
 
-@media (max-width: 768px) {
+.centerLabel {
+  font-size: 16px;
+  font-weight: 600;
+  fill: currentcolor;
+}
+
+.centerValue {
+  font-size: 18px;
+  font-weight: 700;
+  fill: currentcolor;
+}
+
+.noDataMessage {
+  text-align: center;
+  margin-top: 16px;
+  font-weight: 500;
+}
+
+@media (width <= 768px) {
   .chartWrapper {
     flex-direction: column;
     gap: 28px;
@@ -78,20 +96,26 @@
     text-align: center;
   }
 }
-.centerLabel {
-  font-size: 16px;
-  font-weight: 600;
-  fill: currentColor;
+
+/* ---- Dark mode ---- */
+.containerDark {
+  background: #1b2a41;
+  color: #fff;
+  border-color: #3a506b;
 }
 
-.centerValue {
-  font-size: 18px;
-  font-weight: 700;
-  fill: currentColor;
+.titleDark {
+  color: #fff;
 }
 
-.noDataMessage {
-  text-align: center;
-  margin-top: 16px;
-  font-weight: 500;
+.summaryBoxDark h3 {
+  color: #fff;
+}
+
+.summaryBoxDark .label {
+  color: #b5bac5;
+}
+
+.summaryBoxDark .value {
+  color: #6af1ea;
 }

@@ -1,35 +1,27 @@
 import { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { fetchInvTypeByType } from '~/actions/bmdashboard/invTypeActions';
 import { fetchInvUnits } from '~/actions/bmdashboard/invUnitActions';
-import { Accordion, Card, Button } from 'react-bootstrap';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-
+import { Accordion, Card } from 'react-bootstrap';
 import BMError from '../shared/BMError';
-import TypesTable from './TypesTable';
 import UnitsTable from './invUnitsTable';
 import AccordionToggle from './AccordionToggle';
 import styles from './TypesList.module.css';
 
+const categories = [
+  { label: 'Materials', route: '/bmdashboard/materials' },
+  { label: 'Consumables', route: '/bmdashboard/consumables' },
+  { label: 'Equipments', route: '/bmdashboard/equipment' },
+  { label: 'Reusables', route: '/bmdashboard/reusables' },
+  { label: 'Tools', route: '/bmdashboard/tools' },
+];
+
 export function InventoryTypesList(props) {
   const { invUnits, errors, dispatch } = props;
-  const history = useHistory();
-
-  // NOTE: depend on redux action implementation
-  const categories = ['Materials', 'Consumables', 'Equipments', 'Reusables', 'Tools'];
-
   const [isError, setIsError] = useState(false);
-  const [currentTime, setCurrentTime] = useState(new Date());
 
-  const handleBack = () => {
-    history.goBack();
-  };
-
-  // dispatch inventory type fetch action on load
   useEffect(() => {
-    // NOTE: depend on redux action implementation
     dispatch(fetchInvTypeByType('Materials'));
     dispatch(fetchInvTypeByType('Consumables'));
     dispatch(fetchInvTypeByType('Equipments'));
@@ -38,12 +30,10 @@ export function InventoryTypesList(props) {
     dispatch(fetchInvUnits());
   }, []);
 
-  // trigger error state if an error object is added to props
   useEffect(() => {
     if (Object.entries(errors).length) setIsError(true);
   }, [errors]);
 
-  // error state
   if (isError) {
     return (
       <div>
@@ -54,54 +44,38 @@ export function InventoryTypesList(props) {
   }
 
   return (
-    <div className={`${styles.typesListContainer}`}>
-      <h1>All Inventory Types</h1>
-
-      <div className={`${styles.timestampContainer}`}>
-        <span>Time:</span>
-        <DatePicker
-          selected={currentTime}
-          onChange={date => setCurrentTime(date)}
-          dateFormat="MM-dd-yyyy hh:mm:ss"
-          id="timestamp"
-          showTimeInput
-          // NOTE: all users can edit since the User Class has not been implemented yet
-          // disabled
-        />
+    <div className={styles.typesListContainer}>
+      {/* Page Header */}
+      <div className={styles.pageHeader}>
+        <h1 className={styles.pageTitle}>All Inventory Types</h1>
+        <p className={styles.pageSubtitle}>Select a category to view and manage inventory</p>
       </div>
 
-      <Accordion>
-        {categories?.map((category, index) => {
-          return (
-            <Card key={category}>
-              <AccordionToggle as={Card.Header} eventKey={index + 1}>
-                {category}
-              </AccordionToggle>
-              <Accordion.Collapse eventKey={index + 1}>
-                <Card.Body className={`${styles.accordionCollapse}`}>
-                  <TypesTable category={category} />
-                </Card.Body>
-              </Accordion.Collapse>
-            </Card>
-          );
-        })}
+      {/* Category Cards Grid */}
+      <div className={styles.categoryGrid}>
+        {categories.map(({ label, route }) => (
+          <Link key={label} to={route} className={styles.categoryCard}>
+            <span className={styles.categoryCardLabel}>{label}</span>
+            <div className={styles.categoryCardArrow}>›</div>
+          </Link>
+        ))}
+      </div>
 
-        <Card>
-          <AccordionToggle as={Card.Header} eventKey={categories.length + 1}>
-            Unit of Measurement
-          </AccordionToggle>
-          <Accordion.Collapse eventKey={categories.length + 1}>
-            <Card.Body className={`${styles.accordionCollapse}`}>
-              <UnitsTable invUnits={invUnits} />
-            </Card.Body>
-          </Accordion.Collapse>
-        </Card>
-      </Accordion>
-
-      <div className={`${styles.buttonContainer}`}>
-        <Button variant="primary" className={`${styles.backButton}`} onClick={handleBack}>
-          Back to previous list page
-        </Button>
+      {/* Unit of Measurement */}
+      <div className={styles.unitSection}>
+        <h2 className={styles.unitSectionTitle}>Unit of Measurement</h2>
+        <Accordion>
+          <Card className={styles.unitCard}>
+            <AccordionToggle as={Card.Header} eventKey={1} className={styles.cardHeader}>
+              View all units
+            </AccordionToggle>
+            <Accordion.Collapse eventKey={1}>
+              <Card.Body className={styles.accordionCollapse}>
+                <UnitsTable invUnits={invUnits} />
+              </Card.Body>
+            </Accordion.Collapse>
+          </Card>
+        </Accordion>
       </div>
     </div>
   );

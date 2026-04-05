@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer, Label } from 'recharts';
 import axios from 'axios';
 import styles from './ProjectStatusDonutChart.module.css';
 
-const COLORS = ['#B39DDB', '#80DEEA', '#FFABAB']; // Active, Completed, Delayed
+const COLORS = ['#B39DDB', '#80DEEA', '#FFABAB'];
 
 export default function ProjectStatusDonutChart() {
   const [loading, setLoading] = useState(true);
@@ -12,6 +13,8 @@ export default function ProjectStatusDonutChart() {
 
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+
+  const darkMode = useSelector(state => state.theme?.darkMode || false);
 
   const fetchStatus = async () => {
     try {
@@ -66,8 +69,8 @@ export default function ProjectStatusDonutChart() {
   // SHOW MESSAGE WHEN THERE IS NO DATA
   if (pieData.every(item => item.value === 0)) {
     return (
-      <div className={styles.container}>
-        <h2 className={styles.title}>PROJECT STATUS</h2>
+      <div className={`${styles.container} ${darkMode ? styles.containerDark : ''}`}>
+        <h2 className={`${styles.title} ${darkMode ? styles.titleDark : ''}`}>PROJECT STATUS</h2>
         <p className={styles.noDataMessage}>No project status data available.</p>
       </div>
     );
@@ -84,8 +87,8 @@ export default function ProjectStatusDonutChart() {
     !statusData.activeProjects && !statusData.completedProjects && !statusData.delayedProjects;
 
   return (
-    <div className={styles.container}>
-      <h2 className={styles.title}>PROJECT STATUS</h2>
+    <div className={`${styles.container} ${darkMode ? styles.containerDark : ''}`}>
+      <h2 className={`${styles.title} ${darkMode ? styles.titleDark : ''}`}>PROJECT STATUS</h2>
 
       <div className={styles.filterRow}>
         <input
@@ -148,7 +151,7 @@ export default function ProjectStatusDonutChart() {
           </ResponsiveContainer>
         )}
 
-        <div className={styles.summaryBox}>
+        <div className={`${styles.summaryBox} ${darkMode ? styles.summaryBoxDark : ''}`}>
           <h3>{today}</h3>
 
           <p className={styles.label}>ACTIVE PROJECTS</p>
