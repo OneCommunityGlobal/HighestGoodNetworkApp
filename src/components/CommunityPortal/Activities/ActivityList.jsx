@@ -229,7 +229,7 @@ function ActivityList() {
           <button
             type="button"
             onClick={handleClearFilters}
-            disabled={!filter.type && !filter.date && !filter.location}
+            disabled={!filter.type && !filter.date && !filter.location && !showPastEvents}
             className={`${styles.clearFiltersButton} ${
               darkMode ? styles.clearFiltersButtonDark : ''
             }`}
