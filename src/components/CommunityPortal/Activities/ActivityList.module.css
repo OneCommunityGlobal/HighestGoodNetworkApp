@@ -252,6 +252,39 @@
   background-color: #334155;
 }
 
+.showPastToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  color: #1f2937;
+  border-radius: 6px;
+  margin-top: 5px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.showPastToggle input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  cursor: pointer;
+  accent-color: #3b82f6;
+}
+
+.showPastToggle input[type="checkbox"]:focus-visible {
+  outline: none;
+  border-radius: 4px;
+}
+
+.darkShowPastToggle {
+  color: #f1f5f9;
+}
+
+.darkShowPastToggle input[type="checkbox"] {
+  accent-color: #60a5fa;
+}
+
 /* Responsive */
 @media (width <= 768px) {
   .filters {

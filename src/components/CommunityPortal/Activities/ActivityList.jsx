@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useSelector, useStore } from 'react-redux';
 import styles from './ActivityList.module.css';
 import { mockActivities } from './mockActivities';
@@ -20,10 +20,12 @@ function ActivityList() {
     type: '',
     date: '',
     location: '',
+    pastEvents: false,
   });
   const [locationSuggestions, setLocationSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [sortOrder, setSortOrder] = useState('earliest');
+  const [showPastEvents, setShowPastEvents] = useState(false);
 
   useEffect(() => {
     if (darkMode) {
@@ -44,9 +46,12 @@ function ActivityList() {
         setError(null);
         throw new Error('API not implemented yet');
       } catch (err) {
-        console.warn('Failed to fetch activities from API, using mock data:', err.message);
         setError(err.message);
-        setActivities(mockActivities);
+        const parsed = mockActivities.map(a => ({
+          ...a,
+          _dateObj: new Date(`${a.date}T00:00:00`),
+        }));
+        setActivities(parsed);
       } finally {
         setLoading(false);
       }
@@ -90,12 +95,21 @@ function ActivityList() {
       type: '',
       date: '',
       location: '',
+      showPastEvents: false,
     });
+    setShowPastEvents(false);
     setLocationSuggestions([]);
     setShowSuggestions(false);
   };
 
+  const startOfToday = useMemo(() => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }, []);
+
   const filteredActivities = activities
+    .filter(activity => showPastEvents || activity._dateObj >= startOfToday)
     .filter(activity => {
       return (
         (!filter.type || activity.type === filter.type) &&
@@ -201,12 +215,21 @@ function ActivityList() {
             )}
           </div>
         </label>
+        <label className={`${styles.showPastToggle} ${darkMode ? styles.darkShowPastToggle : ''}`}>
+          Show Past Events:
+          <input
+            type="checkbox"
+            name="showPastEvents"
+            checked={showPastEvents}
+            onChange={e => setShowPastEvents(e.target.checked)}
+          />
+        </label>
 
         <div className={styles.clearButtonWrapper}>
           <button
             type="button"
             onClick={handleClearFilters}
-            disabled={!filter.type && !filter.date && !filter.location}
+            disabled={!filter.type && !filter.date && !filter.location && !showPastEvents}
             className={`${styles.clearFiltersButton} ${
               darkMode ? styles.clearFiltersButtonDark : ''
             }`}
