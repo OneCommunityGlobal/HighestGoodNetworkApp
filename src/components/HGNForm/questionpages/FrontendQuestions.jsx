@@ -24,7 +24,6 @@ function FrontendQuestions() {
   const [editingIndex, setEditingIndex] = useState(null);
   const [editedText, setEditedText] = useState('');
   const [loading, setLoading] = useState(true);
-  const darkMode = useSelector(state => state.theme.darkMode);
 
   // Fetch data from database
   useEffect(() => {
