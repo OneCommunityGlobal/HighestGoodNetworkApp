@@ -1,28 +1,19 @@
-import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import Banner from '../questionpages/Banner';
-import FollowupQuestions from '../questionpages/FollowupQuestions';
 import Progress from '../questionpages/Progress';
+import FollowupQuestions from '../questionpages/FollowupQuestions';
 import containerStyles from '../styles/hgnform.module.css';
+import useScrollTop from '~/hooks/useScrollTop';
 
-function Page5() {
+export default function Page5() {
   const darkMode = useSelector(state => state.theme.darkMode);
-
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'auto' });
-  }, []);
+  useScrollTop();
 
   return (
-    <div
-      className={`${containerStyles['container-hgnform-wrapper']} ${
-        darkMode ? 'bg-oxford-blue' : ''
-      }`}
-    >
+    <div className={`${containerStyles.hgnform} ${darkMode ? containerStyles.bgOxfordBlue : ''}`}>
       <Banner />
       <FollowupQuestions />
       <Progress progressValue={16.67 * 5} />
     </div>
   );
 }
-
-export default Page5;

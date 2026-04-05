@@ -8,6 +8,8 @@ import { toast } from 'react-toastify';
 import { setformData } from '~/actions/hgnFormAction';
 import { Spinner } from 'reactstrap';
 import styles from '../styles/FrontendBackendQuestions.module.css';
+import { getBoxStyling, getFontColor } from '../../../styles';
+
 
 function FrontendQuestions() {
   const navigate = useHistory();
@@ -17,7 +19,7 @@ function FrontendQuestions() {
   const [newVolunteer, setNewVolunteer] = useState(formData);
   const dispatch = useDispatch();
   const location = useLocation();
-  const { isOwner } = location.state;
+  const { isOwner } = location.state ||{};
 
   const [editingIndex, setEditingIndex] = useState(null);
   const [editedText, setEditedText] = useState('');
@@ -42,7 +44,7 @@ function FrontendQuestions() {
     };
 
     fetchQuestions();
-  }, [ENDPOINTS.HGN_FORM_GET_QUESTION]);
+  }, []);
 
   const handleNext = e => {
     e.preventDefault();
@@ -51,7 +53,7 @@ function FrontendQuestions() {
   };
 
   const handleBack = () => {
-    navigate.goBack('/hgnform/page2');
+    navigate.goBack();
   };
 
   const handleRadioChange = e => {
@@ -62,7 +64,7 @@ function FrontendQuestions() {
   // Handle edit button click to start editing a question
   const handleEditClick = index => {
     setEditingIndex(index);
-    setEditedText(questions[index].text); // Set the current question text to be edited
+    setEditedText(questions[index]?.text || ''); // Set the current question text to be edited
   };
 
   // Save edited question
@@ -88,8 +90,9 @@ function FrontendQuestions() {
 
   const searchQuestion = (page, qno) => {
     const questiontext = questions.find(question => question.page === page && question.qno === qno);
-    return questiontext.text;
+    return questiontext?questiontext.text : '';
   };
+
 
   // Mapping question keys to structured field names
   const fieldNameMap = [
@@ -119,22 +122,32 @@ function FrontendQuestions() {
       <h3 className={`${styles.blueStrip} ${darkMode ? styles.darkStrip : ''}`}>
         Frontend Questions
       </h3>
+    <div className={`${styles.frontendBackendQuestions} ${darkMode ? 'bg-space-cadet' : ''}`}>
+    <div
+      className={`${styles.frontendBackendQuestions} ${darkMode ? 'bg-space-cadet' : ''}`}
+      style={getBoxStyling(darkMode)}
+    >
+      <h3 className={`${styles.blueStrip}`}>Frontend Questions</h3>
       <form onSubmit={handleNext}>
         {questions.map((question, index) => {
           const fieldName = fieldNameMap[index] || `frontend_Question_${index}`;
 
           return (
-            <div className="frontend-backend" key={question._id || index}>
+            <div className={`${styles.frontendBackend}`} key={question._id || index}>
               <div className={`${styles.questionContainer}`}>
                 {editingIndex === index && isOwner ? (
-                  <div className={`${styles.editQuestionContainer}`}>
-                    <p className={`${styles.editTitle}`}>Edit Question</p>
+                  <div
+                    className={`${styles.editQuestionContainer} ${darkMode ? 'bg-yinmn-blue' : ''}`}
+                  >
+                    <p className={`${styles.editTitle} ${getFontColor(darkMode)}`}>Edit Question</p>
                     <div className={`${styles.editQuestion}`}>
                       <input
                         type="text"
                         value={editedText}
                         onChange={e => setEditedText(e.target.value)}
-                        className={`${styles.editInput}`}
+                        className={`${styles.editInput} ${getFontColor(darkMode)} ${
+                          darkMode ? 'bg-space-cadet' : ''
+                        }`}
                       />
                       <FaRegSave
                         title="Save"
@@ -144,7 +157,7 @@ function FrontendQuestions() {
                     </div>
                   </div>
                 ) : (
-                  <p className={`${styles.question}`}>
+                  <p className={`${styles.question} ${getFontColor(darkMode)}`}>
                     {searchQuestion(3, index + 1)}
                     {isOwner && (
                       <FaEdit
@@ -160,14 +173,19 @@ function FrontendQuestions() {
               <div className={`${styles.frontendBackendRating}`}>
                 {Array.from({ length: 10 }, (_, i) => (
                   <div key={i}>
-                    <label htmlFor={`${fieldName}_${i + 1}`}>{i + 1}</label>
+                    <label
+                      htmlFor={`${fieldName}_${i + 1}`}
+                      className={`${getFontColor(darkMode)}`}
+                    >
+                      {i + 1}
+                    </label>
                     <input
                       type="radio"
                       name={fieldName}
                       id={`${fieldName}_${i + 1}`}
                       value={i + 1}
                       onChange={handleRadioChange}
-                      checked={newVolunteer[fieldName] === (i + 1).toString()}
+                      checked={newVolunteer[fieldName] === String(i + 1)}
                       required
                     />
                   </div>

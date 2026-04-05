@@ -1,6 +1,5 @@
 /* ===========================
    PAGE LAYOUT
-=========================== */
 .pageLayout {
   display: flex;
   flex-direction: row;
@@ -24,7 +23,6 @@
 
 /* ===========================
    HEADINGS
-=========================== */
 .heading {
   font-size: 1.5rem;
   font-weight: 600;
@@ -41,7 +39,6 @@
 
 /* ===========================
    FILTER + GROUP BAR
-=========================== */
 .filterBar,
 .groupBar {
   display: flex;
@@ -77,7 +74,6 @@
 
 /* ===========================
    TASK CARD LIST
-=========================== */
 .taskList {
   display: flex;
   flex-direction: column;
@@ -115,7 +111,6 @@
 
 /* ===========================
    TASK CARD
-=========================== */
 .taskCard {
   background: #ffffff;
   border: 1px solid #e5e7eb;
@@ -277,7 +272,6 @@
 
 /* ===========================
    RESPONSIVENESS
-=========================== */
 @media (max-width: 1024px) {
   .content {
     padding: 1.5rem 1.5rem;
@@ -297,7 +291,6 @@
 
 /* ===========================
    RUBRIC MODAL STYLING
-=========================== */
 .modalOverlay {
   position: fixed;
   top: 0;
@@ -385,7 +378,6 @@
 
 /* ===========================
    DARK MODE
-=========================== */
 .pageLayoutDark {
   background-color: #0b1220;
   position: relative;
@@ -530,7 +522,6 @@
 
 /* ===========================
    DARK BACKDROP
-=========================== */
 .darkBackdrop {
   position: fixed;
   inset: 0;

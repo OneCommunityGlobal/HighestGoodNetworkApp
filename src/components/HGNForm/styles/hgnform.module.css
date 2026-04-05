@@ -12,4 +12,17 @@
 
 .container-hgnform-wrapper.bg-oxford-blue {
   color: #ffffff;
+body{
+    background-color: #e7f4f9;
+} 
+.hgnform {
+    height: 100%;
+    padding: 0;
+    margin: 0;
+}
+.bgOxfordBlue {
+    background-color: #001f3f;
+}
+.bgSpaceCadet {
+    background-color: #1d2b44;
 }

@@ -1,4 +1,4 @@
-.AdditionalInfoBox {
+.additionalInfoBox {
   display: flex;
   flex-direction: column;
   border: 2px solid black;
@@ -9,9 +9,10 @@
 .workExpInfoBox {
   display: flex;
   flex-direction: row;
+
 }
 
-.question-and-response-box {
+.questionAndResponseBox {
   display: flex;
   flex-direction: column;
   margin: 20px;
@@ -30,6 +31,19 @@
 }
 
 .question-and-response-box input[type='text'] {
+.questionBox {
+ display: flex;
+ color: #2f5061;
+  font-size: 1.1em;
+
+
+}
+.questionAndResponseBox textarea {
+   height: 150px;
+   margin: 5px 10px;
+  background-color: #e6f5f3;
+}
+.questionAndResponseBox input[type="text"] {
   width: 40%;
   padding: 10px;
   border: 1px solid #ccc;
@@ -40,6 +54,8 @@
 
 .question-and-response-box p {
   line-height: 1.2;
+.questionAndResponseBox p {
+    line-height: 1.2;
   text-align: left;
   margin-left: 10px;
   margin-right: 30px;
@@ -50,11 +66,17 @@
   border: rgb(28 36 36);
   display: flex;
   flex-direction: column;
+
 }
 
 .custom-list {
   list-style-type: none;
   padding-left: 0%;
+
+}
+.custom-list li:before {
+  content:"-";
+  margin-right: 0rem;
 }
 
 .custom-list li::before {

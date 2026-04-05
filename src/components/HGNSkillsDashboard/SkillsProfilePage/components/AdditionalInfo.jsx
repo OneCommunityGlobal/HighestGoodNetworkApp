@@ -6,6 +6,7 @@ import { ENDPOINTS } from '../../../../utils/URL';
 import { toast } from 'react-toastify';
 import getWordCount from '../../../../utils/getWordCount';
 import { updateFollowUpFields } from '../../../../actions/userSkillsActions';
+import { getFontColor } from '../../../../styles';
 
 function checkIfupdateUserSkillsProfileFollowUp(permissions, role, requestorId, userid) {
   if (role === 'Administrator' || role === 'Owner' || requestorId === userid) return true;
@@ -118,13 +119,14 @@ function AdditionalInfo() {
   if (loading) return <div>Loading...</div>;
   return (
     <div className={`${styles.AdditionalInfoBox} ${darkMode ? 'dark-mode' : ''}`}>
+    <div className={styles.additionalInfoBox}>
       <div className={styles.workExpInfoBox}>
         <h3> Work Experience and Additional Info: </h3>
-        <button type="button" className="edit-button" onClick={handleEditSave}>
+        <button type="button" className={styles.editButton} onClick={handleEditSave}>
           {isEditing ? 'Save' : 'Edit'}
         </button>
       </div>
-      <hr className="horizontal-separator" />
+      <hr className={styles.horizontalSeparator} />
       {!!questions &&
         questions
           .slice(0, 3)
@@ -135,6 +137,9 @@ function AdditionalInfo() {
               <div className={styles['question-and-response-box']} key={field.key}>
                 <div className={styles['question-box']}>
                   <p>{question.text}</p>
+              <div className={styles.questionAndResponseBox} key={field.key}>
+                <div className={styles.questionBox}>
+                  <p className={getFontColor(darkMode)}>{question.text}</p>
                 </div>
                 {field.type === 'textarea' ? (
                   <textarea
@@ -145,6 +150,7 @@ function AdditionalInfo() {
                     readOnly={!isEditing}
                     ref={textareaRef}
                     required
+                    className={`${getFontColor(darkMode)} ${darkMode ? 'bg-yinmn-blue' : ''}`}
                   />
                 ) : (
                   <input
@@ -154,6 +160,7 @@ function AdditionalInfo() {
                     onChange={handleChange(field.key)}
                     required
                     readOnly={!isEditing}
+                    className={`${getFontColor(darkMode)} ${darkMode ? 'bg-yinmn-blue' : ''}`}
                   />
                 )}
               </div>

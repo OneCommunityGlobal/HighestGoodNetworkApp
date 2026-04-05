@@ -8,6 +8,7 @@ import { setformData } from '~/actions/hgnFormAction';
 import { Spinner } from 'reactstrap';
 import { ENDPOINTS } from '~/utils/URL';
 import styles from '../styles/GeneralQuestions.module.css';
+import { getBoxStyling, getFontColor } from '../../../styles';
 
 function GeneralQuestions() {
   const navigate = useHistory();
@@ -26,6 +27,8 @@ function GeneralQuestions() {
   const [editingIndex, setEditingIndex] = useState(null);
   const [editedText, setEditedText] = useState('');
   const [loading, setLoading] = useState(true);
+
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   // Fetch data from database
   useEffect(() => {
@@ -228,14 +231,16 @@ function GeneralQuestions() {
     return (
       <div className={`${styles.questionContainer}`}>
         {editingIndex === index && isOwner ? (
-          <div className={`${styles.editQuestionContainer}`}>
-            <p className={`${styles.editTitle}`}>Edit Question</p>
+          <div className={`${styles.editQuestionContainer} ${darkMode ? 'bg-yinmn-blue' : ''}`}>
+            <p className={`${styles.editTitle} ${getFontColor(darkMode)}`}>Edit Question</p>
             <div className={`${styles.editQuestion}`}>
               <input
                 type="text"
                 value={editedText}
                 onChange={e => setEditedText(e.target.value)}
-                className={`${styles.editInput}`}
+                className={`${styles.editInput} ${getFontColor(darkMode)} ${
+                  darkMode ? 'bg-space-cadet' : ''
+                }`}
               />
               <FaRegSave
                 title="Save"
@@ -245,7 +250,7 @@ function GeneralQuestions() {
             </div>
           </div>
         ) : (
-          <p className={`${styles.question}`}>
+          <p className={`${styles.question} ${getFontColor(darkMode)}`}>
             {searchQuestion(2, index + 1)}
             {isOwner && (
               <FaEdit
@@ -272,6 +277,11 @@ function GeneralQuestions() {
       <h3 className={`${styles.blueStrip} ${darkMode ? styles.darkStrip : ''}`}>
         General Questions
       </h3>
+    <div
+      className={`${styles.generalQuestions} ${darkMode ? 'bg-space-cadet' : ''}`}
+      style={getBoxStyling(darkMode)}
+    >
+      <h3 className={`${styles.blueStrip}`}>General Questions</h3>
       <form onSubmit={handleNext}>
         <div className={`${styles.hours}`}>
           {renderEditableQuestion(0)}
@@ -285,7 +295,9 @@ function GeneralQuestions() {
               onChange={handleRadioChange}
               required
             />
-            <label htmlFor="10-19">10-19 Hour Team</label>
+            <label htmlFor="10-19" className={`${getFontColor(darkMode)}`}>
+              10-19 Hour Team
+            </label>
 
             <input
               type="radio"
@@ -295,7 +307,9 @@ function GeneralQuestions() {
               checked={newVolunteer.hours === '20-29'}
               onChange={handleRadioChange}
             />
-            <label htmlFor="20-29">20-29 Hour Team</label>
+            <label htmlFor="20-29" className={`${getFontColor(darkMode)}`}>
+              20-29 Hour Team
+            </label>
 
             <input
               type="radio"
@@ -305,7 +319,9 @@ function GeneralQuestions() {
               checked={newVolunteer.hours === '30+'}
               onChange={handleRadioChange}
             />
-            <label htmlFor="30+">30+ Hour Team</label>
+            <label htmlFor="30+" className={`${getFontColor(darkMode)}`}>
+              30+ Hour Team
+            </label>
           </div>
         </div>
 
@@ -322,7 +338,9 @@ function GeneralQuestions() {
                 onChange={handleRadioChange}
                 required
               />
-              <label htmlFor="1">Less than 2 months</label>
+              <label htmlFor="1" className={`${getFontColor(darkMode)}`}>
+                Less than 2 months
+              </label>
             </div>
             <div>
               <input
@@ -333,7 +351,9 @@ function GeneralQuestions() {
                 checked={newVolunteer.period === '2'}
                 onChange={handleRadioChange}
               />
-              <label htmlFor="2">2 months</label>
+              <label htmlFor="2" className={`${getFontColor(darkMode)}`}>
+                2 months
+              </label>
             </div>
             <div>
               <input
@@ -344,7 +364,9 @@ function GeneralQuestions() {
                 checked={newVolunteer.period === '3-6'}
                 onChange={handleRadioChange}
               />
-              <label htmlFor="3">3-6 months</label>
+              <label htmlFor="3" className={`${getFontColor(darkMode)}`}>
+                3-6 months
+              </label>
             </div>
             <div>
               <input
@@ -355,7 +377,9 @@ function GeneralQuestions() {
                 checked={newVolunteer.period === '7-12'}
                 onChange={handleRadioChange}
               />
-              <label htmlFor="4">7-12 months</label>
+              <label htmlFor="4" className={`${getFontColor(darkMode)}`}>
+                7-12 months
+              </label>
             </div>
             <div>
               <input
@@ -366,7 +390,9 @@ function GeneralQuestions() {
                 checked={newVolunteer.period === '<1'}
                 onChange={handleRadioChange}
               />
-              <label htmlFor="5">More than 1 year</label>
+              <label htmlFor="5" className={`${getFontColor(darkMode)}`}>
+                More than 1 year
+              </label>
             </div>
           </div>
         </div>
@@ -383,7 +409,9 @@ function GeneralQuestions() {
               onChange={handleRadioChange}
               required
             />
-            <label htmlFor="yes">Yes</label>
+            <label htmlFor="yes" className={`${getFontColor(darkMode)}`}>
+              Yes
+            </label>
 
             <input
               type="radio"
@@ -393,7 +421,9 @@ function GeneralQuestions() {
               checked={newVolunteer.standup === 'no'}
               onChange={handleRadioChange}
             />
-            <label htmlFor="no">No</label>
+            <label htmlFor="no" className={`${getFontColor(darkMode)}`}>
+              No
+            </label>
 
             <input
               type="radio"
@@ -403,7 +433,9 @@ function GeneralQuestions() {
               checked={newVolunteer.standup === 'maybe'}
               onChange={handleRadioChange}
             />
-            <label htmlFor="maybe">Maybe</label>
+            <label htmlFor="maybe" className={`${getFontColor(darkMode)}`}>
+              Maybe
+            </label>
           </div>
         </div>
 
@@ -415,11 +447,12 @@ function GeneralQuestions() {
             id="location"
             value={newVolunteer.location || ''}
             onChange={handleTextChange}
+            className={`${darkMode ? 'bg-yinmn-blue' : ''} ${getFontColor(darkMode)}`}
             required
           />
         </div>
 
-        <div className="manager">
+        <div className={`${styles.manager}`}>
           {renderEditableQuestion(4)}
           <div className={`${styles.standupRadio}`}>
             <input
@@ -431,7 +464,9 @@ function GeneralQuestions() {
               onChange={handleRadioChange}
               required
             />
-            <label htmlFor="yes_m">Yes</label>
+            <label htmlFor="yes_m" className={`${getFontColor(darkMode)}`}>
+              Yes
+            </label>
 
             <input
               type="radio"
@@ -441,7 +476,9 @@ function GeneralQuestions() {
               checked={newVolunteer.manager === 'no'}
               onChange={handleRadioChange}
             />
-            <label htmlFor="no_m">No</label>
+            <label htmlFor="no_m" className={`${getFontColor(darkMode)}`}>
+              No
+            </label>
 
             <input
               type="radio"
@@ -451,16 +488,20 @@ function GeneralQuestions() {
               checked={newVolunteer.manager === 'maybe'}
               onChange={handleRadioChange}
             />
-            <label htmlFor="maybe_m">Maybe</label>
+            <label htmlFor="maybe_m" className={`${getFontColor(darkMode)}`}>
+              Maybe
+            </label>
           </div>
         </div>
 
-        <div className="combined_frontend_backend">
+        <div className={`${styles.combinedFrontendBackend}`}>
           {renderEditableQuestion(5)}
           <div className={`${styles.radioRating}`}>
             {Array.from({ length: 10 }, (_, i) => (
               <div key={i}>
-                <label htmlFor={`f${i + 1}`}>{i + 1}</label>
+                <label htmlFor={`f${i + 1}`} className={`${getFontColor(darkMode)}`}>
+                  {i + 1}
+                </label>
                 <input
                   type="radio"
                   name="combined_frontend_backend"
@@ -495,12 +536,14 @@ function GeneralQuestions() {
           </div>
         </div> */}
 
-        <div className="mern_skills">
+        <div className={`${styles.mernSkills}`}>
           {renderEditableQuestion(6)}
           <div className={`${styles.radioRating}`}>
             {Array.from({ length: 10 }, (_, i) => (
               <div key={i}>
-                <label htmlFor={`b${i + 1}`}>{i + 1}</label>
+                <label htmlFor={`b${i + 1}`} className={`${getFontColor(darkMode)}`}>
+                  {i + 1}
+                </label>
                 <input
                   type="radio"
                   name="mern_skills"
@@ -515,12 +558,14 @@ function GeneralQuestions() {
           </div>
         </div>
 
-        <div className="leadership_skills">
+        <div className={`${styles.leadershipSkills}`}>
           {renderEditableQuestion(7)}
           <div className={`${styles.radioRating}`}>
             {Array.from({ length: 10 }, (_, i) => (
               <div key={i}>
-                <label htmlFor={`b${i + 1}`}>{i + 1}</label>
+                <label htmlFor={`b${i + 1}`} className={`${getFontColor(darkMode)}`}>
+                  {i + 1}
+                </label>
                 <input
                   type="radio"
                   name="leadership_skills"
@@ -535,12 +580,14 @@ function GeneralQuestions() {
           </div>
         </div>
 
-        <div className="leadership_experience">
+        <div className={`${styles.leadershipExperience}`}>
           {renderEditableQuestion(8)}
           <div className={`${styles.radioRating}`}>
             {Array.from({ length: 10 }, (_, i) => (
               <div key={i}>
-                <label htmlFor={`b${i + 1}`}>{i + 1}</label>
+                <label htmlFor={`b${i + 1}`} className={`${getFontColor(darkMode)}`}>
+                  {i + 1}
+                </label>
                 <input
                   type="radio"
                   name="leadership_experience"
@@ -555,7 +602,7 @@ function GeneralQuestions() {
           </div>
         </div>
 
-        <div className="preferences">
+        <div className={`${styles.preferences}`}>
           {renderEditableQuestion(9)}
           <div className={`${styles.preferencesCheckbox}`}>
             {[
@@ -575,7 +622,9 @@ function GeneralQuestions() {
                   onChange={handlePreferenceChange}
                   checked={newVolunteer.preferences && newVolunteer.preferences.includes(pref)}
                 />
-                <label>{pref.charAt(0).toUpperCase() + pref.slice(1)}</label>
+                <label className={`${getFontColor(darkMode)}`}>
+                  {pref.charAt(0).toUpperCase() + pref.slice(1)}
+                </label>
               </div>
             ))}
           </div>
@@ -584,19 +633,22 @@ function GeneralQuestions() {
           )}
         </div>
 
-        <div className="availability">
+        <div className={`${styles.availability}`}>
           {renderEditableQuestion(10)}
           <div className={`${styles.availabilitySelector}`}>
             <div className={`${styles.availabilityGrid}`}>
-              <div className="corner-cell" />
+              <div className={`${styles.cornerCell}`} />
               {times.map(time => (
-                <div key={`time-${time}`} className={`${styles.timeCell}`}>
+                <div
+                  key={`time-${time}`}
+                  className={`${styles.timeCell} ${getFontColor(darkMode)}`}
+                >
                   {time}
                 </div>
               ))}
               {days.map(day => (
                 <React.Fragment key={`day-${day}`}>
-                  <div className={`${styles.dayLabel}`}>{day}</div>
+                  <div className={`${styles.dayLabel} ${getFontColor(darkMode)}`}>{day}</div>
                   {times.map((time, timeIndex) => (
                     <input
                       key={`${day}-${time}`}

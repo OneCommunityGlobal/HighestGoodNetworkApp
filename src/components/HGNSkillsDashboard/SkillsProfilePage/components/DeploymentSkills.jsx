@@ -2,11 +2,14 @@ import { useSelector } from 'react-redux';
 import styles from '../styles/SkillsSection.module.css';
 import { getColorClass } from '../utils/skillUtils';
 
+import { getFontColor } from '../../../../styles';
+
 function DeploymentSkills({ profileData }) {
   const darkMode = useSelector(state => state.theme.darkMode);
   const safeProfileData = profileData || {};
   const skillInfo = safeProfileData.skillInfo || {};
   const backend = skillInfo.backend || {};
+ 
 
   const skills = [
     { value: backend.Deployment, label: 'Deployment (Azure, Docker, etc)' },
@@ -20,7 +23,7 @@ function DeploymentSkills({ profileData }) {
         {skills.map(skill => (
           <div key={skill.label} className={`${styles.skillItem}`}>
             <span className={getColorClass(skill.value)}>{skill.value || 0}</span>
-            <span className={`${styles.skillLabel}`}>{skill.label}</span>
+            <span className={`${styles.skillLabel} ${getFontColor(darkMode)}`}>{skill.label}</span>
           </div>
         ))}
       </div>
